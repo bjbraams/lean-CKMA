@@ -1,6 +1,6 @@
 # Mathlib coverage of Sections 4–53
 
-Survey of what the local Mathlib checkout already contains for Sections 4 through 53 of `CoreKnowledgeMathematicalAnalysis.md`. This file is the index for the later prose notes `Mathlib04.md` through `Mathlib53.md`. It records libraries and named theorems that were seen in source. It is not itself the prose summary.
+Survey of what the local Mathlib checkout already contains for Sections 4 through 53 of `CKMA-bib.md`. This file is the index for the later prose notes `Mathlib04.md` through `Mathlib53.md`. It records libraries and named theorems that were seen in source. It is not itself the prose summary.
 
 ## Pin
 
