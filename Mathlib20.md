@@ -68,7 +68,9 @@ If \(\mu\) is right-invariant, integrable functions convolve to an integrable fu
 \[
 \lVert (f\star g)(x)\rVert_e \le \lVert L\rVert_e\,\lVert f\rVert_p\,\lVert g\rVert_q.
 \]
-These are the algebra and Young inequalities for the convolution. The library does not package \(L^1\) as a normed ring under convolution (`Analysis/Convolution.lean`).
+This is the endpoint \(r=\infty\) of Young's inequality, obtained from Hölder's inequality. The general Young inequality \(\|f\star g\|_r\le\|f\|_p\|g\|_q\) with \(1+1/r=1/p+1/q\), including the \(L^1\) bound \(\|f\star g\|_1\le\|f\|_1\|g\|_1\), is not proved, and the library does not package \(L^1\) as a normed ring under convolution (`Analysis/Convolution.lean`). TauCeti's Schur test gives the case \(\|f\star g\|_p\le\|f\|_1\|g\|_p\) for nonnegative functions (Section 11).
+
+Discrete convolution over a monoid, through a bilinear map of the values, is defined with its unit and summability conditions; it is the multiplication of the group algebra in the \(\ell^1\) setting (`Topology/Algebra/InfiniteSum/DiscreteConvolution.lean`).
 
 For functions with values in the extended nonnegative reals, the Lebesgue-integral convolution is associative when the measure is left-invariant and s-finite and the functions are almost everywhere measurable, and it is commutative when the group is commutative and the measure is also inversion-invariant (`Analysis/LConvolution.lean`).
 
@@ -95,5 +97,8 @@ The local Baker–Campbell–Hausdorff map is defined analytically by \(\log(\ex
 ## Topics of Section 20 not found in either inspected library
 
 - The general identification of an archimedean normed field with a normed \(\mathbb{R}\)-algebra, which the real Gelfand–Mazur file leaves as future work. Ostrowski’s classification of nontrivial real-valued absolute values on \(\mathbb{Q}\), up to equivalence, **is** proved in `NumberTheory/Ostrowski.lean` (`Rat.AbsoluteValue.equiv_real_or_padic`).
-- An \(L^1\) Banach-algebra structure built from convolution. Associativity and the Young bound are proved.
+- An \(L^1\) Banach-algebra structure built from convolution, and the general Young inequality. Associativity and the pointwise Hölder bound for the convolution of \(L^p\) and \(L^q\) functions are proved.
+- The holomorphic (Riesz–Dunford) functional calculus in a general Banach algebra. The continuous functional calculus of C⋆-algebras is Section 23.
+- Wiener's lemma on absolutely convergent Fourier series and the Wiener Tauberian theorem, Shilov boundaries and uniform algebras, the Gleason–Kahane–Żelazko theorem, automatic continuity, and multiplier algebras of \(L^1(G)\).
+- Amenability of locally compact groups, Fourier and Fourier–Stieltjes algebras. Følner filters for measure-preserving actions are present.
 - Pontryagin duality for groups that are not finite.

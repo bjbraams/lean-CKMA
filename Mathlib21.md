@@ -52,6 +52,10 @@ Uniqueness is Stone–Weierstrass. On a compact subset of \(\mathbb{R}\) or of \
 
 The generic calculus is instantiated for normal elements of a unital complex C⋆-algebra, for normal elements of a non-unital complex C⋆-algebra by passage through the unitization, and for self-adjoint elements by restriction of scalars along the real part (`Analysis/CStarAlgebra/ContinuousFunctionalCalculus/Basic.lean`, `Analysis/CStarAlgebra/ContinuousFunctionalCalculus/Instances.lean`). The order, positivity, and the rest of the C⋆-package that use this calculus are section 23.
 
+## Reproducing kernel Hilbert spaces
+
+Reproducing kernel Hilbert spaces, the setting of Paulsen–Raghupathi and Agler–McCarthy, are defined for vector-valued functions: point evaluations are continuous, the kernel is positive semidefinite and its kernel functions are dense, and every positive semidefinite kernel determines such a space (`Analysis/InnerProductSpace/Reproducing.lean`). Multipliers, Pick interpolation, and operators on specific kernel spaces were not found; Section 42 treats the function spaces.
+
 ## Singular values
 
 On finite-dimensional inner product spaces over \(\mathbb{R}\) or \(\mathbb{C}\), the singular values of a linear map \(T\) are the square roots of the eigenvalues of \(T^\ast\circ T\), arranged in decreasing order and repeated by multiplicity. The sequence is indexed by the nonnegative integers and is finitely supported. Its support is the initial segment of length equal to the rank of \(T\): the first \(\operatorname{rank}(T)\) singular values are positive, and the rest are zero (`Analysis/InnerProductSpace/SingularValues.lean`).
@@ -60,7 +64,9 @@ On finite-dimensional inner product spaces over \(\mathbb{R}\) or \(\mathbb{C}\)
 
 The following additions were checked in TauCeti revision `6e53de0d3ce9`; see the [revision, build evidence, and comparison scope](TauCetiCoverage.md). Source links below are pinned to that revision.
 
-The additions include the Banach-space Fredholm criterion from finite-dimensional kernel and cokernel, the Hilbert-space adjoint closed-range theorem, openness of the Fredholm locus, and invariance of index under compact perturbations ([Fredholm criterion](https://github.com/TauCetiProject/TauCeti/blob/6e53de0d3ce9ea24d7d487e656ac4590b0c45b3a/TauCeti/Analysis/Fredholm/ClosedRange.lean), [adjoints](https://github.com/TauCetiProject/TauCeti/blob/6e53de0d3ce9ea24d7d487e656ac4590b0c45b3a/TauCeti/Analysis/Fredholm/Adjoint.lean), [compact perturbations](https://github.com/TauCetiProject/TauCeti/blob/6e53de0d3ce9ea24d7d487e656ac4590b0c45b3a/TauCeti/Analysis/Fredholm/CompactPerturbation.lean)). For compact \(K\), TauCeti proves finite-dimensionality of the kernel and cokernel of \(I-K\), together with closedness of its range ([Riesz theory](https://github.com/TauCetiProject/TauCeti/blob/6e53de0d3ce9ea24d7d487e656ac4590b0c45b3a/TauCeti/Analysis/Normed/Operator/Compact/RieszTheory.lean)).
+The additions include the Banach-space Fredholm criterion from finite-dimensional kernel and cokernel, the Hilbert-space adjoint closed-range theorem, and invariance of index under compact perturbations. Openness of the Fredholm locus and local constancy of the index are already in Mathlib, as recorded above; TauCeti restates them in \(\varepsilon\)-form ([Fredholm criterion](https://github.com/TauCetiProject/TauCeti/blob/6e53de0d3ce9ea24d7d487e656ac4590b0c45b3a/TauCeti/Analysis/Fredholm/ClosedRange.lean), [adjoints](https://github.com/TauCetiProject/TauCeti/blob/6e53de0d3ce9ea24d7d487e656ac4590b0c45b3a/TauCeti/Analysis/Fredholm/Adjoint.lean), [compact perturbations](https://github.com/TauCetiProject/TauCeti/blob/6e53de0d3ce9ea24d7d487e656ac4590b0c45b3a/TauCeti/Analysis/Fredholm/CompactPerturbation.lean)). For compact \(K\), TauCeti proves finite-dimensionality of the kernel and cokernel of \(I-K\), together with closedness of its range ([Riesz theory](https://github.com/TauCetiProject/TauCeti/blob/6e53de0d3ce9ea24d7d487e656ac4590b0c45b3a/TauCeti/Analysis/Normed/Operator/Compact/RieszTheory.lean)).
+
+A self-adjoint Fredholm operator on a Hilbert space has index zero, and more generally so does any Fredholm operator with the same kernel as its adjoint ([self-adjoint Fredholm](https://github.com/TauCetiProject/TauCeti/blob/6e53de0d3ce9ea24d7d487e656ac4590b0c45b3a/TauCeti/Analysis/Fredholm/SelfAdjoint.lean)). The compact self-adjoint spectral theorem is repackaged as the existence of a Hilbert basis of eigenvectors ([eigenbasis](https://github.com/TauCetiProject/TauCeti/blob/6e53de0d3ce9ea24d7d487e656ac4590b0c45b3a/TauCeti/Analysis/InnerProductSpace/Spectrum.lean)); in Mathlib the conclusion is stated as the vanishing of the orthogonal complement of the eigenspaces.
 
 Stone's theorem is available in the unbounded-operator development of Section 22. This should not be confused with a projection-valued spectral-measure construction for arbitrary bounded normal operators, which was not located.
 
@@ -70,7 +76,8 @@ Stone's theorem is available in the unbounded-operator development of Section 22
 - Hilbert–Schmidt operators and Schatten classes.
 - The spectral theorem for a general bounded self-adjoint or normal operator.
 - A projection-valued measure, or a spectral measure, for a general normal operator. The continuous functional calculus supplies a star-isometric map from \(C(\sigma(a))\). This note does not treat that map as a spectral measure.
-- The essential spectrum.
+- The essential spectrum, Weyl's theorem on its stability, and the Calkin algebra.
+- Toeplitz and Hankel operators, the unilateral shift and Beurling's invariant-subspace theorem, the Wold decomposition, von Neumann's inequality, subnormal operators, and the invariant-subspace results of Lomonosov type.
 - The model theory of contractions, the characteristic function of a contraction, and the Sz.-Nagy dilation.
 - The deduction, recorded as a comment in the Rayleigh file, of the equality of spectral radius and norm from the corresponding C⋆-identity by complexification. The equality itself is proved directly.
 - The finite-kernel/cokernel criterion for Fredholmness on general Fréchet spaces. The Banach-space criterion is proved in TauCeti.

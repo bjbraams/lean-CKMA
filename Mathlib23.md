@@ -110,6 +110,10 @@ This is a GNS construction for group functions, not the missing cyclic-vector th
 - Extreme points of the whole closed unit ball. The theorem that is proved describes the extreme points of the nonnegative part of that ball.
 - Spectral permanence for star homomorphisms and for the quasispectrum.
 - Tomita–Takesaki theory, the modular automorphism group, and the KMS condition. Standard subspaces are defined, and the file lists these theorems as future work.
+- The Gelfand–Naimark theorem that every C⋆-algebra embeds isometrically in the bounded operators on a Hilbert space, through the universal GNS representation. The GNS representation of a single positive functional is constructed.
+- Stinespring's dilation theorem and Arveson's extension theorem. Completely positive maps are defined.
+- K-theory of C⋆-algebras, crossed products, AF algebras, nuclearity and exactness, and the Brown–Ozawa approximation theory.
+- The type classification of von Neumann algebras, factors, the Kaplansky density theorem, and subfactors.
 - Operator spaces and Ruan’s theorem.
 - Free probability and free entropy.
 - Spectral triples and noncommutative geometry.

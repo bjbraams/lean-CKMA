@@ -48,5 +48,6 @@ In particular, the following are absent:
 - Microlocal defect measures, semiclassical measures, the semiclassical pseudodifferential calculus, and semiclassical defect measures.
 - Paradifferential operators and any calculus adapted to low regularity.
 - Distributions, pseudodifferential operators, or Fourier integral operators on manifolds, and the Schwartz kernel theorem.
+- The constant-coefficient theory of Hörmander's first volume: convolution of distributions, the Malgrange–Ehrenpreis theorem on fundamental solutions, hypoellipticity, and the Paley–Wiener–Schwartz theorem. The only fundamental solutions found are TauCeti's Newtonian kernels for the Laplacian (Section 38).
 
 The distributional constructions that do exist are those of the section 16 note: test functions, distributions on open sets of real vector spaces, Schwartz space, tempered distributions, and Fourier multipliers.

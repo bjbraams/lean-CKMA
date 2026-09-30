@@ -20,6 +20,14 @@ Compact operators and Fredholm operators, including the index and its local cons
 
 The algebraic tensor product of a finite family of normed spaces carries a projective seminorm, with the isometric universal property for continuous multilinear maps and norm bounds for tensor products of operators (`Analysis/Normed/Module/PiTensorProduct/ProjectiveSeminorm.lean`). Section 16 gives its scope and limitations. It does not provide a theory of nuclear or summing operators.
 
+## Complemented subspaces, L-projections, and isometries
+
+A closed subspace of a Banach space is complemented when it is the range of a continuous linear projection. In a Banach space, algebraic complements that are both closed are topological complements, by the open mapping theorem; finite-dimensional subspaces and closed subspaces of finite codimension are complemented (`Analysis/Normed/Module/Complemented.lean`, `Topology/Algebra/Module/FiniteDimension.lean`). Sobczyk's and Pełczyński's theorems on complementation in \(c_0\) and \(\ell^p\) were not found.
+
+An L-projection on a normed space is a projection \(P\) with \(\|x\|=\|Px\|+\|(1-P)x\|\), and an M-projection one with \(\|x\|=\max(\|Px\|,\|(1-P)x\|)\). The L-projections commute and form a Boolean algebra (`Analysis/Normed/Module/MStructure.lean`). The Boolean algebra of M-projections, completeness of the L-projection algebra, and M-ideals are listed there as motivation, not proved.
+
+The Mazur–Ulam theorem, the starting point of the nonlinear classification theory of Benyamini–Lindenstrauss: a surjective isometry between real normed spaces is affine (`Analysis/Normed/Affine/MazurUlam.lean`). Lipschitz and uniform classification of Banach spaces beyond this were not found.
+
 ## Additional coverage in TauCeti
 
 The following additions were checked in TauCeti revision `6e53de0d3ce9`; see the [revision, build evidence, and comparison scope](TauCetiCoverage.md). Source links below are pinned to that revision.
@@ -28,7 +36,9 @@ TauCeti proves a part of compact-operator and Fredholm theory useful alongside o
 
 ## Topics of Section 17 not found in either inspected library
 
-- Rademacher type and cotype.
+- Rademacher type and cotype, Khintchine's and Kahane's inequalities, and Grothendieck's inequality.
+- Banach–Mazur distance, John's ellipsoid theorem, and the local theory of finite-dimensional normed spaces.
+- The Radon–Nikodým property, smoothness and renorming theory, and the classical structure theory of \(c_0\), \(\ell^p\), and \(L^p\) (Pitt's theorem, Pełczyński's decomposition method).
 - The approximation property.
 - Schatten classes.
 - Nuclear operators and operator ideals.

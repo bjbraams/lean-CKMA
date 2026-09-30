@@ -38,6 +38,8 @@ For scalar positive-definite kernels it packages a minimal Kolmogorov Hilbert-sp
 - The short-time Fourier transform, Gabor frames, and time–frequency analysis.
 - The Shannon, Nyquist, and Whittaker–Kotelnikov–Shannon sampling theorems.
 - Frames of a Hilbert space, frame operators, and frame bounds. The word “frame” occurs elsewhere for an order-theoretic frame and for a local frame of a vector bundle; neither is a Hilbert-space frame.
+- Riesz bases and nonharmonic Fourier series, including Kadec's quarter theorem; the Haar and Walsh systems as bases of \(L^p\).
+- Compressive sensing: the restricted isometry property and sparse recovery guarantees.
 - Sampling expansions and band-limited functions, beyond the Fourier analysis of the circle and of Euclidean space recorded in Sections 27 and 28.
 
 Reproducing-kernel Hilbert spaces and the Hermite orthogonal bases are neighbouring formalized theories; neither supplies the missing wavelet, general-frame, or sampling theorems.

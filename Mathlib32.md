@@ -36,4 +36,6 @@ The Laplacian has implemented distributional fundamental solutions (Section 38),
 
 - The Cauchy–Kowalevski theorem and a general weak/distributional theory for arbitrary linear PDE, beyond the coercive elliptic and semigroup results above.
 - Stokes’ theorem for differential forms, and the divergence theorem on manifolds or on domains other than rectangular boxes.
+- The four model equations of Evans's first part beyond the Laplacian: the transport equation, the heat equation and its fundamental solution, the wave equation with d'Alembert's and Kirchhoff's formulas; the method of characteristics for first-order nonlinear equations, and Hamilton–Jacobi equations with the Hopf–Lax formula.
+- Boundary value problems with nonzero boundary data, traces, and regularity up to the boundary (Lions–Magenes, Grisvard). The Dirichlet problem in TauCeti is posed in \(H^1_0\).
 - General higher-order variable-coefficient PDE and hypoellipticity. Coercive second-order divergence-form equations with measurable coefficients, and fundamental solutions of the Laplacian, are present in TauCeti.

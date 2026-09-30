@@ -114,6 +114,8 @@ The following additions were checked in TauCeti revision `6e53de0d3ce9`; see the
 
 Smooth compactly supported functions are proved dense in Schwartz space on a finite-dimensional real domain, including for normed vector-valued Schwartz functions. Explicit dilated cutoffs converge in every Schwartz seminorm, with an \(O(R^{-1})\) estimate for each seminorm ([Schwartz cutoffs](https://github.com/TauCetiProject/TauCeti/blob/6e53de0d3ce9ea24d7d487e656ac4590b0c45b3a/TauCeti/Analysis/Distribution/SchwartzSpace/Cutoff.lean)). This gives a concrete approximation tool for tempered distributions; it does not prove nuclearity, the Schwartz kernel theorem, or the Montel property of the test-function space.
 
+The du Bois-Reymond lemma is proved on an interval: a continuous function whose distributional derivative vanishes on an open interval is constant there ([du Bois-Reymond](https://github.com/TauCetiProject/TauCeti/blob/6e53de0d3ce9ea24d7d487e656ac4590b0c45b3a/TauCeti/Analysis/Distribution/DuBoisReymond.lean)). This is the first-order companion of Mathlib's zeroth-order lemma that a locally integrable function annihilating all test functions vanishes almost everywhere. Translation of test functions is also packaged ([translation](https://github.com/TauCetiProject/TauCeti/blob/6e53de0d3ce9ea24d7d487e656ac4590b0c45b3a/TauCeti/Analysis/Distribution/TestFunction/Translation.lean)).
+
 The weak-derivative and Sobolev constructions of Section 26, and the distributional fundamental solutions of Section 38, are further applications of the distributional infrastructure beyond this Mathlib checkout.
 
 ## Topics of Section 16 not found in either inspected library
@@ -125,4 +127,5 @@ The weak-derivative and Sobolev constructions of Section 26, and the distributio
 - Bornological spaces and the Mackey topology.
 - Completeness of Schwartz space, the Fréchet property, and the Montel property for Schwartz space or for test functions. The equality of the strong topology and compact convergence on the space of distributions is a citation, not a theorem.
 - The topological embedding of the space of functions supported in a fixed compact into the space of test functions.
-- A product of distributions beyond multiplication by a smooth or temperate function.
+- A product of distributions beyond multiplication by a smooth or temperate function, including Colombeau's algebras of generalized functions.
+- Structure theorems for distributions: local finite order, representation as derivatives of continuous functions, and the description of distributions supported at a point.

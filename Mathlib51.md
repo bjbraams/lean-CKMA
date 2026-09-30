@@ -14,10 +14,11 @@ A search for Riemann–Hilbert problems, integrable systems, the Korteweg–de V
 
 The following additions were checked in TauCeti revision `6e53de0d3ce9`; see the [revision, build evidence, and comparison scope](TauCetiCoverage.md). Source links below are pinned to that revision.
 
-TauCeti contains geometric prerequisites for Hamiltonian analysis. On the linear cotangent space \(V\times V'\), with continuous dual \(V'\), it constructs the Liouville one-form \(\lambda_{(q,p)}(\delta q,\delta p)=p(\delta q)\) and proves that the canonical symplectic form is \(-d\lambda\), without a finite-dimensional restriction ([linear cotangent model](https://github.com/TauCetiProject/TauCeti/blob/6e53de0d3ce9ea24d7d487e656ac4590b0c45b3a/TauCeti/Geometry/Symplectic/Cotangent/Liouville.lean)). This is an exact symplectic construction, not an integrable Hamiltonian system. No Riemann–Hilbert boundary-value problem, isomonodromy, Lax-pair, or soliton theorem was located.
+TauCeti contains geometric prerequisites for Hamiltonian analysis. On the linear cotangent space \(V\times V'\), with continuous dual \(V'\), it constructs the Liouville one-form \(\lambda_{(q,p)}(\delta q,\delta p)=p(\delta q)\) and proves that the canonical symplectic form is \(-d\lambda\), without a finite-dimensional restriction ([linear cotangent model](https://github.com/TauCetiProject/TauCeti/blob/6e53de0d3ce9ea24d7d487e656ac4590b0c45b3a/TauCeti/Geometry/Symplectic/Cotangent/Liouville.lean)). This is an exact symplectic construction, not an integrable Hamiltonian system. The linear symplectic algebra around it (Lagrangian subspaces, compatible almost complex structures) and constant-structure \(J\)-holomorphic maps with their energy identity are also developed, as geometric rather than integrable-systems content. No Riemann–Hilbert boundary-value problem, isomonodromy, Lax-pair, or soliton theorem was located.
 
 ## Topics of Section 51 not found in either inspected library
 
 - Riemann–Hilbert boundary-value problems, and isomonodromy.
 - The Korteweg–de Vries equation, solitons, and Lax pairs.
-- Any other integrable Hamiltonian system, in finite or infinite dimensions.
+- Any other integrable Hamiltonian system, in finite or infinite dimensions: Poisson brackets, Hamiltonian vector fields on symplectic manifolds, the Liouville–Arnold theorem and action–angle variables.
+- Inverse scattering, Painlevé transcendents, and the nonlinear steepest-descent method of Deift–Zhou.

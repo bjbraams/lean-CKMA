@@ -140,6 +140,8 @@ An operator version of the arithmetic–geometric mean inequality is proved for 
 
 There is also a specific majorization rigidity lemma for an antitone integer sequence: prefix sums bounded by those of the finite staircase, equality of the total sum, and equality of a specified quadratic statistic force the sequence to equal the staircase ([staircase criterion](https://github.com/TauCetiProject/TauCeti/blob/6e53de0d3ce9ea24d7d487e656ac4590b0c45b3a/TauCeti/Combinatorics/Majorization.lean)). This is a proved special-purpose lemma, not a general vector-majorization theory or Karamata's inequality.
 
+Among integral inequalities, Schur's test for nonnegative kernels is proved in the lower Lebesgue integral: row and column integrals bounded by \(A\) and \(B\) give an \(L^p\) bound with constant \(A^{1-1/p}B^{1/p}\). For a convolution kernel this is Young's convolution inequality with one factor in \(L^1\) ([Schur test](https://github.com/TauCetiProject/TauCeti/blob/6e53de0d3ce9ea24d7d487e656ac4590b0c45b3a/TauCeti/MeasureTheory/Integral/SchurTest.lean); also recorded in Section 4). Mathlib itself has only the pointwise Hölder bound for the convolution integrand and existence of the convolution of \(L^p\) and \(L^q\) functions (`Analysis/Convolution.lean`).
+
 ## Topics of Section 11 not found in either inspected library
 
 - The weighted power-mean comparison for a general pair of exponents \(p\le q\), including negative exponents, and the convergence of power means to the geometric mean. Both are marked as future work in `Analysis/MeanInequalities.lean` and `Analysis/MeanInequalitiesPow.lean`. The case of smaller exponent \(1\), and the two-point comparison for \(0<p\le q\), are proved.
@@ -147,4 +149,8 @@ There is also a specific majorization rigidity lemma for an antitone integer seq
 - The rearrangement equality criterion restricted to injective permutations. It is a TODO in `Algebra/Order/Rearrangement.lean`.
 - Karamata’s inequality, Muirhead’s inequality, Maclaurin’s inequality, and Schur-concavity.
 - Majorization of vectors. Birkhoff’s file asks for the equivalence between majorization of \(x\) by \(y\) and the existence of a doubly stochastic matrix \(M\) with \(M y=x\), and leaves it unproved.
+- The classical integral inequalities of Hardy, Littlewood, and Pólya: Hardy's inequality, Hilbert's inequality, Carleman's inequality, and the Hermite–Hadamard inequality. Young's convolution inequality for general exponents is also absent; the \(L^1\) case is the TauCeti Schur test above.
+- Rearrangement of functions in the sense of Lieb–Loss and Kawohl: the symmetric decreasing rearrangement, the Riesz and Hardy–Littlewood rearrangement inequalities for integrals, and the Pólya–Szegő inequality. The rearrangement inequality that is proved concerns finite sequences.
+- The Hardy–Littlewood–Sobolev inequality and sharp-constant inequalities.
+- The Brunn–Minkowski inequality and its geometric descendants; see also Section 14.
 - Schur–Horn. The eigenvalue ordering in `Analysis/InnerProductSpace/Spectrum.lean` mentions it as motivation.

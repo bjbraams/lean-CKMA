@@ -102,6 +102,8 @@ The centred Hardy–Littlewood maximal function has weak \((1,1)\), strong \((p,
 
 TauCeti also constructs the Hermite-function Hilbert basis and its Fourier eigenfunction description ([Fourier–Hermite basis](https://github.com/TauCetiProject/TauCeti/blob/6e53de0d3ce9ea24d7d487e656ac4590b0c45b3a/TauCeti/Analysis/SpecialFunctions/Hermite/Function/Fourier/HilbertBasis.lean)), and proves finite-dimensional Bochner representation for positive-definite functions (Section 28). No Calderón–Zygmund singular-integral theory, Littlewood–Paley theory, or Carleson theorem was located.
 
+The Wiener–Ikehara Tauberian theorem is proved by Fourier analysis: if \(a_n\ge0\), the Dirichlet series \(F(s)=\sum a_nn^{-s}\) converges for \(\operatorname{Re}s>1\), and \(F(s)-\kappa/(s-1)\) extends continuously to \(\operatorname{Re}s\ge1\), then \(x^{-1}\sum_{n\le x}a_n\to\kappa\) ([Wiener–Ikehara](https://github.com/TauCetiProject/TauCeti/blob/6e53de0d3ce9ea24d7d487e656ac4590b0c45b3a/TauCeti/NumberTheory/LSeries/WienerIkehara/SharpCutoff.lean), `wienerIkehara`; the Fourier-analytic core is in [Fourier](https://github.com/TauCetiProject/TauCeti/blob/6e53de0d3ce9ea24d7d487e656ac4590b0c45b3a/TauCeti/NumberTheory/LSeries/WienerIkehara/Fourier.lean) and [Riemann–Lebesgue on a vertical line](https://github.com/TauCetiProject/TauCeti/blob/6e53de0d3ce9ea24d7d487e656ac4590b0c45b3a/TauCeti/Analysis/Fourier/RiemannLebesgue.lean)). This is the Tauberian theorem behind the prime number theorem; Wiener's general Tauberian theorem for \(L^1(\mathbb{R})\) is not proved. TauCeti also identifies the continuous characters of the circle with the Fourier monomials ([circle characters](https://github.com/TauCetiProject/TauCeti/blob/6e53de0d3ce9ea24d7d487e656ac4590b0c45b3a/TauCeti/Analysis/Fourier/AddCircle.lean)).
+
 ## Topics of Section 27 not found in either inspected library
 
 - The Hausdorff–Young inequality for \(1<p<2\). The bounds at the endpoints are the \(L^1\to L^\infty\) estimate and the \(L^2\) isometry.
@@ -112,4 +114,6 @@ TauCeti also constructs the Hermite-function Hilbert basis and its Fourier eigen
 - Carleson’s theorem, and pointwise convergence of Fourier series beyond the case of summable coefficients.
 - The Hilbert transform.
 - The Mihlin multiplier theorem, and any \(L^p\) boundedness theorem for Fourier multipliers.
-- Fejér’s kernel and Cesàro summation of Fourier series.
+- Fejér’s kernel and Cesàro summation of Fourier series, the Dirichlet kernel, and the classical pointwise convergence tests of Dini and Dirichlet–Jordan.
+- Uncertainty principles, the Paley–Wiener theorems, and Wiener's general Tauberian theorem. The Wiener–Ikehara theorem is in TauCeti, as recorded above.
+- Oscillatory integrals, stationary phase, and Fourier restriction theory.

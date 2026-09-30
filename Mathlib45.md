@@ -38,8 +38,9 @@ TauCeti also constructs particular complex one-dimensional manifolds from Fuchsi
 
 ## Topics of Section 45 not found in either inspected library
 
-- The Cauchy integral formula over a polydisc, Hartogs extension, and separate holomorphy implying joint holomorphy.
+- The Cauchy integral formula over a polydisc, Hartogs extension, and separate holomorphy implying joint holomorphy. The theorem that a complex-differentiable map is analytic is proved only on open subsets of \(\mathbb{C}\) (`analyticOnNhd_iff_differentiableOn` in `Analysis/Complex/CauchyIntegral.lean`), not on open subsets of \(\mathbb{C}^n\) or of a complex Banach space.
 - Plurisubharmonic functions, the complex Monge–Ampère equation, and pluripotential theory.
 - Domains of holomorphy, pseudoconvexity, and holomorphic convexity.
-- The \(\overline\partial\) equation and the CR geometry of real hypersurfaces.
+- The \(\overline\partial\) equation, Hörmander's \(L^2\) estimates, the \(\overline\partial\)-Neumann problem, integral representations (Bochner–Martinelli, Henkin–Ramírez), and the CR geometry of real hypersurfaces.
+- Kähler geometry, currents on complex manifolds, and Dolbeault cohomology.
 - Holomorphic vector bundles and general holomorphic/meromorphic sheaf theory on complex manifolds. TauCeti constructs the holomorphic-function sheaf and its étalé space on the complex plane.

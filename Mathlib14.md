@@ -6,7 +6,7 @@ Checked against Mathlib commit `065356127b1dc0016f66b7283ce0ce2c4055aa55` (2026-
 
 **Namespaces.** The rearrangement inequality is stated for `Monovary` and `Antivary`, as in Section 11. The Sobolev inequality is in `MeasureTheory`.
 
-This note records the discrete rearrangement inequality and the Sobolev and bounded-support Poincaré estimates relevant to this section. The geometric and isoperimetric inequalities searched for below were not found.
+This note records the discrete rearrangement inequality and the Sobolev and Poincaré estimates relevant to this section. The geometric and isoperimetric inequalities searched for below were not found.
 
 ## Rearrangement
 
@@ -28,7 +28,13 @@ The following additions were checked in TauCeti revision `6e53de0d3ce9`; see the
 
 TauCeti extends the smooth-function Sobolev estimates to actual weak Sobolev spaces. For \(1\le p<n\), it proves \(W^{1,p}_0(\Omega)\hookrightarrow L^{np/(n-p)}(\Omega)\), with a gradient-norm bound ([Sobolev embedding](https://github.com/TauCetiProject/TauCeti/blob/6e53de0d3ce9ea24d7d487e656ac4590b0c45b3a/TauCeti/Analysis/Sobolev/Embedding.lean)). For \(n<p<\infty\), it constructs a continuous linear embedding of whole-space \(W^{1,p}(\mathbb R^n)\) into the global Hölder space of exponent \(1-n/p\) ([Morrey embedding](https://github.com/TauCetiProject/TauCeti/blob/6e53de0d3ce9ea24d7d487e656ac4590b0c45b3a/TauCeti/Analysis/Sobolev/W1p/HolderEmbedding.lean)). The zero-boundary condition in the first result and the whole-space domain in the second are part of the statements. Section 26 records the underlying spaces and compactness results; no Brunn–Minkowski, Prékopa–Leindler, or isoperimetric theorem was located.
 
-A Poincaré inequality is proved on \(W^{1,p}_0(\Omega)\), \(1\le p<\infty\), when \(\Omega\) lies in a slab of width \(b-a\): \(\|u\|_p\le(b-a)\|\nabla u\|_p\). A ball-containment version follows ([Poincaré](https://github.com/TauCetiProject/TauCeti/blob/6e53de0d3ce9ea24d7d487e656ac4590b0c45b3a/TauCeti/Analysis/Sobolev/Poincare/W1p0.lean)).
+A Poincaré inequality is proved on \(W^{1,p}_0(\Omega)\), \(1\le p<\infty\), when \(\Omega\) lies in a slab of width \(b-a\): \(\|u\|_p\le(b-a)\|\nabla u\|_p\). A ball-containment version follows ([Poincaré](https://github.com/TauCetiProject/TauCeti/blob/6e53de0d3ce9ea24d7d487e656ac4590b0c45b3a/TauCeti/Analysis/Sobolev/Poincare/W1p0.lean)). The inequality fails for \(W^{1,p}_0\) of the whole space, and this is proved as well ([whole space](https://github.com/TauCetiProject/TauCeti/blob/6e53de0d3ce9ea24d7d487e656ac4590b0c45b3a/TauCeti/Analysis/Sobolev/Poincare/WholeSpace.lean)).
+
+The Poincaré–Wirtinger inequality is proved on a bounded convex open set \(\Omega\) in a finite-dimensional real inner-product space, for \(1\le p<\infty\): for \(u\in W^{1,p}(\Omega)\) and a subset \(S\subseteq\Omega\) of positive measure,
+\[
+\Bigl\|u-\fint_S u\Bigr\|_{L^p(\Omega)}\le \frac{|B_1|\,(\operatorname{diam}\Omega)^{n+1}}{|S|}\,\|\nabla u\|_{L^p(\Omega)},
+\]
+with the constant \(2^{n+1}R\) on a ball of radius \(R\) averaged over the whole ball. The \(C^1\) version comes first, by the classical potential estimate ([C¹ version](https://github.com/TauCetiProject/TauCeti/blob/6e53de0d3ce9ea24d7d487e656ac4590b0c45b3a/TauCeti/Analysis/Sobolev/Poincare/Wirtinger/Basic.lean), [Sobolev version](https://github.com/TauCetiProject/TauCeti/blob/6e53de0d3ce9ea24d7d487e656ac4590b0c45b3a/TauCeti/Analysis/Sobolev/Poincare/Wirtinger/W1p.lean)). The constants are explicit, not sharp.
 
 ## Topics of Section 14 not found in either inspected library
 
@@ -36,4 +42,7 @@ A Poincaré inequality is proved on \(W^{1,p}_0(\Omega)\), \(1\le p<\infty\), wh
 - The Euclidean isoperimetric inequality, and isoperimetric inequalities on manifolds.
 - Gaussian isoperimetry. The Gaussian integral and the Fourier transform of a Gaussian are present; they are not an isoperimetric theorem.
 - The Prékopa–Leindler inequality.
+- Logarithmic Sobolev, Nash, and Hardy inequalities, the Bakry–Émery Γ-calculus and curvature–dimension conditions, and transport proofs of functional inequalities.
+- Spectral inequalities of shape optimization: Faber–Krahn, Szegő–Weinberger, and Pólya–Szegő symmetrization.
+- Sharp constants: the sharp Sobolev inequality, and quantitative isoperimetry for sets of finite perimeter.
 - Sobolev inequalities on Riemannian manifolds. The Euclidean Gagliardo–Nirenberg–Sobolev inequality above is the Sobolev inequality in this checkout, and it is written out in Section 26.

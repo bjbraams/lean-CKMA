@@ -24,6 +24,10 @@ The calculus library proves Taylor approximation in little-o form and Taylor’s
 
 A concrete large-parameter asymptotic theorem is Stirling’s formula \(n!\sim\sqrt{2\pi n}(n/e)^n\), together with a lower bound and a stepwise logarithmic error estimate (`Analysis/SpecialFunctions/Stirling.lean`; see Section 49). Thus the coverage includes proved asymptotic formulae as well as notation and tactic infrastructure. A general stationary-phase, steepest-descent, or Laplace-method theorem was not found.
 
+## Summation, Abelian and Tauberian theorems
+
+Abel's summation formula, the discrete integration by parts that converts asymptotics of partial sums into asymptotics of weighted sums, is proved in several forms (`NumberTheory/AbelSummation.lean`). Abel's limit theorem, the prototype Abelian theorem, is recorded in Section 40 (`Analysis/Complex/AbelLimit.lean`). No Euler–Maclaurin formula with remainder, and no general Tauberian theorem of Hardy–Littlewood or Karamata type, was found in Mathlib.
+
 ## The asymptotics procedure
 
 `Mathlib.Tactic.ComputeAsymptotics` is a directory of support lemmas, not a resurgence theory. The lemmas reduce goals of the form “a limit along a one-sided or punctured neighbourhood”, and goals of big-O, little-o, and equivalence, to a limit along `atTop` (`Tactic/ComputeAsymptotics/Lemmas.lean`). The accompanying multiseries are lazy series of real monomials in a chosen basis of functions \(\mathbb{R}\to\mathbb{R}\), nested so that a series in \(b_1,\ldots,b_n\) is a series in \(b_1\) whose coefficients are series in the remaining basis. A coinductive predicate says that such a series approximates its attached function at \(+\infty\), after a trimming condition that isolates the leading monomial (`Tactic/ComputeAsymptotics/Multiseries/Defs.lean`). No syntax declaration of a tactic named `compute_asymptotics` appears in the library; the file describes the procedure those lemmas serve.
@@ -34,10 +38,13 @@ The following additions were checked in TauCeti revision `6e53de0d3ce9`; see the
 
 There is concrete perturbation theory for operators. A bounded perturbation of a strongly continuous semigroup generator again generates a semigroup on the same domain, with growth bound \(M\exp((\omega+M\|B\|)t)\) when the original bound is \(M e^{\omega t}\) ([bounded perturbation theorem](https://github.com/TauCetiProject/TauCeti/blob/6e53de0d3ce9ea24d7d487e656ac4590b0c45b3a/TauCeti/Analysis/Semigroups/Generation/BoundedPerturbation.lean)). Fredholmness and index are stable under sufficiently small operator-norm perturbations and under compact perturbations ([small perturbations](https://github.com/TauCetiProject/TauCeti/blob/6e53de0d3ce9ea24d7d487e656ac4590b0c45b3a/TauCeti/Analysis/Fredholm/SmallPerturbation.lean), [compact perturbations](https://github.com/TauCetiProject/TauCeti/blob/6e53de0d3ce9ea24d7d487e656ac4590b0c45b3a/TauCeti/Analysis/Fredholm/CompactPerturbation.lean)).
 
-These remove the blanket absence of operator perturbation theory. No resurgence, Gevrey/Borel summation, WKB expansion, or singular-perturbation theory was located.
+These remove the blanket absence of operator perturbation theory.
+
+On the Tauberian side, TauCeti proves the Wiener–Ikehara theorem: for nonnegative coefficients whose Dirichlet series minus \(\kappa/(s-1)\) extends continuously to \(\operatorname{Re}s\ge1\), the averages \(x^{-1}\sum_{n\le x}a_n\) tend to \(\kappa\) ([Wiener–Ikehara](https://github.com/TauCetiProject/TauCeti/blob/6e53de0d3ce9ea24d7d487e656ac4590b0c45b3a/TauCeti/NumberTheory/LSeries/WienerIkehara/SharpCutoff.lean); see Section 27). It also proves \(\operatorname{Li}(x)\sim x/\log x\) for the logarithmic integral (Section 49). No resurgence, Gevrey/Borel summation, WKB expansion, or singular-perturbation theory was located.
 
 ## Topics of Section 50 not found in either inspected library
 
 - Resurgence, Borel summation, and Gevrey classes. The Borel \(\sigma\)-algebra is unrelated.
+- The Laplace method, Watson's lemma, the method of steepest descent, and stationary phase as general theorems; the Euler–Maclaurin formula; Hardy–Littlewood and Karamata Tauberian theorems and regular variation.
 - Transseries, and Poincaré asymptotics in the sense of a divergent series admitted by a holomorphic function in a sector.
 - Singular perturbations and asymptotic perturbation expansions for differential equations, beyond the semigroup and Fredholm operator perturbation theorems described above.

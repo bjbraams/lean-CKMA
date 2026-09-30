@@ -22,6 +22,14 @@ The Kronecker product of two positive-semidefinite matrices is positive semidefi
 
 For a linear map \(T\) between finite-dimensional inner product spaces over \(\mathbb{R}\) or \(\mathbb{C}\), the singular values are the square roots of the eigenvalues of \(T^*T\), arranged in decreasing order and repeated by multiplicity, then extended by zeros. The sequence is indexed by \(\mathbb{N}\), starting at \(0\), and only finitely many terms are nonzero. They are nonnegative and antitone. The support is exactly the initial segment of length \(\operatorname{rank} T\): the \(n\)th singular value is positive if and only if \(n<\operatorname{rank} T\), and the singular-value sequence vanishes if and only if \(T\) does. The map is injective if and only if every singular value before the dimension of the domain is positive (`Analysis/InnerProductSpace/SingularValues.lean`). Approximation numbers for maps between infinite-dimensional spaces are a TODO, and no von Neumann or Schatten comparison of singular values is proved.
 
+## Eigenvalue localization and nonnegative matrices
+
+Gershgorin's circle theorem: every eigenvalue of a square matrix over a normed field lies in one of the discs centred at a diagonal entry with radius the sum of the norms of the other entries in its row. A strictly diagonally dominant matrix, by rows or by columns, has nonzero determinant (`LinearAlgebra/Matrix/Gershgorin.lean`).
+
+The Rayleigh quotient of a self-adjoint operator is \(\langle Tx,x\rangle/\|x\|^2\). On a complete space, a point at which it attains its maximum or minimum on a sphere is an eigenvector, and the supremum or infimum is the corresponding eigenvalue; in finite dimension the supremum and infimum are eigenvalues (`Analysis/InnerProductSpace/Rayleigh.lean`). The Courant–Fischer min-max characterization of the intermediate eigenvalues was not found.
+
+A nonnegative square matrix is irreducible when its positivity graph is strongly connected, equivalently when every entry of some positive power is positive, and primitive when a single power is entrywise positive (`LinearAlgebra/Matrix/Irreducible/Defs.lean`). These are the definitions of Perron–Frobenius theory; the Perron–Frobenius theorem itself is not proved in this revision.
+
 ## Matrices as C⋆-algebras
 
 `CStarMatrix m n A` is a type copy of the matrices with entries in a C⋆-algebra \(A\). The operator norm coming from the action on \(C^\star\)-valued functions of the columns makes the square matrices a non-unital C⋆-algebra when \(A\) is non-unital, and a unital C⋆-algebra when \(A\) is unital (`Analysis/CStarAlgebra/CStarMatrix.lean`).
@@ -39,6 +47,8 @@ On a real normed algebra with the real functional calculus, the exponential of a
 Throughout this section the order is the star order: the nonnegative elements are those of the form \(b^*b\), arranged so that the Loewner order on operators and the positive-semidefinite order on matrices are instances.
 
 On a non-unital C⋆-algebra, \(a\mapsto a^p\) is monotone for every real exponent \(p\in[0,1]\), the square root is monotone, and both are concave on the positive cone. On a unital C⋆-algebra the real powers \(a\mapsto a^p\) for \(p\in[0,1]\) are monotone and concave on the positive cone (`Analysis/SpecialFunctions/ContinuousFunctionalCalculus/Rpow/Order.lean`). The file leaves unproved the operator antitonicity and operator convexity of these powers on \((-1,0]\), and the operator convexity on \([1,2]\).
+
+The proof for \(p\in(0,1)\) is Löwner-style: \(x^p\) is written as an integral, against a positive measure, of the operator-monotone and operator-concave functions \(t^p(t^{-1}-(t+x)^{-1})\) (`Analysis/SpecialFunctions/ContinuousFunctionalCalculus/Rpow/IntegralRepresentation.lean`).
 
 On a unital C⋆-algebra the logarithm is monotone and concave on the strictly positive elements (`Analysis/SpecialFunctions/ContinuousFunctionalCalculus/ExpLog/Order.lean`). Operator convexity of \(x\log x\) is a TODO.
 
@@ -64,10 +74,16 @@ for strictly positive \(a\) and nonnegative \(b\) in the continuous-functional-c
 
 For positive-definite \(S\) and positive-semidefinite \(T\), it consequently constructs the unique positive-semidefinite solution of \(ASA=T\), namely \(S^{-1}\#T\); the matrix file gives the square-root formula and congruence identity ([matrix specialization](https://github.com/TauCetiProject/TauCeti/blob/6e53de0d3ce9ea24d7d487e656ac4590b0c45b3a/TauCeti/Analysis/Matrix/GeometricMean.lean)). This adds a concrete matrix mean, not Löwner's characterization theorem or a Schatten-norm theory.
 
+For Löwner's theorem, the complex-analytic half of the classical proof is present. A Pick function, holomorphic on the upper half-plane with nonnegative imaginary part, has a Herglotz representation in Cayley coordinates by a finite positive measure on the circle, and conversely ([Pick functions](https://github.com/TauCetiProject/TauCeti/blob/6e53de0d3ce9ea24d7d487e656ac4590b0c45b3a/TauCeti/Analysis/Complex/Pick/Basic.lean)); transporting the circle measure to the line gives the Nevanlinna representation ([Nevanlinna](https://github.com/TauCetiProject/TauCeti/blob/6e53de0d3ce9ea24d7d487e656ac4590b0c45b3a/TauCeti/Analysis/Complex/Pick/Nevanlinna.lean)), and the representing measure vanishes where the boundary values are real ([boundary values](https://github.com/TauCetiProject/TauCeti/blob/6e53de0d3ce9ea24d7d487e656ac4590b0c45b3a/TauCeti/Analysis/Complex/Pick/Boundary.lean)). The link from operator monotonicity to Pick functions is not made. Sylvester's law of inertia is proved for Hermitian matrices over \(\mathbb{R}\) or \(\mathbb{C}\), through the signature ([signature](https://github.com/TauCetiProject/TauCeti/blob/6e53de0d3ce9ea24d7d487e656ac4590b0c45b3a/TauCeti/Analysis/Matrix/HermitianSignature.lean)).
+
 ## Topics of Section 13 not found in either inspected library
 
 - Löwner’s theorem characterizing operator-monotone functions. The Loewner order is defined, and the functions listed above are proved monotone or concave in that order.
+- The Courant–Fischer min-max theorem, Weyl's eigenvalue inequalities, Cauchy interlacing, and the Lidskii, Ky Fan, and Hoffman–Wielandt perturbation inequalities.
+- The Perron–Frobenius theorem. Irreducible and primitive nonnegative matrices are defined.
+- Hadamard's determinant inequality and unitarily invariant norms.
 - The Golden–Thompson inequality and the Lieb–Thirring inequality.
+- Quantum relative entropy, Lieb's concavity theorem, and monotonicity of relative entropy under completely positive maps.
 - The von Neumann trace inequality and Schatten norms. Singular values of finite-dimensional maps are defined; their trace and norm inequalities are not.
 - Operator convexity of \(x\log x\), operator antitonicity and operator convexity of real powers on \((-1,0]\), and operator convexity of real powers on \([1,2]\). Each is a TODO.
 - Approximation numbers in infinite dimension. They are a TODO in `Analysis/InnerProductSpace/SingularValues.lean`.

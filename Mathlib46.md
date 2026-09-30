@@ -21,6 +21,7 @@ For a holomorphic self-map of the unit disc, Schwarz–Pick gives contraction in
 ## Topics of Section 46 not found in either inspected library
 
 - The Fatou set, the Julia set, and the Mandelbrot set.
+- Montel's theorem for families omitting two values, the normality criterion on which Fatou–Julia theory rests. TauCeti proves Montel's theorem for locally bounded families (Section 40).
 - Holomorphic motions, the \(\lambda\)-lemma, and Sullivan’s no-wandering-domains theorem.
 - Local analytic classification of attracting, repelling, parabolic, and indifferent fixed points, Siegel discs, and periodic Fatou components. Schwarz–Pick rigidity and uniqueness of an interior disc fixed point are proved in TauCeti.
 - Convergence of Newton’s method as a dynamical system in the plane. The Newton file is an algebraic identity used for Hensel’s lemma and the Jordan–Chevalley decomposition, not an iterative convergence theorem.

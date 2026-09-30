@@ -20,4 +20,5 @@ No implemented theory of the wave equation, nonlinear conservation laws, dispers
 - Conservation laws, entropy solutions, shocks, and the Burgers equation.
 - The Euler and Navier–Stokes equations.
 - Dispersive equations, Strichartz estimates, and KdV.
-- Kinetic theory, including the Boltzmann equation.
+- Kinetic theory, including the Boltzmann and Vlasov equations, and the mean-field and hydrodynamic limits.
+- Symmetric hyperbolic systems and energy estimates, the nonlinear Schrödinger equation, and wave maps.

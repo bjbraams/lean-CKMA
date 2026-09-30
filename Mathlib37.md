@@ -54,9 +54,14 @@ The following additions were checked in TauCeti revision `6e53de0d3ce9`; see the
 
 A holomorphic specialization of the area/change-of-variables theorem is implemented: for a holomorphic map injective on the set in question, the area of its image is the integral of \(|f'|^2\), with weighted versions ([holomorphic area formula](https://github.com/TauCetiProject/TauCeti/blob/6e53de0d3ce9ea24d7d487e656ac4590b0c45b3a/TauCeti/Analysis/Complex/Conformal/Area.lean)). This makes the conformal area identity directly available, but remains an injective equal-dimensional change-of-variables result. No general multiplicity area formula, coarea formula, finite-perimeter theory, currents, or varifold theory was located.
 
+A set is called Lipschitz parametrizable in dimension \(d\) when finitely many Lipschitz images of the unit \(d\)-cube cover it; the class is stable under Lipschitz images, products, and finite unions, contains \(C^1\) images of cubes, and a Lipschitz-parametrizable set of dimension less than the ambient dimension has Haar measure zero ([Lipschitz-parametrizable sets](https://github.com/TauCetiProject/TauCeti/blob/6e53de0d3ce9ea24d7d487e656ac4590b0c45b3a/TauCeti/Topology/MetricSpace/LipschitzParametrizable.lean)). This is a finite-union special case of the parametrized sets used to define rectifiability, introduced for lattice-point counting; countable rectifiability and its measure-theoretic characterizations are not developed. The Morse–Sard theorem of Section 5 is also relevant here.
+
 ## Topics of Section 37 not found in either inspected library
 
 - Sets of finite perimeter, the De Giorgi perimeter, and the reduced boundary.
 - Rectifiable sets, rectifiable currents, and varifolds.
 - Allard’s regularity theorem, and the deformation theorem.
 - The general area formula with multiplicities, and the coarea formula. The injective equal-dimensional Jacobian theorem is present.
+- Densities and tangent measures in the sense of Mattila and De Lellis, the Besicovitch–Federer projection theorem, and uniform rectifiability.
+- Fractal geometry beyond Hausdorff dimension: box-counting and packing dimensions, self-similar sets and the Moran–Hutchinson theory, Frostman's lemma, and Marstrand's projection theorem.
+- Analytic capacity and the Cauchy transform on rectifiable sets.

@@ -62,18 +62,26 @@ A real process indexed by nonnegative reals is pre-Brownian when its finite-dime
 
 Those finite-dimensional distributions form a projective family: the centered Gaussian on maps from a finite set \(I\subset\mathbb{R}_{\geq 0}\) to \(\mathbb{R}\), with covariance \(\min(s,t)\). The file records that a projective family is the input of Kolmogorov’s extension theorem, and that the extension theorem is not in the library (`Probability/BrownianMotion/GaussianProjectiveFamily.lean`).
 
+No process satisfying either predicate is constructed in this revision. Existence of Brownian motion would need the extension theorem and the Kolmogorov–Chentsov theorem, neither of which is proved, so the statements above are conditional on being given a Brownian motion.
+
+## Markov kernels as Markov chains
+
+The kernel library of `Mathlib06.md` supplies the transition-kernel side of discrete-time Markov chains. A measure is invariant for a kernel \(\kappa\) when \(\mu\) composed with \(\kappa\) is \(\mu\) (`Probability/Kernel/Invariance.lean`). A kernel is \(\varphi\)-irreducible when every set of positive \(\varphi\)-measure is reached with positive probability, in some number of steps, from every state (`Probability/Kernel/Irreducible.lean`). The Ionescu–Tulcea theorem gives the law of the trajectory. Harris recurrence, drift conditions, convergence to equilibrium, and mixing-time bounds, the subjects of Meyn–Tweedie and Levin–Peres, were not found.
+
 ## Additional coverage in TauCeti
 
 The following additions were checked in TauCeti revision `6e53de0d3ce9`; see the [revision, build evidence, and comparison scope](TauCetiCoverage.md). Source links below are pinned to that revision.
 
 TauCeti proves Kolmogorov extension for a **countable** index set and standard Borel coordinate spaces: a projectively consistent family of finite-dimensional probability laws has a probability law on the countable product ([countable projective limits](https://github.com/TauCetiProject/TauCeti/blob/6e53de0d3ce9ea24d7d487e656ac4590b0c45b3a/TauCeti/MeasureTheory/Measure/ProjectiveLimit/Countable.lean)). This does not by itself construct a process indexed by every real time.
 
-Lévy's downward theorem is also present: conditional expectations of an integrable real random variable along a decreasing sequence of σ-algebras converge almost everywhere and in \(L^1\) to conditional expectation on their intersection, on a finite measure space ([reverse-martingale convergence](https://github.com/TauCetiProject/TauCeti/blob/6e53de0d3ce9ea24d7d487e656ac4590b0c45b3a/TauCeti/Probability/Martingale/Convergence.lean)). The de Finetti and separately exchangeable array representations of Section 6 give further process laws. None of these is an Itô integral or a continuous-time stochastic-calculus development.
+Lévy's downward theorem is also present: conditional expectations of an integrable real random variable along a decreasing sequence of σ-algebras converge almost everywhere and in \(L^1\) to conditional expectation on their intersection, on a finite measure space ([reverse-martingale convergence](https://github.com/TauCetiProject/TauCeti/blob/6e53de0d3ce9ea24d7d487e656ac4590b0c45b3a/TauCeti/Probability/Martingale/Convergence.lean)). The de Finetti and separately exchangeable array representations of Section 6 give further process laws. TauCeti also packages the path law of a time-homogeneous Markov chain with given initial law and transition kernel, with its Markov property and the product formula for cylinder probabilities ([Markov chains](https://github.com/TauCetiProject/TauCeti/blob/6e53de0d3ce9ea24d7d487e656ac4590b0c45b3a/TauCeti/Probability/Process/MarkovChain.lean)), and proves that a stationary process on a countable state space is recurrent, by Poincaré recurrence for the shift ([recurrence](https://github.com/TauCetiProject/TauCeti/blob/6e53de0d3ce9ea24d7d487e656ac4590b0c45b3a/TauCeti/Probability/Recurrent.lean)). None of these is an Itô integral or a continuous-time stochastic-calculus development.
 
 ## Topics of Section 8 not found in either inspected library
 
 - Kolmogorov extension for arbitrary, possibly uncountable index sets. TauCeti proves the countable-index standard Borel case.
-- The Kolmogorov–Chentsov theorem. The moment condition is defined.
+- The Kolmogorov–Chentsov theorem. The moment condition, covering exponents, and the pair-reduction lemma of Section 7 are present.
+- Existence of Brownian motion, and its sample-path properties: nowhere differentiability, the law of the iterated logarithm, the strong Markov property, the reflection principle, local time, and Hausdorff dimension of the path.
+- Continuous-time Markov processes, Feller semigroups, generators, and martingale problems in the sense of Ethier–Kurtz and Stroock–Varadhan; quantitative convergence of Markov chains.
 - Continuous-time martingale theory beyond the definitions that apply to a general time index: the convergence, sampling, and maximal theorems above are discrete.
 - The stochastic integral, quadratic variation, Itô’s formula, Girsanov’s theorem, and stochastic differential equations.
 - Semimartingales. A localizing sequence and the notion of a local property are defined.

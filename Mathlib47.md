@@ -56,4 +56,6 @@ Chebyshev and Hermite Hilbert-basis results add \(L^2\) approximation by concret
 
 - Jackson theorems, and any rate of polynomial approximation in terms of a modulus of continuity.
 - Splines, and nonlinear approximation.
+- Polynomial interpolation as an analytic theory: the interpolation error formula, Lebesgue constants, and Chebyshev nodes. Lagrange interpolation exists as algebra over a field (`LinearAlgebra/Lagrange.lean`), without error estimates.
+- The Bernstein and Markov inequalities for derivatives of polynomials, the Müntz–Szász theorem, rational approximation, total positivity, and \(n\)-widths.
 - The equioscillation theorem in the de la Vallée Poussin–Chebyshev form, beyond the leading-coefficient comparison for \(T_n\).

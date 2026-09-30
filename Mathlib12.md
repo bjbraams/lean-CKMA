@@ -102,10 +102,16 @@ The extended-real Legendre–Fenchel conjugate is defined for a real bilinear du
 
 The subdifferential is defined by supporting affine functions at points where the function is finite. Its values are closed and convex under the stated continuity hypotheses; equality in Fenchel–Young characterizes subgradients, and conjugate subgradient reciprocity is proved, with the reverse implication using equality with the biconjugate at the point ([subdifferentials](https://github.com/TauCetiProject/TauCeti/blob/6e53de0d3ce9ea24d7d487e656ac4590b0c45b3a/TauCeti/Analysis/Convex/Subdifferential.lean)). Proximal mappings and maximal-monotone operator theory do not follow merely from these definitions.
 
+Two further items belong to Simon's *Convexity: An Analytic Viewpoint*. Bernstein's theorem on completely monotone functions, in the Hausdorff–Bernstein–Widder form, is proved: a function continuous on \([0,\infty)\) and completely monotone on \((0,\infty)\) is the Laplace transform of a unique finite positive measure ([Hausdorff–Bernstein–Widder](https://github.com/TauCetiProject/TauCeti/blob/6e53de0d3ce9ea24d7d487e656ac4590b0c45b3a/TauCeti/Analysis/CompletelyMonotone/Bernstein/HausdorffBernsteinWidder.lean); details in Section 49). Loewner's theorem is not proved; the Pick-function material that would support it is recorded in Section 13. TauCeti also defines convex polyhedra as finite intersections of closed affine half-spaces, with closure under finite intersection and affine preimage ([polyhedra](https://github.com/TauCetiProject/TauCeti/blob/6e53de0d3ce9ea24d7d487e656ac4590b0c45b3a/TauCeti/Analysis/Convex/Polyhedron.lean)); no Minkowski–Weyl theorem accompanies the definition.
+
 ## Topics of Section 12 not found in either inspected library
 
 - The Fenchel–Moreau equality for arbitrary proper lower-semicontinuous convex functions. Conjugates and the one-sided biconjugate inequality are present in TauCeti.
 - Proximal mappings and maximal-monotone operator theory. The convex subdifferential and its Fenchel–Young characterization are present in TauCeti.
+- Ekeland's variational principle.
+- Nonsmooth analysis: Clarke's generalized gradient, the limiting subdifferentials of Mordukhovich, and the epigraphical and set-valued analysis of Rockafellar–Wets.
+- Choquet's integral representation theorem and the Bishop–de Leeuw theorem. The Krein–Milman theorem is proved.
+- Alexandrov's theorem on second-order differentiability of convex functions, and the geometric convexity theory of convex surfaces.
 - The Minkowski–Carathéodory strengthening of Krein–Milman. `Analysis/Convex/KreinMilman.lean` says it is not in the library.
 - The Milman–Pettis theorem and Hanner’s inequalities. Both are TODOs in `Analysis/Convex/Uniform.lean`.
 - Derivative criteria for strongly convex functions. They are a TODO in `Analysis/Convex/Strong.lean`.

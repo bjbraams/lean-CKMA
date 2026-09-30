@@ -24,7 +24,8 @@ For compact operators on Banach spaces, TauCeti proves the finite-dimensional ke
 
 ## Topics of Section 25 not found in either inspected library
 
-- Volterra integral equations.
+- Volterra integral equations and resolvent kernels. The Gronwall inequality, which bounds solutions of Volterra-type integral inequalities, is proved in `Analysis/ODE/Gronwall.lean`, with a discrete form in `Analysis/ODE/DiscreteGronwall.lean`.
 - Fredholm integral equations of the first or second kind, beyond the spectral alternative for compact operators in section 21.
 - The Fredholm determinant.
 - Nyström methods, and any other numerical method for integral equations.
+- Singular integral equations with Cauchy kernel, the Riemann–Hilbert boundary problems of Muskhelishvili and Gakhov, and boundary integral operators (layer potentials) for elliptic boundary value problems. Cauchy principal values of contour integrals are present in TauCeti (Section 40), but not as a singular-integral-operator theory.

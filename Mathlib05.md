@@ -14,6 +14,8 @@ The derivative of a map from a normed field into a normed space is the element \
 
 The Fréchet derivative of a map between normed spaces is a continuous linear map, again in the pointwise, restricted, and strict senses. The one-variable derivative coincides with the Fréchet derivative (`Analysis/Calculus/FDeriv/Basic.lean`).
 
+Darboux's theorem: the derivative of a function differentiable on an interval takes every intermediate value, so a derivative has the intermediate value property even when it is discontinuous (`Analysis/Calculus/Darboux.lean`). This is the first of the classical facts about the structure of derivatives; the Baire-class and Zahorski descriptions listed below are absent.
+
 ## Monotone functions and bounded variation
 
 A monotone function \(f:\mathbb{R}\to\mathbb{R}\) is differentiable almost everywhere. On a set, a function monotone on that set is differentiable almost everywhere within the set. The argument compares difference quotients with the Radon–Nikodym derivative of the Stieltjes measure of \(f\), using one-sided limits where \(f\) jumps (`Analysis/Calculus/Monotone.lean`).
@@ -48,6 +50,10 @@ A map between extended metric spaces is Lipschitz with constant \(K\geq 0\) when
 
 Rademacher’s theorem: a Lipschitz map between finite-dimensional real vector spaces is differentiable almost everywhere for Lebesgue measure. A map that is Lipschitz on a set is differentiable almost everywhere within that set. The proof reduces to real-valued maps, uses almost-everywhere differentiability along lines from the one-variable BV theorem and Fubini, and then upgrades line derivatives to a Fréchet derivative by Morrey’s duality argument (`Analysis/Calculus/Rademacher.lean`).
 
+Lipschitz extension, in the McShane form: a real-valued map that is \(K\)-Lipschitz on a subset of a pseudometric space extends to a \(K\)-Lipschitz map on the whole space. The same holds coordinatewise for maps into \(\mathbb{R}^n\) with the sup norm, and for maps into any finite-dimensional real normed space with a constant multiplied by a factor depending only on the target (`LipschitzOnWith.extend_real`, `LipschitzOnWith.extend_pi` in `Topology/MetricSpace/Lipschitz.lean`; `LipschitzOnWith.extend_finite_dimension` in `Analysis/Normed/Module/FiniteDimension.lean`). The isometric Kirszbraun extension between Hilbert spaces was not found.
+
+Two easy cases of Sard's theorem are proved. A map that is differentiable on a set of Hausdorff dimension less than the dimension of the target has an image with dense complement; in particular a differentiable map into a space of larger dimension has a range with dense complement (`Topology/MetricSpace/HausdorffDimension.lean`). In equal dimensions, the image of the set where the Jacobian determinant vanishes has measure zero (`addHaar_image_eq_zero_of_det_fderivWithin_eq_zero` in `MeasureTheory/Function/Jacobian.lean`).
+
 ## Covering lemmas
 
 The one-variable theory relies on the differentiation theory of measures. In a metric space, Vitali’s covering lemma extracts a disjoint subfamily of balls whose five-times enlargements cover the original family. Besicovitch’s theorem, in spaces without a satellite configuration and in particular in finite-dimensional normed spaces, covers the centers by finitely many disjoint subfamilies. Along a Vitali family, ratios of measures converge almost everywhere to the Radon–Nikodym derivative, and almost every point of a measurable set is a density point. The full statements are in `Mathlib04.md` (`MeasureTheory/Covering/Vitali.lean`, `MeasureTheory/Covering/Besicovitch.lean`, `MeasureTheory/Covering/Differentiation.lean`, `MeasureTheory/Covering/DensityTheorem.lean`).
@@ -67,15 +73,21 @@ A box in \(\mathbb{R}^n\), represented as functions from a finite index type to 
 
 Continuous functions are integrable for these theories. A Henstock–Sacks inequality controls the oscillation of integral sums (`Analysis/BoxIntegral/Basic.lean`).
 
+Every Bochner-integrable function on a box, for a locally finite measure, is McShane integrable, hence Henstock integrable, with the same integral; the proof follows Gordon's *The Integrals of Lebesgue, Denjoy, Perron, and Henstock*. Continuous functions, and bounded functions continuous almost everywhere, are Riemann integrable with integral equal to the Bochner integral (`Analysis/BoxIntegral/Integrability.lean`, `IntegrableOn.hasBoxIntegral`, `AEContinuous.hasBoxIntegral`). The converse direction, that a Henstock integrable function need not be Lebesgue integrable, and the absolute-integrability characterization of the McShane integral, were not found.
+
 ## Additional coverage in TauCeti
 
 The following additions were checked in TauCeti revision `6e53de0d3ce9`; see the [revision, build evidence, and comparison scope](TauCetiCoverage.md). Source links below are pinned to that revision.
 
 The Hardy–Littlewood maximal function and its weak \((1,1)\) and strong \((p,p)\), \(1<p<\infty\), inequalities are implemented for finite-dimensional real normed spaces with additive Haar measure ([source](https://github.com/TauCetiProject/TauCeti/blob/6e53de0d3ce9ea24d7d487e656ac4590b0c45b3a/TauCeti/MeasureTheory/Integral/MaximalFunction.lean)). Thus the maximal-function omission below the original Mathlib survey can be removed. This is real-variable differentiation infrastructure; no Denjoy–Young–Saks, Zahorski, or developed approximate-differentiation theory was located in TauCeti.
 
+The Morse–Sard theorem is proved in full: for a \(C^k\) map between finite-dimensional real normed spaces, with \(k\) large enough relative to the dimensions, the set of critical values has Haar measure zero, and the regular values are dense ([Morse–Sard](https://github.com/TauCetiProject/TauCeti/blob/6e53de0d3ce9ea24d7d487e656ac4590b0c45b3a/TauCeti/Analysis/Calculus/Sard/OutermostStratum.lean), `ContDiff.addHaar_image_criticalPoints_eq_zero`). This goes beyond the equal-dimension and smaller-source cases in Mathlib recorded above. Lower semicontinuity of total variation under pointwise convergence is also recorded ([variation](https://github.com/TauCetiProject/TauCeti/blob/6e53de0d3ce9ea24d7d487e656ac4590b0c45b3a/TauCeti/Topology/EMetricSpace/BoundedVariation.lean)).
+
 ## Topics of Section 5 not found in either inspected library
 
 - The four Dini derivates, and the Denjoy–Young–Saks theorem. The Dini theorem that is proved is the uniform-convergence theorem above.
 - Approximate continuity and approximate differentiability as a theory.
 - Zahorski’s characterization of derivatives, and the Baire-class description of derivatives.
+- Kirszbraun's theorem on Lipschitz extension with the same constant between Hilbert spaces.
+- Differentiation bases in the sense of de Guzmán (the strong maximal function, the Jessen–Marcinkiewicz–Zygmund theorem, and the Busemann–Feller counterexamples), and Garsia's almost-everywhere convergence methods beyond the maximal inequalities recorded above.
 - The Denjoy and Perron integrals as descriptive theories. The Henstock–Kurzweil and McShane integrals are the gauge integrals above.

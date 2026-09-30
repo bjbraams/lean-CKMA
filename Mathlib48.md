@@ -54,9 +54,12 @@ Hermite polynomial/function orthogonality and completeness are implemented. The 
 
 Finite measures on \(\mathbb R\) are determined by their polynomial moments under a finite exponential-moment hypothesis ([determinacy](https://github.com/TauCetiProject/TauCeti/blob/6e53de0d3ce9ea24d7d487e656ac4590b0c45b3a/TauCeti/Probability/Moments/Determinacy.lean)). Finite measures on \([0,\infty)\) are determined by their Laplace transform, even its values at the nonnegative integers ([Laplace uniqueness](https://github.com/TauCetiProject/TauCeti/blob/6e53de0d3ce9ea24d7d487e656ac4590b0c45b3a/TauCeti/Probability/Moments/LaplaceDeterminacy.lean)). These are determinacy theorems; they do not solve the Hamburger or Stieltjes existence problem for an arbitrary prescribed moment sequence.
 
+A general completeness criterion connects the two: if a weighted measure on \(\mathbb{R}\) has a finite exponential moment, any orthogonal family of polynomials of exact degrees is a Hilbert basis of \(L^2\) of that measure, because a function orthogonal to every monomial vanishes by moment determinacy ([polynomial completeness](https://github.com/TauCetiProject/TauCeti/blob/6e53de0d3ce9ea24d7d487e656ac4590b0c45b3a/TauCeti/Analysis/InnerProductSpace/PolynomialCompleteness.lean), [weighted bases](https://github.com/TauCetiProject/TauCeti/blob/6e53de0d3ce9ea24d7d487e656ac4590b0c45b3a/TauCeti/Analysis/InnerProductSpace/WeightedOrthogonalBasis.lean)). A multivariate determinacy theorem for finite measures on a compact set is also proved ([compact determinacy](https://github.com/TauCetiProject/TauCeti/blob/6e53de0d3ce9ea24d7d487e656ac4590b0c45b3a/TauCeti/Probability/Moments/CompactDeterminacy.lean)).
+
 ## Topics of Section 48 not found in either inspected library
 
 - Existence criteria for prescribed Hamburger or Stieltjes moment sequences. TauCeti proves moment determinacy under exponential integrability and uniqueness from Laplace transforms.
 - Jacobi operators, and a spectral theorem for three-term recurrences.
 - Integral orthogonality of the shifted Legendre polynomials and of \(U_n\). Hermite orthogonality is proved in TauCeti.
-- The classical Legendre polynomials on \([-1,1]\), as opposed to the shifted family.
+- The classical Legendre polynomials on \([-1,1]\), as opposed to the shifted family, and the Laguerre, Jacobi, and Gegenbauer families.
+- General orthogonal polynomials with respect to a measure: the Christoffel–Darboux formula, zeros and interlacing, Gauss quadrature for a general weight, Szegő's theory on the circle, and Favard's theorem.

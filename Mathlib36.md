@@ -30,9 +30,12 @@ A Morse–Palais normal-form theorem is proved for smooth real functions on a Ba
 
 The direct method is carried out for the Kantorovich transport problem: weak compactness of the coupling set and lower semicontinuity of the integral cost give an optimal plan for lower-semicontinuous extended-nonnegative cost on Polish spaces ([optimal-plan existence](https://github.com/TauCetiProject/TauCeti/blob/6e53de0d3ce9ea24d7d487e656ac4590b0c45b3a/TauCeti/MeasureTheory/OptimalTransport/Existence.lean)). This is a concrete variational existence theorem, not a general theory of weak lower semicontinuity of integral functionals, Γ-convergence, or homogenization. Fenchel conjugates and subdifferentials are recorded in Section 12.
 
+Two classical variational principles for quadratic forms are proved. The Rayleigh principle: for a bounded coercive symmetric form \(B\) on a Hilbert space \(V\) and a nonzero compact \(J:V\to H\), the least variational eigenvalue is the minimum of \(B(v,v)/\|Jv\|^2\); without compactness it is still the best constant in \(C\|Jv\|^2\le B(v,v)\) ([Rayleigh principle](https://github.com/TauCetiProject/TauCeti/blob/6e53de0d3ce9ea24d7d487e656ac4590b0c45b3a/TauCeti/Analysis/InnerProductSpace/Variational/Rayleigh.lean)). This gives the variational characterization of the first Dirichlet eigenvalue in Section 22. In Riemannian geometry, the first variation formula for the energy of a curve is proved, and geodesics are critical points of the energy among variations with fixed endpoints ([first variation](https://github.com/TauCetiProject/TauCeti/blob/6e53de0d3ce9ea24d7d487e656ac4590b0c45b3a/TauCeti/Geometry/Manifold/Riemannian/FirstVariation.lean), [geodesics](https://github.com/TauCetiProject/TauCeti/blob/6e53de0d3ce9ea24d7d487e656ac4590b0c45b3a/TauCeti/Geometry/Manifold/Riemannian/Geodesic/FirstVariation.lean)). A general Euler–Lagrange equation for integral functionals \(\int L(x,u,\nabla u)\) was not found in either library.
+
 ## Topics of Section 36 not found in either inspected library
 
 - A general direct-method theory for integral functionals, weak lower semicontinuity under quasiconvexity, and related relaxation theorems. Optimal-transport minimization is proved in TauCeti.
 - The Palais–Smale condition and mountain-pass critical-point theorems. Sion’s convex minimax theorem is already in Mathlib.
 - Γ-convergence and homogenization.
-- Young measures.
+- Young measures, compensated compactness, and \(H\)-measures.
+- The Euler–Lagrange equation and regularity of minimizers for general integral functionals; concentration compactness; free-discontinuity problems and the Mumford–Shah functional.

@@ -6,7 +6,7 @@ Checked against Mathlib commit `065356127b1dc0016f66b7283ce0ce2c4055aa55` (2026-
 
 **Namespaces.** `ProbabilityTheory`, with the sub-Gaussian predicate `HasSubgaussianMGF` and its kernel form `Kernel.HasSubgaussianMGF`. Covering and packing numbers are `Metric.externalCoveringNumber`, `Metric.coveringNumber`, and `Metric.packingNumber`.
 
-This note records the part of high-dimensional probability that the library has formalized: sub-Gaussian bounds, Hoeffding and Azuma–Hoeffding inequalities, Fernique’s integrability theorem, and covering and packing numbers. Chaining and the analytic theory of empirical processes were not found.
+This note records the part of high-dimensional probability that the library has formalized: sub-Gaussian bounds, Hoeffding and Azuma–Hoeffding inequalities, Fernique’s integrability theorem, and covering and packing numbers. Chaining lemmas are present as ingredients, but no chaining bound, and the analytic theory of empirical processes was not found.
 
 ## Sub-Gaussian moment-generating functions
 
@@ -48,6 +48,8 @@ In a pseudo-metric space, the external covering number of a set \(A\) at scale \
 
 The comparisons proved there are the standard ones. The external covering number is at most the internal covering number. The packing number at scale \(2\varepsilon\) is at most the external covering number at scale \(\varepsilon\). The internal covering number is at most the packing number, and the internal covering number at scale \(2\varepsilon\) is at most the external covering number at scale \(\varepsilon\). Internal covering numbers are not monotone under inclusion; if \(A\subseteq B\), the covering number of \(A\) at scale \(\varepsilon\) is at most the covering number of \(B\) at scale \(\varepsilon/2\).
 
+Two chaining ingredients, introduced for the Kolmogorov–Chentsov theorem, are also present. A set has covering exponent \(d\) with constant \(c\) when it has finite diameter and its covering number at every scale \(\varepsilon\le\operatorname{diam}\) is at most \(c\,\varepsilon^{-d}\); the property passes to subsets with constant \(2^dc\) (`Topology/MetricSpace/CoveringExponent.lean`). The pair-reduction lemma, an extension by Krätschmer and Urusov of a lemma in Talagrand's *Upper and Lower Bounds for Stochastic Processes*, is proved: for a finite set \(J\) with \(|J|\le a^n\) there is a set \(K\) of at most \(a|J|\) pairs at distance at most \(cn\), such that for every function \(f\), the supremum of \(d(f(s),f(t))\) over pairs in \(J\) at distance at most \(c\) is bounded by twice its supremum over \(K\) (`EMetric.pair_reduction` in `Topology/EMetricSpace/PairReduction.lean`). No chaining bound for the supremum of a process is assembled from these ingredients in this revision.
+
 ## Combinatorial VC theory
 
 Shattering and VC dimension of finite set families are defined in `Combinatorics/SetFamily/Shatter.lean`. The Sauer–Shelah bound is proved: a family on an \(n\)-element ground set with VC dimension \(d\) has at most \(\sum_{k=0}^d\binom nk\) members. `Combinatorics/SetFamily/DualVC.lean` also proves Assouad’s bound \(\operatorname{VCdim}(\mathcal A^*)\le 2^{d+1}-1\). These are combinatorial ingredients for empirical-process theory; uniform laws of large numbers for VC classes are not developed here.
@@ -58,13 +60,16 @@ The following additions were checked in TauCeti revision `6e53de0d3ce9`; see the
 
 McDiarmid's bounded-differences theorem is proved for measurable functions on a finite product of copies of a probability space. If changing coordinate \(i\) changes \(f\) by at most \(c_i\), the centred function has the sub-Gaussian moment-generating bound with parameter \(\sum_i c_i^2/4\). Combined with the sub-Gaussian tail theorem this gives the usual upper-tail estimate \(\exp(-2r^2/\sum_i c_i^2)\) when the denominator is positive ([McDiarmid](https://github.com/TauCetiProject/TauCeti/blob/6e53de0d3ce9ea24d7d487e656ac4590b0c45b3a/TauCeti/Probability/McDiarmid.lean)). This includes bounded-difference functions on finite product spaces such as the discrete cube, beyond the sum estimates in Mathlib.
 
-The Wasserstein and Kantorovich–Rubinstein developments in Section 39 add the transport distance and its Lipschitz dual formula. A transportation-cost concentration inequality, a logarithmic Sobolev inequality, or a generic-chaining theorem was not located.
+The Wasserstein and Kantorovich–Rubinstein developments in Section 39 add the transport distance and its Lipschitz dual formula. A transportation-cost concentration inequality, a logarithmic Sobolev inequality, or a generic-chaining theorem was not located. The Wishart laws recorded in Section 6 are exact finite-dimensional distributions of Gaussian Gram matrices; no asymptotic random-matrix theorem accompanies them.
 
 ## Topics of Section 7 not found in either inspected library
 
 - The equivalence of Vershynin’s five sub-Gaussian conditions. Only the moment-generating bound is defined.
 - Concentration on the sphere and Gaussian space, and product-space concentration beyond the sub-Gaussian, bounded-sum, conditional-sum, and McDiarmid bounded-difference estimates recorded here.
 - Logarithmic Sobolev inequalities, hypercontractivity, and the Herbst argument.
-- Generic chaining and Dudley’s entropy integral. Covering and packing numbers are defined, and no chaining inequality was found.
+- Generic chaining, Dudley’s entropy integral, and the majorizing-measure theorem. Covering and packing numbers, covering exponents, and Talagrand's pair-reduction lemma are present, and no chaining inequality for the supremum of a process was found.
+- Bernstein's inequality and sub-exponential variables, and the Paley–Zygmund inequality.
+- Random matrix theory: Wigner's semicircle law, the Marchenko–Pastur law, norm bounds for random matrices, and the orthogonal-polynomial and Riemann–Hilbert methods of Mehta and Deift.
+- Asymptotic geometric analysis: Dvoretzky's theorem and the Johnson–Lindenstrauss lemma.
 - Empirical-process bounds for VC classes, and Glivenko–Cantelli or Donsker theorems. Combinatorial VC dimension and Sauer–Shelah are present.
 - Transportation-cost methods for concentration. Conditional sub-Gaussian sums and Azuma–Hoeffding are present.

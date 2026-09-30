@@ -24,10 +24,13 @@ Schwarz–Christoffel primitives and polygon mapping theorems are proved. In par
 
 Two names require care. `Koebe.lean` proves the square-root extremal step for Riemann mapping, not Koebe's one-quarter theorem. `Area.lean` proves the injective holomorphic change-of-variables identity, not the coefficient area theorem of univalent-function theory ([Koebe step](https://github.com/TauCetiProject/TauCeti/blob/6e53de0d3ce9ea24d7d487e656ac4590b0c45b3a/TauCeti/Analysis/Complex/Conformal/Koebe.lean), [area identity](https://github.com/TauCetiProject/TauCeti/blob/6e53de0d3ce9ea24d7d487e656ac4590b0c45b3a/TauCeti/Analysis/Complex/Conformal/Area.lean)).
 
+The length–area method, the classical ingredient of extremal-length arguments, is proved: for a holomorphic map with finite Dirichlet integral on an annulus, some circle in the annulus has an image of controlled length, together with Wolff's lemma, for an arbitrary measurable weight ([holomorphic length–area](https://github.com/TauCetiProject/TauCeti/blob/6e53de0d3ce9ea24d7d487e656ac4590b0c45b3a/TauCeti/Analysis/Complex/Conformal/LengthArea.lean), [measure-theoretic form](https://github.com/TauCetiProject/TauCeti/blob/6e53de0d3ce9ea24d7d487e656ac4590b0c45b3a/TauCeti/MeasureTheory/Integral/CircleLIntegral.lean)). Extremal length as a conformal invariant of curve families is not defined.
+
 The upgrade to a homeomorphism of closures is proved when the continuous disc extension has connected boundary fibres: this hypothesis forces boundary injectivity. It is not simply assumed here that the connected-fibre property has been derived for every Jordan-domain Riemann map ([conditional injectivity](https://github.com/TauCetiProject/TauCeti/blob/6e53de0d3ce9ea24d7d487e656ac4590b0c45b3a/TauCeti/Analysis/Complex/Conformal/MonotoneExtension.lean)).
 
 ## Topics of Section 43 not found in either inspected library
 
 - The Koebe one-quarter theorem, the coefficient area theorem, Grunsky inequalities, and the Bieberbach/de Branges theorem. Holomorphic injections and substantial conformal mapping theory are present in TauCeti.
-- Extremal length, quadratic differentials, and the coefficient body.
+- Extremal length, quadratic differentials, and the coefficient body. The length–area inequality is present in TauCeti.
+- Löwner chains and the Löwner differential equation, subordination, and harmonic measure.
 - The statement that a map conformal at every point of a connected open set in the plane is entirely holomorphic or entirely antiholomorphic. The file marks it as not yet proved.

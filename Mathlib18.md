@@ -16,6 +16,12 @@ Dominated convergence: almost-everywhere strongly measurable functions with valu
 
 A continuous linear map between Banach spaces over \(\mathbb{R}\) or \(\mathbb{C}\) passes inside the Bochner integral of an integrable function. A continuous semilinear map does as well when both spaces are complete and the scalar homomorphism commutes with real scalars. For a fixed continuous semilinear map, the integral of the image of an \(L^1\) class depends continuously on that class; that continuity statement does not add a completeness hypothesis on the codomain. When the target is complete, evaluation of an integrable map with values in continuous linear operators passes inside the integral (`MeasureTheory/Integral/Bochner/ContinuousLinearMap.lean`).
 
+## Strong measurability and Banach-valued function spaces
+
+Pettis's measurability theorem is proved in the form used by Hytönen–van Neerven–Veraar–Weis: a function into a pseudometrizable space is strongly measurable if and only if it is measurable and has separable range, and almost everywhere strongly measurable if and only if it is almost everywhere measurable and almost everywhere separably valued (`stronglyMeasurable_iff_measurable_separable` in `MeasureTheory/Function/StronglyMeasurable/Basic.lean`, `aestronglyMeasurable_iff_aemeasurable_separable` in `MeasureTheory/Function/StronglyMeasurable/AEStronglyMeasurable.lean`). The version with measurability tested only against continuous linear functionals, weak measurability, was not found.
+
+The Lebesgue–Bochner spaces \(L^p(\mu;E)\) are the \(L^p\) spaces of `Mathlib04.md` with a Banach space \(E\) of values: they are complete, simple functions are dense for \(p<\infty\), and a continuous bilinear map induces the Hölder pairing. Conditional expectation is Banach-valued (`Mathlib06.md`), and the definition of a martingale allows Banach values, but the martingale convergence theorems of `Mathlib08.md` are stated for real-valued processes. Complex analysis in Mathlib is largely Banach-valued, including the Cauchy integral formula and analyticity of complex-differentiable maps (`Mathlib40.md`).
+
 ## Vector measures
 
 A vector measure is a countably additive map from a σ-algebra into a topological additive monoid. Signed measures are the real-valued case. Hahn’s decomposition, the Jordan decomposition into a unique pair of mutually singular finite measures, and the Radon–Nikodym theorem for a signed measure absolutely continuous with respect to a σ-finite measure are proved and are recorded in `Mathlib04.md` (`MeasureTheory/VectorMeasure/Decomposition/Hahn.lean`, `MeasureTheory/VectorMeasure/Decomposition/Jordan.lean`, `MeasureTheory/VectorMeasure/Decomposition/RadonNikodym.lean`). Transport of a Banach-valued density along a scalar absolute continuity is proved there as well. It is not a Radon–Nikodym theorem for a general Banach-valued vector measure.
@@ -37,5 +43,7 @@ Its Banach-space evolution theory is also substantial: strongly continuous semig
 ## Topics of Section 18 not found in either inspected library
 
 - The Pettis integral.
-- UMD spaces and radonifying operators.
+- UMD spaces, radonifying operators, Banach-valued martingale convergence, and Littlewood–Paley theory for Banach-valued functions.
+- The vector-valued Laplace transform and its inversion in the sense of Arendt–Batty–Hieber–Neubrander.
+- Sectorial operators, the holomorphic \(H^\infty\) functional calculus, \(R\)-boundedness, and maximal \(L^p\)-regularity.
 - The Diestel–Uhl Radon–Nikodym theorem for vector measures with values in a general Banach space, relative weak compactness of ranges of vector measures, and Lyapunov’s convexity theorem. Semivariation, boundedness, and the bilinear integral are present; the signed and σ-finite scalar Radon–Nikodym theorems are in `Mathlib04.md`.

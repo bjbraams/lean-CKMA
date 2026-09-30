@@ -25,5 +25,6 @@ For holomorphic maps between Riemann surfaces, local multiplicity is defined ind
 ## Topics of Section 44 not found in either inspected library
 
 - General uniformization and global classification of Riemann surfaces, beyond the Fuchsian-quotient constructions and local multiplicity theory described above.
+- The analytic theory of compact Riemann surfaces: harmonic and holomorphic differentials, the Riemann–Roch theorem, Abel's theorem and the Jacobian, and the Riemann–Hurwitz formula.
 - Quasiconformal mappings, the Beltrami equation, and holomorphic motions.
 - Teichmüller space, the Teichmüller metric, and quadratic differentials. The order-theoretic Teichmüller–Tukey lemma and the Teichmüller representatives in Witt vectors are unrelated to this subject.

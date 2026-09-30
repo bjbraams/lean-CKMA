@@ -75,6 +75,10 @@ What the file contains is a separation lemma on a normed field. For a finite set
 \]
 Closeness to some point of \(s\), measured by the sum of truncated logarithms, is detected by the single function \(\log^+\bigl\|\sum (w-a)^{-1}\bigr\|\).
 
+## Growth and product expansions elsewhere
+
+The growth tools of classical function theory are in Section 40: the Borel–Carathéodory inequality, the Phragmén–Lindelöf principle in sectors and strips, and Hadamard's three-lines theorem. Explicit infinite products and partial-fraction expansions are proved for particular functions: Euler's product for \(\sin\pi z\) and the Euler–Gauss limit formula for \(\Gamma\) (Section 49), and the partial-fraction expansion of \(\pi\cot\pi z\) (`cot_series_rep` in `Analysis/SpecialFunctions/Trigonometric/Cotangent.lean`). These are instances of the Weierstrass and Mittag-Leffler theorems, not the general theorems.
+
 ## Additional coverage in TauCeti
 
 The following additions were checked in TauCeti revision `6e53de0d3ce9`; see the [revision, build evidence, and comparison scope](TauCetiCoverage.md). Source links below are pinned to that revision.
