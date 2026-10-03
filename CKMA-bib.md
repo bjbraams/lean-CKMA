@@ -83,6 +83,10 @@ are consulted across many subjects.
   Spaces***. Not classroom texts, but lasting sources for the
   structural language of measure, integration, locally convex spaces,
   and duality.
+* **Jean Dieudonné, *Treatise on Analysis*** (7 volumes). The
+  Bourbaki-school comprehensive course, from integration and manifolds
+  through Lie groups, harmonic analysis, and linear functional
+  equations; the modern successor to the classical *Cours d'analyse*.
 * **Edwin Hewitt and Kenneth A. Ross, *Abstract Harmonic Analysis
   I–II***. The standard large reference for locally compact groups,
   Haar measure, representation theory, and Pontryagin duality.
@@ -320,10 +324,11 @@ theory, and operator algebras.
 * **Pertti Mattila, *Geometry of Sets and Measures in Euclidean
   Spaces***. Densities, rectifiability, and tangent measures,
   developed with real-analysis rather than current-theoretic tools.
-* **Ralph Henstock, *The General Theory of Integration*** and
-  **Russell A. Gordon, *The Integrals of Lebesgue, Denjoy, Perron, and
-  Henstock***. For the nonabsolute integrals, which still appear in
-  questions about differentiation and in the theory of the Fourier
+* **Ralph Henstock, *The General Theory of Integration***. The
+  originator's account of the gauge integral.
+* **Russell A. Gordon, *The Integrals of Lebesgue, Denjoy, Perron, and
+  Henstock***. A comparison of the nonabsolute integrals, which still
+  appear in questions about differentiation and in the Fourier
   transform of unbounded functions.
 * **A. M. Garsia, *Topics in Almost Everywhere Convergence***. A short
   classic on almost-everywhere convergence methods.
@@ -643,11 +648,10 @@ outside probability proper.
 
 # Part III. Inequalities, Convexity, and Order
 
-The first edition kept these under a single heading. They are
-separated here because the literatures are genuinely different: the
-classical inequality tradition, the convex-analytic tradition, the
-matrix tradition, and the functional-inequality tradition have
-distinct canons and largely disjoint citation patterns.
+The literatures are genuinely different: the classical inequality
+tradition, the convex-analytic tradition, the matrix tradition, and
+the functional-inequality tradition have distinct canons and largely
+disjoint citation patterns.
 
 ---
 
@@ -754,9 +758,10 @@ distinct canons and largely disjoint citation patterns.
 * **Aleksandr D. Alexandrov's convexity work, and Herbert Busemann,
   *Convex Surfaces***. The classical geometric strand, still relevant
   to second-order differentiability results.
-* **Roger Webster, *Convexity*** and **Steven R. Lay, *Convex Sets and
-  Their Applications***. Elementary and clean, useful for the
-  finite-dimensional geometry.
+* **Roger Webster, *Convexity***. A clean elementary account of
+  finite-dimensional convexity.
+* **Steven R. Lay, *Convex Sets and Their Applications***. Convex sets
+  at the same elementary level, with geometric applications.
 * **A. Ben-Tal and A. Nemirovski, *Lectures on Modern Convex
   Optimization***. Included because conic duality and the structure of
   convex cones have become common analytic vocabulary.
@@ -809,10 +814,11 @@ distinct canons and largely disjoint citation patterns.
 * **Albrecht Pietsch, *Eigenvalues and s-Numbers***. The systematic
   theory of approximation numbers and eigenvalue estimates for
   operator ideals.
-* **Peter Lancaster and Miron Tismenetsky, *The Theory of Matrices***,
-  and **Alexander Markus, *Introduction to the Spectral Theory of
-  Polynomial Operator Pencils***. Useful when the matrix question is
-  really a spectral question.
+* **Peter Lancaster and Miron Tismenetsky, *The Theory of
+  Matrices***. A large general reference for matrix theory.
+* **Alexander Markus, *Introduction to the Spectral Theory of
+  Polynomial Operator Pencils***. Spectral theory of polynomial
+  pencils, for when a matrix question is really spectral.
 * **Gerd Grubb and Joachim Weidmann** for the differential-operator
   analogues, and **Michael Sh. Birman and Michael Solomyak** for
   eigenvalue asymptotics; see Part IV.
@@ -890,9 +896,10 @@ distinct canons and largely disjoint citation patterns.
   rapidly from Banach spaces through spectral theory to C*-algebras.
 * **Kôsaku Yosida, *Functional Analysis***. A classical comprehensive
   treatment with semigroups, distributions, and evolution equations.
-* **Barbara MacCluer, *Elementary Functional Analysis*** and
-  **Nicholas Young, *An Introduction to Hilbert Space***. Short,
+* **Barbara MacCluer, *Elementary Functional Analysis***. Short and
   clear, and useful for filling gaps quickly.
+* **Nicholas Young, *An Introduction to Hilbert Space***. A short
+  Hilbert-space course at the same elementary level.
 * **Michael Reed and Barry Simon, *Methods of Modern Mathematical
   Physics I: Functional Analysis***. One of the best short routes to
   the functional analysis actually used in spectral theory.
@@ -973,9 +980,10 @@ distinct canons and largely disjoint citation patterns.
 * **J. F. Colombeau, *New Generalized Functions and Multiplication of
   Distributions***. For the nonlinear theory, where the standard
   framework breaks down.
-* **Serge Lang, *Real and Functional Analysis***, and **Diestel and
-  Uhl, *Vector Measures***. Both relevant where locally convex or
-  Banach-valued integration is at issue.
+* **Serge Lang, *Real and Functional Analysis***. Included here for
+  its locally convex methods and Banach-valued calculus.
+* **Joseph Diestel and J. J. Uhl, Jr., *Vector Measures***. The
+  reference for Banach-valued integration.
 
 ---
 
@@ -1138,15 +1146,17 @@ harmonic analysis.
 * **Eberhard Kaniuth and Anthony To-Ming Lau, *Fourier and
   Fourier–Stieltjes Algebras on Locally Compact Groups***. The modern
   reference for the algebras attached to nonabelian groups.
-* **Jean-Paul Pier, *Amenable Locally Compact Groups*** and **Volker
-  Runde, *Lectures on Amenability***. Amenability as a
-  functional-analytic property, with consequences across analysis.
+* **Jean-Paul Pier, *Amenable Locally Compact Groups***. The large
+  reference on amenability of locally compact groups.
+* **Volker Runde, *Lectures on Amenability***. A concise account of
+  amenability, from groups through Banach algebras.
 * **Alan L. T. Paterson, *Amenability***. A large reference on the
   same circle of ideas.
-* **Nicholas Young, *An Introduction to Hilbert Space*** and **Ronald
-  G. Douglas, *Banach Algebra Techniques in Operator Theory***. The
-  two standard routes from Banach algebra language into concrete
-  operator problems.
+* **Nicholas Young, *An Introduction to Hilbert Space***. A short
+  route from Hilbert space into concrete operator problems.
+* **Ronald G. Douglas, *Banach Algebra Techniques in Operator
+  Theory***. Banach-algebra methods for Toeplitz operators and
+  Fredholm theory.
 
 ---
 
@@ -1253,9 +1263,11 @@ harmonic analysis.
 * **Michael Demuth and Maddaly Krishna, *Determining Spectra in
   Quantum Theory***. A compact account of spectral classification.
 * **Vladimir A. Marchenko, *Sturm–Liouville Operators and
-  Applications***, and **B. M. Levitan and I. S. Sargsjan,
-  *Introduction to Spectral Theory***. The inverse spectral theory of
-  one-dimensional operators.
+  Applications***. Inverse spectral theory of one-dimensional
+  Sturm–Liouville operators.
+* **B. M. Levitan and I. S. Sargsjan, *Introduction to Spectral
+  Theory***. Spectral theory of self-adjoint ordinary differential
+  operators, including the inverse problem.
 * **E. C. Titchmarsh, *Eigenfunction Expansions Associated with
   Second-Order Differential Equations I–II***. The classical analytic
   treatment, still valuable.
@@ -1297,9 +1309,10 @@ harmonic analysis.
   Finite-Dimensional Approximations***. The modern reference for
   nuclearity, exactness, amenability, and approximation properties.
 * **Vaughan F. R. Jones and Vlada Sunder, *Introduction to
-  Subfactors***, and **David E. Evans and Yasuyuki Kawahigashi,
-  *Quantum Symmetries on Operator Algebras***. The subfactor theory
-  and its links to statistical mechanics and conformal field theory.
+  Subfactors***. A concise introduction to subfactor theory.
+* **David E. Evans and Yasuyuki Kawahigashi, *Quantum Symmetries on
+  Operator Algebras***. Subfactors and their links to statistical
+  mechanics and conformal field theory.
 * **Gilles Pisier, *Introduction to Operator Space Theory***. The
   standard entry to operator spaces and completely bounded maps.
 * **Vern I. Paulsen, *Completely Bounded Maps and Operator
@@ -1408,9 +1421,10 @@ theory and boundary-value problems.
   nonsmooth domains.
 * **Vladimir Maz'ya and others on boundary integral methods in
   nonsmooth domains**, best approached through McLean and Kenig.
-* **Ram P. Kanwal, *Linear Integral Equations***, and **Harry
-  Hochstadt, *Integral Equations***. Concrete, classical, and useful
-  for explicit solution techniques.
+* **Ram P. Kanwal, *Linear Integral Equations***. A concrete
+  classical treatment, useful for explicit solution techniques.
+* **Harry Hochstadt, *Integral Equations***. A shorter classical
+  account of the same explicit methods.
 
 ---
 
@@ -1790,16 +1804,20 @@ theory and boundary-value problems.
   reference for smooth and hyperbolic dynamics.
 * **Clark Robinson, *Dynamical Systems: Stability, Symbolic Dynamics,
   and Chaos***. A thorough alternative with careful proofs.
-* **Jack K. Hale, *Asymptotic Behavior of Dissipative Systems*** and
-  **Roger Temam, *Infinite-Dimensional Dynamical Systems in Mechanics
-  and Physics***. Attractors and long-time behaviour for evolution
-  PDE.
+* **Jack K. Hale, *Asymptotic Behavior of Dissipative
+  Systems***. Attractors and long-time behaviour of dissipative
+  evolution equations.
+* **Roger Temam, *Infinite-Dimensional Dynamical Systems in Mechanics
+  and Physics***. Attractors for the evolution equations of mechanics
+  and physics.
 * **Wolfgang Wasow, *Asymptotic Expansions for Ordinary Differential
   Equations***. The classical reference for singular points and
   asymptotic ODE theory; see also Part VIII.
 * **Earl A. Coddington and Robert Carlson, *Linear Ordinary
-  Differential Equations***, and **Anton Zettl, *Sturm–Liouville
-  Theory***. The linear spectral theory in modern form.
+  Differential Equations***. Linear ordinary differential equations
+  and their spectral theory in modern form.
+* **Anton Zettl, *Sturm–Liouville Theory***. The modern systematic
+  account of the Sturm–Liouville problem.
 * **Yulij Ilyashenko and Sergei Yakovenko, *Lectures on Analytic
   Differential Equations***. The complex-analytic theory: monodromy,
   normal forms, and limit cycles.
@@ -1851,9 +1869,10 @@ theory and boundary-value problems.
   Problems and Applications*** (3 volumes). The functional-analytic
   theory of boundary value problems and evolution equations.
 * **Robert C. McOwen, *Partial Differential Equations: Methods and
-  Applications***, and **Emmanuele DiBenedetto, *Partial Differential
-  Equations***. Reliable alternatives at the first-course level with
-  different emphases.
+  Applications***. A first graduate course emphasizing methods and
+  applications.
+* **Emmanuele DiBenedetto, *Partial Differential Equations***. A
+  rigorous first course with a more classical emphasis.
 * **Sandro Salsa, *Partial Differential Equations in
   Action***. Modern, applied-facing, and good for modelling context.
 
@@ -1926,10 +1945,11 @@ theory and boundary-value problems.
 * **Cristian E. Gutiérrez, *The Monge–Ampère Equation***. The standard
   earlier treatment of Aleksandrov solutions and Caffarelli's
   regularity theory.
-* **Peter Lindqvist, *Notes on the p-Laplace Equation***, and **Juha
-  Heinonen, Tero Kilpeläinen, and Olli Martio, *Nonlinear Potential
-  Theory of Degenerate Elliptic Equations***. The degenerate elliptic
-  theory.
+* **Peter Lindqvist, *Notes on the p-Laplace Equation***. A concise
+  introduction to the p-Laplace equation.
+* **Juha Heinonen, Tero Kilpeläinen, and Olli Martio, *Nonlinear
+  Potential Theory of Degenerate Elliptic Equations***. The standard
+  monograph on degenerate elliptic equations.
 * **Andrea Bonfiglioli, Ermanno Lanconelli, and Francesco Uguzzoni,
   *Stratified Lie Groups and Potential Theory for Their
   Sub-Laplacians***. Subelliptic equations in the group setting.
@@ -2324,12 +2344,11 @@ theory and boundary-value problems.
 
 # Part VII. Complex Analysis
 
-The first edition treated one complex variable in two blocks. It is
-separated here into five, because the literatures are distinct: the
-graduate courses, the classical function theory of entire and
-meromorphic functions, the analytic function spaces and their
-operators, geometric function theory, and the several-variable
-theory. Riemann surfaces and complex dynamics follow.
+The literatures are distinct: the graduate courses in one variable,
+the classical function theory of entire and meromorphic functions, the
+analytic function spaces and their operators, geometric function
+theory, and the several-variable theory. Riemann surfaces and complex
+dynamics follow.
 
 ---
 
@@ -2894,12 +2913,15 @@ theory. Riemann surfaces and complex dynamics follow.
   Polynomials***. A modern rigorous graduate text.
 * **G. N. Watson, *A Treatise on the Theory of Bessel
   Functions***. The definitive classical Bessel monograph.
-* **Earl D. Rainville, *Special Functions***, and **Lucy Joan Slater,
-  *Generalized Hypergeometric Functions***. Classical accounts of the
-  hypergeometric apparatus.
-* **W. N. Bailey, *Generalized Hypergeometric Series***, and **George
-  Gasper and Mizan Rahman, *Basic Hypergeometric Series***. The
-  classical and the modern references for the q-theory.
+* **Earl D. Rainville, *Special Functions***. A classical account of
+  the special functions through generating functions and
+  hypergeometric series.
+* **Lucy Joan Slater, *Generalized Hypergeometric Functions***. The
+  classical monograph on the generalized hypergeometric series.
+* **W. N. Bailey, *Generalized Hypergeometric Series***. The
+  classical tract on generalized hypergeometric series.
+* **George Gasper and Mizan Rahman, *Basic Hypergeometric Series***.
+  The modern standard reference for basic hypergeometric series.
 * **B. C. Carlson, *Special Functions of Applied Mathematics***. The
   Dirichlet-average approach, unifying the classical functions through
   integration over simplices; unusual and undervalued.
@@ -2936,8 +2958,10 @@ theory. Riemann surfaces and complex dynamics follow.
 * **Norman Bleistein and Richard A. Handelsman, *Asymptotic Expansions
   of Integrals***. A practical treatment of steepest descent and
   uniform approximation.
-* **A. Erdélyi, *Asymptotic Expansions***, and **E. T. Copson,
-  *Asymptotic Expansions***. Compact classical foundations.
+* **A. Erdélyi, *Asymptotic Expansions***. A short classical
+  introduction to asymptotic expansions.
+* **E. T. Copson, *Asymptotic Expansions***. A compact classical
+  treatment, with the expansion of integrals done in detail.
 * **M. V. Fedoryuk, *Asymptotic Analysis: Linear Ordinary Differential
   Equations*** and his work on the saddle-point method. The
   Russian-school treatment.
@@ -2966,10 +2990,11 @@ theory. Riemann surfaces and complex dynamics follow.
   Methods for Scientists and Engineers***. Formal asymptotics, WKB,
   boundary layers, and matched expansions; less rigorous than the
   rest, and exceptionally influential.
-* **Ali H. Nayfeh, *Perturbation Methods***, and **J. Kevorkian and
-  J. D. Cole, *Multiple Scale and Singular Perturbation
-  Methods***. The standard systematic references for multiple scales
-  and matched asymptotics.
+* **Ali H. Nayfeh, *Perturbation Methods***. Multiple scales, matched
+  asymptotics, and the standard applied perturbation methods.
+* **J. Kevorkian and J. D. Cole, *Multiple Scale and Singular
+  Perturbation Methods***. The systematic treatment of multiple-scale
+  and singular perturbation methods.
 * **Johannes Sjöstrand and Mouez Dimassi, *Spectral Asymptotics in the
   Semi-Classical Limit***. Asymptotics as spectral theory; see also
   Section 30.
@@ -3054,13 +3079,16 @@ analytic technique well beyond its origins.
   Curvature: Geometric and Analytic Aspects***. The analytic
   companions to Jost's geometry.
 * **Ben Andrews and Christopher Hopper, *The Ricci Flow in Riemannian
-  Geometry***, and **Bennett Chow, Peng Lu, and Lei Ni, *Hamilton's
-  Ricci Flow***. The standard references for Ricci flow as a PDE.
+  Geometry***. A concise geometric introduction to Ricci flow.
+* **Bennett Chow, Peng Lu, and Lei Ni, *Hamilton's Ricci Flow***. The
+  detailed reference for Ricci flow as a partial differential
+  equation.
 * **Peter Topping, *Lectures on the Ricci Flow***. Short, clear, and
   the usual first exposure.
-* **Klaus Ecker, *Regularity Theory for Mean Curvature Flow***, and
-  **Carlo Mantegazza, *Lecture Notes on Mean Curvature Flow***. The
-  analytic theory of the other central geometric flow.
+* **Klaus Ecker, *Regularity Theory for Mean Curvature Flow***. The
+  research monograph on regularity for mean curvature flow.
+* **Carlo Mantegazza, *Lecture Notes on Mean Curvature Flow***. An
+  accessible analytic treatment of mean curvature flow.
 * **Tobias H. Colding and William P. Minicozzi II, *A Course in
   Minimal Surfaces***. The modern analytic theory of minimal surfaces.
 * **Robert Osserman, *A Survey of Minimal Surfaces***. A classical
@@ -3110,9 +3138,11 @@ analytic technique well beyond its origins.
   Theory***. Global symbol calculus and spectral asymptotics.
 * **Victor Ivrii, *Microlocal Analysis and Precise Spectral
   Asymptotics***. The definitive treatment of sharp Weyl laws.
-* **Isaac Chavel, *Eigenvalues in Riemannian Geometry***, and **Pierre
-  H. Bérard, *Spectral Geometry: Direct and Inverse Problems***. The
-  classical references for the spectrum-and-geometry dictionary.
+* **Isaac Chavel, *Eigenvalues in Riemannian Geometry***. The classic
+  reference for eigenvalues and the geometry of the Laplacian.
+* **Pierre H. Bérard, *Spectral Geometry: Direct and Inverse
+  Problems***. Direct and inverse spectral geometry in the classical
+  style.
 * **Steve Zelditch, *Eigenfunctions of the Laplacian on a Riemannian
   Manifold***. The modern survey of eigenfunction concentration,
   quantum ergodicity, and nodal sets.
@@ -3176,10 +3206,13 @@ classical trick, or a formula.
 * **NIST Digital Library of Mathematical Functions**. For special
   functions, now the first reference to consult, ahead of the older
   tables.
-* **The Bateman Manuscript Project volumes**, and
-  **Gradshteyn–Ryzhik** and **Prudnikov–Brychkov–Marichev**. Still
-  unsurpassed when a classical identity or integral is needed and the
-  DLMF does not have it.
+* **The Bateman Manuscript Project volumes**. Still the place for a
+  classical special-function identity when the DLMF does not have it.
+* **I. S. Gradshteyn and I. M. Ryzhik, *Table of Integrals, Series,
+  and Products***. The standard integral table for a classical
+  identity the DLMF does not record.
+* **A. P. Prudnikov, Yu. A. Brychkov, and O. I. Marichev, *Integrals
+  and Series***. The most complete integral and transform tables.
 * **Encyclopedia of Mathematics (Springer/EMS, online)** and **Wolfram
   Functions Site**. Useful for orientation and for formula checking
   respectively; both to be verified against a primary source.
@@ -3188,11 +3221,10 @@ classical trick, or a formula.
 
 ## 55. Foundations, Constructive Analysis, and Machine-Formalized Mathematics
 
-A new section. Formalized mathematics has reached the point where a
-graduate analyst may encounter it as a research tool, a teaching
-instrument, or a collaborator's working environment, and the
-constructive and reverse-mathematical literatures are the natural
-bridge to it.
+Formalized mathematics has reached the point where a graduate analyst
+may encounter it as a research tool, a teaching instrument, or a
+collaborator's working environment, and the constructive and
+reverse-mathematical literatures are the natural bridge to it.
 
 * **Errett Bishop and Douglas Bridges, *Constructive Analysis***. The
   foundational text of Bishop-style constructive mathematics; a
@@ -3212,11 +3244,12 @@ bridge to it.
 * **Marian B. Pour-El and J. Ian Richards, *Computability in Analysis
   and Physics***. The classical account of computable and
   noncomputable phenomena in analysis.
-* **Abraham Robinson, *Non-standard Analysis***, and **Albert E. Hurd
-  and Peter A. Loeb, *An Introduction to Nonstandard Real
-  Analysis***. The nonstandard framework and the Loeb measure
-  construction, which has genuine applications in probability and
-  functional analysis.
+* **Abraham Robinson, *Non-standard Analysis***. The founding account
+  of nonstandard analysis.
+* **Albert E. Hurd and Peter A. Loeb, *An Introduction to Nonstandard
+  Real Analysis***. Nonstandard real analysis and the Loeb measure
+  construction, with applications in probability and functional
+  analysis.
 * **Sergio Albeverio, Jens Erik Fenstad, Raphael Høegh-Krohn, and Tom
   Lindstrøm, *Nonstandard Methods in Stochastic Analysis and
   Mathematical Physics***. Where the nonstandard machinery earned its

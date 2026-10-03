@@ -27,10 +27,16 @@
 This is a new project in the area of Core Knowledge of Mathematical Analysis at the level of
 graduate students and beginning researchers.
 
-The initial project effort is to assemble a bibliography. The main working file is
-`CoreKnowledgeMathematicalAnalysis.md`. This file is meant for the human reader.
+One component of the project is to assemble a bibliography. The main working file is
+`CKMA-bib.md`. This file is meant for the human reader. The fies is divided into topical sections
+numbered from 1 to 55.
 
 There may be additional files, for example `*.json`, for precise bibliographical data.
+
+Files with names Mathlib<dd>.md (where <dd> ranges from 04 to 53) primarily describe the present
+coverage in Mathlib of the indicated section from `CKMA-bib.md`. Notes at the end of each such file
+describe additional coverage in TauCeti and they note areas that are not covered either in Mathlib
+or in TauCeti.
 
 PDF files for some of the references are in the directory /export/scratch1/braams/Books/.
 Files there have a name that shows the author or authors, year, a shortened title, and the
