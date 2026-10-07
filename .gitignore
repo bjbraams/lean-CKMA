@@ -1,0 +1,13 @@
+/.lake
+*.olean
+/References/
+/ReferencesSuppl/
+*/References/
+# Ignore markdown files except as listed
+*.md
+!/AGENTS.md
+!/CKMA-bib.md
+!/CKMA-bib2.md
+!/CONVENTIONS.md
+!/README.md
+!/Coverage.md

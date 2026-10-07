@@ -1,26 +1,15 @@
-# Project instructions
+# Project instructions — lean-CKMA
 
-## Build topology (do not change)
+Before working, read and follow [the shared Lean instructions](../lean-codes/AGENTS.common.md),
+then apply the project-specific rules below. Resolve that path relative to this file.
+Local rules take precedence over the shared defaults. If the shared file is unavailable,
+report that fact rather than proceeding without it.
 
-- Lake root is this directory. This directory is on NFS.
-- .lake is a symlink to /export/scratch1/braams/lean-codes-lake on local disk.
-- Never replace, delete, or retarget that symlink.
-- Never run lake build from a subdirectory as if it were the package root.
-- Never copy Mathlib or .lake onto NFS ($HOME).
-- Do not “fix” the link because it points outside the repo. That is intentional.
-- That lake directory is shared with the companion projects (lean-SCV, lean-codes, lean-AAR,
-  lean-LCS). They share `.lake/packages` (all pin the same Mathlib), but this project writes
-  its own build outputs to `.lake/build-CA` (`buildDir` in `lakefile.toml`), because Lake's
-  build traces include the package name and modules with equal names (`ComplexAnalysis.*`,
-  `ToMathlib.*`) would otherwise overwrite each other. Keep that `buildDir` setting; never
-  write to or delete another project's build directory.
-- Do not set `LEAN_PATH`, `LAKE_HOME`, or a custom cache dir unless asked.
-- If `.lake` is missing or is no longer a symlink to the path above, stop and ask. Do not repair it.
-- After every Lean edit: `lake build` from the Lake root.
-- For ordinary builds, use lake build > /tmp/ac-build.log 2>&1; reuse this filename to preserve
-  the existing command approval.
-- Without LSP/MCP: treat `lake build` output as the only proof-state.
-- Do not bump lean-toolchain or Mathlib unless asked.
+## Build settings
+
+- Lake root: the directory containing this `AGENTS.md`.
+- Build output: `.lake/build-CKMA`; preserve the matching `buildDir` in `lakefile.toml`.
+- Ordinary build command: `lake build > /tmp/ckma-build.log 2>&1`.
 
 ## Project
 
@@ -28,8 +17,12 @@ This is a new project in the area of Core Knowledge of Mathematical Analysis at 
 graduate students and beginning researchers.
 
 One component of the project is to assemble a bibliography. The main working file is
-`CKMA-bib.md`. This file is meant for the human reader. The fies is divided into topical sections
+`CKMA-bib.md`. This file is meant for the human reader. The file is divided into topical sections
 numbered from 1 to 55.
+
+PDF files for some of the references are in the directory ./References/. The directory
+./ReferencesSuppl/ contains PDF files for some books in the general area of analysis tht are not
+in the bibliography.
 
 There may be additional files, for example `*.json`, for precise bibliographical data.
 
@@ -37,12 +30,6 @@ Files with names Mathlib<dd>.md (where <dd> ranges from 04 to 53) primarily desc
 coverage in Mathlib of the indicated section from `CKMA-bib.md`. Notes at the end of each such file
 describe additional coverage in TauCeti and they note areas that are not covered either in Mathlib
 or in TauCeti.
-
-PDF files for some of the references are in the directory /export/scratch1/braams/Books/.
-Files there have a name that shows the author or authors, year, a shortened title, and the
-publisher. It may be possible to recognize a book just by the filename, but of course the
-files are readable. There are about 6200 files there, so many more than the books for this
-project.
 
 You may be asked to edit, revise or expand any of the Markdown files in the project directory.
 - Keep changes narrowly related to the request.
