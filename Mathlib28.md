@@ -1,0 +1,100 @@
+# 28. Abstract Harmonic Analysis on Groups
+
+Checked against Mathlib commit `065356127b1dc0016f66b7283ce0ce2c4055aa55` (2026-09-16, Lean `v4.35.0-rc2`). The checkout was only read. The survey below concerns this Mathlib revision; the TauCeti supplement and final gap list also use the [TauCeti source audit](TauCetiCoverage.md).
+
+**Imports.** There is no aggregate module. A file `Mathlib/A/B/C.lean` is imported as `import Mathlib.A.B.C`. The roots for this section are `Mathlib.MeasureTheory.Measure.Haar.Basic`, `Mathlib.MeasureTheory.Measure.Haar.Unique`, `Mathlib.MeasureTheory.Measure.Haar.Quotient`, `Mathlib.MeasureTheory.Measure.Haar.Extension`, `Mathlib.MeasureTheory.Group.ModularCharacter`, `Mathlib.MeasureTheory.Group.Convolution`, `Mathlib.MeasureTheory.Group.FoelnerFilter`, `Mathlib.Analysis.Convolution`, `Mathlib.Analysis.Fourier.FiniteAbelian.Orthogonality`, `Mathlib.Analysis.Fourier.FiniteAbelian.PontryaginDuality`, `Mathlib.Analysis.Fourier.AddCircle`, and `Mathlib.Analysis.Fourier.AddCircleMulti`.
+
+**Namespaces.** Haar measure is `MeasureTheory.Measure`, with the covering construction in the nested namespace `haar`. The modular homomorphism is `MeasureTheory.Measure.modularCharacter`. Scaling under a group acting by additive automorphisms is `MeasureTheory.distribHaarChar`, and scaling under a topological automorphism is `MeasureTheory.mulEquivHaarChar`. Short exact sequences of topological groups are `TopologicalGroup.IsSES`. Følner conditions are `IsFoelner`. Finite abelian characters are `AddChar`. Fourier series on the circle are `AddCircle` and, in several variables, `UnitAddTorus`.
+
+This note records left Haar measure, the modular character, convolution, Følner filters, and Fourier analysis of finite abelian groups and of the circle. Analysis on a general locally compact abelian group was not found.
+
+## Existence of Haar measure
+
+On a locally compact Hausdorff topological group, a left Haar measure exists (`MeasureTheory/Measure/Haar/Basic.lean`). The construction follows Gleason’s account of the covering argument. For compact \(K\) and a neighborhood \(V\) of the identity, the index \((K:V)\) is the least number of left translates of \(V\) needed to cover \(K\). Relative to a fixed compact set \(K_0\) with nonempty interior, a cluster point of the functions \(K\mapsto(K:U)/(K_0:U)\), supplied by Tychonoff compactness as \(U\) shrinks to the identity, produces a content. Convergence of the entire family of ratios is not asserted. That content extends to a measure, which is then scaled so that \(K_0\) has measure \(1\).
+
+The resulting measure `haarMeasure K₀` is left-invariant and regular. It gives finite mass to compact sets and positive mass to nonempty open sets, which is the library’s definition of a Haar measure. A choice of such a \(K_0\) gives a Haar measure `haar` on any locally compact Hausdorff group. The same statements hold, additively, for locally compact Hausdorff additive groups. On a second-countable group the measure is \(\sigma\)-finite. A Haar measure in this sense is automatically regular and inner regular when the group is second-countable and locally compact. Textbooks often impose regularity separately on groups that are not second-countable; the library makes the same distinction.
+
+Steinhaus’ theorem: if \(\mu\) is an inner regular Haar measure and \(E\) is measurable with positive measure, then \(E E^{-1}\) is a neighborhood of the identity. If one assumes only inner regularity for sets of finite measure, the same conclusion holds when \(E\) itself has finite positive measure. The theorem is false for a merely regular Haar measure without an inner-regularity assumption, and the file records a counterexample of that shape.
+
+On a finite-dimensional real vector space, a basis determines a Haar measure giving mass \(1\) to the parallelepiped it spans (`MeasureTheory/Measure/Haar/OfBasis.lean`). On a finite-dimensional real inner product space the canonical volume is that measure for an orthonormal basis, and it is the measure of the `MeasureSpace` instance (`MeasureTheory/Measure/Haar/InnerProductSpace.lean`). The pushforward of Haar measure on a finite-dimensional vector space by a surjective continuous linear map is an extended-nonnegative scalar multiple of Haar measure on the target. The factor includes the total Haar mass of the kernel and can be infinite (in particular for a nontrivial kernel over \(\mathbb R\)); the pushforward need not itself be a locally finite Haar measure. A property holds almost everywhere if it holds almost everywhere on the translates of a fixed subspace (`MeasureTheory/Measure/Haar/Disintegration.lean`). The file marks as not proved the corresponding disintegration in a general locally compact group.
+
+## Uniqueness
+
+Write \(c(\mu',\mu)\) for the nonnegative scalar `haarScalarFactor`. It is strictly positive when both measures are Haar measures. On a locally compact group, two measures that are finite on compact sets, one of them left-invariant and the other a Haar measure, give the same integral to every continuous compactly supported function, up to this scalar. They give the same measure to every set whose closure is compact, up to the same scalar. They give the same measure to every open set, up to the same scalar (`MeasureTheory/Measure/Haar/Unique.lean`).
+
+If both measures are inner regular, or both are regular, and both are finite on compact sets, with one a Haar measure and the other only assumed left-invariant, then they coincide as measures up to \(c(\mu',\mu)\). On a second-countable locally compact group the regularity is automatic, so any two such measures coincide up to the scalar. On a compact group, left invariance and finiteness on compact sets already give the same conclusion. Two Haar probability measures are equal.
+
+A second form of uniqueness assumes second-countability in place of finiteness on compact sets. On a second-countable locally compact group, every \(\sigma\)-finite left-invariant measure \(\mu\) satisfies \(\mu=(\mu K_0)\cdot(\text{haarMeasure }K_0)\). In particular \(\mu\) equals that Haar measure if and only if \(\mu(K_0)=1\). Such a \(\sigma\)-finite left-invariant measure is absolutely continuous with respect to any Haar measure (`MeasureTheory/Measure/Haar/Basic.lean`).
+
+## The modular character
+
+Let \(G\) be locally compact and let \(\mu\) be an inner regular left Haar measure. Right multiplication by \(g\) pushes \(\mu\) forward to another left Haar measure. By uniqueness there is a positive real \(\Delta(g)\) with
+\[
+\mu(A g^{-1})=\Delta(g)\,\mu(A)
+\]
+for every measurable \(A\): the pushforward of \(\mu\) under \(x\mapsto xg\) equals \(\Delta(g)\cdot\mu\). The resulting map \(\Delta:G\to\mathbb{R}_{\geq 0}^\times\) is a group homomorphism, the modular character, and it does not depend on the choice of inner regular Haar measure (`MeasureTheory/Group/ModularCharacter.lean`). The module states explicitly that continuity of \(\Delta\) is still to be proved. Continuity is therefore not a theorem of this checkout; it is a TODO in the source.
+
+A group acting continuously by additive automorphisms of a locally compact abelian group has an analogous distributive character, recording how the action scales additive Haar measure (`MeasureTheory/Measure/Haar/DistribChar.lean`). A topological-group automorphism of a locally compact group scales Haar measure by a positive constant (`MeasureTheory/Measure/Haar/MulEquivHaarChar.lean`).
+
+Right Haar measure is obtained from left Haar measure by inversion: \(\mu^{\mathrm{inv}}(A)=\mu(A^{-1})\). The construction `Measure.inv` and the instance `Measure.inv.instIsMulRightInvariant` implement the change from left to right invariance (`MeasureTheory/Group/Measure.lean`); inversion also preserves the topological regularity properties because it is a homeomorphism. Right invariance of a left Haar measure is the reading of the identity above in which \(\Delta\) is identically \(1\). The quotient file notes that a group carrying a Haar measure invariant on both sides is called unimodular.
+
+## Quotients and extensions
+
+Let \(G\) be a Polish topological group and let \(\Gamma\) be a subgroup such that \(G/\Gamma\) is Hausdorff and second-countable. Suppose a measure \(\nu\) on \(G\) is left-invariant and the right action of \(\Gamma\) admits a fundamental domain. A measure \(\mu\) on the coset space that satisfies the projection identity — for a fundamental domain \(t\) and a measurable set \(U\subseteq G/\Gamma\), \(\mu(U)=\nu(\pi^{-1}(U)\cap t)\) — is then invariant under the left translation action of \(G\). If \(\Gamma\) is normal, \(\mu\) is left-invariant. The module docstring describes \(\nu\) as invariant on both sides; these two conclusions use left invariance of \(\nu\), together with the fundamental domain (`MeasureTheory/Measure/Haar/Quotient.lean`).
+
+If \(\Gamma\) is countable and normal, \(\nu\) is \(\sigma\)-finite and right-invariant as well as left-invariant, a fundamental domain exists, and \(\mu\) is a finite left-invariant measure whose total mass equals the covolume of \(\Gamma\), then the projection identity holds.
+
+If, with \(G\) still Polish and \(G/\Gamma\) Hausdorff and second-countable, \(G\) is locally compact, \(\Gamma\) is countable and normal, \(\nu\) is a right-invariant Haar measure, a fundamental domain exists, and \(\mu\) is a finite measure satisfying the projection identity, then \(\mu\) is a Haar measure. The source leaves open whether finiteness of \(\mu\) can be removed. Countability of \(\Gamma\) is the hypothesis used; the docstring says discrete.
+
+In the other direction, a short exact sequence \(1\to A\to B\to C\to 1\) of topological groups, with \(B\) locally compact Hausdorff, produces a Haar measure on \(B\) by integrating a Haar measure on \(A\) along the fibers and then a Haar measure on \(C\). The construction is the Riesz measure of that integrated functional (`MeasureTheory/Measure/Haar/Extension.lean`).
+
+## Convolution
+
+Convolution of functions is defined on an additive group equipped with a Haar measure. For a continuous bilinear multiplication \(L\) of the codomains,
+\[
+(f\star_L g)(x)=\int L\bigl(f(t),g(x-t)\bigr)\,d\mu(t),
+\]
+when the integral exists. The usual applications are scalar multiplication and the product in a normed algebra. Existence everywhere, or at a point, is a separate predicate. The calculus of the convolution — continuity, support in the sum of the supports, differentiation under the integral — is developed when one factor has compact support and the other is locally integrable. The file records that the corresponding arguments for other pairs of hypotheses, such as rapid decay of both factors, are not proved (`Analysis/Convolution.lean`). On Schwartz space the convolution is available by the Fourier-side definition of Section 27.
+
+Convolution of measures on a measurable monoid is the pushforward of the product measure under multiplication. It is associative when multiplication is measurable in the sense required by the file, the Dirac mass at the identity is a two-sided unit, and the convolution of two \(s\)-finite measures is \(s\)-finite (`MeasureTheory/Group/Convolution.lean`). Integrability of a function against a convolution of measures is expressed by an integral over the product (`MeasureTheory/Group/IntegralConvolution.lean`).
+
+## Følner filters
+
+Let a group \(G\) act on a measure space, preserving the measure in the statements that need invariance. A family of sets \(F_i\), indexed along a filter, is Følner when the sets are eventually measurable and of finite positive measure, and when for every group element \(g\) the measure of the symmetric difference of \(F_i\) and \(g\cdot F_i\), divided by the measure of \(F_i\), tends to \(0\). There is a maximal Følner filter, and a family is Følner precisely when it tends to that filter (`MeasureTheory/Group/FoelnerFilter.lean`).
+
+If a Følner filter is nontrivial, the ultralimit of the normalized measures of \(F_i\) is a finitely additive probability, defined on measurable sets, and invariant under the group action. The file calls this conclusion amenability of the action. It also records that a general definition of amenability has not been fixed, because several notions exist for groups and for actions. The theorem presently proved is the existence of this invariant finitely additive probability.
+
+## Finite abelian groups
+
+Characters of a finite abelian group, with values in \(\mathbb{R}\) or \(\mathbb{C}\), are orthogonal. The expectation of a character is \(1\) if the character is trivial and is \(0\) otherwise. The normalized inner product of two characters is \(1\) if they are equal and is \(0\) otherwise. The characters are linearly independent, so there are at most as many as there are group elements (`Analysis/Fourier/FiniteAbelian/Orthogonality.lean`).
+
+For a finite abelian group \(A\), the number of complex characters equals the order of \(A\). The characters form a basis of the functions \(A\to\mathbb{C}\). The evaluation pairing embeds \(A\) into the character group of its character group, and that embedding is an isomorphism of groups: this is Pontryagin duality for finite abelian groups. Equivalently, \(\sum_\psi\psi(a)\) equals \(|A|\) if \(a=0\) and equals \(0\) otherwise. The group \(\mathbb{Z}/n\mathbb{Z}\) is isomorphic to its own character group, by an isomorphism that is not claimed to be canonical (`Analysis/Fourier/FiniteAbelian/PontryaginDuality.lean`).
+
+This duality is the finite abelian case only. It is not the Peter–Weyl theorem.
+
+The discrete Fourier transform on \(\mathbb{Z}/N\mathbb{Z}\), including the formula \(\mathcal{F}(\mathcal{F}\Phi)(j)=N\Phi(-j)\) and the identification of the transform of a primitive Dirichlet character with a Gauss sum, is recorded in Section 27 (`Analysis/Fourier/ZMod.lean`).
+
+## The circle and the torus
+
+The additive circle \(\mathbb{R}/T\mathbb{Z}\), with Haar measure of total mass \(1\), has characters \(e^{2\pi i n x/T}\). They are orthonormal in \(L^2\), their span is dense in the continuous functions and in \(L^p\) for \(1\leq p<\infty\), and they form a Hilbert basis of \(L^2\). The Fourier series of an \(L^2\) function converges to it in \(L^2\), and Parseval’s identity holds. Absolute summability of the coefficients of a continuous function gives uniform convergence. The same package — orthonormal Hilbert basis indexed by \(\mathbb{Z}^d\), \(L^2\) convergence, Parseval, density in \(C\) and in \(L^p\) for \(p<\infty\), and uniform convergence under summable coefficients — holds for the characters of the unit torus \((\mathbb{R}/\mathbb{Z})^d\) (`Analysis/Fourier/AddCircle.lean`, `Analysis/Fourier/AddCircleMulti.lean`). Fejér summation is not proved. Details of the coefficient formulae are in Section 27.
+
+## Additional coverage in TauCeti
+
+The following additions were checked in TauCeti revision `6e53de0d3ce9`; see the [revision, build evidence, and comparison scope](TauCetiCoverage.md). Source links below are pinned to that revision.
+
+The Peter–Weyl theorem is implemented for compact groups: normalized matrix coefficients of irreducible continuous unitary representations form a Hilbert basis of \(L^2(G)\). The file constructs a standard exhaustive family as well as supporting a supplied family, so exhaustiveness is not simply left as an unresolved existence assumption ([Peter–Weyl](https://github.com/TauCetiProject/TauCeti/blob/6e53de0d3ce9ea24d7d487e656ac4590b0c45b3a/TauCeti/RepresentationTheory/Compact/PeterWeyl.lean)). For the circle, its basis is identified with Mathlib's Fourier basis, with the appropriate indexing convention ([circle comparison](https://github.com/TauCetiProject/TauCeti/blob/6e53de0d3ce9ea24d7d487e656ac4590b0c45b3a/TauCeti/RepresentationTheory/Compact/FourierPeterWeyl.lean)).
+
+Around Peter–Weyl, the representation theory of compact groups is developed in the form of the harmonic-analysis texts: normalized Haar measure and averaging onto invariants ([Haar averaging](https://github.com/TauCetiProject/TauCeti/blob/6e53de0d3ce9ea24d7d487e656ac4590b0c45b3a/TauCeti/RepresentationTheory/Compact/Invariants.lean)), Weyl's unitarian trick ([unitarizability](https://github.com/TauCetiProject/TauCeti/blob/6e53de0d3ce9ea24d7d487e656ac4590b0c45b3a/TauCeti/RepresentationTheory/Compact/Unitarizable.lean)), Schur orthogonality ([Schur orthogonality](https://github.com/TauCetiProject/TauCeti/blob/6e53de0d3ce9ea24d7d487e656ac4590b0c45b3a/TauCeti/RepresentationTheory/Compact/SchurOrthogonality.lean)), the irreducible characters as a Hilbert basis of the square-integrable class functions ([characters](https://github.com/TauCetiProject/TauCeti/blob/6e53de0d3ce9ea24d7d487e656ac4590b0c45b3a/TauCeti/RepresentationTheory/Compact/Character/Basis.lean)), density of representative functions in \(C(G)\) ([representative functions](https://github.com/TauCetiProject/TauCeti/blob/6e53de0d3ce9ea24d7d487e656ac4590b0c45b3a/TauCeti/RepresentationTheory/Compact/RepresentativeDensity.lean)), isotypic decomposition of \(L^2(G)\), and the Frobenius–Schur indicator and reality trichotomy.
+
+Bochner's theorem is proved on finite-dimensional real inner-product spaces: every continuous positive-definite complex function is the Fourier transform of a unique finite positive measure ([Bochner representation](https://github.com/TauCetiProject/TauCeti/blob/6e53de0d3ce9ea24d7d487e656ac4590b0c45b3a/TauCeti/Analysis/Bochner/BochnerTheorem.lean)). Positive-definite functions on abstract additive commutative groups also have a unitary GNS representation ([source](https://github.com/TauCetiProject/TauCeti/blob/6e53de0d3ce9ea24d7d487e656ac4590b0c45b3a/TauCeti/Analysis/PositiveDefinite/Function/GNS.lean)). The latter construction alone does not give Bochner or Pontryagin duality on all locally compact abelian groups. The Fourier–Stieltjes transform of a finite measure on a Pontryagin dual is defined, with its continuity and positive definiteness ([Fourier–Stieltjes transform](https://github.com/TauCetiProject/TauCeti/blob/6e53de0d3ce9ea24d7d487e656ac4590b0c45b3a/TauCeti/Analysis/Fourier/Pontryagin/Measure.lean), [continuity](https://github.com/TauCetiProject/TauCeti/blob/6e53de0d3ce9ea24d7d487e656ac4590b0c45b3a/TauCeti/Analysis/Fourier/Pontryagin/Continuity.lean)); the converse Bochner representation on a general locally compact abelian group is not proved. On the semigroup \(\mathbb{R}_{\ge0}\times V\), the Berg–Christensen–Ressel theorem is proved: a bounded continuous positive-definite function is the Laplace–Fourier transform of a unique finite measure ([Berg–Christensen–Ressel](https://github.com/TauCetiProject/TauCeti/blob/6e53de0d3ce9ea24d7d487e656ac4590b0c45b3a/TauCeti/Analysis/PositiveDefinite/SemigroupGroup/FourierLaplace/Existence.lean)).
+
+Mathlib itself defines the Pontryagin dual of a topological group, the continuous homomorphisms into the circle with the compact-open topology, with its group structure and functoriality (`Topology/Algebra/PontryaginDual.lean`); the duality theorem is stated only for finite abelian groups.
+
+## Topics of Section 28 not found in either inspected library
+
+- Continuity of the modular character. The homomorphism is constructed, and the source marks continuity as TODO.
+- The Plancherel theorem for a general locally compact abelian group. Plancherel’s theorem for \(L^2\) of a finite-dimensional real inner product space, and for the circle and the torus, is proved and is recorded in Section 27.
+- Pontryagin duality beyond finite abelian groups.
+- Induced representations and Mackey theory for locally compact groups, Gelfand pairs and spherical functions, and the Plancherel theorem for noncommutative locally compact groups.
+- A settled definition of an amenable group. A nontrivial Følner filter is shown to produce an invariant finitely additive probability.
+- Disintegration of Haar measure along a subgroup of a general locally compact group. The linear case, in finite-dimensional vector spaces, is proved, and the general case is marked as not proved.
