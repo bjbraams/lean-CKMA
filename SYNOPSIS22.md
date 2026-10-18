@@ -3,7 +3,7 @@
 Part of the [mathematical synopsis series](SYNOPSIS.md).
 
 This synopsis selects the recurring core of Section 22 of
-[CKMA-bib.md](CKMA-bib.md) and [CKMA-bib2.md](CKMA-bib2.md): domains and
+[CKMA-bib.md](CKMA-bib.md): domains and
 self-adjointness, spectral measures, quadratic forms, perturbations,
 Schrödinger operators, one-dimensional spectral theory, and scattering.
 Specialist many-body, random, semiclassical, and inverse theories extend
@@ -147,9 +147,14 @@ For self-adjoint operators this agrees with the Fredholm definition.
   enumerate the eigenvalues below $\inf\sigma_{\rm ess}(A)$, with
   multiplicity, and equal that threshold once there are fewer than $n$
   such eigenvalues. The threshold is $+\infty$ for compact resolvent.
-* **28. Form comparison.** Enlarging a form domain or decreasing a form
-  lowers all min–max values. This yields domain monotonicity for Dirichlet
-  eigenvalues and Dirichlet–Neumann bracketing across a partition.
+* **28. Form comparison and bracketing.** Enlarging a form domain or
+  decreasing a form lowers all min–max values. Hence Dirichlet eigenvalues
+  decrease as the domain grows, and if a bounded domain $\Omega$ is split by
+  interior interfaces into finitely many Lipschitz pieces $\Omega_k$, then
+  in the min–max ordering
+  $\bigoplus_k(-\Delta^N_{\Omega_k})\leq-\Delta^N_\Omega\leq
+  -\Delta^D_\Omega\leq\bigoplus_k(-\Delta^D_{\Omega_k})$
+  (Dirichlet–Neumann bracketing, the route to the Weyl law).
 * **29. Weyl criterion.** $\lambda\in\sigma(A)$ exactly when unit
   $u_n\in D(A)$ satisfy $(A-\lambda)u_n\to0$. It belongs to the
   essential spectrum exactly when such vectors can be chosen weakly null,
@@ -161,10 +166,6 @@ For self-adjoint operators this agrees with the Fredholm definition.
 * **31. Weyl law on bounded domains.** For a bounded smooth domain in
   $\mathbb R^d$, both Dirichlet and Neumann counting functions satisfy
   $N(\Lambda)\sim(2\pi)^{-d}\omega_d|\Omega|\Lambda^{d/2}$.
-* **32. Dirichlet bracketing consequences.** Splitting a bounded domain
-  into finitely many Lipschitz pieces, the direct-sum Neumann spectrum
-  lies below the original Dirichlet spectrum, and the direct-sum
-  Dirichlet spectrum lies above it, in the min–max ordering.
 
 ## Perturbation theory
 
@@ -175,33 +176,40 @@ has a common domain and holomorphic $A(z)u$ there; a **type (B)** family
 is obtained from closed sectorial forms with common domain and holomorphic
 form values.
 
-* **33. Kato–Rellich theorem.** If $A$ is self-adjoint and $B$ symmetric
+* **32. Kato–Rellich theorem.** If $A$ is self-adjoint and $B$ symmetric
   with $A$-bound less than one, $A+B$ is self-adjoint on $D(A)$ and
   essentially self-adjoint on every core of $A$.
-* **34. Resolvent perturbation identity.** On the common resolvent set,
+* **33. Resolvent perturbation identity.** On the common resolvent set,
   $(A+B-z)^{-1}-(A-z)^{-1}=-(A+B-z)^{-1}B(A-z)^{-1}$,
   whenever the compositions are defined, in particular for bounded $B$.
   A small norm of $B(A-z)^{-1}$ also gives a convergent inverse series.
-* **35. Analytic isolated eigenvalues.** For a holomorphic type (A) or
+* **34. Analytic isolated eigenvalues.** For a holomorphic type (A) or
   type (B) family, an isolated spectral cluster of finite multiplicity has
   a locally holomorphic Riesz projection. A simple isolated eigenvalue
   and its eigenvector can be chosen holomorphically locally.
-* **36. Rellich theorem.** For a real-analytic self-adjoint family of
+* **35. Rellich theorem.** For a real-analytic self-adjoint family of
   type (A), isolated finite-multiplicity eigenvalues admit locally
   real-analytic eigenvalue branches and orthonormal eigenvector branches,
   including through crossings.
-* **37. Feynman–Hellmann formula.** For a differentiable normalized
+* **36. Feynman–Hellmann formula.** For a differentiable normalized
   simple eigenpair $A(t)u(t)=\lambda(t)u(t)$ with common operator
   domain, $\lambda'(t)=\langle A'(t)u(t),u(t)\rangle$.
-* **38. Schur complement reduction.** For a block operator with bounded
+* **37. Schur complement reduction.** For a block operator with bounded
   off-diagonal entries, if $D-z$ is invertible, invertibility of
   $\begin{pmatrix}A-z&B\\C&D-z\end{pmatrix}$ is equivalent to that of
   $A-z-B(D-z)^{-1}C$ on $D(A)$. This is the basic Feshbach reduction.
-* **39. Birman–Schwinger principle.** If $H_0\geq0$, $V\geq0$, and
+* **38. Birman–Schwinger principle.** If $H_0\geq0$, $V\geq0$, and
   $K_E=V^{1/2}(H_0+E)^{-1}V^{1/2}$ is a well-defined compact operator,
   then $-E<0$ is an eigenvalue of the form sum $H_0-V$ exactly when
-  one is an eigenvalue of $K_E$, with the same multiplicity.
-  Moreover $N(H_0-V<-E)=N(K_E>1)$.
+  $1$ is an eigenvalue of $K_E$, with the same multiplicity.
+  Moreover the number of eigenvalues of $H_0-V$ below $-E$ equals the
+  number of eigenvalues of $K_E$ greater than $1$.
+* **39. Trotter product formula.** If $A$ and $B$ are self-adjoint and
+  $A+B$ is essentially self-adjoint on $D(A)\cap D(B)$, then
+  $e^{it\overline{(A+B)}}=\operatorname{s-lim}_{n\to\infty}
+  (e^{itA/n}e^{itB/n})^n$. For $A,B$ bounded below the analogous
+  formula holds for $e^{-t(A\dotplus B)}$ with the form sum (Kato); this is
+  the operator basis of the Feynman–Kac formula.
 
 ## Schrödinger operators and eigenvalue estimates
 
@@ -216,31 +224,41 @@ form bounds, so the form domain is dense and the operator is well defined.
   is purely absolutely continuous and equals $[0,\infty)$.
 * **41. Bounded potentials.** For real bounded $V$, $H_V$ is self-adjoint
   on $H^2$ and essentially self-adjoint on $C_c^\infty$.
-* **42. Coulomb self-adjointness.** On $\mathbb R^3$, multiplication by
-  $|x|^{-1}$ has arbitrarily small relative bound with respect to $-\Delta$.
-  Thus $-\Delta-c/|x|$ is self-adjoint on $H^2$ for real $c$.
+* **42. Kato's theorem and the hydrogen atom.** On $\mathbb R^3$, every real
+  $V\in L^2+L^\infty$ is $-\Delta$-bounded with relative bound zero, so
+  $-\Delta+V$ is self-adjoint on $H^2$ and essentially self-adjoint on
+  $C_c^\infty$; the same holds for atomic and molecular many-body
+  Hamiltonians. For $-\Delta-c/|x|$, $c>0$, the negative spectrum consists of
+  the eigenvalues $-c^2/(4n^2)$ with multiplicity $n^2$, $n\geq1$, and
+  $\sigma_{\rm ess}=[0,\infty)$.
 * **43. Decaying potentials and essential spectrum.** If $V$ is real,
   bounded, and tends to zero at infinity, multiplication by $V$ is
   relatively compact with respect to $-\Delta$ and
   $\sigma_{\rm ess}(H_V)=[0,\infty)$. Negative eigenvalues are discrete
   and can accumulate only at zero.
-* **44. Confining potentials.** If $V$ is locally bounded, bounded below,
-  and tends to $+\infty$ at infinity, $H_V$ has compact resolvent.
-  This follows by compactness on bounded sets and confinement of the
-  form-unit ball outside them.
-* **45. Cwikel–Lieb–Rozenblum bound.** For $d\geq3$ and
+* **44. HVZ theorem.** For an $N$-body Hamiltonian with the centre of mass
+  removed and pair potentials relatively compact with respect to the
+  Laplacian on $\mathbb R^3$ (e.g. in $L^2+L^\infty_\varepsilon$), the
+  essential spectrum is $[\Sigma,\infty)$, where $\Sigma$ is the minimum of
+  the bottoms of the spectra of the cluster Hamiltonians over decompositions
+  into at least two clusters (Hunziker, van Winter, Zhislin).
+* **45. Confining potentials.** If $V$ is locally bounded, bounded below,
+  and tends to $+\infty$ at infinity, $H_V$ has compact resolvent. For the
+  harmonic oscillator $-\Delta+|x|^2$ on $\mathbb R^d$ the eigenvalues are
+  $2|\alpha|+d$, $\alpha\in\mathbb N_0^d$, with Hermite eigenfunctions.
+* **46. Cwikel–Lieb–Rozenblum bound.** For $d\geq3$ and
   $V_-\in L^{d/2}$,
   $N(H_V<0)\leq C_d\int V_-^{d/2}$, with multiplicities.
-* **46. Lieb–Thirring inequality.** Negative eigenvalues satisfy
+* **47. Lieb–Thirring inequality.** Negative eigenvalues satisfy
   $\sum_j|\lambda_j|^\gamma\leq L_{\gamma,d}\int V_-^{\gamma+d/2}$
   for $\gamma\geq1/2$ in dimension one, $\gamma>0$ in dimension two,
   and $\gamma\geq0$ in dimensions at least three. At $\gamma=0$
   the left side counts negative eigenvalues.
-* **47. Positivity and the ground state.** For real bounded $V$ on
+* **48. Positivity and the ground state.** For real bounded $V$ on
   $\mathbb R^d$, $e^{-tH_V}$ is positivity improving for $t>0$.
   If the bottom of the spectrum is an eigenvalue, it is simple and
   has a strictly positive eigenfunction.
-* **48. Agmon decay, a basic case.** For real bounded $V$, an
+* **49. Agmon decay, a basic case.** For real bounded $V$, an
   $L^2$ eigenfunction of energy $E<\liminf_{|x|\to\infty}V(x)$
   satisfies $e^{a|x|}u\in L^2$ whenever
   $0<a^2<\liminf V-E$. Weighted energy estimates give analogous
@@ -254,37 +272,38 @@ locally absolutely continuous with $u,\tau u\in L^2$. A singular
 endpoint is **limit circle** if all solutions for nonreal spectral
 parameter are square integrable near it, and **limit point** otherwise.
 
-* **49. Green identity.** On a regular finite interval,
+* **50. Green identity.** On a regular finite interval,
   $\langle\tau u,v\rangle-\langle u,\tau v\rangle
   =[u\overline{v'}-u'\overline v]_a^b$. Self-adjoint boundary
   conditions are precisely maximal subspaces on which this boundary
   form vanishes.
-* **50. Separated boundary conditions.** Real separated Dirichlet,
+* **51. Separated boundary conditions.** Real separated Dirichlet,
   Neumann, or Robin conditions at regular endpoints give self-adjoint
   operators with compact resolvent, simple eigenvalues, and complete
   orthonormal eigenfunctions.
-* **51. Weyl alternative.** At each endpoint the limit-point/limit-circle
+* **52. Weyl alternative.** At each endpoint the limit-point/limit-circle
   classification is independent of the nonreal parameter. A limit-circle
   endpoint requires one self-adjoint boundary condition; a limit-point
   endpoint requires none. The minimal operator is essentially self-adjoint
   exactly when both endpoints are limit point.
-* **52. Sturm oscillation theorem.** The $n$th eigenfunction for regular
+* **53. Sturm oscillation theorem.** The $n$th eigenfunction for regular
   separated boundary conditions has exactly $n-1$ zeros in $(a,b)$,
   counting eigenvalues increasingly from $n=1$.
-* **53. Interlacing.** Changing one separated endpoint condition from
+* **54. Interlacing.** Changing one separated endpoint condition from
   Dirichlet to Neumann gives interlacing eigenvalues. More generally the
   spectra for two distinct separated conditions at one endpoint interlace
   while the other condition is fixed.
-* **54. Weyl–Titchmarsh function.** On a half-line with a regular left
+* **55. Weyl–Titchmarsh function.** On a half-line with a regular left
   endpoint and limit-point infinity, the square-integrable solution
   normalized by $u(z,a)=1$ has $m(z)=u'(z,a)$ holomorphic in the upper
   half-plane with $\operatorname{Im}m(z)>0$. Its Herglotz measure
-  determines the scalar spectral representation.
-* **55. Kirchhoff quantum graphs.** On a finite compact metric graph,
+  determines the scalar spectral representation, and $m$ determines $V$
+  (Borg–Marchenko uniqueness).
+* **56. Kirchhoff quantum graphs.** On a finite compact metric graph,
   the edgewise $-u''$ with continuity at vertices and sum of outward
   derivatives zero is self-adjoint and nonnegative, with compact resolvent.
   Its form is $\sum_e\int_e|u'|^2$ on continuous edgewise $H^1$ functions.
-* **56. Graph Weyl law.** For a compact metric graph of total edge length
+* **57. Graph Weyl law.** For a compact metric graph of total edge length
   $L$, the eigenvalue counting function is
   $N(\Lambda)\sim L\sqrt\Lambda/\pi$. Finite changes among
   self-adjoint vertex conditions do not change this leading term.
@@ -295,28 +314,39 @@ For self-adjoint $A,A_0$, the **wave operators** are
 $W_\pm=\operatorname{s-lim}_{t\to\pm\infty}e^{itA}e^{-itA_0}P_{\rm ac}(A_0)$,
 when they exist. They are **complete** if their ranges equal $H_{\rm ac}(A)$.
 
-* **57. Intertwining and isometry.** Existing wave operators are
+* **58. Intertwining and isometry.** Existing wave operators are
   isometries on $H_{\rm ac}(A_0)$ and intertwine the spectral calculi:
   $f(A)W_\pm=W_\pm f(A_0)$ for bounded Borel $f$. Their ranges lie
   in $H_{\rm ac}(A)$.
-* **58. Cook criterion.** If $A=A_0+V$ with bounded self-adjoint $V$,
+* **59. Cook criterion.** If $A=A_0+V$ with bounded self-adjoint $V$,
   and $\int_0^\infty\|Ve^{-itA_0}u\|\,dt<\infty$ on a dense
   subset of $H_{\rm ac}(A_0)$, then $W_+$ exists. The analogous
   negative-time condition gives $W_-$.
-* **59. Kato–Rosenblum theorem.** A trace-class self-adjoint perturbation
+* **60. Short-range Schrödinger scattering.** If $V$ is real with
+  $|V(x)|\leq C(1+|x|)^{-1-\varepsilon}$, $\varepsilon>0$, then for
+  $H_V=-\Delta+V$ on $\mathbb R^d$ the weighted resolvents
+  $\langle x\rangle^{-s}(H_V-\lambda\mp i0)^{-1}\langle x\rangle^{-s}$,
+  $s>1/2$, exist locally uniformly on $(0,\infty)$, where there are no
+  embedded eigenvalues (Kato), by the limiting absorption principle. Consequently
+  $\sigma_{\rm sc}(H_V)=\varnothing$, and $W_\pm(H_V,-\Delta)$ exist and
+  are complete (Agmon–Kato–Kuroda; Enss for a time-dependent proof). Mourre's
+  commutator estimate gives the abstract form of this method.
+* **61. Kato–Rosenblum and Birman–Kuroda theorems.** A trace-class self-adjoint perturbation
   preserves the absolutely continuous part up to unitary equivalence:
   if $A-A_0$ is bounded trace class, both wave operators exist and are
-  complete. Singular spectral parts need not be preserved.
-* **60. Scattering operator.** If both wave operators are complete,
+  complete. More generally it suffices that
+  $(A-z)^{-1}-(A_0-z)^{-1}$ be trace class for one nonreal $z$
+  (Birman–Kuroda). Singular spectral parts need not be preserved.
+* **62. Scattering operator.** If both wave operators are complete,
   $S=W_+^*W_-$ is unitary on $H_{\rm ac}(A_0)$ and commutes with
   its spectral projections. In a spectral representation it decomposes
   into scattering matrices acting on multiplicity fibers.
-* **61. RAGE theorem.** A vector $u$ belongs to the continuous spectral
+* **63. RAGE theorem.** A vector $u$ belongs to the continuous spectral
   subspace exactly when for every compact $C$,
   $T^{-1}\int_0^T\|Ce^{-itA}u\|^2dt\to0$. A vector belongs to the
   pure point subspace exactly when its unitary orbit is relatively compact
   ([Teschl, Chapter 5](https://www.mat.univie.ac.at/~gerald/ftp/book-schroe/schroe.pdf)).
-* **62. Absolutely continuous local decay.** If $u\in H_{\rm ac}(A)$,
+* **64. Absolutely continuous local decay.** If $u\in H_{\rm ac}(A)$,
   then $Ce^{-itA}u\to0$ in norm for every compact $C$ as
   $|t|\to\infty$. Scalar matrix coefficients tend to zero by the
   Riemann–Lebesgue lemma, and compactness upgrades weak decay to norm decay.
@@ -327,23 +357,27 @@ For a closed operator with nonempty resolvent, its **$\varepsilon$-pseudospectru
 is $\sigma_\varepsilon(A)=\sigma(A)\cup
 \{z\in\rho(A):\|(A-z)^{-1}\|>\varepsilon^{-1}\}$.
 
-* **63. Perturbation characterization.** On Hilbert space,
+* **65. Perturbation characterization.** On Hilbert space,
   $\sigma_\varepsilon(A)=\bigcup_{\|B\|<\varepsilon}\sigma(A+B)$,
   with bounded perturbations on $D(A)$. For normal $A$, it is precisely
   the open $\varepsilon$-neighborhood of the spectrum.
-* **64. Bauer–Fike bound.** If a finite-dimensional matrix is diagonalized
+* **66. Bauer–Fike bound.** If a finite-dimensional matrix is diagonalized
   as $A=VDV^{-1}$, every eigenvalue of $A+B$ lies within
   $\|V\|\|V^{-1}\|\|B\|$ of $\sigma(A)$. Poor conditioning permits
   much greater spectral movement than for normal matrices.
-* **65. Numerical range bound.** For bounded $A$, its spectrum lies in
+* **67. Numerical range bound.** For bounded $A$, its spectrum lies in
   the closure of $W(A)=\{\langle Au,u\rangle:\|u\|=1\}$, and
   $\|(A-z)^{-1}\|\leq\operatorname{dist}(z,W(A))^{-1}$ outside
   that closure.
-* **66. Resolvent and transient growth.** If $A$ generates a semigroup
+* **68. Resolvent and transient growth.** If $A$ generates a semigroup
   with $\|e^{tA}\|\leq M e^{\omega t}$, then
   $\|(z-A)^{-1}\|\leq M/(\operatorname{Re}z-\omega)$ for
   $\operatorname{Re}z>\omega$. Large resolvent norms therefore force
   large possible growth constants even when the spectrum is stable.
+  Conversely, for an $N\times N$ matrix with Kreiss constant
+  $\mathcal K=\sup_{\operatorname{Re}z>0}\operatorname{Re}z\,\|(z-A)^{-1}\|$,
+  one has $\mathcal K\leq\sup_{t\geq0}\|e^{tA}\|\leq eN\mathcal K$
+  (Kreiss matrix theorem).
 
 ## Reference guide
 
@@ -353,7 +387,9 @@ variational arguments, differential operators, Schrödinger operators, and
 graphs. Hall gives the self-adjointness and unitary-dynamics foundation from
 the mathematical quantum-mechanics viewpoint. These themes recur throughout
 Reed–Simon, Schmüdgen, Weidmann, Davies, Teschl, and Hislop–Sigal.
-Frank–Laptev–Weidl develops the eigenvalue estimates; the scattering and
+Frank–Laptev–Weidl develops the eigenvalue estimates. Reed–Simon III–IV,
+Cycon–Froese–Kirsch–Simon, and Hislop–Sigal treat the HVZ theorem, limiting
+absorption, and short-range scattering; the scattering and
 nonnormal sections select foundational results shared by the relevant
 monographs rather than a comprehensive scattering or resonance theory.
 

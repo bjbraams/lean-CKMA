@@ -3,7 +3,7 @@
 Part of the [mathematical synopsis series](SYNOPSIS.md).
 
 This synopsis selects recurring core material from Section 39 of
-[CKMA-bib.md](CKMA-bib.md) and [CKMA-bib2.md](CKMA-bib2.md).
+[CKMA-bib.md](CKMA-bib.md).
 Its common theme is analysis specified by distances, measures, energies, and
 transport, including spaces without smooth coordinates. Metric Sobolev theory,
 diffusion, and transport have overlapping but distinct hypotheses; none of
@@ -60,8 +60,6 @@ $$
   curves of length at most $Cd(x,y)$.
 * **8. Lipschitz density.** Under these same assumptions, Lipschitz
   functions in $N^{1,p}$ are dense there for $1\leq p<\infty$.
-  Compactly supported approximation is available with the corresponding
-  zero-boundary conditions.
 * **9. Sobolev capacity and quasi-continuity.** The capacity obtained
   by minimizing $\|u\|_{N^{1,p}}^p$ over $u\geq1$ on a set
   gives Newtonian functions quasi-continuous representatives on complete
@@ -87,6 +85,35 @@ $$
   with the space of $L^p$ functions admitting $g\in L^p$ such that
   $|u(x)-u(y)|\leq d(x,y)(g(x)+g(y))$ outside a null set.
 
+## Embeddings, quasisymmetry, and Gromov–Hausdorff convergence
+
+A homeomorphism $f$ is **$\eta$-quasisymmetric** if
+$d(x,a)\leq t\,d(x,b)$ implies $d(fx,fa)\leq\eta(t)\,d(fx,fb)$ for an
+increasing homeomorphism $\eta$ of $[0,\infty)$. A space is
+**$Q$-Loewner** if $\operatorname{Mod}_Q$ of the curves joining disjoint
+continua $E,F$ is bounded below by a positive function of
+$\operatorname{dist}(E,F)/\min(\operatorname{diam}E,\operatorname{diam}F)$.
+The **Gromov–Hausdorff distance** $d_{GH}(X,Y)$ is the infimum of
+Hausdorff distances between isometric copies of $X,Y$ in a common metric space.
+
+* **15. Assouad embedding.** If $(X,d)$ is metrically doubling and
+  $0<\varepsilon<1$, then the snowflake $(X,d^\varepsilon)$ admits a
+  bi-Lipschitz embedding into some $\mathbb R^N$, with $N$ and the
+  distortion depending only on $\varepsilon$ and the doubling constant.
+  The case $\varepsilon=1$ fails, for example for the Heisenberg group.
+* **16. Loewner spaces and quasisymmetry.** A proper geodesic Ahlfors
+  $Q$-regular space with $Q>1$ is $Q$-Loewner if and only if it supports a
+  $(1,Q)$-Poincaré inequality (Heinonen–Koskela), quantitatively.
+  Quasiconformal homeomorphisms, defined by bounded infinitesimal
+  distortion, between $Q$-regular Loewner spaces are locally quasisymmetric.
+* **17. Gromov precompactness.** A family of compact metric spaces is
+  precompact for $d_{GH}$ if and only if diameters are uniformly bounded
+  and, for each $\varepsilon>0$, the number of $\varepsilon$-balls needed
+  to cover each space is uniformly bounded. The limit space of such a
+  sequence is compact; uniformly doubling spaces of bounded diameter, and
+  closed Riemannian $n$-manifolds with $\operatorname{Ric}\geq-(n-1)k$
+  and $\operatorname{diam}\leq D$ (by Bishop–Gromov), form precompact families.
+
 ## Dirichlet forms and symmetric processes
 
 A **Dirichlet form** $(\mathcal E,\mathcal F)$ is a densely defined
@@ -97,43 +124,45 @@ for $\mathcal E_1=\mathcal E+\|\cdot\|_2^2$ and $C_0(X)$ uniformly.
 It is **strongly local** if $\mathcal E(u,v)=0$ whenever $u$ is constant
 near the compact support of $v$.
 
-* **15. Form–operator correspondence.** A closed nonnegative form
+* **18. Form–operator correspondence.** A closed nonnegative form
   determines a unique nonnegative self-adjoint operator $A$ with
   $\mathcal F=D(A^{1/2})$ and
   $\mathcal E(u,v)=\langle A^{1/2}u,A^{1/2}v\rangle$.
   Its semigroup is $P_t=e^{-tA}$.
-* **16. Beurling–Deny criterion.** The Markov property of the form
+* **19. Beurling–Deny criterion.** The Markov property of the form
   is equivalent to $P_t$ being positivity preserving and
   $0\leq P_tf\leq1$ whenever $0\leq f\leq1$.
   Thus Dirichlet forms and symmetric sub-Markov semigroups correspond.
-* **17. Extension and resolvents.** Such semigroups extend consistently
+* **20. Extension and resolvents.** Such semigroups extend consistently
   as contractions to every $L^p$, $1\leq p\leq\infty$, and are
   strongly continuous for $p<\infty$. Their resolvents satisfy
   $(\alpha+A)^{-1}f=\int_0^\infty e^{-\alpha t}P_tf\,dt$.
-* **18. Capacitary representatives.** A regular form has an associated
+* **21. Capacitary representatives.** A regular form has an associated
   $1$-capacity. Every $u\in\mathcal F$ has a quasi-continuous
   version, unique quasi-everywhere; energy-norm convergence admits a
   subsequence converging quasi-everywhere.
-* **19. Process representation.** Every regular Dirichlet form has
+* **22. Process representation.** Every regular Dirichlet form has
   an associated symmetric Hunt process, unique up to the appropriate
   capacity-zero exceptional sets. Its transition semigroup represents
   $P_t$ using quasi-continuous versions.
-* **20. Beurling–Deny decomposition.** A regular symmetric form
+* **23. Beurling–Deny decomposition.** A regular symmetric form
   decomposes uniquely into a strongly local energy, a symmetric jump
   energy off the diagonal, and a nonnegative killing measure.
   Strong locality excludes both jump and killing parts.
-* **21. Energy measures.** Strongly local regular forms have
+* **24. Energy measures.** Strongly local regular forms have
   carré-du-champ measures characterized, for bounded form functions,
   by $\int\phi\,d\Gamma(u)=\mathcal E(u,u\phi)
   -\frac12\mathcal E(u^2,\phi)$. They obey Leibniz and chain rules.
-* **22. Diffusion and locality.** The process of a strongly local
+* **25. Diffusion and locality.** The process of a strongly local
   regular form has continuous sample paths up to its lifetime.
   Conservativeness, $P_t1=1$, is an additional property excluding explosion.
-* **23. Recurrence criterion.** An irreducible Dirichlet form is
-  recurrent precisely when there are $u_j\in\mathcal F$ with
-  $0\leq u_j\leq1$, $u_j\to1$ almost everywhere, and
-  $\mathcal E(u_j)\to0$. For a transient form, the Green operator
-  gives finite potentials of suitable strictly positive integrable functions.
+  On a complete Riemannian manifold it follows from Grigor'yan's volume test
+  $\int^\infty r\,dr/\log V(x_0,r)=\infty$.
+* **26. Recurrence criterion.** A Dirichlet form is recurrent precisely
+  when there are $u_j\in\mathcal F$ with $0\leq u_j\leq1$, $u_j\to1$
+  almost everywhere, and $\mathcal E(u_j)\to0$; it is transient precisely
+  when the extended Dirichlet space is a Hilbert space under $\mathcal E$.
+  An irreducible form is either recurrent or transient.
 
 ## Heat kernels, inequalities, and curvature
 
@@ -143,22 +172,22 @@ the **intrinsic distance** is the distance obtained from form functions
 with $d\Gamma(u)\leq dm$. Compatibility of that distance with the topology
 and completeness are explicit assumptions, not automatic consequences of regularity.
 
-* **24. Kernel identities.** Symmetric heat kernels satisfy
+* **27. Kernel identities.** Symmetric heat kernels satisfy
   $p_t(x,y)=p_t(y,x)$, the Chapman–Kolmogorov identity, and
   $\int p_t(x,y)dm(y)\leq1$. Under conservativeness the last integral is one.
-* **25. Davies–Gaffney estimate.** A strongly local form with its
+* **28. Davies–Gaffney estimate.** A strongly local form with its
   intrinsic distance satisfies
   $|\langle P_tf,g\rangle|\leq e^{-d(E,F)^2/(4t)}\|f\|_2\|g\|_2$
   for functions supported in sets $E,F$.
-* **26. Nash equivalence.** The inequality
+* **29. Nash equivalence.** The inequality
   $\|u\|_2^{2+4/D}\leq C\mathcal E(u)\|u\|_1^{4/D}$
   is equivalent, up to constants, to
   $\|P_t\|_{1\to\infty}\leq Ct^{-D/2}$ for all $t>0$.
-* **27. Sobolev and ultracontractivity.** For $D>2$,
+* **30. Sobolev and ultracontractivity.** For $D>2$,
   $\|u\|_{2D/(D-2)}^2\leq C\mathcal E(u)$ implies the preceding
   heat bound; the heat bound also implies this Sobolev inequality.
   Finite-volume local versions include lower-order terms.
-* **28. Gaussian estimates from geometry.** For a complete geodesic
+* **31. Gaussian estimates from geometry.** For a complete geodesic
   strongly local regular Dirichlet space with compatible intrinsic metric,
   volume doubling and a scale-invariant $L^2$-Poincaré inequality imply
   two-sided bounds
@@ -169,31 +198,38 @@ and completeness are explicit assumptions, not automatic consequences of regular
   $$
   Kernel versions are understood outside exceptional sets, or everywhere
   when a continuous kernel is available.
-* **29. Parabolic Harnack equivalence.** In this diffusion setting,
-  doubling plus Poincaré is equivalent to the scale-invariant parabolic
-  Harnack inequality. Positive caloric functions on a cylinder are bounded
-  above on an earlier interior subcylinder by their infimum on a later one.
-* **30. Hölder regularity.** Parabolic Harnack yields local Hölder
+* **32. Parabolic Harnack equivalence.** In this diffusion setting
+  (Grigor'yan, Saloff-Coste, Sturm), the following are equivalent:
+  volume doubling plus Poincaré; the scale-invariant parabolic Harnack
+  inequality; and the two-sided Gaussian bounds of the preceding entry.
+  Parabolic Harnack bounds positive caloric functions on an earlier interior
+  subcylinder above by a constant times their infimum on a later one.
+* **33. Hölder regularity.** Parabolic Harnack yields local Hölder
   continuity of caloric functions and the heat kernel. Its elliptic
   counterpart gives Harnack and Hölder estimates for harmonic functions.
-* **31. Li–Yau estimate.** On a complete $n$-manifold with
+* **34. Li–Yau estimate.** On a complete $n$-manifold with
   $\operatorname{Ric}\geq0$, positive heat solutions satisfy
   $|\nabla\log u|^2-\partial_t\log u\leq n/(2t)$.
   Integration gives the corresponding space-time Harnack inequality.
-* **32. Varadhan asymptotics.** For the heat kernel of $\Delta$
+* **35. Varadhan asymptotics.** For the heat kernel of $\Delta$
   on a complete connected Riemannian manifold,
   $\lim_{t\downarrow0}-4t\log p_t(x,y)=d(x,y)^2$.
-* **33. Bakry–Émery gradient bound.** For a symmetric conservative
+* **36. Bakry–Émery gradient bound.** For a symmetric conservative
   diffusion generator $L=-A$, the condition
   $\Gamma_2(f)\geq K\Gamma(f)$ implies
   $\Gamma(P_tf)\leq e^{-2Kt}P_t\Gamma(f)$, assuming the usual
   diffusion calculus and closure hypotheses. The converse follows by
   differentiating at $t=0$ on a core.
-* **34. Curvature and functional inequalities.** If the diffusion is
+* **37. Curvature and functional inequalities.** If the diffusion is
   ergodic, $m$ is an invariant probability measure, and
   $\Gamma_2\geq K\Gamma$ with $K>0$,
   then $\operatorname{Var}_m(f)\leq K^{-1}\mathcal E(f)$ and
   $\operatorname{Ent}_m(f^2)\leq2K^{-1}\mathcal E(f)$.
+* **38. Gross's hypercontractivity theorem.** For a symmetric Markov
+  semigroup with invariant probability $m$, the logarithmic Sobolev
+  inequality $\operatorname{Ent}_m(f^2)\leq2C\mathcal E(f)$ is equivalent to
+  $\|P_tf\|_{q(t)}\leq\|f\|_p$ for all $1<p<\infty$, $t>0$, with
+  $q(t)-1=(p-1)e^{2t/C}$. The Ornstein–Uhlenbeck semigroup is the model, with $C=1$.
 
 ## Optimal transportation and Wasserstein geometry
 
@@ -205,70 +241,85 @@ with finite $p$th moment and
 $W_p(\mu,\nu)^p=\inf_\pi\int d(x,y)^p\,d\pi$.
 The Monge problem restricts to couplings $(\mathrm{id},T)_\#\mu$.
 
-* **35. Existence of optimal plans.** A nonnegative lower semicontinuous
+* **39. Existence of optimal plans.** A nonnegative lower semicontinuous
   cost on Polish spaces attains its minimum over couplings. The same
   holds for costs bounded below by a sum of integrable marginal functions.
-* **36. Kantorovich duality.** For lower semicontinuous nonnegative
+* **40. Kantorovich duality.** For lower semicontinuous nonnegative
   costs, the primal value equals
   $\sup_{\phi(x)+\psi(y)\leq c(x,y)}(\int\phi\,d\mu+\int\psi\,d\nu)$
   in the standard integrable dual class. For compact spaces and continuous
   costs, optimal continuous potentials exist.
-* **37. Cyclical monotonicity.** Finite-cost optimal plans for finite
-  continuous costs are concentrated on $c$-cyclically monotone sets:
+* **41. Cyclical monotonicity.** For a lower semicontinuous real-valued cost
+  bounded below with finite optimal value, a coupling is optimal if and
+  only if it is concentrated on a $c$-cyclically monotone set:
   $\sum c(x_i,y_i)\leq\sum c(x_i,y_{i+1})$ for every finite cycle.
-  For quadratic cost in Euclidean space these sets lie in subdifferentials
-  of convex functions, giving the converse optimality criterion.
-* **38. Wasserstein completeness.** If $X$ is complete and separable,
+  For quadratic cost on $\mathbb R^n$, Rockafellar's theorem places such
+  sets in the subdifferential of a convex function.
+* **42. Wasserstein completeness.** If $X$ is complete and separable,
   then $(\mathcal P_p(X),W_p)$ is complete and separable. Gluing
   couplings proves the triangle inequality.
-* **39. Wasserstein convergence.** $W_p(\mu_j,\mu)\to0$ precisely
+* **43. Wasserstein convergence.** $W_p(\mu_j,\mu)\to0$ precisely
   when $\mu_j\rightharpoonup\mu$ and their $p$th moments about
   one base point converge. Equivalently, weak convergence is accompanied
   by uniform integrability of those moments.
-* **40. Kantorovich–Rubinstein formula.**
+* **44. Kantorovich–Rubinstein formula.**
   $W_1(\mu,\nu)=\sup_{\operatorname{Lip}(f)\leq1}\int f\,d(\mu-\nu)$
   for $\mu,\nu\in\mathcal P_1(X)$.
-* **41. One-dimensional transport.** On $\mathbb R$ the quantile
+* **45. One-dimensional transport.** On $\mathbb R$ the quantile
   coupling is optimal for $|x-y|^p$ and
   $W_p^p=\int_0^1|F_\mu^{-1}(s)-F_\nu^{-1}(s)|^pds$.
   If $\mu$ has no atoms, it is induced by the monotone rearrangement.
-* **42. Brenier's theorem.** For $\mu,\nu\in\mathcal P_2(\mathbb R^n)$
+* **46. Brenier's theorem.** For $\mu,\nu\in\mathcal P_2(\mathbb R^n)$
   with $\mu$ absolutely continuous, the quadratic optimal plan is unique
   and induced by $T=\nabla\phi$, with $\phi$ convex and $T$
   unique $\mu$-almost everywhere.
-* **43. Monge–Ampère relation.** If Brenier's potential is $C^2$
+* **47. Monge–Ampère relation.** If Brenier's potential is $C^2$
   and the optimal map is a diffeomorphism between regions with densities
   $f,g$, then $g(\nabla\phi)\det D^2\phi=f$.
   Without such regularity, convex potentials give the corresponding
   measure-theoretic transport formulation.
-* **44. Displacement interpolation.** An optimal Euclidean quadratic
+* **48. Displacement interpolation.** An optimal Euclidean quadratic
   plan gives a constant-speed $W_2$ geodesic by pushing it forward under
   $(x,y)\mapsto(1-t)x+ty$. In a geodesic Polish space, optimal
   dynamical plans give the analogous construction along geodesics.
-* **45. Benamou–Brenier formula.** On $\mathbb R^n$,
+* **49. Benamou–Brenier formula.** On $\mathbb R^n$,
   $$
   W_2(\mu_0,\mu_1)^2=\inf\int_0^1\int|v_t|^2\,d\mu_t\,dt,
   \qquad \partial_t\mu_t+\nabla\cdot(v_t\mu_t)=0,
   $$
   over distributional solutions with the prescribed endpoints.
-* **46. Absolutely continuous curves.** A $W_2$-absolutely continuous
+* **50. Absolutely continuous curves.** A $W_2$-absolutely continuous
   curve admits a velocity field solving the continuity equation with
   $\|v_t\|_{L^2(\mu_t)}=|\dot\mu_t|$ almost everywhere when chosen
   of minimal norm. Conversely an integrable $L^2$ velocity controls
   the metric derivative by its norm.
-* **47. Displacement convexity.** On $\mathbb R^n$, for convex
+* **51. Displacement convexity.** On $\mathbb R^n$, for convex
   $U$ with $U(0)=0$, $\mu\mapsto\int U(\rho)dx$ is displacement convex if
   $s\mapsto s^nU(s^{-n})$ is convex and nonincreasing, with the
   usual lower semicontinuous extension to singular measures.
   Entropy and powers $U(r)=r^q/(q-1)$, $q>1$, are examples.
-* **48. Potential and interaction energies.** If $D^2V\geq\lambda I$,
+* **52. Potential and interaction energies.** If $D^2V\geq\lambda I$,
   $\int V\,d\mu$ is $\lambda$-convex along $W_2$ geodesics.
   Convex even interaction kernels give displacement-convex interaction
   energies $\frac12\iint W(x-y)d\mu(x)d\mu(y)$.
-* **49. Ricci curvature and entropy.** On a complete weighted manifold
+* **53. Ricci curvature and entropy.** On a complete weighted manifold
   $m=e^{-V}\mathrm{vol}$, $\operatorname{Ric}+D^2V\geq K$
   is equivalent to $K$-displacement convexity of relative entropy.
   This motivates the synthetic condition $CD(K,\infty)$.
+* **54. Transport–entropy inequalities.** If a probability measure $m$ on
+  a Riemannian manifold satisfies $\operatorname{Ent}_m(f^2)\leq
+  (2/K)\int|\nabla f|^2dm$, then
+  $W_2(\mu,m)^2\leq(2/K)\operatorname{Ent}(\mu\,|\,m)$ (Otto–Villani);
+  this in turn implies the Poincaré inequality with constant $1/K$.
+  For the standard Gaussian, $K=1$ (Talagrand's inequality).
+* **55. Curvature–dimension conditions.** The Lott–Sturm–Villani
+  condition $CD(K,N)$ asks for convexity, with $(K,N)$-distorted
+  coefficients, of Rényi entropies along $W_2$ geodesics. It is stable
+  under measured Gromov–Hausdorff convergence. For $1<N<\infty$ it implies
+  Bishop–Gromov volume comparison with the model space, Brunn–Minkowski
+  inequalities, and, for $K>0$, $\operatorname{diam}X\leq\pi\sqrt{(N-1)/K}$.
+  On a weighted $n$-manifold with $N>n$ it is equivalent to
+  $\operatorname{Ric}+D^2V-\frac{\nabla V\otimes\nabla V}{N-n}\geq K$.
 
 ## Metric gradient flows and synthetic diffusion
 
@@ -280,49 +331,48 @@ $$
 \frac12\frac d{dt}d(u_t,v)^2+\frac\lambda2d(u_t,v)^2+F(u_t)\leq F(v).
 $$
 
-* **50. Metric derivatives.** Every absolutely continuous curve in a
+* **56. Metric derivatives.** Every absolutely continuous curve in a
   metric space has a metric derivative almost everywhere, and its length
   is the integral of that derivative. This derivative is the least
   almost everywhere upper bound in the absolute-continuity estimate.
-* **51. Minimizing movements.** A proper lower semicontinuous energy
+* **57. Minimizing movements.** A proper lower semicontinuous energy
   on a complete metric space, bounded below and with compact sublevels,
   admits subsequential limits of implicit steps on finite time intervals
   from finite-energy initial points. Identifying the
   limit with a curve of maximal slope requires slope lower semicontinuity
   and an upper-gradient property; compactness alone does not supply it.
-* **52. Convex flows in Hadamard spaces.** A proper lower semicontinuous
+* **58. Convex flows in Hadamard spaces.** A proper lower semicontinuous
   convex energy on a complete $CAT(0)$ space generates a unique
   $EVI_0$ flow on the closure of its effective domain. Resolvents
   and the flow are nonexpansive, and iterated resolvents converge to it.
-* **53. EVI uniqueness and contraction.** Two $EVI_\lambda$ flows
+* **59. EVI uniqueness and contraction.** Two $EVI_\lambda$ flows
   satisfy $d(u_t,v_t)\leq e^{-\lambda t}d(u_0,v_0)$.
   They are unique and, when defined for all initial data, form a semigroup.
-* **54. Energy dissipation.** For an EVI flow,
+* **60. Energy dissipation.** For an EVI flow,
   $F(u_s)-F(u_t)=\frac12\int_s^t(|\dot u_r|^2+
   |\partial F|^2(u_r))dr$, and speed equals descending slope almost
   everywhere. For positive convexity, distance to a minimizer decays exponentially.
-* **55. Wasserstein minimizing movements.** A proper lower semicontinuous
+* **61. Wasserstein minimizing movements.** A proper lower semicontinuous
   energy on $\mathcal P_2(\mathbb R^n)$, $\lambda$-convex along
   generalized geodesics, generates an $EVI_\lambda$ flow if its
   penalized minimization problems attain their infima for all sufficiently
   small steps. The transport implicit scheme converges to this flow.
-* **56. Heat and Fokker–Planck equations.** The $W_2$ gradient flow
+* **62. Heat and Fokker–Planck equations.** The $W_2$ gradient flow
   of $\int\rho\log\rho\,dx+\int V\rho\,dx$ solves
   $\partial_t\rho=\Delta\rho+\nabla\cdot(\rho\nabla V)$.
   For $V=0$ this identifies heat flow with steepest entropy descent.
-* **57. Porous-medium flow.** The $W_2$ flow of
+* **63. Porous-medium flow.** The $W_2$ flow of
   $\frac1{q-1}\int\rho^qdx$, $q>1$, is the weak solution of
   $\partial_t\rho=\Delta\rho^q$, for initial probability densities
   with finite energy and second moment.
-* **58. Cheeger energy and Hilbertianity.** Relaxation of
+* **64. Cheeger energy and Hilbertianity.** Relaxation of
   $\frac12\int(\operatorname{lip}f)^2dm$ gives a convex lower
   semicontinuous energy and an $L^2$ gradient-flow semigroup. That
   semigroup is linear exactly when the relaxed energy is quadratic.
-* **59. Riemannian synthetic curvature.** On an $RCD(K,\infty)$ probability space,
+* **65. Riemannian synthetic curvature.** On an $RCD(K,\infty)$ probability space,
   namely a $CD(K,\infty)$ space with quadratic Cheeger energy,
   $L^2$ heat flow agrees with the $EVI_K$ entropy flow in $W_2$.
-  It contracts $W_2$ by $e^{-Kt}$ for finite-second-moment initial
-  measures, starting first with finite entropy and extending by closure.
+  It contracts $W_2$ by $e^{-Kt}$ for finite-second-moment initial measures.
   See also [Ambrosio–Gigli–Savaré's foundational treatment](https://arxiv.org/abs/1109.0222)
   for the equivalence with linear heat flow, initially with finite reference measure.
 
@@ -341,69 +391,69 @@ modulo constants, separating points, with finite effective resistances.
 The **walk dimension** $d_w$ describes time scale $r^{d_w}$; the
 volume dimension $d_f$ describes $V(x,r)\asymp r^{d_f}$.
 
-* **60. Graph realizations.** Closing finitely supported functions in
+* **66. Graph realizations.** Closing finitely supported functions in
   the energy norm gives the regular Dirichlet realization; taking all
   finite-energy $\ell^2$ functions gives the Neumann realization.
   Their generators act by the displayed formal Laplacian on their domains.
   Equality of the realizations needs an additional uniqueness condition.
-* **61. Electrical Dirichlet principle.** On a finite connected network,
+* **67. Electrical Dirichlet principle.** On a finite connected network,
   minimizing energy with boundary voltages gives the unique harmonic
   extension. Its boundary flux gives the conductance matrix; eliminating
   interior vertices preserves boundary effective resistances.
-* **62. Effective resistance metric.** For a resistance form,
+* **68. Effective resistance metric.** For a resistance form,
   $R(x,y)=\sup_{\mathcal E(u)>0}|u(x)-u(y)|^2/\mathcal E(u)$
   is a metric and $|u(x)-u(y)|^2\leq R(x,y)\mathcal E(u)$.
   Thus finite-energy functions are continuous in the resistance topology.
-* **63. Thomson principle.** Effective resistance between two vertices
+* **69. Thomson principle.** Effective resistance between two vertices
   is the minimum dissipation of unit flows between them. On an infinite
   locally finite connected network, transience is equivalent to a unit
   flow to infinity of finite energy.
-* **64. Graph recurrence.** A connected network without killing is
+* **70. Graph recurrence.** A connected network without killing is
   recurrent exactly when finitely supported functions $0\leq u_j\leq1$
   tend pointwise to one with $\mathcal E(u_j)\to0$. Equivalently,
   the effective resistance from a vertex to infinity is infinite.
-* **65. Graph Harnack characterization.** For graphs with uniformly
+* **71. Graph Harnack characterization.** For graphs with uniformly
   controlled transition probabilities, volume doubling and the
   scale-$r^2$ Poincaré inequality are equivalent to Gaussian estimates
   and parabolic Harnack. In discrete time the lower estimate uses
   $p_n+p_{n+1}$ to accommodate periodicity.
-* **66. Resistance-form realization.** A regular resistance form on
+* **72. Resistance-form realization.** A regular resistance form on
   a locally compact resistance space, together with a full-support
   Radon measure, gives a regular Dirichlet form by closure on $L^2$.
   A local resistance form yields a diffusion.
-* **67. Self-similar attractors.** A finite family of strict contractions
+* **73. Self-similar attractors.** A finite family of strict contractions
   has a unique nonempty compact invariant set, the fixed point of the
   union map on compact sets with the Hausdorff metric. Positive weights
   summing to one similarly determine a unique invariant probability measure.
-* **68. Similarity dimension.** For Euclidean similarities with ratios
+* **74. Similarity dimension.** For Euclidean similarities with ratios
   $r_i$ satisfying the open set condition, the attractor has Hausdorff
   and box dimensions $s$ determined by $\sum_i r_i^s=1$,
   and $0<\mathcal H^s(K)<\infty$.
-* **69. Gasket energy renormalization.** On the standard Sierpiński
+* **75. Gasket energy renormalization.** On the standard Sierpiński
   gasket, the graph energies renormalized by $(5/3)^j$ increase to
   a local resistance form. Harmonic extension minimizes energy and
   satisfies a finite system of self-similar extension rules.
-* **70. Gasket anomalous scaling.** For the natural gasket measure,
+* **76. Gasket anomalous scaling.** For the natural gasket measure,
   $d_f=\log3/\log2$ and $d_w=\log5/\log2$.
   Diffusion has time scale $r^{d_w}$ rather than $r^2$.
-* **71. Sub-Gaussian kernels.** Conservative gasket diffusion satisfies, at small
+* **77. Sub-Gaussian kernels.** Conservative gasket diffusion satisfies, at small
   times and in its Euclidean metric, with $\Phi=(d(x,y)^{d_w}/t)^{1/(d_w-1)}$,
   $$
   c_1t^{-d_f/d_w}e^{-c_2\Phi}\leq p_t(x,y)
   \leq c_3t^{-d_f/d_w}e^{-c_4\Phi}.
   $$
   All four constants are strictly positive and independent of $t,x,y$.
-* **72. Spectral dimension.** On a compact gasket with standard
+* **78. Spectral dimension.** On a compact gasket with standard
   Dirichlet or Neumann conditions, the eigenvalue counting function
   obeys $N(\lambda)\asymp\lambda^{d_f/d_w}$ at high energy.
   The spectral dimension is $d_s=2d_f/d_w=2\log3/\log5$;
   a constant-coefficient Weyl asymptotic need not hold.
-* **73. Cutoff inequalities for anomalous diffusion.** On controlled
+* **79. Cutoff inequalities for anomalous diffusion.** On controlled
   weighted graphs, volume doubling, a scale-$r^{d_w}$ Poincaré
   inequality, and the matching cutoff Sobolev inequality are equivalent
   to sub-Gaussian heat bounds and parabolic Harnack at that scale.
   Poincaré and doubling alone do not characterize $d_w>2$ diffusion.
-* **74. Stability under rough isometries.** For controlled weighted
+* **80. Stability under rough isometries.** For controlled weighted
   graphs with comparable measures, the preceding Gaussian and
   sub-Gaussian Harnack properties are preserved by rough isometries.
   Their constants change with the comparison data.
@@ -411,7 +461,10 @@ volume dimension $d_f$ describes $V(x,r)\asymp r^{d_f}$.
 ## Reference guide
 
 Heinonen and Heinonen–Koskela–Shanmugalingam–Tyson give the overlapping
-upper-gradient, modulus, Poincaré, and differentiation theory. Fukushima–
+upper-gradient, modulus, Poincaré, and differentiation theory; Heinonen
+also treats Assouad embedding, Loewner spaces, and quasisymmetry, while
+Burago–Burago–Ivanov, Ambrosio–Tilli, and Gromov develop Gromov–Hausdorff
+convergence. Fukushima–
 Oshima–Takeda and Chen–Fukushima are the general process references;
 Keller–Lenz–Wojciechowski makes the form, semigroup, and recurrence
 correspondences concrete on graphs. Grigor'yan, Saloff-Coste, Davies,

@@ -3,7 +3,7 @@
 Part of the [mathematical synopsis series](SYNOPSIS.md).
 
 This synopsis selects the recurring core of Section 32 of
-[CKMA-bib.md](CKMA-bib.md) and [CKMA-bib2.md](CKMA-bib2.md):
+[CKMA-bib.md](CKMA-bib.md):
 characteristics and local solvability, the Laplace, heat, and wave equations,
 weak formulations, linear elliptic boundary problems, energy methods, and
 linear systems. Sections 33 and 34 develop the specialized regularity,
@@ -48,83 +48,97 @@ with elliptic spatial diffusion.
   highest normal derivative, with analytic right-hand side depending on
   derivatives of no higher total order and strictly lower normal order,
   has a unique local analytic solution for analytic Cauchy data.
-* **6. Analytic versus smooth well-posedness.** Analytic local solvability
+* **6. Hadamard's elliptic Cauchy example.** Analytic local solvability
   does not imply continuous dependence in smooth or Sobolev norms.
-  The elliptic Cauchy problem already exhibits this distinction.
-* **7. Hadamard's elliptic Cauchy example.** Solutions
+  Solutions
   $u_n(x,t)=e^{-\sqrt n}\sin(nx)\sinh(nt)/n$ of
   $u_{xx}+u_{tt}=0$ have Cauchy data at $t=0$ tending to zero in every
   $C^k$ norm, while their size at any fixed $t>0$ is unbounded.
-* **8. Fundamental solutions.** Every nonzero constant-coefficient
+* **7. Fundamental solutions.** Every nonzero constant-coefficient
   operator $P(D)$ has $E\in\mathcal D'(\mathbb R^d)$ with
   $P(D)E=\delta$. Then $E*f$ solves $Pu=f$ for compactly supported
   distributions $f$.
-* **9. Lewy's nonsolvability theorem.** There are smooth complex
+* **8. Lewy's nonsolvability theorem.** There are smooth complex
   first-order linear differential operators and smooth right-hand sides
   for which no distributional solution exists in any neighborhood of
   a specified point. Variable-coefficient local solvability requires
   more than a nonzero principal symbol somewhere.
-* **10. Fourier solution of constant-coefficient equations.** Fourier
-  transformation turns $P(D)u=f$ into $P(\xi)\widehat u=\widehat f$.
-  For elliptic spatial evolution models it gives explicit multipliers;
+* **9. Fourier solution of constant-coefficient equations.** Fourier
+  transformation turns $P(D)u=f$ into $P(\xi)\widehat u=\widehat f$;
   zeros of $P$ require distributional inverses or additional prescriptions.
+  For $\partial_tu=a(D)u$ on $\mathbb R^d$ the solution is
+  $\widehat u(t,\xi)=e^{ta(\xi)}\widehat u_0(\xi)$, and the Cauchy
+  problem is well posed in every $H^s$ exactly when
+  $\sup_\xi\operatorname{Re}a(\xi)<\infty$ (Petrowsky condition):
+  heat and Schrödinger equations satisfy it, the backward heat equation
+  does not.
 
 ## The Laplacian and classical potential methods
 
-* **11. Fundamental solution of $-\Delta$.** For $d\geq3$,
+* **10. Fundamental solution of $-\Delta$.** For $d\geq3$,
   $\Gamma(x)=((d-2)|S^{d-1}|)^{-1}|x|^{2-d}$ satisfies
   $-\Delta\Gamma=\delta$. In dimension two use
   $\Gamma(x)=-(2\pi)^{-1}\log|x|$.
-* **12. Newtonian potentials.** For $f\in C_c^\infty$, $\Gamma*f$
-  is smooth and solves $-\Delta u=f$. Local versions give regularity
-  of distributional Poisson equations after subtracting a harmonic remainder.
-* **13. Mean-value characterization.** A continuous function is harmonic
+* **11. Newtonian potentials.** For $f\in C_c^\infty$, $\Gamma*f$
+  is smooth and solves $-\Delta u=f$. If $f$ is bounded, compactly
+  supported, and locally $C^{0,\alpha}$, $0<\alpha<1$, then
+  $\Gamma*f\in C^{2,\alpha}_{\mathrm{loc}}$ solves $-\Delta u=f$
+  classically; for merely continuous $f$ it need not be $C^2$.
+* **12. Mean-value characterization.** A continuous function is harmonic
   exactly when its value at each point equals its average over every
   sufficiently small centered sphere, or equivalently ball.
-* **14. Weyl's lemma.** Every distributional solution of $\Delta u=0$
+* **13. Weyl's lemma.** Every distributional solution of $\Delta u=0$
   is represented by a smooth harmonic function. Harmonic functions
   are real analytic.
-* **15. Maximum principles.** A harmonic function continuous on the
+* **14. Maximum principles.** A harmonic function continuous on the
   closure of a bounded domain attains its maximum and minimum on the
   boundary. On a connected domain an interior extremum forces constancy.
   Subharmonic functions satisfy the corresponding upper maximum principle.
-* **16. Harnack inequality.** For a nonnegative harmonic function on
+* **15. Harnack inequality.** For a nonnegative harmonic function on
   a ball, $\sup_{B_r}u\leq C_d\inf_{B_r}u$ when the concentric
   ball $B_{2r}$ lies in the domain. Chains of balls give compact-set
   versions on connected domains.
-* **17. Interior derivative estimates.** Harmonic functions satisfy
+* **16. Interior derivative estimates.** Harmonic functions satisfy
   $\sup_{B_r}|\partial^\alpha u|
   \leq C_{d,\alpha}r^{-|\alpha|}\sup_{B_{2r}}|u|$.
   These estimates imply local compactness of locally bounded harmonic families.
-* **18. Liouville theorems.** A bounded harmonic function on all of
+* **17. Liouville theorems.** A bounded harmonic function on all of
   $\mathbb R^d$ is constant. More generally a harmonic function with
   polynomial growth of degree at most $m$ is a harmonic polynomial
   of degree at most $m$.
-* **19. Poisson formula.** Continuous boundary data on a ball have a
+* **18. Poisson formula.** Continuous boundary data on a ball have a
   unique harmonic extension continuous to the boundary, represented
   by the Poisson kernel. In the upper half-space the kernel is
   $P_t(x)=c_dt/(t^2+|x|^2)^{(d+1)/2}$, normalized to integral one
-  for $x\in\mathbb R^d$.
-* **20. Green's identities.** For smooth $u,v$,
+  for $x\in\mathbb R^d$. For the ball $B_R\subset\mathbb R^d$ the kernel
+  is $(R^2-|x|^2)/(|S^{d-1}|R|x-y|^d)$ with respect to surface measure.
+* **19. Green's identities.** For smooth $u,v$,
   $\int_\Omega\nabla u\cdot\nabla v
   =-\int_\Omega u\Delta v+\int_{\partial\Omega}u\partial_\nu v$.
   Antisymmetrization gives the second identity and Green representation
   using a fundamental solution or a domain Green function.
-* **21. Dirichlet Green function.** A smooth bounded domain has a
+* **20. Dirichlet Green function.** A smooth bounded domain has a
   Dirichlet Green kernel for $-\Delta$, positive off the diagonal and
   symmetric in its variables. It represents zero-boundary Poisson
   solutions and determines the harmonic-measure boundary kernel.
-* **22. Layer potentials and jumps.** Single- and double-layer harmonic
+* **21. Layer potentials and jumps.** Single- and double-layer harmonic
   potentials are smooth away from a smooth boundary. The single layer
   has continuous trace and a jump of normal derivative; the double
   layer has a jump of trace. With consistent normal orientation the
   two traces differ by the density, and their averages are boundary
   integral operators.
-* **23. Classical Dirichlet and Neumann solvability.** On a smooth
+* **22. Classical Dirichlet and Neumann solvability.** On a smooth
   bounded connected domain, smooth Dirichlet data determine a unique
   harmonic function. The problem $-\Delta u=f$, $\partial_\nu u=g$
   is solvable precisely when $\int_\Omega f+\int_{\partial\Omega}g=0$,
   and then is unique modulo constants.
+* **23. Perron's method and regular points.** On a bounded domain the
+  supremum of subharmonic functions lying below continuous boundary data
+  is harmonic. It attains the data at every boundary point admitting a
+  barrier, so the Dirichlet problem is solvable for all continuous data
+  exactly when every boundary point is regular. An exterior cone condition
+  gives regularity; regularity is characterized by Wiener's capacity test,
+  and the Lebesgue spine shows that some boundary points are irregular.
 
 ## Weak elliptic problems and boundary regularity
 
@@ -188,7 +202,9 @@ Symmetry is assumed only where explicitly stated.
   holds for classical sub- and supersolutions. A nonconstant solution
   attaining a nonnegative maximum at an interior-sphere boundary point
   has strictly positive outward normal derivative under the usual
-  maximum-principle inequality $Lu\leq0$.
+  maximum-principle inequality $Lu\leq0$. Consequently, on a connected
+  domain a solution of $Lu\leq0$ attaining a nonnegative interior maximum
+  is constant (strong maximum principle).
 * **36. Dirichlet spectral theorem.** A symmetric uniformly elliptic
   Dirichlet realization has compact resolvent and an orthonormal $L^2$
   eigenbasis, with real eigenvalues tending to infinity. For smooth
@@ -212,7 +228,9 @@ Symmetry is assumed only where explicitly stated.
 * **40. Heat Cauchy problem.** For $u_0\in L^p(\mathbb R^d)$,
   $1\leq p<\infty$, $u(t)=G_t*u_0$ is smooth for $t>0$,
   solves the heat equation, and tends to $u_0$ in $L^p$.
-  It is the unique solution in $C([0,T];L^p)$.
+  It is the unique solution in $C([0,T];L^p)$. For classical solutions,
+  uniqueness holds under the growth bound $|u|\leq Ce^{a|x|^2}$, but fails
+  without growth restrictions (Tychonoff).
 * **41. Heat smoothing estimates.** For $1\leq p\leq q\leq\infty$,
   $\|\partial^\alpha(G_t*f)\|_q
   \leq Ct^{-|\alpha|/2-(d/2)(1/p-1/q)}\|f\|_p$.
@@ -287,46 +305,52 @@ Symmetry is assumed only where explicitly stated.
   $\int_0^t\sin((t-s)\sqrt L)L^{-1/2}f(s)ds$ gives Duhamel's formula.
   Dirichlet or Neumann self-adjoint realizations yield the corresponding
   bounded-domain solutions and energy identities.
-* **58. Symmetric hyperbolic energy estimate.** For
+* **58. Free Schrödinger equation.** For $i\partial_tu+\Delta u=0$ on
+  $\mathbb R^d$, $u(t)=e^{it\Delta}u_0$ is unitary on every $H^s$, with
+  kernel $(4\pi it)^{-d/2}e^{i|x-y|^2/(4t)}$ for $t\ne0$. Hence
+  $\|e^{it\Delta}u_0\|_\infty\leq(4\pi|t|)^{-d/2}\|u_0\|_1$: unlike the
+  wave equation there is no finite propagation speed, and dispersion
+  replaces it.
+* **59. Symmetric hyperbolic energy estimate.** For
   $A^0u_t+\sum_jA^ju_{x_j}+Bu=f$, with Hermitian smooth matrices,
   $A^0$ uniformly positive and coefficients and their needed derivatives
   bounded, integration by parts gives
   $\|u(t)\|_2\leq Ce^{Ct}(\|u(0)\|_2+\int_0^t\|f(s)\|_2ds)$.
-* **59. Symmetric hyperbolic well-posedness.** Under smooth bounded
+* **60. Symmetric hyperbolic well-posedness.** Under smooth bounded
   coefficient bounds, the system is well posed in $H^s$ on finite
   time intervals, with
   $u\in C(H^s)\cap C^1(H^{s-1})$ for initial data in $H^s$ and
   forcing continuous in time with values in $H^s$.
   Commuted energy estimates control derivatives, and characteristic
   speeds bound the domain of dependence.
-* **60. Strictly hyperbolic Cauchy problems.** A smooth scalar order-$m$
+* **61. Strictly hyperbolic Cauchy problems.** A smooth scalar order-$m$
   operator with distinct real time-characteristic roots is locally
   well posed on a noncharacteristic time slice in the Sobolev Cauchy
   scale $\partial_t^ju(0)\in H^{s+m-1-j}$, $0\leq j<m$.
   The solution has the corresponding local-in-time derivative regularity.
-* **61. Propagation of wave singularities.** For smooth real-principal-type
+* **62. Propagation of wave singularities.** For smooth real-principal-type
   hyperbolic operators, wavefront singularities outside the forcing's
   wavefront set propagate along null bicharacteristics of the principal
   symbol. Smooth data and forcing remain smooth in their domain of dependence.
 
 ## General methods and structural conclusions
 
-* **62. Galerkin construction.** Coercive elliptic and energy-controlled
+* **63. Galerkin construction.** Coercive elliptic and energy-controlled
   linear evolution problems admit finite-dimensional approximations
   with uniform energy bounds. Weak compactness gives solutions;
   uniqueness identifies limits and often gives strong convergence in
   the energy norm when the energy identities converge.
-* **63. Duality and transposition.** If the adjoint boundary problem
+* **64. Duality and transposition.** If the adjoint boundary problem
   has an estimate, pairing data with its solution defines solutions
   for rougher forcing or boundary data by transposition. The resulting
   distributional solution agrees with a weak or classical solution
   whenever both are defined.
-* **64. Interior regularity versus boundary compatibility.** For smooth
+* **65. Interior regularity versus boundary compatibility.** For smooth
   linear parabolic or hyperbolic problems, interior smoothness follows
   from smooth data. Smoothness up to a space–time corner additionally
   requires agreement of the initial trace and its PDE-generated time
   derivatives with the imposed boundary values to the desired order.
-* **65. Complementing boundary conditions.** For a smooth scalar strongly
+* **66. Complementing boundary conditions.** For a smooth scalar strongly
   elliptic operator of order $2m$, a system of $m$ boundary operators
   $B_j$ of orders $m_j\leq2m-1$ satisfying the Lopatinskii–Shapiro
   complementing condition gives a Fredholm map
@@ -334,12 +358,6 @@ Symmetry is assumed only where explicitly stated.
   $H^s(\Omega)\oplus\bigoplus_jH^{s+2m-m_j-1/2}(\partial\Omega)$,
   for $s\geq0$. Principal-symbol ellipticity alone does not guarantee
   an arbitrary choice of boundary conditions is valid.
-* **66. Stability estimates as the mechanism of well-posedness.** A
-  linear a priori estimate on a dense class extends the solution map
-  uniquely to the completion of the data space whenever existence is
-  established on that class. Energy, coercivity, and Fourier estimates
-  are the principal realizations of this general argument in the
-  preceding equations.
 
 ## Reference guide
 

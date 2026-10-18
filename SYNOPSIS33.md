@@ -3,7 +3,7 @@
 Part of the [mathematical synopsis series](SYNOPSIS.md).
 
 This synopsis selects recurring material from Section 33 of
-[CKMA-bib.md](CKMA-bib.md) and [CKMA-bib2.md](CKMA-bib2.md).
+[CKMA-bib.md](CKMA-bib.md).
 It develops the regularity theory beyond the basic linear framework of
 Section 32: rough coefficients, fully nonlinear and degenerate equations,
 viscosity solutions, nonlinear diffusion, and free boundaries. Scalar
@@ -45,62 +45,81 @@ and the separation of the two balls. Hölder exponents lie in $(0,1)$.
   representative, with exponent and estimates depending only on $n$
   and ellipticity. In particular bounded measurable coefficients do
   not prevent scalar solutions from being continuous.
-* **8. Higher integrability of the gradient.** There is $\varepsilon>0$
+* **8. Hilbert's nineteenth problem.** If $F$ is smooth and uniformly
+  convex with $\lambda I\leq D^2F\leq\Lambda I$, scalar local minimizers
+  of $\int F(\nabla u)$ in $H^1$ are $C^\infty$, and analytic when $F$ is
+  analytic (De Giorgi, Nash). Difference quotients put $\partial_ku$ in
+  $H^1$, De Giorgi–Nash–Moser applied to the differentiated equation gives
+  $u\in C^{1,\alpha}$, and Schauder theory bootstraps.
+* **9. Higher integrability of the gradient.** There is $\varepsilon>0$
   depending only on dimension and ellipticity such that homogeneous
   weak solutions have $\nabla u\in L^{2+\varepsilon}_{\mathrm{loc}}$,
   with reverse Hölder bounds. The inhomogeneous estimate applies to
   $-\operatorname{div}(A\nabla u)=\operatorname{div}f$ for
   $f\in L^{2+\varepsilon}$ in the corresponding local range.
-* **9. Scalar regularity does not extend to general systems.** In
+* **10. Scalar regularity does not extend to general systems.** In
   dimensions at least three, uniformly elliptic systems with bounded
-  coefficients can have discontinuous weak solutions. The scalar
+  measurable coefficients can have discontinuous, even unbounded, weak
+  solutions (De Giorgi); in dimension two weak solutions are Hölder
+  continuous (Morrey). The scalar
   maximum-principle and Harnack mechanisms are unavailable in general.
-* **10. Partial regularity of minimizers.** For smooth uniformly convex
+* **11. Partial regularity of minimizers.** For smooth uniformly convex
   integrands $f(Du)$ with quadratic growth and bounded positive Hessian,
   vector-valued energy minimizers are $C^{1,\alpha}$ on an open set
-  of full measure. Global smoothness does not follow for arbitrary systems.
+  of full measure (Giaquinta–Giusti, Evans). Singular minimizers exist
+  in high dimensions even for smooth uniformly convex integrands
+  (Nečas, Šverák–Yan).
 
 ## Classical estimates and nondivergence equations
 
-* **11. Weak maximum principle.** If
+* **12. Weak maximum principle.** If
   $Lu=a^{ij}u_{ij}+b^iu_i+cu$, $c\leq0$, and $Lu\geq0$,
   then $\sup_\Omega u\leq\sup_{\partial\Omega}u^+$ on bounded domains,
   under boundedness and ellipticity assumptions and classical boundary continuity.
-* **12. Strong maximum and Hopf principles.** A nonconstant solution
+* **13. Strong maximum and Hopf principles.** A nonconstant solution
   under the preceding maximum-principle hypotheses cannot attain a
   nonnegative interior maximum. At a boundary maximum admitting an
   interior tangent ball, its outward normal derivative is strictly positive
   when that derivative exists and the coefficients satisfy the standard bounds.
-* **13. Alexandrov–Bakelman–Pucci estimate.** For $u\in W^{2,n}(\Omega)
+* **14. Alexandrov–Bakelman–Pucci estimate.** For $u\in W^{2,n}(\Omega)
   \cap C(\overline\Omega)$, $\Omega$ bounded, and uniformly elliptic $A$,
   $\sup_\Omega u\leq\sup_{\partial\Omega}u^+
   +C\operatorname{diam}(\Omega)\|(a^{ij}u_{ij})^-\|_{L^n(\Omega)}$.
-* **14. Krylov–Safonov theorem.** Nonnegative strong solutions of
+* **15. Krylov–Safonov theorem.** Nonnegative strong solutions of
   $a^{ij}(x)u_{ij}=0$ with measurable uniformly elliptic coefficients
   satisfy interior Harnack inequalities. General solutions have interior
   Hölder estimates with universal positive exponent.
-* **15. Interior Schauder estimate.** If $a^{ij},b^i,c,f\in C^{0,\alpha}$
+* **16. Interior Schauder estimate.** If $a^{ij},b^i,c,f\in C^{0,\alpha}$
   and $Lu=f$, then on $\Omega'\Subset\Omega$,
   $\|u\|_{C^{2,\alpha}(\Omega')}\leq
   C(\|u\|_{C^0(\Omega)}+\|f\|_{C^{0,\alpha}(\Omega)})$.
-* **16. Boundary Schauder theory.** On a bounded $C^{2,\alpha}$ domain,
+* **17. Boundary Schauder theory.** On a bounded $C^{2,\alpha}$ domain,
   the preceding coefficient assumptions and $C^{2,\alpha}$ Dirichlet
   data give a global estimate of the same order. With $c\leq0$,
   the Dirichlet problem is uniquely solvable in $C^{2,\alpha}$.
-* **17. Interior $W^{2,p}$ estimates.** For $1<p<\infty$, continuous
+* **18. Interior $W^{2,p}$ estimates.** For $1<p<\infty$, continuous
   uniformly elliptic leading coefficients and bounded lower-order
   coefficients give local $W^{2,p}$ estimates for strong solutions,
   controlled by $\|Lu\|_p$ and $\|u\|_p$ on a larger set.
   A coefficient modulus of continuity enters the estimate.
-* **18. Divergence-form Schauder estimate.** If $A,f\in C^{0,\alpha}$
+* **19. Divergence-form Schauder estimate.** If $A,f\in C^{0,\alpha}$
   and $-\operatorname{div}(A\nabla u)=\operatorname{div}f$, weak
   solutions are locally $C^{1,\alpha}$, with bounds from the data
   and a local norm of $u$.
-* **19. Method of continuity.** A uniformly bounded inverse estimate
+* **20. Method of continuity.** A uniformly bounded inverse estimate
   along a continuous family of bounded linear operators between fixed
   Banach spaces makes the set of invertible parameters both open and
   closed, provided it is nonempty. Elliptic a priori estimates therefore
   transfer solvability from a model operator to the target operator.
+* **21. Symmetry and Liouville theorems.** If $f$ is locally Lipschitz and
+  $u\in C^2(\overline B)$ is a positive solution of $\Delta u+f(u)=0$ in a
+  ball with $u=0$ on the boundary, then $u$ is radially symmetric and
+  strictly decreasing in $|x|$ (Gidas–Ni–Nirenberg, moving planes). For
+  $n\geq3$, nonnegative solutions of $-\Delta u=u^q$ on $\mathbb R^n$
+  vanish when $1<q<(n+2)/(n-2)$ (Gidas–Spruck), and for
+  $q=(n+2)/(n-2)$ they are the functions
+  $c_n(\varepsilon/(\varepsilon^2+|x-x_0|^2))^{(n-2)/2}$
+  (Caffarelli–Gidas–Spruck).
 
 ## Viscosity and fully nonlinear equations
 
@@ -111,21 +130,21 @@ $G(x,u,D\phi,D^2\phi)\leq0$ whenever $\phi\in C^2$ touches $u$ from
 above. Supersolutions use lower semicontinuity, touching from below, and
 the reverse inequality; a continuous solution is both.
 
-* **20. Consistency.** For $C^2$ functions the viscosity and classical
+* **22. Consistency.** For $C^2$ functions the viscosity and classical
   inequalities agree. For linear uniformly elliptic equations with
   smooth coefficients, continuous distributional and viscosity solutions agree.
-* **21. Comparison and uniqueness.** For continuous viscosity sub- and
+* **23. Comparison and uniqueness.** For continuous viscosity sub- and
   supersolutions of $\gamma u+G_0(Du,D^2u)=f(x)$, $\gamma>0$,
   continuous $f$, and continuous degenerate elliptic $G_0$, ordered
   boundary values imply ordered solutions on a bounded domain.
-* **22. Perron's construction.** If comparison holds and compatible
+* **24. Perron's construction.** If comparison holds and compatible
   continuous sub- and supersolutions provide boundary barriers, the
   supremum of intervening subsolutions, with semicontinuous envelopes,
   gives the unique continuous Dirichlet solution.
-* **23. Stability.** Locally uniform limits of viscosity solutions are
+* **25. Stability.** Locally uniform limits of viscosity solutions are
   solutions when their operators converge locally uniformly. Upper and
   lower half-relaxed limits give the corresponding one-sided statements.
-* **24. Suprema of subsolutions.** The upper semicontinuous envelope
+* **26. Suprema of subsolutions.** The upper semicontinuous envelope
   of a locally bounded supremum of subsolutions is a subsolution for
   a fixed continuous proper operator.
 
@@ -140,20 +159,23 @@ The **Pucci extremal operators** are
 $\mathcal M^+(M)=\Lambda\sum_{\mu_i>0}\mu_i+\lambda\sum_{\mu_i<0}\mu_i$
 and $\mathcal M^-$ with $\lambda,\Lambda$ interchanged.
 
-* **25. Extremal inequalities.** Uniform ellipticity is equivalent to
+* **27. Extremal inequalities.** Uniform ellipticity is equivalent to
   $\mathcal M^-(M-N)\leq F(M)-F(N)\leq\mathcal M^+(M-N)$.
   These inequalities place differences of solutions in universal elliptic classes.
-* **26. Fully nonlinear Hölder estimates.** Viscosity solutions of the
+* **28. Fully nonlinear Hölder estimates.** Viscosity solutions of the
   two Pucci inequalities with bounded forcing have interior $C^{0,\alpha}$
   estimates. Nonnegative solutions satisfy the corresponding Harnack inequality.
-* **27. $C^{1,\alpha}$ regularity.** For translation-invariant uniformly
+* **29. $C^{1,\alpha}$ regularity.** For translation-invariant uniformly
   elliptic $F$ with $F(0)=0$, bounded viscosity solutions of
   $F(D^2u)=0$ are locally $C^{1,\alpha}$ for a universal $\alpha>0$.
-* **28. Evans–Krylov theorem.** If $F$ is uniformly elliptic and convex
+* **30. Evans–Krylov theorem.** If $F$ is uniformly elliptic and convex
   or concave, solutions of $F(D^2u)=f$ with Hölder $f$ have interior
   $C^{2,\beta}$ estimates for some $\beta>0$ controlled by the
-  ellipticity and data regularity.
-* **29. Fully nonlinear $W^{2,p}$ regularity.** For convex or concave
+  ellipticity and data regularity. Without convexity this fails: in
+  dimension two solutions of $F(D^2u)=0$ are $C^{2,\alpha}$ (Nirenberg),
+  but in dimensions $n\geq5$ there are viscosity solutions that are not
+  $C^{1,1}$ (Nadirashvili–Tkachev–Vlăduţ).
+* **31. Fully nonlinear $W^{2,p}$ regularity.** For convex or concave
   translation-invariant uniformly elliptic $F$, $p>n$, and continuous
   $f\in L^p$, bounded viscosity solutions have local $W^{2,p}$
   estimates in terms of $\|u\|_\infty+\|f\|_p$.
@@ -164,17 +186,17 @@ The **$p$-Laplacian** is
 $\Delta_pu=\operatorname{div}(|\nabla u|^{p-2}\nabla u)$, $1<p<\infty$.
 A function is $p$-harmonic when this vanishes weakly.
 
-* **30. $p$-energy minimization.** On a bounded Lipschitz domain,
+* **32. $p$-energy minimization.** On a bounded Lipschitz domain,
   $\int|\nabla u|^p/p-\langle f,u\rangle$ has a unique minimizer
   in each prescribed $W^{1,p}$ trace class for
   $f\in W^{-1,p'}$. Its Euler equation is $-\Delta_pu=f$.
-* **31. Nonlinear comparison.** Weak $p$-subsolutions and
+* **33. Nonlinear comparison.** Weak $p$-subsolutions and
   $p$-supersolutions with ordered traces are ordered in the domain,
   by strict monotonicity of $\xi\mapsto|\xi|^{p-2}\xi$.
-* **32. $p$-harmonic regularity.** Weak $p$-harmonic functions are
+* **34. $p$-harmonic regularity.** Weak $p$-harmonic functions are
   locally $C^{1,\alpha}$ for some $\alpha=\alpha(n,p)>0$.
   Nonnegative ones satisfy scale-invariant Harnack estimates.
-* **33. The infinity-harmonic limit.** For Lipschitz boundary data on
+* **35. The infinity-harmonic limit.** For Lipschitz boundary data on
   a bounded domain, absolutely minimizing Lipschitz extensions are
   characterized by the viscosity equation
   $\Delta_\infty u=\langle D^2u\nabla u,\nabla u\rangle=0$.
@@ -185,18 +207,21 @@ For convex $u$, its **Alexandrov Monge–Ampère measure** is
 $\operatorname{MA}_u(E)=|\partial u(E)|$, the Lebesgue measure of the
 subgradient image. For $C^2$ convex $u$, it equals $\det D^2u\,dx$.
 
-* **34. Alexandrov stability and comparison.** Locally uniform convergence
+* **36. Alexandrov stability and comparison.** Locally uniform convergence
   of convex functions gives weak convergence of their Monge–Ampère
   measures. Ordered boundary data and the reverse ordering of these
   measures imply the corresponding ordering of the convex functions.
-* **35. Alexandrov Dirichlet problem.** On a bounded strictly convex
+* **37. Alexandrov Dirichlet problem.** On a bounded strictly convex
   domain, continuous boundary data and a finite nonnegative interior
   measure determine a unique continuous convex Alexandrov solution.
-* **36. Interior Monge–Ampère regularity.** Strictly convex Alexandrov
+* **38. Interior Monge–Ampère regularity.** Strictly convex Alexandrov
   solutions with $0<\lambda\leq f\leq\Lambda$ are locally
   $C^{1,\alpha}$; Hölder $f$ gives local $C^{2,\alpha}$ regularity.
-  Section geometry and strict convexity enter the estimates.
-* **37. Smooth Monge–Ampère Dirichlet theory.** Smooth uniformly convex
+  Section geometry and strict convexity enter the estimates. Strict
+  convexity is automatic in dimension two but not for $n\geq3$, where
+  Pogorelov's solutions of $\det D^2u=1$ contain line segments and are
+  not $C^{1,1}$.
+* **39. Smooth Monge–Ampère Dirichlet theory.** Smooth uniformly convex
   domains, smooth boundary data, and smooth strictly positive density
   give a smooth strictly convex solution up to the boundary.
 
@@ -207,64 +232,64 @@ $C^{\alpha,\alpha/2}$ measures space with exponent $\alpha$ and time with
 exponent $\alpha/2$; $W^{2,1}_p$ controls two spatial derivatives and one
 time derivative in $L^p$.
 
-* **38. Linear parabolic energy theory.** Bounded measurable uniformly
+* **40. Linear parabolic energy theory.** Bounded measurable uniformly
   elliptic divergence coefficients give unique energy solutions for
   $L^2$ initial data and forcing in $L^2(0,T;H^{-1})$, with zero
   Dirichlet boundary data and the usual energy estimate.
-* **39. Parabolic strong maximum principle.** A nonnegative solution
+* **41. Parabolic strong maximum principle.** A nonnegative solution
   of a uniformly parabolic scalar equation cannot vanish at an interior
   point unless it vanishes throughout the connected region reachable
   backward in time, under the maximum-principle sign condition.
-* **40. Parabolic Harnack inequality.** Positive solutions with bounded
+* **42. Parabolic Harnack inequality.** Positive solutions with bounded
   measurable divergence coefficients satisfy
   $\sup_{Q^-}u\leq C\inf_{Q^+}u$ for separated earlier and later
   subcylinders inside a larger cylinder. The time separation is essential.
-* **41. Parabolic De Giorgi–Nash regularity.** Energy solutions of
+* **43. Parabolic De Giorgi–Nash regularity.** Energy solutions of
   scalar homogeneous uniformly parabolic divergence equations are
   locally Hölder continuous in the parabolic metric, with universal exponent.
-* **42. Parabolic Schauder theory.** Coefficients and forcing in
+* **44. Parabolic Schauder theory.** Coefficients and forcing in
   $C^{\alpha,\alpha/2}$ give interior
   $C^{2+\alpha,1+\alpha/2}$ estimates. Boundary versions require the
   matching spatial boundary smoothness and initial–boundary compatibility.
-* **43. Parabolic $L^p$ estimates.** Smooth uniformly parabolic
+* **45. Parabolic $L^p$ estimates.** Smooth uniformly parabolic
   coefficients give local $W^{2,1}_p$ estimates for $1<p<\infty$.
   These yield strong solvability with the corresponding initial and
   lateral traces under compatibility conditions.
-* **44. Gaussian fundamental-solution bounds.** For
+* **46. Gaussian fundamental-solution bounds.** For
   $u_t=\operatorname{div}(A(t,x)\nabla u)$ on all of $\mathbb R^n$,
   bounded measurable uniformly elliptic $A$ gives a positive kernel
   bounded above and below by constant multiples of
   $(t-s)^{-n/2}\exp(-c|x-y|^2/(t-s))$, with different positive constants.
-* **45. Semilinear local existence and continuation.** For
+* **47. Semilinear local existence and continuation.** For
   $u_t-\Delta u=f(u)$ with locally Lipschitz $f$, bounded continuous
   initial data have a unique local bounded mild solution. A finite
   maximal time requires $\|u(t)\|_\infty\to\infty$.
-* **46. Sub- and supersolution trapping.** Ordered parabolic sub- and
+* **48. Sub- and supersolution trapping.** Ordered parabolic sub- and
   supersolutions trap the semilinear solution as long as it exists.
   A global bounded supersolution therefore prevents blowup.
-* **47. Fujita exponent.** For $u_t-\Delta u=u^q$ on $\mathbb R^n$,
+* **49. Fujita exponent.** For $u_t-\Delta u=u^q$ on $\mathbb R^n$,
   $q>1$, every nontrivial nonnegative bounded compactly supported
   initial datum gives finite-time blowup if $q\leq1+2/n$.
   For $q>1+2/n$, sufficiently small nonnegative data in
   $L^1\cap L^\infty$ yield global solutions.
-* **48. Reaction–diffusion energy.** For zero Dirichlet data and
+* **50. Reaction–diffusion energy.** For zero Dirichlet data and
   $F'=f$, smooth solutions satisfy
   $\frac d{dt}\int(\tfrac12|\nabla u|^2-F(u))=-\int|u_t|^2$.
   This is a Lyapunov functional for semilinear gradient diffusion.
-* **49. Degenerate parabolic Hölder continuity.** Locally bounded
+* **51. Degenerate parabolic Hölder continuity.** Locally bounded
   weak solutions of $u_t-\Delta_pu=0$, $p\geq2$, are locally
   Hölder continuous. Their natural cylinders have time length
   $\omega^{2-p}r^p$ at spatial scale $r$ and oscillation scale $\omega$.
-* **50. Intrinsic Harnack inequality.** For nonnegative solutions of
+* **52. Intrinsic Harnack inequality.** For nonnegative solutions of
   the parabolic $p$-Laplacian with $p>2$, the value at an interior
   point controls a later spatial infimum at waiting time comparable
   to $u(x_0,t_0)^{2-p}r^p$, provided the enlarged intrinsic cylinder
   lies in the domain.
-* **51. Porous-medium contraction and propagation.** For
+* **53. Porous-medium contraction and propagation.** For
   $u_t=\Delta(u^m)$, $m>1$, nonnegative $L^1$ data generate an
   $L^1$ contraction evolution preserving mass. Bounded compactly
   supported data remain compactly supported for finite times.
-* **52. Barenblatt solutions.** The porous-medium equation has
+* **54. Barenblatt solutions.** The porous-medium equation has
   mass-parametrized solutions
   $$
   u(t,x)=t^{-a}\bigl(C-k|x|^2t^{-2b}\bigr)_+^{1/(m-1)},\quad
@@ -281,32 +306,33 @@ The **contact set** is $\{u=\psi\}$ and the **free boundary** is its
 boundary inside $\Omega$. The normalized local model is
 $u\geq0$, $\Delta u=1_{\{u>0\}}$.
 
-* **53. Variational inequality.** The minimizer exists uniquely and
+* **55. Variational inequality.** The minimizer exists uniquely and
   satisfies $\int\nabla u\cdot\nabla(v-u)\geq\int f(v-u)$
   for every $v\in K$. This is equivalent to minimization.
-* **54. Complementarity.** Distributionally $-\Delta u-f\geq0$;
+* **56. Complementarity.** Distributionally $-\Delta u-f\geq0$;
   on $\{u>\psi\}$, $-\Delta u=f$. For smooth solutions this
   is the complementarity system
   $(u-\psi)(-\Delta u-f)=0$, $u\geq\psi$.
-* **55. Optimal solution regularity.** For smooth forcing and a
+* **57. Optimal solution regularity.** For smooth forcing and a
   $C^{1,1}$ obstacle, the solution is locally $C^{1,1}$.
   Second derivatives can jump across the free boundary, so higher
   global regularity is not generally available.
-* **56. Quadratic growth and nondegeneracy.** At a free-boundary point
+* **58. Quadratic growth and nondegeneracy.** At a free-boundary point
   of the normalized model,
   $cr^2\leq\sup_{B_r}u\leq Cr^2$ for all sufficiently small $r$.
-* **57. Blowup compactness.** The rescalings
+* **59. Blowup compactness.** The rescalings
   $u_{x_0,r}(x)=u(x_0+rx)/r^2$ have subsequences converging locally
   in $C^{1,\alpha}$ to nonzero global solutions of the obstacle problem.
-* **58. Classification of quadratic blowups.** Blowups of the normalized
+  Weiss's monotonicity formula makes every blowup homogeneous of degree two.
+* **60. Classification of quadratic blowups.** Blowups of the normalized
   classical obstacle problem are either
   $\tfrac12(x\cdot\nu)_+^2$, $|\nu|=1$, or
   $\tfrac12x\cdot Ax$ with $A\geq0$, $\operatorname{tr}A=1$.
   These distinguish regular and singular points.
-* **59. Regular free boundary.** Near a point with half-space blowup,
+* **61. Regular free boundary.** Near a point with half-space blowup,
   the free boundary is $C^{1,\alpha}$, and is smooth for the smooth
   classical model. Regular points form a relatively open subset.
-* **60. Singular strata.** The quadratic blowup at a singular point
+* **62. Singular strata.** The quadratic blowup at a singular point
   is unique. Points where its matrix has kernel dimension $k$ lie
   locally in countably many $k$-dimensional $C^1$ submanifolds,
   for $0\leq k\leq n-1$.
@@ -318,48 +344,54 @@ $J(u)=\int(|\nabla u|^2+Q^2 1_{\{u>0\}})$, minimized among
 nonnegative functions with fixed trace. Its free boundary is
 $\partial\{u>0\}$ inside the domain.
 
-* **61. One-phase existence and harmonicity.** The energy has minimizers
+* **63. One-phase existence and harmonicity.** The energy has minimizers
   for nonnegative admissible $H^1$ traces on bounded Lipschitz domains.
   Every minimizer is harmonic in its positivity set.
-* **62. Lipschitz regularity and nondegeneracy.** Local minimizers are
+* **64. Lipschitz regularity and nondegeneracy.** Local minimizers are
   locally Lipschitz and satisfy $\sup_{B_r(x_0)}u\geq cr$ at
   free-boundary points. Both phases have positive density there.
-* **63. Perimeter and measure bounds.** The positivity set has locally
+* **65. Perimeter and measure bounds.** The positivity set has locally
   finite perimeter; its free boundary has locally finite
   $\mathcal H^{n-1}$ measure with two-sided bounds comparable to $r^{n-1}$
   in balls centered on it.
-* **64. One-phase blowups.** Rescaling by $u(x_0+rx)/r$ gives
+* **66. One-phase blowups.** Rescaling by $u(x_0+rx)/r$ gives
   subsequential global minimizing blowups. Weiss's adjusted-energy
   monotonicity makes these blowups one-homogeneous.
-* **65. Improvement of flatness.** Sufficiently flat minimizing free
+* **67. Improvement of flatness.** Sufficiently flat minimizing free
   boundaries become flatter at smaller scales. Near a half-space blowup
   the free boundary is $C^{1,\alpha}$; in the constant-coefficient model
   it is smooth, with $|\nabla u|=Q$ on its regular part.
-* **66. Size of the one-phase singular set.** The regular part is
+* **68. Size of the one-phase singular set.** The regular part is
   relatively open and has full $\mathcal H^{n-1}$ measure.
   The singular set has Hausdorff dimension at most $n-5$; in
-  dimensions at most four it is empty.
+  dimensions at most four it is empty. A singular minimizing cone exists
+  in dimension seven (De Silva–Jerison), so the sharp critical dimension
+  lies in $\{5,6,7\}$.
 
 For $0<s<1$, the **fractional Laplacian** has Fourier multiplier
 $|\xi|^{2s}$ under the $e^{-ix\cdot\xi}$ convention, equivalently
 $(-\Delta)^su=c_{n,s}\operatorname{pv}\int(u(x)-u(y))|x-y|^{-n-2s}dy$.
 
-* **67. Nonlocal Dirichlet existence and comparison.** The fractional
+* **69. Nonlocal Dirichlet existence and comparison.** The fractional
   Dirichlet energy gives unique weak solutions with prescribed exterior
   values and forcing in the energy dual. Nonnegative forcing and
   exterior values give a nonnegative solution by comparison.
-* **68. Fractional interior Schauder estimate.** If $u$ is globally
+* **70. Fractional interior Schauder estimate.** If $u$ is globally
   bounded and $(-\Delta)^su=f$ with $f\in C^\alpha$ in a ball,
   then $u\in C^{2s+\alpha}$ on smaller balls when $2s+\alpha$
   is not an integer. The estimate includes $\|u\|_{L^\infty(\mathbb R^n)}$.
-* **69. Fractional boundary behavior.** On a bounded smooth domain,
+* **71. Fractional boundary behavior.** On a bounded smooth domain,
   solutions with bounded forcing and zero exterior value satisfy
   $|u(x)|\leq C\operatorname{dist}(x,\partial\Omega)^s$.
   The quotient by this power extends Hölder continuously to the boundary.
-* **70. Nonlocal boundary Harnack principle.** Positive fractional-harmonic
-  functions vanishing on the exterior portion of a smooth boundary
-  have comparable quotients near that boundary; normalized quotients
-  are Hölder continuous on smaller boundary neighborhoods.
+* **72. Boundary Harnack principles.** Two positive harmonic functions
+  in a Lipschitz domain vanishing on a boundary portion have comparable,
+  indeed Hölder continuous, quotient up to that portion (Dahlberg,
+  Kemper, Caffarelli–Fabes–Mortola–Salsa); the same holds for
+  divergence-form equations with bounded measurable coefficients. For
+  positive fractional-harmonic functions vanishing on the exterior portion
+  of a smooth boundary, quotients are likewise comparable and Hölder
+  continuous near that boundary.
 
 ## Reference guide
 

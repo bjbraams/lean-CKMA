@@ -3,7 +3,7 @@
 Part of the [mathematical synopsis series](SYNOPSIS.md).
 
 This synopsis selects the common foundations and principal continuations of
-Section 28 of [CKMA-bib.md](CKMA-bib.md) and [CKMA-bib2.md](CKMA-bib2.md).
+Section 28 of [CKMA-bib.md](CKMA-bib.md).
 Its central objects are locally compact groups, their convolution algebras,
 unitary representations, and Fourier transforms. Compact and abelian groups
 admit particularly complete theories; induction and the noncommutative
@@ -102,7 +102,10 @@ $\sum_{i,j}\overline{c_i}c_j\phi(x_i^{-1}x_j)\geq0$ for all finite choices.
   $\|f\|_{C^*(G)}=\sup_\pi\|\pi(f)\|$ gives a $C^*$-algebra whose
   nondegenerate representations correspond to unitary representations
   of $G$. Positive definite functions correspond to positive functionals.
-* **19. The regular representation.**
+* **19. Gelfand–Raikov theorem.** For every locally compact group, the
+  irreducible unitary representations separate points: for $x\neq e$
+  there is an irreducible $\pi$ with $\pi(x)\neq I$.
+* **20. The regular representation.**
   $\lambda(x)f(y)=f(x^{-1}y)$ is unitary on $L^2(G)$.
   Its integrated representation is left convolution. The closure of
   $\lambda(L^1(G))$ is the reduced algebra $C_r^*(G)$, a quotient
@@ -114,54 +117,56 @@ For abelian $G$, the **dual group** $\widehat G$ consists of continuous
 characters $\chi:G\to\mathbb T$, with the compact-open topology.
 Set $\widehat f(\chi)=\int_Gf(x)\overline{\chi(x)}dx$.
 
-* **20. Local compactness of the dual.** $\widehat G$ is a locally
+* **21. Local compactness of the dual.** $\widehat G$ is a locally
   compact abelian group. The dual of a compact group is discrete and
   the dual of a discrete group is compact; the converse implications hold.
-* **21. Basic dual pairs.**
+* **22. Basic dual pairs.**
   $\widehat{\mathbb R^d}\simeq\mathbb R^d$ through
   $x\mapsto e^{2\pi ix\cdot\xi}$, $\widehat{\mathbb Z^d}\simeq\mathbb T^d$,
   and $\widehat{\mathbb T^d}\simeq\mathbb Z^d$.
   Finite abelian groups are isomorphic, noncanonically, to their duals.
-* **22. Character extension and separation.** Every continuous character
+* **23. Character extension and separation.** Every continuous character
   on a closed subgroup of an LCA group extends to the whole group.
   Characters separate points of $G$.
-* **23. Pontryagin duality.** The evaluation map
+* **24. Pontryagin duality.** The evaluation map
   $G\to\widehat{\widehat G}$, $x\mapsto(\chi\mapsto\chi(x))$,
   is a topological group isomorphism.
-* **24. Annihilators and quotients.** For closed $H\subset G$, let
+* **25. Annihilators and quotients.** For closed $H\subset G$, let
   $H^\perp=\{\chi:\chi|_H=1\}$. Then
   $\widehat{G/H}\simeq H^\perp$ and
   $\widehat H\simeq\widehat G/H^\perp$; the double annihilator is $H$.
-* **25. Riemann–Lebesgue and uniqueness.**
+* **26. Riemann–Lebesgue and uniqueness.**
   $\widehat f\in C_0(\widehat G)$ for $f\in L^1(G)$.
   The Fourier transform is injective on $L^1(G)$ and on finite measures.
-* **26. Fourier algebra identities.**
+* **27. Fourier algebra identities.**
   $\widehat{f*g}=\widehat f\widehat g$ and
   $\widehat{f^*}=\overline{\widehat f}$.
   The characters of the commutative Banach algebra $L^1(G)$ are exactly
   evaluations $f\mapsto\widehat f(\chi)$.
-* **27. Fourier inversion.** Haar measure on $\widehat G$ can be
+* **28. Fourier inversion.** Haar measure on $\widehat G$ can be
   normalized uniquely so that, whenever $f\in L^1(G)$ and
   $\widehat f\in L^1(\widehat G)$,
   $f(x)=\int_{\widehat G}\widehat f(\chi)\chi(x)d\chi$ almost everywhere.
-* **28. Plancherel theorem.** With this normalization, Fourier
+* **29. Plancherel theorem.** With this normalization, Fourier
   transformation extends to a unitary $L^2(G)\to L^2(\widehat G)$.
   For $1\leq p\leq2$, it also satisfies
   $\|\widehat f\|_{p'}\leq\|f\|_p$.
-* **29. Bochner's theorem.** Continuous positive definite functions on
+* **30. Bochner's theorem.** Continuous positive definite functions on
   $G$ are exactly $\phi(x)=\int_{\widehat G}\chi(x)d\mu(\chi)$
   for finite positive measures $\mu$, uniquely determined, with
   $\mu(\widehat G)=\phi(e)$.
-* **30. Spectral theorem for abelian representations.** Every unitary
+* **31. Spectral theorem for abelian representations.** Every unitary
   representation of an LCA group has a unique projection-valued measure
   $E$ on $\widehat G$ such that
-  $\pi(x)=\int\chi(x)dE(\chi)$. Integrated operators are obtained
-  by the corresponding scalar functional calculus.
-* **31. Wiener's Tauberian theorem.** Translates of $f\in L^1(G)$
+  $\pi(x)=\int\chi(x)dE(\chi)$ (Stone–Naimark–Ambrose–Godement).
+  Integrated operators are $\pi(f)=\int\widehat f(\overline\chi)dE(\chi)$.
+* **32. Wiener's Tauberian theorem.** Translates of $f\in L^1(G)$
   span a dense subspace of $L^1(G)$ exactly when $\widehat f$
   has no zeros. More generally a closed ideal is all of $L^1(G)$
-  exactly when its common Fourier zero set is empty.
-* **32. Generalized Poisson summation.** Let $\Lambda$ be a discrete
+  exactly when its common Fourier zero set is empty. Spectral synthesis
+  (closed ideals determined by their zero sets) fails for every
+  noncompact LCA group (Malliavin).
+* **33. Generalized Poisson summation.** Let $\Lambda$ be a discrete
   cocompact subgroup and $v$ the measure of $G/\Lambda$.
   If $f\in C_c(G)$ and
   $\sum_{\chi\in\Lambda^\perp}|\widehat f(\chi)|<\infty$, then
@@ -170,7 +175,7 @@ Set $\widehat f(\chi)=\int_Gf(x)\overline{\chi(x)}dx$.
   =v^{-1}\sum_{\chi\in\Lambda^\perp}\widehat f(\chi)\chi(x).
   $$
   This follows by Fourier inversion of the continuous periodization.
-* **33. Almost periodic functions.** The uniform closure of finite
+* **34. Almost periodic functions.** The uniform closure of finite
   linear combinations of characters is $C(bG)$ pulled back along
   the canonical dense homomorphism $G\to bG$, the Bohr compactification.
   It carries the invariant mean obtained from Haar probability on $bG$.
@@ -181,54 +186,64 @@ Write $\widehat G$ for equivalence classes of irreducible unitary
 representations, and $d_\pi=\dim H_\pi$. In this part define
 $\widehat f(\pi)=\int_G f(x)\pi(x)^*dx$.
 
-* **34. Finite dimensionality.** Every irreducible unitary
+* **35. Finite dimensionality.** Every irreducible unitary
   representation of a compact group is finite dimensional.
   Every unitary representation is a Hilbert direct sum of irreducibles.
-* **35. Schur orthogonality.** Matrix entries from inequivalent
+* **36. Schur orthogonality.** Matrix entries from inequivalent
   irreducibles are orthogonal, and in orthonormal coordinates
   $\int_G\pi_{ij}(x)\overline{\sigma_{kl}(x)}dx
   =\delta_{\pi\sigma}\delta_{ik}\delta_{jl}/d_\pi$.
-* **36. Peter–Weyl density.** Finite linear combinations of matrix
+* **37. Peter–Weyl density.** Finite linear combinations of matrix
   coefficients are uniformly dense in $C(G)$. The functions
   $\sqrt{d_\pi}\pi_{ij}$ form an orthonormal basis of $L^2(G)$.
-* **37. Regular multiplicities.** In the left or right regular
+* **38. Regular multiplicities.** In the left or right regular
   representation, each irreducible $\pi$ occurs with multiplicity
   $d_\pi$. Equivalently
   $L^2(G)\simeq\bigoplus_{\pi\in\widehat G}H_\pi\otimes H_\pi^*$
   with its left–right action.
-* **38. Compact-group Plancherel formula.**
+* **39. Compact-group Plancherel formula.**
   $\|f\|_2^2=\sum_\pi d_\pi\|\widehat f(\pi)\|_{\mathrm{HS}}^2$.
   Fourier inversion is
   $f(x)=\sum_\pi d_\pi\operatorname{Tr}(\widehat f(\pi)\pi(x))$
   in $L^2$, with finite-set partial sums.
-* **39. Noncommutative convolution formula.** With the adjoint
+* **40. Noncommutative convolution formula.** With the adjoint
   convention above,
   $\widehat{f*g}(\pi)=\widehat g(\pi)\widehat f(\pi)$ and
   $\widehat{f^*}(\pi)=\widehat f(\pi)^*$.
   This order reversal disappears if one uses integrated representations
   $\pi(f)$ instead of $\widehat f(\pi)$.
-* **40. Characters and class functions.** The irreducible characters
+* **41. Characters and class functions.** The irreducible characters
   $\chi_\pi=\operatorname{Tr}\pi$ form an orthonormal basis for
   the conjugation-invariant subspace of $L^2(G)$. For central $f$,
   $\widehat f(\pi)$ is scalar, so central convolution diagonalizes
   on irreducible components.
-* **41. Character multiplicities.** In finite-dimensional compact-group
+* **42. Character multiplicities.** In finite-dimensional compact-group
   representations, $\dim\operatorname{Hom}_G(\pi,V)
   =\int_G\chi_V\overline{\chi_\pi}$. Tensor-product multiplicities
   are obtained by taking inner products of products of characters.
-* **42. Finite-group Fourier inversion.** For finite $G$ with normalized
+* **43. Finite-group Fourier inversion.** For finite $G$ with normalized
   counting measure, the compact formulas are finite sums, valid pointwise
   for every function, and $\sum_\pi d_\pi^2=|G|$.
   The number of irreducibles is the number of conjugacy classes.
-* **43. Compact-group separation.** Finite-dimensional unitary
+* **44. Compact-group separation.** Finite-dimensional unitary
   representations separate points. A compact group embeds into a product
   of unitary groups, and every compact Lie group has a faithful
   finite-dimensional unitary representation.
-* **44. Spherical harmonic decomposition.** On $S^{d-1}$, $d\geq2$,
+* **45. Spherical harmonic decomposition.** On $S^{d-1}$, $d\geq2$,
   restrictions of homogeneous harmonic polynomials of degree $\ell$
   give mutually orthogonal eigenspaces of $-\Delta_S$ with eigenvalues
   $\ell(\ell+d-2)$; their sum is dense in $L^2(S^{d-1})$.
   This realizes compact homogeneous-space harmonic analysis.
+* **46. Weyl's formulas.** Let $G$ be compact connected Lie with maximal
+  torus $T$, Weyl group $W$, positive roots $\alpha$, and half-sum $\rho$.
+  Irreducible representations correspond to dominant integral highest
+  weights $\lambda$; their characters on $T$ are
+  $\chi_\lambda=\sum_{w\in W}\varepsilon(w)e^{w(\lambda+\rho)}/
+  \sum_{w\in W}\varepsilon(w)e^{w\rho}$, with
+  $d_\lambda=\prod_{\alpha>0}\langle\lambda+\rho,\alpha\rangle/
+  \langle\rho,\alpha\rangle$. For continuous class functions,
+  $\int_Gf=|W|^{-1}\int_Tf(t)|\delta(t)|^2dt$, where
+  $\delta=\sum_w\varepsilon(w)e^{w\rho}$ is the Weyl denominator.
 
 ## Induction and noncompact representation theory
 
@@ -238,26 +253,29 @@ $G\times_H H_\sigma\to G/H$, with the quotient measure and its
 Radon–Nikodym correction. For invariant quotient measure, sections can
 be written $F(xh)=\sigma(h)^{-1}F(x)$ with square-integrable quotient norm.
 
-* **45. Induction in stages.** For closed subgroups $H\subset K\subset G$,
+* **47. Induction in stages.** For closed subgroups $H\subset K\subset G$,
   $\operatorname{Ind}_H^G\sigma\simeq
   \operatorname{Ind}_K^G(\operatorname{Ind}_H^K\sigma)$.
   Induction preserves unitary equivalence and orthogonal sums.
-* **46. Frobenius reciprocity for compact groups.** If $G$ is compact
+* **48. Frobenius reciprocity for compact groups.** If $G$ is compact
   and $H$ closed, the multiplicity of an irreducible $\pi$ in
   $\operatorname{Ind}_H^G\sigma$ equals the multiplicity pairing
   $\dim\operatorname{Hom}_H(\pi|_H,\sigma)$.
   In particular, its multiplicity in $L^2(G/H)$ is $\dim H_\pi^H$.
-* **47. Mackey's imprimitivity theorem.** A unitary representation
+* **49. Mackey's imprimitivity theorem.** A unitary representation
   equipped with a projection-valued measure on $G/H$ satisfying
   $U(x)E(B)U(x)^*=E(xB)$ is unitarily equivalent to the canonical
   system attached to a representation induced from $H$.
-* **48. Direct-integral decomposition.** For second-countable type-I
+* **50. Direct-integral decomposition.** For second-countable type-I
   groups, every separable unitary representation decomposes into a
   direct integral of irreducibles. The measure class and multiplicity
   function are unique up to the natural equivalence.
-  Type I means that every factor representation generates a type-I
-  von Neumann algebra, an algebra isomorphic to $B(K)$ for a Hilbert space $K$.
-* **49. Noncommutative Plancherel theorem.** If $G$ is second-countable,
+  Type I means that every factor representation generates a von Neumann
+  factor isomorphic to $B(K)$ for a Hilbert space $K$. Compact, abelian,
+  connected nilpotent, and real reductive groups are type I; nonabelian
+  free groups are not, and for these direct-integral decompositions are
+  not unique (Glimm, Thoma).
+* **51. Noncommutative Plancherel theorem.** If $G$ is second-countable,
   unimodular, and type I, there is a Plancherel measure $\mu$ on
   $\widehat G$ such that
   $$
@@ -267,23 +285,32 @@ be written $F(xh)=\sigma(h)^{-1}F(x)$ with square-integrable quotient norm.
   The transform extends unitarily onto the corresponding direct integral
   of Hilbert–Schmidt spaces. Nonunimodular groups require formal-dimension
   operators rather than this unmodified formula.
-* **50. Stone–von Neumann theorem.** For the real Heisenberg group,
+* **52. Mackey's little-group method.** Let $G=N\rtimes H$ with $N$
+  abelian and the $H$-orbits in $\widehat N$ regularly embedded (the
+  orbit space countably separated). For $\nu\in\widehat N$ let $H_\nu$
+  be its stabilizer and $\rho$ an irreducible representation of $H_\nu$.
+  Then $\operatorname{Ind}_{N\rtimes H_\nu}^G(\nu\rho)$, with
+  $(\nu\rho)(nh)=\nu(n)\rho(h)$, is irreducible, every irreducible
+  representation of $G$ arises so, and the parameters are the orbits and
+  the classes of $\rho$. Examples: the $ax+b$ group and Euclidean motion
+  groups.
+* **53. Stone–von Neumann theorem.** For the real Heisenberg group,
   every irreducible unitary representation with a fixed nontrivial central
   character is equivalent to the Schrödinger representation with that
   character. The remaining irreducibles are characters of the abelian quotient.
-* **51. Kirillov's orbit correspondence.** For a connected simply
+* **54. Kirillov's orbit correspondence.** For a connected simply
   connected nilpotent Lie group, coadjoint orbits in $\mathfrak g^*$
   parametrize the irreducible unitary representations. A representative
   is induced from the character associated to a polarization of the
   orbit functional $\ell$. A polarization is a subordinate subalgebra
   $\mathfrak h$ with $\ell([\mathfrak h,\mathfrak h])=0$ and dimension
   $(\dim\mathfrak g+\dim\mathfrak g_\ell)/2$.
-* **52. Smooth vectors.** In a unitary representation of a Lie group,
+* **55. Smooth vectors.** In a unitary representation of a Lie group,
   vectors $v$ for which $x\mapsto\pi(x)v$ is smooth are dense.
   On this common invariant domain, differentiation gives a Lie algebra
   representation satisfying
   $[d\pi(X),d\pi(Y)]=d\pi([X,Y])$.
-* **53. Compact Lie-group spectral decomposition.** A bi-invariant
+* **56. Compact Lie-group spectral decomposition.** A bi-invariant
   Riemannian metric gives a Laplacian acting by a scalar on every
   irreducible coefficient space. Its heat semigroup is convolution
   with a smooth central kernel, with spectral expansion obtained by
@@ -297,38 +324,47 @@ $A(G)$ consists of coefficients of the left regular representation, with
 its canonical coefficient norm. For LCA groups these identify respectively
 with $M(\widehat G)$ and $L^1(\widehat G)$ under inverse Fourier transform.
 
-* **54. Coefficient algebra properties.** $B(G)$ is a Banach algebra
+* **57. Coefficient algebra properties.** $B(G)$ is a Banach algebra
   under pointwise multiplication, using tensor products of representations.
-  $A(G)$ is a closed ideal in $B(G)$ and lies in $C_0(G)$.
-* **55. Amenability and invariant means.** A locally compact group is
+  $A(G)$ is a closed ideal in $B(G)$ and lies in $C_0(G)$. Every
+  $u\in A(G)$ has the form $u=f*\check g$ with $f,g\in L^2(G)$ and
+  $\|u\|_A=\min\|f\|_2\|g\|_2$; the Gelfand spectrum of $A(G)$ is $G$,
+  and $A(G)^*$ is the group von Neumann algebra $VN(G)$ (Eymard).
+* **58. Amenability and invariant means.** A locally compact group is
   amenable exactly when there is a positive normalized left-invariant
   mean on $L^\infty(G)$. Compact and abelian groups are amenable;
-  amenability is preserved under extensions and passage to closed subgroups.
-* **56. Følner's criterion for discrete groups.** A discrete group is
+  amenability is preserved under extensions, quotients, and passage to
+  closed subgroups. Groups containing a closed nonabelian free discrete
+  subgroup, such as $SL_2(\mathbb R)$, are not amenable.
+* **59. Følner's criterion for discrete groups.** A discrete group is
   amenable exactly when, for every finite $K\subset G$ and
   $\varepsilon>0$, there is a finite nonempty $F$ with
   $|kF\mathbin\triangle F|<\varepsilon|F|$ for all $k\in K$.
-* **57. Amenability and regular representations.** For locally compact
+* **60. Amenability and regular representations.** For locally compact
   $G$, amenability is equivalent to the trivial representation being
   weakly contained in $\lambda$, and to the canonical map
   $C^*(G)\to C_r^*(G)$ being an isomorphism.
   Here $\pi$ is weakly contained in $\rho$ if
   $\|\pi(f)\|\leq\|\rho(f)\|$ for every $f\in L^1(G)$.
-* **58. Leptin's theorem.** $G$ is amenable exactly when $A(G)$
+* **61. Leptin's theorem.** $G$ is amenable exactly when $A(G)$
   has a bounded approximate identity for pointwise multiplication.
-  See also the opening formulation in
-  [Forrest–Kaniuth–Lau–Spronk](https://www.math.uwaterloo.ca/~nspronk/papers/forrestkls03.pdf).
-* **59. Gelfand pairs.** For compact $K\subset G$, commutativity of
+* **62. Gelfand pairs.** For compact $K\subset G$, commutativity of
   the algebra of integrable $K$-bi-invariant functions is the defining
   Gelfand-pair property. If $G$ is compact, it is equivalent to
-  $\dim H_\pi^K\leq1$ for every irreducible $\pi$.
-* **60. Spherical functions.** In a Gelfand pair, normalized bounded
+  $\dim H_\pi^K\leq1$ for every irreducible $\pi$. Gelfand's criterion:
+  if a continuous involutive automorphism $\theta$ of $G$ satisfies $\theta(x)\in Kx^{-1}K$ for all $x$, then $(G,K)$ is a Gelfand
+  pair; this covers Riemannian symmetric pairs such as $(SO(d),SO(d-1))$ and
+  $(SL_2(\mathbb R),SO(2))$.
+* **63. Spherical functions.** In a Gelfand pair, normalized bounded
   spherical functions satisfy
   $\int_K\phi(xky)dk=\phi(x)\phi(y)$.
   Integration against their inverse-variable values gives the characters
   of the commutative $K$-bi-invariant convolution algebra. For compact
   $G$, they are coefficients of irreducible representations on their
-  one-dimensional $K$-fixed spaces.
+  one-dimensional $K$-fixed spaces. Godement's Plancherel theorem gives a
+  unique positive measure $\mu$ on the positive definite spherical
+  functions with $\int_G|f|^2=\int|\widehat f(\phi)|^2d\mu(\phi)$ for
+  $K$-bi-invariant $f\in L^1\cap L^2$.
 
 ## Reference guide
 
@@ -343,6 +379,9 @@ The amenability and coefficient-algebra statements belong to the overlap
 with Reiter–Stegeman and Kaniuth–Lau. Detailed semisimple Plancherel
 formulas, individual reductive duals, and the specialized theories of
 property (T) and random walks require further dedicated inventories.
+
+Leptin's theorem and its variants are surveyed in
+[Forrest–Kaniuth–Lau–Spronk](https://www.math.uwaterloo.ca/~nspronk/papers/forrestkls03.pdf).
 
 Local source copies consulted:
 

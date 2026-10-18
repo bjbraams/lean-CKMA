@@ -3,7 +3,7 @@
 Part of the [mathematical synopsis series](SYNOPSIS.md).
 
 This synopsis selects recurring core material from Section 47 of
-[CKMA-bib.md](CKMA-bib.md) and [CKMA-bib2.md](CKMA-bib2.md).
+[CKMA-bib.md](CKMA-bib.md).
 It treats best approximation, positive operators, direct and inverse
 theorems, polynomial and rational approximation, splines, kernels, sparse
 expansions, and widths. Orthogonal-polynomial spectral theory is developed
@@ -97,7 +97,10 @@ $h\varphi(x)$ where all evaluation points remain in $[-1,1]$.
   Thus derivative approximation and finite-difference smoothness describe
   the same scale without requiring $f$ itself to have derivatives.
 * **20. Jackson's trigonometric theorem.**
-  $E_n^{\mathrm{trig}}(f)_p\leq C_r\omega_r(f,1/n)_p$.
+  $E_n^{\mathrm{trig}}(f)_p\leq C_r\omega_r(f,1/n)_p$. For
+  $f^{(r-1)}$ absolutely continuous, the sharp form is
+  $E_n^{\mathrm{trig}}(f)_\infty\leq K_r(n+1)^{-r}\|f^{(r)}\|_\infty$
+  with the Favard constants $K_r=\frac4\pi\sum_{j\geq0}(-1)^{j(r+1)}(2j+1)^{-r-1}$.
 * **21. Inverse trigonometric estimate.**
   $\omega_r(f,1/n)_p\leq C_rn^{-r}
   \sum_{k=0}^n(k+1)^{r-1}E_k^{\mathrm{trig}}(f)_p$.
@@ -150,8 +153,8 @@ $|w|=\rho$ under $z=(w+w^{-1})/2$.
   $1<\sigma<\rho$.
 * **34. Finite smoothness and coefficients.** For an integer $\nu\geq1$, if $f^{(\nu-1)}$
   is absolutely continuous and $f^{(\nu)}$ has bounded variation,
-  then $a_k=O(k^{-\nu-1})$. For $\nu\geq1$, summation gives
-  uniform truncation error $O(n^{-\nu})$.
+  then $a_k=O(k^{-\nu-1})$, and summation gives uniform truncation
+  error $O(n^{-\nu})$.
 * **35. Chebyshev interpolation stability.** Its Lebesgue constants
   are $(2/\pi)\log n+O(1)$. Hence interpolation is near-best
   with a logarithmic factor.
@@ -161,8 +164,10 @@ $|w|=\rho$ under $z=(w+w^{-1})/2$.
 * **37. Bernstein–Walsh inequality.** For a nonpolar compact set
   $K$ regular for its exterior Dirichlet problem and with connected
   complement, $|P(z)|\leq\|P\|_K e^{n g_K(z,\infty)}$ for
-  $P\in\mathcal P_n$. Green-function level curves replace ellipses
-  in analytic approximation.
+  $P\in\mathcal P_n$. **Walsh's maximal convergence theorem:**
+  $\limsup_n E_n(f)_K^{1/n}\leq1/R$, $R>1$, exactly when $f$ extends
+  holomorphically to the region $\{g_K(\cdot,\infty)<\log R\}$; for
+  $K=[-1,1]$ these regions are the Bernstein ellipses.
 * **38. Rational minimax approximation.** A continuous real function
   on an interval has a best rational approximant of type $(m,n)$
   among real rational functions without interval poles. Limits may
@@ -175,7 +180,8 @@ $|w|=\rho$ under $z=(w+w^{-1})/2$.
 * **40. Newman's theorem.** Best type-$(n,n)$ rational approximation
   to $|x|$ on $[-1,1]$ has error between
   $c_1e^{-c_2\sqrt n}$ and $c_3e^{-c_4\sqrt n}$ for positive
-  constants. Polynomial approximation has order $n^{-1}$ instead.
+  constants; Stahl's sharp asymptotic is $E_{n,n}(|x|)\sim8e^{-\pi\sqrt n}$.
+  Polynomial approximation has exact order $n^{-1}$ instead.
 
 ## Splines and total positivity
 
@@ -208,10 +214,12 @@ a nondecreasing knot sequence $t_i$.
 * **47. Variation diminution.** A B-spline expansion has no more
   strict sign changes than its coefficient sequence. This explains
   positivity and shape-preservation properties of spline constructions.
-* **48. Spline Jackson estimates.** For quasiuniform meshes of
-  maximum spacing $h$, $f\in W^{s,p}$, and $1\leq s\leq k$,
-  some order-$k$ spline satisfies $\|f-s_h\|_p\leq Ch^s\|f^{(s)}\|_p$,
-  $1\leq p\leq\infty$, with fixed degree and mesh-ratio bound.
+* **48. Spline Jackson estimates.** For any knot sequence on $[a,b]$
+  with maximal spacing $h$, $1\leq j\leq k$, $1\leq p\leq\infty$, and
+  $f\in W^{j,p}$, some order-$k$ spline $S$ satisfies
+  $\|f-S\|_p\leq C_kh^j\|f^{(j)}\|_p$; no mesh-ratio bound is needed.
+  For uniform knots, matching Bernstein-type inverse estimates identify
+  the spline approximation spaces with Besov spaces of order below $k-1+1/p$.
 * **49. Local quasi-interpolation.** Bounded local spline operators
   reproducing degree-$(k-1)$ polynomials achieve the corresponding
   smoothness error estimates without solving a global interpolation system.
@@ -246,7 +254,7 @@ $h_{X,\Omega}=\sup_{x\in\Omega}\min_{x_j\in X}|x-x_j|$.
   to $H^s(\Omega)$, $s>d/2$, on a bounded domain with the
   standard extension and interior-cone properties, then
   $\|f-s_X\|_\infty\leq Ch_{X,\Omega}^{s-d/2}\|f\|_{H^s}$
-  for sufficiently dense nodes and the corresponding Sobolev kernels.
+  for sufficiently small fill distance.
 * **56. Bochner criterion.** A continuous translation-invariant kernel
   $K(x-y)$ is positive definite exactly when it is the Fourier
   transform of a finite positive measure. A spectral density positive
@@ -291,26 +299,31 @@ index sets have comparable norms uniformly.
   Hilbert spaces with singular values $s_1\geq s_2\geq\cdots$,
   then $d_m(TB)=s_{m+1}$. Best rank-$m$ linear approximation
   has the same worst-case error.
-* **65. Sobolev widths.** For the unit ball of $H^s(\mathbb T^d)$
+* **65. Widths of finite-dimensional balls.** The Gelfand widths of the
+  $\ell^1$ ball satisfy $d^m(B_1^N;\ell_2^N)\asymp
+  \min\{1,((1+\log(N/m))/m)^{1/2}\}$ (Kashin; Garnaev–Gluskin), and by
+  duality the same holds for the Kolmogorov widths $d_m(B_2^N;\ell_\infty^N)$.
+  Discretization turns this into the Kashin–Gluskin orders of Sobolev
+  widths in $L^q$, $q>2$, which are smaller than the linear widths.
+* **66. Sobolev widths.** For the unit ball of $H^s(\mathbb T^d)$
   in $L^2$, $d_m\asymp m^{-s/d}$, $s>0$.
   Frequency counting makes the dependence on dimension explicit.
-* **66. Mixed-smoothness widths.** For the periodic Hilbert space
+* **67. Mixed-smoothness widths.** For the periodic Hilbert space
   with Fourier weight $\prod_{j=1}^d(1+|k_j|^2)^s$,
   $d_m\asymp m^{-s}(\log m)^{s(d-1)}$ in $L^2$.
   Hyperbolic crosses give the corresponding optimal spectral spaces.
-* **67. Hyperbolic-cross counting.**
+* **68. Hyperbolic-cross counting.**
   $\#\{k\in\mathbb Z^d:\prod_j\max(1,|k_j|)\leq N\}
   \asymp N(\log N)^{d-1}$ for fixed $d$ and large $N$.
-* **68. Multivariate polynomial dimension.** Total-degree-$n$
+* **69. Multivariate polynomial dimension.** Total-degree-$n$
   polynomial spaces in $d$ variables have dimension $\binom{n+d}{d}$;
   tensor degree bounds give $\prod_j(n_j+1)$.
-  These counts enter error-versus-dimension comparisons.
-* **69. Tensor analytic approximation.** Holomorphy in a product
+* **70. Tensor analytic approximation.** Holomorphy in a product
   of Bernstein ellipses, with boundedness on their closures, gives
   product-geometric coefficient decay.
   Tensor truncation errors are bounded by a constant times
   $\sum_j\rho_j^{-n_j}$ with the other ellipse parameters fixed.
-* **70. Approximation on spheres.** On $S^{d-1}$, spherical
+* **71. Approximation on spheres.** On $S^{d-1}$, spherical
   polynomials satisfy Jackson and inverse estimates with rotational
   moduli of smoothness. Their degree-$n$ dimension has order
   $n^{d-1}$, giving the manifold dimension in approximation rates.

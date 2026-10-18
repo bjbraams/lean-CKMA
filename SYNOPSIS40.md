@@ -3,7 +3,7 @@
 Part of the [mathematical synopsis series](SYNOPSIS.md).
 
 This synopsis selects the recurring graduate-course material of Section 40 of
-[CKMA-bib.md](CKMA-bib.md) and [CKMA-bib2.md](CKMA-bib2.md).
+[CKMA-bib.md](CKMA-bib.md).
 It treats the local and global theory of holomorphic functions, contour
 integration, harmonic functions, normal families, conformal mapping,
 approximation, and analytic continuation. Sections 41–44 develop the
@@ -89,9 +89,10 @@ $\partial_{\bar z}=\frac12(\partial_x+i\partial_y)$.
   $|f|$ forces $f$ to be constant. On a bounded domain, a function
   holomorphic inside and continuous on the closure is bounded by its
   boundary supremum.
-* **18. Minimum modulus principle.** A nonvanishing holomorphic
-  function cannot have an interior strict positive minimum of its
-  modulus unless it is constant. Apply the maximum principle to $1/f$.
+* **18. Minimum modulus principle.** If $f$ is holomorphic and
+  zero-free on a domain and $|f|$ has a local minimum, then $f$ is
+  constant. Hence a nonconstant $f$ continuous on the closure of a bounded
+  domain and holomorphic inside attains $\min|f|$ on the boundary or at a zero.
 * **19. Liouville and polynomial growth.** A bounded entire function
   is constant. An entire function satisfying
   $|f(z)|\leq C(1+|z|)^N$ is a polynomial of degree at most $N$.
@@ -164,12 +165,13 @@ in its Laurent expansion.
 * **36. Stability of univalence.** A locally uniform limit of injective
   holomorphic functions on a domain is injective or constant.
 * **37. Jensen's formula.** If $f$ is holomorphic near the closed
-  disk of radius $r$, $f(0)\ne0$, and $f$ has no zeros on $|z|=r$, then
+  disk of radius $r$ and $f(0)\ne0$, then
   $$
   \log|f(0)|+\sum_{|a_j|<r}\log\frac r{|a_j|}
   =\frac1{2\pi}\int_0^{2\pi}\log|f(re^{it})|dt.
   $$
-  Multiplicities are included; zeros at the center are removed first.
+  Multiplicities are included; zeros on $|z|=r$ are allowed, since
+  $\log|f|$ is then still integrable on the circle.
 
 ## Harmonic functions and boundary values
 
@@ -216,6 +218,12 @@ $P_r(t)=(1-r^2)/(1-2r\cos t+r^2)$.
   domain admits a unique continuous harmonic extension of every
   continuous boundary function. A Riemann map transfers the Poisson
   solution using its boundary homeomorphism.
+* **47. Perron method.** On a bounded domain, the supremum of subharmonic
+  functions lying below continuous boundary data $h$ on $\partial\Omega$ is
+  harmonic. It attains the value $h(\zeta)$ at every regular boundary point
+  $\zeta$, and $\zeta$ is regular exactly when a barrier exists there. If no
+  component of $\widehat{\mathbb C}\setminus\Omega$ is a single point,
+  every boundary point is regular and the Dirichlet problem is solvable.
 
 ## Normal families and conformal mapping
 
@@ -224,86 +232,96 @@ locally uniformly in the spherical metric to a meromorphic function or
 the constant infinity. For locally bounded holomorphic families ordinary
 locally uniform convergence suffices.
 
-* **47. Montel compactness.** Every locally bounded family of
+* **48. Montel compactness.** Every locally bounded family of
   holomorphic functions is relatively compact for locally uniform
   convergence. Cauchy estimates give the required equicontinuity.
-* **48. Montel omission criterion.** A family of meromorphic functions
+* **49. Montel omission criterion.** A family of meromorphic functions
   omitting the same three distinct spherical values is normal.
   Holomorphic functions omitting two fixed finite values form a normal
   family in the spherical sense.
-* **49. Vitali convergence.** A locally bounded holomorphic sequence
+* **50. Vitali convergence.** A locally bounded holomorphic sequence
   converging pointwise on a set with an accumulation point in the
   domain converges locally uniformly throughout the domain.
-* **50. Riemann mapping theorem.** Every simply connected proper
+* **51. Riemann mapping theorem.** Every simply connected proper
   plane domain is biholomorphic to $\mathbb D$. Given $a\in\Omega$,
   the map with $f(a)=0$ and $f'(a)>0$ is unique.
-* **51. Disk and half-plane automorphisms.** The disk automorphisms
+* **52. Characterizations of simple connectivity.** For a plane domain
+  $\Omega$ the following are equivalent: $\widehat{\mathbb C}\setminus\Omega$
+  is connected; every cycle in $\Omega$ is null-homologous; every
+  holomorphic function has a primitive; every zero-free holomorphic
+  function has a holomorphic logarithm; every harmonic function has a
+  harmonic conjugate; $\Omega$ is $\mathbb C$ or biholomorphic to $\mathbb D$.
+* **53. Disk and half-plane automorphisms.** The disk automorphisms
   are $e^{i\theta}(z-a)/(1-\bar az)$; the upper-half-plane
   automorphisms are real Möbius transformations of positive determinant.
   Sphere automorphisms are all complex Möbius transformations.
-* **52. Carathéodory extension theorem.** A conformal map between
+* **54. Finite Blaschke products.** If $f$ is holomorphic in $\mathbb D$,
+  continuous on its closure, and $|f|=1$ on $\partial\mathbb D$, then $f$
+  is a unimodular constant times a finite product
+  $\prod_j(z-a_j)/(1-\bar a_jz)$. These are exactly the proper
+  holomorphic self-maps of $\mathbb D$.
+* **55. Carathéodory extension theorem.** A conformal map between
   Jordan domains extends to a homeomorphism between their closures.
   For general simply connected domains the natural replacement uses prime ends.
-* **53. Classification of annuli.** Every doubly connected plane
+* **56. Classification of annuli.** Every doubly connected plane
   domain whose complementary components are nondegenerate is conformal
   to $r<|z|<1$ for a unique $0<r<1$. Its conformal modulus is
   $(2\pi)^{-1}\log(1/r)$.
-* **54. Little Picard theorem.** A nonconstant entire function omits
+* **57. Little Picard theorem.** A nonconstant entire function omits
   at most one complex value. A nonconstant meromorphic function on
   $\mathbb C$ omits at most two values of the sphere.
-* **55. Bloch's theorem.** There is an absolute $b>0$ such that
+* **58. Bloch's theorem.** There is an absolute $b>0$ such that
   every holomorphic $f$ on $\mathbb D$ with $f'(0)=1$ has an
   image containing a disk of radius $b$ on which a holomorphic inverse
   branch exists. The disk need not be centered at $f(0)$.
-* **56. Phragmén–Lindelöf principle.** If a function holomorphic in
+* **59. Phragmén–Lindelöf principle.** If a function holomorphic in
   a sector of opening $\alpha$ is continuous on its boundary, bounded
   there by $M$, and grows at most $C\exp(C|z|^\rho)$ with
   $\rho<\pi/\alpha$, then it is bounded by $M$ throughout the sector.
 
 ## Approximation, prescribed data, and continuation
 
-* **57. Runge approximation on compact sets.** If $K\subset\mathbb C$
+* **60. Runge approximation on compact sets.** If $K\subset\mathbb C$
   is compact and $f$ is holomorphic near $K$, it is uniformly
   approximable there by rational functions with poles in any prescribed
   set meeting every component of $\widehat{\mathbb C}\setminus K$.
   A pole at infinity means a polynomial part.
-* **58. Runge domains.** Every holomorphic function on a plane domain
+* **61. Runge domains.** Every holomorphic function on a plane domain
   is locally uniformly approximable by rational functions with poles
   outside the domain. Polynomial approximation for all such functions
   holds exactly when its spherical complement is connected.
-* **59. Mergelyan's theorem.** If compact $K\subset\mathbb C$ has
+* **62. Mergelyan's theorem.** If compact $K\subset\mathbb C$ has
   connected complement, every continuous function on $K$ holomorphic
   on its interior is uniformly approximable by polynomials.
-* **60. Mittag–Leffler theorem.** On a plane domain, arbitrarily
+* **63. Mittag–Leffler theorem.** On a plane domain, arbitrarily
   prescribed finite principal parts at a discrete set are the principal
   parts of a meromorphic function having no other poles.
-* **61. Weierstrass zero theorem.** Any discrete set in a plane domain,
+* **64. Weierstrass zero theorem.** Any discrete set in a plane domain,
   with assigned positive integer multiplicities, is exactly the zero
   divisor of a holomorphic function there.
-* **62. Entire canonical products.** For a sequence $a_j\to\infty$,
+* **65. Entire canonical products.** For a sequence $a_j\to\infty$,
   suitable elementary factors
   $E_p(w)=(1-w)\exp(w+\cdots+w^p/p)$ give a normally convergent
   product with precisely those zeros. For $p=0$ use $E_0(w)=1-w$.
-* **63. Quotients and divisors.** Every meromorphic function on a
+* **66. Quotients and divisors.** Every meromorphic function on a
   plane domain is a quotient of two holomorphic functions. Two
   holomorphic functions with the same zero divisor differ by a
   zero-free holomorphic factor, which is an exponential on simply
   connected domains.
-* **64. Holomorphic interpolation.** Arbitrary finite jets prescribed
+* **67. Holomorphic interpolation.** Arbitrary finite jets prescribed
   at points of a discrete subset of a plane domain are realized by
-  a holomorphic function. No growth bound is promised by this theorem.
-* **65. Uniqueness of continuation.** A holomorphic germ has at most
+  a holomorphic function.
+* **68. Uniqueness of continuation.** A holomorphic germ has at most
   one analytic continuation along a fixed path. Continuations along
   homotopic paths with fixed endpoints agree when continuation is
   possible throughout the homotopy.
-* **66. Monodromy theorem.** A germ continuable along every path of
+* **69. Monodromy theorem.** A germ continuable along every path of
   a simply connected domain defines a single-valued holomorphic
   function on that domain.
-* **67. Natural boundaries exist.** A power series can have its entire
+* **70. Natural boundaries exist.** A power series can have its entire
   convergence circle as a natural boundary. For example
-  $\sum_{j\geq0}z^{2^j}$ has the unit circle as a natural boundary;
-  analytic continuation is therefore an additional property.
-* **68. Mittag–Leffler expansions and products.** Normal convergence
+  $\sum_{j\geq0}z^{2^j}$ has the unit circle as a natural boundary.
+* **71. Mittag–Leffler expansions and products.** Normal convergence
   of regularized partial-fraction series and canonical products permits
   logarithmic differentiation away from their divisors. In particular
   $$
@@ -316,33 +334,42 @@ locally uniform convergence suffices.
 These examples recur across the broad courses; their systematic special-function
 theory belongs to Section 49.
 
-* **69. Gamma continuation.** The integral
+* **72. Gamma continuation.** The integral
   $\Gamma(z)=\int_0^\infty e^{-t}t^{z-1}dt$ for $\Re z>0$
   continues meromorphically to $\mathbb C$, has no zeros, and has
   simple poles at $-n$ with residues $(-1)^n/n!$.
   It satisfies $\Gamma(z+1)=z\Gamma(z)$.
-* **70. Beta and reflection formulas.** For $\Re z,\Re w>0$,
+* **73. Beta and reflection formulas.** For $\Re z,\Re w>0$,
   $B(z,w)=\Gamma(z)\Gamma(w)/\Gamma(z+w)$, and meromorphic
   continuation gives $\Gamma(z)\Gamma(1-z)=\pi/\sin\pi z$.
-* **71. Stirling asymptotics.** Uniformly in
+* **74. Stirling asymptotics.** Uniformly in
   $|\arg z|\leq\pi-\varepsilon$,
   $\Gamma(z)=\sqrt{2\pi}\,z^{z-1/2}e^{-z}(1+O_\varepsilon(|z|^{-1}))$
   as $|z|\to\infty$, with the principal logarithm in the power.
-* **72. Fourier decay from contour shifting.** If $f$ is holomorphic
+* **75. Fourier decay from contour shifting.** If $f$ is holomorphic
   on $|\Im z|<a$ and, for each $b<a$, satisfies
   $|f(x+iy)|\leq C_b(1+|x|)^{-1-\delta_b}$ uniformly for
   $|y|\leq b$, with $\delta_b>0$, then its Fourier transform
   $\widehat f(\xi)=\int f(x)e^{-ix\xi}dx$ decays like
   $O_b(e^{-b|\xi|})$ for every $0<b<a$.
-* **73. Elliptic residue constraint.** A meromorphic function periodic
+* **76. Elliptic residue constraint.** A meromorphic function periodic
   under a rank-two lattice has equally many zeros and poles in a
   fundamental parallelogram, with multiplicities, and total residue zero.
   A holomorphic doubly periodic function is constant.
-* **74. Local solvability of $\bar\partial$.** For compactly supported
+* **77. Weierstrass $\wp$-function.** For a lattice $\Lambda$,
+  $\wp(z)=z^{-2}+\sum_{\omega\in\Lambda\setminus0}
+  ((z-\omega)^{-2}-\omega^{-2})$ is even, $\Lambda$-periodic, with double
+  poles at $\Lambda$, and satisfies $\wp'^2=4\wp^3-g_2\wp-g_3$ with
+  $g_2=60\sum'\omega^{-4}$, $g_3=140\sum'\omega^{-6}$. Every
+  $\Lambda$-elliptic function is a rational function of $\wp$ and $\wp'$.
+* **78. Local solvability of $\bar\partial$.** For compactly supported
   smooth $g$ on $\mathbb C$,
   $u(z)=\pi^{-1}\int_{\mathbb C}g(\zeta)/(z-\zeta)\,dA(\zeta)$
-  satisfies $\partial_{\bar z}u=g$. This gives the Cauchy–Green
-  method for correcting smooth functions to holomorphic ones.
+  satisfies $\partial_{\bar z}u=g$. It comes from the Cauchy–Pompeiu
+  formula: for $f\in C^1(\overline\Omega)$ on a bounded domain with
+  piecewise $C^1$ boundary and $z\in\Omega$,
+  $f(z)=\frac1{2\pi i}\int_{\partial\Omega}\frac{f(\zeta)}{\zeta-z}d\zeta
+  -\frac1\pi\int_\Omega\frac{\partial_{\bar\zeta}f(\zeta)}{\zeta-z}dA(\zeta)$.
 
 ## Reference guide
 

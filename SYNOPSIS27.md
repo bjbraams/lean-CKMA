@@ -3,7 +3,7 @@
 Part of the [mathematical synopsis series](SYNOPSIS.md).
 
 This synopsis selects recurring material from Section 27 of
-[CKMA-bib.md](CKMA-bib.md) and [CKMA-bib2.md](CKMA-bib2.md): Fourier
+[CKMA-bib.md](CKMA-bib.md): Fourier
 transforms and series, maximal and singular integrals, multipliers, weighted
 estimates, Hardy spaces, and oscillatory integrals. The last topics belong
 to the working core of the advanced monographs, rather than to every first
@@ -81,7 +81,10 @@ test class when an integral is not initially defined pointwise.
   entire function with bound
   $|F(z)|\leq C(1+|z|)^N e^{2\pi H_K(\operatorname{Im}z)}$.
   Conversely such an entire function is the transform of a distribution
-  supported in $K$, where $H_K(y)=\sup_{x\in K}x\cdot y$.
+  supported in $K$, where $H_K(y)=\sup_{x\in K}x\cdot y$. In the $L^2$
+  case (Paley–Wiener), $f\in L^2(\mathbb R)$ has $\widehat f$ supported in
+  $[-A,A]$ exactly when $f$ extends to an entire function of exponential
+  type at most $2\pi A$.
 
 ## Fourier series, summation, and convergence
 
@@ -120,8 +123,8 @@ On $\mathbb T$, $S_Nf=\sum_{|k|\leq N}\widehat f(k)e^{2\pi ikx}$.
   Fourier series converge almost everywhere for $f\in L^p$.
 * **23. Divergence at the integrable endpoint.** There is an
   $f\in L^1(\mathbb T)$ whose ordinary Fourier series diverges
-  almost everywhere. Thus Fejér summability and ordinary convergence
-  have different endpoint behavior.
+  everywhere (Kolmogorov). There are also continuous functions whose
+  Fourier series diverge at a given point (du Bois-Reymond).
 * **24. Wiener's inversion theorem.** If
   $\sum_k|\widehat f(k)|<\infty$ and $f$ has no zeros on
   $\mathbb T^d$, then $1/f$ also has absolutely summable Fourier
@@ -207,11 +210,11 @@ $0<\delta\leq1$ in each variable away from the diagonal.
   $\sup_\xi|\xi_1^{\alpha_1}\cdots\xi_d^{\alpha_d}
   \partial^\alpha m(\xi)|<\infty$ for all $\alpha_j\in\{0,1\}$.
   The conclusion holds for $1<p<\infty$.
-* **41. Cotlar–Stein almost orthogonality.** If a family on a Hilbert
-  space has uniformly summable bounds for
-  $\|T_j^*T_k\|^{1/2}$ and $\|T_jT_k^*\|^{1/2}$ along rows and
-  columns, its finite sums are uniformly bounded. This controls
-  decompositions into interacting scales.
+* **41. Cotlar–Stein almost orthogonality.** If bounded operators $T_j$
+  on a Hilbert space satisfy
+  $\sup_j\sum_k\|T_j^*T_k\|^{1/2}\leq A$ and
+  $\sup_j\sum_k\|T_jT_k^*\|^{1/2}\leq A$, then every finite sum
+  satisfies $\|\sum_jT_j\|\leq A$, and $\sum_jT_j$ converges strongly.
 * **42. The $T(1)$ theorem.** A standard singular-integral kernel defines
   an $L^2$ bounded operator precisely when its distributional operator
   satisfies the weak boundedness property and $T1,T^*1\in\mathrm{BMO}$.
@@ -244,7 +247,11 @@ $\|f\|_{L^p(w)}=(\int|f|^pw)^{1/p}$.
 * **47. Weighted singular integrals.** Every standard
   Calderón–Zygmund operator is bounded on $L^p(w)$ for $w\in A_p$.
   The bound depends only on the exponent, the kernel and $L^2$ bounds,
-  and the $A_p$ characteristic of the weight.
+  and $[w]_{A_p}$; sharply, it is
+  $C[w]_{A_p}^{\max(1,1/(p-1))}$ (Hytönen's $A_2$ theorem with
+  extrapolation). Lerner's pointwise domination of $|Tf|$ by finitely
+  many sparse operators $\sum_{Q\in\mathcal S}\langle|f|\rangle_Q1_Q$
+  gives a short proof.
 * **48. Rubio de Francia extrapolation.** If a family of nonnegative
   pairs $(f,g)$ satisfies $\|f\|_{L^{p_0}(w)}\leq C([w]_{A_{p_0}})
   \|g\|_{L^{p_0}(w)}$ for every $w\in A_{p_0}$ at one
@@ -257,22 +264,32 @@ $\|f\|_{L^p(w)}=(\int|f|^pw)^{1/p}$.
 * **50. Singular-integral endpoints.** Standard Calderón–Zygmund
   operators map $L^\infty$ into BMO, modulo constants, and map
   the real Hardy space $H^1$ into $L^1$.
-* **51. Atomic decomposition of $H^1$.** The space defined by the
+* **51. Sharp maximal function.** With
+  $M^\#f(x)=\sup_{Q\ni x}|Q|^{-1}\int_Q|f-f_Q|$, so that
+  $\|M^\#f\|_\infty=\|f\|_{\mathrm{BMO}}$, one has
+  $\|f\|_p\leq C_{d,p}\|M^\#f\|_p$ whenever $f\in L^{p_0}$ for some
+  $p_0\leq p<\infty$ (Fefferman–Stein). This yields interpolation between
+  $L^{p_0}$ and BMO for linear operators.
+* **52. Atomic decomposition of $H^1$.** The space defined by the
   integrability of a smooth grand maximal function consists exactly of
   sums $f=\sum_j\lambda_ja_j$, $\sum|\lambda_j|<\infty$,
   where each atom is supported in a cube $Q$, has integral zero, and
   satisfies $\|a_j\|_\infty\leq|Q|^{-1}$.
-  The infimum coefficient sum is an equivalent norm.
-* **52. Hardy–BMO duality.** $(H^1(\mathbb R^d))^*=\mathrm{BMO}/\mathbb C$
+  The infimum coefficient sum is an equivalent norm. The Poisson,
+  smooth, and grand maximal functions give the same space for every
+  $0<p<\infty$ (Fefferman–Stein), and $H^p=L^p$ for $p>1$.
+* **53. Hardy–BMO duality.** $(H^1(\mathbb R^d))^*=\mathrm{BMO}/\mathbb C$
   through the extension of $\int fb$ from test functions. The dual norm
   is equivalent to the BMO seminorm.
-* **53. Riesz-transform characterization.** For $f\in L^1$,
+* **54. Riesz-transform characterization.** For $f\in L^1$,
   $f\in H^1$ exactly when $R_jf\in L^1$ for every $j$;
   $\|f\|_{H^1}\asymp\|f\|_1+\sum_j\|R_jf\|_1$.
-* **54. BMO commutators.** If $b\in\mathrm{BMO}$ and $T$ is a
+* **55. BMO commutators.** If $b\in\mathrm{BMO}$ and $T$ is a
   standard Calderón–Zygmund operator, then
   $[b,T]f=bTf-T(bf)$ is bounded on $L^p$, $1<p<\infty$,
-  with norm at most $C\|b\|_{\mathrm{BMO}}$.
+  with norm at most $C\|b\|_{\mathrm{BMO}}$. Conversely, boundedness of
+  all $[b,R_j]$ on some $L^p$ forces $b\in\mathrm{BMO}$
+  (Coifman–Rochberg–Weiss).
 
 ## Frequency decompositions and oscillation
 
@@ -280,13 +297,13 @@ Let $\Delta_j$ be smooth annular Fourier projections forming a homogeneous
 resolution away from zero. Homogeneous distribution identities are understood
 modulo polynomials when needed.
 
-* **55. Littlewood–Paley theorem.** For $1<p<\infty$,
+* **56. Littlewood–Paley theorem.** For $1<p<\infty$,
   $\|f\|_p\asymp\|(\sum_{j\in\mathbb Z}|\Delta_jf|^2)^{1/2}\|_p$.
   The analogous inhomogeneous result includes a low-frequency projection.
-* **56. Randomization and unconditional frequency sums.** Uniform
-  $L^p$ bounds for $\sum_j\varepsilon_j\Delta_j$, $\varepsilon_j=\pm1$,
-  together with the Khintchine inequalities give the square-function
-  estimates. Smooth dyadic recombinations are therefore unconditional.
+  The upper bound follows from uniform $L^p$ bounds for
+  $\sum_j\varepsilon_j\Delta_j$, $\varepsilon_j=\pm1$, and Khintchine's
+  inequality; the lower bound follows by duality. Sharp frequency cutoffs
+  to dyadic annuli give the same equivalence in one dimension.
 * **57. Poisson square functions.** For $1<p<\infty$,
   $\|f\|_p\asymp\|(\int_0^\infty|t\partial_tP_t*f|^2dt/t)^{1/2}\|_p$.
   Lusin area integrals, integrating $|\nabla P_t*f|^2t^{1-d}$ over
@@ -344,9 +361,8 @@ modulo polynomials when needed.
   $1\leq p<\infty$ and at Lebesgue points.
 * **68. The ball multiplier obstruction.** For $d\geq2$, the
   characteristic function of the Euclidean ball is an $L^p$ Fourier
-  multiplier, $1<p<\infty$, only for $p=2$.
-  Smooth-cutoff theorems cannot therefore be extended to arbitrary
-  sharp curved frequency cutoffs.
+  multiplier, $1<p<\infty$, only for $p=2$ (C. Fefferman, via Besicovitch
+  sets).
 
 ## Reference guide
 

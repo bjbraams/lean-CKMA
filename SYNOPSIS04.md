@@ -3,7 +3,7 @@
 Part of the [mathematical synopsis series](SYNOPSIS.md).
 
 This synopsis concerns the common graduate core of Section 04 of
-[CKMA-bib.md](CKMA-bib.md) and [CKMA-bib2.md](CKMA-bib2.md): construction of
+[CKMA-bib.md](CKMA-bib.md): construction of
 measures, Lebesgue integration, convergence, product measures, differentiation,
 and the function spaces and representation theorems built from them. It also
 includes the recurring structural results on Radon, invariant, and vector
@@ -53,7 +53,10 @@ subsets and is monotone and countably subadditive, with value zero at the empty 
 * **5. Lebesgue measure.** There is a unique translation-invariant Borel measure
   on $\mathbb R^n$ assigning the unit cube mass one. Its completion is Lebesgue
   measure; it is regular and satisfies $m(TA)=|\det T|m(A)$ for invertible linear
-  maps $T$ and measurable $A$.
+  maps $T$ and measurable $A$. Not every subset of $\mathbb R^n$ is Lebesgue
+  measurable (Vitali): no translation-invariant measure defined on all subsets
+  gives the unit cube mass one. The completion of $\mathcal L^n\otimes\mathcal L^k$
+  is $\mathcal L^{n+k}$.
 * **6. Lebesgue–Stieltjes measures.** An increasing right-continuous function
   $F:\mathbb R\to\mathbb R$ determines a unique locally finite Borel measure by
   $\mu_F((a,b])=F(b)-F(a)$. Conversely, every locally finite Borel measure on
@@ -91,9 +94,10 @@ or real and imaginary parts.
 * **14. Jensen's inequality.** On a probability space, for an integrable
   real-valued $f$ taking values in an interval and a finite convex function
   $\Phi$ on that interval,
-  $\Phi(\int f\,d\mu)\leq\int\Phi(f)\,d\mu$ whenever the latter integral is
-  defined. The usual integrability hypotheses give the corresponding conditional
-  inequality.
+  $\Phi(\int f\,d\mu)\leq\int\Phi(f)\,d\mu$; the right side is always defined,
+  possibly $+\infty$, since $\Phi$ has an affine minorant. The conditional form
+  $\Phi(\mathbb E[f\mid\mathcal G])\leq\mathbb E[\Phi(f)\mid\mathcal G]$ holds
+  almost surely when $\Phi(f)$ is also integrable.
 * **15. Riemann and Lebesgue integrals.** A bounded real function on a compact
   interval is Riemann integrable exactly when its discontinuity set is Lebesgue
   null. In that case the Riemann and Lebesgue integrals agree.
@@ -107,9 +111,7 @@ integrable** if
 $\sup_{f\in\mathcal F}\int_{\{|f|>R\}}|f|\,d\mu\to0$ as $R\to\infty$.
 On such a space, uniform integrability is equivalently a uniform $L^1$ bound
 together with uniform absolute continuity of the integrals over sets of small
-measure. For infinite measure spaces, global $L^1$ convergence additionally
-requires control of mass escaping through the underlying space; local
-convergence in measure by itself cannot supply this.
+measure.
 
 * **16. Markov–Chebyshev bounds.** For $p>0$ and $t>0$,
   $\mu\{|f|>t\}\leq t^{-p}\|f\|_p^p$. Thus $L^p$ convergence for finite $p$
@@ -133,8 +135,16 @@ convergence in measure by itself cannot supply this.
 * **21. Vitali's convergence theorem.** On a finite measure space, if
   $f_n\to f$ in measure, then $f_n\to f$ in $L^1$ exactly when $\{f_n\}$ is
   uniformly integrable. In particular, the latter hypotheses imply $f\in L^1$.
-* **22. Scheffé's lemma.** If $f_n,f\geq0$ are integrable, $f_n\to f$ almost
-  everywhere, and $\int f_n\to\int f$, then $\|f_n-f\|_1\to0$.
+  On an arbitrary measure space the same holds for $L^p$, $1\leq p<\infty$, if
+  uniform integrability of $\{|f_n|^p\}$ is supplemented by tightness: for every
+  $\varepsilon>0$ some set $E$ of finite measure has
+  $\sup_n\int_{X\setminus E}|f_n|^p\,d\mu<\varepsilon$.
+* **22. Scheffé's lemma and the Brezis–Lieb lemma.** If $f_n,f\geq0$ are
+  integrable, $f_n\to f$ almost everywhere, and $\int f_n\to\int f$, then
+  $\|f_n-f\|_1\to0$. More generally, for $0<p<\infty$, if $f_n\to f$ almost
+  everywhere and $\sup_n\|f_n\|_p<\infty$, then
+  $\|f_n\|_p^p-\|f_n-f\|_p^p\to\|f\|_p^p$; hence
+  $\|f_n\|_p\to\|f\|_p$ implies $\|f_n-f\|_p\to0$.
 
 ## Products, image measures, and parameter integrals
 
@@ -198,8 +208,9 @@ $|\nu|(E)=\sup\sum_j|\nu(E_j)|$, over finite measurable partitions of $E$.
   $\lambda\ll\nu\ll\mu$,
   $$\frac{d\lambda}{d\mu}
     =\frac{d\lambda}{d\nu}\frac{d\nu}{d\mu}\quad\mu\text{-almost everywhere},$$
-  with compatible versions on zero-density sets. For a measurable $h$ with
-  $\int|h|\,d\mu<\infty$, $|h\mu|=|h|\mu$.
+  and $\int g\,d\nu=\int g\,\frac{d\nu}{d\mu}\,d\mu$ for nonnegative measurable
+  $g$. For $h\in L^1(\mu)$, the complex measure $h\mu$ has variation
+  $|h\mu|=|h|\mu$.
 
 ## $L^p$ spaces and the analytic operations on them
 
@@ -211,8 +222,8 @@ supremum norm. Exponents $p,q$ are **conjugate** if $1/p+1/q=1$.
   $\|fg\|_1\leq\|f\|_p\|g\|_q$. In particular $L^2$ satisfies the
   Cauchy–Schwarz inequality.
 * **36. Minkowski's inequalities.** For $p\geq1$,
-  $\|f+g\|_p\leq\|f\|_p+\|g\|_p$. For measurable $F$ on a product of
-  $\sigma$-finite spaces,
+  $\|f+g\|_p\leq\|f\|_p+\|g\|_p$. For $1\leq p<\infty$ and measurable $F$
+  on a product of $\sigma$-finite spaces,
   $$\left\|\int F(\cdot,y)\,d\nu(y)\right\|_p
     \leq\int\|F(\cdot,y)\|_p\,d\nu(y)$$
   whenever the right side is finite.
@@ -225,11 +236,14 @@ supremum norm. Exponents $p,q$ are **conjugate** if $1/p+1/q=1$.
 * **39. Duality.** On a $\sigma$-finite space and for $1\leq p<\infty$,
   every continuous linear functional on $L^p$ has the form
   $f\mapsto\int f\overline g\,d\mu$ for a unique $g\in L^q$, and its norm is
-  $\|g\|_q$. Over the real scalars the conjugation is omitted.
+  $\|g\|_q$. Over the real scalars the conjugation is omitted. For $1<p<\infty$
+  no $\sigma$-finiteness is needed; the dual of $L^\infty$ is in general strictly
+  larger than $L^1$ (it is a space of finitely additive measures).
 * **40. Reflexivity and weak compactness.** For $1<p<\infty$, $L^p$ is reflexive,
   so its bounded sets are relatively weakly compact. On a finite measure space,
   a subset of $L^1$ is relatively weakly compact exactly when it is uniformly
-  integrable (Dunford–Pettis).
+  integrable (Dunford–Pettis); by Eberlein–Šmulian, relative weak compactness
+  and relative weak sequential compactness coincide here.
 * **41. Continuity of translations.** For $f\in L^p(\mathbb R^n)$,
   $1\leq p<\infty$, $\|f(\cdot-h)-f\|_p\to0$ as $h\to0$.
 * **42. Approximate identities.** If $\phi_\varepsilon\geq0$ have integral one
@@ -250,15 +264,21 @@ if the sums of absolute increments over partitions are uniformly bounded.
 
 * **44. Lebesgue differentiation.** Almost every point of a locally integrable
   function is a Lebesgue point. In particular,
-  $m(B(x,r))^{-1}\int_{B(x,r)}f\,dm\to f(x)$ almost everywhere.
+  $m(B(x,r))^{-1}\int_{B(x,r)}f\,dm\to f(x)$ almost everywhere. The key
+  estimate is the Hardy–Littlewood maximal inequality
+  $m\{Mf>t\}\leq3^nt^{-1}\|f\|_1$ for the centered maximal function
+  $Mf(x)=\sup_{r>0}m(B(x,r))^{-1}\int_{B(x,r)}|f|\,dm$, obtained from the
+  Vitali covering lemma; see Section 05.
 * **45. Density theorem.** For measurable $E\subseteq\mathbb R^n$,
   $m(E\cap B(x,r))/m(B(x,r))\to1_E(x)$ for almost every $x$.
 * **46. Fundamental theorem of Lebesgue calculus.** A function $F$ on $[a,b]$
   is absolutely continuous exactly when
   $$F(x)=F(a)+\int_a^x g(t)\,dt\qquad(g\in L^1[a,b]).$$
-  In this case $F'=g$ almost everywhere. Increasing functions, and hence functions
-  of bounded variation, are differentiable almost everywhere; absolute continuity
-  is the condition that excludes a singular part in their derivative measures.
+  In this case $F'=g$ almost everywhere. An increasing $F$ is differentiable
+  almost everywhere with $F'\in L^1$ and $\int_a^bF'\leq F(b)-F(a)$; hence every
+  function of bounded variation is differentiable almost everywhere. Equality
+  on all subintervals holds exactly when $F$ is absolutely continuous; the Cantor
+  function shows that it can fail for continuous increasing $F$.
 * **47. Change of variables.** For a $C^1$ diffeomorphism $T:U\to V$ between
   open subsets of $\mathbb R^n$,
   $$\int_V f(y)\,dy=\int_U f(Tx)|\det DT(x)|\,dx$$
@@ -288,11 +308,14 @@ isomorphic to the Borel space of a Polish space.
 * **49. Regularity on Polish spaces.** Every finite Borel measure on a Polish
   space is tight and Radon. In Euclidean space, measurable sets can be approximated
   from outside by open sets and finite-measure sets from inside by compact sets.
-* **50. Riesz representation.** On a second-countable locally compact Hausdorff
-  space, a positive
-  linear functional on $C_c(X)$ is integration against a unique Radon measure.
-  Here the representing measure can also be chosen outer regular on Borel sets;
-  this is the usual regular-measure formulation of the theorem.
+* **50. Riesz representation.** On a locally compact Hausdorff space $X$, every
+  positive linear functional $I$ on $C_c(X)$ has the form $I(f)=\int f\,d\mu$
+  for a unique Borel measure $\mu$ that is finite on compact sets, outer regular
+  on Borel sets, and inner regular on open sets. If $X$ is $\sigma$-compact,
+  $\mu$ is inner regular on all Borel sets, hence Radon in the above sense. If
+  every open subset is $\sigma$-compact (for instance if $X$ is second countable),
+  every Borel measure finite on compact sets is regular, so $\mu$ is the only such
+  measure representing $I$.
 * **51. The dual of $C_0(X)$.** Every bounded linear functional on $C_0(X)$ is
   integration against a unique finite regular signed or complex Borel measure,
   and the functional norm is its total variation mass.
@@ -358,7 +381,7 @@ $\|Tf\|_{q,\infty}\leq C\|f\|_p$; strong type means the ordinary $L^q$ norm.
   bound. Constants depend only on the exponents and endpoint bounds. In
   particular, weak $(1,1)$ and strong $(\infty,\infty)$ imply strong $(p,p)$
   throughout $1<p<\infty$.
-* **63. Hausdorff measures.** For $s>0$, the limit as $\delta\downarrow0$ of
+* **63. Hausdorff measures.** For $s\geq0$, the limit as $\delta\downarrow0$ of
   $$c_s\inf\left\{\sum_j(\operatorname{diam}E_j)^s:
       E\subseteq\bigcup_jE_j,\ \operatorname{diam}E_j\leq\delta\right\}$$
   defines a metric outer measure $\mathcal H^s$, so Borel sets are measurable.

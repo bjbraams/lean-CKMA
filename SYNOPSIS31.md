@@ -3,7 +3,7 @@
 Part of the [mathematical synopsis series](SYNOPSIS.md).
 
 This synopsis selects recurring core material from Section 31 of
-[CKMA-bib.md](CKMA-bib.md) and [CKMA-bib2.md](CKMA-bib2.md). It covers
+[CKMA-bib.md](CKMA-bib.md). It covers
 existence and dependence, linear equations, stability and invariant manifolds,
 planar dynamics, bifurcations, hyperbolicity, and perturbation of Hamiltonian
 systems. Linear boundary problems and dissipative dynamics provide two
@@ -57,10 +57,11 @@ Smoothness and completeness are imposed in the statements that need them.
   analytic solutions and analytic dependence on initial data and analytic
   parameters. The analogous local theorem holds for holomorphic ODEs
   in a complex time variable.
-* **11. Invariant regions.** For a closed region defined by smooth
-  inequalities with regular boundary faces, an inward-pointing or
-  tangent locally Lipschitz vector field makes the region forward
-  invariant. Strict outward crossing is excluded by the boundary derivative.
+* **11. Invariant regions.** For locally Lipschitz autonomous $F$, a
+  closed set $K$ is forward invariant exactly when $F(x)$ lies in the
+  Bouligand tangent cone of $K$ at every $x\in K$ (Nagumo, Bony–Brezis).
+  For $K=\{g\leq0\}$ with $g\in C^1$ and $\nabla g\ne0$ on $\{g=0\}$,
+  the condition is $\nabla g\cdot F\leq0$ there.
 * **12. Scalar comparison.** For a scalar locally Lipschitz equation,
   subsolutions starting below supersolutions remain below them while
   both exist. In particular distinct scalar solution trajectories cannot cross.
@@ -80,8 +81,8 @@ Smoothness and completeness are imposed in the statements that need them.
 * **16. Constant coefficients and spectral stability.** Solutions of
   $\dot x=Ax$ are $e^{tA}x_0$. Exponential asymptotic stability is
   equivalent to all eigenvalues having negative real part.
-  Lyapunov stability allows eigenvalues on the imaginary axis only
-  when their Jordan blocks are semisimple, and excludes positive real parts.
+  Lyapunov stability holds exactly when all eigenvalues have
+  nonpositive real part and those on the imaginary axis are semisimple.
 * **17. Floquet theorem.** If $A(t+T)=A(t)$, a fundamental matrix
   has the form $P(t)e^{tB}$ with complex $T$-periodic $P$.
   For real $A$, a real factorization can be obtained with $2T$-periodic
@@ -104,6 +105,9 @@ Smoothness and completeness are imposed in the statements that need them.
   potential, and separated self-adjoint regular boundary conditions,
   the eigenvalues are real, simple, discrete, bounded below, and tend
   to infinity. Eigenfunctions form an orthonormal basis in weighted $L^2$.
+  For $-(pu')'+qu=\lambda wu$ the eigenvalues satisfy
+  $\lambda_k\sim(k\pi/L)^2$ as $k\to\infty$, where
+  $L=\int_a^b\sqrt{w/p}$.
 * **22. Sturm oscillation.** With those hypotheses, the eigenfunction
   for the $(k+1)$st eigenvalue has exactly $k$ interior zeros, all simple.
 
@@ -122,6 +126,9 @@ A **hyperbolic equilibrium** has no eigenvalue of $DF$ on the imaginary axis.
   $V$ with $\dot V=\nabla V\cdot F\leq0$ near an equilibrium proves
   stability. Strict negative definiteness of $\dot V$ proves asymptotic
   stability. Proper global versions give global conclusions when solutions exist.
+  Conversely, an asymptotically stable equilibrium of a locally Lipschitz
+  field has a smooth strict Lyapunov function on its basin
+  (Massera, Kurzweil).
 * **25. Quadratic Lyapunov equations.** A real matrix $A$ is Hurwitz
   exactly when, for every positive definite $Q$, the equation
   $A^TP+PA=-Q$ has a unique positive definite solution,
@@ -136,7 +143,10 @@ A **hyperbolic equilibrium** has no eigenvalue of $DF$ on the imaginary axis.
   in positive and negative time respectively.
 * **28. Hartman–Grobman theorem.** Near a hyperbolic equilibrium, the
   nonlinear flow is locally topologically conjugate to its linearization.
-  The conjugacy need not be differentiable.
+  The conjugacy need not be differentiable. If no resonance
+  $\lambda_j=\alpha\cdot\lambda$, $|\alpha|\geq2$, holds, a $C^\infty$
+  field is locally $C^\infty$-linearizable (Sternberg); in the plane a
+  $C^2$ field is $C^1$-linearizable at a hyperbolic equilibrium (Hartman).
 * **29. Center manifolds.** For any fixed finite differentiability order,
   a sufficiently smooth vector field has a local center manifold tangent
   to its center spectral subspace. It contains all sufficiently small
@@ -156,6 +166,9 @@ A **hyperbolic equilibrium** has no eigenvalue of $DF$ on the imaginary axis.
   $\dot V=-|\nabla V|^2$. A precompact orbit has omega-limit set
   contained in the critical set of $V$; if that critical set is discrete
   in the relevant compact region, the trajectory converges to one equilibrium.
+  For real-analytic $V$ every precompact orbit converges to a single
+  critical point (Łojasiewicz gradient inequality), although smooth
+  counterexamples exist.
 
 ## Periodic orbits and planar dynamics
 
@@ -176,8 +189,9 @@ A **hyperbolic equilibrium** has no eigenvalue of $DF$ on the imaginary axis.
   $\exp(\int_0^T\operatorname{div}F(\gamma(t))dt)$.
 * **38. Poincaré–Bendixson theorem.** A nonempty compact omega-limit
   set of a $C^1$ planar flow containing no equilibrium is a periodic orbit.
-  This excludes the corresponding higher-dimensional chaotic limit-set
-  behavior in such planar regions.
+  If it contains only finitely many equilibria, it is an equilibrium, a
+  periodic orbit, or a finite union of equilibria and orbits connecting
+  them. The same holds on the sphere.
 * **39. Bendixson–Dulac criterion.** On a simply connected planar domain,
   if $\operatorname{div}(BF)$ has one sign and is not identically zero
   on any open subset, for a $C^1$ scalar multiplier $B$, there is no
@@ -207,6 +221,9 @@ systems with the stated simple critical spectrum.
   order. For eigenvalues $\lambda_j$, the monomial $x^\alpha e_j$
   is resonant when $\lambda_j=\alpha\cdot\lambda$.
   Formal normal-form existence does not itself assert convergence.
+  For analytic fields, nonresonant eigenvalues whose convex hull omits $0$
+  (Poincaré domain) give convergent linearization (Poincaré); in the
+  Siegel domain a Diophantine condition suffices (Siegel, Brjuno).
 * **44. Saddle-node bifurcation.** For scalar $\dot x=f(x,\mu)$,
   $f=f_x=0$, $f_{xx}\ne0$, $f_\mu\ne0$ at the origin give the
   local orbit structure of $\dot y=\nu\pm y^2$: two equilibria
@@ -281,18 +298,45 @@ bundles. For flows without equilibria, include the one-dimensional flow directio
   pieces on which the dynamics is transitive; each has a finite cyclic
   decomposition for which an iterate is topologically mixing.
 
+* **59. Structural stability.** Morse–Smale vector fields on a closed
+  manifold (finitely many hyperbolic equilibria and periodic orbits
+  forming the nonwandering set, with transverse stable and unstable
+  manifolds) are structurally stable (Palis–Smale). On closed orientable
+  surfaces they are exactly the structurally stable $C^1$ fields and form
+  an open dense set (Peixoto). A $C^1$ diffeomorphism of a closed manifold
+  is structurally stable exactly when it satisfies Axiom A and the strong
+  transversality condition (Robbin, Robinson, Mañé).
+
+## One-dimensional dynamics
+
+* **60. Sharkovskii theorem.** Order the positive integers as
+  $3\rhd5\rhd7\rhd\cdots\rhd2\cdot3\rhd2\cdot5\rhd\cdots\rhd
+  2^2\cdot3\rhd\cdots\rhd2^3\rhd2^2\rhd2\rhd1$. If a continuous map of
+  an interval has a periodic point of least period $m$ and $m\rhd n$,
+  it has one of least period $n$. Every tail of the ordering is the set
+  of periods of some continuous map; in particular period three implies
+  all periods.
+* **61. Circle homeomorphisms.** An orientation-preserving homeomorphism
+  $f$ of $\mathbb R/\mathbb Z$ with lift $F$ has rotation number
+  $\rho(f)=\lim_n(F^n(x)-x)/n\bmod1$, independent of $x$ and continuous
+  in $f$. It is rational exactly when $f$ has a periodic orbit. If
+  $\rho(f)$ is irrational, $f$ is semiconjugate to the rotation by
+  $\rho(f)$, and conjugate to it when $f$ is a $C^1$ diffeomorphism with
+  $f'$ of bounded variation (Denjoy); $C^1$ examples with wandering
+  intervals exist.
+
 ## Hamiltonian structure and further continuations
 
-* **59. Symplectic and volume preservation.** A Hamiltonian flow preserves
+* **62. Symplectic and volume preservation.** A Hamiltonian flow preserves
   the symplectic form and hence Liouville volume, as well as its autonomous
   Hamiltonian. A volume-preserving flow has no asymptotically stable
   equilibrium with an open basin in a finite-volume neighborhood.
-* **60. Liouville–Arnold theorem.** For $n$ independent commuting first
+* **63. Liouville–Arnold theorem.** For $n$ independent commuting first
   integrals of a $2n$-dimensional symplectic system, a compact connected
   regular common level is an $n$-torus. Near it there are action–angle
   coordinates with $H=H(I)$ and $\dot\theta=\nabla H(I)$,
   $\dot I=0$.
-* **61. KAM persistence.** Let $H_0(I)$ be analytic with
+* **64. KAM persistence.** Let $H_0(I)$ be analytic with
   $\det\partial_I^2H_0\ne0$ on a bounded action domain.
   A sufficiently small analytic perturbation preserves invariant
   Lagrangian tori with prescribed Diophantine unperturbed frequencies
@@ -300,16 +344,16 @@ bundles. For flows without equilibria, include the one-dimensional flow directio
   the domain boundary. The surviving Cantor family has positive measure,
   and its relative measure tends to one as the perturbation tends to zero
   with suitably shrinking $\gamma$.
-* **62. Regular singular points.** For $zY'=A(z)Y$ with analytic $A$,
+* **65. Regular singular points.** For $zY'=A(z)Y$ with analytic $A$,
   a fundamental solution admits convergent power-series factors and
   powers $z^\lambda$ with possible logarithmic factors determined by
   resonances. Analytic continuation around the singular point gives
   the monodromy operator.
-* **63. Global attractor criterion.** A continuous semiflow on a complete
+* **66. Global attractor criterion.** A continuous semiflow on a complete
   metric space with a bounded absorbing set and asymptotic compactness
   has a compact invariant global attractor attracting every bounded set.
   It consists of points on bounded complete trajectories.
-* **64. Delay-equation solution spaces.** For a fixed delay $r>0$,
+* **67. Delay-equation solution spaces.** For a fixed delay $r>0$,
   a locally Lipschitz equation $\dot x(t)=F(x_t)$, with
   $x_t(\theta)=x(t+\theta)$ on $[-r,0]$, defines a continuous local
   semiflow on $C([-r,0],\mathbb R^n)$. Its linearization is governed

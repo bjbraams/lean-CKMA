@@ -3,7 +3,7 @@
 Part of the [mathematical synopsis series](SYNOPSIS.md).
 
 This synopsis selects recurring material from Section 48 of
-[CKMA-bib.md](CKMA-bib.md) and [CKMA-bib2.md](CKMA-bib2.md).
+[CKMA-bib.md](CKMA-bib.md).
 It develops the dictionary between polynomial orthogonality, three-term
 recurrences, quadrature, positive moment functionals, and spectral measures,
 followed by unit-circle theory and the principal asymptotic results.
@@ -82,7 +82,6 @@ matrix. Put $K_n(x,y)=\sum_{j=0}^np_j(x)\overline{p_j(y)}$.
 * **18. Markov–Stieltjes inequalities.** For increasing Gauss nodes,
   $\sum_{j<k}\lambda_j\leq\mu(( -\infty,x_k))
   \leq\mu(( -\infty,x_k])\leq\sum_{j\leq k}\lambda_j$.
-  These bounds compare cumulative mass with quadrature weights.
 * **19. Markov convergence.** For compact support, the Gauss
   quadrature measures converge weakly to $\mu$. Their Cauchy
   transforms converge locally uniformly off the supporting interval.
@@ -134,6 +133,11 @@ $m(z)=\langle\delta_0,(J-z)^{-1}\delta_0\rangle$.
   minimal Jacobi operator is essentially self-adjoint.
 * **30. Jacobi Carleman criterion.** $\sum_{n\geq1}a_n^{-1}=\infty$
   implies essential self-adjointness and determinacy.
+* **31. Essential spectrum (Blumenthal–Weyl).** If $a_n\to a>0$ and
+  $b_n\to b$, then $J$ is a compact perturbation of the constant Jacobi
+  matrix and $\sigma_{\mathrm{ess}}(J)=[b-2a,b+2a]$; the spectrum outside
+  this interval consists of isolated eigenvalues accumulating at most at
+  its endpoints.
 
 ## Moment existence, uniqueness, and positivity
 
@@ -142,58 +146,58 @@ $L(x^\alpha)=s_\alpha$. A representing measure on closed $K$ satisfies
 $L(p)=\int_Kp\,d\mu$. Moment matrices are indexed by monomials;
 localizing matrices represent $L(gp\bar q)$.
 
-* **31. Hamburger theorem.** A real sequence $(s_n)_{n\geq0}$
+* **32. Hamburger theorem.** A real sequence $(s_n)_{n\geq0}$
   is a moment sequence on $\mathbb R$ exactly when every Hankel
   matrix $[s_{j+k}]$ is positive semidefinite.
-* **32. Stieltjes theorem.** It is a moment sequence on $[0,\infty)$
+* **33. Stieltjes theorem.** It is a moment sequence on $[0,\infty)$
   exactly when both $[s_{j+k}]$ and $[s_{j+k+1}]$ are positive
   semidefinite in every finite size.
-* **33. Hausdorff theorem.** It is a moment sequence on $[0,1]$
+* **34. Hausdorff theorem.** It is a moment sequence on $[0,1]$
   exactly when $(-1)^k\Delta^ks_n\geq0$ for all $n,k\geq0$.
   The representing measure is then unique.
-* **34. Compact-support determinacy.** Measures of compact support
+* **35. Compact-support determinacy.** Measures of compact support
   are determined by their moments. Bounds $s_{2n}\leq CR^{2n}$
   force every representing measure to be supported in $[-R,R]$.
-* **35. Moment Carleman criteria.**
+* **36. Moment Carleman criteria.**
   $\sum_ns_{2n}^{-1/(2n)}=\infty$ gives Hamburger determinacy;
   $\sum_ns_n^{-1/(2n)}=\infty$ gives Stieltjes determinacy when
   a Stieltjes representing measure exists.
-* **36. Krein indeterminacy criterion.** If $w\geq0$ on
+* **37. Krein indeterminacy criterion.** If $w\geq0$ on
   $\mathbb R$, $w(x)dx$ has all moments, and
   $\int\log w(x)/(1+x^2)dx>-\infty$, its Hamburger moment
   problem is indeterminate.
-* **37. Explicit lognormal indeterminacy.** The distinct densities
+* **38. Explicit lognormal indeterminacy.** The distinct densities
   $e^{-(\log x)^2/2}(1+\varepsilon\sin(2\pi\log x))/(x\sqrt{2\pi})$,
   $x>0$, $|\varepsilon|\leq1$, all have moments $s_n=e^{n^2/2}$.
-* **38. Polynomial density distinction.** Determinacy implies
+* **39. Polynomial density distinction.** Determinacy implies
   polynomial density in $L^2(\mu)$. In an indeterminate Hamburger
   problem some extremal representing measures also have dense
   polynomials, so density alone is not a determinacy criterion.
-* **39. Nevanlinna parametrization.** In an indeterminate Hamburger
+* **40. Nevanlinna parametrization.** In an indeterminate Hamburger
   problem, all Cauchy transforms are described by a fractional-linear
   transformation of a Pick-function parameter using four entire
   functions determined by the recurrence. Real constant parameters
   give the canonical self-adjoint-extension measures.
-* **40. Haviland's theorem.** A linear functional on real
+* **41. Haviland's theorem.** A linear functional on real
   multivariable polynomials has a representing measure on closed $K$
   exactly when it is nonnegative on every polynomial nonnegative on $K$.
-* **41. Multivariate Carleman criterion.** Positivity on squares
+* **42. Multivariate Carleman criterion.** Positivity on squares
   together with the Carleman divergence condition in each coordinate
   yields a unique representing measure on $\mathbb R^d$.
-* **42. Schmüdgen Positivstellensatz.** If
+* **43. Schmüdgen Positivstellensatz.** If
   $K=\{g_1\geq0,\ldots,g_m\geq0\}$ is compact, every polynomial
   strictly positive on $K$ is $\sum_{\nu\in\{0,1\}^m}\sigma_\nu g^\nu$,
   with each $\sigma_\nu$ a sum of squares.
-* **43. Putinar Positivstellensatz.** If the quadratic module
+* **44. Putinar Positivstellensatz.** If the quadratic module
   $\{\sigma_0+\sum_j\sigma_jg_j\}$ is Archimedean, meaning it
   contains $N-\sum x_i^2$ for some $N$, every strictly positive
   polynomial on $K$ belongs to that module. A functional positive
   on the module has a representing measure on $K$.
-* **44. Tchakaloff theorem.** A positive measure with the required
+* **45. Tchakaloff theorem.** A positive measure with the required
   finite moments has a positive atomic quadrature measure reproducing
   all polynomials of degree at most $r$, with at most
   $\dim\mathcal P_r(\mathbb R^d)$ atoms chosen in its support.
-* **45. Flat moment theorem.** If a positive semidefinite truncated
+* **46. Flat moment theorem.** If a positive semidefinite truncated
   moment matrix $M_n$ satisfies
   $\operatorname{rank}M_n=\operatorname{rank}M_{n-1}=r$,
   the data have a unique representing measure, with exactly $r$ atoms.
@@ -207,51 +211,52 @@ Write $\Phi_n$ for its monic orthogonal polynomials,
 $\Phi_n^*(z)=z^n\overline{\Phi_n(1/\bar z)}$, and
 $\alpha_n=-\overline{\Phi_{n+1}(0)}$.
 
-* **46. Szegő recurrence.**
+* **47. Szegő recurrence.**
   $\Phi_{n+1}=z\Phi_n-\bar\alpha_n\Phi_n^*$ and
   $\Phi_{n+1}^*=\Phi_n^*-\alpha_nz\Phi_n$, with $|\alpha_n|<1$.
-* **47. Norm product.**
+* **48. Norm product.**
   $\|\Phi_n\|^2=\prod_{j=0}^{n-1}(1-|\alpha_j|^2)$.
   All zeros of $\Phi_n$ lie strictly inside the disk.
-* **48. Verblunsky theorem.** Infinite-support circle probabilities
+* **49. Verblunsky theorem.** Infinite-support circle probabilities
   correspond bijectively to arbitrary sequences $\alpha_n\in\mathbb D$.
   Finite support corresponds to termination with a last coefficient on $\mathbb T$.
-* **49. Carathéodory–Schur dictionary.**
+* **50. Carathéodory–Schur dictionary.**
   $F(z)=\int(\zeta+z)/(\zeta-z)d\mu(\zeta)$ has positive
   real part and $F(0)=1$; $s(z)=(F(z)-1)/(z(F(z)+1))$
   is Schur. The Schur algorithm successively extracts exactly the
   Verblunsky coefficients.
-* **50. Unit-circle Christoffel–Darboux formula.** For orthonormal
+* **51. Unit-circle Christoffel–Darboux formula.** For orthonormal
   $\varphi_n$, $\sum_{j=0}^n\varphi_j(z)\overline{\varphi_j(w)}$
   equals
   $[\varphi_{n+1}^*(z)\overline{\varphi_{n+1}^*(w)}-
   \varphi_{n+1}(z)\overline{\varphi_{n+1}(w)}]/(1-z\bar w)$.
-* **51. Paraorthogonal polynomials.**
+* **52. Paraorthogonal polynomials.**
   $z\Phi_{n-1}(z)-\bar\beta\Phi_{n-1}^*(z)$, $|\beta|=1$,
   has $n$ distinct zeros on the circle. They give a positive
   $n$-node quadrature rule exact on Laurent powers $|k|\leq n-1$.
-* **52. CMV representation.** Multiplication by $z$ in the
+* **53. CMV representation.** Multiplication by $z$ in the
   orthonormal Laurent-polynomial basis is a five-diagonal unitary
   CMV matrix, factored into alternating $2\times2$ unitary blocks
   determined by $\alpha_n$. Its spectral measure at the first basis
   vector is $\mu$. See [Simon's survey](https://arxiv.org/pdf/math/0502485), Section 5.
-* **53. Szegő theorem.** For $d\mu=w\,dm+d\mu_s$,
+* **54. Szegő theorem.** For $d\mu=w\,dm+d\mu_s$,
   $\prod_{n\geq0}(1-|\alpha_n|^2)=\exp\int\log w\,dm$.
   Thus finite logarithmic integral is equivalent to $\sum|\alpha_n|^2<\infty$.
-* **54. Szegő function.** If that integral is finite,
+* **55. Szegő function.** If that integral is finite,
   $D(z)=\exp[\frac12\int(\zeta+z)/(\zeta-z)\log w\,dm]$
-  is outer, $|D^*|^2=w$ almost everywhere, and
+  is outer, its boundary values satisfy $|D|^2=w$ almost everywhere, and
   $D(0)^2=\exp\int\log w\,dm$.
-* **55. Toeplitz determinants.**
+* **56. Toeplitz determinants.**
   $D_n(w)=\det[\widehat w(j-k)]_{j,k=0}^{n-1}$ equals the
-  product of the first $n$ squared monic orthogonal norms.
-  Thus norm asymptotics and determinant asymptotics are equivalent data.
-* **56. Strong Szegő theorem.** For a positive smooth circle
-  weight $w=e^L$,
+  product of the first $n$ squared monic orthogonal norms
+  $\prod_{j<n}\|\Phi_j\|^2$, so norm and determinant asymptotics are equivalent.
+* **57. Strong Szegő theorem.** For a real $L\in L^1(\mathbb T)$ with
+  $\sum_{k\geq1}k|\widehat L(k)|^2<\infty$ and $w=e^L$,
   $D_n(w)e^{-n\widehat L(0)}\to
-  \exp\sum_{k\geq1}k|\widehat L(k)|^2$.
-  The Sobolev-$1/2$ condition on $L$ is the natural sharp finite-constant condition.
-* **57. Rakhmanov's theorem.** If $w>0$ almost everywhere on
+  \exp\sum_{k\geq1}k|\widehat L(k)|^2$ (Szegő for smooth $L$;
+  Ibragimov in this generality). A probability $\mu$ on $\mathbb T$ has
+  this form exactly when $\sum_n n|\alpha_n|^2<\infty$ (Golinskii–Ibragimov).
+* **58. Rakhmanov's theorem.** If $w>0$ almost everywhere on
   the whole circle, then $\alpha_n\to0$, even with an additional
   singular part of $\mu$.
 
@@ -262,37 +267,52 @@ $\kappa_n^{1/n}\to\operatorname{cap}(K)^{-1}$.
 Let $\omega_K$ be its logarithmic equilibrium measure and $g_K$
 the exterior Green function with pole at infinity.
 
-* **58. Extremal norm regularity.** Regularity is equivalently
+* **59. Extremal norm regularity.** Regularity is equivalently
   $\|P_n\|_{L^2(\mu)}^{1/n}\to\operatorname{cap}(K)$.
   It expresses asymptotic extremality of monic orthogonal polynomials.
-* **59. Equilibrium zero distribution.** For regular $\mu$ on a
+* **60. Equilibrium zero distribution.** For regular $\mu$ on a
   compact subset of $\mathbb R$, the normalized zero-counting
   measures of $p_n$ converge weakly to $\omega_K$.
-* **60. Exterior root asymptotics.** For regular $\mu$,
+* **61. Exterior root asymptotics.** For regular $\mu$,
   $|p_n(z)|^{1/n}\to e^{g_K(z,\infty)}$ locally uniformly
   outside the convex hull of $K$.
-* **61. Positivity implies interval regularity.** If $\mu$ is
+* **62. Positivity implies interval regularity.** If $\mu$ is
   supported on $[-1,1]$ and its density is positive almost everywhere
   there, it is regular. Its zero measures tend to
   $dx/(\pi\sqrt{1-x^2})$.
-* **62. Real-line Rakhmanov theorem.** For probability measures
+* **63. Real-line Rakhmanov theorem.** For probability measures
   supported on $[-2,2]$ with density positive almost everywhere,
-  $a_n\to1$ and $b_n\to0$.
-* **63. Szegő exterior asymptotics.** For $d\mu=w(x)dx$ on
+  $a_n\to1$ and $b_n\to0$. Denisov's extension needs only
+  $\sigma_{\mathrm{ess}}(J)=[-2,2]$ and positivity of the absolutely
+  continuous density almost everywhere there.
+* **64. Killip–Simon theorem.** For a Jacobi matrix with spectral measure
+  $\mu$, $\sum_n[(a_n-1)^2+b_n^2]<\infty$ holds exactly when
+  $\sigma_{\mathrm{ess}}(J)=[-2,2]$, the eigenvalues $E_j$ outside it
+  satisfy $\sum_j(|E_j|-2)^{3/2}<\infty$, and the quasi-Szegő condition
+  $\int_{-2}^2\log(d\mu_{\mathrm{ac}}/dx)\sqrt{4-x^2}\,dx>-\infty$
+  holds. The proof is through sum rules of Case type.
+* **65. Szegő exterior asymptotics.** For $d\mu=w(x)dx$ on
   $[-1,1]$, if the weight satisfies
   $\int_{-1}^1\log w(x)/\sqrt{1-x^2}\,dx>-\infty$,
   then $p_n(z)/(z+\sqrt{z^2-1})^n$ converges locally uniformly
   off $[-1,1]$ to a nonvanishing analytic factor determined by
   the Szegő function, with the branch asymptotic to $2z$.
-* **64. Christoffel bulk asymptotics.** For a continuous positive
+* **66. Christoffel bulk asymptotics.** For a continuous positive
   density $w$ on $[-1,1]$,
   $n\lambda_{n-1}(x)\to\pi w(x)\sqrt{1-x^2}$ locally uniformly
   in the open interval.
-* **65. Mehler–Heine limit.** For Jacobi parameters $\alpha,\beta>-1$,
+* **67. Mehler–Heine limit.** For Jacobi parameters $\alpha,\beta>-1$,
   $n^{-\alpha}P_n^{(\alpha,\beta)}(\cos(z/n))\to
   (z/2)^{-\alpha}J_\alpha(z)$ locally uniformly in complex $z$,
   with the right side interpreted by its entire even series.
-* **66. Riemann–Hilbert characterization.** For positive smooth
+* **68. Exponential weights.** For $w=e^{-2Q}$ on $\mathbb R$ with $Q$
+  even, convex, and of polynomial growth, the sup norms of weighted
+  polynomials $Pe^{-Q}$, $\deg P\leq n$, live on the Mhaskar–Rakhmanov–Saff
+  interval $[-a_n^*,a_n^*]$. After rescaling by $a_n^*$, zero distributions
+  converge to the equilibrium measure in the external field. For
+  $Q(x)=|x|^\alpha$, $\alpha>0$, $a_n/n^{1/\alpha}$ converges to an
+  explicit constant (Freud's conjecture, Lubinsky–Mhaskar–Saff).
+* **69. Riemann–Hilbert characterization.** For positive smooth
   rapidly decreasing $w$ on $\mathbb R$, the unique normalized
   $2\times2$ problem with jump
   $Y_+=Y_-\begin{pmatrix}1&w\\0&1\end{pmatrix}$ and
@@ -302,27 +322,26 @@ the exterior Green function with pole at infinity.
 
 ## Multivariate structure and modified measures
 
-* **67. Multivariate orthogonal decomposition.** With positive
+* **70. Multivariate orthogonal decomposition.** With positive
   polynomial inner product in $d$ variables, the polynomials of
   exact orthogonal degree $n$ have dimension $\binom{n+d-1}{d-1}$.
   Degree-at-most-$n$ spaces split orthogonally into these layers.
-* **68. Matrix three-term relations.** Multiplication by each
+* **71. Matrix three-term relations.** Multiplication by each
   coordinate connects only the degree layers $n-1,n,n+1$.
   The matrix coefficients obey compatibility relations because coordinate
   multiplication operators commute.
-* **69. Product measures.** Tensor products of one-variable
+* **72. Product measures.** Tensor products of one-variable
   orthogonal polynomials form a complete orthogonal system whenever
-  the component polynomial systems are complete. Total-degree
-  truncation selects the corresponding tensor multiindices.
-* **70. Gaussian cubature obstruction.** A degree-$(2n-1)$
+  the component polynomial systems are complete.
+* **73. Gaussian cubature obstruction.** A degree-$(2n-1)$
   cubature rule with the minimal $\dim\mathcal P_{n-1}$ nodes
   requires common zeros of all degree-$n$ orthogonal polynomials.
   In the positive definite setting these common zeros give Gaussian
   cubature when their number is exactly that minimum.
-* **71. Finite-rank moment functionals.** A positive full moment
+* **74. Finite-rank moment functionals.** A positive full moment
   matrix of finite rank $r$ has a unique $r$-atomic representing
   measure. Its kernel is the ideal of polynomials vanishing at those atoms.
-* **72. Positivity versus sums of squares.** In several variables,
+* **75. Positivity versus sums of squares.** In several variables,
   nonnegative polynomials need not be sums of polynomial squares.
   Consequently positivity of multivariate moment matrices alone does
   not imply a representing measure; Haviland positivity or additional

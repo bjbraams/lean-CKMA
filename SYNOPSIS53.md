@@ -3,7 +3,7 @@
 Part of the [mathematical synopsis series](SYNOPSIS.md).
 
 This synopsis selects recurring content from Section 53 of
-[CKMA-bib.md](CKMA-bib.md) and [CKMA-bib2.md](CKMA-bib2.md).
+[CKMA-bib.md](CKMA-bib.md).
 The central connections are between elliptic estimates and topology,
 heat asymptotics and characteristic classes, and the spectrum and geometry
 of a manifold. Sections 22, 30, and 52 supply complementary operator,
@@ -155,8 +155,7 @@ $L_j=d_j^*d_j+d_{j-1}d_{j-1}^*$.
   remainder order cannot generally be improved.
 * **27. Nonperiodic improvement.** If the set of periodic geodesics
   has Liouville measure zero in $S^*M$, the remainder is
-  $o(\Lambda^{n-1})$. This conclusion is a dynamical refinement of
-  the local wave-parametrix argument.
+  $o(\Lambda^{n-1})$ (Duistermaat–Guillemin, Ivrii).
 * **28. Two-term boundary Weyl law.** On a compact manifold with
   smooth boundary, if periodic billiard trajectories have measure zero,
   the Dirichlet and Neumann counting functions satisfy
@@ -254,7 +253,10 @@ spinor bundle splits as $S^+\oplus S^-$ and $D$ is odd.
 * **46. Chern–Gauss–Bonnet theorem.** On a closed oriented
   even-dimensional manifold, the Euler characteristic is the integral
   of the Euler curvature form, the normalized Pfaffian of curvature.
-  It is the index of the even-to-odd de Rham operator.
+  It is the index of the even-to-odd de Rham operator. For a compact
+  surface with boundary, $\int_MK\,dA+\int_{\partial M}k_g\,ds=2\pi\chi(M)$;
+  for a closed four-manifold,
+  $\chi(M)=(32\pi^2)^{-1}\int(|\mathrm{Rm}|^2-4|\operatorname{Ric}|^2+R^2)dV$.
 * **47. Hirzebruch signature theorem.** On a closed oriented
   $4k$-manifold, the signature of the middle-dimensional intersection
   form is $\langle L(TM),[M]\rangle$, the index of the signature
@@ -356,17 +358,15 @@ spinor bundle splits as $S^+\oplus S^-$ and $D$ is odd.
   eigenvalue. For smooth connected domains, equality requires a ball.
 * **65. Szegő–Weinberger theorem.** Among bounded connected smooth Euclidean
   domains of fixed volume, the ball maximizes the first positive
-  Neumann eigenvalue. This is the counterpart of the Dirichlet
-  minimization theorem with the opposite extremal direction.
+  Neumann eigenvalue.
 * **66. Cheeger spectral bound.** On a closed connected manifold,
   $\lambda_1^2\geq h(M)^2/4$, with $h$ the separating
   area-to-volume isoperimetric constant. For Dirichlet domains use
   the corresponding domain Cheeger constant.
 * **67. Curvature eigenvalue bound.** If
   $\operatorname{Ric}\geq(n-1)k g$, $k>0$, then
-  $\lambda_1^2\geq nk$; equality characterizes the round sphere.
-  Its proof combines the integrated Bochner formula with the Hessian
-  inequality and the equality-case rigidity theorem.
+  $\lambda_1^2\geq nk$ (Lichnerowicz); equality characterizes the
+  round sphere (Obata).
 * **68. Steklov spectrum.** On a compact connected manifold with
   smooth nonempty boundary, the Dirichlet-to-Neumann operator for
   harmonic functions is a nonnegative self-adjoint elliptic operator
@@ -377,7 +377,9 @@ spinor bundle splits as $S^+\oplus S^-$ and $D$ is odd.
 * **69. Courant nodal theorem.** The $j$th eigenfunction in an
   ordered real orthonormal basis, with eigenvalues indexed starting
   at one, has at most $j$ nodal domains. This formulation also
-  covers multiplicities by fixing the ordered basis.
+  covers multiplicities by fixing the ordered basis. For Dirichlet
+  domains in the plane, Pleijel's theorem shows that equality holds for
+  only finitely many $j$.
 * **70. Unique continuation and vanishing order.** A nonzero
   Laplace eigenfunction cannot vanish on an open set or to infinite
   order at a point. Quantitatively, at frequency $\lambda\geq1$
@@ -386,8 +388,9 @@ spinor bundle splits as $S^+\oplus S^-$ and $D$ is odd.
   manifold of dimension $n\geq2$, a real nonconstant eigenfunction
   satisfies $c_M\lambda\leq\mathcal H^{n-1}
   (\{\phi_\lambda=0\})\leq C_M\lambda$.
-  The analytic upper bound is not a consequence of smooth elliptic
-  regularity alone.
+  (Donnelly–Fefferman). For smooth metrics the lower bound
+  $c_M\lambda$ holds, and the upper bound is known only with a
+  polynomial power $\lambda^{\alpha}$, $\alpha=\alpha(n)$ (Logunov).
 * **72. Sogge eigenfunction bounds.** For $\|\phi_\lambda\|_2=1$,
   $\|\phi_\lambda\|_p\leq C\lambda^{\delta(p)}$, $2\leq p\leq\infty$,
   where $\delta(p)=\max\{\tfrac{n-1}{2}(\tfrac12-\tfrac1p),
@@ -434,6 +437,10 @@ spinor bundle splits as $S^+\oplus S^-$ and $D$ is odd.
   \ell_\gamma g(k\ell_\gamma)/(2\sinh(k\ell_\gamma/2))$.
   The primitive geodesics use the standard conjugacy-class convention;
   cusps introduce additional continuous-spectrum and scattering terms.
+  Consequences: the Laplace spectrum and the length spectrum with
+  multiplicities determine each other (Huber), and the number of
+  primitive closed geodesics of length at most $L$ is asymptotic to
+  $e^L/L$ (prime geodesic theorem).
 * **79. Hyperbolic resonances.** For an infinite-area convex-cocompact hyperbolic
   surface, the resolvent $(\Delta-s(1-s))^{-1}$ continues
   meromorphically from its initial half-plane as an operator from
@@ -446,7 +453,9 @@ spinor bundle splits as $S^+\oplus S^-$ and $D$ is odd.
   determines dimension, volume, integrated scalar curvature, and the
   higher integrated heat coefficients. It does not determine the
   isometry class: closed nonisometric isospectral manifolds exist,
-  including flat tori in suitable dimensions and hyperbolic surfaces.
+  including flat tori in suitable dimensions (Milnor) and hyperbolic
+  surfaces, and Sunada's method produces isospectral pairs, among them
+  nonisometric planar domains (Gordon–Webb–Wolpert).
 
 ## Reference guide
 

@@ -3,7 +3,7 @@
 Part of the [mathematical synopsis series](SYNOPSIS.md).
 
 This synopsis selects the common graduate and beginning research content of
-Section 10 of [CKMA-bib.md](CKMA-bib.md) and [CKMA-bib2.md](CKMA-bib2.md):
+Section 10 of [CKMA-bib.md](CKMA-bib.md):
 recurrence, ergodic averages, spectral structure, entropy, invariant measures,
 and their connections with smooth dynamics and combinatorics. Joinings,
 multiple averages, and infinite-measure results extend the introductory core
@@ -20,12 +20,10 @@ an **isomorphism** is an invertible such map modulo null sets.
 
 The invariant measure is part of the system: one topological transformation
 can support many mutually singular ergodic probabilities with different
-entropies and recurrence statistics. A periodic orbit carries an invariant
-atomic probability, while a mixing system need not have any periodic points
-in a particular measurable model. Accordingly, statements about orbit counts
-below have explicit topological or symbolic hypotheses; measurable isomorphism
-preserves entropy and spectral structure, but it does not preserve arbitrary
-features of a chosen topology.
+entropies and recurrence statistics. Statements about orbit counts below
+therefore have explicit topological or symbolic hypotheses; measurable
+isomorphism preserves entropy and spectral structure, but not features of a
+chosen topology.
 
 ## Recurrence, induction, and the ergodic theorems
 
@@ -71,10 +69,11 @@ $A_Nf=N^{-1}\sum_{n=0}^{N-1}f\circ T^n$.
   system, every height $n$ and $\varepsilon>0$ admit a measurable base $B$
   with $B,TB,\ldots,T^{n-1}B$ disjoint and union of measure greater than
   $1-\varepsilon$.
-* **10. Natural extension.** Every probability-preserving transformation has
-  an invertible extension whose past coordinates generate the extension and
-  whose future projects to the original system. It is unique up to the
-  corresponding isomorphism and preserves ergodicity and entropy.
+* **10. Natural extension.** Every probability-preserving transformation $T$
+  with factor map $\pi$ has a minimal invertible extension $\widetilde T$,
+  characterized by the property that the $\sigma$-fields
+  $\widetilde T^n\pi^{-1}\mathcal B$, $n\geq0$, generate. It is unique up to
+  isomorphism and has the same ergodicity, mixing properties, and entropy as $T$.
 
 ## Koopman operators and spectral structure
 
@@ -91,8 +90,7 @@ Cesàro averages of $|\mu(A\cap T^{-n}B)-\mu(A)\mu(B)|$ tend to zero; it is
   Atoms describe eigenfunction components.
 * **12. Weak mixing criteria.** Weak mixing is equivalent to ergodicity of
   $T\times T$, to the absence of nonconstant $L^2$ eigenfunctions, and to
-  continuity of every spectral measure on the mean-zero subspace. These
-  criteria refer to an invertible probability system in the spectral formulation.
+  continuity of every spectral measure on the mean-zero subspace.
 * **13. Mixing and correlations.** Strong mixing is equivalent to
   $\langle U^nf,g\rangle\to\mu(f)\overline{\mu(g)}$ for all $f,g\in L^2$.
   Strong mixing implies weak mixing, which implies ergodicity; the converses
@@ -110,10 +108,13 @@ Cesàro averages of $|\mu(A\cap T^{-n}B)-\mu(A)\mu(B)|$ tend to zero; it is
   with discrete spectrum is measurably isomorphic to a rotation on a compact
   metrizable abelian group with Haar measure. Its eigenvalue group determines
   this rotation up to isomorphism.
-* **17. Kronecker factor.** The closed span of eigenfunctions is the $L^2$
-  space of a factor, the maximal factor with discrete spectrum. For ergodic
-  systems it is a compact-group rotation and governs the structured part of
-  two-term nonconventional averages.
+* **17. Kronecker factor and spectral splitting.** For an invertible ergodic
+  system, $L^2$ splits orthogonally into the closed span of eigenfunctions and
+  the continuous-spectrum subspace, on which Cesàro averages of
+  $|\langle U^nf,g\rangle|^2$ vanish. The first summand is the $L^2$ space of
+  a factor, the maximal factor with discrete spectrum, which is a
+  compact-group rotation. This is the Hilbert-space case of the
+  Jacobs–de Leeuw–Glicksberg splitting into reversible and weakly stable parts.
 
 ## Entropy and measurable classification
 
@@ -137,34 +138,43 @@ finite partitions. Natural logarithms are used.
   probability systems.
 * **20. Kolmogorov–Sinai generator theorem.** If $H(\mathcal P)<\infty$ and
   $\bigvee_{n\in\mathbb Z}T^{-n}\mathcal P$ generates the measurable sets
-  modulo null sets, then $h_\mu(T)=h_\mu(T,\mathcal P)$.
-* **21. Shannon–McMillan–Breiman theorem.** For an ergodic system and a
+  modulo null sets, then $h_\mu(T)=h_\mu(T,\mathcal P)$. For noninvertible
+  $T$ the one-sided join $\bigvee_{n\geq0}T^{-n}\mathcal P$ is used.
+* **21. Krieger generator theorem.** An ergodic invertible system on a
+  nonatomic standard space with $h_\mu(T)<\log k$ has a generating partition
+  with $k$ elements. Thus finite entropy is equivalent to the existence of a
+  finite generator, and such a system is isomorphic to a shift-invariant
+  measure on $k$ symbols.
+* **22. Shannon–McMillan–Breiman theorem.** For an ergodic system and a
   partition of finite entropy,
   $$-\frac1n\log\mu(\mathcal P_0^{n-1}(x))
     \longrightarrow h_\mu(T,\mathcal P)$$
   almost everywhere and in $L^1$. Typical length-$n$ names therefore have
   probability on the exponential scale $e^{-nh}$.
-* **22. Bernoulli entropy.** The two-sided independent shift with alphabet
+* **23. Bernoulli entropy.** The two-sided independent shift with alphabet
   probabilities $(p_i)$ has entropy $-\sum_i p_i\log p_i$, with infinity
   allowed. Nontrivial Bernoulli shifts are strongly mixing.
-* **23. Markov entropy.** A stationary finite-state Markov shift with
+* **24. Markov entropy.** A stationary finite-state Markov shift with
   transition matrix $P$ and stationary vector $\pi$ has
   $h=-\sum_{i,j}\pi_iP_{ij}\log P_{ij}$. Irreducibility and aperiodicity give
   mixing of this shift.
-* **24. Abramov induction formula.** For an ergodic invertible system and
+* **25. Abramov induction formula.** For an ergodic invertible system and
   $\mu(A)>0$, the induced system satisfies
   $h_{\mu_A}(T_A)=h_\mu(T)/\mu(A)$.
-* **25. Sinai factor theorem.** Every ergodic invertible system has a Bernoulli
+* **26. Sinai factor theorem.** Every ergodic invertible system has a Bernoulli
   factor of any prescribed finite alphabet distribution whose entropy does
   not exceed the entropy of the system.
-* **26. Ornstein isomorphism theorem.** Two two-sided Bernoulli shifts of the
+* **27. Ornstein isomorphism theorem.** Two two-sided Bernoulli shifts of the
   same entropy are measurably isomorphic, including the standard infinite-entropy
   case. Entropy is thus a complete invariant within this class, although it is
   not a complete invariant for arbitrary ergodic transformations.
-* **27. Pinsker factor.** Every invertible probability system has a maximal
-  zero-entropy factor, generated by its zero-entropy measurable partitions.
-  For a Bernoulli shift with positive entropy this factor is trivial: every
-  nontrivial factor has positive entropy.
+* **28. Pinsker factor and K-systems.** Every invertible probability system
+  has a maximal zero-entropy factor, generated by its finite partitions of
+  zero entropy rate. A system is a **K-system** when this factor is trivial,
+  equivalently when every nontrivial factor has positive entropy. Bernoulli
+  shifts are K, and K-systems are mixing of all orders with countable
+  Lebesgue spectrum on the mean-zero subspace; there are K-systems that are
+  not Bernoulli (Ornstein).
 
 ## Topological dynamics and thermodynamic formalism
 
@@ -175,43 +185,56 @@ exponential growth rate of maximal separated sets as $n\to\infty$ followed by
 $\varepsilon\downarrow0$. For continuous $\phi$, **pressure** weights each
 point by $\exp(S_n\phi(x))$, where $S_n\phi=\sum_{j<n}\phi\circ T^j$.
 
-* **28. Invariant probability existence.** The invariant probabilities form
+* **29. Invariant probability existence.** The invariant probabilities form
   a nonempty compact convex set. Weak limits of empirical measures
-  $N^{-1}\sum_{n<N}\delta_{T^nx}$ are invariant; its extreme points are exactly
-  the ergodic probabilities.
-* **29. Unique ergodicity and uniform averages.** There is a unique invariant
+  $N^{-1}\sum_{n<N}\delta_{T^nx}$ are invariant (Krylov–Bogoliubov), and the
+  extreme points of this set are exactly the ergodic probabilities.
+* **30. Unique ergodicity and uniform averages.** There is a unique invariant
   probability $\mu$ exactly when $A_Nf\to\int f\,d\mu$ uniformly on $X$ for
   every continuous $f$. This conclusion is stronger than almost-everywhere
   convergence for a fixed invariant probability.
-* **30. Weyl equidistribution.** A sequence $x_n$ in $\mathbb T^d$ is
+* **31. Weyl equidistribution.** A sequence $x_n$ in $\mathbb T^d$ is
   Haar-equidistributed exactly when
   $N^{-1}\sum_{n<N}e^{2\pi i\langle k,x_n\rangle}\to0$ for every
   nonzero $k\in\mathbb Z^d$. Rotation by $\alpha$ is uniquely ergodic exactly
-  when $\langle k,\alpha\rangle\notin\mathbb Z$ for nonzero $k$.
-* **31. Entropy of a shift of finite type.** For a primitive zero–one matrix
+  when $\langle k,\alpha\rangle\notin\mathbb Z$ for nonzero $k$. If a real
+  polynomial has an irrational non-constant coefficient, then its values at
+  $n=1,2,\ldots$ are equidistributed modulo one (Weyl), as follows from unique
+  ergodicity of skew products on tori.
+* **32. Toral automorphisms.** An automorphism of $\mathbb T^d$ given by
+  $A\in GL(d,\mathbb Z)$ is ergodic for Haar measure exactly when no
+  eigenvalue of $A$ is a root of unity; it is then mixing, indeed Bernoulli.
+  Its entropy, both measure-theoretic for Haar measure and topological, is
+  $\sum_{|\lambda_i|>1}\log|\lambda_i|$ over eigenvalues with multiplicity.
+* **33. Ratner's theorems.** Let $G$ be a connected Lie group, $\Gamma$ a
+  lattice, and $U$ a subgroup generated by one-parameter unipotent subgroups.
+  Every ergodic $U$-invariant probability on $G/\Gamma$ is homogeneous (the
+  invariant measure on a closed orbit of a closed subgroup), every $U$-orbit
+  closure is homogeneous, and unipotent orbits are equidistributed in their
+  closures.
+* **34. Entropy of a shift of finite type.** For a primitive zero–one matrix
   $A$, the admissible shift space has topological entropy $\log\rho(A)$.
   Perron–Frobenius eigenvectors determine its unique measure of maximal entropy.
-* **32. Variational principle for entropy.**
+* **35. Variational principle for entropy.**
   $h_{\mathrm{top}}(T)=\sup_{\mu\in\mathcal M_T}h_\mu(T)$.
   The supremum need not be attained without further hypotheses.
-* **33. Variational principle for pressure.**
+* **36. Variational principle for pressure.**
   $$P(\phi)=\sup_{\mu\in\mathcal M_T}
      \left(h_\mu(T)+\int\phi\,d\mu\right).$$
   A maximizing measure is an **equilibrium state**. Taking $\phi=0$ recovers
   the entropy principle.
-* **34. Ruelle–Perron–Frobenius theorem.** On a mixing one-sided finite-type
+* **37. Ruelle–Perron–Frobenius theorem.** On a mixing one-sided finite-type
   shift and for Hölder $\phi$, the transfer operator
   $\mathcal L_\phi f(x)=\sum_{Ty=x}e^{\phi(y)}f(y)$ has a simple positive
   leading eigenvalue $e^{P(\phi)}$, a positive Hölder eigenfunction, and an
   eigenmeasure. The remaining spectrum on the Hölder space is separated from
   the leading eigenvalue; their normalized product is the unique equilibrium state.
-* **35. Gibbs property and correlations.** In that setting the equilibrium
+* **38. Gibbs property and correlations.** In that setting the equilibrium
   measure obeys
   $$C^{-1}\leq\frac{\mu([x_0\ldots x_{n-1}])}
     {\exp(S_n\phi(x)-nP(\phi))}\leq C.$$
-  Hölder observables have exponential decay of correlations. This is the
-  basic connection between local weights and statistical independence at long times.
-* **36. Periodic-orbit pressure.** For a mixing finite-type shift and Hölder
+  Hölder observables have exponential decay of correlations.
+* **39. Periodic-orbit pressure.** For a mixing finite-type shift and Hölder
   potential,
   $$P(\phi)=\lim_n\frac1n\log\sum_{T^nx=x}e^{S_n\phi(x)}.$$
   In particular, periodic-point growth recovers topological entropy.
@@ -223,27 +246,33 @@ Its Lyapunov exponents describe exponential growth of vectors and singular
 values. For a diffeomorphism the principal example is $A(x)=DT_x$.
 The multiplicity $m_i$ is the dimension of the exponent space.
 
-* **37. Furstenberg–Kesten growth theorem.** For an ergodic base and a matrix
+* **40. Furstenberg–Kesten growth theorem.** For an ergodic base and a matrix
   cocycle with integrable $\log^+\|A\|$, Kingman's theorem gives an
   almost-everywhere constant limit of $n^{-1}\log\|A^{(n)}(x)\|$, possibly
   $-\infty$. Under integrable inverse norms it is finite.
-* **38. Oseledets multiplicative ergodic theorem.** For an invertible ergodic
+* **41. Oseledets multiplicative ergodic theorem.** For an invertible ergodic
   base, $A(x)\in GL(d,\mathbb R)$, and integrable
   $\log^+\|A\|+\log^+\|A^{-1}\|$, there are exponents
   $\lambda_1>\cdots>\lambda_r$ and a measurable invariant splitting
   $\mathbb R^d=\bigoplus_iE_i(x)$ with
-  $n^{-1}\log|A^{(n)}(x)v|\to\lambda_i$ for nonzero $v\in E_i(x)$.
-* **39. Margulis–Ruelle inequality.** For a $C^1$ diffeomorphism of a compact
+  $n^{-1}\log|A^{(n)}(x)v|\to\lambda_i$ as $n\to\pm\infty$ for nonzero
+  $v\in E_i(x)$, and $\sum_im_i\lambda_i=\int\log|\det A|\,d\mu$. Without
+  invertibility of the base one obtains instead an invariant filtration.
+* **42. Margulis–Ruelle inequality.** For a $C^1$ diffeomorphism of a compact
   manifold and an invariant probability,
   $$h_\mu(T)\leq\int\sum_{\lambda_i(x)>0}m_i(x)\lambda_i(x)\,d\mu(x).$$
-* **40. Pesin entropy formula.** For a $C^{1+\alpha}$ diffeomorphism,
+* **43. Pesin entropy formula.** For a $C^{1+\alpha}$ diffeomorphism,
   $\alpha>0$, of a compact manifold, an invariant probability absolutely
-  continuous with respect to Riemannian volume satisfies equality in result 39.
-  The positive exponents give the entropy produced along unstable directions.
-* **41. Hopf ergodicity theorem.** The geodesic flow of a compact connected
-  negatively curved smooth Riemannian manifold is ergodic for normalized
-  Liouville measure. Stable and unstable foliations connect geometric
-  hyperbolicity with equality of forward and backward time averages.
+  continuous with respect to Riemannian volume satisfies equality in result 42.
+  More generally (Ledrappier–Young), equality holds for a $C^2$ diffeomorphism
+  exactly when $\mu$ has absolutely continuous conditional measures on
+  unstable manifolds, that is, when $\mu$ is an SRB measure.
+* **44. Ergodicity of geodesic flows.** The geodesic flow on the unit tangent
+  bundle of a compact connected Riemannian manifold of negative sectional
+  curvature is ergodic, indeed mixing and Bernoulli, for normalized Liouville
+  measure. Hopf proved ergodicity for surfaces and for constant curvature;
+  Anosov proved it in general, using absolute continuity of the stable and
+  unstable foliations of this Anosov flow.
 
 ## Joinings, recurrence, and nonconventional averages
 
@@ -252,46 +281,44 @@ marginals. Two systems are **disjoint** if their product measure is their only
 joining. The terminology concerns stationary couplings, rather than
 independence of random variables already placed on one probability space.
 
-* **42. Compactness and extreme joinings.** For compact metric models, joinings
+* **45. Compactness and extreme joinings.** For compact metric models, joinings
   form a nonempty compact convex set. If the prescribed marginals are ergodic,
-  its extreme points are precisely the ergodic joinings.
-* **43. Ergodic decomposition of joinings.** A joining of ergodic systems
-  decomposes into ergodic joinings with the same marginals. This allows
-  structural questions about couplings to be reduced to ergodic ones.
-* **44. Spectral disjointness.** For invertible ergodic systems, mutually
+  its extreme points are precisely the ergodic joinings, and every joining
+  decomposes into ergodic joinings with the same marginals.
+* **46. Spectral disjointness.** For invertible ergodic systems, mutually
   singular maximal spectral types on their mean-zero $L^2$ spaces imply
   disjointness. A joining would otherwise give a nonzero intertwining Markov
   operator between these spectral representations.
-* **45. Weak mixing versus discrete spectrum.** Every weakly mixing system
-  is disjoint from every ergodic discrete-spectrum system. Continuous and
-  pure-point spectral components therefore cannot sustain a nontrivial joining.
-* **46. Furstenberg multiple recurrence.** If $\mu(A)>0$ and $k\geq1$, then
+* **47. Weak mixing versus discrete spectrum.** Every weakly mixing system
+  is disjoint from every ergodic discrete-spectrum system. More generally, an
+  ergodic system is weakly mixing exactly when it is disjoint from every
+  ergodic rotation.
+* **48. Furstenberg multiple recurrence.** If $\mu(A)>0$ and $k\geq1$, then
   $$\liminf_{N\to\infty}\frac1N\sum_{n=1}^N
     \mu(A\cap T^{-n}A\cap\cdots\cap T^{-kn}A)>0.$$
-* **47. Correspondence principle.** A subset $E\subseteq\mathbb Z$ of
+* **49. Correspondence principle.** A subset $E\subseteq\mathbb Z$ of
   positive upper Banach density admits a probability-preserving shift model
   and a set $A$ with that density as its measure, such that finite intersection
   densities dominate the corresponding intersection measures in the model.
-* **48. Szemerédi's theorem.** Every subset of the integers of positive upper
+* **50. Szemerédi's theorem.** Every subset of the integers of positive upper
   Banach density contains arithmetic progressions of every finite length with
   positive common difference. The correspondence principle transfers multiple
   recurrence to this combinatorial assertion.
-* **49. Multiple mean convergence.** For bounded measurable $f_1,\ldots,f_k$,
+* **51. Multiple mean convergence.** For bounded measurable $f_1,\ldots,f_k$,
   $$\frac1N\sum_{n=1}^N\prod_{j=1}^kf_j(T^{jn}x)$$
   converges in $L^2$. This is the Host–Kra–Ziegler theorem for powers of one
   transformation, without an ergodicity requirement on the original system.
-* **50. Nilpotent characteristic factors.** In an ergodic invertible system,
-  the factor $\mathcal Z_{k-1}$ is characteristic for the averages in result 49:
+* **52. Nilpotent characteristic factors.** In an ergodic invertible system,
+  the factor $\mathcal Z_{k-1}$ is characteristic for the averages in result 51:
   replacing each $f_j$ by its conditional expectation on this factor does not
   change their $L^2$ limit. These factors are inverse limits of
   $(k-1)$-step nilsystems; $\mathcal Z_1$ is the Kronecker factor.
-* **51. Wiener–Wintner theorem.** For an ergodic system and $f\in L^1$, one
+* **53. Wiener–Wintner theorem.** For an ergodic system and $f\in L^1$, one
   full-measure set of $x$ works simultaneously for every real $\theta$ in the
   convergence of $N^{-1}\sum_{n<N}e^{2\pi in\theta}f(T^nx)$.
-* **52. Bourgain double recurrence theorem.** For bounded $f,g$ in a
+* **54. Bourgain double recurrence theorem.** For bounded $f,g$ in a
   probability-preserving system,
   $N^{-1}\sum_{n<N}f(T^nx)g(T^{2n}x)$ converges almost everywhere.
-  Higher-order $L^2$ convergence does not by itself assert this pointwise conclusion.
 
 ## Infinite invariant measure
 
@@ -300,16 +327,16 @@ measure-preserving. A set is **wandering** if its distinct translates are
 disjoint modulo null sets. The system is **conservative** if no wandering set
 has positive measure.
 
-* **53. Hopf decomposition.** The space decomposes, uniquely modulo null sets,
+* **55. Hopf decomposition.** The space decomposes, uniquely modulo null sets,
   into invariant conservative and dissipative parts. The dissipative part is
   a countable union of translates of one wandering set. Conservativity is the
   appropriate recurrence condition when finite invariant mass is unavailable.
-* **54. Hopf ratio theorem.** In a conservative ergodic system, for
+* **56. Hopf ratio theorem.** In a conservative ergodic system, for
   $f,g\in L^1$ with $g>0$ almost everywhere,
   $$\frac{\sum_{n<N}f(T^nx)}{\sum_{n<N}g(T^nx)}
     \longrightarrow\frac{\int f\,d\mu}{\int g\,d\mu}$$
   almost everywhere. The denominator integral is finite and strictly positive.
-* **55. Vanishing ordinary averages.** If additionally $\mu(X)=\infty$,
+* **57. Vanishing ordinary averages.** If additionally $\mu(X)=\infty$,
   then $A_Nf\to0$ almost everywhere for every $f\in L^1$. Ratio averages,
   rather than division by $N$, recover nontrivial integral information.
 
@@ -322,43 +349,39 @@ For a positive integrable roof $r$ over an invertible system, the
 identifies $(x,r(x))$ with $(Tx,0)$. Its invariant probability is the normalized
 restriction of $\mu(dx)ds$.
 
-* **56. Spectral splitting.** A unitary Koopman representation splits
-  orthogonally into the closed span of eigenfunctions and the continuous-spectrum
-  subspace. On the latter, Cesàro averages of squared correlations vanish.
-  This is the Hilbert-space form of the compact/reversible and weakly mixing
-  decomposition, developed more generally by Jacobs–de Leeuw–Glicksberg.
-* **57. Hilbert-space van der Corput lemma.** Let $u_n$ be a bounded sequence
+* **58. Hilbert-space van der Corput lemma.** Let $u_n$ be a bounded sequence
   in a Hilbert space. If
   $$\lim_{H\to\infty}\frac1H\sum_{h=1}^H
     \limsup_{N\to\infty}\left|\frac1N\sum_{n=1}^N
        \langle u_{n+h},u_n\rangle\right|=0,$$
   then $N^{-1}\sum_{n=1}^Nu_n\to0$ in norm. This reduces convergence of
   nonconventional averages to correlations of lower complexity.
-* **58. Reflexive mean ergodic theorem.** For a power-bounded operator on a
+* **59. Reflexive mean ergodic theorem.** For a power-bounded operator on a
   reflexive Banach space, Cesàro averages converge strongly to a bounded
   projection, and
   $E=\ker(I-U)\oplus\overline{\operatorname{ran}(I-U)}$.
   This gives a common operator theorem behind many $L^p$ mean-ergodic results.
-* **59. Flow ergodic theorem.** For a jointly measurable probability-preserving
+* **60. Flow ergodic theorem.** For a jointly measurable probability-preserving
   flow and $f\in L^1$,
   $T^{-1}\int_0^Tf\circ\phi^t\,dt$ converges almost everywhere and in $L^1$
   to the conditional expectation on the flow-invariant $\sigma$-field.
   Ergodicity of a flow refers to invariance under every time, rather than
   ergodicity of each individual time map.
-* **60. Entropy and ergodic decomposition.** Dynamical entropy is affine in
+* **61. Entropy and ergodic decomposition.** Dynamical entropy is affine in
   the invariant measure and satisfies
-  $h_\mu(T)=\int h_{\mu_\omega}(T)d\eta(\omega)$ under ergodic decomposition.
-  This is stronger than the ordinary concavity of static partition entropy.
-* **61. Abramov suspension formula.** For an ergodic base and integrable
+  $h_\mu(T)=\int h_{\mu_\omega}(T)d\eta(\omega)$ under ergodic decomposition
+  (Jacobs). For continuous maps of compact metric spaces, $\mu\mapsto h_\mu$
+  is upper semicontinuous when $T$ is expansive, so equilibrium states then exist.
+* **62. Abramov suspension formula.** For an ergodic base and integrable
   positive roof, the suspension flow satisfies
   $h(\phi^t)=|t|h_\mu(T)/\int r\,d\mu$.
   Changing the time spent between returns changes entropy per unit time by
   precisely the average roof length.
-* **62. Livšic theorem for shifts.** On a mixing two-sided shift of finite
+* **63. Livšic theorem for shifts.** On a mixing two-sided shift of finite
   type, a real Hölder function has zero sum on every periodic orbit exactly
   when it is a Hölder coboundary. Periodic-orbit identities are therefore
   sufficient, as well as necessary, for solving this cohomological equation.
-* **63. Central limit theorem for Gibbs shifts.** For a Hölder potential on
+* **64. Central limit theorem for Gibbs shifts.** For a Hölder potential on
   a mixing finite-type shift, a real centered Hölder observable satisfies
   $$N^{-1/2}\sum_{n<N}f\circ T^n\Rightarrow N(0,\sigma_f^2),\qquad
     \sigma_f^2=\int f^2d\mu+2\sum_{n\geq1}\int f(f\circ T^n)d\mu.$$
@@ -381,7 +404,7 @@ theorems. Ruelle and Bowen develop the Gibbs and transfer-operator framework.
 Viana's Lyapunov lectures, Barreira–Pesin, and Katok–Hasselblatt develop the
 smooth endpoint; Krengel and Aaronson the infinite-measure one. Furstenberg
 and Host–Kra are the principal structural references for multiple recurrence
-and nilpotent factors. These later endpoints are shared monograph material,
+and nilpotent factors; Morris introduces Ratner's theorems. These later endpoints are shared monograph material,
 rather than prerequisites for a first course.
 
 Local source anchors:

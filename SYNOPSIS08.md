@@ -3,7 +3,7 @@
 Part of the [mathematical synopsis series](SYNOPSIS.md).
 
 This synopsis describes the recurring graduate and beginning research core of
-Section 08 of [CKMA-bib.md](CKMA-bib.md) and [CKMA-bib2.md](CKMA-bib2.md).
+Section 08 of [CKMA-bib.md](CKMA-bib.md).
 It centers on Brownian motion, continuous martingales, stochastic integration,
 diffusions, and Markov generators, with the standard extensions to jumps and
 countable-state chains. The common machinery is extensive enough to stand on
@@ -24,8 +24,6 @@ all times. For continuous or càdlàg processes, equality on a countable dense
 set of times promotes modification to indistinguishability. A sequence of
 processes converges **uniformly on compact time intervals in probability**
 when $\sup_{t\leq T}|X_t^n-X_t|\to0$ in probability for every finite $T$.
-This mode of convergence is used for quadratic variations and stochastic
-integral approximations; it is stronger than convergence at each individual time.
 
 ## Brownian motion and its sample paths
 
@@ -40,10 +38,15 @@ standard real Brownian motions.
   determine a unique probability law on continuous path space.
 * **2. Scaling and symmetries.** For $c>0$, $(c^{-1/2}B_{ct})_{t\geq0}$ is
   standard Brownian motion. Orthogonal transformations preserve its law;
-  in particular $B$ and $-B$ have the same law.
+  in particular $B$ and $-B$ have the same law, and time inversion
+  $(tB_{1/t})_{t>0}$, extended by $0$ at $t=0$, is again Brownian motion. In the
+  plane, the image of Brownian motion under a nonconstant holomorphic map is a
+  time-changed Brownian motion (Lévy's conformal invariance).
 * **3. Strong Markov property.** For an almost surely finite stopping time $T$,
   $(B_{T+t}-B_T)_{t\geq0}$ is standard Brownian motion independent of
-  $\mathcal F_T$.
+  $\mathcal F_T$. Blumenthal's zero–one law: every event in
+  $\mathcal F_{0+}^B=\bigcap_{t>0}\sigma(B_s:s\leq t)$ has probability zero
+  or one.
 * **4. Reflection principle.** For real Brownian motion and $a>0$,
   $$\mathbb P\left(\sup_{s\leq t}B_s\geq a\right)
     =2\mathbb P(B_t\geq a).$$
@@ -56,7 +59,10 @@ standard real Brownian motions.
   point different from its starting point. In dimensions $d\geq3$ it is transient.
 * **6. Path regularity.** Brownian paths are locally Hölder continuous of
   every order $\alpha<1/2$, almost surely, but almost surely are nowhere
-  differentiable and have infinite total variation on every nondegenerate interval.
+  differentiable and have infinite total variation on every nondegenerate
+  interval. Lévy's modulus of continuity: almost surely
+  $$\limsup_{h\downarrow0}\sup_{0\leq t\leq1-h}
+    \frac{|B_{t+h}-B_t|}{\sqrt{2h\log(1/h)}}=1.$$
 * **7. Quadratic variation.** Along deterministic partitions with mesh tending
   to zero, sums of squared Brownian increments converge in probability to elapsed
   time, uniformly on compact time intervals. Along dyadic partitions convergence
@@ -79,9 +85,7 @@ For continuous local martingales the quadratic variation $[M]$ and predictable
 bracket $\langle M\rangle$ coincide. With jumps they need not: for a compensated
 Poisson process the former is $N_t$ and the latter is $\lambda t$. In general,
 for a locally square-integrable càdlàg martingale, the predictable bracket is
-the predictable compensator of $[M]$. This distinction determines which
-quantity appears in isometries and which appears in the pathwise jump term
-of Itô's formula.
+the predictable compensator of $[M]$.
 
 * **9. Càdlàg regularization.** Under the usual conditions, a submartingale
   for which $t\mapsto\mathbb EX_t$ is right-continuous has a càdlàg
@@ -160,7 +164,9 @@ always integrable against it.
   $$c_p\mathbb E\langle M\rangle_T^{p/2}
     \leq\mathbb E(M_T^*)^p
     \leq C_p\mathbb E\langle M\rangle_T^{p/2}.$$
-  Stopping times are allowed, with infinite expectations interpreted by localization.
+  Here $T$ may be any stopping time, with infinite values of both sides allowed.
+  For càdlàg local martingales the same holds for $p\geq1$ with $[M]$ in
+  place of $\langle M\rangle$.
 * **24. Lévy characterization.** A continuous adapted $d$-dimensional local
   martingale starting at zero is standard Brownian motion if and only if
   $\langle M^i,M^j\rangle_t=\delta_{ij}t$.
@@ -192,8 +198,9 @@ exponential** is $\mathcal E(M)_t=\exp(M_t-\frac12\langle M\rangle_t)$.
                       \tfrac12\int_0^T|\theta_s|^2ds\right)$$
   is a martingale density and $d\mathbb Q=Z_Td\mathbb P$, then
   $B_t-\int_0^t\theta_sds$ is Brownian motion under $\mathbb Q$ on $[0,T]$.
-  More generally, continuous local martingales acquire the covariation drift
-  prescribed by the logarithmic stochastic integral of the density.
+  More generally, if $d\mathbb Q=\mathcal E(L)_Td\mathbb P$ with $\mathcal E(L)$
+  a martingale, every continuous $\mathbb P$-local martingale $M$ makes
+  $M-\langle M,L\rangle$ a continuous $\mathbb Q$-local martingale on $[0,T]$.
 * **30. Cameron–Martin theorem on Wiener space.** Translation by
   $h(t)=\int_0^t\dot h(s)ds$, $\dot h\in L^2[0,T]$, produces a measure
   equivalent to Wiener measure, with density
@@ -222,9 +229,10 @@ noise and initial data; **uniqueness in law** compares distributions.
   Solutions with the same noise satisfy
   $\mathbb E\sup_{t\leq T}|X_t^x-X_t^y|^p\leq C_T|x-y|^p$.
 * **33. Yamada–Watanabe principle.** Weak existence together with pathwise
-  uniqueness implies strong existence and uniqueness in law. Thus the analytic
-  construction of a weak solution can be combined with a separate pathwise
-  uniqueness argument.
+  uniqueness implies strong existence and uniqueness in law. In dimension one,
+  pathwise uniqueness holds when $b$ is Lipschitz and
+  $|\sigma(x)-\sigma(y)|\leq\rho(|x-y|)$ with $\int_{0+}\rho(u)^{-2}du=\infty$,
+  for instance for $\sigma$ Hölder of order $1/2$ (Yamada–Watanabe criterion).
 * **34. Diffusion generator and martingales.** For time-homogeneous Lipschitz
   coefficients, solutions form a strong Markov family. With $a=\sigma\sigma^{\mathsf T}$,
   $$Lf=b\cdot\nabla f+\tfrac12\operatorname{tr}(aD^2f),$$
@@ -237,7 +245,7 @@ noise and initial data; **uniqueness in law** compares distributions.
   stopping times and bounded $f,Lf$ suffice.
 * **36. Feynman–Kac formula.** Let a diffusion have smooth bounded coefficients
   with uniformly elliptic $a$, let $V$ be smooth bounded real-valued, and let
-  $g$ be smooth with bounded derivatives. Then
+  $g$ be bounded and smooth with bounded derivatives. Then
   $$u(t,x)=\mathbb E_x\left[e^{-\int_0^tV(X_s)ds}g(X_t)\right]$$
   is the bounded classical solution of
   $\partial_tu=Lu-Vu$, $u(0,\cdot)=g$. Uniqueness follows from Itô's formula;
@@ -248,13 +256,23 @@ noise and initial data; **uniqueness in law** compares distributions.
   $$\partial_tp=L^*p=-\sum_i\partial_i(b_ip)
     +\tfrac12\sum_{i,j}\partial_{ij}(a_{ij}p).$$
   For Brownian motion this is the heat equation with generator $\frac12\Delta$.
-* **38. Stratonovich conversion.** For sufficiently smooth vector fields
+* **38. One-dimensional diffusions: scale and Feller's test.** Let
+  $dX=b(X)dt+\sigma(X)dB$ on an interval $I$, with $b,\sigma$ continuous and
+  $\sigma>0$. The scale function
+  $s(x)=\int^x\exp\bigl(-\int^y2b/\sigma^2\bigr)dy$ makes $s(X)$ a local
+  martingale up to the exit time, and for $a<x<c$ in $I$,
+  $$\mathbb P_x(T_a<T_c)=\frac{s(c)-s(x)}{s(c)-s(a)}.$$
+  The diffusion on $I=\mathbb R$ is recurrent exactly when
+  $s(-\infty)=-\infty$ and $s(+\infty)=+\infty$. Explosion in finite time
+  is decided by Feller's test, an integral condition at each endpoint
+  involving $s$ and the speed measure $2\,dx/(s'\sigma^2)$.
+* **39. Stratonovich conversion.** For sufficiently smooth vector fields
   $\sigma_j$,
   $$dX=b(X)dt+\sum_j\sigma_j(X)\circ dB^j$$
   is the Itô equation with drift
   $b+\frac12\sum_jD\sigma_j\,\sigma_j$. Stratonovich differentials satisfy
   the ordinary chain rule.
-* **39. Wong–Zakai approximation.** For bounded smooth vector fields with
+* **40. Wong–Zakai approximation.** For bounded smooth vector fields with
   bounded derivatives through order three, solutions of ordinary differential
   equations driven by piecewise linear interpolations of Brownian motion along
   refining deterministic partitions with mesh tending to zero converge in
@@ -265,27 +283,29 @@ noise and initial data; **uniqueness in law** compares distributions.
 
 For a real continuous semimartingale $X$, its **local time** $L_t^a$ is the
 occupation density with respect to quadratic variation, using the Tanaka
-normalization in the next result. For a general semimartingale a right-local-time
-version can be chosen; for Brownian motion the spatial versions coincide.
+normalization in the next result. A version càdlàg in $a$ can always be chosen;
+for Brownian motion it can be taken jointly continuous.
 
-* **40. Tanaka's formula.** For a continuous semimartingale,
+* **41. Tanaka's formula.** For a continuous semimartingale,
   $$(X_t-a)^+=(X_0-a)^++\int_0^t1_{\{X_s>a\}}\,dX_s+\tfrac12L_t^a.$$
   For Brownian motion this also gives
   $|B_t-a|=|B_0-a|+\int_0^t\operatorname{sgn}(B_s-a)\,dB_s+L_t^a$.
-* **41. Occupation density formula.** For nonnegative Borel $f$,
+* **42. Occupation density formula.** For nonnegative Borel $f$,
   $$\int_0^tf(X_s)\,d[X]_s=\int_{\mathbb R}f(a)L_t^a\,da.$$
   In particular, for Brownian motion $L_t^a$ measures occupation per unit
   spatial length and can be obtained as the limit of normalized times spent
   in shrinking intervals about $a$.
-* **42. Continuity and support of Brownian local times.** Brownian local time
+* **43. Continuity and support of Brownian local times.** Brownian local time
   has a version jointly continuous in $(t,a)$. For each $a$, $t\mapsto L_t^a$
   is increasing and its Stieltjes measure is carried by $\{t:B_t=a\}$.
-* **43. Skorokhod reflection lemma.** For continuous $w$ with $w(0)\geq0$,
+* **44. Skorokhod reflection lemma.** For continuous $w$ with $w(0)\geq0$,
   the unique decomposition $x=w+k$ with $x\geq0$, $k(0)=0$, $k$ increasing,
   and $\int1_{\{x>0\}}dk=0$ is
   $$k(t)=\sup_{s\leq t}(-w(s))^+.$$
   Applied to Brownian motion this constructs reflected Brownian motion; its
-  law is that of $|B|$ when started at zero.
+  law is that of $|B|$ when started at zero. With $S_t=\sup_{s\leq t}B_s$,
+  Lévy's theorem states that $(S_t-B_t,S_t)_{t\geq0}$ has the law of
+  $(|B_t|,L_t^0)_{t\geq0}$.
 
 ## Markov semigroups, martingale problems, and chains
 
@@ -297,44 +317,45 @@ continuous positive contraction semigroup on $C_0$.
 The **martingale problem** for $(L,\mathcal D)$ asks for a process for which
 $f(X_t)-f(X_0)-\int_0^tLf(X_s)ds$ is a martingale for $f\in\mathcal D$.
 
-* **44. Chapman–Kolmogorov and construction.** Transition kernels satisfy
+* **45. Chapman–Kolmogorov and construction.** Transition kernels satisfy
   $P_{s+t}(x,A)=\int P_t(y,A)P_s(x,dy)$. Conversely, such kernels and an initial
   law determine consistent finite-dimensional laws and hence a process on the
   coordinate product space. Path regularity requires additional hypotheses.
-* **45. Feller process construction and strong Markov property.** A conservative
+* **46. Feller process construction and strong Markov property.** A conservative
   Feller semigroup on a locally compact separable metric space admits a
   càdlàg strong Markov realization with its transition kernels. Conservation
   means these kernels have total mass one; without it a cemetery state records
   killing or explosion.
-* **46. Well-posed martingale problems.** For a diffusion operator $L$ on
+* **47. Well-posed martingale problems.** For a diffusion operator $L$ on
   $\mathbb R^d$ with locally bounded Borel coefficients, suppose the continuous-path
   martingale problem on $C_c^\infty$ has a nonexplosive solution unique in law
   for every starting point, and the resulting laws depend measurably on that
-  point. Then these laws form a strong Markov family. For a Feller generator,
-  the semigroup determines and solves the martingale problem on its generator
-  domain.
-* **47. Continuous-time finite-state chains.** A matrix $Q$ with nonnegative
+  point. Then these laws form a strong Markov family. Well-posedness holds
+  when $a$ is bounded, continuous, and uniformly positive definite and $b$ is
+  bounded and Borel (Stroock–Varadhan). For a Feller generator, the semigroup
+  determines and solves the martingale problem on its generator domain.
+* **48. Continuous-time finite-state chains.** A matrix $Q$ with nonnegative
   off-diagonal entries and zero row sums generates the transition matrix
   $P_t=e^{tQ}$. It satisfies both equations
   $\frac{d}{dt}P_t=QP_t=P_tQ$. Conversely every finite-state time-homogeneous
   continuous-time Markov chain has such a generator.
-* **48. Recurrence and invariant probabilities.** For an irreducible
+* **49. Recurrence and invariant probabilities.** For an irreducible
   discrete-time chain on a countable state space, an invariant probability
   exists exactly when the chain is positive recurrent; then it is unique, and
   $$\pi(i)=\bigl(\mathbb E_i\tau_i^+\bigr)^{-1}.$$
-* **49. Ergodic convergence of chains.** An irreducible aperiodic positive
+* **50. Ergodic convergence of chains.** An irreducible aperiodic positive
   recurrent countable-state chain satisfies $P^n(i,\cdot)\to\pi$ in total
   variation. For $f\in L^1(\pi)$,
   $n^{-1}\sum_{k<n}f(X_k)\to\pi(f)$ almost surely from every starting state;
   this time-average conclusion does not require aperiodicity.
-* **50. Reversibility and spectral decay.** Detailed balance
+* **51. Reversibility and spectral decay.** Detailed balance
   $\pi(i)P(i,j)=\pi(j)P(j,i)$ makes $P$ self-adjoint on $L^2(\pi)$.
   For a reversible continuous-time chain, a spectral gap
   $-\langle f,Qf\rangle\geq\lambda\|f\|_2^2$ on mean-zero functions,
   $\lambda>0$, gives
   $$\|P_tf-\pi(f)\|_{L^2(\pi)}
     \leq e^{-\lambda t}\|f-\pi(f)\|_{L^2(\pi)}.$$
-* **51. Foster–Lyapunov geometric criterion.** For an irreducible aperiodic
+* **52. Foster–Lyapunov geometric criterion.** For an irreducible aperiodic
   countable-state chain, if a finite set $C$, a function $V\geq1$, and constants
   $0<\lambda<1$, $b<\infty$ satisfy
   $PV\leq\lambda V+b1_C$, then the chain is positive recurrent and there are
@@ -350,17 +371,17 @@ version is $\widetilde N=N-dt\,\nu$ when defined through integrable truncations.
 The Brownian and Poisson noises used with a filtration have future increments
 independent of its present $\sigma$-field.
 
-* **52. Poisson compensators.** If $N_t$ is a Poisson process of rate $\lambda$,
+* **53. Poisson compensators.** If $N_t$ is a Poisson process of rate $\lambda$,
   $N_t-\lambda t$ is a martingale with predictable quadratic variation
   $\lambda t$. More generally, predictable nonnegative $H$ satisfies
   $$\mathbb E\int H(t,z)\,N(dt,dz)
     =\mathbb E\int H(t,z)\,dt\,\nu(dz).$$
-* **53. Compensated Poisson isometry.** For predictable $H$ with
+* **54. Compensated Poisson isometry.** For predictable $H$ with
   $\mathbb E\int_0^T\int|H|^2\nu(dz)dt<\infty$,
   $$\mathbb E\left|\int_0^T\int H\,d\widetilde N\right|^2
     =\mathbb E\int_0^T\int|H|^2\nu(dz)dt.$$
   The integral is a square-integrable martingale, extended locally by stopping.
-* **54. Lévy–Itô decomposition.** A real Lévy process has the representation
+* **55. Lévy–Itô decomposition.** A real Lévy process has the representation
   $$X_t=bt+\sigma B_t+
     \int_0^t\int_{|z|>1}z\,N(ds,dz)+
     \lim_{\varepsilon\downarrow0}
@@ -369,15 +390,13 @@ independent of its present $\sigma$-field.
   random measure are independent, and the compensated small-jump limit exists
   in $L^2$ at each finite time and uniformly on compact time intervals in
   probability. Its characteristic exponent is the Lévy–Khintchine exponent.
-* **55. Lévy generators.** On $C_c^2(\mathbb R)$ the generator is
+* **56. Lévy generators.** On $C_c^2(\mathbb R)$ the generator is
   $$Lf(x)=bf'(x)+\tfrac12\sigma^2f''(x)+
     \int\bigl(f(x+z)-f(x)-zf'(x)1_{\{|z|\leq1\}}\bigr)\,\nu(dz).$$
-  Thus diffusion, compound Poisson motion, and infinite-activity jump motion
-  fit one generator and martingale framework.
 
 ## Approximation, harmonic transforms, and invariant laws
 
-* **56. Euler–Maruyama strong approximation.** For a time-homogeneous SDE with
+* **57. Euler–Maruyama strong approximation.** For a time-homogeneous SDE with
   globally Lipschitz coefficients of linear growth and square-integrable initial
   data, set $\kappa_h(s)=h\lfloor s/h\rfloor$ and define the continuous Euler
   process by
@@ -385,9 +404,8 @@ independent of its present $\sigma$-field.
                    \int_0^t\sigma(X_{\kappa_h(s)}^h)dB_s.$$
   On each finite horizon,
   $\mathbb E\sup_{t\leq T}|X_t-X_t^h|^2\leq C_T h$.
-  The square-root rate concerns this stochastic interpolation, rather than a
-  deterministic linear interpolation between the simulated grid values.
-* **57. Brownian solution of the Dirichlet problem.** For a bounded $C^2$
+  The rate refers to this continuous Euler process.
+* **58. Brownian solution of the Dirichlet problem.** For a bounded $C^2$
   domain $U$ and continuous $g$ on $\partial U$,
   $$u(x)=\mathbb E_xg(B_{\tau_U}),\qquad
     \tau_U=\inf\{t:B_t\notin U\},$$
@@ -395,35 +413,30 @@ independent of its present $\sigma$-field.
   boundary data $g$. The exit distribution is harmonic measure. Boundary
   regularity matters: on an arbitrary domain the formula need not attain the
   specified data at every boundary point.
-* **58. Doob's $h$-transform.** For a Markov semigroup and a strictly positive
+* **59. Doob's $h$-transform.** For a Markov semigroup and a strictly positive
   function satisfying $P_th=h$ for all $t$, the kernels
   $$P_t^hf(x)=h(x)^{-1}P_t(hf)(x)$$
   form a conservative Markov semigroup. For a diffusion and smooth $h$ with
   $Lh=0$, on the corresponding test functions its generator is
   $L^hf=h^{-1}L(hf)=Lf+a\nabla\log h\cdot\nabla f$.
-  The semigroup invariance assumption is needed in addition to a merely local
-  harmonicity calculation when conservation is asserted.
-* **59. Doléans exponential with jumps.** If $M_0=0$ is a càdlàg local
+* **60. Doléans exponential with jumps.** If $M_0=0$ is a càdlàg local
   martingale with $\Delta M>-1$, the solution of $dZ=Z_-\,dM$, $Z_0=1$, is
   $$\mathcal E(M)_t=
     \exp(M_t-\tfrac12[M]^c_t)
     \prod_{0<s\leq t}(1+\Delta M_s)e^{-\Delta M_s}.$$
-  It is a positive local martingale and therefore a supermartingale. The
-  product converges in the standard semimartingale sense and reduces to the
-  continuous stochastic exponential when there are no jumps.
-* **60. Finite variation of Lévy paths.** A real Lévy process has paths of
+  The product converges absolutely, and $\mathcal E(M)$ is a positive local
+  martingale, hence a supermartingale.
+* **61. Finite variation of Lévy paths.** A real Lévy process has paths of
   finite variation on compact intervals almost surely exactly when its Gaussian
   coefficient is zero and $\int_{|z|\leq1}|z|\nu(dz)<\infty$. Then it can be
   written as drift plus the uncompensated sum of all jumps, with drift
   $b-\int_{|z|\leq1}z\nu(dz)$ in the truncation convention used above.
-* **61. Gradient diffusions and equilibrium.** Let $V\in C^2(\mathbb R^d)$
+* **62. Gradient diffusions and equilibrium.** Let $V\in C^2(\mathbb R^d)$
   have globally Lipschitz gradient and $Z=\int e^{-V(x)}dx<\infty$. The
   diffusion $dX=-\nabla V(X)dt+\sqrt2\,dB$ has invariant reversible probability
   $\pi(dx)=Z^{-1}e^{-V(x)}dx$. For compactly supported smooth functions,
   $$\int fLg\,d\pi=-\int\nabla f\cdot\nabla g\,d\pi,
     \qquad L=\Delta-\nabla V\cdot\nabla.$$
-  The integration-by-parts identity connects the stochastic equilibrium with
-  Dirichlet forms and functional inequalities.
 
 An elementary model of the last result is the **Ornstein–Uhlenbeck process**.
 For $\theta>0$, the real equation $dX_t=-\theta X_tdt+\sigma dB_t$ has solution
@@ -431,9 +444,7 @@ $$X_t=e^{-\theta t}X_0+\sigma\int_0^te^{-\theta(t-s)}dB_s.$$
 Its invariant law is $N(0,\sigma^2/(2\theta))$, with the point mass at zero
 when $\sigma=0$. From deterministic initial data the mean decays as
 $e^{-\theta t}X_0$ and the variance is
-$\sigma^2(1-e^{-2\theta t})/(2\theta)$. This displays explicitly the distinction
-between a transition law from a fixed point and a stationary process initialized
-in its invariant law.
+$\sigma^2(1-e^{-2\theta t})/(2\theta)$.
 
 ## Reference guide
 
@@ -450,6 +461,9 @@ integration, diffusions, and Markov-process structure. Protter,
 Jacod–Shiryaev, and He–Wang–Yan supply the general semimartingale and jump
 framework; Applebaum and Sato, cross-listed in Section 06, develop the Lévy
 endpoint. Kunita develops stochastic flows and Wong–Zakai approximations.
+One-dimensional diffusions (scale, speed, Feller's test, and the
+Yamada–Watanabe criterion) are treated in Karatzas–Shreve, Chapter 5, and
+Revuz–Yor, Chapters VII and IX.
 The martingale-problem viewpoint is central in Ethier–Kurtz and
 Stroock–Varadhan. Countable-state recurrence, mixing, and drift conditions
 are treated by Levin–Peres and Meyn–Tweedie, with corresponding foundational

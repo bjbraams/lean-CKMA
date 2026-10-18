@@ -3,7 +3,7 @@
 Part of the [mathematical synopsis series](SYNOPSIS.md).
 
 This synopsis selects recurring material from Section 30 of
-[CKMA-bib.md](CKMA-bib.md) and [CKMA-bib2.md](CKMA-bib2.md). It begins
+[CKMA-bib.md](CKMA-bib.md). It begins
 with distribution theory as used in PDE, then develops symbols, microlocal
 regularity, Fourier integral operators, and the semiclassical limit.
 The broader locally convex theory of distributions is treated in Section 16;
@@ -51,9 +51,14 @@ without boundary. Symbols and coefficients are smooth unless specified.
 * **9. Elliptic constant-coefficient regularity.** If $P(D)$ is elliptic,
   $P(D)u\in H^s_{\mathrm{loc}}$ implies
   $u\in H^{s+m}_{\mathrm{loc}}$, where $m$ is its order.
-  In particular elliptic operators are hypoelliptic.
+  In particular elliptic operators are hypoelliptic. More generally,
+  $P(D)$ is hypoelliptic exactly when
+  $\partial^\alpha P(\xi)/P(\xi)\to0$ as $\xi\to\infty$ in
+  $\mathbb R^d$ for every $\alpha\ne0$ (Hörmander); the heat operator
+  is an example.
 * **10. Nonstationary and stationary phase.** Smooth compactly supported
-  oscillatory integrals decay faster than any power when the phase has
+  oscillatory integrals $\int e^{i\lambda\phi}a\,dx$ with real phase
+  $\phi$ decay faster than any power when the phase has
   no stationary point. A nondegenerate stationary point contributes
   a full expansion beginning with
   $(2\pi/\lambda)^{d/2}e^{i\lambda\phi(x_0)+i\pi\operatorname{sgn}\phi''/4}
@@ -161,7 +166,11 @@ of degrees $m,m-1,\ldots$ for large $|\xi|$.
   $\mathrm{WF}^{s-m}(Au)\subset\mathrm{WF}^s(u)$ for order $m$.
   If $A$ is elliptic at a covector, membership in these two wavefront
   sets is equivalent there.
-* **31. Sharp Gårding inequality.** If a real scalar $a\in S^m_{1,0}$
+* **31. Gårding inequalities.** If $A$ has order $m$ and
+  $\operatorname{Re}a_m(x,\xi)\geq c|\xi|^m$ (strong ellipticity), then
+  $\operatorname{Re}\langle Au,u\rangle\geq c'\|u\|_{H^{m/2}}^2
+  -C\|u\|_{H^{-N}}^2$ for $u$ supported in a fixed compact set
+  (Gårding). If a real scalar $a\in S^m_{1,0}$
   is nonnegative, then
   $\operatorname{Re}\langle\operatorname{Op}(a)u,u\rangle
   \geq-C\|u\|_{H^{(m-1)/2}}^2$, locally with compact support or
@@ -192,7 +201,9 @@ its characteristic set $\operatorname{Char}(A)$.
 * **36. Fredholm theorem on closed manifolds.** An elliptic operator
   $A:H^{s+m}(M)\to H^s(M)$ is Fredholm, has smooth kernel and
   cokernel, and has index independent of $s$. Solvability is equivalent
-  to orthogonality to the kernel of its formal adjoint.
+  to orthogonality to the kernel of its formal adjoint. The index
+  depends only on the homotopy class of the principal symbol among
+  elliptic symbols; it vanishes for self-adjoint operators.
 * **37. Complex powers.** A strictly positive self-adjoint elliptic
   classical operator $A$ of positive order $m$ on a closed manifold
   has complex powers $A^z$ in the classical calculus of complex order
@@ -200,25 +211,53 @@ its characteristic set $\operatorname{Char}(A)$.
 * **38. Elliptic spectral asymptotics.** For a positive self-adjoint
   elliptic operator of order $m>0$ with positive scalar principal symbol,
   $N(\lambda)\sim(2\pi)^{-d}\operatorname{vol}\{(x,\xi):a_m(x,\xi)\leq\lambda\}$.
-  The leading growth is $\lambda^{d/m}$.
+  The remainder is $O(\lambda^{(d-1)/m})$, which is sharp for the sphere
+  (Avakumović, Levitan, Hörmander); it improves to $o(\lambda^{(d-1)/m})$
+  when the periodic bicharacteristics have measure zero
+  (Duistermaat–Guillemin).
 * **39. Subelliptic sums of squares.** If real smooth vector fields
   $X_1,\ldots,X_r$ and their brackets span every tangent space, then
   $\sum_jX_j^*X_j$ is hypoelliptic. Locally there is a positive
   subelliptic gain controlled by the bracket lengths on the compact set.
-* **40. Propagation of singularities.** Let $P$ have real homogeneous
-  principal symbol $p$ of principal type, with nonzero Hamilton field
-  on the characteristic set. In a region where $Pu$ is smooth,
-  $\mathrm{WF}(u)$ is a union of maximally extended null
-  bicharacteristics of $H_p$ within that region.
+* **40. Propagation of singularities.** Let $P$ be properly supported
+  with real principal symbol $p$ homogeneous of degree $m$. Then
+  $\mathrm{WF}(u)\setminus\mathrm{WF}(Pu)\subset p^{-1}(0)$ and is
+  invariant under the flow of $H_p$ there (Duistermaat–Hörmander). Likewise,
+  on a bicharacteristic interval where $Pu\in H^s$ microlocally,
+  $u\in H^{s+m-1}$ microlocally at one point implies it on the whole
+  interval.
 * **41. Real-principal-type normal form.** Microlocally near a point
   of $p=0$ where the Hamilton field is not radial, homogeneous canonical
   coordinates reduce $p$ to a nonzero elliptic factor times one momentum
   coordinate. Elliptic Fourier integral conjugations reduce $P$ to the
   corresponding model derivative modulo lower-order corrections.
-* **42. Characteristic obstruction.** A distributional solution may
-  have singularities along the characteristic set even when its forcing
-  is smooth. For the wave operator these covectors travel along null
-  bicharacteristics, rather than being removed by an elliptic parametrix.
+* **42. Sharpness of propagation.** Under the hypotheses of the
+  preceding propagation theorem, for every compact interval $I$ of a null
+  bicharacteristic with injective projection to the cosphere bundle,
+  there is $u$ with $\mathrm{WF}(u)$ the cone over $I$ and
+  $\mathrm{WF}(Pu)$ the cone over its endpoints. Singularities in the
+  characteristic set are thus genuinely transported, not removable.
+* **43. Local solvability.** The Lewy operator
+  $\partial_{x_1}+i\partial_{x_2}-2i(x_1+ix_2)\partial_{x_3}$ on
+  $\mathbb R^3$ is not locally solvable: for most smooth $f$, $Lu=f$ has
+  no distributional solution near any point. For principal type operators,
+  local solvability is equivalent to the Nirenberg–Trèves condition
+  $(\Psi)$ (sufficiency by Dencker); in particular $\operatorname{Im}p$
+  must not change sign from $-$ to $+$ along bicharacteristics of
+  $\operatorname{Re}p$, which excludes Hörmander's condition
+  $\{\operatorname{Re}p,\operatorname{Im}p\}>0$ at a characteristic point.
+* **44. Uniqueness and unique continuation.** If $P$ has analytic
+  coefficients and $S$ is a noncharacteristic $C^1$ hypersurface, a
+  distribution solution of $Pu=0$ vanishing on one side of $S$ vanishes
+  near $S$ (Holmgren). For second-order elliptic operators with real
+  Lipschitz principal coefficients and bounded lower-order coefficients on
+  a connected open set, a solution vanishing to infinite order at a point
+  vanishes identically (Aronszajn–Krzywicki–Szarski). Such results rest
+  on Carleman estimates
+  $\tau^{3/2}\|e^{\tau\varphi}u\|_2+\tau^{1/2}\|e^{\tau\varphi}\nabla u\|_2
+  \leq C\|e^{\tau\varphi}Pu\|_2$ for $u\in C_c^\infty$ of small support
+  and $\tau$ large, with weights satisfying Hörmander's strong
+  pseudoconvexity condition.
 
 ## Fourier integral operators and canonical transformations
 
@@ -233,29 +272,29 @@ $H_p=\partial_\xi p\cdot\partial_x-\partial_xp\cdot\partial_\xi$.
 Use the usual operator order in which order-zero canonical-graph FIOs on
 equal-dimensional manifolds are locally $L^2$ bounded.
 
-* **43. Wavefront mapping.** A properly supported FIO associated to
+* **45. Wavefront mapping.** A properly supported FIO associated to
   $C\subset(T^*X\setminus0)\times(T^*Y\setminus0)$ satisfies
   $\mathrm{WF}(Au)\subset C\circ\mathrm{WF}(u)$.
-* **44. Phase independence.** Equivalent nondegenerate parametrizations
+* **46. Phase independence.** Equivalent nondegenerate parametrizations
   of a Lagrangian define the same class of Lagrangian distributions.
   Their leading amplitudes transform as half-densities with the
   corresponding Maslov factors.
-* **45. Composition and adjoints.** For transverse canonical relations,
+* **47. Composition and adjoints.** For transverse canonical relations,
   FIO composition has the composed relation and the sum of the orders.
   Clean composition with excess $e$ adds $e/2$ to that order.
   Adjoints reverse the canonical relation.
-* **46. $L^2$ boundedness for canonical graphs.** A compactly localized
+* **48. $L^2$ boundedness for canonical graphs.** A compactly localized
   order-zero FIO associated to a canonical graph is $L^2$ bounded.
   Order-$m$ graph FIOs map $H^s_{\mathrm{comp}}$ to
   $H^{s-m}_{\mathrm{loc}}$.
-* **47. Elliptic FIO inversion.** An elliptic FIO on a canonical graph
+* **49. Elliptic FIO inversion.** An elliptic FIO on a canonical graph
   has a microlocal inverse on the inverse graph, modulo smoothing errors.
   It transports microlocal regularity in both directions.
-* **48. Egorov's theorem.** Conjugation of a pseudodifferential
+* **50. Egorov's theorem.** Conjugation of a pseudodifferential
   operator by an elliptic FIO quantizing a canonical transformation
   gives a pseudodifferential operator whose principal symbol is the
   original symbol transported by that transformation.
-* **49. Wave parametrices.** For a positive elliptic first-order
+* **51. Wave parametrices.** For a positive elliptic first-order
   self-adjoint operator $P$, the local propagator $e^{-itP}$ is an
   FIO associated to its Hamilton flow. Local phase representations
   solve the eikonal and transport equations; canonical relations continue
@@ -272,45 +311,43 @@ Unless indicated otherwise, semiclassical statements use symbols with
 uniformly bounded derivatives, or compact phase-space support, and appropriate
 self-adjoint realizations. Semiclassical Sobolev norms use $\langle hD\rangle^s$.
 
-* **50. Uniform boundedness.** The Calderón–Vaillancourt estimate for
+* **52. Uniform boundedness.** The Calderón–Vaillancourt estimate for
   $\operatorname{Op}_h^w(a)$ is uniform as $h\downarrow0$ when the
   required symbol seminorms are uniform.
-* **51. Semiclassical Weyl calculus.**
+* **53. Semiclassical Weyl calculus.**
   $\operatorname{Op}_h^w(a)\operatorname{Op}_h^w(b)
   =\operatorname{Op}_h^w(a\#_hb)$ with
   $a\#_hb=ab+(h/2i)\{a,b\}+O(h^2)$ in the symbol class.
   Thus $[\operatorname{Op}_h^w(a),\operatorname{Op}_h^w(b)]
   =(h/i)\operatorname{Op}_h^w(\{a,b\})+O(h^3)$ for uniform smooth symbols.
-* **52. Weyl adjoints and positivity.**
+* **54. Weyl adjoints and positivity.**
   $\operatorname{Op}_h^w(a)^*=\operatorname{Op}_h^w(\overline a)$.
   If $a\geq0$ is a uniform order-zero symbol, sharp Gårding gives
   $\langle\operatorname{Op}_h^w(a)u,u\rangle\geq-Ch\|u\|_2^2$;
   the scalar Fefferman–Phong estimate improves this to $-Ch^2\|u\|_2^2$.
-* **53. Semiclassical elliptic inversion.** If $|a|\geq c>0$ in a
+* **55. Semiclassical elliptic inversion.** If $|a|\geq c>0$ in a
   region, there is a symbol inverse there modulo $O(h^\infty)$.
   On a globally elliptic order-zero problem this gives a bounded inverse
   for small $h$, up to the stated negligible remainders.
-* **54. Semiclassical wavefront set.** An $h$-tempered family has no
+* **56. Semiclassical wavefront set.** An $h$-tempered family has no
   semiclassical wavefront at $(x,\xi)$ if an elliptic cutoff there
   sends it to $O(h^\infty)$ in local Sobolev norms.
-  Here $h$-tempered means polynomially bounded in $h^{-1}$ in the
-  relevant distribution seminorms.
-  Unlike ordinary wavefront sets, the zero section is included, and
+  Here $h$-tempered means polynomially bounded in $h^{-1}$. Unlike ordinary wavefront sets, the zero section is included, and
   fiber infinity is treated through the chosen symbol compactification.
-* **55. Defect-measure compactness.** Every $L^2$-bounded family $u_h$
+* **57. Defect-measure compactness.** Every $L^2$-bounded family $u_h$
   has a subsequence $h_j\downarrow0$ and a positive Radon measure $\mu$
   with $\langle\operatorname{Op}_{h_j}^w(a)u_{h_j},u_{h_j}\rangle
   \to\int a\,d\mu$ for each compactly supported smooth symbol.
   Mass can escape in space or frequency unless tightness is assumed.
-* **56. Characteristic support of measures.** If
+* **58. Characteristic support of measures.** If
   $P_hu_h=o(1)$ in $L^2$ and $P_h$ has principal symbol $p$,
   then every defect measure is supported on $p=0$, under the usual
   uniform symbol bounds and microlocal localization.
-* **57. Hamiltonian invariance.** If $P_h$ is self-adjoint with real
+* **59. Hamiltonian invariance.** If $P_h$ is self-adjoint with real
   principal symbol $p$ and $P_hu_h=o(h)$, then
   $\int\{p,a\}d\mu=0$ for all compactly supported $a$.
   Thus $\mu$ is invariant under the Hamilton flow where it is defined.
-* **58. Semiclassical Egorov theorem.** For
+* **60. Semiclassical Egorov theorem.** For
   $U_h(t)=e^{-itP_h/h}$ with self-adjoint $P_h$ and principal symbol $p$,
   $$
   U_h(t)^*\operatorname{Op}_h^w(a)U_h(t)
@@ -318,17 +355,24 @@ self-adjoint realizations. Semiclassical Sobolev norms use $\langle hD\rangle^s$
   $$
   in $L^2$ operator norm on fixed time intervals with controlled flow
   and symbols. Here $\Phi_t$ is the $H_p$ flow.
-* **59. Coherent states.** Normalized Gaussian packets centered at
+* **61. Coherent states.** Normalized Gaussian packets centered at
   $(x_0,\xi_0)$ on spatial scale $\sqrt h$ have defect measure
-  $\delta_{(x_0,\xi_0)}$. The uncertainty scale is therefore compatible
-  with point concentration in the semiclassical phase-space limit.
-* **60. Semiclassical trace formula.** A smooth symbol of compact
+  $\delta_{(x_0,\xi_0)}$, while WKB states $a(x)e^{i\varphi(x)/h}$
+  have measure $|a(x)|^2\,dx\otimes\delta_{\xi=\nabla\varphi(x)}$.
+* **62. Functional calculus.** If $P_h=\operatorname{Op}_h^w(p)$ is
+  self-adjoint with real symbol $p$ in a uniform elliptic class and
+  $f\in C_c^\infty(\mathbb R)$, then $f(P_h)$ is a semiclassical
+  pseudodifferential operator with principal symbol $f\circ p$, as follows
+  from the Helffer–Sjöstrand formula
+  $f(P)=-\pi^{-1}\int\bar\partial\widetilde f(z)(z-P)^{-1}dm(z)$
+  with an almost analytic extension $\widetilde f$.
+* **63. Semiclassical trace formula.** A smooth symbol of compact
   phase-space support gives a trace-class Weyl operator with
   $\operatorname{Tr}\operatorname{Op}_h^w(a)
   =(2\pi h)^{-d}\int a(x,\xi)dx\,d\xi$.
   On closed manifolds the corresponding leading formula is invariantly
   expressed using Liouville measure.
-* **61. Semiclassical Weyl law.** For
+* **64. Semiclassical Weyl law.** For
   $P_h=-h^2\Delta_g+V$ on a closed manifold and an interval $[a,b]$
   whose boundary energy surfaces have Liouville measure zero,
   $$
@@ -336,7 +380,7 @@ self-adjoint realizations. Semiclassical Sobolev norms use $\langle hD\rangle^s$
   =(2\pi h)^{-d}\operatorname{vol}\{a\leq|\xi|_g^2+V(x)\leq b\}
   +o(h^{-d}).
   $$
-* **62. Quantum ergodicity.** If the geodesic flow on the unit cosphere
+* **65. Quantum ergodicity.** If the geodesic flow on the unit cosphere
   of a closed Riemannian manifold is ergodic, every orthonormal
   Laplace eigenbasis has a subsequence of density one whose
   order-zero pseudodifferential expectations converge to the normalized
@@ -358,6 +402,7 @@ Local source copies consulted:
 
 * [Hörmander, *The Analysis of Linear Partial Differential Operators*, I](References/Hörmander1998AnalysisLinearPartialDifferentialOperators1DistributionTheoryFourierAnalysis-SpringerGL256.pdf).
 * [Hörmander, *The Analysis of Linear Partial Differential Operators*, III](References/Hörmander2007AnalysisLinearPartialDifferentialOperators3PseudoDifferentialOperators-SpringerCLASSICS.pdf).
+* [Hörmander, *The Analysis of Linear Partial Differential Operators*, IV](References/Hörmander2009AnalysisLinearPartialDifferentialOperators4FourierIntegralOperators-SpringerCLASSICS.pdf).
 * [Grigis–Sjöstrand, *Microlocal Analysis for Differential Operators*](References/GrigisSjöstrand1994MicrolocalAnalysisDifferentialOperatorsIntroduction-CambridgeLMSLNS196.pdf).
 * [Zworski, *Semiclassical Analysis*](References/Zworski2012SemiclassicalAnalysis-AMS.GraduateStudies138.pdf).
 * [Shubin, *Pseudodifferential Operators and Spectral Theory*](References/Shubin2001PseudodifferentialOperatorsSpectralTheory2ndEd-Springer.pdf).

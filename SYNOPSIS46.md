@@ -3,7 +3,7 @@
 Part of the [mathematical synopsis series](SYNOPSIS.md).
 
 This synopsis selects recurring material from Section 46 of
-[CKMA-bib.md](CKMA-bib.md) and [CKMA-bib2.md](CKMA-bib2.md).
+[CKMA-bib.md](CKMA-bib.md).
 Its main subject is iteration of rational and polynomial maps, together
 with the local, quasiconformal, ergodic, and potential-theoretic methods
 that recur in the listed books. The final sections give foundational
@@ -32,7 +32,7 @@ The multiplier of a period-$p$ point is $(f^p)'$ in a local coordinate.
   to $J(f)$, that closure is exactly $J(f)$.
 * **5. Blowing-up property.** If an open set meets $J(f)$, the
   union of its forward images covers the sphere apart from at most
-  the exceptional points. This is the dynamical consequence of Montel's theorem.
+  the exceptional points (by Montel's theorem).
 * **6. Repelling cycles are dense.** Repelling periodic points lie
   in $J(f)$ and are dense there. Attracting periodic points lie in $F(f)$.
 * **7. Iteration does not change Julia sets.** For every $k\geq1$,
@@ -43,7 +43,6 @@ The multiplier of a period-$p$ point is $(f^p)'$ in a local coordinate.
 * **9. Holomorphic fixed-point formula.** If every fixed point is
   simple, then $\sum_{f(a)=a}(1-f'(a))^{-1}=1$, using local
   coordinates at infinity. General versions use residues when multiplier one occurs.
-  The formula is also treated in [Milnor's introductory lectures](https://arxiv.org/pdf/math/9201272).
 
 ## Local normal forms and small divisors
 
@@ -85,18 +84,19 @@ The multiplier of a period-$p$ point is $(f^p)'$ in a local coordinate.
   Herman ring. On the last two, the first return map is conformally
   conjugate to an irrational rotation of a disk or annulus.
 * **20. Sullivan's no-wandering-domains theorem.** Every Fatou
-  component of a rational map is eventually periodic. Consequently
-  the preceding list describes all components after finitely many iterates.
+  component of a rational map is eventually periodic, so the preceding
+  list describes every component after finitely many iterates. The number
+  of Fatou components is $0$, $1$, $2$, or $\infty$.
 * **21. Fatou–Shishikura inequality.** The number of nonrepelling
   periodic point cycles of a rational map is at most $2d-2$.
   This includes irrationally indifferent cycles, not just attracting ones.
 * **22. Polynomial Fatou domains.** A polynomial has no Herman
   rings. Its bounded Fatou components are simply connected, while
   the basin of infinity is governed by its external Green function.
-* **23. Hyperbolicity criteria.** The following are equivalent:
-  $P(f)\cap J(f)=\varnothing$; every critical orbit tends to an
-  attracting cycle; and uniform expansion of some iterate on $J(f)$
-  in a smooth conformal metric near that set.
+* **23. Hyperbolicity criteria.** The following are equivalent, and
+  define **hyperbolic** rational maps: $P(f)\cap J(f)=\varnothing$;
+  every critical orbit tends to an attracting cycle; some iterate is
+  uniformly expanding on $J(f)$ in a smooth conformal metric near $J(f)$.
 * **24. Expanding geometry.** A hyperbolic rational map has uniform
   contraction of inverse branches near its Julia set, bounded distortion,
   and a finite Markov description. These supply its conformal-repeller structure.
@@ -105,10 +105,12 @@ The multiplier of a period-$p$ point is $(f^p)'$ in a local coordinate.
   holomorphic motion, extending to a quasiconformal sphere motion.
 * **26. Dimension of hyperbolic Julia sets.** A hyperbolic rational
   Julia set has Hausdorff dimension strictly below two and hence area zero.
-* **27. Subhyperbolic local connectivity.** A polynomial with connected
-  Julia set, no parabolic cycles, and every Julia critical point
-  preperiodic has a locally connected Julia set if all remaining
-  critical points tend to attracting cycles. Expansion uses an orbifold metric.
+* **27. Subhyperbolic local connectivity.** Call a polynomial
+  **subhyperbolic** if each critical point in $J$ is preperiodic and every
+  other critical point tends to an attracting cycle. If such a polynomial
+  (in particular a hyperbolic or postcritically finite one) has connected
+  Julia set, that set is locally connected; the proof uses expansion in an
+  orbifold metric.
 
 ## Polynomial Green functions, rays, and equilibrium measures
 
@@ -123,8 +125,9 @@ Use $dd^c=\frac{i}{\pi}\partial\bar\partial$.
 * **29. Connectedness criterion.** $K(p)$, equivalently $J(p)$,
   is connected exactly when every finite critical point has bounded orbit.
 * **30. Escape of all critical points.** If every finite critical
-  point escapes to infinity, $J(p)$ is a Cantor expanding repeller.
-  This sufficient condition is not used as a characterization of all Cantor Julia sets.
+  point escapes to infinity, $J(p)=K(p)$ is a Cantor set on which $p$ is
+  topologically conjugate to the one-sided shift on $d$ symbols. For
+  quadratic polynomials this gives the dichotomy: $J(p_c)$ is connected or a Cantor set.
 * **31. Escape-rate potential.** The limit defining $G_p$ exists
   locally uniformly, is continuous and subharmonic, vanishes exactly
   on $K(p)$, is harmonic outside it, and satisfies $G_p\circ p=dG_p$.
@@ -193,11 +196,17 @@ motion of the Julia set.
   quasiconformally conjugate near its filled set to a polynomial of
   the same degree, with the conjugacy conformal almost everywhere
   on the filled set. If that set is connected, the polynomial is
-  unique up to affine conjugacy.
-* **46. Renormalization.** A polynomial-like restriction of an
-  iterate is a renormalization, and straightening assigns it an
-  ordinary polynomial model. Degree, critical points, and connectedness
-  of the small filled set control the applicability and uniqueness of the model.
+  unique up to affine conjugacy. A polynomial-like restriction of an
+  iterate with connected filled set is a **renormalization**;
+  straightening assigns it a polynomial model, and in the quadratic family
+  this produces the small copies of $\mathcal M$ inside $\mathcal M$.
+* **46. Yoccoz and Shishikura theorems.** If $c\in\mathcal M$, $p_c$ has
+  no indifferent cycles, and $p_c$ is not infinitely renormalizable, then
+  $J(p_c)$ is locally connected and $\mathcal M$ is locally connected at
+  $c$ (Yoccoz). The boundary $\partial\mathcal M$ has Hausdorff dimension
+  $2$ (Shishikura). Local connectivity of $\mathcal M$ would imply density
+  of hyperbolic parameters in the quadratic family (Douady–Hubbard); density
+  holds for real parameters (Lyubich, Graczyk–Świątek).
 * **47. Invariant-structure surgery.** A quasiregular sphere map
   preserving a measurable conformal structure with bounded distortion
   is conjugate to a rational map by integrating that structure.
@@ -258,12 +267,12 @@ Class $\mathcal B$ has bounded $S(f)$; class $\mathcal S$ has finite $S(f)$.
   \mathbb C\setminus S(f)$ is a covering map.
 * **57. Transcendental Julia theory.** The Julia set is nonempty,
   perfect, and completely invariant, and repelling periodic points
-  are dense in it. Normal-family arguments remain central despite
-  the essential singularity at infinity.
+  are dense in it; $J(f)$ is unbounded.
 * **58. Eremenko escaping theorem.** $I(f)$ is nonempty and
-  $\partial I(f)=J(f)$. Its closure has no bounded connected component.
-  This closure statement does not assert the corresponding property
-  for components of $I(f)$ itself.
+  $\partial I(f)=J(f)$. Its closure has no bounded connected component;
+  $I(f)$ itself always has an unbounded component (Rippon–Stallard), and
+  for finite-order class-$\mathcal B$ functions every escaping point lies
+  on, or is the endpoint of, a curve escaping to infinity (Rottenfusser–Rückert–Rempe–Schleicher).
 * **59. Class-$\mathcal B$ escape.** For a transcendental entire
   function with bounded singular set, every escaping point belongs
   to the Julia set. Thus this class has no escaping Fatou component.
@@ -304,7 +313,8 @@ $\omega$ by $\int\omega^k=1$.
 * **67. Hénon equilibrium measure.** The Green currents
   $T^\pm=dd^cG^\pm$ have wedge product an invariant probability
   measure supported on the intersection of the forward and backward
-  Julia boundaries. Its measure entropy is $\log d$.
+  Julia boundaries. It is the unique measure of maximal entropy $\log d$,
+  and saddle periodic points equidistribute to it (Bedford–Lyubich–Smillie).
 * **68. Holomorphic linearization without resonance.** In several
   variables, an attracting germ with invertible derivative whose
   eigenvalues have no multiplicative resonances is holomorphically
@@ -332,5 +342,6 @@ Local full-text sources consulted:
 * [Mauldin–Urbański, *Graph Directed Markov Systems*](References/MauldinUrbanski2003GraphDirectedMarkovSystems-Cambridge.TractsMath148.pdf).
 * [Kotus–Urbański, *Meromorphic Dynamics I*](References/KotusUrbanski2023MeromorphicDynamicsVol1-Cambridge.NMM46.pdf).
 
-The linked Milnor text is his earlier introductory lecture version,
-not the later edition named in the main bibliography.
+For the holomorphic fixed-point formula see also Milnor's earlier
+[introductory lectures](https://arxiv.org/pdf/math/9201272), not the later
+edition named in the main bibliography.

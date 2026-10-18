@@ -3,7 +3,7 @@
 Part of the [mathematical synopsis series](SYNOPSIS.md).
 
 This synopsis selects the common structural and distribution-theoretic core of
-Section 16 of [CKMA-bib.md](CKMA-bib.md) and [CKMA-bib2.md](CKMA-bib2.md).
+Section 16 of [CKMA-bib.md](CKMA-bib.md).
 It follows the route from seminorms and duality to completeness, nuclear
 spaces, test functions, and kernels. Distributional Fourier analysis appears
 here as a consequence of this framework; microlocal refinements belong to
@@ -40,8 +40,9 @@ the next and carrying the induced topology.
   an increasing defining sequence $(p_n)$, one compatible invariant metric is
   $d(x,y)=\sum_{n\geq1}2^{-n}\min(1,p_n(x-y))$.
 * **4. Normability criterion.** A Hausdorff locally convex space is
-  normable exactly when it has a bounded zero-neighborhood. In particular,
-  infinite-dimensional weak topologies are generally not norm topologies.
+  normable exactly when it has a bounded zero-neighborhood (Kolmogorov).
+  The weak topology of an infinite-dimensional normed space is never
+  normable, indeed not even metrizable.
 * **5. Completion and products.** Every Hausdorff locally convex space has
   a Hausdorff completion, unique up to its canonical isomorphism. Products
   of complete spaces and closed subspaces of complete spaces are complete.
@@ -92,8 +93,10 @@ $A^\circ=\{f\in F:|\langle a,f\rangle|\leq1\ (a\in A)\}$.
   have the same bounded subsets. In particular, a subset of a locally convex
   space is bounded exactly when it is weakly bounded against every element
   of its continuous dual.
-* **17. Banach spaces are Mackey spaces.** The norm topology of a Banach
-  space $X$ is $\tau(X,X^*)$. Weak and norm topologies have the same
+* **17. Metrizable spaces are Mackey spaces.** Every metrizable, and more
+  generally every barrelled or bornological, locally convex space $E$ carries
+  $\tau(E,E')$; in particular the norm topology of a normed space $X$ is
+  $\tau(X,X^*)$. Weak and norm topologies have the same
   continuous linear functionals and bounded sets, but can have very different
   convergent sequences and compact sets.
 * **18. Strong dual of a normed space.** Uniform convergence on bounded
@@ -102,12 +105,12 @@ $A^\circ=\{f\in F:|\langle a,f\rangle|\leq1\ (a\in A)\}$.
   described by seminorms $f\mapsto\sup_{x\in B}|f(x)|$ for bounded $B$.
 * **19. Duals of subspaces and quotients.** For closed $M\subset E$,
   the continuous dual of $E/M$ is its annihilator $M^\perp\subset E'$;
-  restriction $E'\to M'$ is surjective. These are algebraic dual
-  identifications with their natural weak topologies; stronger dual
-  topologies require separate hypotheses.
+  restriction $E'\to M'$ is surjective with kernel $M^\perp$. These are
+  algebraic identifications, and homeomorphisms for the weak topologies.
 * **20. Krein–Milman theorem.** A compact convex subset of a Hausdorff
   locally convex space is the closed convex hull of its extreme points.
-  Hence compact convex sets possess enough extreme points to generate them.
+  Conversely (Milman), if $K$ is the closed convex hull of a compact set $Z$,
+  then every extreme point of $K$ lies in $Z$.
 
 ## Barrelledness, bornologies, and mapping theorems
 
@@ -119,8 +122,8 @@ compact bounded subsets.
 
 * **21. Banach–Steinhaus in barrelled spaces.** A pointwise bounded family
   of continuous linear maps from a barrelled space into a locally convex
-  space is equicontinuous. In particular, pointwise limits of continuous
-  linear maps into a locally convex space are continuous when they exist.
+  space is equicontinuous. In particular, the pointwise limit of a sequence
+  of continuous linear maps on a barrelled space is continuous.
 * **22. Barrelledness of standard spaces.** Fréchet spaces are barrelled.
   Locally convex direct sums, inductive limits, and Hausdorff quotients of
   barrelled spaces are barrelled; thus strict LF spaces are barrelled.
@@ -142,9 +145,10 @@ compact bounded subsets.
   jointly continuous.
 * **28. Montel duality.** Montel spaces are reflexive in the locally convex
   sense: the canonical map onto their strong bidual is a topological
-  isomorphism. On equicontinuous subsets of the dual, weak-star and strong
-  topologies coincide when bounded subsets of the original space are relatively
-  compact.
+  isomorphism, and the strong dual is again Montel. Since on equicontinuous
+  sets the weak-star topology agrees with compact convergence, weak-star
+  convergent sequences in the dual of a Montel Fréchet or LF space converge
+  strongly; this applies to $\mathcal D'$, $\mathcal E'$, and $\mathcal S'$.
 
 ## Tensor products and nuclear spaces
 
@@ -175,8 +179,7 @@ spaces are nuclear.
   finite dimensional.
 * **33. Nuclear Fréchet compactness.** Every nuclear Fréchet space is
   Montel, and hence reflexive; its bounded sets are relatively compact.
-  This explains compactness properties of smooth-function spaces that
-  cannot hold in infinite-dimensional Banach spaces.
+  Nuclear Fréchet spaces are also separable.
 * **34. Smooth-function examples.** $C^\infty(\Omega)$ and
   $\mathcal S(\mathbb R^n)$ are nuclear Fréchet spaces.
   $\mathcal D(\Omega)$ is a nuclear strict LF space and is Montel.
@@ -224,12 +227,12 @@ where it vanishes.
   some compact neighborhood of its support.
 * **42. Distributions supported at a point.** If $\operatorname{supp}T
   \subset\{a\}$, then $T=\sum_{|\alpha|\leq m}c_\alpha\partial^\alpha\delta_a$
-  for finitely many coefficients. Thus point-supported singularities have
-  no further distributional forms.
+  for finitely many coefficients, with $m$ the order of $T$.
 * **43. Local structure theorem.** On each relatively compact open subset,
   every distribution is a finite sum of distributional derivatives of
-  continuous functions. Its singularity can therefore be measured by the
-  number of derivatives needed, rather than pointwise growth alone.
+  continuous functions. A compactly supported distribution is globally of
+  the form $\sum_{|\alpha|\leq m}\partial^\alpha f_\alpha$ with continuous,
+  compactly supported $f_\alpha$.
 
 ## Differentiation, regularization, and convolution
 
@@ -240,8 +243,9 @@ $\rho_\varepsilon(x)=\varepsilon^{-n}\rho(x/\varepsilon)$.
 
 * **44. Continuity of distributional operations.** Differentiation and
   multiplication by a fixed smooth function are continuous on distributions.
-  They satisfy the Leibniz rule and agree with classical operations whenever
-  the latter exist; integration by parts has no unrecorded boundary term.
+  They satisfy the Leibniz rule and agree with classical operations on
+  $C^{|\alpha|}$ functions. A jump of size $c$ at $x_0$ in a function on
+  $\mathbb R$ contributes $c\,\delta_{x_0}$ to its distributional derivative.
 * **45. Vanishing derivatives.** A distribution on a connected open set
   with all first derivatives zero is constant. On an interval, every
   distribution has a primitive, unique up to an additive constant.
@@ -286,7 +290,9 @@ On distributions, $\widehat T(\phi)=T(\widehat\phi)$.
 * **52. Tempered continuity criterion.** $T\in\mathcal S'$ exactly when
   it is bounded by a finite sum of Schwartz seminorms. Every compactly
   supported distribution is tempered, as are locally integrable functions
-  with a polynomially weighted integrable absolute value.
+  with $(1+|x|)^{-N}f\in L^1$ for some $N$. Every tempered distribution is a
+  finite sum $\sum\partial^\alpha f_\alpha$ of derivatives of continuous
+  functions of polynomial growth.
 * **53. Fourier automorphism.** Fourier transformation is a continuous
   automorphism of $\mathcal S$ and, by transposition, of $\mathcal S'$.
   It satisfies $\widehat{\widehat T}=(2\pi)^nT(-\,\cdot)$.
@@ -294,33 +300,42 @@ On distributions, $\widehat T(\phi)=T(\widehat\phi)$.
   $\widehat{\partial^\alpha T}=(i\xi)^\alpha\widehat T$ and
   $\widehat{x^\alpha T}=i^{|\alpha|}\partial_\xi^\alpha\widehat T$.
   In particular $\widehat{\delta_0}=1$ and $\widehat1=(2\pi)^n\delta_0$.
-* **55. Plancherel theorem.** Fourier transformation extends from
+* **55. Basic Fourier pairs and singular distributions.** One has
+  $\widehat{e^{-|x|^2/2}}=(2\pi)^{n/2}e^{-|\xi|^2/2}$. For $0<a<n$,
+  $|x|^{-a}$ is tempered and
+  $$\widehat{|x|^{-a}}=2^{n-a}\pi^{n/2}\frac{\Gamma((n-a)/2)}{\Gamma(a/2)}
+    |\xi|^{a-n}.$$
+  On $\mathbb R$, the principal value $\mathrm{p.v.}\,1/x$ is a tempered
+  distribution of order one with
+  $\widehat{\mathrm{p.v.}\,1/x}=-i\pi\operatorname{sgn}\xi$, and
+  $1/(x\pm i0)=\mathrm{p.v.}\,1/x\mp i\pi\delta_0$ (Sokhotski–Plemelj).
+* **56. Plancherel theorem.** Fourier transformation extends from
   $\mathcal S$ to $L^2$, with
   $\|\widehat f\|_2=(2\pi)^{n/2}\|f\|_2$. This agrees with its
   distributional extension.
-* **56. Fourier transform of convolution.** If $S\in\mathcal E'$ and
+* **57. Fourier transform of convolution.** If $S\in\mathcal E'$ and
   $T\in\mathcal S'$, then $S*T\in\mathcal S'$ and
   $\widehat{S*T}=\widehat S\,\widehat T$; the smooth function
   $\widehat S$ and its derivatives have the growth needed for this product.
-* **57. Tempered kernel theorem.** Continuous linear maps
+* **58. Tempered kernel theorem.** Continuous linear maps
   $\mathcal S(\mathbb R^m)\to\mathcal S'(\mathbb R^n)$ correspond
   uniquely to kernels in $\mathcal S'(\mathbb R^{n+m})$ by the same
   tensor evaluation formula as in result 51.
-* **58. Paley–Wiener–Schwartz theorem.** For compact convex
+* **59. Paley–Wiener–Schwartz theorem.** For compact convex
   $K\subset\mathbb R^n$, Fourier transforms of distributions supported in
   $K$ are exactly the entire functions $F$ on $\mathbb C^n$ satisfying
   $$|F(z)|\leq C(1+|z|)^N e^{H_K(\operatorname{Im}z)},
     \qquad H_K(\eta)=\sup_{x\in K}x\cdot\eta,$$
   for some $C,N$. The distribution is unique.
-* **59. Smooth Paley–Wiener theorem.** Fourier transforms of smooth
+* **60. Smooth Paley–Wiener theorem.** Fourier transforms of smooth
   functions supported in compact convex $K$ satisfy the preceding estimate
   with $(1+|z|)^{-N}$ for every $N$, with constants depending on $N$.
   Conversely these estimates characterize those functions.
-* **60. Periodic distributions.** Distributions on $\mathbb T^n$ correspond
+* **61. Periodic distributions.** Distributions on $\mathbb T^n$ correspond
   to Fourier coefficient sequences of at most polynomial growth. Smooth
   functions correspond to rapidly decreasing sequences, and Fourier series
   reconstruct every periodic distribution in the distribution topology.
-* **61. Poisson summation.** For $f\in\mathcal S(\mathbb R^n)$,
+* **62. Poisson summation.** For $f\in\mathcal S(\mathbb R^n)$,
   $\sum_{k\in\mathbb Z^n}f(k)=\sum_{k\in\mathbb Z^n}\widehat f(2\pi k)$.
   Both series converge absolutely; the equivalent identity for Dirac combs
   holds in $\mathcal S'$.
@@ -331,19 +346,26 @@ A **fundamental solution** for $P(\partial)$ is a distribution $E$ with
 $P(\partial)E=\delta_0$. An operator is **hypoelliptic** if smoothness of
 $Pu$ on an open subset implies smoothness of $u$ there.
 
-* **62. Malgrange–Ehrenpreis theorem.** Every nonzero constant-coefficient
+* **63. Malgrange–Ehrenpreis theorem.** Every nonzero constant-coefficient
   linear differential operator on $\mathbb R^n$ has a distributional
-  fundamental solution. The solution need not be tempered.
-* **63. Convolution solution.** If $E$ is a fundamental solution and
+  fundamental solution. A tempered fundamental solution also exists
+  (Hörmander, Łojasiewicz).
+* **64. Classical fundamental solutions.** The Laplacian has
+  $E=(2\pi)^{-1}\log|x|$ for $n=2$ and
+  $E=-|x|^{2-n}/((n-2)|S^{n-1}|)$ for $n\geq3$. The heat operator
+  $\partial_t-\Delta$ has $E=H(t)(4\pi t)^{-n/2}e^{-|x|^2/(4t)}$, and
+  $\partial/\partial\bar z$ has $E=1/(\pi z)$ on $\mathbb C$. These give
+  the Newtonian potential, the heat semigroup, and the Cauchy transform.
+* **65. Convolution solution.** If $E$ is a fundamental solution and
   $f$ is a compactly supported distribution, then $u=E*f$ solves
   $P(\partial)u=f$ on all of $\mathbb R^n$.
-* **64. Elliptic regularity with constant coefficients.** A
+* **66. Elliptic regularity with constant coefficients.** A
   constant-coefficient elliptic operator is hypoelliptic. More quantitatively,
   if it has order $m$ and $Pu\in H^s_{\rm loc}$, then
   $u\in H^{s+m}_{\rm loc}$.
-* **65. Weyl lemma.** A distribution satisfying $\Delta u=0$ on an open
+* **67. Weyl lemma.** A distribution satisfying $\Delta u=0$ on an open
   set is represented by a smooth harmonic function, which is in fact real
-  analytic. Thus distributional harmonicity introduces no new local solutions.
+  analytic.
 
 ## Reference guide
 

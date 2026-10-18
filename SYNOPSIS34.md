@@ -3,7 +3,7 @@
 Part of the [mathematical synopsis series](SYNOPSIS.md).
 
 This synopsis selects the recurring mathematical core of the unusually broad
-Section 34 of [CKMA-bib.md](CKMA-bib.md) and [CKMA-bib2.md](CKMA-bib2.md).
+Section 34 of [CKMA-bib.md](CKMA-bib.md).
 Its themes are smooth hyperbolic evolution and shocks, entropy solutions,
 dispersive estimates and nonlinear waves, incompressible and compressible
 fluids, and kinetic equations. General linear energy theory is in Section 32;
@@ -41,8 +41,10 @@ $D\lambda_k\cdot r_k$ never vanishes, and linearly degenerate if it vanishes ide
 * **4. Scalar characteristic breakdown.** For $u_t+f(u)_x=0$ in one
   dimension, $u(t,x)=u_0(\xi)$ with
   $x=\xi+tf'(u_0(\xi))$ while the characteristic map is invertible.
-  If $\min_\xi f''(u_0(\xi))u_0'(\xi)<0$, its first loss of
-  invertibility occurs at the reciprocal of the negative minimum.
+  For $f\in C^2$ and $u_0\in C^1$ with bounded derivative, if
+  $m=\inf_\xi\partial_\xi[f'(u_0(\xi))]<0$, the classical solution
+  exists exactly on $[0,T^*)$, $T^*=-1/m$, and $u_x$ blows up as $t\uparrow T^*$;
+  if $m\geq0$ it is global.
 * **5. Rankine–Hugoniot condition.** A discontinuity moving with speed
   $s$ is a weak solution across the front exactly when
   $s(U_R-U_L)=F(U_R)-F(U_L)$. In several dimensions the normal
@@ -88,8 +90,8 @@ $q_k(u)=\operatorname{sgn}(u-k)(f(u)-f(k))$ for all real $k$.
 * **14. Hopf–Lax formula.** For a convex superlinear Hamiltonian $H$
   with Legendre transform $L$ and Lipschitz initial $v_0$,
   $v(t,x)=\inf_y\{v_0(y)+tL((x-y)/t)\}$ is the viscosity solution
-  of $v_t+H(v_x)=0$. Its spatial derivative solves the associated
-  scalar entropy conservation law almost everywhere.
+  of $v_t+H(v_x)=0$. Its spatial derivative $u=v_x$ is the entropy
+  solution of $u_t+H(u)_x=0$ with data $v_0'$ (Lax–Oleinik formula).
 * **15. Convex scalar Riemann problem.** For strictly convex flux,
   $u_L>u_R$ produces the entropy shock with Rankine–Hugoniot speed;
   $u_L<u_R$ produces the centered rarefaction determined by
@@ -112,12 +114,24 @@ $q_k(u)=\operatorname{sgn}(u-k)(f(u)-f(k))$ for all real $k$.
   weak solution in one space dimension, with uniformly small total variation.
 * **20. Standard Riemann semigroup.** On the small-BV domain there is
   a semigroup Lipschitz in $L^1$ and time, consistent with the local
-  Riemann solvers. It is unique in the class satisfying the standard
-  local consistency estimates, rather than among all distributional solutions.
+  Riemann solvers, and unique among such semigroups (Bressan).
+  Entropy weak solutions of small total variation satisfying a tame
+  oscillation or tame variation condition coincide with its trajectories
+  (Bressan–Goatin, Bressan–LeFloch).
 * **21. Front-tracking convergence.** Piecewise constant approximate
   solutions built from approximate Riemann solvers converge to that
   semigroup. Interaction estimates control total wave strength and
   prevent cumulative growth from wave collisions.
+* **22. Compensated compactness.** If $u_n\rightharpoonup u$,
+  $v_n\rightharpoonup v$ in $L^2_{\mathrm{loc}}(\mathbb R^N;\mathbb R^N)$
+  with $\{\operatorname{div}u_n\}$ and $\{\operatorname{curl}v_n\}$ precompact
+  in $H^{-1}_{\mathrm{loc}}$, then $u_n\cdot v_n\to u\cdot v$ in
+  distributions (Murat–Tartar div–curl lemma). Applied to entropy pairs
+  of vanishing-viscosity approximations, it yields Tartar's commutation
+  relation for Young measures, which reduces them to Dirac masses for
+  genuinely nonlinear scalar laws and, by DiPerna's theorem, for
+  $2\times2$ isentropic gas dynamics, giving $L^\infty$ entropy solutions
+  without BV bounds.
 
 ## Dispersive estimates and nonlinear Schrödinger equations
 
@@ -126,81 +140,104 @@ satisfies $q,r\geq2$, $2/q+d/r=d/2$, excluding $(q,r,d)=(2,\infty,2)$.
 Use $iu_t+\Delta u=\sigma|u|^{p-1}u$, $p>1$, where
 $\sigma=+1$ is defocusing and $\sigma=-1$ focusing.
 
-* **22. Schrödinger dispersive estimate.** For $t\ne0$,
+* **23. Schrödinger dispersive estimate.** For $t\ne0$,
   $\|e^{it\Delta}f\|_\infty\leq(4\pi|t|)^{-d/2}\|f\|_1$.
   The group is unitary on every $H^s$.
-* **23. Homogeneous Strichartz estimate.** For admissible $(q,r)$,
+* **24. Homogeneous Strichartz estimate.** For admissible $(q,r)$,
   $\|e^{it\Delta}f\|_{L_t^qL_x^r(\mathbb R\times\mathbb R^d)}
   \leq C\|f\|_2$.
-* **24. Retarded Strichartz estimate.** For admissible pairs
-  $(q,r),(\widetilde q,\widetilde r)$ with both time exponents
-  strictly greater than two,
+* **25. Retarded Strichartz estimate.** For any two admissible pairs
+  $(q,r),(\widetilde q,\widetilde r)$, endpoints included,
   $\|\int_{s<t}e^{i(t-s)\Delta}F(s)ds\|_{L_t^qL_x^r}
-  \leq C\|F\|_{L_t^{\widetilde q'}L_x^{\widetilde r'}}$.
-* **25. Subcritical $H^1$ well-posedness.** NLS is locally well posed
+  \leq C\|F\|_{L_t^{\widetilde q'}L_x^{\widetilde r'}}$
+  (Keel–Tao; off the endpoints it also follows from entry 24 by
+  $TT^*$ and the Christ–Kiselev lemma).
+* **26. Local smoothing.** Free Schrödinger waves gain half a
+  derivative locally in space, averaged in time:
+  $\sup_{x_0,R}R^{-1}\int_{\mathbb R}\int_{|x-x_0|<R}
+  ||\nabla|^{1/2}e^{it\Delta}f|^2dx\,dt\leq C\|f\|_2^2$.
+  For the Airy group, $\|\partial_xe^{-t\partial_x^3}f\|_{L^\infty_xL^2_t}
+  =c\|f\|_2$ (Kato smoothing), the gain that makes the derivative
+  nonlinearities of KdV-type equations tractable.
+* **27. Subcritical $H^1$ well-posedness.** NLS is locally well posed
   in $H^1$ for $1<p<1+4/(d-2)$ when $d\geq3$, and every finite
   $p>1$ when $d\leq2$. The solution belongs to the accompanying
   Strichartz class; finite maximal lifespan requires an unbounded $H^1$ norm.
-* **26. NLS mass and energy.** Smooth solutions conserve
+* **28. NLS mass and energy.** Smooth solutions conserve
   $M(u)=\int|u|^2$ and
   $E(u)=\int(\tfrac12|\nabla u|^2+\sigma|u|^{p+1}/(p+1))$.
   Approximation extends these identities to the subcritical energy solutions.
-* **27. Scaling and critical exponents.**
+* **29. Scaling and critical exponents.**
   $u_\lambda(t,x)=\lambda^{2/(p-1)}u(\lambda^2t,\lambda x)$
   preserves NLS. The invariant homogeneous regularity is
   $s_c=d/2-2/(p-1)$; $p=1+4/d$ is mass-critical and
   $p=1+4/(d-2)$ is energy-critical for $d\geq3$.
-* **28. Defocusing subcritical global existence.** In the range of
-  entry 25, conservation and the positive energy imply global $H^1$
+* **30. Defocusing subcritical global existence.** In the range of
+  entry 27, conservation and the positive energy imply global $H^1$
   solutions for every $H^1$ datum in the defocusing case.
-* **29. Small-data critical scattering.** The cubic NLS on $\mathbb R^3$
+* **31. Small-data critical scattering.** The cubic NLS on $\mathbb R^3$
   has global solutions for sufficiently small $\dot H^{1/2}$ data,
   for either sign. They scatter to free Schrödinger solutions in
   $\dot H^{1/2}$ as $t\to\pm\infty$.
-* **30. Virial blowup criterion.** For focusing NLS in the $H^1$
+* **32. Virial blowup criterion.** For focusing NLS in the $H^1$
   subcritical or critical range with $p\geq1+4/d$, negative energy
   and finite variance $\int|x|^2|u_0|^2<\infty$ imply finite-time
   breakdown. The variance's second derivative is strictly negative
   under these hypotheses.
-* **31. Mass-critical ground-state threshold.** Let $Q>0$ solve
+* **33. Mass-critical ground-state threshold.** Let $Q>0$ solve
   $-\Delta Q+Q=Q^{1+4/d}$. The sharp Gagliardo–Nirenberg inequality
   gives global $H^1$ existence for focusing mass-critical NLS when
   $\|u_0\|_2<\|Q\|_2$, through coercivity of the conserved energy.
+  The threshold is sharp: the pseudo-conformal transform of the solitary
+  wave $e^{it}Q$ blows up in finite time with mass exactly $\|Q\|_2$.
+* **34. Morawetz estimates and intercritical scattering.** For
+  defocusing NLS with $d\geq3$, finite-energy solutions satisfy
+  $\int_{\mathbb R}\int|u|^{p+1}|x|^{-1}dx\,dt\leq
+  C\sup_t\|u(t)\|_{\dot H^{1/2}}^2$ (Lin–Strauss). With this
+  decay, every $H^1$ solution in the intercritical range
+  $1+4/d<p<1+4/(d-2)$ scatters in $H^1$ in both time directions
+  (Ginibre–Velo); interaction Morawetz estimates extend this to all $d$.
 
 ## Nonlinear waves and KdV
 
-* **32. Wave dispersive estimate.** For $d\geq2$,
+* **35. Wave dispersive estimate.** For $d\geq2$,
   $\|e^{it|D|}f\|_\infty\leq
   C|t|^{-(d-1)/2}\|f\|_{\dot B^{(d+1)/2}_{1,1}}$.
   The Besov derivative loss reflects the geometry of the wave cone.
-* **33. Wave Strichartz estimates.** If $q\geq2$, $2\leq r<\infty$,
+* **36. Wave Strichartz estimates.** If $q\geq2$, $2\leq r<\infty$,
   $1/q+(d-1)/(2r)\leq(d-1)/4$, and
   $\gamma=d/2-d/r-1/q$, the free wave satisfies
   $\|u\|_{L_t^qL_x^r}\leq
   C(\|u_0\|_{\dot H^\gamma}+\|u_1\|_{\dot H^{\gamma-1}})$
   in the standard nontrivial admissible range, $d\geq2$.
-* **34. Semilinear wave energy theory.** For
+* **37. Semilinear wave energy theory.** For
   $u_{tt}-\Delta u+|u|^{p-1}u=0$ in three dimensions,
   $1<p<5$, initial data in $H^1\times L^2$ give a unique global
   energy solution. Local existence uses Strichartz estimates and
   global continuation uses conserved positive energy and control of $\|u\|_2$.
-* **35. Defocusing critical waves.** In three dimensions,
+* **38. Defocusing critical waves.** In three dimensions,
   $u_{tt}-\Delta u+u^5=0$ is globally well posed in
   $\dot H^1\times L^2$, and every finite-energy solution scatters
   to free waves in both time directions.
-* **36. The null condition.** Small smooth compactly supported data
+* **39. The null condition.** Small smooth compactly supported data
   give global solutions of three-dimensional semilinear wave systems
   whose nonlinearities are constant linear combinations of the null forms
   $Q_0(u,v)=u_tv_t-\nabla u\cdot\nabla v$ and
   $Q_{\alpha\beta}(u,v)=\partial_\alpha u\partial_\beta v
-  -\partial_\beta u\partial_\alpha v$.
-* **37. KdV conservation laws.** For $u_t+6uu_x+u_{xxx}=0$,
+  -\partial_\beta u\partial_\alpha v$ (Klainerman, Christodoulou; also
+  for quasilinear systems). Without the null condition the conclusion
+  fails: $\square u=u_t^2$ blows up for suitable small data (John), while
+  general quadratic nonlinearities give only almost global existence,
+  with lifespan $\geq e^{c/\varepsilon}$ for data of size $\varepsilon$.
+* **40. KdV conservation laws.** For $u_t+6uu_x+u_{xxx}=0$,
   sufficiently regular decaying solutions conserve
   $\int u$, $\int u^2$, and $\int(\tfrac12u_x^2-u^3)$.
-* **38. KdV solitons.** For every $c>0$,
+* **41. KdV solitons.** For every $c>0$,
   $u(t,x)=\tfrac c2\operatorname{sech}^2(\tfrac{\sqrt c}{2}(x-ct-x_0))$
-  is a traveling-wave solution. Its amplitude and speed are linked.
-* **39. KdV global $L^2$ evolution.** The KdV Cauchy problem on
+  is a traveling-wave solution. Solitons are orbitally stable in $H^1$:
+  solutions starting near a soliton stay close, for all time, to its
+  family of translates (Benjamin, Bona, Weinstein).
+* **42. KdV global $L^2$ evolution.** The KdV Cauchy problem on
   $\mathbb R$ is globally well posed in $L^2$; local low-regularity
   theory and the conserved $L^2$ norm yield global continuation.
 
@@ -210,94 +247,96 @@ The incompressible equations are
 $u_t+u\cdot\nabla u+\nabla p=\nu\Delta u$, $\operatorname{div}u=0$,
 with $\nu=0$ for Euler and $\nu>0$ for Navier–Stokes.
 
-* **40. Leray projection.** On $\mathbb R^d$, the orthogonal projection
+* **43. Leray projection.** On $\mathbb R^d$, the orthogonal projection
   onto divergence-free fields has Fourier matrix
   $I-\xi\otimes\xi/|\xi|^2$ and is bounded on $L^p$,
   $1<p<\infty$. Applying it eliminates pressure from the evolution.
-* **41. Pressure recovery.** Smooth incompressible solutions satisfy
+* **44. Pressure recovery.** Smooth incompressible solutions satisfy
   $-\Delta p=\partial_i\partial_j(u_i u_j)$.
   Pressure is determined up to its normalization by the velocity
   through Riesz transforms, or the corresponding torus formula.
-* **42. Euler local well-posedness.** Divergence-free data in $H^s$,
+* **45. Euler local well-posedness.** Divergence-free data in $H^s$,
   $s>d/2+1$, give a unique local Euler solution of that regularity,
   continuously dependent on the data.
-* **43. Vorticity transport and stretching.** In three dimensions,
+* **46. Vorticity transport and stretching.** In three dimensions,
   $\omega=\nabla\times u$ satisfies
   $\omega_t+u\cdot\nabla\omega=\omega\cdot\nabla u$.
   In two dimensions vorticity is scalar and the stretching term vanishes.
-* **44. Biot–Savart reconstruction.** On $\mathbb R^3$, a decaying
+* **47. Biot–Savart reconstruction.** On $\mathbb R^3$, a decaying
   divergence-free velocity is $u=\nabla\times(-\Delta)^{-1}\omega$.
   In two dimensions it is $\nabla^\perp\Delta^{-1}\omega$ with
   $\nabla^\perp=(-\partial_2,\partial_1)$ and the usual scalar curl.
-* **45. Beale–Kato–Majda criterion.** A three-dimensional smooth Euler
+* **48. Beale–Kato–Majda criterion.** A three-dimensional smooth Euler
   solution in $H^s$, $s>5/2$, continues past $T$ if
   $\int_0^T\|\omega(t)\|_\infty dt<\infty$.
-* **46. Two-dimensional smooth global flow.** Euler solutions with
+* **49. Two-dimensional smooth global flow.** Euler solutions with
   $H^s$ initial data, $s>2$, exist globally on $\mathbb R^2$ or
   $\mathbb T^2$. Conservation of the vorticity supremum prevents
   the three-dimensional stretching mechanism.
-* **47. Yudovich uniqueness.** On $\mathbb T^2$, bounded initial
+* **50. Yudovich uniqueness.** On $\mathbb T^2$, bounded initial
   vorticity and a prescribed mean velocity give a unique global weak
   Euler solution in the bounded-vorticity class. Its velocity is
   log-Lipschitz, so its particle trajectories are unique.
-* **48. Kelvin's circulation theorem.** For smooth Euler flow,
+* **51. Kelvin's circulation theorem.** For smooth Euler flow,
   circulation $\oint_{\gamma_t}u\cdot dx$ is constant along every
   closed material curve transported by the flow.
-* **49. Euler energy and helicity.** Smooth incompressible Euler flow
+* **52. Euler energy and helicity.** Smooth incompressible Euler flow
   conserves $\tfrac12\int|u|^2$; in three dimensions it also conserves
   helicity $\int u\cdot\omega$ under periodicity or sufficient decay.
 
 ## Navier–Stokes and compressible flow
 
-* **50. Viscous energy identity.** Smooth unforced solutions satisfy
+* **53. Viscous energy identity.** Smooth unforced solutions satisfy
   $\tfrac12\|u(t)\|_2^2+\nu\int_0^t\|\nabla u\|_2^2
   =\tfrac12\|u_0\|_2^2$. Leray–Hopf solutions satisfy the
   corresponding inequality.
-* **51. Leray–Hopf existence.** In three dimensions every divergence-free
+* **54. Leray–Hopf existence.** In three dimensions every divergence-free
   $L^2$ datum on $\mathbb R^3$ or $\mathbb T^3$ has a global weak
   solution in $L_t^\infty L_x^2\cap L_t^2\dot H_x^1$, weakly
   continuous in $L^2$, satisfying the energy inequality.
-* **52. Two-dimensional viscous uniqueness.** In dimension two,
+* **55. Two-dimensional viscous uniqueness.** In dimension two,
   energy-class Navier–Stokes solutions are unique and global.
   Smooth data give smooth solutions for every positive time.
-* **53. Three-dimensional strong local solutions.** Initial data in
+* **56. Three-dimensional strong local solutions.** Initial data in
   divergence-free $H^1$ give a unique local strong Navier–Stokes
   solution. It agrees with every Leray–Hopf solution from the same
   data while the strong solution exists.
-* **54. Prodi–Serrin criterion.** A three-dimensional Leray–Hopf solution
+* **57. Prodi–Serrin criterion.** A three-dimensional Leray–Hopf solution
   satisfying $u\in L^q(0,T;L^r)$, $r>3$,
   $2/q+3/r\leq1$, is regular on positive times through $T$ and
-  unique in the energy class on its interval of regularity.
-* **55. Small critical data.** Sufficiently small divergence-free data
+  unique in the energy class on its interval of regularity. The
+  endpoint $u\in L^\infty(0,T;L^3)$ also suffices
+  (Escauriaza–Seregin–Šverák).
+* **58. Small critical data.** Sufficiently small divergence-free data
   in $\dot H^{1/2}(\mathbb R^3)$ give a unique global mild
   Navier–Stokes solution in the associated critical evolution class.
-* **56. Two-dimensional viscous vorticity bounds.** Vorticity satisfies
+* **59. Two-dimensional viscous vorticity bounds.** Vorticity satisfies
   $\omega_t+u\cdot\nabla\omega=\nu\Delta\omega$, so each
   $L^p$ vorticity norm, $1\leq p\leq\infty$, is nonincreasing
   whenever the initial norm is finite.
-* **57. Suitable weak-solution partial regularity.** Three-dimensional
+* **60. Suitable weak-solution partial regularity.** Three-dimensional
   suitable weak solutions satisfy a local energy inequality. Their
   interior singular set has zero one-dimensional parabolic Hausdorff
   measure, by the Caffarelli–Kohn–Nirenberg theorem.
-* **58. The Stokes problem.** On a smooth bounded domain, the
+* **61. The Stokes problem.** On a smooth bounded domain, the
   divergence-free zero-trace variational formulation of
   $-\nu\Delta u+\nabla p=f$, $\operatorname{div}u=0$, gives a
   unique velocity in $H_0^1$ and pressure in $L^2$ modulo constants
   for $f\in H^{-1}$. The inf–sup condition controls pressure.
-* **59. Compressible Euler energy.** For smooth barotropic flow,
+* **62. Compressible Euler energy.** For smooth barotropic flow,
   $\rho_t+\operatorname{div}(\rho u)=0$ and
   $(\rho u)_t+\operatorname{div}(\rho u\otimes u)+\nabla p(\rho)=0$
   conserve $\int(\tfrac12\rho|u|^2+H(\rho))$, where
   $\rho H'(\rho)-H(\rho)=p(\rho)$. Positive sound speed gives
   symmetrizability away from vacuum.
-* **60. Renormalized continuity equation.** Sufficiently regular
+* **63. Renormalized continuity equation.** Sufficiently regular
   solutions of the continuity equation obey
   $\partial_tb(\rho)+\operatorname{div}(b(\rho)u)
   +(\rho b'(\rho)-b(\rho))\operatorname{div}u=0$.
-  The renormalized formulation retains this chain rule for the weak
-  density–velocity pairs in compressible viscous existence theory,
-  in particular for $C^1$ renormalizations with compactly supported derivative.
-* **61. Compressible viscous global existence.** In a smooth bounded
+  Weak solutions satisfying this identity for all $C^1$ functions $b$
+  with compactly supported derivative are called renormalized; this
+  property is part of the compressible viscous existence theory.
+* **64. Compressible viscous global existence.** In a smooth bounded
   three-dimensional domain with no-slip boundary, barotropic
   Navier–Stokes with $p(\rho)=a\rho^\gamma$, $a>0$, $\gamma>3/2$,
   $\mu>0$, and $\lambda+2\mu/3\geq0$ admits global finite-energy
@@ -311,86 +350,97 @@ $f_t+v\cdot\nabla_xf+E\cdot\nabla_vf=0$. The Boltzmann equation adds
 $Q(f,f)$ on the right, where elastic binary collisions preserve
 $v+v_*$ and $|v|^2+|v_*|^2$.
 
-* **62. Characteristic transport.** For a smooth force field, $f$
+* **65. Characteristic transport.** For a smooth force field, $f$
   is constant along $\dot X=V$, $\dot V=E(t,X)$.
   The phase-space flow preserves Lebesgue measure, giving conservation
   of all finite $L^p$ norms and of $\int\Phi(f)$ when integrable.
-* **63. Vlasov–Poisson invariants.** For repulsive Vlasov–Poisson on
+* **66. Vlasov–Poisson invariants.** For repulsive Vlasov–Poisson on
   $\mathbb R^3$, $E=-\nabla\phi$, $-\Delta\phi=\int f\,dv$,
   smooth decaying solutions conserve mass, momentum, and
   $\tfrac12\iint|v|^2f+\tfrac12\int|E|^2$.
-* **64. Global classical Vlasov–Poisson solutions.** Nonnegative smooth
+* **67. Global classical Vlasov–Poisson solutions.** Nonnegative smooth
   compactly supported data for the three-dimensional repulsive
   Vlasov–Poisson system generate a unique global classical solution.
   Control of velocity growth is the principal a priori step.
-* **65. Velocity averaging.** If $f,g\in L^2$ solve
+* **68. Velocity averaging.** If $f,g\in L^2$ solve
   $(\partial_t+v\cdot\nabla_x)f=g$, then
   $\int f(t,x,v)\psi(v)dv$ belongs locally to
   $H^{1/2}_{t,x}$ for $\psi\in C_c^\infty$.
   This yields compactness of velocity moments despite weak kinetic convergence.
-* **66. Collision invariants.** For elastic Boltzmann collisions,
+* **69. Collision invariants.** For elastic Boltzmann collisions,
   $\int Q(f,f)\{1,v,|v|^2\}\,dv=0$ under the required integrability.
   These identities give local mass, momentum, and energy balance laws.
-* **67. Boltzmann's $H$ theorem.**
+* **70. Boltzmann's $H$ theorem.**
   $\int Q(f,f)\log f\,dv\leq0$; the entropy production is an
   integral of $(a-b)\log(a/b)\geq0$ with the collision measure.
   Transport preserves total entropy in the absence of boundary flux.
-* **68. Maxwellian equilibria.** Positive integrable velocity densities
+* **71. Maxwellian equilibria.** Positive integrable velocity densities
   with zero entropy production are Maxwellians
   $M(v)=\rho(2\pi T)^{-d/2}e^{-|v-U|^2/(2T)}$,
   with $\rho,T>0$. They are exactly the positive equilibria of the
   elastic collision operator under its usual nondegeneracy assumptions.
-* **69. Linearized collision coercivity.** For hard-sphere collisions,
+* **72. Linearized collision coercivity.** For hard-sphere collisions,
   writing $f=M(1+h)$ gives a nonnegative self-adjoint linearized
   operator on $L^2(M\,dv)$. Its kernel is
   $\operatorname{span}\{1,v_1,\ldots,v_d,|v|^2\}$ and it has a
   positive spectral gap on the orthogonal complement.
-* **70. Renormalized Boltzmann existence.** For hard-sphere collisions
+* **73. Renormalized Boltzmann existence.** For hard-sphere collisions
   on the spatial torus, finite mass, energy, and entropy initial data
   admit global nonnegative renormalized solutions satisfying the
   entropy inequality. Admissible renormalizations, for example satisfying
   $|\beta'(z)|\leq C/(1+z)$, make $\beta'(f)Q(f,f)$ meaningful.
-* **71. Entropy controls distance from equilibrium.** For probability
+* **74. Entropy controls distance from equilibrium.** For probability
   densities $f,M$, $\|f-M\|_1^2\leq2\int f\log(f/M)$.
   Thus decay of relative entropy gives strong convergence in mass norm.
-* **72. Hypocoercive kinetic relaxation.** On $\mathbb T^d_x\times
+* **75. Hypocoercive kinetic relaxation.** On $\mathbb T^d_x\times
   \mathbb R^d_v$, the equation
   $f_t+v\cdot\nabla_xf=\Delta_vf+\operatorname{div}_v(vf)$
   converges exponentially in $L^2(M^{-1}dx\,dv)$ to its mass-matched
   spatially uniform Gaussian equilibrium for data in that space.
   Transport couples the undiffused variables to the velocity dissipation.
+* **76. Incompressible Navier–Stokes limit.** On $\mathbb T^3$, let $f_\varepsilon$
+  be renormalized solutions of
+  $\varepsilon\partial_tf+v\cdot\nabla_xf=\varepsilon^{-1}Q(f,f)$ for
+  cutoff hard potentials, with $f_\varepsilon=M(1+\varepsilon g_\varepsilon)$ and initial
+  relative entropy $O(\varepsilon^2)$. Then the moments
+  $\int g_\varepsilon\,v\,M\,dv$ and $\int g_\varepsilon(|v|^2/5-1)M\,dv$
+  converge, along subsequences, to a Leray solution of the
+  incompressible Navier–Stokes–Fourier system (Golse–Saint-Raymond).
 
 ## Structural links and geometric hyperbolic equations
 
-* **73. DiPerna–Lions transport renormalization.** A vector field in
+* **77. DiPerna–Lions transport renormalization.** A vector field in
   $L^1_tW^{1,1}_{\mathrm{loc}}$ with divergence in $L^1_tL^\infty$
   and $b/(1+|x|)\in L^1_t(L^1_x+L^\infty_x)$ has unique
   renormalized transport solutions in $L^\infty_t(L^1\cap L^\infty)$
   for initial data in $L^1\cap L^\infty$. Commutator estimates justify the
   chain rule despite the absence of classical trajectories.
-* **74. Energy equality beyond smooth flow.** On the torus, a weak
+* **78. Energy equality beyond smooth flow.** On the torus, a weak
   Euler solution in $L^3_t C^\alpha_x$ with $\alpha>1/3$
-  conserves kinetic energy distributionally in time. The estimate
-  comes from the decay of the mollified nonlinear energy flux.
-* **75. Inviscid limit before smooth breakdown.** On a boundaryless
+  conserves kinetic energy (Constantin–E–Titi), by decay of the mollified
+  nonlinear energy flux. Conversely, for every $\alpha<1/3$ there are
+  weak solutions in $C_{t,x}^\alpha$ on $\mathbb T^3$ with strictly decreasing
+  energy (convex integration; Isett, Buckmaster–De Lellis–Székelyhidi–Vicol),
+  settling Onsager's conjecture.
+* **79. Inviscid limit before smooth breakdown.** On a boundaryless
   domain, Navier–Stokes solutions with common smooth initial data
   converge to the smooth Euler solution on each compact time interval
   before Euler breakdown in $C_tL^2_x$, with convergence in lower
   Sobolev norms when the data have higher regularity. Physical
   boundaries require additional boundary-layer analysis.
-* **76. Defocusing critical Schrödinger evolution.** On $\mathbb R^3$,
+* **80. Defocusing critical Schrödinger evolution.** On $\mathbb R^3$,
   $iu_t+\Delta u=|u|^4u$ is globally well posed for
   $u_0\in\dot H^1$. Every such solution scatters in $\dot H^1$
   in both time directions; this requires global spacetime estimates
   beyond conservation of energy alone.
   See the [Colliander–Keel–Staffilani–Takaoka–Tao theorem](https://arxiv.org/abs/math/0402129).
-* **77. Einstein constraint propagation and local existence.** Smooth
+* **81. Einstein constraint propagation and local existence.** Smooth
   Riemannian initial data $(g,k)$ satisfying
   $R_g-|k|_g^2+(\operatorname{tr}_gk)^2=0$ and
   $\operatorname{div}_g(k-(\operatorname{tr}_gk)g)=0$ admit a local
   vacuum Einstein development. Hyperbolic gauge reduction and the
   contracted Bianchi identity propagate the constraints.
-* **78. Maximal globally hyperbolic development.** Vacuum initial data
+* **82. Maximal globally hyperbolic development.** Vacuum initial data
   satisfying those constraints have a maximal globally hyperbolic
   development unique up to an isometry fixing the initial data.
   Maximality in this class does not assert geodesic completeness or
@@ -399,7 +449,8 @@ $v+v_*$ and $|v|^2+|v_*|^2$.
 ## Reference guide
 
 Dafermos, Bressan, Serre, Lax, and Holden–Risebro overlap on entropy,
-Riemann problems, and small-BV systems. Tao, Cazenave, Linares–Ponce,
+Riemann problems, and small-BV systems; Dafermos and Serre also treat
+compensated compactness. Tao, Cazenave, Linares–Ponce,
 Sogge, and Bahouri–Chemin–Danchin provide the dispersive and nonlinear-wave
 core. Majda–Bertozzi, Chemin, Temam, Galdi, and the later Navier–Stokes
 texts distinguish smooth incompressible dynamics from weak viscous theory.
@@ -417,6 +468,7 @@ Local source copies consulted:
 * [Linares–Ponce, *Introduction to Nonlinear Dispersive Equations*](References/LinaresPonce2015IntroductionNonlinearDispersiveEquations2ndEd-SpringerUTX.pdf).
 * [Bahouri–Chemin–Danchin, *Fourier Analysis and Nonlinear Partial Differential Equations*](References/BahouriCheminDanchin2011FourierAnalysisNonlinearPartialDifferentialEquations-SpringerGL343.pdf).
 * [Majda–Bertozzi, *Vorticity and Incompressible Flow*](References/MajdaBertozzi2001VorticityIncompressibleFlow-CambridgeTextsAM27.pdf).
+* [Robinson–Rodrigo–Sadowski, *The Three-Dimensional Navier–Stokes Equations*](References/RobinsonRodrigoSadowski2016ThreeDimensionalNavierStokesEquations-CambridgeStudiesAM157.pdf).
 * [Feireisl–Novotný, *Singular Limits in Thermodynamics of Viscous Fluids*](References/FeireislNovotny2017SingularLimitsThermodynamicsViscousFluids2ndEd-SpringerAMFM.pdf).
 * [Saint-Raymond, *Hydrodynamic Limits of the Boltzmann Equation*](References/SaintRaymond2009HydrodynamicLimitsBoltzmannEquation-SpringerLNM1971.pdf).
 

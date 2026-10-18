@@ -3,7 +3,7 @@
 Part of the [mathematical synopsis series](SYNOPSIS.md).
 
 This synopsis selects recurring core material from Section 45 of
-[CKMA-bib.md](CKMA-bib.md) and [CKMA-bib2.md](CKMA-bib2.md).
+[CKMA-bib.md](CKMA-bib.md).
 It covers local analytic geometry, domains of holomorphy, Stein theory,
 $\bar\partial$, positive currents and Monge–Ampère equations, complex
 geometry, invariant metrics, and CR boundaries. Each of these has its own
@@ -127,7 +127,8 @@ $\widehat K_X=\{x:|f(x)|\leq\sup_K|f|\text{ for all }f\in\mathcal O(X)\}$.
   holomorphic equivalence.
 * **28. Stein embedding.** Every Stein manifold of complex dimension
   $n$ admits a proper holomorphic embedding into $\mathbb C^{2n+1}$.
-  Stronger dimension bounds are available but are not needed for this formulation.
+  For $n\geq2$ the optimal dimension is $\lfloor3n/2\rfloor+1$
+  (Eliashberg–Gromov, Schürmann); open Riemann surfaces embed properly in $\mathbb C^3$.
 * **29. Oka mapping principle.** If $Y$ is an Oka manifold and $X$
   is Stein, continuous maps $X\to Y$ deform to holomorphic maps,
   with parametric approximation and interpolation in the Oka formulation.
@@ -184,24 +185,31 @@ complement of its kernel is the **$\bar\partial$-Neumann operator** $N_q$.
   gain half a Sobolev derivative, with the corresponding global estimates.
 * **40. Finite type and subellipticity.** At a smooth pseudoconvex
   boundary point in $\mathbb C^n$, finite D'Angelo type is equivalent
-  to a local positive-order subelliptic estimate for $(0,1)$-forms.
-  Infinite type can therefore obstruct this regularity mechanism.
-* **41. Ohsawa–Takegoshi extension.** On a bounded pseudoconvex
+  to a local positive-order subelliptic estimate for $(0,1)$-forms (Catlin).
+* **41. Global regularity and Condition R.** If the Bergman projection of
+  a smooth bounded domain preserves $C^\infty(\overline\Omega)$
+  (Condition R), biholomorphisms onto another such domain extend smoothly
+  to the closures (Bell–Ligocka). Condition R and global regularity of $N_q$
+  hold for smooth bounded convex domains and under compactness of $N_q$
+  (Boas–Straube, Kohn–Nirenberg), but fail on suitable smooth bounded
+  pseudoconvex worm domains (Barrett, Christ).
+* **42. Ohsawa–Takegoshi extension.** On a bounded pseudoconvex
   domain $\Omega\subset\mathbb C^n$, a holomorphic function on
   $\Omega\cap\{z_n=0\}$ with finite weighted $L^2$ norm extends
   to $F\in\mathcal O(\Omega)$ with
   $\int_\Omega|F|^2e^{-\phi}\leq C\int_{\Omega\cap\{z_n=0\}}|f|^2e^{-\phi}$
-  for psh $\phi$; $C$ depends on a bound for the transverse coordinate.
-* **42. Skoda division.** Let $g=(g_1,\ldots,g_m)$ be holomorphic
+  for psh $\phi$. If $|z_n|<r$ on $\Omega$ one may take $C=\pi r^2$,
+  which is optimal (Błocki, Guan–Zhou).
+* **43. Skoda division.** Let $g=(g_1,\ldots,g_m)$ be holomorphic
   on a pseudoconvex domain, $q=\min(n,m-1)$, and $\alpha>1$.
   If $f$ is holomorphic and $\int|f|^2|g|^{-2(\alpha q+1)}e^{-\psi}<\infty$, with
   $\psi$ psh, then $f=\sum g_jh_j$ holomorphically and
   $\int\sum|h_j|^2|g|^{-2\alpha q}e^{-\psi}$ is at most
   $\alpha/(\alpha-1)$ times that integral.
-* **43. Multiplier-ideal coherence.** For psh $\phi$, the germs
+* **44. Multiplier-ideal coherence.** For psh $\phi$, the germs
   $f$ with $|f|^2e^{-2\phi}$ locally integrable form a coherent
   ideal sheaf $\mathcal I(\phi)$.
-* **44. Nadel vanishing.** If a line bundle on a compact Kähler
+* **45. Nadel vanishing.** If a line bundle on a compact Kähler
   manifold has a singular Hermitian metric with curvature bounded
   below by a positive Kähler form, then
   $H^q(X,K_X\otimes L\otimes\mathcal I(h))=0$ for $q\geq1$.
@@ -215,95 +223,108 @@ distributional differentiation of $u_1dd^cu_2\wedge\cdots$.
 For a Kähler form $\omega$, $u$ is **$\omega$-psh** if
 $\omega+dd^cu\geq0$.
 
-* **45. Stability of psh functions.** Finite maxima, convex increasing
+* **46. Stability of psh functions.** Finite maxima, convex increasing
   compositions, and decreasing limits preserve plurisubharmonicity,
   unless a limit is identically $-\infty$. Locally bounded-above
   suprema become psh after upper-semicontinuous regularization.
-* **46. Local regularization.** Convolution on smaller coordinate
+* **47. Local regularization.** Convolution on smaller coordinate
   domains approximates a psh function decreasingly by smooth psh
   functions. A locally integrable distribution has a psh representative
   exactly when its $dd^c$ is positive.
-* **47. Poincaré–Lelong formula.** For nonzero holomorphic $f$,
+* **48. Poincaré–Lelong formula.** For nonzero holomorphic $f$,
   $dd^c\log|f|=[\operatorname{div}f]$ as currents.
   For a Hermitian holomorphic line bundle this becomes the divisor
   current minus its first-Chern curvature form.
-* **48. Siu analyticity.** For a positive closed current, the sets
+* **49. Siu analyticity.** For a positive closed current, the sets
   where its Lelong number is at least a fixed positive constant are
   analytic. For a positive closed $(1,1)$-current, its divisorial
   part has a unique decomposition into integration currents plus a
   residual positive current with no divisorial generic Lelong numbers.
-* **49. Bedford–Taylor products.** Products of $dd^c$ of locally
+* **50. Bedford–Taylor products.** Products of $dd^c$ of locally
   bounded psh functions are positive, closed, symmetric, and local.
   In top degree they define positive Monge–Ampère measures.
-* **50. Monotone continuity.** Decreasing locally bounded psh
+* **51. Monotone continuity.** Decreasing locally bounded psh
   approximations yield weak convergence of their Bedford–Taylor products.
   This supplies the definition independently of smooth approximating sequences.
-* **51. Comparison principle.** If bounded psh $u,v$ on a bounded
+* **52. Comparison principle.** If bounded psh $u,v$ on a bounded
   domain satisfy $\liminf_{z\to\partial\Omega}(u-v)\geq0$, then
   $\int_{\{u<v\}}(dd^cv)^n\leq\int_{\{u<v\}}(dd^cu)^n$.
-* **52. Maximality.** A locally bounded psh function is maximal
+* **53. Maximality.** A locally bounded psh function is maximal
   under compactly supported psh competitors exactly when
   $(dd^cu)^n=0$.
-* **53. Chern–Levine–Nirenberg estimate.** On nested relatively
+* **54. Chern–Levine–Nirenberg estimate.** On nested relatively
   compact coordinate sets, masses of mixed $dd^c$ products are
   bounded by a constant times the product of the local supremum
   norms of bounded psh potentials, with a fixed background positive form.
-* **54. Monge–Ampère Dirichlet problem.** On a bounded smoothly
+* **55. Monge–Ampère Dirichlet problem.** On a bounded smoothly
   strictly pseudoconvex domain, continuous boundary data and continuous
   nonnegative volume density have a unique continuous psh solution
   of $(dd^cu)^n=f\,dV$ with those boundary values.
-* **55. Capacity and $L^p$ densities.** The relative capacity
+* **56. Capacity and $L^p$ densities.** The relative capacity
   $\sup_{-1\leq v\leq0}\int_E(dd^cv)^n$ controls exceptional
   sets and psh convergence. On a compact Kähler manifold, a
   nonnegative $L^p$ density, $p>1$, of the correct total mass
   has a unique bounded $\omega$-psh Monge–Ampère solution normalized
-  by $\sup_Xu=0$.
-* **56. Calabi–Yau theorem.** On a compact Kähler manifold,
+  by $\sup_Xu=0$ (Kołodziej).
+* **57. Pluripolar sets.** A set $E\subset\mathbb C^n$ is
+  **locally pluripolar** if near each point it lies in $\{u=-\infty\}$
+  for a local psh $u\not\equiv-\infty$. Such sets are globally pluripolar:
+  $E\subset\{u=-\infty\}$ for some psh $u$ on $\mathbb C^n$ (Josefson).
+  In a bounded hyperconvex domain, $E$ is pluripolar exactly when its
+  outer relative capacity vanishes, and negligible sets
+  $\{\sup_\alpha u_\alpha<(\sup_\alpha u_\alpha)^*\}$ are pluripolar
+  (Bedford–Taylor).
+* **58. Calabi–Yau theorem.** On a compact Kähler manifold,
   each smooth positive volume form of mass $\int\omega^n$ is
   $(\omega+dd^cu)^n$ for a unique smooth $u$ modulo constants,
   with $\omega+dd^cu>0$. Thus a prescribed Ricci form in
-  $2\pi c_1(X)$ is realized uniquely in a fixed Kähler class.
+  $2\pi c_1(X)$ is realized uniquely in a fixed Kähler class. If
+  $c_1(X)<0$, there is a unique Kähler–Einstein metric with
+  $\operatorname{Ric}=-\omega$ (Aubin, Yau); if $c_1(X)=0$, each Kähler
+  class contains a unique Ricci-flat metric.
 
 ## Complex manifolds and Kähler geometry
 
-* **57. Newlander–Nirenberg theorem.** A smooth almost complex
+* **59. Newlander–Nirenberg theorem.** A smooth almost complex
   structure comes from holomorphic coordinates exactly when its
   Nijenhuis tensor vanishes, equivalently its $(0,1)$ vector fields
   are involutive.
-* **58. Dolbeault theorem.** For a holomorphic vector bundle $E$,
+* **60. Dolbeault theorem.** For a holomorphic vector bundle $E$,
   $H^q(X,\Omega^p\otimes E)$ is the cohomology of its smooth
   $\bar\partial$ complex in bidegree $(p,q)$.
-* **59. Hermitian Hodge theorem.** On a compact Hermitian manifold,
+* **61. Hermitian Hodge theorem.** On a compact Hermitian manifold,
   every Dolbeault class has a unique $\bar\partial$-harmonic
   representative, and the cohomology groups are finite-dimensional.
-* **60. Serre duality.** On a compact complex $n$-manifold,
+* **62. Serre duality.** On a compact complex $n$-manifold,
   $H^q(X,E)$ is dual to $H^{n-q}(X,K_X\otimes E^*)$ by integration.
-* **61. Kähler identities.** For a Kähler metric,
+* **63. Kähler identities.** For a Kähler metric,
   $\Delta_d=2\Delta_\partial=2\Delta_{\bar\partial}$, with the
   associated commutator identities for wedge multiplication by
   $\omega$ and its adjoint.
-* **62. Kähler Hodge decomposition.**
+* **64. Kähler Hodge decomposition.**
   $H^k(X,\mathbb C)=\bigoplus_{p+q=k}H^{p,q}(X)$ on compact
   Kähler manifolds, with $h^{p,q}=h^{q,p}$ and
   $h^{p,q}=h^{n-p,n-q}$.
-* **63. The $\partial\bar\partial$ lemma.** A pure-type form on
+* **65. The $\partial\bar\partial$ lemma.** A pure-type form on
   a compact Kähler manifold that is $d$-closed and $d$-exact is
   $\partial\bar\partial$-exact. Equivalent versions use
   $\partial$- or $\bar\partial$-exactness.
-* **64. Hard Lefschetz theorem.** Wedge multiplication by
+* **66. Hard Lefschetz theorem.** Wedge multiplication by
   $[\omega]^{n-k}$ is an isomorphism
   $H^k(X,\mathbb C)\to H^{2n-k}(X,\mathbb C)$ for $k\leq n$.
-* **65. Kodaira–Nakano vanishing.** If $L$ is positive on compact
+* **67. Kodaira–Nakano vanishing.** If $L$ is positive on compact
   Kähler $X$, then $H^q(X,\Omega^p\otimes L)=0$ for
   $p+q>n$. In particular $H^q(X,K_X\otimes L)=0$ for $q>0$.
-* **66. Kodaira embedding theorem.** A compact complex manifold
+* **68. Kodaira embedding theorem.** A compact complex manifold
   with a positive holomorphic line bundle is projective; sufficiently
   high tensor powers give embeddings. Equivalently, a compact Kähler
-  manifold with an integral Kähler class is projective.
-* **67. Holomorphic maps to projective space.** A base-point-free
-  finite-dimensional system of sections of a line bundle gives a
-  holomorphic projective map; separation of points and tangent vectors
-  makes it an embedding. This is the analytic mechanism behind positivity criteria.
+  manifold with an integral Kähler class is projective. The embedding is
+  given by a base-point-free space of sections that separates points and
+  tangent vectors.
+* **69. Chow's theorem and GAGA.** Closed analytic subsets of
+  $\mathbb P^N$ are algebraic. On a projective variety, analytic and
+  algebraic coherent sheaves correspond, with the same cohomology (Serre);
+  meromorphic functions on it are rational.
 
 ## Invariant metrics and bounded-domain rigidity
 
@@ -313,28 +334,31 @@ the infimum of sums of disk distances along holomorphic disk chains.
 A domain is **circular about zero** when it is invariant under
 $z\mapsto e^{it}z$.
 
-* **68. Holomorphic contraction.** Both pseudodistances contract
+* **70. Holomorphic contraction.** Both pseudodistances contract
   under holomorphic maps, and $c_X\leq k_X$. Their infinitesimal
   versions have the same functorial property.
-* **69. Ball Schwarz lemma.** Holomorphic ball maps fixing zero
+* **71. Ball Schwarz lemma.** Holomorphic ball maps fixing zero
   contract Euclidean norm. Ball automorphisms transfer this to the
   invariant distance, with
   $k_{\mathbb B^n}(0,z)=\operatorname{arctanh}\|z\|$ in the
   curvature-$-4$ disk normalization.
-* **70. Lempert theorem.** On a bounded convex domain, Carathéodory
+* **72. Lempert theorem.** On a bounded convex domain, Carathéodory
   and Kobayashi distances agree and are realized by complex geodesics
   through any two points. Such a geodesic has a holomorphic left inverse.
-* **71. Brody criterion.** A compact complex manifold is Kobayashi
+* **73. Brody criterion.** A compact complex manifold is Kobayashi
   hyperbolic exactly when every entire map $\mathbb C\to X$ is constant.
   Compactness is essential for this equivalence.
-* **72. Bergman transformation.** The Bergman kernel transforms
+* **74. Bergman transformation.** The Bergman kernel transforms
   by the holomorphic Jacobian determinant under biholomorphisms.
   Where nondegenerate, $\partial\bar\partial\log K(z,z)$
-  defines a biholomorphically invariant Hermitian metric.
-* **73. Cartan uniqueness.** An automorphism of a bounded domain
-  fixing a point with identity derivative is the identity. For a
-  bounded circular domain containing zero, automorphisms fixing zero
-  are linear when both source and target have the corresponding circular structure.
+  defines a biholomorphically invariant Hermitian metric. For the ball,
+  $K(z,w)=n!\,\pi^{-n}(1-\langle z,w\rangle)^{-n-1}$.
+* **75. Cartan uniqueness.** An automorphism of a bounded domain
+  fixing a point with identity derivative is the identity. A
+  biholomorphism between bounded circular domains containing zero that
+  maps zero to zero is linear. Hence (Poincaré) for $n\geq2$ the ball and
+  the polydisk are not biholomorphic, since their isotropy groups at zero,
+  $U(n)$ and the torus extended by coordinate permutations, are not conjugate.
 
 ## CR geometry and boundary analysis
 
@@ -343,29 +367,29 @@ is $T^{0,1}M=\mathbb CTM\cap T^{0,1}\mathbb C^n$.
 A smooth function is **CR** if every section of this bundle annihilates it.
 The induced tangential complex is denoted $\bar\partial_b$.
 
-* **74. Tangential integrability.** The bundle $T^{0,1}M$ is
+* **76. Tangential integrability.** The bundle $T^{0,1}M$ is
   involutive and has zero intersection with its conjugate.
   This makes $\bar\partial_b^2=0$ on its intrinsic quotient complex;
   restrictions of holomorphic functions are CR.
-* **75. Levi form as a commutator.** The transverse part of
+* **77. Levi form as a commutator.** The transverse part of
   $[L,\bar L]$ for complex tangent fields recovers the boundary
   Levi form, up to the chosen normal and sign. Its rank and signature
   are CR invariants, with sign reversed by reversing the normal.
-* **76. Hartogs–Bochner boundary extension.** For $n\geq2$, a
+* **78. Hartogs–Bochner boundary extension.** For $n\geq2$, a
   smooth CR function on the connected smooth boundary of a bounded
   domain in $\mathbb C^n$ extends holomorphically into the domain,
   smoothly up to the boundary.
-* **77. One-sided Lewy extension.** Near a strictly pseudoconvex
+* **79. One-sided Lewy extension.** Near a strictly pseudoconvex
   hypersurface point in $\mathbb C^n$, $n\geq2$, smooth CR
   functions extend holomorphically to the pseudoconvex side locally.
-* **78. Finite-type interpretation.** On a smooth pseudoconvex
+* **80. Finite-type interpretation.** On a smooth pseudoconvex
   hypersurface in $\mathbb C^2$, finite order of contact with
   complex curves is equivalent to finite commutator type of complex
   tangential fields. It is the geometric source of positive subelliptic gain.
-* **79. Fefferman boundary regularity.** A biholomorphism between
+* **81. Fefferman boundary regularity.** A biholomorphism between
   bounded smoothly strictly pseudoconvex domains extends to a smooth
   diffeomorphism of their closures and induces a boundary CR equivalence.
-* **80. Alexander rigidity.** For $n\geq2$, a proper holomorphic
+* **82. Alexander rigidity.** For $n\geq2$, a proper holomorphic
   self-map of the unit ball in $\mathbb C^n$ is an automorphism.
   The disk's higher-degree proper Blaschke maps have no such analogue.
 

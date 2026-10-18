@@ -3,10 +3,10 @@
 Part of the [mathematical synopsis series](SYNOPSIS.md).
 
 This synopsis selects recurring core material from Section 50 of
-[CKMA-bib.md](CKMA-bib.md) and [CKMA-bib2.md](CKMA-bib2.md).
+[CKMA-bib.md](CKMA-bib.md).
 It covers asymptotic scales, integral and coefficient methods, linear
 differential equations and turning points, Gevrey expansions and summation,
-resurgence, and singular perturbations. Formal identities, asymptotic
+resurgence, averaging, and singular and eigenvalue perturbation. Formal identities, asymptotic
 expansions with remainders, and actual summed solutions are distinguished
 throughout. Special-function normalizations are in Section 49, and
 Riemann–Hilbert asymptotics are developed further in Section 51.
@@ -38,8 +38,6 @@ with an additional parameter explicitly require uniform hypotheses.
   a logarithm, and an independent integration constant must be retained.
 * **5. Borel's smooth realization theorem.** Every prescribed
   sequence of derivatives at a point is the jet of a smooth function.
-  Arbitrary formal Taylor series therefore have smooth realizations,
-  without a convergence assertion.
 * **6. Borel–Ritt theorem.** Every formal power series is the
   asymptotic expansion of a holomorphic function on any sector of
   opening strictly less than $2\pi$.
@@ -79,7 +77,10 @@ point from all other contributions.
 * **13. Nonstationary phase.** If $A\in C_c^\infty$ and
   $\nabla\phi\ne0$ on its support, then
   $\int e^{i\lambda\phi}A=O_N(\lambda^{-N})$ for every $N$.
-  Integration by parts gives explicit bounds from phase and amplitude derivatives.
+  On a compact interval $[a,b]$ with $\phi'\ne0$ and smooth $A$,
+  integration by parts gives instead the endpoint expansion
+  $\int_a^be^{i\lambda\phi}A\,dt=\bigl[e^{i\lambda\phi}A/(i\lambda\phi')\bigr]_a^b
+  +O(\lambda^{-2})$, continued to all orders by repetition.
 * **14. Stationary phase.** A nondegenerate critical point with
   real Hessian $H$ contributes
   $e^{i\lambda\phi(x_0)+i\pi\operatorname{sgn}H/4}
@@ -138,7 +139,6 @@ point from all other contributions.
 * **25. Poisson summation.** For Schwartz $f$ and convention
   $\widehat f(\xi)=\int f(x)e^{-2\pi ix\xi}dx$,
   $\sum_{n\in\mathbb Z}f(nh)=h^{-1}\sum_{k\in\mathbb Z}\widehat f(k/h)$.
-  Fourier decay yields summation and discretization error estimates.
 * **26. Mellin contour displacement.** If a Mellin transform has
   meromorphic continuation and sufficient vertical decay, moving its
   inversion contour left yields small-$x$ expansions from the poles
@@ -156,8 +156,7 @@ point from all other contributions.
   with finite Laplace–Stieltjes transform at every positive argument,
   $\int e^{-st}dU(t)\sim s^{-\rho}L(1/s)$ as $s\downarrow0$
   exactly when $U(x)\sim x^\rho L(x)/\Gamma(1+\rho)$,
-  where $\rho\geq0$ and $L$ is slowly varying. Positivity supplies
-  the Tauberian hypothesis.
+  where $\rho\geq0$ and $L$ is slowly varying.
 
 ## Differential equations, irregular singularities, and WKB
 
@@ -204,9 +203,9 @@ point from all other contributions.
   $CQ^{-1/4}e^{-\int_a^x\sqrt Q/\varepsilon}$ connects to
   $2C|Q|^{-1/4}\sin(\int_x^a\sqrt{-Q}/\varepsilon+\pi/4)$
   at leading order. Error is measured additively against the envelope near zeros.
-* **39. Bohr–Sommerfeld rule.** For a smooth one-dimensional
-  confining single-well Schrödinger problem and eigenvalues in a
-  regular energy window with two simple turning points,
+* **39. Bohr–Sommerfeld rule.** For $-\varepsilon^2y''+V(x)y=Ey$
+  with smooth confining single-well $V$, and eigenvalues $E_n$ in a
+  fixed energy window where $V=E$ has exactly two simple turning points,
   $\int_{a(E_n)}^{b(E_n)}\sqrt{E_n-V(x)}dx
   =\pi\varepsilon(n+1/2)+O(\varepsilon^2)$.
 * **40. Gevrey growth from rank one.** If $A$ is invertible and
@@ -350,16 +349,39 @@ the fast normal eigenvalues have real parts uniformly below zero.
   $|x-y|\leq C\varepsilon$ for $0\leq t\leq T/\varepsilon$,
   provided the solutions remain in the common regularity domain and
   their initial difference is $O(\varepsilon)$.
-* **65. Second-order zero-mean averaging.** If $\bar f=0$, a
-  periodic near-identity change removes the order-$\varepsilon$
-  term. With uniformly bounded derivatives through order three, second-order averaging
-  has error $O(\varepsilon)$ on times $O(\varepsilon^{-2})$,
-  again conditional on remaining in a common compact domain.
+* **65. Second-order zero-mean averaging.** If $\bar f=0$, let
+  $u(t,x)$ be the periodic zero-mean antiderivative of $f$ in $t$.
+  The near-identity change $x=y+\varepsilon u(t,y)$ removes the
+  order-$\varepsilon$ term, and the solution of
+  $\dot y=\varepsilon^2\,\overline{D_xf\,u}(y)$ approximates $x$
+  with error $O(\varepsilon)$ on times $O(\varepsilon^{-2})$, given
+  uniformly bounded derivatives through order three and solutions
+  remaining in a common compact domain.
 * **66. Averaged periodic orbits.** A hyperbolic zero of $\bar f$
   yields a nearby periodic solution of the periodically forced
   small-$\varepsilon$ equation. Its Floquet multipliers have leading
   form $1+\varepsilon T\lambda_j+O(\varepsilon^2)$ when the
   relevant eigenvalues are simple, and stability follows the averaged linearization.
+* **67. Poincaré–Lindstedt method.** For
+  $\ddot x+x+\varepsilon g(x,\dot x)=0$, the naive expansion in
+  $\varepsilon$ has secular terms such as $t\sin t$ and is valid only
+  for $t=O(1)$. Expanding the frequency as well, $\tau=\omega t$ with
+  $\omega=1+\varepsilon\omega_1+\cdots$, and removing resonant terms
+  at each order yields uniformly valid periodic expansions; for the
+  Duffing equation $g=x^3$ the periodic orbit of amplitude $a$ has
+  $\omega=1+\tfrac38\varepsilon a^2+O(\varepsilon^2)$. Two-timing
+  reproduces the first-order averaged amplitude–phase equations.
+* **68. Rayleigh–Schrödinger perturbation.** Let $A$ be self-adjoint,
+  $B$ bounded and symmetric, and $\lambda_0$ an isolated simple eigenvalue
+  of $A$ with unit eigenvector $\phi_0$ and reduced resolvent $S$.
+  Then $A+\varepsilon B$ has a unique eigenvalue near $\lambda_0$
+  for small $|\varepsilon|$, analytic in $\varepsilon$, with
+  $\lambda(\varepsilon)=\lambda_0+\varepsilon\langle B\phi_0,\phi_0\rangle
+  -\varepsilon^2\langle SB\phi_0,B\phi_0\rangle+O(\varepsilon^3)$;
+  for discrete spectrum
+  $-\langle SB\phi_0,B\phi_0\rangle=\sum_{k\ne0}
+  |\langle B\phi_0,\phi_k\rangle|^2/(\lambda_0-\lambda_k)$.
+  Analytic families and degenerate eigenvalues are treated in Section 22.
 
 ## Reference guide
 

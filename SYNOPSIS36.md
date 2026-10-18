@@ -3,7 +3,7 @@
 Part of the [mathematical synopsis series](SYNOPSIS.md).
 
 This synopsis selects recurring material from Section 36 of
-[CKMA-bib.md](CKMA-bib.md) and [CKMA-bib2.md](CKMA-bib2.md).
+[CKMA-bib.md](CKMA-bib.md).
 It covers classical variations, existence and lower semicontinuity,
 quasiconvexity and microstructure, critical-point methods, variational
 convergence, and homogenization. BV structure and geometric minimization
@@ -45,8 +45,10 @@ the theorem rather than consequences of the notation.
 * **7. Jacobi condition.** For a regular one-dimensional variational
   problem with positive definite velocity Hessian, a minimizing
   extremal has no conjugate point strictly inside the interval.
-  The strengthened Legendre condition and absence of conjugate points
-  give positivity of the fixed-endpoint second variation on appropriate intervals.
+  Conversely, an extremal with $f_{u'u'}>0$ along it (strengthened Legendre)
+  and no conjugate point in the closed interval is a strict weak local
+  minimizer; embedding it in a field of extremals on which the Weierstrass
+  excess is nonnegative makes it a strong minimizer (Weierstrass field theory).
 * **8. Beltrami identity.** For an autonomous one-dimensional Lagrangian,
   $f-u'\cdot f_{u'}$ is constant along smooth Euler–Lagrange extremals.
 * **9. Noether identity.** A differentiable one-parameter symmetry of
@@ -64,23 +66,30 @@ the theorem rather than consequences of the notation.
   together with fixed trace or a normalization controlling constants,
   bounds minimizing sequences in $W^{1,p}$. Reflexivity gives a
   weakly convergent subsequence with the same trace constraint.
-* **12. Convex integral lower semicontinuity.** A nonnegative
-  Carathéodory integrand convex in $F$ gives weak lower
-  semicontinuity of $\int f(x,Du)$ under the standard $p$-growth
-  hypotheses. A continuous linear load preserves this property.
-* **13. Dependence on the undifferentiated variable.** If
-  $u_j\to u$ strongly in $L^p$, $Du_j\rightharpoonup Du$ in $L^p$,
-  and $f$ is Carathéodory, nonnegative, and convex in its gradient
-  variable with suitable $p$-growth, then
-  $I(u)\leq\liminf I(u_j)$.
-* **14. Existence for convex energies.** Coercivity, the preceding
+* **12. Convex lower semicontinuity.** Let $f(x,u,F)\geq0$ be
+  measurable in $x$, lower semicontinuous in $(u,F)$, and convex in $F$.
+  If $u_j\to u$ in $L^1$ and $Du_j\rightharpoonup Du$ in $L^1$, then
+  $I(u)\leq\liminf I(u_j)$ (De Giorgi, Ioffe); no growth condition is
+  needed. Adding a continuous linear load preserves this property.
+* **13. Existence for convex energies.** Coercivity, the preceding
   lower semicontinuity, and a nonempty finite-energy trace class give
   a minimizer. Strict convexity in the gradient gives uniqueness
   after boundary values or constants are fixed.
-* **15. Strong convergence from uniform convexity.** If the gradient
+* **14. Strong convergence from uniform convexity.** If the gradient
   energy controls a uniformly convex $L^p$ norm, weak convergence
   together with convergence of that energy implies strong convergence
   of gradients. This upgrades compactness when no oscillation energy is lost.
+* **15. Regularity of minimizers.** In the scalar case $m=1$, if
+  $f\in C^\infty$ has $\lambda I\leq D^2f\leq\Lambda I$, minimizers of
+  $\int f(Du)$ in $W^{1,2}$ are $C^\infty$: derivatives of $u$ solve
+  linear equations with bounded measurable elliptic coefficients, so
+  De Giorgi–Nash–Moser gives $C^{1,\alpha}$ and Schauder theory
+  bootstraps (Hilbert's nineteenth problem). For systems this fails:
+  minimizers of quadratic energies with bounded measurable coefficients
+  can be unbounded when $d=m\geq3$ (De Giorgi), and smooth uniformly
+  convex integrands can have singular minimizers (Šverák–Yan). Minimizers
+  of smooth uniformly strictly quasiconvex integrands with $p$-growth
+  are $C^{1,\alpha}$ off a closed null set (Evans; Acerbi–Fusco).
 
 ## Quasiconvexity, minors, and relaxation
 
@@ -92,11 +101,15 @@ It is **rank-one convex** if it is convex on every rank-one line, and
 
 * **16. Convexity hierarchy.** Convexity implies polyconvexity,
   polyconvexity implies quasiconvexity, and quasiconvexity implies
-  rank-one convexity. In scalar problems these notions reduce to
-  convexity; the reverse implications fail in general vectorial dimensions.
+  rank-one convexity. If $m=1$ or $d=1$ all four notions coincide.
+  Otherwise polyconvex functions need not be convex, quasiconvex
+  functions need not be polyconvex, and for $m\geq3$, $d\geq2$
+  rank-one convexity does not imply quasiconvexity (Šverák); the case
+  $m=2$ is open.
 * **17. Morrey's characterization.** For continuous nonnegative
   $f(F)$ with $p$-growth, $\int f(Du)$ is sequentially weakly
-  lower semicontinuous on $W^{1,p}$ exactly when $f$ is quasiconvex.
+  lower semicontinuous on $W^{1,p}$ exactly when $f$ is quasiconvex
+  (Morrey; Acerbi–Fusco, also for $f(x,u,F)$ Carathéodory).
 * **18. Null Lagrangians.** Every minor of $Du$ has an integral
   determined by the boundary trace whenever integrability permits.
   Affine combinations of minors are null Lagrangians, with identically
@@ -110,8 +123,8 @@ It is **rank-one convex** if it is convex on every rank-one line, and
   lower semicontinuous, and nonnegative. If $f$ is $p$-coercive,
   a nonempty finite-energy fixed-trace class has a minimizer.
   The conclusion allows extended-valued determinant constraints.
-* **21. Quasiconvex relaxation.** For continuous $f$ with two-sided
-  coercive $p$-growth, the weak $W^{1,p}$ lower semicontinuous
+* **21. Quasiconvex relaxation.** For continuous $f$ with
+  $0\leq f(F)\leq C(1+|F|^p)$, the weak $W^{1,p}$ lower semicontinuous
   envelope of $\int f(Du)$ is $\int Qf(Du)$, where
   $Qf(F)=\inf_{\phi\in W_0^{1,\infty}(Q)}\fint_Qf(F+D\phi)$.
 * **22. Scalar relaxation.** In the scalar case $Qf=f^{**}$, the
@@ -174,10 +187,11 @@ For $I\in C^1(X,\mathbb R)$, the **Palais–Smale condition at $c$**
 means every sequence with $I(u_j)\to c$ and $DI(u_j)\to0$ has a strongly
 convergent subsequence.
 
-* **33. Ekeland's variational principle.** For a lower semicontinuous
-  bounded-below functional on a complete metric space, an approximate
-  minimizer can be perturbed by a controlled distance into one satisfying
-  $I(v)\geq I(u)-\varepsilon d(u,v)$ for every $v$.
+* **33. Ekeland's variational principle.** Let $I$ be lower
+  semicontinuous, bounded below, and proper on a complete metric space.
+  If $I(u_0)\leq\inf I+\varepsilon$ and $\lambda>0$, there is $u$ with
+  $I(u)\leq I(u_0)$, $d(u,u_0)\leq\lambda$, and
+  $I(v)>I(u)-(\varepsilon/\lambda)d(u,v)$ for every $v\ne u$.
   For differentiable functionals this produces minimizing Palais–Smale sequences.
 * **34. Deformation lemma.** If a $C^1$ functional satisfies compactness
   near an energy interval and has no critical point there, a
@@ -218,6 +232,14 @@ convergent subsequence.
   $$
   On a strictly star-shaped domain, this excludes nonzero solutions
   of the critical or supercritical pure-power problem under the usual regularity.
+* **42. Critical exponent and the Brezis–Nirenberg problem.** For
+  $q=2^*$, $d\geq3$, Palais–Smale fails because of concentrating Sobolev
+  bubbles but holds for $\frac12\int|\nabla u|^2-\frac\lambda2\int u^2
+  -\frac1{2^*}\int|u|^{2^*}$ on $H_0^1$ at levels below $S^{d/2}/d$,
+  $S$ the sharp Sobolev constant. Consequently
+  $-\Delta u=\lambda u+u^{2^*-1}$, $u>0$, $u=0$ on $\partial\Omega$
+  has a solution for $d\geq4$ and $0<\lambda<\lambda_1(\Omega)$; for $d=3$
+  only a subinterval of $(0,\lambda_1)$ works (on a ball, $(\lambda_1/4,\lambda_1)$).
 
 ## Γ-convergence and variational limits
 
@@ -226,39 +248,39 @@ has $F(x)\leq\liminf F_j(x_j)$ and every $x$ has a **recovery sequence**
 $x_j\to x$ with $\limsup F_j(x_j)\leq F(x)$.
 Equicoercivity means their sublevels lie in common relatively compact sets.
 
-* **42. Uniqueness and lower semicontinuity.** A Γ-limit is unique
+* **43. Uniqueness and lower semicontinuity.** A Γ-limit is unique
   and lower semicontinuous in the chosen topology. Pointwise convergence
   alone does not determine it.
-* **43. Fundamental theorem of Γ-convergence.** For equicoercive
-  $F_j$ with a proper Γ-limit and finite infima, minimum values converge.
-  Every limit of approximate minimizers minimizes $F$; existence of
-  minimizers follows with the usual lower semicontinuity of the $F_j$.
-* **44. Recovery of minimizers.** Every minimizer of the Γ-limit has
+* **44. Fundamental theorem of Γ-convergence.** For equicoercive
+  $F_j$ with Γ-limit $F$, $F$ attains its minimum and
+  $\min F=\lim_j\inf F_j$. Every cluster point of a sequence $x_j$ with
+  $F_j(x_j)\leq\inf F_j+o(1)$ minimizes $F$.
+* **45. Recovery of minimizers.** Every minimizer of the Γ-limit has
   a recovery sequence that is asymptotically minimizing. If its minimizer
   is unique, every equicoercive sequence of approximate minimizers converges to it.
-* **45. Γ-compactness.** On a separable metric space, every sequence
+* **46. Γ-compactness.** On a separable metric space, every sequence
   of functionals with values in $[0,\infty]$ has a Γ-convergent
   subsequence. Equicoercivity is additional and controls minimizers,
   rather than being required for this extraction.
-* **46. Continuous perturbations.** Adding a fixed finite continuous
+* **47. Continuous perturbations.** Adding a fixed finite continuous
   function preserves Γ-convergence and adds that function to the limit.
   Perturbations tending uniformly to zero do not change the Γ-limit.
-* **47. Relaxation as a Γ-limit.** The Γ-limit of a constant sequence
+* **48. Relaxation as a Γ-limit.** The Γ-limit of a constant sequence
   $F_j=F$ is its lower semicontinuous envelope. Recovery sequences
   explicitly realize the relaxed energy.
-* **48. Mosco convergence.** For proper lower semicontinuous convex
+* **49. Mosco convergence.** For proper lower semicontinuous convex
   functionals on a Hilbert space, a weak liminf inequality plus strong
   recovery is Mosco convergence. It implies strong convergence of
   their proximal resolvents at every point, for each positive resolvent parameter.
-* **49. Modica–Mortola theorem.** For $W(s)=s^2(1-s)^2$,
+* **50. Modica–Mortola theorem.** For $W(s)=s^2(1-s)^2$,
   $\int_\Omega(\varepsilon|\nabla u|^2/2+W(u)/\varepsilon)$
   Γ-converges in $L^1$ to $c_WP(E;\Omega)$ on $u=1_E$,
   and to infinity otherwise, where $c_W=\int_0^1\sqrt{2W(s)}ds$.
-* **50. Phase-transition compactness.** Bounded Modica–Mortola energy
+* **51. Phase-transition compactness.** Bounded Modica–Mortola energy
   gives $L^1$ precompactness on bounded Lipschitz domains and limits
   taking only the two well values. The limiting perimeter is controlled
   by the energy liminf.
-* **51. Higher-order variational selection.** If the leading Γ-limit
+* **52. Higher-order variational selection.** If the leading Γ-limit
   has several minimizers, rescaling the excess energy can distinguish
   among them through a further Γ-limit, provided the rescaled family
   is equicoercive. A first-order Γ-limit alone does not determine that selection.
@@ -268,47 +290,49 @@ Equicoercivity means their sublevels lie in common relatively compact sets.
 Let $Y=(0,1)^d$ and $A(y)$ be bounded uniformly elliptic and $Y$-periodic.
 Periodic correctors $\chi_i$ have mean zero and belong to $H^1_{\mathrm{per}}(Y)$.
 
-* **52. Cell correctors.** The equation
+* **53. Cell correctors.** The equation
   $-\operatorname{div}_y(A(y)(e_i+\nabla\chi_i))=0$ has a unique
   mean-zero periodic weak solution. Define
   $A^{\mathrm{hom}}e_i=\int_YA(y)(e_i+\nabla\chi_i)dy$.
-* **53. Elliptic homogenization.** Zero-Dirichlet solutions of
+* **54. Elliptic homogenization.** Zero-Dirichlet solutions of
   $-\operatorname{div}(A(x/\varepsilon)\nabla u_\varepsilon)=f$,
   $f\in H^{-1}$, converge weakly in $H_0^1$ and strongly in $L^2$
   to the solution with coefficient $A^{\mathrm{hom}}$.
   Fluxes converge weakly in $L^2$ to $A^{\mathrm{hom}}\nabla u$.
-* **54. Symmetric cell energy.** For symmetric $A$,
+* **55. Symmetric cell energy.** For symmetric $A$,
   $\xi\cdot A^{\mathrm{hom}}\xi
   =\min_{\phi\in H^1_{\mathrm{per}}(Y)}\int_Y
   (\xi+\nabla\phi)\cdot A(\xi+\nabla\phi)$.
   Thus the homogenized matrix is symmetric and uniformly elliptic.
-* **55. Effective coefficient bounds.** In that symmetric case,
+* **56. Effective coefficient bounds.** In that symmetric case,
   $(\int_YA^{-1})^{-1}\leq A^{\mathrm{hom}}\leq\int_YA$
   in the quadratic-form order. In one dimension the effective
   coefficient is exactly the harmonic mean $(\int_Ya^{-1})^{-1}$.
-* **56. Corrector convergence.** For smooth periodic coefficients and
+* **57. Corrector convergence.** For smooth periodic coefficients and
   a smooth homogenized solution,
   $\nabla u_\varepsilon-(I+\nabla_y\chi(x/\varepsilon))\nabla u
   \to0$ in $L^2_{\mathrm{loc}}$.
-  Boundary-corrected or cutoff expansions give the corresponding
-  global approximation under compatible domain and data regularity.
-* **57. Energy Γ-limit.** Symmetric uniformly elliptic periodic
+  On a smooth bounded domain with $u\in H^2$, the first-order expansion
+  satisfies $\|u_\varepsilon-u-\varepsilon\chi(x/\varepsilon)\cdot\nabla u\|_{H^1}
+  \leq C\varepsilon^{1/2}$, the loss coming from a boundary layer, and
+  $\|u_\varepsilon-u\|_{L^2}\leq C\varepsilon$.
+* **58. Energy Γ-limit.** Symmetric uniformly elliptic periodic
   quadratic energies Γ-converge in $L^2$ to the quadratic energy
   with matrix $A^{\mathrm{hom}}$, including fixed Dirichlet data
   formulated on a common affine Sobolev space.
-* **58. Two-scale compactness.** Every bounded $L^2(\Omega)$ sequence
+* **59. Two-scale compactness.** Every bounded $L^2(\Omega)$ sequence
   has a subsequence with a two-scale limit in $L^2(\Omega\times Y)$,
   tested against $\phi(x,x/\varepsilon)$ with smooth compact
   spatial support and periodic second variable.
-* **59. Two-scale gradients.** A weakly convergent $H^1$ sequence
+* **60. Two-scale gradients.** A weakly convergent $H^1$ sequence
   has gradient two-scale limit
   $\nabla_xu(x)+\nabla_yu_1(x,y)$, with
   $u_1\in L^2(\Omega;H^1_{\mathrm{per}}(Y)/\mathbb R)$.
-* **60. H-compactness.** Every uniformly bounded uniformly elliptic
+* **61. H-compactness.** Every uniformly bounded uniformly elliptic
   sequence of matrix fields has an H-convergent subsequence:
   Dirichlet solutions and their fluxes converge weakly for every
   $H^{-1}$ forcing to those of a limiting elliptic matrix field.
-* **61. Nonlinear multicell formula.** For periodic Carathéodory
+* **62. Nonlinear multicell formula.** For periodic Carathéodory
   $f(y,F)$ with coercive two-sided $p$-growth, the homogenized
   variational density is
   $$
@@ -318,14 +342,14 @@ Periodic correctors $\chi_i$ have mean zero and belong to $H^1_{\mathrm{per}}(Y)
   $$
   The energies Γ-converge in $L^p$ to $\int f_{\mathrm{hom}}(Du)$.
   Convexity permits the simpler single periodic-cell formulation.
-* **62. Ergodic homogenization.** Stationary ergodic uniformly elliptic
+* **63. Ergodic homogenization.** Stationary ergodic uniformly elliptic
   random coefficients homogenize almost surely to a deterministic
   matrix. Ergodicity removes realization dependence; quantitative
   rates require additional assumptions on correlations.
 
 ## Optimal control as variational continuation
 
-* **63. Pontryagin principle with free terminal state.** For a smooth
+* **64. Pontryagin principle with free terminal state.** For a smooth
   finite-horizon problem minimizing
   $\int_0^TL(x,u)dt+g(x(T))$ subject to $\dot x=b(x,u)$,
   with compact control set and the standard existence and boundedness
@@ -333,7 +357,7 @@ Periodic correctors $\chi_i$ have mean zero and belong to $H^1_{\mathrm{per}}(Y)
   $\dot p=-D_xH$, $p(T)=Dg(x(T))$, and
   $u(t)\in\operatorname*{argmin}_aH(x(t),p(t),a)$ almost everywhere,
   where $H=L+p\cdot b$.
-* **64. Dynamic programming and Hamilton–Jacobi.** For bounded smooth
+* **65. Dynamic programming and Hamilton–Jacobi.** For bounded smooth
   controlled dynamics and costs with compact control set, the
   finite-horizon value function satisfies dynamic programming and
   is the viscosity solution of
@@ -344,8 +368,10 @@ Periodic correctors $\chi_i$ have mean zero and belong to $H^1_{\mathrm{per}}(Y)
 
 Dacorogna, Morrey, Giaquinta–Hildebrandt, Giusti, Fonseca–Leoni, and
 Rindler overlap on existence, lower semicontinuity, and the vectorial
-convexity notions. Struwe, Rabinowitz, Willem, and Ambrosetti–Malchiodi
-provide the critical-point core. Dal Maso and Braides give Γ-convergence;
+convexity notions; Giaquinta–Hildebrandt and Giusti also develop the
+regularity of minimizers. Struwe, Rabinowitz, Willem, and Ambrosetti–Malchiodi
+provide the critical-point core, with Struwe treating the limit cases
+of the Palais–Smale condition. Dal Maso and Braides give Γ-convergence;
 Braides–Defranceschi, Bensoussan–Lions–Papanicolaou, Jikov–Kozlov–Oleinik,
 Cioranescu–Donato, and Tartar develop homogenization. Armstrong–Kuusi–Mourrat
 provides the stochastic continuation. The control principles recur in

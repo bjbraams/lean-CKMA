@@ -31,7 +31,11 @@ coverage in Mathlib of the indicated section from `CKMA-bib.md`. Notes at the en
 describe additional coverage in TauCeti and they note areas that are not covered either in Mathlib
 or in TauCeti.
 
-You may be asked to edit, revise or expand any of the Markdown files in the project directory.
+Files with names SYNOPSIS<dd>.md are meant to describe the mathematical content of the indicated
+section from the bibliography.
+
+You may be asked to edit, revise or expand any of the Markdown files in the project directory or
+to create new such files.
 - Keep changes narrowly related to the request.
 - Preserve unrelated user changes.
 - Do not commit changes unless explicitly requested.

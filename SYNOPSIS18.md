@@ -3,7 +3,7 @@
 Part of the [mathematical synopsis series](SYNOPSIS.md).
 
 This synopsis selects the working core of Section 18 of
-[CKMA-bib.md](CKMA-bib.md) and [CKMA-bib2.md](CKMA-bib2.md). It connects
+[CKMA-bib.md](CKMA-bib.md). It connects
 integration and martingales with Banach space geometry, Fourier multipliers,
 randomized operator bounds, and evolution equations. Hytönen–van Neerven–
 Veraar–Weis supplies the unifying treatment; the vector-measure, martingale,
@@ -70,9 +70,9 @@ has a Bochner integrable density.
   of bounded variation has a unique density $f\in L^1(\mu;X)$, with
   $\nu(A)=\int_A f\,d\mu$ and $|\nu|(A)=\int_A\|f\|\,d\mu$.
 * **11. Stability and examples of RNP.** Closed subspaces of RNP spaces
-  have RNP. Reflexive spaces and separable dual spaces have RNP; $c_0$
-  does not. RNP is therefore stronger than a formal scalarization of
-  countable additivity.
+  have RNP. Reflexive spaces and separable dual spaces have RNP; $c_0$,
+  $L^1[0,1]$, and $C[0,1]$ do not. RNP is separably determined but not
+  inherited by quotients, since every separable space is a quotient of $\ell^1$.
 * **12. Lipschitz characterization.** $X$ has RNP exactly when every
   Lipschitz curve $[0,1]\to X$ is differentiable almost everywhere.
   In this case such curves are integrals of their essentially bounded derivatives.
@@ -112,8 +112,10 @@ The abbreviation stands for unconditional martingale differences.
   It also holds for predictable scalar multipliers with absolute value at
   most one, with constants depending on $p$ and $X$.
 * **19. UMD stability.** Closed subspaces, quotients, and duals of UMD
-  spaces are UMD. For $1<q<\infty$, $L^q(S;X)$ is UMD if $X$ is;
-  conversely it detects UMD when it contains a copy of $X$.
+  spaces are UMD. For $1<q<\infty$, $L^q(S;X)$ is UMD exactly when $X$ is.
+  Burkholder's geometric characterization: $X$ is UMD exactly when it is
+  $\zeta$-convex, i.e. some biconcave $\zeta:X\times X\to\mathbb R$ has
+  $\zeta(0,0)>0$ and $\zeta(x,y)\leq\|x+y\|$ whenever $\|x\|=\|y\|=1$.
 * **20. Standard examples.** Hilbert spaces, scalar $L^q$ spaces, and
   Schatten classes $S^q$ are UMD for $1<q<\infty$. Infinite-dimensional
   $L^1$, $L^\infty$, and $c_0$ are not UMD.
@@ -187,37 +189,45 @@ $T_mf=\mathcal F^{-1}(m\widehat f)$ to the indicated $L^p$ spaces.
   $-i\xi_j/|\xi|$ are bounded on $L^p(\mathbb R^d;X)$ for
   $1<p<\infty$. Conversely boundedness of a classical Riesz transform
   on such a space characterizes UMD.
-* **35. Necessary R-bounded range.** If a strongly continuous
+* **35. Vector-valued Calderón–Zygmund theorem.** Let $T$ be bounded from
+  $L^{p_0}(\mathbb R^d;X)$ to $L^{p_0}(\mathbb R^d;Y)$ for some
+  $1<p_0<\infty$, with an $\mathcal L(X,Y)$-valued kernel representing it off
+  the support of compactly supported $f$ and satisfying Hörmander's condition
+  $\int_{|x-y|>2|y-y'|}\|K(x,y)-K(x,y')\|\,dx\leq C$. Then $T$ is of weak
+  type $(1,1)$ and bounded on $L^p$ for $1<p\leq p_0$; the dual condition
+  gives $p_0<p<\infty$ (Benedek–Calderón–Panzone). No geometric property of
+  $X$ enters beyond the initial $L^{p_0}$ bound.
+* **36. Necessary R-bounded range.** If a strongly continuous
   operator-valued symbol defines a bounded $L^p(\mathbb R^d;X)\to
   L^p(\mathbb R^d;Y)$ multiplier, its range is R-bounded. For merely
   measurable symbols the analogous conclusion uses their Lebesgue values.
-* **36. Operator-valued Mihlin theorem on the line.** If $X,Y$ are UMD,
+* **37. Operator-valued Mihlin theorem on the line.** If $X,Y$ are UMD,
   $m\in C^1(\mathbb R\setminus\{0\};\mathcal L(X,Y))$, and
   $\{m(\xi),\xi m'(\xi):\xi\ne0\}$ is R-bounded, then $T_m$ is bounded
   from $L^p(\mathbb R;X)$ to $L^p(\mathbb R;Y)$ for $1<p<\infty$.
-* **37. A multidimensional Mihlin formulation.** For UMD $X,Y$, it is
+* **38. A multidimensional Mihlin formulation.** For UMD $X,Y$, it is
   sufficient that a symbol have continuous derivatives through order $d$
   away from zero and that
   $\{|\xi|^{|\alpha|}\partial^\alpha m(\xi):\xi\ne0,\
   \alpha\in\{0,1\}^d\}$ be R-bounded. Then it is an $L^p$ multiplier
   for every $1<p<\infty$.
-* **38. Randomized Littlewood–Paley equivalence.** For a smooth dyadic
+* **39. Randomized Littlewood–Paley equivalence.** For a smooth dyadic
   annular partition $(\Delta_j)$ and UMD $X$,
   $$\|f\|_{L^p(X)}\asymp
     \left(\mathbb E_r\left\|\sum_jr_j\Delta_jf\right\|_{L^p(X)}^p\right)^{1/p},
        \qquad1<p<\infty.$$
   The inhomogeneous version includes one low-frequency block.
-* **39. Sobolev and Bessel potential agreement.** If $X$ is UMD,
+* **40. Sobolev and Bessel potential agreement.** If $X$ is UMD,
   $1<p<\infty$, and $k$ is a nonnegative integer, then
   $W^{k,p}(\mathbb R^d;X)=H^{k,p}(\mathbb R^d;X)$ with equivalent norms,
   where $\|f\|_{H^{s,p}}=\|(I-\Delta)^{s/2}f\|_{L^p(X)}$.
-* **40. Interpolation of Bochner spaces.** For $1\leq p_0,p_1<\infty$,
+* **41. Interpolation of Bochner spaces.** For $1\leq p_0,p_1<\infty$,
   $0<\theta<1$, and $1/p=(1-\theta)/p_0+\theta/p_1$,
   on a $\sigma$-finite measure space,
   $[L^{p_0}(S;X_0),L^{p_1}(S;X_1)]_\theta
   =L^p(S;[X_0,X_1]_\theta)$ for compatible complex Banach couples,
   with the usual natural norm identification.
-* **41. Bessel potential interpolation.** For UMD $X$,
+* **42. Bessel potential interpolation.** For UMD $X$,
   $[H^{s_0,p}(X),H^{s_1,p}(X)]_\theta=H^{(1-\theta)s_0+\theta s_1,p}(X)$
   with equivalent norms, for real $s_0,s_1$ and $1<p<\infty$.
 
@@ -237,47 +247,47 @@ from $L^2(S)$ to $X$, initially interpreted by scalar duality when needed.
 For operator-valued $\Phi$, similarly
 $R_\Phi g=\int_0^T\Phi(t)g(t)\,dt$ on $L^2(0,T;H)$.
 
-* **42. Basis independence and Gaussian realization.** The radonifying
+* **43. Basis independence and Gaussian realization.** The radonifying
   norm is independent of the orthonormal basis. For separable $H$, a bounded
   $T:H\to X$ is radonifying exactly when $\sum_j\gamma_jTh_j$ converges
   in $L^2(\Omega;X)$; the sum realizes a Radon Gaussian variable with
   covariance $TT^*$.
-* **43. Radonifying ideal property.** If $T\in\gamma(H,X)$,
+* **44. Radonifying ideal property.** If $T\in\gamma(H,X)$,
   $A\in\mathcal L(X,Y)$, and $B\in\mathcal L(K,H)$, then
   $ATB\in\gamma(K,Y)$ and
   $\|ATB\|_\gamma\leq\|A\|\|T\|_\gamma\|B\|$.
-* **44. Hilbert–Schmidt case.** For Hilbert targets,
+* **45. Hilbert–Schmidt case.** For Hilbert targets,
   $\gamma(H,X)$ equals the Hilbert–Schmidt class, isometrically. Thus
   the general radonifying norm extends the square-summability norm used
   in Hilbert-valued stochastic integration.
-* **45. Square functions in $L^q$.** For $1\leq q<\infty$ and an
+* **46. Square functions in $L^q$.** For $1\leq q<\infty$ and an
   orthonormal basis $(h_j)$,
   $$\|T\|_{\gamma(H,L^q(S))}\asymp_q
        \left\|\left(\sum_j|Th_j|^2\right)^{1/2}\right\|_{L^q(S)}.$$
   Finiteness of this square-function norm characterizes the radonifying maps.
-* **46. Gamma Fubini theorem.** For $1\leq p<\infty$,
+* **47. Gamma Fubini theorem.** For $1\leq p<\infty$,
   $\gamma(H,L^p(S;X))\cong L^p(S;\gamma(H,X))$ with equivalent norms,
   under the natural identification on finite-rank tensors.
-* **47. Type, cotype, and time integration.** Type two of $X$ gives the
+* **48. Type, cotype, and time integration.** Type two of $X$ gives the
   continuous embedding $L^2(S;X)\hookrightarrow\gamma(L^2(S),X)$ via
   integral operators; cotype two gives the reverse embedding. Both
   embeddings together characterize the Hilbert space isomorphism class.
-* **48. Gamma multiplier theorem.** If $M(s)\in\mathcal L(X,Y)$ is
+* **49. Gamma multiplier theorem.** If $M(s)\in\mathcal L(X,Y)$ is
   strongly measurable on each vector and has $\gamma$-bounded range, then
   pointwise multiplication by $M$ extends boundedly between the associated
   radonifying function spaces when $Y$ contains no copy of $c_0$.
-* **49. Deterministic stochastic integrability.** A deterministic
+* **50. Deterministic stochastic integrability.** A deterministic
   operator-valued function $\Phi$ is integrable against $W_H$ exactly when
   its integral operator $R_\Phi:L^2(0,T;H)\to X$ is radonifying, assuming
   the scalar integrals defining $R_\Phi$ exist. Its Gaussian integral obeys
   $\mathbb E\|\int_0^T\Phi\,dW_H\|^2=\|R_\Phi\|_\gamma^2$.
-* **50. UMD Itô isomorphism.** For adapted elementary $\Phi$ in a UMD
+* **51. UMD Itô isomorphism.** For adapted elementary $\Phi$ in a UMD
   space and $1<p<\infty$,
   $$\mathbb E\sup_{t\leq T}\left\|\int_0^t\Phi\,dW_H\right\|^p
        \asymp_{p,X}\mathbb E\|R_\Phi\|_{\gamma(L^2(0,T;H),X)}^p.$$
   Completion gives the stochastic integral for limits in this norm
   ([van Neerven–Veraar–Weis, Theorem 5.5](https://arxiv.org/abs/1304.7575)).
-* **51. Martingale type-two integration bound.** If $X$ has martingale
+* **52. Martingale type-two integration bound.** If $X$ has martingale
   type two, adapted elementary processes satisfy
   $\mathbb E\|\int_0^T\Phi\,dW_H\|^2
   \leq C_X\mathbb E\int_0^T\|\Phi(t)\|_{\gamma(H,X)}^2dt$.
@@ -293,28 +303,49 @@ $\Sigma_\theta=\{z\ne0:|\arg z|<\theta\}$, and
 $\lambda(\lambda-A)^{-1}$ is uniformly bounded outside every larger sector.
 Replacing these bounds by R-bounds defines **R-sectoriality**.
 
-* **52. Laplace uniqueness and holomorphy.** Bochner Laplace transforms
+* **53. Vector-valued holomorphy.** A function $f:U\to X$ on open
+  $U\subset\mathbb C$ is norm holomorphic exactly when $x^*\circ f$ is
+  holomorphic for every $x^*\in X^*$ (Dunford); for locally bounded $f$ a
+  norming subspace of $X^*$ suffices. Cauchy's integral formula, power series
+  expansions, Liouville's theorem, and Vitali-type convergence theorems then
+  hold as in the scalar case.
+* **54. Laplace uniqueness and holomorphy.** Bochner Laplace transforms
   are holomorphic on their half-plane of absolute convergence. Equal
   transforms imply equality almost everywhere of the original locally
   integrable functions; bounded linear maps commute with transformation.
-* **53. Laplace convolution theorem.** Under exponential integrability,
+* **55. Laplace convolution theorem.** Under exponential integrability,
   $\mathcal L(k*f)(\lambda)=\mathcal Lk(\lambda)\mathcal Lf(\lambda)$,
   including operator-valued $k$ acting on $X$-valued $f$, with the displayed
   order of multiplication.
-* **54. Semigroup resolvent formula.** If $-A$ generates a $C_0$-semigroup
+* **56. Widder–Arendt theorem.** For $r\in C^\infty((0,\infty);X)$ and
+  $M\geq0$, the bounds
+  $\|\lambda^{n+1}r^{(n)}(\lambda)/n!\|\leq M$ for all $\lambda>0$,
+  $n\geq0$, hold exactly when $r(\lambda)=\lambda\int_0^\infty
+  e^{-\lambda t}F(t)\,dt$ for some $F$ with $F(0)=0$ and Lipschitz
+  constant at most $M$. If $X$ has RNP, $r$ is then the Laplace transform of
+  a function bounded by $M$. This gives a Laplace-transform proof of the
+  Hille–Yosida theorem and the theory of integrated semigroups.
+* **57. Semigroup resolvent formula.** If $-A$ generates a $C_0$-semigroup
   $S(t)$ with $\|S(t)\|\leq Me^{\omega t}$, then
   $(\lambda+A)^{-1}x=\int_0^\infty e^{-\lambda t}S(t)x\,dt$ for
   $\operatorname{Re}\lambda>\omega$.
-* **55. Sectorial holomorphic calculus.** For holomorphic $f$ on a sector
+* **58. Sectorial holomorphic calculus.** For holomorphic $f$ on a sector
   larger than that of $A$, with suitable decay at zero and infinity,
   $$f(A)=\frac1{2\pi i}\int_\Gamma f(z)(z-A)^{-1}\,dz.$$
   The construction is an algebra homomorphism and extends by regularization
   where defined. A bounded $H^\infty$ calculus means
   $\|f(A)\|\leq C\|f\|_\infty$ on such a sector.
-* **56. Bounded calculus and R-sectoriality.** On a UMD space, a sectorial
+* **59. Bounded calculus and R-sectoriality.** On a UMD space, a sectorial
   operator with bounded $H^\infty$ calculus is R-sectorial on every strictly
   larger sector. In particular, a calculus angle below $\pi/2$ yields an
   R-sectorial angle below $\pi/2$.
+* **60. Dore–Venni theorem.** Let $X$ be UMD and let $A,B$ be
+  resolvent-commuting sectorial operators, one of them invertible, with bounded
+  imaginary powers $\|A^{is}\|\leq Ke^{\theta_A|s|}$,
+  $\|B^{is}\|\leq Ke^{\theta_B|s|}$, and $\theta_A+\theta_B<\pi$. Then
+  $A+B$ on $D(A)\cap D(B)$ is closed and invertible. With $B=d/dt$ on
+  $L^p(0,T;X)$ this gives maximal regularity for $A$ of power angle below
+  $\pi/2$.
 
 For the next statements assume $A$ is invertible and sectorial with angle
 below $\pi/2$, so $e^{-tA}$ is bounded analytic and exponentially stable.
@@ -323,30 +354,30 @@ $u'+Au=f$, $u(0)=0$, has a solution in
 $W^{1,p}(0,\infty;X)\cap L^p(0,\infty;D(A))$ with
 $\|u'\|_p+\|Au\|_p\leq C\|f\|_p$.
 
-* **57. Weis characterization.** On a UMD space, maximal $L^p$ regularity
-  is equivalent to R-sectoriality with angle below $\pi/2$; it is then
-  independent of $p\in(1,\infty)$
+* **61. Weis characterization.** R-sectoriality with angle below $\pi/2$
+  is necessary for maximal $L^p$ regularity on every Banach space
+  (Clément–Prüss), and on a UMD space it is sufficient (Weis); maximal
+  regularity is independent of $p\in(1,\infty)$ in any Banach space
   ([Kunstmann–Weis, Theorem 1.11](https://www.karlin.mff.cuni.cz/~barta/ToDownload/Kunstmann-Weis2004.pdf)).
-* **58. Hilbert space maximal regularity.** On a Hilbert space, every
+* **62. Hilbert space maximal regularity.** On a Hilbert space, every
   invertible sectorial operator of angle below $\pi/2$ has maximal
   $L^p$ regularity for $1<p<\infty$ (de Simon).
-* **59. Calculus criterion for maximal regularity.** On a UMD space,
+* **63. Calculus criterion for maximal regularity.** On a UMD space,
   invertibility and a bounded $H^\infty$ calculus of angle below $\pi/2$
   imply maximal $L^p$ regularity.
-* **60. Initial trace space.** On a finite interval, the trace at zero of
+* **64. Initial trace space.** On a finite interval, the trace at zero of
   $W^{1,p}(0,T;X)\cap L^p(0,T;D(A))$ is exactly the real interpolation
   space $(X,D(A))_{1-1/p,p}$. Under maximal regularity, this is precisely
   the initial-data class for the same solution regularity with nonzero $u(0)$.
-* **61. Bounded perturbations.** If $A$ has maximal regularity and
+* **65. Bounded perturbations.** If $A$ has maximal regularity and
   $B\in\mathcal L(X)$, then $A+B$ has maximal regularity on finite
   intervals. A sufficiently large positive shift gives the corresponding
   exponentially stable half-line formulation.
-* **62. Vector-valued heat regularity.** If $X$ is UMD and $1<p,q<\infty$,
+* **66. Vector-valued heat regularity.** If $X$ is UMD and $1<p,q<\infty$,
   the zero-initial-value equation $u_t-\Delta u+u=f$ on $\mathbb R^d$
   satisfies
   $\|u_t\|_{L^p_tL^q_x(X)}+\|u\|_{L^p_tW^{2,q}_x(X)}
-  \leq C\|f\|_{L^p_tL^q_x(X)}$ on the half-line. This is a basic
-  mixed-norm application of operator-valued multiplier theory.
+  \leq C\|f\|_{L^p_tL^q_x(X)}$ on the half-line.
 
 ## Reference guide
 
@@ -355,7 +386,8 @@ martingales, UMD, and vector-valued Fourier analysis. Volume II supplies
 random-sum geometry, R-bounds, radonifying operators, and functional calculus.
 Pisier's martingale monograph independently develops the geometric and
 renorming connections. Arendt–Batty–Hieber–Neubrander gives the Laplace
-transform and Cauchy-problem route; Diestel–Uhl and the stochastic evolution
+transform and Cauchy-problem route, including vector-valued holomorphy and
+the Widder–Arendt theorem; Diestel–Uhl and the stochastic evolution
 literature supply the vector-measure and integration background.
 
 The maximal-regularity characterization and perturbation statements can also

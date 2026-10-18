@@ -3,7 +3,7 @@
 Part of the [mathematical synopsis series](SYNOPSIS.md).
 
 This synopsis selects the recurring core of Section 26 of
-[CKMA-bib.md](CKMA-bib.md) and [CKMA-bib2.md](CKMA-bib2.md). It treats
+[CKMA-bib.md](CKMA-bib.md). It treats
 weak derivatives, extension and traces, compactness and capacity, fractional
 smoothness, dyadic scales, interpolation, and the principal generalized
 integrability spaces. Inequalities also appearing in Sections 11 and 14 are
@@ -59,85 +59,97 @@ $1<p<\infty$ explicitly. Spaces are inhomogeneous unless marked otherwise.
   domains induces bounded isomorphisms of $W^{1,p}$ spaces by composition,
   with the almost-everywhere derivative chain rule. Higher orders require
   corresponding higher regularity of the map and its inverse.
-* **11. Dual representation.** For $1<p<\infty$, every functional on
+* **11. Difference quotients and Lipschitz functions.** For
+  $1<p\leq\infty$, $u\in L^p(\mathbb R^d)$ lies in $W^{1,p}$ exactly
+  when $\|u(\cdot+h)-u\|_p\leq C|h|$ for all $h$, and then
+  $C=\|\nabla u\|_p$ is admissible. In
+  particular $W^{1,\infty}_{\rm loc}$ consists of the locally Lipschitz
+  functions, which are differentiable almost everywhere (Rademacher).
+  For $p=1$ the difference condition characterizes $BV$ instead.
+* **12. Dual representation.** For $1<p<\infty$, every functional on
   $W_0^{m,p}(\Omega)$ is
   $u\mapsto\sum_{|\alpha|\leq m}\int f_\alpha\partial^\alpha u$
   for some $f_\alpha\in L^{p'}$. Its distributional form is a sum
   of derivatives of $L^{p'}$ functions, defining $W^{-m,p'}$.
-* **12. Extension theorem.** On a bounded Lipschitz domain there is a
+* **13. Extension theorem.** On a bounded Lipschitz domain there is a
   bounded linear extension $W^{m,p}(\Omega)\to W^{m,p}(\mathbb R^d)$
   for each nonnegative integer $m$, including $p=1,\infty$.
   Consequently restrictions of globally smooth functions are dense for finite $p$.
 
 ## Embeddings, norm inequalities, and compactness
 
-* **13. Sobolev embedding.** For $1\leq p<d$,
+* **14. Sobolev embedding.** For $1\leq p<d$,
   $W^{1,p}(\mathbb R^d)\hookrightarrow L^{p^*}$,
   $p^*=dp/(d-p)$, with $\|u\|_{p^*}\leq C\|\nabla u\|_p$.
   Bounded Lipschitz domains have the corresponding inhomogeneous estimate.
-* **14. Higher-order Sobolev embedding.** If $mp<d$,
+* **15. Higher-order Sobolev embedding.** If $mp<d$,
   $W^{m,p}(\mathbb R^d)\hookrightarrow L^{dp/(d-mp)}$.
   More generally $W^{m,p}\hookrightarrow W^{k,q}$ when
   $1/q=1/p-(m-k)/d>0$ in the usual finite-exponent range.
-* **15. Critical embedding.** On bounded Lipschitz domains,
+* **16. Critical embedding.** On bounded Lipschitz domains,
   $W^{1,d}\hookrightarrow L^q$ for every finite $q$.
   For $d\geq2$ it does not embed into $L^\infty$; the endpoint
   exponential integrability is given by Moser–Trudinger.
-* **16. Morrey embedding.** If $p>d$, then
+* **17. Morrey embedding.** If $p>d$, then
   $W^{1,p}(\Omega)\hookrightarrow C^{0,1-d/p}(\overline\Omega)$
   on bounded Lipschitz domains. Higher-order versions apply after
   differentiating when the remaining Sobolev order exceeds $d/p$.
-* **17. Rellich–Kondrachov compactness.** On bounded Lipschitz domains,
+* **18. Rellich–Kondrachov compactness.** On bounded Lipschitz domains,
   $W^{1,p}\hookrightarrow L^q$ is compact for $q<p^*$ when $p<d$,
   and for every finite $q$ when $p=d$. For $p>d$ it is compact into
   $C^{0,\beta}$ for $0\leq\beta<1-d/p$.
-* **18. Poincaré inequalities.** On bounded connected Lipschitz domains,
+* **19. Poincaré inequalities.** On bounded connected Lipschitz domains,
   $\|u-u_\Omega\|_p\leq C\|\nabla u\|_p$.
-  On $W_0^{1,p}$, $\|u\|_p\leq C\|\nabla u\|_p$.
-  Thus the gradient norm controls the full norm after fixing constants
-  or zero boundary values.
-* **19. Lorentz refinement.** For $1<p<d$,
+  On $W_0^{1,p}$, $\|u\|_p\leq C\|\nabla u\|_p$ for every bounded
+  open $\Omega$.
+* **20. Lorentz refinement.** For $1<p<d$,
   $\|u\|_{L^{p^*,p}(\mathbb R^d)}\leq C\|\nabla u\|_p$.
   At $p=1$, $W^{1,1}$ embeds into $L^{d/(d-1),1}$ for $d>1$.
-* **20. Gagliardo–Nirenberg inequality.** For $1\leq p<d$,
+* **21. Gagliardo–Nirenberg inequality.** For $1\leq p<d$,
   $1\leq r\leq q\leq p^*$ and
   $1/q=\theta(1/p-1/d)+(1-\theta)/r$,
   $\|u\|_q\leq C\|\nabla u\|_p^\theta\|u\|_r^{1-\theta}$
   for smooth compactly supported $u$, and by density wherever the norms are finite.
-* **21. Sobolev algebra theorem.** For integer $m$ and $mp>d$,
+* **22. Sobolev algebra theorem.** For integer $m$ and $mp>d$,
   $W^{m,p}(\mathbb R^d)$ is a Banach algebra under pointwise
   multiplication, up to an equivalent norm; the same holds on bounded
   extension domains.
-* **22. Fréchet–Kolmogorov criterion.** A bounded subset of
+* **23. Fréchet–Kolmogorov criterion.** A bounded subset of
   $L^p(\mathbb R^d)$, $p<\infty$, is relatively compact exactly when
   translations tend uniformly to zero in norm and its $L^p$ mass is
   uniformly small outside large balls.
 
 ## Traces and zero boundary values
 
-* **23. First-order trace theorem.** For bounded Lipschitz $\Omega$ and
+* **24. First-order trace theorem.** For bounded Lipschitz $\Omega$ and
   $1<p<\infty$, restriction extends to a bounded surjection
   $W^{1,p}(\Omega)\to B^{1-1/p}_{p,p}(\partial\Omega)$ with a bounded
-  linear right inverse. For $p=2$ the range is $H^{1/2}$.
-* **24. Higher traces on smooth boundaries.** On bounded smooth domains,
+  linear right inverse. For $p=2$ the range is $H^{1/2}$. For $p=1$ the
+  trace maps $W^{1,1}(\Omega)$ onto $L^1(\partial\Omega)$ (Gagliardo), but
+  no bounded linear right inverse exists (Peetre).
+* **25. Higher traces on smooth boundaries.** On bounded smooth domains,
   the normal traces $\partial_n^ju$, $0\leq j<m$, map $W^{m,p}$
   boundedly to $B^{m-j-1/p}_{p,p}(\partial\Omega)$ for $1<p<\infty$.
   The joint normal-jet map has a bounded right inverse.
-* **25. Kernel of the trace.** For bounded Lipschitz domains,
-  $W_0^{1,p}=\ker\gamma$ for $1<p<\infty$. On smooth domains,
+* **26. Kernel of the trace.** For bounded Lipschitz domains,
+  $W_0^{1,p}=\ker\gamma$ for $1\leq p<\infty$. On smooth domains,
   $W_0^{m,p}$ is characterized by vanishing of all normal traces
   of orders $0,\ldots,m-1$.
-* **26. Zero extension.** If $u\in W_0^{m,p}(\Omega)$, extension by
+* **27. Zero extension.** If $u\in W_0^{m,p}(\Omega)$, extension by
   zero belongs to $W^{m,p}(\mathbb R^d)$ and commutes with weak
   derivatives. For first order on Lipschitz domains, the converse holds
   for $1<p<\infty$.
-* **27. Green formula with traces.** On bounded Lipschitz domains,
+* **28. Green formula with traces.** On bounded Lipschitz domains,
   $\int_\Omega(u\partial_jv+v\partial_ju)=
   \int_{\partial\Omega}\gamma u\,\gamma v\,n_j$
   for $u\in W^{1,p}$, $v\in W^{1,p'}$, $1<p<\infty$.
-* **28. Trace Sobolev exponent.** For $1<p<d$,
+* **29. Trace Sobolev exponent.** For $1<p<d$,
   $W^{1,p}(\Omega)\hookrightarrow L^{p(d-1)/(d-p)}(\partial\Omega)$.
   The trace embedding is compact at smaller finite exponents.
+* **30. Hardy inequality.** For bounded Lipschitz $\Omega$ and
+  $1<p<\infty$, $\|u/\operatorname{dist}(\cdot,\partial\Omega)\|_p
+  \leq C\|\nabla u\|_p$ for $u\in W_0^{1,p}(\Omega)$. On a half-space
+  or a convex domain the sharp constant is $p/(p-1)$.
 
 ## Capacity and fine representatives
 
@@ -146,25 +158,24 @@ capacity generated by the infimum of $\|v\|_{W^{1,p}(\mathbb R^d)}^p$
 over smooth functions at least one near a compact set. A property holds
 **quasi-everywhere** if its exceptional set has zero capacity.
 
-* **29. Quasicontinuity.** Every $W^{1,p}(\mathbb R^d)$ function has
+* **31. Quasicontinuity.** Every $W^{1,p}(\mathbb R^d)$ function has
   a representative continuous outside an open set of arbitrarily small
   $C_{1,p}$ capacity. This representative is unique quasi-everywhere.
-* **30. Capacitary convergence.** From convergence in $W^{1,p}$ one
+* **32. Capacitary convergence.** From convergence in $W^{1,p}$ one
   can extract a subsequence of quasicontinuous representatives converging
-  pointwise quasi-everywhere. Capacity therefore controls exceptional sets
-  more finely than Lebesgue measure.
-* **31. Arbitrary-domain zero boundary criterion.** For any open
+  pointwise quasi-everywhere.
+* **33. Havin–Bagby zero boundary criterion.** For any open
   $\Omega$, $u\in W_0^{1,p}(\Omega)$ exactly when it is the restriction
   of a global $W^{1,p}$ function whose quasicontinuous representative
   vanishes quasi-everywhere on $\mathbb R^d\setminus\Omega$.
-* **32. Approximate differentiability.** $W^{1,1}_{\rm loc}$ functions
+* **34. Approximate differentiability.** $W^{1,1}_{\rm loc}$ functions
   are approximately differentiable almost everywhere, and their approximate
-  gradients agree with weak gradients. Ordinary pointwise differentiability
-  in all directions is a stronger assertion.
-* **33. Lusin approximation.** On a bounded Lipschitz domain, a Sobolev
+  gradients agree with weak gradients. For $p>d$, $W^{1,p}_{\rm loc}$
+  functions are classically differentiable almost everywhere; for
+  $d\geq2$ and $p\leq d$ continuous representatives need not exist.
+* **35. Lusin approximation.** On a bounded Lipschitz domain, a Sobolev
   function with finite $p$ can be approximated in $W^{1,p}$ by Lipschitz
   functions agreeing with it outside sets whose measure tends to zero.
-  This connects weak derivatives with classical Lipschitz differentiation.
 
 ## Fractional Sobolev spaces and nonlocal energies
 
@@ -175,33 +186,35 @@ with norm $\|u\|_p+[u]_{W^{s,p}}$. The Bessel potential space
 $H^{s,p}(\mathbb R^d)$ is defined by
 $\|(I-\Delta)^{s/2}u\|_p<\infty$ through tempered distributions.
 
-* **34. Completeness and density.** $W^{s,p}$ is Banach and is reflexive
+* **36. Completeness and density.** $W^{s,p}$ is Banach and is reflexive
   for $1<p<\infty$. Smooth compactly supported functions are dense
   in $W^{s,p}(\mathbb R^d)$ for finite $p$.
-* **35. Fractional Hilbert identity.** $W^{s,2}(\mathbb R^d)=H^{s,2}$
+* **37. Fractional Hilbert identity.** $W^{s,2}(\mathbb R^d)=H^{s,2}$
   with equivalent norms; the Gagliardo energy equals a positive constant
   times $\int|\xi|^{2s}|\widehat u(\xi)|^2d\xi$.
-* **36. Fractional Laplacian formula.** For Schwartz $u$ and $0<s<1$,
+* **38. Fractional Laplacian formula.** For Schwartz $u$ and $0<s<1$,
   $(-\Delta)^su(x)=c_{d,s}\operatorname{p.v.}\int
   (u(x)-u(y))/|x-y|^{d+2s}\,dy$, with the positive normalization
   giving Fourier symbol $|\xi|^{2s}$. Its quadratic energy is
   $c_{d,s}[u]_{W^{s,2}}^2/2$.
-* **37. Fractional Sobolev embedding.** If $sp<d$,
+* **39. Fractional Sobolev embedding.** If $sp<d$,
   $W^{s,p}(\mathbb R^d)\hookrightarrow L^{dp/(d-sp)}$;
   if $sp>d$, it embeds into $C^{0,s-d/p}$.
   Bounded Lipschitz domains have the corresponding extension and embedding results.
-* **38. Fractional compactness.** On bounded Lipschitz domains,
+* **40. Fractional compactness.** On bounded Lipschitz domains,
   $W^{s,p}\hookrightarrow L^q$ is compact for $q<dp/(d-sp)$
   when $sp<d$, and for every finite $q$ when $sp\geq d$.
-* **39. Nonlocal Poincaré inequality.** For bounded connected Lipschitz
+* **41. Nonlocal Poincaré inequality.** For bounded connected Lipschitz
   $\Omega$, $\|u-u_\Omega\|_p\leq C[u]_{W^{s,p}(\Omega)}$.
   For globally defined functions vanishing outside a fixed bounded domain,
   the full-space Gagliardo seminorm controls the $L^p$ norm.
-* **40. Bourgain–Brezis–Mironescu limit.** For $u\in W^{1,p}(\mathbb R^d)$,
+* **42. Bourgain–Brezis–Mironescu limit.** For $u\in W^{1,p}(\mathbb R^d)$,
   $$\lim_{s\uparrow1}(1-s)[u]_{W^{s,p}}^p
      =\frac1p\left(\int_{S^{d-1}}|\omega_1|^pd\omega\right)
                        \int|\nabla u|^p.$$
-  This identifies the normalized nonlocal energy with the local gradient energy.
+  Conversely, for $1<p<\infty$, $u\in L^p$ with finite
+  $\liminf_{s\uparrow1}(1-s)[u]_{W^{s,p}}^p$ belongs to $W^{1,p}$; for
+  $p=1$ the same condition characterizes $BV$ (Dávila).
 
 ## Besov and Triebel–Lizorkin scales
 
@@ -214,43 +227,43 @@ $\|u\|_{F^s_{p,q}}=\|(\sum_j|2^{js}\Delta_ju|^q)^{1/q}\|_p$.
 Use the supremum for $q=\infty$. Below Besov parameters are at least one,
 and Triebel–Lizorkin assertions use $1<p<\infty$, unless otherwise stated.
 
-* **41. Dyadic norm independence.** Different admissible dyadic partitions
+* **43. Dyadic norm independence.** Different admissible dyadic partitions
   give equivalent norms and the same spaces. For real $s$, the indicated
   Banach ranges are complete spaces of tempered distributions.
-* **42. Bernstein inequality.** If the Fourier support is in a ball of
+* **44. Bernstein inequality.** If the Fourier support is in a ball of
   radius $C2^j$, then for $1\leq p\leq r\leq\infty$,
   $\|\partial^\alpha u\|_r\leq C_\alpha
   2^{j(|\alpha|+d(1/p-1/r))}\|u\|_p$.
-* **43. Difference characterization.** For $0<s<1$ and finite $p$,
+* **45. Difference characterization.** For $0<s<1$ and finite $p$,
   $W^{s,p}=B^s_{p,p}$. More generally differences of integer order
   $m>s>0$, integrated against $|h|^{-sq-d}dh$, characterize
   $B^s_{p,q}$, with the usual supremum for $q=\infty$.
-* **44. Bessel and Sobolev identifications.**
+* **46. Bessel and Sobolev identifications.**
   $H^{s,p}=F^s_{p,2}$ for real $s$ and $1<p<\infty$;
   for nonnegative integer $m$, $W^{m,p}=H^{m,p}$.
   For $p\ne2$, fractional Gagliardo and Bessel spaces need not coincide.
-* **45. Hölder–Zygmund identification.** For positive noninteger $s$,
+* **47. Hölder–Zygmund identification.** For positive noninteger $s$,
   $B^s_{\infty,\infty}$ is the bounded Hölder space $C^s$.
   At positive integers it is the Zygmund class, which is larger than
   the corresponding bounded classical differentiability class.
-* **46. Lifting isomorphism.** $(I-\Delta)^{t/2}$ maps
+* **48. Lifting isomorphism.** $(I-\Delta)^{t/2}$ maps
   $B^s_{p,q}$ isomorphically onto $B^{s-t}_{p,q}$ and
   $F^s_{p,q}$ onto $F^{s-t}_{p,q}$ in the indicated ranges.
-* **47. Fine-index embeddings.** If $q_0\leq q_1$, then
+* **49. Fine-index embeddings.** If $q_0\leq q_1$, then
   $B^s_{p,q_0}\hookrightarrow B^s_{p,q_1}$ and
   $F^s_{p,q_0}\hookrightarrow F^s_{p,q_1}$. Also
   $B^s_{p,\min(p,q)}\hookrightarrow F^s_{p,q}
   \hookrightarrow B^s_{p,\max(p,q)}$.
-* **48. Sobolev-index embedding.** If $p_0\leq p_1$ and
+* **50. Sobolev-index embedding.** If $p_0\leq p_1$ and
   $s_0-d/p_0=s_1-d/p_1$, then
   $B^{s_0}_{p_0,q}\hookrightarrow B^{s_1}_{p_1,q}$.
   In particular $s>d/p$ gives continuous bounded representatives.
-* **49. Besov trace.** For $1<p,q<\infty$ and $s>1/p$, restriction
+* **51. Besov trace.** For $1<p,q<\infty$ and $s>1/p$, restriction
   to a hyperplane is a bounded surjection
   $B^s_{p,q}(\mathbb R^d)\to B^{s-1/p}_{p,q}(\mathbb R^{d-1})$
   with a bounded right inverse. For $F^s_{p,q}$ the trace range is
   $B^{s-1/p}_{p,p}$.
-* **50. Besov algebra theorem.** $B^s_{p,q}\cap L^\infty$ satisfies
+* **52. Besov algebra theorem.** $B^s_{p,q}\cap L^\infty$ satisfies
   a product estimate controlled by the two $L^\infty$ norms and Besov
   norms when $s>0$. Hence $B^s_{p,q}$ is an algebra for $s>d/p$,
   and at $s=d/p>0$ when $q=1$.
@@ -266,53 +279,54 @@ The **complex interpolation space** $[X_0,X_1]_\theta$ consists of
 values at $\theta$ of bounded analytic strip functions with boundary
 values in $X_0$ and $X_1$, with the infimum boundary norm.
 
-* **51. Real interpolation theorem.** An operator bounded
+* **53. Real interpolation theorem.** An operator bounded
   $X_i\to Y_i$ with norms $M_i$ acts boundedly between the real
   interpolation spaces with bound at most $M_0^{1-\theta}M_1^\theta$.
-* **52. Complex interpolation theorem.** The same operator bound holds
+* **54. Complex interpolation theorem.** The same operator bound holds
   between complex interpolation spaces, by the three-lines theorem.
-* **53. K–J equivalence.** Real interpolation can equivalently be
+* **55. K–J equivalence.** Real interpolation can equivalently be
   described by representations $x=\int_0^\infty u(t)dt/t$,
   $u(t)\in X_0\cap X_1$, controlling
   $t^{-\theta}\max(\|u(t)\|_{X_0},t\|u(t)\|_{X_1})$ in $L^q(dt/t)$.
-* **54. Reiteration theorem.** For $0<\theta_0<\theta_1<1$,
+* **56. Reiteration theorem.** For $0<\theta_0<\theta_1<1$,
   $0<\eta<1$, and admissible $q,q_0,q_1$,
   $$((X_0,X_1)_{\theta_0,q_0},(X_0,X_1)_{\theta_1,q_1})_{\eta,q}
        =(X_0,X_1)_{(1-\eta)\theta_0+\eta\theta_1,q}$$
   with equivalent norms.
-* **55. Real interpolation duality.** If $X_0\cap X_1$ is dense in
+* **57. Real interpolation duality.** If $X_0\cap X_1$ is dense in
   both endpoints and $1\leq q<\infty$, then
   $((X_0,X_1)_{\theta,q})^*=(X_0^*,X_1^*)_{\theta,q'}$
   with equivalent norms under the natural pairing.
-* **56. Riesz–Thorin theorem.** Bounds $T:L^{p_i}\to L^{q_i}$
+* **58. Riesz–Thorin theorem.** Bounds $T:L^{p_i}\to L^{q_i}$
   interpolate with reciprocal exponents affine in $\theta$ and norm
   at most $M_0^{1-\theta}M_1^\theta$, including the standard infinite
   endpoint exponents.
-* **57. Marcinkiewicz interpolation.** A sublinear operator of weak
+* **59. Marcinkiewicz interpolation.** A sublinear operator of weak
   types $(p_0,p_0)$ and $(p_1,p_1)$, $1\leq p_0<p_1<\infty$,
   is strongly bounded on $L^p$ for $p_0<p<p_1$.
-* **58. Lorentz interpolation.** For $1\leq p_0<p_1\leq\infty$,
+* **60. Lorentz interpolation.** For $1\leq p_0<p_1\leq\infty$,
   $(L^{p_0},L^{p_1})_{\theta,q}=L^{p,q}$,
   $1/p=(1-\theta)/p_0+\theta/p_1$. Here
   $\|f\|_{p,q}$ is equivalent to
   $\|t^{1/p}f^*(t)\|_{L^q(dt/t)}$, with $f^*$ the decreasing rearrangement.
-* **59. Complex $L^p$ interpolation.**
+* **61. Complex $L^p$ interpolation.**
   $[L^{p_0},L^{p_1}]_\theta=L^p$ with reciprocal exponents as above
   on a $\sigma$-finite measure space, for $1\leq p_0,p_1\leq\infty$.
-* **60. Bessel potential interpolation.** For $1<p<\infty$,
+* **62. Bessel potential interpolation.** For $1<p<\infty$,
   $[H^{s_0,p},H^{s_1,p}]_\theta=H^{(1-\theta)s_0+\theta s_1,p}$.
   Extension and restriction transfer the usual smooth-domain versions.
-* **61. Sobolev real interpolation.** For integers $0\leq m_0<m_1$,
+* **63. Sobolev real interpolation.** For integers $0\leq m_0<m_1$,
   $1<p<\infty$, and $s=(1-\theta)m_0+\theta m_1$,
   $(W^{m_0,p},W^{m_1,p})_{\theta,q}=B^s_{p,q}$ on $\mathbb R^d$.
   This remains a Besov statement when $s$ is an integer.
-* **62. Besov reiteration in smoothness.** For $s_0<s_1$,
+* **64. Besov reiteration in smoothness.** For $s_0<s_1$,
   $(B^{s_0}_{p,q_0},B^{s_1}_{p,q_1})_{\theta,q}
   =B^{(1-\theta)s_0+\theta s_1}_{p,q}$ with equivalent norms.
-* **63. Real interpolation of compactness.** If $T:X_0\to Y_0$ is
+* **65. Real interpolation of compactness.** If $T:X_0\to Y_0$ is
   compact and $T:X_1\to Y_1$ bounded, it is compact between the
   corresponding real interpolation spaces for $0<\theta<1$,
-  $1\leq q<\infty$. This is the Lions–Peetre compactness theorem.
+  $1\leq q<\infty$. Lions and Peetre proved this when the two source
+  spaces or the two target spaces coincide; the general case is Cwikel's.
 
 ## Orlicz and variable-exponent spaces
 
@@ -327,35 +341,35 @@ For measurable $1\leq p(x)<\infty$, **variable Lebesgue space** $L^{p(\cdot)}$ u
 the modular $\rho(f)=\int|f(x)|^{p(x)}dx$ and its Luxemburg norm.
 Write $p_-=\operatorname{ess\,inf}p$, $p_+=\operatorname{ess\,sup}p$.
 
-* **64. Orlicz completeness and Hölder inequality.** $L^\Phi$ is Banach,
+* **66. Orlicz completeness and Hölder inequality.** $L^\Phi$ is Banach,
   and $\int|fg|\leq2\|f\|_\Phi\|g\|_\Psi$.
   Its Köthe associate is $L^\Psi$ with the equivalent Orlicz dual norm.
-* **65. Growth conditions and reflexivity.** If complementary N-functions
+* **67. Growth conditions and reflexivity.** If complementary N-functions
   $\Phi,\Psi$ both satisfy the global doubling condition
   $\Phi(2t)\leq C\Phi(t)$ and its counterpart for $\Psi$, then their
   Orlicz spaces are reflexive and the usual integral duality gives their
   full Banach duals. Without such growth conditions singular functionals
   may occur.
-* **66. Variable-exponent duality.** If $1<p_-\leq p_+<\infty$,
+* **68. Variable-exponent duality.** If $1<p_-\leq p_+<\infty$,
   $L^{p(\cdot)}$ is separable and reflexive, with dual
   $L^{p'(\cdot)}$ under integration, up to equivalent norms.
   The variable Hölder bound holds with constant at most two.
-* **67. Norm–modular comparison.** For $p_+<\infty$,
+* **69. Norm–modular comparison.** For $p_+<\infty$,
   $$\min(\|f\|^{p_-},\|f\|^{p_+})\leq\rho(f)
        \leq\max(\|f\|^{p_-},\|f\|^{p_+}),$$
   with the variable Lebesgue norm. Thus convergence in norm and
   convergence of the difference modular to zero are equivalent.
-* **68. Variable maximal theorem.** If $1<p_-\leq p_+<\infty$ and
+* **70. Variable maximal theorem.** If $1<p_-\leq p_+<\infty$ and
   $p$ is globally log-Hölder continuous, the Hardy–Littlewood maximal
   operator is bounded on $L^{p(\cdot)}(\mathbb R^d)$. The condition
   controls $|p(x)-p(y)|$ by $C/\log(e+1/|x-y|)$ locally and
   $|p(x)-p_\infty|$ by $C/\log(e+|x|)$ at infinity.
-* **69. Variable Sobolev embedding.** On a bounded Lipschitz domain,
+* **71. Variable Sobolev embedding.** On a bounded Lipschitz domain,
   for log-Hölder $p$ with $1<p_-\leq p_+<d$,
   $W^{1,p(\cdot)}\hookrightarrow L^{p^*(\cdot)}$,
   where $p^*(x)=dp(x)/(d-p(x))$. Uniformly subcritical continuous
   target exponents give compact embeddings.
-* **70. Variable smooth density.** Under these log-Hölder assumptions,
+* **72. Variable smooth density.** Under these log-Hölder assumptions,
   smooth functions are dense in $W^{1,p(\cdot)}$ on a Lipschitz
   domain, and compactly supported smooth functions generate its
   zero-boundary space. Arbitrary measurable exponents need not admit
@@ -370,14 +384,13 @@ $\sup_{B(x,r)}r^{-\alpha}(\fint_{B(x,r)}|f-f_B|^p)^{1/p}$.
 These spaces describe local size and oscillation separately from ordinary
 global integrability.
 
-* **71. Campanato–Hölder equivalence.** For $0<\alpha<1$ and finite
+* **73. Campanato–Hölder equivalence.** For $0<\alpha<1$ and finite
   $p\geq1$, finiteness of the Campanato seminorm is equivalent, modulo
   constants and almost-everywhere representatives, to $\alpha$-Hölder
   continuity. The seminorms are equivalent.
-* **72. BMO endpoint.** At $\alpha=0$, the Campanato seminorms for all
+* **74. BMO endpoint.** At $\alpha=0$, the Campanato seminorms for all
   finite $p\geq1$ are equivalent to the BMO seminorm, by the
-  John–Nirenberg exponential-integrability theorem. The endpoint describes
-  controlled mean oscillation rather than bounded pointwise oscillation.
+  John–Nirenberg exponential-integrability theorem.
 
 ## Reference guide
 

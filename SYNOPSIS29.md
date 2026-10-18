@@ -3,7 +3,7 @@
 Part of the [mathematical synopsis series](SYNOPSIS.md).
 
 This synopsis selects recurring mathematical content in Section 29 of
-[CKMA-bib.md](CKMA-bib.md) and [CKMA-bib2.md](CKMA-bib2.md). It covers
+[CKMA-bib.md](CKMA-bib.md). It covers
 stable expansions in Hilbert spaces, multiresolution and wavelets, continuous
 and discrete time–frequency analysis, sampling, and the basic sparse-recovery
 principles shared by the later references. Algorithmic and engineering
@@ -43,8 +43,8 @@ for its closed linear span.
   $f=A^{-1}\sum_k\langle f,f_k\rangle f_k$.
 * **5. Minimal coefficient norm.** Among all $c\in\ell^2$ satisfying
   $C^*c=f$, the canonical coefficients
-  $(\langle f,S^{-1}f_k\rangle)$ uniquely minimize $\|c\|_2$.
-  Every other solution differs by an element of $\ker C^*$.
+  $(\langle f,S^{-1}f_k\rangle)$ uniquely minimize $\|c\|_2$;
+  they are the unique solution in $\operatorname{ran}C=(\ker C^*)^\perp$.
 * **6. Riesz basis characterization.** A complete sequence is a Riesz
   basis exactly when
   $A\sum|c_k|^2\leq\|\sum c_kf_k\|^2\leq B\sum|c_k|^2$
@@ -56,7 +56,7 @@ for its closed linear span.
 * **8. Dual-frame criterion.** Bessel sequences $(f_k),(g_k)$ are dual
   exactly when $D_fC_g=I$, where $D_f$ denotes synthesis. Then also
   $D_gC_f=I$, and both reconstruction formulas hold unconditionally.
-* **9. Frame perturbation.** If $(f_k)$ has lower bound $A$ and
+* **9. Frame perturbation.** If $(f_k)$ is a frame with bounds $A,B$ and
   $\sum_k|\langle f,f_k-g_k\rangle|^2\leq\varepsilon\|f\|^2$
   with $\varepsilon<A$, then $(g_k)$ is a frame with bounds
   $(\sqrt A-\sqrt\varepsilon)^2$ and
@@ -94,42 +94,68 @@ $(\phi(\cdot-k))_k$ of $V_0$.
   $|m_0(\xi)|^2+|m_0(\xi+1/2)|^2=1$ almost everywhere.
   For the usual integrable normalized scaling function,
   $\widehat\phi(0)=1$ and $m_0(0)=1$.
-* **16. Wavelet construction from an MRA.** Setting
+* **16. Scaling functions from filters.** Let $m_0$ be a trigonometric
+  polynomial with $m_0(0)=1$ satisfying the quadrature mirror identity,
+  with $h_k=0$ outside $N_1\leq k\leq N_2$. Then
+  $\widehat\phi(\xi)=\prod_{j\geq1}m_0(2^{-j}\xi)$ converges locally
+  uniformly and defines $\phi\in L^2$ supported in $[N_1,N_2]$.
+  If moreover $m_0$ has no zero on $[-1/6,1/6]$ (Cohen's condition;
+  Lawton's eigenvalue condition is necessary and sufficient), the
+  translates $\phi(\cdot-k)$ are orthonormal and $\phi$ generates an MRA.
+  Without such a condition $\phi$ may fail this, as for
+  $m_0(\xi)=(1+e^{-6\pi i\xi})/2$, $\phi=\frac13 1_{[0,3)}$.
+* **17. Wavelet construction from an MRA.** Setting
   $g_k=(-1)^k\overline{h_{1-k}}$ and
   $\psi(t)=\sqrt2\sum_kg_k\phi(2t-k)$ gives an orthonormal
   basis $(\psi(\cdot-k))_k$ of $W_0$ and hence an orthonormal wavelet.
-* **17. Haar basis.** The functions
+* **18. Characterization of orthonormal wavelets.** A function
+  $\psi\in L^2(\mathbb R)$ with $\|\psi\|_2=1$ is an orthonormal wavelet
+  exactly when, almost everywhere,
+  $\sum_{j\in\mathbb Z}|\widehat\psi(2^j\xi)|^2=1$ and
+  $\sum_{j\geq0}\widehat\psi(2^j\xi)\overline{\widehat\psi(2^j(\xi+q))}=0$
+  for every odd integer $q$. It arises from an MRA exactly when
+  $\sum_{j\geq1}\sum_{k\in\mathbb Z}|\widehat\psi(2^j(\xi+k))|^2=1$
+  almost everywhere (Gripenberg–Wang); non-MRA wavelets exist.
+* **19. Haar basis.** The functions
   $\phi=1_{[0,1)}$ and $\psi=1_{[0,1/2)}-1_{[1/2,1)}$
   generate an MRA and the Haar orthonormal basis of $L^2(\mathbb R)$.
   On $[0,1]$, add the constant function to the nonnegative-scale Haar
   functions.
-* **18. Smooth wavelet existence.** There are orthonormal wavelets in
+* **20. Smooth wavelet existence.** There are orthonormal wavelets in
   $\mathcal S(\mathbb R)$ whose Fourier transforms are smooth and
   supported in an annulus. They have vanishing moments of every order.
-* **19. Compactly supported wavelets.** For every positive integer $N$
-  there are real compactly supported orthonormal wavelets with $N$
-  vanishing moments and finite refinement filters. The attainable
-  regularity tends to infinity with appropriate increasing filter orders.
-* **20. Vanishing moments and polynomial cancellation.** If
+* **21. Daubechies wavelets.** For every integer $N\geq1$ there is a
+  real orthonormal wavelet with support of length $2N-1$ and $N$
+  vanishing moments, from a filter $h_0,\ldots,h_{2N-1}$; $N=1$ gives
+  Haar. Its Hölder regularity grows like $\mu N$ with
+  $\mu=1-\log3/(2\log2)\approx0.21$. A compactly supported orthonormal
+  wavelet cannot be $C^\infty$, and among real compactly supported
+  orthonormal wavelets only the Haar wavelet is symmetric or
+  antisymmetric about some point.
+* **22. Vanishing moments and polynomial cancellation.** If
   $\int t^m\psi(t)dt=0$ for $0\leq m<N$, then every wavelet
   coefficient of a polynomial of degree below $N$ is zero wherever the
   pairing is defined. Equivalently $\widehat\psi$ vanishes to order
-  at least $N$ at zero when the moments exist.
-* **21. Coefficient decay for smooth functions.** If $f\in C^N$ near
+  at least $N$ at zero when the moments exist. Conversely, an orthonormal
+  wavelet in $C^{N-1}$ with bounded derivatives and
+  $|\psi(t)|\leq C(1+|t|)^{-N-\varepsilon}$ has $N$ vanishing moments.
+* **23. Coefficient decay for smooth functions.** If $f\in C^N$ near
   the support of a compactly supported $N$-moment wavelet, then
   $|\langle f,\psi_{j,k}\rangle|
   \leq C2^{-j(N+1/2)}\sup_{\operatorname{supp}\psi_{j,k}}|f^{(N)}|$.
-* **22. Perfect reconstruction filter banks.** The low- and high-pass
+  For the orthogonal projection $P_j$ onto $V_j$ of such an MRA,
+  $\|f-P_jf\|_2\leq C2^{-jN}\|f^{(N)}\|_2$ for $f\in H^N(\mathbb R)$.
+* **24. Perfect reconstruction filter banks.** The low- and high-pass
   filters arising from an orthonormal MRA define a unitary map from
   fine-scale scaling coefficients to coarse scaling and detail
   coefficients. Its adjoint reconstructs the fine-scale coefficients,
   preserving the sum of squared coefficients.
-* **23. Biorthogonal wavelets.** Dual multiresolutions with
+* **25. Biorthogonal wavelets.** Dual multiresolutions with
   biorthogonal scaling and wavelet systems, and uniform Riesz bounds,
   yield dual Riesz bases. Each function is reconstructed by pairing
   with one system and synthesizing with the other; compact support and
   symmetry need not be tied to orthogonality.
-* **24. Tensor products.** Tensoring a one-dimensional MRA gives an
+* **26. Tensor products.** Tensoring a one-dimensional MRA gives an
   MRA on $\mathbb R^d$ with $2^d-1$ wavelet types per dyadic scale.
   The resulting translates and dilates form an orthonormal basis.
 
@@ -141,42 +167,40 @@ decay, and vanishing moments sufficiently large for the indicated parameters.
 Compactly supported wavelets with more than $|s|$ derivatives and moments
 suffice in the Banach ranges below.
 
-* **25. Unconditional $L^p$ bases.** A sufficiently regular orthonormal
+* **27. Unconditional $L^p$ bases.** A sufficiently regular orthonormal
   wavelet basis is unconditional in $L^p(\mathbb R)$ for $1<p<\infty$.
   Its square function
   $(\sum_{j,k}|c_{j,k}|^2 2^j1_{[2^{-j}k,2^{-j}(k+1))})^{1/2}$
   has norm equivalent to $\|f\|_p$, with the low-frequency part added.
-* **26. Sobolev coefficient norms.** For real $s$ in the wavelet's
+* **28. Sobolev coefficient norms.** For real $s$ in the wavelet's
   regularity range,
   $\|f\|_{H^s}^2\asymp\sum_k|a_k|^2+
   \sum_{j\geq0,k}2^{2js}|c_{j,k}|^2$.
-* **27. Besov characterization.** For $1\leq p,q\leq\infty$,
+* **29. Besov characterization.** For $1\leq p,q\leq\infty$,
   $$
   \|f\|_{B^s_{p,q}}\asymp\|(a_k)\|_{\ell^p}
   +\left\|\left(2^{j(s+1/2-1/p)}
         \|(c_{j,k})_k\|_{\ell^p}\right)_{j\geq0}\right\|_{\ell^q}.
   $$
   This describes expansions in the distributional sense at endpoints.
-* **28. Triebel–Lizorkin characterization.** For $1<p<\infty$,
+* **30. Triebel–Lizorkin characterization.** For $1<p<\infty$,
   $1\leq q<\infty$, the $F^s_{p,q}$ norm is equivalent to the
   low-frequency norm plus
   $\|(\sum_{j,k}(2^{j(s+1/2)}|c_{j,k}|1_{I_{j,k}})^q)^{1/q}\|_p$,
   where $I_{j,k}=[2^{-j}k,2^{-j}(k+1))$.
-* **29. Hardy-space square functions.** For sufficiently regular
+* **31. Hardy-space square functions.** For sufficiently regular
   wavelets, the $L^1$ norm of the wavelet square function is equivalent
   to the real $H^1$ norm. Cancellation is built into the expansion.
-* **30. BMO coefficient condition.** For a regular homogeneous wavelet
+* **32. BMO coefficient condition.** For a regular homogeneous wavelet
   basis, coefficients $c_I$ represent a BMO function, unique modulo
   constants, exactly when
   $\sup_J|J|^{-1}\sum_{I\subset J}|c_I|^2<\infty$ over dyadic
   intervals $J$. Its square root is an equivalent BMO seminorm.
-  Homogeneous distribution expansions are taken modulo polynomials;
-  the coefficient condition selects their BMO representative.
-* **31. Best $n$-term approximation in $L^2$.** In an orthonormal basis,
+* **33. Best $n$-term approximation in $L^2$.** In an orthonormal basis,
   retaining the $n$ largest coefficients minimizes the $L^2$ error
   among all $n$-term approximants. The squared error is the sum of
   squares of the discarded coefficients.
-* **32. Stechkin estimate.** If the coefficient sequence belongs to
+* **34. Stechkin estimate.** If the coefficient sequence belongs to
   $\ell^\tau$, $0<\tau<2$, then the best $n$-term error is at most
   $C_\tau n^{1/2-1/\tau}\|c\|_{\ell^\tau}$.
   Wavelet Besov norms turn this sequence estimate into spatial
@@ -189,34 +213,42 @@ $V_gf(x,\omega)=\langle f,M_\omega T_xg\rangle$.
 For continuous wavelets write
 $\psi_{a,b}(t)=|a|^{-1/2}\psi((t-b)/a)$ with $a\ne0$.
 
-* **33. Continuous wavelet isometry.** If
+* **35. Continuous wavelet isometry.** If
   $0<C_\psi=\int_{\mathbb R}|\widehat\psi(\xi)|^2d\xi/|\xi|<\infty$,
   then
   $\int_{\mathbb R^*}\int_{\mathbb R}|\langle f,\psi_{a,b}\rangle|^2
   db\,da/a^2=C_\psi\|f\|_2^2$.
   Both signs of $a$ are included in this normalization.
-* **34. Calderón reconstruction.** Under that admissibility condition,
+* **36. Calderón reconstruction.** Under that admissibility condition,
   $f=C_\psi^{-1}\int\int\langle f,\psi_{a,b}\rangle\psi_{a,b}
   db\,da/a^2$, as a weak $L^2$ integral and as a limit of suitable
   truncated integrals.
-* **35. STFT orthogonality.** For $f,h,g,k\in L^2(\mathbb R^d)$,
+* **37. Uncertainty principles.** For $f\in L^2(\mathbb R)$ and
+  $a,b\in\mathbb R$,
+  $\|f\|_2^2\leq4\pi\|(x-a)f\|_2\|(\xi-b)\widehat f\|_2$, with equality
+  exactly for $f=cM_bT_ae^{-\pi\alpha x^2}$, $\alpha>0$ (Heisenberg).
+  If $\{f\ne0\}$ and $\{\widehat f\ne0\}$ both have finite measure,
+  then $f=0$ (Benedicks). If $|f(x)|\leq Ce^{-\pi\alpha x^2}$ and
+  $|\widehat f(\xi)|\leq Ce^{-\pi\beta\xi^2}$, then $f=0$ when
+  $\alpha\beta>1$ and $f=ce^{-\pi\alpha x^2}$ when $\alpha\beta=1$ (Hardy).
+* **38. STFT orthogonality.** For $f,h,g,k\in L^2(\mathbb R^d)$,
   $\int V_gf\overline{V_kh}=\langle f,h\rangle\langle k,g\rangle$.
   In particular $\|V_gf\|_2=\|g\|_2\|f\|_2$.
-* **36. STFT inversion.** If $\langle k,g\rangle\ne0$, then
+* **39. STFT inversion.** If $\langle k,g\rangle\ne0$, then
   $f=\langle k,g\rangle^{-1}\int V_gf(x,\omega)M_\omega T_xk
   \,dx\,d\omega$ weakly in $L^2$.
-* **37. Time–frequency covariance.** The identity
+* **40. Time–frequency covariance.** The identity
   $M_\omega T_x=e^{2\pi ix\cdot\omega}T_xM_\omega$ gives
   $|V_g(M_\eta T_yf)(x,\omega)|=|V_gf(x-y,\omega-\eta)|$.
   Time–frequency concentration is transported by phase-space translations.
-* **38. Wigner marginals and Moyal identity.** For Schwartz functions,
+* **41. Wigner marginals and Moyal identity.** For Schwartz functions,
   $$
   W(f,g)(x,\omega)=\int f(x+t/2)\overline{g(x-t/2)}e^{-2\pi it\cdot\omega}dt
   $$
   satisfies $\int W(f,f)d\omega=|f(x)|^2$,
   $\int W(f,f)dx=|\widehat f(\omega)|^2$, and
   $\langle W(f,g),W(h,k)\rangle=\langle f,h\rangle\langle k,g\rangle$.
-* **39. Lieb's STFT inequality.** For $2\leq r\leq\infty$,
+* **42. Lieb's STFT inequality.** For $2\leq r\leq\infty$,
   $\|V_gf\|_r\leq(2/r)^{d/r}\|f\|_2\|g\|_2$, with the
   usual limiting constant at infinity. Gaussian functions attain the
   sharp finite-exponent constants.
@@ -227,44 +259,56 @@ A rectangular **Gabor system** is
 $\mathcal G(g,a,b)=\{M_{bn}T_{ak}g:k,n\in\mathbb Z^d\}$,
 where $a,b>0$.
 
-* **40. Gabor duality and commutation.** If $\mathcal G(g,a,b)$
+* **43. Gabor duality and commutation.** If $\mathcal G(g,a,b)$
   is a frame with operator $S$, its canonical dual is
   $\mathcal G(S^{-1}g,a,b)$. This follows because $S$ commutes
   with the lattice time–frequency shifts.
-* **41. Density obstruction.** A rectangular single-window Gabor
+* **44. Painless expansions.** If $g\in L^\infty(\mathbb R^d)$ is
+  supported in $[0,L]^d$, $a\leq L$ and $b\leq1/L$, then the frame
+  operator of $\mathcal G(g,a,b)$ is multiplication by
+  $b^{-d}\sum_{k\in\mathbb Z^d}|g(x-ak)|^2$. Hence it is a frame with
+  bounds $b^{-d}A,b^{-d}B$ exactly when
+  $A\leq\sum_k|g(x-ak)|^2\leq B$ almost everywhere.
+* **45. Frames for dense lattices.** If $g$ belongs to the Wiener
+  amalgam space $W(L^\infty,\ell^1)$ and
+  $A\leq\sum_k|g(x-ak)|^2\leq B$ almost everywhere with $A>0$, then
+  $\mathcal G(g,a,b)$ is a frame for all sufficiently small $b>0$
+  (Walnut). In particular every nonzero $g\in S_0$ generates Gabor frames
+  for all sufficiently small $a,b$.
+* **46. Density obstruction.** A rectangular single-window Gabor
   frame requires $(ab)^d\leq1$; a Gabor Riesz sequence requires
   $(ab)^d\geq1$. A Gabor Riesz basis therefore has $ab=1$.
-* **42. Gaussian frame set.** In dimension one, for a Gaussian window
+* **47. Gaussian frame set.** In dimension one, for a Gaussian window
   $g(t)=e^{-\pi t^2}$, $\mathcal G(g,a,b)$ is a frame exactly when
   $ab<1$. At $ab=1$ it is complete but is not a frame.
-* **43. Wexler–Raz relations.** Two Bessel Gabor systems with windows
+* **48. Wexler–Raz relations.** Two Bessel Gabor systems with windows
   $g,\gamma$ are dual frames exactly when
   $\langle\gamma,M_{n/a}T_{k/b}g\rangle
   =(ab)^d\delta_{k0}\delta_{n0}$ for every $k,n\in\mathbb Z^d$.
-* **44. Duality principle.** $\mathcal G(g,a,b)$ is a frame exactly
+* **49. Duality principle.** $\mathcal G(g,a,b)$ is a frame exactly
   when the adjoint-lattice system
   $\{M_{n/a}T_{k/b}g\}_{k,n}$ is a Riesz sequence.
   Its Riesz bounds are $(ab)^d$ times the frame bounds.
-* **45. Zak-transform criterion.** With
+* **50. Zak-transform criterion.** With
   $Zf(x,\omega)=\sum_{k\in\mathbb Z}f(x-k)e^{2\pi ik\omega}$,
   $Z:L^2(\mathbb R)\to L^2([0,1)^2)$ is unitary.
   $\mathcal G(g,1,1)$ is a frame exactly when
   $0<A\leq|Zg|^2\leq B<\infty$ almost everywhere, and is
   orthonormal exactly when $|Zg|=1$ almost everywhere.
-* **46. Balian–Low theorem.** If $\mathcal G(g,a,b)$ is a Riesz
+* **51. Balian–Low theorem.** If $\mathcal G(g,a,b)$ is a Riesz
   basis of $L^2(\mathbb R)$, then $tg(t)$ and
   $\xi\widehat g(\xi)$ cannot both belong to $L^2$.
-* **47. Modulation-space window independence.** For a nonzero Schwartz
+* **52. Modulation-space window independence.** For a nonzero Schwartz
   window, $M^{p,q}$ consists of tempered distributions with
   $V_gf\in L^{p,q}(dx\,d\omega)$, taking the $L^p$ norm in $x$
   first. Different nonzero Schwartz windows give equivalent norms,
   for $1\leq p,q\leq\infty$; these spaces are Banach.
-* **48. Basic modulation-space identities.** $M^{2,2}=L^2$ with
+* **53. Basic modulation-space identities.** $M^{2,2}=L^2$ with
   equivalent norms. Fourier transformation preserves $M^{p,p}$ and
   all time–frequency shifts act isometrically for the fixed-window norm.
   The space $M^{1,1}$ is the Feichtinger algebra $S_0$ and embeds in
   $C_0\cap L^1$.
-* **49. Gabor expansions of modulation spaces.** If $g\in S_0$ generates
+* **54. Gabor expansions of modulation spaces.** If $g\in S_0$ generates
   a lattice Gabor frame, its canonical dual belongs to $S_0$.
   Analysis identifies $M^{p,q}$ with its coefficient range in
   $\ell^{p,q}$, with equivalent norms and reconstruction by the dual
@@ -278,43 +322,50 @@ Let $PW_B=\{f\in L^2(\mathbb R):\operatorname{supp}\widehat f
 Sampling is **stable** on a set $\Lambda$ if
 $A\|f\|_2^2\leq\sum_{\lambda\in\Lambda}|f(\lambda)|^2\leq B_0\|f\|_2^2$.
 
-* **50. Paley–Wiener theorem.** $PW_B$ consists exactly of restrictions
+* **55. Paley–Wiener theorem.** $PW_B$ consists exactly of restrictions
   of entire functions of exponential type at most $2\pi B$ whose
   restriction to the real axis belongs to $L^2$.
-* **51. Reproducing kernels.** Point evaluation on $PW_B$ is bounded,
+* **56. Reproducing kernels.** Point evaluation on $PW_B$ is bounded,
   with kernel $K_x(t)=2B\operatorname{sinc}(2B(t-x))$,
   $\operatorname{sinc}u=\sin(\pi u)/(\pi u)$. In particular
   $|f(x)|\leq\sqrt{2B}\|f\|_2$.
-* **52. Shannon sampling theorem.** For $f\in PW_B$,
+* **57. Bernstein and Plancherel–Pólya inequalities.** For $f\in PW_B$,
+  $f'\in PW_B$ and $\|f'\|_2\leq2\pi B\|f\|_2$; the same holds in
+  $L^p$, $1\leq p\leq\infty$, for entire functions of exponential type
+  at most $2\pi B$ in $L^p(\mathbb R)$. If
+  $\inf_{\lambda\ne\mu\in\Lambda}|\lambda-\mu|=\delta>0$, then
+  $\sum_{\lambda\in\Lambda}|f(\lambda)|^2\leq C(\delta,B)\|f\|_2^2$
+  on $PW_B$, so for separated sets only the lower sampling bound is at issue.
+* **58. Shannon sampling theorem.** For $f\in PW_B$,
   $$
   f(t)=\sum_{k\in\mathbb Z}f(k/(2B))\operatorname{sinc}(2Bt-k),
   \qquad \|f\|_2^2=(2B)^{-1}\sum_k|f(k/(2B))|^2.
   $$
   The series converges in $L^2$ and uniformly on the real axis.
-* **53. Sampling as a frame problem.** Stable sampling on $\Lambda$
+* **59. Sampling as a frame problem.** Stable sampling on $\Lambda$
   is equivalent to the kernels $(K_\lambda)$ forming a frame in
   $PW_B$, and to the corresponding exponentials forming a frame in
   $L^2([-B,B])$. Dual frames give stable reconstruction formulas.
-* **54. Interpolation and Riesz sequences.** Every $\ell^2(\Lambda)$
+* **60. Interpolation and Riesz sequences.** Every $\ell^2(\Lambda)$
   data sequence has a $PW_B$ interpolant with bounded solution norm
   exactly when $(K_\lambda)$ is a Riesz sequence. Complete stable
   interpolation corresponds to a Riesz basis.
-* **55. Kadec's one-quarter theorem.** If
+* **61. Kadec's one-quarter theorem.** If
   $\sup_{k\in\mathbb Z}|2B\lambda_k-k|<1/4$, the sampling kernels
   at $\lambda_k$ form a Riesz basis of $PW_B$. The universal
   constant $1/4$ cannot be enlarged.
-* **56. Landau's necessary densities.** For a uniformly separated set,
+* **62. Landau's necessary densities.** For a uniformly separated set,
   stable sampling for $PW_B$ requires $D^-(\Lambda)\geq2B$;
   stable interpolation requires $D^+(\Lambda)\leq2B$, where
   $D^-=\liminf_{R\to\infty}\inf_x\#(\Lambda\cap[x,x+R])/R$
   and $D^+$ uses $\limsup$ and $\sup$.
-* **57. Strict-density sufficiency in one dimension.** For uniformly
+* **63. Strict-density sufficiency in one dimension.** For uniformly
   separated $\Lambda\subset\mathbb R$, $D^-(\Lambda)>2B$ implies
   stable sampling for $PW_B$, and $D^+(\Lambda)<2B$ implies
   stable interpolation. Density alone does not settle the equality case.
   These strict and non-strict thresholds are compared in
   [Olevskii–Ulanovskii, *On the duality between sampling and interpolation*, Theorem 2](https://arxiv.org/pdf/1512.01437).
-* **58. Aliasing threshold.** Uniform samples with spacing $h>1/(2B)$
+* **64. Aliasing threshold.** Uniform samples with spacing $h>1/(2B)$
   do not determine all of $PW_B$: overlapping frequency translates
   produce nonzero functions with every sample zero. Oversampling with
   strict bandwidth margin permits smooth reconstruction kernels with
@@ -329,24 +380,24 @@ The **restricted isometry constant** $\delta_s$ is the least $\delta$
 with $(1-\delta)\|x\|_2^2\leq\|Ax\|_2^2\leq(1+\delta)\|x\|_2^2$
 for every $s$-sparse $x$.
 
-* **59. Sparse uniqueness.** Every $s$-sparse vector is determined
+* **65. Sparse uniqueness.** Every $s$-sparse vector is determined
   uniquely among $s$-sparse vectors by $Ax$ exactly when $\ker A$
   contains no nonzero $2s$-sparse vector.
-* **60. Null-space characterization of basis pursuit.** Every
+* **66. Null-space characterization of basis pursuit.** Every
   $s$-sparse $x$ uniquely minimizes $\|z\|_1$ subject to $Az=Ax$
   exactly when $\|h_S\|_1<\|h_{S^c}\|_1$ for every nonzero
   $h\in\ker A$ and every $|S|\leq s$.
-* **61. Coherence criterion.** If the columns have norm one and
+* **67. Coherence criterion.** If the columns have norm one and
   $\mu=\max_{j\ne k}|\langle A_j,A_k\rangle|$, then
   $s<(1+\mu^{-1})/2$ guarantees exact basis-pursuit recovery of
   every $s$-sparse vector.
-* **62. Stable recovery from restricted isometry.** For example,
-  $\delta_{2s}<\sqrt2-1$ guarantees that every minimizer
+* **68. Stable recovery from restricted isometry.** The condition
+  $\delta_{2s}<4/\sqrt{41}\approx0.62$ guarantees that every minimizer
   $\widehat x$ of $\|z\|_1$ subject to $\|Az-y\|_2\leq\eta$,
   with $\|Ax-y\|_2\leq\eta$, obeys
   $\|x-\widehat x\|_2\leq C\sigma_s(x)_1/\sqrt s+D\eta$.
   Constants depend only on the restricted isometry bound.
-* **63. Gaussian sampling complexity.** A matrix with independent
+* **69. Gaussian sampling complexity.** A matrix with independent
   $N(0,1/m)$ entries has $\delta_s\leq\delta$ with probability
   at least $1-\varepsilon$ if
   $m\geq C\delta^{-2}(s\log(eN/s)+\log(2/\varepsilon))$,

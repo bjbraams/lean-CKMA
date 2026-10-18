@@ -3,7 +3,7 @@
 Part of the [mathematical synopsis series](SYNOPSIS.md).
 
 This synopsis selects the recurring foundational and beginning research core of
-Section 23 of [CKMA-bib.md](CKMA-bib.md) and [CKMA-bib2.md](CKMA-bib2.md).
+Section 23 of [CKMA-bib.md](CKMA-bib.md).
 The section contains several connected subjects, each with its own monographs.
 Accordingly the selection combines the common operator-algebra foundation
 with separate cores in matrix norm geometry, free probability, K-theory, and
@@ -108,7 +108,9 @@ A **factor** has center $\mathbb C1$.
   The same holds for self-adjoint and positive unit balls.
 * **23. Predual theorem.** Every von Neumann algebra has a unique Banach
   predual, consisting of its normal functionals. For $\mathcal B(H)$
-  this is trace class, paired by $\operatorname{tr}(Ta)$.
+  this is trace class, paired by $\operatorname{tr}(Ta)$. Conversely a
+  C*-algebra that is isometrically a dual Banach space is a von Neumann
+  algebra (Sakai).
 * **24. Monotone completeness.** Every bounded increasing net of
   self-adjoint elements of $M$ has a supremum in $M$, and converges
   strongly to it. The projection lattice is complete.
@@ -129,19 +131,31 @@ A **factor** has center $\mathbb C1$.
   normalized normal trace $\tau$; projections satisfy
   $p\sim q$ exactly when $\tau(p)=\tau(q)$, and all values in $[0,1]$
   occur. This provides continuous dimension in place of integer rank.
-* **30. Finite conditional expectation.** If $N\subset M$ are finite
+* **30. Group von Neumann algebras and hyperfiniteness.** For a discrete
+  group $G$, $L(G)=\lambda(G)''$ is a factor exactly when every nontrivial
+  conjugacy class of $G$ is infinite, and it is then of type II$_1$ with
+  trace $\tau(x)=\langle x\delta_e,\delta_e\rangle$. There is a unique
+  hyperfinite II$_1$ factor $R$ (Murray–von Neumann), and $L(\mathbb F_2)$ is
+  not isomorphic to $R$ (property $\Gamma$). For von Neumann algebras with
+  separable predual, injectivity is equivalent to hyperfiniteness (Connes);
+  in particular $L(G)\cong R$ for every amenable ICC group $G$.
+* **31. Finite conditional expectation.** If $N\subset M$ are finite
   von Neumann algebras with a faithful normal tracial state $\tau$ on $M$,
   there is a unique $\tau$-preserving normal conditional expectation
   $E_N:M\to N$. On $L^2(M,\tau)$ it is the orthogonal projection onto
   $L^2(N,\tau)$.
-* **31. Noncommutative Hölder inequality.** For a semifinite faithful
+* **32. Noncommutative Hölder inequality.** For a semifinite faithful
   normal trace, the spaces $L^p(M,\tau)$ of measurable affiliated
   operators satisfy $\|xy\|_r\leq\|x\|_p\|y\|_q$ when
   $1/r=1/p+1/q$ and $p,q,r\geq1$. Trace duality gives
   $L^p(M)^*=L^{p'}(M)$ for $1<p<\infty$.
-* **32. Central decomposition.** A von Neumann algebra with separable
+* **33. Central decomposition.** A von Neumann algebra with separable
   predual decomposes as a direct integral of factors over its center,
   uniquely up to the appropriate measure-class equivalence.
+* **34. Derivations.** Every derivation of a C*-algebra into itself is
+  bounded (Sakai), and every derivation of a von Neumann algebra into itself
+  is inner (Kadison–Sakai). A derivation of a C*-algebra $A\subset\mathcal B(H)$
+  is the restriction of an inner derivation of $A''$.
 
 ## Modular theory, equilibrium, and subfactors
 
@@ -151,31 +165,42 @@ operator $S_0(a\Omega)=a^*\Omega$ and write $S=J\Delta^{1/2}$.
 Here $J$ is the **modular conjugation** and $\Delta$ the **modular
 operator**. A II$_1$ **subfactor** is a unital inclusion of II$_1$ factors.
 
-* **33. Tomita theorem.** $JMJ=M'$ and
+* **35. Tomita theorem.** $JMJ=M'$ and
   $\Delta^{it}M\Delta^{-it}=M$. Thus
   $\sigma_t(a)=\Delta^{it}a\Delta^{-it}$ is a one-parameter automorphism
   group intrinsic to the faithful normal vector state.
-* **34. Modular KMS relation.** For $a,b\in M$, there is a bounded
+* **36. Modular KMS relation.** For $a,b\in M$, there is a bounded
   function analytic in $0<\operatorname{Im}z<1$, continuous on its
   closure, with boundary values
   $F(t)=\varphi(\sigma_t(a)b)$ and
   $F(t+i)=\varphi(b\sigma_t(a))$. This boundary convention fixes the
   sign of the modular dynamics.
-* **35. Trace criterion.** A faithful normal state is tracial exactly
+* **37. Trace criterion.** A faithful normal state is tracial exactly
   when its modular automorphism group is trivial. In a finite-dimensional
   algebra with density matrix $\rho>0$, its modular group is
   $\sigma_t(a)=\rho^{it}a\rho^{-it}$.
-* **36. Modular conditional expectations.** For a faithful normal state
+* **38. Modular conditional expectations.** For a faithful normal state
   $\varphi$, a von Neumann subalgebra $N\subset M$ admits a
   $\varphi$-preserving normal conditional expectation exactly when it is
   invariant under $\sigma_t^\varphi$ for all $t$ (Takesaki).
-* **37. Finite-dimensional Gibbs states.** For dynamics
+* **39. Connes cocycle and type III classification.** For faithful normal
+  states (or weights) $\varphi,\psi$ there is a unitary cocycle
+  $u_t=(D\psi:D\varphi)_t$ in $M$ with
+  $\sigma_t^\psi=\operatorname{Ad}u_t\circ\sigma_t^\varphi$ and
+  $u_{s+t}=u_s\sigma_s^\varphi(u_t)$. Hence the modular flow is intrinsic
+  modulo inner automorphisms, and $M$ is semifinite exactly when
+  $\sigma^\varphi$ is inner.
+  Connes's invariant $S(M)=\bigcap_\varphi\sigma(\Delta_\varphi)$ divides
+  type III factors into III$_0$ ($S=\{0,1\}$), III$_\lambda$
+  ($S=\{0\}\cup\lambda^{\mathbb Z}$, $0<\lambda<1$), and III$_1$
+  ($S=[0,\infty)$).
+* **40. Finite-dimensional Gibbs states.** For dynamics
   $\alpha_t(a)=e^{itH}ae^{-itH}$, the state with density
   $e^{-\beta H}/\operatorname{tr}(e^{-\beta H})$ satisfies the
   $\beta$-KMS relation with lower boundary
   $\varphi(a\alpha_t(b))$ and upper boundary
   $\varphi(\alpha_t(b)a)$ at height $\beta>0$.
-* **38. Jones index theorem.** For an inclusion $N\subset M$ of II$_1$
+* **41. Jones index theorem.** For an inclusion $N\subset M$ of II$_1$
   factors, $[M:N]=\dim_NL^2(M)$ lies in
   $\{4\cos^2(\pi/n):n=3,4,\ldots\}\cup[4,\infty]$.
   Each listed value is realized by a subfactor.
@@ -188,21 +213,20 @@ commuting representations. $A$ is **nuclear** if these norms agree for
 every C*-algebra $B$, and **exact** if minimal tensoring by $A$ preserves
 short exact sequences.
 
-* **39. Minimal and maximal tensor products.** Both constructions give
+* **42. Minimal and maximal tensor products.** Both constructions give
   C*-completions, with $\|x\|_{\min}\leq\|x\|_{\max}$. The spatial
   norm is independent of the faithful representations used to define it.
-* **40. Completely positive approximation theorem.** $A$ is nuclear
+* **43. Completely positive approximation theorem.** $A$ is nuclear
   exactly when its identity is a point-norm limit of compositions
   $A\to M_{n_i}\to A$ of completely positive contractions.
-* **41. Nuclear examples and permanence.** Commutative and finite-dimensional
+* **44. Nuclear examples and permanence.** Commutative and finite-dimensional
   C*-algebras are nuclear. Nuclearity passes to closed ideals, quotients,
   inductive limits, and minimal tensor products; every nuclear algebra is exact.
-* **42. Exactness and subalgebras.** C*-subalgebras of exact algebras are
+* **45. Exactness and subalgebras.** C*-subalgebras of exact algebras are
   exact. Nuclearity, by contrast, does not pass to arbitrary C*-subalgebras.
-* **43. Amenability theorem.** A C*-algebra is nuclear exactly when it
-  is amenable as a Banach algebra. This connects completely positive
-  finite-dimensional approximation with the derivation definition of amenability.
-* **44. Group C*-algebras and amenability.** A discrete group $G$ is
+* **46. Amenability theorem.** A C*-algebra is nuclear exactly when it
+  is amenable as a Banach algebra (Connes, Haagerup).
+* **47. Group C*-algebras and amenability.** A discrete group $G$ is
   amenable exactly when its reduced group C*-algebra $C_r^*(G)$ is
   nuclear. For amenable $G$, the canonical map $C^*(G)\to C_r^*(G)$
   is an isomorphism.
@@ -215,34 +239,44 @@ of matrix unitaries. Nonunital groups are defined through the unitization
 and the kernel of the scalar map. The **suspension** is $SA=C_0(\mathbb R)\otimes A$.
 An **AF algebra** is an inductive limit of finite-dimensional C*-algebras.
 
-* **45. Homotopy invariance and stability.** Homotopic star homomorphisms
+* **48. Homotopy invariance and stability.** Homotopic star homomorphisms
   induce the same K-theory maps, and $K_i(A\otimes\mathcal K)=K_i(A)$.
   Matrix amplification therefore does not change K-theory.
-* **46. Basic K-groups.** $K_0(\mathbb C)=\mathbb Z$ and
+* **49. Basic K-groups.** $K_0(\mathbb C)=\mathbb Z$ and
   $K_1(\mathbb C)=0$, with the same groups for $\mathcal K$ and for
   each full matrix algebra. Also $K_0(C(\mathbb T))=K_1(C(\mathbb T))=\mathbb Z$.
-* **47. Bott periodicity.** $K_i(S^2A)\cong K_i(A)$ naturally. Together
+* **50. Bott periodicity.** $K_i(S^2A)\cong K_i(A)$ naturally. Together
   with $K_i(SA)=K_{1-i}(A)$ this makes complex C*-algebra K-theory
   two-periodic.
-* **48. Six-term exact sequence.** A short exact sequence
+* **51. Six-term exact sequence.** A short exact sequence
   $0\to I\to A\to B\to0$ yields the cyclic exact sequence
   $$K_0(I)\to K_0(A)\to K_0(B)\xrightarrow{\partial}
        K_1(I)\to K_1(A)\to K_1(B)\xrightarrow{\partial}K_0(I).$$
-* **49. Index boundary map.** For the Calkin extension, the connecting
+* **52. Index boundary map.** For the Calkin extension, the connecting
   map takes an invertible class represented by a Fredholm operator to its
   Fredholm index in $K_0(\mathcal K)=\mathbb Z$.
   In the Toeplitz extension this recovers minus winding number.
-* **50. Continuity and AF classification.** K-theory commutes with
+* **53. Continuity and AF classification.** K-theory commutes with
   C*-inductive limits. Separable unital AF algebras are classified by their
   ordered $K_0$ groups with distinguished order unit; their $K_1$ groups vanish.
-* **51. Morita invariance.** Strongly Morita equivalent C*-algebras have
+* **54. Cuntz algebras and classification.** The Cuntz algebra $\mathcal O_n$,
+  generated by isometries $s_1,\ldots,s_n$ with $\sum_js_js_j^*=1$
+  ($2\leq n<\infty$), is simple, nuclear, and purely infinite, with
+  $K_0(\mathcal O_n)=\mathbb Z/(n-1)$, $[1]\mapsto1$, and $K_1=0$.
+  Unital Kirchberg algebras (simple, separable, nuclear, purely infinite)
+  satisfying the UCT are classified by $(K_0,[1],K_1)$ (Kirchberg–Phillips);
+  $A\otimes\mathcal O_2\cong\mathcal O_2$ for every unital simple separable
+  nuclear $A$. In the stably finite case, unital simple separable nuclear
+  $\mathcal Z$-stable UCT algebras are classified by the Elliott invariant
+  ($K$-theory, traces, and their pairing).
+* **55. Morita invariance.** Strongly Morita equivalent C*-algebras have
   isomorphic K-groups. For sigma-unital algebras, strong Morita equivalence
   is equivalent to isomorphism after stabilization by $\mathcal K$.
-* **52. Crossed-product universal property.** For a discrete action
+* **56. Crossed-product universal property.** For a discrete action
   $\alpha:G\to\operatorname{Aut}(A)$, representations of the full crossed
   product $A\rtimes_\alpha G$ correspond to covariant pairs
   $(\pi,U)$ satisfying $U_g\pi(a)U_g^*=\pi(\alpha_g(a))$.
-* **53. Pimsner–Voiculescu exact sequence.** For an automorphism $\alpha$
+* **57. Pimsner–Voiculescu exact sequence.** For an automorphism $\alpha$
   of $A$, K-theory of $A\rtimes_\alpha\mathbb Z$ fits into the cyclic
   exact sequence with maps
   $K_i(A)\xrightarrow{1-\alpha_*}K_i(A)\to
@@ -255,22 +289,24 @@ with its induced matrix norms. A linear map is **completely bounded** if
 $\|T\|_{\rm cb}=\sup_n\|T_n\|<\infty$. A **complete isometry** preserves
 all matrix norms, not merely the norm on $E$.
 
-* **54. Ruan representation theorem.** Abstract matrix norms come from
+* **58. Ruan representation theorem.** Abstract matrix norms come from
   a concrete operator space exactly when
   $\|x\oplus y\|=\max(\|x\|,\|y\|)$ and
   $\|\alpha x\beta\|\leq\|\alpha\|\|x\|\|\beta\|$ for scalar
   matrices of compatible sizes.
-* **55. Wittstock extension theorem.** A completely bounded map from
+* **59. Wittstock extension theorem.** A completely bounded map from
   an operator subspace $E\subset A$ into $\mathcal B(H)$ extends to
   all of $A$ without increasing its completely bounded norm.
-* **56. Wittstock decomposition.** Every completely bounded map from a
+* **60. Wittstock decomposition and factorization.** Every completely bounded map from a
   C*-algebra into $\mathcal B(H)$ is a linear combination of four CP maps.
-  A self-adjoint such map is a difference of two CP maps.
-* **57. Similarity theorem.** A unital homomorphism from a C*-algebra
+  A self-adjoint such map is a difference of two CP maps. Equivalently,
+  $\Phi(a)=V^*\pi(a)W$ for a representation $\pi$ and bounded $V,W$ with
+  $\|V\|\|W\|=\|\Phi\|_{\rm cb}$ (Haagerup–Paulsen–Wittstock).
+* **61. Similarity theorem.** A unital homomorphism from a C*-algebra
   into $\mathcal B(H)$ is completely bounded exactly when it is similar
   to a star representation. Its cb norm is the infimum of the similarity
   condition numbers $\|S\|\|S^{-1}\|$.
-* **58. Haagerup tensor product.** The matrix norms defined by
+* **62. Haagerup tensor product.** The matrix norms defined by
   $\|u\|_h=\inf_{u=v\odot w}\|v\|\|w\|$, where
   $(v\odot w)_{ij}=\sum_kv_{ik}\otimes w_{kj}$, give an associative
   operator-space tensor product. Concrete operator multiplication extends
@@ -285,47 +321,49 @@ come from different subalgebras and each has zero expectation. A
 **distribution** records all joint star moments. $NC(n)$ denotes the
 noncrossing partitions of $\{1,\ldots,n\}$.
 
-* **59. Free product construction.** A family of C*-probability spaces
+* **63. Free product construction.** A family of C*-probability spaces
   with faithful states has a reduced free product with state-preserving
   embeddings whose images are free. The prescribed marginal states and freeness determine all
   joint moments uniquely.
-* **60. Free cumulants.** Unique multilinear functionals $\kappa_n$ are
+* **64. Free cumulants.** Unique multilinear functionals $\kappa_n$ are
   determined recursively by
   $$\varphi(a_1\cdots a_n)=\sum_{\pi\in NC(n)}\kappa_\pi(a_1,\ldots,a_n),$$
   where $\kappa_\pi$ is the product of cumulants over its blocks.
   Freeness is equivalent to vanishing of mixed cumulants.
-* **61. Free central limit theorem.** For identically distributed free
+* **65. Free central limit theorem.** For identically distributed free
   self-adjoint variables of mean zero and variance one, normalized sums
   converge in moments to the semicircle law
   $(2\pi)^{-1}\sqrt{4-x^2}\,1_{[-2,2]}dx$.
-* **62. Semicircular Wick formula.** Moments of a centered semicircular
+* **66. Semicircular Wick formula.** Moments of a centered semicircular
   family are sums over noncrossing pairings, with products of the specified
   covariances. Odd moments vanish; the variance-one scalar even moments
   are the Catalan numbers.
-* **63. Free Poisson limit.** For $\lambda>0$, sums of $N$ free
+* **67. Free Poisson limit.** For $\lambda>0$, sums of $N$ free
   projections, each with expectation $\lambda/N$, converge in moments to the free Poisson law
   whose cumulants all equal $\lambda$. Its continuous support is
   $[(1-\sqrt\lambda)^2,(1+\sqrt\lambda)^2]$ and its atom at zero
-  has mass $\max(1-\lambda,0)$.
-* **64. R-transform linearization.** For a compactly supported law,
+  has mass $\max(1-\lambda,0)$. It is the limiting eigenvalue distribution
+  of $N^{-1}XX^*$ for $N\times M$ matrices $X$ with i.i.d. standardized
+  entries and $M/N\to\lambda$ (Marchenko–Pastur).
+* **68. R-transform linearization.** For a compactly supported law,
   $R(w)=\sum_{n\geq1}\kappa_nw^{n-1}$ near zero. Free additive
   convolution satisfies $R_{\mu\boxplus\nu}=R_\mu+R_\nu$.
-* **65. Cauchy transform inversion.** With
+* **69. Cauchy transform inversion.** With
   $G_\mu(z)=\int(z-x)^{-1}d\mu(x)$, one has
   $G_\mu^{-1}(w)=w^{-1}+R_\mu(w)$ near infinity and zero, respectively.
   Boundary values of $G_\mu$ recover $\mu$ by Stieltjes inversion.
-* **66. S-transform multiplication.** For variables with nonzero mean,
+* **70. S-transform multiplication.** For variables with nonzero mean,
   define $\psi_a(z)=\sum_{n\geq1}\varphi(a^n)z^n$ and
   $S_a(z)=(1+z)\psi_a^{-1}(z)/z$. If $a,b$ are free,
   $S_{ab}=S_aS_b$ as formal series, or analytically near zero when bounded.
-* **67. Asymptotic freeness of Gaussian matrices.** Independent GUE
+* **71. Asymptotic freeness of Gaussian matrices.** Independent GUE
   matrices with variance normalization $1/N$ converge jointly in normalized
   trace moments, almost surely, to a free variance-one semicircular family.
-* **68. Haar conjugation and asymptotic freeness.** Deterministic uniformly
+* **72. Haar conjugation and asymptotic freeness.** Deterministic uniformly
   bounded self-adjoint matrix families with limiting moments become
   asymptotically free after independent Haar-unitary conjugation, in expected
   normalized trace moments. Their marginal limits are retained.
-* **69. Free compression.** If a projection $p$ of trace $t>0$ is free
+* **73. Free compression.** If a projection $p$ of trace $t>0$ is free
   from $a$, then in $pAp$ with normalized state $\varphi(\cdot)/t$,
   $\kappa_n(pap,\ldots,pap)=t^{n-1}\kappa_n(a,\ldots,a)$.
 
@@ -342,44 +380,46 @@ $\sup_N\sum_{j\leq N}s_j/\log(1+N)<\infty$, a **Dixmier trace**
 is obtained by a suitable generalized limit of these logarithmic means.
 The operator is **Dixmier measurable** if the value is independent of that choice.
 
-* **70. Bounded transform.** A spectral triple gives a Fredholm module
+* **74. Bounded transform.** A spectral triple gives a Fredholm module
   by $F=D(1+D^2)^{-1/2}$. Compactness of its commutators follows from
   boundedness of $[D,a]$ and compact resolvent.
-* **71. Even index pairing.** If $p\in M_n(\mathcal A)$ is a projection,
+* **75. Even index pairing.** If $p\in M_n(\mathcal A)$ is a projection,
   compression of $F^+:H^+\to H^-$ gives a Fredholm map
   $pF^+p:p(H^+)^n\to p(H^-)^n$. Its index depends only on the
   $K_0$ class and the Fredholm module class.
-* **72. Odd index pairing.** For an odd module represented with
+* **76. Odd index pairing.** For an odd module represented with
   $F^2=I$, let $P=(I+F)/2$. A matrix unitary $u$ gives the Fredholm
   operator $PuP$ on $PH^n$, and its index defines the pairing with $K_1$.
-* **73. Homotopy and compact perturbation invariance.** These index
+* **77. Homotopy and compact perturbation invariance.** These index
   pairings are additive, invariant under stable unitary equivalence and
   norm-continuous operator homotopy, and unchanged by compact perturbations
   of $F$.
-* **74. Classical Dirac example.** On a closed spin manifold of dimension
+* **78. Classical Dirac example.** On a closed spin manifold of dimension
   $d$, $(C^\infty(M),L^2(M,S),D)$ is a spectral triple. One has
   $[D,f]=c(df)$ up to the chosen Clifford convention and
   $(1+D^2)^{-p/2}$ trace class for $p>d$.
-* **75. Connes distance formula.** On a connected closed spin manifold,
+* **79. Connes distance formula.** On a connected closed spin manifold,
   $$d(x,y)=\sup\{|f(x)-f(y)|:f\in C^\infty(M,\mathbb R),
                                       \ \|[D,f]\|\leq1\}.$$
   Thus the commutator norm recovers the geodesic metric.
-* **76. Dixmier trace theorem.** A positive classical pseudodifferential
+* **80. Dixmier trace theorem.** A positive classical pseudodifferential
   operator $P$ of order $-d$ on a closed $d$-manifold, $d\geq1$, is
   Dixmier measurable and satisfies $\operatorname{Tr}_\omega P=d^{-1}\operatorname{Res}P$.
   Here $\operatorname{Res}P=(2\pi)^{-d}\int_{S^*M}
   \operatorname{tr}\sigma_{-d}(P)$ is the noncommutative residue.
-* **77. Geometric index pairing.** On an even-dimensional closed spin
+* **81. Geometric index pairing.** On an even-dimensional closed spin
   manifold, pairing the Dirac class with a smooth vector bundle $E$ gives
-  $\operatorname{ind}D_E^+=\int_M\widehat A(TM)\operatorname{ch}(E)$.
-  This identifies the operator index with characteristic-class integration.
+  $\operatorname{ind}D_E^+=\int_M\widehat A(TM)\operatorname{ch}(E)$
+  (Atiyah–Singer).
 
 ## Reference guide
 
 Blackadar gives a unified structural account of C*- and von Neumann
 algebras, representations, tensor products, modular theory, and the framework
 for K-theory. These topics recur in Murphy, Kadison–Ringrose, Takesaki,
-Bratteli–Robinson, and the classification references. Paulsen independently
+Bratteli–Robinson, and the classification references; Takesaki is the
+standard source for the Connes cocycle and the type III classification, and
+Strung for Cuntz algebras and the classification of nuclear C*-algebras. Paulsen independently
 develops matrix positivity, dilation, and completely bounded methods.
 Nica–Speicher and Mingo–Speicher provide the common combinatorial and
 random-matrix core of free probability. Gracia-Bondía–Várilly–Figueroa

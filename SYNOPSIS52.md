@@ -3,7 +3,7 @@
 Part of the [mathematical synopsis series](SYNOPSIS.md).
 
 This synopsis selects recurring material from Section 52 of
-[CKMA-bib.md](CKMA-bib.md) and [CKMA-bib2.md](CKMA-bib2.md).
+[CKMA-bib.md](CKMA-bib.md).
 Its organizing question is how curvature, topology, and variational structure
 control differential equations and geometric evolution. General elliptic
 regularity and geometric measure theory are developed in Sections 33 and 37;
@@ -43,133 +43,152 @@ bounds; compactness of each individual manifold is insufficient.
   space fields having the same initial data, up to the relevant first
   conjugate point. These comparisons control the exponential map and
   Hessians of distance.
-* **6. Bonnet–Myers theorem.** A complete $n$-manifold with
+* **6. Toponogov comparison.** Let $M$ be complete with sectional
+  curvature at least $k$. For a geodesic triangle with minimizing sides
+  (of perimeter less than $2\pi/\sqrt k$ if $k>0$), each angle is at
+  least the corresponding angle of the triangle with the same side
+  lengths in the simply connected model space of curvature $k$.
+  Equivalently, a hinge has its opening distance at most that of the
+  model hinge.
+* **7. Bonnet–Myers theorem.** A complete $n$-manifold with
   $\operatorname{Ric}\geq(n-1)k g$, $k>0$, is compact with
   diameter at most $\pi/\sqrt k$ and finite fundamental group.
-* **7. Bishop–Gromov comparison.** If
+  Equality of the diameter holds only for the round sphere of
+  curvature $k$ (Cheng).
+* **8. Bishop–Gromov comparison.** If
   $\operatorname{Ric}\geq(n-1)k g$, then
   $\operatorname{Vol}B(p,r)/V_k(r)$ is nonincreasing in $r$,
   within the model radius range. In particular nonnegative Ricci
   curvature gives $\operatorname{Vol}B(p,2r)\leq2^n
   \operatorname{Vol}B(p,r)$.
-* **8. Laplacian comparison.** Under the same Ricci bound,
+* **9. Laplacian comparison.** Under the same Ricci bound,
   $\Delta r\leq(n-1)s_k'(r)/s_k(r)$ away from the base point and
   cut locus, and in the distributional comparison sense globally off
   the base point. Here $s_k$ solves $s_k''+ks_k=0$,
   $s_k(0)=0$, $s_k'(0)=1$.
-* **9. Cheeger–Gromoll splitting.** A complete connected manifold
+* **10. Cheeger–Gromoll splitting.** A complete connected manifold
   with nonnegative Ricci curvature that contains a line is isometric
   to $\mathbb R\times N$. A line is a geodesic minimizing distance
   between each pair of its points.
-* **10. Compactness with controlled geometry.** Closed
+* **11. Compactness with controlled geometry.** Closed
   $n$-manifolds with $|\operatorname{sec}|\leq C$,
   diameter at most $D$, and volume at least $v>0$ have a
   subsequence converging, after diffeomorphisms, in $C^{1,\alpha}$
   for each $\alpha<1$. Bounds on all covariant derivatives of
   curvature improve this to smooth convergence. The hypotheses also
   yield finiteness of diffeomorphism types.
+* **12. Gromov precompactness.** Complete pointed $n$-manifolds with
+  $\operatorname{Ric}\geq-(n-1)Kg$ form a precompact family in the
+  pointed Gromov–Hausdorff topology, and closed ones with diameter at
+  most $D$ are precompact in the Gromov–Hausdorff topology. Bishop–Gromov
+  doubling gives the uniform covering bounds; limits are length spaces
+  but need not be manifolds.
 
 ## Functional inequalities, harmonic functions, and heat
 
-* **11. Sobolev inequalities.** On a closed $n$-manifold, $n>2$,
+* **13. Sobolev inequalities.** On a closed $n$-manifold, $n>2$,
   $\|u\|_{2n/(n-2)}^2\leq C(\|\nabla u\|_2^2+\|u\|_2^2)$.
   More generally the usual $W^{k,p}$ Sobolev and Morrey embeddings
   hold in local charts and globally on compact manifolds. Bounded
   geometry supplies uniform local versions on complete manifolds.
-* **12. Rellich compactness.** On a compact manifold,
+* **14. Rellich compactness.** On a compact manifold,
   $W^{1,p}\hookrightarrow L^q$ is compact for $q<np/(n-p)$,
   $p<n$, with the corresponding finite-exponent conclusions when
   $p\geq n$. At the critical exponent compactness can fail by concentration.
-* **13. Poisson equation.** On a closed connected manifold,
+* **15. Poisson equation.** On a closed connected manifold,
   $-\Delta u=f$ is solvable precisely when $\int f\,dV=0$.
   The solution is unique after prescribing its mean, and smooth for
   smooth $f$; elliptic estimates give its Sobolev and Hölder bounds.
-* **14. Maximum principles.** A harmonic function on a closed
+* **16. Maximum principles.** A harmonic function on a closed
   connected manifold is constant. The strong maximum principle and
   Hopf boundary lemma hold locally for uniformly elliptic operators
   with the standard sign condition on the zeroth-order coefficient.
-* **15. Bochner identity.** For a smooth function,
+* **17. Bochner identity.** For a smooth function,
   $\tfrac12\Delta|\nabla u|^2=|\nabla^2u|^2+
   \langle\nabla u,\nabla\Delta u\rangle+
   \operatorname{Ric}(\nabla u,\nabla u)$. Integrated on a closed
   manifold, it converts curvature bounds into gradient and spectral estimates.
-* **16. Bochner vanishing.** On a closed manifold with
+* **18. Bochner vanishing.** On a closed manifold with
   $\operatorname{Ric}\geq0$, harmonic one-forms are parallel.
   If Ricci curvature is positive definite at one point, the first
   Betti number vanishes.
-* **17. Cheng–Yau gradient estimate.** If a complete manifold has
+* **19. Cheng–Yau gradient estimate.** If a complete manifold has
   $\operatorname{Ric}\geq-(n-1)K g$ and $u>0$ is harmonic on
   $B(p,2r)$, then
   $\sup_{B(p,r)}|\nabla\log u|\leq C_n(r^{-1}+\sqrt K)$.
-* **18. Positive harmonic Liouville theorem.** Every positive
+* **20. Positive harmonic Liouville theorem.** Every positive
   harmonic function on a complete connected manifold with
   nonnegative Ricci curvature is constant. Bounded harmonic functions
   are constant as well, by adding a constant and applying the positive case.
-* **19. Li–Yau differential estimate.** On a complete manifold with
+* **21. Li–Yau differential estimate.** On a complete manifold with
   nonnegative Ricci curvature, a positive heat solution satisfies
   $|\nabla\log u|^2-\partial_t\log u\leq n/(2t)$.
-* **20. Parabolic Harnack inequality.** Under those hypotheses,
+* **22. Parabolic Harnack inequality.** Under those hypotheses,
   $u(x,s)\leq u(y,t)(t/s)^{n/2}
   \exp[d(x,y)^2/(4(t-s))]$ for $0<s<t$.
   Integration of the differential estimate along space-time paths gives
   this comparison. See the
   [Li–Yau paper](https://archive.ymsc.tsinghua.edu.cn/pacm_download/117/6384-11511_2006_Article_BF02399203.pdf).
-* **21. Heat kernel bounds.** For a complete manifold with
+* **23. Heat kernel bounds.** For a complete manifold with
   nonnegative Ricci curvature, the minimal heat kernel has two-sided
   Gaussian bounds
   $C^{-1}V(x,\sqrt t)^{-1}e^{-C d(x,y)^2/t}
   \leq p_t(x,y)\leq C V(x,\sqrt t)^{-1}e^{-d(x,y)^2/(Ct)}$,
   with constants depending only on dimension.
-* **22. Stochastic completeness criterion.** On a complete manifold,
+* **24. Stochastic completeness criterion.** On a complete manifold,
   $\int^\infty r/\log(2+V(o,r))\,dr=\infty$ implies
   $\int p_t(x,y)dV(y)=1$. In particular nonnegative Ricci curvature
   implies stochastic completeness. Completeness of the metric alone
   does not imply conservation of heat mass.
-* **23. Parabolicity from volume growth.** The condition
+* **25. Parabolicity from volume growth.** The condition
   $\int^\infty r/V(o,r)\,dr=\infty$ is sufficient for a complete
   noncompact manifold to have no positive minimal Green function.
   These volume tests and their potential-theoretic interpretation are
   discussed in [Grigor'yan's lectures](https://www.math.uni-bielefeld.de/~grigor/nk2019.pdf).
-* **24. Cheeger inequality.** On a closed connected manifold,
+* **26. Cheeger inequality.** On a closed connected manifold,
   $\lambda_1(-\Delta)\geq h(M)^2/4$, where
   $h(M)=\inf_\Omega\operatorname{Area}(\partial\Omega)/
   \min(\operatorname{Vol}\Omega,\operatorname{Vol}(M\setminus\Omega))$.
-* **25. Lichnerowicz–Obata theorem.** If a closed connected
+* **27. Lichnerowicz–Obata theorem.** If a closed connected
   $n$-manifold has $\operatorname{Ric}\geq(n-1)k g$, $k>0$,
   then $\lambda_1\geq nk$. Equality characterizes the round sphere
   of sectional curvature $k$.
-* **26. Diameter eigenvalue bound.** If a closed connected manifold
+* **28. Diameter eigenvalue bound.** If a closed connected manifold
   has nonnegative Ricci curvature and diameter $D$, the classical
-  Li–Yau estimate gives $\lambda_1\geq\pi^2/(2D^2)$.
-  Such estimates express a global Poincaré inequality in geometric terms.
+  Li–Yau estimate gives $\lambda_1\geq\pi^2/(2D^2)$, and the sharp
+  Zhong–Yang estimate gives $\lambda_1\geq\pi^2/D^2$.
 
 ## Conformal geometry and critical equations
 
-* **27. Conformal scalar-curvature equation.** For $n\geq3$,
+* **29. Conformal scalar-curvature equation.** For $n\geq3$,
   $\widetilde g=u^{4/(n-2)}g$, $u>0$, satisfies
   $R_{\widetilde g}u^{(n+2)/(n-2)}=L_gu$, where
   $L_g=-4(n-1)(n-2)^{-1}\Delta+R_g$.
   The conformal Laplacian obeys the corresponding conformal covariance law.
-* **28. Almost sharp Sobolev inequality.** On a closed manifold,
+* **30. Almost sharp Sobolev inequality.** On a closed manifold,
   for every $\varepsilon>0$,
   $\|u\|_{2n/(n-2)}^2\leq(K_n^2+\varepsilon)
   \|\nabla u\|_2^2+C_\varepsilon\|u\|_2^2$, where $K_n$
   is the best Euclidean Sobolev constant. Euclidean bubbles explain
   the sharp leading constant and loss of critical compactness.
-* **29. Yamabe theorem.** Every conformal class on a closed
+* **31. Yamabe theorem.** Every conformal class on a closed
   $n$-manifold, $n\geq3$, contains a smooth metric of constant scalar
   curvature minimizing the normalized total scalar curvature in that class.
   Equivalently, the Yamabe quotient attains its infimum at a positive
-  smooth solution of $L_gu=\lambda u^{(n+2)/(n-2)}$.
-* **30. Obata rigidity in a conformal class.** If a closed connected
+  smooth solution of $L_gu=\lambda u^{(n+2)/(n-2)}$. The Yamabe
+  invariant satisfies $Y(M,[g])\leq Y(S^n)$; strict inequality yields
+  a minimizer (Aubin), and it holds unless $(M,[g])$ is conformal to the
+  round sphere (Aubin for $n\geq6$ not locally conformally flat,
+  Schoen otherwise via the positive mass theorem).
+* **32. Obata rigidity in a conformal class.** If a closed connected
   Einstein manifold of dimension at least three admits a nonconstant
   conformal factor producing another constant-scalar-curvature metric,
   then it is isometric, up to scaling, to the round sphere.
-* **31. Surface uniformization.** Every conformal class on a closed
+* **33. Surface uniformization.** Every conformal class on a closed
   oriented surface contains a constant-Gauss-curvature metric. Its
   curvature sign is that of the Euler characteristic; for nonpositive
   curvature the area-normalized representative is unique.
-* **32. Calabi–Yau theorem.** On a compact Kähler manifold,
+* **34. Calabi–Yau theorem.** On a compact Kähler manifold,
   every real closed $(1,1)$-form representing $2\pi c_1(M)$ is
   the Ricci form of a unique Kähler metric in each prescribed Kähler
   class. In particular $c_1(M)=0$ in real cohomology gives a unique
@@ -181,59 +200,59 @@ For $u:(M,g)\to(N,h)$, put $E(u)=\tfrac12\int|du|^2dV$.
 The tension field is $\tau(u)=\operatorname{tr}_g\nabla du$;
 harmonic maps are critical points of $E$ and satisfy $\tau(u)=0$.
 
-* **33. First and second variation.** The first variation is
+* **35. First and second variation.** The first variation is
   $\delta E(V)=-\int\langle\tau(u),V\rangle$.
   At a harmonic map the Hessian is
   $\int(|\nabla V|^2-\sum_i\langle R^N(V,du(e_i))du(e_i),V\rangle)$.
   Thus nonpositive target curvature implies stability.
-* **34. Harmonic-map Bochner formula.** The identity for
+* **36. Harmonic-map Bochner formula.** The identity for
   $\tfrac12\Delta|du|^2$ consists of $|\nabla du|^2$, a
   source-Ricci term, a target-curvature term with opposite sign, and
   $\langle\nabla\tau(u),du\rangle$. Consequently, on a closed
   source with nonnegative Ricci curvature and nonpositive target
   curvature, harmonic maps are totally geodesic; positive source Ricci
   curvature forces them to be constant.
-* **35. Eells–Sampson existence.** Every homotopy class of maps
+* **37. Eells–Sampson existence.** Every homotopy class of maps
   between closed manifolds has a smooth harmonic representative if
   the target has nonpositive sectional curvature. It minimizes energy
   within the homotopy class.
-* **36. Uniqueness in negative curvature.** If the target has
+* **38. Uniqueness in negative curvature.** If the target has
   strictly negative sectional curvature, a harmonic representative whose
   differential has rank at least two somewhere is unique in its
   homotopy class. Constant maps and maps into geodesics explain the
   necessary qualification.
-* **37. Small-energy regularity.** For smooth harmonic maps into a
+* **39. Small-energy regularity.** For smooth harmonic maps into a
   compact target, sufficiently small scaled energy
   $r^{2-m}\int_{B_r}|du|^2$ gives an interior gradient bound
   $\sup_{B_{r/2}}|du|^2\leq Cr^{-m}\int_{B_r}|du|^2$,
   with the usual controlled source geometry. Minimizing maps have the
   corresponding weak-solution regularity theorem.
-* **38. Partial regularity for minimizers.** An energy-minimizing
+* **40. Partial regularity for minimizers.** An energy-minimizing
   $W^{1,2}$ map from an $m$-manifold to a compact smooth target is
   smooth off a closed singular set of Hausdorff dimension at most
   $m-3$; in dimension three the singularities are locally isolated.
   Arbitrary weakly harmonic maps need not satisfy this conclusion.
-* **39. Two-dimensional weak regularity.** Every weakly harmonic
+* **41. Two-dimensional weak regularity.** Every weakly harmonic
   $W^{1,2}$ map from a smooth surface into a compact smooth
   Riemannian manifold is smooth. The conservation-law and moving-frame
   structure supplies the compensation absent from a general quadratic system.
-* **40. Removable punctures.** A smooth harmonic map from a
+* **42. Removable punctures.** A smooth harmonic map from a
   punctured disk to a compact target with finite energy extends smoothly
   across the puncture. Rescaled concentration limits therefore extend
   to harmonic maps from $S^2$.
-* **41. Bubble convergence on surfaces.** A bounded-energy sequence
+* **43. Bubble convergence on surfaces.** A bounded-energy sequence
   of harmonic maps from a fixed closed surface to a compact target has
   a subsequence converging smoothly away from finitely many points.
   Finitely many rescaled harmonic spheres account for all lost energy;
   the limiting energy is the energy of the base map plus their energies.
-* **42. Heat-flow dissipation.** Harmonic-map heat flow
+* **44. Heat-flow dissipation.** Harmonic-map heat flow
   $u_t=\tau(u)$ satisfies
   $dE(u(t))/dt=-\int|\tau(u)|^2dV$ as long as it is smooth.
-* **43. Nonpositive-curvature heat flow.** For closed source and
+* **45. Nonpositive-curvature heat flow.** For closed source and
   closed nonpositively curved target, smooth initial data give a global
   smooth heat flow. A sequence of times tending to infinity converges
   smoothly to a harmonic map in the initial homotopy class.
-* **44. Surface heat-flow singularities.** For a closed surface and
+* **46. Surface heat-flow singularities.** For a closed surface and
   compact target there is a global weak harmonic-map heat flow that is
   smooth except at finitely many singular space-time points. Each
   singularity consumes at least the positive minimum bubbling energy;
@@ -241,53 +260,55 @@ harmonic maps are critical points of $E$ and satisfy $\tau(u)=0$.
 
 ## Minimal submanifolds and Plateau problems
 
-* **45. First variation of area.** With mean-curvature vector
+* **47. First variation of area.** With mean-curvature vector
   $\mathbf H=\operatorname{tr}A$, a compactly supported normal
   variation $V$ gives $\delta\operatorname{Area}=-\int
   \langle\mathbf H,V\rangle$. Thus minimal submanifolds are
   precisely the stationary smooth immersions.
-* **46. Stability operator.** For a two-sided minimal hypersurface,
+* **48. Stability operator.** For a two-sided minimal hypersurface,
   the second variation in direction $f\nu$ is
   $\int(|\nabla f|^2-(|A|^2+\operatorname{Ric}(\nu,\nu))f^2)$.
   Stability means this quadratic form is nonnegative for all compactly
   supported $f$.
-* **47. Minimal graphs.** The graph of $u:\Omega\subset
+* **49. Minimal graphs.** The graph of $u:\Omega\subset
   \mathbb R^m\to\mathbb R$ is minimal exactly when
   $\operatorname{div}(\nabla u/\sqrt{1+|\nabla u|^2})=0$.
   A smooth solution minimizes area among graph competitors with its
   boundary values, by convexity of the area integrand.
-* **48. Conformal harmonic parametrization.** A conformal immersion
+* **50. Conformal harmonic parametrization.** A conformal immersion
   of a surface is minimal if and only if it is harmonic. Allowing
   isolated branch points gives the corresponding statement for
   conformal harmonic parametrized surfaces.
-* **49. Weierstrass representation.** Holomorphic one-forms
+* **51. Weierstrass representation.** Holomorphic one-forms
   $\phi_1,\phi_2,\phi_3$ on a Riemann surface satisfying
   $\sum\phi_j^2=0$, having no common zero, and having purely
   imaginary periods give a conformal minimal immersion
   $X=\operatorname{Re}\int(\phi_1,\phi_2,\phi_3)$ into
   $\mathbb R^3$. Every oriented conformal minimal immersion arises
   in this way; common zeros correspond to branch points.
-* **50. Douglas–Radó Plateau theorem.** Every rectifiable Jordan
+* **52. Douglas–Radó Plateau theorem.** Every rectifiable Jordan
   curve in Euclidean space spans a least-area disk in the parametric
   class. It admits a conformal harmonic disk parametrization, smooth
-  in the interior with possible branch points in general codimension.
-* **51. Monotonicity of minimal area.** For a stationary
+  in the interior with possible branch points in general codimension;
+  in $\mathbb R^3$ a least-area disk has no interior branch points
+  (Osserman, Gulliver, Alt).
+* **53. Monotonicity of minimal area.** For a stationary
   $m$-dimensional submanifold or integral varifold in Euclidean space,
   $r^{-m}\mu(B_r(x))$ is nondecreasing while the balls avoid its
   boundary. Constancy characterizes conical behavior about $x$.
-* **52. Graphical regularity near a plane.** A stationary integral
+* **54. Graphical regularity near a plane.** A stationary integral
   varifold sufficiently close in mass and tilt to a multiplicity-one
   plane in a ball is a $C^{1,\alpha}$ graph in a smaller ball.
   The minimal-surface equation improves the graph to smoothness.
-* **53. Stable Bernstein theorem in dimension two.** A complete
+* **55. Stable Bernstein theorem in dimension two.** A complete
   two-sided stable minimal surface in $\mathbb R^3$ is a plane.
   The stability inequality and logarithmic cutoff arguments exclude
   nonzero second fundamental form.
-* **54. Bernstein theorem for graphs.** Every smooth entire
+* **56. Bernstein theorem for graphs.** Every smooth entire
   minimal graph $\mathbb R^m\to\mathbb R$ is affine for
   $m\leq7$. Nonaffine entire examples occur in higher dimensions,
   so the dimension restriction is essential.
-* **55. Regularity of minimizing hypersurfaces.** An area-minimizing
+* **57. Regularity of minimizing hypersurfaces.** An area-minimizing
   integral hypersurface of dimension $m$ has interior singular set of
   Hausdorff dimension at most $m-7$. It is smooth for $m\leq6$;
   isolated singularities can occur for $m=7$.
@@ -298,39 +319,39 @@ Here $F_t:M^m\to\mathbb R^{m+1}$ evolves by $\partial_tF=
 \mathbf H$. Write $H$ for scalar mean curvature with a consistent
 normal choice, and $A$ for the second fundamental form.
 
-* **56. Short-time existence.** Every smooth closed immersed
+* **58. Short-time existence.** Every smooth closed immersed
   hypersurface has a unique smooth mean curvature flow for a short
   time, up to the usual equivalent parametrized formulations. A graph
   evolves by $u_t=\sqrt{1+|\nabla u|^2}
   \operatorname{div}(\nabla u/\sqrt{1+|\nabla u|^2})$.
-* **57. Evolution identities.** Along a Euclidean hypersurface flow,
+* **59. Evolution identities.** Along a Euclidean hypersurface flow,
   $\partial_td\mu=-H^2d\mu$,
   $(\partial_t-\Delta)H=|A|^2H$, and
   $(\partial_t-\Delta)|A|^2=-2|\nabla A|^2+2|A|^4$.
-* **58. Avoidance principle.** Two initially disjoint smooth closed
+* **60. Avoidance principle.** Two initially disjoint smooth closed
   hypersurfaces remain disjoint while their flows exist. Comparison
   with shrinking spheres gives finite extinction bounds for compact
   flows. See [Mantegazza's evolution notes](https://cvgmt.sns.it/HomePages/cm/MCFPisa2017/MCF-Lez56.pdf).
-* **59. Huisken monotonicity.** For $t<t_0$ put
+* **61. Huisken monotonicity.** For $t<t_0$ put
   $\rho=(4\pi(t_0-t))^{-m/2}
   e^{-|x-x_0|^2/(4(t_0-t))}$. Then
   $d\int_{M_t}\rho\,d\mu/dt=-\int_{M_t}\rho
   |\mathbf H+(x-x_0)^\perp/(2(t_0-t))|^2d\mu$.
   Equality characterizes self-similar shrinkers about $(x_0,t_0)$;
   see [the monotonicity notes](https://cvgmt.sns.it/HomePages/cm/MCFPisa2017/MCF-Lez8.pdf).
-* **60. Convex hypersurface convergence.** A smooth closed strictly
+* **62. Convex hypersurface convergence.** A smooth closed strictly
   convex hypersurface in Euclidean space remains convex and shrinks
   to a point in finite time. After recentering and volume or area
   normalization it converges smoothly to a round sphere.
-* **61. Curve shortening.** A smooth embedded closed plane curve
+* **63. Curve shortening.** A smooth embedded closed plane curve
   becomes convex under curve shortening and then shrinks to a round
   point; normalized curves converge smoothly to a circle. The convex
   convergence statements are treated in
   [Mantegazza's singularity notes](https://cvgmt.sns.it/HomePages/cm/MCFPisa2017/MCF-Lez11.pdf).
-* **62. Extension criterion.** A smooth closed hypersurface flow on
+* **64. Extension criterion.** A smooth closed hypersurface flow on
   $[0,T)$ with finite $T$ extends past $T$ if $|A|$ stays
   bounded. Thus a finite maximal time forces curvature blow-up.
-* **63. Density regularity.** There is a dimensional
+* **65. Density regularity.** There is a dimensional
   $\varepsilon>0$ such that Gaussian density ratios sufficiently
   close to one at all scales in a parabolic neighborhood give interior
   curvature bounds for a smooth embedded mean curvature flow.
@@ -343,39 +364,39 @@ A gradient Ricci soliton satisfies
 $\operatorname{Ric}+\nabla^2f=\lambda g$, with positive, zero, or
 negative $\lambda$ giving shrinking, steady, or expanding solutions.
 
-* **64. Hamilton–DeTurck existence.** A smooth metric on a closed
+* **66. Hamilton–DeTurck existence.** A smooth metric on a closed
   manifold has a unique smooth Ricci flow for a short time. Adding a
   Lie derivative fixes diffeomorphism invariance and gives a strictly
   parabolic system; pulling back recovers Ricci flow.
-* **65. Scalar evolution.** Under Ricci flow,
+* **67. Scalar evolution.** Under Ricci flow,
   $\partial_tdV=-R\,dV$ and
   $\partial_tR=\Delta R+2|\operatorname{Ric}|^2$.
   In particular nonnegative scalar curvature is preserved on a closed manifold.
-* **66. Curvature maximum principles.** The tensor maximum
+* **68. Curvature maximum principles.** The tensor maximum
   principle preserves nonnegative curvature operator in every
   dimension, and nonnegative Ricci curvature in dimension three.
   These are invariant curvature cones for the reaction equation.
-* **67. Shi derivative estimates.** A complete Ricci flow with
+* **69. Shi derivative estimates.** A complete Ricci flow with
   $|\mathrm{Rm}|\leq K$ on $[0,T]$ satisfies
   $|\nabla^j\mathrm{Rm}|\leq C_jK t^{-j/2}$ for positive
   times in a bounded $KT$ range. Local versions require curvature
   control on a suitable parabolic ball.
-* **68. Curvature blow-up criterion.** A closed Ricci flow with
+* **70. Curvature blow-up criterion.** A closed Ricci flow with
   bounded full curvature on a finite time interval extends smoothly
   beyond its endpoint. Finite-time singularities therefore have
   $\sup_M|\mathrm{Rm}|\to\infty$ along a sequence of times.
-* **69. Hamilton compactness.** A sequence of complete pointed
+* **71. Hamilton compactness.** A sequence of complete pointed
   Ricci flows with uniform curvature bounds on compact time intervals
   and a positive injectivity-radius bound at the base points at one
   time has a subsequence converging smoothly on compact subsets,
   after pointed diffeomorphisms. These analytic foundations are
   discussed in [Topping's notes](https://warwick.ac.uk/fac/sci/maths/people/staff/peter_topping/rfnotes/topping_rf_mar06.pdf).
-* **70. Perelman $\mathcal F$ monotonicity.** For
+* **72. Perelman $\mathcal F$ monotonicity.** For
   $\mathcal F(g,f)=\int(R+|\nabla f|^2)e^{-f}dV$,
   $g_t=-2\operatorname{Ric}$ and
   $f_t=-\Delta f+|\nabla f|^2-R$ give
   $d\mathcal F/dt=2\int|\operatorname{Ric}+\nabla^2f|^2e^{-f}dV$.
-* **71. Perelman $\mathcal W$ monotonicity.** Put
+* **73. Perelman $\mathcal W$ monotonicity.** Put
   $\mathcal W=\int[\tau(R+|\nabla f|^2)+f-n]
   (4\pi\tau)^{-n/2}e^{-f}dV$, with the weighted measure of mass
   one and $\tau_t=-1$. If
@@ -383,21 +404,21 @@ negative $\lambda$ giving shrinking, steady, or expanding solutions.
   $d\mathcal W/dt=2\tau\int|
   \operatorname{Ric}+\nabla^2f-g/(2\tau)|^2
   (4\pi\tau)^{-n/2}e^{-f}dV$.
-* **72. No local collapsing.** For a closed Ricci flow on a finite
+* **74. No local collapsing.** For a closed Ricci flow on a finite
   time interval there is $\kappa>0$ such that a metric ball of
   radius $r$ with $|\mathrm{Rm}|\leq r^{-2}$ on the appropriate
   parabolic neighborhood has volume at least $\kappa r^n$,
   for bounded scales. Entropy gives the uniform constant; see
   [Perelman's paper](https://arxiv.org/abs/math/0211159).
-* **73. Hamilton's three-dimensional convergence.** A closed
+* **75. Hamilton's three-dimensional convergence.** A closed
   three-manifold with positive Ricci curvature evolves under
   volume-normalized Ricci flow to a constant-positive-sectional-curvature
   metric. It is therefore a spherical space form.
-* **74. Differentiable sphere theorem.** A closed manifold with
+* **76. Differentiable sphere theorem.** A closed manifold with
   strictly pointwise quarter-pinched positive sectional curvature is
   diffeomorphic to a spherical space form; if simply connected, to a
   sphere. Ricci-flow pinching improves the curvature to the round case.
-* **75. Three-dimensional geometrization.** Every closed oriented
+* **77. Three-dimensional geometrization.** Every closed oriented
   three-manifold decomposes along spheres into prime pieces and along
   incompressible tori in those pieces into pieces admitting Thurston
   geometries on their interiors. Ricci flow with surgery establishes
@@ -411,28 +432,28 @@ $\omega$-compatible almost complex structure $J$ makes
 $\omega(\cdot,J\cdot)$ a Riemannian metric. A $J$-holomorphic map
 satisfies $du\circ j=J\circ du$.
 
-* **76. Cauchy–Riemann Fredholm index.** On a fixed closed genus-$g$
+* **78. Cauchy–Riemann Fredholm index.** On a fixed closed genus-$g$
   domain, the linearization at a $J$-holomorphic map to a complex
   $n$-dimensional target is a real elliptic Fredholm operator of index
   $2n(1-g)+2\langle c_1(TM),u_*[\Sigma]\rangle$.
   Surjectivity makes the local parametrized solution space smooth of
   this dimension.
-* **77. Energy and sphere bubbling.** For compatible $J$, a
+* **79. Energy and sphere bubbling.** For compatible $J$, a
   $J$-holomorphic curve satisfies $E(u)=\int_\Sigma u^*\omega$.
   Bounded-area sequences of such spheres with three marked domain
   points in a closed target have a subsequence converging, after
   reparametrization and extraction of
   bubbles, to a stable tree of spheres with the same total area.
-* **78. Symplectic nonsqueezing.** A symplectic embedding of the
+* **80. Symplectic nonsqueezing.** A symplectic embedding of the
   ball $B^{2n}(r)$ into the cylinder
   $B^2(R)\times\mathbb R^{2n-2}$ requires $r\leq R$.
   Holomorphic-curve area bounds give the obstruction.
-* **79. Morse homology.** For a Morse function and Morse–Smale
+* **81. Morse homology.** For a Morse function and Morse–Smale
   metric on a closed manifold, counting gradient trajectories of
   index difference one defines a differential with square zero.
   Compactification by broken trajectories proves this identity, and
   the resulting homology is singular homology.
-* **80. Hamiltonian Floer continuation.** On a closed symplectically
+* **82. Hamiltonian Floer continuation.** On a closed symplectically
   aspherical manifold, $\omega|_{\pi_2}=c_1|_{\pi_2}=0$,
   a nondegenerate Hamiltonian has a Floer complex generated by its
   contractible periodic orbits. Finite-energy cylinders define the
@@ -445,19 +466,19 @@ $F_A=dA+A\wedge A$ and $d_A$ be its covariant exterior derivative.
 Gauge transformations change local connection matrices while preserving
 curvature norms.
 
-* **81. Yang–Mills equation.** The critical equation for
+* **83. Yang–Mills equation.** The critical equation for
   $\tfrac12\int|F_A|^2dV$ is $d_A^*F_A=0$; the Bianchi
   identity is $d_AF_A=0$. The energy and equation are gauge invariant.
-* **82. Four-dimensional instantons.** On an oriented
+* **84. Four-dimensional instantons.** On an oriented
   four-manifold, $F_A^+=0$ or $F_A^-=0$ implies Yang–Mills.
   The self-dual decomposition of the energy and the Chern–Weil
   formula show that these connections minimize energy in their
   topological class when they exist.
-* **83. Uhlenbeck gauge theorem.** On a four-dimensional ball,
+* **85. Uhlenbeck gauge theorem.** On a four-dimensional ball,
   sufficiently small $\|F_A\|_{L^2}$ permits a Coulomb gauge
   $d^*a=0$ with vanishing normal component at the boundary and
   $\|a\|_{W^{1,2}}\leq C\|F_A\|_2$, in scale-normalized norms.
-* **84. Gauge compactness.** On a closed $n$-manifold, curvature
+* **86. Gauge compactness.** On a closed $n$-manifold, curvature
   bounds in $L^p$, $p>n/2$, give weak $W^{1,p}$ compactness
   modulo gauge. For Yang–Mills connections, elliptic regularity improves
   this to smooth compactness modulo gauge. Critical four-dimensional
@@ -468,29 +489,29 @@ A sub-Riemannian structure is an inner product on a bracket-generating
 distribution $\mathcal D\subset TM$. Its distance is the infimum of
 lengths of curves tangent to $\mathcal D$.
 
-* **85. Rashevskii–Chow theorem.** On a connected bracket-generating
+* **87. Rashevskii–Chow theorem.** On a connected bracket-generating
   sub-Riemannian manifold, every two points are joined by a horizontal
   curve. The resulting finite distance induces the manifold topology.
-* **86. Pontryagin principle.** A length minimizer, parametrized at
+* **88. Pontryagin principle.** A length minimizer, parametrized at
   constant speed, has a nontrivial covector lift satisfying the
   Hamiltonian necessary conditions. Normal extremals follow
   $H(q,p)=\tfrac12\sum_i\langle p,X_i(q)\rangle^2$;
   abnormal extremals require the separate zero-cost multiplier case.
-* **87. Ball–box theorem.** In privileged coordinates at an
+* **89. Ball–box theorem.** In privileged coordinates at an
   equiregular point with weights $w_i$, a sufficiently small metric
   ball is trapped between coordinate boxes $|x_i|\leq c r^{w_i}$
   with two fixed positive constants $c$. Thus its volume is comparable
   to $r^Q$, $Q=\sum_iw_i$.
-* **88. Nilpotent tangent geometry.** At an equiregular point, the
+* **90. Nilpotent tangent geometry.** At an equiregular point, the
   rescaled sub-Riemannian spaces converge to the graded nilpotent
   approximation, a Carnot group. Its homogeneous dimension $Q$ is
   the local Hausdorff dimension, generally exceeding the manifold dimension.
-* **89. Hörmander subellipticity.** Smooth bracket-generating vector
+* **91. Hörmander subellipticity.** Smooth bracket-generating vector
   fields give a hypoelliptic sum-of-squares operator and local estimates
   gaining a positive fraction of a derivative. The associated heat
   operator has a smooth kernel for positive time; the available gain
   depends on the bracket structure.
-* **90. Positive mass theorem in dimension three.** A smooth connected
+* **92. Positive mass theorem in dimension three.** A smooth connected
   complete asymptotically flat three-manifold with finitely many ends,
   integrable nonnegative scalar curvature, and decay
   $g_{ij}-\delta_{ij}=O_2(r^{-q})$, $q>1/2$, has nonnegative
