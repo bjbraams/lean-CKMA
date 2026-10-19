@@ -23,7 +23,8 @@ every numbered entry under that heading into *covered* (the result as stated,
 with its hypotheses, is proved in Mathlib or TauCeti, possibly in an equivalent
 formulation), *partly covered* (with a note on what is present), or *not
 covered*. The separate [gap inventory](GAPS.md) selects the principal missing
-results and assesses them. Other numbered sections provide additional detail
+results and assesses them. Section-by-section summaries for each library are in
+[MathlibCoverage.md](MathlibCoverage.md) and [TauCetiCoverage.md](TauCetiCoverage.md). Other numbered sections provide additional detail
 about shared foundations; these are linked where useful.
 
 ## Source baseline and conventions

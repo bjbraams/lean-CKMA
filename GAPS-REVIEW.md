@@ -499,7 +499,11 @@ Every numbered entry was checked against fresh source trees of
 `f039e1b8a616d45782a5c7fc5e7909249c36b8ea` and
 [TauCeti](https://github.com/TauCetiProject/TauCeti) at commit
 `6ebb29f84b4d6e2019233da0718776a6e32e1526`, both dated 2026-10-18. The `Mathlibxx.md`
-inventories and [TauCetiCoverage.md](TauCetiCoverage.md) describe the same revisions.
+inventories and the TauCeti audit note of that date described the same revisions. The
+current summaries, [MathlibCoverage.md](MathlibCoverage.md) and
+[TauCetiCoverage.md](TauCetiCoverage.md), describe Mathlib
+`911003dd6dea5df215dff57f2717be762e11a6ca` and TauCeti
+`5cdecf40e99d5a5ad0833afff31f5b007d68a149`.
 Paths below are relative to the root of the respective repository.
 
 ### Criteria
