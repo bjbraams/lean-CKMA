@@ -1,5 +1,124 @@
 # Library review of GAPS.md, October 2026
 
+## Third review: fresh library search, 19 October 2026
+
+Every one of the 584 entries was checked again against the same Mathlib and
+TauCeti revisions, this time by an independent search of the `.lean` sources
+rather than from the coverage inventories or the earlier assessments. Searches
+went by mathematical content (synonyms, hypotheses, docstrings), and candidate
+declarations were read and checked for `sorry`. **Three entries were removed**
+and **six were narrowed** (three more were narrowed in the deeper search below); the selection now has **581 entries**. All other
+entries were confirmed as genuine gaps.
+
+Removed, because the statement follows from proved library results by a short
+argument with no new mathematics:
+
+- **06.1, Kolmogorov extension for an arbitrary index set.** TauCeti
+  `TauCeti/MeasureTheory/Measure/ProjectiveLimit/Countable.lean`,
+  `exists_isProjectiveLimit_of_countable`, gives existence for countable index
+  sets with standard Borel coordinates; uniqueness is Mathlib's
+  `MeasureTheory.IsProjectiveLimit.unique`. For an uncountable index set, a
+  decreasing sequence of cylinder sets depends on countably many coordinates,
+  so σ-additivity of Mathlib's `projectiveFamilyContent` reduces to the
+  countable case (the same reduction as `piContent_tendsto_zero` in
+  `Mathlib/Probability/ProductMeasure.lean`), and `AddContent.measure` extends
+  the content. The emptied subsection heading was removed.
+- **12.32, everywhere-defined Hilbert proximal map.** TauCeti
+  `TauCeti/Analysis/Convex/FenchelMoreau.lean`, `exists_affine_le_of_lt`, gives
+  a continuous affine minorant, so $f+\|x-\cdot\|^2/2\gamma$ is coercive; it is
+  weakly lower semicontinuous by Mathlib's `Convex.toWeakSpace_closure`, and
+  TauCeti's weak compactness of bounded closed convex sets in reflexive spaces
+  (`Reflexive/WeakCompact.lean`) yields a minimizer. The identification with
+  $J_{\gamma\partial f}$ is a first-order optimality argument along segments.
+  The emptied subsection heading was removed.
+- **13.10, Hoffman–Wielandt for normal matrices.** With orthonormal
+  eigenbases of $A$ and $B$ (TauCeti `NormalOperator.lean`), $\|A-B\|_2^2$ is an
+  affine function of the Schur weight matrix of the two bases, which is doubly
+  stochastic (TauCeti `SchurHorn.lean`, `schurWeight_mem_doublyStochastic`).
+  By Mathlib's `doublyStochastic_eq_convexHull_permMatrix` and
+  `ConcaveOn.exists_le_of_mem_convexHull` its minimum over that polytope is
+  attained at a permutation matrix. The emptied subsection heading was removed.
+
+Narrowed:
+
+- **06.23, three-series theorem.** Sufficiency follows from Mathlib's
+  martingale convergence (`Submartingale.ae_tendsto_limitProcess`) applied to
+  the centered truncated sums, with `IndepFun.variance_sum`,
+  `condExp_indep_eq` and Borel–Cantelli (`measure_limsup_atTop_eq_zero`); the
+  gap is necessity.
+- **10.5, Birkhoff pointwise theorem.** $L^p$ mean convergence follows from
+  TauCeti's $L^2$ theorem (`tendsto_eLpNorm_birkhoffAverage_sub_condExp`,
+  `CondExpProjection.lean`) by density and the $L^p$ contraction bounds
+  (Mathlib `eLpNorm_condExp_le_eLpNorm`); the gap is almost-everywhere
+  convergence and the maximal ergodic inequality.
+- **10.48, Furstenberg multiple recurrence.** The case $k=1$ follows from the
+  $L^2$ mean ergodic theorem, since the limit is
+  $\|\mathbb E[1_A\mid\mathcal I]\|_2^2\geq\mu(A)^2$; the gap is $k\geq2$.
+- **21.22, Schatten Hölder inequality.** TauCeti
+  `TauCeti/Analysis/OperatorIdeal/ApproximationNumber/Basic.lean`,
+  `ContinuousLinearMap.singularValue_comp_add_le_mul`, gives
+  $a_{m+n}(ST)\leq a_m(S)a_n(T)$, hence $S^pS^q\subset S^r$ with constant
+  $2^{1/r}$ and Hilbert–Schmidt products in the trace class; the gap is the
+  sharp inequality, which needs Horn's majorization.
+- **23.9, GNS cyclic vector.** For a unital algebra the class of $1$ in
+  Mathlib's construction (`Mathlib/Analysis/CStarAlgebra/GelfandNaimarkSegal.lean`,
+  `preGNS_inner_def`, `gnsStarAlgHom`) is a cyclic vector realizing the state;
+  the gap is the nonunital case and uniqueness.
+- **52.81, Morse homology.** TauCeti
+  `TauCeti/Analysis/Calculus/Morse/SequentialCompactness.lean`,
+  `exists_subseq_unbroken_or_broken_of_morseIndex_eq_add_two`, proves
+  sequential compactness of index-two trajectory spaces; the gap is gluing,
+  the compactified trajectory manifold, and the identification with singular
+  homology.
+
+Borderline entries examined and kept include 11.22 (Hardy–Littlewood–Pólya:
+TauCeti's transfer descent supplies the core induction, but the passage to a
+doubly stochastic matrix needs further construction), 26.16, 28.58, 35.12,
+37.24, 45.2 and 47.23 (only the case $p=2$ follows from Parseval).
+
+Sections 44, 45, 46 and 53, whose first pass kept every entry quickly, were then
+searched a second time and in more depth: at least four distinct searches per
+entry, each search pattern first tested against a term known to exist, and a
+skim of the module docstrings of every file in the relevant directories of both
+libraries (among them `TauCeti/Analysis/Complex/**`, including the Riemann-surface,
+Fuchsian and thrice-punctured-sphere files, `TauCeti/Geometry/**`,
+`TauCeti/Dynamics/**`, `Mathlib/Analysis/Complex/**`, `Mathlib/Geometry/Manifold/**`
+and `Mathlib/Dynamics/**`). All 87 entries were confirmed. The nearest results
+found were groundwork or special cases too small to narrow an entry: for example
+TauCeti's meromorphic functions on Riemann surfaces and algebraic Abel–Jacobi maps
+(44.12, 44.27), division by a linear factor and the fixed-zero case of
+preparation for analytic germs (45.7, 45.8), local normal forms
+$f-f(z_0)=arphi^m$ that are not conjugacies (46.11), Gauss–Bonnet for
+hyperbolic polygons (53.46), and Riemann–Roch for algebraic curves (53.48).
+
+The same deeper search was then applied to sections 31–34, 39–43 and 47–52
+(203 entries). No entry was removed; three were narrowed:
+
+- **32.19, Green's identities.** In the plane both identities follow by
+  substitution $X=u\,\partial_xv$, $Y=u\,\partial_yv$ from TauCeti's flux form of
+  Green's theorem (`TauCeti/Analysis/Green/IndexOne.lean`, `TauCeti.Green.green_ac_flux`,
+  for regions bounded by closed absolutely continuous curves of winding number one;
+  `Green/FiniteSum.lean` for several boundary curves), and on a half-space from
+  `ContDiffOn.integral_divergence_coordinate_halfSpace`. The gap is curved domains
+  in dimension at least three and the representation formula.
+- **48.6, real and simple zeros.** Mathlib proves the Chebyshev case
+  (`Mathlib/Analysis/SpecialFunctions/Trigonometric/Chebyshev/RootsExtrema.lean`,
+  `Polynomial.Chebyshev.roots_T_real`, `rootMultiplicity_T_real`); the gap is a
+  general measure.
+- **48.14, Gauss quadrature.** Mathlib proves the Chebyshev–Gauss rule
+  (`Chebyshev/ChebyshevGauss.lean`, `Polynomial.Chebyshev.integral_eq_sumZeroes`);
+  the gap is a general measure, uniqueness, and the Christoffel weights.
+
+Two opening paragraphs were clarified without changing the selection: section 39
+now says that Hutchinson's attractor theorem is absent from both libraries but not
+selected because it follows from the Banach fixed-point theorem, and section 51
+mentions TauCeti's Hamiltonian flows on symplectic vector spaces. Near misses
+recorded and kept include TauCeti's synthetic Bonnet–Myers bound under $MCP(K,N)$
+(52.7, not linked to Ricci curvature on manifolds), its Aleksandrov maximum
+principle for convex functions (33.14), its two-point Schwarz–Pick bound (42.26),
+and its explicit statements that the Benamou–Brenier lower bound (39.49) and EVI
+existence (39.61) are not proved.
+
 ## Second review: 19 October 2026
 
 The current selection in [GAPS.md](GAPS.md) has **584 entries**, down from

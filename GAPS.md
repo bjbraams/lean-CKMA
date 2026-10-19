@@ -1,7 +1,7 @@
 # Principal gaps in the core knowledge of mathematical analysis
 
 This catalogue compares the mathematical core described in `SYNOPSIS04.md` through
-`SYNOPSIS53.md` with the content of Mathlib and TauCeti. It selects **584 principal
+`SYNOPSIS53.md` with the content of Mathlib and TauCeti. It selects **581 principal
 theorem statements and theorem families**, distributed unevenly across all fifty
 areas, for which Lean code would be a genuine addition to the combined
 Mathlib and TauCeti core. Its emphasis is on substantial missing mathematics: central
@@ -67,10 +67,10 @@ contributions include:
 The remaining gaps should be assessed relative to that combined foundation.
 They are distributed by area as follows:
 
-* 04–11, real analysis, probability, dynamics, and inequalities: 72 statements.
+* 04–11, real analysis, probability, dynamics, and inequalities: 71 statements.
   Scalar integration and classical inequalities are broad; refined limit theory,
   stochastic calculus, chaining, and pointwise dynamics remain major gaps.
-* 12–19, convexity and functional analysis: 62 statements. Basic linear principles,
+* 12–19, convexity and functional analysis: 60 statements. Basic linear principles,
   reflexivity and convex duality are broad; $L^p$ surjectivity, distribution
   structure, nuclearity, Banach-space geometry, and ordered-space theory have
   substantial gaps.
@@ -204,7 +204,7 @@ A map is **$L$-Lipschitz** if $|f(x)-f(y)|\leq L|x-y|$.
 
 ## 06. Probability, measure-theoretic foundations, and limit theory
 
-Mathlib covers independence and the Kolmogorov zero–one law, the Borel–Cantelli lemmas, conditional expectation and disintegration, the Ionescu-Tulcea theorem and arbitrary products of probability measures, the strong law of large numbers, Lévy's continuity theorem and the Cramér–Wold device, the central limit theorem for independent identically distributed real variables, Chernoff-type and sub-Gaussian tail bounds, Kullback–Leibler divergence, and Gaussian measures. Mathlib also proves Prokhorov's theorem. TauCeti adds Kolmogorov extension for countably many standard Borel coordinates, tightness of weakly convergent sequences on Polish spaces, de Finetti, Hewitt–Savage and Aldous–Hoover exchangeability theory, and the Lévy–Khintchine representation of Bernstein functions (Laplace exponents on the half-line). The principal omissions are Kolmogorov extension for an arbitrary index set, random series and the iterated-logarithm law, triangular-array and quantitative central limit theorems, infinitely divisible laws on the line, functional limits, and large deviations.
+Mathlib covers independence and the Kolmogorov zero–one law, the Borel–Cantelli lemmas, conditional expectation and disintegration, the Ionescu-Tulcea theorem and arbitrary products of probability measures, the strong law of large numbers, Lévy's continuity theorem and the Cramér–Wold device, the central limit theorem for independent identically distributed real variables, Chernoff-type and sub-Gaussian tail bounds, Kullback–Leibler divergence, and Gaussian measures. Mathlib also proves Prokhorov's theorem. TauCeti adds Kolmogorov extension for countably many standard Borel coordinates (from which the arbitrary-index case follows by Mathlib's reduction of projective-family contents to countably many coordinates), tightness of weakly convergent sequences on Polish spaces, de Finetti, Hewitt–Savage and Aldous–Hoover exchangeability theory, and the Lévy–Khintchine representation of Bernstein functions (Laplace exponents on the half-line). The principal omissions are random series and the iterated-logarithm law, triangular-array and quantitative central limit theorems, infinitely divisible laws on the line, functional limits, and large deviations.
 
 Sources: [mathematical synopsis](SYNOPSIS06.md); [combined coverage inventory](STRUCTURE06.md).
 
@@ -225,23 +225,6 @@ finite-dimensional law under permutations. These distinctions matter: laws of
 large numbers, central limits, and mixture representations require different
 forms of control of dependence.
 
-### Independence, construction, and zero–one laws
-
-The **law** of $X$ is $\mathbb P\circ X^{-1}$. A family of $\sigma$-fields is
-**independent** if the probabilities of finite intersections factor; random
-variables are independent when their generated $\sigma$-fields are. The
-**tail $\sigma$-field** of a sequence is
-$\bigcap_n\sigma(X_n,X_{n+1},\ldots)$.
-
-* **06.1. Kolmogorov extension theorem.** A consistent family of finite-dimensional
-  probability distributions, indexed by the finite subsets of an arbitrary
-  (possibly uncountable) index set, with standard Borel coordinate spaces
-  determines a unique law on the product $\sigma$-algebra. TauCeti proves
-  existence for countable index sets, uniqueness is available in general, and
-  Mathlib constructs arbitrary products of probability measures; missing is
-  existence for an uncountable index set, for instance by reduction to countably
-  many coordinates.
-
 ### Independent sums, random series, and laws of large numbers
 
 * **06.23. Kolmogorov three-series theorem.** For independent real $X_n$ and any
@@ -250,6 +233,10 @@ $\bigcap_n\sigma(X_n,X_{n+1},\ldots)$.
   $$\sum_n\mathbb P(|X_n|>A)<\infty,\qquad
     \sum_n\mathbb E Y_n\text{ converges},\qquad
     \sum_n\operatorname{Var}(Y_n)<\infty.$$
+  Sufficiency follows from Mathlib: the centered truncated partial sums form an
+  $L^2$-bounded martingale, which converges almost surely by the martingale
+  convergence theorem, and the first series with Borel–Cantelli gives $X_n=Y_n$
+  eventually. Missing is the necessity of the three conditions.
 
 * **06.27. Hartman–Wintner iterated-logarithm law.** For independent identically
   distributed centered $X_n$ with variance $0<\sigma^2<\infty$,
@@ -894,12 +881,12 @@ $A_Nf=N^{-1}\sum_{n=0}^{N-1}f\circ T^n$.
 * **10.5. Birkhoff pointwise theorem.** For $f\in L^1$,
   $A_Nf\to\mathbb E[f\mid\mathcal I]$ almost everywhere.
   In an ergodic system the limit is $\int f\,d\mu$.
-  For $f\in L^p$, $1\leq p<\infty$, the convergence also holds in $L^p$.
-  The missing assertions are the almost-everywhere convergence for every
-  integrable observable and the $L^p$ convergence; TauCeti proves the
-  convergence only in $L^2$, for $f\in L^2$. On a probability space the
-  $L^p$ statement is a short approximation argument from that case and the
-  contraction bounds, but neither library states it.
+  TauCeti proves the convergence in $L^2$, for $f\in L^2$, with the
+  conditional-expectation limit. The $L^p$ mean convergence, $1\leq p<\infty$,
+  follows on a probability space by density of bounded functions and the
+  $L^p$ contraction bounds for $A_N$ and for conditional expectation, so it is
+  not part of the gap. Missing is the almost-everywhere convergence for every
+  integrable observable, together with the maximal ergodic inequality behind it.
 
 * **10.7. Kingman's subadditive theorem.** If integrable $f_n$ satisfy
   $f_{n+m}\leq f_n+f_m\circ T^n$ and
@@ -984,6 +971,10 @@ The multiplicity $m_i$ is the dimension of the exponent space.
 * **10.48. Furstenberg multiple recurrence.** If $\mu(A)>0$ and $k\geq1$, then
   $$\liminf_{N\to\infty}\frac1N\sum_{n=1}^N
     \mu(A\cap T^{-n}A\cap\cdots\cap T^{-kn}A)>0.$$
+  The case $k=1$ follows from the $L^2$ mean ergodic theorem: the averages
+  converge to $\|\mathbb E[1_A\mid\mathcal I]\|_2^2\geq\mu(A)^2$. Missing is
+  the case $k\geq2$, which needs the Furstenberg structure theory or an
+  equivalent argument.
 
 ## 11. Classical inequalities, means, majorization, and rearrangement
 
@@ -1046,7 +1037,7 @@ row and column sum one.
 
 ## 12. Convexity, convex analysis, optimization, and variational analysis
 
-Mathlib has Hahn–Banach separation, Carathéodory's and Radon's theorems, extreme points and the Krein–Milman theorem, and Sion's minimax theorem. TauCeti defines Legendre–Fenchel conjugates and subdifferentials for general pairings, proves the Fenchel–Young equality characterization of subgradients and conjugate-subgradient reciprocity, the Fenchel–Moreau theorem $f^{**}=f$ for proper lower semicontinuous convex functions on locally convex spaces, Alexandrov's almost-everywhere second-order differentiability of convex functions on finite-dimensional spaces, nonexpansiveness of the resolvent of a subdifferential, and existence of Moreau–Yosida minimizers by the direct method. It also proves the bipolar theorem in locally convex spaces, Rockafellar's characterization of cyclically monotone sets as subsets of subdifferential graphs, the basic theorem of Γ-convergence (convergence of infima and minimality of limits of minimizers under equicoercivity), and the homogeneous case of Hoffman's error bound. Missing are Choquet representation, subdifferential calculus, everywhere-defined Hilbert proximal maps, Fenchel–Rockafellar and Lagrangian duality, Ekeland's principle, and Clarke's generalized gradient.
+Mathlib has Hahn–Banach separation, Carathéodory's and Radon's theorems, extreme points and the Krein–Milman theorem, and Sion's minimax theorem. TauCeti defines Legendre–Fenchel conjugates and subdifferentials for general pairings, proves the Fenchel–Young equality characterization of subgradients and conjugate-subgradient reciprocity, the Fenchel–Moreau theorem $f^{**}=f$ for proper lower semicontinuous convex functions on locally convex spaces, Alexandrov's almost-everywhere second-order differentiability of convex functions on finite-dimensional spaces, nonexpansiveness of the resolvent of a subdifferential, and existence of Moreau–Yosida minimizers by the direct method. It also proves the bipolar theorem in locally convex spaces, Rockafellar's characterization of cyclically monotone sets as subsets of subdifferential graphs, the basic theorem of Γ-convergence (convergence of infima and minimality of limits of minimizers under equicoercivity), and the homogeneous case of Hoffman's error bound. Everywhere-defined Hilbert proximal maps and their identification with the resolvent $J_{\gamma\partial f}$ follow from TauCeti's continuous affine minorants, its weak compactness of bounded closed convex sets in reflexive spaces, and a first-order optimality argument. Missing are Choquet representation, subdifferential calculus, Fenchel–Rockafellar and Lagrangian duality, Ekeland's principle, and Clarke's generalized gradient.
 
 Sources: [mathematical synopsis](SYNOPSIS12.md); [combined coverage inventory](STRUCTURE12.md).
 
@@ -1082,27 +1073,6 @@ the **support function** is $h_C(u)=\sup_{x\in C}\langle u,x\rangle$.
   domain, then $\partial(f+g)(x)=\partial f(x)+\partial g(x)$.
   In finite dimensions, intersecting relative interiors is a standard
   alternative qualification.
-
-### Minimizers, projections, and monotone operators
-
-Here $H$ is a real Hilbert space. The **normal cone** to a closed convex $C$
-is $N_C(x)=\{u:\langle u,y-x\rangle\leq0\ \forall y\in C\}$ for $x\in C$.
-An operator $A:H\rightrightarrows H$ is **monotone** if
-$\langle x-y,u-v\rangle\geq0$ on its graph; it is **maximal monotone** if
-its graph has no proper monotone enlargement. Its resolvent is
-$J_{\gamma A}=(I+\gamma A)^{-1}$.
-
-* **12.32. Everywhere-defined proximal mapping.** For proper lower
-  semicontinuous convex $f$ on a Hilbert space and $\gamma>0$, prove that
-  $$\operatorname{prox}_{\gamma f}(x)=
-    \operatorname*{argmin}_y\left(f(y)+\frac{\|x-y\|^2}{2\gamma}\right)$$
-  exists for every $x$, and identify it with $J_{\gamma\partial f}x$.
-  TauCeti has Moreau–Yosida minimizers under compactness hypotheses.
-  Uniqueness and firm nonexpansiveness on the resolvent graph follow directly
-  from its subdifferential monotonicity inequality; the selected gap is
-  unrestricted Hilbert-space existence and the minimizer–resolvent bridge. Once
-  these exist, Moreau decomposition follows from the existing conjugate-subgradient
-  reciprocity; the cone case already follows from Hilbert projection.
 
 ### Duality and optimality conditions
 
@@ -1140,7 +1110,7 @@ $\partial_Cf(x)=\{u:\langle u,d\rangle\leq f^\circ(x;d)\ \forall d\}$.
 
 ## 13. Matrix analysis, operator monotonicity, and noncommutative inequalities
 
-Mathlib provides finite-dimensional spectral theorems, sorted eigenvalues, the Loewner order with operator monotonicity of $t^p$ ($0<p\leq1$) and of the logarithm, and a definition of completely positive maps. TauCeti proves the Courant–Fischer max–min theorem, monotonicity of sorted eigenvalues in the Loewner order and Weyl's perturbation bound $|\lambda_i(A)-\lambda_i(B)|\leq\|A-B\|$, the forward Schur–Horn inequality, Ky Fan's maximum principle and weak majorization of singular values, Fan dominance for unitarily invariant norms, the Hermitian von Neumann trace and Hoffman–Wielandt inequalities, the Eckart–Young theorem in the operator norm with the mixed-index inequality $s_{m+n+1}(A+B)\leq s_{m+1}(A)+s_{n+1}(B)$, Schatten norms, the positive geometric mean, and Pick–Nevanlinna representations. It also proves the spectral theorem for normal matrices, the singular value decomposition, the polar decomposition of bounded Hilbert-space operators, Sylvester's law of inertia, unique solvability of the Sylvester equation for symmetric operators with disjoint spectra, and the Davis–Kahan $\sin\Theta$ theorems; Mathlib has the Schur-complement criterion for positive semidefiniteness. Interlacing and the index-shifted Weyl inequalities follow from the existing variational subspace estimates; the arbitrary-matrix von Neumann trace inequality follows from the singular-value decomposition, Ky Fan bounds and summation by parts. Missing are the normal-matrix Hoffman–Wielandt theorem, Loewner's theorem, operator Jensen inequalities, the Golden–Thompson and Lieb trace inequalities, and quantum entropy inequalities.
+Mathlib provides finite-dimensional spectral theorems, sorted eigenvalues, the Loewner order with operator monotonicity of $t^p$ ($0<p\leq1$) and of the logarithm, and a definition of completely positive maps. TauCeti proves the Courant–Fischer max–min theorem, monotonicity of sorted eigenvalues in the Loewner order and Weyl's perturbation bound $|\lambda_i(A)-\lambda_i(B)|\leq\|A-B\|$, the forward Schur–Horn inequality, Ky Fan's maximum principle and weak majorization of singular values, Fan dominance for unitarily invariant norms, the Hermitian von Neumann trace and Hoffman–Wielandt inequalities, the Eckart–Young theorem in the operator norm with the mixed-index inequality $s_{m+n+1}(A+B)\leq s_{m+1}(A)+s_{n+1}(B)$, Schatten norms, the positive geometric mean, and Pick–Nevanlinna representations. It also proves the spectral theorem for normal matrices, the singular value decomposition, the polar decomposition of bounded Hilbert-space operators, Sylvester's law of inertia, unique solvability of the Sylvester equation for symmetric operators with disjoint spectra, and the Davis–Kahan $\sin\Theta$ theorems; Mathlib has the Schur-complement criterion for positive semidefiniteness. Interlacing and the index-shifted Weyl inequalities follow from the existing variational subspace estimates; the arbitrary-matrix von Neumann trace inequality follows from the singular-value decomposition, Ky Fan bounds and summation by parts; the normal-matrix Hoffman–Wielandt inequality follows from TauCeti's orthonormal eigenbases of normal operators and doubly stochastic Schur weight matrices together with Mathlib's Birkhoff theorem. Missing are Loewner's theorem, operator Jensen inequalities, the Golden–Thompson and Lieb trace inequalities, and quantum entropy inequalities.
 
 Sources: [mathematical synopsis](SYNOPSIS13.md); [combined coverage inventory](STRUCTURE13.md).
 
@@ -1159,14 +1129,6 @@ $A\mapsto C^{-1}AC$ preserves eigenvalues but generally does not preserve
 Hermitian structure. Trace cyclicity permits cyclic permutations of factors,
 rather than arbitrary permutations. These distinctions account for the
 sandwiches, congruences, and trace expressions in the statements below.
-
-### Spectral structure and variational comparison
-
-* **13.10. Hoffman–Wielandt inequality.** For normal $A,B$, some matching of
-  their eigenvalues satisfies
-  $\sum_i|\lambda_i(A)-\lambda_{\pi(i)}(B)|^2\leq\|A-B\|_2^2$.
-  TauCeti proves the Hermitian case with the decreasing-order matching;
-  missing is the case of normal matrices with complex eigenvalues.
 
 ### Operator monotonicity and convexity
 
@@ -1944,9 +1906,13 @@ classes, respectively.
 
 * **21.22. Schatten Hölder inequality.**
   $\|ST\|_r\leq\|S\|_p\|T\|_q$ when $1/r=1/p+1/q$ and
-  $p,q,r\geq1$. In particular, products of two Hilbert–Schmidt maps are
-  trace class. The two-sided ideal estimate
-  $\|ATB\|_p\leq\|A\|\|T\|_p\|B\|$ is in TauCeti.
+  $p,q,r\geq1$, with constant one. The two-sided ideal estimate
+  $\|ATB\|_p\leq\|A\|\|T\|_p\|B\|$ and the multiplicativity
+  $a_{m+n}(ST)\leq a_m(S)a_n(T)$ of approximation numbers are in TauCeti;
+  with scalar Hölder the latter gives the inclusion $S^pS^q\subset S^r$ with
+  constant $2^{1/r}$, in particular that products of two Hilbert–Schmidt maps
+  are trace class. The sharp inequality needs Horn's multiplicative
+  majorization of singular values.
 
 * **21.23. Trace and cyclicity.** For $T\in S^1$,
   $\operatorname{tr}T=\sum_j\langle Te_j,e_j\rangle$ is absolutely
@@ -2135,9 +2101,11 @@ Hilbert inner products are linear in the first variable.
   representation $(\pi_\varphi,H_\varphi,\Omega_\varphi)$ with
   $\varphi(a)=\langle\pi_\varphi(a)\Omega_\varphi,\Omega_\varphi\rangle$,
   unique up to a unitary preserving the cyclic vector. Mathlib constructs
-  the GNS space and representation of a positive functional; the cyclic
-  vector realizing $\varphi$ (in particular for nonunital algebras) and the
-  uniqueness statement are missing.
+  the GNS space and representation of a positive functional; for a unital
+  algebra the class of $1$ is a cyclic vector realizing $\varphi$ by a direct
+  computation from the construction. Missing are the cyclic vector for
+  nonunital algebras (through an approximate unit) and the uniqueness
+  statement.
 
 * **23.10. Gelfand–Naimark theorem.** Every C*-algebra has a faithful
   isometric representation as a norm-closed star algebra of operators.
@@ -3062,7 +3030,7 @@ systems with the stated simple critical spectrum.
 
 ## 32. Partial differential equations — general and linear theory
 
-TauCeti has a substantial linear elliptic and parabolic theory. It solves the weak Dirichlet problem by Lax–Milgram, including boundary values $g\in H^1(\Omega)$ imposed as $u-g\in H_0^1(\Omega)$, and proves the Fredholm alternative and the compact variational spectrum. Interior $H^2$ regularity holds for locally Lipschitz principal coefficients, interior $H^k$ regularity for smooth ones, and boundary $H^2$ regularity on a half-space for constant coefficients. For the Laplacian it constructs the Poisson integrals of the ball and the half-space, solving the Dirichlet problem for continuous data, and Perron's method with barriers solves it on bounded domains satisfying an exterior sphere condition. It also has the Gaussian heat kernel and the heat semigroup on $L^p$, and existence and uniqueness of weak solutions of the parabolic Dirichlet problem with bounded measurable time-dependent coefficients. Divergence theorems are available only on boxes (Mathlib), half-spaces, and planar regions. Missing are analytic Cauchy problems, Green's identities and the Neumann problem on curved domains, boundary regularity with variable coefficients or curved boundaries, wave equations, and complementing boundary conditions. The missing $H^{1/2}$ trace and lifting theorem is selected in 26.24, rather than counted again as a linear Dirichlet gap.
+TauCeti has a substantial linear elliptic and parabolic theory. It solves the weak Dirichlet problem by Lax–Milgram, including boundary values $g\in H^1(\Omega)$ imposed as $u-g\in H_0^1(\Omega)$, and proves the Fredholm alternative and the compact variational spectrum. Interior $H^2$ regularity holds for locally Lipschitz principal coefficients, interior $H^k$ regularity for smooth ones, and boundary $H^2$ regularity on a half-space for constant coefficients. For the Laplacian it constructs the Poisson integrals of the ball and the half-space, solving the Dirichlet problem for continuous data, and Perron's method with barriers solves it on bounded domains satisfying an exterior sphere condition. It also has the Gaussian heat kernel and the heat semigroup on $L^p$, and existence and uniqueness of weak solutions of the parabolic Dirichlet problem with bounded measurable time-dependent coefficients. Divergence theorems are available only on boxes (Mathlib), half-spaces, and planar regions. Missing are analytic Cauchy problems, Green's identities on curved domains in dimension at least three, Green's representation formula, the Neumann problem on curved domains, boundary regularity with variable coefficients or curved boundaries, wave equations, and complementing boundary conditions. The missing $H^{1/2}$ trace and lifting theorem is selected in 26.24, rather than counted again as a linear Dirichlet gap.
 
 Sources: [mathematical synopsis](SYNOPSIS32.md); [combined coverage inventory](STRUCTURE32.md).
 
@@ -3093,7 +3061,12 @@ with elliptic spatial diffusion.
   $\int_\Omega\nabla u\cdot\nabla v
   =-\int_\Omega u\Delta v+\int_{\partial\Omega}u\partial_\nu v$.
   Antisymmetrization gives the second identity and Green representation
-  using a fundamental solution or a domain Green function.
+  using a fundamental solution or a domain Green function. In the plane
+  both identities follow directly from TauCeti's flux form of Green's
+  theorem for regions bounded by closed absolutely continuous curves,
+  and on a half-space from its divergence theorem for compactly
+  supported fields. Missing are curved domains in dimension at least
+  three and the Green representation formula.
 
 * **32.22. Classical Dirichlet and Neumann solvability.** On a smooth
   bounded connected domain, smooth Dirichlet data determine a unique
@@ -3913,7 +3886,7 @@ Whenever an equilibrium measure $\mu_K$ is used, assume $\operatorname{cap}_{\lo
 
 ## 39. Metric measure spaces, Dirichlet forms, heat kernels, optimal transport, and fractals
 
-TauCeti has a large optimal-transport development: existence of optimal plans, Kantorovich duality for lower semicontinuous costs on Polish spaces with dual attainment by $c$-conjugate potentials for bounded continuous costs, Wasserstein spaces with completeness, geodesics and Kantorovich–Rubinstein duality, Brenier's theorem with uniqueness of the optimal plan and map, the upper bound in the Benamou–Brenier formula, Lisini's superposition principle, existence and uniqueness of the Jordan–Kinderlehrer–Otto step, and the definitions of $CD(K,\infty)$, the Boltzmann and Rényi entropies and the Cheeger energy. Its metric gradient-flow theory proves $\lambda$-contraction, uniqueness and the semigroup property for $EVI_\lambda$ solutions. Missing are metric Sobolev spaces, Cheeger's differentiation theorem, Dirichlet forms and their processes, heat-kernel characterizations, the lower bound in Benamou–Brenier, McCann's displacement convexity and the Riemannian characterization of $CD(K,\infty)$, generation of $EVI$ flows, the $RCD$ identification of heat flows, and fractal dimension and diffusion theory. The elementary self-similar attractor and invariant-measure theorem follows from contraction on compact sets and on Wasserstein probability spaces.
+TauCeti has a large optimal-transport development: existence of optimal plans, Kantorovich duality for lower semicontinuous costs on Polish spaces with dual attainment by $c$-conjugate potentials for bounded continuous costs, Wasserstein spaces with completeness, geodesics and Kantorovich–Rubinstein duality, Brenier's theorem with uniqueness of the optimal plan and map, the upper bound in the Benamou–Brenier formula, Lisini's superposition principle, existence and uniqueness of the Jordan–Kinderlehrer–Otto step, and the definitions of $CD(K,\infty)$, the Boltzmann and Rényi entropies and the Cheeger energy. Its metric gradient-flow theory proves $\lambda$-contraction, uniqueness and the semigroup property for $EVI_\lambda$ solutions. Missing are metric Sobolev spaces, Cheeger's differentiation theorem, Dirichlet forms and their processes, heat-kernel characterizations, the lower bound in Benamou–Brenier, McCann's displacement convexity and the Riemannian characterization of $CD(K,\infty)$, generation of $EVI$ flows, the $RCD$ identification of heat flows, and fractal dimension and diffusion theory. Neither library states Hutchinson's self-similar attractor and invariant-measure theorem, but it is not selected: it follows from the Banach fixed-point theorem applied to the induced contractions on the nonempty compact sets with the Hausdorff metric and on Wasserstein probability spaces.
 
 Sources: [mathematical synopsis](SYNOPSIS39.md); [combined coverage inventory](STRUCTURE39.md).
 
@@ -5001,12 +4974,18 @@ The recurrence is $xp_n=a_{n+1}p_{n+1}+b_np_n+a_np_{n-1}$, with $a_{n+1}>0$, $b_
 
 * **48.6. Real and simple zeros.** The $n$ zeros of $p_n$ are
   simple and lie in the interior of the convex hull of $\operatorname{supp}\mu$.
+  Mathlib proves this for the Chebyshev weight $(1-x^2)^{-1/2}$
+  (`Polynomial.Chebyshev.roots_T_real`, `rootMultiplicity_T_real`); missing is
+  the statement for a general $\mu$.
 
 ### Gaussian quadrature and Cauchy transforms
 
 * **48.14. Gauss quadrature.** The zeros $x_1,\ldots,x_n$ of $p_n$
   support a unique quadrature rule exact on $\mathcal P_{2n-1}$.
   Its weights are positive and equal $1/K_{n-1}(x_j,x_j)$.
+  Mathlib proves the Chebyshev–Gauss case, with equal weights $\pi/n$
+  (`Polynomial.Chebyshev.integral_eq_sumZeroes`); missing are a general $\mu$,
+  uniqueness of the rule, and the Christoffel-number formula for the weights.
 
 ### Jacobi operators and spectral measures
 
@@ -5337,7 +5316,7 @@ the fast normal eigenvalues have real parts uniformly below zero.
 
 ## 51. Integrable systems and Riemann–Hilbert methods
 
-Mathlib and TauCeti contain linear symplectic algebra (symplectic groups, symplectic and Lagrangian bases), Toeplitz and Hankel operators on Hardy space, the Hilbert transform and Calderón–Zygmund singular integrals on the line, the Cauchy–Stieltjes (resolvent) transform of measures, Painlevé removability for holomorphic functions, and Fredholm determinants of finite-rank and nonarchimedean compact operators. Neither library has contour Cauchy operators, matrix Riemann–Hilbert problems or Birkhoff factorization, Jost solutions and inverse scattering, Lax pairs, KdV or Toda flows, Liouville–Arnold theory, Schlesinger or Painlevé equations, orthogonal-polynomial kernel universality, Tracy–Widom distributions, or the Baik–Deift–Johansson theorem. The selection follows the principal links from factorization to solitons, isomonodromy, and universal kernels. Conditional Neumann-series bounds and the formal KdV and finite Toda Lax identities are excluded; the analytic contour, scattering, flow and monodromy constructions remain substantial.
+Mathlib and TauCeti contain linear symplectic algebra (symplectic groups, symplectic and Lagrangian bases), Hamiltonian vector fields and their flows on symplectic vector spaces (TauCeti), Toeplitz and Hankel operators on Hardy space, the Hilbert transform and Calderón–Zygmund singular integrals on the line, the Cauchy–Stieltjes (resolvent) transform of measures, Painlevé removability for holomorphic functions, and Fredholm determinants of finite-rank and nonarchimedean compact operators. Neither library has contour Cauchy operators, matrix Riemann–Hilbert problems or Birkhoff factorization, Jost solutions and inverse scattering, Lax pairs, KdV or Toda flows, Liouville–Arnold theory, Schlesinger or Painlevé equations, orthogonal-polynomial kernel universality, Tracy–Widom distributions, or the Baik–Deift–Johansson theorem. The selection follows the principal links from factorization to solitons, isomonodromy, and universal kernels. Conditional Neumann-series bounds and the formal KdV and finite Toda Lax identities are excluded; the analytic contour, scattering, flow and monodromy constructions remain substantial.
 
 Sources: [mathematical synopsis](SYNOPSIS51.md); [combined coverage inventory](STRUCTURE51.md).
 
@@ -5689,9 +5668,13 @@ satisfies $du\circ j=J\circ du$.
   for a Morse–Smale negative-gradient flow with compact sublevels on a
   finite-dimensional inner-product space and shows that $\partial^2=0$
   is equivalent to evenness of the sets of broken index-two
-  trajectories. Missing are the compactification by broken trajectories
-  and gluing that prove $\partial^2=0$, the corresponding construction
-  for a Morse function and Morse–Smale metric on a closed manifold, and
+  trajectories. It also proves sequential compactness of index-two
+  trajectory spaces: a sequence of index-two connecting orbits has a
+  subsequence converging to an unbroken orbit or to a once-broken pair.
+  Missing are the gluing theorem and the compactified one-dimensional
+  trajectory manifold with boundary that prove $\partial^2=0$, the
+  corresponding construction for a Morse function and Morse–Smale metric
+  on a closed manifold, and
   the identification of the resulting homology with singular homology.
 
 * **52.82. Hamiltonian Floer continuation.** On a closed symplectically
