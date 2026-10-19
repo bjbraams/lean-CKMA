@@ -26,13 +26,17 @@ in the bibliography.
 
 There may be additional files, for example `*.json`, for precise bibliographical data.
 
-Files with names Mathlib<dd>.md (where <dd> ranges from 04 to 53) primarily describe the present
-coverage in Mathlib of the indicated section from `CKMA-bib.md`. Notes at the end of each such file
-describe additional coverage in TauCeti and they note areas that are not covered either in Mathlib
-or in TauCeti.
+Files with names SYNOPSIS<dd>.md (where <dd> ranges from 04 to 53) are meant to describe the
+mathematical content of the indicated section from the bibliography. Their numbered entries,
+cited as <dd>.<k>, are stable identifiers; `SYNOPSIS.md` is the index.
 
-Files with names SYNOPSIS<dd>.md are meant to describe the mathematical content of the indicated
-section from the bibliography.
+Files with names STRUCTURE<dd>.md describe the coverage in Mathlib and TauCeti of the material in
+the corresponding SYNOPSIS<dd>.md, with declarations, source locations and hypotheses. Each section
+follows a synopsis heading and ends with a line classifying every numbered entry under it as
+covered, partly covered, or not covered. `STRUCTURE.md` is the index and records the source
+revisions. `MathlibCoverage.md` and `TauCetiCoverage.md` summarise the coverage section by section
+for each library. `GAPS.md` selects and assesses the principal missing results, and
+`GAPS-REVIEW.md` records the evidence for that selection.
 
 You may be asked to edit, revise or expand any of the Markdown files in the project directory or
 to create new such files.
