@@ -1,9 +1,11 @@
 # Synopsis: Banach space geometry, bases, and operator ideals
 
 Part of the [mathematical synopsis series](SYNOPSIS.md).
+[Bibliographical scope and references](CKMA-bib.md#ckma-17);
+[MSC2020 correspondence and cross-subject index](CKMA-MSC2020.md).
 
 This synopsis selects the recurring structural core of Section 17 of
-[CKMA-bib.md](CKMA-bib.md). Its questions
+[CKMA-bib.md](CKMA-bib.md#ckma-17). Its questions
 concern the subspaces a Banach space must contain, the expansions it admits,
 its finite-dimensional geometry, and the classes of operators controlled by
 that geometry. The selection combines the basic-sequence tradition with
@@ -18,6 +20,11 @@ its own closed span. Two basic sequences are **equivalent** if the map
 taking corresponding vectors to each other extends to an isomorphism of
 their spans. Equivalent norms preserve the Banach space isomorphism class,
 but can change its metric geometry considerably.
+
+The **approximation property** means that the identity can be approximated
+uniformly on each compact subset by finite-rank operators. The **bounded
+approximation property** requires such operators with a common operator-norm
+bound.
 
 ## Bases, block sequences, and duality
 
@@ -77,6 +84,16 @@ $\sum_{j\leq n}a_je_j$ always converge.
   unconditional basis is reflexive exactly when it contains no subspace
   isomorphic to $c_0$ or $\ell^1$. For that basis, absence of $\ell^1$
   characterizes shrinking and absence of $c_0$ characterizes bounded completeness.
+* **70. James quasi-reflexive space.** The James space $J$ consists of real
+  sequences $x$ with $x(k)\to0$ and finite norm
+  $$\|x\|_J=\sup\frac1{\sqrt2}\Big((x(p_m)-x(p_0))^2
+    +\sum_{i=1}^m(x(p_i)-x(p_{i-1}))^2\Big)^{1/2},$$
+  the supremum over $m$ and $p_0<p_1<\cdots<p_m$. The unit vectors form a
+  shrinking basis that is not boundedly complete. $J$ has codimension one in
+  $J^{**}$, yet $J$ is isometric to $J^{**}$ (James): a nonreflexive space
+  isomorphic to its bidual. It contains no copy of $c_0$ or $\ell^1$, so by
+  result 12 it has no unconditional basis; it does not even embed in a space
+  with an unconditional basis, and it is not isomorphic to $J\oplus J$.
 * **13. Basis and approximation property.** A Schauder basis gives bounded
   finite-rank approximations to the identity, converging uniformly on compact
   sets. Thus a space with a basis has the bounded approximation property.
@@ -120,8 +137,9 @@ not themselves assert convergence to a vector of $X$.
 * **22. James distortion theorem.** If $X$ contains a subspace isomorphic
   to $c_0$ (respectively $\ell^1$), then for every $\varepsilon>0$ it
   contains a subspace $(1+\varepsilon)$-isomorphic to $c_0$ (respectively
-  $\ell^1$). In contrast, $\ell^p$ for $1<p<\infty$ admits equivalent norms
-  that are arbitrarily distorting on all infinite-dimensional subspaces
+  $\ell^1$). In contrast, $\ell^p$ for $1<p<\infty$ is arbitrarily
+  distortable: for every $\lambda>1$ it admits an equivalent norm that is
+  $\lambda$-distorted on every infinite-dimensional subspace
   (Odell–Schlumprecht).
 * **23. Dunford–Pettis compactness in $L^1$.** On a finite measure space,
   a bounded subset of $L^1$ is relatively weakly compact exactly when it is
@@ -136,6 +154,10 @@ not themselves assert convergence to a vector of $X$.
 * **25. Banach–Mazur universality.** Every separable Banach space embeds
   linearly isometrically into $C[0,1]$. Every separable Banach space is also
   isomorphic to a quotient of $\ell^1$.
+* **71. Milutin theorem.** For every uncountable compact metric space $K$,
+  $C(K)$ is isomorphic to $C[0,1]$. Thus, for instance, $C(\Delta)$ on the
+  Cantor set, $C([0,1]^n)$, and $C[0,1]$ are mutually isomorphic, although
+  not isometric.
 * **26. Sobczyk theorem.** Every copy of $c_0$ in a separable Banach space
   is complemented. For an isometric copy there is a projection of norm at
   most two. The ambient separability assumption is essential.
@@ -165,7 +187,7 @@ not themselves assert convergence to a vector of $X$.
   when $1<p<\infty$. For $2<p<\infty$ every infinite-dimensional closed
   subspace of $L^p$ is either isomorphic to $\ell^2$ and complemented, or
   contains a copy of $\ell^p$ complemented in $L^p$ (Kadec–Pełczyński).
-  For $p\neq2$, $L^p[0,1]$ and $\ell^p$ are not isomorphic.
+  For $1\leq p<\infty$, $p\neq2$, $L^p[0,1]$ and $\ell^p$ are not isomorphic.
 * **32. Enflo approximation counterexample.** There exist separable Banach
   spaces without the approximation property, hence without a Schauder basis.
   Not every compact operator between Banach spaces is a norm limit of
@@ -179,7 +201,8 @@ not themselves assert convergence to a vector of $X$.
   any $\ell^p$. There exist hereditarily indecomposable spaces, in which no
   closed infinite-dimensional subspace is a topological direct sum of two
   infinite-dimensional closed subspaces; on a complex such space every
-  operator is $\lambda I+S$ with $S$ strictly singular, so it is isomorphic to
+  operator is $\lambda I+S$ with $S$ strictly singular (no restriction of $S$
+  to an infinite-dimensional subspace is an isomorphism), so it is isomorphic to
   no proper subspace (Gowers–Maurey). Every infinite-dimensional Banach space
   contains either a hereditarily indecomposable subspace or a subspace with an
   unconditional basis (Gowers). With Komorowski–Tomczak-Jaegermann, this shows
@@ -202,6 +225,7 @@ distortion at most $1+\varepsilon$, for every $\varepsilon>0$.
   $(\mathbb E\|\sum r_jx_j\|^p)^{1/p}$ and
   $(\mathbb E\|\sum r_jx_j\|^q)^{1/q}$ are equivalent with constants
   depending only on $p,q$, independently of the space and the finite sequence.
+  The corresponding statement holds for Gaussian sums.
 * **36. Type and cotype of $L^p$.** For $1\leq p<\infty$, $L^p$ has
   type $\min(p,2)$ and cotype $\max(p,2)$. These exponents are optimal
   for the infinite classical $\ell^p$ spaces and nonatomic $L^p$ spaces.
@@ -210,6 +234,20 @@ distortion at most $1+\varepsilon$, for every $\varepsilon>0$.
   Type $p>1$ of $X$ implies cotype $p'$ of $X^*$.
 * **38. Kwapień theorem.** A Banach space is isomorphic to a Hilbert space
   exactly when it has both type two and cotype two.
+* **73. Kwapień–Maurey factorization and Maurey extension.** If $X$ has
+  type two and $Y$ has cotype two, every bounded $T:X\to Y$ factors through a
+  Hilbert space. More strongly (Maurey), if $E\subseteq X$ is a closed
+  subspace and $T:E\to Y$ is bounded, there are a Hilbert space $H$ and
+  operators $S:X\to H$, $R:H\to Y$ with $RS|_E=T$ and
+  $\|R\|\|S\|\leq T_2(X)C_2(Y)\|T\|$, the product of the type-two and
+  cotype-two constants. In particular every subspace of a type-two space
+  that is isomorphic to a Hilbert space is complemented.
+* **74. Maurey–Nikishin factorization.** Let $X$ have type $r>1$, let
+  $\mu$ be $\sigma$-finite, $1\leq p<q<r$, and let $T:X\to L^p(\mu)$ be
+  bounded. Then there is a strictly positive probability density $h$ such
+  that $x\mapsto h^{-1/p}Tx$ is bounded from $X$ into $L^q(h\,d\mu)$; thus
+  $T$ factors through $L^q$ after a change of density. For $q=r<2$ the
+  conclusion can fail.
 * **39. Dvoretzky theorem.** Every infinite-dimensional Banach space
   contains, for every $n$ and $\varepsilon>0$, an $n$-dimensional subspace
   with Banach–Mazur distance at most $1+\varepsilon$ from $\ell_2^n$.
@@ -218,10 +256,14 @@ distortion at most $1+\varepsilon$, for every $\varepsilon>0$.
   $(1+\varepsilon)$-Euclidean subspaces of dimension $k\geq c(\varepsilon)\log n$
   (Milman's concentration proof), and $\ell_\infty^n$ shows that the order
   $\log n$ cannot be improved in general.
-* **40. John's ellipsoid bound.** Every real $n$-dimensional normed space
-  has distance at most $\sqrt n$ from Euclidean space. The maximal-volume
-  ellipsoid $\mathcal E$ in the unit ball satisfies
-  $\mathcal E\subset B_X\subset\sqrt n\,\mathcal E$.
+* **72. Kadets–Snobar theorem.** Every $n$-dimensional subspace $E$ of a
+  Banach space $Y$ is the range of a projection $P$ on $Y$ with
+  $\|P\|\leq\sqrt n$. The proof uses an isomorphism $S:E\to\ell_2^n$ with
+  $\|S^{-1}\|=1$ and $\pi_2(S)\leq\sqrt n$, refining John's ellipsoid
+  theorem (SYNOPSIS12, item 11), and extends $S$ to $Y$ with the same
+  two-summing norm via Pietsch's theorem (results 54–55). The order
+  $\sqrt n$ is optimal: the projection constants of $\ell_2^n$ grow like
+  $\sqrt{2n/\pi}$.
 * **41. Krivine theorem.** For every normalized basic sequence there is
   $p\in[1,\infty]$ such that, for each $n$ and $\varepsilon>0$, some
   normalized successive blocks are $(1+\varepsilon)$-equivalent to the
@@ -251,7 +293,8 @@ if every Banach space finitely representable in it is reflexive.
 
 The **Radon–Nikodým property** means that every countably additive
 $X$-valued measure of bounded variation, absolutely continuous with respect
-to a finite positive measure, has a Bochner integrable density.
+to a finite positive measure, has a Bochner integrable density. Its
+Lipschitz and martingale characterizations are SYNOPSIS18, items 12–13.
 
 * **45. Convexity–smoothness duality.** $X$ is uniformly smooth exactly
   when $X^*$ is uniformly convex; $X$ is uniformly convex exactly when
@@ -275,16 +318,8 @@ to a finite positive measure, has a Bochner integrable density.
   separable subspace has separable dual, exactly when $X^*$ has the
   Radon–Nikodým property. Equivalently, every continuous convex function on
   an open convex subset is Fréchet differentiable on a dense $G_\delta$ set.
-* **51. Lipschitz curves and the Radon–Nikodým property.** $X$ has this
-  property exactly when every Lipschitz map $[0,1]\to X$ is norm
-  differentiable almost everywhere.
 
 ## Summing operators, tensor norms, and approximation
-
-The **approximation property** means that the identity can be approximated
-uniformly on each compact subset by finite-rank operators. The **bounded
-approximation property** requires such operators with a common operator-norm
-bound.
 
 An operator $T:X\to Y$ is **absolutely $p$-summing**, $1\leq p<\infty$,
 if the least constant $\pi_p(T)$ in
@@ -309,7 +344,8 @@ $Tx=\sum_j f_j(x)y_j$ with $\sum_j\|f_j\|\|y_j\|<\infty$.
   the closure in $L^p(\mu)$ of the evaluation functions $f\mapsto f(x)$,
   with the first map the canonical evaluation map and the second bounded.
 * **56. Hilbert–Schmidt identification.** For operators between Hilbert
-  spaces, being two-summing is equivalent to being Hilbert–Schmidt, and
+  spaces, being two-summing is equivalent to being Hilbert–Schmidt
+  ($\sum_j\|Te_j\|^2<\infty$ for an orthonormal basis $(e_j)$), and
   $\pi_2(T)^2=\sum_j\|Te_j\|^2$ for any orthonormal basis.
 * **57. Grothendieck inequality.** There is a scalar-field-dependent
   universal $K_G$ such that for every finite scalar matrix $(a_{ij})$ and
@@ -353,6 +389,17 @@ $Tx=\sum_j f_j(x)y_j$ with $\sum_j\|f_j\|\|y_j\|<\infty$.
   connected subsets of real normed spaces extends uniquely to an affine
   isometry of the ambient spaces. In particular this holds for their open
   unit balls.
+* **75. Lipschitz-free spaces.** For a metric space $M$ with base point
+  $0$, let $\mathrm{Lip}_0(M)$ be the Banach space of real Lipschitz functions
+  vanishing at $0$, normed by the Lipschitz constant. The **free space**
+  $\mathcal F(M)$ is the closed span of the evaluations $\delta(x)$ in
+  $\mathrm{Lip}_0(M)^*$. Then $\delta:M\to\mathcal F(M)$ is an isometric
+  embedding, $\mathcal F(M)^*=\mathrm{Lip}_0(M)$ isometrically, and every
+  Lipschitz map from $M$ into a Banach space vanishing at $0$ extends uniquely
+  to a bounded linear map on $\mathcal F(M)$ with the same norm.
+  If a separable Banach space $X$ embeds isometrically, not necessarily
+  linearly, into a Banach space $Y$, then $Y$ contains a linear isometric
+  copy of $X$ (Godefroy–Kalton).
 * **67. Rademacher theorem with Banach target.** If $X$ has the
   Radon–Nikodým property, every Lipschitz map from an open subset of
   $\mathbb R^n$ into $X$ is Fréchet differentiable almost everywhere.
@@ -372,7 +419,9 @@ classical spaces, type and cotype, finite-dimensional structure, and nonlinear
 geometry. Diestel independently develops the sequence and series theorems;
 Diestel–Jarchow–Tonge provides the systematic summing-operator and
 factorization theory. Ryan clarifies tensor representations and approximation
-properties. These themes overlap with Lindenstrauss–Tzafriri, Wojtaszczyk,
+properties; Albiac–Kalton, Chapters 3, 4, 7, 13, and 14, also cover the James
+space, Milutin's theorem, Maurey's factorization theorems, the Kadets–Snobar
+theorem, and Lipschitz-free spaces. These themes overlap with Lindenstrauss–Tzafriri, Wojtaszczyk,
 Pisier, and the geometry handbooks; Albiac–Kalton, Chapters 9 and 11, treat
 uniqueness of unconditional bases, Rosenthal's theorem, and Tsirelson's
 space, while Ostrovskii covers metric embeddings such as Bourgain's theorem. The renorming and Radon–Nikodým

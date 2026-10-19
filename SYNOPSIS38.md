@@ -1,13 +1,21 @@
 # Synopsis: Potential theory and capacity
 
 Part of the [mathematical synopsis series](SYNOPSIS.md).
+[Bibliographical scope and references](CKMA-bib.md#ckma-38);
+[MSC2020 correspondence and cross-subject index](CKMA-MSC2020.md).
 
 This synopsis selects recurring material from Section 38 of
-[CKMA-bib.md](CKMA-bib.md).
+[CKMA-bib.md](CKMA-bib.md#ckma-38).
 It covers harmonic and superharmonic functions, equilibrium and capacity,
 the Dirichlet problem and boundary regularity, probabilistic representations,
-nonlinear potentials, and logarithmic and analytic capacity. Metric-space
+nonlinear potentials, Riesz potentials, logarithmic and analytic capacity,
+harmonic approximation, and the axiomatic viewpoint. Metric-space
 diffusion and Dirichlet forms receive a separate treatment in Section 39.
+
+The current subdivision [39B](CKMA-bib.md#ckma-39b) collects Dirichlet forms,
+heat kernels, and diffusion on graphs and fractals;
+[08B](CKMA-bib.md#ckma-08b) supplies the stochastic-process viewpoint and
+[39C](CKMA-bib.md#ckma-39c) the transport and gradient-flow connections.
 
 For Newtonian theory assume $n\geq3$ and use
 $$
@@ -78,8 +86,9 @@ another assumption is stated.
   $G_{\Omega_1}\leq G_{\Omega_2}$ if $\Omega_1\subset\Omega_2$.
   Increasing exhaustion of a Greenian domain gives increasing
   convergence of the Green kernels.
-* **14. Potential domination.** For positive compactly supported
-  finite-energy Newtonian measures, $U^\mu\leq U^\nu+c$
+* **14. Potential domination.** For a positive compactly supported
+  finite-energy Newtonian measure $\mu$ and any positive measure $\nu$
+  with $U^\nu\not\equiv\infty$, $U^\mu\leq U^\nu+c$
   $\mu$-almost everywhere, $c\geq0$, implies that inequality
   everywhere. In particular a potential bounded by a constant on
   its supporting charge is bounded by that constant everywhere.
@@ -168,7 +177,9 @@ sets by outer approximation.
   Wiener's series is a capacitary test for thinness.
 * **31. Geometric sufficient conditions.** An exterior cone at a
   boundary point supplies a barrier. In particular Lipschitz domains
-  are regular, whereas an arbitrarily thin exterior cusp need not be.
+  are regular, whereas for $n\geq3$ a sufficiently thin exterior cusp
+  (Lebesgue's spine) can be irregular. In the plane, a boundary point
+  lying in a nondegenerate continuum of the complement is regular.
 * **32. Kellogg's theorem.** The irregular boundary points form a
   polar set. Thus every continuous boundary datum is attained
   quasi-everywhere on the boundary.
@@ -199,18 +210,18 @@ sets by outer approximation.
   boundary; the representing mass is $h(x_*)$.
 * **38. Smooth-domain Martin boundary.** For bounded $C^{1,1}$ domains,
   the Martin boundary identifies with the Euclidean boundary, and
-  Martin kernels are normalized Poisson kernels. In general the
+  Martin kernels are normalized Poisson kernels. The identification
+  persists for bounded Lipschitz domains (Hunt–Wheeden) and NTA domains
+  (Jerison–Kenig), with kernels $d\omega^x/d\omega^{x_*}$. In general the
   Euclidean boundary may not parametrize all minimal harmonic functions.
 
 ## Brownian interpretations
 
 Brownian motion here has generator $\tfrac12\Delta$, whereas Green
 functions above invert $-\Delta$. This accounts for the factor two below.
+The Brownian solution of the Dirichlet problem (harmonic measure as exit
+distribution) and recurrence and transience are SYNOPSIS08, items 58 and 5.
 
-* **39. Exit distribution.** For a bounded domain and Brownian exit
-  time $\tau_\Omega$, $H_f(x)=\mathbb E_xf(B_{\tau_\Omega})$.
-  Harmonic measure is the exit distribution, and barriers determine
-  continuity of this expectation at boundary points.
 * **40. Occupation kernel.** For nonnegative Borel $f$,
   $\mathbb E_x\int_0^{\tau_\Omega}f(B_t)dt
   =2\int_\Omega G_\Omega(x,y)f(y)dy$.
@@ -218,10 +229,51 @@ functions above invert $-\Delta$. This accounts for the factor two below.
   $\mathbb R^n$, $n\geq3$, its equilibrium potential equals
   $\mathbb P_x(\tau_K<\infty)$ outside $K$.
   A compact polar set is hit with probability zero from outside it.
-* **42. Recurrence and transience.** Planar Brownian motion returns
-  to every nonempty open disk almost surely. Brownian motion in
-  dimensions at least three is transient and has Newtonian occupation
-  potential. Individual points are polar in every dimension at least two.
+
+## Riesz potentials and stable processes
+
+For $0<\alpha<n$ let
+$k_\alpha(x)=c_{n,\alpha}|x|^{\alpha-n}$,
+$c_{n,\alpha}=\Gamma(\tfrac{n-\alpha}2)/(2^\alpha\pi^{n/2}\Gamma(\tfrac\alpha2))$,
+so that $\widehat{k_\alpha}(\xi)=|\xi|^{-\alpha}$ and $k_\alpha*$ inverts
+$(-\Delta)^{\alpha/2}$; $k_2=\Gamma$ for $n\geq3$. Write
+$U_\alpha^\mu=k_\alpha*\mu$ and $I_\alpha(\mu)=\iint k_\alpha(x-y)d\mu\,d\mu$.
+
+* **68. Riesz composition and energy.** $k_\alpha*k_\beta=k_{\alpha+\beta}$
+  for $\alpha+\beta<n$. For signed measures of finite energy,
+  $I_\alpha(\mu)=(2\pi)^{-n}\int|\widehat\mu(\xi)|^2|\xi|^{-\alpha}d\xi\geq0$,
+  with equality only for $\mu=0$; the energy is a scalar product, and the
+  cone of positive finite-energy measures is complete in its norm
+  (Cartan for $\alpha=2$; Landkof). The whole space of signed
+  finite-energy measures is not complete.
+* **69. Riesz capacity and equilibrium.** For compact $K$ set
+  $C_\alpha(K)=(\inf_{\mu\in\mathcal P(K)}I_\alpha(\mu))^{-1}$; then
+  $C_\alpha(aK)=a^{n-\alpha}C_\alpha(K)$, and $C_\alpha(E)=0$ when
+  $\mathcal H^{n-\alpha}(E)<\infty$, while compact sets of dimension
+  greater than $n-\alpha$ have positive capacity (cf. SYNOPSIS37, item 5).
+  For $0<\alpha\leq2$ the Frostman maximum principle holds: $U_\alpha^\mu\leq1$
+  on $\operatorname{supp}\mu$ implies $U_\alpha^\mu\leq1$ everywhere. Hence
+  a compact $K$ of positive capacity has an equilibrium measure $\lambda_K$
+  with $\lambda_K(K)=C_\alpha(K)$, $U_\alpha^{\lambda_K}=1$ quasi-everywhere
+  on $K$, and $U_\alpha^{\lambda_K}\leq1$ everywhere. For $2<\alpha<n$ the
+  maximum principle holds only with the constant $2^{n-\alpha}$. For
+  $0<\alpha<2$ the equilibrium measure of a closed ball has density
+  proportional to $(r^2-|x|^2)^{-\alpha/2}$ on the ball, not on its sphere
+  (M. Riesz).
+* **70. Stable processes and $\alpha$-harmonic functions.** For
+  $0<\alpha<2$, $-(-\Delta)^{\alpha/2}$ generates the rotation-invariant
+  $\alpha$-stable Lévy process $X$, transient when $\alpha<n$, with
+  occupation kernel $k_\alpha$ and
+  $\mathbb P_x(T_K<\infty)=U_\alpha^{\lambda_K}(x)$ for the hitting time of
+  compact $K$. A function is $\alpha$-harmonic in $D$ if
+  $u(x)=\mathbb E_xu(X_{\tau_D})$; since $X$ jumps, Dirichlet data are
+  prescribed on all of $\mathbb R^n\setminus D$. For the ball $B_r$ the exit
+  distribution has density
+  $P_r(x,y)=\Gamma(\tfrac n2)\pi^{-n/2-1}\sin(\tfrac{\pi\alpha}2)
+  \big(\tfrac{r^2-|x|^2}{|y|^2-r^2}\big)^{\alpha/2}|x-y|^{-n}$ for
+  $|x|<r<|y|$ (M. Riesz). Nonnegative $\alpha$-harmonic functions satisfy
+  Harnack and boundary Harnack principles, the latter on Lipschitz and
+  indeed arbitrary open sets (Bogdan; Bogdan–Kulczycki–Kwaśnicki).
 
 ## Sobolev capacity and nonlinear potential theory
 
@@ -230,18 +282,13 @@ $\operatorname{cap}_p(K,\Omega)=\inf\int_\Omega|\nabla\phi|^p$,
 over $\phi\in C_c^\infty(\Omega)$ at least one near $K$.
 A **$p$-superharmonic function** is lower semicontinuous, finite on a
 dense set, and satisfies comparison with continuous $p$-harmonic functions
-on relatively compact subdomains.
+on relatively compact subdomains. Quasicontinuity of Sobolev functions and
+the capacitary description of $W_0^{1,p}$ are SYNOPSIS26, items 31 and 33.
 
 * **43. Capacitary minimization.** For compact $K\Subset\Omega$,
   minimization over $W_0^{1,p}$ functions at least one quasi-everywhere
   on $K$ gives the unique capacitary potential. It is $p$-harmonic
   outside $K$ and has energy $\operatorname{cap}_p(K,\Omega)$.
-* **44. Sobolev quasi-continuity.** Every $W^{1,p}$ function has a
-  $p$-quasi-continuous representative, unique quasi-everywhere.
-  For arbitrary open $\Omega$, membership in $W_0^{1,p}(\Omega)$
-  is equivalent to the zero extension belonging to $W^{1,p}(\mathbb R^n)$
-  and its quasi-continuous representative vanishing $p$-quasi-everywhere
-  on the complement.
 * **45. Nonlinear comparison.** Weak $p$-harmonic solutions with ordered
   Sobolev boundary data are ordered. The comparison definition extends
   the theory to $p$-superharmonic functions outside the energy class.
@@ -262,7 +309,9 @@ on relatively compact subdomains.
   a normalized positive multiple of $|x|^{(p-n)/(p-1)}$ solves
   $-\Delta_pu=\delta_0$, and
   $\operatorname{cap}_p(\overline B_r,B_{2r})=C_{n,p}r^{n-p}$.
-  At $p=n$ the fundamental singularity is logarithmic.
+  At $p=n$ the fundamental singularity is logarithmic. For $p>n$ the
+  fundamental solution is bounded and continuous at the origin, and
+  points have positive $p$-capacity.
 * **49. Wolff potential estimates.** For $1<p<n$ define
   $\mathbf W_{1,p}^\mu(x,R)=\int_0^R
   (\mu(B_r(x))/r^{n-p})^{1/(p-1)}dr/r$.
@@ -304,7 +353,8 @@ $\widehat G_\alpha(\xi)=(1+|\xi|^2)^{-\alpha/2}$ using $e^{-ix\cdot\xi}$.
 For compact $K\subset\mathbb C$, set
 $I_{\log}(\mu)=\iint\log(1/|z-w|)d\mu(z)d\mu(w)$,
 $V_K=\inf_{\mu\in\mathcal P(K)}I_{\log}(\mu)$, and
-$\operatorname{cap}_{\log}(K)=e^{-V_K}$.
+$\operatorname{cap}_{\log}(K)=e^{-V_K}$. The Bernstein–Walsh inequality
+is SYNOPSIS47, item 37.
 
 * **55. Jensen's formula for subharmonic functions.** If
   $\mu=(2\pi)^{-1}\Delta u$ and $u(0)>-\infty$, then
@@ -341,18 +391,14 @@ $\operatorname{cap}_{\log}(K)=e^{-V_K}$.
   $I_{\log}(\mu)+2\int Qd\mu$ has a unique minimizer.
   Its potential satisfies $U^\mu_{\log}+Q\geq F$ quasi-everywhere
   on $K$ and equality $\mu$-almost everywhere, for a constant $F$.
-* **63. Bernstein–Walsh inequality.** For a polynomial of degree at
-  most $N$ and a nonpolar compact $K$,
-  $|P(z)|\leq\|P\|_K e^{Ng_K(z,\infty)}$ on the unbounded
-  complementary component. Capacity and Green functions therefore
-  control polynomial growth away from the approximation set.
 
 ## Analytic capacity and removability
 
 For compact $E\subset\mathbb C$, **analytic capacity** is
 $\gamma(E)=\sup|f'(\infty)|$, over holomorphic functions on
 $\widehat{\mathbb C}\setminus E$ with $|f|\leq1$ and $f(\infty)=0$,
-where $f'(\infty)=\lim_{z\to\infty}zf(z)$.
+where $f'(\infty)=\lim_{z\to\infty}zf(z)$. Removability of compact sets
+of finite length (Painlevé's problem) is SYNOPSIS37, item 67.
 
 * **64. Analytic removability criterion.** $\gamma(E)=0$ exactly when
   $E$ is removable for bounded holomorphic functions. Analytic capacity
@@ -365,10 +411,55 @@ where $f'(\infty)=\lim_{z\to\infty}zf(z)$.
 * **66. Countable semiadditivity.** There is an absolute $C$ such that
   $\gamma(\bigcup_jE_j)\leq C\sum_j\gamma(E_j)$, with the
   standard inner-capacity extension to noncompact Borel sets $E_j$.
-* **67. Finite-length removability.** For compact sets of finite
-  $\mathcal H^1$ measure, zero analytic capacity is equivalent to
-  pure unrectifiability. This is the link with the rectifiability
-  theory in Section 37, beyond the polar sets detected by logarithmic capacity.
+
+## Harmonic approximation
+
+For compact $K\subset\mathbb R^n$, $\widehat K$ is the union of $K$ with the
+bounded components of $\mathbb R^n\setminus K$, and $\Omega^*$ is the
+one-point compactification of an open set $\Omega$.
+
+* **71. Compact sets.** If $\mathbb R^n\setminus K$ is connected, every
+  function harmonic on a neighborhood of $K$ is a uniform limit on $K$ of
+  harmonic polynomials (Walsh); unlike Runge's theorem, connectedness is
+  sufficient but not necessary, and the exact condition is that
+  $\mathbb R^n\setminus\widehat K$ and $\mathbb R^n\setminus K$ are thin at
+  the same points of $K$ (Gardiner). Every $u\in C(K)$ harmonic on the
+  interior $K^\circ$ is a uniform limit on $K$ of functions harmonic on
+  neighborhoods of $K$ exactly when $\mathbb R^n\setminus K$ and
+  $\mathbb R^n\setminus K^\circ$ are thin at the same points of $K$
+  (Keldysh; Deny). Fine potential theory thus replaces the topological
+  conditions of complex approximation.
+* **72. Closed sets.** Let $\Omega\subset\mathbb R^n$ be open and
+  $E\subset\Omega$ relatively closed. If $\Omega^*\setminus E$ is connected
+  and locally connected, every function harmonic on an open set containing
+  $E$ is, for each $\varepsilon>0$, within $\varepsilon$ of a function
+  harmonic on $\Omega$ uniformly on $E$ (Gauthier–Goldstein–Ow), the
+  harmonic analogue of Arakelyan's theorem. As for compact sets, the
+  condition is sufficient but not necessary; Gardiner characterizes the
+  sets admitting such approximation through thinness.
+
+## Axiomatic potential theory
+
+* **73. Harmonic spaces.** A Brelot harmonic space is a locally compact,
+  connected, locally connected space with a sheaf of vector spaces of
+  continuous harmonic functions such that regular open sets, those with a
+  solvable Dirichlet problem given by positive harmonic measures, form a
+  base, and such that increasing limits of harmonic functions on a domain
+  are harmonic when finite on a dense set (Brelot convergence). Solutions
+  of second-order elliptic equations with Hölder coefficients form such a
+  space. Superharmonic functions, Perron–Wiener–Brelot solutions,
+  balayage, thinness, and fine topology are developed from these axioms;
+  Bauer's weaker convergence axiom admits the heat equation.
+* **74. Hunt's theorem.** Let $E$ be locally compact with countable base
+  and $V$ a positive linear operator from $C_c(E)$ to $C_0(E)$ with dense
+  range. If $V$ satisfies the complete maximum principle — for
+  $f,g\in C_c^+(E)$ and $a\geq0$, $Vf\leq Vg+a$ on $\{f>0\}$ implies
+  $Vf\leq Vg+a$ on $E$ — then $V=\int_0^\infty P_t\,dt$ for a unique
+  Feller semigroup $(P_t)$ (Hunt). Potential kernels thus correspond to
+  transient Markov processes: Newtonian and Riesz kernels with
+  $\alpha\leq2$ arise from Brownian motion and stable processes, and on
+  locally compact abelian groups the convolution version characterizes
+  potential kernels of transient convolution semigroups (Berg–Forst).
 
 ## Reference guide
 
@@ -378,7 +469,10 @@ develop the probabilistic counterpart. Adams–Hedberg and Ponce connect
 capacity to Sobolev spaces and measure data; Heinonen–Kilpeläinen–Martio
 and Björn–Björn give the nonlinear continuation. Ransford, Tsuji, and
 Saff–Totik develop planar logarithmic theory, while Tolsa supplies the
-analytic-capacity continuation. Non-Euclidean geometries and stable-process
+analytic-capacity continuation. Landkof treats Riesz kernels and capacities,
+Bogdan et al. the potential theory of stable processes, Gardiner harmonic
+approximation, and Brelot, Doob, and Berg–Forst the axiomatic and
+kernel-semigroup viewpoints. Non-Euclidean geometries and stable-process
 potential theory extend these foundations without changing the distinctions
 among the capacities used here.
 
@@ -388,6 +482,7 @@ Local source copies consulted:
 * [Armitage–Gardiner, *Classical Potential Theory*](References/ArmitageGardner2001ClassicalPotentialTheory-SpringerMonogMath.pdf).
 * [Axler–Bourdon–Ramey, *Harmonic Function Theory*](References/AxlerBourdonRamey2001HarmonicFunctionTheory2ndEd-SpringerGTM137.pdf).
 * [Doob, *Classical Potential Theory and Its Probabilistic Counterpart*](References/Doob1984ClassicalPotentialTheoryProbabilisticCounterpart-SpringerGL262.pdf).
+* [Gardiner, *Harmonic Approximation*](References/Gardiner1995HarmonicApproximation-CambridgeLMSLNS221.pdf).
 * [Tolsa, *Analytic Capacity, the Cauchy Transform, and Non-homogeneous Calderón–Zygmund Theory*](References/Tolsa2014AnalyticCapacityCauchyTransformNonHomogeneousCalderonZygmundTheory-BirkhäuserPM307.pdf).
 
 Additional primary expositions consulted were

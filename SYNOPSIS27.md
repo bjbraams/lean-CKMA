@@ -1,11 +1,14 @@
 # Synopsis: Fourier analysis and real-variable harmonic analysis
 
 Part of the [mathematical synopsis series](SYNOPSIS.md).
+[Bibliographical scope and references](CKMA-bib.md#ckma-27);
+[MSC2020 correspondence and cross-subject index](CKMA-MSC2020.md).
 
 This synopsis selects recurring material from Section 27 of
-[CKMA-bib.md](CKMA-bib.md): Fourier
+[CKMA-bib.md](CKMA-bib.md#ckma-27): Fourier
 transforms and series, maximal and singular integrals, multipliers, weighted
-estimates, Hardy spaces, and oscillatory integrals. The last topics belong
+estimates, Hardy spaces, oscillatory integrals, and the restriction and
+Kakeya problems. The last topics belong
 to the working core of the advanced monographs, rather than to every first
 course. Abstract groups and time–frequency expansions have separate synopses.
 
@@ -22,6 +25,10 @@ test class when an integral is not initially defined pointwise.
 
 ## The Fourier transform and translation-invariant operators
 
+The extension to tempered distributions and the Paley–Wiener–Schwartz
+theorem are stated in SYNOPSIS16, items 53 and 59, and the $L^2$
+Paley–Wiener theorem in SYNOPSIS41, item 21.
+
 * **1. Riemann–Lebesgue theorem.** The Fourier transform maps
   $L^1(\mathbb R^d)$ continuously into $C_0(\mathbb R^d)$, with
   $\|\widehat f\|_\infty\leq\|f\|_1$.
@@ -33,10 +40,13 @@ test class when an integral is not initially defined pointwise.
 * **3. Plancherel theorem.** Fourier transformation extends uniquely to
   a unitary map on $L^2$; $\langle\widehat f,\widehat g\rangle
   =\langle f,g\rangle$. Its inverse has the opposite exponential sign.
+  It agrees with the distributional extension.
 * **4. Hausdorff–Young inequality.** For $1\leq p\leq2$ and
   $p'=p/(p-1)$, $\|\widehat f\|_{p'}\leq\|f\|_p$.
   In general no corresponding bounded map $L^p\to L^{p'}$ exists for
-  $p>2$ on Euclidean space.
+  $p>2$ on Euclidean space. For $1<p\leq2$ the sharp constant on
+  $\mathbb R^d$ is $C_p^d$ with $C_p=(p^{1/p}/p'^{1/p'})^{1/2}$, attained by
+  Gaussians (Babenko, Beckner).
 * **5. Covariance and differentiation.** Translation by $a$ multiplies
   $\widehat f$ by $e^{-2\pi i a\cdot\xi}$, modulation translates it,
   and $\widehat{\partial_j f}=2\pi i\xi_j\widehat f$.
@@ -48,13 +58,9 @@ test class when an integral is not initially defined pointwise.
   $1+1/r=1/p+1/q$, $1\leq p,q,r\leq\infty$.
 * **7. Approximate identities.** If $\phi\in L^1$, $\int\phi=1$,
   and $\phi_t(x)=t^{-d}\phi(x/t)$, then $f*\phi_t\to f$ in
-  $L^p$ for $1\leq p<\infty$. Convergence is uniform for uniformly
+  $L^p$ as $t\to0$ for $1\leq p<\infty$. Convergence is uniform for uniformly
   continuous bounded $f$. Suitable radial decreasing majorants also
   give convergence at every Lebesgue point.
-* **8. Tempered distributions.** Fourier transformation extends by
-  duality to an automorphism of $\mathcal S'$, preserving the
-  differentiation, multiplication, translation, and scaling identities.
-  In particular $\widehat\delta=1$ and $\widehat1=\delta$.
 * **9. Gaussian transform and semigroups.**
   $\widehat{e^{-\pi a|x|^2}}=a^{-d/2}e^{-\pi|\xi|^2/a}$ for
   $a>0$. The heat kernel has multiplier $e^{-4\pi^2t|\xi|^2}$;
@@ -63,7 +69,8 @@ test class when an integral is not initially defined pointwise.
 * **10. Poisson summation.** For $f\in\mathcal S(\mathbb R^d)$,
   $\sum_{k\in\mathbb Z^d}f(k)=\sum_{k\in\mathbb Z^d}\widehat f(k)$,
   with absolute convergence. Translated and lattice versions follow by
-  covariance and change of variables.
+  covariance and change of variables. The equivalent identity for Dirac
+  combs, $\widehat{\sum_k\delta_k}=\sum_k\delta_k$, holds in $\mathcal S'$.
 * **11. Translation-invariant $L^2$ operators.** Every bounded operator
   on $L^2(\mathbb R^d)$ commuting with translations is
   $T_m f=(m\widehat f)^\vee$ for a unique $m\in L^\infty$;
@@ -76,15 +83,6 @@ test class when an integral is not initially defined pointwise.
   second moments, $\|x_jf\|_2\|\xi_j\widehat f\|_2\geq1/(4\pi)$.
   Translations and modulations give the centered version, with Gaussian
   equality cases.
-* **14. Compact support and analytic continuation.** The transform of
-  a distribution supported in a compact convex set $K$ extends to an
-  entire function with bound
-  $|F(z)|\leq C(1+|z|)^N e^{2\pi H_K(\operatorname{Im}z)}$.
-  Conversely such an entire function is the transform of a distribution
-  supported in $K$, where $H_K(y)=\sup_{x\in K}x\cdot y$. In the $L^2$
-  case (Paley–Wiener), $f\in L^2(\mathbb R)$ has $\widehat f$ supported in
-  $[-A,A]$ exactly when $f$ extends to an entire function of exponential
-  type at most $2\pi A$.
 
 ## Fourier series, summation, and convergence
 
@@ -217,12 +215,24 @@ $0<\delta\leq1$ in each variable away from the diagonal.
   satisfies $\|\sum_jT_j\|\leq A$, and $\sum_jT_j$ converges strongly.
 * **42. The $T(1)$ theorem.** A standard singular-integral kernel defines
   an $L^2$ bounded operator precisely when its distributional operator
-  satisfies the weak boundedness property and $T1,T^*1\in\mathrm{BMO}$.
+  satisfies the weak boundedness property and $T1,T^*1\in\mathrm{BMO}$
+  (the space of bounded mean oscillation; see 49).
   Weak boundedness means uniform bounds $|\langle T\phi_Q,\psi_Q\rangle|
   \leq C|Q|$ for smooth normalized bumps on each cube.
 * **43. Transference to the torus.** If $m$ is a continuous Euclidean
   $L^p$ multiplier, $1\leq p<\infty$, its restriction to
   $\mathbb Z^d$ is a torus multiplier with no larger norm.
+* **69. Cauchy integral on Lipschitz curves.** Let $A:\mathbb R\to\mathbb R$
+  be Lipschitz and $z(x)=x+iA(x)$. The Cauchy integral
+  $C_Af(x)=\operatorname{pv}\frac1{\pi i}\int\frac{f(y)z'(y)}{z(y)-z(x)}dy$
+  is bounded on $L^p(\mathbb R)$, $1<p<\infty$ (Calderón for small
+  $\|A'\|_\infty$; Coifman–McIntosh–Meyer in general). So are the Calderón
+  commutators $\operatorname{pv}\int(\frac{A(x)-A(y)}{x-y})^k
+  \frac{f(y)}{x-y}dy$, with norms at most a polynomial in $k$ times
+  $C^k\|A'\|_\infty^k$.
+  These are the model applications of the $T(1)$ theorem and its accretive
+  $T(b)$ variant, and they give the $L^2$ layer-potential theory on
+  Lipschitz domains (SYNOPSIS25, item 41).
 
 ## Weights and endpoint spaces
 
@@ -249,9 +259,9 @@ $\|f\|_{L^p(w)}=(\int|f|^pw)^{1/p}$.
   The bound depends only on the exponent, the kernel and $L^2$ bounds,
   and $[w]_{A_p}$; sharply, it is
   $C[w]_{A_p}^{\max(1,1/(p-1))}$ (Hytönen's $A_2$ theorem with
-  extrapolation). Lerner's pointwise domination of $|Tf|$ by finitely
-  many sparse operators $\sum_{Q\in\mathcal S}\langle|f|\rangle_Q1_Q$
-  gives a short proof.
+  extrapolation). Lerner's pointwise domination
+  $|Tf|\leq C_T\sum_{j=1}^{3^d}\sum_{Q\in\mathcal S_j}\langle|f|\rangle_Q1_Q$,
+  with sparse families $\mathcal S_j$ depending on $f$, gives a short proof.
 * **48. Rubio de Francia extrapolation.** If a family of nonnegative
   pairs $(f,g)$ satisfies $\|f\|_{L^{p_0}(w)}\leq C([w]_{A_{p_0}})
   \|g\|_{L^{p_0}(w)}$ for every $w\in A_{p_0}$ at one
@@ -263,7 +273,7 @@ $\|f\|_{L^p(w)}=(\int|f|^pw)^{1/p}$.
   All finite mean-oscillation exponents give equivalent seminorms.
 * **50. Singular-integral endpoints.** Standard Calderón–Zygmund
   operators map $L^\infty$ into BMO, modulo constants, and map
-  the real Hardy space $H^1$ into $L^1$.
+  the real Hardy space $H^1$ (see 52) into $L^1$.
 * **51. Sharp maximal function.** With
   $M^\#f(x)=\sup_{Q\ni x}|Q|^{-1}\int_Q|f-f_Q|$, so that
   $\|M^\#f\|_\infty=\|f\|_{\mathrm{BMO}}$, one has
@@ -295,7 +305,8 @@ $\|f\|_{L^p(w)}=(\int|f|^pw)^{1/p}$.
 
 Let $\Delta_j$ be smooth annular Fourier projections forming a homogeneous
 resolution away from zero. Homogeneous distribution identities are understood
-modulo polynomials when needed.
+modulo polynomials when needed. Nonstationary and stationary phase are
+stated in SYNOPSIS50, items 13–14.
 
 * **56. Littlewood–Paley theorem.** For $1<p<\infty$,
   $\|f\|_p\asymp\|(\sum_{j\in\mathbb Z}|\Delta_jf|^2)^{1/2}\|_p$.
@@ -329,23 +340,11 @@ modulo polynomials when needed.
   $\|D^s(fg)\|_r\leq C(\|D^sf\|_{p_1}\|g\|_{q_1}
   +\|f\|_{p_2}\|D^sg\|_{q_2})$, initially for Schwartz functions.
   Here $D^s$ has multiplier $(2\pi|\xi|)^s$.
-* **62. Nonstationary phase.** If a smooth real phase has nonvanishing
-  gradient on the compact support of a smooth amplitude, then
-  $\int e^{i\lambda\phi}a=O_N(|\lambda|^{-N})$ for every $N$.
 * **63. Van der Corput lemma.** On an interval, if
   $|\phi^{(k)}|\geq1$, then
   $|\int e^{i\lambda\phi}a|\leq
   C_k|\lambda|^{-1/k}(\|a\|_\infty+\|a'\|_1)$ for $k\geq2$.
   For $k=1$ the same estimate requires monotonicity of $\phi'$.
-* **64. Stationary phase.** If $\phi$ has a unique nondegenerate
-  critical point $x_0$ on the support of $a$, then as $\lambda\to+\infty$,
-  $$
-  \int e^{i\lambda\phi(x)}a(x)dx
-  =e^{i\lambda\phi(x_0)}(2\pi/\lambda)^{d/2}
-  \frac{e^{i\pi\operatorname{sgn}\phi''(x_0)/4}a(x_0)}
-       {|\det\phi''(x_0)|^{1/2}}+O(\lambda^{-d/2-1}).
-  $$
-  There is a full asymptotic expansion.
 * **65. Curvature and Fourier decay.** Smooth compact hypersurface
   measure with smooth density and everywhere nonzero Gaussian curvature
   has transform $O((1+|\xi|)^{-(d-1)/2})$.
@@ -364,6 +363,68 @@ modulo polynomials when needed.
   multiplier, $1<p<\infty$, only for $p=2$ (C. Fefferman, via Besicovitch
   sets).
 
+## Geometric maximal functions, restriction, and decoupling
+
+A **Kakeya (Besicovitch) set** in $\mathbb R^d$ is a compact set containing a
+unit line segment in every direction. For $0<\delta<1$ a $\delta$-tube is a
+cylinder of length $1$ and radius $\delta$; the **Kakeya maximal function** is
+$f^*_\delta(\omega)=\sup_T|T|^{-1}\int_T|f|$, $\omega\in S^{d-1}$, over
+$\delta$-tubes $T$ with axis parallel to $\omega$. For a compact
+hypersurface $S$ with surface measure $\sigma$, the **extension operator** is
+$Eg=(g\,d\sigma)^\vee$, the adjoint of restriction $f\mapsto\widehat f|_S$.
+The **Bochner–Riesz means** are $S^\delta f=((1-|\xi|^2)_+^\delta\widehat f)^\vee$.
+
+* **70. Besicovitch sets and the Kakeya conjecture.** For every $d\geq2$
+  there are Kakeya sets of Lebesgue measure zero (Besicovitch). Every Kakeya
+  set in $\mathbb R^2$ has Hausdorff dimension $2$ (Davies). The Kakeya
+  conjecture asserts Hausdorff and Minkowski dimension $d$ in every
+  dimension; Wolff's hairbrush bound gives Hausdorff dimension at least
+  $(d+2)/2$, and the case $d=3$ was settled by Wang and Zahl (2025).
+* **71. Kakeya maximal estimates.** In $\mathbb R^2$,
+  $\|f^*_\delta\|_{L^2(S^1)}\leq C(\log(1/\delta))^{1/2}\|f\|_{L^2}$
+  (Córdoba), and the logarithm cannot be removed. The Kakeya maximal
+  conjecture asserts
+  $\|f^*_\delta\|_{L^d(S^{d-1})}\leq C_\varepsilon\delta^{-\varepsilon}\|f\|_{L^d}$
+  for every $\varepsilon>0$; it implies the Kakeya conjecture (Bourgain).
+  Kakeya sets of measure zero make the ball multiplier unbounded (68).
+* **72. Spherical maximal theorem.** For $d\geq2$ the maximal operator
+  $\mathcal Af(x)=\sup_{t>0}|\int_{S^{d-1}}f(x-ty)\,d\sigma(y)|$, with
+  normalized surface measure, is bounded on $L^p(\mathbb R^d)$ exactly when
+  $p>d/(d-1)$ (Stein for $d\geq3$, Bourgain for $d=2$). Consequently
+  spherical means of $f\in L^p$, $p>d/(d-1)$, converge to $f$ almost
+  everywhere as $t\to0$.
+* **73. Restriction conjecture.** For the unit sphere $S^{d-1}$, or a
+  compact piece of the paraboloid, $\|Eg\|_{L^q(\mathbb R^d)}\leq
+  C\|g\|_{L^p(S)}$ can hold only if $q>2d/(d-1)$ and
+  $q\geq(d+1)p'/(d-1)$; the necessity comes from the decay of
+  $\widehat\sigma$ and from Knapp's example. The restriction conjecture
+  asserts that these conditions suffice. It holds for $d=2$ (Fefferman,
+  Zygmund; Carleson–Sjölin), and for $p=2$ it is the Stein–Tomas theorem
+  66. For $d\geq3$ only partial ranges are known, through bilinear,
+  multilinear, and polynomial-partitioning methods (Bourgain, Wolff, Tao,
+  Bourgain–Guth, Guth). The restriction conjecture implies the Kakeya
+  conjecture.
+* **74. Bochner–Riesz conjecture.** For $0<\delta\leq(d-1)/2$, boundedness
+  of $S^\delta$ on $L^p(\mathbb R^d)$ forces
+  $|1/p-1/2|<(2\delta+1)/(2d)$, and the Bochner–Riesz conjecture asserts that
+  this suffices. In $\mathbb R^2$ it is a theorem (Carleson–Sjölin): for
+  $\delta>0$, $S^\delta$ is bounded on $L^p(\mathbb R^2)$ exactly when
+  $|1/p-1/2|<(2\delta+1)/4$. In general dimension the Stein–Tomas theorem
+  gives the conjecture for $\max(p,p')\geq2(d+1)/(d-1)$, and the
+  Bochner–Riesz conjecture implies the restriction conjecture (Tao). At
+  $\delta=0$ the ball multiplier fails for $p\ne2$ (68).
+* **75. Bourgain–Demeter decoupling.** Partition the $\delta$-neighborhood of
+  the paraboloid $\{(\xi,|\xi|^2):\xi\in[0,1]^{d-1}\}$ into boxes $\theta$
+  of dimensions about $\delta^{1/2}\times\dots\times\delta^{1/2}\times\delta$,
+  and let $f_\theta$ be the Fourier restriction of $f$ to $\theta$. If
+  $\widehat f$ is supported in that neighborhood and
+  $2\leq p\leq2(d+1)/(d-1)$, then for every $\varepsilon>0$
+  $$\|f\|_{L^p(\mathbb R^d)}\leq C_\varepsilon\delta^{-\varepsilon}
+    \Big(\sum_\theta\|f_\theta\|_{L^p(\mathbb R^d)}^2\Big)^{1/2}.$$
+  The range is sharp. The analogous decoupling for the moment curve gives
+  Vinogradov's mean value theorem (Bourgain–Demeter–Guth); decoupling also
+  gives sharp Strichartz estimates on tori.
+
 ## Reference guide
 
 Stein–Shakarchi, Katznelson, and Grafakos overlap on transforms, series,
@@ -373,9 +434,11 @@ provide the real-variable and multiplier core. The weighted and endpoint
 parts recur in Grafakos's advanced treatment, García-Cuerva–Rubio de Francia,
 and Cruz-Uribe–Martell–Pérez. Muscalu–Schlag connects those methods to
 oscillatory and multilinear analysis; Stein and Sogge give the principal
-restriction and oscillatory-integral context. The statements here select
-established common results, without attempting the union of the specialized
-decoupling, additive-combinatorial, multiparameter, and vector-valued theories.
+restriction and oscillatory-integral context. Demeter, Wolff's lectures, and
+Mattila treat Kakeya sets, restriction, Bochner–Riesz, and decoupling. The
+statements here select established common results, without attempting the
+union of the specialized decoupling, additive-combinatorial, multiparameter,
+and vector-valued theories.
 
 Local source copies consulted include substantial text, not just contents:
 
@@ -383,7 +446,9 @@ Local source copies consulted include substantial text, not just contents:
 * [Grafakos, *Classical Fourier Analysis*](References/Grafakos2014ClassicalFourierAnalysis3rdEd-SpringerGTM.pdf).
 * [Grafakos, *Modern Fourier Analysis*](References/Grafakos2009ModernFourierAnalysis2ndEd-SpringerGTM.pdf).
 * [Muscalu–Schlag, *Classical and Multilinear Harmonic Analysis*, I](References/MuscaluSchlag2013ClassicalMultilinearHarmonicAnalysisVol1-Cambridge.pdf).
+* [Demeter, *Fourier Restriction, Decoupling, and Applications*](References/Demeter2019FourierRestrictionDecouplingApplications-CambridgeStudiesAM184.pdf).
 
 The advanced Grafakos volume supplies a companion treatment of the weighted,
-Hardy-space, and restriction material; it supplements the bibliography's
-listed classical volume and newer introductory volume.
+Hardy-space, and restriction material; the bibliography lists it together
+with the classical volume, and separately lists the newer introductory
+*Fundamentals of Fourier Analysis*.

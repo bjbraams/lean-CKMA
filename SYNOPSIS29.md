@@ -1,9 +1,11 @@
 # Synopsis: Wavelets, frames, time–frequency analysis, and sampling
 
 Part of the [mathematical synopsis series](SYNOPSIS.md).
+[Bibliographical scope and references](CKMA-bib.md#ckma-29);
+[MSC2020 correspondence and cross-subject index](CKMA-MSC2020.md).
 
 This synopsis selects recurring mathematical content in Section 29 of
-[CKMA-bib.md](CKMA-bib.md). It covers
+[CKMA-bib.md](CKMA-bib.md#ckma-29). It covers
 stable expansions in Hilbert spaces, multiresolution and wavelets, continuous
 and discrete time–frequency analysis, sampling, and the basic sparse-recovery
 principles shared by the later references. Algorithmic and engineering
@@ -158,6 +160,17 @@ $(\phi(\cdot-k))_k$ of $V_0$.
 * **26. Tensor products.** Tensoring a one-dimensional MRA gives an
   MRA on $\mathbb R^d$ with $2^d-1$ wavelet types per dyadic scale.
   The resulting translates and dilates form an orthonormal basis.
+* **70. Unitary extension principle.** Let $\varphi\in L^2(\mathbb R)$
+  satisfy $\widehat\varphi(2\xi)=\tau_0(\xi)\widehat\varphi(\xi)$, with
+  $\widehat\varphi$ continuous at $0$ and $\widehat\varphi(0)=1$, and
+  define $\widehat{\psi_j}(2\xi)=\tau_j(\xi)\widehat\varphi(\xi)$,
+  $1\leq j\leq r$, for bounded $1$-periodic masks $\tau_j$. If
+  $\sum_{j=0}^r|\tau_j(\xi)|^2=1$ and
+  $\sum_{j=0}^r\tau_j(\xi)\overline{\tau_j(\xi+1/2)}=0$ almost
+  everywhere, then $\{2^{k/2}\psi_j(2^k\cdot-n)\}_{j,k,n}$ is a Parseval
+  frame (tight framelet) of $L^2(\mathbb R)$ (Ron–Shen). Unlike
+  orthonormal wavelets, such framelets can be compactly supported,
+  symmetric, and spline-based at once.
 
 ## Function spaces and approximation through wavelets
 
@@ -196,15 +209,6 @@ suffice in the Banach ranges below.
   constants, exactly when
   $\sup_J|J|^{-1}\sum_{I\subset J}|c_I|^2<\infty$ over dyadic
   intervals $J$. Its square root is an equivalent BMO seminorm.
-* **33. Best $n$-term approximation in $L^2$.** In an orthonormal basis,
-  retaining the $n$ largest coefficients minimizes the $L^2$ error
-  among all $n$-term approximants. The squared error is the sum of
-  squares of the discarded coefficients.
-* **34. Stechkin estimate.** If the coefficient sequence belongs to
-  $\ell^\tau$, $0<\tau<2$, then the best $n$-term error is at most
-  $C_\tau n^{1/2-1/\tau}\|c\|_{\ell^\tau}$.
-  Wavelet Besov norms turn this sequence estimate into spatial
-  approximation rates.
 
 ## Continuous wavelets and short-time Fourier analysis
 
@@ -252,6 +256,16 @@ $\psi_{a,b}(t)=|a|^{-1/2}\psi((t-b)/a)$ with $a\ne0$.
   $\|V_gf\|_r\leq(2/r)^{d/r}\|f\|_2\|g\|_2$, with the
   usual limiting constant at infinity. Gaussian functions attain the
   sharp finite-exponent constants.
+* **71. Bargmann transform.** With
+  $\mathcal Bf(z)=2^{d/4}\int f(t)e^{2\pi t\cdot z-\pi t^2-\pi z^2/2}dt$,
+  $z\in\mathbb C^d$, $\mathcal B$ is unitary from $L^2(\mathbb R^d)$
+  onto the Fock space $\mathcal F^2(\mathbb C^d)$ of entire $F$ with
+  $\int|F(z)|^2e^{-\pi|z|^2}dz<\infty$. For the normalized Gaussian
+  $\varphi(t)=2^{d/4}e^{-\pi t^2}$ and $z=x+i\omega$,
+  $V_\varphi f(x,-\omega)=e^{\pi ix\cdot\omega}\mathcal Bf(z)
+  e^{-\pi|z|^2/2}$. The Hermite functions are the preimages of the
+  orthonormal basis $(\pi^{|\alpha|}/\alpha!)^{1/2}z^\alpha$ and are
+  eigenfunctions of the Fourier transform with eigenvalues $(-i)^{|\alpha|}$.
 
 ## Gabor systems and modulation spaces
 
@@ -280,7 +294,15 @@ where $a,b>0$.
   $(ab)^d\geq1$. A Gabor Riesz basis therefore has $ab=1$.
 * **47. Gaussian frame set.** In dimension one, for a Gaussian window
   $g(t)=e^{-\pi t^2}$, $\mathcal G(g,a,b)$ is a frame exactly when
-  $ab<1$. At $ab=1$ it is complete but is not a frame.
+  $ab<1$ (Lyubarskii; Seip–Wallstén). At $ab=1$ it is complete but is not a frame.
+* **72. Gaussian Gabor systems at arbitrary points.** For the Gaussian
+  window and a separated set $\Lambda\subset\mathbb R^2$, identified with
+  a subset of $\mathbb C$, $\{M_\omega T_xg\}_{(x,\omega)\in\Lambda}$
+  is a frame of $L^2(\mathbb R)$ exactly when $D^-(\Lambda)>1$, and a
+  Riesz sequence exactly when $D^+(\Lambda)<1$, with densities in points
+  per unit area. This follows from the Bargmann transform and Fock-space
+  sampling and interpolation (SYNOPSIS42, items 81–82; Lyubarskii,
+  Seip–Wallstén). No Gaussian Gabor system is a Riesz basis.
 * **48. Wexler–Raz relations.** Two Bessel Gabor systems with windows
   $g,\gamma$ are dual frames exactly when
   $\langle\gamma,M_{n/a}T_{k/b}g\rangle
@@ -315,6 +337,41 @@ where $a,b>0$.
   window. Convergence is unconditional for finite $p,q$; endpoints
   use the corresponding weak topology.
 
+## Time–frequency localization and Weyl operators
+
+For a symbol $a$ on $\mathbb R^{2d}$ and windows
+$\varphi_1,\varphi_2\in L^2(\mathbb R^d)$, the **localization operator**
+$A_a^{\varphi_1,\varphi_2}$ is defined weakly by
+$\langle A_a^{\varphi_1,\varphi_2}f,h\rangle
+=\int a\,V_{\varphi_1}f\,\overline{V_{\varphi_2}h}\,dx\,d\omega$.
+The **Weyl operator** $L_\sigma$ with symbol $\sigma\in\mathcal S'(\mathbb R^{2d})$
+is defined by $\langle L_\sigma f,h\rangle=\langle\sigma,W(h,f)\rangle$.
+
+* **73. Localization operators.** If $a\in L^p(\mathbb R^{2d})$,
+  $1\leq p\leq\infty$, then $A_a^{\varphi_1,\varphi_2}$ belongs to the
+  Schatten class $\mathcal S_p$, with norm at most
+  $\|a\|_p\|\varphi_1\|_2\|\varphi_2\|_2$ ($p=\infty$: bounded
+  operators). For $a\in L^1$ its trace is
+  $\langle\varphi_2,\varphi_1\rangle\int a$. If $a\geq0$ and
+  $\varphi_1=\varphi_2$, the operator is positive. Its Weyl symbol is
+  $a*W(\varphi_2,\varphi_1)$; for Gaussian windows these are the
+  anti-Wick operators.
+* **74. Radial symbols with Gaussian windows.** In dimension one, with
+  the normalized Gaussian window and $a(z)=a_0(|z|)$ radial and bounded,
+  $A_a$ is diagonal in the Hermite basis with eigenvalues
+  $\lambda_k=\int_0^\infty a_0(\sqrt{s/\pi})e^{-s}s^k/k!\,ds$
+  (Daubechies). For $a$ the indicator of a disc of area $R$, the
+  eigenvalues are $1-e^{-R}\sum_{j\leq k}R^j/j!$, so about $R$ of them
+  are near one: the phase-space analogue of 76–77.
+* **75. Sjöstrand class.** If $\sigma\in M^{\infty,1}(\mathbb R^{2d})$,
+  then $L_\sigma$ is bounded on every $M^{p,q}(\mathbb R^d)$,
+  $1\leq p,q\leq\infty$, in particular on $L^2$, with operator norm
+  at most a constant times $\|\sigma\|_{M^{\infty,1}}$ (Sjöstrand;
+  Gröchenig–Heil). Bounded derivatives of order at most $2d+1$ place
+  $\sigma$ in $M^{\infty,1}$, giving a Calderón–Vaillancourt theorem;
+  unlike smooth symbol classes, $M^{\infty,1}$ is invariant under
+  time–frequency shifts and requires no smoothness.
+
 ## Bandlimited and nonuniform sampling
 
 Let $PW_B=\{f\in L^2(\mathbb R):\operatorname{supp}\widehat f
@@ -322,9 +379,6 @@ Let $PW_B=\{f\in L^2(\mathbb R):\operatorname{supp}\widehat f
 Sampling is **stable** on a set $\Lambda$ if
 $A\|f\|_2^2\leq\sum_{\lambda\in\Lambda}|f(\lambda)|^2\leq B_0\|f\|_2^2$.
 
-* **55. Paley–Wiener theorem.** $PW_B$ consists exactly of restrictions
-  of entire functions of exponential type at most $2\pi B$ whose
-  restriction to the real axis belongs to $L^2$.
 * **56. Reproducing kernels.** Point evaluation on $PW_B$ is bounded,
   with kernel $K_x(t)=2B\operatorname{sinc}(2B(t-x))$,
   $\operatorname{sinc}u=\sin(\pi u)/(\pi u)$. In particular
@@ -342,6 +396,9 @@ $A\|f\|_2^2\leq\sum_{\lambda\in\Lambda}|f(\lambda)|^2\leq B_0\|f\|_2^2$.
   \qquad \|f\|_2^2=(2B)^{-1}\sum_k|f(k/(2B))|^2.
   $$
   The series converges in $L^2$ and uniformly on the real axis.
+  For $B=1/2$ the series
+  $f(z)=\sum_nf(n)\sin\pi(z-n)/(\pi(z-n))$ also converges locally
+  uniformly in $\mathbb C$.
 * **59. Sampling as a frame problem.** Stable sampling on $\Lambda$
   is equivalent to the kernels $(K_\lambda)$ forming a frame in
   $PW_B$, and to the corresponding exponentials forming a frame in
@@ -351,7 +408,8 @@ $A\|f\|_2^2\leq\sum_{\lambda\in\Lambda}|f(\lambda)|^2\leq B_0\|f\|_2^2$.
   exactly when $(K_\lambda)$ is a Riesz sequence. Complete stable
   interpolation corresponds to a Riesz basis.
 * **61. Kadec's one-quarter theorem.** If
-  $\sup_{k\in\mathbb Z}|2B\lambda_k-k|<1/4$, the sampling kernels
+  $\sup_{k\in\mathbb Z}|2B\lambda_k-k|<1/4$ (equivalently $\leq L$ for
+  some $L<1/4$), the sampling kernels
   at $\lambda_k$ form a Riesz basis of $PW_B$. The universal
   constant $1/4$ cannot be enlarged.
 * **62. Landau's necessary densities.** For a uniformly separated set,
@@ -362,7 +420,7 @@ $A\|f\|_2^2\leq\sum_{\lambda\in\Lambda}|f(\lambda)|^2\leq B_0\|f\|_2^2$.
 * **63. Strict-density sufficiency in one dimension.** For uniformly
   separated $\Lambda\subset\mathbb R$, $D^-(\Lambda)>2B$ implies
   stable sampling for $PW_B$, and $D^+(\Lambda)<2B$ implies
-  stable interpolation. Density alone does not settle the equality case.
+  stable interpolation (Beurling). Density alone does not settle the equality case.
   These strict and non-strict thresholds are compared in
   [Olevskii–Ulanovskii, *On the duality between sampling and interpolation*, Theorem 2](https://arxiv.org/pdf/1512.01437).
 * **64. Aliasing threshold.** Uniform samples with spacing $h>1/(2B)$
@@ -370,6 +428,22 @@ $A\|f\|_2^2\leq\sum_{\lambda\in\Lambda}|f(\lambda)|^2\leq B_0\|f\|_2^2$.
   produce nonzero functions with every sample zero. Oversampling with
   strict bandwidth margin permits smooth reconstruction kernels with
   faster decay than sinc.
+* **76. Time–band limiting and prolate spheroidal functions.** For
+  $T>0$ the concentration operator
+  $Qf=P_B(1_{[-T,T]}f)$ on $PW_B$, with $P_B$ the orthogonal projection
+  onto $PW_B$, is positive and trace class with trace $4TB$. Its
+  eigenvalues $1>\lambda_0>\lambda_1>\cdots>0$ are simple, and
+  $\lambda_0=\max\{\int_{-T}^T|f|^2/\|f\|_2^2:0\ne f\in PW_B\}$
+  (Landau–Pollak–Slepian). The eigenfunctions are the prolate spheroidal
+  wave functions: they are also eigenfunctions of a commuting
+  second-order differential operator (Slepian–Pollak), form an
+  orthonormal basis of $PW_B$, and their restrictions are orthogonal and complete in $L^2([-T,T])$.
+* **77. Eigenvalue plunge.** For each fixed $0<\gamma<1$, as
+  $TB\to\infty$,
+  $\#\{k:\lambda_k>\gamma\}=4TB+\pi^{-2}\log((1-\gamma)/\gamma)
+  \log(TB)+o(\log(TB))$ (Landau–Widom). Thus about $4TB$ eigenvalues are
+  close to one and only $O(\log(TB))$ lie in $(\gamma,1-\gamma)$: the
+  time–frequency rectangle of area $4TB$ has that many degrees of freedom.
 
 ## Sparse recovery and redundant dictionaries
 
@@ -397,12 +471,6 @@ for every $s$-sparse $x$.
   with $\|Ax-y\|_2\leq\eta$, obeys
   $\|x-\widehat x\|_2\leq C\sigma_s(x)_1/\sqrt s+D\eta$.
   Constants depend only on the restricted isometry bound.
-* **69. Gaussian sampling complexity.** A matrix with independent
-  $N(0,1/m)$ entries has $\delta_s\leq\delta$ with probability
-  at least $1-\varepsilon$ if
-  $m\geq C\delta^{-2}(s\log(eN/s)+\log(2/\varepsilon))$,
-  for $0<\delta,\varepsilon<1$. This yields uniform sparse recovery
-  from substantially fewer measurements than the ambient dimension.
 
 ## Reference guide
 
@@ -411,7 +479,11 @@ Fourier-series foundations. Meyer, Daubechies, Hernández–Weiss, and
 Wojtaszczyk overlap on multiresolution, filters, cancellation, and function
 spaces; Mallat and Cohen connect these to approximation. Gröchenig,
 Christensen, and the Gabor references supply the time–frequency and density
-theory. Young, Seip, Christensen, and Eldar provide the sampling viewpoint.
+theory; Gröchenig, M. W. Wong, and Cordero–Rodino treat localization and
+Weyl operators, and Seip the Bargmann–Fock route to Gaussian Gabor frames.
+Han covers framelets and the unitary extension principle, and
+Osipov–Rokhlin–Xiao the prolate spheroidal functions.
+Young, Seip, Christensen, and Eldar provide the sampling viewpoint.
 The final sparse-recovery statements are the core shared by Foucart–Rauhut
 and Adcock–Hansen, rather than a general inventory of numerical algorithms.
 Directional systems, multivariate mask design, and sampling of specific

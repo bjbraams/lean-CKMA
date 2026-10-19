@@ -1,15 +1,23 @@
 # Synopsis: Partial differential equations — general and linear theory
 
 Part of the [mathematical synopsis series](SYNOPSIS.md).
+[Bibliographical scope and references](CKMA-bib.md#ckma-32);
+[MSC2020 correspondence and cross-subject index](CKMA-MSC2020.md).
 
 This synopsis selects the recurring core of Section 32 of
-[CKMA-bib.md](CKMA-bib.md):
+[CKMA-bib.md](CKMA-bib.md#ckma-32):
 characteristics and local solvability, the Laplace, heat, and wave equations,
-weak formulations, linear elliptic boundary problems, energy methods, and
-linear systems. Sections 33 and 34 develop the specialized regularity,
-nonlinear, and dispersive theories; Section 30 develops the full microlocal
+weak formulations, linear elliptic boundary problems, energy methods,
+linear systems, and symmetry methods. Sections 33 and 34 develop the
+specialized regularity, nonlinear, and dispersive theories; Section 30 develops the full microlocal
 calculus. Some overlap is retained because these are the basic mechanisms
 by which PDE are solved.
+
+The current neighbouring subdivisions separate hyperbolic systems
+([34A](CKMA-bib.md#ckma-34a)), dispersive and geometric waves
+([34B](CKMA-bib.md#ckma-34b)), fluids ([34C](CKMA-bib.md#ckma-34c)), and
+kinetic equations ([34D](CKMA-bib.md#ckma-34d)). Section 33 retains nonlinear
+elliptic and parabolic regularity, free boundaries, and viscosity methods.
 
 Write $\Delta=\sum_j\partial_j^2$, so $-\Delta$ is nonnegative, and
 $D_j=(1/i)\partial_j$. Unless explicitly relaxed, domains and coefficients
@@ -27,6 +35,11 @@ nonzero real covector. Hyperbolicity concerns real characteristic roots in
 a chosen time direction; parabolicity combines first-order time evolution
 with elliptic spatial diffusion.
 
+Fundamental solutions (SYNOPSIS16, item 63), Lewy's nonsolvability
+example and local solvability (SYNOPSIS30, item 43), Holmgren uniqueness and
+unique continuation (SYNOPSIS30, item 44), and propagation of singularities
+(SYNOPSIS30, item 40) are stated in Sections 16 and 30.
+
 * **1. Coordinate invariance of characteristics.** The principal symbol
   transforms as a homogeneous function on the cotangent bundle.
   Noncharacteristic hypersurfaces and ellipticity are therefore
@@ -40,6 +53,17 @@ with elliptic spatial diffusion.
   noncharacteristic hypersurface yield a unique local classical solution
   by the characteristic ODEs. The construction remains valid until
   its projection to the base ceases to be invertible.
+* **67. Fully nonlinear first-order equations.** For $F(Du,u,x)=0$
+  with smooth $F$, the characteristic system
+  $\dot x=D_pF$, $\dot z=D_pF\cdot p$,
+  $\dot p=-D_xF-D_zF\,p$ propagates $(x,z,p)=(x,u,Du)$ along
+  characteristics. Smooth data on a hypersurface with admissible initial
+  $p$ (satisfying $F=0$ and the tangential compatibility conditions)
+  that is noncharacteristic, $D_pF\cdot\nu\ne0$, give a unique local
+  $C^2$ solution. For Hamilton–Jacobi equations $u_t+H(Du,x)=0$ this is
+  Hamilton's system $\dot x=D_pH$, $\dot p=-D_xH$; crossing
+  characteristics end classical solvability in finite time in general,
+  and the global theory uses viscosity solutions (Section 33).
 * **4. Characteristic data and compatibility.** Prescribing Cauchy data
   on a characteristic hypersurface imposes tangential compatibility
   relations. Even compatible data need not determine a unique solution;
@@ -54,15 +78,6 @@ with elliptic spatial diffusion.
   $u_n(x,t)=e^{-\sqrt n}\sin(nx)\sinh(nt)/n$ of
   $u_{xx}+u_{tt}=0$ have Cauchy data at $t=0$ tending to zero in every
   $C^k$ norm, while their size at any fixed $t>0$ is unbounded.
-* **7. Fundamental solutions.** Every nonzero constant-coefficient
-  operator $P(D)$ has $E\in\mathcal D'(\mathbb R^d)$ with
-  $P(D)E=\delta$. Then $E*f$ solves $Pu=f$ for compactly supported
-  distributions $f$.
-* **8. Lewy's nonsolvability theorem.** There are smooth complex
-  first-order linear differential operators and smooth right-hand sides
-  for which no distributional solution exists in any neighborhood of
-  a specified point. Variable-coefficient local solvability requires
-  more than a nonzero principal symbol somewhere.
 * **9. Fourier solution of constant-coefficient equations.** Fourier
   transformation turns $P(D)u=f$ into $P(\xi)\widehat u=\widehat f$;
   zeros of $P$ require distributional inverses or additional prescriptions.
@@ -138,26 +153,35 @@ with elliptic spatial diffusion.
   barrier, so the Dirichlet problem is solvable for all continuous data
   exactly when every boundary point is regular. An exterior cone condition
   gives regularity; regularity is characterized by Wiener's capacity test,
-  and the Lebesgue spine shows that some boundary points are irregular.
+  and for $d\geq3$ the Lebesgue spine shows that some boundary points are
+  irregular. In the plane every boundary point of a complementary
+  component that is a nondegenerate continuum is regular.
 
 ## Weak elliptic problems and boundary regularity
 
 Consider
-$Lu=-\partial_i(a^{ij}\partial_ju)+c u$, with bounded real coefficients,
-uniform ellipticity $a^{ij}\xi_i\xi_j\geq\lambda|\xi|^2$, and
-$c\geq0$. Repeated indices are summed. The associated form is
-$a(u,v)=\int a^{ij}\partial_ju\,\partial_i\overline v+c u\overline v$.
-Symmetry is assumed only where explicitly stated.
+$Lu=-\partial_i(a^{ij}\partial_ju)+b^i\partial_iu+c u$ on a bounded
+domain, with bounded real coefficients and
+uniform ellipticity $a^{ij}\xi_i\xi_j\geq\lambda|\xi|^2$; $c$ may have
+either sign. Repeated indices are summed. The associated form is
+$a(u,v)=\int a^{ij}\partial_ju\,\partial_i\overline v
++b^i\partial_iu\,\overline v+c u\overline v$.
+Symmetry is assumed only where explicitly stated. Caccioppoli and Schauder
+estimates are stated in Section 33 (SYNOPSIS33, items 3 and 16–17).
 
-* **24. Weak Dirichlet existence.** For $f\in H^{-1}(\Omega)$,
+* **24. Weak Dirichlet existence.** If $b=0$ and $c\geq0$, then for
+  $f\in H^{-1}(\Omega)$,
   Lax–Milgram gives a unique $u\in H_0^1$ with
   $a(u,v)=\langle f,v\rangle$ and
   $\|u\|_{H^1}\leq C\|f\|_{H^{-1}}$.
+  Only bounded measurability and uniform ellipticity of the coefficients
+  are needed, and $\Omega$ may be any bounded open set.
 * **25. Nonzero boundary data.** If $\partial\Omega$ is Lipschitz and
   $g\in H^{1/2}(\partial\Omega)$, choose an $H^1$ lifting of $g$
   and solve the zero-trace equation for the remainder. This gives
   existence, uniqueness, and continuous dependence in $H^1$.
-* **26. Dirichlet principle.** If $a^{ij}=a^{ji}$, the weak solution
+* **26. Dirichlet principle.** If $a^{ij}=a^{ji}$, $b=0$ and $c\geq0$,
+  the weak solution
   uniquely minimizes
   $\tfrac12a(u,u)-\operatorname{Re}\langle f,u\rangle$
   among functions with the prescribed trace.
@@ -170,10 +194,6 @@ Symmetry is assumed only where explicitly stated.
   $H_0^1\hookrightarrow L^2$ and a coercive shift imply that the
   Dirichlet problem for $L$ is Fredholm. It is solvable exactly when
   the forcing annihilates the adjoint homogeneous kernel.
-* **29. Caccioppoli inequality.** For a weak solution of
-  $-\operatorname{div}(A\nabla u)=0$ and $B_{2r}\subset\Omega$,
-  $\int_{B_r}|\nabla u|^2\leq Cr^{-2}\int_{B_{2r}}|u|^2$.
-  Cutoff-energy estimates give forcing and lower-order variants.
 * **30. Interior $H^2$ regularity.** For locally Lipschitz leading
   coefficients and $f\in L^2_{\mathrm{loc}}$, a weak solution of
   $Lu=f$ belongs to $H^2_{\mathrm{loc}}$, with local estimates
@@ -183,7 +203,7 @@ Symmetry is assumed only where explicitly stated.
   for distributions $u$. Smooth forcing therefore gives smooth interior
   solutions.
 * **32. Boundary $H^2$ regularity.** On a bounded $C^{1,1}$ domain,
-  Lipschitz leading coefficients, bounded $c$, zero Dirichlet trace,
+  Lipschitz leading coefficients, bounded $b,c$, zero Dirichlet trace,
   and $f\in L^2$ give $u\in H^2$ with the corresponding estimate.
   Smooth coefficients, boundary, and compatible data yield higher
   boundary regularity.
@@ -192,13 +212,9 @@ Symmetry is assumed only where explicitly stated.
   $\|u\|_{W^{2,p}}\leq C(\|Lu\|_p+\|u\|_p)$ for
   $u\in W^{2,p}\cap W_0^{1,p}$, $1<p<\infty$.
   The second term can be removed when the homogeneous problem is injective.
-* **34. Schauder estimates.** For uniformly elliptic nondivergence
-  equations with $C^{0,\alpha}$ coefficients, $0<\alpha<1$,
-  classical solutions satisfy interior $C^{2,\alpha}$ estimates from
-  $C^{0,\alpha}$ forcing and a supremum bound. Smooth enough boundary
-  and $C^{2,\alpha}$ Dirichlet data give boundary versions.
 * **35. Maximum and Hopf principles for elliptic equations.** For
-  $L=-a^{ij}\partial_{ij}+b^i\partial_i+c$, $c\geq0$, comparison
+  $L=-a^{ij}\partial_{ij}+b^i\partial_i+c$, $c\geq0$ (Section 33 uses
+  the opposite sign, $a^{ij}u_{ij}+b^iu_i+cu$ with $c\leq0$), comparison
   holds for classical sub- and supersolutions. A nonconstant solution
   attaining a nonnegative maximum at an interior-sphere boundary point
   has strictly positive outward normal derivative under the usual
@@ -247,6 +263,7 @@ Symmetry is assumed only where explicitly stated.
   $L^2$, and $f\in L^2(0,T;H^{-1})$, the zero-Dirichlet equation
   $u_t+L(t)u=f$ has a unique solution
   $u\in L^2(0,T;H_0^1)$, $u_t\in L^2(0,T;H^{-1})$.
+  The solution satisfies the usual energy estimate.
 * **45. Time traces of energy solutions.** If
   $u\in L^2(0,T;V)$ and $u_t\in L^2(0,T;V^*)$ for a dense
   Hilbert triple $V\subset H\subset V^*$, then
@@ -279,7 +296,7 @@ Symmetry is assumed only where explicitly stated.
   $f\in L^1(0,T;L^2)$.
 * **51. Wave energy.** For homogeneous forcing,
   $E(t)=\tfrac12\int(|u_t|^2+c^2|\nabla u|^2)$ is conserved.
-  With forcing, $E'(t)=\int fu_t$, giving continuous dependence
+  With forcing, $E'(t)=\operatorname{Re}\int f\,\overline{u_t}$, giving continuous dependence
   and uniqueness by an energy estimate.
 * **52. Finite propagation speed.** A wave solution at $(t,x)$ depends
   only on initial data in $B(x,ct)$ and forcing in its backward cone.
@@ -328,10 +345,6 @@ Symmetry is assumed only where explicitly stated.
   well posed on a noncharacteristic time slice in the Sobolev Cauchy
   scale $\partial_t^ju(0)\in H^{s+m-1-j}$, $0\leq j<m$.
   The solution has the corresponding local-in-time derivative regularity.
-* **62. Propagation of wave singularities.** For smooth real-principal-type
-  hyperbolic operators, wavefront singularities outside the forcing's
-  wavefront set propagate along null bicharacteristics of the principal
-  symbol. Smooth data and forcing remain smooth in their domain of dependence.
 
 ## General methods and structural conclusions
 
@@ -358,6 +371,25 @@ Symmetry is assumed only where explicitly stated.
   $H^s(\Omega)\oplus\bigoplus_jH^{s+2m-m_j-1/2}(\partial\Omega)$,
   for $s\geq0$. Principal-symbol ellipticity alone does not guarantee
   an arbitrary choice of boundary conditions is valid.
+* **68. Infinitesimal symmetry criterion.** Let a system
+  $\Delta(x,u^{(n)})=0$ of differential equations be of maximal rank and
+  locally solvable (nondegenerate). A connected local group of
+  transformations of the independent and dependent variables is a
+  symmetry group (mapping solutions to solutions) exactly when the $n$th prolongation of each of
+  its infinitesimal generators $v$ satisfies
+  $\operatorname{pr}^{(n)}v(\Delta)=0$ on the solution set (Lie).
+  The symmetries form a Lie algebra computed from linear determining
+  equations; group-invariant solutions solve a reduced system in fewer
+  variables (Olver).
+* **69. Symmetries of the heat equation.** The symmetry algebra of
+  $u_t=u_{xx}$ is spanned by $\partial_x$, $\partial_t$, $u\partial_u$,
+  $x\partial_x+2t\partial_t$, $2t\partial_x-xu\partial_u$,
+  $4tx\partial_x+4t^2\partial_t-(x^2+2t)u\partial_u$, and the
+  infinite-dimensional family $\alpha(x,t)\partial_u$ with $\alpha$ a
+  solution. Invariance under the scaling field gives the similarity
+  solutions, and the last finite generator followed by a time translation
+  maps a constant solution to the fundamental solution
+  $(4\pi t)^{-1/2}e^{-x^2/(4t)}$.
 
 ## Reference guide
 
@@ -371,6 +403,8 @@ problem monographs explain why geometric boundary hypotheses cannot be
 omitted from regularity statements. Rough-coefficient nonlinear regularity,
 free boundaries, dispersive decay estimates, and nonlinear conservation laws
 are reserved for the neighboring subject inventories.
+Evans treats first-order nonlinear characteristics, and Olver and Stormark
+the Lie symmetry method.
 
 Local source copies consulted:
 

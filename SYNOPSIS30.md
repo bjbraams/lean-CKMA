@@ -1,13 +1,22 @@
 # Synopsis: Distributions, pseudodifferential operators, microlocal and semiclassical analysis
 
 Part of the [mathematical synopsis series](SYNOPSIS.md).
+[Bibliographical scope and references](CKMA-bib.md#ckma-30);
+[MSC2020 correspondence and cross-subject index](CKMA-MSC2020.md).
 
 This synopsis selects recurring material from Section 30 of
-[CKMA-bib.md](CKMA-bib.md). It begins
+[CKMA-bib.md](CKMA-bib.md#ckma-30). It begins
 with distribution theory as used in PDE, then develops symbols, microlocal
-regularity, Fourier integral operators, and the semiclassical limit.
+regularity, Fourier integral operators, the semiclassical limit, and
+scattering resonances.
 The broader locally convex theory of distributions is treated in Section 16;
 global spectral and geometric consequences also belong to Sections 22 and 53.
+
+The distribution-space foundations remain in Section 16;
+[34A](CKMA-bib.md#ckma-34a)–[34B](CKMA-bib.md#ckma-34b) supply hyperbolic and
+dispersive applications, while the [inverse-problems
+route](CKMA-MSC2020.md#inverse-problems) links Carleman and microlocal methods
+across their several homes.
 
 Here $D_j=(1/i)\partial_{x_j}$ and
 $\widehat u(\xi)=\int e^{-ix\cdot\xi}u(x)dx$, so Fourier inversion
@@ -17,52 +26,16 @@ without boundary. Symbols and coefficients are smooth unless specified.
 
 ## Distributions and Fourier analysis for PDE
 
+Distribution theory, Fourier transforms, fundamental solutions, and
+stationary phase are stated in Sections 16, 27, and 50 (for example
+SYNOPSIS16, items 42–66, and SYNOPSIS50, items 13–14); this section
+records their microlocal use.
+
 * **1. Distributional differentiation.** Every continuous linear
   functional on $C_c^\infty(\Omega)$ has derivatives of every order,
   defined by $\langle\partial^\alpha u,\phi\rangle
   =(-1)^{|\alpha|}\langle u,\partial^\alpha\phi\rangle$.
   These extend classical and weak derivatives and commute with each other.
-* **2. Local finite order.** On each fixed compact subset, a distribution
-  is bounded by finitely many test-function derivative seminorms.
-  Locally it is a finite sum of derivatives of continuous functions.
-* **3. Point-supported distributions.** Every distribution supported
-  at one point is a finite linear combination of derivatives of the
-  Dirac mass at that point.
-* **4. Convolution and regularization.** Distributions can be convolved
-  when one factor has compact support. Derivatives commute with this
-  convolution, and convolution with a test function is smooth.
-  Mollification converges in the distribution topology.
-* **5. Fourier transformation.** Fourier transformation is an
-  automorphism of $\mathcal S$ and $\mathcal S'$, taking $D_j$ to
-  multiplication by $\xi_j$ and multiplication by $x_j$ to
-  $i\partial_{\xi_j}$.
-* **6. Paley–Wiener–Schwartz theorem.** Compactly supported
-  distributions have entire Fourier transforms of exponential type;
-  a compact convex support $K$ is characterized by bounds
-  $|F(z)|\leq C(1+|z|)^N e^{H_K(\operatorname{Im}z)}$.
-* **7. Schwartz kernel theorem.** Continuous maps
-  $C_c^\infty(Y)\to\mathcal D'(X)$ correspond uniquely to
-  distributions on $X\times Y$. Kernel support encodes locality and
-  proper support; smooth kernels give regularizing operators locally.
-* **8. Malgrange–Ehrenpreis theorem.** Every nonzero constant-coefficient
-  differential operator $P(D)$ on $\mathbb R^d$ has a distributional
-  fundamental solution $E$, $P(D)E=\delta$.
-  Hence $P(D)(E*f)=f$ for compactly supported distributions $f$.
-* **9. Elliptic constant-coefficient regularity.** If $P(D)$ is elliptic,
-  $P(D)u\in H^s_{\mathrm{loc}}$ implies
-  $u\in H^{s+m}_{\mathrm{loc}}$, where $m$ is its order.
-  In particular elliptic operators are hypoelliptic. More generally,
-  $P(D)$ is hypoelliptic exactly when
-  $\partial^\alpha P(\xi)/P(\xi)\to0$ as $\xi\to\infty$ in
-  $\mathbb R^d$ for every $\alpha\ne0$ (Hörmander); the heat operator
-  is an example.
-* **10. Nonstationary and stationary phase.** Smooth compactly supported
-  oscillatory integrals $\int e^{i\lambda\phi}a\,dx$ with real phase
-  $\phi$ decay faster than any power when the phase has
-  no stationary point. A nondegenerate stationary point contributes
-  a full expansion beginning with
-  $(2\pi/\lambda)^{d/2}e^{i\lambda\phi(x_0)+i\pi\operatorname{sgn}\phi''/4}
-  a(x_0)/|\det\phi''(x_0)|^{1/2}$ as $\lambda\to+\infty$.
 
 ## Wavefront sets and operations on singular distributions
 
@@ -152,20 +125,34 @@ of degrees $m,m-1,\ldots$ for large $|\xi|$.
   the classical pseudodifferential calculus. Principal symbols transform
   as functions on the cotangent bundle; full symbols acquire lower-order
   corrections.
-* **27. Calderón–Vaillancourt theorem.** A symbol with sufficiently many
-  bounded derivatives in both variables defines a bounded $L^2$ operator.
+* **27. Calderón–Vaillancourt theorem.** A symbol with bounded derivatives
+  $\partial_x^\alpha\partial_\xi^\beta a$, $|\alpha|,|\beta|\leq N(d)$
+  (the class $S^0_{0,0}$ suffices), defines a bounded $L^2$ operator.
   The norm is controlled by finitely many of those derivative bounds.
+* **66. $S^m_{\rho,\delta}$ calculus.** For $0\leq\delta<\rho\leq1$,
+  $S^m_{\rho,\delta}$ consists of symbols with
+  $|\partial_x^\alpha\partial_\xi^\beta a|
+  \leq C_{\alpha\beta}\langle\xi\rangle^{m-\rho|\beta|+\delta|\alpha|}$.
+  Asymptotic summation, the composition and adjoint expansions of 23–24,
+  pseudolocality, and $H^s\to H^{s-m}$ boundedness hold, successive
+  terms of the expansions decreasing in order by $\rho-\delta$.
+  Coordinate invariance holds when also $\delta\geq1-\rho$, which forces
+  $\rho>1/2$. Order-zero operators are $L^2$ bounded
+  also for $0\leq\delta=\rho<1$ (Calderón–Vaillancourt), but $S^0_{1,1}$
+  operators need not be $L^2$ bounded.
 * **28. Sobolev mapping theorem.** Globally controlled $S^m_{1,0}$
   operators map $H^s(\mathbb R^d)$ continuously to $H^{s-m}$.
   Properly supported versions give the corresponding local statement.
 * **29. Pseudolocality.** Pseudodifferential kernels are smooth off the
   diagonal and $\mathrm{WF}(Au)\subset\mathrm{WF}(u)$.
   More precisely only covectors in the essential symbol support of $A$
-  can survive.
+  can survive; this is the closed conic set of covectors having no conic
+  neighbourhood on which $a$ is of order $-\infty$.
 * **30. Microlocal Sobolev mapping.**
   $\mathrm{WF}^{s-m}(Au)\subset\mathrm{WF}^s(u)$ for order $m$.
-  If $A$ is elliptic at a covector, membership in these two wavefront
-  sets is equivalent there.
+  If $A$ is elliptic at a covector (that is, $|a(x,\xi)|\geq c|\xi|^m$
+  for large $|\xi|$ in a conic neighbourhood of it), membership in these
+  two wavefront sets is equivalent there.
 * **31. Gårding inequalities.** If $A$ has order $m$ and
   $\operatorname{Re}a_m(x,\xi)\geq c|\xi|^m$ (strong ellipticity), then
   $\operatorname{Re}\langle Au,u\rangle\geq c'\|u\|_{H^{m/2}}^2
@@ -177,7 +164,7 @@ of degrees $m,m-1,\ldots$ for large $|\xi|$.
   globally under uniform symbol bounds.
 * **32. Paradifferential decomposition.** Smooth dyadic projections give
   Bony's decomposition $uv=T_uv+T_vu+R(u,v)$, separating low–high,
-  high–low, and comparable-frequency products. For $\alpha,\beta>0$,
+  high–low, and comparable-frequency products. For $\alpha+\beta>0$,
   $R:C^\alpha\times C^\beta\to C^{\alpha+\beta}$ continuously,
   where these are Hölder–Zygmund spaces.
 
@@ -186,10 +173,14 @@ of degrees $m,m-1,\ldots$ for large $|\xi|$.
 An order-$m$ symbol is **elliptic** where $|a(x,\xi)|\geq c|\xi|^m$
 at large frequencies in the indicated conic region. The complement is
 its characteristic set $\operatorname{Char}(A)$.
+Global consequences on closed manifolds (Fredholm property, complex powers,
+Weyl asymptotics) are stated in Section 53 (SYNOPSIS53, items 5, 11, 24–27).
 
 * **33. Parametrix theorem.** An elliptic operator has a two-sided
   parametrix of order $-m$ modulo smoothing operators. The same
   construction works microlocally in any elliptic conic region.
+  Its principal symbol is the reciprocal of the principal symbol of the
+  operator.
 * **34. Elliptic wavefront identity.**
   $\mathrm{WF}(u)\subset\mathrm{WF}(Au)\cup\operatorname{Char}(A)$.
   Thus $\mathrm{WF}(Au)=\mathrm{WF}(u)$ for elliptic $A$.
@@ -198,31 +189,42 @@ its characteristic set $\operatorname{Char}(A)$.
   $\|\chi u\|_{H^{s+m}}\leq C(\|\widetilde\chi Au\|_{H^s}
   +\|\widetilde\chi u\|_{H^{-N}})$, with suitable compact supports.
   Distributional solutions bootstrap to smoothness when $Au$ is smooth.
-* **36. Fredholm theorem on closed manifolds.** An elliptic operator
-  $A:H^{s+m}(M)\to H^s(M)$ is Fredholm, has smooth kernel and
-  cokernel, and has index independent of $s$. Solvability is equivalent
-  to orthogonality to the kernel of its formal adjoint. The index
-  depends only on the homotopy class of the principal symbol among
-  elliptic symbols; it vanishes for self-adjoint operators.
-* **37. Complex powers.** A strictly positive self-adjoint elliptic
-  classical operator $A$ of positive order $m$ on a closed manifold
-  has complex powers $A^z$ in the classical calculus of complex order
-  $mz$. Spectral and pseudodifferential definitions agree.
-* **38. Elliptic spectral asymptotics.** For a positive self-adjoint
-  elliptic operator of order $m>0$ with positive scalar principal symbol,
-  $N(\lambda)\sim(2\pi)^{-d}\operatorname{vol}\{(x,\xi):a_m(x,\xi)\leq\lambda\}$.
-  The remainder is $O(\lambda^{(d-1)/m})$, which is sharp for the sphere
-  (Avakumović, Levitan, Hörmander); it improves to $o(\lambda^{(d-1)/m})$
-  when the periodic bicharacteristics have measure zero
-  (Duistermaat–Guillemin).
 * **39. Subelliptic sums of squares.** If real smooth vector fields
   $X_1,\ldots,X_r$ and their brackets span every tangent space, then
   $\sum_jX_j^*X_j$ is hypoelliptic. Locally there is a positive
   subelliptic gain controlled by the bracket lengths on the compact set.
+  The associated heat operator has a smooth kernel for positive time.
+* **67. Hypoelliptic symbols.** Let $a\in S^m_{\rho,\delta}$,
+  $0\leq\delta<\rho\leq1$, satisfy, for large $|\xi|$ and locally uniformly
+  in $x$, $|a(x,\xi)|\geq c|\xi|^{m'}$ and
+  $|\partial_x^\alpha\partial_\xi^\beta a|\leq C_{\alpha\beta}
+  |a|\langle\xi\rangle^{-\rho|\beta|+\delta|\alpha|}$. Then
+  $\operatorname{Op}(a)$ has a two-sided parametrix in
+  $S^{-m'}_{\rho,\delta}$; it is hypoelliptic, and
+  $\operatorname{Op}(a)u\in H^s_{\mathrm{loc}}$ implies
+  $u\in H^{s+m'}_{\mathrm{loc}}$ (Hörmander). A hypoelliptic
+  constant-coefficient $P(D)$ satisfies these bounds with $\delta=0$ and
+  some $\rho>0$.
+* **68. Hörmander's theorem with drift.** If real smooth vector fields
+  $X_0,X_1,\ldots,X_r$ on an open set of $\mathbb R^n$ together with
+  their iterated brackets span every tangent space, then
+  $\sum_{j=1}^rX_j^2+X_0+c$ is hypoelliptic for smooth $c$. The Kolmogorov
+  operator $\partial_t+v\cdot\nabla_x-\Delta_v$ on
+  $\mathbb R_t\times\mathbb R^d_x\times\mathbb R^d_v$, and the kinetic
+  Fokker–Planck operators obtained by adding terms $b(v)\cdot\nabla_v+c$,
+  are examples:
+  $[\partial_{v_j},\partial_t+v\cdot\nabla_x]=\partial_{x_j}$ supplies
+  the missing directions. Global subelliptic estimates for kinetic
+  Fokker–Planck operators with confining potentials give compact
+  resolvent and a spectral gap (Hérau–Nier, Helffer–Nier); the resulting return to equilibrium is
+  stated in Section 34 (SYNOPSIS34, item 75).
 * **40. Propagation of singularities.** Let $P$ be properly supported
   with real principal symbol $p$ homogeneous of degree $m$. Then
   $\mathrm{WF}(u)\setminus\mathrm{WF}(Pu)\subset p^{-1}(0)$ and is
-  invariant under the flow of $H_p$ there (Duistermaat–Hörmander). Likewise,
+  invariant under the flow of the Hamilton field
+  $H_p=\partial_\xi p\cdot\partial_x-\partial_xp\cdot\partial_\xi$ there,
+  whose integral curves in $p^{-1}(0)$ are the null bicharacteristics
+  (Duistermaat–Hörmander). Likewise,
   on a bicharacteristic interval where $Pu\in H^s$ microlocally,
   $u\in H^{s+m-1}$ microlocally at one point implies it on the whole
   interval.
@@ -240,9 +242,12 @@ its characteristic set $\operatorname{Char}(A)$.
 * **43. Local solvability.** The Lewy operator
   $\partial_{x_1}+i\partial_{x_2}-2i(x_1+ix_2)\partial_{x_3}$ on
   $\mathbb R^3$ is not locally solvable: for most smooth $f$, $Lu=f$ has
-  no distributional solution near any point. For principal type operators,
+  no distributional solution near any point. For operators of principal
+  type ($dp$ never proportional to $\xi\,dx$ on $p^{-1}(0)$),
   local solvability is equivalent to the Nirenberg–Trèves condition
-  $(\Psi)$ (sufficiency by Dencker); in particular $\operatorname{Im}p$
+  $(\Psi)$ (sufficiency by Dencker): for every smooth nonvanishing $q$,
+  $\operatorname{Im}(qp)$ does not change sign from $-$ to $+$ along
+  bicharacteristics of $\operatorname{Re}(qp)$. In particular $\operatorname{Im}p$
   must not change sign from $-$ to $+$ along bicharacteristics of
   $\operatorname{Re}p$, which excludes Hörmander's condition
   $\{\operatorname{Re}p,\operatorname{Im}p\}>0$ at a characteristic point.
@@ -294,6 +299,9 @@ equal-dimensional manifolds are locally $L^2$ bounded.
   operator by an elliptic FIO quantizing a canonical transformation
   gives a pseudodifferential operator whose principal symbol is the
   original symbol transported by that transformation.
+  For example, conjugation of an order-zero operator by the half-wave
+  group $e^{it\sqrt\Delta}$ on a closed Riemannian manifold transports its
+  principal symbol by the geodesic flow, for each fixed time.
 * **51. Wave parametrices.** For a positive elliptic first-order
   self-adjoint operator $P$, the local propagator $e^{-itP}$ is an
   FIO associated to its Hamilton flow. Local phase representations
@@ -380,11 +388,28 @@ self-adjoint realizations. Semiclassical Sobolev norms use $\langle hD\rangle^s$
   =(2\pi h)^{-d}\operatorname{vol}\{a\leq|\xi|_g^2+V(x)\leq b\}
   +o(h^{-d}).
   $$
-* **65. Quantum ergodicity.** If the geodesic flow on the unit cosphere
-  of a closed Riemannian manifold is ergodic, every orthonormal
-  Laplace eigenbasis has a subsequence of density one whose
-  order-zero pseudodifferential expectations converge to the normalized
-  Liouville average of the principal symbol.
+
+## Scattering resonances
+
+For real $V\in L^\infty_{\mathrm{comp}}(\mathbb R^d)$ write
+$R_V(\lambda)=(-\Delta+V-\lambda^2)^{-1}$; it is a bounded operator on
+$L^2$ for $\operatorname{Im}\lambda>0$ except at the finitely many
+$\lambda\in i(0,\infty)$ with $\lambda^2$ a negative eigenvalue.
+
+* **69. Meromorphic continuation.** For odd $d$, $R_V(\lambda)$ continues
+  from the upper half-plane to a meromorphic family
+  $L^2_{\mathrm{comp}}\to L^2_{\mathrm{loc}}$ on $\mathbb C$, with
+  poles of finite rank; for even $d$ the continuation is to the
+  logarithmic cover of $\mathbb C\setminus0$. The poles are the
+  **resonances** (scattering poles). Resonances in the lower half-plane
+  correspond to outgoing solutions of $(-\Delta+V-\lambda^2)u=0$ and
+  govern the local decay of waves, the real part as frequency and
+  $-\operatorname{Im}\lambda$ as decay rate.
+* **70. Counting resonances.** For $d=1$ and $V\ne0$ with convex hull
+  of support of length $L$, the number of resonances with
+  $|\lambda|\leq r$, counted with multiplicity, is
+  $(2L/\pi)r+o(r)$ (Zworski). For odd $d\geq3$ it is $O(r^d)$
+  (Melrose for obstacles, Zworski for potentials).
 
 ## Reference guide
 
@@ -394,7 +419,10 @@ Grigis–Sjöstrand, and Shubin overlap on the calculus and elliptic theory.
 Duistermaat, Hörmander, and Trèves provide the FIO viewpoint. Zworski,
 Dimassi–Sjöstrand, and Martinez give the semiclassical calculus, measures,
 and dynamics. Paradifferential methods also recur in Taylor and
-Alinhac–Gérard. Specialized boundary calculi, analytic wavefront theory,
+Alinhac–Gérard. Hörmander's third volume and Shubin treat the
+$S^m_{\rho,\delta}$ classes and hypoelliptic parametrices, Helffer–Nier the
+Fokker–Planck estimates, and Dyatlov–Zworski the resonance theory.
+Specialized boundary calculi, analytic wavefront theory,
 resonance expansions, tunneling, and global phase-space symbol metrics
 extend this common foundation and are not exhaustively included here.
 

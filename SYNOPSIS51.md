@@ -1,15 +1,24 @@
 # Synopsis: Integrable systems and Riemann–Hilbert methods
 
 Part of the [mathematical synopsis series](SYNOPSIS.md).
+[Bibliographical scope and references](CKMA-bib.md#ckma-51);
+[MSC2020 correspondence and cross-subject index](CKMA-MSC2020.md).
 
 This synopsis selects recurring content from Section 51 of
-[CKMA-bib.md](CKMA-bib.md): analytic
+[CKMA-bib.md](CKMA-bib.md#ckma-51): analytic
 factorization, inverse scattering, Hamiltonian and algebraic integrability,
 isomonodromic deformation, and nonlinear asymptotics. The emphasis is on
 usable mathematical structures and representative theorems shared by several
 treatments. General dispersive well-posedness, orthogonal-polynomial theory,
 and ordinary asymptotic methods are developed further in Sections 34, 48,
-and 50.
+and 50; the Painlevé property of complex ODEs is in Section 41.
+
+General dispersive and nonlinear-wave estimates are identified as
+[34B](CKMA-bib.md#ckma-34b), random matrix ensembles as
+[07B](CKMA-bib.md#ckma-07b), and orthogonal-polynomial theory as Section 48.
+The [inverse-problems route](CKMA-MSC2020.md#inverse-problems) distinguishes
+integrable inverse scattering from broader inverse and regularization
+problems.
 
 An oriented contour has its positive side on the left. A normalized matrix
 Riemann–Hilbert problem asks for $M$ holomorphic off the contour, with
@@ -92,7 +101,7 @@ $L=-\partial_x^2+u$.
   with appropriate sum and difference conditions on spectral bands
   converts large exponential jumps into bounded oscillatory or decaying
   ones. For orthogonal polynomials these conditions are the
-  Euler–Lagrange conditions for logarithmic equilibrium.
+  Euler–Lagrange conditions for logarithmic equilibrium (entry 60).
 * **14. Parametrix error theorem.** Suppose an outer model and local
   models are uniformly invertible and match by $I+O(\varepsilon)$
   on fixed disk boundaries, while remaining jumps are small in
@@ -122,7 +131,9 @@ $L=-\partial_x^2+u$.
 * **18. Discrete spectrum.** The negative eigenvalues are simple and
   finite in number, $-\kappa_j^2$, $\kappa_j>0$; they correspond to
   zeros of the analytic inverse transmission coefficient in the upper
-  half-plane. Positive norming constants complete the discrete data.
+  half-plane. The positive norming constants
+  $c_j=\big(\int_{\mathbb R}f_+(x,i\kappa_j)^2dx\big)^{-1}$ (right
+  convention) complete the discrete data.
 * **19. Uniqueness from scattering data.** One reflection coefficient,
   all negative eigenvalues, and the associated norming constants
   determine a real short-range potential uniquely. Reflection data
@@ -157,6 +168,20 @@ $L=-\partial_x^2+u$.
   $A_{ij}=\sqrt{c_i(t)c_j(t)}e^{-(\kappa_i+\kappa_j)x}/
   (\kappa_i+\kappa_j)$. Positivity of $I+A$ gives a smooth real
   solution for positive $c_j$ and distinct positive $\kappa_j$.
+* **68. Hirota bilinear form and tau functions.** With the Hirota
+  derivative $D_x^mD_t^n\,a\cdot b=(\partial_x-\partial_{x'})^m
+  (\partial_t-\partial_{t'})^na(x,t)b(x',t')|_{x'=x,t'=t}$, the
+  substitution $u=-2\partial_x^2\log\tau$ turns KdV into
+  $(D_xD_t+D_x^4)\,\tau\cdot\tau=0$ (sufficient, and necessary up to
+  integration constants fixed by decay). The $N$-soliton tau function is
+  $\tau=\sum_{\mu\in\{0,1\}^N}\exp\bigl(\sum_i\mu_i\eta_i
+  +\sum_{i<j}\mu_i\mu_jA_{ij}\bigr)$, $\eta_i=k_ix-k_i^3t+\eta_i^0$,
+  $e^{A_{ij}}=((k_i-k_j)/(k_i+k_j))^2$; with $k_i=2\kappa_i$ it equals
+  $\det(I+A)$ of entry 25 after renormalizing the phases. In Sato's
+  theory, tau functions of the KP hierarchy form the orbit of an
+  infinite-dimensional Grassmannian, the Hirota bilinear identities are
+  its Plücker relations, and KdV is the reduction to $\tau$ independent of
+  the even times.
 * **26. Elastic soliton scattering.** As $t\to\pm\infty$, an
   $N$-soliton resolves into the same individual amplitudes and speeds.
   Each collision changes only position; the pairwise shift has magnitude
@@ -176,12 +201,39 @@ $L=-\partial_x^2+u$.
   $\widetilde u=u-2\partial_x^2\log\phi$ and an intertwining
   operator $\partial_x-\phi_x/\phi$. Zeros of $\phi$ produce poles;
   regularity requires their exclusion on the domain considered.
+* **69. Bäcklund transformation and permutability.** For sine-Gordon
+  $u_{xt}=\sin u$ and $a\ne0$, the system
+  $\frac12(u'-u)_x=a\sin\frac{u'+u}2$,
+  $\frac12(u'+u)_t=a^{-1}\sin\frac{u'-u}2$ is compatible exactly when
+  $u$ and $u'$ both solve the equation. From $u=0$ it gives the kink
+  $u'=4\arctan e^{ax+t/a+c}$. If $u_1,u_2$ arise from $u$ with parameters
+  $a_1\ne a_2$, Bianchi's permutability theorem gives a common
+  $u_{12}$ algebraically:
+  $\tan\frac{u_{12}-u}4=\frac{a_1+a_2}{a_1-a_2}\tan\frac{u_1-u_2}4$;
+  iteration builds multisolitons and breathers without quadratures.
+  For KdV the Darboux transformation of entry 29 plays the same role
+  (Rogers–Schief).
 * **30. AKNS compatibility.** For $\Psi_x=U(\lambda)\Psi$,
   $\Psi_t=V(\lambda)\Psi$, compatibility is
   $U_t-V_x+[U,V]=0$. Polynomial choices of $V$ for
   $U=-i\lambda\sigma_3+\begin{pmatrix}0&q\\r&0\end{pmatrix}$
   produce the AKNS hierarchy, including focusing and defocusing NLS
   after the respective reality reductions.
+* **70. Zakharov–Shabat direct scattering.** For complex $q\in L^1(\mathbb R)$
+  and the focusing system $v_x=\begin{pmatrix}-i\lambda&q\\-\bar q&i\lambda
+  \end{pmatrix}v$, Jost solutions normalized at $\mp\infty$ exist for
+  $\operatorname{Im}\lambda\geq0$, and their Wronskian $a(\lambda)$ is
+  analytic in the upper half-plane, continuous up to $\mathbb R$, and tends
+  to $1$ at infinity; on $\mathbb R$, $|a|^2+|b|^2=1$, with $r=b/a$.
+  The $L^2$ eigenvalues are the zeros of $a$ in
+  $\operatorname{Im}\lambda>0$, finitely many when $a$ has no real zeros;
+  there are none if $\|q\|_{L^1}<\pi/2$, and for real nonnegative
+  single-lobe $q$ they are simple, purely imaginary, and
+  $\lfloor\|q\|_{L^1}/\pi+\frac12\rfloor$ in number when
+  $\|q\|_{L^1}/\pi+\frac12\notin\mathbb Z$ (Klaus–Shaw; for
+  $q=A\operatorname{sech}x$, Satsuma–Yajima).
+  Under the NLS flow of entry 31, $a$ is conserved and $b$ and the norming
+  constants evolve by explicit exponential factors in $\lambda^2t$.
 * **31. Focusing NLS soliton.** For
   $iq_t+q_{xx}+2|q|^2q=0$,
   $q=\eta\operatorname{sech}(\eta(x-2\xi t-x_0))
@@ -215,6 +267,7 @@ $L=-\partial_x^2+u$.
   coordinates turn the commuting flows into linear translations.
   Here $F$ is conserved by the flow of $H$ exactly when $\{F,H\}=0$,
   and Poisson-commuting Hamiltonians generate commuting flows.
+  In action–angle coordinates $H=H(I)$, $\dot\theta=\nabla H(I)$, $\dot I=0$.
 * **36. KdV Hamiltonian pair.** The compatible Poisson operators
   $J_1=\partial_x$ and
   $J_2=-\partial_x^3+2(u\partial_x+\partial_xu)$ give
@@ -242,8 +295,9 @@ $L=-\partial_x^2+u$.
 * **41. Baker–Akhiezer construction.** A smooth genus-$g$ spectral
   curve, marked point with local parameter, and generic nonspecial
   degree-$g$ divisor determine a normalized Baker–Akhiezer function
-  with prescribed poles and exponential singularity. The construction
-  is meromorphic in the time parameters, away from the theta divisor.
+  with prescribed poles and exponential singularity. The reconstructed
+  potential is meromorphic in $(x,t)$, with poles where the linearly
+  moving Jacobian point of entry 43 meets the theta divisor.
 * **42. Abelian linearization.** The Abel image of the moving
   spectral divisor evolves linearly in the Jacobian under the commuting
   hierarchy flows. Jacobi inversion reconstructs the divisor and the
@@ -277,6 +331,17 @@ $L=-\partial_x^2+u$.
   flows arise from suitable differential or triangular parts of powers
   of the Lax operator. Their zero-curvature identities give commuting
   evolutions with the same spectral curve.
+* **71. Multidimensional consistency.** A quad equation
+  $Q(x,x_1,x_2,x_{12};\alpha_1,\alpha_2)=0$ on $\mathbb Z^2$, affine
+  in each corner value, is consistent around the cube when, imposed on
+  the three coordinate planes of $\mathbb Z^3$, the three values of
+  $x_{123}$ computed from $x,x_1,x_2,x_3$ coincide. Consistency
+  yields a Lax pair (zero-curvature representation) and Bäcklund
+  transformations as the third lattice direction. Example: the discrete
+  potential KdV equation $(x-x_{12})(x_1-x_2)=\alpha_1-\alpha_2$, for
+  which $x_{123}$ is moreover independent of $x$. Adler–Bobenko–Suris
+  classified consistent quad equations with the symmetry and tetrahedron
+  properties (Bobenko–Suris, Hietarinta–Joshi–Nijhoff).
 * **49. Soliton degeneration.** Coalescence of suitable branch-point
   pairs degenerates finite-gap theta solutions into finite exponential
   determinant solutions. Under the real nonsingularity conditions this
@@ -331,6 +396,14 @@ these data while singularity positions or irregular types vary.
   induce birational transformations of the deformation variables.
   Compatibility between successive shifts yields discrete Painlevé
   equations in the classical isomonodromic constructions.
+* **72. Discrete Painlevé I from a Freud weight.** For the weight
+  $e^{-x^4}$ on $\mathbb R$, the orthonormal recurrence
+  $xp_n=a_{n+1}p_{n+1}+a_np_{n-1}$, $a_0=0$, has $x_n=a_n^2$ satisfying
+  the string equation $4x_n(x_{n-1}+x_n+x_{n+1})=n$, a discrete
+  Painlevé I equation. The recurrence coefficients form its unique
+  positive solution with $x_0=0$, and $a_n\sim(n/12)^{1/4}$. The
+  Riemann–Hilbert problem of entry 58 supplies its Lax pair
+  (Fokas–Its–Kitaev; Joshi).
 
 ## Orthogonal polynomials, kernels, and boundary transforms
 
@@ -343,6 +416,7 @@ $K_n(x,y)=e^{-n(V(x)+V(y))/2}\sum_{j=0}^{n-1}p_{j,n}(x)p_{j,n}(y)$.
   $Y=(I+O(z^{-1}))\operatorname{diag}(z^n,z^{-n})$
   has $Y_{11}$ equal to the monic orthogonal polynomial of degree $n$.
   Its other entries are neighboring polynomials and their Cauchy transforms.
+  This gives the analytic route to strong asymptotics.
 * **59. Kernel recovery.** The Christoffel–Darboux kernel is a
   bilinear expression in $Y(y)^{-1}Y(x)/(x-y)$ with the weight
   factors attached. Consequently uniform matrix asymptotics imply
@@ -381,7 +455,8 @@ $K_n(x,y)=e^{-n(V(x)+V(y))/2}\sum_{j=0}^{n-1}p_{j,n}(x)p_{j,n}(y)$.
   $L^2(s,\infty)$ is
   $F_2(s)=\exp[-\int_s^\infty(x-s)q(x)^2\,dx]$, with $q$
   the Hastings–McLeod solution. It is the limiting largest-eigenvalue
-  distribution at a regular soft edge after centering and scaling.
+  distribution at a regular soft edge of unitary-invariant ($\beta=2$)
+  ensembles after centering and scaling.
 * **66. Longest increasing subsequences.** If $L_N$ is the longest
   increasing subsequence of a uniformly random permutation of $N$
   letters, then $(L_N-2\sqrt N)/N^{1/6}$ converges in distribution
@@ -411,8 +486,12 @@ isomonodromic branches; Conte–Musette supplies the differential-equation
 and transformation viewpoint. Trogdon–Olver emphasizes singular-integral
 stability and computation. Baik–Deift–Suidan and Romik connect kernels and
 Painlevé functions to probability; the boundary-value books of Fokas and
-Pelloni develop the global-relation method. The selection does not attempt
-to enumerate every integrable hierarchy or discrete surface classification.
+Pelloni develop the global-relation method. Rogers–Schief treat Bäcklund
+and Darboux transformations; Bobenko–Suris, Hietarinta–Joshi–Nijhoff, and
+Joshi treat multidimensional consistency and discrete Painlevé equations.
+The selection states the consistency principle (entry 71) but does not
+attempt to enumerate every integrable hierarchy or discrete surface
+classification.
 
 Local full-text sources consulted:
 

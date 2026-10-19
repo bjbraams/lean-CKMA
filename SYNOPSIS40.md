@@ -1,16 +1,20 @@
-# Synopsis: One complex variable — graduate courses
+# Synopsis: One complex variable — general theory
 
 Part of the [mathematical synopsis series](SYNOPSIS.md).
+[Bibliographical scope and references](CKMA-bib.md#ckma-40);
+[MSC2020 correspondence and cross-subject index](CKMA-MSC2020.md).
 
-This synopsis selects the recurring graduate-course material of Section 40 of
-[CKMA-bib.md](CKMA-bib.md).
-It treats the local and global theory of holomorphic functions, contour
-integration, harmonic functions, normal families, conformal mapping,
-approximation, and analytic continuation. Sections 41–44 develop the
-specialist theories of growth and values, analytic function spaces,
-univalent maps, and Riemann surfaces.
+This synopsis treats the general one-variable theory of Section 40:
+holomorphic functions, contour integration, harmonic functions, normal
+families, conformal mapping, approximation, and analytic continuation.
+Sections 41–44 develop growth and value distribution, analytic function
+spaces, univalent maps, and Riemann surfaces. The general-theory title
+includes both graduate courses and broader classical treatments, while the
+numbered mathematical selection is retained.
 
 A **domain** $\Omega\subset\mathbb C$ is nonempty, connected, and open.
+It is **simply connected** if every closed curve in $\Omega$ is
+null-homotopic in $\Omega$ (equivalent conditions are in item 52).
 Write $\mathcal O(\Omega)$ for its holomorphic functions,
 $\mathbb D=\{|z|<1\}$, and $\widehat{\mathbb C}=\mathbb C\cup\{\infty\}$.
 Contours and cycles are piecewise $C^1$ unless otherwise specified.
@@ -67,13 +71,23 @@ $\partial_{\bar z}=\frac12(\partial_x+i\partial_y)$.
 * **12. Distributional holomorphy.** If $f\in L^1_{\mathrm{loc}}$
   and $\partial_{\bar z}f=0$ distributionally, $f$ agrees almost
   everywhere with a holomorphic function.
+* **78. Local solvability of $\bar\partial$.** For compactly supported
+  smooth $g$ on $\mathbb C$,
+  $u(z)=\pi^{-1}\int_{\mathbb C}g(\zeta)/(z-\zeta)\,dA(\zeta)$
+  satisfies $\partial_{\bar z}u=g$. It comes from the Cauchy–Pompeiu
+  formula: for $f\in C^1(\overline\Omega)$ on a bounded domain with
+  piecewise $C^1$ boundary and $z\in\Omega$,
+  $f(z)=\frac1{2\pi i}\int_{\partial\Omega}\frac{f(\zeta)}{\zeta-z}d\zeta
+  -\frac1\pi\int_\Omega\frac{\partial_{\bar\zeta}f(\zeta)}{\zeta-z}dA(\zeta)$.
 
 ## Zeros, local mapping, and maximum principles
 
+The sectorial Phragmén–Lindelöf principle is SYNOPSIS41, item 17.
+
 * **13. Isolated zeros and identity.** A nonzero holomorphic function
   has isolated zeros of finite multiplicity. Two holomorphic functions
-  agreeing on a set with an interior accumulation point agree throughout
-  their common domain.
+  on a domain $\Omega$ and agreeing on a set with an accumulation point
+  in $\Omega$ agree throughout $\Omega$.
 * **14. Local normal form.** Near $a$, a nonconstant holomorphic
   function can be written $f(z)=f(a)+\phi(z)^m$, where $\phi$
   is a local holomorphic coordinate vanishing at $a$ and
@@ -171,7 +185,17 @@ in its Laurent expansion.
   =\frac1{2\pi}\int_0^{2\pi}\log|f(re^{it})|dt.
   $$
   Multiplicities are included; zeros on $|z|=r$ are allowed, since
-  $\log|f|$ is then still integrable on the circle.
+  $\log|f|$ is then still integrable on the circle. The Poisson–Jensen
+  formula is SYNOPSIS41, item 30.
+* **80. Real integrals by residues.** If $R=P/Q$ is rational with
+  $\deg Q\geq\deg P+2$ and no real poles, then
+  $\int_{-\infty}^\infty R=2\pi i\sum_{\Im a>0}\operatorname{Res}_aR$.
+  If $\deg Q\geq\deg P+1$ and $\lambda>0$, Jordan's lemma gives
+  $\int_{-\infty}^\infty R(x)e^{i\lambda x}dx
+  =2\pi i\sum_{\Im a>0}\operatorname{Res}_a(R(z)e^{i\lambda z})$ as an
+  improper integral. Integrals of rational functions of $\cos t,\sin t$
+  over $[0,2\pi]$ become contour integrals over $|z|=1$; real poles,
+  logarithms, and powers are handled by indented contours and keyholes.
 
 ## Harmonic functions and boundary values
 
@@ -194,8 +218,9 @@ $P_r(t)=(1-r^2)/(1-2r\cos t+r^2)$.
   is the unique harmonic function continuous on the closed disk with
   boundary values $h$.
 * **41. Positive harmonic representation.** Every positive harmonic
-  function in $\mathbb D$ is the Poisson integral of a unique finite
-  positive boundary measure. Its mass is $u(0)$.
+  function in $\mathbb D$ has the form
+  $u(re^{i\theta})=(2\pi)^{-1}\int P_r(\theta-t)\,d\mu(t)$ for a unique
+  finite positive Borel measure $\mu$ on the circle. Its mass is $2\pi u(0)$.
 * **42. Harnack inequality and convergence.** Positive harmonic
   functions satisfy $(1-r)/(1+r)\,u(0)\leq u(z)
   \leq(1+r)/(1-r)\,u(0)$ for $|z|\leq r$.
@@ -230,7 +255,8 @@ $P_r(t)=(1-r^2)/(1-2r\cos t+r^2)$.
 A family is **normal** if every sequence has a subsequence converging
 locally uniformly in the spherical metric to a meromorphic function or
 the constant infinity. For locally bounded holomorphic families ordinary
-locally uniform convergence suffices.
+locally uniform convergence suffices. The Schwarz–Christoffel formula
+for polygons is SYNOPSIS43, items 63–64.
 
 * **48. Montel compactness.** Every locally bounded family of
   holomorphic functions is relatively compact for locally uniform
@@ -255,6 +281,14 @@ locally uniform convergence suffices.
   are $e^{i\theta}(z-a)/(1-\bar az)$; the upper-half-plane
   automorphisms are real Möbius transformations of positive determinant.
   Sphere automorphisms are all complex Möbius transformations.
+* **79. Möbius transformations and cross-ratio.** The maps
+  $(az+b)/(cz+d)$, $ad-bc\neq0$, form the automorphism group of
+  $\widehat{\mathbb C}$, isomorphic to $PSL_2(\mathbb C)$, and act simply
+  transitively on ordered triples of distinct points. The cross-ratio
+  $(z_1,z_2;z_3,z_4)=\frac{(z_1-z_3)(z_2-z_4)}{(z_1-z_4)(z_2-z_3)}$ is
+  invariant, and four distinct points lie on one circle or line exactly
+  when it is real. Möbius maps send circles and lines to circles and
+  lines, and preserve symmetry with respect to them.
 * **54. Finite Blaschke products.** If $f$ is holomorphic in $\mathbb D$,
   continuous on its closure, and $|f|=1$ on $\partial\mathbb D$, then $f$
   is a unimodular constant times a finite product
@@ -274,10 +308,6 @@ locally uniform convergence suffices.
   every holomorphic $f$ on $\mathbb D$ with $f'(0)=1$ has an
   image containing a disk of radius $b$ on which a holomorphic inverse
   branch exists. The disk need not be centered at $f(0)$.
-* **59. Phragmén–Lindelöf principle.** If a function holomorphic in
-  a sector of opening $\alpha$ is continuous on its boundary, bounded
-  there by $M$, and grows at most $C\exp(C|z|^\rho)$ with
-  $\rho<\pi/\alpha$, then it is bounded by $M$ throughout the sector.
 
 ## Approximation, prescribed data, and continuation
 
@@ -299,10 +329,11 @@ locally uniform convergence suffices.
 * **64. Weierstrass zero theorem.** Any discrete set in a plane domain,
   with assigned positive integer multiplicities, is exactly the zero
   divisor of a holomorphic function there.
-* **65. Entire canonical products.** For a sequence $a_j\to\infty$,
-  suitable elementary factors
-  $E_p(w)=(1-w)\exp(w+\cdots+w^p/p)$ give a normally convergent
-  product with precisely those zeros. For $p=0$ use $E_0(w)=1-w$.
+* **65. Entire canonical products.** For a sequence of nonzero
+  $a_j\to\infty$, with elementary factors
+  $E_p(w)=(1-w)\exp(w+\cdots+w^p/p)$, the product $\prod_jE_{p_j}(z/a_j)$
+  converges normally for suitable $p_j$ (for example $p_j=j-1$) and has
+  precisely those zeros; a zero at $0$ is supplied by a factor $z^m$. For $p=0$ use $E_0(w)=1-w$.
 * **66. Quotients and divisors.** Every meromorphic function on a
   plane domain is a quotient of two holomorphic functions. Two
   holomorphic functions with the same zero divisor differ by a
@@ -362,14 +393,6 @@ theory belongs to Section 49.
   poles at $\Lambda$, and satisfies $\wp'^2=4\wp^3-g_2\wp-g_3$ with
   $g_2=60\sum'\omega^{-4}$, $g_3=140\sum'\omega^{-6}$. Every
   $\Lambda$-elliptic function is a rational function of $\wp$ and $\wp'$.
-* **78. Local solvability of $\bar\partial$.** For compactly supported
-  smooth $g$ on $\mathbb C$,
-  $u(z)=\pi^{-1}\int_{\mathbb C}g(\zeta)/(z-\zeta)\,dA(\zeta)$
-  satisfies $\partial_{\bar z}u=g$. It comes from the Cauchy–Pompeiu
-  formula: for $f\in C^1(\overline\Omega)$ on a bounded domain with
-  piecewise $C^1$ boundary and $z\in\Omega$,
-  $f(z)=\frac1{2\pi i}\int_{\partial\Omega}\frac{f(\zeta)}{\zeta-z}d\zeta
-  -\frac1\pi\int_\Omega\frac{\partial_{\bar\zeta}f(\zeta)}{\zeta-z}dA(\zeta)$.
 
 ## Reference guide
 

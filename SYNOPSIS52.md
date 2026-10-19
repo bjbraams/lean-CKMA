@@ -1,14 +1,22 @@
 # Synopsis: Geometric analysis on manifolds
 
 Part of the [mathematical synopsis series](SYNOPSIS.md).
+[Bibliographical scope and references](CKMA-bib.md#ckma-52);
+[MSC2020 correspondence and cross-subject index](CKMA-MSC2020.md).
 
 This synopsis selects recurring material from Section 52 of
-[CKMA-bib.md](CKMA-bib.md).
+[CKMA-bib.md](CKMA-bib.md#ckma-52).
 Its organizing question is how curvature, topology, and variational structure
 control differential equations and geometric evolution. General elliptic
 regularity and geometric measure theory are developed in Sections 33 and 37;
 the systematic theory of elliptic complexes, indices, and spectral asymptotics
 belongs to Section 53. Some overlap supplies the analytic tools used here.
+
+The current classification distinguishes metric and fractal geometry in
+[39A](CKMA-bib.md#ckma-39a), diffusion in [39B](CKMA-bib.md#ckma-39b),
+transport in [39C](CKMA-bib.md#ckma-39c), and positivity and Kähler analysis
+in [45C](CKMA-bib.md#ckma-45c). The geometric PDE, flow, gauge, and Lorentzian
+viewpoints remain here; linear geometric operators and index theory are in Section 53.
 
 Manifolds are connected and smooth, and metrics are smooth. A *closed*
 manifold is compact without boundary; *complete* means geodesically complete,
@@ -61,6 +69,9 @@ bounds; compactness of each individual manifold is insufficient.
   within the model radius range. In particular nonnegative Ricci
   curvature gives $\operatorname{Vol}B(p,2r)\leq2^n
   \operatorname{Vol}B(p,r)$.
+  Buser's inequality then gives the scale-invariant Neumann Poincaré
+  inequality on balls (a local Poincaré inequality, distinct from Buser's
+  converse to the Cheeger inequality).
 * **9. Laplacian comparison.** Under the same Ricci bound,
   $\Delta r\leq(n-1)s_k'(r)/s_k(r)$ away from the base point and
   cut locus, and in the distributional comparison sense globally off
@@ -142,17 +153,10 @@ bounds; compactness of each individual manifold is insufficient.
   does not imply conservation of heat mass.
 * **25. Parabolicity from volume growth.** The condition
   $\int^\infty r/V(o,r)\,dr=\infty$ is sufficient for a complete
-  noncompact manifold to have no positive minimal Green function.
+  noncompact manifold to be parabolic, that is, to have no positive
+  Green function.
   These volume tests and their potential-theoretic interpretation are
   discussed in [Grigor'yan's lectures](https://www.math.uni-bielefeld.de/~grigor/nk2019.pdf).
-* **26. Cheeger inequality.** On a closed connected manifold,
-  $\lambda_1(-\Delta)\geq h(M)^2/4$, where
-  $h(M)=\inf_\Omega\operatorname{Area}(\partial\Omega)/
-  \min(\operatorname{Vol}\Omega,\operatorname{Vol}(M\setminus\Omega))$.
-* **27. Lichnerowicz–Obata theorem.** If a closed connected
-  $n$-manifold has $\operatorname{Ric}\geq(n-1)k g$, $k>0$,
-  then $\lambda_1\geq nk$. Equality characterizes the round sphere
-  of sectional curvature $k$.
 * **28. Diameter eigenvalue bound.** If a closed connected manifold
   has nonnegative Ricci curvature and diameter $D$, the classical
   Li–Yau estimate gives $\lambda_1\geq\pi^2/(2D^2)$, and the sharp
@@ -184,15 +188,19 @@ bounds; compactness of each individual manifold is insufficient.
   Einstein manifold of dimension at least three admits a nonconstant
   conformal factor producing another constant-scalar-curvature metric,
   then it is isometric, up to scaling, to the round sphere.
+* **92. Positive mass theorem in dimension three.** A smooth connected
+  complete asymptotically flat three-manifold with finitely many ends,
+  integrable nonnegative scalar curvature, and decay
+  $g_{ij}-\delta_{ij}=O_2(r^{-q})$, $q>1/2$, has nonnegative
+  ADM mass at every end. Zero mass at an end forces the manifold
+  to be Euclidean space. Here ADM mass is the limit
+  $(16\pi)^{-1}\int_{S_r}(\partial_jg_{ij}-\partial_ig_{jj})
+  \nu^i\,dS$ in an asymptotically flat chart. See also
+  [Lee's formulation of positivity and rigidity](https://arxiv.org/abs/0705.0677).
 * **33. Surface uniformization.** Every conformal class on a closed
   oriented surface contains a constant-Gauss-curvature metric. Its
   curvature sign is that of the Euler characteristic; for nonpositive
   curvature the area-normalized representative is unique.
-* **34. Calabi–Yau theorem.** On a compact Kähler manifold,
-  every real closed $(1,1)$-form representing $2\pi c_1(M)$ is
-  the Ricci form of a unique Kähler metric in each prescribed Kähler
-  class. In particular $c_1(M)=0$ in real cohomology gives a unique
-  Ricci-flat metric in each Kähler class.
 
 ## Harmonic maps, regularity, and bubbling
 
@@ -292,10 +300,6 @@ harmonic maps are critical points of $E$ and satisfy $\tau(u)=0$.
   in the interior with possible branch points in general codimension;
   in $\mathbb R^3$ a least-area disk has no interior branch points
   (Osserman, Gulliver, Alt).
-* **53. Monotonicity of minimal area.** For a stationary
-  $m$-dimensional submanifold or integral varifold in Euclidean space,
-  $r^{-m}\mu(B_r(x))$ is nondecreasing while the balls avoid its
-  boundary. Constancy characterizes conical behavior about $x$.
 * **54. Graphical regularity near a plane.** A stationary integral
   varifold sufficiently close in mass and tilt to a multiplicity-one
   plane in a ball is a $C^{1,\alpha}$ graph in a smaller ball.
@@ -308,10 +312,13 @@ harmonic maps are critical points of $E$ and satisfy $\tau(u)=0$.
   minimal graph $\mathbb R^m\to\mathbb R$ is affine for
   $m\leq7$. Nonaffine entire examples occur in higher dimensions,
   so the dimension restriction is essential.
-* **57. Regularity of minimizing hypersurfaces.** An area-minimizing
-  integral hypersurface of dimension $m$ has interior singular set of
-  Hausdorff dimension at most $m-7$. It is smooth for $m\leq6$;
-  isolated singularities can occur for $m=7$.
+* **98. Min–max minimal hypersurfaces.** Every closed Riemannian
+  $(n+1)$-manifold, $2\leq n\leq6$, contains a smooth closed embedded
+  minimal hypersurface, obtained at the positive width of a sweepout by
+  Almgren–Pitts min–max with Schoen–Simon regularity; for $n\geq7$ the
+  singular set has codimension at least seven. Infinitely many exist
+  (Marques–Neves, Song). On $S^3$, sweepouts by level sets realize the
+  width by an embedded minimal sphere (Simon–Smith; Colding–Minicozzi).
 
 ## Mean curvature flow
 
@@ -484,6 +491,60 @@ curvature norms.
   this to smooth compactness modulo gauge. Critical four-dimensional
   $L^2$ bounds instead allow point concentration and bubbling. See
   [Wehrheim's introductory statement of the theorems](https://math.berkeley.edu/~katrin/papers/justintro.pdf).
+* **93. Seiberg–Witten equations.** On a closed oriented Riemannian
+  four-manifold with spin$^c$ structure, spinor bundles $S^\pm$, and
+  determinant line $L$, the unknowns are a unitary connection $A$ on $L$
+  and $\psi\in\Gamma(S^+)$, with
+  $D_A^+\psi=0$ and $\frac12\rho(F_A^+)=(\psi\psi^*)_0$, where
+  $\rho:\Lambda^+\to\operatorname{End}(S^+)$ is Clifford multiplication and
+  $(\cdot)_0$ the traceless part. The gauge group
+  $\operatorname{Map}(X,S^1)$ acts by $u\cdot(A,\psi)=(A-2u^{-1}du,u\psi)$.
+  The Weitzenböck formula
+  $D_A^-D_A^+=\nabla_A^*\nabla_A+\frac s4+\frac12\rho(F_A^+)$ and the
+  maximum principle give $|\psi|^2\leq c\max(0,-\min_Xs)$, with $c$ fixed
+  by the normalization; hence elliptic bootstrapping in Coulomb gauge
+  makes the moduli space of solutions modulo gauge compact
+  (Kronheimer–Mrowka).
+* **94. Seiberg–Witten moduli and invariants.** For a generic self-dual
+  perturbation $F_A^+\mapsto F_A^++i\eta$, the moduli space of irreducible
+  solutions is a compact smooth manifold of dimension
+  $\frac14(c_1(L)^2-2\chi(X)-3\sigma(X))$, oriented by a homology
+  orientation. If $b^+(X)\geq2$, the resulting count is independent of
+  metric and perturbation. Positive scalar curvature forces $\psi=0$
+  in entry 93, so the invariants vanish then (Witten).
+
+A Lorentzian manifold is time-oriented with signature $(-,+,\ldots,+)$;
+$J^\pm(K)$ is the causal future or past of $K$. It is *globally
+hyperbolic* if it is causal and every $J^+(p)\cap J^-(q)$ is compact.
+A *normally hyperbolic* operator on sections of a vector bundle has
+principal symbol $g^{-1}(\xi,\xi)$, as for the wave operator
+$\square_g$ plus lower-order terms.
+
+* **95. Cauchy hypersurfaces and splitting.** A time-oriented
+  Lorentzian manifold is globally hyperbolic exactly when it has a Cauchy
+  hypersurface, met exactly once by every inextendible timelike curve
+  (Geroch). It is then isometric to $\mathbb R\times\Sigma$ with
+  $g=-\beta\,dt^2+g_t$, $\beta>0$ smooth, each $\{t\}\times\Sigma$ a
+  smooth spacelike Cauchy hypersurface (Bernal–Sánchez).
+* **96. Cauchy problem for wave equations.** Let $P$ be normally
+  hyperbolic on a globally hyperbolic manifold, $\Sigma$ a smooth
+  spacelike Cauchy hypersurface with future unit normal $n$. For
+  compactly supported smooth $f$, $u_0$, $u_1$ there is a unique smooth
+  $u$ with $Pu=f$, $u|_\Sigma=u_0$, $\nabla_nu|_\Sigma=u_1$; it depends
+  continuously on the data, and
+  $\operatorname{supp}u\subset J^+(K)\cup J^-(K)$,
+  $K=\operatorname{supp}f\cup\operatorname{supp}u_0\cup\operatorname{supp}u_1$
+  (finite propagation speed). Energy estimates on the slabs of entry 95
+  prove this (Leray; Bär–Ginoux–Pfäffle).
+* **97. Green operators.** In that setting $P$ has unique advanced and
+  retarded Green operators $G_\pm:C_c^\infty\to C^\infty$, with
+  $PG_\pm=G_\pm P=\operatorname{id}$ on $C_c^\infty$ and
+  $\operatorname{supp}G_\pm f\subset J^\pm(\operatorname{supp}f)$. The
+  causal propagator $G=G_+-G_-$ gives an exact sequence
+  $0\to C_c^\infty\xrightarrow{P}C_c^\infty\xrightarrow{G}
+  C_{sc}^\infty\xrightarrow{P}C_{sc}^\infty$, $C_{sc}^\infty$ denoting
+  sections with spacelike compact support, so every such solution of
+  $Pu=0$ is $Gf$, $f\in C_c^\infty$.
 
 A sub-Riemannian structure is an inner product on a bracket-generating
 distribution $\mathcal D\subset TM$. Its distance is the infimum of
@@ -506,20 +567,6 @@ lengths of curves tangent to $\mathcal D$.
   rescaled sub-Riemannian spaces converge to the graded nilpotent
   approximation, a Carnot group. Its homogeneous dimension $Q$ is
   the local Hausdorff dimension, generally exceeding the manifold dimension.
-* **91. Hörmander subellipticity.** Smooth bracket-generating vector
-  fields give a hypoelliptic sum-of-squares operator and local estimates
-  gaining a positive fraction of a derivative. The associated heat
-  operator has a smooth kernel for positive time; the available gain
-  depends on the bracket structure.
-* **92. Positive mass theorem in dimension three.** A smooth connected
-  complete asymptotically flat three-manifold with finitely many ends,
-  integrable nonnegative scalar curvature, and decay
-  $g_{ij}-\delta_{ij}=O_2(r^{-q})$, $q>1/2$, has nonnegative
-  ADM mass at every end. Zero mass at an end forces the manifold
-  to be Euclidean space. Here ADM mass is the limit
-  $(16\pi)^{-1}\int_{S_r}(\partial_jg_{ij}-\partial_ig_{jj})
-  \nu^i\,dS$ in an asymptotically flat chart. See also
-  [Lee's formulation of positivity and rigidity](https://arxiv.org/abs/0705.0677).
 
 ## Reference guide
 
@@ -538,7 +585,8 @@ Brendle and Morgan–Tian carry these methods to sphere and geometrization
 theorems. Ecker, Mantegazza, and Andrews–Chow–Guenther–Langford supply
 the extrinsic flow branch. McDuff–Salamon and Audin–Damian develop
 holomorphic curves and Floer analysis; Wehrheim and Rudolph–Schmidt
-develop gauge theory. Agrachev–Barilari–Boscain and the Heisenberg-group
+develop gauge theory, and Kronheimer–Mrowka the Seiberg–Witten equations.
+Bär–Ginoux–Pfäffle treat wave equations on globally hyperbolic manifolds. Agrachev–Barilari–Boscain and the Heisenberg-group
 text supply sub-Riemannian geometry. Dan Lee's *Geometric Relativity*
 places the positive mass theorem in the common variational and curvature
 framework. These branches are represented by their overlapping analytic

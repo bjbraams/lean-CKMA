@@ -28,7 +28,7 @@ Verdicts use three words.
 | 9 | Malliavin calculus, rough paths, and stochastic PDE | thin |
 | 10 | Ergodic theory and measurable dynamics | partial |
 | 11 | Classical inequalities, means, majorization, and rearrangement | partial |
-| 12 | Convexity, convex analysis, and variational analysis | partial |
+| 12 | Convexity, convex analysis, optimization, and variational analysis | partial |
 | 13 | Matrix analysis, operator monotonicity, and noncommutative inequalities | partial |
 | 14 | Functional, isoperimetric, and geometric inequalities | thin |
 | 15 | Core Banach and Hilbert space theory | substantial |
@@ -36,7 +36,7 @@ Verdicts use three words.
 | 17 | Banach space geometry, bases, and operator ideals | thin |
 | 18 | Vector-valued analysis and analysis in Banach spaces | partial |
 | 19 | Banach lattices, positive operators, and ordered structures | thin |
-| 20 | Banach algebras and commutative harmonic analysis of algebras | partial |
+| 20 | Banach algebras | partial |
 | 21 | Operator theory: bounded operators, spectra, and model theory | partial |
 | 22 | Unbounded operators, spectral theory, and mathematical physics | partial |
 | 23 | Operator algebras, operator spaces, free probability, and noncommutative geometry | partial |
@@ -56,7 +56,7 @@ Verdicts use three words.
 | 37 | Geometric measure theory, BV, rectifiability, and currents | partial |
 | 38 | Potential theory and capacity | thin |
 | 39 | Metric measure spaces, Dirichlet forms, heat kernels, optimal transport, and fractals | partial |
-| 40 | One complex variable | substantial |
+| 40 | One complex variable: general theory | substantial |
 | 41 | Entire and meromorphic functions, value distribution | partial |
 | 42 | Hardy, Bergman, and model spaces; operators on analytic function spaces | thin |
 | 43 | Univalent functions, conformal mapping, and extremal methods | thin |
@@ -135,7 +135,7 @@ Karamata’s inequality as a theory, the Brunn–Minkowski inequality, and geome
 
 **Status.** Drafted in `Mathlib11.md`.
 
-## 12. Convexity, convex analysis, and variational analysis
+## 12. Convexity, convex analysis, optimization, and variational analysis
 
 **Partial.** `Analysis/Convex` is large: convex sets and functions, Jensen’s inequality, gauges, hulls, extreme points, the Krein–Milman theorem, Carathéodory, cones, exposed faces, strict convexity, simplicial complexes, and derivatives of convex functions. There is a separate `Geometry/Convex`.
 
@@ -193,7 +193,7 @@ The Pettis integral, UMD spaces, and radonifying operators were not found.
 
 **Status.** Drafted in `Mathlib19.md`.
 
-## 20. Banach algebras and commutative harmonic analysis of algebras
+## 20. Banach algebras
 
 **Partial.** Spectrum, the Gelfand formula, and Gelfand–Mazur (`Analysis/Normed/Algebra`). Finite abelian Fourier analysis and Pontryagin duality (`Analysis/Fourier/FiniteAbelian`). Haar measure, the modular character, group convolution, and Følner sequences.
 
@@ -337,7 +337,7 @@ Dirichlet forms, heat kernels, curvature-dimension conditions, optimal transport
 
 **Status.** Drafted in `Mathlib39.md`.
 
-## 40. One complex variable
+## 40. One complex variable: general theory
 
 **Substantial.** Holomorphic and analytic functions, Cauchy theory (`Analysis/Complex/CauchyIntegral.lean`), Liouville, the open mapping theorem, Schwarz, Phragmén–Lindelöf, removable singularities, local uniform limits, the identity theorem through isolated zeros, Jensen’s formula, and the calculus of meromorphic functions (orders, divisors, normal forms). Harmonic functions on disks with the Poisson integral. The unit disk and the upper half-plane as geometries.
 

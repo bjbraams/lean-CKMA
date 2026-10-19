@@ -1,13 +1,21 @@
 # Synopsis: Ergodic theory and measurable dynamics
 
 Part of the [mathematical synopsis series](SYNOPSIS.md).
+[Bibliographical scope and references](CKMA-bib.md#ckma-10);
+[MSC2020 correspondence and cross-subject index](CKMA-MSC2020.md).
 
 This synopsis selects the common graduate and beginning research content of
-Section 10 of [CKMA-bib.md](CKMA-bib.md):
+Section 10 of [CKMA-bib.md](CKMA-bib.md#ckma-10):
 recurrence, ergodic averages, spectral structure, entropy, invariant measures,
 and their connections with smooth dynamics and combinatorics. Joinings,
 multiple averages, and infinite-measure results extend the introductory core
 in directions recurring across the monographs.
+
+Smooth local dynamics and bifurcation are organised in Section 31, holomorphic
+iteration in Section 46, Markov mixing and invariant laws in
+[08B](CKMA-bib.md#ckma-08b), and the descriptive foundations of orbit
+equivalence in Section 3. The present emphasis remains invariant measures
+and ergodic structure.
 
 A **probability-preserving system** $(X,\mathcal B,\mu,T)$ consists of a standard
 probability space and a measurable transformation satisfying
@@ -55,6 +63,12 @@ $A_Nf=N^{-1}\sum_{n=0}^{N-1}f\circ T^n$.
   Hilbert space, $N^{-1}\sum_{n<N}U^n$ converges strongly to orthogonal
   projection onto $\ker(I-U)$. Applied to $Uf=f\circ T$, it gives the
   $L^2$ ergodic theorem.
+* **60. Flow ergodic theorem.** For a jointly measurable probability-preserving
+  flow and $f\in L^1$,
+  $T^{-1}\int_0^Tf\circ\phi^t\,dt$ converges almost everywhere and in $L^1$
+  to the conditional expectation on the flow-invariant $\sigma$-field.
+  Ergodicity of a flow refers to invariance under every time, rather than
+  ergodicity of each individual time map.
 * **7. Kingman's subadditive theorem.** If integrable $f_n$ satisfy
   $f_{n+m}\leq f_n+f_m\circ T^n$ and
   $\inf_n n^{-1}\int f_n\,d\mu>-\infty$, then $f_n/n$ converges almost
@@ -70,7 +84,8 @@ $A_Nf=N^{-1}\sum_{n=0}^{N-1}f\circ T^n$.
   with $B,TB,\ldots,T^{n-1}B$ disjoint and union of measure greater than
   $1-\varepsilon$.
 * **10. Natural extension.** Every probability-preserving transformation $T$
-  with factor map $\pi$ has a minimal invertible extension $\widetilde T$,
+  of $(X,\mathcal B,\mu)$ has a minimal invertible extension
+  $(\widetilde X,\widetilde T)$ with factor map $\pi:\widetilde X\to X$,
   characterized by the property that the $\sigma$-fields
   $\widetilde T^n\pi^{-1}\mathcal B$, $n\geq0$, generate. It is unique up to
   isomorphism and has the same ergodicity, mixing properties, and entropy as $T$.
@@ -136,6 +151,13 @@ finite partitions. Natural logarithms are used.
   the entropy-rate limit. Entropy is invariant under measurable isomorphism,
   does not increase on passing to a factor, and is additive for products of
   probability systems.
+* **61. Entropy and ergodic decomposition.** Dynamical entropy is affine in
+  the invariant measure and satisfies
+  $h_\mu(T)=\int h_{\mu_\omega}(T)d\eta(\omega)$ under ergodic decomposition
+  (Jacobs). For continuous maps of compact metric spaces, $\mu\mapsto h_\mu$
+  is upper semicontinuous when $T$ is expansive (there is $\delta>0$ such that
+  $d(T^nx,T^ny)\leq\delta$ for all $n$ forces $x=y$, with $n\in\mathbb Z$ for
+  homeomorphisms), so equilibrium states then exist.
 * **20. Kolmogorov–Sinai generator theorem.** If $H(\mathcal P)<\infty$ and
   $\bigvee_{n\in\mathbb Z}T^{-n}\mathcal P$ generates the measurable sets
   modulo null sets, then $h_\mu(T)=h_\mu(T,\mathcal P)$. For noninvertible
@@ -161,6 +183,13 @@ finite partitions. Natural logarithms are used.
 * **25. Abramov induction formula.** For an ergodic invertible system and
   $\mu(A)>0$, the induced system satisfies
   $h_{\mu_A}(T_A)=h_\mu(T)/\mu(A)$.
+* **62. Abramov suspension formula.** For a positive integrable roof $r$
+  over an ergodic invertible base, the **suspension flow** moves vertically on
+  $\{(x,s):0\leq s<r(x)\}$ and identifies $(x,r(x))$ with $(Tx,0)$; it
+  preserves the normalized restriction of $\mu(dx)ds$, and
+  $h(\phi^t)=|t|h_\mu(T)/\int r\,d\mu$.
+  Thus the entropy per unit time of the flow is the base entropy divided by
+  the mean roof length.
 * **26. Sinai factor theorem.** Every ergodic invertible system has a Bernoulli
   factor of any prescribed finite alphabet distribution whose entropy does
   not exceed the entropy of the system.
@@ -173,7 +202,9 @@ finite partitions. Natural logarithms are used.
   zero entropy rate. A system is a **K-system** when this factor is trivial,
   equivalently when every nontrivial factor has positive entropy. Bernoulli
   shifts are K, and K-systems are mixing of all orders with countable
-  Lebesgue spectrum on the mean-zero subspace; there are K-systems that are
+  Lebesgue spectrum on the mean-zero subspace (the Koopman operator there is
+  unitarily equivalent to a countable direct sum of copies of the bilateral
+  shift on $\ell^2(\mathbb Z)$); there are K-systems that are
   not Bernoulli (Ornstein).
 
 ## Topological dynamics and thermodynamic formalism
@@ -193,6 +224,16 @@ point by $\exp(S_n\phi(x))$, where $S_n\phi=\sum_{j<n}\phi\circ T^j$.
   probability $\mu$ exactly when $A_Nf\to\int f\,d\mu$ uniformly on $X$ for
   every continuous $f$. This conclusion is stronger than almost-everywhere
   convergence for a fixed invariant probability.
+* **65. Birkhoff and multiple topological recurrence.** A closed invariant
+  set is **minimal** if it has no proper nonempty closed invariant subset.
+  Every continuous map of a compact metric space has a minimal set, and each
+  point of a minimal set is uniformly recurrent: its return times to every
+  neighbourhood form a syndetic set (Birkhoff). For a minimal system, a nonempty
+  open $U$, and $k\geq1$, some $n\geq1$ has
+  $U\cap T^{-n}U\cap\cdots\cap T^{-kn}U\neq\emptyset$ (Furstenberg–Weiss).
+  Applied to the shift on $\{1,\ldots,r\}^{\mathbb Z}$, this gives van der
+  Waerden's theorem: in every finite colouring of $\mathbb Z$ some colour class
+  contains arithmetic progressions of every finite length.
 * **31. Weyl equidistribution.** A sequence $x_n$ in $\mathbb T^d$ is
   Haar-equidistributed exactly when
   $N^{-1}\sum_{n<N}e^{2\pi i\langle k,x_n\rangle}\to0$ for every
@@ -210,8 +251,8 @@ point by $\exp(S_n\phi(x))$, where $S_n\phi=\sum_{j<n}\phi\circ T^j$.
   lattice, and $U$ a subgroup generated by one-parameter unipotent subgroups.
   Every ergodic $U$-invariant probability on $G/\Gamma$ is homogeneous (the
   invariant measure on a closed orbit of a closed subgroup), every $U$-orbit
-  closure is homogeneous, and unipotent orbits are equidistributed in their
-  closures.
+  closure is homogeneous, and orbits of a one-parameter unipotent subgroup
+  are equidistributed in their (homogeneous) closures.
 * **34. Entropy of a shift of finite type.** For a primitive zero–one matrix
   $A$, the admissible shift space has topological entropy $\log\rho(A)$.
   Perron–Frobenius eigenvectors determine its unique measure of maximal entropy.
@@ -238,6 +279,44 @@ point by $\exp(S_n\phi(x))$, where $S_n\phi=\sum_{j<n}\phi\circ T^j$.
   potential,
   $$P(\phi)=\lim_n\frac1n\log\sum_{T^nx=x}e^{S_n\phi(x)}.$$
   In particular, periodic-point growth recovers topological entropy.
+* **63. Livšic theorem for shifts.** On a mixing two-sided shift of finite
+  type, a real Hölder function has zero sum on every periodic orbit exactly
+  when it is a Hölder coboundary $u-u\circ T$. Periodic-orbit identities are
+  therefore sufficient, as well as necessary, for solving this cohomological
+  equation.
+
+## Uniformly hyperbolic systems
+
+A $C^1$ diffeomorphism $f$ of a compact Riemannian manifold $M$ is **Anosov**
+if $TM=E^s\oplus E^u$ continuously and $Df$-invariantly, with $E^s$ uniformly
+exponentially contracted by forward iterates and $E^u$ by backward iterates.
+It satisfies **Axiom A** if its nonwandering set is hyperbolic and is the
+closure of the periodic points; this set splits into finitely many transitive
+**basic sets**. A basic set $\Lambda$ is an **attractor** if
+$\Lambda=\bigcap_{n\geq0}f^n(U)$ for an open $U\supset\Lambda$ with
+$f(\overline U)\subset U$. Hyperbolic sets, Markov partitions, and spectral
+decomposition are treated in SYNOPSIS31, items 52–58. The **geometric
+potential** is $\phi^u=-\log|\det Df|_{E^u}|$, Hölder for $C^2$ maps.
+
+* **66. Equilibrium states on basic sets.** Let $\Lambda$ be a topologically
+  mixing basic set of an Axiom A diffeomorphism and $\phi$ Hölder on
+  $\Lambda$. Coding by a Markov partition transfers results 37–39, 63, and 64:
+  $\phi$ has a unique equilibrium state $\mu_\phi$, which has the Gibbs
+  property on Bowen balls $\{y:d_n(x,y)<\varepsilon\}$ for small
+  $\varepsilon$, is Bernoulli, and has exponential decay of correlations for
+  Hölder observables; $P(\phi)$ is the periodic-orbit limit. Two Hölder potentials have the same equilibrium
+  state exactly when they differ by a constant plus a Hölder coboundary
+  (Sinai, Ruelle, Bowen).
+* **67. Sinai–Ruelle–Bowen measures.** Let $\Lambda$ be a transitive
+  attractor of a $C^2$ Axiom A diffeomorphism. Then $P(\phi^u)=0$, and the
+  equilibrium state $\mu^+$ of $\phi^u$ is the unique invariant probability on
+  $\Lambda$ with absolutely continuous conditional measures on unstable
+  manifolds. Lebesgue-almost every point $x$ of the basin of $\Lambda$
+  satisfies $N^{-1}\sum_{n<N}\delta_{f^nx}\to\mu^+$ weakly, and
+  $h_{\mu^+}(f)=\int\log|\det Df|_{E^u}|\,d\mu^+$, as in result 43. If a
+  $C^2$ Anosov diffeomorphism preserves a smooth volume, that volume is its
+  SRB measure; hence it is ergodic (Anosov), and Bernoulli when $f$ is
+  topologically mixing.
 
 ## Lyapunov exponents and smooth ergodic theory
 
@@ -340,14 +419,50 @@ has positive measure.
   then $A_Nf\to0$ almost everywhere for every $f\in L^1$. Ratio averages,
   rather than division by $N$, recover nontrivial integral information.
 
+## Actions of amenable groups and orbit equivalence
+
+Here $G$ is a countably infinite discrete group acting by measure-preserving
+transformations of a standard probability space. A **Følner sequence** is a
+sequence of finite sets $F_n\subset G$ with
+$|gF_n\mathbin\triangle F_n|/|F_n|\to0$ for every $g\in G$; one exists
+exactly when $G$ is amenable (SYNOPSIS28, item 59). Actions of $G$ and $H$ on
+$X$ and $Y$ are **orbit equivalent** if a measure-space isomorphism
+$\theta:X\to Y$ satisfies $\theta(Gx)=H\theta(x)$ for almost every $x$.
+
+* **68. Amenable mean ergodic theorem.** For a unitary representation $\pi$ of
+  an amenable $G$ and a Følner sequence $(F_n)$,
+  $|F_n|^{-1}\sum_{g\in F_n}\pi(g)v$ converges in norm to the orthogonal
+  projection of $v$ onto the $\pi(G)$-invariant vectors. Applied to the
+  Koopman representation it gives the $L^2$ ergodic theorem for amenable
+  actions.
+* **69. Lindenstrauss pointwise ergodic theorem.** Every Følner sequence has a
+  **tempered** subsequence, satisfying
+  $|\bigcup_{k<n}F_k^{-1}F_n|\leq C|F_n|$. Along a tempered Følner sequence,
+  $|F_n|^{-1}\sum_{g\in F_n}f(gx)$ converges almost everywhere to the
+  conditional expectation of $f\in L^1$ on the $G$-invariant
+  $\sigma$-field. For $G=\mathbb Z^d$ and cubes this is Wiener's multiparameter
+  ergodic theorem.
+* **70. Ornstein–Weiss entropy theory.** For an amenable $G$, the entropy
+  $\lim_n|F_n|^{-1}H(\bigvee_{g\in F_n}g^{-1}\mathcal P)$ exists and is
+  independent of the Følner sequence; with the supremum over finite partitions
+  it defines an isomorphism invariant. The Rokhlin lemma (via quasitilings) and
+  the Shannon–McMillan theorem extend, and two Bernoulli actions
+  $G\curvearrowright(K^G,\kappa^G)$ are isomorphic exactly when their base
+  measures have equal entropy. For sofic groups, Bowen's sofic entropy shows
+  that Bernoulli actions with different base entropies are not isomorphic.
+* **71. Dye's theorem and amenability.** Any two ergodic probability-preserving
+  transformations of nonatomic standard spaces are orbit equivalent (Dye).
+  Every ergodic probability-preserving action of a countably infinite amenable
+  group is orbit equivalent to these (Ornstein–Weiss), and a measure-preserving
+  countable Borel equivalence relation is amenable exactly when it is
+  hyperfinite (Connes–Feldman–Weiss). Free ergodic actions of nonamenable groups
+  are never orbit equivalent to actions of amenable groups. Entropy and
+  spectral type are therefore not orbit-equivalence invariants.
+
 ## Operator principles and statistical consequences
 
 An operator is **power bounded** when $\sup_n\|U^n\|<\infty$.
 A **coboundary** is a function of the form $u-u\circ T$; its orbit sums telescope.
-For a positive integrable roof $r$ over an invertible system, the
-**suspension flow** moves vertically on $\{(x,s):0\leq s<r(x)\}$ and
-identifies $(x,r(x))$ with $(Tx,0)$. Its invariant probability is the normalized
-restriction of $\mu(dx)ds$.
 
 * **58. Hilbert-space van der Corput lemma.** Let $u_n$ be a bounded sequence
   in a Hilbert space. If
@@ -361,26 +476,6 @@ restriction of $\mu(dx)ds$.
   projection, and
   $E=\ker(I-U)\oplus\overline{\operatorname{ran}(I-U)}$.
   This gives a common operator theorem behind many $L^p$ mean-ergodic results.
-* **60. Flow ergodic theorem.** For a jointly measurable probability-preserving
-  flow and $f\in L^1$,
-  $T^{-1}\int_0^Tf\circ\phi^t\,dt$ converges almost everywhere and in $L^1$
-  to the conditional expectation on the flow-invariant $\sigma$-field.
-  Ergodicity of a flow refers to invariance under every time, rather than
-  ergodicity of each individual time map.
-* **61. Entropy and ergodic decomposition.** Dynamical entropy is affine in
-  the invariant measure and satisfies
-  $h_\mu(T)=\int h_{\mu_\omega}(T)d\eta(\omega)$ under ergodic decomposition
-  (Jacobs). For continuous maps of compact metric spaces, $\mu\mapsto h_\mu$
-  is upper semicontinuous when $T$ is expansive, so equilibrium states then exist.
-* **62. Abramov suspension formula.** For an ergodic base and integrable
-  positive roof, the suspension flow satisfies
-  $h(\phi^t)=|t|h_\mu(T)/\int r\,d\mu$.
-  Changing the time spent between returns changes entropy per unit time by
-  precisely the average roof length.
-* **63. Livšic theorem for shifts.** On a mixing two-sided shift of finite
-  type, a real Hölder function has zero sum on every periodic orbit exactly
-  when it is a Hölder coboundary. Periodic-orbit identities are therefore
-  sufficient, as well as necessary, for solving this cohomological equation.
 * **64. Central limit theorem for Gibbs shifts.** For a Hölder potential on
   a mixing finite-type shift, a real centered Hölder observable satisfies
   $$N^{-1/2}\sum_{n<N}f\circ T^n\Rightarrow N(0,\sigma_f^2),\qquad
@@ -404,8 +499,14 @@ theorems. Ruelle and Bowen develop the Gibbs and transfer-operator framework.
 Viana's Lyapunov lectures, Barreira–Pesin, and Katok–Hasselblatt develop the
 smooth endpoint; Krengel and Aaronson the infinite-measure one. Furstenberg
 and Host–Kra are the principal structural references for multiple recurrence
-and nilpotent factors; Morris introduces Ratner's theorems. These later endpoints are shared monograph material,
-rather than prerequisites for a first course.
+and nilpotent factors; Morris introduces Ratner's theorems. Bowen's
+*Equilibrium States and the Ergodic Theory of Anosov Diffeomorphisms* and
+Fisher–Hasselblatt supply Markov coding, equilibrium states, and SRB measures
+for uniformly hyperbolic systems. Kerr–Li develop amenable and sofic entropy
+and the pointwise theorems for group actions; Kechris, *Global Aspects of
+Ergodic Group Actions*, and Kechris–Miller (Section 3) treat orbit equivalence.
+These later endpoints are shared monograph material, rather than prerequisites
+for a first course.
 
 Local source anchors:
 
@@ -414,4 +515,6 @@ Local source anchors:
 - [Downarowicz, *Entropy in Dynamical Systems*](References/Downarowicz2011EntropyDynamicalSystems-Cambridge.NMM18.pdf).
 - [Viana, *Lectures on Lyapunov Exponents*](References/Viana2014LecturesLyapunovExponents-Cambridge.StudAM145.pdf).
 - [Barreira–Pesin, *Nonuniform Hyperbolicity*](References/BarreiraPesin2007NonuniformHyperbolicity-CambridgeEMA115.pdf).
+- [Kerr–Li, *Ergodic Theory: Independence and Dichotomies*](References/KerrLi2016ErgodicTheoryIndependenceDichotomies-SpringerSMM.pdf).
+- [Kechris–Miller, *Topics in Orbit Equivalence*](References/KechrisMiller2004TopicsOrbitEquivalence-Springer.LNM1852.pdf).
 - [Ruelle, *Thermodynamic Formalism*](References/Ruelle2004ThermodynamicFormalismMathematicalStructureEquilibriumStatisticalMechanics2ndEd-CambridgeMathLib.pdf).

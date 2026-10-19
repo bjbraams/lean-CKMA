@@ -1,13 +1,17 @@
 # Synopsis: Abstract harmonic analysis on groups
 
 Part of the [mathematical synopsis series](SYNOPSIS.md).
+[Bibliographical scope and references](CKMA-bib.md#ckma-28);
+[MSC2020 correspondence and cross-subject index](CKMA-MSC2020.md).
 
 This synopsis selects the common foundations and principal continuations of
-Section 28 of [CKMA-bib.md](CKMA-bib.md).
+Section 28 of [CKMA-bib.md](CKMA-bib.md#ckma-28).
 Its central objects are locally compact groups, their convolution algebras,
 unitary representations, and Fourier transforms. Compact and abelian groups
 admit particularly complete theories; induction and the noncommutative
 Plancherel theorem explain what replaces scalar Fourier analysis more generally.
+The group $C^*$-algebras (18, 20) and the Fourier algebra (57, 61) are
+also studied as Banach and operator algebras in Sections 20 and 23.
 
 Groups are Hausdorff and locally compact. Statements using measurable fields
 of representations assume second countability. Haar measure is left Haar
@@ -23,6 +27,9 @@ unless specified otherwise. Compact groups have Haar measure of mass one.
 * **1. Haar's theorem.** Every locally compact group $G$ admits a
   nonzero left-invariant regular Borel measure finite on compact sets,
   unique up to a positive scalar. Every nonempty open set has positive measure.
+  Haar measure is outer regular on Borel sets and inner regular on open
+  sets; it need not be inner regular on all Borel sets unless $G$ is
+  $\sigma$-compact. Compact groups admit the normalization $\mu(G)=1$.
 * **2. The modular homomorphism.** $\Delta_G:G\to(0,\infty)$ is
   a continuous homomorphism. Inversion carries left Haar measure to
   right Haar measure, with
@@ -116,6 +123,8 @@ $\sum_{i,j}\overline{c_i}c_j\phi(x_i^{-1}x_j)\geq0$ for all finite choices.
 For abelian $G$, the **dual group** $\widehat G$ consists of continuous
 characters $\chi:G\to\mathbb T$, with the compact-open topology.
 Set $\widehat f(\chi)=\int_Gf(x)\overline{\chi(x)}dx$.
+Wiener's Tauberian theorem and Malliavin's failure of spectral synthesis
+are stated in SYNOPSIS20, item 41.
 
 * **21. Local compactness of the dual.** $\widehat G$ is a locally
   compact abelian group. The dual of a compact group is discrete and
@@ -138,6 +147,7 @@ Set $\widehat f(\chi)=\int_Gf(x)\overline{\chi(x)}dx$.
 * **26. Riemann–Lebesgue and uniqueness.**
   $\widehat f\in C_0(\widehat G)$ for $f\in L^1(G)$.
   The Fourier transform is injective on $L^1(G)$ and on finite measures.
+  Finite measures have bounded continuous Fourier–Stieltjes transforms.
 * **27. Fourier algebra identities.**
   $\widehat{f*g}=\widehat f\widehat g$ and
   $\widehat{f^*}=\overline{\widehat f}$.
@@ -160,12 +170,6 @@ Set $\widehat f(\chi)=\int_Gf(x)\overline{\chi(x)}dx$.
   $E$ on $\widehat G$ such that
   $\pi(x)=\int\chi(x)dE(\chi)$ (Stone–Naimark–Ambrose–Godement).
   Integrated operators are $\pi(f)=\int\widehat f(\overline\chi)dE(\chi)$.
-* **32. Wiener's Tauberian theorem.** Translates of $f\in L^1(G)$
-  span a dense subspace of $L^1(G)$ exactly when $\widehat f$
-  has no zeros. More generally a closed ideal is all of $L^1(G)$
-  exactly when its common Fourier zero set is empty. Spectral synthesis
-  (closed ideals determined by their zero sets) fails for every
-  noncompact LCA group (Malliavin).
 * **33. Generalized Poisson summation.** Let $\Lambda$ be a discrete
   cocompact subgroup and $v$ the measure of $G/\Lambda$.
   If $f\in C_c(G)$ and
@@ -179,6 +183,14 @@ Set $\widehat f(\chi)=\int_Gf(x)\overline{\chi(x)}dx$.
   linear combinations of characters is $C(bG)$ pulled back along
   the canonical dense homomorphism $G\to bG$, the Bohr compactification.
   It carries the invariant mean obtained from Haar probability on $bG$.
+* **64. Structure of LCA groups.** Every LCA group has an open subgroup
+  isomorphic to $\mathbb R^n\times K$ with $K$ compact. A compactly generated
+  LCA group is isomorphic to $\mathbb R^n\times\mathbb Z^m\times K$ with $K$
+  compact, and a connected one to $\mathbb R^n\times K$ with $K$ compact
+  and connected. Dually, if $\widehat G$ is compactly generated then
+  $G\simeq\mathbb R^n\times\mathbb T^m\times D$ with $D$ discrete. This
+  reduces many questions to $\mathbb R^n$, discrete, and compact groups
+  (Hewitt–Ross).
 
 ## Compact and finite groups
 
@@ -239,7 +251,9 @@ $\widehat f(\pi)=\int_G f(x)\pi(x)^*dx$.
   Irreducible representations correspond to dominant integral highest
   weights $\lambda$; their characters on $T$ are
   $\chi_\lambda=\sum_{w\in W}\varepsilon(w)e^{w(\lambda+\rho)}/
-  \sum_{w\in W}\varepsilon(w)e^{w\rho}$, with
+  \sum_{w\in W}\varepsilon(w)e^{w\rho}$ (numerator and denominator are
+  functions on a finite cover of $T$, on $T$ itself when $\rho$ is integral,
+  for example for simply connected $G$; the quotient is a function on $T$), with
   $d_\lambda=\prod_{\alpha>0}\langle\lambda+\rho,\alpha\rangle/
   \langle\rho,\alpha\rangle$. For continuous class functions,
   $\int_Gf=|W|^{-1}\int_Tf(t)|\delta(t)|^2dt$, where
@@ -266,12 +280,12 @@ be written $F(xh)=\sigma(h)^{-1}F(x)$ with square-integrable quotient norm.
   equipped with a projection-valued measure on $G/H$ satisfying
   $U(x)E(B)U(x)^*=E(xB)$ is unitarily equivalent to the canonical
   system attached to a representation induced from $H$.
-* **50. Direct-integral decomposition.** For second-countable type-I
+* **50. Direct-integral decomposition.** A group is type I if every
+  factor representation generates a von Neumann factor isomorphic to
+  $B(K)$ for a Hilbert space $K$. For second-countable type-I
   groups, every separable unitary representation decomposes into a
   direct integral of irreducibles. The measure class and multiplicity
-  function are unique up to the natural equivalence.
-  Type I means that every factor representation generates a von Neumann
-  factor isomorphic to $B(K)$ for a Hilbert space $K$. Compact, abelian,
+  function are unique up to the natural equivalence. Compact, abelian,
   connected nilpotent, and real reductive groups are type I; nonabelian
   free groups are not, and for these direct-integral decompositions are
   not unique (Glimm, Thoma).
@@ -298,6 +312,22 @@ be written $F(xh)=\sigma(h)^{-1}F(x)$ with square-integrable quotient norm.
   every irreducible unitary representation with a fixed nontrivial central
   character is equivalent to the Schrödinger representation with that
   character. The remaining irreducibles are characters of the abelian quotient.
+* **65. Heisenberg Plancherel and Weyl transform.** Let
+  $H^n=\mathbb C^n\times\mathbb R$ with
+  $(z,t)(w,s)=(z+w,t+s+\frac12\operatorname{Im}(z\cdot\overline w))$, and
+  let $\pi_\lambda$, $\lambda\neq0$, be the Schrödinger representation on
+  $L^2(\mathbb R^n)$ with central character $e^{i\lambda t}$. For
+  $f\in L^1\cap L^2(H^n)$ the operators
+  $\widehat f(\lambda)=\int f(z,t)\pi_\lambda(z,t)\,dz\,dt$ are
+  Hilbert–Schmidt and
+  $$\|f\|_2^2=(2\pi)^{-n-1}\int_{\mathbb R\setminus\{0\}}
+    \|\widehat f(\lambda)\|_{\mathrm{HS}}^2|\lambda|^n\,d\lambda;$$
+  the map extends to a unitary onto the corresponding $L^2$ space of
+  Hilbert–Schmidt-valued functions, and the one-dimensional characters
+  carry no Plancherel measure. At $\lambda=1$ the Weyl transform
+  $W(g)=\int_{\mathbb C^n}g(z)\pi_1(z,0)\,dz$ satisfies
+  $\|W(g)\|_{\mathrm{HS}}^2=(2\pi)^n\|g\|_{L^2(\mathbb C^n)}^2$
+  (normalization of Thangavelu).
 * **54. Kirillov's orbit correspondence.** For a connected simply
   connected nilpotent Lie group, coadjoint orbits in $\mathfrak g^*$
   parametrize the irreducible unitary representations. A representative
@@ -348,6 +378,19 @@ with $M(\widehat G)$ and $L^1(\widehat G)$ under inverse Fourier transform.
   $\|\pi(f)\|\leq\|\rho(f)\|$ for every $f\in L^1(G)$.
 * **61. Leptin's theorem.** $G$ is amenable exactly when $A(G)$
   has a bounded approximate identity for pointwise multiplication.
+* **66. Kazhdan's property (T).** $G$ has **property (T)** if there are a
+  compact $Q\subset G$ and $\varepsilon>0$ such that every unitary
+  representation with a unit vector $v$ satisfying
+  $\sup_{x\in Q}\|\pi(x)v-v\|<\varepsilon$ has a nonzero invariant vector;
+  equivalently, every representation weakly containing the trivial one
+  contains it. Such $G$ is compactly generated and its abelianization
+  $G/\overline{[G,G]}$ is compact; a group with (T) is amenable exactly when
+  it is compact. Property (T) passes to quotients and to lattices and back.
+  $SL_n(\mathbb R)$ and $SL_n(\mathbb Z)$, $n\geq3$, have (T) (Kazhdan),
+  while $\mathbb Z$, $SL_2(\mathbb R)$, and nonabelian free groups do not.
+  For $\sigma$-compact $G$, (T) is equivalent to every continuous affine
+  isometric action on a real Hilbert space having a fixed point
+  (Delorme–Guichardet).
 * **62. Gelfand pairs.** For compact $K\subset G$, commutativity of
   the algebra of integrable $K$-bi-invariant functions is the defining
   Gelfand-pair property. If $G$ is compact, it is equivalent to
@@ -366,6 +409,37 @@ with $M(\widehat G)$ and $L^1(\widehat G)$ under inverse Fourier transform.
   functions with $\int_G|f|^2=\int|\widehat f(\phi)|^2d\mu(\phi)$ for
   $K$-bi-invariant $f\in L^1\cap L^2$.
 
+For the next entries $G$ is a connected noncompact semisimple Lie group with
+finite center, $K$ a maximal compact subgroup, and $G=KAN$ an Iwasawa
+decomposition with $\mathfrak a$ the Lie algebra of $A$, $W$ the restricted
+Weyl group, and $\rho$ the half-sum of positive restricted roots counted with
+multiplicity. Write $g=k\exp H(g)n$. Then $(G,K)$ is a Gelfand pair and $G/K$
+is a Riemannian symmetric space of noncompact type.
+
+* **67. Harish-Chandra's spherical functions.** The spherical functions of
+  $(G,K)$ are exactly
+  $\phi_\lambda(g)=\int_Ke^{(i\lambda-\rho)(H(gk))}dk$,
+  $\lambda\in\mathfrak a^*_{\mathbb C}$, with $\phi_\lambda=\phi_\mu$ exactly
+  when $\mu\in W\lambda$. The **spherical transform** of $K$-bi-invariant
+  $f$ is $\widetilde f(\lambda)=\int_Gf(g)\phi_{-\lambda}(g)\,dg$. For
+  $\lambda\in\mathfrak a^*$ regular, $\phi_\lambda(\exp tH)$ behaves as
+  $\sum_{w\in W}c(w\lambda)e^{(iw\lambda-\rho)(tH)}$ when $t\to\infty$, $H$
+  in the positive chamber; the **Harish-Chandra $c$-function** $c(\lambda)$
+  is a product of Gamma-function quotients over the positive indivisible
+  roots (Gindikin–Karpelevich).
+* **68. Plancherel and Paley–Wiener theorems on $G/K$.** With suitable
+  normalizations, for $K$-bi-invariant $f\in L^1\cap L^2(G)$,
+  $$\int_G|f(g)|^2dg=\frac1{|W|}\int_{\mathfrak a^*}
+    |\widetilde f(\lambda)|^2|c(\lambda)|^{-2}\,d\lambda,$$
+  so the Plancherel measure of Godement's theorem (63) is carried by the
+  real parameters (Harish-Chandra). The spherical transform maps the
+  $K$-bi-invariant $C_c^\infty$ functions supported in
+  $K\exp(\overline{B_R})K$, $B_R$ the ball of radius $R$ in $\mathfrak a$,
+  bijectively onto the $W$-invariant entire functions on
+  $\mathfrak a^*_{\mathbb C}$ of exponential type $R$
+  (Helgason, Gangolli). Through the Helgason Fourier transform the same
+  measure governs $L^2(G/K)$.
+
 ## Reference guide
 
 Folland, Hewitt–Ross, Rudin, Loomis, and Reiter–Stegeman overlap on Haar
@@ -378,7 +452,10 @@ results recur in the nilpotent-group and phase-space references.
 The amenability and coefficient-algebra statements belong to the overlap
 with Reiter–Stegeman and Kaniuth–Lau. Detailed semisimple Plancherel
 formulas, individual reductive duals, and the specialized theories of
-property (T) and random walks require further dedicated inventories.
+rigidity and random walks require further dedicated inventories. Bekka–de la
+Harpe–Valette is the reference for property (T); Helgason and
+Gangolli–Varadarajan for spherical analysis on symmetric spaces; Thangavelu
+and Folland (*Harmonic Analysis in Phase Space*) for the Heisenberg group.
 
 Leptin's theorem and its variants are surveyed in
 [Forrest–Kaniuth–Lau–Spronk](https://www.math.uwaterloo.ca/~nspronk/papers/forrestkls03.pdf).
@@ -389,6 +466,7 @@ Local source copies consulted:
 * [Hewitt–Ross, *Abstract Harmonic Analysis*, II](References/HewittRoss1970AbstractHarmonicAnalysis2StructureAnalysisCompactGroupsAnalysisLocallyCompactAbelianGroups-SpringerGL152.pdf).
 * [Faraut, *Analysis on Lie Groups*](References/Faraut2008AnalysisLieGroups-CambridgeStudiesAM110.pdf).
 * [Kaniuth–Taylor, *Induced Representations of Locally Compact Groups*](References/KaniuthTaylor2013InducedRepresentationsLocallyCompactGroups-Cambridge.TractsMath197.pdf).
+* [Thangavelu, *Harmonic Analysis on the Heisenberg Group*](References/Thangavelu1998HarmonicAnalysisHeisenbergGroup-BirkhäuserProgMath159.pdf).
 * [Deitmar–Echterhoff, *Principles of Harmonic Analysis*](References/DeitmarEchterhoff2014PrinciplesHarmonicAnalysis2ndEd-SpringerUTX.pdf).
 
 The noncommutative transform conventions have been stated separately because

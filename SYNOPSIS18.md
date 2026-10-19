@@ -1,9 +1,11 @@
 # Synopsis: Vector-valued analysis and analysis in Banach spaces
 
 Part of the [mathematical synopsis series](SYNOPSIS.md).
+[Bibliographical scope and references](CKMA-bib.md#ckma-18);
+[MSC2020 correspondence and cross-subject index](CKMA-MSC2020.md).
 
 This synopsis selects the working core of Section 18 of
-[CKMA-bib.md](CKMA-bib.md). It connects
+[CKMA-bib.md](CKMA-bib.md#ckma-18). It connects
 integration and martingales with Banach space geometry, Fourier multipliers,
 randomized operator bounds, and evolution equations. Hytönen–van Neerven–
 Veraar–Weis supplies the unifying treatment; the vector-measure, martingale,
@@ -11,6 +13,11 @@ Laplace-transform, and maximal-regularity references provide overlapping
 foundations and applications. The target is a real or complex Banach space
 $X$; Fourier multiplier and holomorphic calculus statements use complex
 spaces or their complexifications.
+
+The vector-valued toolkit here supports stochastic calculus in
+[08A](CKMA-bib.md#ckma-08a), stochastic evolution in
+[09C](CKMA-bib.md#ckma-09c), and maximal regularity in Section 24; Section 17
+emphasises Banach-space structure itself.
 
 For a complete measure space $(S,\Sigma,\mu)$, a function $f:S\to X$ is
 **strongly measurable** if it is an almost-everywhere limit of measurable
@@ -28,6 +35,18 @@ Probability filtrations are increasing unless stated otherwise.
   is Bochner integrable exactly when $\int\|f\|\,d\mu<\infty$. Its integral
   satisfies $\|\int f\|\leq\int\|f\|$, and bounded linear operators commute
   with integration.
+* **67. Pettis and Dunford integrals.** If $f:S\to X$ is weakly measurable
+  and $x^*f\in L^1(\mu)$ for every $x^*\in X^*$, then for each
+  $A\in\Sigma$ there is a unique $x_A^{**}\in X^{**}$ with
+  $x_A^{**}(x^*)=\int_Ax^*f\,d\mu$ (the Dunford integral, by the closed
+  graph theorem). The function is **Pettis integrable** if every $x_A^{**}$
+  lies in $X$; then $A\mapsto\int_Af$ is a countably additive
+  $\mu$-continuous vector measure (Pettis). Bochner integrable functions are
+  Pettis integrable with the same integral. For finite $\mu$, every Dunford
+  integrable function is Pettis integrable if $X$ is reflexive, and every
+  strongly measurable one is if $X$ contains no copy of $c_0$. The map
+  $t\mapsto e_t$ from $[0,1]$ to $\ell^2([0,1])$ is Pettis integrable with
+  all integrals zero but is not strongly measurable.
 * **3. Completeness and dominated convergence.** $L^p(S;X)$ is Banach for
   $1\leq p\leq\infty$. If $f_n\to f$ almost everywhere and
   $\|f_n\|\leq g\in L^p$, $p<\infty$, then $f_n\to f$ in $L^p(S;X)$.
@@ -66,6 +85,22 @@ partitions. $X$ has the **Radon–Nikodým property** (RNP) if every such
 measure absolutely continuous with respect to a finite positive measure
 has a Bochner integrable density.
 
+* **68. Bartle–Dunford–Schwartz theorem.** Let $F:\Sigma\to X$ be
+  countably additive on a $\sigma$-algebra, with semivariation
+  $\|F\|(A)=\sup_{\|x^*\|\leq1}|x^*F|(A)$. Then $F$ has bounded, relatively
+  weakly compact range, and there is a finite positive **control measure**
+  $\lambda$ on $\Sigma$ with $\|F\|(A)\to0$ as $\lambda(A)\to0$; one may
+  take $\lambda=|x^*F|$ for a suitable $x^*\in X^*$ (Rybakov). Weak
+  countable additivity already implies countable additivity (Orlicz–Pettis),
+  and $F$ need not have bounded variation.
+* **69. Lyapunov convexity theorem.** The range
+  $\{\nu(A):A\in\Sigma\}$ of a nonatomic countably additive measure
+  $\nu:\Sigma\to\mathbb R^n$ is compact and convex. In infinite dimensions
+  this can fail: $A\mapsto\mathbf 1_A\in L^2[0,1]$ is nonatomic, with closed
+  range that is neither compact nor convex. If $X$ has RNP and $F$ is
+  countably additive, nonatomic, and of bounded variation, the closure of its
+  range is compact and convex (Uhl). Lyapunov's theorem underlies bang–bang
+  principles in control theory.
 * **10. Vector Radon–Nikodým theorem.** In an RNP space, $\nu\ll\mu$
   of bounded variation has a unique density $f\in L^1(\mu;X)$, with
   $\nu(A)=\int_A f\,d\mu$ and $|\nu|(A)=\int_A\|f\|\,d\mu$.
@@ -83,6 +118,13 @@ has a Bochner integrable density.
 * **14. Bounded $L^p$ martingales.** If $X$ has RNP and $1<p<\infty$,
   every $L^p$-bounded martingale converges almost surely and in $L^p$ to
   a terminal variable $M_\infty$, with $M_n=\mathbb E(M_\infty\mid\mathcal F_n)$.
+* **70. Representable operators on $L^1$.** For finite $\mu$, a bounded
+  $T:L^1(\mu)\to X$ is **representable** if $Tf=\int fg\,d\mu$ for some
+  $g\in L^\infty(\mu;X)$, and then $\|T\|=\|g\|_\infty$. Weakly compact
+  operators from $L^1(\mu)$ are representable (Dunford–Pettis–Phillips), and
+  $X$ has RNP exactly when every bounded operator $L^1[0,1]\to X$ is
+  representable. Representable operators are exactly those factoring through
+  $\ell^1$ (Lewis–Stegall).
 
 ## Random sums, martingale inequalities, and UMD spaces
 
@@ -103,10 +145,6 @@ The abbreviation stands for unconditional martingale differences.
   real scalars $|a_j|\leq1$, and $p\geq1$,
   $\|\sum r_ja_jx_j\|_{L^p(X)}\leq\|\sum r_jx_j\|_{L^p(X)}$.
   Complex coefficients satisfy the analogous estimate with an absolute constant.
-* **17. Kahane–Khintchine equivalence.** All fixed positive moments of
-  a finite Rademacher sum are equivalent, with constants independent of
-  the number of terms and of $X$. The corresponding statement holds for
-  Gaussian sums.
 * **18. UMD extrapolation.** If the defining martingale transform estimate
   holds for one exponent $p\in(1,\infty)$, it holds for every such exponent.
   It also holds for predictable scalar multipliers with absolute value at
@@ -114,11 +152,17 @@ The abbreviation stands for unconditional martingale differences.
 * **19. UMD stability.** Closed subspaces, quotients, and duals of UMD
   spaces are UMD. For $1<q<\infty$, $L^q(S;X)$ is UMD exactly when $X$ is.
   Burkholder's geometric characterization: $X$ is UMD exactly when it is
-  $\zeta$-convex, i.e. some biconcave $\zeta:X\times X\to\mathbb R$ has
+  $\zeta$-convex, i.e. some biconvex $\zeta:X\times X\to\mathbb R$ has
   $\zeta(0,0)>0$ and $\zeta(x,y)\leq\|x+y\|$ whenever $\|x\|=\|y\|=1$.
 * **20. Standard examples.** Hilbert spaces, scalar $L^q$ spaces, and
   Schatten classes $S^q$ are UMD for $1<q<\infty$. Infinite-dimensional
   $L^1$, $L^\infty$, and $c_0$ are not UMD.
+* **71. Burkholder's sharp constant.** For a Hilbert space $X$, including
+  the scalar field, and $1<p<\infty$, the optimal UMD constant is
+  $\beta_p=p^*-1$, $p^*=\max(p,p/(p-1))$. The same bound holds for
+  transforms by predictable real multipliers with values in $[-1,1]$. The
+  proof constructs an explicit special function, the model for later
+  Bellman-function arguments.
 * **21. Geometric consequences.** UMD spaces are superreflexive, have
   nontrivial Rademacher type and finite cotype, and have RNP. Reflexivity
   or superreflexivity alone does not imply UMD.
@@ -151,7 +195,7 @@ on each operator separately.
 
 * **26. Independence of random-sum exponent.** Replacing the second
   moments in the definition by any fixed positive moment yields equivalent
-  R-bounds or $\gamma$-bounds, by moment equivalence.
+  R-bounds or $\gamma$-bounds, by moment equivalence (SYNOPSIS17, item 35).
 * **27. Stability of R-bounds.** R-bounded families are uniformly bounded.
   Finite unions, sums, compositions, and strong-operator closures preserve
   R-boundedness with the corresponding bounds. Closed absolutely convex
@@ -182,6 +226,13 @@ $T_mf=\mathcal F^{-1}(m\widehat f)$ to the indicated $L^p$ spaces.
   transformation extends to $L^2(\mathbb R^d;X)$ with
   $\|\widehat f\|_2=(2\pi)^{d/2}\|f\|_2$. A comparable $L^2$ estimate
   for Fourier transformation characterizes spaces isomorphic to Hilbert space.
+* **72. Fourier type.** $X$ has **Fourier type** $p\in[1,2]$ if Fourier
+  transformation is bounded from $L^p(\mathbb R^d;X)$ to
+  $L^{p'}(\mathbb R^d;X)$. Every space has Fourier type one; Fourier type $p$
+  implies type $p$ and cotype $p'$; $L^q$ has Fourier type $\min(q,q')$ for
+  $1\leq q<\infty$; and Fourier type two characterizes spaces isomorphic to
+  Hilbert space (Kwapień, result 32). A space has some Fourier type $p>1$
+  exactly when it has nontrivial type (Bourgain).
 * **33. Hilbert transform characterization.** $X$ is UMD exactly when
   $Hf(x)=\operatorname{p.v.}\,\pi^{-1}\int f(x-y)/y\,dy$ is bounded on
   $L^p(\mathbb R;X)$ for one, hence every, $1<p<\infty$.
@@ -200,7 +251,8 @@ $T_mf=\mathcal F^{-1}(m\widehat f)$ to the indicated $L^p$ spaces.
 * **36. Necessary R-bounded range.** If a strongly continuous
   operator-valued symbol defines a bounded $L^p(\mathbb R^d;X)\to
   L^p(\mathbb R^d;Y)$ multiplier, its range is R-bounded. For merely
-  measurable symbols the analogous conclusion uses their Lebesgue values.
+  measurable symbols $m$, the set of values $m(\xi)$ at Lebesgue points $\xi$
+  of $m$ is R-bounded (Clément–Prüss).
 * **37. Operator-valued Mihlin theorem on the line.** If $X,Y$ are UMD,
   $m\in C^1(\mathbb R\setminus\{0\};\mathcal L(X,Y))$, and
   $\{m(\xi),\xi m'(\xi):\xi\ne0\}$ is R-bounded, then $T_m$ is bounded
@@ -325,10 +377,6 @@ Replacing these bounds by R-bounds defines **R-sectoriality**.
   constant at most $M$. If $X$ has RNP, $r$ is then the Laplace transform of
   a function bounded by $M$. This gives a Laplace-transform proof of the
   Hille–Yosida theorem and the theory of integrated semigroups.
-* **57. Semigroup resolvent formula.** If $-A$ generates a $C_0$-semigroup
-  $S(t)$ with $\|S(t)\|\leq Me^{\omega t}$, then
-  $(\lambda+A)^{-1}x=\int_0^\infty e^{-\lambda t}S(t)x\,dt$ for
-  $\operatorname{Re}\lambda>\omega$.
 * **58. Sectorial holomorphic calculus.** For holomorphic $f$ on a sector
   larger than that of $A$, with suitable decay at zero and infinity,
   $$f(A)=\frac1{2\pi i}\int_\Gamma f(z)(z-A)^{-1}\,dz.$$
@@ -344,8 +392,8 @@ Replacing these bounds by R-bounds defines **R-sectoriality**.
   imaginary powers $\|A^{is}\|\leq Ke^{\theta_A|s|}$,
   $\|B^{is}\|\leq Ke^{\theta_B|s|}$, and $\theta_A+\theta_B<\pi$. Then
   $A+B$ on $D(A)\cap D(B)$ is closed and invertible. With $B=d/dt$ on
-  $L^p(0,T;X)$ this gives maximal regularity for $A$ of power angle below
-  $\pi/2$.
+  $L^p(0,T;X)$, $D(B)=\{u\in W^{1,p}(0,T;X):u(0)=0\}$, this gives maximal
+  regularity for $A$ of power angle below $\pi/2$.
 
 For the next statements assume $A$ is invertible and sectorial with angle
 below $\pi/2$, so $e^{-tA}$ is bounded analytic and exponentially stable.
@@ -354,21 +402,10 @@ $u'+Au=f$, $u(0)=0$, has a solution in
 $W^{1,p}(0,\infty;X)\cap L^p(0,\infty;D(A))$ with
 $\|u'\|_p+\|Au\|_p\leq C\|f\|_p$.
 
-* **61. Weis characterization.** R-sectoriality with angle below $\pi/2$
-  is necessary for maximal $L^p$ regularity on every Banach space
-  (Clément–Prüss), and on a UMD space it is sufficient (Weis); maximal
-  regularity is independent of $p\in(1,\infty)$ in any Banach space
-  ([Kunstmann–Weis, Theorem 1.11](https://www.karlin.mff.cuni.cz/~barta/ToDownload/Kunstmann-Weis2004.pdf)).
-* **62. Hilbert space maximal regularity.** On a Hilbert space, every
-  invertible sectorial operator of angle below $\pi/2$ has maximal
-  $L^p$ regularity for $1<p<\infty$ (de Simon).
-* **63. Calculus criterion for maximal regularity.** On a UMD space,
-  invertibility and a bounded $H^\infty$ calculus of angle below $\pi/2$
-  imply maximal $L^p$ regularity.
-* **64. Initial trace space.** On a finite interval, the trace at zero of
-  $W^{1,p}(0,T;X)\cap L^p(0,T;D(A))$ is exactly the real interpolation
-  space $(X,D(A))_{1-1/p,p}$. Under maximal regularity, this is precisely
-  the initial-data class for the same solution regularity with nonzero $u(0)$.
+The characterizations of maximal regularity (de Simon, Weis, the
+$H^\infty$-calculus criterion, and the initial trace space) are SYNOPSIS24,
+items 30–33.
+
 * **65. Bounded perturbations.** If $A$ has maximal regularity and
   $B\in\mathcal L(X)$, then $A+B$ has maximal regularity on finite
   intervals. A sufficiently large positive shift gives the corresponding
@@ -388,7 +425,10 @@ Pisier's martingale monograph independently develops the geometric and
 renorming connections. Arendt–Batty–Hieber–Neubrander gives the Laplace
 transform and Cauchy-problem route, including vector-valued holomorphy and
 the Widder–Arendt theorem; Diestel–Uhl and the stochastic evolution
-literature supply the vector-measure and integration background.
+literature supply the vector-measure and integration background, including
+the Pettis integral, the Bartle–Dunford–Schwartz and Lyapunov theorems, and
+representable operators. Osękowski develops Burkholder's sharp martingale
+inequalities.
 
 The maximal-regularity characterization and perturbation statements can also
 be checked in [Kunstmann–Weis's lecture notes](https://www.karlin.mff.cuni.cz/~barta/ToDownload/Kunstmann-Weis2004.pdf),

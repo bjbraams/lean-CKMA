@@ -1,14 +1,21 @@
 # Synopsis: Approximation theory
 
 Part of the [mathematical synopsis series](SYNOPSIS.md).
+[Bibliographical scope and references](CKMA-bib.md#ckma-47);
+[MSC2020 correspondence and cross-subject index](CKMA-MSC2020.md).
 
 This synopsis selects recurring core material from Section 47 of
-[CKMA-bib.md](CKMA-bib.md).
+[CKMA-bib.md](CKMA-bib.md#ckma-47).
 It treats best approximation, positive operators, direct and inverse
-theorems, polynomial and rational approximation, splines, kernels, sparse
-expansions, and widths. Orthogonal-polynomial spectral theory is developed
+theorems, polynomial, rational, and Padé approximation, splines, kernels,
+sparse expansions, widths, discrepancy, ridge functions, and tractability. Orthogonal-polynomial spectral theory is developed
 in Section 48; the approximation questions here concern error, smoothness,
 stability, and the size of approximation classes.
+
+The high-dimensional probabilistic counterpart is in
+[07A](CKMA-bib.md#ckma-07a), structured expansions and sampling in Section 29,
+and transport-based optimization in [39C](CKMA-bib.md#ckma-39c). Error
+estimates and approximation classes remain the organising questions here.
 
 Write $\mathcal P_n$ for polynomials of degree at most $n$ and
 $\mathcal T_n$ for trigonometric polynomials of frequencies $|k|\leq n$.
@@ -163,11 +170,16 @@ $|w|=\rho$ under $z=(w+w^{-1})/2$.
   every continuous function. The associated Lebesgue constants are unbounded.
 * **37. Bernstein–Walsh inequality.** For a nonpolar compact set
   $K$ regular for its exterior Dirichlet problem and with connected
-  complement, $|P(z)|\leq\|P\|_K e^{n g_K(z,\infty)}$ for
+  complement, with Green function $g_K(\cdot,\infty)$ of
+  $\mathbb C\setminus K$ with pole at $\infty$,
+  $|P(z)|\leq\|P\|_K e^{n g_K(z,\infty)}$ for
   $P\in\mathcal P_n$. **Walsh's maximal convergence theorem:**
   $\limsup_n E_n(f)_K^{1/n}\leq1/R$, $R>1$, exactly when $f$ extends
   holomorphically to the region $\{g_K(\cdot,\infty)<\log R\}$; for
   $K=[-1,1]$ these regions are the Bernstein ellipses.
+  The inequality holds more generally for every nonpolar compact $K$ on
+  the unbounded component of $\mathbb C\setminus K$; capacity and Green
+  functions therefore control polynomial growth away from the approximation set.
 * **38. Rational minimax approximation.** A continuous real function
   on an interval has a best rational approximant of type $(m,n)$
   among real rational functions without interval poles. Limits may
@@ -182,6 +194,23 @@ $|w|=\rho$ under $z=(w+w^{-1})/2$.
   $c_1e^{-c_2\sqrt n}$ and $c_3e^{-c_4\sqrt n}$ for positive
   constants; Stahl's sharp asymptotic is $E_{n,n}(|x|)\sim8e^{-\pi\sqrt n}$.
   Polynomial approximation has exact order $n^{-1}$ instead.
+* **72. Padé approximants.** For a power series $f(z)=\sum_kc_kz^k$ and
+  $m,n\geq0$ there are polynomials $P,Q\not\equiv0$, $\deg P\leq m$,
+  $\deg Q\leq n$, with $Qf-P=O(z^{m+n+1})$; the rational function
+  $[m/n]_f=P/Q$ is unique (Frobenius), although it need not match $f$ to
+  that order when the table is not normal. The $[m/0]$ entries are the
+  Taylor sections, and continued-fraction convergents give staircase paths
+  in the table.
+* **73. De Montessus de Ballore theorem.** If $f$ is meromorphic in
+  $|z|<R$ with exactly $n$ poles there, counted with multiplicity, and
+  holomorphic at $0$, then $[m/n]_f\to f$ uniformly on compact subsets
+  of the disk minus the poles as $m\to\infty$, with
+  $\limsup_m\|f-[m/n]_f\|_K^{1/m}\leq\max_K|z|/R$, and the poles of
+  $[m/n]_f$ converge to those of $f$. For diagonal sequences
+  $[n/n]_f$ of a function meromorphic in $\mathbb C$, convergence holds
+  in planar measure (Nuttall) and in logarithmic capacity (Pommerenke) on
+  compact sets, but not
+  uniformly in general, because of spurious poles.
 
 ## Splines and total positivity
 
@@ -284,8 +313,10 @@ index sets have comparable norms uniformly.
 * **60. Stechkin inequality.** For $0<\tau<2$, coefficients in
   $\ell^\tau$ give $\sigma_m(f)_2\leq
   Cm^{1/2-1/\tau}\|c\|_{\ell^\tau}$.
+  Wavelet Besov norms turn this sequence estimate into spatial approximation rates.
 * **61. Greedy-basis characterization.** A normalized Schauder basis
-  has thresholding approximants satisfying $\|f-G_mf\|\leq C\sigma_m(f)$
+  has thresholding approximants $G_mf$ (keep the $m$ coefficients of
+  largest modulus) satisfying $\|f-G_mf\|\leq C\sigma_m(f)$
   uniformly exactly when it is unconditional and democratic.
 * **62. Orthogonal greedy rate.** For a unit-norm Hilbert dictionary,
   functions in its closed absolutely convex hull have orthogonal-greedy
@@ -299,12 +330,15 @@ index sets have comparable norms uniformly.
   Hilbert spaces with singular values $s_1\geq s_2\geq\cdots$,
   then $d_m(TB)=s_{m+1}$. Best rank-$m$ linear approximation
   has the same worst-case error.
-* **65. Widths of finite-dimensional balls.** The Gelfand widths of the
+* **65. Widths of finite-dimensional balls.** The **Gelfand width** is
+  $d^m(A;X)=\inf_{\operatorname{codim}L\leq m}\sup_{f\in A\cap L}\|f\|$
+  over closed subspaces $L$. The Gelfand widths of the
   $\ell^1$ ball satisfy $d^m(B_1^N;\ell_2^N)\asymp
   \min\{1,((1+\log(N/m))/m)^{1/2}\}$ (Kashin; Garnaev–Gluskin), and by
   duality the same holds for the Kolmogorov widths $d_m(B_2^N;\ell_\infty^N)$.
-  Discretization turns this into the Kashin–Gluskin orders of Sobolev
-  widths in $L^q$, $q>2$, which are smaller than the linear widths.
+  Discretization gives Kashin's orders of the Kolmogorov widths
+  $d_m(W^r_p;L^q)$ of Sobolev classes for $p<q$, $q>2$: they are of
+  smaller order than the corresponding linear widths.
 * **66. Sobolev widths.** For the unit ball of $H^s(\mathbb T^d)$
   in $L^2$, $d_m\asymp m^{-s/d}$, $s>0$.
   Frequency counting makes the dependence on dimension explicit.
@@ -328,6 +362,48 @@ index sets have comparable norms uniformly.
   moduli of smoothness. Their degree-$n$ dimension has order
   $n^{d-1}$, giving the manifold dimension in approximation rates.
 
+## Discrepancy, ridge functions, and tractability
+
+For a finite set $\{x_1,\ldots,x_N\}\subset[0,1)^s$ the **star
+discrepancy** is $D_N^*=\sup_{t\in[0,1]^s}
+|N^{-1}\#\{i:x_i\in[0,t)\}-t_1\cdots t_s|$. A **ridge function** on
+$\mathbb R^d$ has the form $x\mapsto g(a\cdot x)$ with $a\neq0$.
+
+* **74. Koksma–Hlawka inequality.** If $f$ has bounded variation
+  $V_{\rm HK}(f)$ in the sense of Hardy and Krause on $[0,1]^s$, then
+  $|N^{-1}\sum_{i=1}^Nf(x_i)-\int_{[0,1]^s}f|\leq V_{\rm HK}(f)D_N^*$.
+  For $s=1$ this is Koksma's inequality with ordinary variation.
+  A sequence is uniformly distributed exactly when $D_N^*\to0$.
+* **75. Discrepancy orders.** Every $N$-point set in $[0,1)^s$,
+  $s\geq2$, has $D_N^*\geq c_s(\log N)^{(s-1)/2}/N$ (Roth; for $s=2$
+  Schmidt's sharp bound $c\log N/N$). Hammersley point sets and
+  $(t,m,s)$-nets achieve $D_N^*\leq C_s(\log N)^{s-1}/N$, and
+  Halton sequences and $(t,s)$-sequences achieve
+  $D_N^*\leq C_s(\log N)^s/N$ for all initial segments.
+  Quasi-Monte Carlo integration therefore converges at almost order
+  $N^{-1}$ for fixed $s$, compared with $N^{-1/2}$ for Monte Carlo.
+* **76. Density of ridge functions.** For a set $\Omega$ of directions,
+  $\operatorname{span}\{g(a\cdot x):a\in\Omega,\ g\in C(\mathbb R)\}$
+  is dense in $C(\mathbb R^d)$, uniformly on compact sets, exactly when
+  no nonzero homogeneous polynomial vanishes on $\Omega$ (Vostrecov–Kreines,
+  Lin–Pinkus). For continuous $\sigma:\mathbb R\to\mathbb R$,
+  $\operatorname{span}\{\sigma(w\cdot x+b):w\in\mathbb R^d,\ b\in\mathbb R\}$
+  is dense in $C(\mathbb R^d)$ in that topology exactly when $\sigma$
+  is not a polynomial (Leshno–Lin–Pinkus–Schocken); this is the
+  universal approximation theorem for one-hidden-layer neural networks.
+* **77. Tractability.** For a sequence of $d$-variate problems let
+  $n(\varepsilon,d)$ be the least number of information evaluations
+  needed to reduce the worst-case error to $\varepsilon$ times the initial
+  error. The problem is **polynomially tractable** if
+  $n(\varepsilon,d)\leq Cd^q\varepsilon^{-p}$, **strongly** so if
+  $q=0$, and suffers the **curse of dimensionality** if
+  $n(\varepsilon,d)\geq(1+\gamma)^d$ for some fixed $\varepsilon,\gamma>0$
+  and infinitely many $d$. For quasi-Monte Carlo integration in weighted
+  Sobolev spaces with product weights $\gamma_j$, strong tractability holds
+  exactly when $\sum_j\gamma_j<\infty$, and tractability exactly when
+  $\limsup_d\sum_{j\leq d}\gamma_j/\log d<\infty$ (Sloan–Woźniakowski);
+  with equal weights the problem is intractable.
+
 ## Reference guide
 
 Cheney, Rivlin, Achieser, Timan, DeVore–Lorentz, and Lorentz share
@@ -339,7 +415,11 @@ de Boor, Karlin, and Pinkus supply splines and total positivity.
 Wendland and Iske connect interpolation with native spaces; Temlyakov,
 DeVore, Pinkus, and the hyperbolic-cross references explain sparse
 approximation and widths. The spherical texts give corresponding
-constructions on curved domains.
+constructions on curved domains. Baker–Graves-Morris supplies Padé
+approximation; Drmota–Tichy and Dick–Pillichshammer discrepancy and
+quasi-Monte Carlo integration; Pinkus ridge functions; and
+Novak–Woźniakowski tractability. Runge and Mergelyan approximation in the
+complex plane are in SYNOPSIS40.
 
 Local full-text sources consulted:
 
@@ -350,4 +430,7 @@ Local full-text sources consulted:
 * [Iske, *Approximation Theory and Algorithms for Data Analysis*](References/Iske2018ApproximationTheoryAlgorithmsDataAnalysis-SpringerTAM68.pdf).
 * [Pinkus, *n-Widths in Approximation Theory*](References/Pinkus1985NWidthsApproximationTheory-SpringerErgebMath3.pdf).
 * [Temlyakov, *Sparse Approximation with Bases*](References/Temlyakov2015SparseApproximationWithBases-BirkhaeuserACMBIRK.pdf).
+* [Baker–Graves-Morris, *Padé Approximants*, second edition](References/BakerGravesMorris1996PadéApproximants2ndEd-CambridgeEMA59.pdf).
+* [Drmota–Tichy, *Sequences, Discrepancies and Applications*](References/DrmotaTichy1997SequencesDiscrepanciesApplications-SpringerLNM1651.pdf).
+* [Pinkus, *Ridge Functions*](References/Pinkus2015RidgeFunctions-Cambridge.TractsMath205.pdf).
 * [Dai–Xu, *Approximation Theory and Harmonic Analysis on Spheres and Balls*](References/DaiXu2013ApproximationTheoryHarmonicAnalysisSpheresBalls-SpringerSMM.pdf).

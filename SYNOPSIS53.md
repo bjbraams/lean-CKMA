@@ -1,14 +1,22 @@
 # Synopsis: Elliptic operators on manifolds, index theory, and spectral geometry
 
 Part of the [mathematical synopsis series](SYNOPSIS.md).
+[Bibliographical scope and references](CKMA-bib.md#ckma-53);
+[MSC2020 correspondence and cross-subject index](CKMA-MSC2020.md).
 
 This synopsis selects recurring content from Section 53 of
-[CKMA-bib.md](CKMA-bib.md).
+[CKMA-bib.md](CKMA-bib.md#ckma-53).
 The central connections are between elliptic estimates and topology,
 heat asymptotics and characteristic classes, and the spectrum and geometry
 of a manifold. Sections 22, 30, and 52 supply complementary operator,
 microlocal, and curvature theories. Boundary conditions, noncompact ends,
 and coverings require separate hypotheses and are identified explicitly.
+
+The current neighbouring divisions identify heat kernels and diffusion as
+[39B](CKMA-bib.md#ckma-39b) and complex-manifold and Kähler material as
+[45B](CKMA-bib.md#ckma-45b)–[45C](CKMA-bib.md#ckma-45c). The [inverse-problems
+route](CKMA-MSC2020.md#inverse-problems) links geometric tomography with
+operator, integral, and PDE methods elsewhere.
 
 Unless specified otherwise, $M$ is a smooth closed connected Riemannian
 $n$-manifold and vector bundles are smooth Hermitian bundles with compatible
@@ -22,13 +30,13 @@ their cohomology classes are independent of the chosen connections.
 
 ## Elliptic operators and global analysis
 
+The pseudodifferential parametrix of an elliptic operator is SYNOPSIS30,
+item 33.
+
 * **1. Principal symbol.** An order-$m$ differential operator
   $P:C^\infty(E)\to C^\infty(F)$ has a homogeneous bundle symbol
   $\sigma_m(P)(x,\xi)$. Ellipticity means this is invertible for
   every $\xi\ne0$; composition multiplies principal symbols.
-* **2. Parametrix theorem.** An elliptic classical operator has a
-  pseudodifferential parametrix $Q$ of order $-m$ with $QP-I$
-  and $PQ-I$ smoothing. Its principal symbol is $\sigma_m(P)^{-1}$.
 * **3. Elliptic regularity.** If $Pu\in H^s$ distributionally,
   then $u\in H^{s+m}$ locally. In particular distributional
   nullsolutions are smooth; the same conclusion holds globally on a
@@ -42,6 +50,8 @@ their cohomology classes are independent of the chosen connections.
   $P:H^{s+m}(E)\to H^s(F)$ is Fredholm. Its kernel and cokernel
   are finite-dimensional smooth spaces, and
   $Pu=f$ is solvable precisely when $f$ annihilates $\ker P^*$.
+  The index depends only on the homotopy class of the principal symbol among
+  elliptic symbols and vanishes for self-adjoint operators.
 * **6. Index stability.** The integer
   $\operatorname{ind}P=\dim\ker P-\dim\ker P^*$ is independent
   of Sobolev order, invariant under continuous elliptic deformations,
@@ -68,6 +78,7 @@ their cohomology classes are independent of the chosen connections.
   family of classical pseudodifferential operators of order $m\operatorname{Re}z$,
   with leading symbol $\sigma_m(P)^z$. A kernel can be removed by
   restricting to its orthogonal complement or adding its projection.
+  Spectral and pseudodifferential definitions agree.
 
 ## Elliptic complexes and Hodge theory
 
@@ -104,15 +115,6 @@ $L_j=d_j^*d_j+d_{j-1}d_{j-1}^*$.
   algebraic curvature action. Nonnegative $\mathcal R_k$ makes
   harmonic forms parallel; positive definiteness everywhere forces
   their vanishing.
-* **18. Kähler Hodge decomposition.** On a compact Kähler
-  manifold, $\Delta_d=2\Delta_{\bar\partial}=2\Delta_\partial$.
-  Consequently $H^k(M;\mathbb C)=\bigoplus_{p+q=k}H^{p,q}(M)$
-  and $h^{p,q}=h^{q,p}$.
-* **19. Hard Lefschetz theorem.** For a compact Kähler manifold of
-  complex dimension $d$, multiplication by $[\omega]^{d-k}$
-  is an isomorphism $H^k(M;\mathbb C)\to H^{2d-k}(M;\mathbb C)$
-  for $k\leq d$. The Lefschetz decomposition reduces cohomology
-  to primitive classes.
 * **20. Witten deformation and Morse inequalities.** For a Morse
   function $f$, $d_t=e^{-tf}de^{tf}$ has the same cohomology as
   $d$. Its degree-$k$ Laplacian has, for large $t$, one small
@@ -141,8 +143,8 @@ $L_j=d_j^*d_j+d_{j-1}d_{j-1}^*$.
   $N(\Lambda)=\#\{j:\lambda_j\leq\Lambda\}$,
   $N(\Lambda)\sim(2\pi)^{-n}\omega_n\operatorname{Vol}(M)
   \Lambda^n$. More generally a positive scalar elliptic operator
-  of order $m$ has counting asymptotic given by the cotangent
-  volume of $\{\sigma_m(P)\leq1\}$ times $\Lambda^{n/m}$
+  of order $m$ has counting asymptotic
+  $(2\pi)^{-n}\operatorname{vol}\{(x,\xi)\in T^*M:\sigma_m(P)(x,\xi)\leq1\}\,\Lambda^{n/m}$
   when its eigenvalues are counted by energy.
 * **25. Local Weyl law.** The spectral projector satisfies
   $\sum_{\lambda_j\leq\Lambda}|\phi_j(x)|^2=
@@ -153,6 +155,10 @@ $L_j=d_j^*d_j+d_{j-1}d_{j-1}^*$.
   manifold, $N(\Lambda)=c_M\Lambda^n+O(\Lambda^{n-1})$.
   Large eigenspace multiplicities on the round sphere show that this
   remainder order cannot generally be improved.
+  The sharp remainder is due to Avakumović, Levitan, and Hörmander; for a
+  positive classical elliptic operator of order $m$ with positive scalar
+  principal symbol it is $O(\Lambda^{(n-1)/m})$ in the counting function of
+  entry 24.
 * **27. Nonperiodic improvement.** If the set of periodic geodesics
   has Liouville measure zero in $S^*M$, the remainder is
   $o(\Lambda^{n-1})$ (Duistermaat–Guillemin, Ivrii).
@@ -231,11 +237,13 @@ spinor bundle splits as $S^+\oplus S^-$ and $D$ is odd.
   operator on a graded bundle,
   $\operatorname{ind}D^+=\operatorname{Str}e^{-tD^2}$ for every
   $t>0$. Nonzero eigenvalues cancel between the two gradings.
-* **42. Local index theorem.** For a twisted spin Dirac operator,
+* **42. Local index theorem.** For a twisted spin Dirac operator
+  on an even-dimensional closed spin manifold,
   the supertrace of the diagonal heat kernel, multiplied by $dV$,
   converges as $t\downarrow0$
   to the top-degree form $[\widehat A(TM,\nabla)\operatorname{ch}
-  (E,\nabla^E)]_n$. Getzler rescaling identifies the local density
+  (E,\nabla^E)]_n$, with the Chern–Weil normalization fixed above.
+  Getzler rescaling identifies the local density
   and explains cancellation of the apparently divergent heat terms.
 * **43. Atiyah–Singer theorem.** The analytic index of an elliptic
   operator on a closed manifold equals the topological pushforward
@@ -334,14 +342,26 @@ spinor bundle splits as $S^+\oplus S^-$ and $D$ is odd.
   $B_p(x,x)\sim p^d+b_1(x)p^{d-1}+\cdots$ in every $C^k$
   norm. Integration recovers Riemann–Roch growth, and the higher
   coefficient functions are local curvature invariants.
+* **84. Holomorphic Morse inequalities.** Let $L$ be a Hermitian
+  holomorphic line bundle with Chern curvature $R^L$ on a compact complex
+  $d$-manifold, $E$ a holomorphic vector bundle, and $M(q)$ the open set
+  where $iR^L$ is nondegenerate with exactly $q$ negative eigenvalues.
+  As $p\to\infty$,
+  $\dim H^q(M,L^p\otimes E)\leq\operatorname{rk}(E)\frac{p^d}{d!}
+  \int_{M(q)}(-1)^q(\tfrac i{2\pi}R^L)^d+o(p^d)$, with strong forms for
+  alternating partial sums (Demailly). The proof localizes the low
+  spectrum of the Kodaira Laplacian through the Bochner–Kodaira–Nakano
+  formula and harmonic-oscillator models (Ma–Marinescu). For positive $L$,
+  $M(q)=\emptyset$ for $q>0$, so higher cohomology is $o(p^d)$ and
+  $\dim H^0(M,L^p\otimes E)\sim\operatorname{rk}(E)\frac{p^d}{d!}
+  \int_M(\tfrac i{2\pi}R^L)^d$.
 
 ## Eigenvalue inequalities and nodal geometry
 
-* **61. Min–max principle.** Eigenvalues of a semibounded
-  self-adjoint elliptic realization with compact resolvent are the
-  successive minima of its Rayleigh quotient over finite-dimensional
-  subspaces of the quadratic-form domain. Dirichlet and Neumann
-  conditions differ through those form domains.
+The min–max principle is SYNOPSIS22, item 27; the Cheeger, Faber–Krahn,
+Szegő–Weinberger, and Lichnerowicz–Obata bounds are SYNOPSIS14, items 20–22
+and 49.
+
 * **62. Dirichlet domain monotonicity.** If
   $\Omega_1\subset\Omega_2$, then
   $\mu_j^D(\Omega_2)\leq\mu_j^D(\Omega_1)$ for eigenvalues
@@ -353,20 +373,6 @@ spinor bundle splits as $S^+\oplus S^-$ and $D$ is odd.
   $\mu'=-\int_{\partial\Omega}(\partial_\nu u)^2
   (V\cdot\nu)dS$. Multiple eigenvalues split according to the
   corresponding finite-dimensional quadratic form.
-* **64. Faber–Krahn theorem.** Among bounded Euclidean domains
-  of a fixed volume, the ball minimizes the first Dirichlet
-  eigenvalue. For smooth connected domains, equality requires a ball.
-* **65. Szegő–Weinberger theorem.** Among bounded connected smooth Euclidean
-  domains of fixed volume, the ball maximizes the first positive
-  Neumann eigenvalue.
-* **66. Cheeger spectral bound.** On a closed connected manifold,
-  $\lambda_1^2\geq h(M)^2/4$, with $h$ the separating
-  area-to-volume isoperimetric constant. For Dirichlet domains use
-  the corresponding domain Cheeger constant.
-* **67. Curvature eigenvalue bound.** If
-  $\operatorname{Ric}\geq(n-1)k g$, $k>0$, then
-  $\lambda_1^2\geq nk$ (Lichnerowicz); equality characterizes the
-  round sphere (Obata).
 * **68. Steklov spectrum.** On a compact connected manifold with
   smooth nonempty boundary, the Dirichlet-to-Neumann operator for
   harmonic functions is a nonnegative self-adjoint elliptic operator
@@ -406,21 +412,20 @@ spinor bundle splits as $S^+\oplus S^-$ and $D$ is odd.
 
 ## Geodesic dynamics, trace formulas, and scattering
 
+Egorov's theorem for the propagation of symbols is SYNOPSIS30, item 50.
+
 * **74. Semiclassical measures.** For normalized eigenfunctions with
   $h=\lambda^{-1}\to0$, subsequential limits of
   $\langle\operatorname{Op}_h(a)\phi_\lambda,\phi_\lambda\rangle$
   define probability measures on $S^*M$. These measures are invariant
   under geodesic flow, by the eigenfunction equation and the
   pseudodifferential commutator formula.
-* **75. Egorov theorem.** Conjugation of an order-zero operator
-  $A$ by the half-wave group $e^{it\sqrt\Delta}$ transports
-  its principal symbol by geodesic flow, for each fixed time.
-  Lower-order terms are determined by the symbol calculus.
 * **76. Quantum ergodicity.** If the geodesic flow is ergodic with
   respect to Liouville measure, every orthonormal eigenbasis has a
   density-one subsequence whose expectations against all order-zero
   observables tend to the normalized Liouville average of their symbols.
   The theorem permits an exceptional density-zero subsequence.
+  (Shnirelman, Zelditch, Colin de Verdière.)
 * **77. Wave trace and lengths.** The distribution
   $\operatorname{Tr}e^{it\sqrt\Delta}$ is smooth away from zero
   and the signed lengths of closed geodesics. For clean nondegenerate
@@ -456,6 +461,36 @@ spinor bundle splits as $S^+\oplus S^-$ and $D$ is odd.
   including flat tori in suitable dimensions (Milnor) and hyperbolic
   surfaces, and Sunada's method produces isospectral pairs, among them
   nonisometric planar domains (Gordon–Webb–Wolpert).
+* **81. Geodesic X-ray transform on simple manifolds.** A compact connected
+  manifold with smooth boundary is *simple* if it is nontrapping, has
+  strictly convex boundary, and has no conjugate points; equivalently,
+  given strictly convex boundary, each $\exp_x$ is a diffeomorphism from
+  its maximal domain onto $M$. For $f\in C^\infty(M)$ put
+  $If(x,v)=\int_0^{\tau(x,v)}f(\gamma_{x,v}(t))dt$ on the inward-pointing
+  unit vectors $\partial_+SM$, $\tau$ the exit time. On a simple manifold
+  $\|f\|_{L^2(M)}\leq C\|If\|_{H^1(\partial_+SM)}$, so $I$ is injective; if
+  $I(f+\alpha)=0$ for a $1$-form $\alpha$, then $f=0$ and $\alpha=dh$ with
+  $h|_{\partial M}=0$ (Mukhometov, Anikonov–Romanov; Pestov energy
+  identity). On simple surfaces solenoidal injectivity holds for symmetric
+  tensors of every order (Paternain–Salo–Uhlmann).
+* **82. Boundary rigidity.** The boundary distance function
+  $d_g|_{\partial M\times\partial M}$ is unchanged by diffeomorphisms
+  fixing $\partial M$. Two simple metrics on a compact surface with the
+  same boundary distance function differ by such a diffeomorphism
+  (Pestov–Uhlmann), and two conformal simple metrics with the same boundary
+  distance function coincide in every dimension (Mukhometov, Croke).
+  Simplicity cannot simply be dropped: enlarging a hemisphere metric in a
+  small interior region leaves boundary distances unchanged. The
+  linearized problem is solenoidal injectivity of $I$ on symmetric
+  $2$-tensors (entry 81).
+* **83. Anisotropic Calderón problem.** The Dirichlet-to-Neumann map
+  $\Lambda_g$ of $\Delta_g$ (entry 68) is unchanged by diffeomorphisms
+  fixing $\partial M$ and, in dimension two, by conformal factors equal
+  to one on $\partial M$. For real-analytic compact connected $(M,g)$ of
+  dimension $n\geq3$, $\Lambda_g$ determines $(M,g)$ up to isometry
+  (Lee–Uhlmann, Lassas–Uhlmann); in dimension two it determines the
+  conformal class (Lassas–Uhlmann). The smooth case for $n\geq3$ remains
+  open in general.
 
 ## Reference guide
 
@@ -473,9 +508,10 @@ spectral geometry. Ivrii, Sogge, and Zelditch supply sharp asymptotics,
 wave methods, eigenfunction estimates, and geodesic dynamics. Bergeron,
 Iwaniec, and Borthwick develop hyperbolic trace and scattering theories;
 Ma–Marinescu develops positive-bundle heat and Bergman asymptotics.
-Bismut–Lebeau gives the deeper analytic-torsion continuation. Specialized
-higher-index conjectures, refined inverse problems, and flexibility theory
-are outside the selected common core.
+Bismut–Lebeau gives the deeper analytic-torsion continuation.
+Paternain–Salo–Uhlmann develop the geometric inverse problems of entries
+81–83. Specialized higher-index conjectures, refined inverse problems beyond
+those entries, and flexibility theory are outside the selected common core.
 
 Local full-text sources consulted:
 

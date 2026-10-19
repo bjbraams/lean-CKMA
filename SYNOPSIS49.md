@@ -1,15 +1,23 @@
 # Synopsis: Special functions, integral transforms, and classical formulae
 
 Part of the [mathematical synopsis series](SYNOPSIS.md).
+[Bibliographical scope and references](CKMA-bib.md#ckma-49);
+[MSC2020 correspondence and cross-subject index](CKMA-MSC2020.md).
 
 This synopsis selects recurring core material from Section 49 of
-[CKMA-bib.md](CKMA-bib.md).
+[CKMA-bib.md](CKMA-bib.md#ckma-49).
 It records the analytic definitions, equations, transformations, integral
 representations, and principal identities of the classical families, with
 basic hypergeometric and fractional-calculus continuations. Conditions of
 convergence and parameter restrictions are part of the statements. General
-orthogonality theory is in Section 48, and systematic asymptotic methods
-in Section 50.
+orthogonality theory is in Section 48 (the explicit norms and Rodrigues
+formulas of the classical families are recorded here as formulae), and
+systematic asymptotic methods in Section 50.
+
+The analytic definitions and transform identities here support approximation
+in Section 47, orthogonal polynomials in Section 48, asymptotics in Section
+50, and integrable methods in Section 51; general reference tables are also
+indexed by role in Section 54.
 
 Write $(a)_n=\Gamma(a+n)/\Gamma(a)$, with its polynomial interpretation
 at exceptional $a$. In series, denominator parameters are not nonpositive
@@ -65,9 +73,20 @@ consistent branches, ordinarily the principal branch on the cut plane.
   $\zeta(s)=\sum_{n\geq1}n^{-s}=\prod_p(1-p^{-s})^{-1}$, so
   $\zeta$ has no zeros there. The completed function
   $Z(s)=\pi^{-s/2}\Gamma(s/2)\zeta(s)$ is meromorphic with simple
-  poles only at $0,1$ and satisfies $Z(s)=Z(1-s)$, by entry 54; and
+  poles only at $0,1$ and satisfies $Z(s)=Z(1-s)$ (via the theta transformation, entry 54); and
   $\zeta(2n)=(-1)^{n+1}B_{2n}(2\pi)^{2n}/[2(2n)!]$ for $n\geq1$.
   The trivial zeros are $-2,-4,\ldots$.
+* **82. Incomplete gamma and exponential integrals.** For $\Re a>0$,
+  $\gamma(a,z)=\int_0^zt^{a-1}e^{-t}dt$; for all $a$ and
+  $z\notin(-\infty,0]$, $\Gamma(a,z)=\int_z^\infty t^{a-1}e^{-t}dt$
+  along a path in the cut plane, and $\gamma(a,z)+\Gamma(a,z)=\Gamma(a)$.
+  Then $\gamma(a,z)=a^{-1}z^aM(a,a+1,-z)$,
+  $\Gamma(a,z)=e^{-z}U(1-a,1-a,z)$, and
+  $\Gamma(a,z)\sim z^{a-1}e^{-z}\sum_{k\geq0}(a-1)(a-2)\cdots(a-k)z^{-k}$
+  as $z\to\infty$ in $|\arg z|\leq3\pi/2-\delta$. Special cases are
+  $\operatorname{erfc}z=\pi^{-1/2}\Gamma(\tfrac12,z^2)$ for $\Re z>0$ and
+  $E_1(z)=\int_z^\infty e^{-t}t^{-1}dt=\Gamma(0,z)
+  =-\gamma-\log z-\sum_{k\geq1}(-z)^k/(k\,k!)$.
 
 ## Hypergeometric and confluent hypergeometric functions
 
@@ -116,6 +135,25 @@ $M(a,b,z)={}_1F_1(a;b;z)$.
   ${}_3F_2(a,b,-n;c,1+a+b-c-n;1)
   =(c-a)_n(c-b)_n/[(c)_n(c-a-b)_n]$,
   with no vanishing denominator factors, or by a defined limit.
+* **83. Contiguous relations and quadratic transformations.** Any three
+  functions $F(a+k,b+l;c+m;z)$ with integer shifts satisfy a linear
+  relation with coefficients rational in $a,b,c,z$ (Gauss), for example
+  $(c-a)F(a-1,b;c;z)+(2a-c+(b-a)z)F(a,b;c;z)+a(z-1)F(a+1,b;c;z)=0$.
+  A quadratic transformation exists exactly when two of the numbers
+  $\pm(1-c)$, $\pm(a-b)$, $\pm(a+b-c)$ are equal or one of them equals
+  $\frac12$ (Kummer, Goursat); for example
+  $F(2a,2b;a+b+\frac12;z)=F(a,b;a+b+\frac12;4z(1-z))$ for $\Re z<\frac12$.
+* **84. Gauss continued fraction.** The relations
+  $F(a,b;c;z)-F(a+1,b;c+1;z)=k_1zF(a+1,b+1;c+2;z)$ and their iterates give
+  $$
+  \frac{F(a+1,b;c+1;z)}{F(a,b;c;z)}
+  =\cfrac{1}{1+\cfrac{k_1z}{1+\cfrac{k_2z}{1+\cdots}}},\qquad
+  k_{2j+1}=\frac{(a-c-j)(b+j)}{(c+2j)(c+2j+1)},\quad
+  k_{2j}=\frac{(b-c-j)(a+j)}{(c+2j-1)(c+2j)}.
+  $$
+  For nonterminating parameters with all $k_j\ne0$, the fraction converges
+  on $\mathbb C\setminus[1,\infty)$ to the meromorphic ratio, locally
+  uniformly away from its poles.
 * **21. Confluent equation and integral.** $M(a,b,z)$ solves
   $zy''+(b-z)y'-ay=0$ and, for $\Re b>\Re a>0$,
   equals $\Gamma(b)[\Gamma(a)\Gamma(b-a)]^{-1}
@@ -131,6 +169,17 @@ $M(a,b,z)={}_1F_1(a;b;z)$.
   $W_{\kappa,\mu}(z)=e^{-z/2}z^{\mu+1/2}
   U(\mu-\kappa+1/2,1+2\mu,z)$ solves
   $y''+[-1/4+\kappa/z+(1/4-\mu^2)/z^2]y=0$.
+* **81. Parabolic cylinder functions.** Weber's equation
+  $y''=(z^2/4+a)y$ has entire solutions. The solution $U(a,z)$ is fixed by
+  $U(a,z)\sim z^{-a-1/2}e^{-z^2/4}$ as $z\to\infty$ in
+  $|\arg z|<3\pi/4$; for $\Re a>-\frac12$,
+  $U(a,z)=\Gamma(a+\frac12)^{-1}e^{-z^2/4}
+  \int_0^\infty t^{a-1/2}e^{-t^2/2-zt}dt$, and for $z>0$,
+  $U(a,z)=2^{-1/4-a/2}e^{-z^2/4}U(\frac a2+\frac14,\frac12,\frac{z^2}2)$.
+  The functions $U(a,\pm z)$, $U(-a,\pm iz)$ solve the equation, and
+  $\mathcal W\{U(a,z),U(a,-z)\}=\sqrt{2\pi}/\Gamma(a+\frac12)$.
+  Whittaker's $D_\nu(z)=U(-\nu-\frac12,z)$ satisfies
+  $D_n(z)=2^{-n/2}e^{-z^2/4}H_n(z/\sqrt2)$ for integers $n\geq0$.
 
 ## Bessel, Airy, and Gaussian functions
 
@@ -158,10 +207,19 @@ $M(a,b,z)={}_1F_1(a;b;z)$.
   with normal convergence on compact subsets of $0<|t|<\infty$.
   Hence Bessel's integral
   $J_n(z)=\pi^{-1}\int_0^\pi\cos(z\sin\theta-n\theta)d\theta$, $n\in\mathbb Z$.
+* **86. Bessel addition and the Euclidean group.** For $\rho>0$, the
+  translation $x\mapsto x+(a,0)$ of the plane acts in the irreducible
+  unitary representation of $E(2)$ on $L^2(S^1)$ by multiplication by
+  $e^{i\rho a\cos\theta}$; by entry 30 its matrix coefficients in the
+  basis $e^{in\theta}$ are $i^{m-n}J_{m-n}(\rho a)$. The homomorphism
+  property gives the addition theorem
+  $J_n(x+y)=\sum_{k\in\mathbb Z}J_k(x)J_{n-k}(y)$; rotations and the
+  full group give Graf's addition theorem in the same way (Miller,
+  Vilenkin–Klimyk).
 * **31. Poisson integral for Bessel functions.** If $\Re\nu>-1/2$,
   $J_\nu(z)=\frac{(z/2)^\nu}{\sqrt\pi\Gamma(\nu+1/2)}
   \int_{-1}^1e^{izt}(1-t^2)^{\nu-1/2}dt$.
-* **32. Hankel transform.** For real $\nu\geq-1/2$,
+* **32. Hankel transform.** For real $\nu>-1$,
   $\mathcal H_\nu f(s)=\int_0^\infty f(r)J_\nu(rs)r\,dr$
   extends to a unitary involution on $L^2((0,\infty),r\,dr)$.
   If $f(x)=f_0(|x|)$ is radial and integrable on $\mathbb R^d$, $d\geq2$,
@@ -236,6 +294,32 @@ $M(a,b,z)={}_1F_1(a;b;z)$.
   =\frac{\dim\mathcal H_\ell}{|S^{d-1}|}\,
   \frac{C_\ell^\lambda(\xi\cdot\eta)}{C_\ell^\lambda(1)}$;
   for $d=3$ this is $(2\ell+1)P_\ell(\xi\cdot\eta)/(4\pi)$.
+* **79. Legendre functions.** The associated Legendre equation
+  $(1-z^2)y''-2zy'+[\nu(\nu+1)-\mu^2/(1-z^2)]y=0$ has regular singular
+  points $\pm1,\infty$. Write $\mathbf F(a,b;c;z)=F(a,b;c;z)/\Gamma(c)$,
+  entire in $c$. On $-1<x<1$ the Ferrers function
+  $\mathsf P_\nu^\mu(x)=\bigl(\frac{1+x}{1-x}\bigr)^{\mu/2}
+  \mathbf F(\nu+1,-\nu;1-\mu;\frac{1-x}2)$ solves it; on
+  $\mathbb C\setminus(-\infty,1]$ the Legendre function $P_\nu^\mu(z)$ has
+  the same formula with $\bigl(\frac{z+1}{z-1}\bigr)^{\mu/2}$. For
+  integers $m\geq0$,
+  $\mathsf P_\nu^m(x)=(-1)^m(1-x^2)^{m/2}d^m\mathsf P_\nu(x)/dx^m$, and
+  $\mathsf P_\nu=\mathsf P_{-\nu-1}$. Laplace's integral is
+  $P_\nu(z)=\pi^{-1}\int_0^\pi(z+\sqrt{z^2-1}\cos\theta)^\nu d\theta$,
+  $\Re z>0$.
+* **80. Legendre eigenvalue problem and second kind.** On $(-1,1)$,
+  $\mathsf P_\nu$ is, up to a factor, the solution of the Legendre equation
+  ($\mu=0$) bounded at $1$; it is bounded at $-1$ exactly when
+  $\nu\in\mathbb Z$, and then it is the Legendre polynomial $P_n$,
+  $n=\max(\nu,-\nu-1)$. For integers $0\leq m\leq\ell,k$,
+  $\int_{-1}^1\mathsf P_\ell^m\mathsf P_k^mdx
+  =\frac2{2\ell+1}\frac{(\ell+m)!}{(\ell-m)!}\delta_{\ell k}$, and
+  $\mathsf P_\ell^{|m|}(\cos\theta)e^{im\phi}$, $|m|\leq\ell$, span
+  $\mathcal H_\ell$ on $S^2$ (entry 45). For $n\geq0$ and
+  $z\notin[-1,1]$, Neumann's integral
+  $Q_n(z)=\frac12\int_{-1}^1P_n(t)(z-t)^{-1}dt$ defines the second
+  solution recessive at infinity,
+  $Q_n(z)\sim n!\sqrt\pi\,(2z)^{-n-1}/\Gamma(n+\frac32)$.
 
 ## Elliptic integrals, elliptic functions, and theta functions
 
@@ -257,14 +341,29 @@ A prime on $K,E$ below means complementary modulus, not differentiation.
   $a_{n+1}=(a_n+b_n)/2$, $b_{n+1}=\sqrt{a_nb_n}$ for
   positive data has a common limit, and
   $K(k)=\pi/[2\operatorname{AGM}(1,k')]$.
+  The common limit $\operatorname{AGM}(a,b)$ lies between the initial
+  geometric and arithmetic means, is invariant under one iteration, and
+  satisfies Gauss's identity $\operatorname{AGM}(a,b)=\frac\pi2\bigl(\int_0^{\pi/2}
+  d\theta/\sqrt{a^2\cos^2\theta+b^2\sin^2\theta}\bigr)^{-1}$.
+* **85. Carlson symmetric integrals.** For $x,y,z\geq0$, at most one zero,
+  $R_F(x,y,z)=\frac12\int_0^\infty[(t+x)(t+y)(t+z)]^{-1/2}dt$ and, for
+  $z>0$, $R_D(x,y,z)=\frac32\int_0^\infty(t+x)^{-1/2}(t+y)^{-1/2}
+  (t+z)^{-3/2}dt$. Then $K(k)=R_F(0,k'^2,1)$ and
+  $E(k)=R_F(0,k'^2,1)-\frac13k^2R_D(0,k'^2,1)$. $R_F$ is symmetric,
+  homogeneous of degree $-\frac12$, $R_F(x,x,x)=x^{-1/2}$, and satisfies
+  the duplication formula $R_F(x,y,z)=R_F(\frac{x+\lambda}4,
+  \frac{y+\lambda}4,\frac{z+\lambda}4)$ with
+  $\lambda=\sqrt{xy}+\sqrt{yz}+\sqrt{zx}$, whose iteration converges to
+  equal arguments.
 * **50. Jacobi elliptic identities.** Inverting
   $u=\int_0^\varphi(1-k^2\sin^2t)^{-1/2}dt$ defines
   $\operatorname{sn}u=\sin\varphi$, $\operatorname{cn}u=\cos\varphi$,
-  $\operatorname{dn}u=(1-k^2\operatorname{sn}^2u)^{1/2}$; these extend
+  $\operatorname{dn}u=d\varphi/du=(1-k^2\sin^2\varphi)^{1/2}>0$
+  for real $u$ and $0<k<1$; these extend
   to meromorphic elliptic functions, $\operatorname{sn}$ with periods
   $4K$, $2iK'$, with
   $\operatorname{sn}^2+\operatorname{cn}^2=1$,
-  $\operatorname{dn}^2+k^2\operatorname{sn}^2=1$ and derivatives
+  $\operatorname{dn}^2+k^2\operatorname{sn}^2=1$ on $\mathbb C$ and derivatives
   $\operatorname{sn}'=\operatorname{cn}\operatorname{dn}$,
   $\operatorname{cn}'=-\operatorname{sn}\operatorname{dn}$,
   $\operatorname{dn}'=-k^2\operatorname{sn}\operatorname{cn}$.
@@ -436,7 +535,9 @@ Andrews–Askey–Roy, Whittaker–Watson, Bateman, Lebedev, Temme,
 Beals–Wong, and the NIST reference share the classical definitions,
 equations, integrals, and transformations. Gasper–Rahman and Ismail
 develop the q-series and orthogonal-polynomial continuation. Carlson
-and the elliptic-function books supply complementary integral viewpoints.
+and the elliptic-function books supply complementary integral viewpoints,
+including the symmetric integrals of entry 85; Miller and Vilenkin–Klimyk
+give the group-theoretic viewpoint of entry 86.
 Widder, Titchmarsh, Sneddon, and Schilling–Song–Vondraček supply
 the transform and positivity framework; the fractional-calculus and
 Mittag–Leffler references explain the last section. The catalogue avoids

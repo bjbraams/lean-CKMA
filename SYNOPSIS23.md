@@ -1,9 +1,11 @@
 # Synopsis: Operator algebras, operator spaces, free probability, and noncommutative geometry
 
 Part of the [mathematical synopsis series](SYNOPSIS.md).
+[Bibliographical scope and references](CKMA-bib.md#ckma-23);
+[MSC2020 correspondence and cross-subject index](CKMA-MSC2020.md).
 
 This synopsis selects the recurring foundational and beginning research core of
-Section 23 of [CKMA-bib.md](CKMA-bib.md).
+Section 23 of [CKMA-bib.md](CKMA-bib.md#ckma-23).
 The section contains several connected subjects, each with its own monographs.
 Accordingly the selection combines the common operator-algebra foundation
 with separate cores in matrix norm geometry, free probability, K-theory, and
@@ -58,28 +60,56 @@ Hilbert inner products are linear in the first variable.
   $\|a\|=\sup_\varphi\varphi(a)$ over states. On a unital algebra,
   the state space is weak-star compact and is the weak-star closed convex
   hull of its pure states.
+* **82. Kadison transitivity theorem.** Let $\pi$ be an irreducible
+  representation of $A$ on $H$, $\xi_1,\ldots,\xi_n\in H$ linearly
+  independent, and $T\in\mathcal B(H)$. There is $a\in A$ with
+  $\pi(a)\xi_i=T\xi_i$ for all $i$ and $\|a\|\leq\|T\|$; if $T$ is
+  self-adjoint, $a$ can be taken self-adjoint, and if $A$ is unital and $T$
+  unitary, $a$ can be taken unitary. Hence topologically irreducible
+  representations are algebraically irreducible, and their kernels are
+  exactly the primitive ideals of $A$.
+
+A C*-algebra is **CCR** (liminal) if $\pi(A)=\mathcal K(H_\pi)$ for every
+irreducible representation $\pi$, **GCR** (postliminal) if
+$\pi(A)\supset\mathcal K(H_\pi)$ for every such $\pi$, and **type I** if
+$\pi(A)''$ is a type I factor (item 27) for every factor representation $\pi$.
+$\widehat A$ denotes the unitary equivalence classes of irreducible
+representations and $\operatorname{Prim}A$ their kernels, with the
+hull–kernel topology.
+
+* **83. Glimm's type I theorem.** For a separable C*-algebra the following
+  are equivalent: $A$ is GCR; $A$ is type I; $A$ has a composition series
+  with CCR subquotients; irreducible representations with the same kernel
+  are unitarily equivalent, so $\widehat A\to\operatorname{Prim}A$ is a
+  bijection; $\widehat A$ is a $T_0$ space; the Borel structure of
+  $\widehat A$ is countably separated. If $A$ is not type I, it has factor
+  representations of types II and III and uncountably many inequivalent
+  irreducible representations with a common kernel (Glimm). Commutative
+  algebras, $\mathcal K(H)$, and the Toeplitz algebra are type I; the
+  CAR algebra and $C^*_r(\mathbb F_2)$ are not.
 
 ## Completely positive maps and dilations
 
 A map $\Phi:A\to B$ is **completely positive** (CP) if
 $\Phi_n:M_n(A)\to M_n(B)$, acting entrywise, is positive for every $n$.
 An **operator system** is a unital self-adjoint subspace of a C*-algebra.
+The Choi criterion and the Kraus representation for maps between matrix
+algebras are in SYNOPSIS13, items 54 and 53.
 
 * **13. Norm of a CP map.** For CP $\Phi$ on a unital C*-algebra,
   $\|\Phi\|=\|\Phi(1)\|$, and the same norm bounds every amplification.
   In particular unital CP maps are completely contractive.
 * **14. Kadison–Schwarz inequality.** A unital two-positive map satisfies
   $\Phi(a)^*\Phi(a)\leq\Phi(a^*a)$. Positivity alone gives the
-  corresponding inequality for self-adjoint $a$.
-* **15. Choi matrix criterion.** $\Phi:M_n\to M_m$ is CP exactly when
-  its block matrix $C_\Phi=(\Phi(e_{ij}))_{i,j=1}^n$ is positive.
-* **16. Kraus representation.** Every CP map $M_n\to M_m$ is
-  $\Phi(a)=\sum_jV_j^*aV_j$ for finitely many $V_j:\mathbb C^m\to
-  \mathbb C^n$. It is unital exactly when $\sum_jV_j^*V_j=I$.
+  corresponding inequality for self-adjoint $a$. Complete positivity
+  suffices.
 * **17. Stinespring theorem.** A CP map $\Phi:A\to\mathcal B(H)$ on
   a unital C*-algebra is $\Phi(a)=V^*\pi(a)V$ for a representation
   $\pi$ on $K$. The realization is unique up to unitary equivalence when
   $K=\overline{\pi(A)VH}$; $V$ is isometric if $\Phi$ is unital.
+  Between matrix algebras a unital completely positive map has the form
+  $\Phi(A)=V^*(A\otimes I)V$ with $V$ an isometry into a larger
+  tensor-product space.
 * **18. Arveson extension theorem.** Every CP map from an operator
   system $S\subset A$ into $\mathcal B(H)$ extends to a CP map on $A$.
   Unitality is preserved.
@@ -97,7 +127,16 @@ A functional on a von Neumann algebra is **normal** if it is ultraweakly
 continuous; for positive functionals this is equivalent to preserving
 bounded increasing suprema. A projection $p$ is **finite** if it is not
 equivalent to a proper subprojection, where $p\sim q$ means
-$v^*v=p$, $vv^*=q$ for a partial isometry $v$ in the algebra.
+$v^*v=p$, $vv^*=q$ for a partial isometry $v$ in the algebra, and
+$p\precsim q$ means $p\sim q'\leq q$ for some projection $q'$. A projection
+$p$ is **abelian** if $pMp$ is commutative; its **central support** is the
+smallest central projection $z$ with $zp=p$. $M$ is **semifinite** if every
+nonzero central projection majorizes a nonzero finite projection. A positive
+functional, weight or trace $\varphi$ is **faithful** if $\varphi(x^*x)=0$
+implies $x=0$. $M\subset\mathcal B(H)$ is **injective** if there is a
+norm-one projection of $\mathcal B(H)$ onto $M$, and **hyperfinite** if it is
+the ultraweak closure of an increasing union of finite-dimensional
+star subalgebras.
 A **factor** has center $\mathbb C1$.
 
 * **21. Bicommutant theorem.** A unital star algebra has the same strong
@@ -133,10 +172,12 @@ A **factor** has center $\mathbb C1$.
   occur. This provides continuous dimension in place of integer rank.
 * **30. Group von Neumann algebras and hyperfiniteness.** For a discrete
   group $G$, $L(G)=\lambda(G)''$ is a factor exactly when every nontrivial
-  conjugacy class of $G$ is infinite, and it is then of type II$_1$ with
+  conjugacy class of $G$ is infinite (ICC), and for $G\neq\{e\}$ it is
+  then of type II$_1$ with
   trace $\tau(x)=\langle x\delta_e,\delta_e\rangle$. There is a unique
   hyperfinite II$_1$ factor $R$ (Murray–von Neumann), and $L(\mathbb F_2)$ is
-  not isomorphic to $R$ (property $\Gamma$). For von Neumann algebras with
+  not isomorphic to $R$ (property $\Gamma$, the existence of nontrivial
+  central sequences, holds for $R$ but not for $L(\mathbb F_2)$). For von Neumann algebras with
   separable predual, injectivity is equivalent to hyperfiniteness (Connes);
   in particular $L(G)\cong R$ for every amenable ICC group $G$.
 * **31. Finite conditional expectation.** If $N\subset M$ are finite
@@ -190,7 +231,9 @@ operator**. A II$_1$ **subfactor** is a unital inclusion of II$_1$ factors.
   $u_{s+t}=u_s\sigma_s^\varphi(u_t)$. Hence the modular flow is intrinsic
   modulo inner automorphisms, and $M$ is semifinite exactly when
   $\sigma^\varphi$ is inner.
-  Connes's invariant $S(M)=\bigcap_\varphi\sigma(\Delta_\varphi)$ divides
+  Connes's invariant $S(M)=\bigcap_\varphi\sigma(\Delta_\varphi)$, over
+  faithful normal states for $\sigma$-finite $M$ (faithful normal
+  semifinite weights in general), divides
   type III factors into III$_0$ ($S=\{0,1\}$), III$_\lambda$
   ($S=\{0\}\cup\lambda^{\mathbb Z}$, $0<\lambda<1$), and III$_1$
   ($S=[0,\infty)$).
@@ -255,22 +298,40 @@ An **AF algebra** is an inductive limit of finite-dimensional C*-algebras.
 * **52. Index boundary map.** For the Calkin extension, the connecting
   map takes an invertible class represented by a Fredholm operator to its
   Fredholm index in $K_0(\mathcal K)=\mathbb Z$.
-  In the Toeplitz extension this recovers minus winding number.
+  In the Toeplitz extension this recovers minus winding number. (Convention:
+  $\partial[u]=[1-v^*v]-[1-vv^*]$ for a partial-isometry lift $v$ of $u$;
+  some texts use the opposite sign.)
 * **53. Continuity and AF classification.** K-theory commutes with
   C*-inductive limits. Separable unital AF algebras are classified by their
   ordered $K_0$ groups with distinguished order unit; their $K_1$ groups vanish.
+* **84. UHF algebras.** A **UHF algebra** is a unital inductive limit
+  $\bigotimes_{k\geq1}M_{n_k}$ of full matrix algebras with unital
+  connecting maps; its **supernatural number** $\prod_pp^{e_p}$,
+  $e_p\in\{0,1,\ldots,\infty\}$, records the exponents of primes dividing
+  $n_1n_2\cdots n_k$ as $k\to\infty$. UHF algebras are simple, nuclear,
+  with a unique tracial state, and
+  $K_0=\{a/b\in\mathbb Q:b\text{ divides the supernatural number}\}$ with
+  $[1]=1$. Two UHF algebras are isomorphic exactly when their supernatural
+  numbers agree (Glimm). The CAR algebra is $M_{2^\infty}$.
 * **54. Cuntz algebras and classification.** The Cuntz algebra $\mathcal O_n$,
   generated by isometries $s_1,\ldots,s_n$ with $\sum_js_js_j^*=1$
-  ($2\leq n<\infty$), is simple, nuclear, and purely infinite, with
+  ($2\leq n<\infty$), is simple, nuclear, and purely infinite (every
+  nonzero hereditary C*-subalgebra contains an infinite projection), with
   $K_0(\mathcal O_n)=\mathbb Z/(n-1)$, $[1]\mapsto1$, and $K_1=0$.
   Unital Kirchberg algebras (simple, separable, nuclear, purely infinite)
-  satisfying the UCT are classified by $(K_0,[1],K_1)$ (Kirchberg–Phillips);
+  satisfying the UCT (the universal coefficient theorem of
+  Rosenberg–Schochet for $KK(A,\cdot)$; equivalently $A$ is $KK$-equivalent
+  to a commutative C*-algebra) are classified by $(K_0,[1],K_1)$
+  (Kirchberg–Phillips);
   $A\otimes\mathcal O_2\cong\mathcal O_2$ for every unital simple separable
   nuclear $A$. In the stably finite case, unital simple separable nuclear
-  $\mathcal Z$-stable UCT algebras are classified by the Elliott invariant
+  $\mathcal Z$-stable ($A\otimes\mathcal Z\cong A$ for the Jiang–Su algebra
+  $\mathcal Z$) UCT algebras are classified by the Elliott invariant
   ($K$-theory, traces, and their pairing).
-* **55. Morita invariance.** Strongly Morita equivalent C*-algebras have
-  isomorphic K-groups. For sigma-unital algebras, strong Morita equivalence
+* **55. Morita invariance.** Strongly Morita equivalent C*-algebras (linked
+  by an imprimitivity bimodule) have isomorphic K-groups. For
+  $\sigma$-unital algebras (with a countable approximate unit), strong
+  Morita equivalence
   is equivalent to isomorphism after stabilization by $\mathcal K$.
 * **56. Crossed-product universal property.** For a discrete action
   $\alpha:G\to\operatorname{Aut}(A)$, representations of the full crossed
@@ -281,6 +342,55 @@ An **AF algebra** is an inductive limit of finite-dimensional C*-algebras.
   exact sequence with maps
   $K_i(A)\xrightarrow{1-\alpha_*}K_i(A)\to
   K_i(A\rtimes_\alpha\mathbb Z)\to K_{1-i}(A)$.
+* **85. Irrational rotation algebras.** For $\theta\in\mathbb R$, the
+  rotation algebra $A_\theta$ is the universal C*-algebra generated by
+  unitaries $u,v$ with $vu=e^{2\pi i\theta}uv$; it is
+  $C(\mathbb T)\rtimes\mathbb Z$ for rotation by $2\pi\theta$. For
+  irrational $\theta$ it is simple, nuclear, with a unique tracial state
+  $\tau$. By item 57, $K_0(A_\theta)\cong K_1(A_\theta)\cong\mathbb Z^2$,
+  and $\tau_*(K_0(A_\theta))=\mathbb Z+\theta\mathbb Z$
+  (Pimsner–Voiculescu); every value in $(\mathbb Z+\theta\mathbb Z)\cap[0,1]$
+  is the trace of a projection (Rieffel). Hence, for irrational
+  $\theta,\theta'$, $A_\theta\cong A_{\theta'}$ exactly when
+  $\theta'\equiv\pm\theta\pmod{\mathbb Z}$, and $A_\theta$ and
+  $A_{\theta'}$ are strongly Morita equivalent exactly when $\theta,\theta'$
+  lie in the same $GL_2(\mathbb Z)$-orbit (Rieffel).
+* **86. Takai duality.** For an action $\alpha$ of a locally compact
+  abelian group $G$ on $A$, the dual action of $\widehat G$ on
+  $A\rtimes_\alpha G$ is given on $C_c(G,A)$ by
+  $(\widehat\alpha_\gamma f)(s)=\overline{\gamma(s)}f(s)$, and
+  $(A\rtimes_\alpha G)\rtimes_{\widehat\alpha}\widehat G\cong
+  A\otimes\mathcal K(L^2(G))$ (Takai). Thus $A$ is recovered from
+  the crossed product up to stable isomorphism.
+
+For separable $A$ and $\sigma$-unital $B$, a **Kasparov $(A,B)$-module**
+$(E,\phi,F)$ consists of a countably generated graded Hilbert $B$-module
+$E$, a graded representation $\phi$ of $A$ by adjointable operators, and an
+odd adjointable $F$ such that $\phi(a)(F^2-1)$, $\phi(a)(F-F^*)$, and
+$[F,\phi(a)]$ are compact for all $a$. $KK(A,B)$ is the group of homotopy
+classes of such modules.
+
+* **87. Kasparov product.** $KK(A,B)$ is contravariant in $A$, covariant in
+  $B$, homotopy invariant, stable under tensoring with $\mathcal K$, and
+  split exact in each variable, with $KK(\mathbb C,B)=K_0(B)$ and
+  $KK(A,\mathbb C)=K^0(A)$, the K-homology of $A$, built from the
+  Fredholm modules of item 74. There is an associative bilinear product
+  $KK(A,B)\times KK(B,C)\to KK(A,C)$ extending composition of star
+  homomorphisms; for $A=\mathbb C$ it gives the action of $KK(B,C)$ on
+  K-theory, and the even index pairing of item 75 is the product
+  $K_0(A)\times K^0(A)\to KK(\mathbb C,\mathbb C)=\mathbb Z$.
+  An invertible element of $KK(A,B)$ is a **$KK$-equivalence**.
+* **88. Universal coefficient theorem.** A separable $A$ **satisfies the
+  UCT** if for every $\sigma$-unital $B$ there is a natural exact sequence
+  $$0\to\operatorname{Ext}^1_{\mathbb Z}(K_*(A),K_{*+1}(B))\to KK_*(A,B)
+     \to\operatorname{Hom}(K_*(A),K_*(B))\to0,$$
+  split unnaturally. This holds exactly when $A$ is $KK$-equivalent to a
+  commutative C*-algebra (Rosenberg–Schochet); the separable nuclear such
+  algebras form the **bootstrap class**. Two algebras satisfying the UCT are
+  $KK$-equivalent exactly when their K-groups are isomorphic. The bootstrap
+  class contains the separable type I algebras and is closed under inductive
+  limits, extensions, and crossed products by $\mathbb Z$ and $\mathbb R$;
+  whether every separable nuclear C*-algebra satisfies the UCT is open.
 
 ## Operator spaces and completely bounded maps
 
@@ -299,7 +409,7 @@ all matrix norms, not merely the norm on $E$.
   all of $A$ without increasing its completely bounded norm.
 * **60. Wittstock decomposition and factorization.** Every completely bounded map from a
   C*-algebra into $\mathcal B(H)$ is a linear combination of four CP maps.
-  A self-adjoint such map is a difference of two CP maps. Equivalently,
+  A self-adjoint such map is a difference of two CP maps. More precisely,
   $\Phi(a)=V^*\pi(a)W$ for a representation $\pi$ and bounded $V,W$ with
   $\|V\|\|W\|=\|\Phi\|_{\rm cb}$ (Haagerup–Paulsen–Wittstock).
 * **61. Similarity theorem.** A unital homomorphism from a C*-algebra
@@ -419,8 +529,16 @@ algebras, representations, tensor products, modular theory, and the framework
 for K-theory. These topics recur in Murphy, Kadison–Ringrose, Takesaki,
 Bratteli–Robinson, and the classification references; Takesaki is the
 standard source for the Connes cocycle and the type III classification, and
-Strung for Cuntz algebras and the classification of nuclear C*-algebras. Paulsen independently
-develops matrix positivity, dilation, and completely bounded methods.
+Strung for Cuntz algebras and the classification of nuclear C*-algebras.
+Brown–Ozawa is the standard source for tensor products, nuclearity,
+exactness, and group C*-algebras, and Rørdam–Larsen–Laustsen for the
+K-theory items; Blackadar's *K-Theory for Operator Algebras* develops
+$KK$-theory and the UCT. Murphy, Davidson, and Dixmier treat transitivity,
+type I algebras and Glimm's theorem, UHF algebras, and (Davidson) the
+rotation algebras; Williams treats crossed products and Takai duality.
+Pisier and Effros–Ruan are the standard sources for operator spaces.
+Paulsen independently develops matrix positivity, dilation, and completely
+bounded methods.
 Nica–Speicher and Mingo–Speicher provide the common combinatorial and
 random-matrix core of free probability. Gracia-Bondía–Várilly–Figueroa
 develops spectral triples, Fredholm modules, trace ideals, and geometric index
@@ -431,6 +549,7 @@ require additional separate treatments.
 Local source copies consulted:
 
 * [Blackadar, Operator Algebras](References/Blackadar2006OperatorAlgebras-SpringerEMS122.pdf).
+* [Rørdam–Larsen–Laustsen, An Introduction to K-Theory for C*-Algebras](References/RordamLarsenLaustsen2000IntroductionKTheoryCStarAlgebras-Cambridge.LMSST49.pdf).
 * [Strung, An Introduction to C*-algebras and the Classification Program](References/Strung2021CStarAlgebrasClassificationProgram-Birkhauser.ACMCRM.pdf).
 * [Paulsen, Completely Bounded Maps and Operator Algebras](References/Paulsen2003CompletelyBoundedMapsOperatorAlgebras-CambridgeStudiesAM78.pdf).
 * [Nica–Speicher, Lectures on the Combinatorics of Free Probability](References/NicaSpeicher2006LecturesCombinatoricsFreeProbability-CambridgeUP.LMSLNS335.pdf).

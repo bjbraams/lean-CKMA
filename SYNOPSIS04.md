@@ -1,15 +1,22 @@
 # Synopsis: Real analysis, measure, and integration
 
 Part of the [mathematical synopsis series](SYNOPSIS.md).
+[Bibliographical scope and references](CKMA-bib.md#ckma-04);
+[MSC2020 correspondence and cross-subject index](CKMA-MSC2020.md).
 
 This synopsis concerns the common graduate core of Section 04 of
-[CKMA-bib.md](CKMA-bib.md): construction of
-measures, Lebesgue integration, convergence, product measures, differentiation,
-and the function spaces and representation theorems built from them. It also
-includes the recurring structural results on Radon, invariant, and vector
-integration. The selection follows overlapping treatments in the references;
-specialized theories of Gaussian measures and measure algebras require separate
-development.
+[CKMA-bib.md](CKMA-bib.md#ckma-04): construction of
+measures, Lebesgue integration, convergence, product measures, Euclidean
+integration formulas, and the function spaces and representation theorems built
+from them. It also includes the recurring structural results on Radon measures
+and weak convergence; Haar measure is stated in Section 28 and Bochner
+integration in Section 18. The selection follows overlapping treatments in the
+references; specialized theories of Gaussian measures and measure algebras
+require separate development.
+
+Probability and process limits are organised in [06A](CKMA-bib.md#ckma-06a)
+and [08A](CKMA-bib.md#ckma-08a)–[08B](CKMA-bib.md#ckma-08b); pointwise fine
+properties remain in Section 05 and smoothness scales in Section 26.
 
 Throughout, $(X,\mathcal A,\mu)$ is a measure space; functions are real or complex
 unless indicated otherwise, and equality in $L^p$ means equality almost
@@ -24,6 +31,8 @@ from its completion: for example, Lebesgue measurable subsets of Euclidean
 space need not be Borel, although each differs from a Borel set by a null set.
 Countable additivity implies continuity from below for increasing sets, and
 continuity from above for decreasing sets when the first set has finite measure.
+A **Radon measure** here is a Borel measure on a Hausdorff space, finite on
+compact sets and inner regular on Borel sets.
 
 ## Measures and their construction
 
@@ -73,6 +82,14 @@ or real and imaginary parts.
 * **7. Simple approximation.** Every nonnegative measurable function is the
   pointwise increasing limit of nonnegative measurable simple functions. Every
   integrable function can be approximated in $L^1$ by integrable simple functions.
+* **65. Monotone class theorem for functions.** Let $\mathcal H$ be a vector
+  space of bounded real functions on $X$ that contains the constants and is
+  closed under bounded increasing limits: if $0\leq f_n\uparrow f$ with
+  $f_n\in\mathcal H$ and $f$ bounded, then $f\in\mathcal H$. If
+  $\mathcal H$ contains a class $\mathcal C$ closed under multiplication, then
+  $\mathcal H$ contains every bounded $\sigma(\mathcal C)$-measurable function.
+  This is the usual route from rectangles or cylinder functions to all bounded
+  measurable functions.
 * **8. Monotone convergence.** If $0\leq f_n\uparrow f$ almost everywhere, then
   $\int f_n\,d\mu\uparrow\int f\,d\mu$, with infinity allowed.
 * **9. Fatou's lemma.** For nonnegative measurable $f_n$,
@@ -97,7 +114,8 @@ or real and imaginary parts.
   $\Phi(\int f\,d\mu)\leq\int\Phi(f)\,d\mu$; the right side is always defined,
   possibly $+\infty$, since $\Phi$ has an affine minorant. The conditional form
   $\Phi(\mathbb E[f\mid\mathcal G])\leq\mathbb E[\Phi(f)\mid\mathcal G]$ holds
-  almost surely when $\Phi(f)$ is also integrable.
+  almost surely when $\Phi(f)$ is also integrable (conditional expectation:
+  SYNOPSIS06, item 7).
 * **15. Riemann and Lebesgue integrals.** A bounded real function on a compact
   interval is Riemann integrable exactly when its discontinuity set is Lebesgue
   null. In that case the Riemann and Lebesgue integrals agree.
@@ -135,8 +153,11 @@ measure.
 * **21. Vitali's convergence theorem.** On a finite measure space, if
   $f_n\to f$ in measure, then $f_n\to f$ in $L^1$ exactly when $\{f_n\}$ is
   uniformly integrable. In particular, the latter hypotheses imply $f\in L^1$.
-  On an arbitrary measure space the same holds for $L^p$, $1\leq p<\infty$, if
-  uniform integrability of $\{|f_n|^p\}$ is supplemented by tightness: for every
+  On an arbitrary measure space the same holds for $f_n\in L^p$,
+  $1\leq p<\infty$, if uniform integrability is replaced by uniform absolute
+  continuity of $\{|f_n|^p\}$ (for every $\varepsilon>0$ some $\delta>0$ has
+  $\sup_n\int_A|f_n|^p\,d\mu<\varepsilon$ whenever $\mu(A)<\delta$),
+  supplemented by tightness: for every
   $\varepsilon>0$ some set $E$ of finite measure has
   $\sup_n\int_{X\setminus E}|f_n|^p\,d\mu<\varepsilon$.
 * **22. Scheffé's lemma and the Brezis–Lieb lemma.** If $f_n,f\geq0$ are
@@ -165,6 +186,13 @@ and makes $x\mapsto K(x,B)$ measurable for each measurable $B$.
   integrable almost everywhere, the section integrals are integrable, and both
   iterated integrals equal its product integral. The completed-product version
   has the corresponding almost-everywhere interpretation of sections.
+* **66. Necessity of the Fubini–Tonelli hypotheses.** Without
+  $\sigma$-finiteness the iterated integrals may differ even for nonnegative
+  functions: for the diagonal of $[0,1]^2$, with Lebesgue measure on one factor
+  and counting measure on the other, they equal $0$ and $1$. Without
+  integrability they may differ for a function on $\mathbb N^2$ with counting
+  measure: $f(n,n)=1$, $f(n+1,n)=-1$ and $f=0$ otherwise give iterated sums $0$
+  and $1$.
 * **26. Integration against an image measure.** For nonnegative measurable $g$,
   or for integrable $g$,
   $\int_Yg\,d(T_\#\mu)=\int_Xg\circ T\,d\mu$.
@@ -180,8 +208,8 @@ and makes $x\mapsto K(x,B)$ measurable for each measurable $B$.
 
 ## Signed measures, variation, and densities
 
-For finite measures, **absolute continuity** $\nu\ll\mu$ means that every
-$\mu$-null set is $\nu$-null; **mutual singularity** $\nu\perp\mu$ means that
+For measures on the same $\sigma$-algebra, **absolute continuity**
+$\nu\ll\mu$ means that every $\mu$-null set is $\nu$-null; **mutual singularity** $\nu\perp\mu$ means that
 the measures are carried by disjoint measurable sets. The **total variation** of
 a finite signed or complex measure is
 $|\nu|(E)=\sup\sum_j|\nu(E_j)|$, over finite measurable partitions of $E$.
@@ -256,29 +284,10 @@ supremum norm. Exponents $p,q$ are **conjugate** if $1/p+1/q=1$.
 
 ## Differentiation and Euclidean integration formulas
 
-A **Lebesgue point** of $f\in L^1_{\mathrm{loc}}(\mathbb R^n)$ is a point $x$
-at which the averages of $|f(y)-f(x)|$ over $B(x,r)$ tend to zero. A function on
-$[a,b]$ is **absolutely continuous** if small total length of disjoint intervals
-forces small total oscillation over their endpoints. It has **bounded variation**
-if the sums of absolute increments over partitions are uniformly bounded.
+Maximal functions, Lebesgue differentiation and density, and absolute
+continuity and bounded variation on the line are stated in Section 05
+(SYNOPSIS05, items 15, 25, 27–28).
 
-* **44. Lebesgue differentiation.** Almost every point of a locally integrable
-  function is a Lebesgue point. In particular,
-  $m(B(x,r))^{-1}\int_{B(x,r)}f\,dm\to f(x)$ almost everywhere. The key
-  estimate is the Hardy–Littlewood maximal inequality
-  $m\{Mf>t\}\leq3^nt^{-1}\|f\|_1$ for the centered maximal function
-  $Mf(x)=\sup_{r>0}m(B(x,r))^{-1}\int_{B(x,r)}|f|\,dm$, obtained from the
-  Vitali covering lemma; see Section 05.
-* **45. Density theorem.** For measurable $E\subseteq\mathbb R^n$,
-  $m(E\cap B(x,r))/m(B(x,r))\to1_E(x)$ for almost every $x$.
-* **46. Fundamental theorem of Lebesgue calculus.** A function $F$ on $[a,b]$
-  is absolutely continuous exactly when
-  $$F(x)=F(a)+\int_a^x g(t)\,dt\qquad(g\in L^1[a,b]).$$
-  In this case $F'=g$ almost everywhere. An increasing $F$ is differentiable
-  almost everywhere with $F'\in L^1$ and $\int_a^bF'\leq F(b)-F(a)$; hence every
-  function of bounded variation is differentiable almost everywhere. Equality
-  on all subintervals holds exactly when $F$ is absolutely continuous; the Cantor
-  function shows that it can fail for continuous increasing $F$.
 * **47. Change of variables.** For a $C^1$ diffeomorphism $T:U\to V$ between
   open subsets of $\mathbb R^n$,
   $$\int_V f(y)\,dy=\int_U f(Tx)|\det DT(x)|\,dx$$
@@ -291,12 +300,13 @@ if the sums of absolute increments over partitions are uniformly bounded.
 
 ## Radon measures, weak convergence, and structural extensions
 
-A **Radon measure** here is a Borel measure on a Hausdorff space, finite on
-compact sets and inner regular on Borel sets. On a metric space, probabilities
+Radon measures are as defined at the start. On a metric space, probabilities
 $\mu_n$ **converge weakly** to $\mu$ if
 $\int f\,d\mu_n\to\int f\,d\mu$ for all bounded continuous $f$.
 A family is **tight** if, for every $\varepsilon>0$, one compact set carries at
 least $1-\varepsilon$ of every probability in the family.
+The portmanteau and Prokhorov theorems are stated in Section 06A (SYNOPSIS06,
+items 14 and 17).
 
 Here $C_c(X)$ denotes continuous scalar functions of compact support, and
 $C_0(X)$ denotes those vanishing at infinity: each set $\{|f|\geq\varepsilon\}$
@@ -306,7 +316,8 @@ a compatible complete metric; a **standard Borel space** is a measurable space
 isomorphic to the Borel space of a Polish space.
 
 * **49. Regularity on Polish spaces.** Every finite Borel measure on a Polish
-  space is tight and Radon. In Euclidean space, measurable sets can be approximated
+  space is tight and Radon. For Lebesgue measure (more generally, locally finite
+  Borel measures on $\mathbb R^n$), measurable sets can be approximated
   from outside by open sets and finite-measure sets from inside by compact sets.
 * **50. Riesz representation.** On a locally compact Hausdorff space $X$, every
   positive linear functional $I$ on $C_c(X)$ has the form $I(f)=\int f\,d\mu$
@@ -319,80 +330,23 @@ isomorphic to the Borel space of a Polish space.
 * **51. The dual of $C_0(X)$.** Every bounded linear functional on $C_0(X)$ is
   integration against a unique finite regular signed or complex Borel measure,
   and the functional norm is its total variation mass.
-* **52. Portmanteau theorem.** For probabilities on a metric space, weak
-  convergence is equivalent to
-  $\limsup_n\mu_n(F)\leq\mu(F)$ for every closed $F$, or to
-  $\liminf_n\mu_n(G)\geq\mu(G)$ for every open $G$. It implies convergence on
-  Borel sets whose boundary has $\mu$-measure zero.
-* **53. Prokhorov's theorem.** For probabilities on a Polish space, tightness
-  is equivalent to relative compactness for weak convergence; equivalently,
-  every sequence has a weakly convergent subsequence.
 * **54. Daniell–Stone construction.** Let $L$ be a vector lattice of bounded
   real functions containing the constants. A positive linear functional $I$ on
   $L$ with $I(f_n)\downarrow0$ whenever $f_n\downarrow0$ pointwise is integration
   against a unique finite measure on $\sigma(L)$.
-* **55. Haar measure.** Every locally compact Hausdorff group has a nonzero
-  left-invariant regular Borel measure, finite on compact sets, unique up to a
-  positive factor. Compact groups admit the normalization $\mu(G)=1$; abelian
-  and compact groups are unimodular.
-* **56. Strong measurability and Bochner integration.** A Banach-valued function
-  is an almost-everywhere limit of measurable simple functions exactly when it
-  is weakly measurable and essentially separably valued (Pettis's measurability
-  theorem, on a complete measure space). Such a function is Bochner integrable
-  exactly when $\int\|f\|\,d\mu<\infty$, and
-  $\|\int f\,d\mu\|\leq\int\|f\|\,d\mu$.
-* **57. Bochner convergence and functoriality.** Dominated convergence holds
-  for strongly measurable Banach-valued functions with an integrable norm
-  majorant. Bounded linear maps commute with the Bochner integral, and Fubini's
-  theorem holds for Bochner-integrable functions on $\sigma$-finite products.
 
 ## Conditional integration, interpolation, and size of sets
 
-For $1\leq p<\infty$, the **weak $L^p$ quasi-norm** is
-$\|f\|_{p,\infty}=\sup_{t>0}t\mu\{|f|>t\}^{1/p}$.
-A linear or sublinear operator has **weak type $(p,q)$** if
-$\|Tf\|_{q,\infty}\leq C\|f\|_p$; strong type means the ordinary $L^q$ norm.
+Conditional expectation and disintegration are stated in Section 06A
+(SYNOPSIS06, items 7–10), the Riesz–Thorin and Marcinkiewicz theorems in
+Section 26 (SYNOPSIS26, items 58–59), and Hausdorff measure and dimension in
+Section 37 (SYNOPSIS37, items 1–2).
 
-* **58. Conditional expectation.** On a probability space and for a
-  sub-$\sigma$-algebra $\mathcal G$, every $f\in L^1$ has a unique
-  $\mathcal G$-measurable conditional integral $\mathbb E[f\mid\mathcal G]$
-  characterized by its integrals over sets in $\mathcal G$. It is positive,
-  contractive on each $L^p$, and an orthogonal projection on $L^2$.
-* **59. Disintegration.** A probability on a product of standard Borel spaces
-  can be written $\mu(dx)K(x,dy)$, where $\mu$ is its first marginal and $K$ is
-  a probability kernel unique $\mu$-almost everywhere. Integration can then be
-  performed by first integrating against the conditional probability $K$.
 * **60. De la Vallée Poussin criterion.** On a finite measure space,
   $\mathcal F\subseteq L^1$ is uniformly integrable exactly when there is an
   increasing convex $\Phi:[0,\infty)\to[0,\infty)$ with
   $\Phi(t)/t\to\infty$ and
   $\sup_{f\in\mathcal F}\int\Phi(|f|)\,d\mu<\infty$.
-* **61. Riesz–Thorin interpolation.** For complex $L^p$ spaces on
-  $\sigma$-finite measure spaces, let a linear
-  operator on $L^{p_0}+L^{p_1}$ have endpoint bounds
-  $\|Tf\|_{q_j}\leq M_j\|f\|_{p_j}$, $j=0,1$, with exponents in $[1,\infty]$.
-  If $0<\theta<1$ and
-  $$p_\theta^{-1}=(1-\theta)p_0^{-1}+\theta p_1^{-1},\qquad
-    q_\theta^{-1}=(1-\theta)q_0^{-1}+\theta q_1^{-1},$$
-  then $\|Tf\|_{q_\theta}\leq M_0^{1-\theta}M_1^\theta\|f\|_{p_\theta}$.
-* **62. Marcinkiewicz interpolation.** A sublinear operator of weak types
-  $(p_0,p_0)$ and $(p_1,p_1)$, $1\leq p_0<p_1\leq\infty$, is bounded on
-  $L^p$ for $p_0<p<p_1$; at the infinite endpoint the bound is an $L^\infty$
-  bound. Constants depend only on the exponents and endpoint bounds. In
-  particular, weak $(1,1)$ and strong $(\infty,\infty)$ imply strong $(p,p)$
-  throughout $1<p<\infty$.
-* **63. Hausdorff measures.** For $s\geq0$, the limit as $\delta\downarrow0$ of
-  $$c_s\inf\left\{\sum_j(\operatorname{diam}E_j)^s:
-      E\subseteq\bigcup_jE_j,\ \operatorname{diam}E_j\leq\delta\right\}$$
-  defines a metric outer measure $\mathcal H^s$, so Borel sets are measurable.
-  With the conventional normalization, $\mathcal H^n=\mathcal L^n$ on
-  $\mathbb R^n$; for $s=0$ the measure is counting measure. An $L$-Lipschitz map
-  satisfies $\mathcal H^s(f(E))\leq L^s\mathcal H^s(E)$ for $s>0$.
-* **64. Hausdorff dimension.** The critical exponent
-  $\dim_HE=\inf\{s:\mathcal H^s(E)=0\}$ is stable under countable unions:
-  $\dim_H(\bigcup_jE_j)=\sup_j\dim_HE_j$. Lipschitz maps do not increase
-  dimension, and bi-Lipschitz maps preserve it. A nonempty open subset of
-  $\mathbb R^n$ has Hausdorff dimension $n$.
 
 ## Reference guide
 
@@ -405,17 +359,16 @@ the graduate courses of Rudin, Royden–Fitzpatrick, Halmos, Axler, and Schillin
 listed in the bibliographies.
 
 For the structural end of the synopsis, Cohn, Chapters 7–9 and Appendix E,
-and Folland, Chapters 7 and 11, connect regular measures, Haar measure, and
-vector integration with the larger accounts in Bogachev, Fremlin, and Bourbaki.
+and Folland, Chapter 7, connect regular measures with the larger accounts in
+Bogachev, Fremlin, and Bourbaki.
 Weak convergence is developed further in Bogachev's *Measure Theory* and
 *Weak Convergence of Measures*, and in Parthasarathy. These references supply
 broader variants; the statements here retain a common usable setting.
 
-The interpolation results are treated in Folland, Chapter 6; Hausdorff measures
-and dimension in Folland, Chapter 11, and Stein–Shakarchi, Chapter 7.
-Conditional integration and disintegration connect Cohn, Chapters 8 and 10,
-with Bogachev's structural account. The uniform-integrability criterion is also
-part of the recurring measure/probability interface.
+The uniform-integrability criterion and the monotone class theorem for
+functions are part of the recurring measure/probability interface; the
+counterexamples to Fubini's theorem are standard exercises in Folland,
+Chapter 2.
 
 Local texts directly consulted for this selection:
 

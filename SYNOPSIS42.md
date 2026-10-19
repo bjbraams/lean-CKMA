@@ -1,14 +1,21 @@
 # Synopsis: Hardy, Bergman, and model spaces; operators on analytic function spaces
 
 Part of the [mathematical synopsis series](SYNOPSIS.md).
+[Bibliographical scope and references](CKMA-bib.md#ckma-42);
+[MSC2020 correspondence and cross-subject index](CKMA-MSC2020.md).
 
 This synopsis selects recurring core material from Section 42 of
-[CKMA-bib.md](CKMA-bib.md).
+[CKMA-bib.md](CKMA-bib.md#ckma-42).
 Boundary factorization, reproducing kernels, interpolation, and analytic
 operators connect the spaces in its title. The distinctions between their
 boundary measures, area measures, norms, and multiplier algebras are essential.
 Real-variable Hardy spaces belong to Section 27, and the general operator
 model theory to Section 21.
+
+Abstract bounded-operator models are in Section 21, real-variable Hardy spaces
+in Section 27, and several-variable function and kernel theory in
+[45A](CKMA-bib.md#ckma-45a). Conformal boundary geometry remains in Section
+43.
 
 Put $\mathbb T=\partial\mathbb D$, $dm=dt/(2\pi)$ on $\mathbb T$,
 and $dA_0=dx\,dy/\pi$ on $\mathbb D$. For $0<p<\infty$,
@@ -27,8 +34,8 @@ An **inner function** is a bounded holomorphic function with boundary
 modulus one almost everywhere. An **outer function** is, up to a unimodular
 constant,
 $\exp\int_{\mathbb T}(\zeta+z)/(\zeta-z)\log h(\zeta)dm(\zeta)$,
-where $h>0$, $\log h\in L^1$, with the additional integrability
-required by the space under consideration.
+where $h>0$ and $\log h\in L^1$; it lies in $H^p$, $0<p\leq\infty$,
+exactly when $h\in L^p$.
 
 * **1. Boundary realization.** Every $f\in H^p$, $0<p<\infty$,
   has nontangential limits $f^*$ almost everywhere,
@@ -84,6 +91,14 @@ required by the space under consideration.
 * **15. Szegő kernel.** $H^2$ is a reproducing-kernel Hilbert space
   with $k_w(z)=(1-\bar wz)^{-1}$ and
   $\|k_w\|^2=(1-|w|^2)^{-1}$.
+* **84. Nevanlinna and Smirnov classes.** The Nevanlinna class $N$
+  consists of holomorphic $f$ on $\mathbb D$ with
+  $\sup_r\int\log^+|f(r\zeta)|\,dm<\infty$; these are exactly the
+  quotients $g/h$ of bounded holomorphic functions with $h$ zero-free.
+  Nonzero $f\in N$ factor as $BS_1O/S_2$ with $B$ Blaschke, $S_1,S_2$
+  singular inner, and $O$ outer. The Smirnov class $N^+$ is the subclass
+  with $S_2$ constant, equivalently the quotients with outer denominator.
+  $H^p\subset N^+$ for all $p>0$, and the boundary map is injective on $N$.
 * **16. Smirnov maximum principle.** If $f$ is a quotient of bounded
   holomorphic functions with outer denominator, and $f^*\in L^p$,
   then $f\in H^p$. In particular a bounded boundary modulus gives
@@ -97,6 +112,10 @@ required by the space under consideration.
 * **19. Rudin–Carleson interpolation.** If $E\subset\mathbb T$
   is compact with arclength zero, every continuous function on $E$
   extends to the disk algebra without increasing its supremum norm.
+* **28. Szegő infimum theorem.** If $w\geq0$ is integrable, then
+  $\inf_{p(0)=0}\int|1-p|^2w\,dm=\exp\int\log w\,dm$,
+  where $p$ ranges over analytic polynomials and the right side is
+  zero when the logarithmic integral is $-\infty$.
 
 ## Carleson measures, BMO, and interpolation
 
@@ -134,12 +153,9 @@ values have bounded mean oscillation; **VMOA** uses vanishing mean oscillation.
   $\sum|f_j(z)|\geq\delta>0$ throughout $\mathbb D$, there
   are $g_j\in H^\infty$ with $\sum f_jg_j=1$. If
   $\|f_j\|_\infty\leq1$, the bounds on $\|g_j\|_\infty$ depend only on
-  $n$ and $\delta$. Equivalently, $\mathbb D$ is dense in the maximal
+  $n$ and $\delta$; a bound on $\sum|g_j|$ independent of $n$ is also
+  available (Rosenblum, Tolokonnikov, Uchiyama). Equivalently, $\mathbb D$ is dense in the maximal
   ideal space of $H^\infty$.
-* **28. Szegő infimum theorem.** If $w\geq0$ is integrable, then
-  $\inf_{p(0)=0}\int|1-p|^2w\,dm=\exp\int\log w\,dm$,
-  where $p$ ranges over analytic polynomials and the right side is
-  zero when the logarithmic integral is $-\infty$.
 
 ## Toeplitz and Hankel operators
 
@@ -152,11 +168,16 @@ $H^2_-=L^2\ominus H^2$.
   $H^2$ is a Toeplitz operator exactly when $S^*TS=T$,
   where $S=M_z$. Its $L^\infty$ symbol is unique and
   $\|T_\phi\|=\|\phi\|_\infty$.
+  Moreover $T_\phi^*=T_{\bar\phi}$.
 * **30. Toeplitz–Hankel product identity.**
   $T_\phi T_\psi-T_{\phi\psi}=-H_{\bar\phi}^*H_\psi$.
   This locates the failure of multiplicativity in the Hankel terms.
+  In particular $T_\phi T_\psi=T_{\phi\psi}$ if $\psi$ is analytic or
+  $\phi$ is coanalytic.
 * **31. Coburn alternative.** For a nonzero $L^\infty$ symbol,
   at least one of $\ker T_\phi$ and $\ker T_\phi^*$ is zero.
+  Hence a Fredholm Toeplitz operator with scalar symbol and index zero is
+  invertible.
 * **32. Toeplitz Fredholm index.** If $\phi\in C(\mathbb T)$,
   $T_\phi$ is Fredholm exactly when $\phi$ never vanishes;
   its index is $-\operatorname{wind}(\phi,0)$ and its essential
@@ -172,13 +193,23 @@ $H^2_-=L^2\ominus H^2$.
   $D_{n+1}(\phi)/D_n(\phi)\to G(\phi)=\exp\int\log\phi\,dm$.
   If $\phi=e^{\psi}$ with $\sum_k|k||\widehat\psi(k)|^2<\infty$, then
   $D_n(\phi)\sim G(\phi)^n\exp\sum_{k\geq1}k\widehat\psi(k)\widehat\psi(-k)$.
+  The first Szegő theorem $D_n(\phi)^{1/n}\to\exp\int\log\phi\,dm$ holds
+  for every nonnegative $\phi\in L^1$, both sides being zero if
+  $\log\phi\notin L^1$.
 * **35. Nehari's theorem.** Every bounded Hankel matrix has a bounded
   symbol, and $\|H_\phi\|=\operatorname{dist}_{L^\infty}(\phi,H^\infty)$.
 * **36. Hartman's theorem.** $H_\phi$ is compact exactly when
   $\phi\in H^\infty+C(\mathbb T)$.
+* **90. Douglas algebras.** $H^\infty+C(\mathbb T)$ is a closed
+  subalgebra of $L^\infty$ (Sarason). Every uniformly closed algebra
+  $\mathcal B$ with $H^\infty\subset\mathcal B\subset L^\infty$ is
+  generated by $H^\infty$ and the conjugates $\bar\theta$ of the inner
+  functions $\theta$ invertible in $\mathcal B$ (Chang–Marshall).
 * **37. Kronecker's theorem.** For analytic $g\in H^2$,
   $H_{\bar g}$ has finite rank exactly when $g$ is rational
   with no poles in the closed disk. Constants give the zero operator.
+  Equivalently, a Hankel matrix has finite rank exactly when the power
+  series formed from its Hankel coefficients is rational.
 * **38. Hilbert–Schmidt Hankel criterion.** If
   $g(z)=\sum a_nz^n$, then
   $\|H_{\bar g}\|_{S_2}^2=\sum_{n\geq1}n|a_n|^2$.
@@ -236,6 +267,51 @@ These are the **model space** and its **compressed shift**.
 * **49. Interpolating model bases.** If $B$ has simple zeros $a_j$,
   its normalized kernels at those zeros form a Riesz basis of $K_B$
   exactly when the zero sequence satisfies Carleson's interpolation condition.
+
+## Cauchy transforms and subnormal operators
+
+For a finite complex measure $\mu$ on $\mathbb T$, its **Cauchy transform**
+is $K\mu(z)=\int_{\mathbb T}(1-\bar\zeta z)^{-1}d\mu(\zeta)$, $z\in\mathbb D$.
+For a positive compactly supported measure $\mu$ on $\mathbb C$ and
+$1\leq t<\infty$, $P^t(\mu)$ is the closure of the polynomials in $L^t(\mu)$.
+A point $w$ is a **bounded point evaluation** if $p\mapsto p(w)$ extends
+continuously to $P^t(\mu)$; it is **analytic** if this holds uniformly
+near $w$.
+
+* **85. Cauchy transforms of measures.** $K\mu\in H^p$ for every
+  $0<p<1$, with $\|K\mu\|_p\leq C_p\|\mu\|$, and its boundary function
+  obeys Kolmogorov's weak-type $(1,1)$ bound. By the F. and M. Riesz
+  theorem $K\mu=0$ exactly when $d\mu=\bar h\,dm$ with $h\in H^1$,
+  $h(0)=0$; with the quotient norm, the space of Cauchy transforms is
+  isometric to the dual of the disk algebra.
+* **86. Aleksandrov disintegration.** For an inner $\theta$ with Clark
+  measures $\sigma_\alpha$ (item 47) and $f\in C(\mathbb T)$,
+  $\int_{\mathbb T}\bigl(\int f\,d\sigma_\alpha\bigr)dm(\alpha)=\int f\,dm$;
+  this extends to $f\in L^1(m)$, the inner integral being defined for
+  almost every $\alpha$. If $\theta(0)=0$, the inverse of the Clark
+  unitary of item 48 is the normalized Cauchy transform
+  $g\mapsto(1-\bar\alpha\theta)K(g\sigma_\alpha)$.
+* **87. Poltoratski's theorem.** If $\mu$ is a positive finite singular
+  measure on $\mathbb T$ and $f\in L^2(\mu)$, then
+  $K(f\mu)/K\mu\to f$ nontangentially at $\mu$-almost every point.
+* **88. Cyclic subnormal operators.** Multiplication by $z$ on
+  $P^2(\mu)$ is subnormal, and every cyclic subnormal operator is unitarily
+  equivalent to such an operator (Bram). Multiplication by $z$ on $H^2$
+  and on $A_\alpha^2$ are examples; on the Dirichlet space it is not even
+  hyponormal. The minimal normal extension $N$ of a subnormal $S$ is
+  unique up to unitary equivalence, $\sigma(N)\subset\sigma(S)$, and
+  $\sigma(S)$ is $\sigma(N)$ with some bounded components of
+  $\mathbb C\setminus\sigma(N)$ filled in. Subnormal operators have
+  nontrivial invariant subspaces (S. Brown; SYNOPSIS21, item 52).
+* **89. Thomson's theorem and Putnam's inequality.** For $1\leq t<\infty$,
+  $\operatorname{supp}\mu$ has a Borel partition $\Delta_0,\Delta_1,\ldots$
+  with $P^t(\mu)=L^t(\mu|_{\Delta_0})\oplus\bigoplus_{i\geq1}P^t(\mu|_{\Delta_i})$,
+  where for $i\geq1$ the analytic bounded point evaluations of
+  $P^t(\mu|_{\Delta_i})$ form a simply connected region $U_i$ with
+  $\Delta_i\subset\overline{U_i}$. In particular $P^t(\mu)\neq L^t(\mu)$
+  exactly when bounded point evaluations exist. Every hyponormal, in
+  particular every subnormal, operator satisfies Putnam's inequality
+  $\|T^*T-TT^*\|\leq\pi^{-1}\operatorname{area}\sigma(T)$.
 
 ## Bergman and Bloch spaces
 
@@ -334,6 +410,8 @@ range norm: the norm of the least-norm preimage.
   space contractively included in $H^2$ with kernel
   $(1-\overline{b(w)}b(z))/(1-\bar wz)$.
   For inner $b=\theta$, it is isometrically $K_\theta$.
+  The kernel is positive definite for every analytic $b$ with
+  $\|b\|_\infty\leq1$.
 * **70. Nonextreme symbols.** For a nonconstant Schur function $b$,
   nonextremality in the unit ball of $H^\infty$ is equivalent to
   $\log(1-|b^*|^2)\in L^1$. In this case there is a unique
@@ -355,10 +433,12 @@ For a holomorphic self-map $\phi$ of the disk, let $C_\phi f=f\circ\phi$.
   is a contraction on $H^p$ for every $0<p<\infty$.
   Every disk self-map induces a bounded operator on $H^p$;
   on $H^2$, $\|C_\phi\|\leq[(1+|\phi(0)|)/(1-|\phi(0)|)]^{1/2}$.
-* **74. Pullback-measure criteria.** For $H^2$, boundedness and
-  compactness are the Carleson and vanishing Carleson properties of
-  the boundary pullback measure $m\circ(\phi^*)^{-1}$ on the
-  closed disk, with the natural extension of Carleson boxes.
+* **74. Pullback-measure criteria.** On $H^2$, where every $C_\phi$ is
+  bounded (item 73) and the boundary pullback measure
+  $m\circ(\phi^*)^{-1}$ on the closed disk is always Carleson, $C_\phi$
+  is compact exactly when that measure is vanishing Carleson, with the
+  natural extension of Carleson boxes. The Carleson criterion for
+  boundedness is substantive on spaces such as $\mathcal D$.
   For $A_\alpha^2$, use instead $A_\alpha\circ\phi^{-1}$ and
   the Bergman box exponent $\alpha+2$.
 * **75. Shapiro compactness criterion.** Define
@@ -401,7 +481,8 @@ and upper limits if necessary.
 * **82. Fock sampling density.** A separated $\Lambda$ gives a
   sampling norm equivalent to $\|f\|^2$ exactly when
   $D^-(\Lambda)>\alpha/\pi$. The strict inequalities distinguish
-  sampling and interpolation even for regular lattices.
+  sampling and interpolation; in particular a lattice of critical density
+  $\alpha/\pi$ is neither sampling nor interpolating.
 * **83. Kernel interpretation.** Fock sampling is equivalent to the
   normalized kernels forming a frame; interpolation is equivalent to
   their forming a Riesz sequence. Thus density theorems become
@@ -412,7 +493,9 @@ and upper limits if necessary.
 Garnett, Duren, Koosis, Hoffman, and Nikolski share the Hardy factorization,
 boundary, interpolation, and invariant-subspace core. Nikolski, Peller,
 Böttcher–Silbermann, and the model-space books connect it with Toeplitz,
-Hankel, and compressed-shift operators. Fricain–Mashreghi provides a
+Hankel, and compressed-shift operators. Cima–Matheson–Ross treat Cauchy
+transforms and Clark measures, and Conway's *The Theory of Subnormal
+Operators* the function theory of subnormal operators. Fricain–Mashreghi provides a
 large overlapping development before treating $\mathcal H(b)$ itself.
 Hedenmalm–Korenblum–Zhu, Duren–Schuster, and Zhu develop the Bergman
 counterparts; the Dirichlet references explain why capacity and multiplier

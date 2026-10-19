@@ -1,14 +1,21 @@
 # Synopsis: Ordinary differential equations and dynamical systems
 
 Part of the [mathematical synopsis series](SYNOPSIS.md).
+[Bibliographical scope and references](CKMA-bib.md#ckma-31);
+[MSC2020 correspondence and cross-subject index](CKMA-MSC2020.md).
 
 This synopsis selects recurring core material from Section 31 of
-[CKMA-bib.md](CKMA-bib.md). It covers
+[CKMA-bib.md](CKMA-bib.md#ckma-31). It covers
 existence and dependence, linear equations, stability and invariant manifolds,
 planar dynamics, bifurcations, hyperbolicity, and perturbation of Hamiltonian
 systems. Linear boundary problems and dissipative dynamics provide two
 further recurring continuations. Measure-theoretic dynamics is treated in
 Section 10, and detailed asymptotic expansions in Section 50.
+
+Ergodic structure is developed in Section 10, holomorphic iteration in Section
+46, and integrability in Section 51. Concrete hyperbolic, dispersive, fluid,
+and kinetic evolution is organised in
+[34A](CKMA-bib.md#ckma-34a)–[34D](CKMA-bib.md#ckma-34d).
 
 The basic equation is $\dot x=F(t,x,\mu)$ in finite-dimensional Euclidean
 space or a smooth manifold. A **flow** satisfies
@@ -17,6 +24,9 @@ Equilibria satisfy $F(x)=0$; periodic orbits are nonconstant closed trajectories
 Smoothness and completeness are imposed in the statements that need them.
 
 ## Existence, uniqueness, and dependence
+
+Grönwall's inequality, used throughout, is stated in Section 11
+(SYNOPSIS11, item 40).
 
 * **1. Peano existence.** Continuous $F$ admits a local solution through
   every interior initial point. Continuity alone does not imply uniqueness.
@@ -37,10 +47,6 @@ Smoothness and completeness are imposed in the statements that need them.
   $|F(t,x)|\leq a(t)+b(t)|x|$ with locally integrable $a,b$ prevents
   finite-time blowup. Under uniqueness this yields a global evolution
   for all finite times on which the coefficients are defined.
-* **6. Grönwall inequality.** If
-  $u(t)\leq a+\int_{t_0}^tb(s)u(s)ds$ with $u,b\geq0$, then
-  $u(t)\leq a\exp(\int_{t_0}^tb)$ for $t\geq t_0$.
-  It gives quantitative uniqueness and perturbation bounds.
 * **7. Continuous dependence.** Solutions depend continuously on initial
   conditions and parameters on every compact interval contained in the
   limiting solution's existence interval, when the local continuity and
@@ -72,6 +78,11 @@ Smoothness and completeness are imposed in the statements that need them.
   space of $\dot x=A(t)x$ has dimension $n$. A fundamental matrix
   $\Phi$ is invertible everywhere, and the evolution is
   $U(t,s)=\Phi(t)\Phi(s)^{-1}$.
+* **65. Regular singular points.** For $zY'=A(z)Y$ with analytic $A$,
+  a fundamental solution admits convergent power-series factors and
+  powers $z^\lambda$ with possible logarithmic factors determined by
+  resonances. Analytic continuation around the singular point gives
+  the monodromy operator.
 * **14. Variation of constants.** For $\dot x=A(t)x+f(t)$,
   $x(t)=U(t,s)x(s)+\int_s^tU(t,\tau)f(\tau)d\tau$.
 * **15. Liouville's formula.**
@@ -108,6 +119,9 @@ Smoothness and completeness are imposed in the statements that need them.
   For $-(pu')'+qu=\lambda wu$ the eigenvalues satisfy
   $\lambda_k\sim(k\pi/L)^2$ as $k\to\infty$, where
   $L=\int_a^b\sqrt{w/p}$.
+  Singular endpoints, the Weyl limit-point/limit-circle alternative, and
+  the Weyl–Titchmarsh function are stated in Section 22 (SYNOPSIS22,
+  items 52 and 55).
 * **22. Sturm oscillation.** With those hypotheses, the eigenfunction
   for the $(k+1)$st eigenvalue has exactly $k$ interior zeros, all simple.
 
@@ -223,7 +237,8 @@ systems with the stated simple critical spectrum.
   Formal normal-form existence does not itself assert convergence.
   For analytic fields, nonresonant eigenvalues whose convex hull omits $0$
   (Poincaré domain) give convergent linearization (Poincaré); in the
-  Siegel domain a Diophantine condition suffices (Siegel, Brjuno).
+  Siegel domain a Diophantine condition (Siegel), more generally the
+  Brjuno condition (Brjuno), suffices.
 * **44. Saddle-node bifurcation.** For scalar $\dot x=f(x,\mu)$,
   $f=f_x=0$, $f_{xx}\ne0$, $f_\mu\ne0$ at the origin give the
   local orbit structure of $\dot y=\nu\pm y^2$: two equilibria
@@ -247,16 +262,30 @@ systems with the stated simple critical spectrum.
   coefficient and no other unit-circle spectrum, gives a branch of
   two-cycles. For a flow these are periodic orbits of approximately
   twice the original period.
+* **72. Bogdanov–Takens bifurcation.** Let a planar system with two
+  parameters have at $\mu=0$ an equilibrium with a double zero eigenvalue
+  and nonzero (nilpotent) linear part. Under two nondegeneracy conditions
+  on the quadratic terms and a transversality condition in the parameters,
+  it is locally topologically equivalent to an unfolding of
+  $\dot y_1=y_2$, $\dot y_2=\beta_1+\beta_2y_1+y_1^2+sy_1y_2$,
+  $s=\pm1$ (Bogdanov, Takens). Its bifurcation set near $\beta=0$ consists
+  of a saddle-node curve, a Hopf curve, and a curve of saddle homoclinic
+  orbits, all emanating from the origin.
 * **49. First-order averaging.** For smooth $T$-periodic $f$ in
   $\dot x=\varepsilon f(t,x)$, solutions remain $O(\varepsilon)$
   close to those of $\dot y=\varepsilon\bar f(y)$ over times
   $O(\varepsilon^{-1})$, while both stay in a fixed controlled compact
   domain and start $O(\varepsilon)$ close. Here
   $\bar f=T^{-1}\int_0^Tf(t,\cdot)dt$.
+  Equivalently, for each fixed $L>0$, $|x-y|\leq C_L\varepsilon$ for
+  $0\leq t\leq L/\varepsilon$.
 * **50. Periodic solutions from averaging.** A nondegenerate zero of
   $\bar f$ gives a nearby $T$-periodic solution for small nonzero
   $\varepsilon$. Hyperbolicity of that zero determines its stability
   through the averaged linearization.
+  When the relevant eigenvalues $\lambda_j$ of the averaged linearization
+  are simple, the Floquet multipliers are
+  $1+\varepsilon T\lambda_j+O(\varepsilon^2)$.
 * **51. Melnikov criterion.** For a smooth periodically perturbed planar
   Hamiltonian system with an unperturbed homoclinic orbit $z_0(t)$
   to a hyperbolic saddle, the first-order splitting is measured by
@@ -289,6 +318,13 @@ bundles. For flows without equilibria, include the one-dimensional flow directio
   invariant horseshoe conjugate to the full shift on two symbols.
   There are consequently infinitely many periodic orbits and positive
   topological entropy.
+* **73. Shilnikov saddle-focus theorem.** Let a smooth three-dimensional
+  flow have a saddle-focus equilibrium with eigenvalues $\lambda_1>0$
+  and $-\rho\pm i\omega$, $\omega\ne0$, and a homoclinic orbit to it.
+  If $0<\rho<\lambda_1$, every neighbourhood of the homoclinic loop
+  contains infinitely many saddle periodic orbits and, for the return map,
+  horseshoes conjugate to shifts; this persists for small perturbations
+  that need not preserve the homoclinic orbit (Shilnikov).
 * **57. Markov partitions.** Compact locally maximal hyperbolic sets
   admit finite Markov partitions of arbitrarily small diameter.
   The resulting symbolic system is a subshift of finite type mapping
@@ -327,15 +363,13 @@ bundles. For flows without equilibria, include the one-dimensional flow directio
 
 ## Hamiltonian structure and further continuations
 
+Integrable systems and action–angle coordinates (Liouville–Arnold) are
+stated in Section 51 (SYNOPSIS51, item 35).
+
 * **62. Symplectic and volume preservation.** A Hamiltonian flow preserves
   the symplectic form and hence Liouville volume, as well as its autonomous
   Hamiltonian. A volume-preserving flow has no asymptotically stable
-  equilibrium with an open basin in a finite-volume neighborhood.
-* **63. Liouville–Arnold theorem.** For $n$ independent commuting first
-  integrals of a $2n$-dimensional symplectic system, a compact connected
-  regular common level is an $n$-torus. Near it there are action–angle
-  coordinates with $H=H(I)$ and $\dot\theta=\nabla H(I)$,
-  $\dot I=0$.
+  equilibrium or periodic orbit.
 * **64. KAM persistence.** Let $H_0(I)$ be analytic with
   $\det\partial_I^2H_0\ne0$ on a bounded action domain.
   A sufficiently small analytic perturbation preserves invariant
@@ -344,11 +378,43 @@ bundles. For flows without equilibria, include the one-dimensional flow directio
   the domain boundary. The surviving Cantor family has positive measure,
   and its relative measure tends to one as the perturbation tends to zero
   with suitably shrinking $\gamma$.
-* **65. Regular singular points.** For $zY'=A(z)Y$ with analytic $A$,
-  a fundamental solution admits convergent power-series factors and
-  powers $z^\lambda$ with possible logarithmic factors determined by
-  resonances. Analytic continuation around the singular point gives
-  the monodromy operator.
+* **68. Poincaré–Birkhoff theorem.** Let $f$ be an orientation- and
+  area-preserving homeomorphism of the closed annulus
+  $\mathbb R/\mathbb Z\times[0,1]$, preserving each boundary circle,
+  with a lift that moves the two boundary circles in opposite directions.
+  Then $f$ has at least two fixed points (Birkhoff; Brown–Neumann).
+  Consequently, for each rational $p/q$ strictly between the rotation
+  numbers of the boundary circles, $f$ has at least two periodic orbits
+  of rotation number $p/q$.
+* **69. Moser twist theorem.** Let
+  $f(\theta,r)=(\theta+\alpha(r)+F(\theta,r),\,r+G(\theta,r))$ on
+  $\mathbb R/\mathbb Z\times[a,b]$, with $\alpha'\geq\nu>0$ (twist),
+  and suppose every closed curve near a circle $r=\mathrm{const}$
+  meets its image (for example $f$ exact area-preserving). For each
+  $\omega\in(\alpha(a),\alpha(b))$ with
+  $|\omega-p/q|\geq\gamma q^{-\tau}$ for all $p/q$, $\tau>2$, there is
+  $\varepsilon>0$ such that $\|F\|_{C^\ell}+\|G\|_{C^\ell}<\varepsilon$,
+  $\ell$ large enough, gives an $f$-invariant closed curve
+  $r=u(\theta)$ on which $f$ is conjugate to rotation by $\omega$
+  (Moser; $\ell>3$ suffices by Rüssmann and Herman).
+* **70. Stability of elliptic fixed points.** An elliptic fixed point of a
+  smooth area-preserving planar map, with eigenvalues
+  $e^{\pm2\pi i\theta}$, $e^{2\pi ik\theta}\ne1$ for $k=1,2,3,4$, and
+  nonzero first Birkhoff twist coefficient, is surrounded by invariant
+  closed curves accumulating on it and is therefore Lyapunov stable
+  (Moser). For isoenergetically nondegenerate near-integrable systems
+  with two degrees of freedom, KAM tori likewise confine orbits on each
+  energy level (Arnold).
+* **71. Nekhoroshev theorem.** Let $H(I,\varphi)=h(I)+\varepsilon f(I,\varphi)$
+  be real analytic on a complex neighbourhood of
+  $B\times\mathbb T^n$, $B\subset\mathbb R^n$ bounded, with $h$ steep,
+  for example strictly convex. Then there are $a,b,C,\varepsilon_0>0$
+  such that for $0<\varepsilon<\varepsilon_0$ every solution satisfies
+  $|I(t)-I(0)|\leq C\varepsilon^b$ for
+  $|t|\leq C\exp(C^{-1}\varepsilon^{-a})$, as long as it stays over $B$.
+  For convex $h$ one may take $a=b=1/(2n)$ (Lochak, Pöschel). For $n\geq3$
+  invariant tori do not separate energy levels, and actions can drift
+  over longer times (Arnold diffusion).
 * **66. Global attractor criterion.** A continuous semiflow on a complete
   metric space with a bounded absorbing set and asymptotic compactness
   has a compact invariant global attractor attracting every bounded set.
@@ -366,9 +432,12 @@ Coddington–Levinson, Hartman, Hale, and Teschl share the existence, linear,
 and stability foundations. Perko, Chicone, Hirsch–Smale–Devaney, and
 Hale–Koçak supply the finite-dimensional qualitative and planar core.
 Kuznetsov, Wiggins, and Guckenheimer–Holmes develop the bifurcation and
-perturbation results. Katok–Hasselblatt and Robinson give the hyperbolic
-and symbolic theory; Arnold and the Hamiltonian references give the
-integrable and KAM continuation. The concluding results indicate the
+perturbation results, including the Bogdanov–Takens and Shilnikov theorems.
+Katok–Hasselblatt and Robinson give the hyperbolic and symbolic theory;
+Arnold and the Hamiltonian references give the integrable and KAM
+continuation, and Siegel–Moser, Moser–Zehnder, Meyer–Offin, and
+Arnold–Kozlov–Neishtadt the twist-map, Moser stability, and Nekhoroshev
+results. The concluding results indicate the
 recurring boundary-value, analytic, delay, and dissipative directions without
 attempting a full account of each research specialization.
 

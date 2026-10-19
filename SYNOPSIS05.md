@@ -1,13 +1,19 @@
 # Synopsis: Differentiation and the fine structure of real functions
 
 Part of the [mathematical synopsis series](SYNOPSIS.md).
+[Bibliographical scope and references](CKMA-bib.md#ckma-05);
+[MSC2020 correspondence and cross-subject index](CKMA-MSC2020.md).
 
 This synopsis selects recurring material from Section 05 of
-[CKMA-bib.md](CKMA-bib.md). Its center is the
+[CKMA-bib.md](CKMA-bib.md#ckma-05). Its center is the
 relation between pointwise derivatives, measures, and integral reconstruction:
 what differentiability forces, how it can fail, and which weaker notions survive
 for Lipschitz, Sobolev, and bounded-variation functions. Classical smooth calculus
 and nonabsolute integration provide the two ends of this spectrum.
+
+The metric and fractal counterparts are in [39A](CKMA-bib.md#ckma-39a);
+Section 37 develops rectifiability, BV functions, and geometric integration,
+while Section 26 emphasises weak derivatives and function-space mappings.
 
 Here $I$ is a real interval, $U\subseteq\mathbb R^n$ is open, $\mathcal L^n$ is
 Lebesgue measure, and $\mathcal H^s$ is Hausdorff measure, normalized so that
@@ -19,23 +25,14 @@ statements refer to Lebesgue measure unless another measure is specified.
 The **Fréchet derivative** of $f:U\to\mathbb R^m$ at $x$ is the linear map
 $Df(x)$ satisfying $f(x+h)=f(x)+Df(x)h+o(|h|)$. A map is $C^k$ if its derivatives
 through order $k$ exist and are continuous. A point is **critical** for a map to
-$\mathbb R^m$ when its derivative has rank less than $m$.
+$\mathbb R^m$ when its derivative has rank less than $m$. The mean value,
+inverse function, and implicit function theorems are stated in Section 35
+(SYNOPSIS35, items 2–4).
 
-* **1. Mean value theorem and inequality.** For a continuous real function on
-  $[a,b]$, differentiable on $(a,b)$, some $c$ satisfies
-  $f(b)-f(a)=f'(c)(b-a)$. For vector-valued maps on a convex open set,
-  $\sup_U\|Df\|\leq M$ implies $|f(x)-f(y)|\leq M|x-y|$.
 * **2. Taylor's theorem.** For $f\in C^k(U)$,
   $$f(x+h)=\sum_{j=0}^k\frac{1}{j!}D^jf(x)[h^j]+o(|h|^k).$$
   If $f\in C^{k+1}$ near the segment, the remainder after order $k$ is
   $\frac1{k!}\int_0^1(1-t)^kD^{k+1}f(x+th)[h^{k+1}]\,dt$.
-* **3. Inverse function theorem.** A $C^k$ map $f:U\to\mathbb R^n$, $k\geq1$,
-  with invertible $Df(x_0)$ has a local $C^k$ inverse, whose derivative at $f(x)$
-  is $Df(x)^{-1}$.
-* **4. Implicit function theorem.** If $F(x,y)$ is $C^k$ near $(x_0,y_0)$,
-  $F(x_0,y_0)=0$, and $D_yF(x_0,y_0)$ is invertible, its nearby zero set is
-  uniquely a graph $y=g(x)$ with $g\in C^k$ and
-  $Dg=-(D_yF)^{-1}D_xF$.
 * **5. Sard's theorem.** If $f:U\to\mathbb R^m$ is $C^k$ with
   $k>\max(n-m,0)$, its critical values form a Lebesgue-null subset of
   $\mathbb R^m$. In particular, almost every value of a smooth map is regular.
@@ -57,6 +54,12 @@ functions. A **Darboux function** has the intermediate value property on interva
 * **8. Continuity points of Baire-one functions.** On a real interval, the
   discontinuity set of a Baire-one function is a meagre $F_\sigma$ set. Thus an
   everywhere finite derivative is continuous on a dense $G_\delta$ set.
+* **63. Approximately continuous functions are derivatives.** Every bounded
+  approximately continuous function on an interval is a derivative; its
+  indefinite Lebesgue integral is differentiable everywhere with that derivative
+  (Denjoy). Darboux and Baire class one together do not characterize derivatives:
+  $\sin(1/x)$, extended by $a\in[-1,1]$ at $0$, has both properties for every
+  $a$ but is a derivative only for $a=0$.
 * **9. Dini criterion for monotonicity.** If $f$ is continuous on $[a,b]$ and
   $D^+f(x)\geq0$ at all but countably many $x\in[a,b)$, then $f$ is
   nondecreasing. In particular, $f'\geq0$ off a countable set implies
@@ -94,6 +97,13 @@ null images.
   $\int_a^b F'\leq F(b)-F(a)$. If a series $\sum_kF_k$ of increasing functions
   converges on $[a,b]$, then it may be differentiated termwise almost everywhere
   (Fubini's differentiation theorem).
+* **62. Rising sun lemma.** Let $G$ be continuous on $[a,b]$ and let $E$ be
+  the set of $x\in(a,b)$ with $G(y)>G(x)$ for some $y\in(x,b]$. Then $E$ is
+  open, and on each of its component intervals $(a_k,b_k)$ one has
+  $G(a_k)=G(b_k)$, except that $G(a_k)\leq G(b_k)$ when $a_k=a$ (F. Riesz). It
+  gives Riesz's proof of result 13 and the one-sided maximal inequality
+  $|\{M^+f>\lambda\}|\leq\lambda^{-1}\int_{\{M^+f>\lambda\}}|f|$ for
+  $M^+f(x)=\sup_{h>0}h^{-1}\int_x^{x+h}|f|$ and $f\in L^1(\mathbb R)$.
 * **14. Differentiation of $BV$ functions.** A function of bounded variation has
   a finite derivative almost everywhere, with
   $\int_a^b|F'|\leq\operatorname{Var}(F)$. Its distributional derivative is a
@@ -125,6 +135,13 @@ null images.
   continuous and $\Phi$ is $C^1$ near its range, then
   $(\Phi\circ F)'=\Phi'(F)F'$ almost everywhere and $\Phi\circ F$ is absolutely
   continuous.
+* **58. Length and the Banach indicatrix.** An absolutely continuous curve
+  $\gamma:[a,b]\to\mathbb R^m$ is rectifiable and
+  $$\operatorname{length}(\gamma)=\int_a^b|\gamma'(t)|dt.$$
+  For every continuous real $F$ on $[a,b]$, Banach's indicatrix theorem gives
+  $$\operatorname{Var}(F)=\int_{\mathbb R}\#\{t\in[a,b]:F(t)=y\}\,dy,$$
+  both sides possibly infinite: total variation counts level crossings with
+  multiplicity.
 
 ## Coverings, maximal functions, and differentiation bases
 
@@ -138,11 +155,11 @@ $$Mf(x)=\sup_{r>0}\frac1{|B(x,r)|}\int_{B(x,r)}|f(y)|\,dy.$$
   $\mathbb R^n$ has a countable disjoint subfamily whose fivefold enlargements
   cover the union of the original balls.
 * **22. Vitali covering theorem.** If a family of closed balls is a Vitali
-  covering of a measurable set $E$ of finite Lebesgue measure, a countable
-  disjoint subfamily covers $E$ up to a null set.
+  covering of an arbitrary set $E\subseteq\mathbb R^n$, a countable disjoint
+  subfamily covers $E$ up to a Lebesgue null set.
 * **23. Besicovitch covering theorem.** If a bounded set $E\subseteq\mathbb R^n$
-  is supplied with arbitrarily small balls centered at each of its points,
-  one can select a countable covering of $E$ with overlap bounded by a constant
+  is supplied with a closed ball centered at each of its points, the radii
+  being bounded, one can select a countable covering of $E$ with overlap bounded by a constant
   depending only on $n$. The stronger finite-family decomposition into disjoint
   subfamilies underlies differentiation for arbitrary Radon measures.
 * **24. Whitney decomposition.** A nonempty proper open subset of $\mathbb R^n$
@@ -152,6 +169,8 @@ $$Mf(x)=\sup_{r>0}\frac1{|B(x,r)|}\int_{B(x,r)}|f(y)|\,dy.$$
 * **25. Weak maximal inequality.** There is $C_n$ such that
   $$|\{Mf>\lambda\}|\leq\frac{C_n}{\lambda}\|f\|_1
     \qquad(\lambda>0).$$
+  For the centred maximal function one may take $C_n=3^n$, by the finite
+  Vitali selection of disjoint balls whose threefold enlargements cover.
 * **26. Strong maximal inequality for balls.** For $1<p\leq\infty$,
   $\|Mf\|_p\leq C_{n,p}\|f\|_p$.
 * **27. Lebesgue differentiation theorem.** For $f\in L^1_{\mathrm{loc}}$,
@@ -178,6 +197,13 @@ $$Mf(x)=\sup_{r>0}\frac1{|B(x,r)|}\int_{B(x,r)}|f(y)|\,dy.$$
   $$|\{M_{\!S}f>\lambda\}|\leq C_n\int
     \frac{|f|}{\lambda}
     \left(1+\log^+\frac{|f|}{\lambda}\right)^{n-1}dx.$$
+* **65. Stein's maximal principle.** Let a compact group act transitively on a
+  probability space $X$ preserving its measure, let $1\leq p\leq2$, and let
+  $T_n$ be bounded linear operators on $L^p(X)$ commuting with the action. If
+  $\sup_n|T_nf|<\infty$ almost everywhere for every $f\in L^p(X)$, then
+  $f\mapsto\sup_n|T_nf|$ is of weak type $(p,p)$. Thus almost-everywhere
+  convergence on $L^p$ forces a maximal inequality, and failure of the maximal
+  inequality yields divergence for some $f\in L^p$.
 
 ## Lipschitz functions and approximate differentiation
 
@@ -199,17 +225,25 @@ where it exists.
   $\inf_{a\in A}(f(a)+Ld(x,a))$ and $\sup_{a\in A}(f(a)-Ld(x,a))$.
 * **33. Kirszbraun's theorem.** An $L$-Lipschitz map from a subset of Euclidean
   space to another Euclidean space extends with the same constant. The theorem
-  also holds for real Hilbert spaces.
+  also holds for real Hilbert spaces. For $\mathbb R^m$-valued maps,
+  componentwise McShane extension may multiply the Lipschitz constant by
+  $\sqrt m$.
 * **34. Rademacher's theorem.** A locally Lipschitz map
   $f:U\to\mathbb R^m$ is Fréchet differentiable almost everywhere, and
   $\|Df(x)\|$ is bounded by its Lipschitz constant wherever the derivative exists.
+  A Lipschitz map agrees with a $C^1$ map outside a set of arbitrarily small
+  measure.
+* **64. Stepanov's theorem.** An arbitrary map $f:U\to\mathbb R^m$ is
+  differentiable at almost every point of the set where
+  $\limsup_{y\to x}|f(y)-f(x)|/|y-x|<\infty$.
 * **35. Lipschitz maps in infinite dimensions.** If $X$ is a separable Banach
   space and $Y$ has the Radon–Nikodým property, every Lipschitz $f:X\to Y$ is
   Gâteaux differentiable outside an Aronszajn-null (in particular Haar-null)
   set (Aronszajn, Christensen, Mankiewicz). Fréchet differentiability is subtler:
   a real Lipschitz function on an Asplund space is Fréchet differentiable on a
-  dense set (Preiss), but its exceptional set need not be Haar-null; porous and
-  $\Gamma$-null sets govern this theory (Lindenstrauss–Preiss–Tišer).
+  dense set (Preiss), and the size of its exceptional set is governed by porous
+  and $\Gamma$-null sets rather than by Haar-null sets
+  (Lindenstrauss–Preiss–Tišer).
 * **36. Absolute continuity on lines.** A function in
   $W^{1,p}_{\mathrm{loc}}(U)$, $1\leq p\leq\infty$, has a representative
   absolutely continuous on almost every line segment parallel to a coordinate
@@ -227,10 +261,14 @@ where it exists.
   measures. It is twice differentiable almost everywhere in the Peano sense:
   for almost every $x$ there is a symmetric $A$ with
   $f(y)=f(x)+\nabla f(x)\cdot(y-x)+\tfrac12(y-x)\cdot A(y-x)+o(|y-x|^2)$, and
-  $A$ is the density of the absolutely continuous part of $D^2f$.
+  $A$ is the density of the absolutely continuous part of $D^2f$. The a.e.
+  Hessian is positive semidefinite.
 * **39. Approximate differentiation of Sobolev functions.** Every
   $f\in W^{1,1}_{\mathrm{loc}}(U)$ is approximately differentiable almost
-  everywhere, and its approximate derivative equals its weak gradient.
+  everywhere, and its approximate derivative equals its weak gradient. For
+  $p>n$, $W^{1,p}_{\mathrm{loc}}$ functions are classically differentiable
+  almost everywhere; for $n\geq2$ and $p\leq n$ continuous representatives need
+  not exist.
 * **40. Whitney's Lusin approximation theorem on the line.** A measurable
   function on a compact interval is approximately differentiable almost
   everywhere exactly when, for every $\varepsilon>0$, it agrees with a $C^1$
@@ -241,18 +279,6 @@ where it exists.
   $\varepsilon>0$ there are a compact $K\subset U$ with $|U\setminus K|<\varepsilon$
   and $g\in C^1(\mathbb R^n)$ such that $g=f$ and $Dg=Df$ almost everywhere on
   $K$.
-* **42. Area formula.** For Lipschitz $f:\mathbb R^n\to\mathbb R^m$, $n\leq m$,
-  measurable $A$, and nonnegative measurable $g$,
-  $$\int_A g(x)J_nf(x)\,dx
-    =\int_{\mathbb R^m}\sum_{x\in A\cap f^{-1}(y)}g(x)\,d\mathcal H^n(y),$$
-  where $J_nf=\sqrt{\det(Df^{\mathsf T}Df)}$ almost everywhere. For injective
-  maps this is change of variables onto the image.
-* **43. Coarea formula.** For Lipschitz $f:\mathbb R^n\to\mathbb R^m$, $n\geq m$,
-  and nonnegative measurable $g$,
-  $$\int g(x)J_mf(x)\,dx
-    =\int_{\mathbb R^m}\int_{f^{-1}(y)}g(x)\,d\mathcal H^{n-m}(x)\,dy,$$
-  where $J_mf=\sqrt{\det(DfDf^{\mathsf T})}$. For $m=1$, the Jacobian is
-  $|\nabla f|$.
 
 ## Fine properties of $BV$ functions in several variables
 
@@ -263,28 +289,11 @@ $$|Du|(U)=\sup\left\{\int_Uu\,\operatorname{div}\phi\,dx:
 A measurable set has **finite perimeter** in $U$ if its locally integrable
 indicator has a distributional gradient of finite total variation there; its
 perimeter is $P(E,U)=|D1_E|(U)$. No finite-volume assumption on $E$ is imposed.
+Section 37 states the theory of $BV$ functions and sets of finite perimeter:
+the area and coarea formulas, compactness and approximation, De Giorgi's
+structure theorem, slicing, the $BV$ Sobolev inequality, and traces
+(SYNOPSIS37, items 13–14, 23–26, 30–32, 36).
 
-* **44. Lower semicontinuity.** If $u_j\to u$ in $L^1_{\mathrm{loc}}(U)$, then
-  $|Du|(U)\leq\liminf_j|Du_j|(U)$, with infinite variation allowed.
-* **45. Smooth approximation.** Every $u\in BV(U)$ admits smooth
-  $u_j\in C^\infty(U)\cap BV(U)$ with $u_j\to u$ in $L^1(U)$ and
-  $\int_U|\nabla u_j|\,dx\to|Du|(U)$.
-* **46. Compactness.** On a bounded Lipschitz domain, bounded subsets of
-  $BV(U)$ are relatively compact in $L^1(U)$. Local versions hold on arbitrary
-  open sets with uniform local bounds.
-* **47. $BV$ coarea.** For real $u\in BV(U)$,
-  $$|Du|(U)=\int_{-\infty}^{\infty}P(\{u>t\},U)\,dt.$$
-  Thus almost all superlevel sets have finite perimeter.
-* **48. De Giorgi's structure theorem.** Let $E$ have locally finite perimeter
-  in $\mathbb R^n$ and let $\partial^*E$ be its reduced boundary, the set of
-  points $x$ of $\operatorname{supp}|D1_E|$ where
-  $\nu_E(x)=-\lim_{r\downarrow0}D1_E(B(x,r))/|D1_E|(B(x,r))$ exists with
-  $|\nu_E(x)|=1$. Then $\partial^*E$ is countably $(n-1)$-rectifiable,
-  $|D1_E|=\mathcal H^{n-1}\llcorner\partial^*E$, and
-  $$\int_E\operatorname{div}\phi\,dx=\int_{\partial^*E}\phi\cdot\nu_E
-    \,d\mathcal H^{n-1}\qquad(\phi\in C^1_c(\mathbb R^n;\mathbb R^n)).$$
-  The measure-theoretic boundary (points of density neither $0$ nor $1$) differs
-  from $\partial^*E$ by an $\mathcal H^{n-1}$-null set (Federer).
 * **49. Approximate differentiability and decomposition in $BV$.** Every $BV$
   function is approximately differentiable almost everywhere, and its
   approximate gradient $\nabla u$ is the density of the absolutely continuous
@@ -295,10 +304,6 @@ perimeter is $P(E,U)=|D1_E|(U)$. No finite-volume assumption on $E$ is imposed.
   one-sided approximate limits $u^\pm$ and normal $\nu_u$, and the Cantor part
   $D^cu$ vanishes on Borel sets of $\sigma$-finite $\mathcal H^{n-1}$ measure.
   $|Du|$ vanishes on $\mathcal H^{n-1}$-null sets.
-* **50. Slicing.** For $u\in BV(U)$, restrictions to almost every line parallel
-  to a fixed coordinate axis are locally one-dimensional $BV$ functions.
-  Integrating their variations over transverse coordinates gives the variation
-  of the corresponding directional derivative measure.
 
 ## Nonabsolute integration and reconstruction of primitives
 
@@ -343,49 +348,15 @@ $\sup_{x,y\in J}|F(x)-F(y)|$.
 ## Extension, traces, and further fine properties
 
 A **first-order jet** on a closed set $E$ is prescribed value and derivative
-data $(f,p)$ with $p:E\to\mathbb R^n$. For $1\leq p<\infty$, the
-**Sobolev $p$-capacity** of $E\subseteq\mathbb R^n$ is the infimum of
-$\|v\|_{W^{1,p}(\mathbb R^n)}^p$ over Sobolev functions $v$ that are at least
-one almost everywhere on some open neighborhood of $E$. Small capacity is a
-stronger notion of exceptional size than small Lebesgue measure. Traces below
-are defined by approach from inside the domain, not by arbitrary values assigned
-on its boundary to an $L^1$ representative.
+data $(f,p)$ with $p:E\to\mathbb R^n$. Traces of $BV$ functions are stated in
+Section 37 (SYNOPSIS37, item 26), and Sobolev capacity and quasicontinuity in
+Section 26 (SYNOPSIS26, item 31).
 
 * **56. Whitney's $C^1$ extension theorem.** For compact $E\subseteq\mathbb R^n$,
   continuous data $f:E\to\mathbb R$, $p:E\to\mathbb R^n$ extend to
   $F\in C^1(\mathbb R^n)$ with $F|_E=f$, $\nabla F|_E=p$ if and only if
   $$f(y)-f(x)-p(x)\cdot(y-x)=o(|y-x|)$$
   uniformly for $x,y\in E$ as $|x-y|\to0$.
-* **57. Lipschitz control of exceptional sets.** An $L$-Lipschitz map satisfies
-  $\mathcal H^s(f(E))\leq L^s\mathcal H^s(E)$ for $s>0$. In particular,
-  Lipschitz maps $\mathbb R^n\to\mathbb R^n$ have property $(N)$. This
-  measure control, together with almost-everywhere differentiability, is a
-  principal reason area and change-of-variables formulas extend beyond $C^1$ maps.
-* **58. Length and the Banach indicatrix.** An absolutely continuous curve
-  $\gamma:[a,b]\to\mathbb R^m$ is rectifiable and
-  $$\operatorname{length}(\gamma)=\int_a^b|\gamma'(t)|dt.$$
-  For every continuous real $F$ on $[a,b]$, Banach's indicatrix theorem gives
-  $$\operatorname{Var}(F)=\int_{\mathbb R}\#\{t\in[a,b]:F(t)=y\}\,dy,$$
-  both sides possibly infinite: total variation counts level crossings with
-  multiplicity.
-* **59. Sobolev inequality for variation.** If $n>1$ and
-  $u\in BV(\mathbb R^n)$, then
-  $\|u\|_{L^{n/(n-1)}}\leq C_n|Du|(\mathbb R^n)$. Taking $u=1_E$ yields
-  the Euclidean isoperimetric inequality for finite-volume finite-perimeter
-  sets. On a ball, subtracting the average gives the corresponding $BV$
-  Poincaré inequality.
-* **60. Trace and Gauss–Green for $BV$.** On a bounded Lipschitz domain,
-  $u\in BV(U)$ has an interior trace $\operatorname{Tr}u\in
-  L^1(\partial U,\mathcal H^{n-1})$. For $\phi$ continuously differentiable
-  near $\overline U$,
-  $$\int_Uu\,\operatorname{div}\phi\,dx+\int_U\phi\cdot dDu
-    =\int_{\partial U}\operatorname{Tr}u\,\phi\cdot\nu\,d\mathcal H^{n-1},$$
-  where $\nu$ is the outward unit normal defined almost everywhere on the boundary.
-* **61. Quasicontinuity of Sobolev functions.** Every
-  $u\in W^{1,p}(\mathbb R^n)$, $1\leq p<\infty$, has a representative such
-  that for every $\varepsilon>0$ there is an open $G$ of $p$-capacity less than
-  $\varepsilon$ for which $u|_{\mathbb R^n\setminus G}$ is continuous.
-  The quasicontinuous representative is unique outside a set of capacity zero.
 
 ## Reference guide
 
@@ -398,8 +369,9 @@ behavior of rectangular bases. Thomson's books treat the same circle of ideas.
 
 Evans–Gariepy, *Measure Theory and Fine Properties of Functions*, organizes
 the Euclidean sequence of covering, differentiation, Lipschitz, area/coarea,
-Sobolev, and $BV$ theory, including the structure of sets of finite perimeter
-(Section 5.7) and Aleksandrov's theorem (Section 6.4); Federer provides the
+Sobolev, and $BV$ theory, including Aleksandrov's theorem (Section 6.4); the
+several-variable $BV$ and area/coarea statements are now in Section 37.
+Federer provides the
 larger geometric framework, and Ambrosio–Fusco–Pallara the standard account of
 the Federer–Vol'pert decomposition. Differentiability of Lipschitz maps on
 Banach spaces is the subject of Lindenstrauss–Preiss–Tišer.
@@ -408,9 +380,15 @@ consulted for measure differentiation and approximate continuity; its table of
 contents supplies only orientation for the later chapters. The classical
 one-dimensional overlap can also be read in Folland, Chapter 3, and
 Stein–Shakarchi, Chapter 3, from Section 04. Smooth calculus is represented
-in Section 05 by Makarov–Podkorytov and Krantz–Parks. The nonabsolute-integral
+in the bibliography by Makarov–Podkorytov, *Smooth Functions and Maps*, and
+Krantz–Parks, *The Implicit Function Theorem*, both listed in Section 35, not
+Section 05. The nonabsolute-integral
 part records the common theory treated comparatively by Saks, Henstock, and
 Gordon, rather than the specialized extensions of any single text.
+Approximate continuity of derivatives (result 63) is in Bruckner, Chapters II
+and III; the rising sun lemma in Stein–Shakarchi, Chapter 3; Stepanov's theorem
+in Federer, 3.1.9, and Heinonen's *Lectures on Lipschitz Analysis*; and Stein's
+maximal principle in Garsia, *Topics in Almost Everywhere Convergence*.
 
 Local source anchors:
 

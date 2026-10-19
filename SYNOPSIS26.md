@@ -1,9 +1,11 @@
 # Synopsis: Sobolev spaces, smoothness scales, and interpolation
 
 Part of the [mathematical synopsis series](SYNOPSIS.md).
+[Bibliographical scope and references](CKMA-bib.md#ckma-26);
+[MSC2020 correspondence and cross-subject index](CKMA-MSC2020.md).
 
 This synopsis selects the recurring core of Section 26 of
-[CKMA-bib.md](CKMA-bib.md). It treats
+[CKMA-bib.md](CKMA-bib.md#ckma-26). It treats
 weak derivatives, extension and traces, compactness and capacity, fractional
 smoothness, dyadic scales, interpolation, and the principal generalized
 integrability spaces. Inequalities also appearing in Sections 11 and 14 are
@@ -35,10 +37,6 @@ $1<p<\infty$ explicitly. Spaces are inhomogeneous unless marked otherwise.
   on relatively compact subdomains, and derivatives commute with convolution.
   On all of $\mathbb R^d$, cutoffs followed by mollification approximate
   every $W^{m,p}$ function by compactly supported smooth functions.
-* **5. Absolute continuity on lines.** $u\in W^{1,p}$ exactly when it
-  has representatives absolutely continuous on almost every coordinate
-  line in interior boxes, with line derivatives and $u$ in $L^p$.
-  These line derivatives are the weak partial derivatives.
 * **6. One-dimensional characterization.** On a bounded interval,
   $W^{1,p}$ functions have absolutely continuous representatives and
   $u(t)=u(a)+\int_a^tu'(s)ds$. Conversely an absolutely continuous
@@ -65,7 +63,9 @@ $1<p<\infty$ explicitly. Spaces are inhomogeneous unless marked otherwise.
   $C=\|\nabla u\|_p$ is admissible. In
   particular $W^{1,\infty}_{\rm loc}$ consists of the locally Lipschitz
   functions, which are differentiable almost everywhere (Rademacher).
-  For $p=1$ the difference condition characterizes $BV$ instead.
+  For $p=1$ the difference condition characterizes $BV$ instead, the
+  $L^1$ functions whose distributional gradient is a finite Radon measure
+  (Section 37).
 * **12. Dual representation.** For $1<p<\infty$, every functional on
   $W_0^{m,p}(\Omega)$ is
   $u\mapsto\sum_{|\alpha|\leq m}\int f_\alpha\partial^\alpha u$
@@ -89,11 +89,14 @@ $1<p<\infty$ explicitly. Spaces are inhomogeneous unless marked otherwise.
 * **16. Critical embedding.** On bounded Lipschitz domains,
   $W^{1,d}\hookrightarrow L^q$ for every finite $q$.
   For $d\geq2$ it does not embed into $L^\infty$; the endpoint
-  exponential integrability is given by Moser–Trudinger.
+  exponential integrability is Trudinger's Orlicz embedding (81), with
+  the sharp Moser constant in SYNOPSIS14, item 8.
 * **17. Morrey embedding.** If $p>d$, then
   $W^{1,p}(\Omega)\hookrightarrow C^{0,1-d/p}(\overline\Omega)$
   on bounded Lipschitz domains. Higher-order versions apply after
   differentiating when the remaining Sobolev order exceeds $d/p$.
+  For compactly supported functions on $\mathbb R^d$ the Hölder seminorm
+  is bounded by $C\|\nabla u\|_p$.
 * **18. Rellich–Kondrachov compactness.** On bounded Lipschitz domains,
   $W^{1,p}\hookrightarrow L^q$ is compact for $q<p^*$ when $p<d$,
   and for every finite $q$ when $p=d$. For $p>d$ it is compact into
@@ -101,15 +104,21 @@ $1<p<\infty$ explicitly. Spaces are inhomogeneous unless marked otherwise.
 * **19. Poincaré inequalities.** On bounded connected Lipschitz domains,
   $\|u-u_\Omega\|_p\leq C\|\nabla u\|_p$.
   On $W_0^{1,p}$, $\|u\|_p\leq C\|\nabla u\|_p$ for every bounded
-  open $\Omega$.
+  open $\Omega$. Connectedness is essential for the mean-value form. For
+  $u\in W_0^{1,p}(\Omega)$ the bound $\|u\|_p\leq C\|\nabla u\|_p$ holds
+  on any open set of finite measure, indeed on any open set bounded in one
+  direction, with no regularity or connectedness.
 * **20. Lorentz refinement.** For $1<p<d$,
-  $\|u\|_{L^{p^*,p}(\mathbb R^d)}\leq C\|\nabla u\|_p$.
+  $\|u\|_{L^{p^*,p}(\mathbb R^d)}\leq C\|\nabla u\|_p$, with the
+  Lorentz spaces $L^{p,q}$ of 60.
   At $p=1$, $W^{1,1}$ embeds into $L^{d/(d-1),1}$ for $d>1$.
 * **21. Gagliardo–Nirenberg inequality.** For $1\leq p<d$,
   $1\leq r\leq q\leq p^*$ and
   $1/q=\theta(1/p-1/d)+(1-\theta)/r$,
   $\|u\|_q\leq C\|\nabla u\|_p^\theta\|u\|_r^{1-\theta}$
   for smooth compactly supported $u$, and by density wherever the norms are finite.
+  Higher-derivative versions extend this interpolation between smoothness
+  and integrability under the corresponding scaling restrictions.
 * **22. Sobolev algebra theorem.** For integer $m$ and $mp>d$,
   $W^{m,p}(\mathbb R^d)$ is a Banach algebra under pointwise
   multiplication, up to an equivalent norm; the same holds on bounded
@@ -118,6 +127,15 @@ $1<p<\infty$ explicitly. Spaces are inhomogeneous unless marked otherwise.
   $L^p(\mathbb R^d)$, $p<\infty$, is relatively compact exactly when
   translations tend uniformly to zero in norm and its $L^p$ mass is
   uniformly small outside large balls.
+* **75. Ehrling–Lions lemma and Aubin–Lions compactness.** Let $X,Y,Z$ be
+  Banach spaces with $X$ compactly embedded in $Y$ and $Y$ continuously
+  embedded in $Z$. For every $\varepsilon>0$ there is $C_\varepsilon$ with
+  $\|u\|_Y\leq\varepsilon\|u\|_X+C_\varepsilon\|u\|_Z$ for $u\in X$;
+  for example $\|u\|_{W^{1,p}}\leq\varepsilon\|u\|_{W^{2,p}}+
+  C_\varepsilon\|u\|_p$ on bounded Lipschitz domains. For $1\leq q<\infty$,
+  a set of functions bounded in $L^q(0,T;X)$ whose time derivatives are
+  bounded in $L^1(0,T;Z)$ is relatively compact in $L^q(0,T;Y)$
+  (Aubin–Lions; Simon).
 
 ## Traces and zero boundary values
 
@@ -137,19 +155,49 @@ $1<p<\infty$ explicitly. Spaces are inhomogeneous unless marked otherwise.
   of orders $0,\ldots,m-1$.
 * **27. Zero extension.** If $u\in W_0^{m,p}(\Omega)$, extension by
   zero belongs to $W^{m,p}(\mathbb R^d)$ and commutes with weak
-  derivatives. For first order on Lipschitz domains, the converse holds
-  for $1<p<\infty$.
+  derivatives. For first order on bounded Lipschitz domains, the converse
+  holds for $1\leq p<\infty$.
 * **28. Green formula with traces.** On bounded Lipschitz domains,
   $\int_\Omega(u\partial_jv+v\partial_ju)=
   \int_{\partial\Omega}\gamma u\,\gamma v\,n_j$
   for $u\in W^{1,p}$, $v\in W^{1,p'}$, $1<p<\infty$.
-* **29. Trace Sobolev exponent.** For $1<p<d$,
+* **29. Trace Sobolev exponent.** For bounded Lipschitz $\Omega$ and $1<p<d$,
   $W^{1,p}(\Omega)\hookrightarrow L^{p(d-1)/(d-p)}(\partial\Omega)$.
   The trace embedding is compact at smaller finite exponents.
+  On the half-space the homogeneous form
+  $\|u(\cdot,0)\|_{L^{p(d-1)/(d-p)}(\mathbb R^{d-1})}\leq
+  C\|\nabla u\|_{L^p(\mathbb R^d_+)}$ holds for smooth functions
+  compactly supported up to the boundary.
 * **30. Hardy inequality.** For bounded Lipschitz $\Omega$ and
   $1<p<\infty$, $\|u/\operatorname{dist}(\cdot,\partial\Omega)\|_p
   \leq C\|\nabla u\|_p$ for $u\in W_0^{1,p}(\Omega)$. On a half-space
   or a convex domain the sharp constant is $p/(p-1)$.
+* **76. Negative-order spaces and zero boundary values.** For open
+  $\Omega$ and $s\geq0$, $H^s_0(\Omega)$ is the closure of
+  $C_c^\infty(\Omega)$ in $H^s(\Omega)$ (restrictions of $H^{s,2}$
+  functions) and $H^{-s}(\Omega)$ is its dual; with $L^2$ as pivot,
+  $H^s_0\hookrightarrow L^2\hookrightarrow H^{-s}$ densely, and for integer
+  $s$ this agrees with 12. On bounded Lipschitz domains
+  $C_c^\infty(\Omega)$ is dense in $H^s(\Omega)$ exactly when
+  $s\leq1/2$, so then $H^s_0=H^s$, and for $0\leq s<1/2$ extension by zero
+  is bounded $H^s(\Omega)\to H^s(\mathbb R^d)$. On smooth domains, for
+  $s>1/2$ with $s-1/2$ not an integer, $H^s_0(\Omega)$ consists of the
+  $u\in H^s$ with $\partial_n^ju=0$ on $\partial\Omega$ for
+  $0\leq j<s-1/2$ (Lions–Magenes).
+* **77. Lions–Magenes space and interpolation of $H^s_0$.** On a bounded
+  smooth domain, $[L^2(\Omega),H_0^1(\Omega)]_\theta=
+  (L^2(\Omega),H_0^1(\Omega))_{\theta,2}$ equals $H^\theta(\Omega)$ for
+  $0<\theta<1/2$ and $H^\theta_0(\Omega)$ for $1/2<\theta<1$. At
+  $\theta=1/2$ it is
+  $H^{1/2}_{00}(\Omega)=\{u\in H^{1/2}(\Omega):\rho^{-1/2}u\in L^2(\Omega)\}$,
+  $\rho=\operatorname{dist}(\cdot,\partial\Omega)$, normed by
+  $(\|u\|_{H^{1/2}}^2+\|\rho^{-1/2}u\|_2^2)^{1/2}$. Equivalently it consists
+  of the $u$ whose extension by zero lies in $H^{1/2}(\mathbb R^d)$. It is
+  dense in $H^{1/2}(\Omega)=H^{1/2}_0(\Omega)$ with a strictly stronger
+  norm. For a smooth relatively open piece $\Gamma_0$ of $\partial\Omega$,
+  $H^{1/2}_{00}(\Gamma_0)$ is the space of traces on $\Gamma_0$ of $H^1$
+  functions vanishing on $\partial\Omega\setminus\overline{\Gamma_0}$, the
+  data space of mixed boundary problems.
 
 ## Capacity and fine representatives
 
@@ -161,6 +209,7 @@ over smooth functions at least one near a compact set. A property holds
 * **31. Quasicontinuity.** Every $W^{1,p}(\mathbb R^d)$ function has
   a representative continuous outside an open set of arbitrarily small
   $C_{1,p}$ capacity. This representative is unique quasi-everywhere.
+  With $C_{1,1}$ defined in the same way, this holds also for $p=1$.
 * **32. Capacitary convergence.** From convergence in $W^{1,p}$ one
   can extract a subsequence of quasicontinuous representatives converging
   pointwise quasi-everywhere.
@@ -168,11 +217,6 @@ over smooth functions at least one near a compact set. A property holds
   $\Omega$, $u\in W_0^{1,p}(\Omega)$ exactly when it is the restriction
   of a global $W^{1,p}$ function whose quasicontinuous representative
   vanishes quasi-everywhere on $\mathbb R^d\setminus\Omega$.
-* **34. Approximate differentiability.** $W^{1,1}_{\rm loc}$ functions
-  are approximately differentiable almost everywhere, and their approximate
-  gradients agree with weak gradients. For $p>d$, $W^{1,p}_{\rm loc}$
-  functions are classically differentiable almost everywhere; for
-  $d\geq2$ and $p\leq d$ continuous representatives need not exist.
 * **35. Lusin approximation.** On a bounded Lipschitz domain, a Sobolev
   function with finite $p$ can be approximated in $W^{1,p}$ by Lipschitz
   functions agreeing with it outside sets whose measure tends to zero.
@@ -230,10 +274,6 @@ and Triebel–Lizorkin assertions use $1<p<\infty$, unless otherwise stated.
 * **43. Dyadic norm independence.** Different admissible dyadic partitions
   give equivalent norms and the same spaces. For real $s$, the indicated
   Banach ranges are complete spaces of tempered distributions.
-* **44. Bernstein inequality.** If the Fourier support is in a ball of
-  radius $C2^j$, then for $1\leq p\leq r\leq\infty$,
-  $\|\partial^\alpha u\|_r\leq C_\alpha
-  2^{j(|\alpha|+d(1/p-1/r))}\|u\|_p$.
 * **45. Difference characterization.** For $0<s<1$ and finite $p$,
   $W^{s,p}=B^s_{p,p}$. More generally differences of integer order
   $m>s>0$, integrated against $|h|^{-sq-d}dh$, characterize
@@ -267,6 +307,14 @@ and Triebel–Lizorkin assertions use $1<p<\infty$, unless otherwise stated.
   a product estimate controlled by the two $L^\infty$ norms and Besov
   norms when $s>0$. Hence $B^s_{p,q}$ is an algebra for $s>d/p$,
   and at $s=d/p>0$ when $q=1$.
+* **78. Endpoint Triebel–Lizorkin identifications.** With the
+  quasi-Banach range $0<p<\infty$ allowed, $F^0_{p,2}=h^p$, Goldberg's
+  local Hardy space, with equivalent quasinorms; thus $F^0_{p,2}=L^p$ for
+  $1<p<\infty$ (Littlewood–Paley), while $F^0_{1,2}=h^1$ is strictly smaller
+  than $L^1$. With $F^s_{\infty,q}$ defined by the Carleson-type
+  modification of the norm (Frazier–Jawerth), $F^0_{\infty,2}=\mathrm{bmo}$,
+  the dual of $h^1$. The homogeneous versions give $H^p$ and BMO
+  (Section 27).
 
 ## Real and complex interpolation
 
@@ -300,10 +348,20 @@ values in $X_0$ and $X_1$, with the infimum boundary norm.
 * **58. Riesz–Thorin theorem.** Bounds $T:L^{p_i}\to L^{q_i}$
   interpolate with reciprocal exponents affine in $\theta$ and norm
   at most $M_0^{1-\theta}M_1^\theta$, including the standard infinite
-  endpoint exponents.
+  endpoint exponents. This constant requires complex scalars; for real
+  scalars and $p_i>q_i$ it can fail, and $2M_0^{1-\theta}M_1^\theta$ holds.
+  Precisely: for complex $L^p$ spaces on $\sigma$-finite measure spaces and
+  a linear operator $T$ on $L^{p_0}+L^{p_1}$ with
+  $\|Tf\|_{q_j}\leq M_j\|f\|_{p_j}$, $j=0,1$, exponents in $[1,\infty]$,
+  $0<\theta<1$, $p_\theta^{-1}=(1-\theta)p_0^{-1}+\theta p_1^{-1}$ and
+  $q_\theta^{-1}=(1-\theta)q_0^{-1}+\theta q_1^{-1}$, one has
+  $\|Tf\|_{q_\theta}\leq M_0^{1-\theta}M_1^\theta\|f\|_{p_\theta}$.
 * **59. Marcinkiewicz interpolation.** A sublinear operator of weak
-  types $(p_0,p_0)$ and $(p_1,p_1)$, $1\leq p_0<p_1<\infty$,
-  is strongly bounded on $L^p$ for $p_0<p<p_1$.
+  types $(p_0,p_0)$ and $(p_1,p_1)$, $1\leq p_0<p_1\leq\infty$,
+  is strongly bounded on $L^p$ for $p_0<p<p_1$; weak type $(\infty,\infty)$
+  means boundedness on $L^\infty$. Constants depend only on the exponents
+  and endpoint bounds. In particular weak type $(1,1)$ together with
+  boundedness on $L^\infty$ gives strong type $(p,p)$ for every $1<p<\infty$.
 * **60. Lorentz interpolation.** For $1\leq p_0<p_1\leq\infty$,
   $(L^{p_0},L^{p_1})_{\theta,q}=L^{p,q}$,
   $1/p=(1-\theta)/p_0+\theta/p_1$. Here
@@ -327,6 +385,29 @@ values in $X_0$ and $X_1$, with the infimum boundary norm.
   corresponding real interpolation spaces for $0<\theta<1$,
   $1\leq q<\infty$. Lions and Peetre proved this when the two source
   spaces or the two target spaces coincide; the general case is Cwikel's.
+* **79. Stein's interpolation of analytic families.** Let $T_z$,
+  $0\leq\operatorname{Re}z\leq1$, be linear maps from simple functions on a
+  $\sigma$-finite space to measurable functions on another, such that for
+  simple $f,g$ the function $z\mapsto\int(T_zf)g$ is continuous on the
+  closed strip, holomorphic inside, and of admissible growth
+  $\log|\int(T_zf)g|\leq Ce^{a|\operatorname{Im}z|}$ with $a<\pi$.
+  If $\|T_{it}f\|_{q_0}\leq M_0(t)\|f\|_{p_0}$ and
+  $\|T_{1+it}f\|_{q_1}\leq M_1(t)\|f\|_{p_1}$ with
+  $\log M_j(t)\leq Ce^{b|t|}$, $b<\pi$, then
+  $\|T_\theta f\|_{q_\theta}\leq M_\theta\|f\|_{p_\theta}$ for
+  $0<\theta<1$, exponents as in 58, with $M_\theta$ depending only on
+  $\theta$ and $M_0,M_1$ (Stein). It handles fractional integrals and
+  Bochner–Riesz and restriction endpoints.
+* **80. Complex reiteration and duality.** If $X_0\cap X_1$ is dense in
+  $X_0$ and $X_1$, then for $0\leq\theta_0,\theta_1\leq1$ and $0<\eta<1$,
+  $[[X_0,X_1]_{\theta_0},[X_0,X_1]_{\theta_1}]_\eta
+  =[X_0,X_1]_{(1-\eta)\theta_0+\eta\theta_1}$ with equivalent norms; if in
+  addition $X_0$ or $X_1$ is reflexive, $[X_0,X_1]_\theta^*
+  =[X_0^*,X_1^*]_\theta$ with equal norms (Calderón). For
+  $\theta_0\neq\theta_1$, real interpolation between complex
+  interpolation spaces gives
+  $([X_0,X_1]_{\theta_0},[X_0,X_1]_{\theta_1})_{\eta,q}
+  =(X_0,X_1)_{(1-\eta)\theta_0+\eta\theta_1,q}$.
 
 ## Orlicz and variable-exponent spaces
 
@@ -374,12 +455,20 @@ Write $p_-=\operatorname{ess\,inf}p$, $p_+=\operatorname{ess\,sup}p$.
   domain, and compactly supported smooth functions generate its
   zero-boundary space. Arbitrary measurable exponents need not admit
   the same density and approximation properties.
+* **81. Trudinger's Orlicz embedding.** For bounded $\Omega\subset\mathbb R^d$,
+  $d\geq2$, $W_0^{1,d}(\Omega)$ embeds continuously into the Orlicz space
+  $L^\Phi(\Omega)$ with $\Phi(t)=\exp(t^{d/(d-1)})-1$, and on bounded
+  Lipschitz domains so does $W^{1,d}(\Omega)$. Among Orlicz spaces this
+  target is optimal (Trudinger). Moser's sharp exponential constant is in
+  SYNOPSIS14, item 8.
 
 ## Morrey and Campanato descriptions
 
 The **Morrey norm** on $\mathbb R^d$ is
 $\sup_{B(x,r)}r^{-\lambda/p}(\int_{B(x,r)}|f|^p)^{1/p}$,
-$0\leq\lambda\leq d$. A **Campanato seminorm** measures oscillation:
+$0\leq\lambda\leq d$; the **Morrey space** $\mathcal M^p_\lambda$ consists of
+the $f$ for which it is finite, so $\mathcal M^p_0=L^p$ and
+$\mathcal M^p_d=L^\infty$. A **Campanato seminorm** measures oscillation:
 $\sup_{B(x,r)}r^{-\alpha}(\fint_{B(x,r)}|f-f_B|^p)^{1/p}$.
 These spaces describe local size and oscillation separately from ordinary
 global integrability.
@@ -391,6 +480,21 @@ global integrability.
 * **74. BMO endpoint.** At $\alpha=0$, the Campanato seminorms for all
   finite $p\geq1$ are equivalent to the BMO seminorm, by the
   John–Nirenberg exponential-integrability theorem.
+* **82. Morrey's Dirichlet growth theorem.** Let $u\in W^{1,1}(\Omega)$
+  and $0<\alpha\leq1$. If $\int_{B_r}|\nabla u|\leq Kr^{d-1+\alpha}$ for
+  every ball $B_r\subset\Omega$, then $u\in C^{0,\alpha}(\Omega)$ and
+  $\operatorname{osc}_{B_r}u\leq C(d,\alpha)Kr^\alpha$ for such balls. By
+  Hölder's inequality the hypothesis follows from
+  $\int_{B_r}|\nabla u|^p\leq K^pr^{d-p+\alpha p}$, that is, from
+  $\nabla u\in\mathcal M^p_{d-p+\alpha p}$; this is the route from
+  Caccioppoli-type decay estimates to Hölder regularity.
+* **83. Adams' Riesz potential theorem.** For $0<\alpha<d$,
+  $0\leq\lambda<d$, and $1<p<(d-\lambda)/\alpha$, the Riesz potential
+  $I_\alpha f(x)=\int f(y)|x-y|^{\alpha-d}dy$ maps
+  $\mathcal M^p_\lambda$ boundedly into $\mathcal M^q_\lambda$ with
+  $1/q=1/p-\alpha/(d-\lambda)$ (Adams). For $\lambda=0$ this is the
+  Hardy–Littlewood–Sobolev theorem. It improves the integrability gain of
+  the earlier Spanne–Peetre estimate.
 
 ## Reference guide
 
@@ -400,6 +504,8 @@ independently cover the Sobolev and interpolation foundation; Maz'ya
 supplies the capacity and fine-property viewpoint. Lunardi gives the
 abstract interpolation and trace methods. Triebel and Sawano develop the
 dyadic scales, lifting, differences, and sharp parameter distinctions.
+Adams (*Morrey Spaces*) and Sawano–Di Fazio–Hakim develop the Morrey
+scale and the action of potentials on it.
 Cruz-Uribe–Fiorenza supplies variable Lebesgue methods, alongside the
 variable Sobolev and generalized Orlicz references in the bibliographies.
 Quasi-Banach ranges, highly irregular extension domains, and full multiplier
@@ -412,4 +518,5 @@ Local source copies consulted:
 * [Lunardi, Interpolation Theory](References/Lunardi2018InterpolationTheory-SpringerLNSNS16.pdf).
 * [Triebel, Theory of Function Spaces](References/Triebel1983TheoryFunctionSpaces1-BirkhäuserMBC.pdf).
 * [Maz'ya, Sobolev Spaces](References/Mazya2011SobolevSpacesApplicationsEllipticPDE-SpringerGL342.pdf).
+* [Adams, Morrey Spaces](References/Adams2015MorreySpaces-Birkhauser.LNANHA.pdf).
 * [Cruz-Uribe–Fiorenza, Variable Lebesgue Spaces](References/CruzUribeFiorenza2013VariableLebesgueSpaces-Birkhauser.ANHA.pdf).

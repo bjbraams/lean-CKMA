@@ -1,14 +1,22 @@
 # Synopsis: Univalent functions, conformal mapping, and extremal methods
 
 Part of the [mathematical synopsis series](SYNOPSIS.md).
+[Bibliographical scope and references](CKMA-bib.md#ckma-43);
+[MSC2020 correspondence and cross-subject index](CKMA-MSC2020.md).
 
 This synopsis selects recurring material from Section 43 of
-[CKMA-bib.md](CKMA-bib.md).
-It develops quantitative univalence, extremal length and capacity, boundary
-geometry and harmonic measure, explicit mapping, and Loewner evolution.
+[CKMA-bib.md](CKMA-bib.md#ckma-43).
+It develops quantitative univalence, multivalent growth, extremal length and
+capacity, boundary geometry and harmonic measure, explicit mapping, circle
+packing, and Loewner evolution.
 The first-course mapping theorems are recalled where their quantitative
 versions are needed. Quasiconformal deformation and Teichmüller theory
 are treated in Section 44.
+
+Random conformal geometry is organised within [08B](CKMA-bib.md#ckma-08b),
+metric and fractal geometry in [39A](CKMA-bib.md#ckma-39a), and quasiconformal
+deformation and surfaces in Section 44. The present selection emphasises
+conformal maps and extremal methods.
 
 A function is **univalent** if it is holomorphic and injective.
 Let $\mathcal S$ consist of univalent
@@ -46,13 +54,41 @@ All conformal maps preserve orientation.
 * **9. A coefficient functional.** The area theorem applied to
   $1/f(1/z)$ gives $|a_3-a_2^2|\leq1$.
   This illustrates how exterior area controls nonlinear coefficient expressions.
+* **33. Grunsky criterion.** For a holomorphic exterior map
+  $g(z)=z+b_0+\cdots$, define $b_{mn}$ by
+  $\log[(g(z)-g(w))/(z-w)]=-\sum_{m,n\geq1}b_{mn}z^{-m}w^{-n}$
+  near infinity. It is univalent on $|z|>1$ exactly when
+  $|\sum\sqrt{mn}\,b_{mn}x_mx_n|\leq\sum|x_n|^2$ for every
+  finite complex sequence. For univalent $g$ the matrix
+  $(\sqrt{mn}\,b_{mn})$ is in fact a contraction on $\ell^2$; its first
+  row recovers the area theorem.
+* **73. Fekete–Szegő inequality.** For $f\in\mathcal S$ and
+  $0\leq\lambda<1$, $|a_3-\lambda a_2^2|\leq1+2e^{-2\lambda/(1-\lambda)}$,
+  sharp for every such $\lambda$; as $\lambda\uparrow1$ this recovers
+  item 9. In particular $|a_3|\leq3$.
 * **10. Compactness of $\mathcal S$.** The normalized univalent
   class is compact for locally uniform convergence. Every continuous
   coefficient functional consequently attains its extrema on it.
-* **11. Area and coefficients.** For $0<r<1$,
+* **11. Area and coefficients.** For univalent
+  $f(z)=\sum_{n\geq1}a_nz^n$ in $\mathbb D$ (for example $f\in\mathcal S$), $0<r<1$ and $B_r=\{|z|<r\}$,
   $\operatorname{area}f(B_r)=\pi\sum_{n\geq1}n|a_n|^2r^{2n}$.
   Letting $r\uparrow1$ relates finite image area to weighted
   square summability of coefficients.
+* **74. Hayman's regularity theorem.** For $f\in\mathcal S$ the limit
+  $\alpha=\lim_{r\uparrow1}(1-r)^2M(r,f)$ exists, $0\leq\alpha\leq1$,
+  with $\alpha=1$ only for Koebe rotations, and $|a_n|/n\to\alpha$.
+  If $\alpha>0$ there is a unique radius $\arg z=\theta_0$ of greatest
+  growth, along which $(1-r)^2|f(re^{i\theta_0})|\to\alpha$.
+* **80. Integral means spectrum and Brennan's conjecture.** For a
+  conformal map $f$ of $\mathbb D$ into $\mathbb C$ set
+  $\beta_f(t)=\limsup_{r\uparrow1}\log\int_{\mathbb T}|f'(r\zeta)|^tdm
+  /\log\frac1{1-r}$. It is convex in $t$; $\beta_f(t)\leq3t-1$ for
+  $t\geq2/5$, sharp for the Koebe function (Feng–MacGregor), and
+  $\beta_f(-1)<0.601$. Brennan's conjecture $\beta_f(-2)\leq1$ is
+  equivalent to $\int_\Omega|g'|^qdA<\infty$ for $4/3<q<4$ whenever $g$
+  maps a simply connected proper subdomain $\Omega\subset\mathbb C$
+  conformally onto $\mathbb D$; Brennan proved this for
+  $4/3<q<3+\delta$ with some $\delta>0$.
 
 ## Geometric subclasses, positive real part, and subordination
 
@@ -92,6 +128,27 @@ $f=g\circ\omega$ for a disk self-map $\omega$ fixing zero.
   disk and $f(z)=\sum a_nz^n$, then
   $\sum|a_n|r^n\leq1$ for $r\leq1/3$.
   The universal radius $1/3$ cannot be increased.
+
+## Multivalent functions
+
+A holomorphic $f$ on $\mathbb D$ is **$p$-valent** if it takes no value more
+than $p$ times, and **(areally) mean $p$-valent**, $p>0$, if for every
+$R>0$ the average over $|w|<R$, with respect to area, of the number of
+roots of $f(z)=w$ is at most $p$. Write $f(z)=\sum_{n\geq0}a_nz^n$ and
+$\mu_p=\sum_{\nu\leq p}|a_\nu|$.
+
+* **75. Growth of mean $p$-valent functions.** A mean $p$-valent
+  function has at most $p$ zeros in $\mathbb D$ and satisfies
+  $M(r,f)\leq A(p)\mu_p(1-r)^{-2p}$ (Cartwright for $p$-valent,
+  Spencer for mean $p$-valent functions). The limit
+  $\alpha=\lim_{r\uparrow1}(1-r)^{2p}M(r,f)$ exists and is finite, and
+  for $\alpha>0$ there is a unique radius of greatest growth (Hayman).
+  For $p=1$ this gives item 74.
+* **79. Coefficients of mean $p$-valent functions.** A mean $p$-valent
+  $f$ satisfies $|a_n|\leq A(p)\mu_pn^{2p-1}$ for $p>1/4$ (Biernacki,
+  Spencer), $|a_n|\leq A\mu_pn^{-1/2}\log(n+1)$ for $p=1/4$, and
+  $a_n=o(n^{-1/2})$ for $p<1/4$. For integer $p$ the exponent $2p-1$ is
+  attained by the $p$-valent function $k(z)^p=z^p(1-z)^{-2p}$.
 
 ## Loewner theory and the Schwarzian
 
@@ -137,6 +194,8 @@ closed subset of $\mathbb H$ whose complement is simply connected.
   $Sf=f'''/f'-\frac32(f''/f')^2$ satisfies
   $S(f\circ g)=(Sf\circ g)(g')^2+Sg$.
   It vanishes precisely for Möbius transformations.
+  Two locally univalent functions on a connected domain have the same
+  Schwarzian exactly when one is a fixed Möbius transformation of the other.
 * **30. Kraus necessary bound.** Univalence on $\mathbb D$ implies
   $\sup_z(1-|z|^2)^2|Sf(z)|\leq6$.
 * **31. Nehari sufficient bound.** A locally univalent meromorphic
@@ -145,14 +204,6 @@ closed subset of $\mathbb H$ whose complement is simply connected.
 * **32. Becker's criterion.** A locally univalent holomorphic $f$ on
   $\mathbb D$ with $(1-|z|^2)|zf''(z)/f'(z)|\leq1$ throughout is
   univalent; the constant $1$ is sharp.
-* **33. Grunsky criterion.** For a holomorphic exterior map
-  $g(z)=z+b_0+\cdots$, define $b_{mn}$ by
-  $\log[(g(z)-g(w))/(z-w)]=-\sum_{m,n\geq1}b_{mn}z^{-m}w^{-n}$
-  near infinity. It is univalent on $|z|>1$ exactly when
-  $|\sum\sqrt{mn}\,b_{mn}x_mx_n|\leq\sum|x_n|^2$ for every
-  finite complex sequence. For univalent $g$ the matrix
-  $(\sqrt{mn}\,b_{mn})$ is in fact a contraction on $\ell^2$; its first
-  row recovers the area theorem.
 
 ## Extremal length, moduli, and capacities
 
@@ -180,9 +231,9 @@ for $f:\mathbb D\to D$, $f(0)=a$.
   $r<|z|<R$ have extremal length $(2\pi)^{-1}\log(R/r)$.
   Essential closed curves have the reciprocal extremal length.
 * **38. Monotonicity and comparison.** Enlarging a curve family
-  decreases its extremal length. If every curve in one family contains
-  a subcurve from another, the corresponding comparison follows by
-  the admissible-length inequality.
+  decreases its extremal length. If every $\gamma\in\Gamma_1$ contains
+  some $\gamma'\in\Gamma_2$, then $\Lambda(\Gamma_1)\geq\Lambda(\Gamma_2)$,
+  by the admissible-length inequality.
 * **39. Series and parallel principles.** If every connecting curve
   crosses disjoint regions successively, its extremal length is at
   least the sum of their crossing extremal lengths. For curve families
@@ -268,9 +319,11 @@ harmonic extension functional at $a$.
   $C^{1,\alpha}$, $0<\alpha<1$, its Riemann map has a
   $C^{1,\alpha}$ extension with nonvanishing boundary derivative.
   Higher smoothness gives the corresponding higher derivative regularity.
-* **57. Analytic corners.** At a corner of angle $\pi\alpha$ formed
-  by analytic boundary arcs, a conformal map has leading behavior
-  $f(z)-w_0\sim c(z-\zeta)^\alpha$, $c\ne0$.
+* **57. Analytic corners.** If $f:\mathbb D\to D$ is a conformal map
+  onto a Jordan domain $D$ with $f(\zeta)=w_0$, where $w_0$ is a corner
+  of angle $\pi\alpha$ formed by analytic boundary arcs, then
+  $f(z)-w_0\sim c(z-\zeta)^\alpha$, $c\ne0$, to leading order
+  (higher-order terms may involve logarithms).
   Thus its derivative has the corresponding power singularity or zero.
 * **58. Conformal invariance of harmonic measure.** A conformal map
   pushes harmonic measure to harmonic measure, interpreted on prime
@@ -288,6 +341,13 @@ harmonic extension functional at $a$.
   boundary of a bounded simply connected plane domain has Hausdorff
   dimension one: the infimum of the dimensions of its full-measure
   Borel sets is one. The boundary itself can have larger dimension.
+* **78. Harmonic measure on arbitrary planar domains.** If
+  $\Omega\subset\widehat{\mathbb C}$ is a domain whose complement has
+  positive logarithmic capacity, harmonic measure for $\Omega$ is carried
+  by a set of Hausdorff dimension at most one (Jones–Wolff; SYNOPSIS38,
+  item 36), indeed by a set of $\sigma$-finite length (Wolff). Unlike the
+  simply connected case, the dimension can be strictly less than one, for
+  example for complements of suitable Cantor sets.
 
 ## Multiply connected domains and explicit polygonal mapping
 
@@ -317,6 +377,29 @@ harmonic extension functional at $a$.
   Its two complete real periods determine the rectangle's side ratio,
   hence its quadrilateral modulus and extremal metric.
 
+## Circle packing
+
+A **circle packing** is a family of closed disks with disjoint interiors;
+its tangency graph has a vertex for each disk and an edge for each tangent
+pair.
+
+* **76. Koebe–Andreev–Thurston theorem.** Every finite simple planar graph
+  is the tangency graph of a circle packing in the sphere. For a
+  triangulation of the sphere the packing is unique up to Möbius and
+  anti-Möbius maps; for a triangulation of a closed disk there is a
+  maximal packing in $\mathbb D$, with boundary circles internally
+  tangent to $\mathbb T$, unique up to disk automorphisms.
+* **77. Rodin–Sullivan convergence.** Let $\Omega$ be a bounded simply
+  connected domain, $z_0\in\Omega$, and $f:\Omega\to\mathbb D$ the
+  Riemann map with $f(z_0)=0$, $f'(z_0)>0$. Approximate $\Omega$ by the
+  circles of the regular hexagonal packing of radius $\varepsilon$, map
+  them to the maximal packing in $\mathbb D$ of the same combinatorics,
+  normalized at the circle nearest $z_0$, and extend piecewise affinely.
+  These maps converge to $f$ locally uniformly in $\Omega$ as
+  $\varepsilon\downarrow0$ (Thurston's conjecture). The key estimate is
+  the ring lemma: the radii of $n$ circles surrounding a given circle are
+  bounded below by a constant $c(n)>0$ times its radius.
+
 ## Conformally invariant Loewner evolution
 
 **Chordal $SLE_\kappa$** in $\mathbb H$ from zero to infinity is
@@ -328,7 +411,8 @@ Maps to other simply connected domains specify two boundary prime ends.
   symmetry, and continuous driving has Brownian driving with some
   variance $\kappa$. Scaling and the Markov property force this form.
 * **68. Existence of the trace.** For every $\kappa\geq0$,
-  $SLE_\kappa$ is almost surely generated by a continuous curve.
+  $SLE_\kappa$ is almost surely generated by a continuous curve
+  (Rohde–Schramm for $\kappa\neq8$; Lawler–Schramm–Werner for $\kappa=8$).
   This is a special property of Brownian driving, beyond general
   continuous-driver Loewner existence.
 * **69. SLE phase transitions.** For $0\leq\kappa\leq4$ the trace
@@ -358,8 +442,14 @@ measure theory. Goluzin and Nehari treat canonical slit and circle domains
 for multiply connected regions; Driscoll–Trefethen develops the explicit polygon maps.
 Lawler, Kemppainen, and Beliaev continue Loewner theory into SLE.
 The selection stops at the foundational theorems of that continuation;
-specific lattice-model convergence theorems, circle-packing theory, and
-Liouville quantum gravity are not added as independent inventories here.
+specific lattice-model convergence theorems and Liouville quantum gravity
+are not added as independent inventories here. Hayman's *Multivalent
+Functions* supplies the mean $p$-valent growth and coefficient theory and
+Hayman's regularity theorem; Stephenson's *Introduction to Circle Packing*
+supplies the Koebe–Andreev–Thurston and Rodin–Sullivan theorems, and only
+those foundational results are included. Pommerenke's *Boundary Behaviour*
+treats integral means and Brennan's conjecture; Garnett–Marshall treats the
+Jones–Wolff theorem.
 
 Local full-text sources consulted:
 
@@ -367,6 +457,7 @@ Local full-text sources consulted:
 * [Dubinin, *Condenser Capacities and Symmetrization in Geometric Function Theory*](References/Dubinin2014CondenserCapacitiesSymmetrizationGeometricFunctionTheory-Birkhauser.pdf).
 * [Baernstein, *Symmetrization in Analysis*](ReferencesSuppl/BaernsteinDrasinLaugesen2019SymmetrizationAnalysis-Cambridge.NMM36.pdf).
 * [Driscoll–Trefethen, *Schwarz–Christoffel Mapping*](References/DriscollTrefethen2002SchwarzChristoffelMapping-CambridgeMonogACM08.pdf).
+* [Hayman, *Multivalent Functions*](References/Hayman1994MultivalentFunctions-CambridgeTractsMath110.pdf).
 * [Kemppainen, *Schramm–Loewner Evolution*](References/Kemppainen2017SchrammLoewnerEvolution-SpringerBriefsMathPhys24.pdf).
 
 The local copy of Nehari's *Conformal Mapping* is image-based and was not

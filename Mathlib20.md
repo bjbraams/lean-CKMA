@@ -1,4 +1,4 @@
-# 20. Banach Algebras and Commutative Harmonic Analysis of Algebras
+# 20. Banach Algebras
 
 Checked against Mathlib commit `f039e1b8a616d45782a5c7fc5e7909249c36b8ea` (2026-10-18, Lean `v4.36.0-rc1`). The checkout was only read. The survey below concerns this Mathlib revision; the TauCeti supplement and final gap list also use the [TauCeti source audit](TauCetiCoverage.md).
 

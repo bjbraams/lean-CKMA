@@ -1,15 +1,23 @@
 # Synopsis: Complex dynamics
 
 Part of the [mathematical synopsis series](SYNOPSIS.md).
+[Bibliographical scope and references](CKMA-bib.md#ckma-46);
+[MSC2020 correspondence and cross-subject index](CKMA-MSC2020.md).
 
 This synopsis selects recurring material from Section 46 of
-[CKMA-bib.md](CKMA-bib.md).
+[CKMA-bib.md](CKMA-bib.md#ckma-46).
 Its main subject is iteration of rational and polynomial maps, together
 with the local, quasiconformal, ergodic, and potential-theoretic methods
 that recur in the listed books. The final sections give foundational
 extensions to transcendental and higher-dimensional holomorphic dynamics.
-Arithmetic and non-Archimedean dynamics are separate substantial theories
-and are not incorporated wholesale.
+Arithmetic and non-Archimedean dynamics are separate substantial theories;
+only their foundational statements are included, together with the
+Denjoy–Wolff theory of self-maps of the disk.
+
+Metric and fractal geometry is organised in [39A](CKMA-bib.md#ckma-39a) and
+surface deformation in Section 44. Several-variable holomorphic foundations
+are in [45A](CKMA-bib.md#ckma-45a)–[45B](CKMA-bib.md#ckma-45b); the present
+emphasis is the iteration of maps and its analytic and ergodic structures.
 
 Unless specified otherwise, $f:\widehat{\mathbb C}\to\widehat{\mathbb C}$
 is rational of degree $d\geq2$; $f^n$ denotes iteration. The **Fatou set**
@@ -21,7 +29,9 @@ The multiplier of a period-$p$ point is $(f^p)'$ in a local coordinate.
 ## Julia sets and global iteration
 
 * **1. Complete invariance.** Both Fatou and Julia sets are completely
-  invariant: their forward images and full inverse images equal themselves.
+  invariant: $z\in J(f)$ if and only if $f(z)\in J(f)$, so
+  $f^{-1}(J)=J$, and likewise for $F(f)$. Since a rational map is
+  surjective on the sphere, also $f(J)=J$ and $f(F)=F$.
 * **2. Nontriviality and perfection.** $J(f)$ is nonempty, compact,
   infinite, and perfect. It has empty interior unless it is the whole sphere.
 * **3. Exceptional points.** There are at most two points with finite
@@ -32,14 +42,15 @@ The multiplier of a period-$p$ point is $(f^p)'$ in a local coordinate.
   to $J(f)$, that closure is exactly $J(f)$.
 * **5. Blowing-up property.** If an open set meets $J(f)$, the
   union of its forward images covers the sphere apart from at most
-  the exceptional points (by Montel's theorem).
+  the exceptional points (by Montel's theorem; SYNOPSIS40, item 49).
 * **6. Repelling cycles are dense.** Repelling periodic points lie
   in $J(f)$ and are dense there. Attracting periodic points lie in $F(f)$.
 * **7. Iteration does not change Julia sets.** For every $k\geq1$,
   $F(f^k)=F(f)$ and $J(f^k)=J(f)$.
 * **8. Periodic-point count.** The equation $f^n(z)=z$ has
   $d^n+1$ solutions counted with intersection multiplicity on the sphere.
-  Multiple solutions occur exactly when the corresponding multiplier is one.
+  A solution is multiple exactly when the multiplier of $f^n$ there,
+  $(f^n)'$ in a local coordinate, is one.
 * **9. Holomorphic fixed-point formula.** If every fixed point is
   simple, then $\sum_{f(a)=a}(1-f'(a))^{-1}=1$, using local
   coordinates at infinity. General versions use residues when multiplier one occurs.
@@ -99,7 +110,10 @@ The multiplier of a period-$p$ point is $(f^p)'$ in a local coordinate.
   uniformly expanding on $J(f)$ in a smooth conformal metric near $J(f)$.
 * **24. Expanding geometry.** A hyperbolic rational map has uniform
   contraction of inverse branches near its Julia set, bounded distortion,
-  and a finite Markov description. These supply its conformal-repeller structure.
+  and a finite Markov description. These make $J(f)$ a conformal
+  repeller: a compact invariant set on which $f$ is conformal and
+  uniformly expanding, with a neighbourhood $U$ such that
+  $J(f)=\bigcap_{n\geq0}f^{-n}(U)$.
 * **25. Structural stability.** Hyperbolicity is open in parameter
   space. Nearby hyperbolic Julia dynamics are conjugate by a
   holomorphic motion, extending to a quasiconformal sphere motion.
@@ -111,6 +125,12 @@ The multiplier of a period-$p$ point is $(f^p)'$ in a local coordinate.
   (in particular a hyperbolic or postcritically finite one) has connected
   Julia set, that set is locally connected; the proof uses expansion in an
   orbifold metric.
+* **69. Boundaries of rotation domains.** The boundary of every Siegel
+  disk and of every Herman ring of a rational map lies in the postcritical
+  set $P(f)$ (Fatou). Cremer points also lie in $P(f)$, indeed in the
+  $\omega$-limit set of a recurrent critical point (Mañé). With items
+  17–18, every cycle of a postcritically finite map is therefore
+  repelling or superattracting.
 
 ## Polynomial Green functions, rays, and equilibrium measures
 
@@ -182,7 +202,8 @@ motion of the Julia set.
   $\mathbb C\setminus\mathcal M$ onto $\{|w|>1\}$ with
   $\Phi(c)/c\to1$ at infinity. Parameter rays are its radial inverse images.
 * **42. Hyperbolic components.** In the quadratic family, a
-  hyperbolic component is simply connected and its attracting-cycle
+  bounded hyperbolic component (a hyperbolic component of the
+  interior of $\mathcal M$) is simply connected and its attracting-cycle
   multiplier is a conformal coordinate onto $\mathbb D$.
   Its center is the unique parameter with superattracting cycle.
 * **43. Holomorphic-motion extension.** A holomorphic motion of
@@ -224,12 +245,9 @@ Let $f:X\to X$ be a topologically mixing expanding conformal repeller.
 For a Hölder potential $\varphi$, write $P(\varphi)$ for pressure and
 $\mathcal L_\varphi u(x)=\sum_{f(y)=x}e^{\varphi(y)}u(y)$.
 
-* **49. Variational principle.**
-  $P(\varphi)=\sup_\nu(h_\nu(f)+\int\varphi\,d\nu)$ over
-  invariant probabilities. An attaining measure is an equilibrium state.
 * **50. Ruelle–Perron–Frobenius theorem.** On Hölder functions,
   $\mathcal L_\varphi$ has a simple positive leading eigenvalue
-  $e^{P(\varphi)}$, a positive eigenfunction, an eigenmeasure, and
+  $e^{P(\varphi)}$ (pressure as in SYNOPSIS10, item 36), a positive eigenfunction, an eigenmeasure, and
   a spectral gap after normalization.
 * **51. Gibbs states.** Hölder potentials have unique equilibrium
   states with the Gibbs cylinder estimates. They are mixing, with
@@ -321,6 +339,50 @@ $\omega$ by $\int\omega^k=1$.
   conjugate to its linear part. With resonances, Poincaré–Dulac
   polynomial normal forms replace linearization.
 
+## Self-maps of the disk
+
+* **70. Denjoy–Wolff theorem.** Let $f:\mathbb D\to\mathbb D$ be
+  holomorphic and not an elliptic automorphism (an automorphism with a
+  fixed point in $\mathbb D$, including the identity). Then $f^n$
+  converges locally uniformly to a constant $\tau\in\overline{\mathbb D}$.
+  If $f$ has a fixed point in $\mathbb D$, $\tau$ is that point;
+  otherwise $\tau\in\partial\mathbb D$.
+* **71. Wolff's lemma and boundary dilation.** If $f$ has no fixed point
+  in $\mathbb D$, every horodisk at the Denjoy–Wolff point $\tau$ is
+  mapped into itself. The angular derivative $f'(\tau)$ exists and lies
+  in $(0,1]$ (Julia–Wolff–Carathéodory); the map is called hyperbolic if
+  $f'(\tau)<1$ and parabolic if $f'(\tau)=1$. Heins extended the
+  dichotomy to hyperbolic Riemann surfaces: unless $f$ is an automorphism
+  of finite order or conjugate to an irrational rotation of a disk,
+  punctured disk, or annulus, its iterates either converge to a constant
+  or diverge compactly.
+
+## Arithmetic and non-Archimedean dynamics
+
+Let $\varphi:\mathbb P^N\to\mathbb P^N$ be a morphism of degree
+$d\geq2$ defined over a number field $K$, and let $h$ be the absolute
+logarithmic Weil height on $\mathbb P^N(\overline{\mathbb Q})$.
+
+* **72. Canonical height.** The limit
+  $\hat h_\varphi(P)=\lim_nd^{-n}h(\varphi^n(P))$ exists; $\hat h_\varphi$
+  is the unique function with $\hat h_\varphi=h+O(1)$ and
+  $\hat h_\varphi\circ\varphi=d\hat h_\varphi$ (Call–Silverman). It is
+  nonnegative, and $\hat h_\varphi(P)=0$ exactly when $P$ is preperiodic.
+* **73. Northcott finiteness.** The preperiodic points of $\varphi$ have
+  bounded height, so for each $D\geq1$ only finitely many of them are
+  defined over extensions of $K$ of degree at most $D$. In particular
+  $\varphi$ has finitely many $K$-rational preperiodic points.
+* **74. Berkovich Julia set.** Let $\varphi$ be a rational map of degree
+  $d\geq2$ over a complete algebraically closed non-Archimedean field
+  such as $\mathbb C_p$. Its classical Julia set in $\mathbb P^1$ can be
+  empty: for a map with good reduction, such as $z^d$, the Fatou set is all
+  of $\mathbb P^1(\mathbb C_p)$. On the Berkovich line the Julia set is
+  nonempty and compact, and carries a canonical invariant probability
+  $\mu_\varphi$ with $\varphi^*\mu_\varphi=d\mu_\varphi$; pullbacks
+  $d^{-n}(\varphi^n)^*\delta_a$ converge weakly to $\mu_\varphi$ for
+  every nonexceptional $a$ (Favre–Rivera-Letelier, Baker–Rumely). For good
+  reduction the Berkovich Julia set is the Gauss point.
+
 ## Reference guide
 
 Milnor, Carleson–Gamelin, Beardon, Steinmetz, and the introductory
@@ -331,6 +393,9 @@ Przytycki–Urbański and Mauldin–Urbański give the expanding and
 thermodynamic framework. The CIME lectures compare local germs,
 transcendental dynamics, projective endomorphisms, and polynomial
 automorphisms; Kotus–Urbański develops the meromorphic continuation.
+Abate treats self-maps of hyperbolic Riemann surfaces and the Denjoy–Wolff
+theory. Silverman, Baker–Rumely, and Benedetto supply the arithmetic and
+non-Archimedean statements.
 Statements here retain the rational, entire, and higher-dimensional
 hypotheses separately, especially for no-wandering and escape assertions.
 
@@ -341,6 +406,7 @@ Local full-text sources consulted:
 * [Abate–Bedford–Brunella–Dinh–Schleicher–Sibony, *Holomorphic Dynamical Systems*](References/AbateBedfordBrunellaEtAl2010HolomorphicDynamicalSystems-Springer.LNM1998.pdf).
 * [Mauldin–Urbański, *Graph Directed Markov Systems*](References/MauldinUrbanski2003GraphDirectedMarkovSystems-Cambridge.TractsMath148.pdf).
 * [Kotus–Urbański, *Meromorphic Dynamics I*](References/KotusUrbanski2023MeromorphicDynamicsVol1-Cambridge.NMM46.pdf).
+* [Silverman, *The Arithmetic of Dynamical Systems*](References/Silverman2007ArithmeticDynamicalSystems-Springer.GTM241.pdf).
 
 For the holomorphic fixed-point formula see also Milnor's earlier
 [introductory lectures](https://arxiv.org/pdf/math/9201272), not the later

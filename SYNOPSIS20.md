@@ -1,9 +1,11 @@
-# Synopsis: Banach algebras and commutative harmonic analysis of algebras
+# Synopsis: Banach algebras
 
 Part of the [mathematical synopsis series](SYNOPSIS.md).
+[Bibliographical scope and references](CKMA-bib.md#ckma-20);
+[MSC2020 correspondence and cross-subject index](CKMA-MSC2020.md).
 
 This synopsis selects the recurring core of Section 20 of
-[CKMA-bib.md](CKMA-bib.md). It develops
+[CKMA-bib.md](CKMA-bib.md#ckma-20). It develops
 spectra, characters and Gelfand transforms, function algebras, ideal theory,
 convolution algebras, and amenability. General operator algebra representation
 theory belongs primarily to Section 23, and harmonic analysis on groups
@@ -67,13 +69,64 @@ $(ab)^*=b^*a^*$ and $\|a^*a\|=\|a\|^2$.
   Radical elements are quasinilpotent; the converse holds for commutative
   algebras but fails in general (e.g. in matrix algebras).
 
+A left ideal $L$ is **modular** if $a-au\in L$ for some $u$ and all $a$.
+A left $A$-module $X$ is **algebraically irreducible** if $AX\neq0$ and
+$X$ has no submodules other than $0$ and $X$. A **primitive ideal** is the
+annihilator $\{a:aX=0\}$ of such a module; $\operatorname{Prim}A$ is the
+set of primitive ideals.
+
+* **64. Primitive ideals.** Every maximal modular left ideal $L$ of a
+  Banach algebra is closed, and every algebraically irreducible left module
+  is isomorphic to $A/L$ for such an $L$; hence primitive ideals are closed
+  two-sided ideals, of the form $\{a:aA\subset L\}$. The radical is the
+  intersection of all primitive ideals, equivalently of all maximal modular
+  left ideals. With the hull–kernel (Jacobson) topology,
+  $\operatorname{Prim}A$ is a $T_0$ space, compact when $A$ is unital. For
+  commutative $A$ the primitive ideals are the maximal modular ideals, so
+  $\operatorname{Prim}A=\Delta(A)$ as sets.
+* **65. Jacobson density theorem.** Let $X$ be an algebraically
+  irreducible left module of a Banach algebra $A$. Its commutant
+  $\operatorname{End}_A(X)$ is $\mathbb C$ (Schur's lemma together with
+  Gelfand–Mazur, after norming $X\cong A/L$; Rickart). For linearly
+  independent $x_1,\ldots,x_n\in X$ and any $y_1,\ldots,y_n\in X$ there
+  is $a\in A$ with $ax_i=y_i$ for all $i$. A primitive Banach algebra
+  with a nonzero finite-dimensional irreducible module is a full matrix
+  algebra.
+
+## Numerical range and Hermitian elements
+
+For unital $A$, the **states** are $f\in A^*$ with $f(1)=1=\|f\|$, and
+the **numerical range** of $a$ is $V(a)=\{f(a):f\text{ a state}\}$,
+with **numerical radius** $v(a)=\sup\{|\lambda|:\lambda\in V(a)\}$.
+An element $h$ is **Hermitian** if $V(h)\subset\mathbb R$.
+
+* **66. Numerical range.** $V(a)$ is a nonempty compact convex set
+  containing $\sigma(a)$, hence its convex hull, and
+  $V(a)=\bigcap_{\lambda\in\mathbb C}\{z:|z-\lambda|\leq\|a-\lambda1\|\}$.
+  Moreover $e^{-1}\|a\|\leq v(a)\leq\|a\|$ (Bohnenblust–Karlin), and
+  the constant $e$ is optimal. For a bounded operator on a Hilbert space,
+  $V(a)$ is the closure of the spatial numerical range
+  $\{\langle a\xi,\xi\rangle:\|\xi\|=1\}$.
+* **67. Hermitian elements.** $h$ is Hermitian exactly when
+  $\|\exp(ith)\|=1$ for all real $t$ (Vidav, Lumer). The Hermitian
+  elements form a closed real subspace $H(A)$, and
+  $H(A)\cap iH(A)=\{0\}$. For Hermitian $h$, $\|h\|=r(h)$ (Sinclair).
+  In a unital C*-algebra the Hermitian elements are exactly the
+  self-adjoint ones.
+* **68. Vidav–Palmer theorem.** If a unital Banach algebra satisfies
+  $A=H(A)+iH(A)$, then $(h+ik)^*=h-ik$ ($h,k\in H(A)$) is an involution
+  making $A$, with its given norm, a C*-algebra. Thus unital C*-algebras are
+  characterized among unital Banach algebras by the numerical range alone.
+
 ## Characters and the Gelfand representation
 
 A **character** is a nonzero multiplicative complex linear functional.
 The **character space** $\Delta(A)$ has the weak-star topology, and
 $\widehat a(\varphi)=\varphi(a)$ is the **Gelfand transform**.
 An algebra is **semisimple** if its Jacobson radical is zero. The next
-statements assume commutativity unless indicated otherwise.
+statements assume commutativity unless indicated otherwise. For a
+commutative C*-algebra the Gelfand transform is an isometric
+star isomorphism onto $C_0(\Delta(A))$ (SYNOPSIS23, item 7).
 
 * **11. Automatic continuity of characters.** Every character is continuous
   with $|\varphi(a)|\leq r(a)\leq\|a\|$. On a unital algebra it has
@@ -81,7 +134,8 @@ statements assume commutativity unless indicated otherwise.
 * **12. Maximal ideals and characters.** In a commutative unital Banach
   algebra, every maximal proper ideal is closed and is the kernel of a
   unique character. Its quotient is $\mathbb C$. In the nonunital case
-  the analogous correspondence uses maximal modular ideals.
+  the analogous correspondence uses maximal modular ideals (ideals $I$
+  with some $u\in A$ such that $a-ua\in I$ for all $a\in A$).
 * **13. Gelfand representation theorem.** $\Delta(A)$ is locally compact
   Hausdorff, compact when $A$ is unital, and
   $a\mapsto\widehat a$ is a contractive homomorphism into
@@ -104,20 +158,30 @@ statements assume commutativity unless indicated otherwise.
   $\{(\widehat a_1(\varphi),\ldots,\widehat a_n(\varphi)):\varphi\in\Delta(A)\}
   \subset\mathbb C^n$, there is $b\in A$ with
   $\widehat b=f(\widehat a_1,\ldots,\widehat a_n)$ (Shilov, Arens–Calderón).
-  Consequences: the identity component of $A^{-1}$ is $\exp A$, and
+  The identity component of $A^{-1}$ is $\exp A$ (an elementary fact in
+  any commutative unital Banach algebra); with the calculus one obtains
   $A^{-1}/\exp A\cong H^1(\Delta(A),\mathbb Z)$ (Arens–Royden).
+* **26. Shilov idempotent theorem.** For a commutative unital Banach
+  algebra and a clopen subset $U\subset\Delta(A)$, there is an idempotent
+  $e\in A$ with $\widehat e=1_U$. Thus disconnected character spaces
+  force nontrivial algebraic decompositions.
 * **18. Automatic continuity into semisimple algebras.** Every algebra
   homomorphism from a Banach algebra into a commutative semisimple Banach
   algebra is continuous (Shilov). More generally, every semisimple Banach
   algebra, commutative or not, has a unique complete algebra norm up to
   equivalence (Johnson).
+* **69. Homomorphisms from $C(K)$.** Every algebra norm on $C(K)$
+  dominates the uniform norm (Kaplansky). If $\theta:C(K)\to B$ is a
+  homomorphism into a Banach algebra, there is a finite set $F\subset K$
+  such that $\theta$ is continuous on the ideal of functions vanishing on a
+  neighbourhood of $F$ (Bade–Curtis). Assuming the continuum hypothesis,
+  every infinite $K$ admits a discontinuous homomorphism from $C(K)$ into a
+  Banach algebra (Dales, Esterle); it is consistent with ZFC that every
+  such homomorphism is continuous (Solovay, Woodin).
 * **19. Gleason–Kahane–Żelazko theorem.** If a complex linear functional
   $F$ on a unital Banach algebra satisfies $F(1)=1$ and never vanishes
   on invertible elements, then it is multiplicative. Neither continuity
   nor commutativity need be assumed.
-* **20. Commutative C*-algebra theorem.** If $A$ is a commutative
-  C*-algebra, its Gelfand transform is an isometric star isomorphism
-  $A\cong C_0(\Delta(A))$. For unital $A$ the target is $C(\Delta(A))$.
 * **21. Uniform norm criterion.** A commutative Banach algebra satisfying
   $\|a^2\|=\|a\|^2$ for all $a$ has $\|a\|=r(a)$ and is represented
   isometrically as a closed function algebra on its character space.
@@ -146,10 +210,6 @@ is the **Shilov boundary**.
   boundary and its only representing probability measure is $\delta_x$.
   For compact metrizable $K$, the closure of the peak points is the Shilov
   boundary (Bishop's theorem).
-* **26. Shilov idempotent theorem.** For a commutative unital Banach
-  algebra and a clopen subset $U\subset\Delta(A)$, there is an idempotent
-  $e\in A$ with $\widehat e=1_U$. Thus disconnected character spaces
-  force nontrivial algebraic decompositions.
 * **27. Polynomial hull interpretation.** For compact $K\subset\mathbb C^n$,
   the character space of the uniform closure $P(K)$ of polynomials is its
   polynomial hull
@@ -160,11 +220,6 @@ is the **Shilov boundary**.
   is $\mathbb T$; the representing measures of $z\in\mathbb D$ include the
   Poisson measure, and $P(\mathbb T)$ is the disk algebra restricted to
   $\mathbb T$.
-* **29. Carleson corona theorem.** The open disk is dense in the character
-  space of $H^\infty(\mathbb D)$. Equivalently, if
-  $f_1,\ldots,f_n\in H^\infty$ satisfy $\sum_j|f_j|\geq\delta>0$ on
-  $\mathbb D$, then $\sum_jg_jf_j=1$ for some $g_j\in H^\infty$, with
-  bounds on $\|g_j\|_\infty$ depending only on $n$ and $\delta$.
 
 ## Regularity, ideals, and spectral synthesis
 
@@ -223,10 +278,6 @@ characters, and $\widehat f(\gamma)=\int f(x)\overline{\gamma(x)}\,dx$.
   $\Delta(L^1(G))\cong\widehat G$, and the Gelfand transform is the
   Fourier transform. $L^1(G)$ is semisimple and
   $\widehat{f*g}=\widehat f\,\widehat g$.
-* **39. Riemann–Lebesgue and uniqueness.** $\widehat f\in C_0(\widehat G)$
-  for $f\in L^1(G)$; the transform is injective. Finite measures have
-  bounded continuous Fourier–Stieltjes transforms, also uniquely determining
-  the measure.
 * **40. Wiener lemma.** If $f\in C(\mathbb T)$ has an absolutely
   convergent Fourier series and no zeros on $\mathbb T$, then $1/f$ also
   has an absolutely convergent Fourier series. More generally a holomorphic
@@ -235,13 +286,17 @@ characters, and $\widehat f(\gamma)=\int f(x)\overline{\gamma(x)}\,dx$.
   the closed span of the translates of $f$ is all of $L^1(G)$ exactly
   when $\widehat f$ has no zero on $\widehat G$. Equivalently, the
   closed convolution ideal generated by $f$ is the entire algebra.
+  More generally a closed ideal of $L^1(G)$ is all of $L^1(G)$ exactly
+  when its common Fourier zero set is empty.
 * **42. Regularity and Tauberianity.** For every locally compact abelian
   $G$, $L^1(G)$ is regular and Tauberian. In particular there are
   Fourier transforms supported in arbitrarily small neighborhoods of any
   dual point, and compactly supported transforms give a dense ideal.
 * **43. Spectral synthesis in $L^1(G)$.** Points, closed subgroups, and
-  more generally closed sets in the coset ring of $\widehat G$ are sets of
-  synthesis (indeed Ditkin sets). If $G$ is noncompact, so that
+  more generally closed sets in the coset ring of $\widehat G$ (the Boolean
+  ring of subsets generated by cosets of all subgroups) are sets of
+  synthesis (indeed Ditkin sets: each $f$ with $\widehat f=0$ on $E$ is a
+  limit of $f*u_k$ with $\widehat u_k$ compactly supported off $E$). If $G$ is noncompact, so that
   $\widehat G$ is nondiscrete, some closed subsets of $\widehat G$ fail
   synthesis (Malliavin); for $\mathbb R^n$, $n\geq3$, the unit sphere
   already fails (L. Schwartz).
@@ -249,6 +304,9 @@ characters, and $\widehat f(\gamma)=\int f(x)\overline{\gamma(x)}\,dx$.
   commuting with right translations is left convolution by a unique
   $\mu\in M(G)$, and its norm is $\|\mu\|$. In the abelian case this
   identifies the multiplier algebra of $L^1(G)$ with $M(G)$.
+* **48. Multipliers of continuous-function algebras.** The multiplier
+  algebra of $C_0(K)$ is $C_b(K)$, isometrically, acting by pointwise
+  multiplication; for noncompact $K$ it is larger than the unitization.
 * **45. Wiener–Pitt phenomenon.** For nondiscrete abelian $G$ the
   Fourier–Stieltjes characters do not exhaust $\Delta(M(G))$, and
   $\sigma(\mu)$ can be strictly larger than the closure of
@@ -256,10 +314,12 @@ characters, and $\widehat f(\gamma)=\int f(x)\overline{\gamma(x)}\,dx$.
   are measures on $\mathbb T$ whose Fourier coefficients are bounded away
   from zero but which are not invertible in $M(\mathbb T)$.
 * **46. Cohen idempotent theorem.** For abelian $G$, the transforms of
-  idempotent measures in $M(G)$ are exactly indicators of sets in the coset
-  ring of $\widehat G$, generated by cosets of its open subgroups. The
+  idempotent measures in $M(G)$ are exactly indicators of sets in the
+  ring of subsets of $\widehat G$ generated by cosets of its open subgroups
+  (such sets are open and closed). The
   hulls of closed ideals of $L^1(G)$ with bounded approximate identities
-  are exactly the closed sets in the coset ring of $\widehat G$.
+  are exactly the closed sets in the coset ring of $\widehat G$ of item 43,
+  generated by cosets of arbitrary subgroups (Liu–van Rooij–Wang).
 
 ## Approximate identities, modules, and derivations
 
@@ -275,9 +335,6 @@ if $D(a)=a\cdot x-x\cdot a$ for some fixed $x$.
   that case each $x\in X$ has the form $x=ay$ with $a\in A$, and $y$
   can be taken in $\overline{Ax}$ with $\|y-x\|<\varepsilon$ for any given
   $\varepsilon>0$. In particular $A=A^2$ when $A$ has a bounded approximate identity.
-* **48. Multipliers of continuous-function algebras.** The multiplier
-  algebra of $C_0(K)$ is $C_b(K)$, isometrically, acting by pointwise
-  multiplication; for noncompact $K$ it is larger than the unitization.
 * **49. Singer–Wermer theorem.** The range of every continuous derivation
   from a commutative Banach algebra into itself lies in its radical.
   Continuity can be dropped (Thomas), and every derivation of a commutative
@@ -307,7 +364,8 @@ outer bimodule actions, and $m(a\otimes b)=ab$.
   direct sum of full complex matrix algebras. A finite-dimensional complex
   Banach algebra is amenable exactly when it is semisimple.
 * **54. Vanishing in symmetric modules.** If $A$ is commutative and
-  amenable, every bounded derivation into a symmetric Banach bimodule is
+  amenable, every bounded derivation into a symmetric Banach bimodule
+  ($a\cdot x=x\cdot a$) is
   zero. In particular, there are no nonzero bounded point derivations.
 * **55. Johnson group algebra theorem.** For every locally compact group
   $G$, the Banach algebra $L^1(G)$ is amenable exactly when $G$ is amenable.
@@ -317,26 +375,21 @@ outer bimodule actions, and $m(a\otimes b)=ab$.
   nonnegative $f_\alpha\in L^1(G)$ of integral one with
   $\|L_sf_\alpha-f_\alpha\|_1\to0$ uniformly for $s$ in compact subsets
   of $G$, where $L_sf(t)=f(s^{-1}t)$.
-* **57. Følner criterion for discrete groups.** A discrete group is
-  amenable exactly when for every finite $S\subset G$ and $\varepsilon>0$
-  some finite nonempty $F\subset G$ satisfies
-  $|sF\mathbin\triangle F|<\varepsilon|F|$ for all $s\in S$.
 
 The **Fourier algebra** $A(G)$ consists of sums of coefficient functions
 of the left regular representation, with norm given by the infimum of the
 sums of the products of their $L^2$ vector norms. It is a commutative
 Banach algebra under pointwise multiplication. The **Fourier–Stieltjes
 algebra** $B(G)$ uses coefficients of arbitrary unitary representations.
+Følner's criterion and Leptin's theorem ($A(G)$ has a bounded approximate
+identity exactly when $G$ is amenable) are in SYNOPSIS28, items 59 and 61.
 
 * **58. Abelian Fourier algebra identification.** If $G$ is abelian,
   Fourier transformation identifies $L^1(\widehat G)$ isometrically with
   $A(G)$, and $M(\widehat G)$ with $B(G)$; convolution corresponds to
   pointwise multiplication.
-* **59. Leptin theorem.** $A(G)$ has a bounded approximate identity
-  exactly when $G$ is amenable. This concerns a bounded approximate
-  identity, rather than Banach algebra amenability of $A(G)$.
 * **60. Weak amenability of group algebras.** For every locally compact
-  $G$, each bounded derivation $L^1(G)\to L^1(G)^*$ is inner. Thus
+  $G$, each bounded derivation $L^1(G)\to L^1(G)^*$ is inner (Johnson). Thus
   group algebras are weakly amenable even when the group is not amenable.
 
 ## Bidual multiplication and weak compactness
@@ -368,7 +421,12 @@ holomorphic calculus (including the several-variable calculus and the
 Arens–Royden theorem), boundaries, regularity, group algebras, multipliers,
 and synthesis in a single course. These topics overlap extensively with
 Rickart, Gelfand–Raikov–Shilov, Gamelin, Browder, Palmer, and Dales;
-Gamelin is the standard source for uniform algebras and the corona theorem.
+Gamelin is the standard source for uniform algebras (the corona theorem
+is SYNOPSIS42, item 27). Bonsall–Duncan is also the source for numerical
+ranges, Hermitian elements, and the Vidav–Palmer theorem, which Palmer
+and Cabrera García–Rodríguez Palacios develop further; Palmer and Rickart
+treat primitive ideals and irreducible representations, and Dales treats
+automatic continuity, including homomorphisms from $C(K)$.
 Runde gives the module, derivation, approximate-diagonal, and group
 amenability theory, including the Fourier algebra connections. The bidual
 viewpoint is developed further in the newer Dales–Ülger reference.
@@ -380,3 +438,4 @@ Local source copies consulted:
 * [Bonsall–Duncan, Complete Normed Algebras](References/BonsallDuncan1973CompleteNormedAlgebras-SpringerErgeb80.pdf).
 * [Kaniuth, A Course in Commutative Banach Algebras](References/Kaniuth2009CourseInCommutativeBanachAlgebras-SpringerGTM.pdf).
 * [Runde, Amenable Banach Algebras: A Panorama](References/Runde2020AmenableBanachAlgebras-Springer.SMM.pdf).
+* [Palmer, Banach Algebras and the General Theory of *-Algebras I](References/Palmer1994BanachAlgebrasGeneralTheoryStarAlgebrasVol1AlgebrasBanachAlgebras-CambridgeEMA49.pdf).

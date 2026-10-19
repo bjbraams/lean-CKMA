@@ -1,13 +1,16 @@
 # Synopsis: Matrix analysis, operator monotonicity, and noncommutative inequalities
 
 Part of the [mathematical synopsis series](SYNOPSIS.md).
+[Bibliographical scope and references](CKMA-bib.md#ckma-13);
+[MSC2020 correspondence and cross-subject index](CKMA-MSC2020.md).
 
 This synopsis selects recurring content from Section 13 of
-[CKMA-bib.md](CKMA-bib.md). It begins with
+[CKMA-bib.md](CKMA-bib.md#ckma-13). It begins with
 spectral comparison and unitarily invariant norms, then develops matrix order,
 operator functions and means, trace inequalities, and the entropy consequences
-for positive maps. The final statements record the basic infinite-dimensional
-trace-ideal extensions.
+for positive maps, followed by total positivity, positive completions, and
+positive maps beyond complete positivity. The later statements record the basic
+infinite-dimensional trace-ideal extensions and further perturbation results.
 
 Matrices are complex unless specified otherwise, $A^*$ is the adjoint, and
 $A\geq0$ means positive semidefinite; $A>0$ means positive definite.
@@ -66,16 +69,11 @@ arbitrary, permutations of factors.
 * **11. Gershgorin and Perron–Frobenius theorems.** Every eigenvalue of a
   square matrix lies in $\bigcup_i\{z:|z-a_{ii}|\leq\sum_{j\ne i}|a_{ij}|\}$,
   and a union of $k$ discs disjoint from the others contains exactly $k$
-  eigenvalues. If $A\geq0$ entrywise and is irreducible, its spectral radius
+  eigenvalues. If $A$ is entrywise nonnegative ($a_{ij}\geq0$) and irreducible, its spectral radius
   $\rho(A)$ is a simple eigenvalue with an entrywise positive eigenvector, the
   only eigenvalue with a nonnegative eigenvector; if $A$ is primitive,
   $\rho(A)$ strictly dominates all other eigenvalues in modulus and
   $\rho(A)^{-k}A^k$ converges to the rank-one Perron projection.
-* **12. Numerical range.** The numerical range
-  $W(A)=\{x^*Ax:|x|=1\}$ is a compact convex set containing the spectrum
-  (Toeplitz–Hausdorff), equal to the convex hull of the spectrum for normal
-  $A$. The numerical radius $w(A)$ is a norm with
-  $\frac12\|A\|\leq w(A)\leq\|A\|$.
 
 ## Singular values, norms, and determinant inequalities
 
@@ -114,8 +112,19 @@ of $a$ are bounded by those of $b$, without equality of total sums.
   $n\times n$ matrices,
   $\det(A+B)^{1/n}\geq\det A^{1/n}+\det B^{1/n}$.
   For positive definite matrices, equality means proportionality.
+* **71. Heinz norm inequality.** For $A,B\geq0$, $0\leq t\leq1$, and every
+  unitarily invariant norm,
+  $$\|A^tXB^{1-t}+A^{1-t}XB^t\|_{\!u}\leq\|AX+XB\|_{\!u}.$$
+  Endpoint powers use the identity convention.
+* **74. Matrix arithmetic–geometric norm inequality.** For square matrices
+  $A,B$ and every unitarily invariant norm,
+  $2\|A^*B\|_{\!u}\leq\|AA^*+BB^*\|_{\!u}$ (Bhatia–Kittaneh). It is a
+  comparison of singular values, not a Loewner-order assertion.
 
 ## Positive blocks, products, and factorization
+
+The Douglas factorization theorem is SYNOPSIS21, item 3; the numerical range
+is SYNOPSIS21, item 9.
 
 * **23. Schur complement.** If $B>0$, then
   $\begin{pmatrix}B&C\\C^*&D\end{pmatrix}\geq0$ exactly when
@@ -131,9 +140,6 @@ of $a$ are bounded by those of $b$, without equality of total sums.
 * **26. Tensor products.** Positivity is preserved by tensor products;
   eigenvalues and singular values of $A\otimes B$ are the pairwise products.
   Thus $\|A\otimes B\|_p=\|A\|_p\|B\|_p$ for Schatten norms.
-* **27. Douglas factorization.** For matrices $A,B$ with common target,
-  $AA^*\leq BB^*$ exactly when $A=BC$ for a contraction $C$.
-  This is the norm-controlled version of range inclusion.
 
 ## Operator monotonicity and convexity
 
@@ -248,6 +254,10 @@ $I\,\sigma\,I=I$.
   with equality exactly for $\rho=\sigma$. It is infinite if
   $\operatorname{supp}\rho\not\subseteq\operatorname{supp}\sigma$;
   $0\log0=0$ on the supported subspace.
+* **70. Lieb exponential concavity.** For fixed Hermitian $H$, the function
+  $A\mapsto\operatorname{tr}\exp(H+\log A)$ is concave on $A>0$. It
+  substitutes for factorization of noncommuting exponentials in matrix
+  moment-generating-function bounds (Tropp).
 
 ## Completely positive maps and quantum entropy
 
@@ -256,6 +266,8 @@ positivity for every $k$. A **quantum channel** is a completely positive
 trace-preserving map. The von Neumann entropy is
 $S(\rho)=-\operatorname{tr}\rho\log\rho$, in natural-logarithm units.
 Partial traces define reduced density matrices such as $\rho_{AB}$ and $\rho_B$.
+The Stinespring dilation and the Kadison–Schwarz inequality are SYNOPSIS23,
+items 17 and 14.
 
 * **53. Kraus representation.** $\Phi$ is completely positive exactly when
   $\Phi(A)=\sum_jV_jAV_j^*$. Trace preservation is
@@ -263,12 +275,6 @@ Partial traces define reduced density matrices such as $\rho_{AB}$ and $\rho_B$.
 * **54. Choi criterion.** Complete positivity is equivalent to positivity of
   $J(\Phi)=\sum_{ij}E_{ij}\otimes\Phi(E_{ij})$. Trace preservation is
   $\operatorname{tr}_{\mathrm{out}}J(\Phi)=I_{\mathrm{in}}$.
-* **55. Stinespring dilation.** A unital completely positive map between
-  matrix algebras has the representation $\Phi(A)=V^*(A\otimes I)V$ for
-  an isometry $V$ into a larger tensor-product space.
-* **56. Kadison–Schwarz inequality.** For a unital 2-positive map,
-  $\Phi(A)^*\Phi(A)\leq\Phi(A^*A)$. Complete positivity is sufficient;
-  ordinary positivity alone only gives the corresponding Hermitian-square statement.
 * **57. Majorization by unitary mixing.** For density matrices of the same
   size, $\lambda(\rho)\prec\lambda(\sigma)$ exactly when $\rho$ is a convex
   combination of unitary conjugates of $\sigma$.
@@ -288,6 +294,62 @@ Partial traces define reduced density matrices such as $\rho_{AB}$ and $\rho_B$.
 * **62. Quantum Pinsker inequality.**
   $D(\rho\|\sigma)\geq\frac12\|\rho-\sigma\|_1^2$.
   The constant corresponds to natural logarithms and the unhalved trace norm.
+* **73. Entropy continuity.** In dimension $n\geq2$, with
+  $T=\frac12\|\rho-\sigma\|_1$ and binary entropy
+  $h_2(t)=-t\log t-(1-t)\log(1-t)$ (continuous at the endpoints),
+  $$|S(\rho)-S(\sigma)|\leq T\log(n-1)+h_2(T).$$
+  This is the sharp Fannes–Audenaert bound.
+* **76. Entropy of mixtures.** For density matrices and probability weights,
+  $$\sum_jp_jS(\rho_j)\leq S(\sum_jp_j\rho_j)
+       \leq-\sum_jp_j\log p_j+\sum_jp_jS(\rho_j).$$
+  Moreover $0\leq S(\rho)\leq\log n$, with equality at the lower endpoint
+  exactly for rank-one states and at the upper endpoint exactly for $I/n$.
+  Mixing can add at most the classical entropy of the mixing variable.
+
+## Total positivity, completions, and positive maps
+
+For index sets $I,J$ of size $k$, $A[I,J]$ is the corresponding submatrix; the
+**$k$th compound** $C_k(A)$ is the matrix of all $k\times k$ minors
+$\det A[I,J]$ in lexicographic order. A real matrix is **totally nonnegative**
+(**totally positive**) if all its minors are nonnegative (positive). A
+**partial matrix** with pattern graph $G$ on $\{1,\ldots,n\}$ specifies the
+diagonal and the entries $a_{ij}$ for edges $ij$ of $G$; it is **partial
+positive definite** if every fully specified principal submatrix is. A
+positive map $\Phi$ is **decomposable** if $\Phi=\Phi_1+\Phi_2\circ\top$ with
+$\Phi_1,\Phi_2$ completely positive and $\top$ the transpose.
+
+* **77. Cauchy–Binet formula.** For $A$ of size $m\times n$ and $B$ of size
+  $n\times p$,
+  $\det(AB)[I,J]=\sum_{|K|=k}\det A[I,K]\det B[K,J]$. Hence
+  $C_k(AB)=C_k(A)C_k(B)$, $C_k(A^*)=C_k(A)^*$, and the eigenvalues of
+  $C_k(A)$ for square $A$ are the products $\lambda_{i_1}\cdots\lambda_{i_k}$,
+  $i_1<\cdots<i_k$. In particular totally nonnegative and totally positive
+  matrices are closed under products.
+* **78. Gantmacher–Krein theorem.** A totally positive $n\times n$ matrix has
+  $n$ distinct positive eigenvalues $\lambda_1>\cdots>\lambda_n>0$, and an
+  eigenvector for $\lambda_k$ has exactly $k-1$ sign changes. The same holds for
+  oscillatory matrices, the totally nonnegative ones with a totally positive
+  power. Every invertible totally nonnegative matrix is a product of
+  totally nonnegative elementary bidiagonal matrices and a positive diagonal
+  matrix (Loewner–Whitney).
+* **79. Positive definite completions.** Every partial positive definite
+  matrix with pattern $G$ has a positive definite completion exactly when $G$
+  is chordal (every cycle of length at least four has a chord)
+  (Grone–Johnson–Sá–Wolkowicz). When a positive definite completion exists,
+  the one of maximal determinant is unique and is characterized by zeros of its
+  inverse in the unspecified positions (Dym–Gohberg).
+* **80. Carathéodory–Toeplitz theorem.** Complex numbers
+  $c_0,\ldots,c_n$, with $c_{-k}=\overline{c_k}$, are the trigonometric moments
+  $c_k=\int z^{-k}d\mu$ of a positive measure on the unit circle exactly when the
+  Toeplitz matrix $(c_{j-k})_{j,k=0}^n$ is positive semidefinite. If it is
+  singular of rank $r$, the measure is unique and has exactly $r$ atoms.
+* **81. Positive maps and entanglement.** Every positive linear map
+  $M_2\to M_2$, $M_2\to M_3$, or $M_3\to M_2$ is decomposable (Størmer,
+  Woronowicz), whereas the Choi map on $M_3$ is positive but not decomposable.
+  A state $\rho$ on $\mathbb C^m\otimes\mathbb C^n$ is separable exactly when
+  $(I\otimes\Phi)(\rho)\geq0$ for every positive map $\Phi$ (Horodecki); hence for
+  $mn\leq6$ separability is equivalent to positivity of the partial transpose
+  (Peres–Horodecki).
 
 ## Trace ideals and determinants
 
@@ -295,16 +357,10 @@ For compact operators on a separable Hilbert space, singular values are defined
 as eigenvalues of $|T|$ with multiplicity. The **Schatten ideal** $\mathcal S_p$
 consists of those with $\sum_js_j(T)^p<\infty$; $\mathcal S_1$ is trace class
 and $\mathcal S_2$ is Hilbert–Schmidt. Hölder and the ideal inequalities extend
-to these classes.
+to these classes. Lidskii's trace theorem and the Fredholm determinant are
+SYNOPSIS21, item 24; Weyl's eigenvalue–singular-value majorization is
+SYNOPSIS21, item 25.
 
-* **63. Lidskii trace theorem.** For trace-class $T$, the eigenvalues, counted
-  with algebraic multiplicity, are absolutely summable and
-  $\operatorname{tr}T=\sum_j\lambda_j(T)$, even without self-adjointness.
-* **64. Fredholm determinant.** For trace-class $T$,
-  $\det(I+zT)=\prod_j(1+z\lambda_j(T))$ is entire, with zeros prescribed by
-  nonzero eigenvalues. It is continuous in trace norm and multiplicative on
-  products of identity-plus-trace-class operators. Near zero,
-  $\log\det(I+zT)=\sum_{k\geq1}(-1)^{k+1}z^k\operatorname{tr}(T^k)/k$.
 * **65. Regularized determinant.** For Hilbert–Schmidt $T$,
   $\det_2(I+T)=\prod_j(1+\lambda_j(T))e^{-\lambda_j(T)}$ is well defined
   and continuous in Hilbert–Schmidt norm. For $S,T\in\mathcal S_2$,
@@ -312,14 +368,18 @@ to these classes.
     =\det_2(I+S)\det_2(I+T)e^{-\operatorname{tr}(ST)}.$$
   The function $z\mapsto\det_2(I+zT)$ is entire and vanishes exactly where
   $-1/z$ is a nonzero eigenvalue of $T$.
+* **69. Log-determinant concavity.** On positive definite matrices,
+  $A\mapsto\log\det A$ is strictly concave, and
+  $$D\log\det A[H]=\operatorname{tr}(A^{-1}H),\qquad
+    D^2\log\det A[H,H]=-\operatorname{tr}(A^{-1}HA^{-1}H).$$
+  The negative log-determinant is a self-concordant barrier for the positive cone.
 
 ## Perturbation and further trace and entropy inequalities
 
 The Frobenius notation $\|\cdot\|_2$ below agrees with the Schatten convention
 fixed above. A **spectral subspace** is a sum of eigenspaces, and a spectral
 gap relevant to perturbation separates a selected cluster from the unwanted
-part of the spectrum. The binary entropy is
-$h_2(t)=-t\log t-(1-t)\log(1-t)$, with its continuous endpoint values.
+part of the spectrum.
 
 * **66. Sylvester equation.** The equation $AX-XB=C$ has a unique solution
   for every $C$ exactly when $A$ and $B$ have disjoint spectra. If $A,B$ are
@@ -333,50 +393,18 @@ $h_2(t)=-t\log t-(1-t)\log(1-t)$, with its continuous endpoint values.
   $$\|(I-P)X\|_2\leq\delta^{-1}\|AX-XH\|_2.$$
   Here $\|(I-P)X\|_2$ is the Frobenius norm of the sines of the canonical
   angles between $\operatorname{ran}X$ and $\operatorname{ran}P$.
-* **68. Weyl eigenvalue–singular-value majorization.** Order the eigenvalues
-  of any square matrix by decreasing modulus. Then
-  $\prod_{j=1}^k|\lambda_j(A)|\leq\prod_{j=1}^ks_j(A)$ for every $k$,
-  with equality of the full products. Consequently
-  $\sum_j|\lambda_j(A)|^p\leq\sum_js_j(A)^p$ for $p>0$.
-* **69. Log-determinant concavity.** On positive definite matrices,
-  $A\mapsto\log\det A$ is strictly concave, and
-  $$D\log\det A[H]=\operatorname{tr}(A^{-1}H),\qquad
-    D^2\log\det A[H,H]=-\operatorname{tr}(A^{-1}HA^{-1}H).$$
-  The negative log-determinant is a self-concordant barrier for the positive cone.
-* **70. Lieb exponential concavity.** For fixed Hermitian $H$, the function
-  $A\mapsto\operatorname{tr}\exp(H+\log A)$ is concave on $A>0$. It
-  substitutes for factorization of noncommuting exponentials in matrix
-  moment-generating-function bounds (Tropp).
-* **71. Heinz norm inequality.** For $A,B\geq0$, $0\leq t\leq1$, and every
-  unitarily invariant norm,
-  $$\|A^tXB^{1-t}+A^{1-t}XB^t\|_{\!u}\leq\|AX+XB\|_{\!u}.$$
-  Endpoint powers use the identity convention.
 * **72. Wigner–Yanase–Dyson skew information.** For a density matrix and
   Hermitian $H$, $0<t<1$,
   $$I_t(\rho,H)=\operatorname{tr}(\rho H^2)
      -\operatorname{tr}(\rho^tH\rho^{1-t}H)\geq0.$$
   It is convex in $\rho$ (by Lieb's concavity theorem) and vanishes exactly
   when $\rho$ commutes with $H$.
-* **73. Entropy continuity.** In dimension $n\geq2$, with
-  $T=\frac12\|\rho-\sigma\|_1$,
-  $$|S(\rho)-S(\sigma)|\leq T\log(n-1)+h_2(T).$$
-  This is the sharp Fannes–Audenaert bound.
-* **74. Matrix arithmetic–geometric norm inequality.** For square matrices
-  $A,B$ and every unitarily invariant norm,
-  $2\|A^*B\|_{\!u}\leq\|AA^*+BB^*\|_{\!u}$ (Bhatia–Kittaneh). It is a
-  comparison of singular values, not a Loewner-order assertion.
 * **75. Convex spectral functions.** A symmetric convex function
   $\phi:\mathbb R^n\to\mathbb R$ induces a convex unitarily invariant function
   $A\mapsto\phi(\lambda(A))$ on Hermitian matrices, with conjugate
   $(\phi\circ\lambda)^*=\phi^*\circ\lambda$ and subdifferential consisting of
   the $U\operatorname{diag}(u)U^*$ with $A=U\operatorname{diag}(\lambda(A))U^*$
   and $u\in\partial\phi(\lambda(A))$ (Davis, Lewis).
-* **76. Entropy of mixtures.** For density matrices and probability weights,
-  $$\sum_jp_jS(\rho_j)\leq S(\sum_jp_j\rho_j)
-       \leq-\sum_jp_j\log p_j+\sum_jp_jS(\rho_j).$$
-  Moreover $0\leq S(\rho)\leq\log n$, with equality at the lower endpoint
-  exactly for rank-one states and at the upper endpoint exactly for $I/n$.
-  Mixing can add at most the classical entropy of the mixing variable.
 
 ## Reference guide
 
@@ -394,6 +422,10 @@ Hiai–Petz and Carlen connect operator convexity and trace inequalities with
 relative entropy. Watrous provides a systematic finite-dimensional treatment
 of completely positive maps and entropy inequalities; Bengtsson–Życzkowski
 and Heinosaari–Ziman supply complementary convex and geometric accounts.
+Fallat–Johnson, *Totally Nonnegative Matrices*, treats compounds, total
+positivity, and the Gantmacher–Krein oscillation theory; Bakonyi–Woerdeman
+treats positive definite completions and trigonometric moments; Aubrun–Szarek
+develops positive maps, decomposability, and entanglement.
 Simon, *Trace Ideals*, and Gohberg–Krein supply the trace-ideal and determinant
 endpoint, which is developed further in the operator-theory sections.
 
@@ -403,4 +435,5 @@ Local source anchors:
 - [Horn–Johnson, *Matrix Analysis*](References/HornJohnson1985MatrixAnalysis-Cambridge.pdf).
 - [Horn–Johnson, *Topics in Matrix Analysis*](References/HornJohnson1991TopicsInMatrixAnalysis-Cambridge.pdf).
 - [Simon, *Loewner's Theorem*](References/Simon2019LoewnersTheoremMonotoneMatrixFunctions-SpringerGL354.pdf).
+- [Bakonyi–Woerdeman, *Matrix Completions, Moments, and Sums of Hermitian Squares*](References/BakonyiWoerdeman2011MatrixCompletionsMomentsSumsHermitianSquares-PrincetonUP.pdf).
 - [Watrous, *The Theory of Quantum Information*](References/Watrous2018TheoryQuantumInformation-Cambridge.pdf).

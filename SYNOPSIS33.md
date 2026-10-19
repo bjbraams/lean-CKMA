@@ -1,13 +1,22 @@
 # Synopsis: Elliptic and parabolic equations — regularity, free boundaries, and viscosity solutions
 
 Part of the [mathematical synopsis series](SYNOPSIS.md).
+[Bibliographical scope and references](CKMA-bib.md#ckma-33);
+[MSC2020 correspondence and cross-subject index](CKMA-MSC2020.md).
 
 This synopsis selects recurring material from Section 33 of
-[CKMA-bib.md](CKMA-bib.md).
+[CKMA-bib.md](CKMA-bib.md#ckma-33).
 It develops the regularity theory beyond the basic linear framework of
-Section 32: rough coefficients, fully nonlinear and degenerate equations,
-viscosity solutions, nonlinear diffusion, and free boundaries. Scalar
+Section 32: rough coefficients, quasilinear, fully nonlinear and degenerate
+equations, viscosity solutions including first-order Hamilton–Jacobi
+equations, nonlinear diffusion, and free boundaries. Scalar
 equations and systems are distinguished, as are interior and boundary estimates.
+
+Hamilton–Jacobi and viscosity methods connect with stochastic control in
+[08C](CKMA-bib.md#ckma-08c) and optimization in Section 12; Monge–Ampère
+equations connect with transport in [39C](CKMA-bib.md#ckma-39c). The
+hyperbolic and dispersive branches are identified separately in
+[34A](CKMA-bib.md#ckma-34a)–[34B](CKMA-bib.md#ckma-34b).
 
 Write $\Delta=\sum_i\partial_i^2$. Uniform ellipticity of a matrix means
 $\lambda|\xi|^2\leq a^{ij}(x)\xi_i\xi_j$ and $|A(x)|\leq\Lambda$,
@@ -18,10 +27,10 @@ and the separation of the two balls. Hölder exponents lie in $(0,1)$.
 
 ## Weak solutions and rough-coefficient elliptic regularity
 
-* **1. Variational Dirichlet existence.** For bounded measurable uniformly
-  elliptic $A$, $-\operatorname{div}(A\nabla u)=f$ has a unique
-  solution in $H_0^1(\Omega)$ for $f\in H^{-1}(\Omega)$ on a bounded
-  Lipschitz domain. The solution norm is bounded by the data norm.
+Variational $H_0^1$ existence for divergence-form equations and the linear
+parabolic energy theory are stated in Section 32 (SYNOPSIS32, items 24
+and 44).
+
 * **2. Weak comparison.** If $-\operatorname{div}(A\nabla u)
   \leq-\operatorname{div}(A\nabla v)$ weakly and $(u-v)^+\in H_0^1$,
   then $u\leq v$ almost everywhere. A nonnegative zeroth-order term
@@ -29,6 +38,7 @@ and the separation of the two balls. Hölder exponents lie in $(0,1)$.
 * **3. Caccioppoli estimate.** If $\operatorname{div}(A\nabla u)=0$,
   then $\int_{B_r}|\nabla u|^2\leq Cr^{-2}\int_{B_{2r}}|u-c|^2$
   for every constant $c$ and $B_{2r}\Subset\Omega$.
+  Cutoff-energy arguments give variants with forcing and lower-order terms.
 * **4. Local boundedness.** For weak solutions of the same equation,
   $\|u\|_{L^\infty(B_r)}\leq
   C(r^{-n}\int_{B_{2r}}|u|^2)^{1/2}$. Subsolutions satisfy the
@@ -93,6 +103,8 @@ and the separation of the two balls. Hölder exponents lie in $(0,1)$.
   and $Lu=f$, then on $\Omega'\Subset\Omega$,
   $\|u\|_{C^{2,\alpha}(\Omega')}\leq
   C(\|u\|_{C^0(\Omega)}+\|f\|_{C^{0,\alpha}(\Omega)})$.
+  Smooth enough boundary and $C^{2,\alpha}$ Dirichlet data give the
+  corresponding global estimate up to the boundary.
 * **17. Boundary Schauder theory.** On a bounded $C^{2,\alpha}$ domain,
   the preceding coefficient assumptions and $C^{2,\alpha}$ Dirichlet
   data give a global estimate of the same order. With $c\leq0$,
@@ -114,12 +126,50 @@ and the separation of the two balls. Hölder exponents lie in $(0,1)$.
 * **21. Symmetry and Liouville theorems.** If $f$ is locally Lipschitz and
   $u\in C^2(\overline B)$ is a positive solution of $\Delta u+f(u)=0$ in a
   ball with $u=0$ on the boundary, then $u$ is radially symmetric and
-  strictly decreasing in $|x|$ (Gidas–Ni–Nirenberg, moving planes). For
+  strictly decreasing in $|x|$ (moving planes; Gidas–Ni–Nirenberg for
+  $f\in C^1$, Berestycki–Nirenberg for locally Lipschitz $f$). For
   $n\geq3$, nonnegative solutions of $-\Delta u=u^q$ on $\mathbb R^n$
   vanish when $1<q<(n+2)/(n-2)$ (Gidas–Spruck), and for
-  $q=(n+2)/(n-2)$ they are the functions
-  $c_n(\varepsilon/(\varepsilon^2+|x-x_0|^2))^{(n-2)/2}$
+  $q=(n+2)/(n-2)$ they are $0$ or the functions
+  $c_n(\varepsilon/(\varepsilon^2+|x-x_0|^2))^{(n-2)/2}$,
+  $c_n=(n(n-2))^{(n-2)/4}$
   (Caffarelli–Gidas–Spruck).
+
+## Quasilinear equations
+
+Consider $Qu=a^{ij}(x,u,Du)u_{ij}+b(x,u,Du)$, elliptic in
+$\overline\Omega\times\mathbb R\times\mathbb R^n$, on a bounded domain.
+
+* **73. Leray–Schauder reduction to a priori estimates.** Let
+  $\partial\Omega\in C^{2,\alpha}$, $\varphi\in C^{2,\alpha}(\overline\Omega)$,
+  and $a^{ij},b\in C^\alpha$. If for some $\beta>0$ every $C^{2,\alpha}$
+  solution of $a^{ij}(x,u,Du)u_{ij}+\sigma b(x,u,Du)=0$, $u=\sigma\varphi$
+  on $\partial\Omega$, $0\leq\sigma\leq1$, satisfies
+  $\|u\|_{C^{1,\beta}(\overline\Omega)}\leq M$ with $M$ independent of
+  $u$ and $\sigma$, then $Qu=0$, $u=\varphi$ on $\partial\Omega$, has a
+  $C^{2,\alpha}$ solution. The proof applies the Leray–Schauder fixed-point
+  theorem to the map that freezes the coefficients and solves the linear
+  Schauder problem.
+* **74. Hölder gradient estimates.** For $a^{ij}\in C^1$, $b\in C^0$,
+  $\partial\Omega\in C^2$ and $C^2$ boundary values, solutions of $Qu=0$
+  satisfy a global $C^{1,\gamma}$ estimate with $\gamma>0$ and the bound
+  depending only on $n$, the data, and $\sup|u|+\sup|Du|$
+  (Ladyzhenskaya–Ural'tseva). Hence solvability of the Dirichlet problem
+  reduces to a priori bounds, in order, for $\sup|u|$, for $|Du|$ on
+  $\partial\Omega$ (barriers), and for $|Du|$ in $\Omega$.
+* **75. Minimal surface Dirichlet problem.** For a bounded $C^2$ domain,
+  $\operatorname{div}(Du/\sqrt{1+|Du|^2})=0$, $u=\varphi$ on
+  $\partial\Omega$, is solvable for every $\varphi\in C^0(\partial\Omega)$
+  exactly when $\partial\Omega$ has nonnegative mean curvature
+  (Jenkins–Serrin). For constant prescribed mean curvature $H$ the
+  condition is that the boundary mean curvature be at least
+  $n|H|/(n-1)$ (Serrin).
+* **76. Minimal-surface gradient estimate.** A $C^2$ solution of the
+  minimal surface equation satisfies
+  $|Du(y)|\leq C_1\exp(C_2\sup_\Omega(u-u(y))/d)$,
+  $d=\operatorname{dist}(y,\partial\Omega)$, with $C_1,C_2$ depending
+  only on $n$ (Bombieri–De Giorgi–Miranda; Trudinger). The exponential
+  form cannot be improved; it makes solutions compact under uniform bounds.
 
 ## Viscosity and fully nonlinear equations
 
@@ -174,11 +224,59 @@ and $\mathcal M^-$ with $\lambda,\Lambda$ interchanged.
   ellipticity and data regularity. Without convexity this fails: in
   dimension two solutions of $F(D^2u)=0$ are $C^{2,\alpha}$ (Nirenberg),
   but in dimensions $n\geq5$ there are viscosity solutions that are not
-  $C^{1,1}$ (Nadirashvili–Tkachev–Vlăduţ).
+  $C^{1,1}$ (Nadirashvili–Vlăduţ for $n=5$;
+  earlier constructions needed higher dimensions; see also
+  Nadirashvili–Tkachev–Vlăduţ).
 * **31. Fully nonlinear $W^{2,p}$ regularity.** For convex or concave
   translation-invariant uniformly elliptic $F$, $p>n$, and continuous
   $f\in L^p$, bounded viscosity solutions have local $W^{2,p}$
   estimates in terms of $\|u\|_\infty+\|f\|_p$.
+
+## First-order Hamilton–Jacobi equations
+
+For first-order equations the viscosity definitions above apply with $G$
+independent of $X$. Assume $H(x,p)$ is continuous, uniformly continuous on
+$\mathbb R^n\times B_R$ for each $R$, and satisfies
+$|H(x,p)-H(y,p)|\leq\omega(|x-y|(1+|p|))$ for a modulus $\omega$.
+
+* **77. First-order comparison.** For $\lambda>0$, a bounded uniformly
+  continuous viscosity subsolution $u$ and supersolution $v$ of
+  $\lambda w+H(x,Dw)=0$ on $\mathbb R^n$ satisfy $u\leq v$
+  (Crandall–Lions, Crandall–Evans–Lions). On a bounded open set the same
+  holds for $u,v\in C(\overline\Omega)$ with $u\leq v$ on $\partial\Omega$.
+  When $H(\cdot,0)$ is bounded, Perron's method then gives a unique
+  bounded uniformly continuous solution (Ishii).
+* **78. The Cauchy problem.** For $g\in BUC(\mathbb R^n)$,
+  $u_t+H(x,Du)=0$, $u(0)=g$, has a unique viscosity solution in
+  $BUC(\mathbb R^n\times[0,T])$, and
+  $\sup_x|u-v|(t)\leq\sup|g-h|$ for the solutions with data $g,h$.
+  If $H$ is Lipschitz in $p$ with constant $L$, data agreeing on
+  $B(x_0,R)$ give solutions agreeing on $B(x_0,R-Lt)$. For convex
+  superlinear $H=H(p)$ and Lipschitz $g$ the solution is the Hopf–Lax
+  formula (SYNOPSIS34, item 14).
+* **79. Value functions of optimal control.** Let $A$ be compact,
+  $b(x,a)$ bounded continuous and Lipschitz in $x$ uniformly in $a$, and
+  $L(x,a)$ bounded continuous and uniformly continuous in $x$ uniformly
+  in $a$. For $\lambda>0$ the discounted value function
+  $V(x)=\inf_{a(\cdot)}\int_0^\infty e^{-\lambda t}L(y(t),a(t))dt$,
+  $\dot y=b(y,a)$, $y(0)=x$, is bounded and uniformly continuous and is
+  the unique such viscosity solution of the Hamilton–Jacobi–Bellman
+  equation $\lambda V+\sup_a\{-b(x,a)\cdot DV-L(x,a)\}=0$
+  (Bardi–Capuzzo-Dolcetta). The finite-horizon analogue is SYNOPSIS36,
+  item 65.
+* **80. Semiconcavity and a.e. solutions.** Lipschitz functions satisfying
+  a first-order equation almost everywhere are not unique: for the eikonal
+  problem $|Du|=1$ in a bounded $\Omega$, $u=0$ on $\partial\Omega$, the
+  viscosity solution is $\operatorname{dist}(x,\partial\Omega)$, while
+  $-\operatorname{dist}$ and many sawtooth functions are a.e. solutions.
+  For smooth convex $H(p)$ and Lipschitz $g$, there is at most one
+  Lipschitz a.e. solution of $u_t+H(Du)=0$, $u(0)=g$, with the
+  one-sided bound $u(x+z,t)-2u(x,t)+u(x-z,t)\leq C(1+1/t)|z|^2$
+  (Kruzhkov; Evans). If $D^2H\geq\theta I>0$, the Hopf–Lax solution
+  satisfies this bound with $C(1+1/t)$ replaced by $1/(\theta t)$, even
+  for nonsemiconcave $g$; semiconcave viscosity solutions are
+  differentiable off a countably $(n-1)$-rectifiable set
+  (Cannarsa–Sinestrari).
 
 ## Degenerate elliptic and Monge–Ampère equations
 
@@ -232,10 +330,6 @@ $C^{\alpha,\alpha/2}$ measures space with exponent $\alpha$ and time with
 exponent $\alpha/2$; $W^{2,1}_p$ controls two spatial derivatives and one
 time derivative in $L^p$.
 
-* **40. Linear parabolic energy theory.** Bounded measurable uniformly
-  elliptic divergence coefficients give unique energy solutions for
-  $L^2$ initial data and forcing in $L^2(0,T;H^{-1})$, with zero
-  Dirichlet boundary data and the usual energy estimate.
 * **41. Parabolic strong maximum principle.** A nonnegative solution
   of a uniformly parabolic scalar equation cannot vanish at an interior
   point unless it vanishes throughout the connected region reachable
@@ -398,8 +492,11 @@ $(-\Delta)^su=c_{n,s}\operatorname{pv}\int(u(x)-u(y))|x-y|^{-n-2s}dy$.
 Gilbarg–Trudinger, Han–Lin, and the Ladyzhenskaya–Ural'tseva books
 provide the elliptic estimates; Lieberman, Friedman, and Krylov provide
 their parabolic counterparts. Caffarelli–Cabré and the viscosity references
-supply the fully nonlinear core. The obstacle and one-phase results recur
-in Caffarelli–Salsa, Petrosyan–Shahgholian–Uraltseva, Fernández-Real–Ros-Oton,
+supply the fully nonlinear core; Gilbarg–Trudinger and
+Ladyzhenskaya–Ural'tseva the quasilinear Dirichlet problem; and
+Bardi–Capuzzo-Dolcetta, Barles, Cannarsa–Sinestrari, and Tran the
+first-order Hamilton–Jacobi and control theory. The obstacle and
+one-phase results recur in Caffarelli–Salsa, Petrosyan–Shahgholian–Uraltseva, Fernández-Real–Ros-Oton,
 and Velichkov, with different emphasis. The nonlinear-potential and
 Monge–Ampère monographs develop the degenerate equations separately.
 Mean-field systems, detailed singular-set refinements, and specialized

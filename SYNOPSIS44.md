@@ -1,14 +1,21 @@
 # Synopsis: Riemann surfaces, quasiconformal mappings, and Teichmüller theory
 
 Part of the [mathematical synopsis series](SYNOPSIS.md).
+[Bibliographical scope and references](CKMA-bib.md#ckma-44);
+[MSC2020 correspondence and cross-subject index](CKMA-MSC2020.md).
 
 This synopsis selects recurring core material from Section 44 of
-[CKMA-bib.md](CKMA-bib.md).
+[CKMA-bib.md](CKMA-bib.md#ckma-44).
 It joins the analytic theory of surfaces, divisors and periods, measurable
 complex structures, and deformation spaces. The emphasis is on results
 shared by several surface and quasiconformal references; the algebraic
 geometry of higher-dimensional varieties and the full theory of Kleinian
 three-manifolds are outside its scope.
+
+Metric quasiconformal viewpoints connect with [39A](CKMA-bib.md#ckma-39a),
+holomorphic iteration and surgery with Section 46, and geometric spectral
+problems with Section 53. The surface and deformation theory remains the
+centre of this synopsis.
 
 A **Riemann surface** is a connected, second-countable Hausdorff
 one-dimensional complex manifold. An **open surface** means a noncompact
@@ -148,8 +155,10 @@ and set $\tau_{ij}=\int_{b_j}\omega_i$.
   For $g=1$ it is an isomorphism onto the torus.
 * **30. Riemann theta divisor.** The theta function
   $\theta(z,\tau)=\sum_{n\in\mathbb Z^g}
-  e^{\pi i n^T\tau n+2\pi i n^Tz}$ defines a divisor on $J(X)$.
-  Its zero set is a translate of the Abel image of effective
+  e^{\pi i n^T\tau n+2\pi i n^Tz}$ is not periodic but
+  quasi-periodic under the period lattice, so its zero set is
+  lattice-invariant and defines the theta divisor on $J(X)$.
+  This divisor is a translate of the Abel image of effective
   degree-$(g-1)$ divisors (Riemann's vanishing theorem).
 * **31. Torelli's theorem.** A compact Riemann surface is determined
   up to biholomorphism by its principally polarized Jacobian.
@@ -254,9 +263,10 @@ $\mu(z)d\bar z/dz$ under conformal coordinate changes.
   $J_f\in L^1_{\mathrm{loc}}$ has finite distortion if
   $|Df|^n\leq K(x)J_f$ a.e. for some measurable $K<\infty$.
   If $f\in W^{1,n}_{\mathrm{loc}}$, it has a continuous representative.
-  If moreover $K\in L^p_{\mathrm{loc}}$ with $p>n-1$ ($p\geq1$ when
+  If $f\in W^{1,n}_{\mathrm{loc}}$ and moreover $K\in L^p_{\mathrm{loc}}$ with $p>n-1$ ($p\geq1$ when
   $n=2$), or if $\exp(\lambda K)\in L^1_{\mathrm{loc}}$ for some
-  $\lambda>0$, a nonconstant $f$ is open and discrete. Lipschitz
+  $\lambda>0$, a nonconstant $f$ is open and discrete
+  (Manfredi–Villamor for $p>n-1$; Iwaniec–Šverák for $n=2$). Lipschitz
   examples with $K\in L^p$ for all $p<n-1$ show that openness and
   discreteness can fail below that threshold.
 * **52. Higher-dimensional quasiconformality.** For homeomorphisms
@@ -270,6 +280,22 @@ $\mu(z)d\bar z/dz$ under conformal coordinate changes.
   is open and discrete. In dimension two Stoilow factorization reduces
   its branch behavior to holomorphic branching; no such holomorphic
   factorization exists in higher dimensions.
+* **78. Rickman's Picard theorem.** For $n\geq2$ and $K\geq1$ there is
+  $q=q(n,K)$ such that every $K$-quasiregular map
+  $\mathbb R^n\to S^n\setminus\{a_1,\ldots,a_q\}$, with distinct
+  $a_j$, is constant; that is, a nonconstant $K$-quasiregular map
+  $\mathbb R^n\to S^n$ omits fewer than $q$ points. For $n=2$ Stoilow
+  factorization gives $q=3$ (Picard). For $n\geq3$ the bound must depend
+  on $K$: every finite set can be omitted (Rickman for $n=3$,
+  Drasin–Pankka in general). Zorich: for $n\geq3$, a locally
+  homeomorphic quasiregular map $\mathbb R^n\to\mathbb R^n$ is a homeomorphism.
+* **79. Liouville rigidity.** For $n\geq3$, a $1$-quasiregular map
+  ($f\in W^{1,n}_{\mathrm{loc}}(\Omega,\mathbb R^n)$ with
+  $|Df|^n=J_f$ almost everywhere) on a domain $\Omega\subset\mathbb R^n$
+  is constant or the restriction of a Möbius transformation (Liouville
+  for $C^3$ maps; Gehring for homeomorphisms; Reshetnyak in this
+  generality). In the plane, by contrast, $1$-quasiregular maps are exactly
+  the holomorphic maps.
 
 ## Teichmüller spaces and extremal maps
 
@@ -342,8 +368,14 @@ Write $Q(X)=H^0(X,K_X^2)$ with $\|q\|_1=\int_X|q|$.
   and changing the marking gives the $PSL(2,\mathbb Z)$ action.
 * **67. Royden's theorem.** For $g\geq2$ the Teichmüller metric equals
   the Kobayashi metric of the complex manifold $\mathcal T_g$, and every
-  biholomorphism of $\mathcal T_g$ is induced by an extended mapping
-  class; for $g\geq3$, $\operatorname{Aut}(\mathcal T_g)\cong\operatorname{Mod}_g^{\pm}$.
+  biholomorphism of $\mathcal T_g$ is induced by a mapping class
+  (an isotopy class of orientation-preserving homeomorphisms; see the
+  definition of $\operatorname{Mod}_g$ below). For $g\geq3$,
+  $\operatorname{Aut}(\mathcal T_g)\cong\operatorname{Mod}_g$; for $g=2$
+  it is $\operatorname{Mod}_2$ modulo the hyperelliptic involution.
+  Orientation-reversing classes act antiholomorphically; for $g\geq3$
+  the isometry group of $d_T$ is the extended mapping class group
+  $\operatorname{Mod}_g^{\pm}=\pi_0(\operatorname{Homeo}(S_g))$.
 
 ## Moduli, mapping classes, and hyperbolic geometry
 
@@ -392,6 +424,17 @@ cotangent pairing is $\langle q,p\rangle_{WP}
   surfaces with opposite orientations, a quasifuchsian group has two
   invariant simply connected components of discontinuity whose
   quotients realize them. The marked group is unique up to Möbius conjugacy.
+* **80. Ahlfors finiteness theorem.** A **Kleinian group** is a discrete
+  subgroup $\Gamma$ of $PSL(2,\mathbb C)$; its limit set $\Lambda(\Gamma)$
+  is the set of accumulation points of an orbit, and
+  $\Omega(\Gamma)=\widehat{\mathbb C}\setminus\Lambda(\Gamma)$ is its
+  domain of discontinuity. For nonelementary $\Gamma$, $\Lambda(\Gamma)$
+  is the smallest nonempty closed invariant set and is perfect. If
+  $\Gamma$ is finitely generated, $\Omega(\Gamma)/\Gamma$ is a finite
+  union of Riemann surfaces of finite type, closed surfaces with finitely
+  many punctures and orbifold points (Ahlfors). With $N$ generators and
+  $\Gamma$ nonelementary, its total hyperbolic area is at most
+  $4\pi(N-1)$ (Bers).
 
 ## Reference guide
 
@@ -401,7 +444,9 @@ and uniformization core. The open-surface statements connect their
 cohomological and analytic constructions. Ahlfors, Lehto–Virtanen,
 Astala–Iwaniec–Martin, and the quasiconformal chapters of Branner–Fagella
 supply the measurable-structure theory; Hencl–Koskela explains which
-conclusions need stronger distortion assumptions. Imayoshi–Taniguchi,
+conclusions need stronger distortion assumptions. Väisälä, Rickman,
+Iwaniec–Martin, and Gehring–Martin–Palka supply the higher-dimensional
+quasiconformal and quasiregular theory. Imayoshi–Taniguchi,
 Hubbard, Gardiner–Lakic, Jost, and the Teichmüller handbook organize
 the deformation theory. Farb–Margalit supplies its topological companion,
 and Buser, Marden, Kapovich, and Wolpert connect it with hyperbolic

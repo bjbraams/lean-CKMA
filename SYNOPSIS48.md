@@ -1,14 +1,20 @@
 # Synopsis: Orthogonal polynomials, moment problems, and spectral recurrences
 
 Part of the [mathematical synopsis series](SYNOPSIS.md).
+[Bibliographical scope and references](CKMA-bib.md#ckma-48);
+[MSC2020 correspondence and cross-subject index](CKMA-MSC2020.md).
 
 This synopsis selects recurring material from Section 48 of
-[CKMA-bib.md](CKMA-bib.md).
+[CKMA-bib.md](CKMA-bib.md#ckma-48).
 It develops the dictionary between polynomial orthogonality, three-term
 recurrences, quadrature, positive moment functionals, and spectral measures,
 followed by unit-circle theory and the principal asymptotic results.
 Classical special-function identities are treated further in Section 49;
 the integrable and Riemann–Hilbert continuations belong principally to Section 51.
+
+Random matrix ensembles are identified as [07B](CKMA-bib.md#ckma-07b) and
+their Riemann–Hilbert methods as part of Section 51. The present emphasis
+remains measures, recurrence, moments, and spectral correspondences.
 
 For real-line orthogonality, $\mu$ is a positive Borel measure with infinite
 support and finite moments of all orders. Write $p_n(x)=\kappa_nx^n+\cdots$,
@@ -68,7 +74,8 @@ matrix. Put $K_n(x,y)=\sum_{j=0}^np_j(x)\overline{p_j(y)}$.
 
 * **14. Gauss quadrature.** The zeros $x_1,\ldots,x_n$ of $p_n$
   support a unique quadrature rule exact on $\mathcal P_{2n-1}$.
-  Its weights are positive and equal $1/K_{n-1}(x_j,x_j)$.
+  Its weights (Christoffel numbers) $\lambda_{n,j}$ are positive and
+  equal $1/K_{n-1}(x_j,x_j)=\lambda_{n-1}(x_j)$.
 * **15. Maximal exactness.** No $n$-node rule with real nodes can
   integrate every polynomial of degree $2n$ for an infinite-support
   positive measure. The squared node polynomial gives the obstruction.
@@ -80,8 +87,8 @@ matrix. Put $K_n(x,y)=\sum_{j=0}^np_j(x)\overline{p_j(y)}$.
   leaves $2n-3$. For a positive measure on a nondegenerate compact
   interval, the corresponding rules have positive weights.
 * **18. Markov–Stieltjes inequalities.** For increasing Gauss nodes,
-  $\sum_{j<k}\lambda_j\leq\mu(( -\infty,x_k))
-  \leq\mu(( -\infty,x_k])\leq\sum_{j\leq k}\lambda_j$.
+  $\sum_{j<k}\lambda_{n,j}\leq\mu(( -\infty,x_k))
+  \leq\mu(( -\infty,x_k])\leq\sum_{j\leq k}\lambda_{n,j}$.
 * **19. Markov convergence.** For compact support, the Gauss
   quadrature measures converge weakly to $\mu$. Their Cauchy
   transforms converge locally uniformly off the supporting interval.
@@ -89,10 +96,6 @@ matrix. Put $K_n(x,y)=\sum_{j=0}^np_j(x)\overline{p_j(y)}$.
   $C(z)=\int(z-x)^{-1}d\mu(x)$, the $[n-1/n]$ Padé
   approximant at infinity is the Gauss Cauchy transform
   $\sum_j\lambda_j/(z-x_j)$. It matches the first $2n$ moments.
-* **21. Christoffel modification.** If $a$ lies to the left of the
-  support, the monic polynomials for $(x-a)d\mu$ are
-  $[P_{n+1}(x)-P_{n+1}(a)P_n(x)/P_n(a)]/(x-a)$.
-  This transforms recurrence coefficients by factorization of the Jacobi matrix.
 
 ## Jacobi operators and spectral measures
 
@@ -259,6 +262,18 @@ $\alpha_n=-\overline{\Phi_{n+1}(0)}$.
 * **58. Rakhmanov's theorem.** If $w>0$ almost everywhere on
   the whole circle, then $\alpha_n\to0$, even with an additional
   singular part of $\mu$.
+* **76. Szegő map and Geronimus relations.** For a probability $\mu$ on
+  $\mathbb T$ invariant under $z\mapsto\bar z$, define $\nu=\operatorname{Sz}(\mu)$
+  on $[-2,2]$ by $\int g\,d\nu=\int g(z+z^{-1})\,d\mu(z)$. This is a
+  bijection onto the probabilities on $[-2,2]$; the Verblunsky coefficients
+  of $\mu$ are real, and the Jacobi parameters of $\nu$, in the
+  indexing of the Jacobi section, are
+  $a_{n+1}^2=(1-\alpha_{2n-1})(1-\alpha_{2n}^2)(1+\alpha_{2n+1})$ and
+  $b_n=(1-\alpha_{2n-1})\alpha_{2n}-(1+\alpha_{2n-1})\alpha_{2n-2}$,
+  $n\geq0$, with $\alpha_{-1}=-1$ (Geronimus). The Szegő condition for
+  $\nu$, $\int_{-2}^2\log w(x)(4-x^2)^{-1/2}dx>-\infty$, is equivalent
+  to $\sum\alpha_n^2<\infty$; this transfers items 54, 55, and 58 to
+  the real-line results 63 and 65.
 
 ## Asymptotics and potential theory
 
@@ -309,16 +324,11 @@ the exterior Green function with pole at infinity.
   even, convex, and of polynomial growth, the sup norms of weighted
   polynomials $Pe^{-Q}$, $\deg P\leq n$, live on the Mhaskar–Rakhmanov–Saff
   interval $[-a_n^*,a_n^*]$. After rescaling by $a_n^*$, zero distributions
-  converge to the equilibrium measure in the external field. For
-  $Q(x)=|x|^\alpha$, $\alpha>0$, $a_n/n^{1/\alpha}$ converges to an
-  explicit constant (Freud's conjecture, Lubinsky–Mhaskar–Saff).
-* **69. Riemann–Hilbert characterization.** For positive smooth
-  rapidly decreasing $w$ on $\mathbb R$, the unique normalized
-  $2\times2$ problem with jump
-  $Y_+=Y_-\begin{pmatrix}1&w\\0&1\end{pmatrix}$ and
-  $Y=(I+O(z^{-1}))\operatorname{diag}(z^n,z^{-n})$
-  has $Y_{11}=P_n$; the other entries are adjacent polynomials
-  and their Cauchy transforms. This gives the analytic route to strong asymptotics.
+  converge to the equilibrium measure in the external field. For the
+  Freud weight $e^{-2|x|^\alpha}$, $\alpha>0$ (convex only for
+  $\alpha\geq1$), the recurrence coefficients $a_n$ of the orthonormal
+  polynomials satisfy $a_n/n^{1/\alpha}\to$ an explicit constant
+  (Freud's conjecture, Lubinsky–Mhaskar–Saff).
 
 ## Multivariate structure and modified measures
 
@@ -346,6 +356,30 @@ the exterior Green function with pole at infinity.
   Consequently positivity of multivariate moment matrices alone does
   not imply a representing measure; Haviland positivity or additional
   moment, growth, or support hypotheses are needed.
+* **21. Christoffel modification.** If $a$ lies to the left of the
+  support, the monic polynomials for $(x-a)d\mu$ are
+  $[P_{n+1}(x)-P_{n+1}(a)P_n(x)/P_n(a)]/(x-a)$.
+  This transforms recurrence coefficients by factorization of the Jacobi matrix.
+* **77. Christoffel's theorem.** Let $\pi(x)=\prod_{i=1}^m(x-a_i)$ have
+  distinct real zeros and be nonnegative on the support of $\mu$. Then
+  the orthogonal polynomials of $\pi\,d\mu$ are, up to normalization,
+  $\pi(x)^{-1}\det\begin{pmatrix}P_n(x)&\cdots&P_{n+m}(x)\\
+  P_n(a_i)&\cdots&P_{n+m}(a_i)\end{pmatrix}$, the lower block having one
+  row for each $i$. Item 21 is the case $m=1$.
+* **78. Geronimus transformation.** For $a$ to the left of the support
+  and $M\geq0$, put $d\nu=(x-a)^{-1}d\mu+M\delta_a$, so that
+  $(x-a)d\nu=d\mu$. Its monic orthogonal polynomials are
+  $Q_n=P_n+c_nP_{n-1}$ with
+  $c_n=-\int P_n\,d\nu/\int P_{n-1}\,d\nu>0$. The free mass $M$
+  reflects that division by $x-a$ determines $\nu$ only up to a point mass
+  at $a$. On Jacobi matrices the Christoffel and Geronimus transformations
+  are the two directions of a Darboux refactorization of $J-a$ into
+  triangular factors.
+* **79. Uvarov transformation.** For real $a$ and $M>0$, the monic
+  orthogonal polynomials of $\mu+M\delta_a$ are
+  $P_n(x)-MP_n(a)K_{n-1}(x,a)/(1+MK_{n-1}(a,a))$.
+  Adding mass therefore changes the polynomials through the
+  Christoffel–Darboux kernel only.
 
 ## Reference guide
 
@@ -354,7 +388,9 @@ zero, kernel, and quadrature core. Akhiezer, Shohat–Tamarkin,
 Krein–Nudel'man, and Schmüdgen develop existence and determinacy;
 Schmüdgen, Marshall, and Lasserre supply the multivariate positivity
 continuation. Simon and the unit-circle chapters of Ismail organize
-OPUC and spectral recurrences. Stahl–Totik, Saff–Totik, Levin–Lubinsky,
+OPUC and spectral recurrences, including the Szegő map and Geronimus
+relations; Szegő, Chihara, and Ismail give the Christoffel, Geronimus, and
+Uvarov modifications of measures. Stahl–Totik, Saff–Totik, Levin–Lubinsky,
 and Deift supply the potential and asymptotic theories. Dunkl–Xu
 explains the matrix and cubature structure in several variables.
 Integrable deformations and detailed classifications of hypergeometric

@@ -1,14 +1,23 @@
 # Synopsis: Unbounded operators, spectral theory, and mathematical physics
 
 Part of the [mathematical synopsis series](SYNOPSIS.md).
+[Bibliographical scope and references](CKMA-bib.md#ckma-22);
+[MSC2020 correspondence and cross-subject index](CKMA-MSC2020.md).
 
 This synopsis selects the recurring core of Section 22 of
-[CKMA-bib.md](CKMA-bib.md): domains and
-self-adjointness, spectral measures, quadratic forms, perturbations,
-Schrödinger operators, one-dimensional spectral theory, and scattering.
+[CKMA-bib.md](CKMA-bib.md#ckma-22): domains and
+self-adjointness, boundary triples, spectral measures, quadratic forms,
+perturbations, Schrödinger operators, the basic theory of periodic, random,
+and Dirac operators, one-dimensional spectral theory, and scattering.
 Specialist many-body, random, semiclassical, and inverse theories extend
 this core; their full hypotheses and techniques are not compressed into
 the elementary statements below.
+
+Inverse problems have several homes in the current classification. The
+[inverse-problems route](CKMA-MSC2020.md#inverse-problems) connects this
+spectral and operator viewpoint with boundary-integral methods in Section 25,
+Carleman and microlocal tools in Sections 30 and 33, and geometric problems in
+Section 53.
 
 Throughout, $H$ is a complex Hilbert space with inner product linear in
 the first variable. An **unbounded operator** includes its linear domain
@@ -41,6 +50,35 @@ a subspace dense in $D(A)$ for the graph norm $\|u\|+\|Au\|$.
   $U=(A-i)(A+i)^{-1}$ is unitary and has no eigenvector with eigenvalue
   one. Conversely every such unitary determines a unique self-adjoint
   operator by the inverse Cayley transform.
+* **69. Boundary triples.** Let $S$ be closed, densely defined, and
+  symmetric. A **boundary triple** $(\mathcal G,\Gamma_0,\Gamma_1)$ for
+  $S^*$ consists of a Hilbert space $\mathcal G$ and linear maps
+  $\Gamma_0,\Gamma_1:D(S^*)\to\mathcal G$ such that
+  $\langle S^*u,v\rangle-\langle u,S^*v\rangle
+  =\langle\Gamma_1u,\Gamma_0v\rangle_{\mathcal G}
+  -\langle\Gamma_0u,\Gamma_1v\rangle_{\mathcal G}$ and
+  $u\mapsto(\Gamma_0u,\Gamma_1u)$ maps $D(S^*)$ onto
+  $\mathcal G\oplus\mathcal G$. One exists exactly when $n_+=n_-$, and then
+  $\dim\mathcal G=n_\pm$. The restrictions
+  $S_\Theta=S^*|\{u:(\Gamma_0u,\Gamma_1u)\in\Theta\}$ give a bijection
+  between closed linear relations $\Theta$ in $\mathcal G$ and closed
+  extensions between $S$ and $S^*$; $S_\Theta$ is self-adjoint exactly
+  when $\Theta$ is a self-adjoint relation. In particular
+  $A_0=S^*|\ker\Gamma_0$ is self-adjoint. For $-d^2/dx^2$ on a compact
+  interval, $\Gamma_0u=(u(a),u(b))$ and $\Gamma_1u=(u'(a),-u'(b))$ form a
+  boundary triple, and $A_0$ is the Dirichlet operator.
+* **70. Weyl function and Krein resolvent formula.** In the setting of
+  item 69, for $z\in\rho(A_0)$ let $\gamma(z)$ be the inverse of
+  $\Gamma_0$ restricted to $\ker(S^*-z)$ and $M(z)=\Gamma_1\gamma(z)$.
+  Then $M$ is a $\mathcal B(\mathcal G)$-valued Nevanlinna function,
+  $M(z)-M(w)^*=(z-\overline w)\gamma(w)^*\gamma(z)$. For a closed relation
+  $\Theta$, $z\in\rho(A_0)$ is an eigenvalue of $S_\Theta$ exactly when
+  $\ker(\Theta-M(z))\neq0$, lies in $\rho(S_\Theta)$ exactly when
+  $0\in\rho(\Theta-M(z))$, and then
+  $$(S_\Theta-z)^{-1}=(A_0-z)^{-1}
+    +\gamma(z)\bigl(\Theta-M(z)\bigr)^{-1}\gamma(\overline z)^*$$
+  (Krein–Naimark). For half-line Sturm–Liouville operators $M$ is the
+  Weyl–Titchmarsh function of item 55.
 * **7. Stone theorem.** Every strongly continuous unitary group is
   $U(t)=e^{-itA}$ for a unique self-adjoint $A$. Its differentiability
   domain is $D(A)$, and $U'(0)u=-iAu$ there.
@@ -118,7 +156,8 @@ extension obtained by completing its graph in this form norm.
   original domain in the form norm.
 * **22. KLMN theorem.** If $q\geq0$ is closed and a symmetric form $b$
   on $Q(q)$ satisfies $|b[u]|\leq a q[u]+c\|u\|^2$ with $a<1$,
-  then $q+b$ is closed and lower semibounded on the same form domain.
+  then $q+b$ is closed and lower semibounded on the same form domain, and
+  so (if $Q(q)$ is dense) defines a unique self-adjoint operator by item 19.
 * **23. Monotone convergence of forms.** An increasing sequence of
   nonnegative closed forms has a closed supremum form on the vectors
   where the supremum is finite. If that domain is dense, the associated
@@ -147,6 +186,8 @@ For self-adjoint operators this agrees with the Fredholm definition.
   enumerate the eigenvalues below $\inf\sigma_{\rm ess}(A)$, with
   multiplicity, and equal that threshold once there are fewer than $n$
   such eigenvalues. The threshold is $+\infty$ for compact resolvent.
+  For elliptic realizations, Dirichlet and Neumann conditions differ
+  through their form domains.
 * **28. Form comparison and bracketing.** Enlarging a form domain or
   decreasing a form lowers all min–max values. Hence Dirichlet eigenvalues
   decrease as the domain grows, and if a bounded domain $\Omega$ is split by
@@ -165,7 +206,8 @@ For self-adjoint operators this agrees with the Fredholm definition.
   a standard sufficient condition.
 * **31. Weyl law on bounded domains.** For a bounded smooth domain in
   $\mathbb R^d$, both Dirichlet and Neumann counting functions satisfy
-  $N(\Lambda)\sim(2\pi)^{-d}\omega_d|\Omega|\Lambda^{d/2}$.
+  $N(\Lambda)\sim(2\pi)^{-d}\omega_d|\Omega|\Lambda^{d/2}$, where
+  $\omega_d$ is the volume of the unit ball in $\mathbb R^d$.
 
 ## Perturbation theory
 
@@ -207,9 +249,12 @@ form values.
 * **39. Trotter product formula.** If $A$ and $B$ are self-adjoint and
   $A+B$ is essentially self-adjoint on $D(A)\cap D(B)$, then
   $e^{it\overline{(A+B)}}=\operatorname{s-lim}_{n\to\infty}
-  (e^{itA/n}e^{itB/n})^n$. For $A,B$ bounded below the analogous
-  formula holds for $e^{-t(A\dotplus B)}$ with the form sum (Kato); this is
-  the operator basis of the Feynman–Kac formula.
+  (e^{itA/n}e^{itB/n})^n$. For $A,B$ bounded below with form domains
+  $Q(A),Q(B)$, $(e^{-tA/n}e^{-tB/n})^n$ converges strongly to
+  $e^{-t(A\dotplus B)}P$, where $A\dotplus B$ is the form sum on
+  $\overline{Q(A)\cap Q(B)}$ and $P$ the orthogonal projection onto that
+  closure; if $Q(A)\cap Q(B)$ is dense the limit is $e^{-t(A\dotplus B)}$
+  (Kato). This is the operator basis of the Feynman–Kac formula.
 
 ## Schrödinger operators and eigenvalue estimates
 
@@ -238,7 +283,9 @@ form bounds, so the form domain is dense and the operator is well defined.
   and can accumulate only at zero.
 * **44. HVZ theorem.** For an $N$-body Hamiltonian with the centre of mass
   removed and pair potentials relatively compact with respect to the
-  Laplacian on $\mathbb R^3$ (e.g. in $L^2+L^\infty_\varepsilon$), the
+  Laplacian on $\mathbb R^3$ (e.g. in $L^2+L^\infty_\varepsilon$: for every
+  $\varepsilon>0$, $V=V_1+V_2$ with $V_1\in L^2$ and
+  $\|V_2\|_\infty<\varepsilon$), the
   essential spectrum is $[\Sigma,\infty)$, where $\Sigma$ is the minimum of
   the bottoms of the spectra of the cluster Hamiltonians over decompositions
   into at least two clusters (Hunziker, van Winter, Zhislin).
@@ -264,6 +311,76 @@ form bounds, so the form domain is dense and the operator is well defined.
   $0<a^2<\liminf V-E$. Weighted energy estimates give analogous
   decay in the Agmon metric for more general potentials.
 
+## Periodic, random, and Dirac operators
+
+Let $V$ be real and periodic with respect to $\mathbb Z^d$, with
+$V\in L^\infty$ unless stated otherwise, let $\mathbb T^d=\mathbb R^d/\mathbb Z^d$,
+and let $B=[-\pi,\pi]^d$ be the Brillouin zone. An **ergodic operator**
+is a measurable family $H_\omega$ of self-adjoint operators over an
+ergodic measure-preserving action of $\mathbb Z^d$ (or $\mathbb R^d$)
+on a probability space, with $H_{T_x\omega}=U_xH_\omega U_x^*$ for
+translations $U_x$.
+
+* **71. Floquet–Bloch decomposition.** The Floquet transform conjugates
+  $H_V=-\Delta+V$ to a direct integral
+  $\int_B^\oplus H(k)\,dk/|B|$, where
+  $H(k)=(-i\nabla+k)^2+V$ on $L^2(\mathbb T^d)$ has compact resolvent.
+  Its eigenvalues $\lambda_1(k)\leq\lambda_2(k)\leq\cdots$ are continuous
+  and $2\pi\mathbb Z^d$-periodic, and
+  $\sigma(H_V)=\bigcup_n[\min_k\lambda_n,\max_k\lambda_n]$, a union of
+  closed **bands** possibly separated by gaps. The spectrum is purely
+  absolutely continuous (Thomas). In one dimension (SYNOPSIS51, item 39)
+  all gaps are closed only when $V$ is constant (Borg); for smooth $V$ in
+  dimension $d\geq2$ there are only finitely many gaps
+  (Bethe–Sommerfeld conjecture; Skriganov, Parnovski).
+* **72. Deterministic spectra of ergodic operators.** For an ergodic
+  family, $\sigma(H_\omega)$ equals a fixed closed set $\Sigma$ for almost
+  every $\omega$, and so do its absolutely continuous, singular continuous,
+  and pure point parts (Pastur; Kunz–Souillard, Kirsch–Martinelli). The
+  discrete spectrum is almost surely empty, and each fixed $E$ is almost
+  surely not an eigenvalue.
+* **73. Integrated density of states.** For the Anderson model
+  $H_\omega=h_0+\lambda\sum_x\omega_x\langle\cdot,\delta_x\rangle\delta_x$
+  on $\ell^2(\mathbb Z^d)$, with $(h_0u)(x)=\sum_{|y-x|=1}u(y)$ and
+  i.i.d. $\omega_x$ of distribution $\mu$, the limit
+  $N(E)=\lim_{L\to\infty}|\Lambda_L|^{-1}\#\{\text{eigenvalues}\leq E
+  \text{ of }H_\omega|_{\Lambda_L}\}$ over boxes $\Lambda_L$ exists almost
+  surely, is nonrandom, and equals $\mathbb E\langle\delta_0,
+  1_{(-\infty,E]}(H_\omega)\delta_0\rangle$; $\Sigma$ is the set of
+  points of increase of $N$, and here
+  $\Sigma=[-2d,2d]+\lambda\operatorname{supp}\mu$ (Kunz–Souillard).
+  If $\mu$ has a bounded density $\rho$, $N$ is Lipschitz, by the Wegner
+  estimate $\mathbb E\operatorname{tr}1_I(H_\omega|_\Lambda)\leq
+  |\lambda|^{-1}\|\rho\|_\infty|I||\Lambda|$.
+* **74. Anderson localization.** In the setting of item 73 with a bounded
+  density, for $|\lambda|$ sufficiently large the spectrum of $H_\omega$ is
+  almost surely pure point, with exponentially decaying eigenfunctions,
+  and dynamical localization holds (multiscale analysis of
+  Fröhlich–Spencer; fractional moments of Aizenman–Molchanov). The same
+  holds at every disorder $\lambda\neq0$ in dimension one (Kunz–Souillard;
+  Goldsheid–Molchanov–Pastur in the continuum) and near the edges of
+  $\Sigma$ in any dimension. Absolutely continuous spectrum at weak
+  disorder for $d\geq3$ is open, though it holds on regular trees (Klein).
+* **75. Free Dirac operator.** With $4\times4$ Hermitian matrices
+  $\alpha_1,\alpha_2,\alpha_3,\beta$ satisfying the anticommutation
+  relations $\alpha_j\alpha_k+\alpha_k\alpha_j=2\delta_{jk}$,
+  $\alpha_j\beta+\beta\alpha_j=0$, $\beta^2=I$, the operator
+  $H_0=-ic\,\alpha\cdot\nabla+mc^2\beta$ is self-adjoint on
+  $H^1(\mathbb R^3)^4$ and essentially self-adjoint on
+  $C_c^\infty(\mathbb R^3\setminus\{0\})^4$. Fourier transformation
+  diagonalizes it with eigenvalues $\pm\sqrt{c^2|\xi|^2+m^2c^4}$, so
+  $\sigma(H_0)=(-\infty,-mc^2]\cup[mc^2,\infty)$, purely absolutely
+  continuous, and $H_0^2=(-c^2\Delta+m^2c^4)I$. The spectrum is unbounded
+  below, so no Rayleigh principle applies directly.
+* **76. Coulomb–Dirac operators.** If $|x||V(x)|\leq\nu$, then $H_0+V$
+  is essentially self-adjoint on $C_c^\infty(\mathbb R^3\setminus\{0\})^4$
+  and self-adjoint on $H^1(\mathbb R^3)^4$ for $\nu<c\sqrt3/2$; for
+  $\nu<c$ it has a distinguished self-adjoint extension, characterized by
+  a domain contained in $D(|x|^{-1/2})$ (Schmincke, Wüst, Nenciu). For
+  $V=-\nu/|x|$, $0<\nu<c$, the essential spectrum is that of $H_0$ and
+  the eigenvalues lie in $(-mc^2,mc^2)$, accumulate only at $mc^2$, and
+  are given by Sommerfeld's fine-structure formula.
+
 ## Sturm–Liouville operators and quantum graphs
 
 For the one-dimensional expression $\tau u=-u''+Vu$ with real
@@ -271,24 +388,20 @@ $V\in L^1_{\rm loc}(a,b)$, the maximal domain consists of $u,u'$
 locally absolutely continuous with $u,\tau u\in L^2$. A singular
 endpoint is **limit circle** if all solutions for nonreal spectral
 parameter are square integrable near it, and **limit point** otherwise.
+Regular problems with separated boundary conditions (simple eigenvalues,
+complete eigenfunctions) and Sturm oscillation are in Section 31
+(SYNOPSIS31, items 21–22).
 
 * **50. Green identity.** On a regular finite interval,
   $\langle\tau u,v\rangle-\langle u,\tau v\rangle
   =[u\overline{v'}-u'\overline v]_a^b$. Self-adjoint boundary
   conditions are precisely maximal subspaces on which this boundary
   form vanishes.
-* **51. Separated boundary conditions.** Real separated Dirichlet,
-  Neumann, or Robin conditions at regular endpoints give self-adjoint
-  operators with compact resolvent, simple eigenvalues, and complete
-  orthonormal eigenfunctions.
 * **52. Weyl alternative.** At each endpoint the limit-point/limit-circle
   classification is independent of the nonreal parameter. A limit-circle
   endpoint requires one self-adjoint boundary condition; a limit-point
   endpoint requires none. The minimal operator is essentially self-adjoint
   exactly when both endpoints are limit point.
-* **53. Sturm oscillation theorem.** The $n$th eigenfunction for regular
-  separated boundary conditions has exactly $n-1$ zeros in $(a,b)$,
-  counting eigenvalues increasingly from $n=1$.
 * **54. Interlacing.** Changing one separated endpoint condition from
   Dirichlet to Neumann gives interlacing eigenvalues. More generally the
   spectra for two distinct separated conditions at one endpoint interlace
@@ -345,7 +458,7 @@ when they exist. They are **complete** if their ranges equal $H_{\rm ac}(A)$.
   subspace exactly when for every compact $C$,
   $T^{-1}\int_0^T\|Ce^{-itA}u\|^2dt\to0$. A vector belongs to the
   pure point subspace exactly when its unitary orbit is relatively compact
-  ([Teschl, Chapter 5](https://www.mat.univie.ac.at/~gerald/ftp/book-schroe/schroe.pdf)).
+  (Teschl, Chapter 5).
 * **64. Absolutely continuous local decay.** If $u\in H_{\rm ac}(A)$,
   then $Ce^{-itA}u\to0$ in norm for every compact $C$ as
   $|t|\to\infty$. Scalar matrix coefficients tend to zero by the
@@ -392,6 +505,12 @@ Cycon–Froese–Kirsch–Simon, and Hislop–Sigal treat the HVZ theorem, limit
 absorption, and short-range scattering; the scattering and
 nonnormal sections select foundational results shared by the relevant
 monographs rather than a comprehensive scattering or resonance theory.
+Schmüdgen and Behrndt–Hassi–de Snoo develop boundary triples, Weyl
+functions, and the Krein resolvent formula. Kuchment is the source for
+Floquet–Bloch theory and Reed–Simon IV for periodic operators;
+Cycon–Froese–Kirsch–Simon and Aizenman–Warzel treat ergodic operators, the
+density of states, and Anderson localization; Thaller treats the Dirac
+operator and its Coulomb problem.
 
 Teschl's [author-hosted online edition](https://www.mat.univie.ac.at/~gerald/ftp/book-schroe/schroe.pdf),
 Chapter 5, was also consulted for the spectral-dynamics formulations.
@@ -403,3 +522,7 @@ Local source copies consulted:
 * [Hall, Quantum Theory for Mathematicians](References/Hall2013QuantumTheoryMathematicians-SpringerGTM.pdf).
 * [Frank–Laptev–Weidl, Schrödinger Operators: Eigenvalues and Lieb–Thirring Inequalities](References/FrankLaptevWeidl2023SchrodingerOperatorsEigenvaluesLiebThirringInequalities-Cambridge.StudAM200.pdf).
 * [Davies, Linear Operators and Their Spectra](References/Davies2007LinearOperatorsSpectra-CambridgeStudiesAM106.pdf).
+* [Schmüdgen, Unbounded Self-adjoint Operators on Hilbert Space](References/Schmuedgen2012UnboundedSelfadjointOperatorsHilbertSpace-SpringerGTM265.pdf).
+* [Behrndt–Hassi–de Snoo, Boundary Value Problems, Weyl Functions, and Differential Operators](References/BehrndtHassiDeSnoo2020BoundaryValueProblemsWeylFunctionsDifferentialOperators-Birkhauser.MMA108.pdf).
+* [Kuchment, Floquet Theory for Partial Differential Equations](References/Kuchment1993FloquetTheoryPartialDifferentialEquations-SpringerOTAA60.pdf).
+* [Thaller, The Dirac Equation](References/Thaller1992DiracEquation-SpringerTMP.pdf).

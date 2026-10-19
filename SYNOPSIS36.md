@@ -1,14 +1,22 @@
 # Synopsis: Calculus of variations, Γ-convergence, and homogenization
 
 Part of the [mathematical synopsis series](SYNOPSIS.md).
+[Bibliographical scope and references](CKMA-bib.md#ckma-36);
+[MSC2020 correspondence and cross-subject index](CKMA-MSC2020.md).
 
 This synopsis selects recurring material from Section 36 of
-[CKMA-bib.md](CKMA-bib.md).
+[CKMA-bib.md](CKMA-bib.md#ckma-36).
 It covers classical variations, existence and lower semicontinuity,
 quasiconvexity and microstructure, critical-point methods, variational
 convergence, and homogenization. BV structure and geometric minimization
 are developed further in Section 37. Convex analysis supplies many tools,
 but vectorial variational problems require more than convexity.
+
+Convex optimization and nonsmooth calculus are organised in Section 12,
+abstract nonlinear existence in Section 35, and transport and metric gradient
+flows in [39C](CKMA-bib.md#ckma-39c). The final optimal-control material
+connects with the control routes through Sections [08C](CKMA-bib.md#ckma-08c),
+24, and 52.
 
 Unless otherwise stated, $\Omega\subset\mathbb R^d$ is bounded and
 Lipschitz, $u:\Omega\to\mathbb R^m$, and $1<p<\infty$.
@@ -67,7 +75,8 @@ the theorem rather than consequences of the notation.
   bounds minimizing sequences in $W^{1,p}$. Reflexivity gives a
   weakly convergent subsequence with the same trace constraint.
 * **12. Convex lower semicontinuity.** Let $f(x,u,F)\geq0$ be
-  measurable in $x$, lower semicontinuous in $(u,F)$, and convex in $F$.
+  $\mathcal L\otimes\mathcal B$-measurable, lower semicontinuous in $(u,F)$
+  (a normal integrand), and convex in $F$.
   If $u_j\to u$ in $L^1$ and $Du_j\rightharpoonup Du$ in $L^1$, then
   $I(u)\leq\liminf I(u_j)$ (De Giorgi, Ioffe); no growth condition is
   needed. Adding a continuous linear load preserves this property.
@@ -145,9 +154,10 @@ It is **rank-one convex** if it is convex on every rank-one line, and
 
 A **Young measure** is a weakly measurable field of probability measures
 $\nu_x$ recording limiting distributions of oscillating values.
+The Brezis–Lieb lemma used with concentration–compactness is SYNOPSIS04, item 22.
 
 * **25. Fundamental Young-measure compactness.** A bounded sequence
-  in $L^p$, $p>1$, has a subsequence generating $\nu_x$.
+  in $L^1$ (in particular in $L^p$, $p>1$) has a subsequence generating $\nu_x$.
   For continuous test integrands whose compositions are uniformly
   integrable, their integrals converge to $\int\langle\nu_x,f(x,\cdot)\rangle dx$.
 * **26. Barycenter and collapse.** If $v_j\rightharpoonup v$ in $L^p$,
@@ -168,9 +178,6 @@ $\nu_x$ recording limiting distributions of oscillating values.
   $b_j\rightharpoonup b$ in $L^{p'}$, their divergences and curls
   are locally precompact in the matching negative Sobolev spaces,
   then $a_j\cdot b_j\to a\cdot b$ distributionally.
-* **30. Brezis–Lieb splitting.** If $u_j\to u$ almost everywhere
-  and $(u_j)$ is bounded in $L^p$, $1<p<\infty$, then
-  $\|u_j\|_p^p-\|u_j-u\|_p^p\to\|u\|_p^p$.
 * **31. Concentration–compactness vanishing lemma.** A bounded
   $H^1(\mathbb R^d)$ sequence with
   $\sup_y\int_{B_1(y)}|u_j|^2\to0$ converges strongly to zero
@@ -185,14 +192,9 @@ $\nu_x$ recording limiting distributions of oscillating values.
 
 For $I\in C^1(X,\mathbb R)$, the **Palais–Smale condition at $c$**
 means every sequence with $I(u_j)\to c$ and $DI(u_j)\to0$ has a strongly
-convergent subsequence.
+convergent subsequence. Ekeland's variational principle, which yields
+minimizing Palais–Smale sequences, is SYNOPSIS12, item 45.
 
-* **33. Ekeland's variational principle.** Let $I$ be lower
-  semicontinuous, bounded below, and proper on a complete metric space.
-  If $I(u_0)\leq\inf I+\varepsilon$ and $\lambda>0$, there is $u$ with
-  $I(u)\leq I(u_0)$, $d(u,u_0)\leq\lambda$, and
-  $I(v)>I(u)-(\varepsilon/\lambda)d(u,v)$ for every $v\ne u$.
-  For differentiable functionals this produces minimizing Palais–Smale sequences.
 * **34. Deformation lemma.** If a $C^1$ functional satisfies compactness
   near an energy interval and has no critical point there, a
   continuous descending deformation carries the upper sublevel below
@@ -240,6 +242,41 @@ convergent subsequence.
   $-\Delta u=\lambda u+u^{2^*-1}$, $u>0$, $u=0$ on $\partial\Omega$
   has a solution for $d\geq4$ and $0<\lambda<\lambda_1(\Omega)$; for $d=3$
   only a subinterval of $(0,\lambda_1)$ works (on a ball, $(\lambda_1/4,\lambda_1)$).
+* **66. Critical groups and the Morse lemma.** Let $I\in C^1(X,\mathbb R)$
+  and let $u$ be an isolated critical point with $I(u)=c$. Its critical
+  groups are $C_q(I,u)=H_q(I^c\cap U,(I^c\setminus\{u\})\cap U)$,
+  with $I^c=\{I\leq c\}$, $U$ a neighborhood containing no other
+  critical point, and singular homology over a field $\mathbb F$; they
+  do not depend on $U$. On a Hilbert space, a critical point of a $C^2$
+  functional is nondegenerate if $D^2I(u)$ is invertible; its Morse index
+  $m$ is the dimension of the maximal negative subspace of $D^2I(u)$,
+  assumed finite. Near such a point, $I$ is the quadratic form
+  $c+\tfrac12\langle D^2I(u)h,h\rangle$ in suitable local coordinates
+  (Morse lemma; Palais in Hilbert space), and $C_q(I,u)=\mathbb F$ for
+  $q=m$, $0$ otherwise. A local minimizer has $C_q=\delta_{q0}\mathbb F$.
+* **67. Morse inequalities.** Let $I\in C^1(X,\mathbb R)$ satisfy
+  Palais–Smale, let $a<b$ be regular values, and suppose
+  $I^{-1}[a,b]$ contains finitely many critical points. With
+  $M_q=\sum_u\dim C_q(I,u)$ over those points and
+  $\beta_q=\dim H_q(I^b,I^a)$, both finite,
+  $\sum_{q\leq k}(-1)^{k-q}M_q\geq\sum_{q\leq k}(-1)^{k-q}\beta_q$ for
+  every $k$, and $\sum_q(-1)^qM_q=\sum_q(-1)^q\beta_q$; in particular
+  $M_q\geq\beta_q$. If the critical points at the mountain-pass level
+  of 35 are isolated, one of them has $C_1(I,u)\neq0$ (Hofer). Critical
+  groups thus distinguish mountain-pass solutions from minimizers and
+  yield further critical points when $I^b$ and $I^a$ differ topologically.
+* **68. Periodic orbits of Hamiltonian systems.** On $\mathbb R^{2n}$
+  with the standard symplectic matrix $J$, $T$-periodic solutions of
+  $\dot z=J\nabla H(z)$ are the critical points of the strongly
+  indefinite action $\int_0^T(\tfrac12\langle-J\dot z,z\rangle-H(z))dt$
+  on $H^{1/2}(\mathbb R/T\mathbb Z;\mathbb R^{2n})$. If $H\in C^1$,
+  $H\geq0$, $H(z)=o(|z|^2)$ as $z\to0$, and
+  $0<\mu H(z)\leq z\cdot\nabla H(z)$ for $|z|\geq r$ with $\mu>2$, then
+  for every $T>0$ there is a nonconstant $T$-periodic solution, obtained by
+  linking (Rabinowitz). Every compact energy surface $H^{-1}(1)$ that is
+  star-shaped, with $z\cdot\nabla H(z)>0$ on it, carries a periodic orbit
+  (Rabinowitz; for convex surfaces Weinstein, and Clarke–Ekeland through
+  the dual action principle).
 
 ## Γ-convergence and variational limits
 
@@ -255,8 +292,8 @@ Equicoercivity means their sublevels lie in common relatively compact sets.
   $F_j$ with Γ-limit $F$, $F$ attains its minimum and
   $\min F=\lim_j\inf F_j$. Every cluster point of a sequence $x_j$ with
   $F_j(x_j)\leq\inf F_j+o(1)$ minimizes $F$.
-* **45. Recovery of minimizers.** Every minimizer of the Γ-limit has
-  a recovery sequence that is asymptotically minimizing. If its minimizer
+* **45. Recovery of minimizers.** Under the equicoercivity of 44, every
+  minimizer of the Γ-limit has a recovery sequence that is asymptotically minimizing. If its minimizer
   is unique, every equicoercive sequence of approximate minimizers converges to it.
 * **46. Γ-compactness.** On a separable metric space, every sequence
   of functionals with values in $[0,\infty]$ has a Γ-convergent
@@ -284,6 +321,24 @@ Equicoercivity means their sublevels lie in common relatively compact sets.
   has several minimizers, rescaling the excess energy can distinguish
   among them through a further Γ-limit, provided the rescaled family
   is equicoercive. A first-order Γ-limit alone does not determine that selection.
+* **69. Ginzburg–Landau vortices.** Let $\Omega\subset\mathbb R^2$ be
+  smooth, bounded, and star-shaped, $g:\partial\Omega\to S^1$ smooth of
+  degree $d>0$, and
+  $E_\varepsilon(u)=\int_\Omega(\tfrac12|\nabla u|^2
+  +\tfrac1{4\varepsilon^2}(1-|u|^2)^2)$ on $\{u\in H^1(\Omega;\mathbb C):u=g
+  \text{ on }\partial\Omega\}$. Minimizers satisfy
+  $E_\varepsilon(u_\varepsilon)=\pi d|\log\varepsilon|+O(1)$. Along a
+  subsequence they converge, in $C^k_{\mathrm{loc}}(\overline\Omega\setminus
+  \{a_1,\ldots,a_d\})$, to an $S^1$-valued harmonic map with $d$ distinct
+  interior vortices of degree one, and $(a_1,\ldots,a_d)$ minimizes the
+  renormalized energy $W$; indeed
+  $E_\varepsilon(u_\varepsilon)=\pi d|\log\varepsilon|+\min W+d\gamma_0+o(1)$
+  with a universal constant $\gamma_0$ (Bethuel–Brezis–Hélein). Without
+  boundary data, $E_\varepsilon(u_\varepsilon)\leq C|\log\varepsilon|$
+  gives compactness of the Jacobians $\det\nabla u_\varepsilon$ toward
+  $\pi\sum_jd_j\delta_{a_j}$ with
+  $\liminf E_\varepsilon/|\log\varepsilon|\geq\pi\sum_j|d_j|$
+  (Jerrard; Sandier; Jerrard–Soner).
 
 ## Periodic and stochastic homogenization
 
@@ -310,7 +365,7 @@ Periodic correctors $\chi_i$ have mean zero and belong to $H^1_{\mathrm{per}}(Y)
   coefficient is exactly the harmonic mean $(\int_Ya^{-1})^{-1}$.
 * **57. Corrector convergence.** For smooth periodic coefficients and
   a smooth homogenized solution,
-  $\nabla u_\varepsilon-(I+\nabla_y\chi(x/\varepsilon))\nabla u
+  $\nabla u_\varepsilon-\nabla u-\sum_i\partial_iu\,\nabla_y\chi_i(x/\varepsilon)
   \to0$ in $L^2_{\mathrm{loc}}$.
   On a smooth bounded domain with $u\in H^2$, the first-order expansion
   satisfies $\|u_\varepsilon-u-\varepsilon\chi(x/\varepsilon)\cdot\nabla u\|_{H^1}
@@ -346,6 +401,78 @@ Periodic correctors $\chi_i$ have mean zero and belong to $H^1_{\mathrm{per}}(Y)
   random coefficients homogenize almost surely to a deterministic
   matrix. Ergodicity removes realization dependence; quantitative
   rates require additional assumptions on correlations.
+* **70. Hashin–Shtrikman bounds.** Mix two isotropic conductors
+  $0<\sigma_1<\sigma_2$ in $\mathbb R^d$ with volume fractions
+  $\theta_1,\theta_2$. Every isotropic effective conductivity
+  $\sigma^*I$ obtained as an H-limit (entry 61) of such mixtures satisfies
+  $$
+  \sigma_1+\frac{\theta_2}{(\sigma_2-\sigma_1)^{-1}+\theta_1/(d\sigma_1)}
+  \leq\sigma^*\leq
+  \sigma_2+\frac{\theta_1}{(\sigma_1-\sigma_2)^{-1}+\theta_2/(d\sigma_2)},
+  $$
+  and both bounds are attained, by coated spheres or sequential laminates.
+  They improve the arithmetic and harmonic mean bounds of entry 56. The
+  full set of attainable anisotropic effective tensors, the G-closure,
+  is characterized by analogous trace bounds on their eigenvalues
+  (Murat–Tartar; Lurie–Cherkaev).
+
+## Shape optimization
+
+For bounded open $\Omega\subset\mathbb R^d$ and $V\in W^{1,\infty}(\mathbb R^d;\mathbb R^d)$,
+let $\Omega_t=(I+tV)(\Omega)$. The shape derivative of $J$ in direction $V$
+is $J'(\Omega)(V)=\frac d{dt}J(\Omega_t)|_{t=0}$.
+
+* **71. Hadamard formulas.** For $f\in W^{1,1}(\mathbb R^d)$ and Lipschitz
+  $\Omega$, $\frac d{dt}\int_{\Omega_t}f|_{t=0}=\int_{\partial\Omega}fV\cdot\nu
+  \,d\mathcal H^{d-1}$. For a bounded $C^2$ domain, $f\in H^1(\mathbb R^d)$,
+  and $u_\Omega\in H_0^1(\Omega)$ solving $-\Delta u=f$, the Dirichlet energy
+  $J(\Omega)=\min_{H_0^1(\Omega)}(\tfrac12\int|\nabla v|^2-\int fv)$ has
+  $J'(\Omega)(V)=-\tfrac12\int_{\partial\Omega}|\partial_\nu u_\Omega|^2
+  V\cdot\nu\,d\mathcal H^{d-1}$; a simple Dirichlet eigenvalue has
+  $\lambda'(\Omega)(V)=-\int_{\partial\Omega}|\partial_\nu u|^2V\cdot\nu
+  \,d\mathcal H^{d-1}$ with $\|u\|_2=1$ (Hadamard). Generally, a shape
+  derivative at a smooth domain depends only on $V\cdot\nu$ on
+  $\partial\Omega$ (Hadamard–Zolésio structure theorem); critical shapes
+  under a volume constraint have $|\partial_\nu u|$ constant on the boundary.
+* **72. Existence of optimal shapes.** Open sets $\Omega_j\subset D$, $D$
+  a fixed bounded open set, $\gamma$-converge to $\Omega$ if the Dirichlet
+  resolvents $(-\Delta_{\Omega_j})^{-1}$ converge to $(-\Delta_\Omega)^{-1}$
+  strongly on $L^2(D)$. Limits of open sets are in general not open sets but
+  relaxed problems $-\Delta u+\mu u=f$ with a measure $\mu$
+  (Cioranescu–Murat), so existence can fail. However, if $F$ is
+  nonincreasing under inclusion and $\gamma$-lower semicontinuous, then
+  $\min\{F(\Omega):\Omega\subset D\text{ quasi-open},\ |\Omega|\leq m\}$
+  is attained (Buttazzo–Dal Maso); this covers $\Omega\mapsto\lambda_k(\Omega)$
+  and the Dirichlet energy. In two dimensions, for open sets whose
+  complements have at most a fixed number of connected components,
+  Hausdorff complementary convergence implies $\gamma$-convergence
+  (Šverák), which gives existence among open sets.
+
+## Rate-independent evolution
+
+* **73. Energetic solutions.** Let $\mathcal E:[0,T]\times Q\to(-\infty,\infty]$
+  be an energy and $\mathcal D:Q\times Q\to[0,\infty]$ a dissipation
+  quasi-distance satisfying the triangle inequality. A map
+  $q:[0,T]\to Q$ is an energetic solution if it is globally stable,
+  $\mathcal E(t,q(t))\leq\mathcal E(t,\widetilde q)+\mathcal D(q(t),\widetilde q)$
+  for all $\widetilde q$, and satisfies the energy balance
+  $\mathcal E(t,q(t))+\operatorname{Diss}_{\mathcal D}(q;[0,t])
+  =\mathcal E(0,q(0))+\int_0^t\partial_s\mathcal E(s,q(s))ds$, where
+  $\operatorname{Diss}_{\mathcal D}$ is the supremum over partitions of
+  $\sum_j\mathcal D(q(t_{j-1}),q(t_j))$. Under compactness of energy
+  sublevels, lower semicontinuity, a power bound
+  $|\partial_t\mathcal E|\leq c_1(\mathcal E+c_0)$, and closedness of
+  stable sets, every stable initial state has an energetic solution. It
+  is obtained from the incremental minimizations
+  $q_k\in\operatorname{argmin}_q(\mathcal E(t_k,q)+\mathcal D(q_{k-1},q))$
+  through a Helly selection (Mielke–Theil; Francfort–Mielke). In the
+  convex case $Q$ a Hilbert space,
+  $\mathcal E(t,q)=\tfrac12\langle Aq,q\rangle-\langle\ell(t),q\rangle$
+  with $A$ bounded, self-adjoint, and coercive, $\ell$ Lipschitz, and
+  $\mathcal D(q,\widetilde q)=\Psi(\widetilde q-q)$ with $\Psi$ convex,
+  continuous, and positively homogeneous of degree one, the energetic
+  solution from a stable datum is unique, Lipschitz, and solves
+  $0\in\partial\Psi(\dot q)+Aq-\ell(t)$.
 
 ## Optimal control as variational continuation
 
@@ -375,9 +502,12 @@ of the Palais–Smale condition. Dal Maso and Braides give Γ-convergence;
 Braides–Defranceschi, Bensoussan–Lions–Papanicolaou, Jikov–Kozlov–Oleinik,
 Cioranescu–Donato, and Tartar develop homogenization. Armstrong–Kuusi–Mourrat
 provides the stochastic continuation. The control principles recur in
-Clarke, Liberzon, and Agrachev–Sachkov. Detailed vortex expansions,
-rate-independent evolution, and shape differentiation require additional
-specialized selections.
+Clarke, Liberzon, and Agrachev–Sachkov. Mawhin–Willem and Chang
+(Section 35) develop Morse theory and critical groups; Rabinowitz, Ekeland,
+and Mazzucchelli the Hamiltonian and Lagrangian periodic orbits. Sandier–Serfaty
+treat Ginzburg–Landau vortices, Milton and Tartar the composite bounds,
+Henrot–Pierre shape variation, and Mielke–Roubíček rate-independent
+evolution; these entries are anchors rather than full inventories.
 
 Local source copies consulted:
 

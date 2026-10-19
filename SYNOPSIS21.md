@@ -1,13 +1,17 @@
 # Synopsis: Bounded operator theory, spectra, and functional models
 
 Part of the [mathematical synopsis series](SYNOPSIS.md).
+[Bibliographical scope and references](CKMA-bib.md#ckma-21);
+[MSC2020 correspondence and cross-subject index](CKMA-MSC2020.md).
 
 This synopsis selects the recurring graduate and beginning research core of
-Section 21 of [CKMA-bib.md](CKMA-bib.md).
-It develops Fredholm theory, compact ideals, contractions and dilations,
-Toeplitz and Hankel operators, reproducing kernels, and the first structural
-results on invariant subspaces and linear dynamics. General unbounded
-operators and operator algebras are treated in Sections 22 and 23.
+Section 21 of [CKMA-bib.md](CKMA-bib.md#ckma-21).
+It develops joint, Weyl, and Browder spectra, Fredholm theory, compact
+ideals, contractions, dilations, and functional models, the Toeplitz
+extension, reproducing kernels, the first structural results on invariant
+subspaces and linear dynamics, and operators in Krein and Pontryagin
+spaces. General unbounded operators and operator algebras are treated in
+Sections 22 and 23.
 
 Unless indicated otherwise, $H$ is a nonzero complex Hilbert space,
 $\mathcal B(H)$ denotes its bounded operators, and inner products are linear
@@ -23,15 +27,10 @@ The **strong operator topology** is pointwise norm convergence; the **weak
 operator topology** is pointwise convergence of matrix coefficients.
 An operator is **normal** if $T^*T=TT^*$, **hyponormal** if
 $T^*T\geq TT^*$, and a **contraction** if $\|T\|\leq1$.
+The adjoint and closed-range identities, polar decomposition, and the
+bounded spectral theorem for normal operators are in SYNOPSIS15, items 46,
+64, and 65.
 
-* **1. Adjoint and closed range.** $\|T^*T\|=\|T\|^2$,
-  $\overline{\operatorname{ran}T}=(\ker T^*)^\perp$, and
-  $\operatorname{ran}T$ is closed exactly when $T$ is bounded below on
-  $(\ker T)^\perp$. Closedness of the ranges of $T$ and $T^*$ is equivalent.
-* **2. Polar decomposition.** Every $T$ has a unique decomposition
-  $T=U|T|$, where $|T|=(T^*T)^{1/2}$ and $U$ is a partial isometry
-  with initial space $(\ker T)^\perp$ and final space
-  $\overline{\operatorname{ran}T}$.
 * **3. Douglas factorization theorem.** For $A:K\to H$ and $B:L\to H$,
   $\operatorname{ran}A\subset\operatorname{ran}B$ exactly when
   $AA^*\leq cBB^*$ for some $c$, and exactly when $A=BC$ for some
@@ -44,10 +43,6 @@ $T^*T\geq TT^*$, and a **contraction** if $\|T\|\leq1$.
 * **5. Spectral radius and calculus.** The spectrum is nonempty compact,
   $r(T)=\lim_n\|T^n\|^{1/n}$, and the holomorphic functional calculus
   satisfies $\sigma(f(T))=f(\sigma(T))$.
-* **6. Normal spectral theorem.** A normal $T$ has a projection-valued
-  measure $E$ with $T=\int z\,dE(z)$, and bounded Borel functions define
-  $f(T)=\int f\,dE$. In particular
-  $\|R(z,T)\|=\operatorname{dist}(z,\sigma(T))^{-1}$ off the spectrum.
 * **7. Fuglede–Putnam theorem.** If $N$ and $M$ are normal and $NX=XM$
   for a bounded $X$, then $N^*X=XM^*$. In particular an operator commuting
   with a normal operator commutes with its adjoint and with all its Borel
@@ -64,6 +59,18 @@ $T^*T\geq TT^*$, and a **contraction** if $\|T\|\leq1$.
   yield commuting Riesz projections
   $P=(2\pi i)^{-1}\int_\Gamma(zI-T)^{-1}\,dz$ and invariant direct
   sums on which the restrictions have the corresponding spectra.
+* **67. Taylor joint spectrum.** For a commuting tuple
+  $T=(T_1,\ldots,T_n)$ on a complex Banach space $X\neq0$, $\lambda\in\mathbb C^n$
+  lies outside the **Taylor spectrum** $\sigma_T(T)$ when the Koszul complex
+  of $T-\lambda=(T_1-\lambda_1,\ldots,T_n-\lambda_n)$ on $X$ is exact.
+  Then $\sigma_T(T)$ is nonempty and compact, equals $\sigma(T_1)$ for
+  $n=1$, and is contained in the joint spectrum of $T$ in any commutative
+  Banach subalgebra of $\mathcal B(X)$ containing the $T_j$ (in particular
+  in $\prod_j\sigma(T_j)$). It has the projection property
+  $\pi(\sigma_T(T_1,\ldots,T_n))=\sigma_T(T_1,\ldots,T_{n-1})$, and there
+  is a holomorphic functional calculus on neighbourhoods of $\sigma_T(T)$
+  with the spectral mapping property $\sigma_T(f(T))=f(\sigma_T(T))$ for
+  holomorphic $f:U\to\mathbb C^m$ (Taylor).
 
 ## Fredholm operators and essential spectra
 
@@ -74,10 +81,14 @@ $\operatorname{ind}T=\dim\ker T-\dim(Y/\operatorname{ran}T)$.
 The **Calkin algebra** is $\mathcal B(H)/\mathcal K(H)$, where
 $\mathcal K(H)$ is the compact ideal; the **essential spectrum** here means
 $\sigma_{\rm ess}(T)=\{z:T-zI\text{ is not Fredholm}\}$.
+The Fredholm alternative for $I-K$ is SYNOPSIS15, item 53, and Weyl's
+criterion for the essential spectrum of self-adjoint operators is
+SYNOPSIS22, item 29.
 
 * **11. Atkinson theorem.** $T$ is Fredholm exactly when it has a bounded
   inverse modulo compact operators. For endomorphisms this says that its
-  image in the Calkin algebra is invertible.
+  image in the Calkin algebra is invertible. Finite codimension of the
+  range forces the range to be closed.
 * **12. Stability and local constancy.** Fredholm operators form an open
   subset of $\mathcal L(X,Y)$, and their index is locally constant.
   Compact perturbations preserve Fredholmness and the index.
@@ -85,21 +96,15 @@ $\sigma_{\rm ess}(T)=\{z:T-zI\text{ is not Fredholm}\}$.
   Fredholm, with $\operatorname{ind}(ST)=\operatorname{ind}S+
   \operatorname{ind}T$. For the Hilbert-space or Banach-space adjoint,
   $\operatorname{ind}T^*=-\operatorname{ind}T$.
-* **14. Fredholm alternative.** For compact $K$, $I-K$ is Fredholm of
-  index zero. It is invertible exactly when it is injective, and
-  $(I-K)x=y$ is solvable exactly when $y\perp\ker(I-K^*)$ on Hilbert space.
 * **15. Analytic Fredholm theorem.** If $K(z)$ is a norm-holomorphic
   compact-operator family on a connected plane domain, then either
   $I-K(z)$ is nowhere invertible or its inverse is meromorphic, with
-  discrete poles and finite-rank principal parts.
+  discrete poles and finite-rank principal parts. One invertible parameter
+  rules out the first alternative.
 * **16. Essential spectral invariance.** Compact perturbations preserve
   $\sigma_{\rm ess}$. For bounded self-adjoint $T$, the complement of
   its essential spectrum in its spectrum consists exactly of isolated
   eigenvalues of finite multiplicity.
-* **17. Weyl criterion for essential spectrum.** For self-adjoint $T$,
-  $\lambda\in\sigma_{\rm ess}(T)$ exactly when there are unit vectors
-  $x_n\rightharpoonup0$ with $(T-\lambda I)x_n\to0$. Such a sequence
-  can be chosen orthonormal.
 * **18. Weyl–von Neumann–Berg and Brown–Douglas–Fillmore.** On separable
   $H$, every normal operator is the sum of a diagonal normal operator and a
   compact operator of arbitrarily small norm (Hilbert–Schmidt for
@@ -108,6 +113,27 @@ $\sigma_{\rm ess}(T)=\{z:T-zI\text{ is not Fredholm}\}$.
   essentially normal operators ($T^*T-TT^*$ compact), unitary equivalence
   modulo compacts holds exactly when the essential spectra agree and
   $\operatorname{ind}(T-\lambda)$ agrees off the essential spectrum (BDF).
+* **68. Weyl and Browder spectra.** For a bounded operator $T$ on a
+  complex Banach space, the **Weyl spectrum** $\sigma_w(T)$ is the set of
+  $\lambda$ for which $T-\lambda I$ is not Fredholm of index zero, and the
+  **Browder spectrum** $\sigma_b(T)$ the set for which $T-\lambda I$ is not
+  Fredholm with finite ascent and descent. Then
+  $\sigma_{\rm ess}(T)\subset\sigma_w(T)\subset\sigma_b(T)\subset\sigma(T)$,
+  $\sigma_w(T)=\bigcap_{K\text{ compact}}\sigma(T+K)$ (Schechter), and
+  $\sigma_b(T)=\sigma_w(T)\cup\operatorname{acc}\sigma(T)$, where
+  $\operatorname{acc}$ denotes the set of accumulation points; the
+  complement $\sigma(T)\setminus\sigma_b(T)$ consists of the isolated
+  eigenvalues with finite-rank Riesz projections. Both $\sigma_w$ and
+  $\sigma_b$ are invariant under compact perturbation (for $\sigma_b$, by
+  commuting compact perturbation).
+* **69. Weyl's theorem.** $T$ **satisfies Weyl's theorem** if
+  $\sigma(T)\setminus\sigma_w(T)$ is exactly the set of isolated
+  eigenvalues of finite multiplicity, and **Browder's theorem** if
+  $\sigma_w(T)=\sigma_b(T)$. Weyl's theorem implies Browder's theorem.
+  Self-adjoint operators satisfy Weyl's theorem (H. Weyl), as do normal and,
+  more generally, hyponormal operators and Toeplitz operators (Coburn).
+  If $T$ or $T^*$ has SVEP, Browder's theorem holds. A compact
+  perturbation of an operator satisfying Weyl's theorem need not satisfy it.
 
 ## Compact operators, singular values, and trace ideals
 
@@ -117,19 +143,11 @@ The **Schatten class** $S^p$ has $\sum_ns_n(T)^p<\infty$,
 $1\leq p<\infty$. $S^2$ and $S^1$ are the Hilbert–Schmidt and trace
 classes, respectively.
 
-* **19. Compact spectral theorem.** A compact normal operator is diagonal
-  in an orthonormal basis. For general compact operators, every nonzero
-  spectral point is an isolated eigenvalue of finite algebraic multiplicity;
-  zero is the only possible spectral accumulation point.
 * **20. Calkin's theorem on ideals.** If $H$ is separable and infinite
   dimensional, every nonzero proper two-sided ideal of $\mathcal B(H)$
   contains the finite-rank operators and is contained in $\mathcal K(H)$;
   hence $\mathcal K(H)$ is its only nontrivial closed ideal. Such ideals
   correspond to symmetric sequence spaces of singular values.
-* **21. Singular value approximation.** With $s_1(T)\geq s_2(T)\geq\cdots$,
-  $s_n(T)=\inf_{\operatorname{rank}F<n}\|T-F\|$. Singular value
-  decompositions therefore give optimal finite-rank approximation in
-  operator norm.
 * **22. Ideal inequalities.** $\|ATB\|_p\leq\|A\|\|T\|_p\|B\|$,
   and Schatten Hölder gives $\|ST\|_r\leq\|S\|_p\|T\|_q$ when
   $1/r=1/p+1/q$ and $p,q,r\geq1$. In particular, products of two
@@ -143,11 +161,24 @@ classes, respectively.
   $\operatorname{tr}T=\sum_j\lambda_j(T)$ with algebraic multiplicities.
   The Fredholm determinant $\det(I+T)=\prod_j(1+\lambda_j(T))$ is
   well defined, continuous in $\|\cdot\|_1$, multiplicative, and vanishes
-  exactly when $I+T$ is not invertible.
+  exactly when $I+T$ is not invertible. The eigenvalues are absolutely
+  summable even without self-adjointness. The function
+  $z\mapsto\det(I+zT)=\prod_j(1+z\lambda_j(T))$ is entire, and near zero
+  $\log\det(I+zT)=\sum_{k\geq1}(-1)^{k+1}z^k\operatorname{tr}(T^k)/k$.
 * **25. Weyl inequalities.** If $|\lambda_1|\geq|\lambda_2|\geq\cdots$ are
   the eigenvalues of a compact $T$ with algebraic multiplicity, then
   $\prod_{j\leq n}|\lambda_j|\leq\prod_{j\leq n}s_j(T)$ for every $n$.
   Consequently $\sum_j|\lambda_j|^p\leq\sum_js_j(T)^p$ for $p>0$.
+  For an $n\times n$ matrix $T$ the full products are equal:
+  $\prod_{j\leq n}|\lambda_j|=\prod_{j\leq n}s_j(T)=|\det T|$.
+* **70. Volterra operator.** $Vf(x)=\int_0^xf(t)\,dt$ on $L^2[0,1]$ is
+  compact and quasinilpotent, $\sigma(V)=\{0\}$ with no eigenvalues, and
+  its singular values are $s_n=2/((2n-1)\pi)$, so $\|V\|=2/\pi$ and
+  $V\in S^p$ exactly for $p>1$. Its real part $(V+V^*)/2$ has rank one.
+  The closed invariant subspaces of $V$ are exactly
+  $\{f:f=0\text{ a.e. on }[0,a]\}$, $0\leq a\leq1$, a chain
+  (Brodskii, Donoghue); $V$ is the basic example of the triangular models
+  of Gohberg–Krein.
 
 ## Isometries, contractions, and functional models
 
@@ -162,10 +193,6 @@ $\mathcal D_T=\overline{\operatorname{ran}D_T}$.
   a unitary operator and a unilateral shift. The shift multiplicity is
   $\dim\ker V^*$; its shift part is
   $\bigoplus_{n\geq0}V^n\ker V^*$.
-* **27. Beurling theorem.** Every nonzero closed shift-invariant subspace
-  of scalar $H^2$ is $\theta H^2$ for an inner function $\theta$, unique
-  up to a unimodular constant. Inner means that its boundary values have
-  modulus one almost everywhere.
 * **28. Beurling–Lax–Halmos theorem.** Closed invariant subspaces of
   $H^2(E)$ are ranges $\Theta H^2(F)$ of multiplication by operator-valued
   inner functions, for suitable Hilbert $F$; the multiplier is an isometry.
@@ -213,6 +240,23 @@ $\mathcal D_T=\overline{\operatorname{ran}D_T}$.
   Power boundedness for nonnegative powers alone does not suffice, and a
   polynomially bounded operator need not be similar to a contraction
   (Pisier's solution of Halmos's problem).
+* **71. Unitary realization of Schur functions.** An analytic
+  $S:\mathbb D\to\mathcal B(U,Y)$ satisfies $\sup_z\|S(z)\|\leq1$ exactly
+  when $S(z)=D+zC(I-zA)^{-1}B$ for a unitary colligation
+  $\begin{pmatrix}A&B\\C&D\end{pmatrix}:H\oplus U\to H\oplus Y$. A closely
+  connected such colligation ($H$ is spanned by the ranges of $A^nB$ and
+  $A^{*n}C^*$) is unique up to unitary equivalence on $H$, and the
+  characteristic function of item 34 is the realization of this kind for
+  the colligation built from $T$ and its defect operators.
+* **72. Class $C_0$ and Jordan models.** A completely nonunitary
+  contraction is of **class $C_0$** if $u(T)=0$ for some nonzero
+  $u\in H^\infty$; the annihilating functions are then the multiples of an
+  inner **minimal function** $m_T$. If $T$ is of class $C_0$ on a separable
+  space, it is quasisimilar (intertwined both ways by injective operators with
+  dense range) to a unique **Jordan operator**
+  $\bigoplus_{j\geq0}S_{\theta_j}$ with inner $\theta_j$,
+  $\theta_{j+1}\mid\theta_j$, and $\theta_0=m_T$, where $S_\theta$ is
+  the model operator of item 36 (Sz.-Nagy–Foiaş, Bercovici).
 
 ## Toeplitz and Hankel operators
 
@@ -220,48 +264,14 @@ Let $P:L^2(\mathbb T)\to H^2$ be the orthogonal projection, with normalized
 arc measure. For $\phi\in L^\infty(\mathbb T)$ define
 $T_\phi=P M_\phi|_{H^2}$ and $H_\phi=(I-P)M_\phi|_{H^2}$.
 Thus $H_\phi:H^2\to H^2{}^\perp$.
+The concrete Toeplitz and Hankel theory (Brown–Halmos, Coburn, the
+Fredholm index, Nehari, Hartman, Kronecker, and Szegő) is in Section 42,
+SYNOPSIS42, items 29–37, as the Section 21 bibliography intro indicates.
 
-* **39. Brown–Halmos characterization.** $T\in\mathcal B(H^2)$ is
-  Toeplitz exactly when $S^*TS=T$. Its symbol in $L^\infty$ is unique,
-  $\|T_\phi\|=\|\phi\|_\infty$, and $T_\phi^*=T_{\overline\phi}$.
-* **40. Product identity.**
-  $T_\phi T_\psi-T_{\phi\psi}=-H_{\overline\phi}^*H_\psi$.
-  In particular $T_\phi T_\psi=T_{\phi\psi}$ if $\psi$ is analytic
-  or $\phi$ is coanalytic.
-* **41. Coburn alternative.** For a nonzero scalar symbol $\phi$,
-  at least one of $\ker T_\phi$ and $\ker T_\phi^*$ is zero.
-  Hence a Fredholm scalar Toeplitz operator of index zero is invertible.
-* **42. Continuous-symbol Fredholm theorem.** For $\phi\in C(\mathbb T)$,
-  $T_\phi$ is Fredholm exactly when $\phi$ has no zeros, and then
-  $\operatorname{ind}T_\phi=-\operatorname{wind}(\phi,0)$.
-* **43. Essential spectrum of Toeplitz operators.** For continuous $\phi$,
-  $\sigma_{\rm ess}(T_\phi)=\phi(\mathbb T)$. Its full spectrum consists
-  of that curve together with points $\lambda$ where
-  $\operatorname{wind}(\phi-\lambda,0)\ne0$.
 * **44. Toeplitz extension.** The C*-algebra generated by $S$ contains
   all compact operators, and its quotient by them is $C(\mathbb T)$,
   taking $S$ to the coordinate function. Semicommutators of continuous-symbol
   Toeplitz operators are compact.
-* **45. Nehari theorem.** The Hankel norm satisfies
-  $\|H_\phi\|=\operatorname{dist}_{L^\infty}(\phi,H^\infty)$.
-  Every bounded Hankel matrix has an $L^\infty$ symbol, so its boundedness
-  is precisely a bounded-symbol extension problem.
-* **46. Hartman theorem.** $H_\phi$ is compact exactly when
-  $\phi\in H^\infty+C(\mathbb T)$.
-* **47. Kronecker finite-rank theorem.** A Hankel matrix has finite rank
-  exactly when the power series formed from its Hankel coefficients is
-  rational. For a bounded Hankel operator this is equivalent to its
-  negative Fourier part being the negative part of a rational symbol
-  with no poles on $\mathbb T$.
-* **48. Szegő limit theorems.** If $\phi>0$ is
-  smooth on $\mathbb T$ and $T_n(\phi)$ is its $n\times n$ Toeplitz
-  matrix, then
-  $$\det T_n(\phi)\sim\exp\left(n\widehat{\log\phi}(0)
-       +\sum_{k\geq1}k\widehat{\log\phi}(k)
-                            \widehat{\log\phi}(-k)\right).$$
-  The first Szegő theorem, $(\det T_n(\phi))^{1/n}\to
-  \exp\int\log\phi$, holds for every nonnegative $\phi\in L^1$ (both sides
-  zero if $\log\phi\notin L^1$).
 
 ## Hyponormality, subnormality, and invariant subspaces
 
@@ -278,8 +288,8 @@ weighted shift is $We_n=w_ne_{n+1}$ on $\ell^2(\mathbb N_0)$.
 * **51. Berger measure criterion.** Set $\beta_0=1$ and
   $\beta_n=w_0^2\cdots w_{n-1}^2$. The weighted shift is subnormal
   exactly when $\beta_n=\int t^n\,d\mu(t)$ for a probability measure
-  on $[0,\|W\|^2]$
-  ([an explicit lecture-note formulation](https://www.math.snu.ac.kr/~wylee/Lecture%20notes%20in%20math/Lecture%20Notes%20on%20OperatorTheory.pdf), Theorem 4.1.4).
+  on $[0,\|W\|^2]$ (Berger; see Conway, *The Theory of Subnormal
+  Operators*).
 * **52. Lomonosov theorem and invariant subspaces.** On a complex Banach space
   of dimension greater than one, every nonscalar operator commuting with
   a nonzero compact operator has a nontrivial closed hyperinvariant
@@ -313,14 +323,6 @@ function $\phi$ for which multiplication is a bounded operator on the space.
 * **57. Kernel comparison and inclusion.** The inclusion
   $H(K_1)\hookrightarrow H(K_2)$ has norm at most $C$ exactly when
   $C^2K_2-K_1$ is positive definite.
-* **58. Nevanlinna–Pick interpolation.** For distinct $z_i\in\mathbb D$,
-  there is analytic $f$ with $\|f\|_\infty\leq1$ and $f(z_i)=w_i$
-  exactly when $((1-w_i\overline{w_j})/(1-z_i\overline{z_j}))$ is
-  positive semidefinite.
-* **59. de Branges–Rovnyak kernels.** If $b$ is analytic with
-  $\|b\|_\infty\leq1$, then
-  $K_b(z,w)=(1-b(z)\overline{b(w)})/(1-z\overline w)$ is positive
-  definite. For inner $b=\theta$, its RKHS is isometrically $K_\theta$.
 
 ## Local spectra and linear dynamics
 
@@ -358,6 +360,33 @@ $\{T^nx:n\geq0\}$ is dense.
   circle. In particular, compact operators on infinite-dimensional
   Banach spaces are not hypercyclic.
 
+## Indefinite inner product spaces
+
+A **Krein space** is a complex vector space $\mathcal K$ with a Hermitian
+form $[\cdot,\cdot]$ admitting a **fundamental decomposition**
+$\mathcal K=\mathcal K_+[\dotplus]\mathcal K_-$ into $[\cdot,\cdot]$-orthogonal
+subspaces such that $(\mathcal K_\pm,\pm[\cdot,\cdot])$ are Hilbert spaces.
+With $J=P_+-P_-$, $\langle x,y\rangle=[Jx,y]$ is a Hilbert inner product.
+If $\kappa=\dim\mathcal K_+<\infty$, $\mathcal K$ is a **Pontryagin space**
+$\Pi_\kappa$. A subspace is **nonnegative** if $[x,x]\geq0$ on it, and an
+operator is **self-adjoint** if $[Ax,y]=[x,Ay]$.
+
+* **73. Fundamental decompositions and maximal semidefinite subspaces.**
+  All fundamental decompositions of a Krein space give equivalent Hilbert
+  norms, so its topology is intrinsic, and $\dim\mathcal K_\pm$ do not
+  depend on the decomposition. A subspace is maximal nonnegative exactly
+  when it is the graph $\{x+Kx:x\in\mathcal K_+\}$ of a contraction
+  $K:\mathcal K_+\to\mathcal K_-$ (its angular operator). In $\Pi_\kappa$
+  every nonnegative subspace has dimension at most $\kappa$, with equality
+  for the maximal ones.
+* **74. Pontryagin's invariant subspace theorem.** Every bounded
+  self-adjoint operator $A$ in $\Pi_\kappa$ has a $\kappa$-dimensional
+  nonnegative invariant subspace (Pontryagin). Its nonreal spectrum consists of
+  eigenvalues symmetric about $\mathbb R$, whose root subspaces in the upper
+  half-plane have total dimension at most $\kappa$; a unitary operator in
+  $\Pi_\kappa$ likewise has at most $\kappa$ eigenvalues, counted with
+  algebraic multiplicity, outside the closed unit disc.
+
 ## Reference guide
 
 Gohberg–Goldberg–Kaashoek develops the Fredholm, compact, and trace-ideal
@@ -368,9 +397,16 @@ and determinant asymptotics; these recur in Douglas, Rosenblum–Rovnyak,
 and Böttcher–Silbermann. Conway and Douglas treat the Calkin algebra,
 essential unitary equivalence, and the Brown–Douglas–Fillmore theorem.
 Paulsen–Raghupathi supplies the kernel and
-interpolation foundation. The local-spectrum and dynamics sections select
-basic results shared by the specialist references in the supplementary
-bibliography, rather than attempting their full classification theories.
+interpolation foundation. Müller treats the Taylor spectrum and spectral
+systems (the local copy is the 2003 first edition), and Aiena the Weyl and
+Browder spectra and Weyl-type theorems. Sz.-Nagy–Foiaş–Bercovici–Kérchy
+also gives the class $C_0$ and Jordan models; Ball–Gohberg–Rodman and
+Arov–Dym develop realizations of contractive analytic functions;
+Gohberg–Krein treats the Volterra operator and triangular models; and
+Bognár is the source for Krein and Pontryagin spaces. The local-spectrum
+and dynamics sections select basic results shared by the specialist
+references in the supplementary bibliography, rather than attempting their
+full classification theories.
 
 Local source copies consulted:
 
@@ -378,5 +414,6 @@ Local source copies consulted:
 * [Sz.-Nagy–Foiaş–Bercovici–Kérchy, Harmonic Analysis of Operators on Hilbert Space](References/NagyFoiasBercoviciKérchy2010HarmonicAnalysisOperatorsHilbertSpace2ndEd-SpringerUTX.pdf).
 * [Nikolski, Toeplitz Matrices and Operators](References/Nikolski2019ToeplitzMatricesOperators-CambridgeStudiesAM182.pdf).
 * [Paulsen–Raghupathi, An Introduction to the Theory of Reproducing Kernel Hilbert Spaces](References/PaulsenRaghupathi2016IntroductionTheoryReproducingKernelHilbertSpaces-CambridgeStudiesAM152.pdf).
+* [Bognár, Indefinite Inner Product Spaces](References/Bognár1974IndefiniteInnerProductSpaces-SpringerErgeb78.pdf).
 * [Müller, Spectral Theory of Linear Operators and Spectral Systems in Banach Algebras](References/Müller2003SpectralTheoryLinearOperatorsSpectralSystemsBanachAlgebras-SpringerOTAA139.pdf).
 * [Grosse-Erdmann–Peris Manguillot, Linear Chaos](References/GrosseErdmannPerisManguillot2011LinearChaos-Springer.UTX.pdf).

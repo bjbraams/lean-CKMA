@@ -1,13 +1,19 @@
 # Synopsis: Classical inequalities, means, majorization, and rearrangement
 
 Part of the [mathematical synopsis series](SYNOPSIS.md).
+[Bibliographical scope and references](CKMA-bib.md#ckma-11);
+[MSC2020 correspondence and cross-subject index](CKMA-MSC2020.md).
 
 This synopsis describes the recurring core of Section 11 of
-[CKMA-bib.md](CKMA-bib.md). It follows the
+[CKMA-bib.md](CKMA-bib.md#ckma-11). It follows the
 classical progression from convexity and means through finite-dimensional
-ordering to integral inequalities and symmetrization. Some functional and
-geometric consequences reappear in Section 14, where their connections with
-capacity, semigroups, and spectral theory become central.
+ordering to integral inequalities and symmetrization. Functional and
+geometric inequalities involving derivatives or Minkowski addition, such as
+the Euclidean Hardy, Sobolev, Hardy–Littlewood–Sobolev, Pólya–Szegő,
+isoperimetric, Brunn–Minkowski, Prékopa–Leindler, Brascamp–Lieb,
+Loomis–Whitney, and Faber–Krahn inequalities, are stated in Section 14, where
+their connections with capacity, semigroups, and spectral theory become
+central.
 
 Weights $w_i$ are positive and sum to one unless stated otherwise; means are
 initially defined for positive $x_i$. Conjugate exponents satisfy
@@ -90,6 +96,11 @@ and general measure spaces with the stated integrability.
 * **14. Minkowski.** For $1\leq p\leq\infty$,
   $\|f+g\|_p\leq\|f\|_p+\|g\|_p$. For $1<p<\infty$, equality for real
   nonzero functions requires proportionality with the same sign almost everywhere.
+* **65. Reverse Minkowski for positive functions.** For $0<p<1$ and
+  nonnegative $f,g$ with finite $p$-quasi-norms,
+  $\|f+g\|_p\geq\|f\|_p+\|g\|_p$.
+  Positivity is essential: the ordinary $L^p$ quasi-triangle inequality for
+  signed functions has a different form.
 * **15. Generalized Hölder.** If $p_i\in[1,\infty]$ and $\sum_i1/p_i=1$,
   then $\int\prod_i|f_i|\leq\prod_i\|f_i\|_{p_i}$.
 * **16. Lyapunov norm inequality.** On a probability space,
@@ -99,9 +110,18 @@ and general measure spaces with the stated integrability.
   $\sum_iw_ia_ib_i\geq(\sum_iw_ia_i)(\sum_iw_ib_i)$.
   Opposite ordering reverses the inequality. The weighted version follows
   from the sign of $(a_i-a_j)(b_i-b_j)$.
+* **64. Grüss and Popoviciu bounds.** On a probability space, if
+  $m\leq f\leq M$, $r\leq g\leq R$, then
+  $|\mathbb E(fg)-\mathbb Ef\mathbb Eg|\leq(M-m)(R-r)/4$.
+  In particular $\operatorname{Var}f\leq(M-m)^2/4$. Both constants are sharp;
+  equal probability at the two endpoints gives the extremal variance.
 * **18. Rearrangement inequality.** Among all pairings of two real vectors,
   $\sum_i a_i^\downarrow b_i^\uparrow$ is minimal and
   $\sum_i a_i^\downarrow b_i^\downarrow$ is maximal.
+* **73. Abel's inequality.** If $b_1\geq b_2\geq\cdots\geq b_n\geq0$, then
+  $|\sum_ia_ib_i|\leq b_1\max_k|\sum_{i\leq k}a_i|$. More precisely,
+  $\sum_ia_ib_i$ lies between $b_1\min_kA_k$ and $b_1\max_kA_k$, where
+  $A_k=\sum_{i\leq k}a_i$; summation by parts gives the proof.
 * **19. Bergström inequality.** For $b_i>0$ and real $a_i$,
   $\sum_i a_i^2/b_i\geq(\sum_i a_i)^2/\sum_i b_i$.
   Equality holds exactly when $a_i/b_i$ is constant.
@@ -140,10 +160,21 @@ being pointwise larger than the other.
 * **24. Karamata's inequality.** If $x\prec y$ and $\phi$ is convex on an
   interval containing their entries, then $\sum_i\phi(x_i)\leq\sum_i\phi(y_i)$.
   For strictly convex $\phi$, equality requires $x$ and $y$ to be permutations.
+* **71. Weak majorization (Tomić–Weyl).** For real $x,y\in\mathbb R^n$,
+  $x\prec_wy$ (decreasing partial sums of $x$ bounded by those of $y$) holds
+  exactly when $\sum_i\phi(x_i)\leq\sum_i\phi(y_i)$ for every increasing
+  convex $\phi$, and exactly when $x\leq z$ coordinatewise for some $z\prec y$.
+  For nonnegative vectors it is equivalent to $x=Sy$ with $S$ doubly
+  substochastic.
+* **72. Jensen–Steffensen inequality.** If $x_1\geq\cdots\geq x_n$ lie in an
+  interval, $W_k=\sum_{i\leq k}w_i$ satisfies $0\leq W_k\leq W_n$ for all $k$
+  and $W_n>0$, and $\phi$ is convex there, then
+  $\phi(W_n^{-1}\sum_iw_ix_i)\leq W_n^{-1}\sum_iw_i\phi(x_i)$. Some weights may
+  be negative.
 * **25. Differential criterion for Schur convexity.** A symmetric $C^1$
   function on an open symmetric convex set is Schur-convex exactly when
   $(x_i-x_j)(\partial_i\Phi-\partial_j\Phi)\geq0$ for every pair $i,j$.
-* **26. Doubly stochastic contraction.** For every symmetric norm,
+* **26. Doubly stochastic contraction.** For every permutation-invariant norm,
   $\|Dx\|\leq\|x\|$ when $D$ is doubly stochastic. Thus averaging
   coordinates decreases every $\ell^p$ norm, $1\leq p\leq\infty$.
 * **27. Stop-loss characterization of convex order.** For integrable real
@@ -168,6 +199,8 @@ being pointwise larger than the other.
 
 ## Hardy, Hilbert, and differential inequalities
 
+The Euclidean Hardy inequality for gradients is SYNOPSIS14, item 9.
+
 * **32. Discrete Hardy inequality.** For nonnegative $a_n$ and $1<p<\infty$,
   $$\sum_{n\geq1}\left(\frac{a_1+\cdots+a_n}{n}\right)^p
     \leq(p')^p\sum_{n\geq1}a_n^p.$$
@@ -186,14 +219,8 @@ being pointwise larger than the other.
   $B=\sup_{r>0}(\int_r^\infty u)^{1/p}
   (\int_0^rv^{-1/(p-1)})^{1/p'}<\infty$.
   Its optimal norm satisfies $B\leq C\leq p^{1/p}(p')^{1/p'}B$.
-* **36. Euclidean Hardy inequality.** For $1<p<n$ and
-  $u\in C_c^\infty(\mathbb R^n)$,
-  $$\int|\nabla u|^pdx\geq\left(\frac{n-p}{p}\right)^p
-    \int\frac{|u|^p}{|x|^p}dx.$$
-  The constant is optimal and is not attained by a nonzero function in the
-  corresponding homogeneous Sobolev space.
-* **37. Hilbert's integral inequality.** For nonnegative $f\in L^p(0,\infty)$,
-  $g\in L^{p'}(0,\infty)$,
+* **37. Hilbert's integral inequality.** For $1<p<\infty$ and nonnegative
+  $f\in L^p(0,\infty)$, $g\in L^{p'}(0,\infty)$,
   $$\int_0^\infty\!\int_0^\infty\frac{f(x)g(y)}{x+y}dxdy
     \leq\frac{\pi}{\sin(\pi/p)}\|f\|_p\|g\|_{p'}.$$
   The same optimal constant holds in the discrete sum with denominator $m+n$,
@@ -208,7 +235,10 @@ being pointwise larger than the other.
   $-\infty$. This is the continuous Carleman–Knopp inequality.
 * **40. Grönwall inequality.** If nonnegative continuous $u$ satisfies
   $u(t)\leq a+\int_0^tb(s)u(s)ds$, $a\geq0$, $b\geq0$ integrable, then
-  $u(t)\leq a\exp(\int_0^tb)$.
+  $u(t)\leq a\exp(\int_0^tb)$. The same conclusion holds for measurable
+  $u,b\geq0$ with $b\in L^1$ and $bu\in L^1(0,t)$. It gives uniqueness,
+  continuous dependence, and perturbation bounds for differential and Volterra
+  equations.
 * **41. Bihari inequality.** Replace $u$ in the integral by a positive
   increasing continuous $\omega(u)$ and assume $a>0$. With
   $G(s)=\int_{s_0}^sdr/\omega(r)$,
@@ -228,9 +258,11 @@ being pointwise larger than the other.
 For $f\geq0$ with finite-measure superlevel sets, its **decreasing
 rearrangement** $f^*:(0,\infty)\to[0,\infty]$ has the same distribution
 function $|\{f>t\}|$. In $\mathbb R^n$, its **symmetric decreasing
-rearrangement** is $f^\#(x)=f^*(\omega_n|x|^n)$, with centered balls as
-superlevel sets. These operations preserve all $L^p$ norms and all integrals
-of nonnegative Borel functions of the values that vanish at zero.
+rearrangement** is $f^\#(x)=f^*(\omega_n|x|^n)$, where $\omega_n$ is the
+volume of the unit ball, with centered balls as superlevel sets. These operations preserve all $L^p$ norms and all integrals
+of nonnegative Borel functions of the values that vanish at zero. The
+Pólya–Szegő, Hardy–Littlewood–Sobolev, and sharp Sobolev inequalities are
+SYNOPSIS14, items 19, 13, and 3.
 
 * **44. Layer-cake formula.** $f(x)=\int_0^\infty1_{\{f>t\}}(x)dt$, and
   $\int f^p=p\int_0^\infty t^{p-1}|\{f>t\}|dt$ for $p>0$.
@@ -241,11 +273,6 @@ of nonnegative Borel functions of the values that vanish at zero.
   $\mathbb R^n$,
   $$\iint f(x)g(x-y)h(y)dxdy
     \leq\iint f^\#(x)g^\#(x-y)h^\#(y)dxdy.$$
-* **47. Pólya–Szegő principle.** For $1\leq p<\infty$ and nonnegative
-  $u\in W^{1,p}(\mathbb R^n)$, $u^\#\in W^{1,p}$ and
-  $\|\nabla u^\#\|_p\leq\|\nabla u\|_p$. For $1<p<\infty$, equality forces
-  $u$ to be a translate of $u^\#$ provided $|\{\nabla u^\#=0,\,
-  0<u^\#<\operatorname{ess\,sup}u\}|=0$ (Brothers–Ziemer).
 * **48. Steiner symmetrization.** Steiner symmetrization in a hyperplane
   direction preserves volume, maps convex bodies to convex bodies, does not
   increase perimeter or Dirichlet energy, and does not decrease the integrals
@@ -257,38 +284,23 @@ of nonnegative Borel functions of the values that vanish at zero.
   $$\sup_{\mu(E)\leq s}\int_Ef\,d\mu=\int_0^sf^*(t)dt,$$
   extending $f^*$ by zero beyond the total mass. Thus rearrangement describes
   the largest integral that can be captured by a set of prescribed size.
+* **62. Bathtub principle.** On a finite measure space, for real $f\in L^1$
+  and $0<m<\mu(X)$, the minimum of $\int fg\,d\mu$ under $0\leq g\leq1$,
+  $\int g=m$, is attained by filling the lowest values of $f$:
+  $g=1_{\{f<t\}}+c1_{\{f=t\}}$ for a suitable threshold and $0\leq c\leq1$.
+  Fractional filling allows the statement to include atoms.
 * **50. Rearrangement contraction.** For nonnegative $f,g$ on the same
   measure space and $1\leq p<\infty$,
   $\|f^*-g^*\|_{L^p(0,\infty)}\leq\|f-g\|_p$.
-* **51. Hardy–Littlewood–Sobolev inequality.** If $0<\lambda<n$,
-  $1<p,q<\infty$, and $1/p+1/q+\lambda/n=2$, then
-  $$\iint\frac{|f(x)g(y)|}{|x-y|^\lambda}dxdy
-    \leq C_{n,\lambda,p}\|f\|_p\|g\|_q.$$
-  For $p=q=2n/(2n-\lambda)$ the sharp constant is attained exactly by
-  $f,g$ proportional to $(1+|x-x_0|^2)^{-(2n-\lambda)/2}$ up to dilation (Lieb).
-* **52. Sobolev inequality.** For $1\leq p<n$ and $p^*=np/(n-p)$,
-  $\|u\|_{p^*}\leq S_{n,p}\|\nabla u\|_p$ for compactly supported smooth
-  $u$. The endpoint $p=1$, with sharp constant, is equivalent to the
-  isoperimetric inequality; for $1<p<n$ the sharp constant is attained by
-  $(1+|x|^{p'})^{-(n-p)/p}$ and its translates and dilates (Aubin, Talenti).
 
 ## Geometric and convolution consequences
 
-For measurable sets, $A+B=\{a+b:a\in A,b\in B\}$ is their Minkowski sum.
-For convex bodies and for compact sets there are no measurability issues in
-the geometric statements below. A **log-concave function** has convex
+The Brunn–Minkowski, Prékopa–Leindler, geometric Brascamp–Lieb,
+Loomis–Whitney, and Faber–Krahn inequalities are SYNOPSIS14, items 28, 29,
+31, 32, and 21. A **log-concave function** has convex
 superlevel geometry in the stronger sense
 $f((1-t)x+ty)\geq f(x)^{1-t}f(y)^t$.
 
-* **53. Euclidean isoperimetry.** For $n\geq2$, a finite-volume finite-perimeter set satisfies
-  $P(E)\geq n\omega_n^{1/n}|E|^{(n-1)/n}$, with equality, at positive volume,
-  exactly for balls modulo null sets.
-* **54. Brunn–Minkowski inequality.** For nonempty compact $A,B\subseteq\mathbb R^n$,
-  $|A+B|^{1/n}\geq|A|^{1/n}+|B|^{1/n}$. For convex bodies of positive
-  volume, equality holds exactly for homothetic bodies.
-* **55. Prékopa–Leindler inequality.** If $0<t<1$ and
-  $h((1-t)x+ty)\geq f(x)^{1-t}g(y)^t$ for nonnegative integrable functions,
-  then $\int h\geq(\int f)^{1-t}(\int g)^t$.
 * **56. Young's convolution inequality.** If
   $1+1/r=1/p+1/q$ with exponents in $[1,\infty]$, then
   $\|f*g\|_r\leq\|f\|_p\|g\|_q$ on $\mathbb R^n$.
@@ -296,54 +308,17 @@ $f((1-t)x+ty)\geq f(x)^{1-t}f(y)^t$.
   $(C_pC_q/C_r)^n$, where
   $C_s=(s^{1/s}/(s')^{1/s'})^{1/2}$ and $C_1=C_\infty=1$.
   For interior exponents, appropriately matched Gaussian functions attain it.
-* **58. Geometric Brascamp–Lieb inequality.** Suppose
-  $B_i:\mathbb R^n\to\mathbb R^{n_i}$ satisfy $B_iB_i^*=I$ and
-  $\sum_i c_iB_i^*B_i=I$, $c_i>0$. For $f_i\geq0$,
-  $$\int\prod_i f_i(B_ix)^{c_i}dx\leq\prod_i(\int f_i)^{c_i}.$$
-  The constant one is attained by compatible centered Gaussians.
-* **59. Loomis–Whitney inequality.** For $n\geq2$ and Borel
-  $E\subseteq\mathbb R^n$,
-  $|E|^{n-1}\leq\prod_{i=1}^n|\pi_iE|$, where $\pi_i$ drops coordinate $i$.
-  The functional version follows from the preceding inequality for these projections.
 * **60. Prékopa marginal theorem.** Integrating a log-concave nonnegative
   function over some of its variables produces a log-concave marginal,
   provided that marginal is finite. In particular, convolution preserves
   log-concavity for integrable log-concave functions.
-* **61. Faber–Krahn inequality.** Among open sets of fixed finite volume, the
-  ball minimizes the first Dirichlet eigenvalue of the Laplacian, defined by
-  the $H_0^1$ Rayleigh quotient. This follows by rearranging test functions and
-  using Pólya–Szegő.
-* **62. Bathtub principle.** On a finite measure space, for real $f\in L^1$
-  and $0<m<\mu(X)$, the minimum of $\int fg\,d\mu$ under $0\leq g\leq1$,
-  $\int g=m$, is attained by filling the lowest values of $f$:
-  $g=1_{\{f<t\}}+c1_{\{f=t\}}$ for a suitable threshold and $0\leq c\leq1$.
-  Fractional filling allows the statement to include atoms.
 
 ## Iterative means, moment inequalities, and interpolation
 
-An **arithmetic–geometric iteration** starts with $a_0=a$, $b_0=b>0$ and
-sets $a_{n+1}=(a_n+b_n)/2$, $b_{n+1}=\sqrt{a_nb_n}$.
-Independent **Rademacher variables** take the values $-1,1$ with equal
-probability. The Fourier normalization in the final statement is
-$\widehat f(\xi)=\int e^{-2\pi i x\cdot\xi}f(x)dx$.
+The arithmetic–geometric mean is SYNOPSIS49, item 49; the Khintchine and
+Paley–Zygmund inequalities are SYNOPSIS07, items 11 and 10; the
+Hausdorff–Young inequality is SYNOPSIS27, item 4.
 
-* **63. Arithmetic–geometric mean.** The two iterative sequences converge to
-  a common positive limit, $\operatorname{AGM}(a,b)$, lying between the initial
-  geometric and arithmetic means. It is invariant under one iteration and
-  satisfies Gauss's integral identity
-  $$\operatorname{AGM}(a,b)=\frac\pi2
-    \left(\int_0^{\pi/2}\frac{d\theta}
-      {\sqrt{a^2\cos^2\theta+b^2\sin^2\theta}}\right)^{-1}.$$
-* **64. Grüss and Popoviciu bounds.** On a probability space, if
-  $m\leq f\leq M$, $r\leq g\leq R$, then
-  $|\mathbb E(fg)-\mathbb Ef\mathbb Eg|\leq(M-m)(R-r)/4$.
-  In particular $\operatorname{Var}f\leq(M-m)^2/4$. Both constants are sharp;
-  equal probability at the two endpoints gives the extremal variance.
-* **65. Reverse Minkowski for positive functions.** For $0<p<1$ and
-  nonnegative $f,g$ with finite $p$-quasi-norms,
-  $\|f+g\|_p\geq\|f\|_p+\|g\|_p$.
-  Positivity is essential: the ordinary $L^p$ quasi-triangle inequality for
-  signed functions has a different form.
 * **66. Clarkson inequalities.** For $2\leq p<\infty$,
   $$\left\|\frac{f+g}2\right\|_p^p+
     \left\|\frac{f-g}2\right\|_p^p
@@ -352,30 +327,12 @@ $\widehat f(\xi)=\int e^{-2\pi i x\cdot\xi}f(x)dx$.
   side $((\|f\|_p^p+\|g\|_p^p)/2)^{p'/p}$.
   These quantitative midpoint inequalities imply uniform convexity of $L^p$
   throughout $1<p<\infty$.
-* **67. Khintchine inequalities.** For each $0<p<\infty$ there are
-  $0<A_p\leq B_p<\infty$, independent of the number of terms, such that
-  $$A_p(\sum_i a_i^2)^{1/2}\leq
-    (\mathbb E|\sum_i a_i\varepsilon_i|^p)^{1/p}
-       \leq B_p(\sum_i a_i^2)^{1/2}.$$
-  At $p=2$ both constants are one; $A_p=1$ for $p\geq2$, $B_p=1$ for
-  $p\leq2$, and the optimal $A_1$ is $1/\sqrt2$ (Szarek). The optimal
-  constants were determined by Haagerup.
-* **68. Paley–Zygmund inequality.** For nonnegative $Z\in L^2$ with
-  $\mathbb EZ^2>0$ and $0<\theta<1$,
-  $\mathbb P(Z\geq\theta\mathbb EZ)\geq
-  (1-\theta)^2(\mathbb EZ)^2/\mathbb EZ^2$.
 * **69. Hadamard three-lines theorem.** If $F$ is bounded and continuous on
   $0\leq\operatorname{Re}z\leq1$, holomorphic inside, and
   $|F(it)|\leq M_0$, $|F(1+it)|\leq M_1$, then
   $|F(\theta+it)|\leq M_0^{1-\theta}M_1^\theta$ for $0<\theta<1$.
   Applied to suitable scalar matrix elements, it produces the Riesz–Thorin
   interpolation bound for linear operators.
-* **70. Hausdorff–Young inequality.** For $1\leq p\leq2$,
-  $\|\widehat f\|_{p'}\leq\|f\|_p$ in the stated Fourier normalization,
-  with extension by density from $L^1\cap L^p$.
-  For $1<p\leq2$ the sharp Euclidean constant is $C_p^n$, with $C_p$
-  as in result 57. Gaussians attain it, linking Fourier interpolation to the
-  sharp convolution inequality.
 
 ## Reference guide
 
@@ -386,10 +343,11 @@ and convex-function viewpoints. Marshall–Olkin–Arnold supplies the systemati
 majorization and stochastic-order account. Garling, especially Chapters 3–11,
 connects these inequalities to $L^p$ analysis and interpolation.
 
-The final iterative-mean and moment results are developed in Bullen and in
-Garling, Chapters 9 and 12–13; the latter also treats Clarkson, Khintchine,
-and the sharp Fourier inequalities. Grüss and related bounded-range
-inequalities are treated systematically by Mitrinović–Pečarić–Fink.
+The final Clarkson and three-lines results are developed in Garling,
+Chapter 9; Garling, Chapters 12–13, also treats the Khintchine and sharp
+Fourier inequalities now stated in Sections 07 and 27. Grüss and related
+bounded-range inequalities, Abel's inequality, and the Jensen–Steffensen
+inequality are treated systematically by Mitrinović–Pečarić–Fink.
 
 The Hardy and differential inequalities recur in Beckenbach–Bellman,
 Mitrinović, Mitrinović–Pečarić–Fink, and the weighted-Hardy and

@@ -1,13 +1,16 @@
 # Synopsis: Locally convex spaces, duality, and distributions
 
 Part of the [mathematical synopsis series](SYNOPSIS.md).
+[Bibliographical scope and references](CKMA-bib.md#ckma-16);
+[MSC2020 correspondence and cross-subject index](CKMA-MSC2020.md).
 
 This synopsis selects the common structural and distribution-theoretic core of
-Section 16 of [CKMA-bib.md](CKMA-bib.md).
+Section 16 of [CKMA-bib.md](CKMA-bib.md#ckma-16).
 It follows the route from seminorms and duality to completeness, nuclear
 spaces, test functions, and kernels. Distributional Fourier analysis appears
 here as a consequence of this framework; microlocal refinements belong to
-Section 30. Scalars are real or complex, and locally convex spaces are
+Section 30, and fundamental solutions and elliptic regularity continue in
+Sections 32–34 (Weyl's lemma is SYNOPSIS32, item 13). Scalars are real or complex, and locally convex spaces are
 Hausdorff unless otherwise stated.
 
 A **topological vector space** has continuous addition and scalar
@@ -82,6 +85,7 @@ $A^\circ=\{f\in F:|\langle a,f\rangle|\leq1\ (a\in A)\}$.
 * **13. Bipolar theorem for dual pairs.** $A^{\circ\circ}$ is the
   $\sigma(E,F)$-closed absolutely convex hull of $A\cup\{0\}$. In particular,
   absolutely convex weakly closed sets are recovered exactly from their polars.
+  For convex sets in a normed space, weak and norm closures coincide.
 * **14. Alaoglu–Bourbaki theorem.** The polar of a zero-neighborhood in
   $E$ is compact for $\sigma(E',E)$. A subset of $E'$ is equicontinuous
   exactly when it is contained in such a polar.
@@ -109,8 +113,26 @@ $A^\circ=\{f\in F:|\langle a,f\rangle|\leq1\ (a\in A)\}$.
   algebraic identifications, and homeomorphisms for the weak topologies.
 * **20. Krein–Milman theorem.** A compact convex subset of a Hausdorff
   locally convex space is the closed convex hull of its extreme points.
-  Conversely (Milman), if $K$ is the closed convex hull of a compact set $Z$,
-  then every extreme point of $K$ lies in $Z$.
+  Conversely (Milman), if a compact convex $K$ is the closed convex hull of
+  a set $Z$, then every extreme point of $K$ lies in $\overline Z$.
+  Closure cannot generally be omitted in infinite dimensions; the theorem
+  applies to weak-star compact dual balls.
+* **68. Grothendieck completeness theorem.** A locally convex space $E$ is
+  complete exactly when every linear form on $E'$ whose restriction to each
+  equicontinuous set is $\sigma(E',E)$-continuous is itself
+  $\sigma(E',E)$-continuous, that is, evaluation at a point of $E$. In
+  general the completion of $E$ is the space of all such linear forms. More
+  generally, for a saturated covering family $\mathfrak S$ of bounded sets,
+  $E'$ is complete for uniform convergence on $\mathfrak S$ exactly when
+  every linear form on $E$ continuous on each member of $\mathfrak S$ is
+  continuous.
+* **69. Banach–Dieudonné and Krein–Šmulian theorems.** If $E$ is metrizable,
+  uniform convergence on precompact subsets of $E$, equivalently on null
+  sequences, is the finest topology on $E'$ that agrees with
+  $\sigma(E',E)$ on every equicontinuous set (Banach–Dieudonné). Hence, for
+  Fréchet $E$, a convex subset of $E'$ is weak-star closed exactly when its
+  intersection with the polar of every zero-neighborhood is weak-star closed
+  (Krein–Šmulian).
 
 ## Barrelledness, bornologies, and mapping theorems
 
@@ -188,6 +210,16 @@ spaces are nuclear.
   \cong C^\infty(\Omega\times\Lambda)$ and
   $\mathcal S(\mathbb R^n)\widehat\otimes_\pi\mathcal S(\mathbb R^m)
   \cong\mathcal S(\mathbb R^{n+m})$ as locally convex spaces.
+* **70. Köthe echelon spaces and the Grothendieck–Pietsch criterion.** Let
+  $(a_j)_{j\geq1}$ be positive weights on $\mathbb N$ with
+  $a_j(k)\leq a_{j+1}(k)$. For $1\leq p<\infty$ the **echelon space**
+  $\lambda^p(A)=\{x:\sum_k|x_ka_j(k)|^p<\infty\ \text{for every }j\}$,
+  with these seminorms, is Fréchet. It is nuclear exactly when for each $j$
+  there is $l$ with $\sum_ka_j(k)/a_l(k)<\infty$; the space then does not
+  depend on $p$. The weights $a_j(k)=k^j$ give the space $s$ of rapidly
+  decreasing sequences, which is nuclear and isomorphic to
+  $\mathcal S(\mathbb R^n)$ through Hermite expansions and to
+  $C^\infty(\mathbb T^n)$ through Fourier series.
 
 ## Test functions and the local structure of distributions
 
@@ -244,8 +276,10 @@ $\rho_\varepsilon(x)=\varepsilon^{-n}\rho(x/\varepsilon)$.
 * **44. Continuity of distributional operations.** Differentiation and
   multiplication by a fixed smooth function are continuous on distributions.
   They satisfy the Leibniz rule and agree with classical operations on
-  $C^{|\alpha|}$ functions. A jump of size $c$ at $x_0$ in a function on
-  $\mathbb R$ contributes $c\,\delta_{x_0}$ to its distributional derivative.
+  $C^{|\alpha|}$ functions. For a piecewise $C^1$ function on $\mathbb R$
+  with jumps of size $c_j$ at a locally finite set of points $x_j$, the
+  distributional derivative is the classical derivative plus
+  $\sum_jc_j\delta_{x_j}$.
 * **45. Vanishing derivatives.** A distribution on a connected open set
   with all first derivatives zero is constant. On an interval, every
   distribution has a primitive, unique up to an additive constant.
@@ -309,10 +343,6 @@ On distributions, $\widehat T(\phi)=T(\widehat\phi)$.
   distribution of order one with
   $\widehat{\mathrm{p.v.}\,1/x}=-i\pi\operatorname{sgn}\xi$, and
   $1/(x\pm i0)=\mathrm{p.v.}\,1/x\mp i\pi\delta_0$ (Sokhotski–Plemelj).
-* **56. Plancherel theorem.** Fourier transformation extends from
-  $\mathcal S$ to $L^2$, with
-  $\|\widehat f\|_2=(2\pi)^{n/2}\|f\|_2$. This agrees with its
-  distributional extension.
 * **57. Fourier transform of convolution.** If $S\in\mathcal E'$ and
   $T\in\mathcal S'$, then $S*T\in\mathcal S'$ and
   $\widehat{S*T}=\widehat S\,\widehat T$; the smooth function
@@ -335,10 +365,43 @@ On distributions, $\widehat T(\phi)=T(\widehat\phi)$.
   to Fourier coefficient sequences of at most polynomial growth. Smooth
   functions correspond to rapidly decreasing sequences, and Fourier series
   reconstruct every periodic distribution in the distribution topology.
-* **62. Poisson summation.** For $f\in\mathcal S(\mathbb R^n)$,
-  $\sum_{k\in\mathbb Z^n}f(k)=\sum_{k\in\mathbb Z^n}\widehat f(2\pi k)$.
-  Both series converge absolutely; the equivalent identity for Dirac combs
-  holds in $\mathcal S'$.
+
+## Rigged Hilbert spaces and measures on duals
+
+A **Gel'fand triple** (rigged Hilbert space) $\Phi\subset H\subset\Phi^\times$
+consists of a nuclear space $\Phi$ continuously and densely embedded in a
+separable Hilbert space $H$, and the space $\Phi^\times$ of continuous
+conjugate-linear functionals on $\Phi$, into which $H$ embeds by
+$h\mapsto\langle h,\cdot\rangle$. The model is
+$\mathcal S(\mathbb R^n)\subset L^2(\mathbb R^n)\subset\mathcal S'(\mathbb R^n)$,
+after composing with complex conjugation.
+
+* **71. Gel'fand–Maurin nuclear spectral theorem.** Let
+  $\Phi\subset H\subset\Phi^\times$ be a Gel'fand triple and $A$ a
+  self-adjoint operator on $H$ with $\Phi\subset D(A)$, $A\Phi\subset\Phi$,
+  and $A|_\Phi$ continuous on $\Phi$. Then there are a finite Borel measure
+  $\mu$ on $\sigma(A)$ and, for $\mu$-almost every $\lambda$, generalized
+  eigenvectors $F_{\lambda,j}\in\Phi^\times$, $j$ in a countable index set,
+  with $F_{\lambda,j}(A\phi)=\lambda F_{\lambda,j}(\phi)$ and
+  $$\|\phi\|^2=\int\sum_j|F_{\lambda,j}(\phi)|^2\,d\mu(\lambda)
+    \qquad(\phi\in\Phi).$$
+  For $-d^2/dx^2$ with $\Phi=\mathcal S(\mathbb R)$ the generalized
+  eigenfunctions are $e^{\pm i\sqrt\lambda x}$, $\lambda>0$, none of which
+  lies in $L^2$.
+* **72. Bochner–Minlos theorem.** Let $E$ be a real nuclear space, for
+  example $\mathcal S(\mathbb R^n)$ or $\mathcal D(\mathbb R^n)$ of real
+  functions. If $\chi:E\to\mathbb C$ is continuous and positive definite
+  with $\chi(0)=1$, there is a unique probability measure $\mu$ on the
+  $\sigma$-algebra of $E'$ generated by the evaluations $T\mapsto T(\phi)$
+  such that $\chi(\phi)=\int_{E'}e^{iT(\phi)}\,d\mu(T)$. Conversely every
+  such characteristic functional is positive definite with $\chi(0)=1$, and
+  it is continuous when $E$ is Fréchet. For $E=\mathcal S(\mathbb R^n)$
+  that $\sigma$-algebra is the Borel $\sigma$-algebra of $\mathcal S'$;
+  $\chi(\phi)=e^{-\|\phi\|_2^2/2}$ gives white noise. On an
+  infinite-dimensional separable Hilbert space norm continuity does not
+  suffice: characteristic functionals of Borel probabilities are exactly the
+  positive definite functions with $\chi(0)=1$ continuous for the topology
+  defined by Hilbert–Schmidt operators (Sazonov).
 
 ## Fundamental solutions and elementary regularity
 
@@ -362,10 +425,10 @@ $Pu$ on an open subset implies smoothness of $u$ there.
 * **66. Elliptic regularity with constant coefficients.** A
   constant-coefficient elliptic operator is hypoelliptic. More quantitatively,
   if it has order $m$ and $Pu\in H^s_{\rm loc}$, then
-  $u\in H^{s+m}_{\rm loc}$.
-* **67. Weyl lemma.** A distribution satisfying $\Delta u=0$ on an open
-  set is represented by a smooth harmonic function, which is in fact real
-  analytic.
+  $u\in H^{s+m}_{\rm loc}$. More generally, with symbol $p(\xi)=P(i\xi)$,
+  $P(\partial)$ is hypoelliptic exactly when
+  $\partial^\alpha p(\xi)/p(\xi)\to0$ as $\xi\to\infty$ in $\mathbb R^n$
+  for every $\alpha\neq0$ (Hörmander); the heat operator is an example.
 
 ## Reference guide
 
@@ -376,7 +439,9 @@ developed in Trèves, Köthe, Grothendieck, and Jarchow; Ryan gives the Banach
 tensor foundations. Duistermaat–Kolk supplies an independent, concrete route
 through distributions, operations, kernels, Fourier transforms, and fundamental
 solutions. These themes recur in Schwartz, Horváth, Friedlander–Joshi, and
-the other distribution texts in the bibliographies. Nonlinear generalized
+the other distribution texts in the bibliographies. Gel'fand–Shilov and
+Berezansky–Kondratiev develop rigged Hilbert spaces, generalized eigenvector
+expansions, and measures on duals of nuclear spaces. Nonlinear generalized
 function algebras and specialist splitting theory are beyond the common core
 selected here.
 

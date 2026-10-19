@@ -1,14 +1,21 @@
 # Synopsis: Integral equations and classical operator methods
 
 Part of the [mathematical synopsis series](SYNOPSIS.md).
+[Bibliographical scope and references](CKMA-bib.md#ckma-25);
+[MSC2020 correspondence and cross-subject index](CKMA-MSC2020.md).
 
 This synopsis selects the recurring core of Section 25 of
-[CKMA-bib.md](CKMA-bib.md): Fredholm
+[CKMA-bib.md](CKMA-bib.md#ckma-25): Fredholm
 and Volterra equations, singular kernels, layer potentials, boundary
 integral reductions, approximation, and regularization. Operator-theoretic
 results are retained in the concrete forms used for kernels and boundary
-value problems. Boundary signs are fixed explicitly, since different
+value problems. Multidimensional singular integral operators and their
+symbol calculus belong to Sections 27 and 30. Boundary signs are fixed explicitly, since different
 references normalize fundamental solutions and double layers differently.
+
+The [inverse-problems route](CKMA-MSC2020.md#inverse-problems) connects these
+integral and regularization methods with Section 22, Carleman and microlocal
+methods in Sections 30 and 33, and geometric inverse problems in Section 53.
 
 A **Fredholm equation of the second kind** is $(I-\lambda K)u=f$;
 an equation of the **first kind** is $Ku=f$. A **Volterra equation**
@@ -19,8 +26,8 @@ interpretation, not merely a formal integral sign.
 
 ## Kernel operators and elementary solution methods
 
-* **1. Continuous kernels.** For compact $D\subset\mathbb R^d$ of finite
-  measure and $k\in C(D\times D)$, $Ku(x)=\int_Dk(x,y)u(y)dy$
+* **1. Continuous kernels.** For compact $D\subset\mathbb R^d$
+  and $k\in C(D\times D)$, $Ku(x)=\int_Dk(x,y)u(y)dy$
   is compact on $C(D)$ and on $L^2(D)$. Equicontinuity or approximation
   by finite sums of separated functions proves compactness.
 * **2. Schur test.** If $\sup_x\int|k(x,y)|dy\leq a$ and
@@ -56,19 +63,14 @@ interpretation, not merely a formal integral sign.
 
 ## Fredholm theory and spectral expansions
 
-* **9. Fredholm alternative.** For compact $K$ on a Banach space,
-  $I-\lambda K$ has closed range, finite-dimensional kernel and cokernel,
-  and index zero. Injectivity is equivalent to invertibility.
-* **10. Adjoint solvability.** On Hilbert space, $(I-\lambda K)u=f$
-  is solvable exactly when $f\perp\ker(I-\overline\lambda K^*)$.
-  Solutions differ by the finite-dimensional homogeneous solution space.
-* **11. Exceptional parameters.** Noninvertible parameters $\lambda\ne0$
-  are reciprocals of nonzero eigenvalues of $K$. They are isolated,
+The Fredholm alternative for compact operators and its adjoint solvability
+condition are stated in SYNOPSIS15, items 53–54, and the analytic Fredholm
+theorem in SYNOPSIS21, item 15.
+
+* **11. Exceptional parameters.** For compact $K$ on a Banach space, the
+  noninvertible parameters $\lambda\ne0$ of $I-\lambda K$ are reciprocals
+  of nonzero eigenvalues of $K$. They are isolated,
   of finite algebraic multiplicity, with no finite accumulation point.
-* **12. Analytic Fredholm theorem.** A holomorphic compact family $K(z)$
-  on a connected domain has either nowhere-invertible $I-K(z)$ or a
-  meromorphic inverse with finite-rank principal parts. One invertible
-  parameter rules out the first alternative.
 * **13. Fredholm determinant.** For continuous $k$ on $[a,b]^2$,
   $$d(\lambda)=\sum_{n\geq0}\frac{(-\lambda)^n}{n!}\int_{[a,b]^n}
     \det[k(x_i,x_j)]_{i,j=1}^n\,dx$$
@@ -104,10 +106,6 @@ $I^\alpha f(t)=\Gamma(\alpha)^{-1}\int_0^t(t-s)^{\alpha-1}f(s)ds$.
   is invertible for every complex $\lambda$, and successive substitution
   converges uniformly. The solution depends continuously on the data on
   every bounded time interval.
-* **19. Grönwall inequality.** If $v(t)\leq a+\int_0^tb(s)v(s)ds$
-  with $v,b\geq0$, $b\in L^1$, then
-  $v(t)\leq a\exp(\int_0^tb)$. This gives uniqueness and continuous
-  dependence for Volterra and differential equations.
 * **20. ODE–Volterra equivalence.** The initial-value problem
   $u'=A(t)u+g(t)$, $u(0)=u_0$, is equivalent to its integrated
   Volterra equation. Continuous coefficients give the unique classical
@@ -189,6 +187,9 @@ Now superscripts $-$ and $+$ mean interior and exterior traces,
 respectively, and both normal derivatives use the same outward $n$.
 Let $V=\gamma S$, $K$ be the averaged trace of $D$, $K'$ the averaged
 normal derivative of $S$, and $W=-\partial_nD$.
+In this and the next subsection $S$, $K$, and $\Phi$ have these meanings,
+not those of the Cauchy operator, the generic kernel operator, or the
+Riemann–Hilbert unknown of 28.
 
 * **31. Green representation.** A smooth harmonic function in $\Omega$
   satisfies $u=S(\partial_nu)-D(\gamma u)$. The same representation
@@ -210,7 +211,7 @@ normal derivative of $S$, and $W=-\partial_nD$.
   and $\langle V\mu,\mu\rangle\geq c\|\mu\|_{H^{-1/2}}^2$.
   Consequently $V$ is an isomorphism between the indicated Sobolev spaces.
   The two-dimensional logarithmic case requires a capacity normalization
-  or stabilization.
+  or stabilization (61).
 * **36. Hypersingular coercivity.** $W$ is symmetric nonnegative,
   has kernel the constants, and is coercive on $H^{1/2}(\Gamma)$
   modulo constants. Compatibility with constants is the corresponding
@@ -239,6 +240,18 @@ normal derivative of $S$, and $W=-\partial_nD$.
   not be compact. Hence the $L^2$ Dirichlet and Neumann problems are
   uniquely solvable (modulo constants for Neumann) with nontangential
   maximal function estimates.
+* **61. Two-dimensional single layer.** In $\mathbb R^2$ take
+  $\Phi(x,y)=-(2\pi)^{-1}\log|x-y|$ and a closed Lipschitz curve $\Gamma$.
+  There is a unique equilibrium density $\mu_e\in H^{-1/2}(\Gamma)$ with
+  $\langle\mu_e,1\rangle=1$ and $V\mu_e$ constant; that constant is
+  $-(2\pi)^{-1}\log\operatorname{cap}(\Gamma)$, where
+  $\operatorname{cap}(\Gamma)$ is the logarithmic capacity. $V$ is coercive on
+  densities of mean zero, it is an isomorphism
+  $H^{-1/2}(\Gamma)\to H^{1/2}(\Gamma)$ exactly when
+  $\operatorname{cap}(\Gamma)\neq1$, and it is positive definite when
+  $\operatorname{cap}(\Gamma)<1$, for instance when the diameter of
+  $\Gamma$ is below $1$. Rescaling the curve therefore restores
+  the three-dimensional theory of 35.
 
 ## Helmholtz scattering and boundary integral equations
 
@@ -271,6 +284,57 @@ $\partial_ru-iku=o(r^{-1})$ and $u=O(r^{-1})$ in three dimensions.
   Analytic Fredholm theory therefore gives meromorphic inverses wherever
   the family is Fredholm and invertible at one parameter.
 
+## Electromagnetic and inverse obstacle scattering
+
+Here $D\subset\mathbb R^3$ is a bounded $C^2$ domain with connected
+exterior, $\nu$ is its outward normal, $k>0$, and $\Phi_k$ is as above.
+The time-harmonic Maxwell equations are $\operatorname{curl}E-ikH=0$,
+$\operatorname{curl}H+ikE=0$. An exterior solution is **radiating** if it
+satisfies the Silver–Müller condition $H\times x-|x|E\to0$ as
+$|x|\to\infty$, uniformly in $x/|x|$. For a sound-soft obstacle let
+$u_\infty(\cdot,d)$ be the far-field pattern for incidence $e^{ikx\cdot d}$;
+the **far-field operator** is
+$(Fg)(\widehat x)=\int_{S^2}u_\infty(\widehat x,d)g(d)\,ds(d)$ on
+$L^2(S^2)$.
+
+* **62. Stratton–Chu formula.** A radiating solution $E,H$, continuously
+  differentiable outside $\overline D$ and continuous up to $\partial D$,
+  satisfies for $x\notin\overline D$
+  $$E(x)=\operatorname{curl}\int_{\partial D}\nu\times E\,\Phi_k(x,\cdot)\,ds
+    -\frac1{ik}\operatorname{curl}\operatorname{curl}
+    \int_{\partial D}\nu\times H\,\Phi_k(x,\cdot)\,ds,$$
+  and symmetrically for $H$. The Silver–Müller condition is equivalent to
+  the Sommerfeld condition for the Cartesian components, and radiating
+  fields have electric far-field patterns as in 45.
+* **63. Perfect conductor problem.** For a Hölder continuous tangential
+  field $c$ on $\partial D$ with Hölder continuous surface divergence, there
+  is exactly one radiating solution with $\nu\times E=c$ on $\partial D$,
+  depending continuously on $c$, for every $k>0$. A pure magnetic-dipole
+  (vector single-layer) ansatz gives a second-kind equation that fails to
+  be uniquely solvable at the interior resonances of $D$; a combined
+  magnetic and electric dipole ansatz, with a compact smoothing operator in
+  the electric part, is uniquely solvable for all $k>0$. This is the
+  Maxwell analogue of 44 (Colton–Kress); Nédélec develops the variational
+  setting with tangential trace spaces of order $-1/2$.
+* **64. Uniqueness for inverse obstacle scattering.** Two sound-soft
+  obstacles whose far-field patterns coincide for infinitely many distinct
+  incident directions at one fixed $k$ are equal (Schiffer). Far-field
+  patterns for all incident directions at one fixed $k$ determine the
+  obstacle together with its boundary condition, sound-soft, sound-hard,
+  or impedance (Kirsch–Kress). For a perfect conductor or an impedance
+  obstacle the electric far fields for all incident directions and
+  polarizations at one fixed $k$ likewise determine the scatterer.
+* **65. Factorization method.** Let $D$ be sound-soft and let $k^2$ not be
+  a Dirichlet eigenvalue of $-\Delta$ in $D$. Then $F$ is compact and normal,
+  and with $\Phi_\infty(\widehat x,z)=(4\pi)^{-1}e^{-ik\widehat x\cdot z}$,
+  a point $z\in\mathbb R^3$ lies in $D$ exactly when
+  $(F^*F)^{1/4}g=\Phi_\infty(\cdot,z)$ is solvable in $L^2(S^2)$. With an
+  eigensystem $(\lambda_n,\psi_n)$ of $F$ this is the Picard condition
+  $\sum_n|\langle\Phi_\infty(\cdot,z),\psi_n\rangle|^2/|\lambda_n|<\infty$
+  (Kirsch; compare 52). The linear sampling method uses approximate
+  solutions of $Fg=\Phi_\infty(\cdot,z)$, whose Herglotz wave functions stay
+  bounded in $H^1(D)$ for $z\in D$ and blow up for $z\notin D$ (Colton–Kirsch).
+
 ## Galerkin, quadrature, and operator approximation
 
 * **47. Collectively compact approximation theorem.** Suppose $K_nx\to Kx$
@@ -287,11 +351,6 @@ $\partial_ru-iku=o(r^{-1})$ and $u=O(r^{-1})$ in three dimensions.
   If $I-K$ is invertible on $C$, the quadrature solutions exist for large
   $n$ and $\|u_n-u\|_\infty\leq C\|(K_n-K)u\|_\infty$, so they inherit
   the quadrature error on the exact solution.
-* **50. Coercive Galerkin approximation.** If a bounded form satisfies
-  $\operatorname{Re}a(u,u)\geq\alpha\|u\|^2$, its Galerkin solution
-  obeys $\|u-u_n\|\leq(\|a\|/\alpha)\inf_{v\in X_n}\|u-v\|$.
-  Coercive layer equations therefore reduce convergence to approximation
-  in the appropriate boundary Sobolev norm.
 * **51. Inf–sup stability.** For Banach spaces $X,Y$, let the variational
   form $a:X\times Y\to\mathbb C$ have bound $M$, and let finite-dimensional trial and test spaces $X_n,Y_n$ have
   equal dimension and
@@ -336,8 +395,8 @@ $\|f^\delta-f\|\leq\delta$.
   $\delta/a\to0$, it converges to $u^\dagger$ for solvable data.
 * **58. Discrepancy principle.** For fixed $\tau>1$, choosing the
   Tikhonov parameter by $\|Ku_\alpha^\delta-f^\delta\|=\tau\delta$
-  yields convergence for solvable data as $\delta\to0$, using zero
-  when $\|f^\delta\|\leq\tau\delta$. It uses the noise level and
+  yields convergence for solvable data as $\delta\to0$, taking
+  $u^\delta=0$ when $\|f^\delta\|\leq\tau\delta$. It uses the noise level and
   residual rather than an unknown source norm, and gives the optimal rate
   $O(\delta^{2\nu/(2\nu+1)})$ for source conditions with $\nu\leq1/2$ only.
 * **59. Landweber iteration.** If $0<\omega<2/\|K\|^2$, the iteration
@@ -356,8 +415,10 @@ approximation, and regularization spine. Zemyan independently develops
 separable kernels, resolvent kernels, Fredholm and Volterra methods, and Abel
 equations. Hsiao–Wendland develops the boundary operators, Sobolev mappings,
 coercivity, and Calderón projectors; these overlap with McLean, Kenig,
-Sauter–Schwab, and the modern layer-potential monographs. Colton–Kress
-supplies the scattering applications. Gakhov and Muskhelishvili treat the
+and the modern layer-potential monographs. Colton–Kress
+supplies the scattering applications, including the Maxwell equations and
+inverse obstacle scattering; Nédélec treats acoustic and electromagnetic
+boundary integral equations variationally. Gakhov and Muskhelishvili treat the
 Riemann–Hilbert problem; Gohberg–Krupnik and Gohberg–Goldberg–Kaashoek give
 the operator-theoretic Wiener–Hopf and Toeplitz theory; Kenig and Medková
 treat Lipschitz boundaries. Numerical entries concern analytic

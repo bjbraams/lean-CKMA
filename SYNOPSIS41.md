@@ -1,15 +1,23 @@
 # Synopsis: Classical function theory — entire and meromorphic functions, value distribution
 
 Part of the [mathematical synopsis series](SYNOPSIS.md).
+[Bibliographical scope and references](CKMA-bib.md#ckma-41);
+[MSC2020 correspondence and cross-subject index](CKMA-MSC2020.md).
 
 This synopsis selects recurring core material from Section 41 of
-[CKMA-bib.md](CKMA-bib.md).
-It emphasizes growth, canonical products, zeros, exponential type, Nevanlinna
-theory, and their connections with normal families and differential equations.
+[CKMA-bib.md](CKMA-bib.md#ckma-41).
+It emphasizes growth, canonical products, zeros, exponential type,
+quasi-analyticity and completeness of exponentials, real-zero and de Branges
+theory, Nevanlinna theory, and their connections with normal families and
+differential equations.
 The elementary Cauchy theory is in Section 40; Hardy-space and operator
 formulations are developed in Section 42. Specialized Painlevé equations and
 probabilistic zero processes have their own substantial theories and are not
 included merely because one listed monograph treats them.
+
+The function-theoretic core here complements the analytic spaces of Section
+42, integrable complex equations in Section 51, and the random matrix methods
+represented in [07B](CKMA-bib.md#ckma-07b).
 
 Functions are nonconstant unless otherwise indicated. Zeros and poles are
 counted with multiplicity, except where a bar denotes reduced counting.
@@ -101,6 +109,8 @@ whose restrictions to $\mathbb R$ lie in $L^2$.
   $\alpha$, a boundary bound propagates inside if the function has
   growth $O(\exp(C|z|^s))$ with $s<\pi/\alpha$.
   The strict inequality is essential without an additional type condition.
+  Precisely: if the function is continuous on the closed sector and bounded
+  by $M$ on its boundary, it is bounded by $M$ throughout the sector.
 * **18. Trigonometric convexity.** Indicators satisfy
   $$
   h(\theta)\leq
@@ -114,7 +124,8 @@ whose restrictions to $\mathbb R$ lie in $L^2$.
   $h(\theta)=\max_{w\in I}\operatorname{Re}(we^{-i\theta})$, where
   $I$ is the complex conjugate of the smallest compact convex set outside
   which $B$ continues analytically, and
-  $f(z)=(2\pi i)^{-1}\oint B(w)e^{zw}dw$ around that set.
+  $f(z)=(2\pi i)^{-1}\oint B(w)e^{zw}dw$ around the conjugate
+  diagram $\overline I$ (the convex set itself).
   Multiplication by $e^{az}$ translates $I$ by $\bar a$.
 * **20. Denjoy–Carleman–Ahlfors theorem.** An entire function of finite
   order $\rho$ has at most $2\rho$ distinct finite asymptotic values,
@@ -124,18 +135,12 @@ whose restrictions to $\mathbb R$ lie in $L^2$.
   $f\in PW_\sigma$ precisely when
   $f(z)=\int_{-\sigma}^{\sigma}g(t)e^{izt}dt$ for some $g\in L^2$.
   Plancherel identifies the norms up to the Fourier normalization.
-* **22. Distributional Paley–Wiener theorem.** Entire functions with
-  $|F(z)|\leq C(1+|z|)^N e^{\sigma|\Im z|}$ are precisely
-  Fourier–Laplace transforms of distributions supported in
-  $[-\sigma,\sigma]$. Polynomial factors record distributional order.
+  Equivalently, $PW_\sigma$ consists of the entire functions of exponential
+  type at most $\sigma$ whose restrictions to $\mathbb R$ lie in $L^2$.
 * **23. Bernstein inequality.** If $f$ is entire of type at most
   $\sigma$ and bounded on $\mathbb R$, then
   $\|f'\|_{L^\infty(\mathbb R)}\leq\sigma\|f\|_{L^\infty(\mathbb R)}$.
   The $L^p$ version holds for $1\leq p<\infty$ when $f|_{\mathbb R}\in L^p$.
-* **24. Sampling in $PW_\pi$.** Every $f\in PW_\pi$ satisfies
-  $f(z)=\sum_{n\in\mathbb Z}f(n)\sin\pi(z-n)/(\pi(z-n))$,
-  with convergence in $L^2(\mathbb R)$ and locally uniformly in
-  $\mathbb C$. The integer samples form an $\ell^2$ sequence.
 * **25. Cartwright–Krein characterization.** An entire function
   belongs to the Cartwright class exactly when it is of bounded type
   in both half-planes, that is, a quotient of bounded holomorphic
@@ -155,11 +160,96 @@ whose restrictions to $\mathbb R$ lie in $L^2$.
   $\int|\log w(x)|/(1+x^2)dx<\infty$, then for every
   $\varepsilon>0$ there is a nonzero $f\in PW_\varepsilon$ with
   $|f(x)|\leq w(x)$ on $\mathbb R$.
-* **29. Proximate order.** Every finite-order transcendental entire
-  function admits a proximate order $\rho(r)\to\rho$ with
+* **29. Proximate order.** Every transcendental entire function of
+  finite positive order $\rho$ admits a proximate order $\rho(r)\to\rho$ with
   $r\rho'(r)\log r\to0$ and
   $0<\limsup\log M(r)/r^{\rho(r)}<\infty$.
   This replaces minimal or maximal type by a normal growth scale.
+* **56. Carlson's theorem.** Let $f$ be holomorphic in
+  $\operatorname{Re}z>0$, continuous on its closure, of exponential type
+  there, and satisfy $|f(iy)|\leq Ce^{c|y|}$ with $c<\pi$. If
+  $f(n)=0$ for $n=0,1,2,\ldots$, then $f\equiv0$. The function
+  $\sin\pi z$ shows that $c<\pi$ cannot be relaxed.
+
+## Quasi-analyticity and completeness of exponentials
+
+For positive $M_0=1,M_1,\ldots$ and an interval $I$, the class
+$C_I\{M_n\}$ consists of the $C^\infty$ functions with
+$|f^{(n)}|\leq c\,\beta^nM_n$ on $I$ for some $c,\beta$ and all $n$. It is
+**quasi-analytic** if $f\in C_I\{M_n\}$ and $f^{(n)}(x_0)=0$ for all
+$n$ at one $x_0\in I$ force $f\equiv0$. A family $\{e^{i\lambda t}\}$ is
+**complete** in $L^2(-a,a)$ if its linear span is dense.
+
+* **70. Denjoy–Carleman theorem.** If $(M_n)$ is logarithmically convex,
+  $C_I\{M_n\}$ is quasi-analytic exactly when
+  $\sum_nM_n^{-1/n}=\infty$, equivalently
+  $\sum_nM_{n-1}/M_n=\infty$, equivalently
+  $\int^\infty\log T(r)\,dr/r^2=\infty$ with
+  $T(r)=\sup_nr^n/M_n$. For general $(M_n)$ the same holds with $M_n$
+  replaced by its largest log-convex minorant. Thus $M_n=n!$ (real-analytic
+  functions) and $M_n=(n\log n)^n$ ($n\geq2$) give quasi-analytic classes, while
+  $M_n=n!^{s}$, $s>1$ (Gevrey classes), do not.
+* **71. Completeness of exponential systems.** If
+  $\lambda_n\in\mathbb R$ and $|\lambda_n-n|\leq1/4$ for all
+  $n\in\mathbb Z$, then $\{e^{i\lambda_nt}\}$ is complete in
+  $L^2(-\pi,\pi)$ (Levinson); with strict inequality uniformly it is a
+  Riesz basis (Kadec, SYNOPSIS29, item 61). At the endpoint $1/4$
+  completeness may hold without the Riesz-basis property, as for
+  $\lambda_n=n-\frac14\operatorname{sign}n$. Removing one exponential
+  from the integer system leaves it complete in $L^2(-a,a)$ only for $a<\pi$.
+* **72. Beurling–Malliavin radius of completeness.** For a discrete set
+  $\Lambda\subset\mathbb R$, call a sequence of disjoint intervals
+  $I_k$ **long** if $\sum_k|I_k|^2/(1+\operatorname{dist}(0,I_k)^2)=\infty$,
+  and let $D^*(\Lambda)$ be the supremum of $d$ for which some long
+  sequence satisfies $\#(\Lambda\cap I_k)\geq d|I_k|$. Then
+  $\{e^{i\lambda t}\}_{\lambda\in\Lambda}$ is complete in
+  $L^2(-a,a)$ for $a<\pi D^*(\Lambda)$ and incomplete for
+  $a>\pi D^*(\Lambda)$. The proof rests on the multiplier theorem (item 28).
+
+## Real zeros, Hermite–Biehler functions, and de Branges spaces
+
+For entire $F$ write $F^\#(z)=\overline{F(\bar z)}$. An entire $E$ is a
+**Hermite–Biehler function** if $|E(\bar z)|<|E(z)|$ for $\Im z>0$;
+write $E=A-iB$ with $A=(E+E^\#)/2$ and $B=i(E-E^\#)/2$ real entire.
+$H^2(\mathbb C_+)$ is the Hardy space of the upper half-plane.
+
+* **73. Gauss–Lucas and Grace–Walsh–Szegő.** The zeros of $P'$ lie in
+  the convex hull of the zeros of a polynomial $P$. If $F$ is a symmetric
+  polynomial in $z_1,\ldots,z_n$, of degree at most one in each variable,
+  and $\zeta_1,\ldots,\zeta_n$ lie in a closed circular region $C$
+  (disk, disk complement, or half-plane), then
+  $F(\zeta_1,\ldots,\zeta_n)=F(\zeta,\ldots,\zeta)$ for some
+  $\zeta\in C$, provided $C$ is convex or $F$ has total degree $n$.
+* **74. Laguerre–Pólya class.** The locally uniform limits of real
+  polynomials with only real zeros are exactly the entire functions
+  $cz^me^{-az^2+bz}\prod_k(1-z/x_k)e^{z/x_k}$ with $a\geq0$,
+  $b,c,x_k\in\mathbb R$, and $\sum_kx_k^{-2}<\infty$. The class is
+  closed under differentiation and locally uniform limits.
+* **75. Hermite–Biehler theorem.** If $E$ is Hermite–Biehler without
+  real zeros, then $A$ and $B$ have only real simple zeros, which
+  interlace. Conversely, for real polynomials $A,B$ with real simple
+  interlacing zeros, one of $A\pm iB$ has all its zeros in a single open
+  half-plane.
+* **76. de Branges spaces.** For a Hermite–Biehler $E$, the space
+  $\mathcal H(E)$ of entire $F$ with $F/E,F^\#/E\in H^2(\mathbb C_+)$ and
+  $\|F\|^2=\int_{\mathbb R}|F/E|^2dx$ is a Hilbert space with
+  reproducing kernel
+  $$
+  K(w,z)=\frac{E(z)\overline{E(w)}-E^\#(z)\overline{E^\#(w)}}{2\pi i(\bar w-z)}
+  =\frac{B(z)\overline{A(w)}-A(z)\overline{B(w)}}{\pi(z-\bar w)}.
+  $$
+  For $E(z)=e^{-i\sigma z}$ it is $PW_\sigma$. For all but at most one
+  $\alpha\in[0,\pi)$, the kernels at the real zeros of
+  $e^{i\alpha}E-e^{-i\alpha}E^\#$ form an orthogonal basis.
+* **77. de Branges axioms and ordering.** A nonzero Hilbert space of
+  entire functions is isometrically some $\mathcal H(E)$ exactly when
+  evaluations at nonreal points are bounded, $F\mapsto F^\#$ is isometric,
+  and $F(w)=0$ implies $F(z)(z-\bar w)/(z-w)$ belongs to the space with
+  the same norm. de Branges spaces contained isometrically in a given
+  $\mathcal H(E)$ are totally ordered by inclusion: if
+  $\mathcal H(E_1),\mathcal H(E_2)\subset\mathcal H(E)$ isometrically,
+  $E,E_1,E_2$ have no real zeros, and $E_1/E_2$ has bounded type in
+  $\mathbb C_+$, then one of the two spaces contains the other.
 
 ## Nevanlinna characteristic and the first main theorem
 
@@ -290,11 +380,6 @@ with meromorphic or constant-infinity limit.
   function on $\mathbb C$ with bounded spherical derivative has
   $T(r)=O(r^2)$. For entire functions, bounded spherical derivative
   implies exponential type.
-* **56. Carlson's theorem.** Let $f$ be holomorphic in
-  $\operatorname{Re}z>0$, continuous on its closure, of exponential type
-  there, and satisfy $|f(iy)|\leq Ce^{c|y|}$ with $c<\pi$. If
-  $f(n)=0$ for $n=0,1,2,\ldots$, then $f\equiv0$. The function
-  $\sin\pi z$ shows that $c<\pi$ cannot be relaxed.
 * **57. Hadamard and Fabry gap theorems.** If $\sum a_jz^{n_j}$ has
   radius one and $n_{j+1}/n_j\geq q>1$, the unit circle is a natural
   boundary. Fabry's theorem gives the same conclusion under the weaker
@@ -347,21 +432,22 @@ characteristics are $o(T(r,f))$ outside the stated exceptional set.
   $Sf=f'''/f'-\frac32(f''/f')^2$.
   Ratios of independent solutions of $u''+Au=0$ satisfy $Sf=2A$;
   conversely they locally represent all solutions of that Schwarzian equation.
-* **68. Möbius ambiguity.** Two locally univalent functions have the
-  same Schwarzian on a connected domain exactly when one is a fixed
-  Möbius transformation of the other. The Schwarzian chain rule is
-  $S(f\circ g)=(Sf\circ g)(g')^2+Sg$.
 * **69. Logarithmic derivatives of differential monomials.** For
   fixed nonnegative integers $\alpha_j$,
   $m(r,\prod_{j\geq1}(f^{(j)}/f)^{\alpha_j})=S(r,f)$.
-  Thus the proximity of a differential polynomial is bounded by its
-  total degree times $m(r,f)$, plus coefficient terms and $S(r,f)$.
+  Consequently, if $P(f)$ is a differential polynomial in $f$ of total
+  degree $d$ (the largest degree of its monomials) with coefficients $a$ satisfying $T(r,a)=S(r,f)$, then
+  $m(r,P(f))\leq d\,m(r,f)+S(r,f)$.
 
 ## Reference guide
 
 Boas and Levin supply the canonical-product, indicator, exponential-type,
 and zero-distribution core. Koosis and Paley–Wiener develop its real-axis,
-Fourier, multiplier, and uniqueness consequences. Nevanlinna, Hayman,
+Fourier, multiplier, and uniqueness consequences; Koosis, Levinson, and
+Poltoratski treat quasi-analyticity and the completeness of exponential
+systems. de Branges's monograph is the source for Hermite–Biehler functions
+and de Branges spaces, Levin and Sheil-Small for real zeros and polynomial
+zero location. Nevanlinna, Hayman,
 Gol'dberg–Ostrovskii, Cherry–Ye, Zheng, and Steinmetz share the
 characteristic, main theorems, defects, and ramification theory.
 Laine and Steinmetz connect it with growth and differential equations.

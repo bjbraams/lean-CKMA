@@ -1,9 +1,11 @@
 # Synopsis: Core Banach and Hilbert space theory
 
 Part of the [mathematical synopsis series](SYNOPSIS.md).
+[Bibliographical scope and references](CKMA-bib.md#ckma-15);
+[MSC2020 correspondence and cross-subject index](CKMA-MSC2020.md).
 
 This synopsis selects the recurring graduate core of Section 15 of
-[CKMA-bib.md](CKMA-bib.md): completeness,
+[CKMA-bib.md](CKMA-bib.md#ckma-15): completeness,
 duality, weak compactness, Hilbert space geometry, and the first structure
 theorems for linear operators. The more specialized geometry of Banach
 spaces, locally convex theory, Banach algebras, and general spectral theory
@@ -15,6 +17,7 @@ complete for the norm induced by an inner product. Write $B_X$ for the closed
 unit ball, $X^*$ for the continuous linear dual, and $\mathcal L(X,Y)$ for
 bounded linear operators with the operator norm. An **isomorphism** is a bounded
 linear bijection with bounded inverse; an **isometry** preserves the norm.
+Unless stated otherwise, $X$ and $Y$ denote Banach spaces.
 Hilbert inner products are linear in the first variable.
 
 ## Completeness, quotient spaces, and classical examples
@@ -28,8 +31,9 @@ boundedness.
 * **1. Completion theorem.** Every normed space embeds isometrically as a
   dense subspace of a Banach space, uniquely up to the isometry fixing the
   original space. Bounded maps into Banach spaces extend uniquely to the completion.
-* **2. Quotients and operator spaces.** If $X,Y$ are Banach and $M\subset X$
-  is closed, then $X/M$ and $\mathcal L(X,Y)$ are Banach. A bounded map
+* **2. Quotients and operator spaces.** If $X$ is Banach and $M\subset X$
+  is closed, then $X/M$ is Banach; for normed $X$, $\mathcal L(X,Y)$ is
+  Banach whenever $Y$ is. A bounded map
   vanishing on $M$ factors uniquely through $X/M$, with the same norm.
 * **3. Finite-dimensional equivalence.** All norms on a finite-dimensional
   vector space are equivalent; every linear map from it to a normed space is
@@ -49,13 +53,9 @@ boundedness.
   $\sigma$-finite $\mu$. The dual of $L^\infty$ is strictly larger than
   $L^1$ except in finite-dimensional cases; it consists of bounded finitely
   additive measures.
-* **7. Riesz representation for continuous functions.** The dual of $C_0(K)$
-  is the space of finite regular real or complex Borel measures on $K$, with
-  total variation norm, under $f\mapsto\int f\,d\mu$.
-* **8. Stone–Weierstrass theorem.** For compact Hausdorff $K$, a subalgebra
-  of $C(K;\mathbb R)$ that contains the constants and separates points is
-  uniformly dense. In $C(K;\mathbb C)$ the subalgebra must in addition be
-  closed under complex conjugation.
+* **69. Arzelà–Ascoli theorem.** For compact Hausdorff $K$, a subset of
+  $C(K)$ is relatively norm compact exactly when it is pointwise bounded
+  and equicontinuous.
 * **9. Complemented subspaces.** A closed subspace $M$ of a Banach space
   is complemented exactly when $X=M\oplus N$ for another closed subspace
   $N$. Every finite-dimensional or closed finite-codimensional subspace is
@@ -63,7 +63,8 @@ boundedness.
 
 ## Hahn–Banach, separation, and duality
 
-For $A\subset X$ let $A^\perp=\{f\in X^*:f|_A=0\}$. The canonical
+For $A\subset X$ let $A^\perp=\{f\in X^*:f|_A=0\}$, and for $B\subset X^*$
+let $B_\perp=\{x\in X:f(x)=0\ (f\in B)\}$. The canonical
 map $J:X\to X^{**}$ is $(Jx)(f)=f(x)$. A real function $p$ is
 **sublinear** if it is subadditive and positively homogeneous.
 
@@ -86,10 +87,6 @@ map $J:X\to X^{**}$ is $(Jx)(f)=f(x)$. A real function $p$ is
 * **14. Duality of subspaces and quotients.** For closed $M\subset X$,
   $(X/M)^*$ identifies isometrically with $M^\perp$, while restriction
   induces the isometric identification $X^*/M^\perp\cong M^*$.
-* **15. Bipolar theorem.** If $A^\circ=\{f:|f(a)|\leq1\ (a\in A)\}$,
-  then $A^{\circ\circ}$, viewed in $X$, is the weak closure of the
-  absolutely convex hull of $A\cup\{0\}$. For convex sets, weak and norm
-  closures coincide.
 * **16. Goldstine theorem.** $J(B_X)$ is weak-star dense in $B_{X^{**}}$.
   Thus $J(X)$ is weak-star dense in $X^{**}$, though norm closed and proper
   when $X$ is nonreflexive.
@@ -152,16 +149,14 @@ compactness until the relevant theorem is invoked.
   when every $f\in X^*$ attains its norm on $B_X$. More generally,
   a closed bounded convex set is weakly compact exactly when every
   continuous real linear functional attains its supremum there.
-* **30. Krein–Milman theorem.** A nonempty compact convex subset of a
-  Hausdorff locally convex space is the closed convex hull of its extreme
-  points. It applies in particular to weak-star compact dual balls.
 * **31. Krein–Šmulian theorem.** A convex subset $C\subset X^*$ is
   weak-star closed exactly when $C\cap rB_{X^*}$ is weak-star closed for
   every $r>0$.
 * **32. Separability and duality.** If $X^*$ is separable, then $X$ is
   separable. For reflexive $X$, separability of $X$ and of $X^*$ are
   equivalent. The converse implication fails for general Banach spaces.
-* **33. Uniform convexity and reflexivity.** If for each $\varepsilon>0$
+* **33. Uniform convexity and reflexivity.** If, in a Banach space $X$,
+  for each $\varepsilon>0$
   there is $\delta>0$ such that unit-ball vectors with distance at least
   $\varepsilon$ have midpoint norm at most $1-\delta$, then $X$ is
   reflexive (Milman–Pettis). Clarkson's inequalities show that $L^p$ is
@@ -180,6 +175,9 @@ compactness until the relevant theorem is invoked.
 For $M\subset H$, let $M^\perp=\{x:\langle x,m\rangle=0\ (m\in M)\}$.
 An **orthonormal basis** is a maximal orthonormal set, whose closed linear
 span is $H$; its expansions are norm limits, not algebraic finite expansions.
+A bounded operator $T$ on $H$ is **self-adjoint** if
+$\langle Tx,y\rangle=\langle x,Ty\rangle$ for all $x,y$, and **positive** if
+$\langle Tx,x\rangle\geq0$ for all $x$.
 
 * **36. Cauchy–Schwarz and polarization.**
   $|\langle x,y\rangle|\leq\|x\|\|y\|$, with equality for nonzero
@@ -191,7 +189,8 @@ span is $H$; its expansions are norm limits, not algebraic finite expansions.
 * **38. Projection onto closed convex sets.** Every nonempty closed convex
   $C\subset H$ has a unique nearest point $P_Cx$ to each $x$. It is
   characterized by $\operatorname{Re}\langle x-P_Cx,y-P_Cx\rangle\leq0$
-  for $y\in C$, and $P_C$ is nonexpansive.
+  for $y\in C$, and $P_C$ is nonexpansive. Indeed it is firmly nonexpansive:
+  $\|P_Cx-P_Cy\|^2\leq\operatorname{Re}\langle P_Cx-P_Cy,x-y\rangle$.
 * **39. Orthogonal decomposition.** For a closed linear subspace $M$,
   $H=M\oplus M^\perp$. Its nearest-point map is a bounded self-adjoint
   projection; every bounded self-adjoint projection arises this way.
@@ -207,6 +206,13 @@ span is $H$; its expansions are norm limits, not algebraic finite expansions.
   orthonormal basis and is isometrically isomorphic to $\ell^2(I)$ for its
   basis index set $I$. Two Hilbert spaces are unitarily isomorphic exactly
   when their orthonormal bases have the same cardinality.
+* **70. Gram–Schmidt and separable Hilbert spaces.** Every finite or
+  countable linearly independent sequence $(x_n)$ in $H$ yields, by
+  Gram–Schmidt orthonormalization, an orthonormal sequence $(e_n)$ with the
+  same linear spans $\operatorname{span}\{x_1,\dots,x_n\}$ for every $n$.
+  Hence $H$ is separable exactly when it has a countable orthonormal basis,
+  and every infinite-dimensional separable Hilbert space is unitarily
+  isomorphic to $\ell^2$.
 * **43. Lax–Milgram theorem.** If a bounded sesquilinear form $a$ on $H$
   is linear in its first variable and
   $\operatorname{Re}a(u,u)\geq\alpha\|u\|^2$ with $\alpha>0$, then for
@@ -231,7 +237,9 @@ sets; **weakly compact** uses relative weak compactness instead.
 * **46. Adjoint identities.** $\|T^*\|=\|T\|$, $(ST)^*=T^*S^*$, and on
   Hilbert spaces $\|T^*T\|=\|T\|^2$. Moreover
   $(\operatorname{ran}T)^\perp=\ker T^*$ and
-  $\overline{\operatorname{ran}T}=(\ker T^*)_\perp$.
+  $\overline{\operatorname{ran}T}=(\ker T^*)_\perp$. On Hilbert spaces the
+  range of $T$ is closed exactly when $T$ is bounded below on
+  $(\ker T)^\perp$.
 * **47. Closed range theorem.** For bounded maps between Banach spaces,
   $\operatorname{ran}T$ is norm closed exactly when $\operatorname{ran}T^*$
   is norm closed, and then $\operatorname{ran}T=(\ker T^*)_\perp$ and
@@ -261,44 +269,43 @@ sets; **weakly compact** uses relative weak compactness instead.
 * **54. Solvability condition.** In result 53, $(I-K)x=y$ is solvable exactly
   when $f(y)=0$ for all $f\in\ker(I-K^*)$. Solutions, when they exist,
   form an affine translate of $\ker(I-K)$.
-* **55. Fredholm operators and index.** $T\in\mathcal L(X,Y)$ is
-  **Fredholm** if $\ker T$ and $Y/\operatorname{ran}T$ are finite
-  dimensional (the range is then closed); its index is
-  $\dim\ker T-\operatorname{codim}\operatorname{ran}T$. By Atkinson's
-  theorem, $T$ is Fredholm exactly when it is invertible modulo compact
-  operators. Fredholm operators form an open set on which the index is
-  locally constant, $\operatorname{ind}(ST)=\operatorname{ind}S+
-  \operatorname{ind}T$, and the index is unchanged by compact perturbations.
 * **56. Compact spectral structure.** For compact $K$ on a complex Banach
   space, every nonzero spectral value is an isolated eigenvalue with finite
   algebraic multiplicity. There are only finitely many outside any disk
-  about zero. In infinite dimension, zero belongs to the spectrum.
+  about zero. In infinite dimension, zero belongs to the spectrum. A compact
+  normal operator on a Hilbert space is diagonal in an orthonormal basis.
 * **57. Compact self-adjoint spectral theorem.** A compact self-adjoint
   operator on $H$ has an orthonormal basis of eigenvectors, including a basis
   of its kernel. Its nonzero eigenvalues are real, of finite multiplicity,
   and tend to zero if infinite in number.
-* **58. Courant–Fischer min–max principle.** If the positive eigenvalues of a
-  compact self-adjoint operator are listed with multiplicity as
-  $\lambda_1\geq\lambda_2\geq\cdots$, then
-  $$\lambda_k=\max_{\dim V=k}\ \min_{x\in V,\ \|x\|=1}\langle Tx,x\rangle
-     =\min_{\dim W=k-1}\ \sup_{x\perp W,\ \|x\|=1}\langle Tx,x\rangle.$$
+* **58. Courant–Fischer min–max principle.** Let the positive eigenvalues of a
+  compact self-adjoint operator $T$ on an infinite-dimensional $H$ be listed
+  with multiplicity as $\lambda_1\geq\lambda_2\geq\cdots$, padded with
+  zeros if there are only finitely many. Then for every $k\geq1$
+  $$\lambda_k=\sup_{\dim V=k}\ \min_{x\in V,\ \|x\|=1}\langle Tx,x\rangle
+     =\min_{\dim W=k-1}\ \sup_{x\perp W,\ \|x\|=1}\langle Tx,x\rangle,$$
+  the supremum being attained when $\lambda_k>0$.
   Consequences include Weyl's perturbation bound
-  $|\lambda_k(S)-\lambda_k(T)|\leq\|S-T\|$ and eigenvalue interlacing.
+  $|\lambda_k(S)-\lambda_k(T)|\leq\|S-T\|$ for these padded lists and
+  eigenvalue interlacing.
 * **59. Singular value decomposition.** A compact operator $T:H_1\to H_2$
   has an expansion $Tx=\sum_ns_n\langle x,e_n\rangle f_n$ with orthonormal
   systems, $s_1\geq s_2\geq\cdots>0$, and $s_n\to0$ if infinite; the
   $s_n^2$ are the nonzero eigenvalues of $T^*T$. Truncation gives best
   rank-at-most-$n$ approximation error $s_{n+1}$ in operator norm, with
   the singular-value list padded by zeros in the finite-rank case.
+  Equivalently, $s_n(T)=\inf_{\operatorname{rank}F<n}\|T-F\|$.
 
 ## First spectral and fixed-point principles
 
 The spectral statements in this section use complex spaces. For bounded
 $T$ on a nonzero complex Banach space,
 $\sigma(T)=\{\lambda:\lambda I-T\text{ is not invertible}\}$ and
-$R(\lambda,T)=(\lambda I-T)^{-1}$ on its complement. An operator is
-**self-adjoint** if $T=T^*$, **normal** if $TT^*=T^*T$, and **positive**
-if $\langle Tx,x\rangle\geq0$ for all $x$.
+$R(\lambda,T)=(\lambda I-T)^{-1}$ on its complement. A Hilbert-space
+operator is **normal** if $TT^*=T^*T$; self-adjoint and positive operators
+are defined before result 36. The Fredholm index is treated in Section 21
+(Atkinson's theorem, SYNOPSIS21, item 11), the Banach and Schauder fixed-point
+theorems in Section 35, and the mean ergodic theorem in Section 10.
 
 * **60. Neumann series and resolvent.** If $\|S\|<1$, then
   $(I-S)^{-1}=\sum_{n\geq0}S^n$ in operator norm. Invertible operators
@@ -322,26 +329,15 @@ if $\langle Tx,x\rangle\geq0$ for all $x$.
   projection-valued measure $E$ on $\sigma(T)$ with
   $T=\int z\,dE(z)$. Continuous functional calculus is an isometric
   unital star homomorphism from $C(\sigma(T))$ onto the C*-algebra generated
-  by $T$ and the identity.
-* **66. Banach contraction principle.** A contraction with Lipschitz
-  constant $q<1$ on a nonempty complete metric space has a unique fixed
-  point. Its iterates converge from every starting point, with
-  $d(x_n,x_*)\leq q^nd(x_0,x_1)/(1-q)$.
-* **67. Schauder fixed-point theorem.** If $C$ is a nonempty closed convex
-  subset of a Banach space and $F:C\to C$ is continuous with relatively
-  compact image, then $F$ has a fixed point.
-* **68. Mean ergodic theorem on reflexive spaces.** If $T$ is power bounded
-  on a reflexive Banach space, then $n^{-1}\sum_{k=0}^{n-1}T^kx$ converges
-  in norm for every $x$. The resulting projection gives
-  $X=\ker(I-T)\oplus\overline{\operatorname{ran}(I-T)}$.
-* **69. Arzelà–Ascoli theorem.** For compact Hausdorff $K$, a subset of
-  $C(K)$ is relatively norm compact exactly when it is pointwise bounded
-  and equicontinuous.
+  by $T$ and the identity. Bounded Borel functions define
+  $f(T)=\int f\,dE$, and $\|R(z,T)\|=\operatorname{dist}(z,\sigma(T))^{-1}$
+  off the spectrum.
 
 ## Reference guide
 
 Conway, Chapters I–VI, gives the Hilbert geometry, Banach principles, and
-weak compactness spine, with Stone–Weierstrass in V.8; Chapters VII–IX supply
+weak compactness spine, with Stone–Weierstrass (stated in Section 47) in V.8;
+Chapters VII–IX supply
 the initial spectral results and Chapter XI the Fredholm index.
 Brezis, Chapters 1–6, independently develops separation, mapping principles,
 reflexivity, variational problems, and compact operator theory. Einsiedler–Ward

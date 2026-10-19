@@ -1,15 +1,23 @@
 # Synopsis: Asymptotic analysis, resurgence, and perturbation
 
 Part of the [mathematical synopsis series](SYNOPSIS.md).
+[Bibliographical scope and references](CKMA-bib.md#ckma-50);
+[MSC2020 correspondence and cross-subject index](CKMA-MSC2020.md).
 
 This synopsis selects recurring core material from Section 50 of
-[CKMA-bib.md](CKMA-bib.md).
+[CKMA-bib.md](CKMA-bib.md#ckma-50).
 It covers asymptotic scales, integral and coefficient methods, linear
 differential equations and turning points, Gevrey expansions and summation,
 resurgence, averaging, and singular and eigenvalue perturbation. Formal identities, asymptotic
 expansions with remainders, and actual summed solutions are distinguished
 throughout. Special-function normalizations are in Section 49, and
 Riemann–Hilbert asymptotics are developed further in Section 51.
+
+Microlocal and semiclassical operator methods remain in Section 30; nonlinear
+dispersive evolution is identified as [34B](CKMA-bib.md#ckma-34b), and
+integrable Riemann–Hilbert methods remain in Section 51. Spectral
+asymptotics beyond the Bohr–Sommerfeld rule (entry 39), such as Weyl laws,
+are in Sections 30 and 53.
 
 For an asymptotic scale $\phi_{n+1}=o(\phi_n)$, write
 $f\sim\sum a_n\phi_n$ if
@@ -40,7 +48,8 @@ with an additional parameter explicitly require uniform hypotheses.
   sequence of derivatives at a point is the jet of a smooth function.
 * **6. Borel–Ritt theorem.** Every formal power series is the
   asymptotic expansion of a holomorphic function on any sector of
-  opening strictly less than $2\pi$.
+  finite opening (on the Riemann surface of the logarithm when the
+  opening is at least $2\pi$).
 * **7. Flat-function ambiguity.** On a sector where $\Re(1/z)>0$,
   $e^{-1/z}$ has the zero power-asymptotic expansion. Ordinary
   asymptotic data therefore do not determine a sectorial function uniquely.
@@ -86,6 +95,9 @@ point from all other contributions.
   $e^{i\lambda\phi(x_0)+i\pi\operatorname{sgn}H/4}
   (2\pi/\lambda)^{m/2}A(x_0)/\sqrt{|\det H|}$,
   with subsequent powers of $\lambda^{-1}$ and controlled remainder.
+  For a unique nondegenerate critical point on the support of the amplitude,
+  the remainder after the leading term is $O(\lambda^{-m/2-1})$. The van der
+  Corput bound for degenerate phases is SYNOPSIS27, item 63.
 * **15. Degenerate endpoint scale.** For $m>0$, $\Re\alpha>0$,
   $\int_0^\infty e^{-\lambda t^m}t^{\alpha-1}dt
   =\Gamma(\alpha/m)\lambda^{-\alpha/m}/m$.
@@ -108,6 +120,17 @@ point from all other contributions.
   $t^4/4+at^2/2+bt$. Its uniform scaling is
   $t=O(\lambda^{-1/4})$, $a=O(\lambda^{-1/2})$,
   $b=O(\lambda^{-3/4})$, with smooth amplitude corrections.
+* **74. Newton polyhedra and oscillation index.** For a real-analytic
+  phase $\phi$ on $\mathbb R^n$ with a critical point at $0$ and smooth
+  amplitude of small support,
+  $\int e^{i\lambda\phi}a\,dx\sim e^{i\lambda\phi(0)}\sum_\alpha\sum_{k=0}^{n-1}
+  c_{\alpha,k}\lambda^\alpha(\log\lambda)^k$, with $\alpha$ in finitely
+  many arithmetic progressions of negative rationals (Malgrange). If
+  $\phi-\phi(0)$ is nondegenerate with respect to its Newton polyhedron at
+  $0$ and the Newton distance $d$ (where the diagonal meets the polyhedron)
+  exceeds one, the oscillation index is $-1/d$: the integral is
+  $O(\lambda^{-1/d}(\log\lambda)^{n-1})$, and no faster rate holds for
+  all amplitudes (Varchenko; Arnold–Gusein-Zade–Varchenko).
 * **20. Darboux principle.** A remainder with $k$ continuous
   angular derivatives on the convergence circle has Taylor coefficients
   $o(n^{-k})$ after scaling the circle to radius one. Subtracting explicitly
@@ -123,6 +146,16 @@ point from all other contributions.
   continuation, their coefficient contributions add. Equal-modulus
   singularities can create oscillations or cancellation, so a single
   positive equivalent need not exist.
+* **73. Saddle-point bound and Hayman admissibility.** If $f$ has
+  nonnegative Taylor coefficients and radius $R$, then
+  $[z^n]f\leq f(r)/r^n$ for $0<r<R$, best at $a(r)=n$, where
+  $a(r)=rf'(r)/f(r)$. Let $b(r)=ra'(r)$. If $f$ is Hayman admissible
+  ($b(r)\to\infty$ as $r\uparrow R$; for some $0<\delta(r)<\pi$,
+  $f(re^{i\theta})\sim f(r)e^{i\theta a(r)-\theta^2b(r)/2}$ uniformly in
+  $|\theta|\leq\delta(r)$, and $f(re^{i\theta})=o(f(r)/\sqrt{b(r)})$
+  uniformly in $\delta(r)\leq|\theta|\leq\pi$), then
+  $[z^n]f\sim f(r_n)r_n^{-n}/\sqrt{2\pi b(r_n)}$ with $a(r_n)=n$.
+  For $f=e^z$ this is Stirling's formula for $1/n!$.
 
 ## Summation, Mellin transforms, and regular variation
 
@@ -136,9 +169,6 @@ point from all other contributions.
 * **24. Euler–Maclaurin error bound.**
   $|R_p|\leq2\zeta(2p)(2\pi)^{-2p}\int_m^n|f^{(2p)}(x)|dx$.
   Endpoint derivative decay permits summation to an infinite endpoint.
-* **25. Poisson summation.** For Schwartz $f$ and convention
-  $\widehat f(\xi)=\int f(x)e^{-2\pi ix\xi}dx$,
-  $\sum_{n\in\mathbb Z}f(nh)=h^{-1}\sum_{k\in\mathbb Z}\widehat f(k/h)$.
 * **26. Mellin contour displacement.** If a Mellin transform has
   meromorphic continuation and sufficient vertical decay, moving its
   inversion contour left yields small-$x$ expansions from the poles
@@ -171,10 +201,12 @@ point from all other contributions.
   matrices, and invertible formal power-series factors.
 * **32. Sectorial realization.** For
   $z^{r+1}Y'=A(z)Y$, $r\geq1$, analytic $A$ with distinct
-  eigenvalues at zero, formal fundamental solutions have actual
-  sectorial realizations on sufficiently narrow sectors. Subsector
-  openings below $\pi/r$, with compatible exponential ordering,
-  give the classical asymptotic existence theorem.
+  eigenvalues at zero, on every sector of opening at most $\pi/r$
+  and small radius there is an actual fundamental solution
+  asymptotic to a given formal one (classical existence theorem).
+  On sectors of opening greater than $\pi/r$ such a solution is
+  unique when it exists; Stokes matrices compare these solutions on
+  overlapping sectors of opening slightly greater than $\pi/r$.
 * **33. Stokes matrices.** Sectorial fundamental solutions with
   the same formal normalization differ on overlaps by constant
   matrices. Their nontrivial entries describe exponentially small
@@ -269,6 +301,18 @@ sector about that ray with at most exponential growth there.
   differ by a positively oriented loop about a simple Borel pole
   $A$ with residue $c$, their sums differ by $2\pi ic\,e^{-A/z}$,
   assuming the remaining contour deformation is justified.
+* **72. Smoothing of the Stokes phenomenon.** Let the Borel transform
+  have a nearest simple pole at $A$ (entry 55), so the singulant is
+  $F=A/z$ and $\arg z=\arg A$ is the Stokes line. Let $f$ be the lateral
+  sum from the side where $\sigma=\Im F/\sqrt{2\Re F}$ is negative,
+  continued across the line, and $\Delta=f-\mathcal S_{+}\widehat f$ its
+  exponentially small difference from the lateral sum on the other side
+  (entry 50). Truncating near the least term, $N=|F|+O(1)$, gives
+  $f(z)-\sum_{n<N}a_nz^n=\Delta\cdot\frac12[1+\operatorname{erf}\sigma]
+  (1+O(|z|^{1/2}))$ near the line. The subdominant exponential is
+  switched on smoothly across an angular width $O(|z|^{1/2})$ (Berry);
+  re-expanding the remainder in terminant functions gives exponentially
+  improved and hyperasymptotic expansions (Dingle, Olver, Paris).
 * **51. Ramis–Sibuya theorem.** Bounded holomorphic functions on
   a finite good sectorial covering of a punctured disk, whose
   overlap differences are $O(e^{-c/|z|^k})$, have one common
@@ -316,8 +360,8 @@ the fast normal eigenvalues have real parts uniformly below zero.
   uniformly asymptotically stable for the frozen fast equation,
   the initial fast datum lies in its attraction basin, and the
   reduced solution stays in the regular branch, then $x_\varepsilon$
-  converges uniformly to the reduced slow solution on fixed intervals,
-  and $y_\varepsilon\to h(x_0)$ away from the initial time.
+  converges uniformly to the reduced slow solution $x_0(t)$ on fixed
+  intervals, and $y_\varepsilon(t)\to h(x_0(t))$ away from the initial time.
 * **59. Initial-layer estimate.** With $C^2$ data, a uniform
   Hurwitz gap, matching slow initial data, and fast initial values in a fixed small attraction
   neighborhood, one has $x_\varepsilon-x_0=O(\varepsilon)$ and
@@ -336,6 +380,27 @@ the fast normal eigenvalues have real parts uniformly below zero.
   the reduced solution is $u_0(x)=\beta-\int_x^1f(t)dt$.
   For $f\in C^1$, $u_0(x)+(\alpha-u_0(0))e^{-x/\varepsilon}$
   approximates $u$ uniformly with error $O(\varepsilon)$.
+* **69. Matching principle and composite expansion.** Let an outer
+  expansion $u^o\sim\sum\varepsilon^nu^o_n(x)$ hold away from a layer at
+  $x=0$, and an inner expansion $u^i\sim\sum\varepsilon^nU_n(X)$ in the
+  stretched variable $X=x/\delta(\varepsilon)$, $\delta\to0$. Van Dyke's
+  matching principle requires the $m$-term inner expansion of the
+  $n$-term outer expansion to equal the $n$-term outer expansion of the
+  $m$-term inner expansion, both written in one variable; Kaplun's
+  intermediate matching requires agreement in $x=\eta\xi$ with
+  $\delta\ll\eta\ll1$. The composite $u^c=u^o+u^i-(u^o)^i$, with
+  $(u^o)^i$ the common part, is then uniformly valid to the matched
+  order. In entry 62, $U_0(\infty)=u_0(0)$ gives exactly the stated
+  approximant. The construction is formal; it is justified by an
+  estimate such as entry 63.
+* **70. Location of boundary layers.** Let $a,b,f\in C^\infty[0,1]$ and
+  $a>0$. For all sufficiently small $\varepsilon>0$,
+  $\varepsilon u''+a(x)u'+b(x)u=f$, $u(0)=\alpha$, $u(1)=\beta$, has a
+  unique solution, and
+  $u(x)=u_0(x)+(\alpha-u_0(0))e^{-a(0)x/\varepsilon}+O(\varepsilon)$
+  uniformly, where $au_0'+bu_0=f$, $u_0(1)=\beta$; higher-order matched
+  expansions hold to all orders. If $a<0$ the layer is at $x=1$; zeros of
+  $a$ produce turning points with interior or corner layers (O'Malley).
 * **63. Residual control by comparison.** For
   $L_\varepsilon=-\varepsilon d^2/dx^2+a(x)d/dx+c(x)$,
   $c\geq c_0>0$, the maximum principle gives
@@ -343,13 +408,11 @@ the fast normal eigenvalues have real parts uniformly below zero.
   \max_{\partial I}|u-v|+c_0^{-1}\|L_\varepsilon(u-v)\|_\infty$.
   A matched construction becomes a uniform approximation once its
   boundary and residual errors are controlled.
-* **64. First-order averaging.** For $\dot x=\varepsilon f(t,x)$
-  with periodic $t$ dependence and uniformly bounded derivatives,
-  the averaged equation $\dot y=\varepsilon\bar f(y)$ has
-  $|x-y|\leq C\varepsilon$ for $0\leq t\leq T/\varepsilon$,
-  provided the solutions remain in the common regularity domain and
-  their initial difference is $O(\varepsilon)$.
-* **65. Second-order zero-mean averaging.** If $\bar f=0$, let
+* **65. Second-order zero-mean averaging.** For $\dot x=\varepsilon f(t,x)$
+  with $T$-periodic $t$ dependence, first-order averaging compares
+  solutions with those of $\dot y=\varepsilon\bar f(y)$,
+  $\bar f=T^{-1}\int_0^Tf(t,\cdot)dt$, on times $O(\varepsilon^{-1})$
+  (SYNOPSIS31, items 49–50). If $\bar f=0$, let
   $u(t,x)$ be the periodic zero-mean antiderivative of $f$ in $t$.
   The near-identity change $x=y+\varepsilon u(t,y)$ removes the
   order-$\varepsilon$ term, and the solution of
@@ -357,11 +420,6 @@ the fast normal eigenvalues have real parts uniformly below zero.
   with error $O(\varepsilon)$ on times $O(\varepsilon^{-2})$, given
   uniformly bounded derivatives through order three and solutions
   remaining in a common compact domain.
-* **66. Averaged periodic orbits.** A hyperbolic zero of $\bar f$
-  yields a nearby periodic solution of the periodically forced
-  small-$\varepsilon$ equation. Its Floquet multipliers have leading
-  form $1+\varepsilon T\lambda_j+O(\varepsilon^2)$ when the
-  relevant eigenvalues are simple, and stability follows the averaged linearization.
 * **67. Poincaré–Lindstedt method.** For
   $\ddot x+x+\varepsilon g(x,\dot x)=0$, the naive expansion in
   $\varepsilon$ has secular terms such as $t\sin t$ and is valid only
@@ -371,6 +429,18 @@ the fast normal eigenvalues have real parts uniformly below zero.
   Duffing equation $g=x^3$ the periodic orbit of amplitude $a$ has
   $\omega=1+\tfrac38\varepsilon a^2+O(\varepsilon^2)$. Two-timing
   reproduces the first-order averaged amplitude–phase equations.
+* **71. Method of multiple scales.** For
+  $\ddot x+x+\varepsilon h(x,\dot x)=0$ with smooth $h$, set $\tau=\varepsilon t$
+  and $x=A(\tau)\cos(t+\varphi(\tau))+\varepsilon x_1(t,\tau)+\cdots$.
+  Removing secular terms from $x_1$ gives
+  $A'=\frac1{2\pi}\int_0^{2\pi}h(A\cos\theta,-A\sin\theta)\sin\theta\,d\theta$
+  and
+  $A\varphi'=\frac1{2\pi}\int_0^{2\pi}h(A\cos\theta,-A\sin\theta)\cos\theta\,d\theta$.
+  These are the first-order averaged equations in amplitude–phase variables,
+  so the leading term is $O(\varepsilon)$ accurate on $t=O(\varepsilon^{-1})$
+  while $A$ stays in a compact subset of $(0,\infty)$. For Van der Pol,
+  $h=-(1-x^2)\dot x$, one gets $A'=\frac A2(1-\frac{A^2}4)$, a limit cycle
+  of amplitude $2$.
 * **68. Rayleigh–Schrödinger perturbation.** Let $A$ be self-adjoint,
   $B$ bounded and symmetric, and $\lambda_0$ an isolated simple eigenvalue
   of $A$ with unit eigenvector $\phi_0$ and reduced resolvent $S$.

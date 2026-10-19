@@ -1,14 +1,24 @@
 # Synopsis: Nonlinear functional analysis, monotone operators, and fixed points
 
 Part of the [mathematical synopsis series](SYNOPSIS.md).
+[Bibliographical scope and references](CKMA-bib.md#ckma-35);
+[MSC2020 correspondence and cross-subject index](CKMA-MSC2020.md).
 
 This synopsis selects recurring content from Section 35 of
-[CKMA-bib.md](CKMA-bib.md).
+[CKMA-bib.md](CKMA-bib.md#ckma-35).
 Its main themes are nonlinear equations in Banach spaces, topological and
 metric fixed points, degree, monotonicity, nonlinear evolution, and bifurcation.
 Convex duality is developed separately in Section 12 and critical-point
 variational methods in Section 36; they reappear here when they solve
-operator equations or inclusions.
+operator equations or inclusions. Morse theory and critical groups are
+placed with the critical-point methods of Section 36, and the Krein–Rutman
+theory of positive compact operators with Section 19 (SYNOPSIS19, items
+50–51).
+
+Convex optimization and generalized calculus are organised in Section 12,
+variational problems for functions in Section 36, and metric gradient flows in
+[39C](CKMA-bib.md#ckma-39c). The emphasis here remains abstract existence,
+continuation, and nonlinear operator methods.
 
 Spaces are real unless stated otherwise. $X^*$ is the continuous dual of
 a Banach space $X$, and $H$ is a Hilbert space identified with its dual.
@@ -29,9 +39,12 @@ limits and need not by itself give Fréchet differentiability.
 * **2. Mean-value estimate.** On a convex set where $\|DF\|\leq L$,
   a $C^1$ map satisfies $\|F(x)-F(y)\|\leq L\|x-y\|$.
   The integral of $DF(y+t(x-y))(x-y)$ gives the exact difference.
+  For real $f$ continuous on $[a,b]$ and differentiable on $(a,b)$,
+  $f(b)-f(a)=f'(c)(b-a)$ for some $c\in(a,b)$ (Lagrange).
 * **3. Inverse function theorem.** If $F$ is $C^1$ and $DF(x_0)$
   is an isomorphism, $F$ has a $C^1$ inverse between neighborhoods
   of $x_0$ and $F(x_0)$. Higher differentiability is inherited.
+  The derivative of the local inverse is $D(F^{-1})(F(x))=DF(x)^{-1}$.
 * **4. Implicit function theorem.** If $F(x_0,y_0)=0$ and
   $D_yF(x_0,y_0)$ is an isomorphism, nearby zeros are uniquely
   $y=\phi(x)$, with
@@ -59,11 +72,22 @@ limits and need not by itself give Fréchet differentiability.
   that radius about $x_0$ and converge to a zero, which is unique in a
   larger ball. Near a zero with invertible derivative and Lipschitz
   derivative, convergence is quadratic.
+* **66. Nash–Moser inverse function theorem.** Let $X,Y$ be tame Fréchet
+  spaces, graded by norms $\|\cdot\|_k$ and admitting smoothing operators
+  (e.g. $C^\infty$ functions on a compact manifold), and let
+  $P:U\subset X\to Y$ be a smooth tame map. If $DP(x)$ is invertible for
+  every $x\in U$ and $(x,y)\mapsto DP(x)^{-1}y$ is a smooth tame map, then
+  $P$ is locally invertible and every local inverse is smooth tame
+  (Hamilton's form of the Nash–Moser theorem). Tameness allows a fixed loss
+  of derivatives, $\|DP(x)^{-1}y\|_k\leq C_k(\|y\|_{k+r}+\|x\|_{k+r}\|y\|_b)$;
+  the proof is a Newton scheme with smoothing at each step, whose quadratic
+  convergence absorbs the loss. Entry 3 does not apply because no single
+  Banach norm is preserved by $DP(x)^{-1}$.
 * **10. Nemytskii continuity.** For finite $p,q\geq1$, a Carathéodory
   function $f(x,s)$ with $|f(x,s)|\leq a(x)+C|s|^{p/q}$,
   $a\in L^q$, defines a continuous superposition map $L^p\to L^q$.
   Conversely, if $u\mapsto f(\cdot,u)$ maps $L^p$ into $L^q$ (on a
-  $\sigma$-finite measure space), then it is continuous and bounded and
+  non-atomic $\sigma$-finite measure space), then it is continuous and bounded and
   such a growth bound holds (Krasnosel'skii).
 
 ## Topological and metric fixed-point theorems
@@ -71,6 +95,8 @@ limits and need not by itself give Fréchet differentiability.
 * **11. Banach contraction theorem.** A strict contraction of a complete
   metric space has a unique fixed point, and every Picard orbit
   converges geometrically to it with the usual a posteriori error bound.
+  Explicitly, for Lipschitz constant $q<1$,
+  $d(x_n,x_*)\leq q^nd(x_0,x_1)/(1-q)$.
 * **12. Brouwer fixed-point theorem.** A continuous self-map of a
   nonempty compact convex subset of $\mathbb R^n$ has a fixed point.
   Equivalently (acute-angle lemma), a continuous $F:\mathbb R^n\to\mathbb R^n$
@@ -152,6 +178,18 @@ the **Brouwer degree** is the integer $\deg(F,\Omega,y)$.
   every parameter has a fixed point there. The connected-component
   continuation principle strengthens this to a connected set crossing
   the parameter interval under the corresponding compactness hypotheses.
+* **65. Fixed-point index on retracts.** Let $C\subset X$ be a retract
+  (for example a closed convex set, by Dugundji's theorem), $U\subset C$
+  relatively open, and $f:\overline U\to C$ compact with no fixed point
+  on the relative boundary of $U$. For any retraction $r:X\to C$, the
+  Leray–Schauder degree of $I-f\circ r$ on $r^{-1}(U)$, intersected with a
+  large ball, defines the index $i_C(f,U)$, independent of $r$. It has
+  normalization ($i_C(f,U)=1$ for a constant map into $U$), additivity,
+  homotopy invariance, and the solution property. On a cone $P$ with
+  $U=P\cap B_\rho$: if $f(x)\neq\mu x$ for $\mu\geq1$ and
+  $x\in P\cap\partial B_\rho$, then $i_P(f,U)=1$; if there is
+  $e\in P\setminus\{0\}$ with $x-f(x)\neq te$ for all $t\geq0$ and
+  $x\in P\cap\partial B_\rho$, then $i_P(f,U)=0$ (Amann; Granas–Dugundji).
 * **31. Cone compression–expansion.** Let $P$ be a cone in $X$,
   $\Omega_1,\Omega_2$ bounded open with $0\in\Omega_1$,
   $\overline\Omega_1\subset\Omega_2$, and
@@ -159,7 +197,9 @@ the **Brouwer degree** is the integer $\deg(F,\Omega,y)$.
   $\|Tx\|\leq\|x\|$ on $P\cap\partial\Omega_1$ and $\|Tx\|\geq\|x\|$
   on $P\cap\partial\Omega_2$, or the reverse, then $T$ has a fixed
   point in $P\cap(\overline\Omega_2\setminus\Omega_1)$
-  (Krasnosel'skii). The proof uses the fixed-point index on the retract $P$,
+  (Krasnosel'skii). The proof computes the fixed-point index on the
+  retract $P$ (entry 65) on $P\cap\Omega_1$ and $P\cap\Omega_2$ as $1$ and
+  $0$, or $0$ and $1$, and uses additivity,
   and it yields positive solutions distinct from zero.
 
 ## Monotone operators and variational inequalities
@@ -169,6 +209,7 @@ $\langle a-b,x-y\rangle\geq0$ for all graph pairs $(x,a),(y,b)$.
 It is **maximal monotone** if no strictly larger monotone graph contains it.
 A single-valued map is **hemicontinuous** if its restrictions to line
 segments are weakly continuous in the dual pairing.
+In entries 32–39, $X=H$ is a real Hilbert space identified with $H^*$.
 
 * **32. Minty's range theorem.** On $H$, a monotone graph $A$ is
   maximal monotone exactly when $\operatorname{Ran}(I+\lambda A)=H$
@@ -282,7 +323,9 @@ On Hilbert spaces this is maximal monotonicity.
 * **55. Krasnosel'skii–Mann iteration.** For nonexpansive $T$ with a
   fixed point, $x_{n+1}=(1-\alpha_n)x_n+\alpha_nTx_n$ converges
   weakly to a fixed point in $H$ if $0<\alpha_n<1$ and
-  $\sum_n\alpha_n(1-\alpha_n)=\infty$.
+  $\sum_n\alpha_n(1-\alpha_n)=\infty$. The proof uses Fejér
+  monotonicity and Opial's lemma; splitting methods are instances,
+  applied to averaged operators.
 * **56. Proximal-point convergence.** If $A$ is maximal monotone and
   $A^{-1}(0)\ne\varnothing$, then
   $x_{n+1}=J_{\lambda_nA}x_n$, $\inf_n\lambda_n>0$,
@@ -309,7 +352,7 @@ On Hilbert spaces this is maximal monotonicity.
   is $C^2$, $F(\lambda,0)=0$, and $L=D_uF(\lambda_0,0)$ is
   Fredholm of index zero with kernel $\mathbb R\phi$.
   If $D_\lambda D_uF(\lambda_0,0)\phi\notin\operatorname{Ran}L$,
-  all nearby nontrivial zeros form a smooth curve
+  all nearby nontrivial zeros form a $C^1$ curve (smooth if $F$ is)
   $(\lambda(s),s\phi+o(s))$ through $(\lambda_0,0)$.
 * **61. Odd-multiplicity global alternative.** For
   $u=\lambda Ku+N(\lambda,u)$ with $K$ linear compact, $N$
@@ -349,7 +392,9 @@ topological and metric fixed-point viewpoints. Showalter, Brezis, Barbu,
 Bauschke–Combettes, and Simons give the monotone and accretive core,
 with different emphasis on PDE, evolution, and optimization. Chow–Hale,
 Kielhöfer, and Buffoni–Toland develop the bifurcation theory, including
-Hopf and variational bifurcation. The selection
+Hopf and variational bifurcation. Granas–Dugundji and Nussbaum treat the
+fixed-point index on retracts, and Krantz–Parks the Nash–Moser theorem.
+The selection
 retains standard usable hypotheses rather than cataloguing every generalized
 degree, condensing map, or monotonicity qualification.
 

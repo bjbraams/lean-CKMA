@@ -1,13 +1,23 @@
 # Synopsis: Semigroups, evolution equations, and functional calculus
 
 Part of the [mathematical synopsis series](SYNOPSIS.md).
+[Bibliographical scope and references](CKMA-bib.md#ckma-24);
+[MSC2020 correspondence and cross-subject index](CKMA-MSC2020.md).
 
 This synopsis selects the recurring core of Section 24 of
-[CKMA-bib.md](CKMA-bib.md): generation,
+[CKMA-bib.md](CKMA-bib.md#ckma-24): generation,
 perturbation, approximation, smoothing, functional calculus, asymptotics,
-forms, nonlinear evolution, and the basic control-theoretic interface.
+forms, nonlinear and delay evolution, and the basic control-theoretic interface.
 Banach-valued multiplier techniques appear in Section 18; here their role
-is the solvability and regularity of evolution equations.
+is the solvability and regularity of evolution equations. Stationary
+monotone-operator and fixed-point methods belong to Section 35, of which
+entries 51–54 record the evolution counterpart; specific parabolic,
+hyperbolic, and dispersive equations are treated in Sections 33–34.
+
+Control and observation here concern abstract evolution and
+infinite-dimensional systems. Stochastic control is organised in
+[08C](CKMA-bib.md#ckma-08c), geometric control in Section 52, and variational
+optimal control in Section 36; the MSC2020 index links these viewpoints.
 
 A **$C_0$-semigroup** on a Banach space $X$ is a family $T(t)$ of bounded
 linear maps with $T(0)=I$, $T(t+s)=T(t)T(s)$, and $T(t)x\to x$ as
@@ -70,9 +80,9 @@ formula and need not be differentiable.
   is the unique classical solution of $u'=Au$, $u(0)=x$.
   For arbitrary $x\in X$ it is the unique continuous integrated solution
   satisfying $u(t)=x+A\int_0^tu(s)\,ds$. Conversely, for closed $A$
-  the problem is well posed (unique classical solutions for a dense set of
-  initial values, depending continuously on them uniformly on compact time
-  intervals) exactly when $A$ generates a $C_0$-semigroup.
+  the problem is well posed ($D(A)$ dense, a unique classical solution for
+  every initial value $x\in D(A)$, depending continuously on $x$ uniformly
+  on compact time intervals) exactly when $A$ generates a $C_0$-semigroup.
 * **13. Variation of constants.** For $f\in L^1(0,T;X)$ and $x\in X$,
   $$u(t)=T(t)x+\int_0^tT(t-s)f(s)\,ds$$
   is the unique mild solution. If $x\in D(A)$ and $f$ is continuously
@@ -95,7 +105,8 @@ formula and need not be differentiable.
   bounded time intervals.
 * **18. Chernoff product formula.** Let $F(0)=I$, $F$ be strongly
   continuous, and $\|F(t)^n\|\leq Me^{\omega nt}$. If
-  $F'(0)x=Ax$ on a core of a generator $A$, then
+  $F'(0)x=Ax$ on a core of a generator $A$ (a subspace of $D(A)$ dense
+  for the graph norm), then
   $F(t/n)^nx\to T(t)x$ uniformly on bounded time intervals.
 * **19. Lie–Trotter formula.** If $A,B$ generate semigroups, the closure
   of $A+B$ on $D(A)\cap D(B)$ generates $S(t)$, and the products
@@ -120,7 +131,7 @@ strictly larger sector.
   $T(t)X\subset D(A^k)$ and $\|A^kT(t)\|\leq C_kt^{-k}$ for
   every positive integer $k$ and $t>0$.
 * **22. Fractional smoothing.** For sectorial $B$ of angle below $\pi/2$
-  and $\alpha\geq0$, $\|B^\alpha e^{-tB}\|\leq C_\alpha t^{-\alpha}$.
+  and $\alpha\geq0$, $\|B^\alpha e^{-tB}\|\leq C_\alpha t^{-\alpha}$ for $t>0$.
   Thus positive time gains fractional domain regularity.
 * **23. Balakrishnan formula.** For $0<\alpha<1$ and sectorial $B$,
   $$B^\alpha x=\frac{\sin\pi\alpha}{\pi}
@@ -148,7 +159,13 @@ $f(B)=(2\pi i)^{-1}\int_\Gamma f(z)(z-B)^{-1}dz$.
 A **bounded $H^\infty$ calculus** satisfies
 $\|f(B)\|\leq C\|f\|_\infty$, initially for functions decaying at
 zero and infinity and then by regularization. **R-sectoriality** replaces
-the sectorial resolvent bound by an R-bound on the entire family.
+the sectorial resolvent bound by an R-bound on the entire family; a family
+$\mathcal T$ of operators is **R-bounded** if
+$\mathbb E\|\sum_j\varepsilon_jT_jx_j\|\leq C\,\mathbb E\|\sum_j\varepsilon_jx_j\|$
+for all finite choices $T_j\in\mathcal T$, $x_j\in X$, with independent
+Rademacher signs $\varepsilon_j$. A Banach space is **UMD** if martingale
+differences are unconditional in $L^p(X)$ for some (equivalently all)
+$1<p<\infty$; Hilbert spaces and $L^q$, $1<q<\infty$, are UMD.
 
 * **28. Calculus laws.** The sectorial calculus is independent of its
   admissible contour and respects products, resolvents, and composition
@@ -168,7 +185,9 @@ the sectorial resolvent bound by an R-bound on the entire family.
   regularity property for an invertible sectorial operator is equivalent
   to R-sectoriality with angle below $\pi/2$. On every Banach space,
   maximal $L^p$ regularity forces $-B$ to generate a bounded analytic
-  semigroup and is independent of $p\in(1,\infty)$ (Dore).
+  semigroup (Dore) and is independent of $p\in(1,\infty)$ (Sobolevskii; Dore).
+  R-sectoriality with angle below $\pi/2$ is necessary for maximal $L^p$
+  regularity on every Banach space (Clément–Prüss).
 * **32. Calculus sufficient condition.** On a UMD space, an invertible
   operator with bounded $H^\infty$ calculus of angle below $\pi/2$
   has maximal $L^p$ regularity. A bounded analytic semigroup alone is
@@ -192,7 +211,9 @@ $s(A)=\sup\{\operatorname{Re}z:z\in\sigma(A)\}$.
   require further hypotheses.
 * **35. Analytic spectral mapping.** For analytic semigroups,
   $\sigma(T(t))\setminus\{0\}=e^{t\sigma(A)}$ for $t>0$.
-  The same conclusion holds for eventually norm-continuous semigroups.
+  The same conclusion holds for eventually norm-continuous semigroups,
+  those for which $t\mapsto T(t)$ is norm continuous on $(t_0,\infty)$
+  for some $t_0\geq0$.
 * **36. Growth bound from the semigroup.** For every fixed $t>0$,
   $r(T(t))=e^{t\omega_0}$. Consequently eventually norm-continuous
   semigroups satisfy $s(A)=\omega_0$.
@@ -212,7 +233,8 @@ $s(A)=\sup\{\operatorname{Re}z:z\in\sigma(A)\}$.
   $A^*$ has no eigenvalues on $i\mathbb R$. On reflexive spaces it
   suffices to exclude eigenvalues of $A$ there.
 * **41. Quasicompact asymptotics.** Let $\omega_{\rm ess}$ be the
-  essential growth bound, defined from the essential norms of $T(t)$.
+  essential growth bound, $\omega_{\rm ess}=\lim_{t\to\infty}t^{-1}\log\|T(t)\|_{\rm ess}$,
+  where $\|S\|_{\rm ess}$ is the distance from $S$ to the compact operators.
   Then $\omega_0=\max(\omega_{\rm ess},s(A))$, and for $w>\omega_{\rm ess}$
   the set $\sigma(A)\cap\{\operatorname{Re}z\geq w\}$ consists of finitely
   many poles $\lambda_j$ of the resolvent with finite-rank residues $P_j$.
@@ -225,13 +247,18 @@ $s(A)=\sup\{\operatorname{Re}z:z\in\sigma(A)\}$.
 * **43. Positive semigroup criterion.** On a Banach lattice, a generated
   semigroup is positive exactly when $R(\lambda,A)$ is positive for
   every sufficiently large real $\lambda$. Bounded positive perturbations
-  preserve positivity and give dominating semigroups.
+  preserve positivity and give dominating semigroups. The proof uses the
+  Laplace formula in one direction and the Euler formula
+  $T(t)=\lim_n(\tfrac ntR(\tfrac nt,A))^n$ in the other.
 * **44. Spectral bound of positive semigroups.** For a positive semigroup
   on a Banach lattice, $s(A)\in\sigma(A)$ whenever $\sigma(A)\neq\emptyset$,
   and $R(\lambda,A)=\int_0^\infty e^{-\lambda t}T(t)\,dt$, as an improper strong integral, for every
   $\operatorname{Re}\lambda>s(A)$. On $L^p$, $1\leq p<\infty$, and on
   $C_0(\Omega)$ one has $s(A)=\omega_0$ (Weis on $L^p$), so stability
-  follows from the location of the real spectrum.
+  follows from the location of the real spectrum. Equality $s(A)=\omega_0$
+  holds also on AL spaces and $C_0(\Omega)$ (Derndinger; Batty–Davies for
+  noncompact $\Omega$) and on Hilbert lattices (Greiner–Nagel), but can fail
+  on other Banach lattices.
 
 ## Form methods, products, and subordination
 
@@ -298,7 +325,7 @@ $\operatorname{ran}(I+\lambda B)=X$ for every $\lambda>0$.
   global Lipschitz $F$ gives global existence. If $-A=B$ is sectorial of
   angle below $\pi/2$ with $0\in\rho(B)$, the same conclusions hold in
   $D(B^\alpha)$, $0\leq\alpha<1$, for $F:D(B^\alpha)\to X$ Lipschitz on
-  bounded sets, and the solution is classical for $t>0$ (Henry, Pazy).
+  bounded sets, and the solution is classical for $t>0$ (Pazy).
 * **56. Parabolic evolution families.** Let each $A(t)$, $t\in[0,T]$,
   have the same domain $D$, with $-A(t)$ uniformly sectorial of angle
   below $\pi/2$ and $t\mapsto A(t)\in\mathcal L(D,X)$ Hölder continuous
@@ -306,6 +333,22 @@ $\operatorname{ran}(I+\lambda B)=X$ for every $\lambda>0$.
   with $\partial_tU(t,s)=A(t)U(t,s)$ for $t>s$, and
   $u(t)=U(t,0)x+\int_0^tU(t,s)f(s)\,ds$ solves $u'=A(t)u+f$ classically
   on $(0,T]$ for every $x\in X$ and Hölder continuous $f$.
+* **64. Kato's hyperbolic evolution families.** Let $Y$ be a Banach space
+  densely and continuously embedded in $X$, and let each $A(t)$,
+  $t\in[0,T]$, generate a $C_0$-semigroup on $X$. Assume: (i) the family
+  is **stable**, $\|\prod_{j=1}^kR(\lambda,A(t_j))\|\leq M(\lambda-\omega)^{-k}$
+  for $\lambda>\omega$, $k\geq1$, and every time-ordered product with
+  $0\leq t_1\leq\dots\leq t_k\leq T$ (automatic with $M=1$ if every
+  $A(t)-\omega$ is dissipative); (ii) there is an isomorphism $S:Y\to X$ with
+  $SA(t)S^{-1}=A(t)+B(t)$, where $B(t)\in\mathcal L(X)$ is strongly
+  measurable and $\|B(t)\|$ is integrable on $[0,T]$; (iii) $Y\subset D(A(t))$ and
+  $t\mapsto A(t)\in\mathcal L(Y,X)$ is norm continuous. Then there is a
+  unique evolution family $U(t,s)$, $0\leq s\leq t\leq T$, on $X$ with
+  $\|U(t,s)\|\leq Me^{\omega(t-s)}$, $U(t,s)Y\subset Y$, and, for $v\in Y$,
+  $\partial_tU(t,s)v=A(t)U(t,s)v$ and $\partial_sU(t,s)v=-U(t,s)A(s)v$.
+  Thus $u(t)=U(t,s)v$ is the unique $Y$-valued classical solution of
+  $u'=A(t)u$, $u(s)=v$ (Kato). Symmetric hyperbolic systems fit this
+  scheme with $X=L^2$ and $Y$ a Sobolev space.
 * **57. Volterra resolvent families.** For closed densely defined $A$
   and scalar $a\in L^1_{\rm loc}(\mathbb R_+)$, the equation
   $u=f+a*Au$ is well posed exactly when it has a resolvent family:
@@ -314,6 +357,37 @@ $\operatorname{ran}(I+\lambda B)=X$ for every $\lambda>0$.
   it exists for every $a$, by the convolution series. If $a$ is
   completely positive and $A$ generates a bounded $C_0$-semigroup, a
   bounded resolvent exists (Prüss's subordination principle).
+
+## Delay equations
+
+Fix $r>0$, the history space $\mathcal C=C([-r,0];\mathbb C^n)$ with the
+supremum norm, and a bounded linear $L:\mathcal C\to\mathbb C^n$; by
+the Riesz representation $L\varphi=\int_{-r}^0d\eta(\theta)\,\varphi(\theta)$
+with $\eta$ a matrix function of bounded variation. For a function $x$ on
+$[-r,\infty)$ the **history segment** is $x_t(\theta)=x(t+\theta)$,
+$-r\leq\theta\leq0$. The nonlinear phase-space viewpoint is in Section 31.
+
+* **65. Solution semigroup of a linear delay equation.** For every
+  $\varphi\in\mathcal C$ the retarded equation $\dot x(t)=Lx_t$
+  ($t\geq0$), $x_0=\varphi$, has a unique solution, continuous on
+  $[-r,\infty)$ and continuously differentiable on $[0,\infty)$
+  (one-sided at $0$). The maps $T(t)\varphi=x_t$ form a $C_0$-semigroup on
+  $\mathcal C$ with generator $A\varphi=\varphi'$ on
+  $D(A)=\{\varphi\in C^1([-r,0];\mathbb C^n):\varphi'(0)=L\varphi\}$.
+  $T(t)$ is compact for $t\geq r$ (Hale–Verduyn Lunel; Diekmann–van
+  Gils–Verduyn Lunel–Walther).
+* **66. Characteristic equation and stability.** Put
+  $\Delta(\lambda)=\lambda I-\int_{-r}^0e^{\lambda\theta}d\eta(\theta)$.
+  Then $\sigma(A)=\sigma_p(A)=\{\lambda\in\mathbb C:\det\Delta(\lambda)=0\}$,
+  with eigenvectors $\theta\mapsto e^{\lambda\theta}v$, $\Delta(\lambda)v=0$.
+  The characteristic roots are isolated, of finite algebraic multiplicity,
+  and only finitely many lie in each right half-plane. The semigroup is
+  eventually compact, hence eventually norm continuous, so $s(A)=\omega_0$
+  by 36 and the zero solution is exponentially stable exactly when every
+  root has negative real part.
+  For example, $\dot x(t)=-ax(t-r)$ with $a>0$ has characteristic equation
+  $\lambda+ae^{-\lambda r}=0$ and is exponentially stable exactly when
+  $ar<\pi/2$.
 
 ## Observation and control
 
@@ -349,17 +423,39 @@ means its range is dense.
   $X\to L^2(0,T;Y)$ exactly when
   $\int_0^T\|CT(t)x\|^2dt\leq K_T\|x\|^2$ for $x\in D(A)$.
   This admissibility condition allows boundary observations beyond bounded $C$.
+* **67. Linear-quadratic regulator and the Riccati equation.** With $B,C$
+  bounded, minimize $J(x_0,u)=\int_0^\infty(\|Cx(t)\|^2+\|u(t)\|^2)dt$
+  over $u\in L^2(0,\infty;U)$, $x$ the mild solution with $x(0)=x_0$.
+  The pair $(A,B)$ is **exponentially stabilizable** if $A+BF$ generates an
+  exponentially stable semigroup for some $F\in\mathcal L(X,U)$, and
+  $(A,C)$ is **exponentially detectable** if $A+KC$ does for some
+  $K\in\mathcal L(Y,X)$. If every $x_0$ admits a control of finite cost
+  (for instance, if $(A,B)$ is stabilizable), then the minimum is
+  $\langle\Pi x_0,x_0\rangle$, where $\Pi\in\mathcal L(X)$ is the
+  minimal nonnegative self-adjoint solution of the algebraic Riccati equation
+  $$\langle Ax,\Pi z\rangle+\langle\Pi x,Az\rangle+\langle Cx,Cz\rangle
+    -\langle B^*\Pi x,B^*\Pi z\rangle=0\qquad(x,z\in D(A)),$$
+  and the unique optimal control is the feedback $u=-B^*\Pi x$. If $(A,B)$ is
+  exponentially stabilizable and $(A,C)$ exponentially detectable, $\Pi$ is
+  the unique nonnegative self-adjoint solution and $A-BB^*\Pi$ generates an
+  exponentially stable semigroup (Curtain–Zwart). Unbounded boundary control
+  operators require the Lasiecka–Triggiani theory.
 
 ## Reference guide
 
 Engel–Nagel supplies generation, perturbation, approximation, spectral
-mapping, and stability. Arendt–Batty–Hieber–Neubrander independently develops
+mapping, and stability; Pazy is the classical source for generation and
+for Kato's hyperbolic evolution families, and Haase for the sectorial
+calculus. Arendt–Batty–Hieber–Neubrander independently develops
 the resolvent and Laplace-transform approach and the Tauberian stability
 theorems. Hytönen–van Neerven–Veraar–Weis supplies the functional-calculus
 and maximal-regularity interface; Lunardi gives interpolation and trace
 spaces. The form and nonlinear sections recur in Ouhabaz, Barbu, Amann,
 and the parabolic references. Tucsnak–Weiss and Curtain–Zwart supply the
-control interface. Prüss treats Volterra resolvents; Yagi and Amann
+control interface; Curtain–Zwart, Staffans, and Lasiecka–Triggiani also give the
+linear-quadratic and Riccati theory. Hale–Verduyn Lunel,
+Diekmann–van Gils–Verduyn Lunel–Walther, and Bátkai–Kramar Fijavž–Rhandi
+treat delay equations. Prüss treats Volterra resolvents; Yagi and Amann
 treat parabolic evolution families and quasilinear problems, whose
 free-boundary applications require additional compatibility hypotheses.
 
