@@ -636,8 +636,7 @@ Friz–Hairer, *A Course on Rough Paths*, Chapters 2–5 and 8–11, supplies
 controlled integration, RDEs, Brownian and Gaussian lifts; Lyons–Caruana–Lévy
 and Friz–Victoir develop the extension and universal-limit theory in greater
 generality. Friz–Hairer, Chapters 13–16, treats reconstruction and singular
-equations, with KPZ as the worked example; Hairer's *A Theory of Regularity
-Structures* gives the general subcritical theory, including $\Phi^4_3$. The two-dimensional cubic example and Cole–Hopf equation are useful
+equations, with KPZ as the worked example. The two-dimensional cubic example and Cole–Hopf equation are useful
 common models across singular-SPDE and random-interface treatments; they do
 not represent the full scope of regularity structures or paracontrolled calculus.
 

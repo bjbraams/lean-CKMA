@@ -379,7 +379,8 @@ The **Bochner–Riesz means** are $S^\delta f=((1-|\xi|^2)_+^\delta\widehat f)^\
   set in $\mathbb R^2$ has Hausdorff dimension $2$ (Davies). The Kakeya
   conjecture asserts Hausdorff and Minkowski dimension $d$ in every
   dimension; Wolff's hairbrush bound gives Hausdorff dimension at least
-  $(d+2)/2$, and the case $d=3$ was settled by Wang and Zahl (2025).
+  $(d+2)/2$, and Wang and Zahl have proved the case $d=3$ (2025 preprint, arXiv:2502.17655;
+  the sticky case appears in *J. Amer. Math. Soc.* 39 (2026)).
 * **71. Kakeya maximal estimates.** In $\mathbb R^2$,
   $\|f^*_\delta\|_{L^2(S^1)}\leq C(\log(1/\delta))^{1/2}\|f\|_{L^2}$
   (Córdoba), and the logarithm cannot be removed. The Kakeya maximal

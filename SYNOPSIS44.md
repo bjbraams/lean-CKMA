@@ -12,9 +12,10 @@ shared by several surface and quasiconformal references; the algebraic
 geometry of higher-dimensional varieties and the full theory of Kleinian
 three-manifolds are outside its scope.
 
-Metric quasiconformal viewpoints connect with [39A](CKMA-bib.md#ckma-39a),
-holomorphic iteration and surgery with Section 46, and geometric spectral
-problems with Section 53. The surface and deformation theory remains the
+Conformal mapping of plane domains and extremal length are developed in
+Section 43, metric quasiconformal viewpoints in [39A](CKMA-bib.md#ckma-39a),
+holomorphic iteration and surgery in Section 46, and geometric spectral
+problems in Section 53. The surface and deformation theory remains the
 centre of this synopsis.
 
 A **Riemann surface** is a connected, second-countable Hausdorff

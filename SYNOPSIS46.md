@@ -409,5 +409,5 @@ Local full-text sources consulted:
 * [Silverman, *The Arithmetic of Dynamical Systems*](References/Silverman2007ArithmeticDynamicalSystems-Springer.GTM241.pdf).
 
 For the holomorphic fixed-point formula see also Milnor's earlier
-[introductory lectures](https://arxiv.org/pdf/math/9201272), not the later
+introductory lectures (arXiv:math/9201272), not the later
 edition named in the main bibliography.

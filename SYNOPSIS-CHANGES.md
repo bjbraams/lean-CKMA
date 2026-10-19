@@ -1,6 +1,7 @@
 # Revision record for the synopses SYNOPSIS04–SYNOPSIS53
 
-This file records the critical revision of the fifty synopses carried out on 2026-10-18.
+This file records the critical revision of the fifty synopses carried out on 2026-10-18
+and the [second revision](#second-revision-2026-10-19) of 2026-10-19.
 The synopses themselves contain no remarks about their development; this record
 replaces such remarks.
 
@@ -1250,3 +1251,119 @@ Changes:
 Numbering map (old → new):
 unchanged
 
+## Second revision, 2026-10-19
+
+A second review of all fifty synopses led to four kinds of change.
+
+1. **Corrections.** Wrong statements were corrected and missing hypotheses
+   supplied, following the review's list of errors and imprecisions.
+2. **Duplicates.** 206 entries that repeated a result stated elsewhere were
+   removed; each result is kept in the synopsis where it is best placed, and
+   the merged entries absorbed any additional content. Where a heading lost
+   entries, a sentence points to the synopsis that now holds them.
+3. **Placement.** 35 entries were moved to a more appropriate heading within
+   their file, without renumbering. Kolmogorov's continuity theorem moved from
+   06.56 to 08.63.
+4. **Coverage.** 319 entries were added for topics that the bibliography
+   covers but the synopses did not, with new headings where needed.
+
+Unlike the first revision, this one did not renumber: surviving entries keep
+their identifiers, removed identifiers are not reused, and new entries take the
+next free number in their file. The synopses now have 3,606 numbered entries.
+Entries of [GAPS.md](GAPS.md) and [GAPS-REVIEW.md](GAPS-REVIEW.md) that cited
+removed identifiers were renumbered to the kept entries and placed under the
+appropriate sections. The per-section records above refer to the first
+revision and are not updated.
+
+### Removed entries and the entries that keep their content
+
+- 04.44 → 05.27, 04.45 → 05.28, 04.46 → 05.15, 04.52 → 06.14, 04.53 → 06.17, 04.55 → 28.1, 04.56 → 18.1, 04.57 → 18.3, 04.58 → 06.7, 04.59 → 06.10, 04.61 → 26.58, 04.62 → 26.59, 04.63 → 37.1, 04.64 → 37.2.
+- 05.1 → 35.2, 05.3 → 35.3, 05.4 → 35.4, 05.42 → 37.13, 05.43 → 37.14, 05.44 → 37.23, 05.45 → 37.25, 05.46 → 37.24, 05.47 → 37.30, 05.48 → 37.36, 05.50 → 37.32, 05.57 → 37.3, 05.59 → 37.31, 05.60 → 37.26, 05.61 → 26.31.
+- 07.18 → 14.48, 07.21 → 14.26, 07.23 → 14.55, 07.49 → 17.39.
+- 09.10 → 08.30.
+- 11.36 → 14.9, 11.47 → 14.19, 11.51 → 14.13, 11.52 → 14.3, 11.53 → 14.1, 11.54 → 14.28, 11.55 → 14.29, 11.58 → 14.31, 11.59 → 14.32, 11.61 → 14.21, 11.63 → 49.49, 11.67 → 07.11, 11.68 → 07.10, 11.70 → 27.4.
+- 12.8 → 16.20, 12.16 → 05.38, 12.30 → 15.38, 12.35 → 35.32, 12.36 → 35.38, 12.37 → 35.33, 12.56 → 35.55.
+- 13.12 → 21.9, 13.27 → 21.3, 13.55 → 23.17, 13.56 → 23.14, 13.63 → 21.24, 13.64 → 21.24, 13.68 → 21.25.
+- 14.4 → 26.21, 14.5 → 26.19, 14.7 → 26.17, 14.15 → 26.29, 14.39 → 07.19, 14.41 → 39.29, 14.42 → 39.30, 14.50 → 52.21, 14.51 → 52.22, 14.52 → 52.8, 14.53 → 39.32, 14.54 → 52.7, 14.73 → 22.47.
+- 15.7 → 04.51, 15.8 → 47.12, 15.15 → 16.13, 15.30 → 16.20, 15.55 → 21.11, 15.66 → 35.11, 15.67 → 35.13, 15.68 → 10.59.
+- 16.56 → 27.3, 16.62 → 27.10, 16.67 → 32.13.
+- 17.40 → 12.11, 17.51 → 18.12.
+- 18.17 → 17.35, 18.57 → 24.5, 18.61 → 24.31, 18.62 → 24.30, 18.63 → 24.32, 18.64 → 24.33.
+- 19.54 → 24.43, 19.55 → 24.43, 19.57 → 24.44, 19.58 → 39.19, 19.62 → 47.17.
+- 20.20 → 23.7, 20.29 → 42.27, 20.39 → 28.26, 20.57 → 28.59, 20.59 → 28.61.
+- 21.1 → 15.46, 21.2 → 15.64, 21.6 → 15.65, 21.14 → 15.53, 21.17 → 22.29, 21.19 → 15.56, 21.21 → 15.59, 21.27 → 42.17, 21.39 → 42.29, 21.40 → 42.30, 21.41 → 42.31, 21.42 → 42.32, 21.43 → 42.32, 21.45 → 42.35, 21.46 → 42.36, 21.47 → 42.37, 21.48 → 42.34, 21.58 → 42.26, 21.59 → 42.69.
+- 22.51 → 31.21, 22.53 → 31.22.
+- 23.15 → 13.54, 23.16 → 13.53.
+- 25.9 → 15.53, 25.10 → 15.54, 25.12 → 21.15, 25.19 → 11.40, 25.50 → 15.45.
+- 26.5 → 05.36, 26.34 → 05.39, 26.44 → 27.58.
+- 27.8 → 16.53, 27.14 → 16.59, 27.62 → 50.13, 27.64 → 50.14.
+- 28.32 → 20.41.
+- 29.33 → 47.59, 29.34 → 47.60, 29.55 → 41.21, 29.69 → 07.48.
+- 30.2 → 16.43, 30.3 → 16.42, 30.4 → 16.46, 30.5 → 16.53, 30.6 → 16.59, 30.7 → 16.51, 30.8 → 16.63, 30.9 → 16.66, 30.10 → 50.13, 30.36 → 53.5, 30.37 → 53.11, 30.38 → 53.26, 30.65 → 53.76.
+- 31.6 → 11.40, 31.63 → 51.35.
+- 32.7 → 16.63, 32.8 → 30.43, 32.29 → 33.3, 32.34 → 33.16, 32.62 → 30.40.
+- 33.1 → 32.24, 33.40 → 32.44.
+- 36.30 → 04.22, 36.33 → 12.45.
+- 37.9 → 39.74, 37.10 → 05.34, 37.11 → 05.33, 37.41 → 14.1.
+- 38.39 → 08.58, 38.42 → 08.5, 38.44 → 26.31, 38.63 → 47.37, 38.67 → 37.67.
+- 39.34 → 52.21, 39.36 → 14.46, 39.37 → 14.47, 39.38 → 14.36, 39.54 → 14.57.
+- 40.59 → 41.17.
+- 41.22 → 16.59, 41.24 → 29.58, 41.68 → 43.29.
+- 46.49 → 10.36.
+- 48.69 → 51.58.
+- 50.25 → 27.10, 50.64 → 31.49, 50.66 → 31.50.
+- 52.26 → 14.20, 52.27 → 14.49, 52.34 → 45.58, 52.53 → 37.59, 52.57 → 37.45, 52.91 → 30.39.
+- 53.2 → 30.33, 53.18 → 45.64, 53.19 → 45.66, 53.61 → 22.27, 53.64 → 14.21, 53.65 → 14.22, 53.66 → 14.20, 53.67 → 14.49, 53.75 → 30.50.
+- 06.56 → 08.63 (moved, not removed).
+
+### New entries
+
+The new entries (320 in all, including 08.63) are 04.65–66, 05.62–65, 06.67–80, 07.63–70, 08.63–81, 09.61–68, 10.65–71, 11.71–73, 12.70–75, 13.77–81, 14.74–83, 15.70, 16.68–72, 17.70–75, 18.67–72, 19.64–74, 20.64–69, 21.67–74, 22.69–76, 23.82–88, 24.64–67, 25.61–65, 26.75–83, 27.69–75, 28.64–68, 29.70–77, 30.66–70, 31.68–73, 32.67–69, 33.73–80, 34.83–86, 35.65–66, 36.66–73, 37.70–76, 38.68–74, 39.81–90, 40.79–80, 41.70–77, 42.84–90, 43.73–80, 44.78–80, 45.83–87, 46.69–74, 47.72–77, 48.76–79, 49.79–86, 50.69–74, 51.68–72, 52.93–98, and 53.81–84.
+
+### Introductions and reference guides
+
+After the entry changes, the introductions and reference guides were revised
+together with [CKMA-bib.md](CKMA-bib.md), so that every work a guide cites is
+listed in the bibliography or is given as a plain reference.
+
+- **Scope paragraphs.** The two overlapping scope paragraphs in the
+  introductions of 42 and 43 were merged. The scope paragraph of 44 now names
+  Section 43, and that of 47 names Section 26 in place of 39C.
+- **Works added to the bibliography.** Works that the guides cited but the
+  bibliography lacked were added to it: Boyd–Vandenberghe, Nesterov, Webster,
+  and Beck (Section 12); Bengtsson–Życzkowski, Heinosaari–Ziman, and Watrous
+  (13); Kunstmann–Weis (18); Eldar and Adcock–Hansen (29); Smith, *Delay
+  Differential Equations* (31); Driscoll–Trefethen (43); Iske (47); and
+  Rudolph–Schmidt (52).
+- **Citations changed in the guides.**
+  - 09: the citation of Hairer's article *A Theory of Regularity Structures*
+    was removed, since the bibliography lists books; Friz–Hairer covers the
+    material cited.
+  - 11: Baernstein's *Symmetrization in Analysis* is cited as "Baernstein
+    (with Drasin and Laugesen)", as in the bibliography.
+  - 18: Kunstmann–Weis is cited by title, and the van Neerven–Veraar–Weis
+    survey as a plain reference; the claim that both are bibliography works
+    was removed.
+  - 21: the guide notes that the local copy of Müller's book is the 2003 first
+    edition, while the bibliography cites the second edition (2007).
+  - 25: Sauter–Schwab, which is not in the bibliography, was removed.
+  - 27: entry 70 gives the Wang–Zahl proof of the three-dimensional Kakeya
+    conjecture as a 2025 preprint (arXiv:2502.17655), with the sticky case in
+    *J. Amer. Math. Soc.* 39 (2026).
+  - 28: Forrest–Kaniuth–Lau–Spronk is described as a research paper that
+    studies Leptin's theorem rather than a survey.
+  - 32: Strauss's undergraduate text was removed.
+  - 47: the bare "DeVore" was replaced by the sparse-approximation works listed
+    in the bibliography (Temlyakov, Dũng–Temlyakov–Ullrich,
+    Adcock–Brugiapaglia–Webster) and Pinkus's *n-Widths*.
+  - 49: Beals–Wong is dated 2016 and described as the enlarged second edition
+    of *Special Functions: A Graduate Text*; "the elliptic-function books" now
+    names Takebe, Roy, and Weil.
+- **Web links.** All links from the synopses to external websites were
+  replaced by plain references (author, title, and, where known, journal and
+  year), in Sections 22, 28, 29, 31, 33, 34, 37, 38, 39, 46, 48, 49, 50, 51,
+  52, and 53. arXiv identifiers are kept in the text where a paper or set of
+  notes is cited through arXiv. Author-hosted copies of books in the
+  bibliography are cited as those books, and the DLMF is cited by section
+  number. Links to local copies in `References/` and `ReferencesSuppl/` and
+  to the bibliography are unchanged.

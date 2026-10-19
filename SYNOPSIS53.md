@@ -526,11 +526,14 @@ Local full-text sources consulted:
 * [Bergeron, *The Spectrum of Hyperbolic Surfaces*](References/Bergeron2016SpectrumHyperbolicSurfaces-SpringerUTX.pdf).
 * [Borthwick, *Spectral Theory of Infinite-Area Hyperbolic Surfaces*, second edition](References/Borthwick2016SpectralTheoryInfiniteAreaHyperbolicSurfaces2ndEd-Birkhauser.PM318.pdf).
 
-Gilkey's [authorized electronic first edition](https://pages.uoregon.edu/gilkey/dirPDF/InvarianceTheory1Ed.pdf)
+The first edition of Gilkey's *Invariance Theory, the Heat Equation, and the
+Atiyah–Singer Index Theorem*
 was consulted for the eta regularity and boundary-condition discussion;
 it is distinct from later editions. The boundary index formula was also
-checked against [Atiyah–Patodi–Singer, *Spectral Asymmetry and Riemannian Geometry I*](https://webhomes.maths.ed.ac.uk/~v1ranick/papers/aps001.pdf).
+checked against Atiyah–Patodi–Singer, *Spectral Asymmetry and Riemannian Geometry I* (Math. Proc.
+Cambridge Philos. Soc. 1975).
 For the spectral-flow/index correspondence, see also
-[Robbin–Salamon, *The Spectral Flow and the Maslov Index*](https://webhomes.maths.ed.ac.uk/~v1ranick/papers/robbsala1.pdf),
+Robbin–Salamon, *The Spectral Flow and the Maslov Index* (Bull. London Math.
+Soc. 1995),
 with the sign fixed here by the operator $\partial_t+B_t$.
 These accessible sources supplement the boundary monographs named above.

@@ -486,8 +486,8 @@ Local source copies consulted:
 * [Tolsa, *Analytic Capacity, the Cauchy Transform, and Non-homogeneous Calderón–Zygmund Theory*](References/Tolsa2014AnalyticCapacityCauchyTransformNonHomogeneousCalderonZygmundTheory-BirkhäuserPM307.pdf).
 
 Additional primary expositions consulted were
-[Ponce's author-posted precursor to his measure-data book](https://arxiv.org/pdf/1204.0668),
-[Kilpeläinen's survey of $p$-Laplace equations with measures](https://arxiv.org/pdf/math/0304392),
-and [Saff's account of logarithmic potential theory](https://arxiv.org/pdf/1010.3760).
+Ponce's lecture notes preceding his *Elliptic PDEs, Measures and Capacities* (arXiv:1204.0668),
+Kilpeläinen's survey of $p$-Laplace equations with measures (arXiv:math/0304392),
+and Saff's survey of logarithmic potential theory (arXiv:1010.3760).
 They supplement the local texts for the nonlinear capacitary criteria
 and weighted equilibrium statements.

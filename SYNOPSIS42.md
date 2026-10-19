@@ -9,13 +9,11 @@ This synopsis selects recurring core material from Section 42 of
 Boundary factorization, reproducing kernels, interpolation, and analytic
 operators connect the spaces in its title. The distinctions between their
 boundary measures, area measures, norms, and multiplier algebras are essential.
-Real-variable Hardy spaces belong to Section 27, and the general operator
-model theory to Section 21.
 
-Abstract bounded-operator models are in Section 21, real-variable Hardy spaces
-in Section 27, and several-variable function and kernel theory in
-[45A](CKMA-bib.md#ckma-45a). Conformal boundary geometry remains in Section
-43.
+Real-variable Hardy spaces belong to Section 27, abstract bounded-operator
+models and the general operator model theory to Section 21, several-variable
+function and kernel theory to [45A](CKMA-bib.md#ckma-45a), and conformal
+boundary geometry to Section 43.
 
 Put $\mathbb T=\partial\mathbb D$, $dm=dt/(2\pi)$ on $\mathbb T$,
 and $dA_0=dx\,dy/\pi$ on $\mathbb D$. For $0<p<\infty$,

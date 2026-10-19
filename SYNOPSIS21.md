@@ -415,5 +415,6 @@ Local source copies consulted:
 * [Nikolski, Toeplitz Matrices and Operators](References/Nikolski2019ToeplitzMatricesOperators-CambridgeStudiesAM182.pdf).
 * [Paulsen–Raghupathi, An Introduction to the Theory of Reproducing Kernel Hilbert Spaces](References/PaulsenRaghupathi2016IntroductionTheoryReproducingKernelHilbertSpaces-CambridgeStudiesAM152.pdf).
 * [Bognár, Indefinite Inner Product Spaces](References/Bognár1974IndefiniteInnerProductSpaces-SpringerErgeb78.pdf).
-* [Müller, Spectral Theory of Linear Operators and Spectral Systems in Banach Algebras](References/Müller2003SpectralTheoryLinearOperatorsSpectralSystemsBanachAlgebras-SpringerOTAA139.pdf).
+* [Müller, Spectral Theory of Linear Operators and Spectral Systems in Banach Algebras](References/Müller2003SpectralTheoryLinearOperatorsSpectralSystemsBanachAlgebras-SpringerOTAA139.pdf)
+  (first edition, 2003; the bibliography cites the second edition, 2007).
 * [Grosse-Erdmann–Peris Manguillot, Linear Chaos](References/GrosseErdmannPerisManguillot2011LinearChaos-Springer.UTX.pdf).

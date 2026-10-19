@@ -654,8 +654,10 @@ $$
   namely a $CD(K,\infty)$ space with quadratic Cheeger energy,
   $L^2$ heat flow agrees with the $EVI_K$ entropy flow in $W_2$.
   It contracts $W_2$ by $e^{-Kt}$ for finite-second-moment initial measures.
-  See also [Ambrosio–Gigli–Savaré's foundational treatment](https://arxiv.org/abs/1109.0222)
-  for the equivalence with linear heat flow, initially with finite reference measure.
+  See also Ambrosio–Gigli–Savaré, *Calculus and Heat Flow in Metric Measure
+  Spaces and Applications to Spaces with Ricci Bounds from Below* (Invent.
+  Math., 2014), for the equivalence with linear heat flow, initially with
+  finite reference measure.
 
 ## Reference guide
 

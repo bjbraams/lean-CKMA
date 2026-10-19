@@ -384,7 +384,8 @@ $\sigma=+1$ is defocusing and $\sigma=-1$ focusing.
   $u_0\in\dot H^1$. Every such solution scatters in $\dot H^1$
   in both time directions; this requires global spacetime estimates
   beyond conservation of energy alone.
-  See the [Colliander–Keel–Staffilani–Takaoka–Tao theorem](https://arxiv.org/abs/math/0402129).
+  See the Colliander–Keel–Staffilani–Takaoka–Tao theorem (Ann. of Math. 2008;
+  arXiv:math/0402129).
 
 * **81. Einstein constraint propagation and local existence.** Smooth
   Riemannian initial data $(g,k)$ satisfying
@@ -681,6 +682,7 @@ Local source copies consulted:
 * [Saint-Raymond, *Hydrodynamic Limits of the Boltzmann Equation*](References/SaintRaymond2009HydrodynamicLimitsBoltzmannEquation-SpringerLNM1971.pdf).
 
 The geometric Cauchy statements were also checked against
-[Chruściel–Galloway–Pollack, *Mathematical General Relativity: A Sampler*, Sections 4–6](https://www.math.miami.edu/~galloway/papers/cgpbams.pdf).
+Chruściel–Galloway–Pollack, *Mathematical General Relativity: A Sampler*
+(Bull. Amer. Math. Soc. 2010), Sections 4–6.
 The dispersive selection was compared with
-[Tao's author-posted *Nonlinear Dispersive Equations*](https://www.math.ucla.edu/~tao/preprints/chapter.pdf).
+a preprint chapter of Tao's *Nonlinear Dispersive Equations*.

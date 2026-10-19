@@ -139,7 +139,8 @@ bounds; compactness of each individual manifold is insufficient.
   \exp[d(x,y)^2/(4(t-s))]$ for $0<s<t$.
   Integration of the differential estimate along space-time paths gives
   this comparison. See the
-  [Li–Yau paper](https://archive.ymsc.tsinghua.edu.cn/pacm_download/117/6384-11511_2006_Article_BF02399203.pdf).
+  Li–Yau paper *On the parabolic kernel of the Schrödinger operator* (Acta Math.
+  1986).
 * **23. Heat kernel bounds.** For a complete manifold with
   nonnegative Ricci curvature, the minimal heat kernel has two-sided
   Gaussian bounds
@@ -156,7 +157,8 @@ bounds; compactness of each individual manifold is insufficient.
   noncompact manifold to be parabolic, that is, to have no positive
   Green function.
   These volume tests and their potential-theoretic interpretation are
-  discussed in [Grigor'yan's lectures](https://www.math.uni-bielefeld.de/~grigor/nk2019.pdf).
+  discussed in Grigor'yan's lecture *Analysis on Manifolds and Volume Growth*
+  (Nankai University, 2019).
 * **28. Diameter eigenvalue bound.** If a closed connected manifold
   has nonnegative Ricci curvature and diameter $D$, the classical
   Li–Yau estimate gives $\lambda_1\geq\pi^2/(2D^2)$, and the sharp
@@ -196,7 +198,7 @@ bounds; compactness of each individual manifold is insufficient.
   to be Euclidean space. Here ADM mass is the limit
   $(16\pi)^{-1}\int_{S_r}(\partial_jg_{ij}-\partial_ig_{jj})
   \nu^i\,dS$ in an asymptotically flat chart. See also
-  [Lee's formulation of positivity and rigidity](https://arxiv.org/abs/0705.0677).
+  Lee's formulation of positivity and rigidity (arXiv:0705.0677).
 * **33. Surface uniformization.** Every conformal class on a closed
   oriented surface contains a constant-Gauss-curvature metric. Its
   curvature sign is that of the Euler characteristic; for nonpositive
@@ -338,14 +340,14 @@ normal choice, and $A$ for the second fundamental form.
 * **60. Avoidance principle.** Two initially disjoint smooth closed
   hypersurfaces remain disjoint while their flows exist. Comparison
   with shrinking spheres gives finite extinction bounds for compact
-  flows. See [Mantegazza's evolution notes](https://cvgmt.sns.it/HomePages/cm/MCFPisa2017/MCF-Lez56.pdf).
+  flows. See Mantegazza's 2017 Pisa lecture notes on mean curvature flow.
 * **61. Huisken monotonicity.** For $t<t_0$ put
   $\rho=(4\pi(t_0-t))^{-m/2}
   e^{-|x-x_0|^2/(4(t_0-t))}$. Then
   $d\int_{M_t}\rho\,d\mu/dt=-\int_{M_t}\rho
   |\mathbf H+(x-x_0)^\perp/(2(t_0-t))|^2d\mu$.
   Equality characterizes self-similar shrinkers about $(x_0,t_0)$;
-  see [the monotonicity notes](https://cvgmt.sns.it/HomePages/cm/MCFPisa2017/MCF-Lez8.pdf).
+  see the monotonicity lecture of Mantegazza's notes.
 * **62. Convex hypersurface convergence.** A smooth closed strictly
   convex hypersurface in Euclidean space remains convex and shrinks
   to a point in finite time. After recentering and volume or area
@@ -354,7 +356,7 @@ normal choice, and $A$ for the second fundamental form.
   becomes convex under curve shortening and then shrinks to a round
   point; normalized curves converge smoothly to a circle. The convex
   convergence statements are treated in
-  [Mantegazza's singularity notes](https://cvgmt.sns.it/HomePages/cm/MCFPisa2017/MCF-Lez11.pdf).
+  the singularity lecture of Mantegazza's notes.
 * **64. Extension criterion.** A smooth closed hypersurface flow on
   $[0,T)$ with finite $T$ extends past $T$ if $|A|$ stays
   bounded. Thus a finite maximal time forces curvature blow-up.
@@ -397,7 +399,7 @@ negative $\lambda$ giving shrinking, steady, or expanding solutions.
   and a positive injectivity-radius bound at the base points at one
   time has a subsequence converging smoothly on compact subsets,
   after pointed diffeomorphisms. These analytic foundations are
-  discussed in [Topping's notes](https://warwick.ac.uk/fac/sci/maths/people/staff/peter_topping/rfnotes/topping_rf_mar06.pdf).
+  discussed in Topping's *Lectures on the Ricci Flow*.
 * **72. Perelman $\mathcal F$ monotonicity.** For
   $\mathcal F(g,f)=\int(R+|\nabla f|^2)e^{-f}dV$,
   $g_t=-2\operatorname{Ric}$ and
@@ -416,7 +418,8 @@ negative $\lambda$ giving shrinking, steady, or expanding solutions.
   radius $r$ with $|\mathrm{Rm}|\leq r^{-2}$ on the appropriate
   parabolic neighborhood has volume at least $\kappa r^n$,
   for bounded scales. Entropy gives the uniform constant; see
-  [Perelman's paper](https://arxiv.org/abs/math/0211159).
+  Perelman's paper *The entropy formula for the Ricci flow and its geometric
+  applications* (arXiv:math/0211159).
 * **75. Hamilton's three-dimensional convergence.** A closed
   three-manifold with positive Ricci curvature evolves under
   volume-normalized Ricci flow to a constant-positive-sectional-curvature
@@ -490,7 +493,7 @@ curvature norms.
   modulo gauge. For Yang–Mills connections, elliptic regularity improves
   this to smooth compactness modulo gauge. Critical four-dimensional
   $L^2$ bounds instead allow point concentration and bubbling. See
-  [Wehrheim's introductory statement of the theorems](https://math.berkeley.edu/~katrin/papers/justintro.pdf).
+  the introductory statement of the theorems in Wehrheim's *Uhlenbeck Compactness*.
 * **93. Seiberg–Witten equations.** On a closed oriented Riemannian
   four-manifold with spin$^c$ structure, spinor bundles $S^\pm$, and
   determinant line $L$, the unknowns are a unitary connection $A$ on $L$

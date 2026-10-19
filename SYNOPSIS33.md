@@ -199,7 +199,8 @@ the reverse inequality; a continuous solution is both.
   a fixed continuous proper operator.
 
 These foundational forms follow the
-[Crandall–Ishii–Lions *User's Guide*](https://arxiv.org/pdf/math/9207212),
+Crandall–Ishii–Lions, *User's guide to viscosity solutions of second order
+partial differential equations* (Bull. Amer. Math. Soc. 1992),
 with coefficient-dependent comparison requiring its additional structural hypotheses.
 
 For $F(D^2u)=f$, use the increasing convention
@@ -513,4 +514,5 @@ Local source copies consulted:
 
 The Monge–Ampère comparison and regularity statements were also checked
 against the authors' exposition
-[De Philippis–Figalli, *The Monge–Ampère equation and its link to optimal transportation*](https://people.math.ethz.ch/~afigalli/lecture-notes-pdf/The-Monge-Ampere-equation-and-its-link-to-optimal-transportation.pdf).
+De Philippis–Figalli, *The Monge–Ampère equation and its link to optimal
+transportation* (Bull. Amer. Math. Soc. 2014).

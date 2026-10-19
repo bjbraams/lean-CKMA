@@ -450,8 +450,8 @@ Local source copies consulted:
 * [Sanders–Verhulst–Murdock, *Averaging Methods in Nonlinear Dynamical Systems*](References/SandersVerhulstMurdock2007AveragingMethodsNonlinearDynamicalSystems2ndEd-SpringerAMS59.pdf).
 * [Smith, *An Introduction to Delay Differential Equations with Applications to the Life Sciences*](References/Smith2011DelayDifferentialEquationsApplicationsLifeSciences-Springer.TAM57.pdf).
 
-Teschl's freely accessible
-[author's edition](https://www.mat.univie.ac.at/~gerald/ftp/book-ode/ode.pdf),
+The author's freely accessible edition of Teschl's *Ordinary Differential
+Equations and Dynamical Systems*,
 especially Chapters 4–5 and Section 8.6, was also consulted for the
 regular-singular, Sturm–Liouville, and Hamiltonian continuation.
 

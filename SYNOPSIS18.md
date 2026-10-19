@@ -338,7 +338,8 @@ $R_\Phi g=\int_0^T\Phi(t)g(t)\,dt$ on $L^2(0,T;H)$.
   $$\mathbb E\sup_{t\leq T}\left\|\int_0^t\Phi\,dW_H\right\|^p
        \asymp_{p,X}\mathbb E\|R_\Phi\|_{\gamma(L^2(0,T;H),X)}^p.$$
   Completion gives the stochastic integral for limits in this norm
-  ([van Neerven–Veraar–Weis, Theorem 5.5](https://arxiv.org/abs/1304.7575)).
+  (van Neerven–Veraar–Weis, *Stochastic Integration in Banach Spaces – a
+  Survey*, Theorem 5.5).
 * **52. Martingale type-two integration bound.** If $X$ has martingale
   type two, adapted elementary processes satisfy
   $\mathbb E\|\int_0^T\Phi\,dW_H\|^2
@@ -431,12 +432,12 @@ representable operators. Osękowski develops Burkholder's sharp martingale
 inequalities.
 
 The maximal-regularity characterization and perturbation statements can also
-be checked in [Kunstmann–Weis's lecture notes](https://www.karlin.mff.cuni.cz/~barta/ToDownload/Kunstmann-Weis2004.pdf),
-especially the introductory characterization and operator-sum sections.
-The stochastic integration statements are also treated in
-[van Neerven–Veraar–Weis's survey](https://arxiv.org/abs/1304.7575).
-These are accessible author texts corresponding to the references named in
-the bibliography. More general noninvertible, weighted, nonautonomous, and
+be checked in Kunstmann–Weis's lecture notes, *Maximal L_p-Regularity for
+Parabolic Equations, Fourier Multiplier Theorems and H^∞-Functional
+Calculus*, especially the introductory characterization and operator-sum
+sections. The stochastic integration statements are also treated in the
+survey of van Neerven–Veraar–Weis, *Stochastic Integration in Banach
+Spaces – a Survey* (2015). More general noninvertible, weighted, nonautonomous, and
 stochastic maximal-regularity variants require additional hypotheses and are
 not subsumed by the formulations above.
 

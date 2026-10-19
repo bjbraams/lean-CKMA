@@ -422,7 +422,7 @@ $A\|f\|_2^2\leq\sum_{\lambda\in\Lambda}|f(\lambda)|^2\leq B_0\|f\|_2^2$.
   stable sampling for $PW_B$, and $D^+(\Lambda)<2B$ implies
   stable interpolation (Beurling). Density alone does not settle the equality case.
   These strict and non-strict thresholds are compared in
-  [Olevskii–Ulanovskii, *On the duality between sampling and interpolation*, Theorem 2](https://arxiv.org/pdf/1512.01437).
+  Olevskii–Ulanovskii, *On the duality between sampling and interpolation* (arXiv:1512.01437), Theorem 2.
 * **64. Aliasing threshold.** Uniform samples with spacing $h>1/(2B)$
   do not determine all of $PW_B$: overlapping frequency translates
   produce nonzero functions with every sample zero. Oversampling with

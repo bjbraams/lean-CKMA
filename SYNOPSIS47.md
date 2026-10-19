@@ -12,9 +12,9 @@ sparse expansions, widths, discrepancy, ridge functions, and tractability. Ortho
 in Section 48; the approximation questions here concern error, smoothness,
 stability, and the size of approximation classes.
 
-The high-dimensional probabilistic counterpart is in
-[07A](CKMA-bib.md#ckma-07a), structured expansions and sampling in Section 29,
-and transport-based optimization in [39C](CKMA-bib.md#ckma-39c). Error
+Smoothness spaces (Sobolev, Besov, and their interpolation) are developed in
+Section 26, structured expansions and sampling in Section 29, and the
+high-dimensional probabilistic counterpart in [07A](CKMA-bib.md#ckma-07a). Error
 estimates and approximation classes remain the organising questions here.
 
 Write $\mathcal P_n$ for polynomials of degree at most $n$ and
@@ -412,9 +412,10 @@ Bustamante sharpen interval and endpoint estimates. Trefethen compares
 analytic, Chebyshev, interpolation, and rational approximation; Saff–Totik
 and Stahl–Totik explain the potential-theoretic geometry. Schumaker,
 de Boor, Karlin, and Pinkus supply splines and total positivity.
-Wendland and Iske connect interpolation with native spaces; Temlyakov,
-DeVore, Pinkus, and the hyperbolic-cross references explain sparse
-approximation and widths. The spherical texts give corresponding
+Wendland and Iske connect interpolation with native spaces. Temlyakov,
+Dũng–Temlyakov–Ullrich, and Adcock–Brugiapaglia–Webster explain sparse,
+greedy, and hyperbolic-cross approximation, and Pinkus's *n-Widths* the
+theory of widths. The spherical texts give corresponding
 constructions on curved domains. Baker–Graves-Morris supplies Padé
 approximation; Drmota–Tichy and Dick–Pillichshammer discrepancy and
 quasi-Monte Carlo integration; Pinkus ridge functions; and

@@ -114,8 +114,9 @@ $L=-\partial_x^2+u$.
   problems. Coalescing critical points require different, often Painlevé,
   models. These reductions require the corresponding phase and weight
   nondegeneracy assumptions. See the
-  [Deift–Zhou paper](https://annals.math.princeton.edu/1993/137-2/p03)
-  and [Deift's lectures](https://arxiv.org/abs/1903.08304).
+  Deift–Zhou paper *A steepest descent method for oscillatory Riemann–Hilbert
+  problems* (Ann. of Math. 1993)
+  and Deift's lectures (arXiv:1903.08304).
 
 ## Direct and inverse scattering on the line
 

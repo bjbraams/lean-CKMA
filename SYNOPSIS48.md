@@ -241,7 +241,7 @@ $\alpha_n=-\overline{\Phi_{n+1}(0)}$.
   orthonormal Laurent-polynomial basis is a five-diagonal unitary
   CMV matrix, factored into alternating $2\times2$ unitary blocks
   determined by $\alpha_n$. Its spectral measure at the first basis
-  vector is $\mu$. See [Simon's survey](https://arxiv.org/pdf/math/0502485), Section 5.
+  vector is $\mu$. See Simon's survey *OPUC on one foot* (arXiv:math/0502485), Section 5.
 * **54. Szegő theorem.** For $d\mu=w\,dm+d\mu_s$,
   $\prod_{n\geq0}(1-|\alpha_n|^2)=\exp\int\log w\,dm$.
   Thus finite logarithmic integral is equivalent to $\sum|\alpha_n|^2<\infty$.

@@ -509,6 +509,6 @@ Local source copies consulted:
 * [Markoe, *Analytic Tomography*](References/Markoe2006AnalyticTomography-CambridgeEMA106.pdf).
 
 The geometric regularity statements were also compared with
-[Simon's author-posted *Introduction to Geometric Measure Theory*](https://web.stanford.edu/class/math285/ts-gmt.pdf),
+Leon Simon's lecture notes *Introduction to Geometric Measure Theory*,
 an updated continuation of his listed lectures. The local Evans–Gariepy
 copy is incomplete and was not used as evidence for its unavailable BV chapters.

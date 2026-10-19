@@ -336,7 +336,7 @@ A prime on $K,E$ below means complementary modulus, not differentiation.
   $dK/dk=E/[k(1-k^2)]-K/k$.
 * **48. Legendre relation.**
   $K(k)E(k')+E(k)K(k')-K(k)K(k')=\pi/2$.
-  See [DLMF §19.7](https://dlmf.nist.gov/19.7).
+  See DLMF §19.7.
 * **49. Arithmetic–geometric mean.** Iteration
   $a_{n+1}=(a_n+b_n)/2$, $b_{n+1}=\sqrt{a_nb_n}$ for
   positive data has a common limit, and
@@ -409,7 +409,7 @@ with products over the listed numerator and denominator parameters.
 * **57. q-Gauss sum.**
   ${}_2\phi_1(a,b;c;q,c/(ab))
   =(c/a,c/b;q)_\infty/(c,c/(ab);q)_\infty$ for $|c/(ab)|<1$.
-  See [DLMF §17.6](https://dlmf.nist.gov/17.6).
+  See DLMF §17.6.
 * **58. Euler q-exponentials.**
   $1/(z;q)_\infty=\sum z^n/(q;q)_n$ for $|z|<1$, and
   $(z;q)_\infty=\sum(-1)^nq^{n(n-1)/2}z^n/(q;q)_n$ for all $z$.
@@ -430,7 +430,7 @@ with products over the listed numerator and denominator parameters.
   {(b,q/a,z,b/(az);q)_\infty},\qquad |b/a|<|z|<1.
   $$
   Denominator and bilateral parameters must be nonsingular;
-  see [DLMF §17.8](https://dlmf.nist.gov/17.8).
+  see DLMF §17.8.
 * **62. q-gamma limit.** For $0<q<1$,
   $\Gamma_q(z)=(1-q)^{1-z}(q;q)_\infty/(q^z;q)_\infty$
   satisfies $\Gamma_q(z+1)=(1-q^z)\Gamma_q(z)/(1-q)$ and
@@ -535,9 +535,12 @@ Andrews–Askey–Roy, Whittaker–Watson, Bateman, Lebedev, Temme,
 Beals–Wong, and the NIST reference share the classical definitions,
 equations, integrals, and transformations. Gasper–Rahman and Ismail
 develop the q-series and orthogonal-polynomial continuation. Carlson
-and the elliptic-function books supply complementary integral viewpoints,
-including the symmetric integrals of entry 85; Miller and Vilenkin–Klimyk
-give the group-theoretic viewpoint of entry 86.
+supplies the symmetric integrals of entry 85, and the elliptic-function
+books of Section 49 (Takebe, *Elliptic Integrals and Elliptic Functions*;
+Roy, *Elliptic and Modular Functions from Gauss to Dedekind to Hecke*;
+Weil, *Elliptic Functions according to Eisenstein and Kronecker*) give
+complementary analytic, historical, and Eisenstein-series viewpoints;
+Miller and Vilenkin–Klimyk give the group-theoretic viewpoint of entry 86.
 Widder, Titchmarsh, Sneddon, and Schilling–Song–Vondraček supply
 the transform and positivity framework; the fractional-calculus and
 Mittag–Leffler references explain the last section. The catalogue avoids
@@ -546,7 +549,7 @@ reproducing isolated table entries without their analytic context.
 Local full-text sources consulted:
 
 * [Andrews–Askey–Roy, *Special Functions*](References/AndrewsAskeyRoy1999SpecialFunctions-CambridgeEMA71.pdf).
-* [Beals–Wong, *Special Functions and Orthogonal Polynomials*, second edition](References/BealsWong2015SpecialFunctionsOrthogonalPolynomials2ndEd-CambridgeStudiesAM153.pdf).
+* [Beals–Wong, *Special Functions and Orthogonal Polynomials* (2016), the enlarged second edition of *Special Functions: A Graduate Text*](References/BealsWong2015SpecialFunctionsOrthogonalPolynomials2ndEd-CambridgeStudiesAM153.pdf).
 * [Temme, *Special Functions*](References/Temme1996SpecialFunctionsIntroductionClassicalFunctionsMathematicalPhysics-Wiley.pdf).
 * [Gasper–Rahman, *Basic Hypergeometric Series*, second edition](References/GasperRahman2004BasicHypergeometricSeries2ndEd-CambridgeEMA96.pdf).
 * [Viola, *An Introduction to Special Functions*](References/Viola2016IntroductionToSpecialFunctions-SpringerUnitext.pdf).

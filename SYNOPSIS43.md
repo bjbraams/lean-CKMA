@@ -10,13 +10,13 @@ It develops quantitative univalence, multivalent growth, extremal length and
 capacity, boundary geometry and harmonic measure, explicit mapping, circle
 packing, and Loewner evolution.
 The first-course mapping theorems are recalled where their quantitative
-versions are needed. Quasiconformal deformation and Teichmüller theory
-are treated in Section 44.
+versions are needed.
 
-Random conformal geometry is organised within [08B](CKMA-bib.md#ckma-08b),
-metric and fractal geometry in [39A](CKMA-bib.md#ckma-39a), and quasiconformal
-deformation and surfaces in Section 44. The present selection emphasises
-conformal maps and extremal methods.
+Quasiconformal deformation, Teichmüller theory, and Riemann surfaces are
+treated in Section 44, random conformal geometry within
+[08B](CKMA-bib.md#ckma-08b), and metric and fractal geometry in
+[39A](CKMA-bib.md#ckma-39a). The present selection emphasises conformal maps
+and extremal methods.
 
 A function is **univalent** if it is holomorphic and injective.
 Let $\mathcal S$ consist of univalent

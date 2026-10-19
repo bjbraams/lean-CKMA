@@ -351,7 +351,7 @@ inequality are treated systematically by Mitrinović–Pečarić–Fink.
 
 The Hardy and differential inequalities recur in Beckenbach–Bellman,
 Mitrinović, Mitrinović–Pečarić–Fink, and the weighted-Hardy and
-Balinsky–Evans–Lewis monographs. Lieb–Loss and Baernstein–Drasin–Laugesen
+Balinsky–Evans–Lewis monographs. Lieb–Loss and Baernstein (with Drasin and Laugesen)
 develop the rearrangement and sharp-integral endpoint; Schneider and
 Burago–Zalgaller develop its convex-geometric side. Some of the later
 inequalities have wider generalizations, but the Euclidean formulations here
@@ -365,4 +365,4 @@ Local source anchors:
 - [Bullen, *Handbook of Means*](References/Bullen2003HandbookMeansInequalities-SpringerKluwerMAIA560.pdf).
 - [Mitrinović–Pečarić–Fink, *Classical and New Inequalities*](References/MitrinovićPečarićFink1993ClassicalNewInequalitiesAnalysis-SpringerKluwerMAEE61.pdf).
 - [Balinsky–Evans–Lewis, *Hardy's Inequality*](References/BalinskyEvansLewis2015AnalysisGeometryHardysInequality-SpringerUTX.pdf).
-- [Baernstein–Drasin–Laugesen, *Symmetrization in Analysis*](ReferencesSuppl/BaernsteinDrasinLaugesen2019SymmetrizationAnalysis-Cambridge.NMM36.pdf).
+- [Baernstein (with Drasin and Laugesen), *Symmetrization in Analysis*](ReferencesSuppl/BaernsteinDrasinLaugesen2019SymmetrizationAnalysis-Cambridge.NMM36.pdf).

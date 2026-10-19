@@ -393,7 +393,7 @@ estimates are stated in Section 33 (SYNOPSIS33, items 3 and 16–17).
 
 ## Reference guide
 
-Evans, Folland, John, Renardy–Rogers, Strauss, and McOwen share the model
+Evans, Folland, John, Renardy–Rogers, and McOwen share the model
 equations, characteristics, and weak-solution foundations. Folland and
 Taylor connect these to distributions, spectral methods, and elliptic
 operators; John, Rauch, and Mizohata emphasize characteristics, energy,

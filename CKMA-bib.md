@@ -53,12 +53,12 @@ optimization and control, and other subjects with several homes.
 Within each publication group, books that serve as entry points generally
 come first, followed by standard references, followed by research
 monographs. A title that genuinely belongs in several places is listed
-in each, with the annotation adjusted; cross-listing is deliberate,
-since the point of the list is navigation rather than taxonomy. Some
-recent books appear in full once, with a short pointer from other
-sections. A pointer entry says "Listed in full in Section N"; an entry
-for a work that also appears elsewhere ends with "Also listed in
-Section N". Multi-volume works are cited as a unit unless the volumes
+in full once, in the section that suits it best, and as a short pointer
+in each of the others, with an annotation adjusted to that section;
+cross-listing is deliberate, since the point of the list is navigation
+rather than taxonomy. A pointer entry says "Listed in full in Section
+N"; the full entry for a work that also appears elsewhere ends with
+"Also listed in Section N". Multi-volume works are cited as a unit unless the volumes
 are usually consulted separately.
 
 For foundational works, editions and publishers are usually omitted:
@@ -102,31 +102,30 @@ problems, counterexamples, and tables.
   introduction to Fourier, complex, real, and functional analysis, with
   connections between the subjects developed throughout.
 * **Walter Rudin, *Real and Complex Analysis*** and ***Functional
-  Analysis***. Concise graduate treatments of measure and complex analysis,
-  and of functional analysis. Both use a terse theorem-and-proof style and
-  substantial exercises.
-  Also listed in Sections 4, 40, and 54.
+  Analysis***. Listed in full in Sections 4 and 15. Concise graduate
+  treatments of measure and complex analysis, and of functional
+  analysis.
 * **Lars Hörmander, *The Analysis of Linear Partial Differential
-  Operators I–IV***. A four-volume reference for distributions, Fourier
-  analysis, pseudodifferential operators, propagation of singularities, and
-  Fourier integral operators.
-  Also listed in Section 32.
-* **Michael E. Taylor, *Partial Differential Equations I–III***. A broad PDE
-  course combining classical equations, pseudodifferential methods,
-  geometry, spectral theory, and nonlinear problems.
-  Also listed in Section 32.
+  Operators I–IV***. Listed in full in Section 30. A four-volume
+  reference for distributions, Fourier analysis, pseudodifferential
+  operators, propagation of singularities, and Fourier integral
+  operators.
+* **Michael E. Taylor, *Partial Differential Equations I–III***. Listed
+  in full in Section 32. A broad PDE course combining classical
+  equations, pseudodifferential methods, geometry, spectral theory, and
+  nonlinear problems.
 * **Michael Reed and Barry Simon, *Methods of Modern Mathematical
-  Physics I–IV***. Functional analysis, self-adjointness, scattering, and
-  spectral analysis, developed with applications to Schrödinger operators.
-  Also listed in Section 22.
+  Physics I–IV***. Listed in full in Section 22. Functional analysis,
+  self-adjointness, scattering, and spectral analysis, developed with
+  applications to Schrödinger operators.
 * **Nelson Dunford and Jacob T. Schwartz, *Linear Operators
   I–III***. An extensive reference on Banach-space operator theory and
   spectral theory. Its detailed treatment includes compact, self-adjoint,
   and spectral operators.
 * **Nicolas Bourbaki, *Integration*** and ***Topological Vector
-  Spaces***. Systematic treatments of measure, integration, locally convex
-  spaces, and duality, intended for reference and advanced study.
-  Also listed in Section 4.
+  Spaces***. Listed in full in Sections 4 and 16. Systematic treatments
+  of measure, integration, locally convex spaces, and duality, intended
+  for reference and advanced study.
 * **Jean Dieudonné, *Treatise on Analysis*** (8 volumes). A comprehensive course
   in analysis, extending from foundations and integration to manifolds, Lie
   groups, harmonic analysis, and linear functional equations.
@@ -152,17 +151,15 @@ problems, counterexamples, and tables.
   distributions. More structural than a first real-analysis text, with
   connections to infinite-dimensional analysis.
 * **Edwin Hewitt and Kenneth A. Ross, *Abstract Harmonic Analysis
-  I–II***. The standard large reference for locally compact groups,
-  Haar measure, representation theory, and Pontryagin duality.
-  Also listed in Section 28.
+  I–II***. Listed in full in Section 28. The standard large reference
+  for locally compact groups, Haar measure, representation theory, and
+  Pontryagin duality.
 * **Antoni Zygmund, *Trigonometric Series*** (2 volumes). The
   classical encyclopedia of Fourier series and an enduring source for
   sharp convergence and summability results.
 * **Einar Hille and Ralph S. Phillips, *Functional Analysis and
-  Semi-Groups***. Historically foundational and still useful for the
-  operator-semigroup point of view and for its unusually wide
-  classical coverage.
-  Also listed in Section 24.
+  Semi-Groups***. Listed in full in Section 24. Historically
+  foundational for the operator-semigroup point of view.
 * **Richard Courant and David Hilbert, *Methods of Mathematical
   Physics*** (2 volumes). Classical analysis, variational methods,
   eigenvalue problems, and PDE in a style that still repays
@@ -191,26 +188,35 @@ problems, counterexamples, and tables.
   encyclopedic French treatise on the analysis of the equations of
   mathematical physics: distributions, variational methods, spectral
   theory, integral equations, and evolution problems.
+* **Nicolas Bourbaki, *Functions of a Real Variable: Elementary Theory***.
+  Derivatives, primitives, convexity, the gamma function, and asymptotic
+  expansions, in Bourbaki's style; the source of much later terminology.
 
 ### More recent works
 
 * **Barry Simon, *A Comprehensive Course in Analysis*** (5 volumes,
-  2015, American Mathematical Society: *Real Analysis*; *Basic Complex
-  Analysis*; *Advanced Complex Analysis*; *Harmonic Analysis*; *Operator
-  Theory*). A graduate-to-research course across real, complex, harmonic,
-  and operator analysis, with extensive problems, historical notes, and
-  connections between subjects.
-  Also listed in Section 54.
+  2015, American Mathematical Society: [*Real
+  Analysis*](https://doi.org/10.1090/simon/001); [*Basic Complex
+  Analysis*](https://doi.org/10.1090/simon/002.1); [*Advanced Complex
+  Analysis*](https://doi.org/10.1090/simon/002.2); [*Harmonic
+  Analysis*](https://doi.org/10.1090/simon/003); [*Operator
+  Theory*](https://doi.org/10.1090/simon/004)). A graduate-to-research
+  course across real, complex, harmonic, and operator analysis, with
+  extensive problems, historical notes, and connections between
+  subjects. Also listed in Section 54.
 * **Terence Tao, *An Epsilon of Room, I: Real Analysis*** (2010, [American
   Mathematical Society](https://doi.org/10.1090/gsm/117), Graduate Studies in Mathematics). A second
   graduate pass through real analysis, Hilbert space, and Fourier
   analysis, written as a bridge out of a first course. Volume II is a
   separate collection of expository notes.
 * **D. J. H. Garling, *A Course in Mathematical Analysis*** (3 volumes,
-  2013–2014, Cambridge University Press; [I](https://doi.org/10.1017/CBO9781139424493), [II](https://doi.org/10.1017/CBO9781139424509), [III](https://doi.org/10.1017/CBO9781139424516)). A broad English-style
-  advanced undergraduate course from foundations through complex analysis and
-  measure, often used as background for graduate study.
-  Also listed in Section 4.
+  2013–2014, Cambridge University Press;
+  [I](https://doi.org/10.1017/CBO9781139424493),
+  [II](https://doi.org/10.1017/CBO9781139424509),
+  [III](https://doi.org/10.1017/CBO9781139424516)). A broad
+  English-style advanced undergraduate course from foundations through
+  complex analysis and measure, often used as background for graduate
+  study. Also listed in Section 4.
 * **Jean-Paul Penot, *Analysis: From Concepts to Applications*** (2016,
   [Springer](https://doi.org/10.1007/978-3-319-32411-1)). A broad course
   joining real and functional analysis with differential calculus, convexity,
@@ -264,7 +270,8 @@ subject.
   on the development of its principal subjects.
 * **Jean Dieudonné, *Foundations of Modern Analysis***. A structural course in
   analysis that also illustrates the influence of Bourbaki on
-  twentieth-century graduate teaching.
+  twentieth-century graduate teaching. Its enlarged 1969 printing is volume I
+  of the *Treatise on Analysis* (Section 1).
 * **Antonie F. Monna, *Functional Analysis in Historical
   Perspective***. Shorter and more idiosyncratic than Dieudonné, with
   useful coverage of the Dutch and French schools.
@@ -279,12 +286,13 @@ subject.
 * **Jean-Pierre Kahane and Pierre Gilles Lemarié-Rieusset, *Fourier
   Series and Wavelets***. A history-conscious account of how classical
   Fourier analysis turned into wavelet theory.
-* **Reinhold Remmert, *Theory of Complex Functions*** and ***Classical
-  Topics in Complex Function Theory***. The first is listed again in
-  Section 40. Both texts
-  combine complex function theory with historical commentary and discussion
-  of the origins of its concepts.
-  Also listed in Section 40.
+* **Reinhold Remmert, *Theory of Complex Functions***. Listed in full in
+  Section 40. Complex function theory with historical commentary on the
+  origins of its concepts.
+* **Reinhold Remmert, *Classical Topics in Complex Function Theory***.
+  The sequel to *Theory of Complex Functions*, combining complex function
+  theory with historical commentary and discussion of the origins of its
+  concepts.
 * **Vladimir G. Maz'ya and Tatyana O. Shaposhnikova, *Jacques Hadamard: A
   Universal Mathematician***. A scientific biography that doubles as a
   history of French analysis.
@@ -396,9 +404,9 @@ Section 55.
 * **John L. Kelley, *General Topology***. Older and shorter, with the
   nets-and-filters language that functional analysis uses.
 * **D. H. Fremlin, *Measure Theory*, volume 5 (*Set-theoretic Measure
-  Theory*)**. Where measure theory meets independence results,
-  measurable cardinals, and the limits of what is provable.
-  Also listed in Section 4.
+  Theory*)**. Listed in full in Section 4. Where measure theory meets
+  independence results, measurable cardinals, and the limits of what is
+  provable.
 * **Thomas Jech, *Set Theory***. A reference on axiomatic set theory, forcing,
   and independence, useful when analytic questions depend on additional
   set-theoretic assumptions.
@@ -478,9 +486,9 @@ Section 26; some foundational texts naturally serve all four areas.
   Hilbert spaces, and a first Fourier theory.
 * **Walter Rudin, *Real and Complex Analysis***. A faster, more
   compressed route through Lebesgue integration, complex measures,
-  functional analysis, Hardy spaces, and Haar measure, with the
-  complex theory interleaved rather than segregated.
-  Also listed in Sections 1, 40, and 54.
+  functional analysis, Hardy spaces, and Haar measure, with the complex
+  theory interleaved rather than segregated. Also listed in Sections 1,
+  40, and 54.
 * **Halsey L. Royden and Patrick Fitzpatrick, *Real Analysis***. More
   leisurely than Folland and well suited to a first graduate course.
 * **Elias M. Stein and Rami Shakarchi, *Real Analysis: Measure Theory,
@@ -488,13 +496,13 @@ Section 26; some foundational texts naturally serve all four areas.
   Princeton series, covering Lebesgue integration, differentiation, Hilbert
   spaces, and Hausdorff measure and fractals.
 * **René L. Schilling, *Measures, Integrals and Martingales*** (2nd ed.,
-  2017, Cambridge University Press). A careful first graduate book that
+  2017, Cambridge University Press; first ed. 2005). A careful first graduate book that
   reaches martingales without assuming a probability course.
 * **Karl R. Stromberg, *An Introduction to Classical Real
   Analysis***. A detailed treatment of classical real-variable analysis,
   with concrete examples and careful development of the basic techniques.
 * **Richard L. Wheeden and Antoni Zygmund, *Measure and Integral: An
-  Introduction to Real Analysis*** (2nd ed., 2015, [CRC Press](https://doi.org/10.1201/b18361)). A
+  Introduction to Real Analysis*** (2nd ed., 2015, [CRC Press](https://doi.org/10.1201/b18361); first ed. 1977). A
   concrete Euclidean development, useful where abstract treatments skip
   the covering arguments.
 * **Robert G. Bartle, *The Elements of Integration and Lebesgue
@@ -517,12 +525,12 @@ Section 26; some foundational texts naturally serve all four areas.
   functional analysis.
 * **William P. Ziemer, *Modern Real Analysis*** (2nd ed., 2017, with
   contributions by Monica Torres,
-  [Springer](https://doi.org/10.1007/978-3-319-64629-9)). A graduate course
-  combining measure and integration with differentiation and functional
-  analysis. Distinct from Ziemer's specialised *Weakly Differentiable
-  Functions* (Section 26).
+  [Springer](https://doi.org/10.1007/978-3-319-64629-9); first ed. 1995). A
+  graduate course combining measure and integration with differentiation and
+  functional analysis. Ziemer's *Weakly Differentiable Functions*, a
+  specialised monograph on Sobolev and BV functions, is listed in Section 26.
 * **Emmanuele DiBenedetto, *Real Analysis*** (2nd ed., 2016,
-  [Birkhäuser](https://doi.org/10.1007/978-1-4939-4005-9)). A PDE analyst's real analysis: measure, weak derivatives,
+  [Birkhäuser](https://doi.org/10.1007/978-1-4939-4005-9); first ed. 2002). A PDE analyst's real analysis: measure, weak derivatives,
   and the facts used in regularity theory.
 * **Piermarco Cannarsa and Teresa D'Aprile, *Introduction to Measure Theory
   and Functional Analysis*** (2015; English translation of the 2008 Italian
@@ -544,23 +552,19 @@ Section 26; some foundational texts naturally serve all four areas.
   contemporary encyclopedia: Radon measures, measurable mappings, weak
   convergence, capacities, topological measure theory, and a
   bibliography of extraordinary depth.
-* **D. H. Fremlin, *Measure Theory*** (5 volumes). A systematic reference
-  running from elementary measure theory to measure algebras, topological
-  measure theory, and set-theoretic independence. Freely available from the
-  author.
-  Also listed in Section 3.
+* **D. H. Fremlin, *Measure Theory*** (5 volumes). A systematic
+  reference running from elementary measure theory to measure algebras,
+  topological measure theory, and set-theoretic independence. Freely
+  available from the author. Also listed in Section 3.
 * **Nicolas Bourbaki, *Integration***. The structural account of
   integration on locally compact spaces, vector integration, and Haar
-  measure.
-  Also listed in Section 1.
-* **K. R. Parthasarathy, *Probability Measures on Metric
-  Spaces***. Tightness, Prokhorov compactness, and the
+  measure. Also listed in Section 1.
+* **K. R. Parthasarathy, *Probability Measures on Metric Spaces***.
+  Listed in full in Section 6. Tightness, Prokhorov compactness, and the
   measure-theoretic foundations of weak convergence.
-  Also listed in Section 6.
-* **Joseph Diestel and J. J. Uhl, Jr., *Vector Measures***. Vector
-  integration, Radon–Nikodým phenomena, compactness, and the
-  interaction with Banach-space geometry.
-  Also listed in Sections 16, 17, and 18.
+* **Joseph Diestel and J. J. Uhl, Jr., *Vector Measures***. Listed in
+  full in Section 18. Vector integration, Radon–Nikodým phenomena,
+  compactness, and the interaction with Banach-space geometry.
 * **Vladimir I. Bogachev, *Gaussian Measures***. The standard
   monograph on Gaussian measures in infinite dimensions.
   Also listed in Section 14.
@@ -571,37 +575,28 @@ Section 26; some foundational texts naturally serve all four areas.
 * **Joseph L. Doob, *Measure Theory***. A probabilist's treatment of
   measure and integration, with conditional expectations, martingales, and
   the Radon–Nikodym theorem placed at the centre.
-* **Nicolas Bourbaki, *Functions of a Real Variable: Elementary Theory***.
-  Derivatives, primitives, convexity, the gamma function, and asymptotic
-  expansions, in Bourbaki's style; the source of much later terminology.
-* **Washek F. Pfeffer, *Derivation and Integration***. Recovery of a function from its
-  derivative on sets of bounded variation, and the Gauss–Green and Stokes theorems that
-  follow. His later *The Divergence Theorem and Sets of Finite Perimeter* is listed in
-  Section 5.
 * **Johannes J. Duistermaat and Johan A. C. Kolk, *Multidimensional Real Analysis I–II***.
   Differentiation and integration in several variables, as a graduate course with the
   geometric and measure-theoretic arguments kept together. Also listed in Section 5.
-  Distinct from their *Distributions: Theory and Applications*.
 * **Anatoli V. Skorokhod, *Integration in Hilbert Space***. Measures on Hilbert space and
-  the integration of functionals of Hilbert-space variables. Distinct from Gikhman and
-  Skorokhod, *The Theory of Stochastic Processes*.
+  the integration of functionals of Hilbert-space variables.
 
 ### More recent works
 
 #### Graduate courses
 
-* **Terence Tao, *An Introduction to Measure Theory*** (2011, American
-  Mathematical Society). Discursive, exercise-rich, and particularly good
+* **Terence Tao, *An Introduction to Measure Theory*** (2011, [American
+  Mathematical Society](https://doi.org/10.1090/gsm/126)). Discursive, exercise-rich, and particularly good
   for self-study.
 * **Sheldon Axler, *Measure, Integration & Real Analysis*** (2020,
   [Springer](https://doi.org/10.1007/978-3-030-33143-6), Graduate Texts in Mathematics). A clean graduate course,
   freely available, with the functional analysis developed far enough
   for a first pass at spectral theory.
-* **John B. Conway, *A Course in Abstract Analysis*** (2012, American
-  Mathematical Society). Measure and functional analysis developed
+* **John B. Conway, *A Course in Abstract Analysis*** (2012, [American
+  Mathematical Society](https://doi.org/10.1090/gsm/141)). Measure and functional analysis developed
   together in a unified modern style.
 * **Richard F. Bass, *[Real Analysis for Graduate Students](https://r-bass.scholar.uconn.edu/)*** (2nd ed.,
-  2013; freely available, with later printings). A compact graduate
+  2013, self-published; freely available, with later printings). A compact graduate
   course used for self-study, covering measure, functional analysis,
   and a first treatment of distributions and Sobolev spaces.
 * **Christopher Heil, *Introduction to Real Analysis*** (2019, [Springer](https://doi.org/10.1007/978-3-030-26903-6),
@@ -611,10 +606,11 @@ Section 26; some foundational texts naturally serve all four areas.
   (2011, [Springer](https://doi.org/10.1007/978-1-4614-1135-2), Graduate Texts in Mathematics). A short, sharp
   integration course written for later use in probability and PDE.
 * **D. J. H. Garling, *A Course in Mathematical Analysis***, volumes II
-  and III (2013–2014, Cambridge University Press; [II](https://doi.org/10.1017/CBO9781139424509), [III](https://doi.org/10.1017/CBO9781139424516)). Measure, integration,
-  and functional analysis inside a three-volume advanced undergraduate
-  course.
-  Also listed in Section 1.
+  and III (2013–2014, Cambridge University Press;
+  [II](https://doi.org/10.1017/CBO9781139424509),
+  [III](https://doi.org/10.1017/CBO9781139424516)). Listed in full in
+  Section 1. Measure, integration, and functional analysis inside a
+  three-volume advanced undergraduate course.
 * **Boris M. Makarov and Anatolii N. Podkorytov, *Real Analysis: Measures,
   Integrals and Applications*** (2013; English translation,
   [Springer](https://doi.org/10.1007/978-1-4471-5122-7)). A detailed course
@@ -624,22 +620,22 @@ Section 26; some foundational texts naturally serve all four areas.
 * **Hari Bercovici, Arlen Brown, and Carl Pearcy, *Measure and Integration***
   (2016, [Springer](https://doi.org/10.1007/978-3-319-29046-1)). An
   introductory graduate course in Lebesgue integration, convergence, and
-  function spaces. Particularly useful as preparation for these authors'
-  operator-theoretic approach to functional analysis.
+  function spaces, in which the integral is defined axiomatically before its
+  correspondence with measures is established.
 * **Jean-François Le Gall, *Measure Theory, Probability, and Stochastic
   Processes*** (2022, [Springer](https://doi.org/10.1007/978-3-031-14205-5)). Listed in full in Section 6.
-* **Dietmar A. Salamon, *Measure and Integration*** (2016, European
-  Mathematical Society, EMS Textbooks in Mathematics). A compact graduate
+* **Dietmar A. Salamon, *Measure and Integration*** (2016, [European
+  Mathematical Society](https://doi.org/10.4171/159), EMS Textbooks in Mathematics). A compact graduate
   course through Lebesgue and Haar measure, L^p duality, product measures,
   and the Lebesgue differentiation theorem.
 
 #### References and monographs
 
-* **Nik Weaver, *Measure Theory and Functional Analysis*** (2013, World
-  Scientific). Short, modern, and attentive to the functional-analytic
+* **Nik Weaver, *Measure Theory and Functional Analysis*** (2013, [World
+  Scientific](https://doi.org/10.1142/8813)). Short, modern, and attentive to the functional-analytic
   reformulation of measure.
 * **Joseph Diestel and Angela Spalsbury, *The Joys of Haar Measure***
-  (2014, American Mathematical Society). A modern route to invariant
+  (2014, [American Mathematical Society](https://doi.org/10.1090/gsm/150)). A modern route to invariant
   measure and its links with harmonic analysis.
 * **Vladimir I. Bogachev, *Weak Convergence of Measures*** (2018,
   [American Mathematical Society](https://doi.org/10.1090/surv/234), Mathematical Surveys and Monographs).
@@ -647,13 +643,18 @@ Section 26; some foundational texts naturally serve all four areas.
   the infinite-dimensional case, beyond the chapters in Bogachev's
   *Measure Theory*.
 * **Vladimir I. Bogachev, *Differentiable Measures and the Malliavin
-  Calculus*** (2010, American Mathematical Society). Differentiability of
-  measures on infinite-dimensional spaces, and the measure-theoretic
-  background to stochastic analysis.
-  Also listed in Section 9.
+  Calculus*** (2010, [American Mathematical
+  Society](https://doi.org/10.1090/surv/164)). Listed in full in Section
+  9. Differentiability of measures on infinite-dimensional spaces, and
+  the measure-theoretic background to stochastic analysis.
 * **René L. Schilling and Franziska Kühn, *Counterexamples in Measure
   and Integration*** (2021, [Cambridge University Press](https://doi.org/10.1017/9781009003797)). The modern
   companion to Gelbaum–Olmsted for measure-theoretic pathology. Also listed in Section 54.
+* **Jan Pachl, *Uniform Spaces and Measures*** (2013,
+  [Springer](https://doi.org/10.1007/978-1-4614-5058-0)). Uniform measures,
+  compactification, convolution, and topological groups. A research monograph
+  extending measure theory beyond the standard metric and locally compact
+  frameworks.
 
 ---
 
@@ -673,25 +674,25 @@ BV functions, and geometric integration.
 ### Foundational works
 
 * **Andrew M. Bruckner, Judith B. Bruckner, and Brian S. Thomson,
-  *Real Analysis***. A detailed treatment of derivatives, Baire classes, and
-  the fine structure of real functions, continuing the classical descriptive
-  real-analysis tradition.
+  *Real Analysis***. A one-year graduate course in measure and integration,
+  continuing to Baire category, Banach and L^p spaces, analytic sets, Hilbert
+  space, and Fourier series, with unusually strong coverage of classical
+  real-variable topics.
 * **Stanisław Saks, *Theory of the Integral***. The classical
   monograph on differentiation theory, Denjoy–Perron integration, and
   descriptive real analysis.
 * **Lawrence C. Evans and Ronald F. Gariepy, *Measure Theory and Fine
   Properties of Functions***. The modern working reference for
   differentiation of measures, Sobolev and BV functions, Hausdorff
-  measure, and approximate continuity; short enough to read and
-  precise enough to cite.
-  Also listed in Sections 26 and 37.
-* **Herbert Federer, *Geometric Measure Theory***. Far beyond a first
-  course, but one of the ultimate sources for differentiation,
-  densities, Hausdorff measures, and rectifiability.
-  Also listed in Section 37.
-* **Brian S. Thomson, *Real Functions*** (to be read with Guzmán's
-  monograph below). A specialised treatment of covering theorems, derivation
-  bases, and differentiation of real functions.
+  measure, and approximate continuity; short enough to read and precise
+  enough to cite. Also listed in Sections 26 and 37.
+* **Herbert Federer, *Geometric Measure Theory***. Listed in full in
+  Section 37. Far beyond a first course, but one of the ultimate sources
+  for differentiation, densities, Hausdorff measures, and
+  rectifiability.
+* **Brian S. Thomson, *Real Functions***. A specialised treatment of
+  covering theorems, derivation bases, and differentiation of real functions,
+  best read with Guzmán's monograph below.
 * **Miguel de Guzmán, *Differentiation of Integrals in R^n***. The
   standard monograph on covering arguments, maximal functions, and the
   failure of differentiation for general bases.
@@ -699,7 +700,7 @@ BV functions, and geometric integration.
   focused account of the pathologies: Dini derivatives, monotonicity,
   and typical behaviour.
 * **Alexander Kharazishvili, *Strange Functions in Real Analysis*** (3rd
-  ed., 2017, [CRC Press](https://doi.org/10.1201/9781315154473)).
+  ed., 2017, [CRC Press](https://doi.org/10.1201/9781315154473); first ed. 2000).
   Pathological functions, among them Sierpiński–Zygmund functions,
   nonmeasurable functions, and Hamel-basis constructions, together with the
   set theory behind them. Complements Gelbaum–Olmsted with proofs.
@@ -707,15 +708,15 @@ BV functions, and geometric integration.
   functions, extension, differentiability, and the route from real
   analysis into metric geometry.
 * **Pertti Mattila, *Geometry of Sets and Measures in Euclidean
-  Spaces***. Densities, rectifiability, and tangent measures,
-  developed with real-analysis rather than current-theoretic tools.
-  Also listed in Section 37.
+  Spaces***. Listed in full in Section 37. Densities, rectifiability,
+  and tangent measures, developed with real-analysis rather than
+  current-theoretic tools.
 * **C. A. Rogers, *Hausdorff Measures***. The classical monograph on
   Hausdorff measure: measures, Hausdorff dimension, and the geometric
   measure theory of sets in Euclidean space before the current-theoretic
   developments. Also listed in Section 37.
-* **Ralph Henstock, *The General Theory of Integration***. The
-  originator's account of the gauge integral.
+* **Ralph Henstock, *The General Theory of Integration***. An account of
+  the gauge integral by one of its two originators, the other being Kurzweil.
 * **Russell A. Gordon, *The Integrals of Lebesgue, Denjoy, Perron, and
   Henstock***. A comparison of the nonabsolute integrals, which still
   appear in questions about differentiation and in the Fourier
@@ -724,6 +725,10 @@ BV functions, and geometric integration.
   classic on almost-everywhere convergence methods.
 * **Johannes J. Duistermaat and Johan A. C. Kolk, *Multidimensional Real Analysis I–II***.
   Listed in full in Section 4. Differentiation and integration in several variables.
+* **Washek F. Pfeffer, *Derivation and Integration***. Recovery of a function from its
+  derivative on sets of bounded variation, and the Gauss–Green and Stokes theorems that
+  follow. His later *The Divergence Theorem and Sets of Finite Perimeter* is listed
+  among the more recent works.
 
 ### More recent works
 
@@ -784,105 +789,80 @@ classical and functional limit theorems provide the general framework.
 * **Patrick Billingsley, *Probability and Measure***. The classic
   first graduate text: measure-theoretic probability, characteristic
   functions, convergence, and central limit theory.
-
 * **Rick Durrett, *Probability: Theory and Examples***. A graduate probability
   text covering martingales, Markov chains, Brownian motion, and limit
   theorems, with numerous examples.
-
 * **David Williams, *Probability with Martingales***. A concise introduction to
   measure-theoretic probability organised around conditional expectation and
   martingales.
-
 * **Olav Kallenberg, *Foundations of Modern Probability***. The
   comprehensive modern reference: conditioning, martingales, point
   processes, random measures, exchangeability, invariance, and
   stochastic calculus, all at high density.
-
 * **Achim Klenke, *Probability Theory: A Comprehensive Course***. A
   broad modern graduate text with a clean measure-theoretic foundation
   and unusually wide coverage.
-
 * **Daniel W. Stroock, *Probability Theory: An Analytic
   View***. Probability developed by an analyst, with semigroups, weak
   convergence, and analytic methods prominent throughout.
-
 * **Albert N. Shiryaev, *Probability***. Broad and detailed, bridging
   foundations, martingales, stochastic processes, and applications.
-
 * **Leo Breiman, *Probability***. Older but still valuable, especially
   for technique and probabilistic intuition.
-
 * **Yuan Shih Chow and Henry Teicher, *Probability Theory:
   Independence, Interchangeability, Martingales***. A classical
   graduate reference for limit theory and dependence structures.
-
 * **R. M. Dudley, *Real Analysis and Probability***. A distinctive
   synthesis of measure theory, probability, weak convergence, and
   empirical processes.
-
 * **Kai Lai Chung, *A Course in Probability Theory***. A careful
   classical treatment, especially good on characteristic functions and
   sums.
-
 * **William Feller, *An Introduction to Probability Theory and Its
   Applications I–II***. Not measure-theoretic in volume I, but volume
   II remains one of the great expositions of limit theory, renewal
   theory, and Fourier methods in probability.
-
 * **Allan Gut, *Probability: A Graduate Course*** (2nd ed., 2013,
-  [Springer](https://doi.org/10.1007/978-1-4614-4708-5)). A systematic course in limit theorems, characteristic
+  [Springer](https://doi.org/10.1007/978-1-4614-4708-5); first ed. 2005). A systematic course in limit theorems, characteristic
   functions, and convergence.
-
 * **V. V. Petrov, *Sums of Independent Random Variables*** and
   ***Limit Theorems of Probability Theory***. The classical monographs
   behind precise asymptotic probability: rates, large deviations, and
   refinements of the central limit theorem.
-
 * **A. A. Borovkov, *Probability Theory***. Broad, classical, and
   strong on asymptotic and limit-theorem content.
-
 * **Patrick Billingsley, *Convergence of Probability Measures***. The
   standard source for weak convergence on metric spaces and functional
   limit theory.
-
-* **K. R. Parthasarathy, *Probability Measures on Metric
-  Spaces***. Foundational for tightness, Prokhorov's theorem, and
-  probability on general state spaces.
-  Also listed in Section 4.
-
+* **K. R. Parthasarathy, *Probability Measures on Metric Spaces***.
+  Foundational for tightness, Prokhorov's theorem, and probability on
+  general state spaces. Also listed in Section 4.
 * **B. V. Gnedenko and A. N. Kolmogorov, *Limit Distributions for Sums
   of Independent Random Variables***. The classical account of
   infinitely divisible and stable laws.
-
 * **Ken-iti Sato, *Lévy Processes and Infinitely Divisible
   Distributions***. A detailed reference for Lévy processes, infinitely
   divisible distributions, and their analytic and probabilistic properties.
-
 * **Jean Bertoin, *Lévy Processes***. A concise research-level
   complement to Sato.
-
 * **Andreas E. Kyprianou, *Fluctuations of Lévy Processes with
-  Applications*** (2nd ed., 2014, [Springer](https://doi.org/10.1007/978-3-642-37632-0)). Path decomposition, exit
+  Applications*** (2nd ed., 2014, [Springer](https://doi.org/10.1007/978-3-642-37632-0); first ed. 2006 as
+  *Introductory Lectures on Fluctuations of Lévy Processes with Applications*). Path decomposition, exit
   problems, and the fluctuation theory that Sato's treatise does not
   emphasise.
-
 * **Michel Ledoux and Michel Talagrand, *Probability in Banach
-  Spaces***. The major reference for random series, Gaussian
-  processes, and concentration in infinite dimensions.
-  Also listed in Sections 7 and 17.
-
+  Spaces***. The major reference for random series, Gaussian processes,
+  and concentration in infinite dimensions. Also listed in Sections 7
+  and 17.
 * **Michel Loève, *Probability Theory I–II***. The classic graduate
   treatise on the measure-theoretic foundations, sums of independent
   variables, and the central limit problem.
-
 * **Bert Fristedt and Lawrence Gray, *A Modern Approach to Probability
   Theory***. A broad graduate course taking measure-theoretic probability
   through martingales, Markov processes, and Brownian motion.
-
 * **Leonid B. Koralov and Yakov G. Sinai, *Theory of Probability and
   Random Processes***. A concise graduate course from limit theorems to
   stationary processes, Markov processes, and stochastic calculus.
-
 * **Olav Kallenberg, *Probabilistic Symmetries and Invariance
   Principles***. Exchangeability, contractability, and rotatability; the
   research reference for de Finetti-type theorems.
@@ -894,47 +874,39 @@ classical and functional limit theorems provide the general framework.
   graduate course from measure theory to martingales, Markov chains,
   and Brownian motion, with the analytic connections kept in view.
   Also listed in Sections 1 and 4.
-
 * **Erhan Çinlar, *Probability and Stochastics*** (2011, [Springer](https://doi.org/10.1007/978-0-387-87859-1),
   Graduate Texts in Mathematics). A graduate treatment of measure-theoretic
   probability, conditioning, random measures, and stochastic processes.
-
 * **Daniel W. Stroock, *Mathematics of Probability*** (2013, [American
   Mathematical Society](https://doi.org/10.1090/gsm/149), Graduate Studies in Mathematics). A short
-  analyst's course, distinct from Stroock's *Probability Theory: An
-  Analytic View*.
-
+  analyst's course, much shorter than Stroock's *Probability Theory: An
+  Analytic View*, listed above.
 * **Henry P. McKean, *Probability: The Classical Limit Theorems*** (2014,
   [Cambridge University Press](https://doi.org/10.1017/CBO9781107282032)). A
   concise, distinctive treatment of laws of large numbers, central limit
   behaviour, and Brownian motion. An experienced probabilist's account of the
   analytic mechanisms behind the limit theorems.
-
 * **Louis H. Y. Chen, Larry Goldstein, and Qi-Man Shao, *Normal Approximation
   by Stein's Method*** (2011,
   [Springer](https://doi.org/10.1007/978-3-642-15007-4)). A systematic
   research reference for quantitative normal approximation, including
   dependent variables. Develops Stein's method far beyond the elementary
   central limit theorem.
-
 * **Vydas Čekanavičius, *Approximation Methods in Probability Theory*** (2016,
   [Springer](https://doi.org/10.1007/978-3-319-34072-2)). Distributional
   approximation for sums of independent and dependent variables, including
   Poisson and compound Poisson approximation. A useful complement to books
   concentrated on Gaussian limits.
-
 * **Oleg Klesov, *Limit Theorems for Multi-Indexed Sums of Random Variables***
   (2014, [Springer](https://doi.org/10.1007/978-3-662-44388-0)). Strong laws,
   central limit theorems, and iterated-logarithm results for multi-parameter
   sums. The specialist continuation when a one-dimensional indexing set is
   insufficient.
-
 * **Gennady Samorodnitsky, *Stochastic Processes and Long Range Dependence***
   (2016, [Springer](https://doi.org/10.1007/978-3-319-45575-4)). Long memory,
   heavy tails, and nonclassical limit behaviour. Explains how dependence
   changes the analytic and probabilistic structure of familiar convergence
   problems.
-
 * **Daniel W. Stroock, *Gaussian Measures in Finite and Infinite Dimensions***
   (2023, [Springer](https://doi.org/10.1007/978-3-031-23122-3)). A graduate
   account of Gaussian measures and their passage to infinite dimensions.
@@ -953,27 +925,21 @@ and statistical mechanics.
 * **Amir Dembo and Ofer Zeitouni, *Large Deviations Techniques and
   Applications***. The standard reference for large deviation
   principles, Varadhan's lemma, and Sanov-type theorems.
-
 * **Jean-Dominique Deuschel and Daniel W. Stroock, *Large
   Deviations***. An analyst's complement to Dembo–Zeitouni, closer to
   convexity and functional inequalities.
-
 * **Frank den Hollander, *Large Deviations***. A short, readable entry
   to the same circle of ideas.
-
 * **Jin Feng and Thomas G. Kurtz, *Large Deviations for Stochastic
   Processes*** (2006, [American Mathematical
   Society](https://doi.org/10.1090/surv/131), Mathematical Surveys and
   Monographs). Large deviations for Markov processes through convergence of
   nonlinear semigroups and viscosity solutions of Hamilton–Jacobi equations.
-
 * **Richard S. Ellis, *Entropy, Large Deviations, and Statistical
   Mechanics***. Large deviations and convex duality developed alongside the
   equilibrium statistical mechanics that motivated them.
-
 * **Paul Dupuis and Richard S. Ellis, *A Weak Convergence Approach to the Theory of Large
   Deviations***. Large deviations obtained from weak convergence of controlled processes.
-  Distinct from Ellis's *Entropy, Large Deviations, and Statistical Mechanics*.
 
 #### More recent works
 
@@ -982,7 +948,6 @@ and statistical mechanics.
   Mathematical Society](https://doi.org/10.1090/gsm/162), Graduate Studies in Mathematics). A modern
   graduate route into large deviations, closer to statistical mechanics
   than Dembo–Zeitouni.
-
 * **S. R. S. Varadhan, *Large Deviations*** (2016, [American Mathematical
   Society](https://doi.org/10.1090/cln/027), Courant Lecture Notes).
   A short course on large-deviation principles and their applications, by a
@@ -1000,32 +965,26 @@ measure-theoretic probability with geometric structures.
 * **Robert J. Adler and Jonathan E. Taylor, *Random Fields and
   Geometry***. Gaussian fields, excursion sets, and the geometric side
   of continuous-parameter probability.
-
 * **D. J. Daley and D. Vere-Jones, *An Introduction to the Theory of Point
-  Processes*** (2 volumes, 2nd ed., 2003–2008,
-  [Springer](https://doi.org/10.1007/978-0-387-49835-5); [volume I](https://doi.org/10.1007/b97277)).
+  Processes*** (2 volumes, 2nd ed., 2003–2008, Springer;
+  [I](https://doi.org/10.1007/b97277), [II](https://doi.org/10.1007/978-0-387-49835-5)).
   A two-volume reference on point processes and random measures, from
   elementary models to Palm theory and convergence.
-
 * **Rolf Schneider and Wolfgang Weil, *Stochastic and Integral
   Geometry***. Integral geometry and random closed sets, point processes,
   and random tessellations. Also listed in Section 37.
-
 * **Georges Matheron, *Random Sets and Integral Geometry***. The founding
   monograph on random closed sets, Choquet capacities, and their integral
   geometry. Also listed in Section 37.
-
 * **Ilya Molchanov, *Theory of Random Sets*** (2nd ed., 2017,
   [Springer](https://doi.org/10.1007/978-1-4471-7349-6)). Capacities, Choquet's theorem, and
-  the modern theory of random closed sets. The first edition appeared in 2005. Distinct from
-  Matheron's monograph above.
+  the modern theory of random closed sets. The first edition appeared in 2005.
 
 #### More recent works
 
 * **Olav Kallenberg, *Random Measures, Theory and Applications*** (2017,
   [Springer](https://doi.org/10.1007/978-3-319-41598-7)). The research treatise on random measures and point
   processes, separate from Kallenberg's *Foundations*.
-
 * **Günter Last and Mathew Penrose, *Lectures on the Poisson Process***
   (2017, [Cambridge University
   Press](https://doi.org/10.1017/9781316104477)). Poisson point processes on
@@ -1046,78 +1005,63 @@ behaviour.
   2011, [De Gruyter](https://doi.org/10.1515/9783110250329)). The standard
   reference for the Dobrushin–Lanford–Ruelle theory of Gibbs measures. The
   first edition appeared in 1988.
-
 * **Wolfgang Woess, *Denumerable Markov Chains: Generating Functions,
   Boundary Theory, Random Walks on Trees*** (2009, [European Mathematical
   Society](https://doi.org/10.4171/071)). Countable Markov chains, Martin
   boundaries, and random walks on trees and groups. Woess's earlier *Random
   Walks on Infinite Graphs and Groups* (2000, Cambridge University Press) is
   the companion research monograph.
-
 * **Geoffrey Grimmett, *Percolation***. The research monograph on
-  bond and site percolation and critical behaviour. Distinct from the
-  short course *Probability on Graphs* listed below.
-
+  bond and site percolation and critical behaviour.
 * **Béla Bollobás and Oliver Riordan, *Percolation***. Critical probabilities, scaling, and
-  the geometry of clusters, including conformal invariance in the plane. Distinct from
-  Grimmett's *Percolation*.
-
+  the geometry of clusters, including conformal invariance in the plane. Not to be
+  confused with Grimmett's monograph of the same title, listed above.
 * **Krishna B. Athreya and Peter E. Ney, *Branching Processes***. The classical treatise on
   Galton–Watson processes, age-dependent branching, and continuous-time branching.
-
 * **Søren Asmussen and Heinrich Hering, *Branching Processes***. General branching
-  processes, random characteristics, and measure-valued limits. Distinct from Athreya and
-  Ney.
-
+  processes, random characteristics, and measure-valued limits. Not to be confused with
+  Athreya and Ney's book of the same title, listed above.
 * **Göran Högnäs and Arunava Mukherjea, *Probability Measures on Semigroups: Convolution
   Products, Random Walks, and Random Matrices*** (2nd ed., 2011,
   [Springer](https://doi.org/10.1007/978-0-387-77548-7)). Convolution of probability
   measures on semigroups, and the random walks and random matrices described by the
   convolution powers. The first edition appeared in 1995.
-
 * **Jim Pitman, *Combinatorial Stochastic Processes***. The Saint-Flour lectures on
   exchangeable partitions, random trees, and coalescents.
-
 * **Gregory F. Lawler, *Intersections of Random Walks***. Intersection probabilities, cut
-  points, and the capacity estimates behind them. The 2013 printing is an uncorrected
-  reprint of the 1991 monograph. Also listed in Section 8. Distinct from Lawler and Limic,
-  *Random Walk*, and from his book on conformally invariant processes.
+  points, and the capacity estimates behind them. First published in 1991; the 2013
+  printing reprints the 1996 softcover edition, which corrected misprints and added an
+  addendum. Also listed in Section 8.
 
 #### More recent works
 
 * **Gregory F. Lawler and Vlada Limic, *Random Walk: A Modern
   Introduction*** (2010, [Cambridge University Press](https://doi.org/10.1017/CBO9780511750854)). Potential theory,
-  intersection, and the heat kernel for random walk, written for
-  analysts.
-
+  intersection, and the heat kernel for random walk, with an emphasis on
+  error estimates in the approximation by Brownian motion.
 * **Russell Lyons and Yuval Peres, *Probability on Trees and Networks***
   (2016, [Cambridge University Press](https://doi.org/10.1017/9781316672815)). Branching processes, percolation,
   uniform spanning trees, and random walk on graphs, in one systematic
   book.
-
 * **Geoffrey Grimmett, *Probability on Graphs: Random Processes on
   Graphs and Lattices*** (2nd ed., 2018, [Cambridge University Press](https://doi.org/10.1017/9781108528986)). A
   short graduate course on percolation, random-cluster models, and
   related processes. The research monograph *Percolation* is listed under
   Foundational works.
-
 * **Michel Talagrand, *Mean Field Models for Spin Glasses*** (2 volumes,
   2011, [Springer](https://doi.org/10.1007/978-3-642-15202-3); [volume II](https://doi.org/10.1007/978-3-642-22253-5)). The rigorous
   theory of the Sherrington–Kirkpatrick model and its relatives, including
   the proof of the Parisi formula. A probabilist's treatise on a problem
   from physics.
-
 * **Dmitry Panchenko, *The Sherrington–Kirkpatrick Model*** (2013,
   [Springer](https://doi.org/10.1007/978-1-4614-6289-7)). Ultrametricity and
   the Parisi formula through the Ghirlanda–Guerra identities. The shorter
   route after Talagrand.
-
 * **Sacha Friedli and Yvan Velenik, *Statistical Mechanics of Lattice
   Systems: A Concrete Mathematical Introduction*** (2017, [Cambridge
   University Press](https://doi.org/10.1017/9781316882603)). Ising, Potts,
   and Gaussian free field models, Gibbs measures, phase transitions, and
   cluster expansions. A carefully written graduate text.
-
 
 ---
 
@@ -1145,99 +1089,80 @@ supply estimates for high-dimensional and function-indexed random objects.
 
 * **Michel Ledoux, *The Concentration of Measure Phenomenon***. The
   standard monograph: isoperimetric, semigroup, and entropy routes to
-  concentration.
-  Also listed in Section 14.
-
+  concentration. Also listed in Section 14.
 * **Michel Talagrand, *The Generic Chaining***. The earlier and
   shorter version of the programme completed in *Upper and Lower Bounds
   for Stochastic Processes*.
-
 * **Aad W. van der Vaart and Jon A. Wellner, *Weak Convergence and
   Empirical Processes***. The standard reference for empirical process
   theory, entropy conditions, and functional limit theorems.
-
 * **R. M. Dudley, *Uniform Central Limit Theorems*** (2nd ed., 2014,
   [Cambridge University Press](https://doi.org/10.1017/CBO9781139014830); first ed. 1999).
   Empirical processes, Vapnik–Červonenkis classes, and Donsker theorems,
   with the measurability questions handled carefully. A companion to van der
   Vaart–Wellner.
-
 * **David Pollard, *Convergence of Stochastic Processes*** and
   ***Empirical Processes: Theory and Applications***. Concise treatments of
   weak convergence, empirical processes, and maximal inequalities, with
   applications to asymptotic statistics.
-
 * **Michel Ledoux and Michel Talagrand, *Probability in Banach
-  Spaces***. The geometric-probabilistic core from which much of this
-  section grew. Also listed in Sections 6 and 17.
-
-* **Vitali D. Milman and Gideon Schechtman, *Asymptotic Theory of
-  Finite Dimensional Normed Spaces***. Concentration on the sphere and
-  the birth of asymptotic geometric analysis.
-  Also listed in Section 17.
+  Spaces***. Listed in full in Section 6. The geometric-probabilistic
+  core from which much of this section grew.
+* **Vitali D. Milman and Gideon Schechtman, *Asymptotic Theory of Finite
+  Dimensional Normed Spaces***. Listed in full in Section 17.
+  Concentration on the sphere and the birth of asymptotic geometric
+  analysis.
 
 #### More recent works
 
 * **Roman Vershynin, *High-Dimensional Probability: An Introduction
-  with Applications in Data Science*** (2018, Cambridge University
-  Press). Sub-Gaussian technique, random matrices, and chaining,
+  with Applications in Data Science*** (2018, [Cambridge University
+  Press](https://doi.org/10.1017/9781108231596)). Sub-Gaussian technique, random matrices, and chaining,
   presented as a toolkit.
-
 * **Stéphane Boucheron, Gábor Lugosi, and Pascal Massart,
   *Concentration Inequalities: A Nonasymptotic Theory of
-  Independence*** (2013, Oxford University Press). A systematic treatment of
+  Independence*** (2013, [Oxford University Press](https://doi.org/10.1093/acprof:oso/9780199535255.001.0001)). A systematic treatment of
   concentration inequalities, organised around entropy methods and related
   techniques.
-
 * **Ramon van Handel, *Probability in High Dimension*** (2016 version; freely
-  available graduate lecture notes, [Graduate lecture
+  available [graduate lecture
   notes](https://web.math.princeton.edu/~rvan/APC550.pdf)). A substantial
   online course on concentration, Gaussian processes, chaining, and random
-  matrices. Included as an explicitly labelled online resource with a coherent
-  graduate syllabus.
-
+  matrices.
 * **Joel A. Tropp, *An Introduction to Matrix Concentration
   Inequalities*** (2015, [Foundations and Trends in Machine Learning](https://doi.org/10.1561/9781601988393)).
   The short systematic account of matrix Bernstein and Chernoff bounds.
-
 * **Michel Talagrand, *Upper and Lower Bounds for Stochastic
-  Processes*** (2014, Springer). A research treatment of generic chaining,
+  Processes*** (2014, [Springer](https://doi.org/10.1007/978-3-642-54075-2)). A research treatment of generic chaining,
   majorizing measures, and bounds for suprema of stochastic processes.
-
 * **Evarist Giné and Richard Nickl, *Mathematical Foundations of
   Infinite-Dimensional Statistical Models*** (2016, [Cambridge University
   Press](https://doi.org/10.1017/CBO9781107337862)). Empirical processes, concentration, and nonparametric theory
   in the form closest to classical analysis.
-
 * **Shiri Artstein-Avidan, Apostolos Giannopoulos, and Vitali
   D. Milman, *Asymptotic Geometric Analysis I–II*** (2015 and 2021,
-  American Mathematical Society). The modern systematic treatment of
+  American Mathematical Society; [I](https://doi.org/10.1090/surv/202), [II](https://doi.org/10.1090/surv/261)). The modern systematic treatment of
   high-dimensional convexity, with strong analytic content.
-
 * **Bernard Bercu, Bernard Delyon, and Emmanuel Rio, *Concentration
   Inequalities for Sums and Martingales*** (2015,
   [Springer](https://doi.org/10.1007/978-3-319-22099-4)). A short research
   account of exponential bounds for sums and martingales. Useful where
   independence-based concentration must be replaced by conditional estimates.
-
 * **Sourav Chatterjee, *Superconcentration and Related Topics*** (2014,
   [Springer](https://doi.org/10.1007/978-3-319-03886-5)). Superconcentration,
   in which variance is substantially smaller than the Gaussian Poincaré
   bound, and its connections with disorder chaos and multiple valleys.
   Includes applications to spin glasses and other random models.
-
 * **Sergey G. Bobkov and Michel Ledoux, *One-dimensional Empirical
   Measures, Order Statistics, and Kantorovich Transport
-  Distances*** (2019, American Mathematical Society, Memoirs). A
+  Distances*** (2019, [American Mathematical Society](https://doi.org/10.1090/memo/1259), Memoirs). A
   research monograph where concentration, transport, and empirical
   measures meet.
-
 * **Ryan O'Donnell, *Analysis of Boolean Functions*** (2014, [Cambridge
   University Press](https://doi.org/10.1017/CBO9781139814782)). Fourier
   analysis on the discrete cube, influences, noise stability, and
   hypercontractivity. A major bridge from harmonic analysis and probability to
   discrete mathematics.
-
 * **Guillaume Aubrun and Stanisław J. Szarek, *Alice and Bob Meet
   Banach: The Interface of Asymptotic Geometric Analysis and Quantum
   Information Theory*** (2017, [American Mathematical Society](https://doi.org/10.1090/surv/223)). Listed in full in Section 13.
@@ -1254,11 +1179,9 @@ and combinatorics.
 
 * **Madan Lal Mehta, *Random Matrices***. The classical reference for
   exact computations and orthogonal-polynomial methods.
-
 * **Percy Deift, *Orthogonal Polynomials and Random Matrices: A
-  Riemann–Hilbert Approach***. The bridge to steepest-descent
-  asymptotics. Also listed in Sections 48 and 51.
-
+  Riemann–Hilbert Approach***. Listed in full in Section 51. The bridge
+  to steepest-descent asymptotics.
 * **Zhidong Bai and Jack W. Silverstein, *Spectral Analysis of Large
   Dimensional Random Matrices*** (2nd ed., 2010,
   [Springer](https://doi.org/10.1007/978-1-4419-0661-8); first ed. 2006). Limiting spectral
@@ -1269,47 +1192,39 @@ and combinatorics.
 #### More recent works
 
 * **Greg W. Anderson, Alice Guionnet, and Ofer Zeitouni, *An
-  Introduction to Random Matrices*** (2010, Cambridge University
-  Press). The standard graduate entry to random matrix theory, with
+  Introduction to Random Matrices*** (2010, [Cambridge University
+  Press](https://doi.org/10.1017/CBO9780511801334)). The standard graduate entry to random matrix theory, with
   free probability and large deviations included.
-
-* **Terence Tao, *Topics in Random Matrix Theory*** (2012, American
-  Mathematical Society). A more discursive complement with an emphasis
+* **Terence Tao, *Topics in Random Matrix Theory*** (2012, [American
+  Mathematical Society](https://doi.org/10.1090/gsm/132)). A more discursive complement with an emphasis
   on technique.
-
 * **Gernot Akemann, Jinho Baik, and Philippe Di Francesco (eds.), *The
   Oxford Handbook of Random Matrix Theory*** (2011, [Oxford University
   Press](https://doi.org/10.1093/oxfordhb/9780198744191.001.0001)).
   Survey chapters across the mathematical and physical sides of random
   matrix theory, offering an overview of its methods and applications.
-
 * **Peter J. Forrester, *Log-Gases and Random Matrices*** (2010,
   [Princeton University Press](https://doi.org/10.1515/9781400835416), London Mathematical Society Monographs). The large
   reference for exact random-matrix computations and log-gases.
-
 * **Leonid Pastur and Mariya Shcherbina, *Eigenvalue Distribution of Large
   Random Matrices*** (2011, [American Mathematical
   Society](https://doi.org/10.1090/surv/171), Mathematical Surveys and
   Monographs). Global and local eigenvalue statistics for Wigner, sample
   covariance, and unitary-invariant ensembles, by resolvent and
   orthogonal-polynomial methods. A large research reference.
-
 * **László Erdős and Horng-Tzer Yau, *A Dynamical Approach to Random
   Matrix Theory*** (2017, [American Mathematical Society](https://doi.org/10.1090/cln/028), Courant Lecture
   Notes). Local semicircle laws and universality through Dyson Brownian
   motion.
-
 * **Jinho Baik, Percy Deift, and Toufic Suidan, *Combinatorics and
   Random Matrix Theory*** (2016, [American Mathematical Society](https://doi.org/10.1090/gsm/172), Graduate
   Studies in Mathematics). Longest increasing subsequences, random
   matrices, and the Riemann–Hilbert method in combinatorial form.
   Also listed in Section 51.
-
 * **Elizabeth S. Meckes, *The Random Matrix Theory of the Classical
   Compact Groups*** (2019, [Cambridge University Press](https://doi.org/10.1017/9781108303453)). Eigenvalue
   distribution, concentration, and the classical groups, at graduate
   level.
-
 
 ---
 
@@ -1340,72 +1255,58 @@ evolution.
   Stochastic Calculus***. The standard graduate course in
   continuous-time stochastic analysis and stochastic differential
   equations.
-
 * **Daniel Revuz and Marc Yor, *Continuous Martingales and Brownian
   Motion***. The research-level standard: continuous martingales,
   local time, stochastic integration, excursions, and Bessel
   processes.
-
 * **L. C. G. Rogers and David Williams, *Diffusions, Markov Processes,
   and Martingales I–II***. A two-volume development of Markov processes,
   martingales, Itô calculus, and diffusion theory, with attention to the
   connections between these approaches.
-
 * **Nobuyuki Ikeda and Shinzo Watanabe, *Stochastic Differential
   Equations and Diffusion Processes***. A classical rigorous account
   of SDEs, diffusions, and stochastic flows, with the Japanese-school
   perspective on excursions and Malliavin calculus.
-
 * **Bernt Øksendal, *Stochastic Differential Equations***. The
   standard accessible first course.
-
 * **Philip Protter, *Stochastic Integration and Differential
   Equations***. The semimartingale approach, developed cleanly from
   the general theory.
-
 * **Jean Jacod and Albert N. Shiryaev, *Limit Theorems for Stochastic
   Processes***. The major technical reference for semimartingale
   convergence and the asymptotics of processes.
-
 * **Sheng-Wu He, Jia-Gang Wang, and Jia-An Yan, *Semimartingale Theory
   and Stochastic Calculus***. A large and precise reference, useful
   where Dellacherie–Meyer is hard to navigate.
-
 * **Hiroshi Kunita, *Stochastic Flows and Stochastic Differential
   Equations***. The standard monograph on stochastic flows of
   diffeomorphisms.
-
 * **Richard F. Bass, *Diffusions and Elliptic Operators***. Compact and
   analytically oriented, with the probabilistic–PDE dictionary made explicit.
   Bass's later *Stochastic Processes* is listed among the more recent works.
-
 * **Kiyosi Itô and Henry P. McKean, Jr., *Diffusion Processes and
   Their Sample Paths***. A classical account of one-dimensional diffusions,
   local times, and sample-path methods.
-
 * **David Applebaum, *Lévy Processes and Stochastic Calculus*** (2nd ed.,
   2009, [Cambridge University Press](https://doi.org/10.1017/CBO9780511809781)).
   A graduate treatment of Lévy processes, stochastic integration with jumps,
   and stochastic differential equations driven by Lévy noise.
-
 * **Iosif I. Gikhman and Anatoli V. Skorokhod, *The Theory of Stochastic
   Processes I–III***. The large Soviet treatise on general processes,
   Markov processes, and stochastic differential equations.
-
 * **Kai Lai Chung and Ruth J. Williams, *Introduction to Stochastic
   Integration***. A careful, compact account of stochastic integrals with
   respect to continuous and general semimartingales.
-
 * **Robert Sh. Liptser and Albert N. Shiryaev, *Theory of
   Martingales***. Semimartingales, predictable characteristics, and limit
   theorems, treated in full generality.
-
 * **Marc Yor, *Some Aspects of Brownian Motion, Part II: Some Recent Martingale Problems***.
-  ETH lectures on martingale problems for Brownian motion. The volume is Part II. Distinct
-  from Revuz and Yor, *Continuous Martingales and Brownian Motion*.
-
-* **Roger Mansuy and Marc Yor, *Aspects of Brownian Motion***. Further martingale and
-  excursion topics for Brownian motion, continuing Yor's ETH lectures.
+  ETH lectures on martingale problems for Brownian motion.
+* **Roger Mansuy and Marc Yor, *Aspects of Brownian Motion***. An updated version of the
+  first eleven chapters of Yor's ETH lecture notes *Some Aspects of Brownian Motion*
+  (Parts I and II): Gaussian subspaces, quadratic and exponential functionals, Bessel
+  processes and Ray–Knight theorems, windings, local times, and Brownian representations
+  of the Riemann zeta function.
 
 #### More recent works
 
@@ -1414,64 +1315,53 @@ evolution.
   A graduate course on Brownian motion, martingales, stochastic integration,
   and stochastic differential equations, with attention to sample-path
   properties.
-
 * **Richard F. Bass, *Stochastic Processes*** (2011, [Cambridge
   University Press](https://doi.org/10.1017/CBO9780511997044)). A compact
   graduate course on Brownian motion, martingales, stochastic calculus,
   Markov processes, and Lévy processes, with the analytic connections kept
   in view.
-
-* **Peter Mörters and Yuval Peres, *Brownian Motion*** (2010, Cambridge
-  University Press). A modern, geometric, sample-path-oriented account
+* **Peter Mörters and Yuval Peres, *Brownian Motion*** (2010, [Cambridge
+  University Press](https://doi.org/10.1017/CBO9780511750489)). A modern, geometric, sample-path-oriented account
   with strong coverage of dimension and fractal properties.
-
 * **René L. Schilling and Lothar Partzsch, *Brownian Motion: An Introduction
   to Stochastic Processes*** (2nd ed., 2014,
   [De Gruyter](https://doi.org/10.1515/9783110307306); with a chapter on
   simulation by Björn Böttcher). A detailed first course with complete proofs
   and a large exercise set.
-
 * **Paolo Baldi, *Stochastic Calculus: An Introduction Through Theory
   and Exercises*** (2017, [Springer](https://doi.org/10.1007/978-3-319-62226-2)). A graduate stochastic-calculus
   course organised around exercises.
   Also listed in Section 54.
-
 * **Fabrice Baudoin, *Diffusion Processes and Stochastic Calculus***
   (2014, [European Mathematical Society](https://doi.org/10.4171/133)). Diffusions from the analytic
   side, including rough-path and geometric remarks.
-
 * **Pierre Brémaud, *Probability Theory and Stochastic Processes*** (2020,
   [Springer](https://doi.org/10.1007/978-3-030-40183-2)). A broad graduate
   introduction connecting probability foundations with the principal classes
   of stochastic processes. Useful for readers seeking an applied orientation
   with complete mathematical arguments.
-
 * **Andrei N. Borodin, *Stochastic Processes*** (2017,
   [Springer](https://doi.org/10.1007/978-3-319-62310-8)). A substantial
   treatment of Brownian motion and diffusion functionals, with explicit
   distributional calculations. Useful beside books that emphasise abstract
   construction over computable examples.
-
 * **Grigorios A. Pavliotis, *Stochastic Processes and Applications: Diffusion
   Processes, the Fokker–Planck and Langevin Equations*** (2014,
   [Springer](https://doi.org/10.1007/978-1-4939-1323-7)). Diffusions studied
   together with their forward equations, invariant measures, and asymptotic
   behaviour. A useful bridge between probability and PDE.
-
 * **Weinan E, Tiejun Li, and Eric Vanden-Eijnden, *Applied Stochastic
   Analysis*** (2019, [American Mathematical
   Society](https://www.ams.org/books/gsm/199/)). Stochastic differential
   equations, Fokker–Planck equations, averaging, homogenization, and rare
   events. Included for its analytic treatment of stochastic models as well as
   its applications.
-
 * **Francesco Russo and Pierre Vallois, *Stochastic Calculus via
   Regularizations*** (2022,
   [Springer](https://doi.org/10.1007/978-3-031-09446-0)). Stochastic
   integration through regularization, including integrators beyond
   semimartingales. Connects Itô calculus, pathwise integration, and
   functional-analytic methods.
-
 * **Hiroshi Kunita, *Stochastic Flows and Jump-Diffusions*** (2019,
   [Springer](https://doi.org/10.1007/978-981-13-3801-4)). A research
   treatment of stochastic flows with jumps, extending the scope of Kunita's
@@ -1492,212 +1382,168 @@ processes.
   Characterization and Convergence***. A detailed reference for generators,
   martingale problems, weak convergence of processes, and approximation of
   Markov processes.
-
 * **Daniel W. Stroock and S. R. Srinivasa Varadhan, *Multidimensional
   Diffusion Processes***. The foundational martingale-problem
   treatment of diffusions.
-
 * **Claude Dellacherie and Paul-André Meyer, *Probabilities and
   Potential*** (multi-volume). The monumental general theory of
   processes and the potential-theoretic foundations of stochastic
   analysis.
-
 * **Kai Lai Chung and Zhongxin Zhao, *From Brownian Motion to
   Schrödinger's Equation***. A bridge between Markov processes,
   potential theory, and spectral analysis.
-
-* **Sidney C. Port and Charles J. Stone, *Brownian Motion and
-  Classical Potential Theory***. The probabilistic route into
-  classical potential theory.
-  Also listed in Section 38.
-
+* **Sidney C. Port and Charles J. Stone, *Brownian Motion and Classical
+  Potential Theory***. Listed in full in Section 38. The probabilistic
+  route into classical potential theory.
 * **Richard F. Bass, *Probabilistic Techniques in Analysis***. Brownian
   motion as a method in real analysis: harmonic functions, boundary
   behaviour, and capacity. Also listed in Section 38.
-
 * **Elton P. Hsu, *Stochastic Analysis on Manifolds*** (2002, [American
   Mathematical Society](https://doi.org/10.1090/gsm/038), Graduate Studies
   in Mathematics). Brownian motion on Riemannian manifolds, heat-kernel
   estimates, and analysis on path space. The standard text.
-
 * **David A. Levin, Yuval Peres, and Elizabeth L. Wilmer, *Markov Chains
   and Mixing Times*** (2nd ed. 2017 by Levin and Peres, with contributions
   by Wilmer). The standard reference for quantitative convergence of
   Markov chains.
-
 * **Sean Meyn and Richard L. Tweedie, *Markov Chains and Stochastic
   Stability***. General state-space Markov chains, ergodicity, and
   drift conditions.
-
 * **Michael B. Marcus and Jay Rosen, *Markov Processes, Gaussian Processes,
   and Local Times*** (2006, [Cambridge University
   Press](https://doi.org/10.1017/CBO9780511617997)). Local times of
   symmetric Markov processes studied through isomorphism theorems with
   Gaussian processes.
-
 * **Niels Jacob, *Pseudo Differential Operators and Markov Processes*** (3
   volumes, 2001–2005, [Imperial College
   Press](https://doi.org/10.1142/p245)). Feller semigroups generated by
   pseudodifferential operators, with the Fourier analysis, Dirichlet forms,
   and potential theory they require.
-
 * **Eugene B. Dynkin, *Markov Processes I–II***. The foundational
   treatise on the analytic theory of Markov processes, generators, and
   their connection with potential theory.
-
 * **Mark I. Freidlin and Alexander D. Wentzell, *Random Perturbations of
   Dynamical Systems***. Large deviations for small random perturbations,
   exit problems, and averaging. The founding monograph of the subject.
-
 * **Alexander D. Wentzell, *Limit Theorems on Large Deviations for Markov Stochastic
   Processes***. A specialised treatment of large-deviation limit theorems
   for Markov processes, complementing the joint monograph with Freidlin.
-
 * **Mark I. Freidlin, *Functional Integration and Partial Differential
   Equations***. Probabilistic representations of solutions of elliptic and
   parabolic equations, with wave-front propagation and small-parameter
   problems.
-
 * **Barry Simon, *Functional Integration and Quantum Physics***. Listed in full in Section 22. Path integrals and the Feynman–Kac formula as
   analysis.
-
 * **Sergio Albeverio, Raphael Høegh-Krohn, and Sonia Mazzucchi, *Mathematical Theory
   of Feynman Path Integrals: An Introduction***. Listed in full in Section 22. The
   oscillatory-integral construction of Feynman path integrals.
-
 * **Daniel W. Stroock, *Markov Processes from K. Itô's Perspective***.
   Markov processes built as solutions of stochastic differential equations
   in Itô's sense, with the analytic consequences drawn out.
-
 * **Daniel W. Stroock, *Partial Differential Equations for
   Probabilists***. Elliptic and parabolic theory developed by
   probabilistic methods, including heat kernel estimates.
-
 * **Thomas M. Liggett, *Interacting Particle Systems***. The founding
   monograph on the contact process, voter model, and exclusion process, and
   their ergodic theory.
-
 * **Claude Kipnis and Claudio Landim, *Scaling Limits of Interacting
   Particle Systems***. Hydrodynamic limits and fluctuations, through the
   entropy and relative-entropy methods.
-
 * **Herbert Spohn, *Large Scale Dynamics of Interacting Particles***.
   Hydrodynamic limits for classical mechanical and stochastic lattice
   systems, from the viewpoint of mathematical physics.
-
-* **Gregory F. Lawler, *Conformally Invariant Processes in the
-  Plane***. Schramm–Loewner evolution and the conformally invariant
-  processes that precede it. Also listed in Section 43. Distinct from
-  Lawler and Limic, *Random Walk*, listed in Section 6.
-
+* **Gregory F. Lawler, *Conformally Invariant Processes in the Plane***.
+  Schramm–Loewner evolution and the conformally invariant processes that
+  precede it. Also listed in Section 43.
 * **Gregory F. Lawler, *Intersections of Random Walks***. Listed in full in Section 6.
   Intersection probabilities for random walks.
-
 * **Kai Lai Chung and John B. Walsh, *Markov Processes, Brownian Motion, and Time
   Symmetry*** (2nd ed., 2005). Potential theory of Markov processes, time reversal, and
-  last-exit decompositions. Distinct from Chung and Zhao, *From Brownian Motion to
-  Schrödinger's Equation*, and from Chung and Williams, *Introduction to Stochastic
-  Integration*.
-
+  last-exit decompositions.
 * **Masao Nagasawa, *Schrödinger Equations and Diffusion Theory***. Diffusion processes
   associated with Schrödinger equations, through multiplicative functionals and
   transformation of drifts.
-
 * **Masao Nagasawa, *Stochastic Processes in Quantum Physics***. Stochastic processes as a
-  formulation of quantum dynamics. Distinct from his *Schrödinger Equations and Diffusion
-  Theory*.
+  formulation of quantum dynamics.
+* **Mu-Fa Chen, *Eigenvalues, Inequalities, and Ergodic Theory***. Spectral gaps, functional
+  inequalities, and rates of convergence to equilibrium for Markov processes.
 
 #### More recent works
 
 * **David Applebaum, *Probability on Compact Lie Groups*** (2014,
   [Springer](https://doi.org/10.1007/978-3-319-07842-7)). Probability, convolution, and analysis on compact groups.
   Also listed in Section 28.
-
 * **Pierre Brémaud, *Fourier Analysis and Stochastic Processes*** (2014,
   [Springer](https://doi.org/10.1007/978-3-319-09590-5)). Spectral
   representations of stationary processes, random signals, and Fourier methods
   in probability. Connects abstract stochastic-process theory with transform
   techniques.
-
 * **Thomas M. Liggett, *Continuous Time Markov Processes: An Introduction***
   (2010, [American Mathematical Society](https://doi.org/10.1090/gsm/113),
   Graduate Studies in Mathematics). Feller processes, generators, and
   semigroups, with interacting particle systems as the guiding examples.
-
 * **Vassili N. Kolokoltsov, *Markov Processes, Semigroups and Generators***
   (2011, [De Gruyter](https://doi.org/10.1515/9783110250114)). Markov
   processes organised through their generators and semigroups, including jump
   processes. Especially helpful for analysts approaching stochastic evolution
   through operator theory.
-
 * **Alexei Kulik, *Ergodic Behavior of Markov Processes: With Applications to
   Limit Theorems*** (2018, [De
   Gruyter](https://doi.org/10.1515/9783110458930)). Coupling, convergence to
   equilibrium, and limit theorems for Markov processes. Emphasises
   quantitative methods applicable beyond the elementary countable-state
   setting.
-
 * **Tomasz Komorowski, Claudio Landim, and Stefano Olla, *Fluctuations in
   Markov Processes: Time Symmetry and Martingale Approximation*** (2012,
   [Springer](https://doi.org/10.1007/978-3-642-29880-6)). Additive
   functionals, invariance principles, and martingale approximations for Markov
   processes. A research-level continuation of the basic ergodic theory of
   stochastic processes.
-
-* **Martin T. Barlow, *Random Walks and Heat Kernels on
-  Graphs*** (2017, Cambridge University Press). Random walks, potential
-  theory, and heat-kernel estimates on graphs, including the relationships
-  between geometric conditions and transition probabilities.
-  Also listed in Section 39.
-
+* **Martin T. Barlow, *Random Walks and Heat Kernels on Graphs*** (2017,
+  [Cambridge University Press](https://doi.org/10.1017/9781107415690)).
+  Listed in full in Section 39. Random walks, potential theory, and
+  heat-kernel estimates on graphs, including the relationships between
+  geometric conditions and transition probabilities.
 * **Zenghu Li, *Measure-Valued Branching Markov Processes*** (2011,
   [Springer](https://doi.org/10.1007/978-3-642-15004-3)). Superprocesses,
   branching mechanisms, and their connections with nonlinear equations. A
   systematic monograph on stochastic processes whose state space consists of
   measures.
-
 * **Yves Le Jan, *Markov Paths, Loops and Fields*** (2011, [Springer](https://doi.org/10.1007/978-3-642-21216-1),
   Lecture Notes in Mathematics). Loop measures, the Gaussian free field,
   and the isomorphism theorems, from the Saint-Flour lectures.
-
 * **Alain-Sol Sznitman, *Topics in Occupation Times and Gaussian Free
   Fields*** (2012, [European Mathematical Society](https://doi.org/10.4171/109), Zurich Lectures in
   Advanced Mathematics). Isomorphism theorems and cover times, in a
   short research course.
-
 * **Nathanaël Berestycki and Ellen Powell, *Gaussian Free Field and
   Liouville Quantum Gravity*** (2025, [Cambridge University Press](https://doi.org/10.1017/9781009405492),
   Cambridge Studies in Advanced Mathematics). A systematic introduction
   to the Gaussian free field and the random geometry built from it.
   Also listed in Section 43.
-
 * **Christophe Garban and Jeffrey E. Steif, *Noise Sensitivity of
   Boolean Functions and Percolation*** (2014, [Cambridge University
   Press](https://doi.org/10.1017/CBO9781139924160)). Noise sensitivity, hypercontractivity, and the Fourier
   analysis of percolation.
-
 * **Tadahisa Funaki, *Lectures on Random Interfaces*** (2016, [Springer](https://doi.org/10.1007/978-981-10-0849-8)).
   Scaling limits of pinned Gaussian interfaces and dynamic Young diagrams,
   stochastic interface equations, and sharp-interface limits for the
   stochastic Allen–Cahn equation.
   Also listed in Section 9.
-
 * **Amarjit Budhiraja and Paul Dupuis, *Analysis and Approximation of
   Rare Events: Representations and Weak Convergence Methods*** (2019,
   [Springer](https://doi.org/10.1007/978-1-4939-9579-0)). Variational
   representations and weak-convergence methods for large deviations of
   small-noise systems driven by Brownian motion and Poisson random measures,
   with applications to accelerated Monte Carlo.
-
 * **Pierre Collet, Servet Martínez, and Jaime San Martín, *Quasi-Stationary Distributions:
   Markov Chains, Diffusions and Dynamical Systems*** (2013,
   [Springer](https://doi.org/10.1007/978-3-642-33131-2)). Yaglom limits, quasi-stationary
   distributions, and the process conditioned on survival.
-
 * **Vassili N. Kolokoltsov, *Nonlinear Markov Processes and Kinetic Equations*** (2010,
   [Cambridge University Press](https://doi.org/10.1017/CBO9780511760303)). Nonlinear Markov
-  processes and the kinetic equations that describe their evolution. Distinct from his
-  *Markov Processes, Semigroups and Generators*.
+  processes and the kinetic equations that describe their evolution. His *Markov
+  Processes, Semigroups and Generators*, listed above, treats the linear theory.
 
 <a id="ckma-08c"></a>
 
@@ -1711,13 +1557,11 @@ and PDE.
 
 * **N. V. Krylov, *Controlled Diffusion Processes***. PDE and
   probabilistic methods in diffusion control.
-
 * **Wendell H. Fleming and H. Mete Soner, *Controlled Markov Processes and
   Viscosity Solutions*** (2nd ed., 2006,
   [Springer](https://doi.org/10.1007/0-387-31071-1); first ed. 1993). Stochastic optimal
   control through dynamic programming and viscosity solutions of
   Hamilton–Jacobi–Bellman equations. The standard graduate reference.
-
 * **Goran Peskir and Albert N. Shiryaev, *Optimal Stopping and
   Free-Boundary Problems***. The correspondence between optimal stopping
   and free-boundary problems for Markov processes.
@@ -1727,32 +1571,26 @@ and PDE.
 * **Nizar Touzi, *Optimal Stochastic Control, Stochastic Target
   Problems, and Backward SDE*** (2013, [Springer](https://doi.org/10.1007/978-1-4614-4286-8)). A research course on
   backward equations and stochastic control.
-
 * **Jianfeng Zhang, *Backward Stochastic Differential Equations: From
   Linear to Fully Nonlinear Theory*** (2017, [Springer](https://doi.org/10.1007/978-1-4939-7256-2)). The analytic
   theory of BSDEs, through fully nonlinear equations.
-
 * **Étienne Pardoux and Aurel Răşcanu, *Stochastic Differential Equations,
   Backward SDEs, Partial Differential Equations*** (2014,
   [Springer](https://doi.org/10.1007/978-3-319-05714-9)). Forward and
   backward SDEs with their PDE connections, including reflected equations
   and multivalued drifts.
-
 * **René Carmona and François Delarue, *Probabilistic Theory of Mean
   Field Games with Applications*** (2 volumes, 2018, Springer; [I](https://doi.org/10.1007/978-3-319-58920-6), [II](https://doi.org/10.1007/978-3-319-56436-4)). The
   large probabilistic treatment of mean-field games.
-
 * **Pierre Cardaliaguet, François Delarue, Jean-Michel Lasry, and
   Pierre-Louis Lions, *The Master Equation and the Convergence Problem
   in Mean Field Games*** (2019, [Princeton University Press](https://doi.org/10.23943/princeton/9780691190716.001.0001), Annals of
   Mathematics Studies). The master equation and the passage from finite
   to infinite player games.
   Also listed in Section 33.
-
 * **Alain Bensoussan, Jens Frehse, and Phillip Yam, *Mean Field Games
   and Mean Field Type Control Theory*** (2013, [Springer](https://doi.org/10.1007/978-1-4614-8508-7)). The
   PDE-and-control route into the same subject.
-
 
 ---
 
@@ -1782,21 +1620,17 @@ approximation.
 * **David Nualart, *The Malliavin Calculus and Related Topics***. The
   standard reference for the stochastic calculus of variations, Wiener
   chaos, and smoothness of densities.
-
 * **Paul Malliavin, *Stochastic Analysis*** and ***Integration and
   Probability***. The first is the originator's own account of
   Malliavin calculus, geometric and demanding; the second is a general
   course in measure, integration, and probability.
-
 * **Giuseppe Da Prato, *An Introduction to Infinite-Dimensional
   Analysis***. Gaussian measures, Sobolev spaces on Wiener space, and
   Ornstein–Uhlenbeck semigroups, compactly presented.
-
 * **Giuseppe Da Prato, *Introduction to Stochastic Analysis and
   Malliavin Calculus*** (3rd ed., 2014, [Edizioni della Normale](https://doi.org/10.1007/978-88-7642-499-1); first ed. 2007). Gaussian
   analysis on Hilbert space and the Malliavin calculus, in a short
   course.
-
 * **Hui-Hsiung Kuo, *Gaussian Measures in Banach Spaces***. Abstract
   Wiener spaces and the calculus on them; the standard short entry point
   to infinite-dimensional Gaussian analysis.
@@ -1806,43 +1640,38 @@ approximation.
 * **David Nualart and Eulalia Nualart, *Introduction to Malliavin
   Calculus*** (2018, [Cambridge University Press](https://doi.org/10.1017/9781139856485)). A graduate textbook,
   shorter and more introductory than Nualart's research monograph.
-
 * **Vladimir I. Bogachev, *Differentiable Measures and the Malliavin
-  Calculus*** (2010, American Mathematical Society). Differentiability of
-  measures on infinite-dimensional spaces and its role in the foundations of
-  Malliavin calculus. Complements the stochastic-calculus approach in
-  Nualart.
-  Also listed in Section 4.
-
+  Calculus*** (2010, [American Mathematical
+  Society](https://doi.org/10.1090/surv/164)). Differentiability of
+  measures on infinite-dimensional spaces and its role in the
+  foundations of Malliavin calculus. Complements the stochastic-calculus
+  approach in Nualart. Also listed in Section 4.
 * **Yaozhong Hu, *Analysis on Gaussian Spaces*** (2016, [World
   Scientific](https://doi.org/10.1142/10094)). Gaussian measures, chaos
   expansions, Malliavin calculus, and hypercontractivity, with applications
   to stochastic equations.
-
 * **Hiroyuki Matsumoto and Setsuo Taniguchi, *Stochastic Analysis: Itô and Malliavin Calculus in
   Tandem*** (2016,
   [Cambridge University Press](https://doi.org/10.1017/9781316492888)). Itô
   and Malliavin calculus developed together from the viewpoint of path space.
   Includes Wiener-space distributions and applications to semiclassical
   analysis.
-
 * **Ivan Nourdin and Giovanni Peccati, *Normal Approximations with Malliavin
   Calculus: From Stein's Method to Universality*** (2012, [Cambridge
   University Press](https://doi.org/10.1017/CBO9781139084659)). The
   Malliavin–Stein method, Gaussian approximation on Wiener chaos, and
   universality. A research monograph connecting stochastic calculus with
   quantitative limit theory.
-
 * **Horst Osswald, *Malliavin Calculus for Lévy Processes and
   Infinite-Dimensional Brownian Motion*** (2012, [Cambridge University
   Press](https://doi.org/10.1017/CBO9781139060110)). Malliavin calculus beyond
   finite-dimensional Brownian motion, including jump processes. A specialised
   complement to the standard Wiener-space textbooks.
-
 * **Vlad Bally, Lucia Caramellino, and Rama Cont, *Stochastic Integration by
-  Parts and Functional Itô Calculus*** (2016, [Birkhäuser](https://doi.org/10.1007/978-3-319-27128-6)). Integration by
-  parts for jump processes, and the functional Itô calculus.
-
+  Parts and Functional Itô Calculus*** (2016, [Birkhäuser](https://doi.org/10.1007/978-3-319-27128-6)). Integration-by-parts
+  formulas, Malliavin calculus, and regularity of probability laws (Bally and
+  Caramellino), and the functional Itô calculus with functional Kolmogorov equations
+  (Cont).
 * **Nicolas Bouleau and Laurent Denis, *Dirichlet Forms Methods for Poisson
   Point Measures and Lévy Processes: With Emphasis on the
   Creation–Annihilation Techniques*** (2015,
@@ -1862,7 +1691,6 @@ evolution.
 
 * **Terry J. Lyons and Zhongmin Qian, *System Control and Rough
   Paths***. The original systematic account of rough path theory.
-
 * **Terry J. Lyons, Michael Caruana, and Thierry Lévy, *Differential
   Equations Driven by Rough Paths*** (2007,
   [Springer](https://doi.org/10.1007/978-3-540-71285-5), Lecture Notes in
@@ -1872,12 +1700,11 @@ evolution.
 #### More recent works
 
 * **Peter K. Friz and Nicolas B. Victoir, *Multidimensional Stochastic
-  Processes as Rough Paths*** (2010, Cambridge University Press). The
+  Processes as Rough Paths*** (2010, [Cambridge University Press](https://doi.org/10.1017/CBO9780511845079)). The
   comprehensive reference, with the Gaussian theory developed in
   detail.
-
 * **Peter K. Friz and Martin Hairer, *A Course on Rough Paths*** (2014,
-  Springer; 2nd ed. 2020). The standard modern course, including an
+  [Springer](https://doi.org/10.1007/978-3-319-08332-2); 2nd ed., 2020, [Springer](https://doi.org/10.1007/978-3-030-41556-3)). The standard modern course, including an
   introduction to regularity structures.
 
 <a id="ckma-09c"></a>
@@ -1893,31 +1720,25 @@ behaviour.
 * **Giuseppe Da Prato and Jerzy Zabczyk, *Stochastic Equations in
   Infinite Dimensions***. The basic analytic reference for SPDE via
   semigroups and infinite-dimensional stochastic integration.
-
 * **Giuseppe Da Prato and Jerzy Zabczyk, *Ergodicity for Infinite
   Dimensional Systems***. Invariant measures and long-time behaviour
   of stochastic evolution equations.
-
 * **Claudia Prévôt and Michael Röckner, *A Concise Course on
   Stochastic Partial Differential Equations***. The variational
   approach, short and usable.
-
 * **Szymon Peszat and Jerzy Zabczyk, *Stochastic Partial Differential
   Equations with Lévy Noise***. The standard reference beyond Gaussian
   forcing.
-
 * **John B. Walsh, *An Introduction to Stochastic Partial Differential
   Equations*** (1986, lecture course in *École d'Été de Probabilités de
   Saint-Flour XIV — 1984*,
   [Springer](https://doi.org/10.1007/BFb0074920), Lecture Notes in Mathematics
   1180, pp. 265–439). The Saint-Flour notes that introduced the random-field
   approach.
-
 * **Robert C. Dalang, Davar Khoshnevisan, Carl Mueller, David Nualart,
   and Yimin Xiao, *A Minicourse on Stochastic Partial Differential
   Equations*** (Davar Khoshnevisan and Firas Rassoul-Agha, eds.; 2009, [Springer](https://doi.org/10.1007/978-3-540-85994-9), Lecture Notes in Mathematics). Five
   short courses that still orient the subject.
-
 * **Helge Holden, Bernt Øksendal, Jan Ubøe, and Tusheng Zhang, *Stochastic
   Partial Differential Equations: A Modeling, White Noise Functional
   Approach*** (2nd ed., 2010,
@@ -1930,33 +1751,26 @@ behaviour.
 * **Wei Liu and Michael Röckner, *Stochastic Partial Differential
   Equations: An Introduction*** (2015, [Springer](https://doi.org/10.1007/978-3-319-22354-4)). The variational
   approach to SPDE, as a textbook continuing Prévôt–Röckner.
-
 * **Sergey V. Lototsky and Boris L. Rozovsky, *Stochastic Partial Differential
   Equations*** (2017, [Springer](https://doi.org/10.1007/978-3-319-58647-2)).
   A systematic graduate account of stochastic PDE, including variational and
   Wiener-chaos methods. Broadens the approaches available beside the Da
   Prato–Zabczyk and Liu–Röckner texts.
-
 * **Davar Khoshnevisan, *Analysis of Stochastic Partial Differential
   Equations*** (2014, [American Mathematical Society](https://doi.org/10.1090/cbms/119), CBMS Regional
   Conference Series). The random-field approach: intermittency, peaks,
   and the parabolic Anderson model.
-
 * **Feng-Yu Wang, *Harnack Inequalities for Stochastic Partial
   Differential Equations*** (2013, [Springer](https://doi.org/10.1007/978-1-4614-7934-5)). Coupling and Harnack
   inequalities for stochastic evolution equations.
-
 * **Lorenzo Zambotti, *Random Obstacle Problems*** (2017, [Springer](https://doi.org/10.1007/978-3-319-52096-4),
   Lecture Notes in Mathematics). Reflected SPDEs and the contact set,
   from the Saint-Flour lectures.
-
 * **Tadahisa Funaki, *Lectures on Random Interfaces*** (2016, [Springer](https://doi.org/10.1007/978-981-10-0849-8)).
   Listed in full in Section 8. Random-interface models, their scaling limits, and
   associated stochastic evolution equations.
-
 * **Sergei B. Kuksin and Armen Shirikyan, *Mathematics of Two-Dimensional
   Turbulence*** (2012, [Cambridge University Press](https://doi.org/10.1017/CBO9781139137119)). Listed in full in Section 34. The stochastic Navier–Stokes equation as a dynamical system.
-
 
 ---
 
@@ -1989,9 +1803,8 @@ mixing is also treated in Section 8.
   Number Theory***. The founding text of the ergodic-theoretic
   approach to Szemerédi-type problems.
 * **Anatole Katok and Boris Hasselblatt, *Introduction to the Modern
-  Theory of Dynamical Systems***. The standard large graduate
-  reference for smooth and hyperbolic dynamics.
-  Also listed in Section 31.
+  Theory of Dynamical Systems***. Listed in full in Section 31. The
+  standard large graduate reference for smooth and hyperbolic dynamics.
 * **Jon Aaronson, *An Introduction to Infinite Ergodic Theory***. The
   standard monograph for conservative transformations with infinite
   invariant measure.
@@ -2062,15 +1875,13 @@ mixing is also treated in Section 8.
 * **Klaus Schmidt, *Dynamical Systems of Algebraic Origin***.
   Multidimensional actions by automorphisms of compact groups; entropy,
   mixing, and rigidity.
-* **Mu-Fa Chen, *Eigenvalues, Inequalities, and Ergodic Theory***. Spectral gaps, functional
-  inequalities, and rates of convergence to equilibrium for Markov processes.
 
 ### More recent works
 
 #### Textbooks and general theory
 
 * **Manfred Einsiedler and Thomas Ward, *Ergodic Theory with a View
-  Towards Number Theory*** (2011, Springer). A graduate introduction to
+  Towards Number Theory*** (2011, [Springer](https://doi.org/10.1007/978-0-85729-021-2)). A graduate introduction to
   ergodic theory with applications to number theory, including homogeneous
   dynamics and equidistribution.
 * **Marcelo Viana and Krerley Oliveira, *Foundations of Ergodic Theory***
@@ -2086,7 +1897,7 @@ mixing is also treated in Section 8.
   [Springer](https://doi.org/10.1007/978-1-4471-7287-1)). A short course bridging topological and measurable
   dynamics.
 * **Tanja Eisner, Bálint Farkas, Markus Haase, and Rainer Nagel,
-  *Operator Theoretic Aspects of Ergodic Theory*** (2015, Springer).
+  *Operator Theoretic Aspects of Ergodic Theory*** (2015, [Springer](https://doi.org/10.1007/978-3-319-16898-2)).
   Ergodic theorems developed through operator theory, with applications of
   spectral methods, semigroups, and Banach lattices.
 * **David Kerr and Hanfeng Li, *Ergodic Theory: Independence and
@@ -2106,7 +1917,7 @@ mixing is also treated in Section 8.
 #### Smooth and hyperbolic dynamics
 
 * **Luis Barreira and Yakov Pesin, *Introduction to Smooth Ergodic
-  Theory*** (2013, American Mathematical Society). Lyapunov exponents,
+  Theory*** (2013, [American Mathematical Society](https://doi.org/10.1090/gsm/148)). Lyapunov exponents,
   entropy, and Pesin theory.
 * **Marcelo Viana, *Lectures on Lyapunov Exponents*** (2014, [Cambridge
   University Press](https://doi.org/10.1017/CBO9781139976602)). The multiplicative ergodic theorem and its
@@ -2138,7 +1949,7 @@ mixing is also treated in Section 8.
 #### Group actions, homogeneous dynamics, and combinatorics
 
 * **Bernard Host and Bryna Kra, *Nilpotent Structures in Ergodic
-  Theory*** (2018, American Mathematical Society). Characteristic factors,
+  Theory*** (2018, [American Mathematical Society](https://doi.org/10.1090/surv/236)). Characteristic factors,
   nilsystems, and higher-order recurrence, with applications to multiple
   ergodic averages.
 * **Yves Benoist and Jean-François Quint, *Random Walks on Reductive
@@ -2146,8 +1957,9 @@ mixing is also treated in Section 8.
   on homogeneous spaces, stationary measures, and stiffness.
   Also listed in Section 28.
 * **Anatole Katok and Viorel Niţică, *Rigidity in Higher Rank Abelian
-  Group Actions***, volume I (2011, [Cambridge University Press](https://doi.org/10.1017/CBO9780511803550)). KAM
-  and measure rigidity for higher-rank abelian actions.
+  Group Actions***, volume I, *Introduction and Cocycle Problem* (2011, [Cambridge University Press](https://doi.org/10.1017/CBO9780511803550)).
+  Principal classes of algebraic actions, the preparatory analysis, and
+  cocycle rigidity and cohomology for higher-rank abelian actions.
   Also listed in Section 31.
 * **Alexander S. Kechris, *Global Aspects of Ergodic Group Actions***
   (2010, [American Mathematical Society](https://doi.org/10.1090/surv/160)). Listed in full in Section 3.
@@ -2223,10 +2035,9 @@ derivatives, measure, and geometry.
 * **Rolf Schneider, *Convex Bodies: The Brunn–Minkowski Theory***.
   Listed in full in Section 12.
 * **Richard J. Gardner, *Geometric Tomography***. Listed in full in Section 37.
-* **G. Pólya and G. Szegő, *Problems and Theorems in Analysis
-  I–II***. A problem collection developing classical inequalities and the
-  methods used to prove them.
-  Also listed in Section 54.
+* **G. Pólya and G. Szegő, *Problems and Theorems in Analysis I–II***.
+  Listed in full in Section 54. A problem collection developing
+  classical inequalities and the methods used to prove them.
 * **G. Pólya and G. Szegő, *Isoperimetric Inequalities in Mathematical
   Physics***. The classical source for the shape-optimization
   tradition in eigenvalue and capacity inequalities.
@@ -2247,9 +2058,9 @@ derivatives, measure, and geometry.
   by Kufner and Persson, 2003). The updated reference for weighted
   Hardy inequalities and their constants.
 * **Vladimir G. Maz'ya, *Sobolev Spaces, with Applications to Elliptic
-  Partial Differential Equations***. Also listed in Sections 14 and 26. Sobolev and
-  capacitary inequalities, sharp constants, and necessary and sufficient
-  conditions for embeddings.
+  Partial Differential Equations***. Listed in full in Section 26.
+  Sobolev and capacitary inequalities, sharp constants, and necessary
+  and sufficient conditions for embeddings.
 * **Dorin Bucur and Giuseppe Buttazzo, *Variational Methods in Shape
   Optimization Problems***. Where inequalities for eigenvalues and
   capacities become a variational subject.
@@ -2314,10 +2125,21 @@ cross-subject index.
 * **Jonathan M. Borwein and Adrian S. Lewis, *Convex Analysis and
   Nonlinear Optimization***. Convex duality, cones, entropy, and
   modern applications, with unusually good exercises.
+* **Stephen Boyd and Lieven Vandenberghe, *Convex Optimization***
+  (2004, [Cambridge University
+  Press](https://doi.org/10.1017/CBO9780511804441)). Convex sets and
+  functions, Lagrange duality, conic and semidefinite programming, and
+  interior-point methods, with many applications. The standard course text
+  on convex optimization.
+* **Yurii Nesterov, *Lectures on Convex Optimization*** (2004 as
+  *Introductory Lectures on Convex Optimization: A Basic Course*; 2nd ed.,
+  2018, [Springer](https://doi.org/10.1007/978-3-319-91578-4), Springer
+  Optimization and Its Applications). Lower complexity bounds, optimal
+  gradient methods, smoothing, and self-concordant barriers for
+  interior-point methods.
 * **Ivar Ekeland and Roger Temam, *Convex Analysis and Variational
   Problems***. The classic bridge from convex duality to PDE and the
-  calculus of variations.
-  Also listed in Section 36.
+  calculus of variations. Also listed in Section 36.
 * **Hedy Attouch, Giuseppe Buttazzo, and Gérard Michaille, *Variational
   Analysis in Sobolev and BV Spaces: Applications to PDEs and
   Optimization*** (2006; 2nd ed., 2014, [SIAM](https://doi.org/10.1137/1.9781611973488)). Convex and nonsmooth analysis
@@ -2358,6 +2180,11 @@ cross-subject index.
   Mathematical Society](https://doi.org/10.1090/gsm/054), Graduate Studies
   in Mathematics). Convex sets, duality, ellipsoids, lattices, and
   semidefinite relaxations. A problem-rich graduate text.
+* **Roger Webster, *Convexity*** (1994, [Oxford University
+  Press](https://doi.org/10.1093/oso/9780198531470.001.0001)). Convex sets
+  and polytopes, linear programming, convex functions, and mixed volumes, with
+  solutions to the exercises. An introductory graduate text on the
+  geometric side of convexity.
 * **Robert R. Phelps, *Lectures on Choquet's Theorem*** and ***Convex
   Functions, Monotone Operators and Differentiability***. The two
   standard short monographs on integral representation and on
@@ -2371,7 +2198,7 @@ cross-subject index.
   the Fitzpatrick function, and the geometry of monotone operators.
   Also listed in Section 35.
 * **Gustave Choquet, *Lectures on Analysis I–III***. Idiosyncratic and
-  wide-ranging, with the original treatment of integral representation
+  wide-ranging, with Choquet's own account of integral representation
   and capacities.
 * **Jean-Pierre Aubin and Hélène Frankowska, *Set-Valued Analysis***.
   Limits, continuity, derivatives, and measurable selections of set-valued
@@ -2388,6 +2215,11 @@ cross-subject index.
   Methods and Examples*** (2015, [Springer](https://doi.org/10.1007/978-3-319-13710-0)). A short Banach-space course
   aimed at evolution equations and algorithms.
   Also listed in Section 35.
+* **Amir Beck, *First-Order Methods in Optimization*** (2017,
+  [SIAM](https://doi.org/10.1137/1.9781611974997), MOS-SIAM Series on
+  Optimization). Subgradients, conjugacy, and proximal operators, with
+  complete convergence analyses of subgradient, mirror-descent,
+  proximal-gradient, conditional-gradient, and splitting methods.
 * **Frank H. Clarke, *Functional Analysis, Calculus of Variations and
   Optimal Control*** (2013, [Springer](https://doi.org/10.1007/978-1-4471-4820-3), Graduate Texts in Mathematics).
   A graduate course connecting functional analysis, nonsmooth calculus, the
@@ -2397,24 +2229,26 @@ cross-subject index.
   [Springer](https://doi.org/10.1007/978-3-030-50180-8), Graduate Texts in Mathematics). A modern graduate course in
   convex geometry, shorter than Schneider.
 * **Heinz H. Bauschke and Patrick L. Combettes, *Convex Analysis and
-  Monotone Operator Theory in Hilbert Spaces*** (2011; 2nd ed., 2017,
-  Springer). The modern Hilbert-space synthesis of convexity, monotone
-  operators, projections, and proximal methods.
-  Also listed in Section 35.
+  Monotone Operator Theory in Hilbert Spaces*** (2011,
+  [Springer](https://doi.org/10.1007/978-1-4419-9467-7); 2nd ed., 2017,
+  [Springer](https://doi.org/10.1007/978-3-319-48311-5)). The modern
+  Hilbert-space synthesis of convexity, monotone operators, projections,
+  and proximal methods. Also listed in Section 35.
 * **Jonathan M. Borwein and Jon D. Vanderwerff, *Convex Functions:
-  Constructions, Characterizations and Counterexamples*** (2010, Cambridge
-  University Press). The infinite-dimensional theory and its pathologies.
-* **Barry Simon, *Convexity: An Analytic Viewpoint*** (2011, Cambridge
-  University Press). Choquet theory, Krein–Milman, Loewner and Bernstein
+  Constructions, Characterizations and Counterexamples*** (2010, [Cambridge
+  University Press](https://doi.org/10.1017/CBO9781139087322)). The infinite-dimensional theory and its pathologies.
+* **Barry Simon, *Convexity: An Analytic Viewpoint*** (2011, [Cambridge
+  University Press](https://doi.org/10.1017/CBO9780511910135)). Choquet theory, Krein–Milman, Loewner and Bernstein
   theorems, and convexity as it is actually used by analysts.
 * **Jean-Paul Penot, *Calculus Without Derivatives*** (2013, [Springer](https://doi.org/10.1007/978-1-4614-4538-8),
   Graduate Texts in Mathematics). A systematic nonsmooth calculus in
   Banach spaces.
   Also listed in Section 35.
 * **Boris S. Mordukhovich, *Variational Analysis and Applications***
-  (2018, [Springer](https://doi.org/10.1007/978-3-319-92775-6)). A synthesis
-  of variational analysis and its applications, distinct from the 2006
-  two-volume treatise.
+  (2018, [Springer](https://doi.org/10.1007/978-3-319-92775-6)). A one-volume
+  synthesis of variational analysis and its applications, later than his
+  two-volume *Variational Analysis and Generalized Differentiation*, listed
+  above.
 * **Alexander D. Ioffe, *Variational Analysis of Regular Mappings:
   Theory and Applications*** (2017, [Springer](https://doi.org/10.1007/978-3-319-64277-2)). Metric regularity, error
   bounds, and the inverse-function theory of set-valued maps.
@@ -2464,23 +2298,25 @@ references are included for their analytic and geometric content.
   Use***. Relative entropy, monotonicity under completely positive
   maps, and the operator-inequality background to quantum statistical
   mechanics.
-* **Karl Löwner's original work, as presented in Bhatia and in
-  Donoghue**: **William F. Donoghue, Jr., *Monotone Matrix Functions
-  and Analytic Continuation***. The classical monograph linking
-  operator monotonicity to Pick functions and Nevanlinna
+* **Ingemar Bengtsson and Karol Życzkowski, *Geometry of Quantum States:
+  An Introduction to Quantum Entanglement*** (2006; 2nd ed., 2017,
+  [Cambridge University Press](https://doi.org/10.1017/9781139207010)). The
+  convex and differential geometry of quantum state spaces, positive and
+  completely positive maps, and entanglement.
+* **William F. Donoghue, Jr., *Monotone Matrix Functions and Analytic
+  Continuation***. The classical monograph on Löwner's theorem (1934),
+  linking operator monotonicity to Pick functions and Nevanlinna
   representation.
 * **Barry Simon, *Trace Ideals and Their Applications***. Schatten
-  classes, determinants, and trace inequalities; the standard
-  reference for the infinite-dimensional case.
-  Also listed in Section 22.
+  classes, determinants, and trace inequalities; the standard reference
+  for the infinite-dimensional case. Also listed in Section 22.
 * **Israel Gohberg, Seymour Goldberg, and Naum Krupnik, *Traces and Determinants of Linear
   Operators***. Traces and determinants beyond the trace class, including the regularized
-  determinants used in spectral theory. Distinct from Gohberg and Krein and from Gohberg and
-  Krupnik, *One-Dimensional Linear Singular Integral Equations*.
+  determinants used in spectral theory.
 * **Israel Gohberg and Mark G. Krein, *Introduction to the Theory of
-  Linear Nonselfadjoint Operators***. Singular numbers, s-number
-  inequalities, and the classical theory of trace-class perturbation.
-  Also listed in Section 21.
+  Linear Nonselfadjoint Operators***. Listed in full in Section 21.
+  Singular numbers, s-number inequalities, and the classical theory of
+  trace-class perturbation.
 * **Albrecht Pietsch, *Eigenvalues and s-Numbers***. The systematic
   theory of approximation numbers and eigenvalue estimates for
   operator ideals.
@@ -2503,7 +2339,7 @@ references are included for their analytic and geometric content.
 ### More recent works
 
 * **Fumio Hiai and Dénes Petz, *Introduction to Matrix Analysis and
-  Applications*** (2014, Springer). Matrix monotonicity, convexity,
+  Applications*** (2014, [Springer](https://doi.org/10.1007/978-3-319-04150-6)). Matrix monotonicity, convexity,
   entropy, and the noncommutative inequalities used in quantum
   information.
 * **Eric Carlen, *Trace Inequalities and Quantum Entropy: An Introductory
@@ -2513,7 +2349,7 @@ references are included for their analytic and geometric content.
   trace inequalities and quantum entropy, connecting operator convexity with
   inequalities used in quantum statistical mechanics.
 * **Barry Simon, *Loewner's Theorem on Monotone Matrix Functions***
-  (2019, Springer). A modern book-length treatment with many proofs of the
+  (2019, [Springer](https://doi.org/10.1007/978-3-030-22422-6)). A modern book-length treatment with many proofs of the
   central theorem and its surroundings.
 * **Shaun M. Fallat and Charles R. Johnson, *Totally Nonnegative Matrices***
   (2011, [Princeton University
@@ -2536,14 +2372,22 @@ references are included for their analytic and geometric content.
   completely positive maps, decomposability, and their structure. A
   specialised monograph connecting operator inequalities with
   operator-algebraic quantum theory.
+* **Teiko Heinosaari and Mário Ziman, *The Mathematical Language of
+  Quantum Theory: From Uncertainty to Entanglement*** (2012, [Cambridge
+  University Press](https://doi.org/10.1017/CBO9781139031103)). States,
+  effects, observables, and channels as convex and operator-theoretic
+  objects, in finite and infinite dimensions.
+* **John Watrous, *The Theory of Quantum Information*** (2018, [Cambridge
+  University Press](https://doi.org/10.1017/9781316848142)). A rigorous
+  finite-dimensional treatment of channels, completely positive maps,
+  entropy inequalities, and semidefinite-programming methods.
 * **Mihály Bakonyi and Hugo J. Woerdeman, *Matrix Completions, Moments, and
-  Sums of Hermitian Squares*** (2011, Princeton University Press). Positive
+  Sums of Hermitian Squares*** (2011, [Princeton University Press](https://doi.org/10.1515/9781400840595)). Positive
   definite completions, moment problems, and sums of squares, treated
   together.
 * **Fumio Hiai, *Quantum f-Divergences in von Neumann Algebras: Reversibility of Quantum
   Operations*** (2021, [Springer](https://doi.org/10.1007/978-981-33-4199-9)). Standard
   f-divergences on von Neumann algebras and the reversibility of quantum operations.
-  Distinct from Hiai and Petz, *Introduction to Matrix Analysis and Applications*.
 
 ---
 
@@ -2563,35 +2407,29 @@ may support several of these viewpoints.
 ### Foundational works
 
 * **Vladimir G. Maz'ya, *Sobolev Spaces, with Applications to Elliptic
-  Partial Differential Equations*** (first edition 1985 as *Sobolev
-  Spaces*; 2nd, expanded ed. 2011). The encyclopedic source for
-  Sobolev, capacitary, and isoperimetric-type inequalities, with
-  necessary and sufficient conditions rather than merely sufficient
+  Partial Differential Equations***. Listed in full in Section 26. The
+  source for Sobolev, capacitary, and isoperimetric-type inequalities,
+  with necessary and sufficient conditions rather than merely sufficient
   ones.
-  Also listed in Sections 11 and 26.
-* **Laurent Saloff-Coste, *Aspects of Sobolev-Type
-  Inequalities***. Sobolev, Nash, Poincaré, and heat-kernel
-  inequalities on manifolds and graphs.
-  Also listed in Section 39.
-* **Alexander Grigor'yan, *Heat Kernel and Analysis on
-  Manifolds***. Functional inequalities as they control heat kernels
-  and volume growth.
-  Also listed in Sections 39 and 52.
+* **Laurent Saloff-Coste, *Aspects of Sobolev-Type Inequalities***.
+  Sobolev, Nash, Poincaré, and heat-kernel inequalities on manifolds and
+  graphs. Also listed in Section 39.
+* **Alexander Grigor'yan, *Heat Kernel and Analysis on Manifolds***.
+  Listed in full in Section 52. Functional inequalities as they control
+  heat kernels and volume growth.
 * **Thierry Aubin, *Nonlinear Analysis on Manifolds: Monge–Ampère
-  Equations*** and ***Some Nonlinear Problems in Riemannian
-  Geometry***. Sharp Sobolev constants, best-constant problems, and
-  the Yamabe circle of ideas.
-* **Emmanuel Hebey, *Nonlinear Analysis on Manifolds: Sobolev Spaces
-  and Inequalities***. The functional-analytic complement to Aubin,
-  careful about sharp constants and concentration.
-  Also listed in Section 52.
-* **Cédric Villani, *Optimal Transport: Old and New***. Optimal transport and
-  its applications to functional inequalities, curvature bounds, and
-  gradient flows.
-  Also listed in Section 39.
-* **Michel Ledoux, *The Concentration of Measure Phenomenon***. Also listed in Section 7.
-  Connections between isoperimetric inequalities and concentration of
-  measure.
+  Equations*** and ***Some Nonlinear Problems in Riemannian Geometry***.
+  Listed in full in Section 52. Sharp Sobolev constants, best-constant
+  problems, and the Yamabe circle of ideas.
+* **Emmanuel Hebey, *Nonlinear Analysis on Manifolds: Sobolev Spaces and
+  Inequalities***. Listed in full in Section 52. The functional-analytic
+  complement to Aubin, careful about sharp constants and concentration.
+* **Cédric Villani, *Optimal Transport: Old and New***. Listed in full
+  in Section 39. Optimal transport and its applications to functional
+  inequalities, curvature bounds, and gradient flows.
+* **Michel Ledoux, *The Concentration of Measure Phenomenon***. Listed
+  in full in Section 7. Connections between isoperimetric inequalities
+  and concentration of measure.
 * **Vladimir I. Bogachev, *Gaussian Measures***. Listed in full in Section 4. Gaussian
   measures in infinite dimensions, including Gaussian isoperimetry and
   concentration.
@@ -2602,8 +2440,8 @@ may support several of these viewpoints.
   distributions.
 * **Antoine Henrot, *Extremum Problems for Eigenvalues of Elliptic
   Operators***. Faber–Krahn, Szegő–Weinberger, and the modern
-  shape-optimization treatment of spectral inequalities.
-  Also listed in Section 53.
+  shape-optimization treatment of spectral inequalities. Also listed in
+  Section 53.
 * **Isaac Chavel, *Isoperimetric Inequalities: Differential Geometric
   and Analytic Perspectives***. The geometric side, written for
   analysts.
@@ -2617,11 +2455,11 @@ may support several of these viewpoints.
 ### More recent works
 
 * **Dominique Bakry, Ivan Gentil, and Michel Ledoux, *Analysis and
-  Geometry of Markov Diffusion Operators*** (2014, Springer,
-  Grundlehren). Γ-calculus, curvature–dimension conditions, logarithmic
-  Sobolev, Poincaré, and Nash inequalities in a single framework; the
-  central modern reference.
-  Also listed in Section 39.
+  Geometry of Markov Diffusion Operators*** (2014,
+  [Springer](https://doi.org/10.1007/978-3-319-00227-9), Grundlehren).
+  Γ-calculus, curvature–dimension conditions, logarithmic Sobolev,
+  Poincaré, and Nash inequalities in a single framework; the central
+  modern reference. Also listed in Section 39.
 * **Francesco Maggi, *Sets of Finite Perimeter and Geometric
   Variational Problems*** (2012, Cambridge University Press). Listed in full in Section 37. The textbook route into quantitative isoperimetry.
 * **Nassif Ghoussoub and Amir Moradifam, *Functional Inequalities: New
@@ -2640,25 +2478,12 @@ may support several of these viewpoints.
 * **Rolf Schneider, *Convex Cones: Geometry and Probability*** (2022,
   [Springer](https://doi.org/10.1007/978-3-031-15127-9)). Conic integral
   geometry, intrinsic volumes, and probabilistic questions about convex cones.
-  A later, distinct synthesis beside his *Convex Bodies: The
-  Brunn–Minkowski Theory*, listed in Section 12.
+  A later synthesis beside his *Convex Bodies: The Brunn–Minkowski Theory*,
+  listed in Section 12.
 * **Gabor Toth, *Measures of Symmetry for Convex Sets and Stability*** (2015,
   [Springer](https://doi.org/10.1007/978-3-319-23733-6)). Quantitative
   measures of asymmetry and stability for convex bodies. A specialist account
   of how geometric inequalities record departure from symmetry.
-* **Luis J. Alías, Paolo Mastrolia, and Marco Rigoli, *Maximum Principles and
-  Geometric Applications*** (2016,
-  [Springer](https://doi.org/10.1007/978-3-319-24337-5)). Weak maximum
-  principles, Omori–Yau methods, and geometric consequences. Connects
-  differential inequalities with curvature, immersion, and completeness
-  questions.
-* **Sylvia Serfaty, *Coulomb Gases and Ginzburg–Landau Vortices***
-  (2015, [European Mathematical Society](https://doi.org/10.4171/152), Zurich Lectures in Advanced
-  Mathematics). Listed in full in Section 36. Mean-field limits and
-  renormalized energies for Coulomb gases and Ginzburg–Landau vortices.
-* **Bozhidar Velichkov, *Regularity of the One-phase Free Boundaries***
-  (2023, [Springer](https://doi.org/10.1007/978-3-031-13238-4)). Listed in full in Section 33. Variational methods and regularity for the one-phase
-  Bernoulli free-boundary problem.
 
 ---
 
@@ -2684,13 +2509,12 @@ these subjects remain useful entry points here.
   graduate course: Banach and Hilbert spaces, operators, weak
   topologies, compactness, Banach algebras, and spectral theory.
 * **Walter Rudin, *Functional Analysis***. Fast, elegant, and broad;
-  particularly strong on distributions, Fourier transforms, and
-  locally convex methods.
+  particularly strong on distributions, Fourier transforms, and locally
+  convex methods. Also listed in Sections 1 and 54.
 * **Haim Brezis, *Functional Analysis, Sobolev Spaces and Partial
   Differential Equations***. The modern analysis–PDE interface,
   emphasizing weak convergence, monotonicity, Sobolev spaces, and
-  variational methods.
-  Also listed in Section 26.
+  variational methods. Also listed in Section 26.
 * **Peter D. Lax, *Functional Analysis***. A distinctive analyst's
   course, strong on operators, PDE applications, and the history of
   the ideas.
@@ -2722,8 +2546,7 @@ these subjects remain useful entry points here.
   unbounded operators, extensions, and spectral theory.
 * **Serge Lang, *Real and Functional Analysis***. A transitional
   graduate text unifying measure, locally convex methods, and
-  differential calculus in Banach spaces.
-  Also listed in Section 16.
+  differential calculus in Banach spaces. Also listed in Section 16.
 * **Rajendra Bhatia, *Notes on Functional Analysis***. Short lectures on Banach
   and Hilbert spaces and spectral theory, using concrete examples and
   connections with matrix analysis.
@@ -2736,8 +2559,7 @@ these subjects remain useful entry points here.
 
 * **Markus Haase, *Functional Analysis: An Elementary Introduction***
   (2014, [American Mathematical Society](https://doi.org/10.1090/gsm/156), Graduate Studies in Mathematics).
-  A short Hilbert-and-Banach course, distinct from Haase's functional
-  calculus monograph.
+  A short Hilbert-and-Banach course.
 * **James C. Robinson, *An Introduction to Functional Analysis*** (2020,
   [Cambridge University
   Press](https://www.cambridge.org/highereducation/books/an-introduction-to-functional-analysis/261D9C94C952E5FD68B5A5C21973B27B)).
@@ -2776,11 +2598,6 @@ these subjects remain useful entry points here.
   Applications*** (2013, [SIAM](https://doi.org/10.1137/1.9781611972597)). A very large course from linear
   functional analysis through nonlinear equations, written for applied
   analysts.
-* **Marián Fabian, Petr Habala, Petr Hájek, Vicente Montesinos, and
-  Václav Zizler, *Banach Space Theory: The Basis for Linear and
-  Nonlinear Analysis*** (2011, Springer). A detailed textbook and reference
-  on Banach-space structure, including bases, weak compactness,
-  differentiability, and renorming.
 
 ---
 
@@ -2804,8 +2621,8 @@ their use in differential equations.
   spaces to distributions, kernels, nuclearity, and PDE.
 * **Helmut H. Schaefer and Manfred P. Wolff, *Topological Vector
   Spaces***. The standard structural reference: duality, Mackey
-  topologies, barrelledness, bornological spaces, and ordered TVS.
-  Also listed in Section 19.
+  topologies, barrelledness, bornological spaces, and ordered TVS. Also
+  listed in Section 19.
 * **Gottfried Köthe, *Topological Vector Spaces I–II***. The
   encyclopedic classical source for locally convex theory, sequence
   spaces, and duality.
@@ -2830,7 +2647,7 @@ their use in differential equations.
   Ideals***. The systematic reference for the Grothendieck programme.
 * **Nicolas Bourbaki, *Topological Vector Spaces***. The structural
   reference for uniform, bornological, locally convex, and duality
-  language.
+  language. Also listed in Section 1.
 * **Pedro Pérez Carreras and José Bonet, *Barrelled Locally Convex
   Spaces***. The specialist reference for barrelledness and its many
   relatives.
@@ -2841,11 +2658,11 @@ their use in differential equations.
 * **Laurent Schwartz, *Théorie des distributions***. The original
   monograph; historically fundamental and still mathematically
   instructive.
-* **I. M. Gel'fand and G. E. Shilov, *Generalized Functions***
-  (multi-volume, with Graev and Vilenkin). A broad classical corpus on
+* **I. M. Gel'fand and G. E. Shilov, *Generalized Functions*** (6
+  volumes; volumes 4–6 by Gel'fand with N. Ya. Vilenkin, M. I. Graev,
+  and I. I. Piatetski-Shapiro). A broad classical corpus on
   distributions, transforms, generalized eigenfunction expansions, and
-  representation theory.
-  Also listed in Section 28.
+  representation theory. Also listed in Section 28.
 * **Robert S. Strichartz, *A Guide to Distribution Theory and Fourier
   Transforms***. A concise modern first route for analysts.
 * **F. G. Friedlander and Mark Joshi, *Introduction to the Theory of
@@ -2865,12 +2682,11 @@ their use in differential equations.
 * **J. F. Colombeau, *New Generalized Functions and Multiplication of
   Distributions***. An algebra of generalized functions that permits
   multiplication of distributions, with applications to nonlinear problems.
-* **Serge Lang, *Real and Functional Analysis***. Included here for
-  its locally convex methods and Banach-valued calculus.
-  Also listed in Section 15.
-* **Joseph Diestel and J. J. Uhl, Jr., *Vector Measures***. The
-  reference for Banach-valued integration.
-  Also listed in Sections 4, 17, and 18.
+* **Serge Lang, *Real and Functional Analysis***. Listed in full in
+  Section 15. Included here for its locally convex methods and
+  Banach-valued calculus.
+* **Joseph Diestel and J. J. Uhl, Jr., *Vector Measures***. Listed in
+  full in Section 18. The reference for Banach-valued integration.
 * **John L. Kelley and Isaac Namioka, *Linear Topological Spaces***. The
   classical graduate treatment of locally convex spaces, duality, and the
   Krein–Milman and Mackey–Arens theorems.
@@ -2882,12 +2698,9 @@ their use in differential equations.
   the finer structure of locally convex spaces.
 * **François Trèves, *Locally Convex Spaces and Linear Partial Differential Equations***.
   Locally convex methods aimed at existence theory for linear partial differential
-  equations. Distinct from his *Topological Vector Spaces, Distributions and Kernels*, from
-  his *Introduction to Pseudodifferential and Fourier Integral Operators I–II*, and from his
-  *Basic Linear Partial Differential Equations*.
+  equations.
 * **Alain Robert, *A Course in p-adic Analysis***. p-adic numbers, analytic functions, and
-  p-adic integration. Distinct from his *Introduction to the Representation Theory of
-  Compact and Locally Compact Groups*.
+  p-adic integration.
 * **Yuri M. Berezansky and Yuri G. Kondratiev, *Spectral Methods in Infinite-Dimensional
   Analysis*, Volume 1**. Spectral theory of operators on functions of infinitely many
   variables, through rigged Hilbert spaces.
@@ -2909,7 +2722,7 @@ their use in differential equations.
   distributions through Fourier transforms and fundamental solutions.
 * **Dorina Mitrea, *Distributions, Partial Differential Equations, and
   Harmonic Analysis*** (2nd ed., 2018, [Springer](https://doi.org/10.1007/978-3-030-03296-8)). Distributions,
-  Sobolev spaces, and layer potentials in one graduate text.
+  fundamental solutions, layer potentials, and Sobolev spaces in one graduate text.
   Also listed in Section 32.
 * **Gerrit van Dijk, *Distribution Theory: Convolution, Fourier
   Transform, and Laplace Transform*** (2013, [De Gruyter](https://doi.org/10.1515/9783110298512)). A short,
@@ -2920,11 +2733,6 @@ their use in differential equations.
   duality theory over valued fields such as the p-adics. Included as a
   substantial extension of familiar functional-analytic constructions to a
   different scalar setting.
-* **Jan Pachl, *Uniform Spaces and Measures*** (2013,
-  [Springer](https://doi.org/10.1007/978-1-4614-5058-0)). Uniform measures,
-  compactification, convolution, and topological groups. A research monograph
-  extending measure theory beyond the standard metric and locally compact
-  frameworks.
 
 ---
 
@@ -2948,7 +2756,7 @@ Sections 13 and 7.
   geometry, bases, and classical sequence spaces.
 * **Joram Lindenstrauss and Lior Tzafriri, *Classical Banach Spaces
   I–II***. The classic structural reference for sequence spaces,
-  function spaces, local theory, and complemented subspaces.
+  function spaces and Banach lattices, and complemented subspaces.
 * **Joseph Diestel, *Sequences and Series in Banach Spaces***. Weak
   convergence, unconditional convergence, basic sequences, and
   compactness, taught through the classical theorems.
@@ -2971,14 +2779,12 @@ Sections 13 and 7.
 * **Nicole Tomczak-Jaegermann, *Banach–Mazur Distances and
   Finite-Dimensional Operator Ideals***. A central research monograph
   in local theory.
-* **Vitali D. Milman and Gideon Schechtman, *Asymptotic Theory of
-  Finite Dimensional Normed Spaces***. Concentration and the
-  asymptotic geometry of high-dimensional convex bodies.
-  Also listed in Section 7.
+* **Vitali D. Milman and Gideon Schechtman, *Asymptotic Theory of Finite
+  Dimensional Normed Spaces***. Concentration and the asymptotic
+  geometry of high-dimensional convex bodies. Also listed in Section 7.
 * **Michel Ledoux and Michel Talagrand, *Probability in Banach
-  Spaces***. Probability as a tool for geometry, and geometry as a
-  constraint on probability.
-  Also listed in Sections 6 and 7.
+  Spaces***. Listed in full in Section 6. Probability as a tool for
+  geometry, and geometry as a constraint on probability.
 * **Joseph Diestel, Hans Jarchow, and Andrew Tonge, *Absolutely Summing
   Operators***. The main reference for summing ideals and
   Grothendieck's theorem.
@@ -3004,9 +2810,9 @@ Sections 13 and 7.
   [Springer](https://doi.org/10.1007/978-0-387-68915-9), CMS Books in
   Mathematics). Markushevich bases and the structure theory that replaces
   Schauder bases in nonseparable spaces.
-* **Joseph Diestel and J. J. Uhl, Jr., *Vector Measures***. The
-  Radon–Nikodým property and its geometric equivalents.
-  Also listed in Sections 4, 16, and 18.
+* **Joseph Diestel and J. J. Uhl, Jr., *Vector Measures***. Listed in
+  full in Section 18. The Radon–Nikodým property and its geometric
+  equivalents.
 * **Spiros A. Argyros and Stevo Todorčević, *Ramsey Methods in
   Analysis*** (2005, [Birkhäuser](https://doi.org/10.1007/3-7643-7360-1)). Ramsey theory as a construction
   method for Banach spaces.
@@ -3026,7 +2832,7 @@ Sections 13 and 7.
   Kirszbraun-type extension theorems, and negative-definite kernels.
 * **Jesús M. F. Castillo and Manuel González, *Three-Space Problems in Banach Space
   Theory***. Which Banach-space properties pass to a space when they hold for a subspace and
-  for the quotient. Distinct from the homological monographs of Castillo listed below.
+  for the quotient.
 
 ### More recent works
 
@@ -3086,6 +2892,11 @@ Sections 13 and 7.
   Bohr's problem, Bohnenblust–Hille inequalities, and holomorphy on
   infinite-dimensional polydiscs. Banach-space theory meeting analytic
   number theory.
+* **Marián Fabian, Petr Habala, Petr Hájek, Vicente Montesinos, and
+  Václav Zizler, *Banach Space Theory: The Basis for Linear and
+  Nonlinear Analysis*** (2011, [Springer](https://doi.org/10.1007/978-1-4419-7515-7)). A detailed textbook and reference
+  on Banach-space structure, including bases, weak compactness,
+  differentiability, and renorming.
 
 ---
 
@@ -3103,46 +2914,54 @@ the scalar harmonic-analysis methods extended by this theory.
 
 ### Foundational works
 
-* **Joseph Diestel and J. J. Uhl, Jr., *Vector Measures***. Banach-valued
-  measures and integration, with the Radon–Nikodým property and related
-  Banach-space geometry.
-  Also listed in Sections 4, 16, and 17.
-* **Herbert Amann, *Linear and Quasilinear Parabolic
-  Problems***. Vector-valued function spaces, interpolation, and abstract
-  methods for linear and quasilinear parabolic equations.
-  Also listed in Section 24.
+* **Joseph Diestel and J. J. Uhl, Jr., *Vector Measures***.
+  Banach-valued measures and integration, with the Radon–Nikodým
+  property and related Banach-space geometry. Also listed in Sections 4,
+  16, and 17.
+* **Herbert Amann, *Linear and Quasilinear Parabolic Problems*** (volume
+  I, *Abstract Linear Theory*, 1995; volume II, *Function Spaces*,
+  2019). Listed in full in Section 24. Vector-valued function spaces,
+  interpolation, and abstract methods for linear and quasilinear
+  parabolic equations.
 * **Alessandra Lunardi, *Interpolation Theory*** and ***Analytic
-  Semigroups and Optimal Regularity in Parabolic Problems***. Real
-  interpolation for vector-valued spaces, done carefully.
-  Also listed in Section 26.
+  Semigroups and Optimal Regularity in Parabolic Problems***. Listed in
+  full in Sections 24 and 26. Real interpolation for vector-valued
+  spaces, done carefully.
 * **Wolfgang Arendt, Charles J. K. Batty, Matthias Hieber, and Frank
-  Neubrander, *Vector-Valued Laplace Transforms and Cauchy
-  Problems*** (2001; 2nd ed., 2011,
+  Neubrander, *Vector-Valued Laplace Transforms and Cauchy Problems***
+  (2001; 2nd ed., 2011,
   [Birkhäuser](https://doi.org/10.1007/978-3-0348-0087-7)). The
   Laplace-transform theory in the vector-valued setting, with
-  asymptotics. The positive and evolution-equation continuations are in
-  Section 24.
-  Also listed in Section 24.
-* **Markus Haase, *The Functional Calculus for Sectorial
-  Operators***. The standard reference for holomorphic functional
-  calculus, and the natural companion to Hytönen et al.
-  Also listed in Section 24.
+  asymptotics. Also listed in Section 24.
+* **Markus Haase, *The Functional Calculus for Sectorial Operators***.
+  Listed in full in Section 24. The standard reference for holomorphic
+  functional calculus, and the natural companion to Hytönen et al.
 * **Robert Denk, Matthias Hieber, and Jan Prüss, *R-boundedness, Fourier
   Multipliers and Problems of Elliptic and Parabolic Type*** (2003,
   [American Mathematical Society](https://doi.org/10.1090/memo/0788),
   Memoirs). Operator-valued Fourier multipliers and R-boundedness, applied
   to maximal L^p-regularity for elliptic and parabolic boundary problems.
+* **Peer C. Kunstmann and Lutz Weis, *Maximal L_p-Regularity for
+  Parabolic Equations, Fourier Multiplier Theorems and H^∞-Functional
+  Calculus*** (2004, lecture course in *Functional Analytic Methods for
+  Evolution Equations*, [Springer](https://doi.org/10.1007/978-3-540-44653-8_2),
+  Lecture Notes in Mathematics 1855, pp. 65–311). R-boundedness,
+  operator-valued Fourier multipliers, and the H^∞-calculus, assembled into
+  the characterisation of maximal L^p-regularity and applied to parabolic
+  problems.
 
 ### More recent works
 
 * **Tuomas Hytönen, Jan van Neerven, Mark Veraar, and Lutz Weis,
-  *Analysis in Banach Spaces I–III*** (*Martingales and
-  Littlewood–Paley Theory*; *Probabilistic Methods and Operator
-  Theory*; *Harmonic Analysis and Spectral Theory*) (2016, 2017, 2023,
-  Springer). A three-volume treatment of UMD spaces, martingale methods,
-  R-boundedness, vector-valued harmonic analysis, functional calculus, and
-  maximal regularity.
-  Also listed in Section 27.
+  *Analysis in Banach Spaces I–III*** (*Martingales and Littlewood–Paley
+  Theory*; *Probabilistic Methods and Operator Theory*; *Harmonic
+  Analysis and Spectral Theory*) (2016, 2017, 2023, Springer;
+  [I](https://doi.org/10.1007/978-3-319-48520-1),
+  [II](https://doi.org/10.1007/978-3-319-69808-3),
+  [III](https://doi.org/10.1007/978-3-031-46598-7)). A three-volume
+  treatment of UMD spaces, martingale methods, R-boundedness,
+  vector-valued harmonic analysis, functional calculus, and maximal
+  regularity. Also listed in Section 27.
 * **Gilles Pisier, *Martingales in Banach Spaces*** (2016, [Cambridge
   University Press](https://doi.org/10.1017/CBO9781316480588)). Listed in full in Section 17. The martingale inequalities
   that underlie UMD and vector-valued singular integrals.
@@ -3185,15 +3004,14 @@ Positivity inside C\*-algebras is treated in Section 23.
   for vector lattices, order duality, and positive operators.
 * **A. C. Zaanen, *Introduction to Operator Theory in Riesz
   Spaces***. A more accessible route into the same material.
-* **Helmut H. Schaefer, *Topological Vector Spaces***. Also the
-  reference for ordered locally convex spaces and positive
-  functionals.
-  Also listed in Section 16.
+* **Helmut H. Schaefer, *Topological Vector Spaces***. Listed in full in
+  Section 16. The reference for ordered locally convex spaces and
+  positive functionals.
 * **Klaus-Jochen Engel and Rainer Nagel, *One-Parameter Semigroups for
-  Linear Evolution Equations***, and **Rainer Nagel (ed.),
-  *One-parameter Semigroups of Positive Operators***. Positivity as a
-  tool in evolution equations.
-  Also listed in Section 24.
+  Linear Evolution Equations***. Listed in full in Section 24. Includes
+  positive semigroups and their spectral theory.
+* **Rainer Nagel (ed.), *One-parameter Semigroups of Positive
+  Operators***. Positivity as a tool in evolution equations.
 * **Yuri A. Abramovich and Charalambos D. Aliprantis, *An Invitation
   to Operator Theory***. A modern text where order-theoretic methods
   sit alongside classical operator theory.
@@ -3254,10 +3072,9 @@ methods.
 * **Theodore W. Palmer, *Banach Algebras and the General Theory of
   \*-Algebras I–II***. A systematic reference on Banach algebras and
   involutive algebras, including representations and spectral theory.
-* **Lynn H. Loomis, *An Introduction to Abstract Harmonic
-  Analysis***. The classical short bridge from Banach algebras to
-  harmonic analysis on groups.
-  Also listed in Section 28.
+* **Lynn H. Loomis, *An Introduction to Abstract Harmonic Analysis***.
+  Listed in full in Section 28. The classical short bridge from Banach
+  algebras to harmonic analysis on groups.
 * **I. M. Gelfand, D. A. Raikov, and G. E. Shilov, *Commutative Normed
   Rings***. An early systematic treatment of commutative Banach algebras,
   maximal ideals, and the Gelfand transform.
@@ -3277,10 +3094,9 @@ methods.
   amenability, from groups through Banach algebras.
 * **Alan L. T. Paterson, *Amenability***. A large reference on the
   same circle of ideas.
-* **Ronald G. Douglas, *Banach Algebra Techniques in Operator
-  Theory***. Banach-algebra methods for Toeplitz operators and
-  Fredholm theory.
-  Also listed in Section 21.
+* **Ronald G. Douglas, *Banach Algebra Techniques in Operator Theory***.
+  Listed in full in Section 21. Banach-algebra methods for Toeplitz
+  operators and Fredholm theory.
 
 ### More recent works
 
@@ -3290,9 +3106,9 @@ methods.
   structural theory.
 * **Eberhard Kaniuth and Anthony To-Ming Lau, *Fourier and
   Fourier–Stieltjes Algebras on Locally Compact Groups*** (2018,
-  American Mathematical Society). The modern reference for the algebras
+  [American Mathematical Society](https://doi.org/10.1090/surv/231)).
+  Listed in full in Section 28. The modern reference for the algebras
   attached to nonabelian groups.
-  Also listed in Section 28.
 * **Volker Runde, *Amenable Banach Algebras: A Panorama*** (2020,
   [Springer](https://doi.org/10.1007/978-1-0716-0351-2), Springer Monographs in Mathematics). A greatly expanded
   successor to Runde's *Lectures on Amenability*, now the working
@@ -3337,17 +3153,15 @@ operators used in many models.
 
 ### Foundational works
 
-* **Ronald G. Douglas, *Banach Algebra Techniques in Operator
-  Theory***. Toeplitz operators, Fredholm theory, and C\*-algebra methods in
-  classical operator theory.
-  Also listed in Section 20.
+* **Ronald G. Douglas, *Banach Algebra Techniques in Operator Theory***.
+  Toeplitz operators, Fredholm theory, and C\*-algebra methods in
+  classical operator theory. Also listed in Section 20.
 * **John B. Conway, *A Course in Operator Theory***. A natural
   continuation of the author's functional-analysis text into
   Hilbert-space operators.
-* **Paul R. Halmos, *A Hilbert Space Problem Book***. Hilbert-space operator
-  theory developed through problems and their solutions, covering examples
-  as well as structural results.
-  Also listed in Section 54.
+* **Paul R. Halmos, *A Hilbert Space Problem Book***. Listed in full in
+  Section 54. Hilbert-space operator theory developed through problems
+  and their solutions, covering examples as well as structural results.
 * **William Arveson, *A Short Course on Spectral Theory***. Concise,
   algebraic, and elegant.
 * **Rubén A. Martínez-Avendaño and Peter Rosenthal, *An Introduction to
@@ -3355,19 +3169,17 @@ operators used in many models.
   [Springer](https://doi.org/10.1007/978-0-387-48578-2), Graduate Texts in
   Mathematics). Shift, Toeplitz, Hankel, and composition operators on H², at
   a first-year graduate level.
-* **John B. Conway, *The Theory of Subnormal Operators***. A detailed treatment
-  of subnormal operators and their connections with analytic function spaces
-  and approximation theory.
-  Also listed in Section 42.
+* **John B. Conway, *The Theory of Subnormal Operators***. A detailed
+  treatment of subnormal operators and their connections with analytic
+  function spaces and approximation theory. Also listed in Section 42.
 * **Israel Gohberg, Seymour Goldberg, and Marinus A. Kaashoek, *Basic
   Classes of Linear Operators*** and ***Classes of Linear Operators
   I–II***. Broad and concrete, with Fredholm, compact, and structured
   operator classes.
 * **Israel Gohberg and Mark G. Krein, *Introduction to the Theory of
-  Linear Nonselfadjoint Operators***. A classical research monograph
-  on compact and nonselfadjoint operators, singular numbers, and
-  triangular models.
-  Also listed in Section 13.
+  Linear Nonselfadjoint Operators***. A classical research monograph on
+  compact and nonselfadjoint operators, singular numbers, and triangular
+  models. Also listed in Section 13.
 * **Béla Sz.-Nagy and Ciprian Foiaş, *Harmonic Analysis of Operators on
   Hilbert Space*** (2nd ed., 2010, revised and enlarged with Hari Bercovici
   and László Kérchy). Dilation theory
@@ -3381,16 +3193,15 @@ operators used in many models.
   and more concentrated account of the shift and its invariant
   subspaces.
 * **Marvin Rosenblum and James Rovnyak, *Hardy Classes and Operator
-  Theory***. The function-theoretic side of contraction and Toeplitz
-  theory.
-  Also listed in Section 42.
+  Theory***. Listed in full in Section 42. The function-theoretic side
+  of contraction and Toeplitz theory.
 * **Albrecht Böttcher and Bernd Silbermann, *Analysis of Toeplitz
   Operators***. The large reference for Toeplitz and Wiener–Hopf
-  operators, symbols, and asymptotics of determinants.
-  Also listed in Section 42.
-* **Kehe Zhu, *Operator Theory in Function Spaces***. Composition,
-  Toeplitz, and Hankel operators on Bergman and related spaces.
-  Also listed in Section 42.
+  operators, symbols, and asymptotics of determinants. Also listed in
+  Section 42.
+* **Kehe Zhu, *Operator Theory in Function Spaces***. Listed in full in
+  Section 42. Composition, Toeplitz, and Hankel operators on Bergman and
+  related spaces.
 * **Heydar Radjavi and Peter Rosenthal, *Invariant Subspaces***. The
   classical reference for the invariant subspace problem and
   reducibility.
@@ -3421,8 +3232,7 @@ operators used in many models.
   problems for matrix functions, via state-space realizations.
 * **Damir Z. Arov and Harry Dym, *J-Contractive Matrix Valued Functions and Related
   Topics***. J-contractive and J-inner matrix functions, and the interpolation theory built
-  on them. Distinct from their *Bitangential Direct and Inverse Problems for Systems of
-  Integral and Differential Equations*.
+  on them.
 * **Robert L. Ellis and Israel Gohberg, *Orthogonal Systems and Convolution Operators***.
   Orthogonal systems, convolution operators, and the identities that connect them.
 
@@ -3431,7 +3241,7 @@ operators used in many models.
 #### Courses and textbooks
 
 * **Barry Simon, *Operator Theory*** (Part 4 of *A Comprehensive
-  Course in Analysis*) (2015, American Mathematical Society). A modern
+  Course in Analysis*) (2015, [American Mathematical Society](https://doi.org/10.1090/simon/004)). A modern
   graduate-to-research survey with wide coverage.
 * **Stephan Ramon Garcia, Javad Mashreghi, and William T. Ross,
   *Operator Theory by Example*** (2023, [Oxford University Press](https://doi.org/10.1093/oso/9780192863867.001.0001)). A
@@ -3454,8 +3264,8 @@ operators used in many models.
 * **Carlos S. Kubrusly, *Spectral Theory of Bounded Linear Operators*** (2020,
   [Birkhäuser](https://doi.org/10.1007/978-3-030-33149-8)). Spectral sets,
   decompositions, and the spectral theory of bounded operators on Banach and
-  Hilbert spaces. Distinct from the author's Hilbert-space spectral text
-  listed above.
+  Hilbert spaces. Not to be confused with Kubrusly's *Spectral Theory of
+  Operators on Hilbert Spaces*, listed above.
 * **Milivoje Lukić, *A First Course in Spectral Theory*** (2022,
   [American Mathematical Society](https://doi.org/10.1090/gsm/226)). Listed in full in Section 22.
 
@@ -3463,13 +3273,14 @@ operators used in many models.
 
 * **Jim Agler, John E. McCarthy, and Nicholas Young, *Operator
   Analysis: Hilbert Space Methods in Complex Analysis*** (2020,
-  Cambridge University Press). Reproducing kernels, interpolation, and
+  [Cambridge University Press](https://doi.org/10.1017/9781108751292)). Reproducing kernels, interpolation, and
   several-variable operator theory.
 * **Vern I. Paulsen and Mrinal Raghupathi, *An Introduction to the
-  Theory of Reproducing Kernel Hilbert Spaces*** (2016, Cambridge
-  University Press). A graduate introduction to reproducing kernel Hilbert
-  spaces, positive definite functions, interpolation, and applications.
-  Also listed in Section 42.
+  Theory of Reproducing Kernel Hilbert Spaces*** (2016, [Cambridge
+  University Press](https://doi.org/10.1017/CBO9781316219232)). Listed
+  in full in Section 42. A graduate introduction to reproducing kernel
+  Hilbert spaces, positive definite functions, interpolation, and
+  applications.
 * **Nikolai Nikolski, *Toeplitz Matrices and Operators*** (2020, [Cambridge
   University Press](https://doi.org/10.1017/9781108182577)). A graduate
   account of Toeplitz operators, symbols, and finite-section questions. A
@@ -3535,8 +3346,7 @@ differential operators respectively.
   spectral stability.
 * **Michael Reed and Barry Simon, *Methods of Modern Mathematical
   Physics I–IV***. The working corpus for self-adjointness, Fourier
-  analysis, scattering, and spectral analysis of Schrödinger
-  operators.
+  analysis, scattering, and spectral analysis of Schrödinger operators.
   Also listed in Section 1.
 * **Joachim Weidmann, *Linear Operators in Hilbert Spaces*** and
   ***Spectral Theory of Ordinary Differential Operators***. Detailed
@@ -3568,9 +3378,8 @@ differential operators respectively.
 * **Hans Cycon, Richard Froese, Werner Kirsch, and Barry Simon,
   *Schrödinger Operators***. The standard monograph on spectral and
   scattering theory, including many-body and random cases.
-* **Barry Simon, *Trace Ideals and Their Applications***. Schatten
-  classes, determinants, and trace formulas.
-  Also listed in Section 13.
+* **Barry Simon, *Trace Ideals and Their Applications***. Listed in full
+  in Section 13. Schatten classes, determinants, and trace formulas.
 * **Lloyd N. Trefethen and Mark Embree, *Spectra and
   Pseudospectra***. The standard reference for nonnormal operators and
   the failure of spectral intuition.
@@ -3578,17 +3387,15 @@ differential operators respectively.
   Quantum Theory***. A compact account of spectral classification.
 * **Vladimir A. Marchenko, *Sturm–Liouville Operators and
   Applications***. Inverse spectral theory of one-dimensional
-  Sturm–Liouville operators.
-  Also listed in Section 51.
+  Sturm–Liouville operators. Also listed in Section 51.
 * **B. M. Levitan and I. S. Sargsjan, *Introduction to Spectral
   Theory***. Spectral theory of self-adjoint ordinary differential
   operators, including the inverse problem.
 * **E. C. Titchmarsh, *Eigenfunction Expansions Associated with
   Second-Order Differential Equations I–II***. The classical analytic
   treatment, still valuable.
-* **Anton Zettl, *Sturm–Liouville Theory***. The modern systematic
-  reference.
-  Also listed in Section 31.
+* **Anton Zettl, *Sturm–Liouville Theory***. Listed in full in Section
+  31. The modern systematic reference.
 * **David Borthwick, *Spectral Theory of Infinite-Area Hyperbolic
   Surfaces*** (first ed. 2007; 2nd ed., 2016, [Birkhäuser](https://doi.org/10.1007/978-3-319-33877-4)). Resonances and scattering on
   hyperbolic surfaces. Also listed in Section 53.
@@ -3609,20 +3416,19 @@ differential operators respectively.
   theory, scattering, and quasiclassical asymptotics for Schrödinger
   operators.
 * **Barry Simon, *Quantum Mechanics for Hamiltonians Defined as Quadratic
-  Forms***. Quadratic-form methods for singular potentials; the source of
-  the form approach to Schrödinger operators.
+  Forms***. Quadratic-form methods for singular potentials; an early
+  systematic development of the form approach to Schrödinger operators.
 * **Barry Simon, *Functional Integration and Quantum Physics***. Path
   integrals, the Feynman–Kac formula, and magnetic fields, written as
-  analysis. The second edition (2005) revises the 1979 monograph. Also listed in Section 8. Distinct from Freidlin's *Functional Integration and
-  Partial Differential Equations*.
+  analysis. The second edition (2005) revises the 1979 monograph. Also listed in Section 8.
+  Not to be confused with Freidlin's *Functional Integration and Partial Differential
+  Equations* (Section 8), a probabilistic treatment of elliptic and parabolic equations.
 * **James Glimm and Arthur Jaffe, *Quantum Physics: A Functional Integral
   Point of View***. Constructive quantum field theory through functional
   integrals: the research monograph of the programme.
 * **Sergio Albeverio, Raphael Høegh-Krohn, and Sonia Mazzucchi, *Mathematical Theory
   of Feynman Path Integrals: An Introduction*** (2nd ed., 2008). The oscillatory-integral
-  construction of Feynman path integrals. The first edition appeared in 1976. Also listed in Section 8. Distinct from Simon's *Functional Integration and Quantum Physics*, from
-  Glimm and Jaffe, and from Albeverio, Fenstad, Høegh-Krohn, and Lindstrøm, *Nonstandard
-  Methods in Stochastic Analysis and Mathematical Physics*.
+  construction of Feynman path integrals. The first edition appeared in 1976. Also listed in Section 8.
 * **Bernd Thaller, *The Dirac Equation***. Self-adjointness, spectral
   theory, and scattering for the Dirac operator.
 * **Jiří Blank, Pavel Exner, and Miloslav Havlíček, *Hilbert Space
@@ -3639,24 +3445,24 @@ differential operators respectively.
   operators and its applications to nonlinear Hamiltonian PDE.
 * **Christiane Tretter, *Spectral Theory of Block Operator Matrices and Applications***.
   Spectral enclosures, variational principles, and essential spectra for block operator
-  matrices. Distinct from Jeribi's *Spectral Theory and Applications of Linear Operators and
-  Block Operator Matrices*.
+  matrices. Jeribi's *Spectral Theory and Applications of Linear Operators and Block
+  Operator Matrices* (Section 21) is a later book on related material.
 * **B. M. Levitan and I. S. Sargsjan, *Sturm–Liouville and Dirac Operators***. Spectral
-  theory of one-dimensional Sturm–Liouville and Dirac operators. Distinct from their
-  *Introduction to Spectral Theory*.
+  theory of one-dimensional Sturm–Liouville and Dirac operators.
 * **Yuri V. Egorov and Vladimir Kondratiev, *On Spectral Theory of Elliptic Operators***.
   Eigenvalue bounds and spectral estimates for elliptic operators.
 * **Stefan Teufel, *Adiabatic Perturbation Theory in Quantum Dynamics***. Space-adiabatic
   perturbation theory and effective dynamics for quantum systems with separated scales.
-* **Manfred Salmhofer, *Renormalization: An Introduction***. Renormalization of fermionic
-  models through functional integrals, written as analysis.
+* **Manfred Salmhofer, *Renormalization: An Introduction***. Functional integrals,
+  graphical expansions, and the renormalization group for bosonic lattice field theories
+  in two to four dimensions and for many-fermion systems, written as analysis.
 
 ### More recent works
 
 #### Courses and spectral theory
 
 * **Konrad Schmüdgen, *Unbounded Self-adjoint Operators on Hilbert
-  Space*** (2012, Springer). A systematic treatment of unbounded
+  Space*** (2012, [Springer](https://doi.org/10.1007/978-94-007-4753-1)). A systematic treatment of unbounded
   self-adjoint operators, including domains, extensions, spectral measures,
   and quadratic forms.
 * **Milivoje Lukić, *A First Course in Spectral Theory*** (2022,
@@ -3670,8 +3476,7 @@ differential operators respectively.
 * **David Borthwick, *Spectral Theory: Basic Concepts and Applications***
   (2020, [Springer](https://doi.org/10.1007/978-3-030-38002-1)). A graduate
   introduction to unbounded operators with applications to Laplacians and
-  Schrödinger operators. Distinct from the author's hyperbolic-surface
-  monograph listed above.
+  Schrödinger operators.
 * **Brian C. Hall, *Quantum Theory for Mathematicians*** (2013,
   [Springer](https://doi.org/10.1007/978-1-4614-7116-5), Graduate Texts in Mathematics). Quantum mechanics from
   unbounded operators, the Fourier transform, and the spectral theorem,
@@ -3743,7 +3548,7 @@ differential operators respectively.
   substantial reference for the influence of domain geometry on quantum
   spectra.
 * **Gregory Berkolaiko and Peter Kuchment, *Introduction to Quantum
-  Graphs*** (2013, American Mathematical Society). Spectral theory of
+  Graphs*** (2013, [American Mathematical Society](https://doi.org/10.1090/surv/186)). Spectral theory of
   metric graphs: self-adjoint realizations, scattering, and the dependence
   of the spectrum on the graph. The standard graduate entry.
 * **Olaf Post, *Spectral Analysis on Graph-like Spaces*** (2012,
@@ -3754,8 +3559,7 @@ differential operators respectively.
   Networks*** (2014, Springer). Listed in full in Section 24.
 * **Alexander A. Balinsky and W. Desmond Evans, *Spectral Analysis of Relativistic
   Operators*** (2010, [Imperial College Press](https://doi.org/10.1142/p566)). Spectral
-  theory of the Dirac operator and related relativistic Hamiltonians. Distinct from
-  Balinsky, Evans, and Lewis, *The Analysis and Geometry of Hardy's Inequality*.
+  theory of the Dirac operator and related relativistic Hamiltonians.
 
 #### Quantum fields and many-body dynamics
 
@@ -3782,8 +3586,9 @@ differential operators respectively.
   estimates.
   Also listed in Section 30.
 * **Asao Arai, *Inequivalent Representations of Canonical Commutation and Anti-Commutation
-  Relations*** (2020, [Springer](https://doi.org/10.1007/978-981-15-2180-5)). Inequivalent
-  representations of the canonical commutation and anticommutation relations.
+  Relations*** (2020, [Springer](https://doi.org/10.1007/978-981-15-2180-5)). Von Neumann's
+  uniqueness theorem and the ways it fails: weak Weyl representations, the Aharonov–Bohm
+  effect, time operators, representations of the CAR, and Fock-space second quantization.
 
 #### Inverse problems and scattering
 
@@ -3877,7 +3682,6 @@ analysis.
   Press](https://doi.org/10.1016/C2016-0-03431-9); first edition 1979).
   Automorphism groups of C\*-algebras and the dynamical theory built on
   them. The second edition is a substantial revision of the 1979 monograph.
-  Distinct from Pedersen's *Analysis Now*.
 * **Ola Bratteli and Derek W. Robinson, *Operator Algebras and Quantum
   Statistical Mechanics I–II***. C\*-dynamical systems, KMS states, and
   the operator-algebraic foundations of statistical mechanics.
@@ -3936,11 +3740,9 @@ analysis.
   spaces, quantum stochastic calculus, and their relation to classical
   stochastic integration.
 * **V. S. Sunder, *An Invitation to von Neumann Algebras***. Projections, the coupling
-  constant, and a short route into von Neumann algebras. Distinct from his *Operators on
-  Hilbert Space* and from Halmos and Sunder, *Bounded Integral Operators on L² Spaces*.
+  constant, and a short route into von Neumann algebras.
 * **Konrad Schmüdgen, *Unbounded Operator Algebras and Representation Theory***.
-  Op\*-algebras of unbounded operators and their representations. Distinct from his
-  *Unbounded Self-adjoint Operators on Hilbert Space* and from *The Moment Problem*.
+  Op\*-algebras of unbounded operators and their representations.
 
 ### More recent works
 
@@ -3975,7 +3777,7 @@ analysis.
 #### Operator spaces, tensor products, and free probability
 
 * **Gilles Pisier, *Tensor Products of C\*-Algebras and Operator
-  Spaces*** (2020, Cambridge University Press). Tensor products of
+  Spaces*** (2020, [Cambridge University Press](https://doi.org/10.1017/9781108782081)). Tensor products of
   C\*-algebras and operator spaces, nuclearity, approximation properties, and
   tensor-product formulations of the Connes embedding problem.
 * **A. Ya. Helemskii, *Quantum Functional Analysis: Non-Coordinate
@@ -3984,7 +3786,7 @@ analysis.
   Operator spaces and their tensor products, developed without matrix
   coordinates.
 * **James A. Mingo and Roland Speicher, *Free Probability and Random
-  Matrices*** (2017, Springer). The bridge between free probability and
+  Matrices*** (2017, [Springer](https://doi.org/10.1007/978-1-4939-6942-5)). The bridge between free probability and
   asymptotic random matrix theory.
 * **Dan-Virgil Voiculescu, Nicolai Stammeier, and Moritz Weber (eds.), *Free
   Probability and Operator Algebras*** (2016, [European Mathematical
@@ -4040,49 +3842,46 @@ cross-subject index.
   on C0-semigroups for PDE.
 * **Klaus-Jochen Engel and Rainer Nagel, *One-Parameter Semigroups for
   Linear Evolution Equations***. The comprehensive modern treatment of
-  generation, spectral theory, positivity, and asymptotics, with an
-  excellent shorter companion volume.
-  Also listed in Section 19.
+  generation, spectral theory, positivity, and asymptotics. Also listed
+  in Section 19.
 * **Klaus-Jochen Engel and Rainer Nagel, *A Short Course on Operator
   Semigroups*** (2006, [Springer](https://doi.org/10.1007/0-387-36619-9),
   Universitext). The condensed version of their large treatise, suitable for
   a one-semester course.
 * **Einar Hille and Ralph S. Phillips, *Functional Analysis and
-  Semi-Groups***. The foundational classical treatise.
-  Also listed in Section 1.
+  Semi-Groups***. The foundational classical treatise, still useful for
+  the operator-semigroup point of view and for its unusually wide
+  classical coverage. Also listed in Section 1.
 * **E. Brian Davies, *One-Parameter Semigroups***. A concise analytic
   account, effective for operator theorists.
 * **Jerome A. Goldstein, *Semigroups of Linear Operators and
   Applications***. A broad classical treatment with PDE applications
   and unusually good notes.
 * **Wolfgang Arendt, Charles J. K. Batty, Matthias Hieber, and Frank
-  Neubrander, *Vector-Valued Laplace Transforms and Cauchy
-  Problems***. Laplace-transform methods, generation theorems, and
-  asymptotic behaviour.
-  Also listed in Section 18.
+  Neubrander, *Vector-Valued Laplace Transforms and Cauchy Problems***.
+  Listed in full in Section 18. Laplace-transform methods, generation
+  theorems, and asymptotic behaviour.
 * **El Maati Ouhabaz, *Analysis of Heat Equations on Domains*** (2005,
   [Princeton University Press](https://doi.org/10.1515/9781400826483),
   London Mathematical Society Monographs). Sesquilinear forms, criteria for
   positivity and L^∞-contractivity, and Gaussian bounds for heat kernels of
   elliptic operators.
-* **Herbert Amann, *Linear and Quasilinear Parabolic
-  Problems***. Abstract parabolic evolution equations and
-  interpolation at research level.
-  Also listed in Section 18.
+* **Herbert Amann, *Linear and Quasilinear Parabolic Problems*** (volume
+  I, *Abstract Linear Theory*, 1995; volume II, *Function Spaces*,
+  2019). Abstract parabolic evolution equations and interpolation at
+  research level. Also listed in Section 18.
 * **Alessandra Lunardi, *Analytic Semigroups and Optimal Regularity in
   Parabolic Problems***. Analytic semigroups, interpolation, Hölder
-  spaces, and maximal regularity.
+  spaces, and maximal regularity. Also listed in Section 18.
 * **Jan Prüss, *Evolutionary Integral Equations and
   Applications***. Volterra equations, resolvents, and abstract
   evolution problems.
-* **Markus Haase, *The Functional Calculus for Sectorial
-  Operators***. The standard reference for sectorial operators and
-  holomorphic functional calculus.
-  Also listed in Section 18.
+* **Markus Haase, *The Functional Calculus for Sectorial Operators***.
+  The standard reference for sectorial operators and holomorphic
+  functional calculus. Also listed in Section 18.
 * **Thierry Cazenave and Alain Haraux, *An Introduction to Semilinear
   Evolution Equations***. Semilinear evolution equations through the
-  semigroup: local existence, blow-up, and global behaviour. Also listed in Section 35. Distinct from Cazenave's *Semilinear Schrödinger
-  Equations*.
+  semigroup: local existence, blow-up, and global behaviour. Also listed in Section 35.
 * **Marius Tucsnak and George Weiss, *Observation and Control for
   Operator Semigroups*** (2009, [Birkhäuser](https://doi.org/10.1007/978-3-7643-8994-9)). Admissibility, observation,
   and exact controllability for semigroup systems.
@@ -4099,14 +3898,14 @@ cross-subject index.
   Differential Equations: Continuous and Approximation Theories***. The
   semigroup theory of boundary control and Riccati equations for PDE.
 * **Olof Staffans, *Well-Posed Linear Systems***. Well-posed linear systems, their semigroup
-  realizations, and admissibility. Distinct from Gripenberg, Londen, and Staffans, *Volterra
-  Integral and Functional Equations*, and from Curtain and Zwart.
+  realizations, and admissibility.
 * **H. O. Fattorini, *Infinite Dimensional Optimization and Control Theory***. Existence and
   necessary conditions for optimal control of evolution equations, including the Pontryagin
   maximum principle in infinite dimensions.
 * **Jack K. Hale and Sjoerd M. Verduyn Lunel, *Introduction to Functional Differential
-  Equations***. Retarded and neutral functional differential equations. Distinct from
-  Diekmann, van Gils, Verduyn Lunel, and Walther, *Delay Equations*.
+  Equations***. Retarded and neutral functional differential equations. Diekmann, van
+  Gils, Verduyn Lunel, and Walther, *Delay Equations*, listed above, develops the
+  complementary sun-dual semigroup approach.
 
 ### More recent works
 
@@ -4121,10 +3920,10 @@ cross-subject index.
   Applications*** (2010, [Springer](https://doi.org/10.1007/978-3-642-04631-5)). Quasilinear parabolic equations in
   the Amann–Yagi framework.
 * **Jan Prüss and Gieri Simonett, *Moving Interfaces and Quasilinear
-  Parabolic Evolution Equations*** (2016, Birkhäuser, Monographs in
+  Parabolic Evolution Equations*** (2016, [Birkhäuser](https://doi.org/10.1007/978-3-319-27698-4), Monographs in
   Mathematics). A modern research treatment built on maximal regularity.
 * **Tuomas Hytönen, Jan van Neerven, Mark Veraar, and Lutz Weis,
-  *Analysis in Banach Spaces II–III*** (2017 and 2023, Springer, Ergebnisse
+  *Analysis in Banach Spaces II–III*** (2017 and 2023, Springer; [II](https://doi.org/10.1007/978-3-319-69808-3), [III](https://doi.org/10.1007/978-3-031-46598-7); Ergebnisse
   der Mathematik und ihrer Grenzgebiete). Where the functional calculus
   meets R-boundedness and vector-valued harmonic analysis.
 * **Viorel Barbu, *Nonlinear Differential Equations of Monotone Types in
@@ -4220,8 +4019,8 @@ problems connect with Section 22 and the cross-subject index.
   Helmholtz and Maxwell problems.
 * **Stefan Bergman, *Integral Operators in the Theory of Linear Partial Differential
   Equations***. Integral operators that transform analytic functions into solutions of
-  linear partial differential equations. Distinct from the Bergman-space monographs in
-  Section 42 and from Krantz's *Geometric Analysis of the Bergman Kernel and Metric*.
+  linear partial differential equations. Not to be confused with the theory of Bergman
+  spaces and the Bergman kernel (Section 42).
 
 ### More recent works
 
@@ -4312,14 +4111,13 @@ and real-variable tools. Metric-space Sobolev theory is organised in Section
   course. Particularly useful for learning why the function-space
   constructions are needed.
 * **Vladimir G. Maz'ya, *Sobolev Spaces, with Applications to Elliptic
-  Partial Differential Equations***. The encyclopedic reference:
+  Partial Differential Equations*** (first edition 1985 as *Sobolev
+  Spaces*; 2nd, expanded ed. 2011). The encyclopedic reference:
   capacities, sharp constants, irregular domains, and necessary
-  conditions.
-  Also listed in Sections 11 and 14.
+  conditions. Also listed in Sections 11 and 14.
 * **Lawrence C. Evans and Ronald F. Gariepy, *Measure Theory and Fine
-  Properties of Functions***. Fine properties of Sobolev and BV
-  functions in compact form.
-  Also listed in Sections 5 and 37.
+  Properties of Functions***. Listed in full in Section 5. Fine
+  properties of Sobolev and BV functions in compact form.
 * **William P. Ziemer, *Weakly Differentiable Functions***. Sobolev
   spaces and BV with capacity and fine-topology methods throughout.
 * **Hans Triebel, *Theory of Function Spaces I–III*** (and later
@@ -4340,15 +4138,13 @@ and real-variable tools. Metric-space Sobolev theory is organised in Section
   Linear Operators***. The classical Russian treatment, strong on
   symmetric spaces.
 * **Alessandra Lunardi, *Interpolation Theory***. Short, precise, and
-  written with evolution equations in mind.
-  Also listed in Section 18.
+  written with evolution equations in mind. Also listed in Section 18.
 * **Luc Tartar, *An Introduction to Sobolev Spaces and Interpolation
   Spaces***. Insightful, historically aware, and close to PDE
   practice.
-* **David R. Adams and Lars Inge Hedberg, *Function Spaces and
-  Potential Theory***. Capacities, Bessel and Riesz potentials,
-  nonlinear potential estimates, and fine properties.
-  Also listed in Section 38.
+* **David R. Adams and Lars Inge Hedberg, *Function Spaces and Potential
+  Theory***. Capacities, Bessel and Riesz potentials, nonlinear
+  potential estimates, and fine properties. Also listed in Section 38.
 * **Thomas Runst and Winfried Sickel, *Sobolev Spaces of Fractional
   Order, Nemytskij Operators, and Nonlinear Partial Differential
   Equations***. Fractional smoothness and nonlinear composition
@@ -4371,15 +4167,13 @@ and real-variable tools. Metric-space Sobolev theory is organised in Section
 * **Emmanuel Hebey, *Sobolev Spaces on Riemannian
   Manifolds***. Sobolev theory in geometric settings.
 * **Haim Brezis, *Functional Analysis, Sobolev Spaces and Partial
-  Differential Equations***. A concise route from Banach-space methods
-  into Sobolev theory.
-  Also listed in Section 15.
+  Differential Equations***. Listed in full in Section 15. A concise
+  route from Banach-space methods into Sobolev theory.
 * **Hans Triebel, *The Structure of Functions***. Atomic, wavelet, and
   local-means characterizations of Besov and Triebel–Lizorkin spaces, with
   fractal applications.
 * **David E. Edmunds and W. Desmond Evans, *Hardy Operators, Function Spaces and
-  Embeddings***. Hardy operators and the function-space embeddings they control. Distinct
-  from their *Elliptic Differential Operators and Spectral Analysis*.
+  Embeddings***. Hardy operators and the function-space embeddings they control.
 
 ### More recent works
 
@@ -4392,7 +4186,7 @@ and real-variable tools. Metric-space Sobolev theory is organised in Section
   Applications*** (2016, [Springer](https://doi.org/10.1007/978-3-319-28739-3)). A short course on nonlocal elliptic
   equations and the fractional Laplacian.
   Also listed in Section 33.
-* **Yoshihiro Sawano, *Theory of Besov Spaces*** (2018, Springer,
+* **Yoshihiro Sawano, *Theory of Besov Spaces*** (2018, [Springer](https://doi.org/10.1007/978-981-13-0836-9),
   Developments in Mathematics). A detailed treatment of Besov spaces, their
   characterisations, and related function spaces, complementing Triebel's
   monographs.
@@ -4406,8 +4200,8 @@ and real-variable tools. Metric-space Sobolev theory is organised in Section
   treatment of Morrey spaces and their operators.
 * **David R. Adams, *Morrey Spaces*** (2015,
   [Birkhäuser](https://doi.org/10.1007/978-3-319-26681-7)). Morrey estimates,
-  potentials, capacities, and applications to PDE. A concise research course
-  beside the larger Morrey-space reference already listed.
+  potentials, capacities, and applications to PDE. A concise research course,
+  shorter than the two-volume Sawano–Di Fazio–Hakim treatment above.
 * **Vakhtang Kokilashvili, Alexander Meskhi, Humberto Rafeiro, and
   Stefan Samko, *Integral Operators in Non-Standard Function Spaces***
   (2 volumes, 2016, Birkhäuser; [I](https://doi.org/10.1007/978-3-319-21015-5), [II](https://doi.org/10.1007/978-3-319-21018-6)). Singular integrals on Morrey, variable
@@ -4418,7 +4212,7 @@ and real-variable tools. Metric-space Sobolev theory is organised in Section
   rearrangement-invariant function spaces, including duality and embeddings.
 * **Lars Diening, Petteri Harjulehto, Peter Hästö, and Michael
   Růžička, *Lebesgue and Sobolev Spaces with Variable
-  Exponents*** (2011, Springer, Lecture Notes in Mathematics). The
+  Exponents*** (2011, [Springer](https://doi.org/10.1007/978-3-642-18363-8), Lecture Notes in Mathematics). The
   standard treatment of variable-exponent spaces.
 * **David V. Cruz-Uribe and Alberto Fiorenza, *Variable Lebesgue Spaces:
   Foundations and Harmonic Analysis*** (2013,
@@ -4426,7 +4220,7 @@ and real-variable tools. Metric-space Sobolev theory is organised in Section
   Variable-exponent spaces, the maximal operator, and extrapolation. The
   companion to Diening–Harjulehto–Hästö–Růžička.
 * **Petteri Harjulehto and Peter Hästö, *Orlicz Spaces and Generalized
-  Orlicz Spaces*** (2019, Springer, Lecture Notes in Mathematics). The
+  Orlicz Spaces*** (2019, [Springer](https://doi.org/10.1007/978-3-030-15100-3), Lecture Notes in Mathematics). The
   modern reference for Musielak–Orlicz settings and the associated
   harmonic analysis.
 * **Juha Kinnunen, Juha Lehrbäck, and Antti Vähäkangas, *Maximal Function
@@ -4440,7 +4234,7 @@ and real-variable tools. Metric-space Sobolev theory is organised in Section
   [European Mathematical Society](https://doi.org/10.4171/140)). Sobolev capacities, measure data, and
   the borderline integrability of solutions.
   Also listed in Sections 33 and 38.
-* **Haïm Brezis and Petru Mironescu, *Sobolev Maps to the Circle: From the
+* **Haim Brezis and Petru Mironescu, *Sobolev Maps to the Circle: From the
   Perspective of Analysis, Geometry, and Topology*** (2021,
   [Birkhäuser](https://doi.org/10.1007/978-1-0716-1512-6)). Lifting, degree,
   and density questions for Sobolev and VMO maps with values in the circle.
@@ -4518,9 +4312,9 @@ Hardy-space theory in Section 42.
   Hilbert transform.
 * **Thomas H. Wolff, *Lectures on Harmonic Analysis***. Lectures on Fourier
   restriction, Kakeya problems, and geometric methods in harmonic analysis.
-* **Christopher D. Sogge, *Fourier Integrals in Classical
-  Analysis***. Oscillatory integrals, spectral clusters, and
-  eigenfunction estimates.
+* **Christopher D. Sogge, *Fourier Integrals in Classical Analysis***.
+  Listed in full in Section 53. Oscillatory integrals, spectral
+  clusters, and eigenfunction estimates.
 * **Elias M. Stein, *Topics in Harmonic Analysis Related to the
   Littlewood–Paley Theory***. A short classic on square functions and
   semigroup methods.
@@ -4528,13 +4322,12 @@ Hardy-space theory in Section 42.
   Groups***. Hardy spaces, singular integrals, and subelliptic analysis on
   homogeneous groups.
 * **Alexander Nagel and Elias M. Stein, *Lectures on
-  Pseudo-Differential Operators***, and their work on
-  Carnot–Carathéodory metrics. The subelliptic strand of real-variable
-  theory.
+  Pseudo-Differential Operators***. Pseudodifferential operators and
+  their application to non-elliptic problems: the subelliptic strand of
+  real-variable theory.
 * **E. C. Titchmarsh, *Introduction to the Theory of Fourier
   Integrals***. A classical reference for the Fourier transform of a
-  single variable.
-  Also listed in Section 49.
+  single variable. Also listed in Section 49.
 * **Jean-Pierre Kahane, *Some Random Series of Functions***. Random
   Fourier series, and a model of how probability enters harmonic
   analysis.
@@ -4571,8 +4364,7 @@ Hardy-space theory in Section 42.
   Operators in Harmonic Analysis***. Clifford algebras, Dirac operators, and
   their use in Euclidean harmonic analysis and representation theory.
 * **Ralph P. Boas, Jr., *Integrability Theorems for Trigonometric Transforms***.
-  Integrability of Fourier transforms of monotone functions and of wider classes. Distinct
-  from his *Entire Functions*.
+  Integrability of Fourier transforms of monotone functions and of wider classes.
 
 ### More recent works
 
@@ -4586,13 +4378,13 @@ Hardy-space theory in Section 42.
 
 #### Real-variable theory: research monographs
 
-* **David V. Cruz-Uribe, José Maria Martell, and Carlos Pérez, *Weights,
-  Extrapolation and the Theory of Rubio de Francia*** (2011, Birkhäuser,
+* **David V. Cruz-Uribe, José María Martell, and Carlos Pérez, *Weights,
+  Extrapolation and the Theory of Rubio de Francia*** (2011, [Birkhäuser](https://doi.org/10.1007/978-3-0348-0072-3),
   Operator Theory: Advances and Applications). Weighted norm inequalities,
   Rubio de Francia extrapolation, and applications to operators in harmonic
   analysis.
 * **Camil Muscalu and Wilhelm Schlag, *Classical and Multilinear
-  Harmonic Analysis I–II*** (2013, Cambridge University Press, Cambridge
+  Harmonic Analysis I–II*** (2013, Cambridge University Press; [I](https://doi.org/10.1017/CBO9781139047081), [II](https://doi.org/10.1017/CBO9781139410397); Cambridge
   Studies in Advanced Mathematics). The modern route to paraproducts,
   time-frequency methods, and multilinear estimates.
 * **Vasily Vasyunin and Alexander Volberg, *The Bellman Function Technique in
@@ -4622,21 +4414,24 @@ Hardy-space theory in Section 42.
 * **Alexei Poltoratski, *Toeplitz Approach to Problems of the
   Uncertainty Principle*** (2015, [American Mathematical Society](https://doi.org/10.1090/cbms/121)). Listed in full in Section 21.
 * **Tuomas Hytönen, Jan van Neerven, Mark Veraar, and Lutz Weis,
-  *Analysis in Banach Spaces I–III*** (2016–2023, Springer, Ergebnisse der
-  Mathematik und ihrer Grenzgebiete). The vector-valued theory.
-  Also listed in Section 18.
+  *Analysis in Banach Spaces I–III*** (2016–2023, Springer;
+  [I](https://doi.org/10.1007/978-3-319-48520-1),
+  [II](https://doi.org/10.1007/978-3-319-69808-3),
+  [III](https://doi.org/10.1007/978-3-031-46598-7); Ergebnisse der
+  Mathematik und ihrer Grenzgebiete). Listed in full in Section 18. The
+  vector-valued theory.
 
 #### Restriction, geometric, and additive-combinatorial methods
 
 * **Ciprian Demeter, *Fourier Restriction, Decoupling, and
-  Applications*** (2020, Cambridge University Press, Cambridge Studies in
+  Applications*** (2020, [Cambridge University Press](https://doi.org/10.1017/9781108584401), Cambridge Studies in
   Advanced Mathematics). The standard book on decoupling and its arithmetic
   and PDE consequences.
-* **Pertti Mattila, *Fourier Analysis and Hausdorff
-  Dimension*** (2015, Cambridge University Press, Cambridge Studies in
+* **Pertti Mattila, *Fourier Analysis and Hausdorff Dimension*** (2015,
+  [Cambridge University
+  Press](https://doi.org/10.1017/CBO9781316227619), Cambridge Studies in
   Advanced Mathematics). Projections, distance sets, and the
-  Fourier-analytic side of fractal geometry.
-  Also listed in Section 37.
+  Fourier-analytic side of fractal geometry. Also listed in Section 37.
 * **Larry Guth, *Polynomial Methods in Combinatorics*** (2016, [American
   Mathematical Society](https://doi.org/10.1090/ulect/064), University Lecture Series).
   Polynomial partitioning, the joints problem, and applications of incidence
@@ -4674,31 +4469,30 @@ analytic constructions and estimates.
 * **Ronald R. Coifman and Guido Weiss, *Transference Methods in
   Analysis***. Listed in full in Section 27.
 * **Edwin Hewitt and Kenneth A. Ross, *Abstract Harmonic Analysis
-  I–II***. A two-volume reference on locally compact groups, Haar measure,
-  representation theory, and duality.
-  Also listed in Section 1.
+  I–II***. A two-volume reference on locally compact groups, Haar
+  measure, representation theory, and duality. Also listed in Section 1.
 * **Walter Rudin, *Fourier Analysis on Groups***. A compact classic on
   locally compact abelian groups, idempotent measures, Sidon sets, and
   Fourier–Stieltjes theory.
 * **Hans Reiter and Jan D. Stegeman, *Classical Harmonic Analysis and
   Locally Compact Groups***. A systematic modern account with careful
   treatment of the Segal-algebra viewpoint.
-* **Lynn H. Loomis, *An Introduction to Abstract Harmonic
-  Analysis***. Short, classical, and algebra-first.
-  Also listed in Section 20.
+* **Lynn H. Loomis, *An Introduction to Abstract Harmonic Analysis***.
+  Short, classical, and algebra-first: the bridge from Banach algebras
+  to harmonic analysis on groups. Also listed in Section 20.
 * **Jacques Faraut, *Analysis on Lie Groups: An Introduction*** (2008,
   [Cambridge University Press](https://doi.org/10.1017/CBO9780511755170)).
   Matrix Lie groups, Haar measure, the Peter–Weyl theorem, and spherical
   harmonics, as a first course in harmonic analysis on groups.
 * **Brian C. Hall, *Lie Groups, Lie Algebras, and Representations: An
   Elementary Introduction*** (2nd ed., 2015, [Springer](https://doi.org/10.1007/978-3-319-13467-3), Graduate Texts
-  in Mathematics; first edition 2003). The usual first book on compact groups and their
-  representations for analysts.
+  in Mathematics; first edition 2003). A first course on matrix Lie groups, Lie algebras,
+  and their representations.
 * **Daniel Bump, *Lie Groups*** (2nd ed., 2013, [Springer](https://doi.org/10.1007/978-1-4614-8024-2), Graduate Texts
   in Mathematics; first edition 2004). A graduate treatment of Lie groups
   and their finite- and infinite-dimensional representations, with
   applications to harmonic analysis.
-* **Sigurður Helgason, *Groups and Geometric Analysis*** and
+* **Sigurdur Helgason, *Groups and Geometric Analysis*** and
   ***Geometric Analysis on Symmetric Spaces***. Spherical functions,
   invariant differential operators, Radon transforms, and analysis on
   symmetric spaces.
@@ -4723,9 +4517,8 @@ analytic constructions and estimates.
   spaces of positive matrices, with applications to number theory and
   physics.
 * **I. M. Gel'fand, M. I. Graev, and N. Ya. Vilenkin, *Generalized
-  Functions*, volume 5**. Integral geometry and representation theory
-  in the Gelfand style.
-  Also listed in Section 16.
+  Functions*, volume 5**. Listed in full in Section 16. Integral
+  geometry and representation theory in the Gelfand style.
 * **Gerald B. Folland, *Harmonic Analysis in Phase Space***. The
   Heisenberg group, Weyl calculus, and the metaplectic representation.
   Also listed in Section 30.
@@ -4777,8 +4570,7 @@ analytic constructions and estimates.
   generate.
 * **Valery V. Volchkov and Vitaly V. Volchkov, *Harmonic Analysis of Mean Periodic Functions
   on Symmetric Spaces and the Heisenberg Group***. Mean-periodic functions, spectral
-  synthesis, and the Pompeiu problem on symmetric spaces and the Heisenberg group. Distinct
-  from their *Offbeat Integral Geometry on Symmetric Spaces*.
+  synthesis, and the Pompeiu problem on symmetric spaces and the Heisenberg group.
 
 ### More recent works
 
@@ -4792,10 +4584,10 @@ analytic constructions and estimates.
   and representation theory of locally compact and discrete groups. A research
   reference connecting abstract harmonic analysis with operator algebras.
 * **Eberhard Kaniuth and Anthony To-Ming Lau, *Fourier and
-  Fourier–Stieltjes Algebras on Locally Compact Groups*** (2018, American
-  Mathematical Society, Mathematical Surveys and Monographs). The
-  algebra-theoretic modern reference.
-  Also listed in Section 20.
+  Fourier–Stieltjes Algebras on Locally Compact Groups*** (2018,
+  [American Mathematical Society](https://doi.org/10.1090/surv/231),
+  Mathematical Surveys and Monographs). The algebra-theoretic modern
+  reference. Also listed in Section 20.
 * **Eberhard Kaniuth and Keith F. Taylor, *Induced Representations of
   Locally Compact Groups*** (2013, [Cambridge University
   Press](https://doi.org/10.1017/CBO9781139045391)). Mackey's induction
@@ -4906,8 +4698,8 @@ applications alone.
   and Algorithms*** and ***Advances in Gabor Analysis***. Collections
   that function as references for the subject.
 * **M. W. Wong, *Wavelet Transforms and Localization Operators***. Localization operators
-  defined through the wavelet transform. Distinct from R. Wong, *Asymptotic Approximations
-  of Integrals*.
+  defined through the wavelet transform. Not to be confused with Roderick Wong, author of
+  *Asymptotic Approximations of Integrals* (Section 50).
 
 ### More recent works
 
@@ -4947,12 +4739,22 @@ applications alone.
   anisotropic features.
 * **Alexander Olevskii and Alexander Ulanovskii, *Functions with
   Disconnected Spectrum: Sampling, Interpolation, Translates*** (2016,
-  American Mathematical Society, University Lecture Series). Sampling and
+  [American Mathematical Society](https://doi.org/10.1090/ulect/065), University Lecture Series). Sampling and
   interpolation for functions with spectrum in a given set.
+* **Yonina C. Eldar, *Sampling Theory: Beyond Bandlimited Systems***
+  (2014, [Cambridge University
+  Press](https://doi.org/10.1017/CBO9780511762321)). Sampling and
+  reconstruction in shift-invariant, multiband, and union-of-subspaces
+  models, formulated in Hilbert-space and frame language.
 * **Simon Foucart and Holger Rauhut, *A Mathematical Introduction to
-  Compressive Sensing*** (2013, Birkhäuser, Applied and Numerical Harmonic
+  Compressive Sensing*** (2013, [Birkhäuser](https://doi.org/10.1007/978-0-8176-4948-7), Applied and Numerical Harmonic
   Analysis). Sparse recovery and compressed sensing, using concentration
   inequalities, random matrices, and approximation theory.
+* **Ben Adcock and Anders C. Hansen, *Compressive Imaging: Structure,
+  Sampling, Learning*** (2021, [Cambridge University
+  Press](https://doi.org/10.1017/9781108377447)). Compressed sensing for
+  imaging problems: structured sparsity, variable-density sampling, and the
+  stability of reconstruction, including learned methods.
 * **Andrei Osipov, Vladimir Rokhlin, and Hong Xiao, *Prolate Spheroidal Wave Functions of
   Order Zero: Mathematical Tools for Bandlimited Approximation*** (2013,
   [Springer](https://doi.org/10.1007/978-1-4614-8259-8)). Prolate spheroidal wave functions
@@ -4977,11 +4779,12 @@ treats asymptotic methods more broadly.
 
 * **Lars Hörmander, *The Analysis of Linear Partial Differential
   Operators I***. The working reference for distributions, Fourier
-  transforms, wavefront sets, and constant-coefficient equations.
+  transforms, wavefront sets, and constant-coefficient equations. Also
+  listed in Sections 1 and 32.
 * **Lars Hörmander, *The Analysis of Linear Partial Differential
-  Operators II–IV***. Differential operators with variable
-  coefficients, pseudodifferential operators, propagation of
-  singularities, and Fourier integral operators.
+  Operators II–IV***. Differential operators with variable coefficients,
+  pseudodifferential operators, propagation of singularities, and
+  Fourier integral operators. Also listed in Sections 1 and 32.
 * **Lars Hörmander, *Linear Partial Differential Operators***. The
   earlier, shorter route into the constant-coefficient and
   distributional theory.
@@ -5004,10 +4807,9 @@ treats asymptotic methods more broadly.
 * **Johannes J. Duistermaat, *Fourier Integral Operators***. The classic
   geometric treatment of canonical relations and oscillatory
   integrals.
-* **M. A. Shubin, *Pseudodifferential Operators and Spectral
-  Theory***. Global pseudodifferential analysis and spectral
-  asymptotics.
-  Also listed in Section 53.
+* **M. A. Shubin, *Pseudodifferential Operators and Spectral Theory***.
+  Global pseudodifferential analysis and spectral asymptotics. Also
+  listed in Section 53.
 * **Xavier Saint Raymond, *Elementary Introduction to the Theory of
   Pseudodifferential Operators***. An accessible short entry point.
 * **Serge Alinhac and Patrick Gérard, *Pseudo-differential Operators and the
@@ -5018,22 +4820,20 @@ treats asymptotic methods more broadly.
 * **Mouez Dimassi and Johannes Sjöstrand, *Spectral Asymptotics in the
   Semi-Classical Limit***. Semiclassical pseudodifferential methods and
   spectral asymptotics, including trace formulas and estimates for
-  Schrödinger operators.
-  Also listed in Section 50.
+  Schrödinger operators. Also listed in Section 50.
 * **André Martinez, *An Introduction to Semiclassical and Microlocal
   Analysis***. An introduction to semiclassical and microlocal methods,
   including pseudodifferential operators, WKB constructions, and spectral
   applications.
-* **Gerald B. Folland, *Harmonic Analysis in Phase Space***. Weyl
-  quantization and the Heisenberg-group foundation.
-  Also listed in Section 28.
+* **Gerald B. Folland, *Harmonic Analysis in Phase Space***. Listed in
+  full in Section 28. Weyl quantization and the Heisenberg-group
+  foundation.
 * **Victor Guillemin and Shlomo Sternberg, *Geometric Asymptotics***. The
   symplectic side of oscillatory integrals and spectral asymptotics. Their
   later *Semi-Classical Analysis* is listed among the more recent works.
 * **Richard B. Melrose, *The Atiyah–Patodi–Singer Index Theorem*** and
   ***Geometric Scattering Theory***. Microlocal analysis on manifolds
-  with boundary and at infinity.
-  Also listed in Section 53.
+  with boundary and at infinity. Also listed in Section 53.
 * **Frédéric Pham, *Singularities of Integrals: Homology, Hyperfunctions and
   Microlocal Analysis*** (2011; English translation of the 2005 French work,
   [Springer](https://doi.org/10.1007/978-0-85729-603-0)). Integration cycles,
@@ -5055,7 +4855,7 @@ treats asymptotic methods more broadly.
   microlocal analysis in the Sato school's approach.
 * **V. P. Maslov and M. V. Fedoriuk, *Semi-Classical Approximation in
   Quantum Mechanics***. The canonical operator and Maslov index; the
-  founding work on global WKB approximation.
+  systematic account of global WKB approximation.
 * **Yuri V. Egorov and Bert-Wolfgang Schulze, *Pseudo-Differential Operators, Singularities,
   Applications***. Pseudodifferential operators on manifolds with singularities, and the
   edge calculus.
@@ -5064,8 +4864,8 @@ treats asymptotic methods more broadly.
 
 ### More recent works
 
-* **Maciej Zworski, *Semiclassical Analysis*** (2012, American
-  Mathematical Society). The standard graduate text for semiclassical
+* **Maciej Zworski, *Semiclassical Analysis*** (2012, [American
+  Mathematical Society](https://doi.org/10.1090/gsm/138)). The standard graduate text for semiclassical
   calculus, microlocalization, and applications to spectral theory and
   resonances.
 * **Victor Guillemin and Shlomo Sternberg, *Semi-Classical Analysis***
@@ -5073,18 +4873,18 @@ treats asymptotic methods more broadly.
   viewpoint: WKB, Fourier integral operators, the Maslov index, and
   spectral asymptotics.
 * **Nicolas Lerner, *Metrics on the Phase Space and Non-Selfadjoint
-  Pseudo-Differential Operators*** (2010, Birkhäuser). The modern
+  Pseudo-Differential Operators*** (2010, [Birkhäuser](https://doi.org/10.1007/978-3-7643-8510-1)). The modern
   Weyl–Hörmander calculus, done thoroughly.
 * **Hajer Bahouri, Jean-Yves Chemin, and Raphaël Danchin, *Fourier
   Analysis and Nonlinear Partial Differential Equations*** (2011,
-  Springer). Paradifferential calculus and Littlewood–Paley methods for
-  nonlinear PDE. Also listed in Section 34.
+  [Springer](https://doi.org/10.1007/978-3-642-16830-7)). Listed in full in Section 34. Paradifferential
+  calculus and Littlewood–Paley methods for nonlinear PDE.
 * **Fabio Nicola and Luigi Rodino, *Global Pseudo-Differential Calculus on
   Euclidean Spaces*** (2010,
   [Birkhäuser](https://doi.org/10.1007/978-3-7643-8512-5)). Shubin and SG
   symbol classes, global ellipticity, and spectral asymptotics on R^n.
 * **Semyon Dyatlov and Maciej Zworski, *Mathematical Theory of
-  Scattering Resonances*** (2019, American Mathematical Society). Scattering
+  Scattering Resonances*** (2019, [American Mathematical Society](https://doi.org/10.1090/gsm/200)). Scattering
   resonances for differential operators, developed through spectral,
   complex-analytic, and microlocal methods.
 * **Victor Ivrii, *Microlocal Analysis, Sharp Spectral Asymptotics and
@@ -5095,8 +4895,7 @@ treats asymptotic methods more broadly.
   Also listed in Sections 50 and 53.
 * **Nicolas Lerner, *Carleman Inequalities: An Introduction and More*** (2019,
   [Springer](https://doi.org/10.1007/978-3-030-15993-1)). A systematic
-  treatment of weighted estimates, unique continuation, and applications. A
-  distinct later monograph beside Lerner's phase-space book listed above.
+  treatment of weighted estimates, unique continuation, and applications.
 * **Alberto Parmeggiani, *Spectral Theory of Non-commutative Harmonic
   Oscillators: An Introduction*** (2010, [Springer](https://doi.org/10.1007/978-3-642-11922-4), Lecture Notes in
   Mathematics). A short research introduction to a model non-commuting
@@ -5174,9 +4973,8 @@ systems. Perturbation and averaging also connect with Section 50.
   Mathematical Sciences). Averaging with error estimates, normal forms, and
   passage through resonance. Also listed in Section 50.
 * **Anatole Katok and Boris Hasselblatt, *Introduction to the Modern
-  Theory of Dynamical Systems***. The standard large graduate
-  reference for smooth and hyperbolic dynamics.
-  Also listed in Section 10.
+  Theory of Dynamical Systems***. The standard large graduate reference
+  for smooth and hyperbolic dynamics. Also listed in Section 10.
 * **Jacob Palis and Welington de Melo, *Geometric Theory of Dynamical
   Systems: An Introduction***. Structural stability, genericity, and the
   Kupka–Smale theorem, in the geometric theory of flows and
@@ -5222,14 +5020,13 @@ systems. Perturbation and averaging also connect with Section 50.
   solutions of nonlinear wave equations by variational methods and
   Nash–Moser iteration, small divisors included.
 * **Wolfgang Wasow, *Asymptotic Expansions for Ordinary Differential
-  Equations***. The classical reference for singular points and
-  asymptotic ODE theory. Also listed in Section 50.
+  Equations***. Listed in full in Section 50. The classical reference
+  for singular points and asymptotic ODE theory.
 * **Earl A. Coddington and Robert Carlson, *Linear Ordinary
   Differential Equations***. Linear ordinary differential equations
   and their spectral theory in modern form.
 * **Anton Zettl, *Sturm–Liouville Theory***. The modern systematic
-  account of the Sturm–Liouville problem.
-  Also listed in Section 22.
+  account of the Sturm–Liouville problem. Also listed in Section 22.
 * **Yulij Ilyashenko and Sergei Yakovenko, *Lectures on Analytic
   Differential Equations***. The complex-analytic theory: monodromy,
   normal forms, and limit cycles.
@@ -5249,28 +5046,23 @@ systems. Perturbation and averaging also connect with Section 50.
 * **Jack K. Hale, Luis T. Magalhães, and Waldyr M. Oliva, *Dynamics in Infinite
   Dimensions*** (2nd ed., 2002). Invariant manifolds and attractors for delay equations and
   dissipative partial differential equations, with an appendix by Krzysztof P. Rybakowski.
-  Distinct from Hale's *Ordinary Differential Equations*.
 * **Peter Constantin, Ciprian Foias, Basil Nicolaenko, and Roger Temam, *Integral Manifolds
   and Inertial Manifolds for Dissipative Partial Differential Equations***. Inertial
-  manifolds and finite-dimensional reduction for dissipative evolution equations. Distinct
-  from Constantin and Foias, *Navier–Stokes Equations*.
+  manifolds and finite-dimensional reduction for dissipative evolution equations.
 * **Stephen Wiggins, *Global Bifurcations and Chaos: Analytical Methods***. Global
-  bifurcations, homoclinic orbits, and analytic methods for detecting chaos. Distinct from
-  his *Introduction to Applied Nonlinear Dynamical Systems and Chaos* and from *Normally
-  Hyperbolic Invariant Manifolds in Dynamical Systems*.
+  bifurcations, homoclinic orbits, and analytic methods for detecting chaos.
 * **Kenneth R. Meyer and Daniel C. Offin, *Introduction to Hamiltonian Dynamical Systems and
   the N-Body Problem*** (3rd ed., 2017,
   [Springer](https://doi.org/10.1007/978-3-319-53691-0)). Hamiltonian systems, stability,
   and the N-body problem. The first edition, with Glen R. Hall, appeared in 1992.
 * **Edson de Faria and Welington de Melo, *Mathematical Tools for One-Dimensional
   Dynamics***. Quasiconformal mappings, Riemann surfaces, and the analytic tools of
-  one-dimensional dynamics. Distinct from Palis and de Melo, *Geometric Theory of Dynamical
-  Systems*.
+  one-dimensional dynamics.
 
 ### More recent works
 
 * **Gerald Teschl, *Ordinary Differential Equations and Dynamical
-  Systems*** (2012, American Mathematical Society). A modern rigorous
+  Systems*** (2012, [American Mathematical Society](https://doi.org/10.1090/gsm/140)). A modern rigorous
   graduate course connecting ODE, dynamical systems, and spectral
   theory; freely available.
 * **Luis Barreira and Claudia Valls, *Ordinary Differential Equations:
@@ -5319,7 +5111,7 @@ systems. Perturbation and averaging also connect with Section 50.
   Averaging, KAM, and separatrix splitting in a short course.
 * **Alfonso Sorrentino, *Action-Minimizing Methods in Hamiltonian
   Dynamics: An Introduction to Aubry–Mather Theory*** (2015, [Princeton
-  University Press](https://doi.org/10.1515/9781400866618), Annals of Mathematics Studies). Aubry–Mather theory
+  University Press](https://doi.org/10.1515/9781400866618), Mathematical Notes). Aubry–Mather theory
   and weak KAM, as a graduate monograph. Albert Fathi's long-circulated
   lecture notes remain the other standard entry to weak KAM.
 * **Vadim Kaloshin and Ke Zhang, *Arnold Diffusion for Smooth Systems of
@@ -5331,6 +5123,13 @@ systems. Perturbation and averaging also connect with Section 50.
 * **Shangjiang Guo and Jianhong Wu, *Bifurcation Theory of Functional
   Differential Equations*** (2013, [Springer](https://doi.org/10.1007/978-1-4614-6992-6)). Normal forms and
   bifurcations for delay equations.
+* **Hal Smith, *An Introduction to Delay Differential Equations with
+  Applications to the Life Sciences*** (2011,
+  [Springer](https://doi.org/10.1007/978-1-4419-7646-8), Texts in Applied
+  Mathematics). The method of steps, characteristic equations, linearized
+  stability, semiflows, and Hopf bifurcation for delay equations, with
+  biological models. An introductory route to Hale and Verduyn Lunel
+  (Section 24).
 * **Todd Fisher and Boris Hasselblatt, *Hyperbolic Flows*** (2019,
   [European Mathematical Society](https://doi.org/10.4171/200)). Listed in full in Section 10.
 * **José F. Alves, *Nonuniformly Hyperbolic Attractors*** (2020,
@@ -5366,10 +5165,9 @@ formulations are treated in Sections 24–25.
   standard first graduate course: characteristics, the classical
   equations, Sobolev spaces, weak solutions, elliptic regularity, and
   variational methods.
-* **Michael E. Taylor, *Partial Differential Equations
-  I–III***. Broader and more geometric, extending to spectral theory,
-  microlocal analysis, and nonlinear problems.
-  Also listed in Section 1.
+* **Michael E. Taylor, *Partial Differential Equations I–III***. Broader
+  and more geometric, extending to spectral theory, microlocal analysis,
+  and nonlinear problems. Also listed in Section 1.
 * **Gerald B. Folland, *Introduction to Partial Differential
   Equations***. A compact analytic course centred on distributions,
   the Fourier transform, and constant-coefficient equations.
@@ -5396,16 +5194,15 @@ formulations are treated in Sections 24–25.
   functional-analytic methods together. Useful for readers wanting the
   potential-theoretic and operator approaches in one sequence.
 * **Lars Hörmander, *The Analysis of Linear Partial Differential
-  Operators I–IV***. A four-volume research reference for distributions,
-  linear differential operators, pseudodifferential calculus, and
-  propagation of singularities.
-  Also listed in Section 1.
+  Operators I–IV***. Listed in full in Section 30. A four-volume
+  research reference for distributions, linear differential operators,
+  pseudodifferential calculus, and propagation of singularities.
 * **S. Mizohata, *The Theory of Partial Differential Equations***. A
   classical Japanese-school treatment strong on energy methods and
   well-posedness.
 * **Vladimir A. Kozlov, Vladimir G. Maz'ya, and Jürgen Rossmann, *Elliptic
   Boundary Value Problems in Domains with Point Singularities***. Elliptic
-  boundary-value problems near conical and cuspidal points, using operator
+  boundary-value problems near angular and conical points, using operator
   pencils and asymptotic expansions of solutions.
 * **Pierre Grisvard, *Elliptic Problems in Nonsmooth Domains***. The
   standard source for regularity on polygonal and Lipschitz domains.
@@ -5427,12 +5224,10 @@ formulations are treated in Sections 24–25.
   boundary-value problems in Sobolev spaces.
 * **Demetrios Christodoulou, *The Action Principle and Partial Differential Equations***.
   The calculus of variations for systems of partial differential equations, and the action
-  principle as a source of hyperbolic equations. Distinct from his monographs on the
-  Einstein equations.
+  principle as a source of hyperbolic equations.
 * **Olga A. Ladyzhenskaya, *The Boundary Value Problems of Mathematical Physics***.
   Functional-analytic methods for elliptic, parabolic, and hyperbolic boundary-value
-  problems. Distinct from Ladyzhenskaya and Ural'tseva and from Ladyzhenskaya, Solonnikov,
-  and Ural'tseva.
+  problems.
 * **Olle Stormark, *Lie's Structural Approach to PDE Systems***. Lie's theory of local
   solvability and the structure of overdetermined systems of partial differential equations.
 
@@ -5504,8 +5299,8 @@ Hyperbolic and dispersive evolution is organised in Section 34.
   boundary estimates.
 * **N. V. Krylov, *Lectures on Elliptic and Parabolic Equations in
   Hölder Spaces*** and ***…in Sobolev Spaces***. Schauder and Sobolev
-  theory from the Krylov school, with the fully nonlinear techniques
-  included.
+  (L^p) theory for linear equations from the Krylov school; the fully
+  nonlinear theory is in the next entry.
 * **N. V. Krylov, *Nonlinear Elliptic and Parabolic Equations of the
   Second Order***. The Krylov–Safonov theory and fully nonlinear
   regularity.
@@ -5518,10 +5313,9 @@ Hyperbolic and dispersive evolution is organised in Section 34.
 * **Mariano Giaquinta and Luca Martinazzi, *An Introduction to the
   Regularity Theory for Elliptic Systems, Harmonic Maps and Minimal
   Graphs***. A modern, more readable route to the same material.
-* **Enrico Giusti, *Direct Methods in the Calculus of
-  Variations***. Regularity for minimizers, with the De Giorgi
-  technique developed carefully.
-  Also listed in Section 36.
+* **Enrico Giusti, *Direct Methods in the Calculus of Variations***.
+  Listed in full in Section 36. Regularity for minimizers, with the De
+  Giorgi technique developed carefully.
 * **Michael G. Crandall, Hitoshi Ishii, and Pierre-Louis Lions,
   *User's Guide to Viscosity Solutions of Second Order Partial Differential
   Equations*** (1992, survey article in *Bulletin of the American
@@ -5556,9 +5350,9 @@ Hyperbolic and dispersive evolution is organised in Section 34.
 * **Peter Lindqvist, *Notes on the p-Laplace Equation***. A concise
   introduction to the p-Laplace equation.
 * **Juha Heinonen, Tero Kilpeläinen, and Olli Martio, *Nonlinear
-  Potential Theory of Degenerate Elliptic Equations***. The standard
-  monograph on degenerate elliptic equations.
-  Also listed in Section 38.
+  Potential Theory of Degenerate Elliptic Equations***. Listed in full
+  in Section 38. The standard monograph on degenerate elliptic
+  equations.
 * **Juan Luis Vázquez, *The Porous Medium Equation: Mathematical Theory***
   (2007, [Oxford University Press](https://doi.org/10.1093/acprof:oso/9780198569039.001.0001)). The monograph on the porous-medium
   equation: existence, regularity, and asymptotics.
@@ -5571,8 +5365,7 @@ Hyperbolic and dispersive evolution is organised in Section 34.
 * **Emmanuele DiBenedetto, *Degenerate Parabolic Equations***. The
   monograph on degenerate and singular parabolic equations, intrinsic
   scaling, and the Harnack inequality. The later accounts of intrinsic
-  scaling rest on it. Distinct from his *Real Analysis* and *Partial
-  Differential Equations*.
+  scaling rest on it.
 * **José Miguel Urbano, *The Method of Intrinsic Scaling: A Systematic
   Approach to Regularity for Degenerate and Singular PDEs*** (2008,
   [Springer](https://doi.org/10.1007/978-3-540-75932-4), Lecture Notes in Mathematics). Intrinsic scaling as a
@@ -5609,7 +5402,7 @@ Hyperbolic and dispersive evolution is organised in Section 34.
   methods. A graduate bridge from functional analysis to nonlinear elliptic
   existence theory.
 * **Hervé Le Dret, *Nonlinear Elliptic Partial Differential Equations: An
-  Introduction*** (2018; English translation,
+  Introduction*** (2018; English translation of the 2013 French book,
   [Springer](https://doi.org/10.1007/978-3-319-78390-1)). Weak formulations,
   monotonicity, and variational methods for nonlinear elliptic problems. A
   course-length introduction before the specialised regularity monographs.
@@ -5624,7 +5417,7 @@ Hyperbolic and dispersive evolution is organised in Section 34.
   Monographs). W^{2,p} solvability and viscosity solutions for fully
   nonlinear equations, by one of the founders of the regularity theory.
 * **Alessio Figalli, *The Monge–Ampère Equation and Its
-  Applications*** (2017, European Mathematical Society). Regularity
+  Applications*** (2017, [European Mathematical Society](https://doi.org/10.4171/170)). Regularity
   theory for Monge–Ampère, with the optimal-transport connection.
   Also listed in Section 39.
 * **Nam Q. Le, *Analysis of Monge–Ampère Equations*** (2024, [American
@@ -5635,14 +5428,14 @@ Hyperbolic and dispersive evolution is organised in Section 34.
   treatments of Gutiérrez and Figalli listed in this section.
 * **Arshak Petrosyan, Henrik Shahgholian, and Nina N. Ural'tseva,
   *Regularity of Free Boundaries in Obstacle-Type Problems*** (2012,
-  American Mathematical Society, Graduate Studies in Mathematics). A
+  [American Mathematical Society](https://doi.org/10.1090/gsm/136), Graduate Studies in Mathematics). A
   graduate text on obstacle-type free-boundary problems that reaches the
   research literature.
 * **Bozhidar Velichkov, *Regularity of the One-phase Free Boundaries***
   (2023, [Springer](https://doi.org/10.1007/978-3-031-13238-4), Lecture Notes of the Unione Matematica Italiana). An
   open-access introduction to one-phase free-boundary regularity,
   organised around four theorems.
-  Also listed in Sections 14 and 37.
+  Also listed in Section 37.
 * **Xavier Fernández-Real and Xavier Ros-Oton, *Integro-Differential
   Elliptic Equations*** (2024,
   [Birkhäuser](https://doi.org/10.1007/978-3-031-54242-8), Progress in
@@ -5663,10 +5456,10 @@ Hyperbolic and dispersive evolution is organised in Section 34.
   Entropy dissipation, existence, and convergence to equilibrium for diffusion
   systems. A short introduction to estimates particularly useful when maximum
   principles are unavailable.
-* **Vitaly Volpert, *Elliptic Partial Differential Equations*** (2 volumes:
-  *Fredholm Theory of Elliptic Problems in Unbounded Domains* (2011);
-  *Reaction-Diffusion Equations* (2014),
-  [Birkhäuser](https://doi.org/10.1007/978-3-0346-0537-3); [volume II](https://doi.org/10.1007/978-3-0348-0813-2)). Elliptic problems
+* **Vitaly Volpert, *Elliptic Partial Differential Equations*** (2 volumes,
+  2011–2014, Birkhäuser; [I](https://doi.org/10.1007/978-3-0346-0537-3): *Fredholm
+  Theory of Elliptic Problems in Unbounded Domains*; [II](https://doi.org/10.1007/978-3-0348-0813-2):
+  *Reaction-Diffusion Equations*). Elliptic problems
   on unbounded domains, Fredholm properties, and reaction–diffusion models. A
   research treatise complementing bounded-domain regularity books.
 * **Hung Vinh Tran, *Hamilton–Jacobi Equations: Theory and Applications***
@@ -5726,47 +5519,37 @@ evolution.
 * **Constantine M. Dafermos, *Hyperbolic Conservation Laws in
   Continuum Physics***. The encyclopedic research reference: entropy
   solutions, shocks, BV methods, and continuum-mechanical structure.
-
 * **Alberto Bressan, *Hyperbolic Systems of Conservation Laws: The
   One-Dimensional Cauchy Problem***. Front tracking, semigroup
   solutions, and stability.
-
 * **Helge Holden and Nils Henrik Risebro, *Front Tracking for
   Hyperbolic Conservation Laws*** (2nd ed., 2015, [Springer](https://doi.org/10.1007/978-3-662-47507-2)). Front
   tracking as an existence method, updated.
-
 * **Denis Serre, *Systems of Conservation Laws I–II***. A broad
   analytic and structural treatment.
-
 * **Peter D. Lax, *Hyperbolic Systems of Conservation Laws and the
   Mathematical Theory of Shock Waves***. The short foundational
   monograph.
-
 * **Philippe G. LeFloch, *Hyperbolic Systems of Conservation Laws: The
   Theory of Classical and Nonclassical Shock Waves*** (2002,
   [Birkhäuser](https://doi.org/10.1007/978-3-0348-8150-0)). Undercompressive
   shocks, kinetic relations, and well-posedness in the nonclassical regime.
-
 * **Andrew Majda, *Compressible Fluid Flow and Systems of Conservation
   Laws in Several Space Variables***. Hyperbolic systems from the
   compressible-flow viewpoint.
-
 * **Sylvie Benzoni-Gavage and Denis Serre, *Multidimensional Hyperbolic
   Partial Differential Equations: First-Order Systems and Applications***
   (2007, [Oxford University
   Press](https://doi.org/10.1093/acprof:oso/9780199211234.001.0001)).
   Well-posedness of hyperbolic initial–boundary value problems, Kreiss
   symmetrizers, and the stability of shocks.
-
 * **Lars Hörmander, *Lectures on Nonlinear Hyperbolic Differential
   Equations***. High-level energy and microlocal methods for nonlinear
   waves.
-
 * **Serge Alinhac, *Hyperbolic Partial Differential Equations***. A short
   graduate introduction to hyperbolic equations: characteristics, energy
   estimates, and well-posedness. His *Geometric Analysis of Hyperbolic
   Differential Equations* is listed among the more recent works.
-
 * **Joel Smoller, *Shock Waves and Reaction–Diffusion Equations***.
   Conservation laws, shock waves, reaction–diffusion equations, and the
   Conley index. The classical graduate text.
@@ -5779,13 +5562,11 @@ evolution.
   Society Lecture Note Series). Vector-field methods, energy inequalities,
   and the null condition for small-data global existence of quasilinear
   wave equations.
-
 * **Demetrios Christodoulou, *The Shock Development Problem*** (2019,
   [European Mathematical Society](https://doi.org/10.4171/192)). The free-boundary problem for the
   development of shocks in compressible Euler flow, continuing his
   *Formation of Shocks in 3-Dimensional Fluids* (2007, European
   Mathematical Society).
-
 * **Jared Speck, *Shock Formation in Small-Data Solutions to 3D
   Quasilinear Wave Equations*** (2016, [American Mathematical Society](https://doi.org/10.1090/surv/214),
   Mathematical Surveys and Monographs). Shock formation for quasilinear
@@ -5804,49 +5585,38 @@ geometric wave systems.
 * **Terence Tao, *Nonlinear Dispersive Equations: Local and Global
   Analysis***. The modern toolkit: Strichartz estimates, conservation
   laws, concentration compactness, and criticality.
-
 * **Thierry Cazenave, *Semilinear Schrödinger Equations***. The
   standard monograph for nonlinear Schrödinger equations.
-
 * **Jean Bourgain, *Global Solutions of Nonlinear Schrödinger
   Equations***. Global well-posedness for nonlinear Schrödinger equations,
-  in the AMS Colloquium Publications monograph. Distinct from his *Green's
-  Function Estimates for Lattice Schrödinger Operators*.
-
+  in the AMS Colloquium Publications monograph.
 * **Felipe Linares and Gustavo Ponce, *Introduction to Nonlinear
   Dispersive Equations***. A graduate introduction to dispersive estimates
   and well-posedness methods for nonlinear evolution equations, including
   KdV and nonlinear Schrödinger equations.
-
 * **Christopher D. Sogge, *Lectures on Nonlinear Wave
   Equations***. Energy and dispersive estimates for nonlinear waves.
-
 * **Jalal Shatah and Michael Struwe, *Geometric Wave
   Equations***. Wave maps and geometric hyperbolic PDE.
-
 * **Sergiu Klainerman and Francesco Nicolò, *The Evolution Problem in
   General Relativity***, and **Demetrios Christodoulou and Sergiu
   Klainerman, *The Global Nonlinear Stability of the Minkowski
   Space***. Global stability of Minkowski space and the Einstein vacuum
   equations, using geometric formulations and estimates for nonlinear
   hyperbolic systems.
-
 * **Yvonne Choquet-Bruhat, *General Relativity and the Einstein Equations***
   (2009, [Oxford University
   Press](https://doi.org/10.1093/acprof:oso/9780199230723.001.0001)).
   The Einstein equations, constraint equations, and their Cauchy problem,
   with appendices developing the required analytic and geometric tools.
-
 * **Hans Ringström, *The Cauchy Problem in General Relativity*** (2009,
   [European Mathematical Society](https://doi.org/10.4171/053)). Local
   existence, maximal globally hyperbolic developments, and the hyperbolic
   PDE theory they require.
-
 * **Demetrios Christodoulou, *The Formation of Black Holes in General
   Relativity*** (2009, [European Mathematical
   Society](https://doi.org/10.4171/068)). Trapped-surface formation for the
   vacuum Einstein equations from regular data. A landmark of hyperbolic PDE.
-
 * **Reinhard Racke, *Lectures on Nonlinear Evolution Equations: Initial
   Value Problems***. Global existence for small data in nonlinear wave,
   heat, and elasticity equations.
@@ -5855,52 +5625,44 @@ geometric wave systems.
 
 * **Hajer Bahouri, Jean-Yves Chemin, and Raphaël Danchin, *Fourier
   Analysis and Nonlinear Partial Differential
-  Equations*** (2011, Springer). Littlewood–Paley and paradifferential
+  Equations*** (2011, [Springer](https://doi.org/10.1007/978-3-642-16830-7)). Littlewood–Paley and paradifferential
   methods applied systematically to nonlinear PDE; now the standard
   technical reference. Also listed in Section 30.
-
 * **M. Burak Erdoğan and Nikolaos Tzirakis, *Dispersive Partial Differential
   Equations: Wellposedness and Applications*** (2016, [Cambridge University
   Press](https://doi.org/10.1017/CBO9781316563267)). Fourier restriction
   norms, smoothing, and low-regularity well-posedness. A graduate account
   concentrating on techniques for nonlinear dispersive equations.
-
 * **Herbert Koch, Daniel Tataru, and Monica Vişan, *Dispersive
-  Equations and Nonlinear Waves*** (2014, Birkhäuser). Three sets of
+  Equations and Nonlinear Waves*** (2014, [Birkhäuser](https://doi.org/10.1007/978-3-0348-0736-4)). Three sets of
   lecture notes: Koch on dispersive and Strichartz estimates, U^p and V^p
   spaces, and well-posedness; Tataru on wave maps and Schrödinger maps; and
   Vişan on concentration compactness
   and profile decompositions for nonlinear Schrödinger equations.
-
 * **Carlos E. Kenig, *Lectures on the Energy Critical Nonlinear Wave
   Equation*** (2015, [American Mathematical
   Society](https://doi.org/10.1090/cbms/122), CBMS Regional Conference
   Series). Concentration compactness and rigidity, and the soliton
   resolution programme for the energy-critical wave equation.
-
 * **Kenji Nakanishi and Wilhelm Schlag, *Invariant Manifolds and
   Dispersive Hamiltonian Evolution Equations*** (2011, [European
   Mathematical Society](https://doi.org/10.4171/095)). Invariant manifolds for nonlinear Klein–Gordon
   and Schrödinger equations.
-
 * **Joachim Krieger and Wilhelm Schlag, *Concentration Compactness for
   Critical Wave Maps*** (2012, [European Mathematical Society](https://doi.org/10.4171/106)).
   Global regularity and scattering for energy-critical wave maps into the
   hyperbolic plane, proved by concentration compactness.
-
 * **Christian Klein and Jean-Claude Saut, *Nonlinear Dispersive Equations:
   Inverse Scattering and PDE Methods*** (2022; copyright 2021,
   [Springer](https://doi.org/10.1007/978-3-030-91427-1)). Dispersive equations
   treated through both inverse scattering and PDE estimates, with emphasis on
   Benjamin–Ono, Davey–Stewartson, and Kadomtsev–Petviashvili models. Useful
   for comparing integrable and nonintegrable behaviour.
-
 * **Todd Kapitula and Keith Promislow, *Spectral and Dynamical Stability of
   Nonlinear Waves*** (2013,
   [Springer](https://doi.org/10.1007/978-1-4614-6995-7)). Evans functions,
   Hamiltonian spectral theory, and orbital stability. A systematic bridge from
   linearized spectra to the dynamics of nonlinear waves.
-
 * **Gadi Fibich, *The Nonlinear Schrödinger Equation: Singular Solutions
   and Optical Collapse*** (2015,
   [Springer](https://doi.org/10.1007/978-3-319-12748-4)). Blow-up and
@@ -5919,54 +5681,43 @@ limits.
 
 * **Roger Temam, *Navier–Stokes Equations***. The classical
   functional-analytic treatment of incompressible flow.
-
 * **Giovanni P. Galdi, *An Introduction to the Mathematical Theory of
   the Navier–Stokes Equations***. A detailed reference for stationary
   incompressible Navier–Stokes equations, including existence, uniqueness,
   regularity, and problems in exterior domains.
-
 * **Andrew Majda and Andrea Bertozzi, *Vorticity and Incompressible
   Flow***. Euler and Navier–Stokes through vorticity, transport, and
   harmonic analysis.
-
 * **Jean-Yves Chemin, *Perfect Incompressible
   Fluids***. Paradifferential and geometric methods for the Euler
   equations.
-
 * **Carlo Marchioro and Mario Pulvirenti, *Mathematical Theory of
   Incompressible Nonviscous Fluids***. The Euler equations through the
   vortex method and the point-vortex system.
-
 * **Pierre-Louis Lions, *Mathematical Topics in Fluid Mechanics
   I–II***. Incompressible and compressible flow from the weak-solution
   viewpoint.
-
 * **Peter Constantin and Ciprian Foias, *Navier–Stokes
   Equations***. Dynamical-systems and functional-analytic aspects.
-
 * **Ciprian Foias, Oscar Manley, Ricardo Rosa, and Roger Temam,
   *Navier–Stokes Equations and Turbulence*** (2001, [Cambridge University
   Press](https://doi.org/10.1017/CBO9780511546754)). Statistical solutions,
   and the connection between the mathematical theory of the Navier–Stokes
   equations and conventional turbulence theory.
-
 * **Marco Cannone, *Ondelettes, paraproduits et
   Navier–Stokes***. Critical spaces and harmonic-analytic
   well-posedness.
-
 * **Jean-Yves Chemin, Benoit Desjardins, Isabelle Gallagher, and
   Emmanuel Grenier, *Mathematical Geophysics: An Introduction to
   Rotating Fluids and the Navier–Stokes Equations*** (2006, [Oxford
   University Press](https://doi.org/10.1093/oso/9780198571339.001.0001)).
   Incompressible Navier–Stokes equations, rapid-rotation limits, and
   boundary-layer effects in geophysical fluid models.
-
 * **Eduard Feireisl and Antonín Novotný, *Singular Limits in Thermodynamics
   of Viscous Fluids*** (2nd ed., 2017,
   [Birkhäuser](https://doi.org/10.1007/978-3-319-63781-5)). Weak solutions
   of compressible Navier–Stokes–Fourier systems and their low-Mach-number
   and other singular limits.
-
 * **Charles R. Doering and J. D. Gibbon, *Applied Analysis of the
   Navier–Stokes Equations***. Energy estimates, attractors, and regularity
   questions for the Navier–Stokes equations.
@@ -5978,50 +5729,41 @@ limits.
   (2022, [American Mathematical Society](https://doi.org/10.1090/gsm/225), Graduate Studies in Mathematics).
   A one-semester graduate introduction to well-posedness, vorticity, and
   blow-up criteria.
-
 * **Franck Boyer and Pierre Fabrie, *Mathematical Tools for the Study of the
   Incompressible Navier–Stokes Equations and Related Models*** (2013,
   [Springer](https://doi.org/10.1007/978-1-4614-5975-0)). Sobolev spaces, weak
   formulations, compactness, and evolution estimates for viscous flow. Useful
   for learning the analytic infrastructure before more specialised fluid
   monographs.
-
 * **James C. Robinson, José L. Rodrigo, and Witold Sadowski, *The
   Three-Dimensional Navier–Stokes Equations: Classical Theory*** (2016,
   [Cambridge University Press](https://doi.org/10.1017/CBO9781139095143)). Mild solutions, weak solutions, and the
   classical regularity theory in one volume.
-
 * **Tai-Peng Tsai, *Lectures on Navier–Stokes Equations*** (2018, [American
   Mathematical Society](https://doi.org/10.1090/gsm/192), Graduate Studies
   in Mathematics). Weak and mild solutions, partial regularity, self-similar
   solutions, and ε-regularity.
-
 * **Pierre Gilles Lemarié-Rieusset, *The Navier–Stokes Problem in the
-  21st Century*** (2016, CRC Press). A comprehensive modern account
+  21st Century*** (2016, [CRC Press](https://doi.org/10.1201/b19556)). A comprehensive modern account
   organized around the regularity problem.
-
 * **David Lannes, *The Water Waves Problem: Mathematical Analysis and
   Asymptotics*** (2013, [American Mathematical Society](https://doi.org/10.1090/surv/188), Mathematical
   Surveys and Monographs). The well-posedness and asymptotic theory of
   the water-wave equations.
   Also listed in Section 51.
-
 * **Sergei B. Kuksin and Armen Shirikyan, *Mathematics of Two-Dimensional
   Turbulence*** (2012, [Cambridge University Press](https://doi.org/10.1017/CBO9781139137119)). Invariant measures
   for the stochastic two-dimensional Navier–Stokes equations.
   Also listed in Section 9.
-
 * **Dominic Breit, Eduard Feireisl, and Martina Hofmanová, *Stochastically
   Forced Compressible Fluid Flows*** (2018, [De
   Gruyter](https://doi.org/10.1515/9783110492552)). Martingale solutions,
   compactness, and stochastic forcing in compressible fluid equations. A
   research monograph joining nonlinear PDE with stochastic evolution.
-
 * **Eduard Feireisl, Trygve G. Karper, and Milan Pokorný, *Mathematical Theory of
   Compressible Viscous Fluids: Analysis and Numerics*** (2016,
   [Birkhäuser](https://doi.org/10.1007/978-3-319-44835-0)). Weak solutions of the compressible
-  Navier–Stokes system and the analysis of their approximation. Distinct from Feireisl and
-  Novotný, *Singular Limits in Thermodynamics of Viscous Fluids*.
+  Navier–Stokes system and the analysis of their approximation.
 
 <a id="ckma-34d"></a>
 
@@ -6036,35 +5778,26 @@ dynamics with continuum equations.
 * **Carlo Cercignani, Reinhard Illner, and Mario Pulvirenti, *The
   Mathematical Theory of Dilute Gases***. The standard reference for
   Boltzmann-equation analysis.
-
 * **Cédric Villani, *A Review of Mathematical Topics in Collisional
   Kinetic Theory*** (2002, chapter in *Handbook of Mathematical Fluid
   Dynamics*, volume 1,
   [North-Holland](https://doi.org/10.1016/S1874-5792(02)80004-0), pp. 71–305).
   A survey of collisional kinetic equations, including Boltzmann and Landau
   equations, entropy methods, regularity, and hydrodynamic limits.
-
 * **Robert T. Glassey, *The Cauchy Problem in Kinetic Theory***. A
   careful treatment of Vlasov and Boltzmann well-posedness.
-
 * **Laure Saint-Raymond, *Hydrodynamic Limits of the Boltzmann
   Equation*** (2009, [Springer](https://doi.org/10.1007/978-3-540-92847-8), Lecture Notes in Mathematics). The
   passage from Boltzmann to fluid equations.
-
 * **Benoît Perthame, *Kinetic Formulation of Conservation Laws*** (2002,
   [Oxford University
   Press](https://doi.org/10.1093/oso/9780198509134.001.0001)). Kinetic
   formulations of scalar conservation laws and the compactness they give.
   The analytic reference for the method.
-
 * **Luc Tartar, *From Hyperbolic Systems to Kinetic Theory***. Compensated compactness and
-  the passage from hyperbolic systems of conservation laws to kinetic equations. Distinct
-  from his *The General Theory of Homogenization*.
-
+  the passage from hyperbolic systems of conservation laws to kinetic equations.
 * **Carlo Cercignani and Gilberto Medeiros Kremer, *The Relativistic Boltzmann Equation:
   Theory and Applications***. The relativistic Boltzmann equation and its fluid limits.
-  Distinct from Cercignani, Illner, and Pulvirenti, *The Mathematical Theory of Dilute
-  Gases*.
 
 #### More recent works
 
@@ -6073,12 +5806,10 @@ dynamics with continuum equations.
   (2014, [European Mathematical Society](https://doi.org/10.4171/129), Zurich Lectures in Advanced
   Mathematics). Lanford's theorem and the low-density limit, in a
   self-contained monograph.
-
 * **Alexander V. Bobylev, *Kinetic Equations, Volume 1: Boltzmann Equation, Maxwell Models,
   and Hydrodynamics beyond Navier–Stokes*** (2020, [De
   Gruyter](https://doi.org/10.1515/9783110550986)). The Boltzmann equation for Maxwell
   models, and hydrodynamic descriptions beyond the Navier–Stokes level.
-
 
 ---
 
@@ -6192,9 +5923,10 @@ equations remain with their PDE or dynamical sections.
   Analysis*** (2021, [Birkhäuser](https://doi.org/10.1007/978-3-030-63230-4)). A modern reconstruction of Brouwer
   degree as the root of the topological theory.
 * **Heinz H. Bauschke and Patrick L. Combettes, *Convex Analysis and
-  Monotone Operator Theory in Hilbert Spaces*** (2011, Springer). The modern synthesis
-  of monotone operators, resolvents, and proximal methods.
-  Also listed in Section 12.
+  Monotone Operator Theory in Hilbert Spaces*** (2011,
+  [Springer](https://doi.org/10.1007/978-1-4419-9467-7)). Listed in full
+  in Section 12. The modern synthesis of monotone operators, resolvents,
+  and proximal methods.
 * **Nikolaos S. Papageorgiou, Vicenţiu D. Rădulescu, and Dušan D. Repovš,
   *Nonlinear Analysis — Theory and Methods*** (2019,
   [Springer](https://doi.org/10.1007/978-3-030-03430-6), Springer Monographs
@@ -6243,16 +5975,16 @@ complementary home in Section 39C.
 * **Mariano Giaquinta and Stefan Hildebrandt, *Calculus of Variations
   I–II***. A broad classical treatment of direct methods, regularity,
   and geometric problems.
-* **Enrico Giusti, *Direct Methods in the Calculus of
-  Variations***. Concise and classical; an excellent entry point.
-  Also listed in Section 33.
+* **Enrico Giusti, *Direct Methods in the Calculus of Variations***.
+  Concise and classical; an excellent entry point. Existence and
+  regularity of minimizers, with the De Giorgi technique developed
+  carefully. Also listed in Section 33.
 * **Irene Fonseca and Giovanni Leoni, *Modern Methods in the Calculus
   of Variations: L^p Spaces***. A rigorous modern route through lower
   semicontinuity, relaxation, and Young measures.
 * **Ivar Ekeland and Roger Temam, *Convex Analysis and Variational
-  Problems***. Convex duality and variational principles with PDE
-  applications.
-  Also listed in Section 12.
+  Problems***. Listed in full in Section 12. Convex duality and
+  variational principles with PDE applications.
 * **Hedy Attouch, Giuseppe Buttazzo, and Gérard Michaille, *Variational
   Analysis in Sobolev and BV Spaces*** (2nd ed., 2014, [SIAM](https://doi.org/10.1137/1.9781611973488)). Listed in full in Section 12.
 * **Michael Struwe, *Variational Methods***. Critical point theory,
@@ -6298,9 +6030,8 @@ complementary home in Section 39C.
   University Press](https://doi.org/10.1017/CBO9780511613357)). Effective
   moduli, bounds, and microstructures. Reissued by SIAM in 2022.
 * **Luigi Ambrosio, Nicola Fusco, and Diego Pallara, *Functions of
-  Bounded Variation and Free Discontinuity Problems***. The
-  variational theory of BV and SBV energies.
-  Also listed in Section 37.
+  Bounded Variation and Free Discontinuity Problems***. Listed in full
+  in Section 37. The variational theory of BV and SBV energies.
 * **Mariano Giaquinta, Giuseppe Modica, and Jiří Souček, *Cartesian
   Currents in the Calculus of Variations I–II***. Currents and weak
   convergence for variational problems involving mappings.
@@ -6359,17 +6090,17 @@ complementary home in Section 39C.
   line of Avellaneda–Lin and Kenig–Lin–Shen.
 * **Scott Armstrong, Tuomo Kuusi, and Jean-Christophe Mourrat,
   *Quantitative Stochastic Homogenization and Large-Scale
-  Regularity*** (2019, Springer). Quantitative stochastic homogenization for
+  Regularity*** (2019, [Springer](https://doi.org/10.1007/978-3-030-15545-2)). Quantitative stochastic homogenization for
   elliptic equations, including large-scale regularity and estimates for
   effective behaviour.
 * **Sylvia Serfaty, *Coulomb Gases and Ginzburg–Landau Vortices***
   (2015, [European Mathematical Society](https://doi.org/10.4171/152), Zurich Lectures in Advanced
   Mathematics). Mean-field limits, Coulomb gases, and the
   Ginzburg–Landau energy, in a research course.
-  Also listed in Section 14.
 * **Marco Mazzucchelli, *Critical Point Theory for Lagrangian Systems*** (2012,
-  [Birkhäuser](https://doi.org/10.1007/978-3-0348-0163-8)). The Maslov index, Morse theory,
-  and multiplicity of periodic orbits for Lagrangian systems.
+  [Birkhäuser](https://doi.org/10.1007/978-3-0348-0163-8)). Morse indices and Bott's
+  iteration theory, Morse theory for the action functional, and multiplicity of periodic
+  orbits of Tonelli Lagrangian systems, up to the Conley conjecture.
 
 ---
 
@@ -6388,25 +6119,23 @@ nonsmooth spaces.
 
 ### Foundational works
 
-* **Herbert Federer, *Geometric Measure Theory***. A research treatise on
-  Hausdorff measure, rectifiability, currents, and the area and coarea
-  formulas.
-  Also listed in Section 5.
+* **Herbert Federer, *Geometric Measure Theory***. A research treatise
+  on Hausdorff measure, rectifiability, currents, and the area and
+  coarea formulas. Also listed in Section 5.
 * **Leon Simon, *Lectures on Geometric Measure Theory***. An introduction to
   varifolds, monotonicity, compactness, and regularity, with applications to
   minimal surfaces.
 * **Pertti Mattila, *Geometry of Sets and Measures in Euclidean
-  Spaces***. The analyst's GMT, developed without current theory.
-  Also listed in Section 5.
+  Spaces***. The analyst's GMT, developed without current theory. Also
+  listed in Section 5.
 * **Luigi Ambrosio, Nicola Fusco, and Diego Pallara, *Functions of
-  Bounded Variation and Free Discontinuity Problems***. A research reference
-  on BV and SBV functions, lower semicontinuity, and free-discontinuity
-  variational problems.
-  Also listed in Section 36.
+  Bounded Variation and Free Discontinuity Problems***. A research
+  reference on BV and SBV functions, lower semicontinuity, and
+  free-discontinuity variational problems. Also listed in Section 36.
 * **Lawrence C. Evans and Ronald F. Gariepy, *Measure Theory and Fine
-  Properties of Functions***. A compact reference on differentiation of
-  measures and the fine properties of Sobolev and BV functions.
-  Also listed in Sections 5 and 26.
+  Properties of Functions***. Listed in full in Section 5. A compact
+  reference on differentiation of measures and the fine properties of
+  Sobolev and BV functions.
 * **Enrico Giusti, *Minimal Surfaces and Functions of Bounded
   Variation***. The classical route from BV to perimeter minimization.
 * **Frank Morgan, *Geometric Measure Theory: A Beginner's Guide***. A
@@ -6430,7 +6159,7 @@ nonsmooth spaces.
 * **Kenneth Falconer, *The Geometry of Fractal Sets*** and ***Fractal
   Geometry: Mathematical Foundations and Applications***. Hausdorff
   dimension, fractal sets, and the measure-theoretic techniques used to
-  study them.
+  study them. Also listed in Section 39.
 * **Hassler Whitney, *Geometric Integration Theory***. Geometric integration
   through chains, cochains, differential forms, and Lipschitz mappings,
   including the flat-norm approach to nonsmooth domains of integration.
@@ -6447,12 +6176,13 @@ nonsmooth spaces.
   Geometry***. Listed in full in Section 6.
 * **Georges Matheron, *Random Sets and Integral Geometry***. Listed in full in Section 6.
 * **Alexander Markoe, *Analytic Tomography***. The Radon transform and its inversion, from
-  the analytic side of tomography. Distinct from Gardner's *Geometric Tomography*.
+  the analytic side of tomography. Gardner's *Geometric Tomography*, above, treats the
+  convex-geometric side.
 
 ### More recent works
 
 * **Francesco Maggi, *Sets of Finite Perimeter and Geometric
-  Variational Problems*** (2012, Cambridge University Press). A graduate
+  Variational Problems*** (2012, [Cambridge University Press](https://doi.org/10.1017/CBO9781139108133)). A graduate
   treatment of sets of finite perimeter, compactness, isoperimetric
   inequalities, and regularity of perimeter minimizers.
   Also listed in Section 14.
@@ -6463,15 +6193,16 @@ nonsmooth spaces.
   geometric flows.
   Also listed in Section 5.
 * **Xavier Tolsa, *Analytic Capacity, the Cauchy Transform, and
-  Non-homogeneous Calderón–Zygmund Theory*** (2014, Birkhäuser). Analytic
+  Non-homogeneous Calderón–Zygmund Theory*** (2014, [Birkhäuser](https://doi.org/10.1007/978-3-319-00596-6)). Analytic
   capacity, Cauchy transforms, removable sets, and semiadditivity of
   analytic capacity, using non-homogeneous Calderón–Zygmund theory.
-* **Pertti Mattila, *Fourier Analysis and Hausdorff
-  Dimension*** (2015, Cambridge University Press). Projections, intersections, and the Fourier-analytic
+* **Pertti Mattila, *Fourier Analysis and Hausdorff Dimension*** (2015,
+  [Cambridge University
+  Press](https://doi.org/10.1017/CBO9781316227619)). Listed in full in
+  Section 27. Projections, intersections, and the Fourier-analytic
   methods.
-  Also listed in Section 27.
 * **Christopher J. Bishop and Yuval Peres, *Fractals in Probability
-  and Analysis*** (2017, Cambridge University Press). A modern synthesis of dimension, Brownian motion,
+  and Analysis*** (2017, [Cambridge University Press](https://doi.org/10.1017/9781316460238)). A modern synthesis of dimension, Brownian motion,
   and analytic techniques.
 * **Washek F. Pfeffer, *The Divergence Theorem and Sets of Finite
   Perimeter*** (2012, [CRC Press](https://doi.org/10.1201/b11919)). Listed in full in Section 5.
@@ -6524,9 +6255,9 @@ and weighted approximation in Sections 43 and 47–48.
 * **Marcel Brelot, *Éléments de la théorie classique du potentiel***
   and ***Lectures on Potential Theory***. The French axiomatic
   tradition.
-* **Sidney C. Port and Charles J. Stone, *Brownian Motion and
-  Classical Potential Theory***. The probabilistic treatment.
-  Also listed in Section 8.
+* **Sidney C. Port and Charles J. Stone, *Brownian Motion and Classical
+  Potential Theory***. The probabilistic treatment. Also listed in
+  Section 8.
 * **Richard F. Bass, *Probabilistic Techniques in Analysis***. Listed in full in Section 8. Brownian motion applied to harmonic functions and
   boundary behaviour.
 * **Krzysztof Bogdan, Tomasz Byczkowski, Tadeusz Kulczycki, Michał Ryznar,
@@ -6535,14 +6266,13 @@ and weighted approximation in Sections 43 and 47–48.
   [Springer](https://doi.org/10.1007/978-3-642-02141-1), Lecture Notes in
   Mathematics). Potential theory of the fractional Laplacian: the boundary
   Harnack principle, Green functions, and Martin boundaries.
-* **David R. Adams and Lars Inge Hedberg, *Function Spaces and
-  Potential Theory***. Nonlinear capacities tied to Sobolev and Besov
-  spaces.
-  Also listed in Section 26.
+* **David R. Adams and Lars Inge Hedberg, *Function Spaces and Potential
+  Theory***. Listed in full in Section 26. Nonlinear capacities tied to
+  Sobolev and Besov spaces.
 * **Juha Heinonen, Tero Kilpeläinen, and Olli Martio, *Nonlinear
   Potential Theory of Degenerate Elliptic Equations***. The standard
-  nonlinear reference.
-  Also listed in Section 33.
+  monograph on nonlinear potential theory for degenerate elliptic
+  equations. Also listed in Section 33.
 * **W. K. Hayman and P. B. Kennedy, *Subharmonic Functions I***, and
   **W. K. Hayman, *Subharmonic Functions II***. The large classical reference on subharmonicity.
 * **Thomas Ransford, *Potential Theory in the Complex
@@ -6550,16 +6280,15 @@ and weighted approximation in Sections 43 and 47–48.
   analysts.
 * **Edward B. Saff and Vilmos Totik, *Logarithmic Potentials with
   External Fields***. Weighted potential theory, equilibrium measures,
-  and the link to orthogonal polynomials and random matrices.
-  Also listed in Section 47.
+  and the link to orthogonal polynomials and random matrices. Also
+  listed in Section 47.
 * **M. Tsuji, *Potential Theory in Modern Function Theory***. The
   classical bridge to one-variable complex analysis.
 * **Luca Capogna, Carlos E. Kenig, and Loredana Lanzani, *Harmonic
   Measure*** (2005, [American Mathematical Society](https://doi.org/10.1090/ulect/035)). Listed in full in Section 25.
-* **Masatoshi Fukushima, Yoichi Oshima, and Masayoshi Takeda,
-  *Dirichlet Forms and Symmetric Markov Processes***. Potential theory
-  in its modern functional-analytic form; see also Section 39.
-  Also listed in Section 39.
+* **Masatoshi Fukushima, Yoichi Oshima, and Masayoshi Takeda, *Dirichlet
+  Forms and Symmetric Markov Processes***. Listed in full in Section 39.
+  Potential theory in its modern functional-analytic form.
 * **Oliver Dimon Kellogg, *Foundations of Potential Theory***. The
   classical introduction to Newtonian potentials, harmonic functions, and
   the Dirichlet problem.
@@ -6575,9 +6304,10 @@ and weighted approximation in Sections 43 and 47–48.
 ### More recent works
 
 * **Anders Björn and Jana Björn, *Nonlinear Potential Theory on Metric
-  Spaces*** (2011, [European Mathematical Society](https://doi.org/10.4171/099)). Newtonian spaces, capacities, and p-harmonic functions
-  beyond Euclidean space.
-  Also listed in Section 39.
+  Spaces*** (2011, [European Mathematical
+  Society](https://doi.org/10.4171/099)). Newtonian spaces, capacities,
+  and p-harmonic functions beyond Euclidean space. Also listed in
+  Section 39.
 * **Manfred Stoll, *Harmonic and Subharmonic Function Theory on the Hyperbolic
   Ball*** (2016, [Cambridge University
   Press](https://doi.org/10.1017/CBO9781316341063)). Invariant harmonic
@@ -6634,66 +6364,56 @@ fixed smooth coordinates.
 * **Juha Heinonen, *Lectures on Analysis on Metric Spaces***. The
   standard introduction to first-order analysis without smooth
   structure.
-
 * **Luigi Ambrosio and Paolo Tilli, *Topics on Analysis in Metric
   Spaces***. Hausdorff measures, Lipschitz maps, and Gromov–Hausdorff
   convergence.
-
 * **Dmitri Burago, Yuri Burago, and Sergei Ivanov, *A Course in Metric
   Geometry***. The geometric background that metric analysis assumes.
-
 * **Mikhail Gromov, *Metric Structures for Riemannian and
   Non-Riemannian Spaces***. Metric geometry, convergence of spaces, and
   geometric inequalities, with applications to Riemannian and nonsmooth
   spaces.
-
 * **Kenneth Falconer, *Fractal Geometry: Mathematical Foundations and
-  Applications*** (3rd ed., 2014, [Wiley](https://www.wiley-vch.de/de/fachgebiete/mathematik-und-statistik/fractal-geometry-978-1-119-94239-9)). Hausdorff and box dimensions,
-  projections, self-similar sets, and dynamical examples. The standard
-  graduate introduction.
+  Applications*** (3rd ed., 2014,
+  [Wiley](https://www.wiley-vch.de/de/fachgebiete/mathematik-und-statistik/fractal-geometry-978-1-119-94239-9)).
+  Listed in full in Section 37. Hausdorff and box dimensions,
+  projections, self-similar sets, and dynamical examples.
 
 #### More recent works
 
 * **Juha Heinonen, Pekka Koskela, Nageswari Shanmugalingam, and Jeremy
-  T. Tyson, *Sobolev Spaces on Metric Measure Spaces*** (2015, Cambridge University Press). The
+  T. Tyson, *Sobolev Spaces on Metric Measure Spaces*** (2015, [Cambridge University Press](https://doi.org/10.1017/CBO9781316135914)). The
   comprehensive reference for upper gradients, Poincaré inequalities,
   and Newtonian spaces.
-
 * **Anders Björn and Jana Björn, *Nonlinear Potential Theory on Metric
-  Spaces*** (2011, [European Mathematical Society](https://doi.org/10.4171/099)). Capacity and p-harmonic theory in doubling and Poincaré
-  spaces.
-  Also listed in Section 38.
-
+  Spaces*** (2011, [European Mathematical
+  Society](https://doi.org/10.4171/099)). Listed in full in Section 38.
+  Capacity and p-harmonic theory in doubling and Poincaré spaces.
 * **John M. Mackay and Jeremy T. Tyson, *Conformal Dimension: Theory and
   Application*** (2010, [American Mathematical
   Society](https://doi.org/10.1090/ulect/054), University Lecture Series).
   The conformal dimension of metric spaces and its uses in geometric group
   theory and dynamics.
-
 * **Miroslav Bačák, *Convex Analysis and Optimization in Hadamard Spaces***
   (2014, [De Gruyter](https://doi.org/10.1515/9783110361629)). Convex
   functions, proximal methods, and gradient flows in spaces of nonpositive
   curvature. Extends Hilbert-space variational methods to nonlinear metric
   settings.
-
 * **Jun Kigami, *Geometry and Analysis of Metric Spaces via Weighted
   Partitions*** (2020, [Springer](https://doi.org/10.1007/978-3-030-54154-5)).
   Weighted partitions link compact metric spaces with infinite graphs,
   energies, and conformal dimension. A research continuation of Kigami's
   resistance-form and fractal-analysis books.
-
 * **Laurent Younes, *Shapes and Diffeomorphisms*** (2nd ed., 2019,
   [Springer](https://doi.org/10.1007/978-3-662-58496-5)). Shape spaces of curves and
   surfaces, and the diffeomorphic metrics used to compare them. The first edition appeared
   in 2010.
-
 * **Balázs Bárány, Károly Simon, and Boris Solomyak, *Self-similar and
   Self-affine Sets and Measures*** (2023, [American Mathematical
   Society](https://www.ams.org/books/surv/276/)). Dimensions, measures,
   overlaps, and projections for iterated function systems. A substantial
   research synthesis connecting geometric measure theory, fractals, and
   dynamical methods.
-
 * **Jonathan M. Fraser, *Assouad Dimension and Fractal Geometry*** (2020,
   [Cambridge University Press](https://doi.org/10.1017/9781108778459)).
   Assouad and related dimensions, with applications to embeddings and to
@@ -6708,38 +6428,29 @@ spectral methods describe diffusion on manifolds, graphs, and fractals.
 
 #### Foundational works
 
-* **Masatoshi Fukushima, Yoichi Oshima, and Masayoshi Takeda,
-  *Dirichlet Forms and Symmetric Markov Processes***. The standard
-  reference connecting forms, processes, and potential theory.
-  Also listed in Section 38.
-
-* **Alexander Grigor'yan, *Heat Kernel and Analysis on
-  Manifolds***. Heat kernels, volume growth, and parabolic Harnack
-  inequalities.
-  Also listed in Sections 14 and 52.
-
+* **Masatoshi Fukushima, Yoichi Oshima, and Masayoshi Takeda, *Dirichlet
+  Forms and Symmetric Markov Processes***. The standard reference
+  connecting forms, processes, and potential theory. Also listed in
+  Section 38.
+* **Alexander Grigor'yan, *Heat Kernel and Analysis on Manifolds***.
+  Listed in full in Section 52. Heat kernels, volume growth, and
+  parabolic Harnack inequalities.
 * **E. Brian Davies, *Heat Kernels and Spectral Theory***. Semigroup and spectral
   methods for elliptic operators, including ultracontractivity and
   heat-kernel estimates.
-
-* **Laurent Saloff-Coste, *Aspects of Sobolev-Type
-  Inequalities***. Sobolev, Nash, and Poincaré inequalities on
-  manifolds and graphs.
-  Also listed in Section 14.
-
+* **Laurent Saloff-Coste, *Aspects of Sobolev-Type Inequalities***.
+  Listed in full in Section 14. Sobolev, Nash, and Poincaré inequalities
+  on manifolds and graphs.
 * **Jun Kigami, *Analysis on Fractals***. The foundational monograph
   on Dirichlet forms and Laplacians on self-similar sets.
-
 * **Robert S. Strichartz, *Differential Equations on Fractals: A
   Tutorial***. The readable introduction to the same subject.
-
 * **Martin T. Barlow, *Diffusions on Fractals*** (1998, lecture course in
   *Lectures on Probability Theory and Statistics*,
   [Springer](https://doi.org/10.1007/BFb0092537), Lecture Notes in Mathematics
   1690, pp. 1–121). Random walks, diffusion processes, potential theory,
   and heat-kernel estimates on fractals. His *Random Walks and Heat
   Kernels on Graphs* is listed among the more recent works.
-
 * **Michel L. Lapidus and Machiel van Frankenhuijsen, *Fractal
   Geometry, Complex Dimensions and Zeta Functions: Geometry and Spectra
   of Fractal Strings*** (2nd ed., 2013, [Springer](https://doi.org/10.1007/978-1-4614-2176-4)). Fractal strings and
@@ -6751,41 +6462,35 @@ spectral methods describe diffusion on manifolds, graphs, and fractals.
   [Cambridge University Press](https://doi.org/10.1017/9781107415690),
   London Mathematical Society Lecture Note Series). Random walks and
   electrical networks, isoperimetric and Poincaré inequalities, and
-  Gaussian and sub-Gaussian heat-kernel bounds on graphs.
-  Also listed in Section 8.
-
+  Gaussian and sub-Gaussian heat-kernel bounds on graphs. Also listed in
+  Section 8.
 * **Zhen-Qing Chen and Masatoshi Fukushima, *Symmetric Markov
-  Processes, Time Change, and Boundary Theory*** (2012, Princeton University Press).
+  Processes, Time Change, and Boundary Theory*** (2012, [Princeton University Press](https://doi.org/10.1515/9781400840564)).
   Symmetric Markov processes and Dirichlet forms, with detailed treatments
   of time changes and boundary theory.
-
 * **Dominique Bakry, Ivan Gentil, and Michel Ledoux, *Analysis and
-  Geometry of Markov Diffusion Operators*** (2014, Springer). The central modern
-  reference for Γ-calculus and curvature–dimension conditions.
-  Also listed in Section 14.
-
+  Geometry of Markov Diffusion Operators*** (2014,
+  [Springer](https://doi.org/10.1007/978-3-319-00227-9)). Listed in full
+  in Section 14. The central modern reference for Γ-calculus and
+  curvature–dimension conditions.
 * **Alexander Grigor'yan, *Introduction to Analysis on Graphs*** (2018,
   [American Mathematical Society](https://doi.org/10.1090/ulect/071),
   University Lecture Series). Laplacians on graphs, random walks, and
   spectral and isoperimetric estimates.
-
 * **Matthias Keller, Daniel Lenz, and Radosław K. Wojciechowski, *Graphs and
   Discrete Dirichlet Spaces*** (2021,
   [Springer](https://doi.org/10.1007/978-3-030-81459-5)). Dirichlet forms,
   heat kernels, spectra, and geometry on weighted graphs. A substantial
   analytic reference where discreteness makes the general ideas particularly
   concrete.
-
 * **Takashi Kumagai, *Random Walks on Disordered Media and their Scaling
   Limits*** (2014, [Springer](https://doi.org/10.1007/978-3-319-03152-1), Lecture Notes in Mathematics). Heat
   kernels and scaling limits on fractals and random media, from the
   Saint-Flour lectures.
-
 * **Jun Kigami, *Resistance Forms, Quasisymmetric Maps and Heat Kernel
   Estimates*** (2012, Memoirs of the [American Mathematical Society](https://bookstore.ams.org/memo-216-1015/)). A
   research monograph on resistance forms beyond the post-critically
   finite sets of his earlier book.
-
 * **Michel L. Lapidus, Goran Radunović, and Darko Žubrinić, *Fractal
   Zeta Functions and Fractal Drums: Higher-Dimensional Theory of
   Complex Dimensions*** (2017, [Springer](https://doi.org/10.1007/978-3-319-44706-3)). The higher-dimensional
@@ -6804,12 +6509,9 @@ geometry.
 * **Cédric Villani, *Topics in Optimal Transportation***. A concise
   route to Kantorovich duality, displacement interpolation, and
   transport inequalities.
-
 * **Cédric Villani, *Optimal Transport: Old and New***. The
   comprehensive reference connecting transport with PDE, geometry,
-  probability, and entropy.
-  Also listed in Section 14.
-
+  probability, and entropy. Also listed in Section 14.
 * **Luigi Ambrosio, Nicola Gigli, and Giuseppe Savaré, *Gradient Flows
   in Metric Spaces and in the Space of Probability Measures***. The
   foundational metric theory of gradient flows and Wasserstein
@@ -6818,47 +6520,38 @@ geometry.
 #### More recent works
 
 * **Filippo Santambrogio, *Optimal Transport for Applied
-  Mathematicians*** (2015, Birkhäuser). Kantorovich duality, Wasserstein
+  Mathematicians*** (2015, [Birkhäuser](https://doi.org/10.1007/978-3-319-20828-2)). Kantorovich duality, Wasserstein
   distances, and transport maps, developed toward PDE and variational
   applications.
-
 * **Alessio Figalli and Federico Glaudo, *An Invitation to Optimal
-  Transport, Wasserstein Distances, and Gradient Flows*** (2021, European Mathematical Society).
+  Transport, Wasserstein Distances, and Gradient Flows*** (2021, [European Mathematical Society](https://doi.org/10.4171/etb/22)).
   A short introduction to optimal transport, including transport maps,
   Wasserstein geometry, and applications.
-
 * **Luigi Ambrosio, Elia Brué, and Daniele Semola, *Lectures on
-  Optimal Transport*** (2021, Springer). A graduate course connecting
+  Optimal Transport*** (2021, [Springer](https://doi.org/10.1007/978-3-030-72162-6)). A graduate course connecting
   optimal transport with analysis on metric measure spaces.
-
 * **Luigi Ambrosio and Nicola Gigli, *A User's Guide to Optimal Transport***
   (2013, chapter in *Modelling and Optimisation of Flows on Networks*,
   [Springer](https://doi.org/10.1007/978-3-642-32160-3_1), Lecture Notes in
   Mathematics 2062, pp. 1–155). Kantorovich duality, Wasserstein geometry,
   gradient flows, and curvature-dimension conditions, in long lecture notes.
-
 * **D. J. H. Garling, *Analysis on Polish Spaces and an Introduction to
   Optimal Transportation*** (2018, [Cambridge University
   Press](https://doi.org/10.1017/9781108377362)). Measures on Polish spaces,
   weak convergence, and transport developed together. A graduate bridge from
   abstract measure theory to Kantorovich's theory.
-
 * **Nicola Gigli and Enrico Pasqualetto, *Lectures on Nonsmooth
-  Differential Geometry*** (2020, Springer). Differential calculus on metric measure
+  Differential Geometry*** (2020, [Springer](https://doi.org/10.1007/978-3-030-38613-9)). Differential calculus on metric measure
   spaces and the RCD theory.
-
 * **Alessio Figalli, *The Monge–Ampère Equation and Its
-  Applications*** (2017, European Mathematical Society). Transport regularity through Monge–Ampère theory.
-  Also listed in Section 33.
-
+  Applications*** (2017, [European Mathematical Society](https://doi.org/10.4171/170)). Listed in full in Section 33.
+  Transport regularity through Monge–Ampère theory.
 * **Ludovic Rifford, *Sub-Riemannian Geometry and Optimal Transport***
   (2014, [Springer](https://doi.org/10.1007/978-3-319-04804-8)). A short bridge between sub-Riemannian geometry and
   optimal transport. The full sub-Riemannian treatise is in Section 52.
-
 * **Gabriel Peyré and Marco Cuturi, *Computational Optimal
-  Transport*** (2019, Now Publishers). Computational in emphasis, but the standard reference
+  Transport*** (2019, [Now Publishers](https://doi.org/10.1561/9781680835519)). Computational in emphasis, but the standard reference
   for entropic regularization, which has analytic content of its own.
-
 
 ---
 
@@ -6894,25 +6587,25 @@ applications.
 * **John B. Conway, *Functions of One Complex Variable I***. A systematic first
   graduate course in holomorphic functions, integration, and classical
   complex function theory.
-* **John B. Conway, *Functions of One Complex Variable II***. Hardy
-  spaces, harmonic functions, potential theory, and analytic
-  continuation at second-course level.
+* **John B. Conway, *Functions of One Complex Variable II***. Conformal
+  equivalence for simply and finitely connected regions, analytic covering
+  maps, de Branges's proof of the Bieberbach conjecture, harmonic
+  functions, Hardy spaces, and potential theory.
 * **Elias M. Stein and Rami Shakarchi, *Complex
   Analysis***. Especially effective at connecting complex analysis
   with Fourier analysis and analytic number theory.
 * **Theodore W. Gamelin, *Complex Analysis***. A modern one-volume
   course with a strong function-theoretic viewpoint and excellent
   exercises.
-* **Walter Rudin, *Real and Complex Analysis***. A compressed
-  measure-theoretic development of holomorphic functions, Hardy
-  spaces, and boundary behaviour.
-  Also listed in Sections 1, 4, and 54.
+* **Walter Rudin, *Real and Complex Analysis***. Listed in full in
+  Section 4. A compressed measure-theoretic development of holomorphic
+  functions, Hardy spaces, and boundary behaviour.
 * **Serge Lang, *Complex Analysis***. Broad and classical, with
   elliptic functions and analytic continuation.
-* **Reinhold Remmert, *Theory of Complex Functions***. A detailed treatment of
-  classical complex function theory, with historical commentary and careful
-  discussion of the basic concepts.
-  Also listed in Section 2.
+* **Reinhold Remmert, *Theory of Complex Functions***. A detailed
+  treatment of classical complex function theory, with historical
+  commentary and careful discussion of the basic concepts. Also listed
+  in Section 2.
 * **Raghavan Narasimhan and Yves Nievergelt, *Complex Analysis in One
   Variable***. Concise, geometric, rigorous, and with an unusually
   good problem section.
@@ -6953,7 +6646,7 @@ applications.
 * **E. C. Titchmarsh, *The Theory of Functions***. A classical
   treatise covering both real and complex function theory, with
   material hard to find elsewhere.
-* **Saks and Zygmund, *Analytic Functions***. A classical
+* **Stanisław Saks and Antoni Zygmund, *Analytic Functions***. A classical
   Polish-school text of enduring precision.
 * **Steven G. Krantz, *Handbook of Complex Variables*** and ***Complex
   Analysis: The Geometric Viewpoint***. A formula reference and an
@@ -6982,7 +6675,7 @@ applications.
   beside the shorter first-course texts for a more extended development.
 * **Barry Simon, *Basic Complex Analysis*** and ***Advanced Complex
   Analysis*** (Parts 2A and 2B of *A Comprehensive Course in
-  Analysis*; 2015, American Mathematical Society). Wide coverage, extensive problems, and reliable
+  Analysis*; 2015, American Mathematical Society; [2A](https://doi.org/10.1090/simon/002.1), [2B](https://doi.org/10.1090/simon/002.2)). Wide coverage, extensive problems, and reliable
   historical notes.
 * **Ranjan Roy, *Sources in the Development of Mathematics*** (2011,
   [Cambridge University Press](https://doi.org/10.1017/CBO9780511844195)) and his *Elliptic and Modular Functions
@@ -7053,8 +6746,9 @@ equations with Sections 50–51.
 * **R. E. A. C. Paley and Norbert Wiener, *Fourier Transforms in the
   Complex Domain***. The founding text of the Paley–Wiener circle of
   ideas.
-* **Lars Hörmander, *Notions of Convexity***. Convexity, subharmonicity, and
-  plurisubharmonicity, with applications to complex analysis. Also listed in Section 45 for its several-variable theory.
+* **Lars Hörmander, *Notions of Convexity***. Listed in full in Section
+  45. Convexity, subharmonicity, and plurisubharmonicity, with
+  applications to complex analysis.
 * **Carlos A. Berenstein and Roger Gay, *Complex Analysis and Special
   Topics in Harmonic Analysis*** and ***Complex Variables: An
   Introduction***. A large modern treatment linking entire functions,
@@ -7140,8 +6834,8 @@ with Section 45.
   spaces on the ball, the several-variable companion to the one-variable
   theory.
 * **Kehe Zhu, *Operator Theory in Function Spaces***. Toeplitz, Hankel,
-  and composition operators across the standard analytic function spaces.
-  Also listed in Section 21.
+  and composition operators across the standard analytic function
+  spaces. Also listed in Section 21.
 * **Carl C. Cowen and Barbara D. MacCluer, *Composition Operators on
   Spaces of Analytic Functions***. The standard reference for
   composition operators.
@@ -7150,9 +6844,8 @@ with Section 45.
   function theory, with emphasis on compactness and the geometry of the
   inducing maps.
 * **Albrecht Böttcher and Bernd Silbermann, *Analysis of Toeplitz
-  Operators***. The large reference for Toeplitz operators and their
-  symbols.
-  Also listed in Section 21.
+  Operators***. Listed in full in Section 21. The large reference for
+  Toeplitz operators and their symbols.
 * **Vladimir V. Peller, *Hankel Operators and Their
   Applications***. A detailed treatment of Hankel operators, their symbols,
   Schatten-class properties, and applications to approximation and
@@ -7161,35 +6854,34 @@ with Section 45.
   Harmonic Analysis***. Quasi-analyticity, uniqueness theorems, and
   the complex-analytic side of uncertainty.
 * **Marvin Rosenblum and James Rovnyak, *Hardy Classes and Operator
-  Theory*** and ***Topics in Hardy Classes and Univalent
-  Functions***. Function theory written for operator theorists.
-  Also listed in Section 21.
+  Theory*** and ***Topics in Hardy Classes and Univalent Functions***.
+  Function theory written for operator theorists. Also listed in Section
+  21.
 * **Jim Agler and John E. McCarthy, *Pick Interpolation and Hilbert
   Function Spaces***. Interpolation, the Nevanlinna–Pick problem, and
   multivariable operator theory.
 * **Louis de Branges, *Hilbert Spaces of Entire Functions***. Listed in full in Section 41. The classical source of the spaces from which
   de Branges–Rovnyak theory descends.
-* **John B. Conway, *The Theory of Subnormal Operators***. Subnormal operators
-  developed through spectral theory, measures, and spaces of analytic
-  functions.
-  Also listed in Section 21.
+* **John B. Conway, *The Theory of Subnormal Operators***. Listed in
+  full in Section 21. Subnormal operators developed through spectral
+  theory, measures, and spaces of analytic functions.
 
 ### More recent works
 
-* **Nikolai Nikolski, *Hardy Spaces*** (2019, Cambridge University
-  Press; French original 2012). A modern graduate course from the
+* **Nikolai Nikolski, *Hardy Spaces*** (2019, [Cambridge University
+  Press](https://doi.org/10.1017/9781316882108); French original 2012). A modern graduate course from the
   Russian school.
 * **Stephan Ramon Garcia, Javad Mashreghi, and William T. Ross,
-  *Introduction to Model Spaces and Their Operators*** (2016, Cambridge
-  University Press). With Cima–Matheson–Ross (above), the modern
+  *Introduction to Model Spaces and Their Operators*** (2016, [Cambridge
+  University Press](https://doi.org/10.1017/CBO9781316258231)). With Cima–Matheson–Ross (above), the modern
   accessible route into model space theory.
-* **Vern I. Paulsen and Mrinal Raghupathi, *An Introduction to the Theory
-  of Reproducing Kernel Hilbert Spaces*** (2016, Cambridge University
-  Press). A graduate introduction to reproducing kernel Hilbert spaces,
-  positive definite kernels, and their connections with interpolation and
-  operator theory.
-  Also listed in Section 21.
-* **Kehe Zhu, *Analysis on Fock Spaces*** (2012, Springer, Graduate
+* **Vern I. Paulsen and Mrinal Raghupathi, *An Introduction to the
+  Theory of Reproducing Kernel Hilbert Spaces*** (2016, [Cambridge
+  University Press](https://doi.org/10.1017/CBO9781316219232)). A
+  graduate introduction to reproducing kernel Hilbert spaces, positive
+  definite kernels, and their connections with interpolation and
+  operator theory. Also listed in Section 21.
+* **Kehe Zhu, *Analysis on Fock Spaces*** (2012, [Springer](https://doi.org/10.1007/978-1-4419-8801-0), Graduate
   Texts in Mathematics). Toeplitz, Hankel, and related operators on
   the Fock space, the companion to *Operator Theory in Function Spaces*.
 * **Omar El-Fallah, Karim Kellay, Javad Mashreghi, and Thomas Ransford,
@@ -7259,6 +6951,12 @@ in Section 8, and several-variable extensions in Section 45.
   variational methods.
 * **Zeev Nehari, *Conformal Mapping***. A classical analytic text on
   conformal mapping and the associated extremal problems.
+* **Tobin A. Driscoll and Lloyd N. Trefethen, *Schwarz–Christoffel
+  Mapping*** (2002, [Cambridge University
+  Press](https://doi.org/10.1017/CBO9780511546808), Cambridge Monographs on
+  Applied and Computational Mathematics). The Schwarz–Christoffel formula,
+  its parameter problem, and variants for exterior, periodic, doubly
+  connected, and circular-arc regions.
 * **Lars V. Ahlfors, *Conformal Invariants: Topics in Geometric
   Function Theory***. Extremal length, harmonic measure, and conformal
   invariants in concentrated form.
@@ -7281,16 +6979,16 @@ in Section 8, and several-variable extensions in Section 45.
   Discrete Analytic Functions*** (2005, [Cambridge University Press](https://www.cambridge.org/9780521823562)). Circle
   packings as discrete conformal maps, with Thurston's conjecture and the
   Rodin–Sullivan convergence theorem.
-* **Gregory F. Lawler, *Conformally Invariant Processes in the
-  Plane***. Where classical conformal invariance meets SLE and modern
-  probability. Also listed in Section 8.
+* **Gregory F. Lawler, *Conformally Invariant Processes in the Plane***.
+  Listed in full in Section 8. Where classical conformal invariance
+  meets SLE and modern probability.
 * **W. K. Hayman, *Multivalent Functions***. The classical monograph on
   multivalent functions and their extremal problems.
 
 ### More recent works
 
-* **Donald E. Marshall, *Complex Analysis*** (2019, Cambridge University
-  Press). A modern graduate text by a coauthor of *Harmonic Measure*,
+* **Donald E. Marshall, *Complex Analysis*** (2019, [Cambridge University
+  Press](https://doi.org/10.1017/9781316471227)). A modern graduate text by a coauthor of *Harmonic Measure*,
   unusually good on conformal mapping and boundary behaviour.
 * **Dmitry Beliaev, *Conformal Maps and Geometry*** (2019, [World
   Scientific](https://doi.org/10.1142/q0183)). Conformal mapping, harmonic
@@ -7376,14 +7074,12 @@ surfaces connect with Section 53.
   Thurston's hyperbolization theorem for Haken manifolds, with the
   Kleinian-group and Teichmüller theory it needs.
 * **Robert C. Gunning, *Riemann Surfaces and Generalized Theta Functions***. Theta functions
-  on compact Riemann surfaces and the function theory built from them. Distinct from his
-  *Lectures on Riemann Surfaces* and from Gunning and Rossi, *Analytic Functions of Several
-  Complex Variables*.
+  on compact Riemann surfaces and the function theory built from them.
 
 ### More recent works
 
-* **Simon Donaldson, *Riemann Surfaces*** (2011, Oxford University
-  Press). A modern geometric account with PDE methods prominent.
+* **Simon Donaldson, *Riemann Surfaces*** (2011, [Oxford University
+  Press](https://doi.org/10.1093/acprof:oso/9780198526391.001.0001)). A modern geometric account with PDE methods prominent.
 * **Wilhelm Schlag, *A Course in Complex Analysis and Riemann Surfaces***
   (2014, [American Mathematical Society](https://doi.org/10.1090/gsm/154)). Listed in full in Section 40.
 * **Terrence Napier and Mohan Ramachandran, *An Introduction to Riemann
@@ -7416,7 +7112,7 @@ surfaces connect with Section 53.
   Weil–Petersson metric and the geometry of moduli space, in a research
   course.
 * **Benson Farb and Dan Margalit, *A Primer on Mapping Class
-  Groups*** (2012, Princeton University Press). A topological introduction
+  Groups*** (2012, [Princeton University Press](https://doi.org/10.1515/9781400839049)). A topological introduction
   to mapping class groups, Teichmüller theory, and surface homeomorphisms,
   complementing the analytic references.
 * **Albert Marden, *Hyperbolic Manifolds: An Introduction in 2 and 3
@@ -7468,84 +7164,63 @@ variables.
 * **Lars Hörmander, *An Introduction to Complex Analysis in Several
   Variables***. A graduate treatment of pseudoconvexity, the d-bar equation,
   and L^2 estimates, leading to existence and extension theorems.
-
 * **Steven G. Krantz, *Function Theory of Several Complex
   Variables***. The standard broad American graduate text, with
   extensive coverage of integral formulas and boundary behaviour.
-
 * **Robert C. Gunning and Hugo Rossi, *Analytic Functions of Several
   Complex Variables***. The classical sheaf-theoretic foundation.
-
 * **Klaus Fritzsche and Hans Grauert, *From Holomorphic Functions to
   Complex Manifolds***. A well-paced modern route from the local
   theory to complex manifolds.
-
 * **Volker Scheidemann, *Introduction to Complex Analysis in Several
   Variables***. Short and clear; a good first exposure.
-
 * **B. V. Shabat, *Introduction to Complex Analysis, Part II:
   Functions of Several Variables***. The classical Russian course.
-
 * **Ludger Kaup and Burchard Kaup, *Holomorphic Functions of Several
   Variables***. A careful treatment with analytic sets and local
   algebra developed in parallel.
-
 * **Raghavan Narasimhan, *Several Complex Variables***. Short, precise
   Chicago lectures.
-
 * **Joseph L. Taylor, *Several Complex Variables with Connections to
   Algebraic Geometry and Lie Groups***. An unusual and valuable
   synthesis.
-
 * **Herbert Alexander and John Wermer, *Several Complex Variables and
   Banach Algebras***. The uniform-algebra approach, with polynomial
   convexity treated thoroughly.
-
 * **Marek Jarnicki and Peter Pflug, *First Steps in Several Complex
   Variables: Reinhardt Domains*** (2008, [European Mathematical
   Society](https://doi.org/10.4171/049)). Holomorphic convexity,
   pseudoconvexity, and invariant metrics worked out for Reinhardt domains.
-
 * **R. Michael Range, *Holomorphic Functions and Integral
   Representations in Several Complex Variables***. Integral kernels,
   Bochner–Martinelli, Henkin–Ramirez, and boundary regularity.
-
 * **Gennadi M. Henkin and Jürgen Leiterer, *Theory of Functions on
   Complex Manifolds*** and ***Andreotti–Grauert Theory by Integral
   Formulas***. The kernel-theoretic school at research level.
-
 * **Christine Laurent-Thiébaut, *Holomorphic Function Theory in
   Several Variables***. A modern textbook treatment of integral
   representations and d-bar.
-
 * **So-Chin Chen and Mei-Chi Shaw, *Partial Differential Equations in
   Several Complex Variables***. The PDE theory of d-bar and the
   d-bar-Neumann problem.
-
 * **Gerald B. Folland and Joseph J. Kohn, *The Neumann Problem for the
   Cauchy–Riemann Complex***. The foundational monograph on
   subellipticity.
-
 * **Takeo Ohsawa, *Analysis of Several Complex Variables***. Extension
   theorems and the L^2 method at research level; his later *L^2
   Approaches in Several Complex Variables* is listed below.
-
 * **Ingo Lieb and Joachim Michel, *The Cauchy–Riemann Complex: Integral
   Formulae and Neumann Problem***. Integral representations and estimates
   for the d-bar-Neumann problem on strictly pseudoconvex domains.
-
 * **Marek Jarnicki and Peter Pflug, *Invariant Distances and Metrics
   in Complex Analysis*** and ***Extension of Holomorphic
   Functions***. Kobayashi and Carathéodory metrics, and the systematic
   theory of extension.
-
 * **Shoshichi Kobayashi, *Hyperbolic Complex Spaces***. A systematic treatment
   of invariant distances, holomorphic curves, and complex hyperbolicity.
-
 * **Edgar Lee Stout, *Polynomial Convexity***. The standard reference on
   polynomially convex sets and polynomial approximation in several
   variables.
-
 * **Walter Rudin, *Function Theory in the Unit Ball of C^n*** and
   ***Function Theory in Polydiscs***. Concrete model-domain function
   theory, invariant metrics, and boundary behaviour.
@@ -7555,30 +7230,25 @@ variables.
 * **Jiří Lebl, *Tasty Bits of Several Complex Variables***. A modern,
   freely available introduction; unusually good at motivating the
   subject.
-
 * **Paul M. Gauthier, *Lectures on Several Complex Variables*** (2014,
   [Birkhäuser](https://doi.org/10.1007/978-3-319-11511-5)). A compact graduate
   course in holomorphic functions, domains, and approximation in several
   variables. Useful as an entry before the larger SCV monographs.
-
 * **Steven G. Krantz, *Harmonic and Complex Analysis in Several Variables***
   (2017, [Springer](https://doi.org/10.1007/978-3-319-63231-5)). Real harmonic
   analysis and several-variable holomorphic function theory developed in
   parallel. Makes the shared kernels, boundary phenomena, and analytic methods
   visible.
-
 * **Emil J. Straube, *Lectures on the L^2-Sobolev Theory of the
-  d-bar-Neumann Problem*** (2010, European Mathematical Society). L^2 and
+  d-bar-Neumann Problem*** (2010, [European Mathematical Society](https://doi.org/10.4171/076)). L^2 and
   Sobolev estimates for the d-bar-Neumann problem, with emphasis on
   regularity, compactness, and their geometric conditions.
-
 * **Takeo Ohsawa, *L² Approaches in Several Complex Variables: Towards the
   Oka–Cartan Theory with Precise Bounds*** (2015; 2nd ed., 2018,
   [Springer](https://doi.org/10.1007/978-4-431-56852-0)). The d-bar
   equation, L^2 extension theorems, and Oka–Cartan theory, with quantitative
   estimates. A research-level continuation of *Analysis of Several Complex
   Variables*.
-
 * **Friedrich Haslinger, *The ∂̄-Neumann Problem and Schrödinger
   Operators*** (2nd ed., 2023, [De Gruyter](https://doi.org/10.1515/9783111182926)). The ∂̄-Neumann problem
   through Schrödinger operators with magnetic fields. The second
@@ -7597,18 +7267,14 @@ homotopy problems.
 * **R. O. Wells, Jr., *Differential Analysis on Complex
   Manifolds***. Dolbeault cohomology, Hodge theory, and compact
   complex manifolds.
-
 * **Daniel Huybrechts, *Complex Geometry: An Introduction***. The
   standard modern bridge between the analytic and algebraic sides.
-
 * **Phillip Griffiths and Joseph Harris, *Principles of Algebraic
   Geometry***. Its first chapters remain a standard analytic reference
   for Hodge theory and residues.
-
 * **Hans Grauert and Reinhold Remmert, *Theory of Stein Spaces*** and
   ***Coherent Analytic Sheaves***. The classical structural
   references.
-
 * **E. M. Chirka, *Complex Analytic Sets***. Local and global structure of
   analytic sets, multiplicity, and extension theorems.
 
@@ -7617,23 +7283,19 @@ homotopy problems.
 * **Tatsuo Suwa, *Complex Analytic Geometry: From the Localization
   Viewpoint*** (2024, [World Scientific](https://doi.org/10.1142/8324)).
   Local analytic geometry, residues, and index theorems.
-
 * **Junjiro Noguchi, *Analytic Function Theory of Several Variables:
   Elements of Oka's Coherence*** (2016,
   [Springer](https://doi.org/10.1007/978-981-10-0291-5)). Oka's coherence
   theorems and the Cousin problems, following Oka's own approach.
-
 * **John M. Lee, *Introduction to Complex Manifolds*** (2024, [American
   Mathematical Society](https://sites.math.washington.edu/~lee/Books/ICM/)).
   Complex and Kähler geometry, holomorphic bundles, cohomology, and analytic
   tools leading to the Kodaira embedding theorem. A graduate course building
   on smooth manifolds and Riemannian geometry.
-
 * **Franc Forstnerič, *Stein Manifolds and Holomorphic
-  Mappings*** (2011; 2nd ed., 2017, Springer). Stein manifolds, holomorphic
+  Mappings*** (2011, [Springer](https://doi.org/10.1007/978-3-642-22250-4); 2nd ed., 2017, [Springer](https://doi.org/10.1007/978-3-319-61058-0)). Stein manifolds, holomorphic
   approximation, and the Oka principle, including homotopy methods for
   holomorphic mappings.
-
 * **Antonio Alarcón, Franc Forstnerič, and Francisco J. López, *Minimal
   Surfaces from a Complex Analytic Viewpoint*** (2021, [Springer](https://doi.org/10.1007/978-3-030-69056-4)).
   Minimal surfaces through holomorphic curves, the Oka principle, and
@@ -7653,28 +7315,21 @@ Kähler geometry.
 * **Jean-Pierre Demailly, *Complex Analytic and Differential
   Geometry***. Freely available lecture notes on complex manifolds,
   currents, positivity, vanishing theorems, and L^2 methods.
-
 * **Jean-Pierre Demailly, *Analytic Methods in Algebraic
   Geometry***. Positive currents, multiplier ideals, and L^2 extension
   applied to algebraic geometry.
-
 * **Pierre Lelong and Lawrence Gruman, *Entire Functions of Several
   Complex Variables***. Growth, currents, and value distribution in
   several variables.
-
 * **Maciej Klimek, *Pluripotential Theory***. The standard monograph
   on plurisubharmonic functions and the complex Monge–Ampère operator.
-
-* **Lars Hörmander, *Notions of Convexity***. Plurisubharmonic functions,
-  the minimum principle, and the convexity theorems that organise
-  several complex variables. Also listed in Section 41, where the same
-  book is used for entire functions.
-
+* **Lars Hörmander, *Notions of Convexity***. Plurisubharmonic
+  functions, the minimum principle, and the convexity theorems that
+  organise several complex variables. Also listed in Section 41.
 * **Sławomir Kołodziej, *The Complex Monge–Ampère Equation and
   Pluripotential Theory*** (2005, [American Mathematical
   Society](https://doi.org/10.1090/memo/0840), Memoirs). Weak solutions with
   L^p densities and capacity estimates; a foundation for Guedj–Zeriahi.
-
 * **Gang Tian, *Canonical Metrics in Kähler Geometry*** (2000,
   [Birkhäuser](https://doi.org/10.1007/978-3-0348-8389-4)). Kähler–Einstein
   metrics, the Calabi–Yau theorem, and K-stability as it stood in 2000.
@@ -7682,30 +7337,26 @@ Kähler geometry.
 #### More recent works
 
 * **Vincent Guedj and Ahmed Zeriahi, *Degenerate Complex Monge–Ampère
-  Equations*** (2017, European Mathematical Society). A research treatment
+  Equations*** (2017, [European Mathematical Society](https://doi.org/10.4171/167)). A research treatment
   of degenerate complex Monge–Ampère equations through pluripotential
   theory, energy classes, and applications to Kähler geometry.
-
 * **Vincent Guedj (ed.), *Complex Monge–Ampère Equations and Geodesics in the
   Space of Kähler Metrics*** (2012,
   [Springer](https://doi.org/10.1007/978-3-642-23669-3)). Graduate lecture
   courses on Monge–Ampère operators, boundary problems, the Calabi conjecture,
   and geodesics in spaces of metrics. A useful bridge between pluripotential
   theory and Kähler geometry.
-
 * **Sébastien Boucksom, Philippe Eyssidieux, and Vincent Guedj (eds.),
   *An Introduction to the Kähler–Ricci Flow*** (2013, [Springer](https://doi.org/10.1007/978-3-319-00819-6), Lecture
   Notes in Mathematics). Lecture notes making the Kähler–Ricci flow
   accessible from complex analysis.
-
 * **Gábor Székelyhidi, *An Introduction to Extremal Kähler Metrics***
   (2014, [American Mathematical Society](https://doi.org/10.1090/gsm/152), Graduate Studies in
   Mathematics). A graduate introduction to cscK metrics, K-stability,
   and the analytic problems around them.
   Also listed in Section 52.
-
 * **Junjiro Noguchi and Jörg Winkelmann, *Nevanlinna Theory in Several
-  Complex Variables and Diophantine Approximation*** (2014, Springer).
+  Complex Variables and Diophantine Approximation*** (2014, [Springer](https://doi.org/10.1007/978-4-431-54571-2)).
   Value distribution in the several-variable setting.
 
 <a id="ckma-45d"></a>
@@ -7719,18 +7370,14 @@ mapping problems describe the analytic geometry of complex boundaries.
 
 * **Albert Boggess, *CR Manifolds and the Tangential Cauchy–Riemann
   Complex***. The standard introduction.
-
 * **M. Salah Baouendi, Peter Ebenfelt, and Linda Preiss Rothschild,
   *Real Submanifolds in Complex Space and Their Mappings***. A
   research monograph on finite type, reflection, and mapping problems.
-
 * **John P. D'Angelo, *Several Complex Variables and the Geometry of
   Real Hypersurfaces***. Finite type and local hypersurface geometry.
-
 * **Sorin Dragomir and Giuseppe Tomassini, *Differential Geometry and
   Analysis on CR Manifolds***. The geometric side, with subelliptic
   analysis included.
-
 * **Shiferaw Berhanu, Paulo D. Cordaro, and Jorge Hounie, *An
   Introduction to Involutive Structures*** (2008, [Cambridge University
   Press](https://doi.org/10.1017/CBO9780511543067)). Involutive structures and locally integrable systems, the
@@ -7740,15 +7387,12 @@ mapping problems describe the analytic geometry of complex boundaries.
 
 * **John P. D'Angelo, *Hermitian Analysis: From Fourier Series to
   Cauchy–Riemann Geometry*** (2nd ed., 2019, [Springer](https://doi.org/10.1007/978-3-030-16514-7)). CR geometry
-  approached from Fourier series and Hermitian forms. Distinct from his
-  hypersurface monograph.
-
+  approached from Fourier series and Hermitian forms.
 * **John P. D'Angelo, *Rational Sphere Maps*** (2021,
   [Birkhäuser](https://doi.org/10.1007/978-3-030-75809-7)). Rational maps
   between complex spheres, proper holomorphic maps, and CR geometry. A
   specialised synthesis relating Hermitian forms, degree bounds, and geometric
   mapping problems.
-
 
 ---
 
@@ -7791,10 +7435,10 @@ and 39A.
 ### More recent works
 
 * **Feliks Przytycki and Mariusz Urbański, *Conformal Fractals:
-  Ergodic Theory Methods*** (2010, Cambridge University Press).
+  Ergodic Theory Methods*** (2010, [Cambridge University Press](https://doi.org/10.1017/CBO9781139193184)).
   Thermodynamic formalism in conformal dynamics and fractal geometry.
 * **Mariusz Urbański, Mario Roy, and Sara Munday, *Non-Invertible
-  Dynamical Systems*** (multi-volume, 2022–, De Gruyter). The modern
+  Dynamical Systems*** (3 volumes, 2022–2023, De Gruyter; [1](https://doi.org/10.1515/9783110702682), [2](https://doi.org/10.1515/9783110702699), [3](https://doi.org/10.1515/9783110769876)). The modern
   systematic treatment of thermodynamic formalism for conformal systems.
 * **Janina Kotus and Mariusz Urbański, *Meromorphic Dynamics*** (2 volumes,
   2023, [Cambridge University
@@ -7811,8 +7455,7 @@ and 39A.
   Mathematics). CIME lectures on dynamics in several complex variables,
   holomorphic foliations, and transcendental dynamics.
 * **Marco Abate, *Holomorphic Dynamics on Hyperbolic Riemann
-  Surfaces*** (De Gruyter) and the several-variable literature of Bedford,
-  Fornaess, and Sibony. Holomorphic self-maps of hyperbolic Riemann
+  Surfaces*** (2022, [De Gruyter](https://doi.org/10.1515/9783110601978)). Holomorphic self-maps of hyperbolic Riemann
   surfaces, their iteration, and the invariant metrics used in their study.
 * **Matthew Baker and Robert Rumely, *Potential Theory and Dynamics on the
   Berkovich Projective Line*** (2010, [American Mathematical
@@ -7883,13 +7526,15 @@ their mathematical approximation theory is central.
   critical points of polynomials, and the Bernstein and Markov inequalities,
   in one reference.
 * **Allan Pinkus, *n-Widths in Approximation Theory***. The standard
-  research monograph on widths and optimal recovery.
+  research monograph on n-widths, with Tchebycheff systems and total
+  positivity as the tools for exact computations.
 * **Erich Novak and Henryk Woźniakowski, *Tractability of Multivariate
   Problems*** (3 volumes, 2008–2012, European Mathematical Society; [I](https://ems.press/books/etm/56), [II](https://ems.press/books/etm/83), [III](https://ems.press/books/etm/116)).
   Information-based complexity and the tractability of high-dimensional
   approximation.
-* **Allan Pinkus, *Totally Positive Matrices***. Variation-diminishing
-  transformations, splines, and total positivity.
+* **Allan Pinkus, *Totally Positive Matrices***. Criteria, factorizations,
+  spectral properties, and variation diminishing for totally positive
+  matrices.
 * **Samuel Karlin, *Total Positivity***. The large classical reference
   on the same subject.
 * **Larry L. Schumaker, *Spline Functions: Basic Theory***. The
@@ -7905,8 +7550,8 @@ their mathematical approximation theory is central.
   Polynomials***. Approximation and potential theory meeting
   orthogonal polynomials.
 * **Edward B. Saff and Vilmos Totik, *Logarithmic Potentials with
-  External Fields***. Weighted approximation and equilibrium problems.
-  Also listed in Section 38.
+  External Fields***. Listed in full in Section 38. Weighted
+  approximation and equilibrium problems.
 * **Dietrich Braess, *Nonlinear Approximation Theory***. Rational and
   nonlinear approximation in systematic form.
 * **George A. Baker Jr. and Peter Graves-Morris, *Padé
@@ -7929,8 +7574,7 @@ their mathematical approximation theory is central.
 * **Martin D. Buhmann, *Radial Basis Functions: Theory and
   Implementations***. Approximation by radial basis functions.
 * **Carl de Boor, Klaus Höllig, and Sherman Riemenschneider, *Box Splines***. Structure,
-  approximation order, and Fourier analysis of box splines. Distinct from de Boor's *A
-  Practical Guide to Splines*.
+  approximation order, and Fourier analysis of box splines.
 * **Michael Drmota and Robert F. Tichy, *Sequences, Discrepancies and Applications***.
   Uniform distribution and discrepancy, with applications in analysis. Dick and
   Pillichshammer treat the quasi-Monte Carlo side below.
@@ -7943,6 +7587,12 @@ their mathematical approximation theory is central.
   Practice*** (2013; 2nd ed., 2019, SIAM). Computational in emphasis,
   but an exceptionally effective modern account of polynomial and
   rational approximation and of Chebfun-style thinking.
+* **Armin Iske, *Approximation Theory and Algorithms for Data Analysis***
+  (2018, [Springer](https://doi.org/10.1007/978-3-030-05228-7), Texts in
+  Applied Mathematics). Best approximation in Euclidean and Chebyshev
+  norms, the Remez algorithm, Jackson theorems, and kernel interpolation in
+  native reproducing-kernel Hilbert spaces. A graduate course linking
+  classical approximation with data analysis.
 * **Jorge Bustamante, *Algebraic Approximation: A Guide to Past and Current
   Solutions*** (2012,
   [Birkhäuser](https://doi.org/10.1007/978-3-0348-0194-2)). Polynomial
@@ -8047,9 +7697,8 @@ connect this section with Sections 7, 50, and 51.
   circle, connecting recurrence relations and measure theory with spectral
   theory.
 * **Percy Deift, *Orthogonal Polynomials and Random Matrices: A
-  Riemann–Hilbert Approach***. The entry point to steepest-descent
-  asymptotics.
-  Also listed in Sections 7 and 51.
+  Riemann–Hilbert Approach***. Listed in full in Section 51. The entry
+  point to steepest-descent asymptotics.
 * **Charles F. Dunkl and Yuan Xu, *Orthogonal Polynomials of Several
   Variables***. The standard reference for the multivariate theory.
 * **Gerald Teschl, *Jacobi Operators and Completely Integrable Nonlinear
@@ -8098,9 +7747,9 @@ connect this section with Sections 7, 50, and 51.
   [American Mathematical Society](https://doi.org/10.1090/gsm/226)). Listed in full in Section 22. Jacobi
   operators and the spectral form of orthogonal polynomials.
 * **Barry Simon, *Szegő's Theorem and Its Descendants*** (2011,
-  Princeton University Press). A synthesis of sum rules, spectral
+  [Princeton University Press](https://doi.org/10.1515/9781400837052)). A synthesis of sum rules, spectral
   theory, and the Szegő asymptotics across settings.
-* **Konrad Schmüdgen, *The Moment Problem*** (2017, Springer). The
+* **Konrad Schmüdgen, *The Moment Problem*** (2017, [Springer](https://doi.org/10.1007/978-3-319-64546-9)). The
   modern comprehensive treatment of one- and multi-dimensional moment
   problems, positivity, and representing measures.
 * **Jean B. Lasserre, *Moments, Positive Polynomials and Their
@@ -8121,7 +7770,7 @@ connect this section with Sections 7, 50, and 51.
   Schrödinger Operators*** (2022–2025, American Mathematical Society; [I](https://doi.org/10.1090/gsm/221), [II](https://doi.org/10.1090/gsm/249)).
   Listed in full in Section 22. The ergodic theory of the recurrences.
 * **Walter Van Assche, *Orthogonal Polynomials and Painlevé
-  Equations*** (2017, Cambridge University Press). Recurrence
+  Equations*** (2017, [Cambridge University Press](https://doi.org/10.1017/9781108644860)). Recurrence
   coefficients, integrable systems, and special functions.
 * **Nalini Joshi, *Discrete Painlevé Equations*** (2019,
   [American Mathematical Society](https://doi.org/10.1090/cbms/131)). Listed in full in Section 51.
@@ -8192,10 +7841,9 @@ their practical role rather than by mathematical subject.
 * **Wilhelm Magnus, Fritz Oberhettinger, and Raj Pal Soni, *Formulas
   and Theorems for the Special Functions of Mathematical Physics***. A
   compact and reliable formula handbook.
-* **I. S. Gradshteyn and I. M. Ryzhik, *Table of Integrals, Series,
-  and Products***. A large reference collection of definite and indefinite
-  integrals, series, and products.
-  Also listed in Section 54.
+* **I. S. Gradshteyn and I. M. Ryzhik, *Table of Integrals, Series, and
+  Products***. Listed in full in Section 54. A large reference
+  collection of definite and indefinite integrals, series, and products.
 * **A. P. Prudnikov, Yu. A. Brychkov, and O. I. Marichev, *Integrals
   and Series*** (5 volumes). Extensive tables of integrals, series, and
   integral transforms, including formulas involving special functions.
@@ -8247,8 +7895,8 @@ their practical role rather than by mathematical subject.
   to Transform Theory***. The classical rigorous monographs on Laplace
   inversion and completely monotone functions.
 * **E. C. Titchmarsh, *Introduction to the Theory of Fourier
-  Integrals***. The classical Fourier transform reference on the line.
-  Also listed in Section 27.
+  Integrals***. Listed in full in Section 27. The classical Fourier
+  transform reference on the line.
 * **Ian N. Sneddon, *The Use of Integral Transforms***. Fourier,
   Laplace, Hankel, and Mellin transforms in applications.
 * **Ricardo Estrada and Ram P. Kanwal, *A Distributional Approach to
@@ -8270,17 +7918,18 @@ their practical role rather than by mathematical subject.
 * **NIST Digital Library of Mathematical Functions**, and **Frank
   W. J. Olver, Daniel W. Lozier, Ronald F. Boisvert, and Charles
   W. Clark (eds.), *NIST Handbook of Mathematical Functions*** (2010,
-  Cambridge University Press). A reference for special-function definitions,
+  [Cambridge University Press](https://www.cambridge.org/9780521192255)). A reference for special-function definitions,
   identities, differential equations, and asymptotics, available as an
   online library and a print handbook.
 * **Richard Beals and Roderick Wong, *Special Functions and Orthogonal
-  Polynomials*** (2016, Cambridge University Press). A modern rigorous
-  graduate text.
+  Polynomials*** (2016, Cambridge University Press, Cambridge Studies in
+  Advanced Mathematics; enlarged second edition of *Special Functions: A
+  Graduate Text*, 2010). A modern rigorous graduate text.
 * **Carlo Viola, *An Introduction to Special Functions*** (2016,
   [Springer](https://doi.org/10.1007/978-3-319-41345-7)). A graduate course on
   gamma, hypergeometric, Bessel, and related functions. Useful for learning
   the analytic theory behind the reference tables.
-* **Mourad E. H. Ismail (ed., with assistance from Walter Van Assche); Tom H.
+* **Mourad E. H. Ismail and Walter Van Assche (eds., volume I); Tom H.
   Koornwinder and Jasper V. Stokman (eds., volume II), *Encyclopedia of
   Special Functions: The Askey–Bateman Project*** (volumes I–II, 2020–2021:
   *Univariate Orthogonal Polynomials*; *Multivariable Special Functions*,
@@ -8293,7 +7942,7 @@ their practical role rather than by mathematical subject.
   (2010, [Springer](https://doi.org/10.1007/978-3-642-05014-5)). Listed in full in Section 48.
 * **Victor H. Moll, *Special Integrals of Gradshteyn and Ryzhik: The
   Proofs*** (2 volumes, 2014–2015, [CRC
-  Press](https://doi.org/10.1201/b17674); [volume II](https://www.routledge.com/Special-Integrals-of-Gradshteyn-and-Ryzhik-the-Proofs---Volume-II/Moll/p/book/9780367377274)). Proofs of entries in the table,
+  Press](https://doi.org/10.1201/b17674); [volume II](https://doi.org/10.1201/b19419)). Proofs of entries in the table,
   organised by method.
 * **Takashi Takebe, *Elliptic Integrals and Elliptic Functions*** (2023,
   [Springer](https://doi.org/10.1007/978-3-031-30265-7)). Elliptic integrals,
@@ -8349,7 +7998,7 @@ applications are in Section 53.
 * **F. W. J. Olver, *Asymptotics and Special Functions***. The
   foundational modern reference for asymptotic expansions, turning
   points, uniform asymptotics, and error bounds.
-* **R. Wong, *Asymptotic Approximations of Integrals***. The standard
+* **Roderick Wong, *Asymptotic Approximations of Integrals***. The standard
   detailed reference for Laplace, stationary phase, saddle points, and
   uniform methods.
 * **N. G. de Bruijn, *Asymptotic Methods in Analysis***. A short
@@ -8385,20 +8034,18 @@ applications are in Section 53.
 #### Differential equations, summability, and resurgence
 
 * **M. V. Fedoryuk, *Asymptotic Analysis: Linear Ordinary Differential
-  Equations*** and his work on the saddle-point method. The
-  Russian-school treatment.
+  Equations***. The Russian-school treatment.
 * **Wolfgang Wasow, *Asymptotic Expansions for Ordinary Differential
   Equations***. The classical reference for irregular singular points
-  and turning-point theory.
-  Also listed in Section 31.
+  and turning-point theory. Also listed in Section 31.
 * **Roscoe B. White, *Asymptotic Analysis of Differential Equations***
   (revised ed., 2010, [Imperial College Press](https://doi.org/10.1142/p735);
   first edition 2005). WKB methods, turning points, boundary layers, and
   complex asymptotic matching. Useful for connecting formal
   differential-equation approximations with integral representations.
-* **Ovidiu Costin, *Asymptotics and Borel Summability***. The standard
-  book-length treatment of resurgence and Borel summation for
-  analysts.
+* **Ovidiu Costin, *Asymptotics and Borel Summability***. A
+  book-length treatment of Borel summation and transseries for analysts,
+  with an introduction to resurgence.
 * **Werner Balser, *Formal Power Series and Linear Systems of
   Meromorphic Ordinary Differential Equations***. Multisummability and
   the Stokes phenomenon, rigorously.
@@ -8445,13 +8092,12 @@ applications are in Section 53.
 #### Spectral asymptotics
 
 * **Mouez Dimassi and Johannes Sjöstrand, *Spectral Asymptotics in the
-  Semi-Classical Limit***. Asymptotics as spectral theory; see also
-  Section 30.
-  Also listed in Section 30.
+  Semi-Classical Limit***. Listed in full in Section 30. Asymptotics as
+  spectral theory.
 * **Victor Ivrii, *Microlocal Analysis and Precise Spectral
-  Asymptotics***. Microlocal methods for spectral asymptotics, including
-  sharp remainder estimates beyond the leading Weyl term.
-  Also listed in Section 53.
+  Asymptotics***. Listed in full in Section 53. Microlocal methods for
+  spectral asymptotics, including sharp remainder estimates beyond the
+  leading Weyl term.
 
 ### More recent works
 
@@ -8464,7 +8110,7 @@ applications are in Section 53.
   University Press](https://doi.org/10.1017/CBO9780511753626)). Convergent
   Hadamard expansions and exponentially improved asymptotics.
 * **Claude Mitschi and David Sauzin, *Divergent Series, Summability and
-  Resurgence I*** (2016, Springer, Lecture Notes in Mathematics). An
+  Resurgence I*** (2016, [Springer](https://doi.org/10.1007/978-3-319-28736-2), Lecture Notes in Mathematics). An
   introduction to divergent series, Borel summation, and resurgence, with
   applications to differential equations and dynamical systems.
 * **Michèle Loday-Richaud, *Divergent Series, Summability and
@@ -8511,15 +8157,14 @@ asymptotic and numerical Riemann–Hilbert methods are included. Section 34
 develops general nonlinear-wave and dispersive PDE estimates, Section 41
 complex differential equations, and Section 50 asymptotics and summability.
 Orthogonal polynomials and random matrix applications connect with Sections
-48 and 7B; broader inverse problems are linked through the cross-subject
+48 and 07B; broader inverse problems are linked through the cross-subject
 index.
 
 ### Foundational works
 
 * **Percy Deift, *Orthogonal Polynomials and Random Matrices: A
   Riemann–Hilbert Approach***. The standard introduction to the
-  nonlinear steepest-descent method.
-  Also listed in Sections 7 and 48.
+  nonlinear steepest-descent method. Also listed in Sections 7 and 48.
 * **Athanassios S. Fokas, Alexander R. Its, Andrei A. Kapaev, and
   Victor Yu. Novokshenov, *Painlevé Transcendents: The Riemann–Hilbert
   Approach***. Riemann–Hilbert methods for Painlevé equations, including
@@ -8539,14 +8184,13 @@ index.
   Press](https://doi.org/10.1017/CBO9780511535024)). Lax pairs, r-matrices,
   spectral curves, and their algebro-geometric and field-theoretic sides.
 * **Vladimir A. Marchenko, *Sturm–Liouville Operators and
-  Applications***. Inverse spectral theory, and the analytic core of
-  the inverse scattering transform.
-  Also listed in Section 22.
+  Applications***. Listed in full in Section 22. Inverse spectral
+  theory, and the analytic core of the inverse scattering transform.
 * **Fritz Gesztesy and Helge Holden, *Soliton Equations and Their
   Algebro-Geometric Solutions***, volume I, *(1+1)-Dimensional
   Continuous Models* (2003), and, with Johanna Michor and Gerald
   Teschl, volume II, *(1+1)-Dimensional Discrete Models* (2008,
-  Cambridge University Press; [I](https://doi.org/10.1017/CBO9780511546723), [II](https://www.cambridge.org/core/books/soliton-equations-and-their-algebrogeometric-solutions/444985FF5EB231A3101AEBE8DEDAFB2B)). Algebro-geometric solutions of soliton
+  Cambridge University Press; [I](https://doi.org/10.1017/CBO9780511546723), [II](https://doi.org/10.1017/CBO9780511543203)). Algebro-geometric solutions of soliton
   equations, with the spectral theory done carefully.
 * **Spyridon Kamvissis, Kenneth D. T.-R. McLaughlin, and Peter D. Miller,
   *Semiclassical Soliton Ensembles for the Focusing Nonlinear Schrödinger
@@ -8579,8 +8223,7 @@ index.
   its solutions, and its integrability.
 * **Mark J. Ablowitz, Barbara Prinari, and A. David Trubatch, *Discrete and Continuous
   Nonlinear Schrödinger Systems***. Integrable discrete and continuous nonlinear Schrödinger
-  equations and their inverse scattering. Distinct from Ablowitz and Clarkson, *Solitons,
-  Nonlinear Evolution Equations and Inverse Scattering*.
+  equations and their inverse scattering.
 
 ### More recent works
 
@@ -8665,17 +8308,15 @@ operators, index theory, and spectral geometry.
 * **Jeff Cheeger and David G. Ebin, *Comparison Theorems in Riemannian
   Geometry***. A focused treatment of comparison arguments in Riemannian
   geometry, including curvature, geodesics, and the variation of energy.
-* **Isaac Chavel, *Eigenvalues in Riemannian Geometry***. The classic
-  reference for spectral geometry and geometric eigenvalue
-  inequalities.
-  Also listed in Section 53.
+* **Isaac Chavel, *Eigenvalues in Riemannian Geometry***. Listed in full
+  in Section 53. The classic reference for spectral geometry and
+  geometric eigenvalue inequalities.
 * **Richard Schoen and Shing-Tung Yau, *Lectures on Differential
   Geometry***. Research-level geometry shaped throughout by PDE,
   curvature, and minimal-surface methods.
-* **Alexander Grigor'yan, *Heat Kernel and Analysis on
-  Manifolds***. Heat kernels, volume growth, parabolic estimates, and
-  the analytic consequences of geometry.
-  Also listed in Sections 14 and 39.
+* **Alexander Grigor'yan, *Heat Kernel and Analysis on Manifolds***.
+  Heat kernels, volume growth, parabolic estimates, and the analytic
+  consequences of geometry. Also listed in Sections 14 and 39.
 * **Jürgen Jost, *Partial Differential Equations*** and ***Nonpositive
   Curvature: Geometric and Analytic Aspects***. The analytic
   companions to Jost's geometry.
@@ -8689,19 +8330,17 @@ operators, index theory, and spectral geometry.
   The geometric control theory that the later sub-Riemannian treatise
   assumes.
 * **Velimir Jurdjevic, *Geometric Control Theory***. Controllability, the maximum principle,
-  and optimal control on Lie groups and homogeneous spaces. Distinct from Agrachev and
-  Sachkov, *Control Theory from the Geometric Viewpoint*.
+  and optimal control on Lie groups and homogeneous spaces.
 
 #### Nonlinear elliptic problems and harmonic maps
 
 * **Thierry Aubin, *Some Nonlinear Problems in Riemannian Geometry***
-  and ***Nonlinear Analysis on Manifolds: Monge–Ampère
-  Equations***. Sobolev inequalities, Yamabe-type problems, and
-  complex Monge–Ampère on manifolds.
-* **Emmanuel Hebey, *Nonlinear Analysis on Manifolds: Sobolev Spaces
-  and Inequalities***. The functional-analytic complement to Aubin,
-  careful about best constants.
-  Also listed in Section 14.
+  and ***Nonlinear Analysis on Manifolds: Monge–Ampère Equations***.
+  Sobolev inequalities, Yamabe-type problems, and complex Monge–Ampère
+  on manifolds. Also listed in Section 14.
+* **Emmanuel Hebey, *Nonlinear Analysis on Manifolds: Sobolev Spaces and
+  Inequalities***. The functional-analytic complement to Aubin, careful
+  about best constants. Also listed in Section 14.
 * **Olivier Druet, Emmanuel Hebey, and Frédéric Robert, *Blow-up Theory
   for Elliptic PDEs in Riemannian Geometry*** (2004, [Princeton
   University Press](https://doi.org/10.1515/9781400826162), Mathematical Notes). Blow-up analysis
@@ -8802,6 +8441,12 @@ operators, index theory, and spectral geometry.
   Society](https://doi.org/10.1090/gsm/201), Graduate Studies in
   Mathematics). Positive mass theorems, Penrose inequalities, and the
   constraint equations, treated as geometric analysis.
+* **Luis J. Alías, Paolo Mastrolia, and Marco Rigoli, *Maximum Principles and
+  Geometric Applications*** (2016,
+  [Springer](https://doi.org/10.1007/978-3-319-24337-5)). Weak maximum
+  principles, Omori–Yau methods, and geometric consequences. Connects
+  differential inequalities with curvature, immersion, and completeness
+  questions.
 
 #### Geometric flows
 
@@ -8856,6 +8501,13 @@ operators, index theory, and spectral geometry.
   quasi-states, and rigidity of functions on symplectic manifolds. Included
   for its functional-analytic and variational viewpoint on symplectic
   geometry.
+* **Gerd Rudolph and Matthias Schmidt, *Differential Geometry and
+  Mathematical Physics*** (2 volumes: *Manifolds, Lie Groups and
+  Hamiltonian Systems*; *Fibre Bundles, Topology and Gauge Fields*; 2013
+  and 2017, [Springer](https://doi.org/10.1007/978-94-024-0959-8),
+  Theoretical and Mathematical Physics). The second volume develops
+  connections, characteristic classes, Dirac operators, the Yang–Mills
+  equation, and the gauge orbit space.
 * **Kai Cieliebak and Yakov Eliashberg, *From Stein to Weinstein and Back:
   Symplectic Geometry of Affine Complex Manifolds*** (2012, [American
   Mathematical Society](https://doi.org/10.1090/coll/059), Colloquium
@@ -8891,9 +8543,9 @@ cross-subject index.
 * **Liviu I. Nicolaescu, *Lectures on the Geometry of Manifolds***. A
   large modern course covering elliptic operators, Hodge theory, and
   index theory in one place.
-* **M. A. Shubin, *Pseudodifferential Operators and Spectral
-  Theory***. Global symbol calculus and spectral asymptotics.
-  Also listed in Section 30.
+* **M. A. Shubin, *Pseudodifferential Operators and Spectral Theory***.
+  Listed in full in Section 30. Global symbol calculus and spectral
+  asymptotics.
 * **Mikhail Gromov, *Partial Differential Relations***. A research treatise on
   the h-principle, partial differential relations, and flexibility methods
   in differential geometry.
@@ -8920,9 +8572,8 @@ cross-subject index.
   Boundary Problems for Dirac Operators***. Boundary value problems
   and spectral flow.
 * **Richard B. Melrose, *The Atiyah–Patodi–Singer Index Theorem*** and
-  ***Geometric Scattering Theory***. Microlocal analysis on manifolds
-  with boundary and with ends.
-  Also listed in Section 30.
+  ***Geometric Scattering Theory***. Listed in full in Section 30.
+  Microlocal analysis on manifolds with boundary and with ends.
 * **Nigel Higson and John Roe, *Analytic K-Homology*** (2000, Oxford
   University Press). Listed in full in Section 23.
 * **Wolfgang Lück, *L²-Invariants: Theory and Applications to Geometry and
@@ -8937,14 +8588,13 @@ cross-subject index.
   of Mathematics Studies). The hypoelliptic Laplacian and its relation
   to the Ray–Singer torsion.
 * **Nicolas Ginoux, *The Dirac Spectrum***. Eigenvalue estimates for the Dirac operator on
-  Riemannian spin manifolds. Distinct from Bär, Ginoux, and Pfäffle, *Wave Equations on
-  Lorentzian Manifolds and Quantization*.
+  Riemannian spin manifolds.
 
 #### Spectral geometry
 
 * **Isaac Chavel, *Eigenvalues in Riemannian Geometry***. The classic
-  reference for eigenvalues and the geometry of the Laplacian.
-  Also listed in Section 52.
+  reference for eigenvalues and the geometry of the Laplacian. Also
+  listed in Section 52.
 * **Pierre H. Bérard, *Spectral Geometry: Direct and Inverse
   Problems***. Direct and inverse spectral geometry in the classical
   style.
@@ -8955,8 +8605,8 @@ cross-subject index.
   Asymptotics***. Microlocal methods for sharp Weyl laws and spectral
   remainder estimates. Also listed in Section 50.
 * **Christopher D. Sogge, *Hangzhou Lectures on Eigenfunctions of the
-  Laplacian*** and ***Fourier Integrals in Classical
-  Analysis***. Harmonic-analytic eigenfunction estimates.
+  Laplacian*** and ***Fourier Integrals in Classical Analysis***.
+  Harmonic-analytic eigenfunction estimates. Also listed in Section 27.
 * **Henryk Iwaniec, *Spectral Methods of Automorphic Forms*** (2nd ed.,
   2002, [American Mathematical Society](https://doi.org/10.1090/gsm/053),
   Graduate Studies in Mathematics; first edition 1995). Spectral theory of
@@ -8965,8 +8615,8 @@ cross-subject index.
 * **David Borthwick, *Spectral Theory of Infinite-Area Hyperbolic
   Surfaces*** (2nd ed., 2016, [Birkhäuser](https://doi.org/10.1007/978-3-319-33877-4); first edition 2007). Listed in full in Section 22.
 * **Antoine Henrot, *Extremum Problems for Eigenvalues of Elliptic
-  Operators***. The extremal side of spectral geometry.
-  Also listed in Section 14.
+  Operators***. Listed in full in Section 14. The extremal side of
+  spectral geometry.
 * **Antoine Henrot and Michel Pierre, *Shape Variation and
   Optimization*** (2018, [European Mathematical Society](https://doi.org/10.4171/178); French original
   2005). Listed in full in Section 36. Extremal eigenvalues as a
@@ -8985,10 +8635,11 @@ cross-subject index.
   index-theory references.
 * **Nicolas Bergeron, *The Spectrum of Hyperbolic Surfaces*** (2016,
   [Springer](https://doi.org/10.1007/978-3-319-27666-3); French original
-  2011). Selberg, geodesic flows, and the spectrum of hyperbolic
-  surfaces, as a graduate text. Also listed in Section 44.
+  2011). The spectrum of hyperbolic surfaces through the Selberg trace
+  formula, arithmetic surfaces, and small eigenvalues (Selberg's 3/16
+  theorem), as a graduate text. Also listed in Section 44.
 * **Steve Zelditch, *Eigenfunctions of the Laplacian on a Riemannian
-  Manifold*** (2017, American Mathematical Society, CBMS Regional
+  Manifold*** (2017, [American Mathematical Society](https://doi.org/10.1090/cbms/125), CBMS Regional
   Conference Series). The modern survey of eigenfunction concentration,
   quantum ergodicity, and nodal sets.
 * **Victor Ivrii, *Microlocal Analysis, Sharp Spectral Asymptotics and
@@ -9005,8 +8656,7 @@ cross-subject index.
 * **Michael Ruzhansky, Makhmud Sadybekov, and Durvudkhan Suragan, *Spectral Geometry of
   Partial Differential Operators*** (2020, [Chapman and
   Hall/CRC](https://doi.org/10.1201/9780429432965)). Spectral geometry of differential
-  operators on domains, including boundary conditions and explicit spectra. Distinct from
-  Ruzhansky and Suragan, *Hardy Inequalities on Homogeneous Groups*.
+  operators on domains, including boundary conditions and explicit spectra.
 
 ---
 
@@ -9029,11 +8679,11 @@ collections are distinguished from instructional exercises.
 
 ### Foundational works
 
-* **G. Pólya and G. Szegő, *Problems and Theorems in Analysis
-  I–II***. A classical problem collection developing techniques in real and
-  complex analysis through worked problems and their solutions.
-  Also listed in Section 11.
-* **Boris M. Makarov, M. G. Goluzina, A. A. Lodkin, and Anatolii N. Podkorytov,
+* **G. Pólya and G. Szegő, *Problems and Theorems in Analysis I–II***. A
+  classical problem collection developing techniques in real and complex
+  analysis through worked problems and their solutions. Also listed in
+  Section 11.
+* **Boris M. Makarov, Maria G. Goluzina, Andrei A. Lodkin, and Anatolii N. Podkorytov,
   *Selected Problems in Real Analysis***. A collection of challenging
   problems in real-variable analysis, including differentiation,
   integration, and measure theory.
@@ -9042,13 +8692,13 @@ collections are distinguished from instructional exercises.
 * **Charalambos D. Aliprantis and Owen Burkinshaw, *Problems in Real
   Analysis***. The companion to their *Principles of Real Analysis*,
   and a good source of routine-but-instructive exercises.
-* **Paul R. Halmos, *A Hilbert Space Problem Book***. Hilbert-space and operator
-  theory developed through problems, with hints and solutions.
+* **Paul R. Halmos, *A Hilbert Space Problem Book***. Hilbert-space and
+  operator theory developed through problems, with hints and solutions.
   Also listed in Section 21.
 * **Konrad Knopp, *Problem Book in the Theory of Functions
   I–II***. The classical complex-analysis problem collection.
 * **Albert N. Shiryaev, *Problems in Probability***, translated by
-  Andrew Lyasoff (2012, [Springer](https://doi.org/10.1007/978-1-4614-3688-1)). A large problem collection across
+  Andrew Lyasoff (2012, [Springer](https://doi.org/10.1007/978-1-4614-3688-1); Russian original 2006). A large problem collection across
   graduate probability, with solutions.
 * **Bernard R. Gelbaum and John M. H. Olmsted, *Counterexamples in
   Analysis***. The standard compact source of pathology.
@@ -9063,13 +8713,14 @@ collections are distinguished from instructional exercises.
   techniques developed through problems and applications, beginning with
   Cauchy–Schwarz and extending to related classical inequalities.
 * **Walter Rudin, *Real and Complex Analysis*** and ***Functional
-  Analysis***. Listed in full in Sections 1, 4, and 40. The exercises provide additional practice in
-  measure theory, complex analysis, and functional analysis.
+  Analysis***. Listed in full in Sections 4 and 15. The exercises
+  provide additional practice in measure theory, complex analysis, and
+  functional analysis.
 * **The Bateman Manuscript Project volumes**. The special-function and
   integral-transform reference volumes listed in Section 49, with extensive
   classical identities and representations.
-* **I. S. Gradshteyn and I. M. Ryzhik, *Table of Integrals, Series,
-  and Products***. A reference collection of integrals, series, and
+* **I. S. Gradshteyn and I. M. Ryzhik, *Table of Integrals, Series, and
+  Products***. A reference collection of integrals, series, and
   products, complementing the special-function references in Section 49.
   Also listed in Section 49.
 * **A. P. Prudnikov, Yu. A. Brychkov, and O. I. Marichev, *Integrals
@@ -9086,10 +8737,15 @@ collections are distinguished from instructional exercises.
 
 ### More recent works
 
-* **Barry Simon, *A Comprehensive Course in Analysis*** (2015, American
-  Mathematical Society). The problem sets and notes make the series a
-  standing reference beyond its exposition.
-  Also listed in Section 1.
+* **Barry Simon, *A Comprehensive Course in Analysis*** (5 volumes,
+  2015, American Mathematical Society;
+  [1](https://doi.org/10.1090/simon/001),
+  [2A](https://doi.org/10.1090/simon/002.1),
+  [2B](https://doi.org/10.1090/simon/002.2),
+  [3](https://doi.org/10.1090/simon/003),
+  [4](https://doi.org/10.1090/simon/004)). Listed in full in Section 1.
+  The problem sets and notes make the series a standing reference beyond
+  its exposition.
 * **René L. Schilling and Franziska Kühn, *Counterexamples in Measure
   and Integration*** (2021, [Cambridge University Press](https://doi.org/10.1017/9781009003797)). Listed in full in Section 4.
 * **Stephan Ramon Garcia, Javad Mashreghi, and William T. Ross,
@@ -9141,30 +8797,23 @@ logical strength of analytic theorems.
 * **Errett Bishop and Douglas S. Bridges, *Constructive Analysis***. A systematic
   development of Bishop-style constructive analysis, including measure
   theory, functional analysis, and complex analysis.
-
 * **Douglas S. Bridges and Luminiţa Simona Vîţă, *Techniques of
   Constructive Analysis***. A modern, readable continuation.
-
 * **Anne Sjerp Troelstra and Dirk van Dalen, *Constructivism in
   Mathematics I–II***. The systematic logical background.
-
 * **Stephen G. Simpson, *Subsystems of Second Order Arithmetic***. Reverse
   mathematics in subsystems of second-order arithmetic, identifying the
   axioms needed for many classical theorems of analysis.
-
 * **Klaus Weihrauch, *Computable Analysis***. The type-two theory of
   effectivity; the standard framework for computability over the
   reals.
-
 * **Marian B. Pour-El and J. Ian Richards, *Computability in Analysis
   and Physics***. The classical account of computable and
   noncomputable phenomena in analysis.
-
 * **André Nies, *Computability and Randomness*** (2009, [Oxford University
   Press](https://doi.org/10.1093/acprof:oso/9780199230761.001.0001)).
-  Algorithmic randomness and lowness notions; the companion to
-  Downey–Hirschfeldt.
-
+  Algorithmic randomness and lowness notions; an independent monograph
+  that complements Downey–Hirschfeldt.
 * **Ulrich Kohlenbach, *Applied Proof Theory: Proof Interpretations and
   their Use in Mathematics*** (2008, [Springer](https://doi.org/10.1007/978-3-540-77533-1)). Proof mining and the
   extraction of quantitative bounds from analytic proofs.
@@ -9177,39 +8826,32 @@ logical strength of analytic theorems.
   substantial handbook of constructive analysis, topology, foundations, and
   computation. Supplies a modern research panorama beyond the Bishop–Bridges
   and Troelstra–van Dalen books.
-
 * **Yuen-Kwok Chan, *Foundations of Constructive Probability Theory*** (2021,
   [Cambridge University Press](https://doi.org/10.1017/9781108884013)).
   Probability developed constructively, with explicit attention to the
   information needed to establish convergence and existence. A specialised
   continuation of Bishop-style analysis.
-
-* **Denis R. Hirschfeldt, *Slicing the Truth*** (2014, World Scientific).
+* **Denis R. Hirschfeldt, *Slicing the Truth*** (2014, [World Scientific](https://doi.org/10.1142/9208)).
   An introduction to computability-theoretic methods in reverse mathematics,
   emphasising the relative strength of mathematical principles.
-
 * **Damir D. Dzhafarov and Carl Mummert, *Reverse Mathematics: Problems,
   Reductions, and Proofs*** (2022,
   [Springer](https://doi.org/10.1007/978-3-031-11367-3)). Modern reverse
   mathematics, with computable reducibilities between problems.
-
 * **Vasco Brattka and Peter Hertling (eds.), *Handbook of Computability
   and Complexity in Analysis*** (2021, [Springer](https://doi.org/10.1007/978-3-030-59234-9)). The research handbook
   of computable analysis: computable reals, computable functionals, and
   the complexity of analytic operations.
-
 * **Rodney G. Downey and Denis R. Hirschfeldt, *Algorithmic Randomness and
   Complexity*** (2010, [Springer](https://doi.org/10.1007/978-0-387-68441-3)).
   A major research reference on effective randomness and its connections with
   computability and measure. Supplies the foundational background for
   effective probabilistic analysis.
-
 * **Johanna N. Y. Franklin and Christopher P. Porter (eds.), *Algorithmic
   Randomness: Progress and Prospects*** (2020, [Cambridge University
   Press](https://doi.org/10.1017/9781108781718)). Research surveys on
-  effective randomness, computability, and connections with analysis. A later
-  continuation of the Downey–Hirschfeldt monograph.
-
+  effective randomness, computability, and connections with analysis.
+  Complements the monographs of Downey–Hirschfeldt and Nies.
 * **Helmut Schwichtenberg and Stanley S. Wainer, *Proofs and
   Computations*** (2012, [Cambridge University Press](https://doi.org/10.1017/CBO9781139031905)). Primitive
   recursion, computability, and the proof theory that constructive
@@ -9227,36 +8869,29 @@ classical analysis.
 
 * **Abraham Robinson, *Non-standard Analysis***. The founding account
   of nonstandard analysis.
-
 * **Albert E. Hurd and Peter A. Loeb, *An Introduction to Nonstandard
   Real Analysis***. Nonstandard real analysis and the Loeb measure
   construction, with applications in probability and functional
   analysis.
-
 * **Peter A. Loeb and Manfred P. H. Wolff (eds.), *Nonstandard Analysis for
   the Working Mathematician*** (2nd ed., 2015,
   [Springer](https://doi.org/10.1007/978-94-017-7327-0)). Nonstandard
   methods in measure theory, functional analysis, probability, and
   economics.
-
 * **Sergio Albeverio, Jens Erik Fenstad, Raphael Høegh-Krohn, and Tom
   Lindstrøm, *Nonstandard Methods in Stochastic Analysis and
   Mathematical Physics***. Nonstandard methods applied to stochastic
   analysis and mathematical physics, connecting hyperfinite constructions
   with classical analytic models.
-
 * **Nicolas Bourbaki, *Theory of Sets***. Formal mathematics, axiomatic set
   theory, ordered sets, cardinals, and Bourbaki's theory of structures.
   Provides foundational background for the organisation of abstract
   mathematics.
-
 * **Robert Goldblatt, *Lectures on the Hyperreals: An Introduction to
   Nonstandard Analysis***. The ultrapower construction of the hyperreals
   and nonstandard analysis.
-
 * **Vladimir Kanovei and Michael Reeken, *Nonstandard Analysis, Axiomatically***. An
-  axiomatic development of nonstandard analysis for use in analysis. Distinct from Kanovei's
-  *Borel Equivalence Relations*.
+  axiomatic development of nonstandard analysis for use in analysis.
 
 <a id="ckma-55c"></a>
 
@@ -9272,7 +8907,6 @@ formal libraries of analysis in interactive proof assistants.
   functional analysis, complex analysis, and Fourier analysis. Its generated
   documentation records formal definitions, theorem statements, and their
   dependencies.
-
 * **The Coq/Rocq analysis libraries (Coquelicot, MathComp-Analysis)**.
   Libraries of formal real analysis for Coq/Rocq, including limits,
   differentiation, and integration. Their documentation provides access to
@@ -9291,7 +8925,6 @@ turn computation into rigorous existence, error, and dynamical conclusions.
   Computations*** (2011, [Princeton University
   Press](https://doi.org/10.1515/9781400838974)). Interval arithmetic and
   computer-assisted proofs in analysis and dynamics.
-
 * **Mitsuhiro T. Nakao, Michael Plum, and Yoshitaka Watanabe, *Numerical
   Verification Methods and Computer-Assisted Proofs for Partial Differential
   Equations*** (2019,
@@ -9299,7 +8932,6 @@ turn computation into rigorous existence, error, and dynamical conclusions.
   methods for PDE, especially nonlinear elliptic boundary-value problems,
   with rigorous error bounds and computer-assisted existence proofs.
   Includes extensions to evolution problems.
-
 
 ---
 
@@ -9424,7 +9056,8 @@ Burckel question" rather than a search.
   its tools are harmonic or complex analytic; Montgomery's *Ten
   Lectures* is included precisely because it sits on the
   boundary. Readers wanting the subject itself should begin with
-  Iwaniec–Kowalski.
+  Iwaniec and Kowalski's *Analytic Number Theory*, which is not listed
+  here.
 - **Mathematical physics is included only where the analysis is the
   point** — spectral theory, scattering, operator-algebraic
   statistical mechanics, kinetic theory — and not otherwise.

@@ -457,8 +457,9 @@ Harpe–Valette is the reference for property (T); Helgason and
 Gangolli–Varadarajan for spherical analysis on symmetric spaces; Thangavelu
 and Folland (*Harmonic Analysis in Phase Space*) for the Heisenberg group.
 
-Leptin's theorem and its variants are surveyed in
-[Forrest–Kaniuth–Lau–Spronk](https://www.math.uwaterloo.ca/~nspronk/papers/forrestkls03.pdf).
+Variants of Leptin's theorem for ideals of the Fourier algebra are studied
+in Forrest–Kaniuth–Lau–Spronk, *Ideals with Bounded Approximate Identities
+in Fourier Algebras* (J. Funct. Anal., 2003).
 
 Local source copies consulted:
 

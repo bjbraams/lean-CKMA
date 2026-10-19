@@ -512,7 +512,7 @@ Cycon–Froese–Kirsch–Simon and Aizenman–Warzel treat ergodic operators, t
 density of states, and Anderson localization; Thaller treats the Dirac
 operator and its Coulomb problem.
 
-Teschl's [author-hosted online edition](https://www.mat.univie.ac.at/~gerald/ftp/book-schroe/schroe.pdf),
+The author's online edition of Teschl's *Mathematical Methods in Quantum Mechanics*,
 Chapter 5, was also consulted for the spectral-dynamics formulations.
 
 Local source copies consulted:

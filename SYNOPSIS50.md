@@ -341,7 +341,7 @@ sector about that ray with at most exponential growth there.
   normalized WKB series are Borel summable in the chosen direction
   at regular points of each Stokes region. Their sums solve the
   equation and obey the simple-turning-point connection formulas.
-  The hypotheses are spelled out in [Iwaki–Nakanishi, Section 2](https://arxiv.org/pdf/1401.7094).
+  The hypotheses are spelled out in Iwaki–Nakanishi, *Exact WKB analysis and cluster algebras* (arXiv:1401.7094), Section 2.
 
 ## Regular and singular perturbation of differential equations
 
