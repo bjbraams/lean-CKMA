@@ -23,6 +23,10 @@ comparison cover the fifty areas 04–53.
 - [GAPS_EASY.md](GAPS_EASY.md) gives short derivations from library
   results for those entries of `GAPS.md` that have one.
 
+The coverage and gap assessments, including the derivations in
+`GAPS_EASY.md`, rest on inspection of the library sources. They have not
+been written or compiled as Lean code.
+
 Supporting files:
 
 - [CKMA-MSC2020.md](CKMA-MSC2020.md), the MSC2020 and cross-subject index
