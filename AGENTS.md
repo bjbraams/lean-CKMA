@@ -36,7 +36,8 @@ follows a synopsis heading and ends with a line classifying every numbered entry
 covered, partly covered, or not covered. `STRUCTURE.md` is the index and records the source
 revisions. `MathlibCoverage.md` and `TauCetiCoverage.md` summarise the coverage section by section
 for each library. `GAPS.md` selects and assesses the principal missing results, and
-`GAPS-REVIEW.md` records the evidence for that selection.
+`GAPS_EASY.md` gives short derivations from library results for those entries of `GAPS.md` that
+have one.
 
 You may be asked to edit, revise or expand any of the Markdown files in the project directory or
 to create new such files.

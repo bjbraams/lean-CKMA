@@ -1,49 +1,57 @@
 # Principal gaps in the core knowledge of mathematical analysis
 
-This catalogue compares the mathematical core described in `SYNOPSIS04.md` through
-`SYNOPSIS53.md` with the content of Mathlib and TauCeti. It selects **603 principal
-theorem statements and theorem families**, distributed unevenly across all fifty
-areas, for which Lean code would be a genuine addition to the combined
-Mathlib and TauCeti core. Its emphasis is on substantial missing mathematics: central
-representation and existence theorems, analytic estimates, structural equivalences,
-and the theories they organize. It does not attempt to list every omitted lemma or
-every result in the reference books.
+This file belongs to the project *Core Knowledge of Mathematical Analysis*,
+which describes the analysis expected of graduate students and beginning
+researchers and compares it with the results proved in the Lean libraries
+Mathlib and TauCeti. The [bibliography](CKMA-bib.md) divides the subject into
+fifty areas, numbered 04–53. For each area, `SYNOPSISdd.md` describes the
+mathematical content in numbered entries ([synopsis index](SYNOPSIS.md)).
+`STRUCTUREdd.md` records how far Mathlib and TauCeti cover those entries, with
+declarations, source locations and hypotheses
+([coverage index](STRUCTURE.md)).
 
-The selection was reviewed again on **19 October 2026**, against the local
-Mathlib source tree at `911003dd6dea5df215dff57f2717be762e11a6ca` and TauCeti at
-`5cdecf40e99d5a5ad0833afff31f5b007d68a149`. Both revisions are dated 18 October.
-The [coverage index](STRUCTURE.md) organizes the available material by the current
-synopsis subdivisions. The review searched beyond those inventories and compared
-hypotheses and conclusions, rather than relying on theorem names or subject labels.
+This catalogue selects **603 principal theorem statements and theorem
+families** from the synopses for which Lean code would be a genuine addition
+to the combined Mathlib and TauCeti core. They are distributed unevenly
+across all fifty areas. The emphasis is on substantial missing mathematics:
+central representation and existence theorems, analytic estimates,
+structural equivalences, and the theories they organize. The catalogue does
+not attempt to list every omitted lemma or every result in the reference
+books.
 
-Statements are selected principally for requiring substantial mathematical work
-beyond the combined libraries. A missing named declaration, a routine specialization,
-a short combination of existing theorems, finite algebraic bookkeeping, or
-repackaging in a new definition does not by itself qualify. Conversely, a
-conditional theorem does not supply its missing existence hypotheses, and
-finite-dimensional or flat-boundary cases do not automatically supply their
-infinite-dimensional or curved-boundary generalizations. Only completed proofs
-count as library results; admissions, acquisition targets and roadmap text do not.
-The evidence and derivations are recorded in [GAPS-REVIEW.md](GAPS-REVIEW.md).
-A removal justified by a short mathematical derivation does not assert that a
-named Lean theorem, or compiled adapter implementing that derivation, already
-exists. The retained entries are the substantial gaps identified by this review,
-not a certified impossibility of deriving them from another library formulation.
-Some central theorems that neither library states are nevertheless selected
+The comparison uses Mathlib at `911003dd6dea5df215dff57f2717be762e11a6ca`
+and TauCeti at `5cdecf40e99d5a5ad0833afff31f5b007d68a149`, both dated
+18 October 2026. It searches the library sources beyond the coverage
+inventories and compares hypotheses and conclusions, rather than relying on
+theorem names or subject labels. Only completed proofs count as library
+results; admissions, acquisition targets and roadmap text do not.
+
+Statements are selected principally for requiring substantial mathematical
+work beyond the combined libraries. A missing named declaration, a routine
+specialization, a short combination of existing theorems, finite algebraic
+bookkeeping, or repackaging in a new definition does not by itself qualify.
+Conversely, a conditional theorem does not supply its missing existence
+hypotheses, and finite-dimensional or flat-boundary cases do not
+automatically supply their infinite-dimensional or curved-boundary
+generalizations. The selected entries are the substantial gaps identified by
+this comparison, not a certified impossibility of deriving them from another
+library formulation.
+
+Some central theorems that neither library states are nevertheless selected,
 although they follow from existing results by a comparatively short argument.
-Their derivations are recorded in [GAPS_EASY.md](GAPS_EASY.md), together with
-those of other selected statements later found to be derivable in the same way.
+These entries, and the other selected statements that have short derivations
+from library results, are collected with their arguments in
+[GAPS_EASY.md](GAPS_EASY.md).
 
 Numbers retain the synopsis provenance: **26.23** means result 23 of
-`SYNOPSIS26.md`. They are deliberately nonconsecutive. Statements have occasionally
-been combined with neighboring hypotheses or reformulated to stand alone. Each
-field links to its mathematical synopsis and coverage inventory; its synopsis
-also supplies the reference-text guide. Definitions and conventions recalled here
-may themselves already be available. The **numbered assertions**, at the scope
-specified in each assessment, are the selected gaps. Counts refer to selected
-statements or families, not to independent theorems or percentages of a subject.
-Results added to the synopses after the selection was made have not been assessed
-for inclusion.
+`SYNOPSIS26.md`. They are deliberately nonconsecutive. Statements have
+occasionally been combined with neighboring hypotheses or reformulated to
+stand alone. Each field links to its mathematical synopsis and coverage
+inventory; its synopsis also supplies the reference-text guide. Definitions
+and conventions recalled here may themselves already be available. The
+**numbered assertions**, at the scope specified in each assessment, are the
+selected gaps. Counts refer to selected statements or families, not to
+independent theorems or percentages of a subject.
 
 ## Where the largest gaps lie
 
