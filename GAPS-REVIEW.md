@@ -1,5 +1,59 @@
 # Library review of GAPS.md, October 2026
 
+## Reinstatement of central short derivations, 20 October 2026
+
+The criterion was relaxed for central named theorems that neither library
+states. Such a theorem is now selected even when a comparatively short
+derivation from existing results is available, and that derivation is
+recorded in [GAPS_EASY.md](GAPS_EASY.md). **Seventeen entries removed on
+19 October were reinstated**, bringing the selection to **598 entries**:
+
+- from the third review below: **06.1** (Kolmogorov extension for an
+  arbitrary index set), **12.32** (everywhere-defined proximal map) and
+  **13.10** (Hoffman–Wielandt for normal matrices);
+- from the second review below: **13.7** and **13.8** (Cauchy interlacing,
+  shifted Weyl inequalities), **13.13** (von Neumann trace inequality),
+  **14.40** (Nash), **20.40** (Wiener's lemma), **21.11** (Atkinson),
+  **27.4** (Hausdorff–Young), **27.13** (Heisenberg), **28.2** (modular
+  function), **29.2** and **29.3** (frame operator and canonical dual),
+  **31.26** (LaSalle), **36.1** (Euler–Lagrange) and **39.73**
+  (Hutchinson).
+
+Two entries were restored in narrowed form, following the derivations
+recorded below. **20.40** omits the holomorphic-function extension, which
+stays consolidated in 20.7. **21.11** omits the Calkin-algebra
+restatement. The other entries keep their earlier wording, with two small
+clarifications: 28.2 states Mathlib's reciprocal `modularCharacter`
+convention explicitly, and 39.73 names the complete metric space. The opening
+paragraphs of the affected sections, the area counts and the selection
+criterion in `GAPS.md` were updated to match.
+
+The derivations below remain the evidence for these entries. The other
+removals of 19 October stand. 25.54, 29.38, 33.55, 34.23, 36.12, 43.34,
+47.66, 48.8 and 48.22 are routine derivations that were not judged central
+enough to restore. 32.2, 51.8, 51.22 and 51.46 are conditional or formal
+calculations. 12.34, 32.25, 38.33 and 51.14 are consolidated into gaps that
+are still selected. 43.51 is a TauCeti theorem.
+
+The removals of the first review (18 October) were then examined the same
+way. Most of them are theorems that Mathlib or TauCeti states directly, or
+states apart from a small side clause, and these removals stand. **Five
+entries were reinstated**, which brings the selection to **603 entries**:
+
+- **05.7** (Baire class one of derivatives) and **05.30** (almost-everywhere
+  approximate continuity): neither library has the notion or the theorem;
+- **13.18** (Eckart–Young–Mirsky in every unitarily invariant norm): TauCeti
+  proves only the operator-norm and Ky Fan cases;
+- **16.13** (bipolar theorem for dual pairs): TauCeti proves only the
+  locally convex form;
+- **22.32** (Kato–Rellich), narrowed to essential self-adjointness on every
+  core of $A$, since TauCeti proves self-adjointness on $D(A)$.
+
+Their derivations are in `GAPS_EASY.md`. The opening paragraphs of
+sections 05, 13, 16 and 22 and the area counts in `GAPS.md` were updated
+to match. Counts stated in the review sections below describe the selection
+at the time of each review.
+
 ## Third review: fresh library search, 19 October 2026
 
 Every one of the 584 entries was checked again against the same Mathlib and
