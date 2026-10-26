@@ -121,7 +121,7 @@ whose restrictions to $\mathbb R$ lie in $L^2$.
 * **19. Pólya's indicator-diagram theorem.** Let
   $f(z)=\sum a_nz^n$ have exponential type and Borel transform
   $B(w)=\sum n!a_nw^{-n-1}$. Then
-  $h(\theta)=\max_{w\in I}\operatorname{Re}(we^{-i\theta})$, where
+  $h(\theta)=\max_{w\in I}\mathop{\mathrm{Re}}(we^{-i\theta})$, where
   $I$ is the complex conjugate of the smallest compact convex set outside
   which $B$ continues analytically, and
   $f(z)=(2\pi i)^{-1}\oint B(w)e^{zw}dw$ around the conjugate
@@ -166,7 +166,7 @@ whose restrictions to $\mathbb R$ lie in $L^2$.
   $0<\limsup\log M(r)/r^{\rho(r)}<\infty$.
   This replaces minimal or maximal type by a normal growth scale.
 * **56. Carlson's theorem.** Let $f$ be holomorphic in
-  $\operatorname{Re}z>0$, continuous on its closure, of exponential type
+  $\mathop{\mathrm{Re}}z>0$, continuous on its closure, of exponential type
   there, and satisfy $|f(iy)|\leq Ce^{c|y|}$ with $c<\pi$. If
   $f(n)=0$ for $n=0,1,2,\ldots$, then $f\equiv0$. The function
   $\sin\pi z$ shows that $c<\pi$ cannot be relaxed.
@@ -195,11 +195,11 @@ $n$ at one $x_0\in I$ force $f\equiv0$. A family $\{e^{i\lambda t}\}$ is
   $L^2(-\pi,\pi)$ (Levinson); with strict inequality uniformly it is a
   Riesz basis (Kadec, SYNOPSIS29, item 61). At the endpoint $1/4$
   completeness may hold without the Riesz-basis property, as for
-  $\lambda_n=n-\frac14\operatorname{sign}n$. Removing one exponential
+  $\lambda_n=n-\frac14\mathop{\mathrm{sign}}n$. Removing one exponential
   from the integer system leaves it complete in $L^2(-a,a)$ only for $a<\pi$.
 * **72. Beurling–Malliavin radius of completeness.** For a discrete set
   $\Lambda\subset\mathbb R$, call a sequence of disjoint intervals
-  $I_k$ **long** if $\sum_k|I_k|^2/(1+\operatorname{dist}(0,I_k)^2)=\infty$,
+  $I_k$ **long** if $\sum_k|I_k|^2/(1+\mathop{\mathrm{dist}}(0,I_k)^2)=\infty$,
   and let $D^*(\Lambda)$ be the supremum of $d$ for which some long
   sequence satisfies $\#(\Lambda\cap I_k)\geq d|I_k|$. Then
   $\{e^{i\lambda t}\}_{\lambda\in\Lambda}$ is complete in

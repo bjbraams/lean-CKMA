@@ -148,7 +148,7 @@ Abel’s inequality is an ordered-ring statement about sequences indexed by \(\m
 \]
 (`Finset.sum_mul_le_sum_mul_of_sum_range_le`). If every partial sum of \(f\) is at most \(M\), the weighted sum is at most \(M\,g_0\); the empty partial sum forces \(M\ge 0\). If every partial sum is at least \(m\), then \(m\,g_0\) is a lower bound and \(m\le 0\). In a linear ordered ring, a uniform bound \(M\) on the absolute values of the partial sums yields \(\bigl|\sum_{i<n} f_i g_i\bigr|\le M\,g_0\) (`Finset.abs_sum_mul_le_mul_of_abs_sum_range_le`).
 
-**Popoviciu's variance bound.** A real random variable with \(a\le X\le b\) almost surely on a probability space satisfies \(\operatorname{Var}X\le((b-a)/2)^2\) (`ProbabilityTheory.variance_le_sq_of_bounded`, `Probability/Moments/Variance.lean`). The covariance (Grüss) form is not stated.
+**Popoviciu's variance bound.** A real random variable with \(a\le X\le b\) almost surely on a probability space satisfies \(\mathop{\mathrm{Var}}X\le((b-a)/2)^2\) (`ProbabilityTheory.variance_le_sq_of_bounded`, `Probability/Moments/Variance.lean`). The covariance (Grüss) form is not stated.
 
 **Rearrangement.**
 
@@ -186,7 +186,7 @@ There is also a specific majorization rigidity lemma for an antitone integer seq
 
 Pinsker's inequality is proved with natural logarithms: for probability measures, the total variation \(\|\mu-\nu\|\) of the signed measure \(\mu-\nu\) satisfies \(\|\mu-\nu\|^2\le2\,\mathrm{KL}(\mu\|\nu)\), with infinite divergence allowed (`TauCeti.totalVariation_sq_le_two_mul_klDiv`, [Pinsker](https://github.com/TauCetiProject/TauCeti/blob/5cdecf40e99d5a5ad0833afff31f5b007d68a149/TauCeti/InformationTheory/KullbackLeibler/Pinsker.lean)). On probability vectors this is \(D(p\|q)\ge\frac12\|p-q\|_1^2\).
 
-**Synopsis entries.** Covered: 11.23 (Mathlib), 11.30 (Mathlib, TauCeti). Partly covered: 11.22 (the direction \(x=Dy\Rightarrow x\in\operatorname{conv}\{y\circ\sigma\}\) and its converse via Birkhoff; the equivalence with the partial-sum inequalities is not proved), 11.24 (the inequality under the hypothesis \(x=Dy\); no partial-sum hypothesis and no equality case), 11.71 (monotonicity of symmetric gauges and symmetric convex sets under weak majorization of antitone nonnegative tuples), 11.26 (\(\ell^p\) norms, \(1\le p<\infty\), and the \(\ell^2\) operator norm; general permutation-invariant norms not stated), 11.29 (obtainable from the data-processing inequality; not stated in finite-sum form, no equality case). Not covered: 11.72, 11.25, 11.27, 11.28, 11.31.
+**Synopsis entries.** Covered: 11.23 (Mathlib), 11.30 (Mathlib, TauCeti). Partly covered: 11.22 (the direction \(x=Dy\Rightarrow x\in\mathop{\mathrm{conv}}\{y\circ\sigma\}\) and its converse via Birkhoff; the equivalence with the partial-sum inequalities is not proved), 11.24 (the inequality under the hypothesis \(x=Dy\); no partial-sum hypothesis and no equality case), 11.71 (monotonicity of symmetric gauges and symmetric convex sets under weak majorization of antitone nonnegative tuples), 11.26 (\(\ell^p\) norms, \(1\le p<\infty\), and the \(\ell^2\) operator norm; general permutation-invariant norms not stated), 11.29 (obtainable from the data-processing inequality; not stated in finite-sum form, no equality case). Not covered: 11.72, 11.25, 11.27, 11.28, 11.31.
 
 ## Hardy, Hilbert, and differential inequalities
 
@@ -244,7 +244,7 @@ The Prékopa–Leindler and Brunn–Minkowski inequalities for Lebesgue measure 
 
 ### Mathlib
 
-Hadamard's three-lines theorem is proved: if \(f\) is bounded on the closed strip \(l\le\operatorname{Re}z\le u\), continuous there, and complex differentiable in the open strip, then \(\|f(z)\|\le M(l)^{1-\theta}M(u)^{\theta}\) with \(\theta=(\operatorname{Re}z-l)/(u-l)\), where \(M(x)\) is the supremum of \(\|f\|\) on the line \(\operatorname{Re}z=x\) (`Complex.HadamardThreeLines.norm_le_interp_of_mem_verticalClosedStrip`, with the variant `Complex.HadamardThreeLines.norm_le_interp_of_mem_verticalClosedStrip'` stated directly with bounds \(a\), \(b\) on the boundary lines, `Analysis/Complex/Hadamard.lean`). Clarkson's inequalities are not stated.
+Hadamard's three-lines theorem is proved: if \(f\) is bounded on the closed strip \(l\le\mathop{\mathrm{Re}}z\le u\), continuous there, and complex differentiable in the open strip, then \(\|f(z)\|\le M(l)^{1-\theta}M(u)^{\theta}\) with \(\theta=(\mathop{\mathrm{Re}}z-l)/(u-l)\), where \(M(x)\) is the supremum of \(\|f\|\) on the line \(\mathop{\mathrm{Re}}z=x\) (`Complex.HadamardThreeLines.norm_le_interp_of_mem_verticalClosedStrip`, with the variant `Complex.HadamardThreeLines.norm_le_interp_of_mem_verticalClosedStrip'` stated directly with bounds \(a\), \(b\) on the boundary lines, `Analysis/Complex/Hadamard.lean`). Clarkson's inequalities are not stated.
 
 ### TauCeti
 

@@ -373,9 +373,9 @@ $Tx=\sum_j f_j(x)y_j$ with $\sum_j\|f_j\|\|y_j\|<\infty$.
   associated with an operator.
 * **63. Trace of nuclear operators.** On a space with the approximation
   property, a nuclear endomorphism has a well-defined trace
-  $\operatorname{tr}T=\sum_j f_j(y_j)$, independent of the nuclear
-  representation, with $|\operatorname{tr}T|\leq\|T\|_{\rm nuc}$.
-* **64. Approximation numbers.** For $a_n(T)=\inf_{\operatorname{rank}R<n}
+  $\mathop{\mathrm{tr}}T=\sum_j f_j(y_j)$, independent of the nuclear
+  representation, with $|\mathop{\mathrm{tr}}T|\leq\|T\|_{\rm nuc}$.
+* **64. Approximation numbers.** For $a_n(T)=\inf_{\mathop{\mathrm{rank}}R<n}
   \|T-R\|$, one has $a_n(ATB)\leq\|A\|a_n(T)\|B\|$ and
   $a_{m+n-1}(S+T)\leq a_m(S)+a_n(T)$. On Hilbert spaces the
   approximation numbers of a compact operator are its singular values.

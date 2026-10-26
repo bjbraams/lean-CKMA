@@ -216,7 +216,7 @@ $\widehat f(\pi)=\int_G f(x)\pi(x)^*dx$.
 * **39. Compact-group Plancherel formula.**
   $\|f\|_2^2=\sum_\pi d_\pi\|\widehat f(\pi)\|_{\mathrm{HS}}^2$.
   Fourier inversion is
-  $f(x)=\sum_\pi d_\pi\operatorname{Tr}(\widehat f(\pi)\pi(x))$
+  $f(x)=\sum_\pi d_\pi\mathop{\mathrm{Tr}}(\widehat f(\pi)\pi(x))$
   in $L^2$, with finite-set partial sums.
 * **40. Noncommutative convolution formula.** With the adjoint
   convention above,
@@ -225,12 +225,12 @@ $\widehat f(\pi)=\int_G f(x)\pi(x)^*dx$.
   This order reversal disappears if one uses integrated representations
   $\pi(f)$ instead of $\widehat f(\pi)$.
 * **41. Characters and class functions.** The irreducible characters
-  $\chi_\pi=\operatorname{Tr}\pi$ form an orthonormal basis for
+  $\chi_\pi=\mathop{\mathrm{Tr}}\pi$ form an orthonormal basis for
   the conjugation-invariant subspace of $L^2(G)$. For central $f$,
   $\widehat f(\pi)$ is scalar, so central convolution diagonalizes
   on irreducible components.
 * **42. Character multiplicities.** In finite-dimensional compact-group
-  representations, $\dim\operatorname{Hom}_G(\pi,V)
+  representations, $\dim\mathop{\mathrm{Hom}}_G(\pi,V)
   =\int_G\chi_V\overline{\chi_\pi}$. Tensor-product multiplicities
   are obtained by taking inner products of products of characters.
 * **43. Finite-group Fourier inversion.** For finite $G$ with normalized
@@ -262,19 +262,19 @@ $\widehat f(\pi)=\int_G f(x)\pi(x)^*dx$.
 ## Induction and noncompact representation theory
 
 For closed $H\subset G$, **unitary induction** constructs
-$\operatorname{Ind}_H^G\sigma$ from measurable sections of the bundle
+$\mathop{\mathrm{Ind}}_H^G\sigma$ from measurable sections of the bundle
 $G\times_H H_\sigma\to G/H$, with the quotient measure and its
 Radon–Nikodym correction. For invariant quotient measure, sections can
 be written $F(xh)=\sigma(h)^{-1}F(x)$ with square-integrable quotient norm.
 
 * **47. Induction in stages.** For closed subgroups $H\subset K\subset G$,
-  $\operatorname{Ind}_H^G\sigma\simeq
-  \operatorname{Ind}_K^G(\operatorname{Ind}_H^K\sigma)$.
+  $\mathop{\mathrm{Ind}}_H^G\sigma\simeq
+  \mathop{\mathrm{Ind}}_K^G(\mathop{\mathrm{Ind}}_H^K\sigma)$.
   Induction preserves unitary equivalence and orthogonal sums.
 * **48. Frobenius reciprocity for compact groups.** If $G$ is compact
   and $H$ closed, the multiplicity of an irreducible $\pi$ in
-  $\operatorname{Ind}_H^G\sigma$ equals the multiplicity pairing
-  $\dim\operatorname{Hom}_H(\pi|_H,\sigma)$.
+  $\mathop{\mathrm{Ind}}_H^G\sigma$ equals the multiplicity pairing
+  $\dim\mathop{\mathrm{Hom}}_H(\pi|_H,\sigma)$.
   In particular, its multiplicity in $L^2(G/H)$ is $\dim H_\pi^H$.
 * **49. Mackey's imprimitivity theorem.** A unitary representation
   equipped with a projection-valued measure on $G/H$ satisfying
@@ -303,7 +303,7 @@ be written $F(xh)=\sigma(h)^{-1}F(x)$ with square-integrable quotient norm.
   abelian and the $H$-orbits in $\widehat N$ regularly embedded (the
   orbit space countably separated). For $\nu\in\widehat N$ let $H_\nu$
   be its stabilizer and $\rho$ an irreducible representation of $H_\nu$.
-  Then $\operatorname{Ind}_{N\rtimes H_\nu}^G(\nu\rho)$, with
+  Then $\mathop{\mathrm{Ind}}_{N\rtimes H_\nu}^G(\nu\rho)$, with
   $(\nu\rho)(nh)=\nu(n)\rho(h)$, is irreducible, every irreducible
   representation of $G$ arises so, and the parameters are the orbits and
   the classes of $\rho$. Examples: the $ax+b$ group and Euclidean motion
@@ -314,7 +314,7 @@ be written $F(xh)=\sigma(h)^{-1}F(x)$ with square-integrable quotient norm.
   character. The remaining irreducibles are characters of the abelian quotient.
 * **65. Heisenberg Plancherel and Weyl transform.** Let
   $H^n=\mathbb C^n\times\mathbb R$ with
-  $(z,t)(w,s)=(z+w,t+s+\frac12\operatorname{Im}(z\cdot\overline w))$, and
+  $(z,t)(w,s)=(z+w,t+s+\frac12\mathop{\mathrm{Im}}(z\cdot\overline w))$, and
   let $\pi_\lambda$, $\lambda\neq0$, be the Schrödinger representation on
   $L^2(\mathbb R^n)$ with central character $e^{i\lambda t}$. For
   $f\in L^1\cap L^2(H^n)$ the operators

@@ -21,11 +21,11 @@ operator, integral, and PDE methods elsewhere.
 Unless specified otherwise, $M$ is a smooth closed connected Riemannian
 $n$-manifold and vector bundles are smooth Hermitian bundles with compatible
 connections. Write $\Delta_k=dd^*+d^*d$ for the nonnegative Hodge
-Laplacian and $\Delta=\Delta_0=-\operatorname{div}\nabla$ on functions.
+Laplacian and $\Delta=\Delta_0=-\mathop{\mathrm{div}}\nabla$ on functions.
 Scalar eigenvalues are $0=\lambda_0^2<\lambda_1^2\leq\cdots$,
 counted with multiplicity; thus $\lambda$ denotes frequency, not energy.
 Characteristic forms use the usual Chern–Weil normalization, so that
-$\operatorname{ch}(E)=\operatorname{tr}\exp(iF^E/(2\pi))$ and
+$\mathop{\mathrm{ch}}(E)=\mathop{\mathrm{tr}}\exp(iF^E/(2\pi))$ and
 their cohomology classes are independent of the chosen connections.
 
 ## Elliptic operators and global analysis
@@ -53,7 +53,7 @@ item 33.
   The index depends only on the homotopy class of the principal symbol among
   elliptic symbols and vanishes for self-adjoint operators.
 * **6. Index stability.** The integer
-  $\operatorname{ind}P=\dim\ker P-\dim\ker P^*$ is independent
+  $\mathop{\mathrm{ind}}P=\dim\ker P-\dim\ker P^*$ is independent
   of Sobolev order, invariant under continuous elliptic deformations,
   and unchanged by lower-order perturbations. Indices add under
   composition and direct sum.
@@ -75,7 +75,7 @@ item 33.
   for positive time.
 * **11. Complex powers.** For a strictly positive elliptic operator
   $P$ of order $m$, spectral powers $P^z$ form a holomorphic
-  family of classical pseudodifferential operators of order $m\operatorname{Re}z$,
+  family of classical pseudodifferential operators of order $m\mathop{\mathrm{Re}}z$,
   with leading symbol $\sigma_m(P)^z$. A kernel can be removed by
   restricting to its orthogonal complement or adding its projection.
   Spectral and pseudodifferential definitions agree.
@@ -130,21 +130,21 @@ $L_j=d_j^*d_j+d_{j-1}d_{j-1}^*$.
   valid with all derivatives after finite truncation and the corresponding
   remainder bounds. Each coefficient is a universal local curvature expression.
 * **22. Heat trace.** Integrating gives
-  $\operatorname{Tr}e^{-tP}\sim(4\pi t)^{-n/2}
-  \sum_jt^j\int_M\operatorname{tr}a_j(x)dV$.
+  $\mathop{\mathrm{Tr}}e^{-tP}\sim(4\pi t)^{-n/2}
+  \sum_jt^j\int_M\mathop{\mathrm{tr}}a_j(x)dV$.
   For the scalar Laplacian, $a_0=1$ and $a_1=R/6$.
 * **23. First curvature invariants.** For the scalar Laplacian on
   a closed manifold, the integrated coefficient of $t^2$ inside
   the heat-trace brackets is
-  $\tfrac1{360}\int(5R^2-2|\operatorname{Ric}|^2+
+  $\tfrac1{360}\int(5R^2-2|\mathop{\mathrm{Ric}}|^2+
   2|\mathrm{Rm}|^2)dV$. The omitted pointwise divergence term
   integrates to zero.
 * **24. Weyl law.** For
   $N(\Lambda)=\#\{j:\lambda_j\leq\Lambda\}$,
-  $N(\Lambda)\sim(2\pi)^{-n}\omega_n\operatorname{Vol}(M)
+  $N(\Lambda)\sim(2\pi)^{-n}\omega_n\mathop{\mathrm{Vol}}(M)
   \Lambda^n$. More generally a positive scalar elliptic operator
   of order $m$ has counting asymptotic
-  $(2\pi)^{-n}\operatorname{vol}\{(x,\xi)\in T^*M:\sigma_m(P)(x,\xi)\leq1\}\,\Lambda^{n/m}$
+  $(2\pi)^{-n}\mathop{\mathrm{vol}}\{(x,\xi)\in T^*M:\sigma_m(P)(x,\xi)\leq1\}\,\Lambda^{n/m}$
   when its eigenvalues are counted by energy.
 * **25. Local Weyl law.** The spectral projector satisfies
   $\sum_{\lambda_j\leq\Lambda}|\phi_j(x)|^2=
@@ -167,14 +167,14 @@ $L_j=d_j^*d_j+d_{j-1}d_{j-1}^*$.
   the Dirichlet and Neumann counting functions satisfy
   $N_{D/N}(\Lambda)=c_M\Lambda^n
   \mp\tfrac14(2\pi)^{-(n-1)}\omega_{n-1}
-  \operatorname{Area}(\partial M)\Lambda^{n-1}
+  \mathop{\mathrm{Area}}(\partial M)\Lambda^{n-1}
   +o(\Lambda^{n-1})$. The dynamical hypothesis is essential to
   this standard sharp two-term formulation.
 * **29. Boundary heat term.** Without that billiard hypothesis, a
   smooth compact boundary still gives a full heat-trace expansion in
   half-integer powers. For the scalar Laplacian the first two terms are
-  $(4\pi t)^{-n/2}[\operatorname{Vol}(M)
-  \mp(\sqrt\pi/2)\operatorname{Area}(\partial M)t^{1/2}+O(t)]$
+  $(4\pi t)^{-n/2}[\mathop{\mathrm{Vol}}(M)
+  \mp(\sqrt\pi/2)\mathop{\mathrm{Area}}(\partial M)t^{1/2}+O(t)]$
   for Dirichlet/Neumann conditions.
 * **30. Spectral zeta function.** For a positive elliptic operator,
   $\zeta_P(s)=\sum_{\mu_j>0}\mu_j^{-s}$ converges initially
@@ -187,7 +187,7 @@ $L_j=d_j^*d_j+d_{j-1}d_{j-1}^*$.
   consistently in both zeta functions.
 * **32. Eta invariant.** For a self-adjoint first-order elliptic
   differential operator on a closed manifold,
-  $\eta_D(s)=\sum_{\mu\ne0}\operatorname{sign}(\mu)|\mu|^{-s}$
+  $\eta_D(s)=\sum_{\mu\ne0}\mathop{\mathrm{sign}}(\mu)|\mu|^{-s}$
   has meromorphic continuation regular at zero. The reduced invariant
   is $\bar\eta(D)=(\eta_D(0)+\dim\ker D)/2$; one may also
   regard its value modulo integers.
@@ -235,36 +235,36 @@ spinor bundle splits as $S^+\oplus S^-$ and $D$ is odd.
   in particular an Einstein metric.
 * **41. McKean–Singer identity.** For an odd self-adjoint Dirac
   operator on a graded bundle,
-  $\operatorname{ind}D^+=\operatorname{Str}e^{-tD^2}$ for every
+  $\mathop{\mathrm{ind}}D^+=\mathop{\mathrm{Str}}e^{-tD^2}$ for every
   $t>0$. Nonzero eigenvalues cancel between the two gradings.
 * **42. Local index theorem.** For a twisted spin Dirac operator
   on an even-dimensional closed spin manifold,
   the supertrace of the diagonal heat kernel, multiplied by $dV$,
   converges as $t\downarrow0$
-  to the top-degree form $[\widehat A(TM,\nabla)\operatorname{ch}
+  to the top-degree form $[\widehat A(TM,\nabla)\mathop{\mathrm{ch}}
   (E,\nabla^E)]_n$, with the Chern–Weil normalization fixed above.
   Getzler rescaling identifies the local density
   and explains cancellation of the apparently divergent heat terms.
 * **43. Atiyah–Singer theorem.** The analytic index of an elliptic
   operator on a closed manifold equals the topological pushforward
-  $\operatorname{ind}_{\mathrm{top}}[\sigma(P)]\in K^0(\mathrm{pt})
+  $\mathop{\mathrm{ind}}_{\mathrm{top}}[\sigma(P)]\in K^0(\mathrm{pt})
   =\mathbb Z$. The pushforward is defined by embedding, the Thom
   isomorphism, and Bott periodicity; it depends only on the symbol class.
 * **44. Spin index formula.** On a closed even-dimensional spin
   manifold,
-  $\operatorname{ind}D_E^+=\langle\widehat A(TM)
-  \operatorname{ch}(E),[M]\rangle$.
+  $\mathop{\mathrm{ind}}D_E^+=\langle\widehat A(TM)
+  \mathop{\mathrm{ch}}(E),[M]\rangle$.
 * **45. Spin-$c$ formula.** If the spin-$c$ determinant line is
   $L$, then
-  $\operatorname{ind}D_E^+=\langle e^{c_1(L)/2}
-  \widehat A(TM)\operatorname{ch}(E),[M]\rangle$.
+  $\mathop{\mathrm{ind}}D_E^+=\langle e^{c_1(L)/2}
+  \widehat A(TM)\mathop{\mathrm{ch}}(E),[M]\rangle$.
 * **46. Chern–Gauss–Bonnet theorem.** On a closed oriented
   even-dimensional manifold, the Euler characteristic is the integral
   of the Euler curvature form, the normalized Pfaffian of curvature.
   It is the index of the even-to-odd de Rham operator. For a compact
   surface with boundary, $\int_MK\,dA+\int_{\partial M}k_g\,ds=2\pi\chi(M)$;
   for a closed four-manifold,
-  $\chi(M)=(32\pi^2)^{-1}\int(|\mathrm{Rm}|^2-4|\operatorname{Ric}|^2+R^2)dV$.
+  $\chi(M)=(32\pi^2)^{-1}\int(|\mathrm{Rm}|^2-4|\mathop{\mathrm{Ric}}|^2+R^2)dV$.
 * **47. Hirzebruch signature theorem.** On a closed oriented
   $4k$-manifold, the signature of the middle-dimensional intersection
   form is $\langle L(TM),[M]\rangle$, the index of the signature
@@ -272,16 +272,16 @@ spinor bundle splits as $S^+\oplus S^-$ and $D$ is odd.
 * **48. Hirzebruch–Riemann–Roch theorem.** For a holomorphic bundle
   $E$ on a compact complex manifold,
   $\sum_q(-1)^q\dim H^{0,q}(M,E)=
-  \langle\operatorname{Td}(T^{1,0}M)\operatorname{ch}(E),[M]\rangle$.
+  \langle\mathop{\mathrm{Td}}(T^{1,0}M)\mathop{\mathrm{ch}}(E),[M]\rangle$.
 * **49. Families index theorem.** A smooth family of elliptic
   operators over a compact parameter space has an index class in
   $K^0(B)$, even when kernel dimensions jump. For an even-dimensional
   spin fibration, its Chern character is the fiber integral
-  $\int_{M/B}\widehat A(T(M/B))\operatorname{ch}(E)$.
+  $\int_{M/B}\widehat A(T(M/B))\mathop{\mathrm{ch}}(E)$.
 * **50. Lefschetz fixed-point formula.** For a smooth self-map of
   a closed manifold with isolated nondegenerate fixed points,
-  $\sum_k(-1)^k\operatorname{tr}(f^*:H^k(M)\to H^k(M))
-  =\sum_{f(x)=x}\operatorname{sign}\det(I-df_x)$.
+  $\sum_k(-1)^k\mathop{\mathrm{tr}}(f^*:H^k(M)\to H^k(M))
+  =\sum_{f(x)=x}\mathop{\mathrm{sign}}\det(I-df_x)$.
   Equivariant elliptic complexes have the analogous local fixed-set
   index formulas.
 
@@ -303,8 +303,8 @@ spinor bundle splits as $S^+\oplus S^-$ and $D$ is odd.
   finite-dimensional boundary subspace.
 * **54. Atiyah–Patodi–Singer formula.** In the product convention
   for this APS condition,
-  $\operatorname{ind}D^+_{\mathrm{APS}}=
-  \int_M\widehat A(TM)\operatorname{ch}(E)
+  $\mathop{\mathrm{ind}}D^+_{\mathrm{APS}}=
+  \int_M\widehat A(TM)\mathop{\mathrm{ch}}(E)
   -[\eta_B(0)+\dim\ker B]/2$.
   For nonproduct geometry the local integral acquires a boundary
   transgression correction.
@@ -347,13 +347,13 @@ spinor bundle splits as $S^+\oplus S^-$ and $D$ is odd.
   $d$-manifold, $E$ a holomorphic vector bundle, and $M(q)$ the open set
   where $iR^L$ is nondegenerate with exactly $q$ negative eigenvalues.
   As $p\to\infty$,
-  $\dim H^q(M,L^p\otimes E)\leq\operatorname{rk}(E)\frac{p^d}{d!}
+  $\dim H^q(M,L^p\otimes E)\leq\mathop{\mathrm{rk}}(E)\frac{p^d}{d!}
   \int_{M(q)}(-1)^q(\tfrac i{2\pi}R^L)^d+o(p^d)$, with strong forms for
   alternating partial sums (Demailly). The proof localizes the low
   spectrum of the Kodaira Laplacian through the Bochner–Kodaira–Nakano
   formula and harmonic-oscillator models (Ma–Marinescu). For positive $L$,
   $M(q)=\emptyset$ for $q>0$, so higher cohomology is $o(p^d)$ and
-  $\dim H^0(M,L^p\otimes E)\sim\operatorname{rk}(E)\frac{p^d}{d!}
+  $\dim H^0(M,L^p\otimes E)\sim\mathop{\mathrm{rk}}(E)\frac{p^d}{d!}
   \int_M(\tfrac i{2\pi}R^L)^d$.
 
 ## Eigenvalue inequalities and nodal geometry
@@ -379,7 +379,7 @@ and 49.
   of order one, with principal symbol $|\xi|$.
   Its counting function is
   $N_S(\sigma)\sim(2\pi)^{-(n-1)}\omega_{n-1}
-  \operatorname{Area}(\partial M)\sigma^{n-1}$ for $n\geq2$.
+  \mathop{\mathrm{Area}}(\partial M)\sigma^{n-1}$ for $n\geq2$.
 * **69. Courant nodal theorem.** The $j$th eigenfunction in an
   ordered real orthonormal basis, with eigenvalues indexed starting
   at one, has at most $j$ nodal domains. This formulation also
@@ -416,7 +416,7 @@ Egorov's theorem for the propagation of symbols is SYNOPSIS30, item 50.
 
 * **74. Semiclassical measures.** For normalized eigenfunctions with
   $h=\lambda^{-1}\to0$, subsequential limits of
-  $\langle\operatorname{Op}_h(a)\phi_\lambda,\phi_\lambda\rangle$
+  $\langle\mathop{\mathrm{Op}}_h(a)\phi_\lambda,\phi_\lambda\rangle$
   define probability measures on $S^*M$. These measures are invariant
   under geodesic flow, by the eigenfunction equation and the
   pseudodifferential commutator formula.
@@ -427,7 +427,7 @@ Egorov's theorem for the propagation of symbols is SYNOPSIS30, item 50.
   The theorem permits an exceptional density-zero subsequence.
   (Shnirelman, Zelditch, Colin de Verdière.)
 * **77. Wave trace and lengths.** The distribution
-  $\operatorname{Tr}e^{it\sqrt\Delta}$ is smooth away from zero
+  $\mathop{\mathrm{Tr}}e^{it\sqrt\Delta}$ is smooth away from zero
   and the signed lengths of closed geodesics. For clean nondegenerate
   families the leading singular terms are determined by the linearized
   return map and Maslov data. Cancellation can prevent an arbitrary
@@ -436,7 +436,7 @@ Egorov's theorem for the propagation of symbols is SYNOPSIS30, item 50.
   write $\lambda_j^2=1/4+r_j^2$ and take an admissible even test
   function $h$, with $g(\ell)=(2\pi)^{-1}\int h(r)e^{-ir\ell}dr$.
   Then
-  $\sum_jh(r_j)=\operatorname{Area}(M)(4\pi)^{-1}
+  $\sum_jh(r_j)=\mathop{\mathrm{Area}}(M)(4\pi)^{-1}
   \int_{\mathbb R}r\tanh(\pi r)h(r)dr+
   \sum_{\gamma\ \mathrm{primitive}}\sum_{k\geq1}
   \ell_\gamma g(k\ell_\gamma)/(2\sinh(k\ell_\gamma/2))$.

@@ -86,7 +86,7 @@ Grönwall's inequality, used throughout, is stated in Section 11
 * **14. Variation of constants.** For $\dot x=A(t)x+f(t)$,
   $x(t)=U(t,s)x(s)+\int_s^tU(t,\tau)f(\tau)d\tau$.
 * **15. Liouville's formula.**
-  $\det U(t,s)=\exp(\int_s^t\operatorname{tr}A(\tau)d\tau)$.
+  $\det U(t,s)=\exp(\int_s^t\mathop{\mathrm{tr}}A(\tau)d\tau)$.
   For a nonlinear flow the same formula applies with
   $A(t)=DF(\varphi_t(x))$, determining volume distortion.
 * **16. Constant coefficients and spectral stability.** Solutions of
@@ -200,14 +200,14 @@ A **hyperbolic equilibrium** has no eigenvalue of $DF$ on the imaginary axis.
   uniquely nearby under small perturbation, up to phase.
 * **37. Planar divergence formula.** For a planar periodic orbit
   $\gamma$ of period $T$, the nontrivial multiplier is
-  $\exp(\int_0^T\operatorname{div}F(\gamma(t))dt)$.
+  $\exp(\int_0^T\mathop{\mathrm{div}}F(\gamma(t))dt)$.
 * **38. Poincaré–Bendixson theorem.** A nonempty compact omega-limit
   set of a $C^1$ planar flow containing no equilibrium is a periodic orbit.
   If it contains only finitely many equilibria, it is an equilibrium, a
   periodic orbit, or a finite union of equilibria and orbits connecting
   them. The same holds on the sphere.
 * **39. Bendixson–Dulac criterion.** On a simply connected planar domain,
-  if $\operatorname{div}(BF)$ has one sign and is not identically zero
+  if $\mathop{\mathrm{div}}(BF)$ has one sign and is not identically zero
   on any open subset, for a $C^1$ scalar multiplier $B$, there is no
   periodic orbit lying in the domain.
 * **40. Planar index theorem.** A simple periodic orbit has vector-field

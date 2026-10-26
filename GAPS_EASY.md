@@ -81,7 +81,7 @@ not thereby certified to lack a short proof.
 open interval, $f'$ is of Baire class one, as follows by taking continuous
 difference quotients locally.
 
-**Argument.** Put $h_n(x)=\min(1/n,\operatorname{dist}(x,\mathbb R\setminus
+**Argument.** Put $h_n(x)=\min(1/n,\mathop{\mathrm{dist}}(x,\mathbb R\setminus
 I)/2)$. It is continuous and positive on $I$, and $x+h_n(x)\in I$. The
 quotients $g_n(x)=(f(x+h_n(x))-f(x))/h_n(x)$ are continuous because $f$ is.
 For fixed $x$, $h_n(x)=1/n$ for large $n$, so $g_n(x)\to f'(x)$ by the
@@ -384,7 +384,7 @@ above all the construction of $D$ from $x\prec y$.
 give both directions.
 
 Write $x^\downarrow,y^\downarrow$ for decreasing rearrangements, and put
-$C=\operatorname{conv}\{\sigma y\}$. This is a compact convex set.
+$C=\mathop{\mathrm{conv}}\{\sigma y\}$. This is a compact convex set.
 If $x\prec y$, then for every real vector $c$, rearrangement and Abel
 summation give
 $$
@@ -528,8 +528,8 @@ interchange and the elementary telescoping identity.
 
 **Statement.** For proper lower
 semicontinuous convex $f$ on a Hilbert space and $\gamma>0$, prove that
-$$\operatorname{prox}_{\gamma f}(x)=
-  \operatorname*{argmin}_y\left(f(y)+\frac{\|x-y\|^2}{2\gamma}\right)$$
+$$\mathop{\mathrm{prox}}\nolimits_{\gamma f}(x)=
+  \mathop{\mathrm{argmin}}\limits_y\left(f(y)+\frac{\|x-y\|^2}{2\gamma}\right)$$
 exists for every $x$, and identify it with $J_{\gamma\partial f}x$.
 TauCeti has Moreau–Yosida minimizers under compactness hypotheses.
 Uniqueness and firm nonexpansiveness on the resolvent graph follow directly
@@ -553,7 +553,7 @@ $(x-p)/\gamma\in\partial f(p)$, which says that $p=J_{\gamma\partial f}x$.
 Conversely, this subgradient inequality and
 $\|x-y\|^2\ge\|x-p\|^2-2\langle x-p,y-p\rangle$ show that $p$ minimizes.
 Firm nonexpansiveness follows by adding the two subgradient inequalities at
-$p=\operatorname{prox}(x)$ and $p'=\operatorname{prox}(x')$:
+$p=\mathop{\mathrm{prox}}(x)$ and $p'=\mathop{\mathrm{prox}}(x')$:
 $\|p-p'\|^2\le\langle x-x',p-p'\rangle$.
 
 **Library results.** `TauCeti.exists_affine_le_of_lt` in
@@ -621,7 +621,7 @@ $B=\sum_k\beta_kv_kv_k^*$ in orthonormal eigenbases, and put
 $W_{ik}=|\langle u_i,v_k\rangle|^2$. Expanding the Frobenius norm gives
 $$
 \|A-B\|_2^2=\sum_i|\alpha_i|^2+\sum_k|\beta_k|^2
--2\operatorname{Re}\sum_{i,k}\alpha_i\overline{\beta_k}W_{ik}.
+-2\mathop{\mathrm{Re}}\sum_{i,k}\alpha_i\overline{\beta_k}W_{ik}.
 $$
 This is an affine, hence concave, function of $W$. The matrix $W$ is doubly
 stochastic, so by Birkhoff's theorem it lies in the convex hull of the
@@ -640,15 +640,15 @@ $\sum_i|\alpha_i-\beta_{\pi(i)}|^2$.
 
 ### 13.13. Von Neumann trace inequality
 
-**Statement.** $|\operatorname{tr}(A^*B)|\leq\sum_i s_i(A)s_i(B)$.
+**Statement.** $|\mathop{\mathrm{tr}}(A^*B)|\leq\sum_i s_i(A)s_i(B)$.
 TauCeti proves the Hermitian form
-$\operatorname{Re}\operatorname{tr}(AB)\leq\sum_i\lambda_i(A)\lambda_i(B)$ and the
-bound $|\operatorname{tr}(AU)|\leq\sum_is_i(A)$ for unitary $U$; missing is the
+$\mathop{\mathrm{Re}}\mathop{\mathrm{tr}}(AB)\leq\sum_i\lambda_i(A)\lambda_i(B)$ and the
+bound $|\mathop{\mathrm{tr}}(AU)|\leq\sum_is_i(A)$ for unitary $U$; missing is the
 singular-value form for arbitrary square matrices.
 
 **Argument.** Take a singular-value decomposition
 $B=\sum_ks_k(B)\,y_kx_k^*$. Then
-$\operatorname{tr}(A^*B)=\sum_ks_k(B)\langle y_k,Ax_k\rangle$. The phases of
+$\mathop{\mathrm{tr}}(A^*B)=\sum_ks_k(B)\langle y_k,Ax_k\rangle$. The phases of
 the coefficients can be absorbed into the orthonormal family $(y_k)$. Ky Fan's
 bound then gives $\sum_{k\le m}|\langle y_k,Ax_k\rangle|\le\sum_{k\le
 m}s_k(A)$ for every $m$. Since $s_k(B)$ is decreasing, summation by parts
@@ -669,7 +669,7 @@ $\sum_{j>k}s_j^2$. TauCeti proves the operator-norm case; missing is the
 statement for general unitarily invariant norms.
 
 **Argument.** Let $A_k$ be the truncation, so that
-$s_j(A-A_k)=s_{j+k}(A)$. If $\operatorname{rank}B\le k$ then $s_{k+1}(B)=0$,
+$s_j(A-A_k)=s_{j+k}(A)$. If $\mathop{\mathrm{rank}}B\le k$ then $s_{k+1}(B)=0$,
 and the mixed-index inequality applied to $A=(A-B)+B$ gives
 $s_{j+k}(A)\le s_j(A-B)$ for every $j$. Hence every Ky Fan sum of $A-A_k$ is
 at most the corresponding sum of $A-B$, and Fan dominance gives
@@ -779,7 +779,7 @@ packaging and is not part of this entry.
 finite-rank remainders, which are compact. Conversely, $ST=I+K_1$ and
 $TS=I+K_2$ are Fredholm by TauCeti's compact-perturbation theorem. Then
 $\ker T\subseteq\ker(ST)$ is finite-dimensional, and
-$\operatorname{ran}(TS)\subseteq\operatorname{ran}T$ has finite
+$\mathop{\mathrm{ran}}(TS)\subseteq\mathop{\mathrm{ran}}T$ has finite
 codimension. TauCeti's finite kernel and cokernel criterion makes $T$
 Fredholm; it supplies the closed range itself.
 
@@ -802,7 +802,7 @@ TauCeti's compact-perturbation theorem for Fredholm operators.
 **Argument.** If $\lambda\in\sigma(T)\setminus\sigma_{\mathrm{ess}}(T)$ in the
 Fredholm sense, then $T-\lambda$ is Fredholm, so $\ker(T-\lambda)$ is
 finite-dimensional. For self-adjoint operators TauCeti's closed-range adjoint
-theorem gives $\operatorname{ran}(T-\lambda)=\ker(T-\lambda)^\perp$, hence
+theorem gives $\mathop{\mathrm{ran}}(T-\lambda)=\ker(T-\lambda)^\perp$, hence
 $\lambda$ is an eigenvalue of finite multiplicity, and $T-\lambda$ is
 invertible on the orthogonal complement (`orthogonalKerEquivRange`,
 `ContinuousLinearEquiv.ofBijective`). Since $\ker(T-\lambda)$ reduces $T$, for
@@ -1207,7 +1207,7 @@ Translations and modulations give the centered version, with Gaussian
 equality cases.
 
 **Argument.** For Schwartz $f$, integration by parts in $x_j$ gives
-$\|f\|_2^2=-\int x_j\partial_j|f|^2=-2\operatorname{Re}\int x_jf\,
+$\|f\|_2^2=-\int x_j\partial_j|f|^2=-2\mathop{\mathrm{Re}}\int x_jf\,
 \overline{\partial_jf}$. Cauchy–Schwarz then gives
 $\|f\|_2^2\le2\|x_jf\|_2\|\partial_jf\|_2$, and by Plancherel
 $\|\partial_jf\|_2=2\pi\|\xi_j\widehat f\|_2$. Cutoff and mollification pass
@@ -1233,11 +1233,11 @@ and the inversion formula.
 
 **Argument.** Mathlib's character $D=\Delta_G^{-1}$ is
 $D(g)=\int f(xg)\,d\mu/\int f\,d\mu$ for a fixed nonnegative nonzero
-$f\in C_c(G)$. Its numerator is $\int f(y^{-1}g)\,d(\operatorname{inv}_*\mu)(y)$,
+$f\in C_c(G)$. Its numerator is $\int f(y^{-1}g)\,d(\mathop{\mathrm{inv}}_*\mu)(y)$,
 which is continuous in $g$ by the parameter-integral lemma. So $D$ and
-$\Delta_G$ are continuous. The measure $\operatorname{inv}_*\mu$ is right
+$\Delta_G$ are continuous. The measure $\mathop{\mathrm{inv}}_*\mu$ is right
 invariant, and so is $D\mu$. Haar uniqueness for the opposite group gives
-$\operatorname{inv}_*\mu=c\,D\mu$. Inverting twice and using
+$\mathop{\mathrm{inv}}_*\mu=c\,D\mu$. Inverting twice and using
 $D(g^{-1})D(g)=1$ gives $c^2=1$, so $c=1$. Since $D(x)=\Delta_G(x^{-1})$,
 this is the stated formula.
 
@@ -1298,7 +1298,7 @@ inverts them.
 
 **Statement.** For $f\in PW_B$,
 $$
-f(t)=\sum_{k\in\mathbb Z}f(k/(2B))\operatorname{sinc}(2Bt-k),
+f(t)=\sum_{k\in\mathbb Z}f(k/(2B))\mathop{\mathrm{sinc}}(2Bt-k),
 \qquad \|f\|_2^2=(2B)^{-1}\sum_k|f(k/(2B))|^2.
 $$
 The series converges in $L^2$ and uniformly on the real axis.
@@ -1311,7 +1311,7 @@ With Mathlib's frequency convention, $\widehat f$ is supported in $[-B,B]$.
 An orthonormal basis of that interval is
 $e_k(\xi)=(2B)^{-1/2}e^{-2\pi i k\xi/(2B)}$.
 Its coefficients are $(2B)^{-1/2}f(k/(2B))$; inverse transforming a basis
-vector gives $(2B)^{1/2}\operatorname{sinc}(2Bt-k)$, where the sinc in the statement
+vector gives $(2B)^{1/2}\mathop{\mathrm{sinc}}(2Bt-k)$, where the sinc in the statement
 is normalized as $\sin(\pi t)/(\pi t)$. This is
 `Real.sinc (Real.pi * t)` in Mathlib. Hilbert expansion and Parseval give
 the sampling series and its exact norm identity.
@@ -1393,7 +1393,7 @@ in `Mathlib/Dynamics/OmegaLimit.lean`; the proof of
 
 **Statement.** A sufficiently regular local minimizer
 with admissible compactly supported variations satisfies
-$f_u-\operatorname{div}f_{Du}=0$. For Sobolev minimizers this
+$f_u-\mathop{\mathrm{div}}f_{Du}=0$. For Sobolev minimizers this
 holds weakly when derivative growth bounds justify differentiation
 under the integral.
 
@@ -1403,7 +1403,7 @@ function is differentiable at $0$ with derivative
 $\int(f_u\varphi+f_{Du}\cdot\nabla\varphi)$. A local minimum forces this to
 vanish, which is the weak equation. In the regular case, integrate by parts
 against compactly supported $\varphi$. The fundamental lemma then gives
-$f_u-\operatorname{div}f_{Du}=0$ almost everywhere, and continuity gives it
+$f_u-\mathop{\mathrm{div}}f_{Du}=0$ almost everywhere, and continuity gives it
 everywhere.
 
 **Library results.** `hasFDerivAt_integral_of_dominated_of_fderiv_le` in
@@ -1694,7 +1694,7 @@ No general approximation theorem beyond this argument is required.
 ### 48.6. Real and simple zeros
 
 **Statement.** The $n$ zeros of $p_n$ are
-simple and lie in the interior of the convex hull of $\operatorname{supp}\mu$.
+simple and lie in the interior of the convex hull of $\mathop{\mathrm{supp}}\mu$.
 Mathlib proves this for the Chebyshev weight $(1-x^2)^{-1/2}$
 (`Polynomial.Chebyshev.roots_T_real`, `rootMultiplicity_T_real`); missing is
 the statement for a general $\mu$.

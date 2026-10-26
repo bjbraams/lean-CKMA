@@ -43,7 +43,7 @@ All conformal maps preserve orientation.
   $(1-r)/(1+r)^3\leq|f'(z)|\leq(1+r)/(1-r)^3$.
 * **6. Distance to the image boundary.** If $f$ is univalent on
   $\mathbb D$, then
-  $\frac14(1-|z|^2)|f'(z)|\leq\operatorname{dist}(f(z),\partial f(\mathbb D))
+  $\frac14(1-|z|^2)|f'(z)|\leq\mathop{\mathrm{dist}}(f(z),\partial f(\mathbb D))
   \leq(1-|z|^2)|f'(z)|$.
 * **7. Pre-Schwarzian distortion.** Every univalent $f$ satisfies
   $|(1-|z|^2)f''(z)/f'(z)-2\bar z|\leq4$.
@@ -71,7 +71,7 @@ All conformal maps preserve orientation.
   coefficient functional consequently attains its extrema on it.
 * **11. Area and coefficients.** For univalent
   $f(z)=\sum_{n\geq1}a_nz^n$ in $\mathbb D$ (for example $f\in\mathcal S$), $0<r<1$ and $B_r=\{|z|<r\}$,
-  $\operatorname{area}f(B_r)=\pi\sum_{n\geq1}n|a_n|^2r^{2n}$.
+  $\mathop{\mathrm{area}}f(B_r)=\pi\sum_{n\geq1}n|a_n|^2r^{2n}$.
   Letting $r\uparrow1$ relates finite image area to weighted
   square summability of coefficients.
 * **74. Hayman's regularity theorem.** For $f\in\mathcal S$ the limit
@@ -243,7 +243,7 @@ for $f:\mathbb D\to D$, $f(0)=a$.
   and one equals the reciprocal of the connecting extremal length.
   The minimizer is the harmonic capacitary potential.
 * **41. Reduced modulus.**
-  $\lim_{\varepsilon\downarrow0}[\operatorname{mod}(D\setminus
+  $\lim_{\varepsilon\downarrow0}[\mathop{\mathrm{mod}}(D\setminus
   \overline B(a,\varepsilon))+(2\pi)^{-1}\log\varepsilon]
   =(2\pi)^{-1}\log r_D(a)$.
   Conformal radius is monotone under domain inclusion, strictly unless
@@ -255,7 +255,7 @@ for $f:\mathbb D\to D$, $f(0)=a$.
   $\{w,\infty\}$ with $|w|=P$, the Teichmüller ring
   $\mathbb C\setminus([-1,0]\cup[P,\infty))$ has the largest modulus.
 * **43. Capacity and diameter.** A nondegenerate planar continuum
-  $E$ has logarithmic capacity at least $\operatorname{diam}(E)/4$.
+  $E$ has logarithmic capacity at least $\mathop{\mathrm{diam}}(E)/4$.
   Segments attain equality. The exterior normalized map has leading
   coefficient equal to the continuum's capacity when its complement is simply connected.
   For every compact set, logarithmic capacity equals the transfinite
@@ -273,7 +273,7 @@ for $f:\mathbb D\to D$, $f(0)=a$.
   Complementary half-planes with symmetric marked points give equality.
 * **47. Ahlfors distortion theorem.** Let $f$ map a strip-like domain
   $\{x+iy:\phi_-(x)<y<\phi_+(x)\}$, of width $\theta(x)$, conformally
-  onto $\{|\operatorname{Im}w|<\pi/2\}$ with ends corresponding. If
+  onto $\{|\mathop{\mathrm{Im}}w|<\pi/2\}$ with ends corresponding. If
   $\int_{x_1}^{x_2}dx/\theta(x)\geq2$, then the real parts on the
   crosscuts at $x_2$ exceed those at $x_1$ by at least
   $\pi\int_{x_1}^{x_2}dx/\theta(x)-4\pi$. Harmonic measure of a far
@@ -356,7 +356,7 @@ harmonic extension functional at $a$.
   to a domain bounded by $n$ circles, unique up to Möbius maps. If the
   domain contains $\infty$, there is a unique conformal map
   $z+a_1/z+\cdots$ near $\infty$ onto a horizontal parallel-slit domain;
-  it maximizes $\operatorname{Re}a_1$ among univalent maps with this normalization.
+  it maximizes $\mathop{\mathrm{Re}}a_1$ among univalent maps with this normalization.
 
 * **63. Schwarz–Christoffel formula.** If $f:\mathbb H\to P$
   maps onto a polygon with angles $\pi\alpha_j$ and the last

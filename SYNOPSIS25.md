@@ -114,7 +114,7 @@ $I^\alpha f(t)=\Gamma(\alpha)^{-1}\int_0^t(t-s)^{\alpha-1}f(s)ds$.
   $k\in L^1(\mathbb R_+)$, the resolvent $r=k+k*r$ of
   $u=f+k*u$ on $\mathbb R_+$ lies in $L^1(\mathbb R_+)$ exactly when
   $\hat k(z)=\int_0^\infty e^{-zt}k(t)dt\neq1$ for
-  $\operatorname{Re}z\geq0$. Then $u=f+r*f$, and the solution map is
+  $\mathop{\mathrm{Re}}z\geq0$. Then $u=f+r*f$, and the solution map is
   bounded on $L^p(\mathbb R_+)$ for $1\leq p\leq\infty$.
 * **22. Fractional semigroup law.** $I^\alpha I^\beta=I^{\alpha+\beta}$
   on $L^1(0,T)$ for positive $\alpha,\beta$. Fubini and the beta
@@ -134,7 +134,7 @@ $I^\alpha f(t)=\Gamma(\alpha)^{-1}\int_0^t(t-s)^{\alpha-1}f(s)ds$.
 Let $\Gamma$ be a smooth positively oriented simple closed plane curve.
 Set $C\phi(z)=(2\pi i)^{-1}\int_\Gamma\phi(\zeta)/(\zeta-z)d\zeta$
 off the curve and
-$S\phi=(\pi i)^{-1}\operatorname{p.v.}\int_\Gamma
+$S\phi=(\pi i)^{-1}\mathop{\mathrm{p.v.}}\int_\Gamma
 \phi(\zeta)/(\zeta-\cdot)d\zeta$ on it. Interior and exterior traces
 are denoted by $C_+$ and $C_-$ in this subsection only.
 
@@ -149,9 +149,9 @@ are denoted by $C_+$ and $C_-$ in this subsection only.
 * **27. Singular integral Fredholm criterion.** For smooth scalar
   $a,b$ on $\Gamma$, $aI+bS$ is Fredholm on $L^p$, $1<p<\infty$,
   exactly when $a+b$ and $a-b$ never vanish. Its index is
-  $-\operatorname{wind}((a+b)/(a-b),0)$.
+  $-\mathop{\mathrm{wind}}((a+b)/(a-b),0)$.
 * **28. Riemann–Hilbert problem.** Let $G$ be Hölder continuous and
-  nowhere zero on $\Gamma$, $g$ Hölder, and $\kappa=\operatorname{wind}(G,0)$.
+  nowhere zero on $\Gamma$, $g$ Hölder, and $\kappa=\mathop{\mathrm{wind}}(G,0)$.
   Seek $\Phi$ holomorphic off $\Gamma$, vanishing at infinity, with
   Hölder boundary values satisfying $\Phi_+=G\Phi_-+g$. If
   $\kappa\geq0$ it is solvable for every $g$, with a $\kappa$-dimensional
@@ -165,7 +165,7 @@ are denoted by $C_+$ and $C_-$ in this subsection only.
   the Wiener algebra of $\mathbb T$ factors as
   $a=a_-z^\kappa a_+$, where $a_+$ and its inverse have nonnegative
   Fourier frequencies, $a_-$ and its inverse have nonpositive frequencies,
-  and $\kappa=\operatorname{wind}(a,0)$.
+  and $\kappa=\mathop{\mathrm{wind}}(a,0)$.
 * **30. Toeplitz and Wiener–Hopf operators.** The associated Toeplitz operator is
   Fredholm of index $-\kappa$ and is invertible exactly when $\kappa=0$.
   In that case factorization gives the inverse through the triangular
@@ -173,7 +173,7 @@ are denoted by $C_+$ and $C_-$ in this subsection only.
   $k\in L^1(\mathbb R)$, the Wiener–Hopf operator
   $u\mapsto u-\int_0^\infty k(\cdot-s)u(s)ds$ on $L^2(\mathbb R_+)$ is
   Fredholm exactly when $W(\xi)=1-\int e^{i\xi t}k(t)dt$ never vanishes,
-  with index $-\operatorname{wind}(W,0)$ over $-\infty\leq\xi\leq\infty$
+  with index $-\mathop{\mathrm{wind}}(W,0)$ over $-\infty\leq\xi\leq\infty$
   (Krein).
 
 ## Laplace layer potentials and boundary operators
@@ -244,12 +244,12 @@ Riemann–Hilbert unknown of 28.
   $\Phi(x,y)=-(2\pi)^{-1}\log|x-y|$ and a closed Lipschitz curve $\Gamma$.
   There is a unique equilibrium density $\mu_e\in H^{-1/2}(\Gamma)$ with
   $\langle\mu_e,1\rangle=1$ and $V\mu_e$ constant; that constant is
-  $-(2\pi)^{-1}\log\operatorname{cap}(\Gamma)$, where
-  $\operatorname{cap}(\Gamma)$ is the logarithmic capacity. $V$ is coercive on
+  $-(2\pi)^{-1}\log\mathop{\mathrm{cap}}(\Gamma)$, where
+  $\mathop{\mathrm{cap}}(\Gamma)$ is the logarithmic capacity. $V$ is coercive on
   densities of mean zero, it is an isomorphism
   $H^{-1/2}(\Gamma)\to H^{1/2}(\Gamma)$ exactly when
-  $\operatorname{cap}(\Gamma)\neq1$, and it is positive definite when
-  $\operatorname{cap}(\Gamma)<1$, for instance when the diameter of
+  $\mathop{\mathrm{cap}}(\Gamma)\neq1$, and it is positive definite when
+  $\mathop{\mathrm{cap}}(\Gamma)<1$, for instance when the diameter of
   $\Gamma$ is below $1$. Rescaling the curve therefore restores
   the three-dimensional theory of 35.
 
@@ -288,8 +288,8 @@ $\partial_ru-iku=o(r^{-1})$ and $u=O(r^{-1})$ in three dimensions.
 
 Here $D\subset\mathbb R^3$ is a bounded $C^2$ domain with connected
 exterior, $\nu$ is its outward normal, $k>0$, and $\Phi_k$ is as above.
-The time-harmonic Maxwell equations are $\operatorname{curl}E-ikH=0$,
-$\operatorname{curl}H+ikE=0$. An exterior solution is **radiating** if it
+The time-harmonic Maxwell equations are $\mathop{\mathrm{curl}}E-ikH=0$,
+$\mathop{\mathrm{curl}}H+ikE=0$. An exterior solution is **radiating** if it
 satisfies the Silver–Müller condition $H\times x-|x|E\to0$ as
 $|x|\to\infty$, uniformly in $x/|x|$. For a sound-soft obstacle let
 $u_\infty(\cdot,d)$ be the far-field pattern for incidence $e^{ikx\cdot d}$;
@@ -300,8 +300,8 @@ $L^2(S^2)$.
 * **62. Stratton–Chu formula.** A radiating solution $E,H$, continuously
   differentiable outside $\overline D$ and continuous up to $\partial D$,
   satisfies for $x\notin\overline D$
-  $$E(x)=\operatorname{curl}\int_{\partial D}\nu\times E\,\Phi_k(x,\cdot)\,ds
-    -\frac1{ik}\operatorname{curl}\operatorname{curl}
+  $$E(x)=\mathop{\mathrm{curl}}\int_{\partial D}\nu\times E\,\Phi_k(x,\cdot)\,ds
+    -\frac1{ik}\mathop{\mathrm{curl}}\mathop{\mathrm{curl}}
     \int_{\partial D}\nu\times H\,\Phi_k(x,\cdot)\,ds,$$
   and symmetrically for $H$. The Silver–Müller condition is equivalent to
   the Sommerfeld condition for the Cartesian components, and radiating
@@ -372,8 +372,8 @@ $\|f^\delta-f\|\leq\delta$.
   The minimum-norm solution is
   $u^\dagger=\sum_js_j^{-1}\langle f,f_j\rangle e_j$.
 * **53. Pseudoinverse.** The Moore–Penrose inverse maps
-  $f\in\operatorname{ran}K\oplus\ker K^*$ to the minimum-norm
-  least-squares solution. It is bounded exactly when $\operatorname{ran}K$
+  $f\in\mathop{\mathrm{ran}}K\oplus\ker K^*$ to the minimum-norm
+  least-squares solution. It is bounded exactly when $\mathop{\mathrm{ran}}K$
   is closed.
 * **54. Tikhonov minimization.** For $\alpha>0$,
   $\|Ku-f^\delta\|^2+\alpha\|u\|^2$ has the unique minimizer

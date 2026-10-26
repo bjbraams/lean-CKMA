@@ -32,7 +32,7 @@ bounded spectral theorem for normal operators are in SYNOPSIS15, items 46,
 64, and 65.
 
 * **3. Douglas factorization theorem.** For $A:K\to H$ and $B:L\to H$,
-  $\operatorname{ran}A\subset\operatorname{ran}B$ exactly when
+  $\mathop{\mathrm{ran}}A\subset\mathop{\mathrm{ran}}B$ exactly when
   $AA^*\leq cBB^*$ for some $c$, and exactly when $A=BC$ for some
   bounded $C:K\to L$. The least such $c$ is the square of the least
   possible norm of $C$.
@@ -75,9 +75,9 @@ bounded spectral theorem for normal operators are in SYNOPSIS15, items 46,
 ## Fredholm operators and essential spectra
 
 A bounded map $T:X\to Y$ between Banach spaces is **Fredholm** if its
-range is closed and both $\ker T$ and $Y/\operatorname{ran}T$ are finite
+range is closed and both $\ker T$ and $Y/\mathop{\mathrm{ran}}T$ are finite
 dimensional. Its **index** is
-$\operatorname{ind}T=\dim\ker T-\dim(Y/\operatorname{ran}T)$.
+$\mathop{\mathrm{ind}}T=\dim\ker T-\dim(Y/\mathop{\mathrm{ran}}T)$.
 The **Calkin algebra** is $\mathcal B(H)/\mathcal K(H)$, where
 $\mathcal K(H)$ is the compact ideal; the **essential spectrum** here means
 $\sigma_{\rm ess}(T)=\{z:T-zI\text{ is not Fredholm}\}$.
@@ -93,9 +93,9 @@ SYNOPSIS22, item 29.
   subset of $\mathcal L(X,Y)$, and their index is locally constant.
   Compact perturbations preserve Fredholmness and the index.
 * **13. Product and adjoint rules.** Products of Fredholm operators are
-  Fredholm, with $\operatorname{ind}(ST)=\operatorname{ind}S+
-  \operatorname{ind}T$. For the Hilbert-space or Banach-space adjoint,
-  $\operatorname{ind}T^*=-\operatorname{ind}T$.
+  Fredholm, with $\mathop{\mathrm{ind}}(ST)=\mathop{\mathrm{ind}}S+
+  \mathop{\mathrm{ind}}T$. For the Hilbert-space or Banach-space adjoint,
+  $\mathop{\mathrm{ind}}T^*=-\mathop{\mathrm{ind}}T$.
 * **15. Analytic Fredholm theorem.** If $K(z)$ is a norm-holomorphic
   compact-operator family on a connected plane domain, then either
   $I-K(z)$ is nowhere invertible or its inverse is meromorphic, with
@@ -112,7 +112,7 @@ SYNOPSIS22, item 29.
   modulo compacts exactly when their essential spectra agree. For
   essentially normal operators ($T^*T-TT^*$ compact), unitary equivalence
   modulo compacts holds exactly when the essential spectra agree and
-  $\operatorname{ind}(T-\lambda)$ agrees off the essential spectrum (BDF).
+  $\mathop{\mathrm{ind}}(T-\lambda)$ agrees off the essential spectrum (BDF).
 * **68. Weyl and Browder spectra.** For a bounded operator $T$ on a
   complex Banach space, the **Weyl spectrum** $\sigma_w(T)$ is the set of
   $\lambda$ for which $T-\lambda I$ is not Fredholm of index zero, and the
@@ -120,8 +120,8 @@ SYNOPSIS22, item 29.
   Fredholm with finite ascent and descent. Then
   $\sigma_{\rm ess}(T)\subset\sigma_w(T)\subset\sigma_b(T)\subset\sigma(T)$,
   $\sigma_w(T)=\bigcap_{K\text{ compact}}\sigma(T+K)$ (Schechter), and
-  $\sigma_b(T)=\sigma_w(T)\cup\operatorname{acc}\sigma(T)$, where
-  $\operatorname{acc}$ denotes the set of accumulation points; the
+  $\sigma_b(T)=\sigma_w(T)\cup\mathop{\mathrm{acc}}\sigma(T)$, where
+  $\mathop{\mathrm{acc}}$ denotes the set of accumulation points; the
   complement $\sigma(T)\setminus\sigma_b(T)$ consists of the isolated
   eigenvalues with finite-rank Riesz projections. Both $\sigma_w$ and
   $\sigma_b$ are invariant under compact perturbation (for $\sigma_b$, by
@@ -153,18 +153,18 @@ classes, respectively.
   $1/r=1/p+1/q$ and $p,q,r\geq1$. In particular, products of two
   Hilbert–Schmidt maps are trace class.
 * **23. Trace and cyclicity.** For $T\in S^1$,
-  $\operatorname{tr}T=\sum_j\langle Te_j,e_j\rangle$ is absolutely
+  $\mathop{\mathrm{tr}}T=\sum_j\langle Te_j,e_j\rangle$ is absolutely
   convergent and basis independent. If $A$ is bounded,
-  $\operatorname{tr}(AT)=\operatorname{tr}(TA)$ and
-  $|\operatorname{tr}T|\leq\|T\|_1$.
+  $\mathop{\mathrm{tr}}(AT)=\mathop{\mathrm{tr}}(TA)$ and
+  $|\mathop{\mathrm{tr}}T|\leq\|T\|_1$.
 * **24. Lidskii theorem and determinant.** For trace-class $T$,
-  $\operatorname{tr}T=\sum_j\lambda_j(T)$ with algebraic multiplicities.
+  $\mathop{\mathrm{tr}}T=\sum_j\lambda_j(T)$ with algebraic multiplicities.
   The Fredholm determinant $\det(I+T)=\prod_j(1+\lambda_j(T))$ is
   well defined, continuous in $\|\cdot\|_1$, multiplicative, and vanishes
   exactly when $I+T$ is not invertible. The eigenvalues are absolutely
   summable even without self-adjointness. The function
   $z\mapsto\det(I+zT)=\prod_j(1+z\lambda_j(T))$ is entire, and near zero
-  $\log\det(I+zT)=\sum_{k\geq1}(-1)^{k+1}z^k\operatorname{tr}(T^k)/k$.
+  $\log\det(I+zT)=\sum_{k\geq1}(-1)^{k+1}z^k\mathop{\mathrm{tr}}(T^k)/k$.
 * **25. Weyl inequalities.** If $|\lambda_1|\geq|\lambda_2|\geq\cdots$ are
   the eigenvalues of a compact $T$ with algebraic multiplicity, then
   $\prod_{j\leq n}|\lambda_j|\leq\prod_{j\leq n}s_j(T)$ for every $n$.
@@ -187,7 +187,7 @@ consists of analytic $E$-valued functions with square-summable Taylor
 coefficients. A contraction is **completely nonunitary** if it has no
 nonzero reducing subspace on which it is unitary. Its defect operators and
 spaces are $D_T=(I-T^*T)^{1/2}$ and
-$\mathcal D_T=\overline{\operatorname{ran}D_T}$.
+$\mathcal D_T=\overline{\mathop{\mathrm{ran}}D_T}$.
 
 * **26. Wold decomposition.** Every isometry is the orthogonal sum of
   a unitary operator and a unilateral shift. The shift multiplicity is
@@ -198,11 +198,11 @@ $\mathcal D_T=\overline{\operatorname{ran}D_T}$.
   inner functions, for suitable Hilbert $F$; the multiplier is an isometry.
 * **29. Isometric dilation theorem.** Every contraction $T$ is a compression
   of an isometry $V$ with $T^n=P_HV^n|_H$ for $n\geq0$. Requiring
-  $K=\overline{\operatorname{span}}\{V^nH:n\geq0\}$ makes the dilation
+  $K=\overline{\mathop{\mathrm{span}}}\{V^nH:n\geq0\}$ makes the dilation
   unique up to a unitary fixing $H$.
 * **30. Unitary dilation theorem.** Every contraction has a unitary power
   dilation $U$ with $T^n=P_HU^n|_H$ for $n\geq0$, unique under
-  $K=\overline{\operatorname{span}}\{U^nH:n\in\mathbb Z\}$.
+  $K=\overline{\mathop{\mathrm{span}}}\{U^nH:n\in\mathbb Z\}$.
 * **31. von Neumann inequality.** If $T$ is a contraction and $p$ is a
   polynomial, $\|p(T)\|\leq\max_{|z|\leq1}|p(z)|$. This extends the
   polynomial calculus contractively to the disk algebra.

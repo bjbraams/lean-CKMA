@@ -19,15 +19,15 @@ This file follows the thematic order and lettered subdivisions of the mathematic
 
 **Separation.**
 
-The geometric Hahn–Banach theorems are in `Analysis/LocallyConvex/Separation.lean`. In a real locally convex topological vector space, a point outside a closed convex set is strictly separated from it by a continuous linear functional (`geometric_hahn_banach_point_closed`, `geometric_hahn_banach_closed_point`), and a compact convex set disjoint from a closed convex set is strictly separated from it (`geometric_hahn_banach_compact_closed`, `geometric_hahn_banach_closed_compact`). No Hausdorff hypothesis is needed. Without local convexity, an open convex set is separated from a disjoint convex set (`geometric_hahn_banach_open`). If a convex set \(A\) has nonempty interior and \(x\notin\operatorname{int}A\), some nonzero continuous linear functional attains its maximum over \(A\) at \(x\) (`geometric_hahn_banach_of_nonempty_interior_point`); this is the supporting-hyperplane theorem for convex sets with nonempty interior in a topological vector space. Complex versions are in the namespace `RCLike`.
+The geometric Hahn–Banach theorems are in `Analysis/LocallyConvex/Separation.lean`. In a real locally convex topological vector space, a point outside a closed convex set is strictly separated from it by a continuous linear functional (`geometric_hahn_banach_point_closed`, `geometric_hahn_banach_closed_point`), and a compact convex set disjoint from a closed convex set is strictly separated from it (`geometric_hahn_banach_compact_closed`, `geometric_hahn_banach_closed_compact`). No Hausdorff hypothesis is needed. Without local convexity, an open convex set is separated from a disjoint convex set (`geometric_hahn_banach_open`). If a convex set \(A\) has nonempty interior and \(x\notin\mathop{\mathrm{int}}A\), some nonzero continuous linear functional attains its maximum over \(A\) at \(x\) (`geometric_hahn_banach_of_nonempty_interior_point`); this is the supporting-hyperplane theorem for convex sets with nonempty interior in a topological vector space. Complex versions are in the namespace `RCLike`.
 
 **The Minkowski functional.**
 
 The gauge of a set \(s\) in a real vector space is
 \[
-\operatorname{gauge}_s(x)=\inf\{r>0:x\in r\cdot s\}.
+\mathop{\mathrm{gauge}}\nolimits_s(x)=\inf\{r>0:x\in r\cdot s\}.
 \]
-If \(s\) is convex and absorbent, the gauge is subadditive. If it is also balanced, the gauge is a seminorm. If \(s\) is a convex neighborhood of the origin in a topological real vector space, the gauge is continuous, the open sublevel set \(\{\operatorname{gauge}_s<1\}\) is the interior of \(s\), the closed sublevel set \(\{\operatorname{gauge}_s\le 1\}\) is the closure, and the level set \(\{\operatorname{gauge}_s=1\}\) is the frontier. In a normed space the gauge of a convex neighborhood of the origin is Lipschitz, and the gauge of the open unit ball is the norm (`Analysis/Convex/Gauge.lean`).
+If \(s\) is convex and absorbent, the gauge is subadditive. If it is also balanced, the gauge is a seminorm. If \(s\) is a convex neighborhood of the origin in a topological real vector space, the gauge is continuous, the open sublevel set \(\{\mathop{\mathrm{gauge}}_s<1\}\) is the interior of \(s\), the closed sublevel set \(\{\mathop{\mathrm{gauge}}_s\le 1\}\) is the closure, and the level set \(\{\mathop{\mathrm{gauge}}_s=1\}\) is the frontier. In a normed space the gauge of a convex neighborhood of the origin is Lipschitz, and the gauge of the open unit ball is the norm (`Analysis/Convex/Gauge.lean`).
 
 **Carathéodory, Radon, and Helly.**
 
@@ -43,7 +43,7 @@ A subset \(B\subseteq A\) is extreme when a point of \(B\) that lies on an open 
 
 A set \(B\) is exposed in \(A\) when, as soon as \(B\) is nonempty, it is exactly the set of maximizers in \(A\) of some continuous linear functional. The empty set is exposed. An exposed set is extreme, and exposed points are extreme points (`Analysis/Convex/Exposed.lean`).
 
-In a real locally convex Hausdorff topological vector space, a nonempty compact set has an extreme point, and a compact convex set is the closure of the convex hull of its extreme points (`IsCompact.extremePoints_nonempty`, `closure_convexHull_extremePoints`). Every extreme point of the image of a compact set under a continuous affine map has an extreme-point preimage. In symbols, \(\operatorname{ext}(f(K))\subseteq f(\operatorname{ext}K)\). This inclusion can be strict: an extreme point of \(K\) need not map to an extreme point of its image (`Analysis/Convex/KreinMilman.lean`). The file states that the finite-dimensional form without the closure, the Minkowski–Carathéodory theorem, is not in the library. The interior of a set in a nontrivial topological vector space contains no extreme point, and the extreme points of a strictly convex set in a nontrivial normed space are exactly its points outside the interior (`Analysis/Convex/Strict/Extreme.lean`).
+In a real locally convex Hausdorff topological vector space, a nonempty compact set has an extreme point, and a compact convex set is the closure of the convex hull of its extreme points (`IsCompact.extremePoints_nonempty`, `closure_convexHull_extremePoints`). Every extreme point of the image of a compact set under a continuous affine map has an extreme-point preimage. In symbols, \(\mathop{\mathrm{ext}}(f(K))\subseteq f(\mathop{\mathrm{ext}}K)\). This inclusion can be strict: an extreme point of \(K\) need not map to an extreme point of its image (`Analysis/Convex/KreinMilman.lean`). The file states that the finite-dimensional form without the closure, the Minkowski–Carathéodory theorem, is not in the library. The interior of a set in a nontrivial topological vector space contains no extreme point, and the extreme points of a strictly convex set in a nontrivial normed space are exactly its points outside the interior (`Analysis/Convex/Strict/Extreme.lean`).
 
 **Cones, Farkas, and Stone separation.**
 
@@ -57,7 +57,7 @@ Stone’s separation theorem, for a module over an ordered field: two disjoint c
 
 A simplicial complex in a module over the scalar field is a down-closed family of nonempty finite sets of vertices, each affinely independent, such that the convex hulls of two faces meet inside the convex hull of the intersection of their vertex sets. For faces \(s\) and \(t\),
 \[
-\operatorname{conv}(s)\cap\operatorname{conv}(t)=\operatorname{conv}(s\cap t).
+\mathop{\mathrm{conv}}(s)\cap\mathop{\mathrm{conv}}(t)=\mathop{\mathrm{conv}}(s\cap t).
 \]
 The textbook alternative, that two faces are disjoint or meet in a face, is deduced from that identity (`Analysis/Convex/SimplicialComplex/Basic.lean`).
 
@@ -151,7 +151,7 @@ Let \(h\) be a strictly convex real function on a finite-dimensional real inner 
 
 **Polars and recession.**
 
-The bipolar theorem is proved for the absolute polar: in a real or complex locally convex space, the bipolar of a set is its closed absolutely convex hull after adjoining zero (`StrongDual.bipolar_eq_closedAbsConvexHull`, `AbsConvex.bipolar_eq_closure`, [bipolar](https://github.com/TauCetiProject/TauCeti/blob/5cdecf40e99d5a5ad0833afff31f5b007d68a149/TauCeti/Analysis/LocallyConvex/Bipolar.lean)). The one-sided polar \(\{u:\langle u,x\rangle\le1\}\) of the synopsis, with \(\overline{\operatorname{conv}}(C\cup\{0\})\), is not treated.
+The bipolar theorem is proved for the absolute polar: in a real or complex locally convex space, the bipolar of a set is its closed absolutely convex hull after adjoining zero (`StrongDual.bipolar_eq_closedAbsConvexHull`, `AbsConvex.bipolar_eq_closure`, [bipolar](https://github.com/TauCetiProject/TauCeti/blob/5cdecf40e99d5a5ad0833afff31f5b007d68a149/TauCeti/Analysis/LocallyConvex/Bipolar.lean)). The one-sided polar \(\{u:\langle u,x\rangle\le1\}\) of the synopsis, with \(\overline{\mathop{\mathrm{conv}}}(C\cup\{0\})\), is not treated.
 
 The recession constant \(U'(\infty)=\limsup_{s\to\infty}U(s)/s\) of a function on the half-line is defined, and for \(U\) convex on \([0,\infty)\) the quotient \(U(s)/s\) converges to it (`TauCeti.recessionConstant`, `ConvexOn.tendsto_div_recessionConstant`, [recession constant](https://github.com/TauCetiProject/TauCeti/blob/5cdecf40e99d5a5ad0833afff31f5b007d68a149/TauCeti/Analysis/Convex/RecessionConstant.lean)). This is a one-variable special case of the recession function.
 

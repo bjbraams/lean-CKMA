@@ -61,9 +61,9 @@ limits and need not by itself give Fréchet differentiability.
   $C^1$ diffeomorphism. Properness supplies global continuation of the
   local inverses; the target Banach space is simply connected.
 * **8. Sard–Smale theorem.** If $F:M\to N$ is a $C^r$ Fredholm map
-  between separable Banach manifolds and $r>\max(\operatorname{ind}F,0)$,
+  between separable Banach manifolds and $r>\max(\mathop{\mathrm{ind}}F,0)$,
   its regular values form a residual subset of $N$. Generic solution sets
-  $F^{-1}(y)$ are therefore $C^r$ manifolds of dimension $\operatorname{ind}F$.
+  $F^{-1}(y)$ are therefore $C^r$ manifolds of dimension $\mathop{\mathrm{ind}}F$.
 * **9. Newton–Kantorovich convergence.** Let $DF(x_0)$ be invertible,
   $\|DF(x_0)^{-1}F(x_0)\|\leq\eta$, and
   $\|DF(x_0)^{-1}(DF(x)-DF(y))\|\leq L\|x-y\|$ on a suitable
@@ -157,7 +157,7 @@ the **Brouwer degree** is the integer $\deg(F,\Omega,y)$.
   $F(x)=y$ in $\Omega$. Removing a closed region containing no
   such solution leaves the degree unchanged.
 * **25. Regular-value formula.** For $C^1$ maps with regular value $y$,
-  $\deg(F,\Omega,y)=\sum_{F(x)=y}\operatorname{sgn}\det DF(x)$.
+  $\deg(F,\Omega,y)=\sum_{F(x)=y}\mathop{\mathrm{sgn}}\det DF(x)$.
   Each isolated nondegenerate zero has local degree $\pm1$.
 * **26. Borsuk's odd mapping theorem.** An odd continuous map on the
   closure of a bounded symmetric neighborhood of zero, with no
@@ -212,7 +212,7 @@ segments are weakly continuous in the dual pairing.
 In entries 32–39, $X=H$ is a real Hilbert space identified with $H^*$.
 
 * **32. Minty's range theorem.** On $H$, a monotone graph $A$ is
-  maximal monotone exactly when $\operatorname{Ran}(I+\lambda A)=H$
+  maximal monotone exactly when $\mathop{\mathrm{Ran}}(I+\lambda A)=H$
   for one, equivalently every, $\lambda>0$.
 * **33. Firm resolvents.** For maximal monotone $A$,
   $J_{\lambda A}=(I+\lambda A)^{-1}$ is everywhere defined,
@@ -239,7 +239,7 @@ In entries 32–39, $X=H$ is a real Hilbert space identified with $H^*$.
   $\partial\phi$ is maximal monotone. Its resolvent minimizes
   $\phi(y)+\|y-x\|^2/(2\lambda)$ uniquely.
 * **39. Maximal monotone sums.** If $A,B$ are maximal monotone on $H$
-  and $D(A)\cap\operatorname{int}D(B)\ne\varnothing$, then
+  and $D(A)\cap\mathop{\mathrm{int}}D(B)\ne\varnothing$, then
   $A+B$ is maximal monotone. In particular, addition of a continuous
   everywhere-defined monotone operator preserves maximality.
 * **40. Browder–Minty surjectivity.** On a reflexive Banach space,
@@ -273,7 +273,7 @@ In entries 32–39, $X=H$ is a real Hilbert space identified with $H^*$.
   is maximal monotone and $J_{\lambda N_C}=P_C$.
   The variational inequality is $0\in Au-f+N_C(u)$.
 * **47. Nonlinear elliptic application.** The map
-  $u\mapsto-\operatorname{div}(|\nabla u|^{p-2}\nabla u)$ from
+  $u\mapsto-\mathop{\mathrm{div}}(|\nabla u|^{p-2}\nabla u)$ from
   $W_0^{1,p}$ to $W^{-1,p'}$, $1<p<\infty$, is bounded,
   hemicontinuous, coercive, and strictly monotone. Hence every datum
   in the dual has a unique weak solution.
@@ -283,7 +283,7 @@ In entries 32–39, $X=H$ is a real Hilbert space identified with $H^*$.
 A graph $A\subset X\times X$ is **accretive** if
 $\|x-y\|\leq\|x-y+\lambda(a-b)\|$ for every $\lambda>0$ and
 every pair of graph points. It is **$m$-accretive** if also
-$\operatorname{Ran}(I+\lambda A)=X$ for every $\lambda>0$.
+$\mathop{\mathrm{Ran}}(I+\lambda A)=X$ for every $\lambda>0$.
 On Hilbert spaces this is maximal monotonicity.
 
 * **48. Crandall–Liggett generation.** An $m$-accretive graph generates
@@ -351,7 +351,7 @@ On Hilbert spaces this is maximal monotonicity.
 * **60. Crandall–Rabinowitz simple-eigenvalue theorem.** Suppose $F$
   is $C^2$, $F(\lambda,0)=0$, and $L=D_uF(\lambda_0,0)$ is
   Fredholm of index zero with kernel $\mathbb R\phi$.
-  If $D_\lambda D_uF(\lambda_0,0)\phi\notin\operatorname{Ran}L$,
+  If $D_\lambda D_uF(\lambda_0,0)\phi\notin\mathop{\mathrm{Ran}}L$,
   all nearby nontrivial zeros form a $C^1$ curve (smooth if $F$ is)
   $(\lambda(s),s\phi+o(s))$ through $(\lambda_0,0)$.
 * **61. Odd-multiplicity global alternative.** For
@@ -378,7 +378,7 @@ On Hilbert spaces this is maximal monotonicity.
   has a simple pair of eigenvalues $\pm i\omega_0$, $\omega_0>0$, no
   other eigenvalues in $i\omega_0\mathbb Z$, and the continuation
   $\mu(\lambda)$ of $i\omega_0$ crosses transversally,
-  $\operatorname{Re}\mu'(\lambda_0)\neq0$. Then a one-parameter family
+  $\mathop{\mathrm{Re}}\mu'(\lambda_0)\neq0$. Then a one-parameter family
   of nonconstant periodic orbits with periods near $2\pi/\omega_0$ and
   amplitudes tending to zero emanates from $(\lambda_0,0)$, and near
   $(\lambda_0,0)$ it contains all small periodic orbits with such periods.

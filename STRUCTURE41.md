@@ -21,7 +21,7 @@ This file follows the thematic order of the mathematical inventory. It records d
 
 **Jensen’s formula.** If \(f:\mathbb{C}\to\mathbb{C}\) is meromorphic on the closed disc of center \(c\) and radius \(|R|\), and \(R\neq 0\), the circle average of \(\log\|f\|\) equals the logarithm of the norm of the trailing coefficient of \(f\) at \(c\), plus a correction from the zeros and poles. With \(D\) the divisor of \(f\) on that closed disc,
 \[
-\operatorname{circleAverage}(\log\|f\|,c,R)
+\mathop{\mathrm{circleAverage}}(\log\|f\|,c,R)
 = \sum_u D(u)\log\bigl(R\,\|c-u\|^{-1}\bigr) + D(c)\log R + \log\|\text{trailing coefficient of }f\text{ at }c\|.
 \]
 The sum is finite. The term \(D(c)\log R\) compensates for the convention that \(\log(R\,\|c-u\|^{-1})\) is interpreted as zero when \(u=c\). If the order is infinite at even one point of the disc, \(f\) vanishes off a discrete set, the divisor is zero, and both sides are the value attached to the zero function (`MeromorphicOn.circleAverage_log_norm`, `Analysis/Complex/JensenFormula.lean`).
@@ -91,8 +91,8 @@ The characteristic function \(T(r,f,a)\), also called the Nevanlinna height, is 
 **Cartan’s formula.** For \(f:\mathbb{C}\to\mathbb{C}\) meromorphic on the plane and \(R\neq 0\), Cartan’s formula writes the characteristic at infinity as two circle averages over the unit circle:
 \[
 T(R,f,\infty)
-= \operatorname{circleAverage}\bigl(a\mapsto N(R,f,a)\bigr)
-+ \operatorname{circleAverage}\bigl(a\mapsto \log\|\text{trailing coefficient of }f-a\text{ at }0\|\bigr).
+= \mathop{\mathrm{circleAverage}}\bigl(a\mapsto N(R,f,a)\bigr)
++ \mathop{\mathrm{circleAverage}}\bigl(a\mapsto \log\|\text{trailing coefficient of }f-a\text{ at }0\|\bigr).
 \]
 Both integrands are circle-integrable. Away from radius zero, the second average is a constant, so the characteristic differs from the average of the counting function by a constant. As a consequence the characteristic at infinity is monotone on \((0,\infty)\) (`characteristic_top_eq_circleAverage_add_circleAverage`, `characteristic_monotoneOn`, `Analysis/Complex/ValueDistribution/Cartan.lean`). The file notes that this monotonicity is not obvious from the definition, because the proximity function need not be monotone.
 

@@ -178,12 +178,12 @@ $H^2_-=L^2\ominus H^2$.
   invertible.
 * **32. Toeplitz Fredholm index.** If $\phi\in C(\mathbb T)$,
   $T_\phi$ is Fredholm exactly when $\phi$ never vanishes;
-  its index is $-\operatorname{wind}(\phi,0)$ and its essential
+  its index is $-\mathop{\mathrm{wind}}(\phi,0)$ and its essential
   spectrum is $\phi(\mathbb T)$.
 * **33. Toeplitz spectra.** For continuous $\phi$, $\sigma(T_\phi)$
   is $\phi(\mathbb T)$ together with the points $\lambda$ about which
   $\phi$ has nonzero winding number. For real $\phi\in L^\infty$,
-  $\sigma(T_\phi)=[\operatorname{ess\,inf}\phi,\operatorname{ess\,sup}\phi]$
+  $\sigma(T_\phi)=[\mathop{\mathrm{ess\,inf}}\phi,\mathop{\mathrm{ess\,sup}}\phi]$
   (Hartman–Wintner). For every $\phi\in L^\infty$, $\sigma(T_\phi)$
   contains the essential range of $\phi$ and is connected (Widom).
 * **34. Szegő limit theorems.** Let $D_n(\phi)=\det[\widehat\phi(j-k)]_{j,k=0}^{n-1}$.
@@ -195,7 +195,7 @@ $H^2_-=L^2\ominus H^2$.
   for every nonnegative $\phi\in L^1$, both sides being zero if
   $\log\phi\notin L^1$.
 * **35. Nehari's theorem.** Every bounded Hankel matrix has a bounded
-  symbol, and $\|H_\phi\|=\operatorname{dist}_{L^\infty}(\phi,H^\infty)$.
+  symbol, and $\|H_\phi\|=\mathop{\mathrm{dist}}_{L^\infty}(\phi,H^\infty)$.
 * **36. Hartman's theorem.** $H_\phi$ is compact exactly when
   $\phi\in H^\infty+C(\mathbb T)$.
 * **90. Douglas algebras.** $H^\infty+C(\mathbb T)$ is a closed
@@ -302,14 +302,14 @@ near $w$.
   $\mathbb C\setminus\sigma(N)$ filled in. Subnormal operators have
   nontrivial invariant subspaces (S. Brown; SYNOPSIS21, item 52).
 * **89. Thomson's theorem and Putnam's inequality.** For $1\leq t<\infty$,
-  $\operatorname{supp}\mu$ has a Borel partition $\Delta_0,\Delta_1,\ldots$
+  $\mathop{\mathrm{supp}}\mu$ has a Borel partition $\Delta_0,\Delta_1,\ldots$
   with $P^t(\mu)=L^t(\mu|_{\Delta_0})\oplus\bigoplus_{i\geq1}P^t(\mu|_{\Delta_i})$,
   where for $i\geq1$ the analytic bounded point evaluations of
   $P^t(\mu|_{\Delta_i})$ form a simply connected region $U_i$ with
   $\Delta_i\subset\overline{U_i}$. In particular $P^t(\mu)\neq L^t(\mu)$
   exactly when bounded point evaluations exist. Every hyponormal, in
   particular every subnormal, operator satisfies Putnam's inequality
-  $\|T^*T-TT^*\|\leq\pi^{-1}\operatorname{area}\sigma(T)$.
+  $\|T^*T-TT^*\|\leq\pi^{-1}\mathop{\mathrm{area}}\sigma(T)$.
 
 ## Bergman and Bloch spaces
 
@@ -388,9 +388,9 @@ range norm: the norm of the least-norm preimage.
   Capacity refines arclength-null exceptional sets in this space.
 * **65. Stegenga's embedding theorem.** A finite positive measure
   embeds $\mathcal D$ into $L^2(\mu)$ exactly when
-  $\mu(\bigcup_jS(I_j))\leq C\operatorname{Cap}(\bigcup_j I_j)$
+  $\mu(\bigcup_jS(I_j))\leq C\mathop{\mathrm{Cap}}(\bigcup_j I_j)$
   for all finite families of disjoint boundary arcs. Here
-  $\operatorname{Cap}$ is the boundary Sobolev capacity of order
+  $\mathop{\mathrm{Cap}}$ is the boundary Sobolev capacity of order
   $1/2$, comparable to the reciprocal of the minimum probability
   energy for the kernel $\log(e/|\zeta-\eta|)$ on the set.
 * **66. Dirichlet multipliers.** A holomorphic $\phi$ multiplies

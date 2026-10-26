@@ -17,7 +17,7 @@ Unless specified otherwise, $(X,d,m)$ is complete and separable, $m$ is a
 Radon measure of full support, and $0<m(B(x,r))<\infty$. Write
 $V(x,r)=m(B(x,r))$. A measure is **doubling** if
 $V(x,2r)\leq C_DV(x,r)$. A space is **Ahlfors $Q$-regular** if
-$V(x,r)\asymp r^Q$ for $0<r<\operatorname{diam}X$.
+$V(x,r)\asymp r^Q$ for $0<r<\mathop{\mathrm{diam}}X$.
 All comparison constants are uniform on the scales under consideration.
 
 Lettered headings match the bibliography. Numbered results retain their
@@ -39,7 +39,7 @@ A Borel function $g\geq0$ is an **upper gradient** of $u$ if
 $|u(\gamma(b))-u(\gamma(a))|\leq\int_\gamma g\,ds$ for every
 rectifiable curve. The **$p$-modulus** of a curve family is
 $$
-\operatorname{Mod}_p\Gamma=\inf\left\{\int\rho^p\,dm:
+\mathop{\mathrm{Mod}}\nolimits_p\Gamma=\inf\left\{\int\rho^p\,dm:
 \rho\geq0,\ \int_\gamma\rho\,ds\geq1\quad(\gamma\in\Gamma)\right\}.
 $$
 A **$p$-weak upper gradient** may fail on a family of zero $p$-modulus.
@@ -71,7 +71,7 @@ $$
 
 * **5. Completeness and calculus.** $N^{1,p}$ is complete. Minimal
   gradients are local, obey a product inequality for bounded functions,
-  and satisfy $g_{\phi\circ u}\leq\operatorname{Lip}(\phi)g_u$.
+  and satisfy $g_{\phi\circ u}\leq\mathop{\mathrm{Lip}}(\phi)g_u$.
   For $C^1$ Lipschitz $\phi$, the sharper chain rule holds almost everywhere.
 
 * **6. Euclidean identification.** On Euclidean open sets with
@@ -122,9 +122,9 @@ $$
 A homeomorphism $f$ is **$\eta$-quasisymmetric** if
 $d(x,a)\leq t\,d(x,b)$ implies $d(fx,fa)\leq\eta(t)\,d(fx,fb)$ for an
 increasing homeomorphism $\eta$ of $[0,\infty)$. A space is
-**$Q$-Loewner** if $\operatorname{Mod}_Q$ of the curves joining disjoint
+**$Q$-Loewner** if $\mathop{\mathrm{Mod}}_Q$ of the curves joining disjoint
 continua $E,F$ is bounded below by a positive function of
-$\operatorname{dist}(E,F)/\min(\operatorname{diam}E,\operatorname{diam}F)$.
+$\mathop{\mathrm{dist}}(E,F)/\min(\mathop{\mathrm{diam}}E,\mathop{\mathrm{diam}}F)$.
 The **Gromov–Hausdorff distance** $d_{GH}(X,Y)$ is the infimum of
 Hausdorff distances between isometric copies of $X,Y$ in a common metric space.
 
@@ -141,14 +141,14 @@ Hausdorff distances between isometric copies of $X,Y$ in a common metric space.
   distortion, between $Q$-regular Loewner spaces are locally quasisymmetric.
 
 * **85. Conformal dimension.** The **conformal dimension** of a metric
-  space $X$ is $\operatorname{Cdim}X=\inf\dim_HY$ over metric spaces
+  space $X$ is $\mathop{\mathrm{Cdim}}X=\inf\dim_HY$ over metric spaces
   $Y$ quasisymmetric to $X$; restricting to Ahlfors-regular $Y$ gives
   the Ahlfors-regular conformal dimension. Always
-  $\operatorname{Cdim}X\geq\dim_{\mathrm{top}}X$. If $X$ is Ahlfors
+  $\mathop{\mathrm{Cdim}}X\geq\dim_{\mathrm{top}}X$. If $X$ is Ahlfors
   $Q$-regular, $Q>1$, and some curve family in $X$ has positive
   $Q$-modulus (for instance if $X$ is $Q$-Loewner), then
-  $\operatorname{Cdim}X=Q$ (Pansu, Tyson). The standard Sierpiński carpet
-  satisfies $1+\log2/\log3\leq\operatorname{Cdim}<\log8/\log3$
+  $\mathop{\mathrm{Cdim}}X=Q$ (Pansu, Tyson). The standard Sierpiński carpet
+  satisfies $1+\log2/\log3\leq\mathop{\mathrm{Cdim}}<\log8/\log3$
   (Tyson; Keith–Laakso).
 
 * **17. Gromov precompactness.** A family of compact metric spaces is
@@ -156,8 +156,8 @@ Hausdorff distances between isometric copies of $X,Y$ in a common metric space.
   and, for each $\varepsilon>0$, the number of $\varepsilon$-balls needed
   to cover each space is uniformly bounded. The limit space of such a
   sequence is compact; uniformly doubling spaces of bounded diameter, and
-  closed Riemannian $n$-manifolds with $\operatorname{Ric}\geq-(n-1)k$
-  and $\operatorname{diam}\leq D$ (by Bishop–Gromov), form precompact families.
+  closed Riemannian $n$-manifolds with $\mathop{\mathrm{Ric}}\geq-(n-1)k$
+  and $\mathop{\mathrm{diam}}\leq D$ (by Bishop–Gromov), form precompact families.
 
 ### Self-similar sets and dimensions
 
@@ -190,7 +190,7 @@ least number of sets of diameter at most $\delta$ covering $E$.
   (Käenmäki–Ojala–Rossi).
 
 * **83. Mass distribution principle.** If $\mu$ is a finite Borel measure
-  with $\mu(E)>0$ and $\mu(U)\leq c\operatorname{diam}(U)^s$ for all
+  with $\mu(E)>0$ and $\mu(U)\leq c\mathop{\mathrm{diam}}(U)^s$ for all
   sets $U$ of sufficiently small diameter, then $\mathcal H^s(E)>0$ and
   $\dim_HE\geq s$. Locally: if
   $\liminf_{r\downarrow0}\log\mu(B(x,r))/\log r\geq s$ for
@@ -361,7 +361,7 @@ are SYNOPSIS14, items 46, 47, 36, and 57.
   subcylinder above by a constant times their infimum on a later one.
   On a complete Riemannian manifold the Poincaré inequality is
   $\int_B|f-f_B|^2\leq Cr^2\int_{2B}|\nabla f|^2$ on all balls $B$ of
-  radius $r$, and all three conditions hold under $\operatorname{Ric}\geq0$.
+  radius $r$, and all three conditions hold under $\mathop{\mathrm{Ric}}\geq0$.
 
 * **33. Hölder regularity.** Parabolic Harnack yields local Hölder
   continuity of caloric functions and the heat kernel. Its elliptic
@@ -502,7 +502,7 @@ The Monge problem restricts to couplings $(\mathrm{id},T)_\#\mu$.
   by uniform integrability of those moments.
 
 * **44. Kantorovich–Rubinstein formula.**
-  $W_1(\mu,\nu)=\sup_{\operatorname{Lip}(f)\leq1}\int f\,d(\mu-\nu)$
+  $W_1(\mu,\nu)=\sup_{\mathop{\mathrm{Lip}}(f)\leq1}\int f\,d(\mu-\nu)$
   for $\mu,\nu\in\mathcal P_1(X)$.
 
 * **45. One-dimensional transport.** On $\mathbb R$ the quantile
@@ -512,7 +512,7 @@ The Monge problem restricts to couplings $(\mathrm{id},T)_\#\mu$.
 
 * **90. Entropic transport and Sinkhorn.** For $\varepsilon>0$ and a
   continuous cost on compact spaces,
-  $\int c\,d\pi+\varepsilon\operatorname{KL}(\pi\,|\,\mu\otimes\nu)$
+  $\int c\,d\pi+\varepsilon\mathop{\mathrm{KL}}(\pi\,|\,\mu\otimes\nu)$
   has a unique minimizer over $\Pi(\mu,\nu)$, of the form
   $e^{(f(x)+g(y)-c(x,y))/\varepsilon}\,d(\mu\otimes\nu)$, with potentials
   solving the Schrödinger system. Sinkhorn's algorithm alternately
@@ -579,7 +579,7 @@ The Monge problem restricts to couplings $(\mathrm{id},T)_\#\mu$.
   energies $\frac12\iint W(x-y)d\mu(x)d\mu(y)$.
 
 * **53. Ricci curvature and entropy.** On a complete weighted manifold
-  $m=e^{-V}\mathrm{vol}$, $\operatorname{Ric}+D^2V\geq K$
+  $m=e^{-V}\mathrm{vol}$, $\mathop{\mathrm{Ric}}+D^2V\geq K$
   is equivalent to $K$-displacement convexity of relative entropy.
   This motivates the synthetic condition $CD(K,\infty)$.
 
@@ -589,9 +589,9 @@ The Monge problem restricts to couplings $(\mathrm{id},T)_\#\mu$.
   under measured Gromov–Hausdorff convergence (of compact, or pointed
   proper, spaces). For $1<N<\infty$ it implies
   Bishop–Gromov volume comparison with the model space, Brunn–Minkowski
-  inequalities, and, for $K>0$, $\operatorname{diam}X\leq\pi\sqrt{(N-1)/K}$.
+  inequalities, and, for $K>0$, $\mathop{\mathrm{diam}}X\leq\pi\sqrt{(N-1)/K}$.
   On a weighted $n$-manifold with $N>n$ it is equivalent to
-  $\operatorname{Ric}+D^2V-\frac{\nabla V\otimes\nabla V}{N-n}\geq K$.
+  $\mathop{\mathrm{Ric}}+D^2V-\frac{\nabla V\otimes\nabla V}{N-n}\geq K$.
 
 ### Metric gradient flows and synthetic diffusion
 
@@ -646,7 +646,7 @@ $$
   with finite energy and second moment.
 
 * **64. Cheeger energy and Hilbertianity.** Relaxation of
-  $\frac12\int(\operatorname{lip}f)^2dm$ gives a convex lower
+  $\frac12\int(\mathop{\mathrm{lip}}f)^2dm$ gives a convex lower
   semicontinuous energy and an $L^2$ gradient-flow semigroup. That
   semigroup is linear exactly when the relaxed energy is quadratic.
 

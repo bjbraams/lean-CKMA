@@ -59,7 +59,7 @@ The logarithm is the series \(\log x = \sum_{n\ge 1} ((-1)^{n+1}/n)\,(x-1)^n\). 
 
 **Jacobson radical and density.**
 
-The Jacobson radical of a ring is the intersection of its maximal left ideals (`Ideal.jacobson`, with the two-sided version `TwoSidedIdeal.jacobson`); membership is characterized algebraically by left invertibility of the elements \(1+yx\) (`Ideal.mem_jacobson_iff`, and `Ideal.mem_jacobson_bot` in the commutative case) (`RingTheory/Jacobson/Ideal.lean`). Its closedness in a Banach algebra and the relation with quasinilpotence are not formalized. The algebraic Jacobson density theorem is proved for semisimple modules: every endomorphism commuting with \(\operatorname{End}_R(M)\) agrees with the action of a ring element on any finite set (`jacobson_density`, `RingTheory/SimpleModule/Basic.lean`). The Banach-algebra input that the commutant of an irreducible module is \(\mathbb C\) is not formalized.
+The Jacobson radical of a ring is the intersection of its maximal left ideals (`Ideal.jacobson`, with the two-sided version `TwoSidedIdeal.jacobson`); membership is characterized algebraically by left invertibility of the elements \(1+yx\) (`Ideal.mem_jacobson_iff`, and `Ideal.mem_jacobson_bot` in the commutative case) (`RingTheory/Jacobson/Ideal.lean`). Its closedness in a Banach algebra and the relation with quasinilpotence are not formalized. The algebraic Jacobson density theorem is proved for semisimple modules: every endomorphism commuting with \(\mathop{\mathrm{End}}_R(M)\) agrees with the action of a ring element on any finite set (`jacobson_density`, `RingTheory/SimpleModule/Basic.lean`). The Banach-algebra input that the commutant of an irreducible module is \(\mathbb C\) is not formalized.
 
 ### TauCeti
 

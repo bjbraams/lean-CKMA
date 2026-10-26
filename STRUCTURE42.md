@@ -29,7 +29,7 @@ This file follows the thematic order of the mathematical inventory. It records d
 
 **Boundary measures.** The Herglotz representation is proved: if \(F\) is holomorphic on the unit disc with nonnegative real part, then
 \[
- F(w)=\int_{|z|=1}\frac{z+w}{z-w}\,d\mu(z)+i\operatorname{Im}F(0)
+ F(w)=\int_{|z|=1}\frac{z+w}{z-w}\,d\mu(z)+i\mathop{\mathrm{Im}}F(0)
 \]
 for a finite positive measure \(\mu\), and conversely such transforms have those properties (`TauCeti.exists_isFiniteMeasure_eq_herglotzTransform_add`, [Herglotz](https://github.com/TauCetiProject/TauCeti/blob/5cdecf40e99d5a5ad0833afff31f5b007d68a149/TauCeti/Analysis/Complex/Herglotz.lean)). This is the boundary-measure theory behind singular inner factors and Clark measures, but neither is constructed. Its half-plane counterpart, the representation of Pick functions, is recorded in Section 13 ([Pick functions](https://github.com/TauCetiProject/TauCeti/blob/5cdecf40e99d5a5ad0833afff31f5b007d68a149/TauCeti/Analysis/Complex/Pick/Basic.lean)). The planar Poisson integral of integrable real boundary data on a circle is harmonic in the disc, and for continuous data it tends to the boundary value at each boundary point, which solves the Dirichlet problem on a disc ([Poisson integral](https://github.com/TauCetiProject/TauCeti/blob/5cdecf40e99d5a5ad0833afff31f5b007d68a149/TauCeti/Analysis/Complex/Poisson/Integral.lean)).
 

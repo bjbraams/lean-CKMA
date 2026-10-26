@@ -42,7 +42,7 @@ matrix. Put $K_n(x,y)=\sum_{j=0}^np_j(x)\overline{p_j(y)}$.
   $\|P_n\|^2=D_{n+1}/D_n$. Determinant formulas recover $P_n$
   and the recurrence coefficients from the moments.
 * **6. Real and simple zeros.** The $n$ zeros of $p_n$ are
-  simple and lie in the interior of the convex hull of $\operatorname{supp}\mu$.
+  simple and lie in the interior of the convex hull of $\mathop{\mathrm{supp}}\mu$.
 * **7. Interlacing.** Zeros of $p_n$ and $p_{n+1}$ strictly
   interlace. Each open gap of the support contains at most one
   zero of $p_n$.
@@ -112,7 +112,7 @@ $m(z)=\langle\delta_0,(J-z)^{-1}\delta_0\rangle$.
 * **23. Spectral representation.** In the bounded case, $\delta_0$
   is cyclic and $\delta_n\mapsto p_n$ gives a unitary map onto
   $L^2(\mu)$ under which $J$ becomes multiplication by $x$.
-  Its spectrum is $\operatorname{supp}\mu$.
+  Its spectrum is $\mathop{\mathrm{supp}}\mu$.
 * **24. Finite sections and zeros.** The characteristic polynomial
   of the upper-left $n\times n$ Jacobi block is $P_n$.
   Its spectral weights at $\delta_0$ are precisely the Gauss weights.
@@ -202,7 +202,7 @@ localizing matrices represent $L(gp\bar q)$.
   $\dim\mathcal P_r(\mathbb R^d)$ atoms chosen in its support.
 * **46. Flat moment theorem.** If a positive semidefinite truncated
   moment matrix $M_n$ satisfies
-  $\operatorname{rank}M_n=\operatorname{rank}M_{n-1}=r$,
+  $\mathop{\mathrm{rank}}M_n=\mathop{\mathrm{rank}}M_{n-1}=r$,
   the data have a unique representing measure, with exactly $r$ atoms.
   For constrained supports, positive localizing matrices enforce the
   corresponding support conditions in the flat-extension formulation.
@@ -263,7 +263,7 @@ $\alpha_n=-\overline{\Phi_{n+1}(0)}$.
   the whole circle, then $\alpha_n\to0$, even with an additional
   singular part of $\mu$.
 * **76. Szegő map and Geronimus relations.** For a probability $\mu$ on
-  $\mathbb T$ invariant under $z\mapsto\bar z$, define $\nu=\operatorname{Sz}(\mu)$
+  $\mathbb T$ invariant under $z\mapsto\bar z$, define $\nu=\mathop{\mathrm{Sz}}(\mu)$
   on $[-2,2]$ by $\int g\,d\nu=\int g(z+z^{-1})\,d\mu(z)$. This is a
   bijection onto the probabilities on $[-2,2]$; the Verblunsky coefficients
   of $\mu$ are real, and the Jacobi parameters of $\nu$, in the
@@ -278,12 +278,12 @@ $\alpha_n=-\overline{\Phi_{n+1}(0)}$.
 ## Asymptotics and potential theory
 
 For compact nonpolar real support $K$, call $\mu$ **regular** if
-$\kappa_n^{1/n}\to\operatorname{cap}(K)^{-1}$.
+$\kappa_n^{1/n}\to\mathop{\mathrm{cap}}(K)^{-1}$.
 Let $\omega_K$ be its logarithmic equilibrium measure and $g_K$
 the exterior Green function with pole at infinity.
 
 * **59. Extremal norm regularity.** Regularity is equivalently
-  $\|P_n\|_{L^2(\mu)}^{1/n}\to\operatorname{cap}(K)$.
+  $\|P_n\|_{L^2(\mu)}^{1/n}\to\mathop{\mathrm{cap}}(K)$.
   It expresses asymptotic extremality of monic orthogonal polynomials.
 * **60. Equilibrium zero distribution.** For regular $\mu$ on a
   compact subset of $\mathbb R$, the normalized zero-counting

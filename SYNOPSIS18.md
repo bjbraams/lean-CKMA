@@ -234,7 +234,7 @@ $T_mf=\mathcal F^{-1}(m\widehat f)$ to the indicated $L^p$ spaces.
   Hilbert space (Kwapień, result 32). A space has some Fourier type $p>1$
   exactly when it has nontrivial type (Bourgain).
 * **33. Hilbert transform characterization.** $X$ is UMD exactly when
-  $Hf(x)=\operatorname{p.v.}\,\pi^{-1}\int f(x-y)/y\,dy$ is bounded on
+  $Hf(x)=\mathop{\mathrm{p.v.}}\,\pi^{-1}\int f(x-y)/y\,dy$ is bounded on
   $L^p(\mathbb R;X)$ for one, hence every, $1<p<\infty$.
 * **34. Riesz transforms.** In a UMD space the multipliers
   $-i\xi_j/|\xi|$ are bounded on $L^p(\mathbb R^d;X)$ for

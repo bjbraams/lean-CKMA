@@ -29,10 +29,10 @@ carré du champ $\Gamma$ is defined before result 33 ($\Gamma(f)=|\nabla f|^2$
 for the Euclidean or Riemannian Laplacian). The perimeter $P(E)$ of a measurable
 set is the total variation of the distributional gradient of $\mathbf 1_E$. A probability
 measure satisfies **Poincaré with constant $C_P$** if
-$\operatorname{Var}_\mu f\leq C_P\mathcal E(f,f)$, and **logarithmic Sobolev
+$\mathop{\mathrm{Var}}_\mu f\leq C_P\mathcal E(f,f)$, and **logarithmic Sobolev
 with constant $C_{LS}$** if
-$\operatorname{Ent}_\mu(f^2)\leq2C_{LS}\mathcal E(f,f)$.
-Here $\operatorname{Ent}_\mu h=\int h\log(h/\int h\,d\mu)d\mu$.
+$\mathop{\mathrm{Ent}}_\mu(f^2)\leq2C_{LS}\mathcal E(f,f)$.
+Here $\mathop{\mathrm{Ent}}_\mu h=\int h\log(h/\int h\,d\mu)d\mu$.
 The heat generator throughout is $\Delta$, rather than $\frac12\Delta$.
 
 An inequality is **sharp** when its constant cannot be improved; this does
@@ -88,7 +88,7 @@ stated in Section 26; this section records sharp constants and extremals.
   The constant is optimal.
 * **11. Boundary Hardy inequality.** For a proper convex open set,
   $\int_\Omega|\nabla u|^2\geq\frac14\int_\Omega
-  |u|^2/\operatorname{dist}(x,\partial\Omega)^2$ for $u\in C_c^\infty(\Omega)$.
+  |u|^2/\mathop{\mathrm{dist}}(x,\partial\Omega)^2$ for $u\in C_c^\infty(\Omega)$.
   The coefficient $1/4$ is the best constant for every such $\Omega$; for
   nonconvex domains the best constant may be smaller.
 * **12. Caffarelli–Kohn–Nirenberg inequality.** For $n\geq3$,
@@ -108,7 +108,7 @@ stated in Section 26; this section records sharp constants and extremals.
 ## Capacity, perimeter, and spectral optimization
 
 For compact $K\subset\Omega$, the relative **$p$-capacity** is
-$\operatorname{cap}_p(K,\Omega)=\inf\int_\Omega|\nabla v|^p$, over
+$\mathop{\mathrm{cap}}_p(K,\Omega)=\inf\int_\Omega|\nabla v|^p$, over
 $v\in C_c^\infty(\Omega)$ at least one near $K$.
 Perimeter is the total variation of the distributional gradient of an indicator;
 it is meaningful for nonsmooth sets. The first Dirichlet eigenvalue is the
@@ -118,12 +118,12 @@ infimum of $\int|\nabla u|^2/\int u^2$ over nonzero $H_0^1(\Omega)$.
   $1<p\leq q<\infty$, the inequality
   $\|u\|_{L^q(\nu)}\leq C\|\nabla u\|_{L^p(\Omega)}$ on $C_c^\infty(\Omega)$
   holds exactly when
-  $$\nu(K)^{p/q}\leq C'\operatorname{cap}_p(K,\Omega)$$
+  $$\nu(K)^{p/q}\leq C'\mathop{\mathrm{cap}}\nolimits_p(K,\Omega)$$
   for every compact $K\subset\Omega$. The optimal constants are comparable
   after the appropriate $p$th power, with factors depending on the exponents.
 * **17. Strong capacitary inequality.** For $1<p<\infty$ and smooth compactly
   supported $u$,
-  $$\int_0^\infty\operatorname{cap}_p(\{|u|\geq t\},\Omega)\,d(t^p)
+  $$\int_0^\infty\mathop{\mathrm{cap}}\nolimits_p(\{|u|\geq t\},\Omega)\,d(t^p)
     \leq C_p\int_\Omega|\nabla u|^pdx.$$
   This is stronger than estimating each individual superlevel capacity.
 * **18. Isocapacitary inequality.** For $1<p<n$, among compact sets of fixed
@@ -137,7 +137,7 @@ infimum of $\int|\nabla u|^2/\int u^2$ over nonzero $H_0^1(\Omega)$.
   This reduces the sharp Sobolev, Moser–Trudinger, and Faber–Krahn problems
   to radial functions. For $1<p<\infty$, equality forces $u$ to be a
   translate of $u^*$ provided
-  $|\{\nabla u^*=0,\ 0<u^*<\operatorname{ess\,sup}u\}|=0$ (Brothers–Ziemer).
+  $|\{\nabla u^*=0,\ 0<u^*<\mathop{\mathrm{ess\,sup}}u\}|=0$ (Brothers–Ziemer).
 * **20. Cheeger's inequality.** For the Dirichlet Cheeger constant
   $h(\Omega)=\inf_{E\Subset\Omega}P(E)/|E|$, with positive-volume finite-perimeter
   competitors, $\lambda_1(\Omega)\geq h(\Omega)^2/4$.
@@ -173,7 +173,7 @@ infimum of $\int|\nabla u|^2/\int u^2$ over nonzero $H_0^1(\Omega)$.
   Equivalently $\gamma(E_r)\geq\Phi(\Phi^{-1}(\gamma(E))+r)$ for the
   $r$-neighbourhood, which gives dimension-free Gaussian concentration.
 * **27. Lévy–Gromov comparison.** On a closed connected $n$-manifold,
-  $n\geq2$, with $\operatorname{Ric}\geq(n-1)g$, the isoperimetric profile
+  $n\geq2$, with $\mathop{\mathrm{Ric}}\geq(n-1)g$, the isoperimetric profile
   for normalized volume is at least that of the unit round $n$-sphere with
   normalized volume. Both volume and perimeter are divided by total volume.
 * **28. Brunn–Minkowski inequality.**
@@ -186,7 +186,7 @@ infimum of $\int|\nabla u|^2/\int u^2$ over nonzero $H_0^1(\Omega)$.
   This is a functional strengthening of Brunn–Minkowski.
 * **30. Brascamp–Lieb variance inequality.** If
   $d\mu=Z^{-1}e^{-V}dx$ with $V\in C^2$ and positive definite Hessian, then
-  $$\operatorname{Var}_\mu f\leq
+  $$\mathop{\mathrm{Var}}\nolimits_\mu f\leq
     \int\langle(D^2V)^{-1}\nabla f,\nabla f\rangle\,d\mu.$$
   An infinite right side is permitted; uniform convexity yields Poincaré.
 * **31. Geometric Brascamp–Lieb inequality.** If $B_iB_i^*=I$ and
@@ -205,7 +205,7 @@ $\delta(K,L)=\min\{\varepsilon\geq0:K\subseteq L+\varepsilon B,\ L\subseteq K+\v
 where $B$ is the closed unit ball; a **convex body** is an element of
 $\mathcal K^n$ with nonempty interior. The support function
 $h_K(u)=\max_{x\in K}\langle x,u\rangle$ satisfies $h_{K+L}=h_K+h_L$. For
-$0\in\operatorname{int}K$ the **polar body** is
+$0\in\mathop{\mathrm{int}}K$ the **polar body** is
 $K^\circ=\{y:\langle x,y\rangle\leq1\ (x\in K)\}$. A **star body** is a compact
 set, star-shaped about $0$, whose radial function
 $\rho_K(u)=\max\{t\geq0:tu\in K\}$ is positive and continuous on $S^{n-1}$;
@@ -301,21 +301,21 @@ Identities are first read on a smooth core and extended by closure;
 probability is assumed when variance or normalized entropy is used.
 
 * **33. Variance identity.**
-  $\frac{d}{dt}\operatorname{Var}_\mu(P_tf)=-2\mathcal E(P_tf,P_tf)$.
+  $\frac{d}{dt}\mathop{\mathrm{Var}}_\mu(P_tf)=-2\mathcal E(P_tf,P_tf)$.
   For an ergodic semigroup,
-  $\operatorname{Var}_\mu f=2\int_0^\infty\mathcal E(P_tf,P_tf)dt$.
+  $\mathop{\mathrm{Var}}_\mu f=2\int_0^\infty\mathcal E(P_tf,P_tf)dt$.
 * **34. Spectral gap and decay.** Poincaré with constant $C_P$ is equivalent
   to $\|P_tf-\mu(f)\|_2\leq e^{-t/C_P}\|f-\mu(f)\|_2$.
   The bottom of the nonzero spectrum of $-L$ is at least $1/C_P$.
 * **35. Entropy dissipation.** For a diffusion semigroup and a positive
   probability density $h$,
-  $$\frac{d}{dt}\operatorname{Ent}_\mu(P_th)
+  $$\frac{d}{dt}\mathop{\mathrm{Ent}}\nolimits_\mu(P_th)
     =-I_\mu(P_th),\qquad
     I_\mu(h)=\int\frac{\Gamma(h)}h\,d\mu.$$
   For a general symmetric Markov semigroup the dissipation is
   $\mathcal E(P_th,\log P_th)$ instead.
   Logarithmic Sobolev with constant $C_{LS}$ gives entropy decay
-  $\operatorname{Ent}_\mu(P_th)\leq e^{-2t/C_{LS}}\operatorname{Ent}_\mu(h)$.
+  $\mathop{\mathrm{Ent}}_\mu(P_th)\leq e^{-2t/C_{LS}}\mathop{\mathrm{Ent}}_\mu(h)$.
 * **36. Gross hypercontractivity theorem.** Logarithmic Sobolev with constant
   $C_{LS}$ is equivalent, for diffusion semigroups, to
   $\|P_tf\|_{q(t)}\leq\|f\|_p$, where
@@ -326,22 +326,22 @@ probability is assumed when variance or normalized entropy is used.
   for the sum energy. This is their principal source of dimension independence.
 * **38. Holley–Stroock perturbation.** Reweighting by $d\nu=e^\psi d\mu/Z$
   with bounded oscillation $\sup\psi-\inf\psi$ multiplies a Poincaré or
-  logarithmic Sobolev constant by at most $e^{\operatorname{osc}\psi}$.
+  logarithmic Sobolev constant by at most $e^{\mathop{\mathrm{osc}}\psi}$.
 * **40. Nash inequality.** On $\mathbb R^n$,
   $\|f\|_2^{2+4/n}\leq C_n\|\nabla f\|_2^2\|f\|_1^{4/n}$.
   This interpolates mass, energy, and square-integrability.
 * **43. Weak Poincaré and polynomial decay.** If bounded functions satisfy
-  $\operatorname{Var}_\mu f\leq Cs^{-\alpha}\mathcal E(f,f)
-  +s\operatorname{Osc}(f)^2$ for every $s>0$, $\alpha>0$, then
-  $\operatorname{Var}_\mu(P_tf)\leq C'(1+t)^{-1/\alpha}
-  \operatorname{Osc}(f)^2$. Optimizing the defect replaces a spectral gap
+  $\mathop{\mathrm{Var}}_\mu f\leq Cs^{-\alpha}\mathcal E(f,f)
+  +s\mathop{\mathrm{Osc}}(f)^2$ for every $s>0$, $\alpha>0$, then
+  $\mathop{\mathrm{Var}}_\mu(P_tf)\leq C'(1+t)^{-1/\alpha}
+  \mathop{\mathrm{Osc}}(f)^2$. Optimizing the defect replaces a spectral gap
   by slower convergence to equilibrium.
 * **44. Rothaus tightening.**
-  $\operatorname{Ent}(f^2)\leq\operatorname{Ent}((f-\mu f)^2)
-  +2\operatorname{Var}(f)$. Thus a defective bound
-  $\operatorname{Ent}(f^2)\leq a\mathcal E(f,f)+b\|f\|_2^2$, $a,b\geq0$, combined
+  $\mathop{\mathrm{Ent}}(f^2)\leq\mathop{\mathrm{Ent}}((f-\mu f)^2)
+  +2\mathop{\mathrm{Var}}(f)$. Thus a defective bound
+  $\mathop{\mathrm{Ent}}(f^2)\leq a\mathcal E(f,f)+b\|f\|_2^2$, $a,b\geq0$, combined
   with Poincaré, gives
-  $\operatorname{Ent}(f^2)\leq[a+(b+2)C_P]\mathcal E(f,f)$.
+  $\mathop{\mathrm{Ent}}(f^2)\leq[a+(b+2)C_P]\mathcal E(f,f)$.
 * **65. Linearization of logarithmic Sobolev.** A probability logarithmic
   Sobolev inequality with constant $C_{LS}$ implies Poincaré with
   $C_P\leq C_{LS}$. Substituting $1+\varepsilon f$ and expanding to second
@@ -367,7 +367,7 @@ $N=\infty$. Global probability inequalities below use normalized invariant mass.
 
 * **45. Bochner identity.**
   $$\Gamma_2(f)=\|\nabla^2f\|^2+
-    (\operatorname{Ric}+\nabla^2V)(\nabla f,\nabla f).$$
+    (\mathop{\mathrm{Ric}}+\nabla^2V)(\nabla f,\nabla f).$$
   Thus a lower bound on weighted Ricci curvature is $CD(\kappa,\infty)$;
   the unweighted $n$-dimensional Laplacian has the additional dimension term.
 * **46. Gradient estimate.** $CD(\kappa,\infty)$ is equivalent, in the
@@ -388,7 +388,7 @@ $N=\infty$. Global probability inequalities below use normalized invariant mass.
 * **49. Lichnerowicz bound.** Under $CD(\kappa,N)$, $\kappa>0$, $N>1$,
   the spectral gap is at least $\kappa N/(N-1)$ in the corresponding
   ergodic probability setting. In particular, a closed $n$-manifold with
-  $\operatorname{Ric}\geq(n-1)Kg$, $K>0$, has $\lambda_1\geq nK$; equality
+  $\mathop{\mathrm{Ric}}\geq(n-1)Kg$, $K>0$, has $\lambda_1\geq nK$; equality
   holds only for the round sphere (Obata).
 * **67. Cheng eigenvalue comparison.** On a complete $n$-manifold with
   nonnegative Ricci curvature, the first Dirichlet eigenvalue of a geodesic
@@ -397,7 +397,7 @@ $N=\infty$. Global probability inequalities below use normalized invariant mass.
   first positive zero of $J_\nu$. The eigenvalue is understood variationally
   even when the geodesic sphere is not smooth.
 * **68. Buser's converse to Cheeger.** For a closed connected $n$-manifold,
-  $n\geq2$, with $\operatorname{Ric}\geq-(n-1)k^2g$, $k\geq0$,
+  $n\geq2$, with $\mathop{\mathrm{Ric}}\geq-(n-1)k^2g$, $k\geq0$,
   $\lambda_1\leq C_n(kh+h^2)$ for the closed-manifold Cheeger constant.
   Together with Cheeger's lower bound, this compares spectral and isoperimetric
   gaps under a curvature lower bound.

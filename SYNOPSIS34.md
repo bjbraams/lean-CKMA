@@ -92,7 +92,7 @@ $D\lambda_k\cdot r_k$ never vanishes, and linearly degenerate if it vanishes ide
 
 For scalar laws, the **Kružkov entropy inequalities** use
 $\eta_k(u)=|u-k|$ and
-$q_k(u)=\operatorname{sgn}(u-k)(f(u)-f(k))$ for all real $k$.
+$q_k(u)=\mathop{\mathrm{sgn}}(u-k)(f(u)-f(k))$ for all real $k$.
 
 * **9. Kružkov existence and uniqueness.** For smooth scalar flux and
   bounded initial data on $\mathbb R^d$, there is a unique bounded
@@ -105,7 +105,7 @@ $q_k(u)=\operatorname{sgn}(u-k)(f(u)-f(k))$ for all real $k$.
   Ordered initial data remain ordered, giving a contraction semigroup.
 
 * **11. Vanishing viscosity.** Solutions of
-  $u_t+\operatorname{div}f(u)=\varepsilon\Delta u$ with suitably
+  $u_t+\mathop{\mathrm{div}}f(u)=\varepsilon\Delta u$ with suitably
   approximated bounded initial data converge in $L^1_{\mathrm{loc}}$
   to the entropy solution as $\varepsilon\downarrow0$.
 
@@ -163,7 +163,7 @@ $q_k(u)=\operatorname{sgn}(u-k)(f(u)-f(k))$ for all real $k$.
 
 * **22. Compensated compactness.** If $u_n\rightharpoonup u$,
   $v_n\rightharpoonup v$ in $L^2_{\mathrm{loc}}(\mathbb R^N;\mathbb R^N)$
-  with $\{\operatorname{div}u_n\}$ and $\{\operatorname{curl}v_n\}$ precompact
+  with $\{\mathop{\mathrm{div}}u_n\}$ and $\{\mathop{\mathrm{curl}}v_n\}$ precompact
   in $H^{-1}_{\mathrm{loc}}$, then $u_n\cdot v_n\to u\cdot v$ in
   distributions (Murat–Tartar div–curl lemma). Applied to entropy pairs
   of vanishing-viscosity approximations, it yields Tartar's commutation
@@ -368,7 +368,7 @@ $\sigma=+1$ is defocusing and $\sigma=-1$ focusing.
   $\int u$, $\int u^2$, and $\int(\tfrac12u_x^2-u^3)$.
 
 * **41. KdV solitons.** For every $c>0$,
-  $u(t,x)=\tfrac c2\operatorname{sech}^2(\tfrac{\sqrt c}{2}(x-ct-x_0))$
+  $u(t,x)=\tfrac c2\mathop{\mathrm{sech}}^2(\tfrac{\sqrt c}{2}(x-ct-x_0))$
   is a traveling-wave solution. Solitons are orbitally stable in $H^1$:
   solutions starting near a soliton stay close, for all time, to its
   family of translates (Benjamin, Bona, Weinstein).
@@ -389,8 +389,8 @@ $\sigma=+1$ is defocusing and $\sigma=-1$ focusing.
 
 * **81. Einstein constraint propagation and local existence.** Smooth
   Riemannian initial data $(g,k)$ satisfying
-  $R_g-|k|_g^2+(\operatorname{tr}_gk)^2=0$ and
-  $\operatorname{div}_g(k-(\operatorname{tr}_gk)g)=0$ admit a local
+  $R_g-|k|_g^2+(\mathop{\mathrm{tr}}_gk)^2=0$ and
+  $\mathop{\mathrm{div}}_g(k-(\mathop{\mathrm{tr}}_gk)g)=0$ admit a local
   vacuum Einstein development. Hyperbolic gauge reduction and the
   contracted Bianchi identity propagate the constraints.
 
@@ -412,7 +412,7 @@ with 34D.
 ### Incompressible Euler flow
 
 The incompressible equations are
-$u_t+u\cdot\nabla u+\nabla p=\nu\Delta u$, $\operatorname{div}u=0$,
+$u_t+u\cdot\nabla u+\nabla p=\nu\Delta u$, $\mathop{\mathrm{div}}u=0$,
 with $\nu=0$ for Euler and $\nu>0$ for Navier–Stokes.
 
 * **43. Leray projection.** On $\mathbb R^d$, the orthogonal projection
@@ -505,21 +505,21 @@ with $\nu=0$ for Euler and $\nu>0$ for Navier–Stokes.
 
 * **61. The Stokes problem.** On a smooth bounded domain, the
   divergence-free zero-trace variational formulation of
-  $-\nu\Delta u+\nabla p=f$, $\operatorname{div}u=0$, gives a
+  $-\nu\Delta u+\nabla p=f$, $\mathop{\mathrm{div}}u=0$, gives a
   unique velocity in $H_0^1$ and pressure in $L^2$ modulo constants
   for $f\in H^{-1}$. The inf–sup condition controls pressure.
 
 * **62. Compressible Euler energy.** For smooth barotropic flow,
-  $\rho_t+\operatorname{div}(\rho u)=0$ and
-  $(\rho u)_t+\operatorname{div}(\rho u\otimes u)+\nabla p(\rho)=0$
+  $\rho_t+\mathop{\mathrm{div}}(\rho u)=0$ and
+  $(\rho u)_t+\mathop{\mathrm{div}}(\rho u\otimes u)+\nabla p(\rho)=0$
   conserve $\int(\tfrac12\rho|u|^2+H(\rho))$, where
   $\rho H'(\rho)-H(\rho)=p(\rho)$. Positive sound speed gives
   symmetrizability away from vacuum.
 
 * **63. Renormalized continuity equation.** Sufficiently regular
   solutions of the continuity equation obey
-  $\partial_tb(\rho)+\operatorname{div}(b(\rho)u)
-  +(\rho b'(\rho)-b(\rho))\operatorname{div}u=0$.
+  $\partial_tb(\rho)+\mathop{\mathrm{div}}(b(\rho)u)
+  +(\rho b'(\rho)-b(\rho))\mathop{\mathrm{div}}u=0$.
   Weak solutions satisfying this identity for all $C^1$ functions $b$
   with compactly supported derivative are called renormalized; this
   property is part of the compressible viscous existence theory.
@@ -609,7 +609,7 @@ $v+v_*$ and $|v|^2+|v_*|^2$.
 * **72. Linearized collision coercivity.** For hard-sphere collisions,
   writing $f=M(1+h)$ gives a nonnegative self-adjoint linearized
   operator on $L^2(M\,dv)$. Its kernel is
-  $\operatorname{span}\{1,v_1,\ldots,v_d,|v|^2\}$ and it has a
+  $\mathop{\mathrm{span}}\{1,v_1,\ldots,v_d,|v|^2\}$ and it has a
   positive spectral gap on the orthogonal complement.
 
 * **73. Renormalized Boltzmann existence.** For hard-sphere collisions
@@ -624,7 +624,7 @@ $v+v_*$ and $|v|^2+|v_*|^2$.
 
 * **75. Hypocoercive kinetic relaxation.** On $\mathbb T^d_x\times
   \mathbb R^d_v$, the equation
-  $f_t+v\cdot\nabla_xf=\Delta_vf+\operatorname{div}_v(vf)$
+  $f_t+v\cdot\nabla_xf=\Delta_vf+\mathop{\mathrm{div}}_v(vf)$
   converges exponentially in $L^2(M^{-1}dx\,dv)$ to its mass-matched
   spatially uniform Gaussian equilibrium for data in that space.
   Transport couples the undiffused variables to the velocity dissipation.

@@ -28,7 +28,7 @@ the theorem rather than consequences of the notation.
 
 * **1. Euler–Lagrange equation.** A sufficiently regular local minimizer
   with admissible compactly supported variations satisfies
-  $f_u-\operatorname{div}f_{Du}=0$. For Sobolev minimizers this
+  $f_u-\mathop{\mathrm{div}}f_{Du}=0$. For Sobolev minimizers this
   holds weakly when derivative growth bounds justify differentiation
   under the integral.
 * **2. Natural boundary conditions.** If a smooth minimizer is free on
@@ -147,7 +147,7 @@ It is **rank-one convex** if it is convex on every rank-one line, and
 * **24. Geometric rigidity.** On a bounded connected Lipschitz domain
   in $\mathbb R^d$, every $u\in W^{1,2}(\Omega;\mathbb R^d)$
   has a rotation $R\in SO(d)$ with
-  $\|Du-R\|_2\leq C\|\operatorname{dist}(Du,SO(d))\|_2$.
+  $\|Du-R\|_2\leq C\|\mathop{\mathrm{dist}}(Du,SO(d))\|_2$.
   Small elastic strain is close to one rigid rotation.
 
 ## Young measures and concentration
@@ -213,7 +213,7 @@ minimizing Palais–Smale sequences, is SYNOPSIS12, item 45.
   set of Krasnosel'skii genus at least $k$ on which $I<0$, then it
   has at least $k$ distinct pairs of nonzero critical points.
 * **38. Lusternik–Schnirelmann category.** A smooth real function on a
-  compact smooth manifold without boundary has at least $\operatorname{cat}(M)$
+  compact smooth manifold without boundary has at least $\mathop{\mathrm{cat}}(M)$
   critical points. Category is the least size of an open cover whose
   members contract within $M$.
 * **39. Nehari natural constraints.** Let
@@ -346,11 +346,11 @@ Let $Y=(0,1)^d$ and $A(y)$ be bounded uniformly elliptic and $Y$-periodic.
 Periodic correctors $\chi_i$ have mean zero and belong to $H^1_{\mathrm{per}}(Y)$.
 
 * **53. Cell correctors.** The equation
-  $-\operatorname{div}_y(A(y)(e_i+\nabla\chi_i))=0$ has a unique
+  $-\mathop{\mathrm{div}}_y(A(y)(e_i+\nabla\chi_i))=0$ has a unique
   mean-zero periodic weak solution. Define
   $A^{\mathrm{hom}}e_i=\int_YA(y)(e_i+\nabla\chi_i)dy$.
 * **54. Elliptic homogenization.** Zero-Dirichlet solutions of
-  $-\operatorname{div}(A(x/\varepsilon)\nabla u_\varepsilon)=f$,
+  $-\mathop{\mathrm{div}}(A(x/\varepsilon)\nabla u_\varepsilon)=f$,
   $f\in H^{-1}$, converge weakly in $H_0^1$ and strongly in $L^2$
   to the solution with coefficient $A^{\mathrm{hom}}$.
   Fluxes converge weakly in $L^2$ to $A^{\mathrm{hom}}\nabla u$.
@@ -456,15 +456,15 @@ is $J'(\Omega)(V)=\frac d{dt}J(\Omega_t)|_{t=0}$.
   $q:[0,T]\to Q$ is an energetic solution if it is globally stable,
   $\mathcal E(t,q(t))\leq\mathcal E(t,\widetilde q)+\mathcal D(q(t),\widetilde q)$
   for all $\widetilde q$, and satisfies the energy balance
-  $\mathcal E(t,q(t))+\operatorname{Diss}_{\mathcal D}(q;[0,t])
+  $\mathcal E(t,q(t))+\mathop{\mathrm{Diss}}_{\mathcal D}(q;[0,t])
   =\mathcal E(0,q(0))+\int_0^t\partial_s\mathcal E(s,q(s))ds$, where
-  $\operatorname{Diss}_{\mathcal D}$ is the supremum over partitions of
+  $\mathop{\mathrm{Diss}}_{\mathcal D}$ is the supremum over partitions of
   $\sum_j\mathcal D(q(t_{j-1}),q(t_j))$. Under compactness of energy
   sublevels, lower semicontinuity, a power bound
   $|\partial_t\mathcal E|\leq c_1(\mathcal E+c_0)$, and closedness of
   stable sets, every stable initial state has an energetic solution. It
   is obtained from the incremental minimizations
-  $q_k\in\operatorname{argmin}_q(\mathcal E(t_k,q)+\mathcal D(q_{k-1},q))$
+  $q_k\in\mathop{\mathrm{argmin}}_q(\mathcal E(t_k,q)+\mathcal D(q_{k-1},q))$
   through a Helly selection (Mielke–Theil; Francfort–Mielke). In the
   convex case $Q$ a Hilbert space,
   $\mathcal E(t,q)=\tfrac12\langle Aq,q\rangle-\langle\ell(t),q\rangle$
@@ -482,7 +482,7 @@ is $J'(\Omega)(V)=\frac d{dt}J(\Omega_t)|_{t=0}$.
   with compact control set and the standard existence and boundedness
   hypotheses, an optimum has an adjoint satisfying
   $\dot p=-D_xH$, $p(T)=Dg(x(T))$, and
-  $u(t)\in\operatorname*{argmin}_aH(x(t),p(t),a)$ almost everywhere,
+  $u(t)\in\mathop{\mathrm{argmin}}\limits_aH(x(t),p(t),a)$ almost everywhere,
   where $H=L+p\cdot b$.
 * **65. Dynamic programming and Hamilton–Jacobi.** For bounded smooth
   controlled dynamics and costs with compact control set, the

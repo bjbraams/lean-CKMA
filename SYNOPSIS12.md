@@ -17,7 +17,7 @@ optimization in
 [39C](CKMA-bib.md#ckma-39c).
 
 A convex function $f:E\to(-\infty,\infty]$ is **proper** if it never takes
-$-\infty$ and is finite somewhere. Its **effective domain** is $\operatorname{dom}f$;
+$-\infty$ and is finite somewhere. Its **effective domain** is $\mathop{\mathrm{dom}}f$;
 it is **lower semicontinuous** when its epigraph is closed. The conjugate is
 $f^*(u)=\sup_x(\langle u,x\rangle-f(x))$, with $u$ in the continuous dual.
 The **subdifferential** is
@@ -114,8 +114,8 @@ the **support function** is $h_C(u)=\sup_{x\in C}\langle u,x\rangle$.
 * **20. Legendre-type functions.** A proper closed convex $f$ on
   $\mathbb R^n$ is essentially smooth exactly when $f^*$ is essentially
   strictly convex. If $f$ is of Legendre type (both properties), then
-  $\nabla f$ is a bijection from $\operatorname{int}\operatorname{dom}f$
-  onto $\operatorname{int}\operatorname{dom}f^*$ with inverse $\nabla f^*$,
+  $\nabla f$ is a bijection from $\mathop{\mathrm{int}}\mathop{\mathrm{dom}}f$
+  onto $\mathop{\mathrm{int}}\mathop{\mathrm{dom}}f^*$ with inverse $\nabla f^*$,
   and $f^*$ is again of Legendre type.
 * **21. Subdifferential sum rule.** For proper lower semicontinuous convex
   functions on a Banach space, if one is continuous at a point of their common
@@ -129,7 +129,7 @@ the **support function** is $h_C(u)=\sup_{x\in C}\langle u,x\rangle$.
 * **67. Danskin's maximum rule.** Let $K$ be compact and $\phi(x,t)$ be convex
   and $C^1$ in $x\in\mathbb R^n$, with $\phi$ and $\nabla_x\phi$ jointly
   continuous. Then for $f(x)=\max_{t\in K}\phi(x,t)$,
-  $$\partial f(x)=\operatorname{conv}\{
+  $$\partial f(x)=\mathop{\mathrm{conv}}\{
      \nabla_x\phi(x,t):\phi(x,t)=f(x)\}.$$
   A unique maximizing gradient gives ordinary differentiability, even if there
   are several active indices producing that same gradient.
@@ -138,15 +138,15 @@ the **support function** is $h_C(u)=\sup_{x\in C}\langle u,x\rangle$.
   and $(f\mathbin\square g)^*=f^*+g^*$. Lower semicontinuity and attainment
   of the infimum require additional hypotheses.
 * **24. Support and indicator duality.** $\delta_C^*=h_C$ and, for nonempty
-  $C$, $h_C^*=\delta_{\overline{\operatorname{conv}}C}$.
+  $C$, $h_C^*=\delta_{\overline{\mathop{\mathrm{conv}}}C}$.
 * **25. Bipolar theorem.** For $C^\circ=\{u:\langle u,x\rangle\leq1\ \forall x\in C\}$,
-  $C^{\circ\circ}=\overline{\operatorname{conv}}(C\cup\{0\})$ in finite
+  $C^{\circ\circ}=\overline{\mathop{\mathrm{conv}}}(C\cup\{0\})$ in finite
   dimensions, and with the corresponding weak topology in dual-pair formulations.
 * **26. Recession and bounded sublevels.** For proper closed convex $f$ in
   finite dimensions, its recession function satisfies
   $$f^\infty(d)=\lim_{t\to\infty}\frac{f(x+td)-f(x)}t
-    =\sup_{u\in\operatorname{dom}f^*}\langle u,d\rangle,$$
-  independently of $x\in\operatorname{dom}f$. All sublevel sets are bounded
+    =\sup_{u\in\mathop{\mathrm{dom}}f^*}\langle u,d\rangle,$$
+  independently of $x\in\mathop{\mathrm{dom}}f$. All sublevel sets are bounded
   exactly when $f^\infty(d)>0$ for every $d\ne0$.
 
 ## Minimizers, projections, and monotone operators
@@ -177,23 +177,23 @@ nonexpansive maps are SYNOPSIS35, items 32, 38, and 33.
 * **31. Normal-cone resolvent.** $J_{\gamma N_C}=P_C$ for $\gamma>0$;
   equivalently, $u\in N_C(x)$ exactly when $P_C(x+\gamma u)=x$.
 * **66. Tangent and intersection rules.** For closed convex $C$ and $x\in C$,
-  the tangent cone is $T_C(x)=\overline{\operatorname{cone}(C-x)}$ and
+  the tangent cone is $T_C(x)=\overline{\mathop{\mathrm{cone}}(C-x)}$ and
   $N_C(x)=T_C(x)^\circ$, using the nonpositive polar convention for cones.
-  If $\operatorname{ri}C\cap\operatorname{ri}D\ne\varnothing$ in finite
+  If $\mathop{\mathrm{ri}}C\cap\mathop{\mathrm{ri}}D\ne\varnothing$ in finite
   dimensions, $N_{C\cap D}(x)=N_C(x)+N_D(x)$.
 * **32. Proximal mapping.** For proper lower semicontinuous convex $f$,
-  $$\operatorname{prox}_{\gamma f}(x)=
-    \operatorname*{argmin}_y\left(f(y)+\frac{\|x-y\|^2}{2\gamma}\right)$$
+  $$\mathop{\mathrm{prox}}\nolimits_{\gamma f}(x)=
+    \mathop{\mathrm{argmin}}\limits_y\left(f(y)+\frac{\|x-y\|^2}{2\gamma}\right)$$
   exists uniquely and equals $J_{\gamma\partial f}x$. It is firmly nonexpansive.
 * **33. Moreau envelope.** The infimum in result 32 defines a finite convex
   differentiable function $e_\gamma f$, with
-  $\nabla e_\gamma f(x)=\gamma^{-1}(x-\operatorname{prox}_{\gamma f}x)$
+  $\nabla e_\gamma f(x)=\gamma^{-1}(x-\mathop{\mathrm{prox}}_{\gamma f}x)$
   and gradient Lipschitz constant $1/\gamma$. As $\gamma\downarrow0$,
   $e_\gamma f$ increases pointwise to $f$, and $e_\gamma f$ has the same
   infimum and minimizers as $f$.
 * **34. Moreau decomposition.**
-  $\operatorname{prox}_{\gamma f}(x)+
-  \gamma\operatorname{prox}_{f^*/\gamma}(x/\gamma)=x$.
+  $\mathop{\mathrm{prox}}_{\gamma f}(x)+
+  \gamma\mathop{\mathrm{prox}}_{f^*/\gamma}(x/\gamma)=x$.
   For indicators of closed convex cones, this becomes orthogonal decomposition
   into the cone and its polar.
 * **38. Baillon–Haddad theorem.** If a convex differentiable function has
@@ -256,7 +256,7 @@ $\partial_Cf(x)=\{u:\langle u,d\rangle\leq f^\circ(x;d)\ \forall d\}$.
   with
   $\|x_\lambda-x\|\leq\lambda$ and
   $\|u_\lambda-u\|\leq\varepsilon/\lambda$. In particular
-  $\operatorname{dom}\partial f$ is dense in $\operatorname{dom}f$.
+  $\mathop{\mathrm{dom}}\partial f$ is dense in $\mathop{\mathrm{dom}}f$.
 * **46. Berge maximum theorem.** A continuous objective over a nonempty
   compact-valued continuous feasible correspondence has continuous optimal
   value and an upper semicontinuous compact-valued optimizer correspondence.
@@ -269,10 +269,10 @@ $\partial_Cf(x)=\{u:\langle u,d\rangle\leq f^\circ(x;d)\ \forall d\}$.
   Mosco convergence $f_n\to f$ is equivalent to pointwise convergence
   $e_\gamma f_n\to e_\gamma f$ of Moreau envelopes for every $\gamma>0$.
   It is also equivalent to strong pointwise convergence of the proximal
-  mappings $\operatorname{prox}_{\gamma f_n}$ together with a normalization
+  mappings $\mathop{\mathrm{prox}}_{\gamma f_n}$ together with a normalization
   fixing additive constants, such as convergence
-  $f_n(x_n)\to f(x)$ along one sequence $(x_n,u_n)\in\operatorname{gph}\partial f_n$
-  converging to some $(x,u)\in\operatorname{gph}\partial f$.
+  $f_n(x_n)\to f(x)$ along one sequence $(x_n,u_n)\in\mathop{\mathrm{gph}}\partial f_n$
+  converging to some $(x,u)\in\mathop{\mathrm{gph}}\partial f$.
 * **49. Convex-set convergence and projection.** Nonempty closed convex sets
   converge in the Mosco sense exactly when their projections converge strongly
   at every point. In finite dimensions this is the usual inner-and-outer
@@ -297,12 +297,12 @@ $\partial_Cf(x)=\{u:\langle u,d\rangle\leq f^\circ(x;d)\ \forall d\}$.
   Hilbert spaces and reflexive Banach spaces are standard examples.
 * **54. Lyusternik–Graves theorem.** If a $C^1$ map between Banach spaces has
   surjective derivative at $x_0$, then locally
-  $\operatorname{dist}(x,F^{-1}(y))\leq C\|F(x)-y\|$ for $x$ near $x_0$
+  $\mathop{\mathrm{dist}}(x,F^{-1}(y))\leq C\|F(x)-y\|$ for $x$ near $x_0$
   and $y$ near $F(x_0)$. Surjectivity gives metric regularity even when a
   single-valued inverse is unavailable.
 * **55. Hoffman's error bound.** For a nonempty polyhedron
   $C=\{x:Ax\leq b,Ex=d\}$, there is $\kappa<\infty$ such that
-  $\operatorname{dist}(x,C)\leq\kappa(\|(Ax-b)_+\|+\|Ex-d\|)$ for all $x$.
+  $\mathop{\mathrm{dist}}(x,C)\leq\kappa(\|(Ax-b)_+\|+\|Ex-d\|)$ for all $x$.
 
 ## Limiting subdifferentials and nonlinear programming
 
@@ -316,7 +316,7 @@ and the **limiting subdifferential** $\partial_Lf(x)$ consists of limits of
 $v_k\in\widehat\partial f(x_k)$ with $x_k\to x$ and $f(x_k)\to f(x)$. For a
 closed-graph set-valued map $F:\mathbb R^n\rightrightarrows\mathbb R^m$ and
 $\bar y\in F(\bar x)$, the **coderivative** is
-$D^*F(\bar x|\bar y)(y^*)=\{x^*:(x^*,-y^*)\in N^L_{\operatorname{gph}F}(\bar x,\bar y)\}$.
+$D^*F(\bar x|\bar y)(y^*)=\{x^*:(x^*,-y^*)\in N^L_{\mathop{\mathrm{gph}}F}(\bar x,\bar y)\}$.
 $F$ has the **Aubin property** at $\bar x$ for $\bar y$ if, for neighbourhoods
 $U\ni\bar x$, $V\ni\bar y$ and some $\kappa$,
 $F(x')\cap V\subseteq F(x)+\kappa|x'-x|B$ for $x,x'\in U$.
@@ -383,8 +383,8 @@ The Browder–Göhde–Kirk fixed-point theorem and Krasnosel'skiĭ–Mann itera
 are SYNOPSIS35, items 21 and 55; the methods below are instances of the latter
 applied to averaged operators.
 
-* **57. Proximal point method.** If $\operatorname{argmin}f\ne\varnothing$
-  and $\gamma>0$, $x_{n+1}=\operatorname{prox}_{\gamma f}(x_n)$ converges
+* **57. Proximal point method.** If $\mathop{\mathrm{argmin}}f\ne\varnothing$
+  and $\gamma>0$, $x_{n+1}=\mathop{\mathrm{prox}}_{\gamma f}(x_n)$ converges
   weakly in $H$ to a minimizer, with
   $f(x_n)-\min f\leq\|x_0-x_*\|^2/(2\gamma n)$ for $n\geq1$. Strong
   convergence can fail (Güler). More generally, the iteration
@@ -395,8 +395,8 @@ applied to averaged operators.
   $x_{n+1}=P_C(x_n-\gamma\nabla f(x_n))$ converges weakly for $0<\gamma<2/L$.
   For $\gamma\leq1/L$ and $x_0\in C$, objective errors are $O(1/n)$.
 * **59. Forward–backward splitting.** For convex $L$-smooth $f$ and proper
-  closed convex $g$, assume $\operatorname{argmin}(f+g)\ne\varnothing$.
-  The iteration $x_{n+1}=\operatorname{prox}_{\gamma g}
+  closed convex $g$, assume $\mathop{\mathrm{argmin}}(f+g)\ne\varnothing$.
+  The iteration $x_{n+1}=\mathop{\mathrm{prox}}_{\gamma g}
   (x_n-\gamma\nabla f(x_n))$ converges weakly to a minimizer for
   $0<\gamma<2/L$, with the standard $O(1/n)$ objective bound for $\gamma\leq1/L$.
 * **60. Accelerated gradient bound.** For a convex $L$-smooth function on
@@ -408,7 +408,7 @@ applied to averaged operators.
   $f(x_k)-f(x_*)\leq2L\|x_0-x_*\|^2/(k+1)^2$ for $k\geq1$. The rate is
   optimal (Nesterov): for $1\leq k\leq(n-1)/2$ there is a convex $L$-smooth
   quadratic on $\mathbb R^n$ such that every method with
-  $x_k\in x_0+\operatorname{span}\{\nabla f(x_0),\ldots,\nabla f(x_{k-1})\}$
+  $x_k\in x_0+\mathop{\mathrm{span}}\{\nabla f(x_0),\ldots,\nabla f(x_{k-1})\}$
   has $f(x_k)-f(x_*)\geq3L\|x_0-x_*\|^2/(32(k+1)^2)$.
 * **61. Subgradient complexity bound.** For a convex globally $G$-Lipschitz
   function, projected subgradient steps on $C$ with
@@ -420,11 +420,11 @@ applied to averaged operators.
   intersection. For closed subspaces it converges strongly to
   $P_{C\cap D}x_0$; the nearest-point conclusion is special to that setting.
 * **63. Douglas–Rachford splitting.** In finite dimensions, for proper closed
-  convex $f,g$ with $\operatorname{zer}(\partial f+\partial g)\ne\varnothing$,
-  $$z_{n+1}=z_n+\operatorname{prox}_{\gamma f}
-     (2\operatorname{prox}_{\gamma g}z_n-z_n)
-       -\operatorname{prox}_{\gamma g}z_n$$
-  converges to a fixed point, and $\operatorname{prox}_{\gamma g}z_n$ converges
+  convex $f,g$ with $\mathop{\mathrm{zer}}(\partial f+\partial g)\ne\varnothing$,
+  $$z_{n+1}=z_n+\mathop{\mathrm{prox}}\nolimits_{\gamma f}
+     (2\mathop{\mathrm{prox}}\nolimits_{\gamma g}z_n-z_n)
+       -\mathop{\mathrm{prox}}\nolimits_{\gamma g}z_n$$
+  converges to a fixed point, and $\mathop{\mathrm{prox}}_{\gamma g}z_n$ converges
   to a minimizer of $f+g$. In a Hilbert space both convergences hold weakly.
 
 ## Further conjugacy and subgradient structure

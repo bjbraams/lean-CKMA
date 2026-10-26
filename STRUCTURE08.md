@@ -27,7 +27,7 @@ Process measurability, stopping times, the finite-dimensional-law predicates for
 
 **Kolmogorov’s condition.** A process satisfies Kolmogorov’s condition with exponents \(p,q\) and constant \(M\) when pairs of values are measurable and
 \[
-\int \operatorname{edist}(X_s,X_t)^p\,dP \leq M\,\operatorname{edist}(s,t)^q.
+\int \mathop{\mathrm{edist}}(X_s,X_t)^p\,dP \leq M\,\mathop{\mathrm{edist}}(s,t)^q.
 \]
 The file defines this condition (`IsKolmogorovProcess`), and the condition of being a modification of such a process (`IsAEKolmogorovProcess`), and identifies it as the hypothesis of the Kolmogorov–Chentsov continuity theorem. The continuity theorem itself is not stated (`Probability/Process/Kolmogorov.lean`). The covering-exponent and pair-reduction lemmas recorded in [Section 07](STRUCTURE07.md#metric-entropy-gaussian-comparison-and-chaining) were introduced for its proof.
 

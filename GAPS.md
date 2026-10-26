@@ -271,7 +271,7 @@ $\bigcap_n\sigma(X_n,X_{n+1},\ldots)$.
   converges almost surely exactly when
   $$\sum_n\mathbb P(|X_n|>A)<\infty,\qquad
     \sum_n\mathbb E Y_n\text{ converges},\qquad
-    \sum_n\operatorname{Var}(Y_n)<\infty.$$
+    \sum_n\mathop{\mathrm{Var}}(Y_n)<\infty.$$
   Sufficiency follows from Mathlib: the centered truncated partial sums form an
   $L^2$-bounded martingale, which converges almost surely by the martingale
   convergence theorem, and the first series with Borel–Cantelli gives $X_n=Y_n$
@@ -296,7 +296,7 @@ $\exp(i\langle t,m\rangle-\frac12t^{\mathsf T}\Sigma t)$.
   $$s_n^{-2}\sum_k\mathbb E\!
     \left[X_{n,k}^2 1_{\{|X_{n,k}|>\varepsilon s_n\}}\right]\longrightarrow0,$$
   then $s_n^{-1}\sum_kX_{n,k}\Rightarrow N(0,1)$. Under
-  $\max_k\operatorname{Var}(X_{n,k})/s_n^2\to0$, this condition is also necessary.
+  $\max_k\mathop{\mathrm{Var}}(X_{n,k})/s_n^2\to0$, this condition is also necessary.
 
 * **06.36. Berry–Esseen bound.** For independent identically distributed centered
   variables with variance $\sigma^2>0$ and third absolute moment $\rho<\infty$,
@@ -310,7 +310,7 @@ A family is **Gaussian** if all finite real linear combinations are normally
 distributed. A law is **infinitely divisible** if for every positive integer
 $n$ it is the $n$-fold convolution of some law. A **Poisson random measure**
 $N$ of intensity $\mu$ has independent counts on disjoint sets, with
-$N(A)\sim\operatorname{Poisson}(\mu(A))$ when $\mu(A)<\infty$.
+$N(A)\sim\mathop{\mathrm{Poisson}}(\mu(A))$ when $\mu(A)<\infty$.
 
 * **06.51. Lévy–Khintchine formula.** A real law is infinitely divisible exactly
   when its characteristic function is
@@ -418,16 +418,16 @@ dimension-independent bounds retain the proxy supplied by the hypotheses.
 ### Product spaces, entropy, and geometric concentration
 
 For $Z\geq0$, its **entropy** is
-$\operatorname{Ent}(Z)=\mathbb E(Z\log Z)-\mathbb EZ\log\mathbb EZ$.
+$\mathop{\mathrm{Ent}}(Z)=\mathbb E(Z\log Z)-\mathbb EZ\log\mathbb EZ$.
 A probability $\mu$ satisfies a **Poincaré inequality** with constant $C$ if
-$\operatorname{Var}_\mu f\leq C\int|\nabla f|^2d\mu$, and a
+$\mathop{\mathrm{Var}}_\mu f\leq C\int|\nabla f|^2d\mu$, and a
 **logarithmic Sobolev inequality** with constant $C$ if
-$\operatorname{Ent}_\mu(g^2)\leq2C\int|\nabla g|^2d\mu$.
+$\mathop{\mathrm{Ent}}_\mu(g^2)\leq2C\int|\nabla g|^2d\mu$.
 
 $\gamma_d$ is standard Gaussian probability on $\mathbb R^d$.
 
 * **07.17. Gaussian logarithmic Sobolev inequality.** For smooth $g$,
-  $\operatorname{Ent}_{\gamma_d}(g^2)\leq2\int|\nabla g|^2d\gamma_d$.
+  $\mathop{\mathrm{Ent}}_{\gamma_d}(g^2)\leq2\int|\nabla g|^2d\gamma_d$.
 
 ### Metric entropy, Gaussian comparison, and chaining
 
@@ -446,7 +446,7 @@ where the infimum runs over such sequences of subsets.
 * **07.27. Dudley's entropy bound.** For a separable centered process with
   sub-Gaussian increments controlled by $d$,
   $$\mathbb E\sup_{t\in T}(X_t-X_{t_0})
-    \leq C\int_0^{\operatorname{diam}T}
+    \leq C\int_0^{\mathop{\mathrm{diam}}T}
       \sqrt{\log N(T,d,\varepsilon)}\,d\varepsilon.$$
   Finiteness together with the corresponding vanishing small-scale entropy
   integral gives a bounded uniformly continuous version under the usual
@@ -668,7 +668,7 @@ and initial data; a **weak solution** includes a choice of probability space
 and driving motion. **Pathwise uniqueness** compares solutions with the same
 noise and initial data; **uniqueness in law** compares distributions.
 
-$a=\sigma\sigma^{\mathsf T}$ and $L=b\cdot\nabla+\tfrac12\operatorname{tr}(aD^2)$ denote the diffusion matrix and generator in the time-homogeneous case.
+$a=\sigma\sigma^{\mathsf T}$ and $L=b\cdot\nabla+\tfrac12\mathop{\mathrm{tr}}(aD^2)$ denote the diffusion matrix and generator in the time-homogeneous case.
 
 * **08.31. Existence and pathwise uniqueness for Lipschitz coefficients.** If
   $b,\sigma$ are measurable in time, globally Lipschitz in space, and of linear
@@ -798,7 +798,7 @@ $|X_{s,t}|\lesssim|t-s|^\alpha$, $|\mathbb X_{s,t}|\lesssim|t-s|^{2\alpha}$,
 and **Chen's relation**
 $\mathbb X_{s,t}=\mathbb X_{s,u}+\mathbb X_{u,t}+X_{s,u}\otimes X_{u,t}$.
 It is **weakly geometric** when
-$\operatorname{Sym}\mathbb X_{s,t}=\frac12X_{s,t}^{\otimes2}$.
+$\mathop{\mathrm{Sym}}\mathbb X_{s,t}=\frac12X_{s,t}^{\otimes2}$.
 Geometric rough paths are limits of iterated-integral lifts of smooth paths
 in the corresponding rough-path topology.
 
@@ -829,7 +829,7 @@ controlled-path space, rather than an equation based only on the first-level pat
 * **09.28. RDE existence and uniqueness.** For $V\in C_b^3$ and
   $1/3<\alpha\leq1/2$, every initial value and $\alpha$-Hölder rough path
   determine a unique global RDE solution on a finite interval. For general
-  finite $p$-variation, $\operatorname{Lip}^\gamma$ vector fields with
+  finite $p$-variation, $\mathop{\mathrm{Lip}}^\gamma$ vector fields with
   $\gamma>p$ give the corresponding theorem.
 
 ### Hilbert-space stochastic integration and evolution equations
@@ -1081,7 +1081,7 @@ Mathlib has Hahn–Banach separation, Carathéodory's and Radon's theorems, extr
 Sources: [mathematical synopsis](SYNOPSIS12.md); [combined coverage inventory](STRUCTURE12.md).
 
 A convex function $f:E\to(-\infty,\infty]$ is **proper** if it never takes
-$-\infty$ and is finite somewhere. Its **effective domain** is $\operatorname{dom}f$;
+$-\infty$ and is finite somewhere. Its **effective domain** is $\mathop{\mathrm{dom}}f$;
 it is **lower semicontinuous** when its epigraph is closed. The conjugate is
 $f^*(u)=\sup_x(\langle u,x\rangle-f(x))$, with $u$ in the continuous dual.
 The **subdifferential** is
@@ -1124,8 +1124,8 @@ $J_{\gamma A}=(I+\gamma A)^{-1}$.
 
 * **12.32. Everywhere-defined proximal mapping.** For proper lower
   semicontinuous convex $f$ on a Hilbert space and $\gamma>0$, prove that
-  $$\operatorname{prox}_{\gamma f}(x)=
-    \operatorname*{argmin}_y\left(f(y)+\frac{\|x-y\|^2}{2\gamma}\right)$$
+  $$\mathop{\mathrm{prox}}\nolimits_{\gamma f}(x)=
+    \mathop{\mathrm{argmin}}\limits_y\left(f(y)+\frac{\|x-y\|^2}{2\gamma}\right)$$
   exists for every $x$, and identify it with $J_{\gamma\partial f}x$.
   TauCeti has Moreau–Yosida minimizers under compactness hypotheses.
   Uniqueness and firm nonexpansiveness on the resolvent graph follow directly
@@ -1180,7 +1180,7 @@ The **Loewner order** is $A\leq B$ when $B-A\geq0$. Hermitian eigenvalues
 $\lambda_1(A)\geq\cdots\geq\lambda_n(A)$ and singular values
 $s_1(A)\geq\cdots\geq s_n(A)\geq0$ are in decreasing order.
 The operator norm is $\|A\|=s_1(A)$; the Schatten norm is
-$\|A\|_p=(\operatorname{tr}|A|^p)^{1/p}$, $|A|=(A^*A)^{1/2}$.
+$\|A\|_p=(\mathop{\mathrm{tr}}|A|^p)^{1/p}$, $|A|=(A^*A)^{1/2}$.
 
 Products of positive matrices need not be Hermitian or positive, so their
 order cannot be compared directly without an appropriate symmetric placement
@@ -1210,10 +1210,10 @@ sandwiches, congruences, and trace expressions in the statements below.
 ### Singular values, norms, and determinant inequalities
 
 * **13.13. Von Neumann trace inequality.**
-  $|\operatorname{tr}(A^*B)|\leq\sum_i s_i(A)s_i(B)$.
+  $|\mathop{\mathrm{tr}}(A^*B)|\leq\sum_i s_i(A)s_i(B)$.
   TauCeti proves the Hermitian form
-  $\operatorname{Re}\operatorname{tr}(AB)\leq\sum_i\lambda_i(A)\lambda_i(B)$ and the
-  bound $|\operatorname{tr}(AU)|\leq\sum_is_i(A)$ for unitary $U$; missing is the
+  $\mathop{\mathrm{Re}}\mathop{\mathrm{tr}}(AB)\leq\sum_i\lambda_i(A)\lambda_i(B)$ and the
+  bound $|\mathop{\mathrm{tr}}(AU)|\leq\sum_is_i(A)$ for unitary $U$; missing is the
   singular-value form for arbitrary square matrices.
 
 * **13.18. Eckart–Young–Mirsky theorem.** Truncating the SVD after $k$ terms
@@ -1241,10 +1241,10 @@ convexity alone does not imply these stronger properties.
 ### Trace inequalities
 
 * **13.46. Golden–Thompson inequality.** For Hermitian $H,K$,
-  $\operatorname{tr}e^{H+K}\leq\operatorname{tr}(e^He^K)$.
+  $\mathop{\mathrm{tr}}e^{H+K}\leq\mathop{\mathrm{tr}}(e^He^K)$.
 
 * **13.47. Lieb concavity theorem.** For fixed $K$ and $0\leq t\leq1$,
-  $(A,B)\mapsto\operatorname{tr}(K^*A^tKB^{1-t})$ is jointly concave on
+  $(A,B)\mapsto\mathop{\mathrm{tr}}(K^*A^tKB^{1-t})$ is jointly concave on
   positive matrices, with endpoint zeroth powers interpreted as the identity.
 
 ### Completely positive maps and quantum entropy
@@ -1252,10 +1252,10 @@ convexity alone does not imply these stronger properties.
 A map $\Phi$ is **completely positive** if $I_k\otimes\Phi$ preserves
 positivity for every $k$. A **quantum channel** is a completely positive
 trace-preserving map. The von Neumann entropy is
-$S(\rho)=-\operatorname{tr}\rho\log\rho$, in natural-logarithm units.
+$S(\rho)=-\mathop{\mathrm{tr}}\rho\log\rho$, in natural-logarithm units.
 Partial traces define reduced density matrices such as $\rho_{AB}$ and $\rho_B$.
 
-A **density matrix** is a positive semidefinite matrix of trace one. Its relative entropy is $D(\rho\|\sigma)=\operatorname{tr}\rho(\log\rho-\log\sigma)$ if $\operatorname{supp}\rho\subseteq\operatorname{supp}\sigma$, and $+\infty$ otherwise; zero eigenvalues use the limiting convention.
+A **density matrix** is a positive semidefinite matrix of trace one. Its relative entropy is $D(\rho\|\sigma)=\mathop{\mathrm{tr}}\rho(\log\rho-\log\sigma)$ if $\mathop{\mathrm{supp}}\rho\subseteq\mathop{\mathrm{supp}}\sigma$, and $+\infty$ otherwise; zero eigenvalues use the limiting convention.
 
 * **13.58. Data processing.** Every quantum channel satisfies
   $D(\Phi(\rho)\|\Phi(\sigma))\leq D(\rho\|\sigma)$.
@@ -1274,10 +1274,10 @@ Sources: [mathematical synopsis](SYNOPSIS14.md); [combined coverage inventory](S
 Write $\omega_n=|B_1(0)|$, $p^*=np/(n-p)$ for $p<n$, and
 $\mathcal E(f,f)=\int\Gamma(f)\,d\mu$ for a Dirichlet energy. A probability
 measure satisfies **Poincaré with constant $C_P$** if
-$\operatorname{Var}_\mu f\leq C_P\mathcal E(f,f)$, and **logarithmic Sobolev
+$\mathop{\mathrm{Var}}_\mu f\leq C_P\mathcal E(f,f)$, and **logarithmic Sobolev
 with constant $C_{LS}$** if
-$\operatorname{Ent}_\mu(f^2)\leq2C_{LS}\mathcal E(f,f)$.
-Here $\operatorname{Ent}_\mu h=\int h\log(h/\int h\,d\mu)d\mu$.
+$\mathop{\mathrm{Ent}}_\mu(f^2)\leq2C_{LS}\mathcal E(f,f)$.
+Here $\mathop{\mathrm{Ent}}_\mu h=\int h\log(h/\int h\,d\mu)d\mu$.
 The heat generator throughout is $\Delta$, rather than $\frac12\Delta$.
 
 An inequality is **sharp** when its constant cannot be improved; this does
@@ -1320,7 +1320,7 @@ this a function space. Constants below are finite and positive unless indicated.
 ### Capacity, perimeter, and spectral optimization
 
 For compact $K\subset\Omega$, the relative **$p$-capacity** is
-$\operatorname{cap}_p(K,\Omega)=\inf\int_\Omega|\nabla v|^p$, over
+$\mathop{\mathrm{cap}}_p(K,\Omega)=\inf\int_\Omega|\nabla v|^p$, over
 $v\in C_c^\infty(\Omega)$ at least one near $K$.
 Perimeter is the total variation of the distributional gradient of an indicator;
 it is meaningful for nonsmooth sets. The first Dirichlet eigenvalue is the
@@ -1385,20 +1385,20 @@ The **curvature–dimension condition** $CD(\kappa,N)$ is
 $\Gamma_2(f)\geq\kappa\Gamma(f)+(Lf)^2/N$; the last term is zero for
 $N=\infty$. Global probability inequalities below use normalized invariant mass.
 
-The convention for $C_{LS}$ is $\operatorname{Ent}_\mu(f^2)\leq2C_{LS}\int\Gamma(f)\,d\mu$, with $\operatorname{Ent}_\mu(g)=\int g\log g\,d\mu-(\int g\,d\mu)\log\int g\,d\mu$.
+The convention for $C_{LS}$ is $\mathop{\mathrm{Ent}}_\mu(f^2)\leq2C_{LS}\int\Gamma(f)\,d\mu$, with $\mathop{\mathrm{Ent}}_\mu(g)=\int g\log g\,d\mu-(\int g\,d\mu)\log\int g\,d\mu$.
 
 * **14.48. Bakry–Émery logarithmic Sobolev inequality.** For a normalized invariant diffusion measure satisfying $CD(\kappa,\infty)$ with $\kappa>0$, $C_{LS}\leq1/\kappa$. For $V(x)=|x|^2/2$ this is
   the sharp Gaussian logarithmic Sobolev inequality.
 
 * **14.49. Lichnerowicz–Obata theorem.** For $n\geq2$, if a closed connected
-  Riemannian $n$-manifold has $\operatorname{Ric}\geq(n-1)k g$, $k>0$,
+  Riemannian $n$-manifold has $\mathop{\mathrm{Ric}}\geq(n-1)k g$, $k>0$,
   then the first nonzero eigenvalue of $-\Delta$ satisfies
   $\lambda_1\geq nk$. Equality characterizes the round sphere
   of sectional curvature $k$.
 
 ## 15. Core Banach and Hilbert space theory
 
-Mathlib covers Hahn–Banach, Banach–Alaoglu, uniform boundedness, the open mapping and closed graph theorems, Hilbert projection, Riesz representation, Lax–Milgram, and substantial Fredholm theory. TauCeti adds Goldstine's theorem, the characterization of reflexivity by weak compactness of the unit ball, weak compactness of bounded closed convex sets in reflexive spaces, permanence of reflexivity under closed subspaces, quotients, duals and isomorphisms, the Milman–Pettis theorem for real uniformly convex spaces, and the Banach-space closed-range theorem with $\operatorname{ran}T^*=(\ker T)^\perp$, together with its Hilbert-space counterpart. Missing are the sequential and norm-attainment characterizations of weak compactness (Eberlein–Šmulian, James), uniform convexity of $L^p$, the singular value decomposition of compact operators in infinite dimension, and the projection-valued spectral theorem for bounded normal operators. Scalar $L^p$ duality is listed once in Section 04.
+Mathlib covers Hahn–Banach, Banach–Alaoglu, uniform boundedness, the open mapping and closed graph theorems, Hilbert projection, Riesz representation, Lax–Milgram, and substantial Fredholm theory. TauCeti adds Goldstine's theorem, the characterization of reflexivity by weak compactness of the unit ball, weak compactness of bounded closed convex sets in reflexive spaces, permanence of reflexivity under closed subspaces, quotients, duals and isomorphisms, the Milman–Pettis theorem for real uniformly convex spaces, and the Banach-space closed-range theorem with $\mathop{\mathrm{ran}}T^*=(\ker T)^\perp$, together with its Hilbert-space counterpart. Missing are the sequential and norm-attainment characterizations of weak compactness (Eberlein–Šmulian, James), uniform convexity of $L^p$, the singular value decomposition of compact operators in infinite dimension, and the projection-valued spectral theorem for bounded normal operators. Scalar $L^p$ duality is listed once in Section 04.
 
 Sources: [mathematical synopsis](SYNOPSIS15.md); [combined coverage inventory](STRUCTURE15.md).
 
@@ -1441,7 +1441,7 @@ multiplicity and padded by zeros.
 
 * **15.59. Singular value approximation.** For compact $T:H_1\to H_2$
   between Hilbert spaces, with $H_1$ infinite-dimensional,
-  $s_n(T)=\inf_{\operatorname{rank}F<n}\|T-F\|$, and truncating a
+  $s_n(T)=\inf_{\mathop{\mathrm{rank}}F<n}\|T-F\|$, and truncating a
   singular value decomposition attains the infimum. TauCeti proves this
   in finite dimension and for decreasing diagonal operators; missing is the
   singular value decomposition of a general compact operator and the
@@ -1525,7 +1525,7 @@ $\mathcal D'(\Omega)$, acting linearly, without complex conjugation, on
 test functions. The **support** is the complement of the largest open set
 where it vanishes.
 
-* **16.42. Distributions supported at a point.** If $\operatorname{supp}T
+* **16.42. Distributions supported at a point.** If $\mathop{\mathrm{supp}}T
   \subset\{a\}$, then $T=\sum_{|\alpha|\leq m}c_\alpha\partial^\alpha\delta_a$
   for finitely many coefficients. Thus point-supported singularities have
   no further distributional forms.
@@ -1559,7 +1559,7 @@ On distributions, $\widehat T(\phi)=T(\widehat\phi)$.
 * **16.59. Paley–Wiener–Schwartz theorem.** For compact convex
   $K\subset\mathbb R^n$, Fourier transforms of distributions supported in
   $K$ are exactly the entire functions $F$ on $\mathbb C^n$ satisfying
-  $$|F(z)|\leq C(1+|z|)^N e^{H_K(\operatorname{Im}z)},
+  $$|F(z)|\leq C(1+|z|)^N e^{H_K(\mathop{\mathrm{Im}}z)},
     \qquad H_K(\eta)=\sup_{x\in K}x\cdot\eta,$$
   for some $C,N$. The distribution is unique.
 
@@ -1728,7 +1728,7 @@ $\bigl(\mathbb E\|\sum_jr_jT_jx_j\|^2\bigr)^{1/2}\leq C\bigl(\mathbb E\|\sum_jr_
 for all finite choices $T_j\in\mathcal T$, $x_j\in X$, with independent Rademacher signs $r_j$.
 
 * **18.33. Hilbert transform characterization.** $X$ is UMD exactly when
-  $Hf(x)=\operatorname{p.v.}\,\pi^{-1}\int f(x-y)/y\,dy$ is bounded on
+  $Hf(x)=\mathop{\mathrm{p.v.}}\,\pi^{-1}\int f(x-y)/y\,dy$ is bounded on
   $L^p(\mathbb R;X)$ for one, hence every, $1<p<\infty$.
 
 * **18.37. Operator-valued Mihlin theorem on the line.** If $X,Y$ are UMD,
@@ -1975,7 +1975,7 @@ outer bimodule actions, and $m(a\otimes b)=ab$.
 
 ## 21. Bounded operator theory, spectra, and functional models
 
-Mathlib has adjoints, the spectral theorem for compact self-adjoint operators, the isometric continuous functional calculus for normal operators, Fredholm operators with their quasi-inverse (modulo finite rank) characterization, and openness of the Fredholm set with local constancy of the index. TauCeti adds a Hilbert eigenbasis for compact self-adjoint operators, Riesz–Schauder theory, Fredholmness and index invariance under compact perturbations, the Fredholm adjoint, the scalar spectral measures $\langle f(T)\xi,\xi\rangle=\int f\,d\mu_\xi$ of a bounded normal operator, and an operator-ideal theory built on approximation numbers $a_n(T)=\inf_{\operatorname{rank}F\leq n}\|T-F\|$: the two-sided ideal estimate, Eckart–Young in finite dimension, the diagonal case on $\ell^p$, compactness exactly when $a_n(T)\to0$, the Hilbert–Schmidt identity $\sum a_n(T)^2=\|T\|_{\rm HS}^2$, nuclear and symmetric-gauge (Schatten) gauges, and finite-dimensional Schatten seminorms. Missing are the analytic Fredholm theorem, the essential spectrum of self-adjoint operators, Schatten Hölder inequalities, the trace on trace class, and all of dilation theory and functional models. Atkinson's inverse-modulo-compact characterization is also not stated; it is selected although it follows from the existing finite-rank quasi-inverse theorem, Fredholmness of compact perturbations of the identity and the finite kernel/cokernel criterion (see [GAPS_EASY.md](GAPS_EASY.md)). The projection-valued spectral theorem for bounded normal operators is 15.65, and the unbounded self-adjoint spectral theorem with its domain characterization is 22.9.
+Mathlib has adjoints, the spectral theorem for compact self-adjoint operators, the isometric continuous functional calculus for normal operators, Fredholm operators with their quasi-inverse (modulo finite rank) characterization, and openness of the Fredholm set with local constancy of the index. TauCeti adds a Hilbert eigenbasis for compact self-adjoint operators, Riesz–Schauder theory, Fredholmness and index invariance under compact perturbations, the Fredholm adjoint, the scalar spectral measures $\langle f(T)\xi,\xi\rangle=\int f\,d\mu_\xi$ of a bounded normal operator, and an operator-ideal theory built on approximation numbers $a_n(T)=\inf_{\mathop{\mathrm{rank}}F\leq n}\|T-F\|$: the two-sided ideal estimate, Eckart–Young in finite dimension, the diagonal case on $\ell^p$, compactness exactly when $a_n(T)\to0$, the Hilbert–Schmidt identity $\sum a_n(T)^2=\|T\|_{\rm HS}^2$, nuclear and symmetric-gauge (Schatten) gauges, and finite-dimensional Schatten seminorms. Missing are the analytic Fredholm theorem, the essential spectrum of self-adjoint operators, Schatten Hölder inequalities, the trace on trace class, and all of dilation theory and functional models. Atkinson's inverse-modulo-compact characterization is also not stated; it is selected although it follows from the existing finite-rank quasi-inverse theorem, Fredholmness of compact perturbations of the identity and the finite kernel/cokernel criterion (see [GAPS_EASY.md](GAPS_EASY.md)). The projection-valued spectral theorem for bounded normal operators is 15.65, and the unbounded self-adjoint spectral theorem with its domain characterization is 22.9.
 
 Sources: [mathematical synopsis](SYNOPSIS21.md); [combined coverage inventory](STRUCTURE21.md).
 
@@ -1989,9 +1989,9 @@ invariant for both $T$ and $T^*$.
 ### Fredholm operators and essential spectra
 
 A bounded map $T:X\to Y$ between Banach spaces is **Fredholm** if its
-range is closed and both $\ker T$ and $Y/\operatorname{ran}T$ are finite
+range is closed and both $\ker T$ and $Y/\mathop{\mathrm{ran}}T$ are finite
 dimensional. Its **index** is
-$\operatorname{ind}T=\dim\ker T-\dim(Y/\operatorname{ran}T)$.
+$\mathop{\mathrm{ind}}T=\dim\ker T-\dim(Y/\mathop{\mathrm{ran}}T)$.
 The **Calkin algebra** is $\mathcal B(H)/\mathcal K(H)$, where
 $\mathcal K(H)$ is the compact ideal; the **essential spectrum** here means
 $\sigma_{\rm ess}(T)=\{z:T-zI\text{ is not Fredholm}\}$.
@@ -2033,10 +2033,10 @@ classes, respectively.
   majorization of singular values.
 
 * **21.23. Trace and cyclicity.** For $T\in S^1$,
-  $\operatorname{tr}T=\sum_j\langle Te_j,e_j\rangle$ is absolutely
+  $\mathop{\mathrm{tr}}T=\sum_j\langle Te_j,e_j\rangle$ is absolutely
   convergent and basis independent. If $A$ is bounded,
-  $\operatorname{tr}(AT)=\operatorname{tr}(TA)$ and
-  $|\operatorname{tr}T|\leq\|T\|_1$.
+  $\mathop{\mathrm{tr}}(AT)=\mathop{\mathrm{tr}}(TA)$ and
+  $|\mathop{\mathrm{tr}}T|\leq\|T\|_1$.
 
 ### Isometries, contractions, and functional models
 
@@ -2045,7 +2045,7 @@ consists of analytic $E$-valued functions with square-summable Taylor
 coefficients. A contraction is **completely nonunitary** if it has no
 nonzero reducing subspace on which it is unitary. Its defect operators and
 spaces are $D_T=(I-T^*T)^{1/2}$ and
-$\mathcal D_T=\overline{\operatorname{ran}D_T}$.
+$\mathcal D_T=\overline{\mathop{\mathrm{ran}}D_T}$.
 
 * **21.26. Wold decomposition.** Every isometry is the orthogonal sum of
   a unitary operator and a unilateral shift. The shift multiplicity is
@@ -2054,7 +2054,7 @@ $\mathcal D_T=\overline{\operatorname{ran}D_T}$.
 
 * **21.30. Unitary dilation theorem.** Every contraction has a unitary power
   dilation $U$ with $T^n=P_HU^n|_H$ for $n\geq0$, unique under
-  $K=\overline{\operatorname{span}}\{U^nH:n\in\mathbb Z\}$.
+  $K=\overline{\mathop{\mathrm{span}}}\{U^nH:n\in\mathbb Z\}$.
 
 * **21.34. Characteristic function.** The analytic contractive function
   $$\Theta_T(z)=\left[-T+zD_{T^*}(I-zT^*)^{-1}D_T\right]|_{\mathcal D_T}
@@ -2188,7 +2188,7 @@ parameter are square integrable near it, and **limit point** otherwise.
 ### Scattering, spectral dynamics, and stability
 
 For self-adjoint $A,A_0$, the **wave operators** are
-$W_\pm=\operatorname{s-lim}_{t\to\pm\infty}e^{itA}e^{-itA_0}P_{\rm ac}(A_0)$,
+$W_\pm=\mathop{\mathrm{s-lim}}_{t\to\pm\infty}e^{itA}e^{-itA_0}P_{\rm ac}(A_0)$,
 when they exist. They are **complete** if their ranges equal $H_{\rm ac}(A)$.
 
 * **22.61. Kato–Rosenblum and Birman–Kuroda theorems.** A trace-class
@@ -2268,7 +2268,7 @@ A **factor** has center $\mathbb C1$.
 
 * **23.23. Predual theorem.** Every von Neumann algebra has a unique Banach
   predual, consisting of its normal functionals. For $\mathcal B(H)$
-  this is trace class, paired by $\operatorname{tr}(Ta)$.
+  this is trace class, paired by $\mathop{\mathrm{tr}}(Ta)$.
 
 * **23.27. Type decomposition.** A von Neumann algebra splits uniquely by
   central projections into types I, II, and III. Type I has abelian
@@ -2436,7 +2436,7 @@ the sectorial resolvent bound by an R-bound on the entire family.
 
 The **growth bound** $\omega_0$ is the infimum of admissible exponential
 exponents; the **spectral bound** is
-$s(A)=\sup\{\operatorname{Re}z:z\in\sigma(A)\}$.
+$s(A)=\sup\{\mathop{\mathrm{Re}}z:z\in\sigma(A)\}$.
 **Strong stability** means $T(t)x\to0$ for each $x$;
 **exponential stability** means $\|T(t)\|\leq Me^{-\varepsilon t}$.
 
@@ -2458,7 +2458,7 @@ $s(A)=\sup\{\operatorname{Re}z:z\in\sigma(A)\}$.
 For a possibly multivalued operator $B\subset X\times X$,
 **accretivity** means $\|x-y\|\leq\|x-y+\lambda(u-v)\|$ for
 $(x,u),(y,v)\in B$, $\lambda>0$. It is **m-accretive** if also
-$\operatorname{ran}(I+\lambda B)=X$ for every $\lambda>0$.
+$\mathop{\mathrm{ran}}(I+\lambda B)=X$ for every $\lambda>0$.
 
 * **24.52. Crandall–Liggett generation.** An m-accretive $B$ generates a
   nonlinear contraction semigroup on $\overline{D(B)}$ by
@@ -2514,7 +2514,7 @@ $I^\alpha f(t)=\Gamma(\alpha)^{-1}\int_0^t(t-s)^{\alpha-1}f(s)ds$.
 Let $\Gamma$ be a smooth positively oriented simple closed plane curve.
 Set $C\phi(z)=(2\pi i)^{-1}\int_\Gamma\phi(\zeta)/(\zeta-z)d\zeta$
 off the curve and
-$S\phi=(\pi i)^{-1}\operatorname{p.v.}\int_\Gamma
+$S\phi=(\pi i)^{-1}\mathop{\mathrm{p.v.}}\int_\Gamma
 \phi(\zeta)/(\zeta-\cdot)d\zeta$ on it. Interior and exterior traces
 are denoted by $C_+$ and $C_-$ in this subsection only.
 
@@ -2718,10 +2718,10 @@ On $\mathbb T$, $S_Nf=\sum_{|k|\leq N}\widehat f(k)e^{2\pi ikx}$.
 ### Singular integrals and Fourier multipliers
 
 * **27.35. Hilbert transform as a principal-value integral.** The
-  $L^p$ boundedness ($1<p<\infty$) of the multiplier $-i\operatorname{sgn}\xi$
+  $L^p$ boundedness ($1<p<\infty$) of the multiplier $-i\mathop{\mathrm{sgn}}\xi$
   and $H^2=-I$ on $L^2(\mathbb R)$ follow from the Mihlin–Hörmander theorem in
   TauCeti. Missing is the identification of this multiplier with
-  $Hf(x)=\operatorname{pv}\pi^{-1}\int f(y)/(x-y)dy$, including almost-everywhere
+  $Hf(x)=\mathop{\mathrm{pv}}\pi^{-1}\int f(y)/(x-y)dy$, including almost-everywhere
   existence of the principal value, and hence the weak type $(1,1)$ bound.
 
 ### Weights and endpoint spaces
@@ -2816,7 +2816,7 @@ Set $\widehat f(\chi)=\int_Gf(x)\overline{\chi(x)}dx$.
 ### Induction and noncompact representation theory
 
 For closed $H\subset G$, **unitary induction** constructs
-$\operatorname{Ind}_H^G\sigma$ from measurable sections of the bundle
+$\mathop{\mathrm{Ind}}_H^G\sigma$ from measurable sections of the bundle
 $G\times_H H_\sigma\to G/H$, with the quotient measure and its
 Radon–Nikodym correction. For invariant quotient measure, sections can
 be written $F(xh)=\sigma(h)^{-1}F(x)$ with square-integrable quotient norm.
@@ -2922,14 +2922,14 @@ where $a,b>0$.
 
 ### Bandlimited and nonuniform sampling
 
-Let $PW_B=\{f\in L^2(\mathbb R):\operatorname{supp}\widehat f
+Let $PW_B=\{f\in L^2(\mathbb R):\mathop{\mathrm{supp}}\widehat f
 \subset[-B,B]\}$, $B>0$, with its continuous entire representative.
 Sampling is **stable** on a set $\Lambda$ if
 $A\|f\|_2^2\leq\sum_{\lambda\in\Lambda}|f(\lambda)|^2\leq B_0\|f\|_2^2$.
 
 * **29.58. Shannon sampling theorem.** For $f\in PW_B$,
   $$
-  f(t)=\sum_{k\in\mathbb Z}f(k/(2B))\operatorname{sinc}(2Bt-k),
+  f(t)=\sum_{k\in\mathbb Z}f(k/(2B))\mathop{\mathrm{sinc}}(2Bt-k),
   \qquad \|f\|_2^2=(2B)^{-1}\sum_k|f(k/(2B))|^2.
   $$
   The series converges in $L^2$ and uniformly on the real axis.
@@ -2949,7 +2949,7 @@ $A\|f\|_2^2\leq\sum_{\lambda\in\Lambda}|f(\lambda)|^2\leq B_0\|f\|_2^2$.
 
 For $A\in\mathbb C^{m\times N}$, a vector is **$s$-sparse** if it has
 at most $s$ nonzero coordinates. Write
-$\sigma_s(x)_1=\inf_{\#\operatorname{supp}z\leq s}\|x-z\|_1$.
+$\sigma_s(x)_1=\inf_{\#\mathop{\mathrm{supp}}z\leq s}\|x-z\|_1$.
 The **restricted isometry constant** $\delta_s$ is the least $\delta$
 with $(1-\delta)\|x\|_2^2\leq\|Ax\|_2^2\leq(1+\delta)\|x\|_2^2$
 for every $s$-sparse $x$.
@@ -2997,14 +2997,14 @@ $|\partial_x^\alpha\partial_\xi^\beta a(x,\xi)|
 \leq C_{\alpha\beta}\langle\xi\rangle^{m-|\beta|}$, locally uniformly
 in $x$, or globally when global mapping bounds are asserted. Left quantization is
 $$
-\operatorname{Op}(a)u(x)=(2\pi)^{-d}\iint
+\mathop{\mathrm{Op}}(a)u(x)=(2\pi)^{-d}\iint
  e^{i(x-y)\cdot\xi}a(x,\xi)u(y)dy\,d\xi.
 $$
 A **classical symbol** has an expansion in terms homogeneous in $\xi$
 of degrees $m,m-1,\ldots$ for large $|\xi|$.
 
-* **30.23. Composition formula.** If $A=\operatorname{Op}(a)$ and
-  $B=\operatorname{Op}(b)$, then $AB=\operatorname{Op}(a\#b)$ with
+* **30.23. Composition formula.** If $A=\mathop{\mathrm{Op}}(a)$ and
+  $B=\mathop{\mathrm{Op}}(b)$, then $AB=\mathop{\mathrm{Op}}(a\#b)$ with
   $$
   a\#b\sim\sum_\alpha\frac{1}{i^{|\alpha|}\alpha!}
        (\partial_\xi^\alpha a)(\partial_x^\alpha b).
@@ -3022,7 +3022,7 @@ of degrees $m,m-1,\ldots$ for large $|\xi|$.
 
 * **30.31. Sharp Gårding inequality.** If a real scalar $a\in S^m_{1,0}$
   is nonnegative, then
-  $\operatorname{Re}\langle\operatorname{Op}(a)u,u\rangle
+  $\mathop{\mathrm{Re}}\langle\mathop{\mathrm{Op}}(a)u,u\rangle
   \geq-C\|u\|_{H^{(m-1)/2}}^2$, locally with compact support or
   globally under uniform symbol bounds.
 
@@ -3030,7 +3030,7 @@ of degrees $m,m-1,\ldots$ for large $|\xi|$.
 
 An order-$m$ symbol is **elliptic** where $|a(x,\xi)|\geq c|\xi|^m$
 at large frequencies in the indicated conic region. The complement is
-its characteristic set $\operatorname{Char}(A)$.
+its characteristic set $\mathop{\mathrm{Char}}(A)$.
 
 * **30.33. Parametrix theorem.** An elliptic operator has a two-sided
   parametrix of order $-m$ modulo smoothing operators. The same
@@ -3085,7 +3085,7 @@ equal-dimensional manifolds are locally $L^2$ bounded.
 
 For $0<h\leq1$, Weyl quantization is
 $$
-\operatorname{Op}_h^w(a)u(x)=(2\pi h)^{-d}\iint
+\mathop{\mathrm{Op}}\nolimits_h^w(a)u(x)=(2\pi h)^{-d}\iint
  e^{i(x-y)\cdot\xi/h}a((x+y)/2,\xi;h)u(y)dy\,d\xi.
 $$
 Unless indicated otherwise, semiclassical statements use symbols with
@@ -3094,7 +3094,7 @@ self-adjoint realizations. Semiclassical Sobolev norms use $\langle hD\rangle^s$
 
 * **30.57. Defect-measure compactness.** Every $L^2$-bounded family $u_h$
   has a subsequence $h_j\downarrow0$ and a positive Radon measure $\mu$
-  with $\langle\operatorname{Op}_{h_j}^w(a)u_{h_j},u_{h_j}\rangle
+  with $\langle\mathop{\mathrm{Op}}_{h_j}^w(a)u_{h_j},u_{h_j}\rangle
   \to\int a\,d\mu$ for each compactly supported smooth symbol.
   Mass can escape in space or frequency unless tightness is assumed.
 
@@ -3300,13 +3300,13 @@ and the separation of the two balls. Hölder exponents lie in $(0,1)$.
 
 ### Weak solutions and rough-coefficient elliptic regularity
 
-Here the scalar weak equation is $-\operatorname{div}(A\nabla u)=0$, with bounded measurable uniformly elliptic $A$, unless a right-hand side is explicitly displayed.
+Here the scalar weak equation is $-\mathop{\mathrm{div}}(A\nabla u)=0$, with bounded measurable uniformly elliptic $A$, unless a right-hand side is explicitly displayed.
 
 * **33.9. Higher integrability of the gradient.** There is $\varepsilon>0$
   depending only on dimension and ellipticity such that homogeneous
   weak solutions have $\nabla u\in L^{2+\varepsilon}_{\mathrm{loc}}$,
   with reverse Hölder bounds. The inhomogeneous estimate applies to
-  $-\operatorname{div}(A\nabla u)=\operatorname{div}f$ for
+  $-\mathop{\mathrm{div}}(A\nabla u)=\mathop{\mathrm{div}}f$ for
   $f\in L^{2+\varepsilon}$ in the corresponding local range.
 
 ### Classical estimates and nondivergence equations
@@ -3316,7 +3316,7 @@ In this subsection $Lu=a^{ij}u_{ij}+b^iu_i+cu$ is a scalar nondivergence-form op
 * **33.14. Alexandrov–Bakelman–Pucci estimate.** For $u\in W^{2,n}(\Omega)
   \cap C(\overline\Omega)$, $\Omega$ bounded, and uniformly elliptic $A$,
   $\sup_\Omega u\leq\sup_{\partial\Omega}u^+
-  +C\operatorname{diam}(\Omega)\|(a^{ij}u_{ij})^-\|_{L^n(\Omega)}$.
+  +C\mathop{\mathrm{diam}}(\Omega)\|(a^{ij}u_{ij})^-\|_{L^n(\Omega)}$.
 
 * **33.15. Krylov–Safonov theorem.** Nonnegative strong solutions of
   $a^{ij}(x)u_{ij}=0$ with measurable uniformly elliptic coefficients
@@ -3371,10 +3371,10 @@ the reverse inequality; a continuous solution is both.
 ### Degenerate elliptic and Monge–Ampère equations
 
 The **$p$-Laplacian** is
-$\Delta_pu=\operatorname{div}(|\nabla u|^{p-2}\nabla u)$, $1<p<\infty$.
+$\Delta_pu=\mathop{\mathrm{div}}(|\nabla u|^{p-2}\nabla u)$, $1<p<\infty$.
 A function is $p$-harmonic when this vanishes weakly.
 
-For convex $u$, the **Alexandrov Monge–Ampère measure** is $\operatorname{MA}_u(E)=|\partial u(E)|$, the Lebesgue measure of the subgradient image. For $C^2$ convex $u$ this is $\det D^2u\,dx$; an Alexandrov solution has the prescribed measure.
+For convex $u$, the **Alexandrov Monge–Ampère measure** is $\mathop{\mathrm{MA}}_u(E)=|\partial u(E)|$, the Lebesgue measure of the subgradient image. For $C^2$ convex $u$ this is $\det D^2u\,dx$; an Alexandrov solution has the prescribed measure.
 
 * **33.34. $p$-harmonic regularity.** Weak $p$-harmonic functions are
   locally $C^{1,\alpha}$ for some $\alpha=\alpha(n,p)>0$.
@@ -3400,7 +3400,7 @@ exponent $\alpha/2$; $W^{2,1}_p$ controls two spatial derivatives and one
 time derivative in $L^p$.
 
 * **33.46. Gaussian fundamental-solution bounds.** For
-  $u_t=\operatorname{div}(A(t,x)\nabla u)$ on all of $\mathbb R^n$,
+  $u_t=\mathop{\mathrm{div}}(A(t,x)\nabla u)$ on all of $\mathbb R^n$,
   bounded measurable uniformly elliptic $A$ gives a positive kernel
   bounded above and below by constant multiples of
   $(t-s)^{-n/2}\exp(-c|x-y|^2/(t-s))$, with different positive constants.
@@ -3459,7 +3459,7 @@ $D\lambda_k\cdot r_k$ never vanishes, and linearly degenerate if it vanishes ide
 
 For scalar laws, the **Kružkov entropy inequalities** use
 $\eta_k(u)=|u-k|$ and
-$q_k(u)=\operatorname{sgn}(u-k)(f(u)-f(k))$ for all real $k$.
+$q_k(u)=\mathop{\mathrm{sgn}}(u-k)(f(u)-f(k))$ for all real $k$.
 
 * **34.9. Kružkov existence and uniqueness.** For smooth scalar flux and
   bounded initial data on $\mathbb R^d$, there is a unique bounded
@@ -3512,7 +3512,7 @@ $\sigma=+1$ is defocusing and $\sigma=-1$ focusing.
 ### Incompressible Euler flow
 
 The incompressible equations are
-$u_t+u\cdot\nabla u+\nabla p=\nu\Delta u$, $\operatorname{div}u=0$,
+$u_t+u\cdot\nabla u+\nabla p=\nu\Delta u$, $\mathop{\mathrm{div}}u=0$,
 with $\nu=0$ for Euler and $\nu>0$ for Navier–Stokes.
 
 The vorticity is $\omega=\nabla\times u$ in dimension three and $\omega=\partial_1u_2-\partial_2u_1$ in dimension two.
@@ -3656,7 +3656,7 @@ A single-valued map is **hemicontinuous** if its restrictions to line
 segments are weakly continuous in the dual pairing.
 
 * **35.32. Minty's range theorem.** On $H$, a monotone graph $A$ is
-  maximal monotone exactly when $\operatorname{Ran}(I+\lambda A)=H$
+  maximal monotone exactly when $\mathop{\mathrm{Ran}}(I+\lambda A)=H$
   for one, equivalently every, $\lambda>0$.
 
 * **35.40. Browder–Minty surjectivity.** On a reflexive Banach space,
@@ -3675,7 +3675,7 @@ segments are weakly continuous in the dual pairing.
 * **35.60. Crandall–Rabinowitz simple-eigenvalue theorem.** Suppose $F$
   is $C^2$, $F(\lambda,0)=0$, and $L=D_uF(\lambda_0,0)$ is
   Fredholm of index zero with kernel $\mathbb R\phi$.
-  If $D_\lambda D_uF(\lambda_0,0)\phi\notin\operatorname{Ran}L$,
+  If $D_\lambda D_uF(\lambda_0,0)\phi\notin\mathop{\mathrm{Ran}}L$,
   all nearby nontrivial zeros form a smooth curve
   $(\lambda(s),s\phi+o(s))$ through $(\lambda_0,0)$.
 
@@ -3695,7 +3695,7 @@ the theorem rather than consequences of the notation.
 
 * **36.1. Euler–Lagrange equation.** A sufficiently regular local minimizer
   with admissible compactly supported variations satisfies
-  $f_u-\operatorname{div}f_{Du}=0$. For Sobolev minimizers this
+  $f_u-\mathop{\mathrm{div}}f_{Du}=0$. For Sobolev minimizers this
   holds weakly when derivative growth bounds justify differentiation
   under the integral.
 
@@ -3770,10 +3770,10 @@ $x_j\to x$ with $\limsup F_j(x_j)\leq F(x)$.
 Let $Y=(0,1)^d$ and $A(y)$ be bounded uniformly elliptic and $Y$-periodic.
 Periodic correctors $\chi_i$ have mean zero and belong to $H^1_{\mathrm{per}}(Y)$.
 
-The effective matrix is $A^{\mathrm{hom}}e_i=\int_Y A(y)(e_i+\nabla\chi_i)\,dy$, where $-\operatorname{div}_y(A(y)(e_i+\nabla\chi_i))=0$ periodically.
+The effective matrix is $A^{\mathrm{hom}}e_i=\int_Y A(y)(e_i+\nabla\chi_i)\,dy$, where $-\mathop{\mathrm{div}}_y(A(y)(e_i+\nabla\chi_i))=0$ periodically.
 
 * **36.54. Elliptic homogenization.** Zero-Dirichlet solutions of
-  $-\operatorname{div}(A(x/\varepsilon)\nabla u_\varepsilon)=f$,
+  $-\mathop{\mathrm{div}}(A(x/\varepsilon)\nabla u_\varepsilon)=f$,
   $f\in H^{-1}$, converge weakly in $H_0^1$ and strongly in $L^2$
   to the solution with coefficient $A^{\mathrm{hom}}$.
   Fluxes converge weakly in $L^2$ to $A^{\mathrm{hom}}\nabla u$.
@@ -3832,7 +3832,7 @@ with every such image has zero $\mathcal H^k$ measure.
 
 A function $u\in L^1(\Omega)$ belongs to **$BV$** if its distributional
 gradient $Du$ is a finite vector measure. Its variation is
-$|Du|(\Omega)=\sup\{\int u\operatorname{div}\phi:
+$|Du|(\Omega)=\sup\{\int u\mathop{\mathrm{div}}\phi:
 \phi\in C_c^1(\Omega;\mathbb R^n),\ |\phi|\leq1\}$.
 
 * **37.24. BV compactness.** On a bounded Lipschitz domain, bounded sets
@@ -3863,7 +3863,7 @@ measure-theoretic unit normal obtained by differentiation of $D1_E$.
   Thus perimeter is exactly reduced-boundary measure.
 
 * **37.39. Gauss–Green theorem.** For $X\in C_c^1$,
-  $\int_E\operatorname{div}X=\int_{\partial^*E}X\cdot\nu_E
+  $\int_E\mathop{\mathrm{div}}X=\int_{\partial^*E}X\cdot\nu_E
   \,d\mathcal H^{n-1}$. Classical smooth boundaries are unnecessary.
 
 * **37.45. Interior regularity of minimizing boundaries.** A locally
@@ -3888,7 +3888,7 @@ A current is **normal** if it and its boundary have finite mass, and
 * **37.54. Plateau existence.** A compactly supported integral boundary
   $S$ in Euclidean space has an integral mass-minimizing filling
   $T$ with $\partial T=S$. A minimizer can be chosen supported
-  in the convex hull of $\operatorname{supp}S$.
+  in the convex hull of $\mathop{\mathrm{supp}}S$.
 
 * **37.57. Higher-codimension interior regularity.** An area-minimizing
   integral $m$-current is locally a smooth minimal submanifold with
@@ -3901,7 +3901,7 @@ An **$m$-varifold** is a Radon measure on
 $\mathbb R^n\times G(n,m)$, with weight measure $\|V\|$.
 Rectifiable varifolds integrate multiplicity over approximate tangent planes;
 integer multiplicity makes them integral. Their first variation is
-$\delta V(X)=\int\operatorname{div}_S X(x)dV(x,S)$.
+$\delta V(X)=\int\mathop{\mathrm{div}}_S X(x)dV(x,S)$.
 
 * **37.59. Stationary monotonicity.** For a stationary varifold,
   $r^{-m}\|V\|(B_r(x))$ is nondecreasing while the balls remain
@@ -3919,16 +3919,16 @@ $\delta V(X)=\int\operatorname{div}_S X(x)dV(x,S)$.
 
 A closed set is **$k$-Ahlfors regular** if
 $C^{-1}r^k\leq\mathcal H^k(E\cap B(x,r))\leq Cr^k$
-for $x\in E$ and $0<r<\operatorname{diam}E$.
+for $x\in E$ and $0<r<\mathop{\mathrm{diam}}E$.
 It is **uniformly rectifiable** if every such ball captures a fixed
 positive proportion of its measure in an $L$-Lipschitz image of a
 $k$-ball of comparable radius, with uniform constants.
 
 * **37.66. Analyst's traveling-salesman theorem.** A compact set
   $E\subset\mathbb R^n$ lies in a connected curve of finite length
-  exactly when $\sum_Q\beta_\infty(E,3Q)^2\operatorname{diam}Q<\infty$,
+  exactly when $\sum_Q\beta_\infty(E,3Q)^2\mathop{\mathrm{diam}}Q<\infty$,
   over dyadic cubes meeting $E$. The least containing-curve length
-  is comparable to this sum plus $\operatorname{diam}E$.
+  is comparable to this sum plus $\mathop{\mathrm{diam}}E$.
   The beta number is normalized maximal distance to a best-fitting line.
 
 * **37.67. Painlevé's problem for finite length.** If compact
@@ -3968,16 +3968,16 @@ another assumption is stated.
 ### Newtonian capacity, equilibrium, and thinness
 
 For compact $K$ define
-$\operatorname{Cap}(K)=\inf\{\int_{\mathbb R^n}|\nabla\phi|^2:
+$\mathop{\mathrm{Cap}}(K)=\inf\{\int_{\mathbb R^n}|\nabla\phi|^2:
 \phi\in C_c^\infty,\ \phi\geq1\text{ near }K\}$.
 Extend first to open sets by compact exhaustion and then to arbitrary
 sets by outer approximation.
 
 * **38.17. Equilibrium measure.** If $K$ has positive capacity, there is
   a unique equilibrium charge $\nu_K$ supported on $K$ such that
-  $\nu_K(K)=\operatorname{Cap}(K)$,
+  $\nu_K(K)=\mathop{\mathrm{Cap}}(K)$,
   $U^{\nu_K}=1$ quasi-everywhere on $K$, and $U^{\nu_K}\leq1$
-  everywhere. Its energy is $I(\nu_K)=\operatorname{Cap}(K)$.
+  everywhere. Its energy is $I(\nu_K)=\mathop{\mathrm{Cap}}(K)$.
   For a zero-capacity compact set the capacitary measure and potential are zero.
 
 * **38.20. Choquet properties.** Capacity is monotone, continuous on
@@ -3999,7 +3999,7 @@ sets by outer approximation.
 
 * **38.30. Wiener's criterion.** For $n\geq3$, a boundary point $x_0$
   is regular exactly when
-  $\sum_{k\geq1}2^{k(n-2)}\operatorname{Cap}(E_k)=\infty$,
+  $\sum_{k\geq1}2^{k(n-2)}\mathop{\mathrm{Cap}}(E_k)=\infty$,
   where $E_k=(\mathbb R^n\setminus\Omega)\cap
   \{2^{-k-1}\leq|x-x_0|\leq2^{-k}\}$.
 
@@ -4012,7 +4012,7 @@ sets by outer approximation.
 ### Sobolev capacity and nonlinear potential theory
 
 For $1<p<\infty$, the relative **$p$-capacity** is
-$\operatorname{cap}_p(K,\Omega)=\inf\int_\Omega|\nabla\phi|^p$,
+$\mathop{\mathrm{cap}}_p(K,\Omega)=\inf\int_\Omega|\nabla\phi|^p$,
 over $\phi\in C_c^\infty(\Omega)$ at least one near $K$.
 A **$p$-superharmonic function** is lower semicontinuous, finite on a
 dense set, and satisfies comparison with continuous $p$-harmonic functions
@@ -4022,8 +4022,8 @@ on relatively compact subdomains.
   regular exactly when
   $$
   \int_0^{r_0}\left(
-  \frac{\operatorname{cap}_p((\mathbb R^n\setminus\Omega)\cap\overline B_r(x_0),B_{2r}(x_0))}
-       {\operatorname{cap}_p(\overline B_r(x_0),B_{2r}(x_0))}
+  \frac{\mathop{\mathrm{cap}}\nolimits_p((\mathbb R^n\setminus\Omega)\cap\overline B_r(x_0),B_{2r}(x_0))}
+       {\mathop{\mathrm{cap}}\nolimits_p(\overline B_r(x_0),B_{2r}(x_0))}
   \right)^{1/(p-1)}\frac{dr}{r}=\infty.
   $$
 
@@ -4040,9 +4040,9 @@ on relatively compact subdomains.
 For compact $K\subset\mathbb C$, set
 $I_{\log}(\mu)=\iint\log(1/|z-w|)d\mu(z)d\mu(w)$,
 $V_K=\inf_{\mu\in\mathcal P(K)}I_{\log}(\mu)$, and
-$\operatorname{cap}_{\log}(K)=e^{-V_K}$.
+$\mathop{\mathrm{cap}}_{\log}(K)=e^{-V_K}$.
 
-Whenever an equilibrium measure $\mu_K$ is used, assume $\operatorname{cap}_{\log}(K)>0$; $\mu_K$ minimizes $I_{\log}$ over probability measures on $K$.
+Whenever an equilibrium measure $\mu_K$ is used, assume $\mathop{\mathrm{cap}}_{\log}(K)>0$; $\mu_K$ minimizes $I_{\log}$ over probability measures on $K$.
 
 * **38.57. Frostman's theorem.** The equilibrium potential satisfies
   $U^{\mu_K}_{\log}=V_K$ quasi-everywhere on $K$ and
@@ -4050,7 +4050,7 @@ Whenever an equilibrium measure $\mu_K$ is used, assume $\operatorname{cap}_{\lo
 
 * **38.60. Transfinite diameter.**
   $\lim_{N\to\infty}\max_{z_1,\ldots,z_N\in K}
-  \prod_{i<j}|z_i-z_j|^{2/(N(N-1))}=\operatorname{cap}_{\log}(K)$.
+  \prod_{i<j}|z_i-z_j|^{2/(N(N-1))}=\mathop{\mathrm{cap}}_{\log}(K)$.
 
 * **38.62. Weighted equilibrium.** For a lower semicontinuous
   external field $Q:K\to\mathbb R\cup\{\infty\}$ on compact $K$,
@@ -4069,7 +4069,7 @@ Unless specified otherwise, $(X,d,m)$ is complete and separable, $m$ is a
 Radon measure of full support, and $0<m(B(x,r))<\infty$. Write
 $V(x,r)=m(B(x,r))$. A measure is **doubling** if
 $V(x,2r)\leq C_DV(x,r)$. A space is **Ahlfors $Q$-regular** if
-$V(x,r)\asymp r^Q$ for $0<r<\operatorname{diam}X$.
+$V(x,r)\asymp r^Q$ for $0<r<\mathop{\mathrm{diam}}X$.
 All comparison constants are uniform on the scales under consideration.
 
 ### Upper gradients and metric Sobolev spaces
@@ -4078,7 +4078,7 @@ A Borel function $g\geq0$ is an **upper gradient** of $u$ if
 $|u(\gamma(b))-u(\gamma(a))|\leq\int_\gamma g\,ds$ for every
 rectifiable curve. The **$p$-modulus** of a curve family is
 $$
-\operatorname{Mod}_p\Gamma=\inf\left\{\int\rho^p\,dm:
+\mathop{\mathrm{Mod}}\nolimits_p\Gamma=\inf\left\{\int\rho^p\,dm:
 \rho\geq0,\ \int_\gamma\rho\,ds\geq1\quad(\gamma\in\Gamma)\right\}.
 $$
 A **$p$-weak upper gradient** may fail on a family of zero $p$-modulus.
@@ -4170,7 +4170,7 @@ $W_p(\mu,\nu)^p=\inf_\pi\int d(x,y)^p\,d\pi$.
   Entropy and powers $U(r)=r^q/(q-1)$, $q>1$, are examples.
 
 * **39.53. Ricci curvature and entropy.** On a complete weighted manifold
-  $m=e^{-V}\mathrm{vol}$, $\operatorname{Ric}+D^2V\geq K$
+  $m=e^{-V}\mathrm{vol}$, $\mathop{\mathrm{Ric}}+D^2V\geq K$
   is equivalent to $K$-displacement convexity of relative entropy.
   This motivates the synthetic condition $CD(K,\infty)$.
 
@@ -4249,7 +4249,7 @@ Write $\mathcal O(\Omega)$ for its holomorphic functions,
 $\mathbb D=\{|z|<1\}$, and $\widehat{\mathbb C}=\mathbb C\cup\{\infty\}$.
 Contours and cycles are piecewise $C^1$ unless otherwise specified.
 The winding number is
-$\operatorname{Ind}(\gamma,a)=(2\pi i)^{-1}\int_\gamma dz/(z-a)$.
+$\mathop{\mathrm{Ind}}(\gamma,a)=(2\pi i)^{-1}\int_\gamma dz/(z-a)$.
 Convergence in $\mathcal O(\Omega)$ means uniform convergence on compact sets.
 
 ### Isolated singularities, residues, and counting
@@ -4472,11 +4472,11 @@ $P_+$ is the orthogonal projection from $L^2(\mathbb T)$ onto the nonnegative Fo
 
 * **42.32. Toeplitz Fredholm index.** If $\phi\in C(\mathbb T)$,
   $T_\phi$ is Fredholm exactly when $\phi$ never vanishes;
-  its index is $-\operatorname{wind}(\phi,0)$ and its essential
+  its index is $-\mathop{\mathrm{wind}}(\phi,0)$ and its essential
   spectrum is $\phi(\mathbb T)$.
 
 * **42.35. Nehari's theorem.** Every bounded Hankel matrix has a bounded
-  symbol, and $\|H_\phi\|=\operatorname{dist}_{L^\infty}(\phi,H^\infty)$.
+  symbol, and $\|H_\phi\|=\mathop{\mathrm{dist}}_{L^\infty}(\phi,H^\infty)$.
 
 ### Bergman and Bloch spaces
 
@@ -4505,9 +4505,9 @@ range norm: the norm of the least-norm preimage.
 
 * **42.65. Stegenga's embedding theorem.** A finite positive measure
   embeds $\mathcal D$ into $L^2(\mu)$ exactly when
-  $\mu(\bigcup_jS(I_j))\leq C\operatorname{Cap}(\bigcup_j I_j)$
+  $\mu(\bigcup_jS(I_j))\leq C\mathop{\mathrm{Cap}}(\bigcup_j I_j)$
   for all finite families of disjoint boundary arcs. Here
-  $\operatorname{Cap}$ is the boundary Sobolev capacity of order
+  $\mathop{\mathrm{Cap}}$ is the boundary Sobolev capacity of order
   $1/2$, comparable to the reciprocal of the minimum probability
   energy for the kernel $\log(e/|\zeta-\eta|)$ on the set.
   It is not the exponential logarithmic capacity used for planar compact sets.
@@ -4725,15 +4725,15 @@ Write $Q(X)=H^0(X,K_X^2)$ with $\|q\|_1=\int_X|q|$.
 * **44.63. Extremal-length distance formula.** For essential simple
   closed curves $\alpha$,
   $d_T(X,Y)=\frac12\log\sup_\alpha
-  \operatorname{Ext}_Y(\alpha)/\operatorname{Ext}_X(\alpha)$.
+  \mathop{\mathrm{Ext}}_Y(\alpha)/\mathop{\mathrm{Ext}}_X(\alpha)$.
   This connects quasiconformal distortion with the extremal metrics
   of Section 43.
 
 ### Moduli, mapping classes, and hyperbolic geometry
 
 The **mapping class group** is
-$\operatorname{Mod}_g=\pi_0(\operatorname{Homeo}^+(S_g))$;
-the moduli space is $\mathcal M_g=\mathcal T_g/\operatorname{Mod}_g$.
+$\mathop{\mathrm{Mod}}_g=\pi_0(\mathop{\mathrm{Homeo}}^+(S_g))$;
+the moduli space is $\mathcal M_g=\mathcal T_g/\mathop{\mathrm{Mod}}_g$.
 For the hyperbolic metric $\rho^2|dz|^2$, the Weil–Petersson
 cotangent pairing is $\langle q,p\rangle_{WP}
 =\int q\bar p\,\rho^{-2}dx\,dy$.
@@ -4856,7 +4856,7 @@ For a Kähler form $\omega$, $u$ is **$\omega$-psh** if
 $\omega+dd^cu\geq0$.
 
 * **45.48. Poincaré–Lelong formula.** For nonzero holomorphic $f$,
-  $dd^c\log|f|=[\operatorname{div}f]$ as currents.
+  $dd^c\log|f|=[\mathop{\mathrm{div}}f]$ as currents.
   For a Hermitian holomorphic line bundle this becomes the divisor
   current minus its first-Chern curvature form.
 
@@ -4912,7 +4912,7 @@ Unless specified otherwise, $f:\widehat{\mathbb C}\to\widehat{\mathbb C}$
 is rational of degree $d\geq2$; $f^n$ denotes iteration. The **Fatou set**
 $F(f)$ is the open set where $\{f^n\}$ is normal in the spherical metric;
 the **Julia set** is its complement $J(f)$. The **postcritical set** is
-$P(f)=\overline{\bigcup_{n\geq1}f^n(\operatorname{Crit}f)}$.
+$P(f)=\overline{\bigcup_{n\geq1}f^n(\mathop{\mathrm{Crit}}f)}$.
 The multiplier of a period-$p$ point is $(f^p)'$ in a local coordinate.
 
 ### Julia sets and global iteration
@@ -5154,7 +5154,7 @@ The recurrence is $xp_n=a_{n+1}p_{n+1}+b_np_n+a_np_{n-1}$, with $a_{n+1}>0$, $b_
   and total mass fix the moments, but need not fix the measure.
 
 * **48.6. Real and simple zeros.** The $n$ zeros of $p_n$ are
-  simple and lie in the interior of the convex hull of $\operatorname{supp}\mu$.
+  simple and lie in the interior of the convex hull of $\mathop{\mathrm{supp}}\mu$.
   Mathlib proves this for the Chebyshev weight $(1-x^2)^{-1/2}$
   (`Polynomial.Chebyshev.roots_T_real`, `rootMultiplicity_T_real`); missing is
   the statement for a general $\mu$.
@@ -5244,7 +5244,7 @@ For a circle weight $w$, put $D_n(w)=\det[\widehat w(j-k)]_{j,k=0}^{n-1}$, and u
 ### Asymptotics and potential theory
 
 For compact nonpolar real support $K$, call $\mu$ **regular** if
-$\kappa_n^{1/n}\to\operatorname{cap}(K)^{-1}$.
+$\kappa_n^{1/n}\to\mathop{\mathrm{cap}}(K)^{-1}$.
 Let $\omega_K$ be its logarithmic equilibrium measure and $g_K$
 the exterior Green function with pole at infinity.
 
@@ -5306,7 +5306,7 @@ $J_\nu$ is the Bessel function of the first kind, defined by $\sum_{k\geq0}(-1)^
   extends to a unitary involution on $L^2((0,\infty),r\,dr)$.
 
 * **49.36. Airy representation.** The Airy equation is $y''=zy$.
-  For real $x$, $\operatorname{Ai}(x)=\pi^{-1}\int_0^\infty
+  For real $x$, $\mathop{\mathrm{Ai}}(x)=\pi^{-1}\int_0^\infty
   \cos(t^3/3+xt)dt$, as an oscillatory integral.
 
 ### Classical polynomial families and spherical functions
@@ -5337,12 +5337,12 @@ The Jacobi normalization is $P_n^{(\alpha,\beta)}(x)=(\alpha+1)_n\,{}_2F_1(-n,n+
 Throughout, $0<k<1$ is the elliptic modulus.
 
 * **49.50. Jacobi elliptic identities.** The inverse elliptic integral
-  defines $\operatorname{sn}$, with
-  $\operatorname{sn}^2+\operatorname{cn}^2=1$,
-  $\operatorname{dn}^2+k^2\operatorname{sn}^2=1$ and derivatives
-  $\operatorname{sn}'=\operatorname{cn}\operatorname{dn}$,
-  $\operatorname{cn}'=-\operatorname{sn}\operatorname{dn}$,
-  $\operatorname{dn}'=-k^2\operatorname{sn}\operatorname{cn}$.
+  defines $\mathop{\mathrm{sn}}$, with
+  $\mathop{\mathrm{sn}}^2+\mathop{\mathrm{cn}}^2=1$,
+  $\mathop{\mathrm{dn}}^2+k^2\mathop{\mathrm{sn}}^2=1$ and derivatives
+  $\mathop{\mathrm{sn}}'=\mathop{\mathrm{cn}}\mathop{\mathrm{dn}}$,
+  $\mathop{\mathrm{cn}}'=-\mathop{\mathrm{sn}}\mathop{\mathrm{dn}}$,
+  $\mathop{\mathrm{dn}}'=-k^2\mathop{\mathrm{sn}}\mathop{\mathrm{cn}}$.
 
 ### Laplace, Mellin, and positivity representations
 
@@ -5402,7 +5402,7 @@ point from all other contributions.
 
 * **50.14. Stationary phase.** A nondegenerate critical point with
   real Hessian $H$ contributes
-  $e^{i\lambda\phi(x_0)+i\pi\operatorname{sgn}H/4}
+  $e^{i\lambda\phi(x_0)+i\pi\mathop{\mathrm{sgn}}H/4}
   (2\pi/\lambda)^{m/2}A(x_0)/\sqrt{|\det H|}$,
   with subsequent powers of $\lambda^{-1}$ and controlled remainder.
 
@@ -5448,8 +5448,8 @@ $B_j$ are Bernoulli numbers and $\widetilde B_j(x)=B_j(\{x\})$ are periodic Bern
   zero at $a$, the change
   $\frac23\zeta^{3/2}=\int_a^x\sqrt Q$
   transforms the leading equation to Airy form. Uniform solutions
-  have leading factors $(\zeta/Q)^{1/4}\operatorname{Ai}
-  (\varepsilon^{-2/3}\zeta)$ and the corresponding $\operatorname{Bi}$ term.
+  have leading factors $(\zeta/Q)^{1/4}\mathop{\mathrm{Ai}}
+  (\varepsilon^{-2/3}\zeta)$ and the corresponding $\mathop{\mathrm{Bi}}$ term.
 
 ### Gevrey series, Borel summation, and resurgence
 
@@ -5517,10 +5517,10 @@ $C$ is the contour Cauchy transform $(2\pi i)^{-1}\int_\Gamma f(s)/(s-z)\,ds$, w
 
 * **51.4. Matrix partial indices.** An invertible Hölder matrix loop on
   the unit circle admits a Birkhoff factorization
-  $v=v_-^{-1}\operatorname{diag}(z^{\kappa_1},\ldots,z^{\kappa_r})v_+$
+  $v=v_-^{-1}\mathop{\mathrm{diag}}(z^{\kappa_1},\ldots,z^{\kappa_r})v_+$
   with holomorphically invertible inside and outside factors. The integer
   partial indices govern homogeneous solutions and solvability;
-  $\sum\kappa_j=\operatorname{wind}\det v$ does not determine them separately.
+  $\sum\kappa_j=\mathop{\mathrm{wind}}\det v$ does not determine them separately.
 
 * **51.6. Singular-integral formulation.** For $v-I\in L^2\cap L^\infty$,
   the equation $\mu=I+C_-(\mu(v-I))$ gives
@@ -5537,7 +5537,7 @@ The negative eigenvalues are $-\kappa_j^2$, $\kappa_j>0$, $R_+$ is the right ref
 * **51.16. Jost solutions.** For real $u\in L^1((1+|x|)\,dx)$,
   $Lf=k^2f$ has solutions $f_\pm(x,k)\sim e^{\pm ikx}$ at
   the corresponding ends. After removal of these exponentials they
-  extend analytically to $\operatorname{Im}k>0$ and continuously to
+  extend analytically to $\mathop{\mathrm{Im}}k>0$ and continuously to
   nonzero real $k$, by Volterra integral equations.
 
 * **51.20. Marchenko reconstruction.** For admissible right scattering
@@ -5601,7 +5601,7 @@ PI and PII are $q''=6q^2+x$ and $q''=2q^3+xq+\alpha$. PI–PVI denote the six cl
 
 * **51.54. Hastings–McLeod solution.** PII with $\alpha=0$ has a
   distinguished real pole-free solution satisfying
-  $q(x)\sim\operatorname{Ai}(x)$ as $x\to+\infty$ and
+  $q(x)\sim\mathop{\mathrm{Ai}}(x)$ as $x\to+\infty$ and
   $q(x)\sim\sqrt{-x/2}$ as $x\to-\infty$. The positive Airy
   normalization selects it uniquely.
 
@@ -5615,7 +5615,7 @@ For 51.62–63 assume real analytic confining $V$, with $V(x)/\log(1+|x|)\to\inf
 * **51.58. Fokas–Its–Kitaev characterization.** For a positive Schwartz
   weight $w$ on $\mathbb R$, the unique problem
   $Y_+=Y_-\begin{pmatrix}1&w\\0&1\end{pmatrix}$,
-  $Y=(I+O(z^{-1}))\operatorname{diag}(z^n,z^{-n})$
+  $Y=(I+O(z^{-1}))\mathop{\mathrm{diag}}(z^n,z^{-n})$
   has $Y_{11}$ equal to the monic orthogonal polynomial of degree $n$.
   Its other entries are neighboring polynomials and their Cauchy transforms.
 
@@ -5629,8 +5629,8 @@ For 51.62–63 assume real analytic confining $V$, with $V(x)/\log(1+|x|)\to\inf
   an appropriate positive constant $c$ gives
   $(cn^{2/3})^{-1}K_n(b+u/(cn^{2/3}),b+v/(cn^{2/3}))
   \to K_{\mathrm{Ai}}(u,v)$, where
-  $K_{\mathrm{Ai}}(u,v)=[\operatorname{Ai}(u)\operatorname{Ai}'(v)
-  -\operatorname{Ai}'(u)\operatorname{Ai}(v)]/(u-v)$.
+  $K_{\mathrm{Ai}}(u,v)=[\mathop{\mathrm{Ai}}(u)\mathop{\mathrm{Ai}}'(v)
+  -\mathop{\mathrm{Ai}}'(u)\mathop{\mathrm{Ai}}(v)]/(u-v)$.
 
 * **51.65. Tracy–Widom formula.** The Airy-kernel determinant on
   $L^2(s,\infty)$ is
@@ -5653,8 +5653,8 @@ Sources: [mathematical synopsis](SYNOPSIS52.md); [combined coverage inventory](S
 Manifolds are connected and smooth, and metrics are smooth. A *closed*
 manifold is compact without boundary; *complete* means geodesically complete,
 without boundary unless
-specified. Write $\Delta=\operatorname{div}\nabla$, so $-\Delta\geq0$,
-$dV$ for volume, $\operatorname{Ric}$ for Ricci curvature, and $R$ for
+specified. Write $\Delta=\mathop{\mathrm{div}}\nabla$, so $-\Delta\geq0$,
+$dV$ for volume, $\mathop{\mathrm{Ric}}$ for Ricci curvature, and $R$ for
 scalar curvature. Constants in local estimates may depend on the indicated
 geometric bounds. A uniform estimate over varying metrics requires such
 bounds; compactness of each individual manifold is insufficient.
@@ -5674,15 +5674,15 @@ bounds; compactness of each individual manifold is insufficient.
   Hessians of distance.
 
 * **52.7. Bonnet–Myers theorem.** For $n\geq2$, a complete $n$-manifold with
-  $\operatorname{Ric}\geq(n-1)k g$, $k>0$, is compact with
+  $\mathop{\mathrm{Ric}}\geq(n-1)k g$, $k>0$, is compact with
   diameter at most $\pi/\sqrt k$ and finite fundamental group.
 
 * **52.8. Bishop–Gromov comparison.** If
-  $\operatorname{Ric}\geq(n-1)k g$, then
-  $\operatorname{Vol}B(p,r)/V_k(r)$ is nonincreasing in $r$,
+  $\mathop{\mathrm{Ric}}\geq(n-1)k g$, then
+  $\mathop{\mathrm{Vol}}B(p,r)/V_k(r)$ is nonincreasing in $r$,
   within the model radius range. In particular nonnegative Ricci
-  curvature gives $\operatorname{Vol}B(p,2r)\leq2^n
-  \operatorname{Vol}B(p,r)$.
+  curvature gives $\mathop{\mathrm{Vol}}B(p,2r)\leq2^n
+  \mathop{\mathrm{Vol}}B(p,r)$.
 
 * **52.10. Cheeger–Gromoll splitting.** A complete connected manifold
   with nonnegative Ricci curvature that contains a line is isometric
@@ -5690,7 +5690,7 @@ bounds; compactness of each individual manifold is insufficient.
   between each pair of its points.
 
 * **52.11. Compactness with controlled geometry.** Closed
-  $n$-manifolds with $|\operatorname{sec}|\leq C$,
+  $n$-manifolds with $|\mathop{\mathrm{sec}}|\leq C$,
   diameter at most $D$, and volume at least $v>0$ have a
   subsequence converging, after diffeomorphisms, in $C^{1,\alpha}$
   for each $\alpha<1$. Bounds on all covariant derivatives of
@@ -5702,11 +5702,11 @@ bounds; compactness of each individual manifold is insufficient.
 * **52.17. Bochner identity.** For a smooth function,
   $\tfrac12\Delta|\nabla u|^2=|\nabla^2u|^2+
   \langle\nabla u,\nabla\Delta u\rangle+
-  \operatorname{Ric}(\nabla u,\nabla u)$. Integrated on a closed
+  \mathop{\mathrm{Ric}}(\nabla u,\nabla u)$. Integrated on a closed
   manifold, it converts curvature bounds into gradient and spectral estimates.
 
 * **52.19. Cheng–Yau gradient estimate.** If a complete manifold has
-  $\operatorname{Ric}\geq-(n-1)K g$ and $u>0$ is harmonic on
+  $\mathop{\mathrm{Ric}}\geq-(n-1)K g$ and $u>0$ is harmonic on
   $B(p,2r)$, then
   $\sup_{B(p,r)}|\nabla\log u|\leq C_n(r^{-1}+\sqrt K)$.
 
@@ -5727,7 +5727,7 @@ The conformal Laplacian is $L_g=-4(n-1)(n-2)^{-1}\Delta+R_g$.
 ### Harmonic maps, regularity, and bubbling
 
 For $u:(M,g)\to(N,h)$, put $E(u)=\tfrac12\int|du|^2dV$.
-The tension field is $\tau(u)=\operatorname{tr}_g\nabla du$;
+The tension field is $\tau(u)=\mathop{\mathrm{tr}}_g\nabla du$;
 harmonic maps are critical points of $E$ and satisfy $\tau(u)=0$.
 
 * **52.37. Eells–Sampson existence.** Every homotopy class of maps
@@ -5750,7 +5750,7 @@ harmonic maps are critical points of $E$ and satisfy $\tau(u)=0$.
 
 * **52.48. Stability operator.** For a two-sided minimal hypersurface,
   the second variation in direction $f\nu$ is
-  $\int(|\nabla f|^2-(|A|^2+\operatorname{Ric}(\nu,\nu))f^2)$.
+  $\int(|\nabla f|^2-(|A|^2+\mathop{\mathrm{Ric}}(\nu,\nu))f^2)$.
   Stability means this quadratic form is nonnegative for all compactly
   supported $f$.
 
@@ -5774,7 +5774,7 @@ normal choice, and $A$ for the second fundamental form.
   hypersurface has a unique smooth mean curvature flow for a short
   time, up to the usual equivalent parametrized formulations. A graph
   evolves by $u_t=\sqrt{1+|\nabla u|^2}
-  \operatorname{div}(\nabla u/\sqrt{1+|\nabla u|^2})$.
+  \mathop{\mathrm{div}}(\nabla u/\sqrt{1+|\nabla u|^2})$.
 
 * **52.61. Huisken monotonicity.** For $t<t_0$ put
   $\rho=(4\pi(t_0-t))^{-m/2}
@@ -5790,9 +5790,9 @@ normal choice, and $A$ for the second fundamental form.
 
 ### Ricci flow and curvature normalization
 
-Ricci flow is $\partial_tg=-2\operatorname{Ric}$.
+Ricci flow is $\partial_tg=-2\mathop{\mathrm{Ric}}$.
 A gradient Ricci soliton satisfies
-$\operatorname{Ric}+\nabla^2f=\lambda g$, with positive, zero, or
+$\mathop{\mathrm{Ric}}+\nabla^2f=\lambda g$, with positive, zero, or
 negative $\lambda$ giving shrinking, steady, or expanding solutions.
 
 * **52.66. Hamilton–DeTurck existence.** A smooth metric on a closed
@@ -5812,7 +5812,7 @@ negative $\lambda$ giving shrinking, steady, or expanding solutions.
   one and $\tau_t=-1$. If
   $f_t=-\Delta f+|\nabla f|^2-R+n/(2\tau)$, then
   $d\mathcal W/dt=2\tau\int|
-  \operatorname{Ric}+\nabla^2f-g/(2\tau)|^2
+  \mathop{\mathrm{Ric}}+\nabla^2f-g/(2\tau)|^2
   (4\pi\tau)^{-n/2}e^{-f}dV$.
 
 * **52.74. No local collapsing.** For a closed Ricci flow on a finite
@@ -5914,11 +5914,11 @@ Sources: [mathematical synopsis](SYNOPSIS53.md); [combined coverage inventory](S
 Unless specified otherwise, $M$ is a smooth closed connected Riemannian
 $n$-manifold and vector bundles are smooth Hermitian bundles with compatible
 connections. Write $\Delta_k=dd^*+d^*d$ for the nonnegative Hodge
-Laplacian and $\Delta=\Delta_0=-\operatorname{div}\nabla$ on functions.
+Laplacian and $\Delta=\Delta_0=-\mathop{\mathrm{div}}\nabla$ on functions.
 Scalar eigenvalues are $0=\lambda_0^2<\lambda_1^2\leq\cdots$,
 counted with multiplicity; thus $\lambda$ denotes frequency, not energy.
 Characteristic forms use the usual Chern–Weil normalization, so that
-$\operatorname{ch}(E)=\operatorname{tr}\exp(iF^E/(2\pi))$ and
+$\mathop{\mathrm{ch}}(E)=\mathop{\mathrm{tr}}\exp(iF^E/(2\pi))$ and
 their cohomology classes are independent of the chosen connections.
 
 ### Elliptic operators and global analysis
@@ -5962,7 +5962,7 @@ $L_j=d_j^*d_j+d_{j-1}d_{j-1}^*$.
 
 ### Heat coefficients, Weyl laws, and spectral invariants
 
-In 53.28, $c_M=(2\pi)^{-n}\omega_n\operatorname{Vol}(M)$ and $\omega_n$ is the Euclidean unit-ball volume.
+In 53.28, $c_M=(2\pi)^{-n}\omega_n\mathop{\mathrm{Vol}}(M)$ and $\omega_n$ is the Euclidean unit-ball volume.
 
 * **53.21. Local heat expansion.** A Laplace-type operator on a
   closed manifold has a smooth heat kernel with diagonal expansion
@@ -5972,7 +5972,7 @@ In 53.28, $c_M=(2\pi)^{-n}\omega_n\operatorname{Vol}(M)$ and $\omega_n$ is the E
 
 * **53.24. Weyl law.** For
   $N(\Lambda)=\#\{j:\lambda_j\leq\Lambda\}$,
-  $N(\Lambda)\sim(2\pi)^{-n}\omega_n\operatorname{Vol}(M)
+  $N(\Lambda)\sim(2\pi)^{-n}\omega_n\mathop{\mathrm{Vol}}(M)
   \Lambda^n$. More generally a positive scalar elliptic operator
   of order $m$ has counting asymptotic given by the cotangent
   volume of $\{\sigma_m(P)\leq1\}$ times $\Lambda^{n/m}$
@@ -5983,7 +5983,7 @@ In 53.28, $c_M=(2\pi)^{-n}\omega_n\operatorname{Vol}(M)$ and $\omega_n$ is the E
   the Dirichlet and Neumann counting functions satisfy
   $N_{D/N}(\Lambda)=c_M\Lambda^n
   \mp\tfrac14(2\pi)^{-(n-1)}\omega_{n-1}
-  \operatorname{Area}(\partial M)\Lambda^{n-1}
+  \mathop{\mathrm{Area}}(\partial M)\Lambda^{n-1}
   +o(\Lambda^{n-1})$. The dynamical hypothesis is essential to
   this standard sharp two-term formulation.
 
@@ -5995,7 +5995,7 @@ In 53.28, $c_M=(2\pi)^{-n}\omega_n\operatorname{Vol}(M)$ and $\omega_n$ is the E
 
 * **53.32. Eta invariant.** For a self-adjoint first-order elliptic
   differential operator on a closed manifold,
-  $\eta_D(s)=\sum_{\mu\ne0}\operatorname{sign}(\mu)|\mu|^{-s}$
+  $\eta_D(s)=\sum_{\mu\ne0}\mathop{\mathrm{sign}}(\mu)|\mu|^{-s}$
   has meromorphic continuation regular at zero. The reduced invariant
   is $\bar\eta(D)=(\eta_D(0)+\dim\ker D)/2$; one may also
   regard its value modulo integers.
@@ -6024,26 +6024,26 @@ spinor bundle splits as $S^+\oplus S^-$ and $D$ is odd.
 
 * **53.41. McKean–Singer identity.** For an odd self-adjoint Dirac
   operator on a graded bundle,
-  $\operatorname{ind}D^+=\operatorname{Str}e^{-tD^2}$ for every
+  $\mathop{\mathrm{ind}}D^+=\mathop{\mathrm{Str}}e^{-tD^2}$ for every
   $t>0$. Nonzero eigenvalues cancel between the two gradings.
 
 * **53.42. Local index theorem.** For a twisted spin Dirac operator,
   the supertrace of the diagonal heat kernel, multiplied by $dV$,
   converges as $t\downarrow0$
-  to the top-degree form $[\widehat A(TM,\nabla)\operatorname{ch}
+  to the top-degree form $[\widehat A(TM,\nabla)\mathop{\mathrm{ch}}
   (E,\nabla^E)]_n$. Getzler rescaling identifies the local density
   and explains cancellation of the apparently divergent heat terms.
 
 * **53.43. Atiyah–Singer theorem.** The analytic index of an elliptic
   operator on a closed manifold equals the topological pushforward
-  $\operatorname{ind}_{\mathrm{top}}[\sigma(P)]\in K^0(\mathrm{pt})
+  $\mathop{\mathrm{ind}}_{\mathrm{top}}[\sigma(P)]\in K^0(\mathrm{pt})
   =\mathbb Z$. The pushforward is defined by embedding, the Thom
   isomorphism, and Bott periodicity; it depends only on the symbol class.
 
 * **53.44. Spin index formula.** On a closed even-dimensional spin
   manifold,
-  $\operatorname{ind}D_E^+=\langle\widehat A(TM)
-  \operatorname{ch}(E),[M]\rangle$.
+  $\mathop{\mathrm{ind}}D_E^+=\langle\widehat A(TM)
+  \mathop{\mathrm{ch}}(E),[M]\rangle$.
 
 * **53.46. Chern–Gauss–Bonnet theorem.** On a closed oriented
   even-dimensional manifold, the Euler characteristic is the integral
@@ -6058,13 +6058,13 @@ spinor bundle splits as $S^+\oplus S^-$ and $D$ is odd.
 * **53.48. Hirzebruch–Riemann–Roch theorem.** For a holomorphic bundle
   $E$ on a compact complex manifold,
   $\sum_q(-1)^q\dim H^{0,q}(M,E)=
-  \langle\operatorname{Td}(T^{1,0}M)\operatorname{ch}(E),[M]\rangle$.
+  \langle\mathop{\mathrm{Td}}(T^{1,0}M)\mathop{\mathrm{ch}}(E),[M]\rangle$.
 
 * **53.49. Families index theorem.** A smooth family of elliptic
   operators over a compact parameter space has an index class in
   $K^0(B)$, even when kernel dimensions jump. For an even-dimensional
   spin fibration, its Chern character is the fiber integral
-  $\int_{M/B}\widehat A(T(M/B))\operatorname{ch}(E)$.
+  $\int_{M/B}\widehat A(T(M/B))\mathop{\mathrm{ch}}(E)$.
 
 ### Boundary operators, spectral flow, coverings, and positive bundles
 
@@ -6072,8 +6072,8 @@ For 53.54 take an even-dimensional compact spin manifold with boundary, a twiste
 
 * **53.54. Atiyah–Patodi–Singer formula.** In the product convention
   for this APS condition,
-  $\operatorname{ind}D^+_{\mathrm{APS}}=
-  \int_M\widehat A(TM)\operatorname{ch}(E)
+  $\mathop{\mathrm{ind}}D^+_{\mathrm{APS}}=
+  \int_M\widehat A(TM)\mathop{\mathrm{ch}}(E)
   -[\eta_B(0)+\dim\ker B]/2$.
   For nonproduct geometry the local integral acquires a boundary
   transgression correction.
@@ -6107,7 +6107,7 @@ For 53.54 take an even-dimensional compact spin manifold with boundary, a twiste
   of order one, with principal symbol $|\xi|$.
   Its counting function is
   $N_S(\sigma)\sim(2\pi)^{-(n-1)}\omega_{n-1}
-  \operatorname{Area}(\partial M)\sigma^{n-1}$ for $n\geq2$.
+  \mathop{\mathrm{Area}}(\partial M)\sigma^{n-1}$ for $n\geq2$.
 
 * **53.69. Courant nodal theorem.** The $j$th eigenfunction in an
   ordered real orthonormal basis, with eigenvalues indexed starting
@@ -6137,7 +6137,7 @@ For 53.54 take an even-dimensional compact spin manifold with boundary, a twiste
   The theorem permits an exceptional density-zero subsequence.
 
 * **53.77. Wave trace and lengths.** The distribution
-  $\operatorname{Tr}e^{it\sqrt\Delta}$ is smooth away from zero
+  $\mathop{\mathrm{Tr}}e^{it\sqrt\Delta}$ is smooth away from zero
   and the signed lengths of closed geodesics. For clean nondegenerate
   families the leading singular terms are determined by the linearized
   return map and Maslov data. Cancellation can prevent an arbitrary
@@ -6147,7 +6147,7 @@ For 53.54 take an even-dimensional compact spin manifold with boundary, a twiste
   write $\lambda_j^2=1/4+r_j^2$ and take an admissible even test
   function $h$, with $g(\ell)=(2\pi)^{-1}\int h(r)e^{-ir\ell}dr$.
   Then
-  $\sum_jh(r_j)=\operatorname{Area}(M)(4\pi)^{-1}
+  $\sum_jh(r_j)=\mathop{\mathrm{Area}}(M)(4\pi)^{-1}
   \int_{\mathbb R}r\tanh(\pi r)h(r)dr+
   \sum_{\gamma\ \mathrm{primitive}}\sum_{k\geq1}
   \ell_\gamma g(k\ell_\gamma)/(2\sinh(k\ell_\gamma/2))$.

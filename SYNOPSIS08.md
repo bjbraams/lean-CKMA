@@ -328,7 +328,7 @@ for Brownian motion it can be taken jointly continuous.
 * **41. Tanaka's formula.** For a continuous semimartingale,
   $$(X_t-a)^+=(X_0-a)^++\int_0^t1_{\{X_s>a\}}\,dX_s+\tfrac12L_t^a.$$
   For Brownian motion this also gives
-  $|B_t-a|=|B_0-a|+\int_0^t\operatorname{sgn}(B_s-a)\,dB_s+L_t^a$.
+  $|B_t-a|=|B_0-a|+\int_0^t\mathop{\mathrm{sgn}}(B_s-a)\,dB_s+L_t^a$.
 
 * **42. Occupation density formula.** For nonnegative Borel $f$,
   $$\int_0^tf(X_s)\,d[X]_s=\int_{\mathbb R}f(a)L_t^a\,da.$$
@@ -538,7 +538,7 @@ $f(X_t)-f(X_0)-\int_0^tLf(X_s)ds$ is a martingale for $f\in\mathcal D$.
 
 * **34. Diffusion generator and martingales.** For time-homogeneous Lipschitz
   coefficients, solutions form a strong Markov family. With $a=\sigma\sigma^{\mathsf T}$,
-  $$Lf=b\cdot\nabla f+\tfrac12\operatorname{tr}(aD^2f),$$
+  $$Lf=b\cdot\nabla f+\tfrac12\mathop{\mathrm{tr}}(aD^2f),$$
   and $f(X_t)-f(X_0)-\int_0^tLf(X_s)ds$ is a local martingale for $f\in C^2$.
   For compactly supported $f$ under the stated growth bounds it is a true
   martingale on finite horizons.
@@ -656,7 +656,7 @@ values in $[t,T]$.
 
 * **73. Snell envelope.** Let $Z$ be an adapted càdlàg process on $[0,T]$ with
   $\mathbb E\sup_{t\leq T}|Z_t|<\infty$. The value process
-  $V_t=\operatorname{ess\,sup}_{\tau\in\mathcal T_{t,T}}\mathbb E[Z_\tau\mid\mathcal F_t]$
+  $V_t=\mathop{\mathrm{ess\,sup}}_{\tau\in\mathcal T_{t,T}}\mathbb E[Z_\tau\mid\mathcal F_t]$
   has a càdlàg version, the Snell envelope, which is the smallest
   supermartingale dominating $Z$. If $Z$ has continuous paths,
   $\tau_t^*=\inf\{s\geq t:V_s=Z_s\}$ is optimal and
@@ -682,7 +682,7 @@ progressively measurable controls $\alpha$ with values in a set $A$; $b$ and
 $\sigma$ are continuous and Lipschitz in $x$ uniformly in $a$. With running
 and terminal rewards $f,g$ of polynomial growth, the **value function** is
 $$v(t,x)=\sup_\alpha\mathbb E\Bigl[\int_t^Tf(X_s,\alpha_s)\,ds+g(X_T)\Bigr],$$
-and $L^af=b(\cdot,a)\cdot\nabla f+\frac12\operatorname{tr}(\sigma\sigma^{\mathsf T}(\cdot,a)D^2f)$.
+and $L^af=b(\cdot,a)\cdot\nabla f+\frac12\mathop{\mathrm{tr}}(\sigma\sigma^{\mathsf T}(\cdot,a)D^2f)$.
 
 * **75. Verification theorem.** Let
   $w\in C^{1,2}([0,T)\times\mathbb R^d)\cap C([0,T]\times\mathbb R^d)$
@@ -744,7 +744,7 @@ couplings $F,G:\mathbb T^d\times\mathcal P(\mathbb T^d)\to\mathbb R$, the
 **mean-field game system** is
 $$\begin{aligned}
   -\partial_tu-\nu\Delta u+H(x,\nabla u)&=F(x,m(t)),& u(T)&=G(x,m(T)),\\
-  \partial_tm-\nu\Delta m-\operatorname{div}\bigl(m\,\partial_pH(x,\nabla u)\bigr)&=0,
+  \partial_tm-\nu\Delta m-\mathop{\mathrm{div}}\bigl(m\,\partial_pH(x,\nabla u)\bigr)&=0,
   & m(0)&=m_0.
 \end{aligned}$$
 The first equation is the Hamilton–Jacobi–Bellman equation of a representative

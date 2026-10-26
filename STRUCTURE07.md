@@ -25,9 +25,9 @@ Sub-Gaussian moment bounds, concentration estimates, metric covering numbers, an
 
 **Chernoff’s bound.** On a finite measure, if \(t\geq 0\) and \(e^{tX}\) is integrable, the upper tail satisfies
 \[
-\mu\{X\geq\varepsilon\}\leq\exp(-t\varepsilon+\operatorname{cgf}_X(t)),
+\mu\{X\geq\varepsilon\}\leq\exp(-t\varepsilon+\mathop{\mathrm{cgf}}\nolimits_X(t)),
 \]
-where \(\operatorname{cgf}_X\) is the cumulant-generating function. For \(t\leq 0\) the same expression bounds the lower tail \(\mu\{X\leq\varepsilon\}\) (`measure_ge_le_exp_cgf`, `measure_le_le_exp_cgf`, `Probability/Moments/Basic.lean`). For independent variables the moment-generating functions multiply and the cumulant-generating functions add (`IndepFun.cgf_add`, `iIndepFun.cgf_sum`). Taking the infimum over \(t\) is immediate.
+where \(\mathop{\mathrm{cgf}}_X\) is the cumulant-generating function. For \(t\leq 0\) the same expression bounds the lower tail \(\mu\{X\leq\varepsilon\}\) (`measure_ge_le_exp_cgf`, `measure_le_le_exp_cgf`, `Probability/Moments/Basic.lean`). For independent variables the moment-generating functions multiply and the cumulant-generating functions add (`IndepFun.cgf_add`, `iIndepFun.cgf_sum`). Taking the infimum over \(t\) is immediate.
 
 **Sub-Gaussian moment-generating functions.** A real random variable has a sub-Gaussian moment-generating function with parameter \(c\geq 0\) when \(e^{tX}\) is integrable for every real \(t\) and
 \[
@@ -85,7 +85,7 @@ The normalized Hermite polynomials form a Hilbert basis of \(L^2\) of the standa
 
 The comparisons proved there are the standard ones. The external covering number is at most the internal covering number. The packing number at scale \(2\varepsilon\) is at most the external covering number at scale \(\varepsilon\). The internal covering number is at most the packing number, and the internal covering number at scale \(2\varepsilon\) is at most the external covering number at scale \(\varepsilon\). Internal covering numbers are not monotone under inclusion; if \(A\subseteq B\), the covering number of \(A\) at scale \(\varepsilon\) is at most the covering number of \(B\) at scale \(\varepsilon/2\). The volumetric bound for balls in finite-dimensional spaces is not stated.
 
-Two chaining ingredients, introduced for the Kolmogorov–Chentsov theorem, are also present. A set has covering exponent \(d\) with constant \(c\) when it has finite diameter and its covering number at every scale \(\varepsilon\le\operatorname{diam}\) is at most \(c\,\varepsilon^{-d}\); the property passes to subsets with constant \(2^dc\) (`Topology/MetricSpace/CoveringExponent.lean`). The pair-reduction lemma, an extension by Krätschmer and Urusov of a lemma in Talagrand's *Upper and Lower Bounds for Stochastic Processes*, is proved: for a finite set \(J\) with \(|J|\le a^n\) there is a set \(K\) of at most \(a|J|\) pairs at distance at most \(cn\), such that for every function \(f\), the supremum of \(d(f(s),f(t))\) over pairs in \(J\) at distance at most \(c\) is bounded by twice its supremum over \(K\) (`EMetric.pair_reduction` in `Topology/EMetricSpace/PairReduction.lean`). No chaining bound for the supremum of a process is stated.
+Two chaining ingredients, introduced for the Kolmogorov–Chentsov theorem, are also present. A set has covering exponent \(d\) with constant \(c\) when it has finite diameter and its covering number at every scale \(\varepsilon\le\mathop{\mathrm{diam}}\) is at most \(c\,\varepsilon^{-d}\); the property passes to subsets with constant \(2^dc\) (`Topology/MetricSpace/CoveringExponent.lean`). The pair-reduction lemma, an extension by Krätschmer and Urusov of a lemma in Talagrand's *Upper and Lower Bounds for Stochastic Processes*, is proved: for a finite set \(J\) with \(|J|\le a^n\) there is a set \(K\) of at most \(a|J|\) pairs at distance at most \(cn\), such that for every function \(f\), the supremum of \(d(f(s),f(t))\) over pairs in \(J\) at distance at most \(c\) is bounded by twice its supremum over \(K\) (`EMetric.pair_reduction` in `Topology/EMetricSpace/PairReduction.lean`). No chaining bound for the supremum of a process is stated.
 
 **Synopsis entries.** Not covered: 07.25–07.32, 07.58, 07.61.
 
@@ -95,7 +95,7 @@ Two chaining ingredients, introduced for the Kolmogorov–Chentsov theorem, are 
 
 #### Mathlib
 
-Shattering and VC dimension of finite set families are defined in `Combinatorics/SetFamily/Shatter.lean`. The Sauer–Shelah bound is proved: a family on an \(n\)-element ground set with VC dimension \(d\) has at most \(\sum_{k=0}^d\binom nk\) members (`Finset.card_le_card_shatterer`, `Finset.card_shatterer_le_sum_vcDim`). Applied to the traces of a set class on \(n\) points this is the synopsis bound; the estimate \((en/v)^v\) is not stated. `Combinatorics/SetFamily/DualVC.lean` also proves Assouad’s bound \(\operatorname{VCdim}(\mathcal A^*)\le 2^{d+1}-1\) (`vcDim_dualFamily_le`).
+Shattering and VC dimension of finite set families are defined in `Combinatorics/SetFamily/Shatter.lean`. The Sauer–Shelah bound is proved: a family on an \(n\)-element ground set with VC dimension \(d\) has at most \(\sum_{k=0}^d\binom nk\) members (`Finset.card_le_card_shatterer`, `Finset.card_shatterer_le_sum_vcDim`). Applied to the traces of a set class on \(n\) points this is the synopsis bound; the estimate \((en/v)^v\) is not stated. `Combinatorics/SetFamily/DualVC.lean` also proves Assouad’s bound \(\mathop{\mathrm{VCdim}}(\mathcal A^*)\le 2^{d+1}-1\) (`vcDim_dualFamily_le`).
 
 #### TauCeti
 

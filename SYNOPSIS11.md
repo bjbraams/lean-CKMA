@@ -113,7 +113,7 @@ and general measure spaces with the stated integrability.
 * **64. Grüss and Popoviciu bounds.** On a probability space, if
   $m\leq f\leq M$, $r\leq g\leq R$, then
   $|\mathbb E(fg)-\mathbb Ef\mathbb Eg|\leq(M-m)(R-r)/4$.
-  In particular $\operatorname{Var}f\leq(M-m)^2/4$. Both constants are sharp;
+  In particular $\mathop{\mathrm{Var}}f\leq(M-m)^2/4$. Both constants are sharp;
   equal probability at the two endpoints gives the extremal variance.
 * **18. Rearrangement inequality.** Among all pairings of two real vectors,
   $\sum_i a_i^\downarrow b_i^\uparrow$ is minimal and
@@ -328,7 +328,7 @@ Hausdorff–Young inequality is SYNOPSIS27, item 4.
   These quantitative midpoint inequalities imply uniform convexity of $L^p$
   throughout $1<p<\infty$.
 * **69. Hadamard three-lines theorem.** If $F$ is bounded and continuous on
-  $0\leq\operatorname{Re}z\leq1$, holomorphic inside, and
+  $0\leq\mathop{\mathrm{Re}}z\leq1$, holomorphic inside, and
   $|F(it)|\leq M_0$, $|F(1+it)|\leq M_1$, then
   $|F(\theta+it)|\leq M_0^{1-\theta}M_1^\theta$ for $0<\theta<1$.
   Applied to suitable scalar matrix elements, it produces the Riesz–Thorin

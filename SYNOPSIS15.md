@@ -40,7 +40,7 @@ boundedness.
   continuous. Finite-dimensional subspaces of normed spaces are closed.
 * **4. Riesz lemma and local compactness.** If $M$ is a proper closed subspace
   of $X$ and $0<\alpha<1$, some $x\in X$ has $\|x\|=1$ and
-  $\operatorname{dist}(x,M)>\alpha$. Consequently $B_X$ is norm compact
+  $\mathop{\mathrm{dist}}(x,M)>\alpha$. Consequently $B_X$ is norm compact
   exactly when $X$ is finite dimensional.
 * **5. Completeness of classical spaces.** The spaces $\ell^p$, $L^p(\mu)$
   for $1\leq p\leq\infty$, $c_0$, and $C_0(K)$ for locally compact
@@ -81,7 +81,7 @@ map $J:X\to X^{**}$ is $(Jx)(f)=f(x)$. A real function $p$ is
   separated; in particular so can a point and a closed convex set.
   In complex spaces use real parts of complex linear functionals.
 * **13. Distance to a subspace.** For a closed linear subspace $M$,
-  $$\operatorname{dist}(x,M)=
+  $$\mathop{\mathrm{dist}}(x,M)=
     \sup\{|f(x)|:f\in M^\perp,\ \|f\|\leq1\}.$$
   In particular, continuous functionals detect membership in $M$.
 * **14. Duality of subspaces and quotients.** For closed $M\subset X$,
@@ -115,7 +115,7 @@ $\sup_{T\in\mathcal T}\|Tx\|<\infty$ for each $x\in X$.
   operator is bounded, with norm at most $\sup_n\|T_n\|$.
 * **22. Closed range estimates.** For $T\in\mathcal L(X,Y)$ between Banach
   spaces, its range is closed exactly when
-  $\operatorname{dist}(x,\ker T)\leq C\|Tx\|$ for some $C$ and all $x$.
+  $\mathop{\mathrm{dist}}(x,\ker T)\leq C\|Tx\|$ for some $C$ and all $x$.
   If $T$ is injective, this says that $T$ is bounded below.
 
 ## Weak topologies, compactness, and reflexivity
@@ -188,9 +188,9 @@ $\langle Tx,x\rangle\geq0$ for all $x$.
   $\|x+y\|^2+\|x-y\|^2=2\|x\|^2+2\|y\|^2$.
 * **38. Projection onto closed convex sets.** Every nonempty closed convex
   $C\subset H$ has a unique nearest point $P_Cx$ to each $x$. It is
-  characterized by $\operatorname{Re}\langle x-P_Cx,y-P_Cx\rangle\leq0$
+  characterized by $\mathop{\mathrm{Re}}\langle x-P_Cx,y-P_Cx\rangle\leq0$
   for $y\in C$, and $P_C$ is nonexpansive. Indeed it is firmly nonexpansive:
-  $\|P_Cx-P_Cy\|^2\leq\operatorname{Re}\langle P_Cx-P_Cy,x-y\rangle$.
+  $\|P_Cx-P_Cy\|^2\leq\mathop{\mathrm{Re}}\langle P_Cx-P_Cy,x-y\rangle$.
 * **39. Orthogonal decomposition.** For a closed linear subspace $M$,
   $H=M\oplus M^\perp$. Its nearest-point map is a bounded self-adjoint
   projection; every bounded self-adjoint projection arises this way.
@@ -209,13 +209,13 @@ $\langle Tx,x\rangle\geq0$ for all $x$.
 * **70. Gram–Schmidt and separable Hilbert spaces.** Every finite or
   countable linearly independent sequence $(x_n)$ in $H$ yields, by
   Gram–Schmidt orthonormalization, an orthonormal sequence $(e_n)$ with the
-  same linear spans $\operatorname{span}\{x_1,\dots,x_n\}$ for every $n$.
+  same linear spans $\mathop{\mathrm{span}}\{x_1,\dots,x_n\}$ for every $n$.
   Hence $H$ is separable exactly when it has a countable orthonormal basis,
   and every infinite-dimensional separable Hilbert space is unitarily
   isomorphic to $\ell^2$.
 * **43. Lax–Milgram theorem.** If a bounded sesquilinear form $a$ on $H$
   is linear in its first variable and
-  $\operatorname{Re}a(u,u)\geq\alpha\|u\|^2$ with $\alpha>0$, then for
+  $\mathop{\mathrm{Re}}a(u,u)\geq\alpha\|u\|^2$ with $\alpha>0$, then for
   every bounded conjugate-linear functional $F$ there is a unique $u$ such
   that $a(u,v)=F(v)$ for all $v$, and $\|u\|\leq\alpha^{-1}\|F\|$.
 * **44. Stampacchia variational inequality.** In a real Hilbert space, for
@@ -236,14 +236,14 @@ sets; **weakly compact** uses relative weak compactness instead.
 
 * **46. Adjoint identities.** $\|T^*\|=\|T\|$, $(ST)^*=T^*S^*$, and on
   Hilbert spaces $\|T^*T\|=\|T\|^2$. Moreover
-  $(\operatorname{ran}T)^\perp=\ker T^*$ and
-  $\overline{\operatorname{ran}T}=(\ker T^*)_\perp$. On Hilbert spaces the
+  $(\mathop{\mathrm{ran}}T)^\perp=\ker T^*$ and
+  $\overline{\mathop{\mathrm{ran}}T}=(\ker T^*)_\perp$. On Hilbert spaces the
   range of $T$ is closed exactly when $T$ is bounded below on
   $(\ker T)^\perp$.
 * **47. Closed range theorem.** For bounded maps between Banach spaces,
-  $\operatorname{ran}T$ is norm closed exactly when $\operatorname{ran}T^*$
-  is norm closed, and then $\operatorname{ran}T=(\ker T^*)_\perp$ and
-  $\operatorname{ran}T^*=(\ker T)^\perp$. Also $T$ is surjective exactly
+  $\mathop{\mathrm{ran}}T$ is norm closed exactly when $\mathop{\mathrm{ran}}T^*$
+  is norm closed, and then $\mathop{\mathrm{ran}}T=(\ker T^*)_\perp$ and
+  $\mathop{\mathrm{ran}}T^*=(\ker T)^\perp$. Also $T$ is surjective exactly
   when $T^*$ is bounded below.
 * **48. Gantmacher theorem.** $T:X\to Y$ is weakly compact exactly when
   $T^{**}(X^{**})\subset J_Y(Y)$, and exactly when $T^*$ is weakly compact.
@@ -294,7 +294,7 @@ sets; **weakly compact** uses relative weak compactness instead.
   $s_n^2$ are the nonzero eigenvalues of $T^*T$. Truncation gives best
   rank-at-most-$n$ approximation error $s_{n+1}$ in operator norm, with
   the singular-value list padded by zeros in the finite-rank case.
-  Equivalently, $s_n(T)=\inf_{\operatorname{rank}F<n}\|T-F\|$.
+  Equivalently, $s_n(T)=\inf_{\mathop{\mathrm{rank}}F<n}\|T-F\|$.
 
 ## First spectral and fixed-point principles
 
@@ -323,14 +323,14 @@ theorems in Section 35, and the mean ergodic theorem in Section 10.
 * **64. Positive square root and polar decomposition.** Every bounded
   positive operator has a unique bounded positive square root. Every bounded
   $T:H_1\to H_2$ has a unique factorization $T=U(T^*T)^{1/2}$ where $U$
-  is the partial isometry with initial space $\overline{\operatorname{ran}T^*}$
-  and final space $\overline{\operatorname{ran}T}$.
+  is the partial isometry with initial space $\overline{\mathop{\mathrm{ran}}T^*}$
+  and final space $\overline{\mathop{\mathrm{ran}}T}$.
 * **65. Bounded normal spectral theorem.** For normal $T$ there is a unique
   projection-valued measure $E$ on $\sigma(T)$ with
   $T=\int z\,dE(z)$. Continuous functional calculus is an isometric
   unital star homomorphism from $C(\sigma(T))$ onto the C*-algebra generated
   by $T$ and the identity. Bounded Borel functions define
-  $f(T)=\int f\,dE$, and $\|R(z,T)\|=\operatorname{dist}(z,\sigma(T))^{-1}$
+  $f(T)=\int f\,dE$, and $\|R(z,T)\|=\mathop{\mathrm{dist}}(z,\sigma(T))^{-1}$
   off the spectrum.
 
 ## Reference guide

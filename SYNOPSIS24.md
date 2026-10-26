@@ -42,9 +42,9 @@ and parabolic equations we instead write $B=-A$, so $u'+Bu=f$.
   semigroup uniquely. A semigroup is continuous in operator norm at zero
   exactly when its generator is bounded, and then $T(t)=e^{tA}$.
 * **5. Laplace resolvent formula.** If $\|T(t)\|\leq Me^{\omega t}$,
-  then for $\operatorname{Re}\lambda>\omega$,
+  then for $\mathop{\mathrm{Re}}\lambda>\omega$,
   $$R(\lambda,A)x=\int_0^\infty e^{-\lambda t}T(t)x\,dt,
-    \qquad\|R(\lambda,A)\|\leq\frac M{\operatorname{Re}\lambda-\omega}.$$
+    \qquad\|R(\lambda,A)\|\leq\frac M{\mathop{\mathrm{Re}}\lambda-\omega}.$$
 * **6. Hille–Yosida theorem.** A densely defined closed $A$ generates
   a semigroup with bound $Me^{\omega t}$ exactly when
   $(\omega,\infty)\subset\rho(A)$ and
@@ -55,7 +55,7 @@ and parabolic equations we instead write $B=-A$, so $u'+Bu=f$.
   $\lambda I-A$ is onto for some $\lambda>0$.
   Dissipativity means $\|x-tAx\|\geq\|x\|$ for $t>0$.
 * **8. Hilbert space dissipativity.** On a Hilbert space, dissipativity
-  is equivalent to $\operatorname{Re}\langle Ax,x\rangle\leq0$.
+  is equivalent to $\mathop{\mathrm{Re}}\langle Ax,x\rangle\leq0$.
   A densely defined closed operator is a contraction generator if both
   $A$ and $A^*$ are dissipative.
 * **9. Yosida approximations.** For a contraction generator,
@@ -174,7 +174,7 @@ $1<p<\infty$; Hilbert spaces and $L^q$, $1<q<\infty$, are UMD.
   $B$ on Hilbert space, bounded $H^\infty$ calculus is equivalent to
   $$\int_0^\infty\|tB(I+tB)^{-2}x\|^2\frac{dt}{t}\leq C\|x\|^2$$
   and the corresponding estimate for $B^*$ (McIntosh). Every m-accretive
-  $B$ on Hilbert space satisfies $\|f(B)\|\leq\sup_{\operatorname{Re}z>0}|f(z)|$
+  $B$ on Hilbert space satisfies $\|f(B)\|\leq\sup_{\mathop{\mathrm{Re}}z>0}|f(z)|$
   for bounded holomorphic $f$ on the right half-plane (von Neumann's
   inequality via the Cayley transform).
 * **30. de Simon maximal regularity.** On Hilbert space, an invertible
@@ -201,7 +201,7 @@ $1<p<\infty$; Hilbert spaces and $L^q$, $1<q<\infty$, are UMD.
 
 The **growth bound** $\omega_0$ is the infimum of admissible exponential
 exponents; the **spectral bound** is
-$s(A)=\sup\{\operatorname{Re}z:z\in\sigma(A)\}$.
+$s(A)=\sup\{\mathop{\mathrm{Re}}z:z\in\sigma(A)\}$.
 **Strong stability** means $T(t)x\to0$ for each $x$;
 **exponential stability** means $\|T(t)\|\leq Me^{-\varepsilon t}$.
 
@@ -236,14 +236,14 @@ $s(A)=\sup\{\operatorname{Re}z:z\in\sigma(A)\}$.
   essential growth bound, $\omega_{\rm ess}=\lim_{t\to\infty}t^{-1}\log\|T(t)\|_{\rm ess}$,
   where $\|S\|_{\rm ess}$ is the distance from $S$ to the compact operators.
   Then $\omega_0=\max(\omega_{\rm ess},s(A))$, and for $w>\omega_{\rm ess}$
-  the set $\sigma(A)\cap\{\operatorname{Re}z\geq w\}$ consists of finitely
+  the set $\sigma(A)\cap\{\mathop{\mathrm{Re}}z\geq w\}$ consists of finitely
   many poles $\lambda_j$ of the resolvent with finite-rank residues $P_j$.
   Then $T(t)=\sum_je^{\lambda_jt}e^{tN_j}P_j+R(t)$ with nilpotent
   $N_j=(A-\lambda_j)P_j$ and $\|R(t)\|\leq Me^{wt}$.
 * **42. Mean ergodic theorem.** A bounded semigroup on a reflexive
   Banach space has strongly convergent Cesàro averages
   $t^{-1}\int_0^tT(s)x\,ds$. Their limit projects onto $\ker A$
-  along $\overline{\operatorname{ran}A}$.
+  along $\overline{\mathop{\mathrm{ran}}A}$.
 * **43. Positive semigroup criterion.** On a Banach lattice, a generated
   semigroup is positive exactly when $R(\lambda,A)$ is positive for
   every sufficiently large real $\lambda$. Bounded positive perturbations
@@ -253,7 +253,7 @@ $s(A)=\sup\{\operatorname{Re}z:z\in\sigma(A)\}$.
 * **44. Spectral bound of positive semigroups.** For a positive semigroup
   on a Banach lattice, $s(A)\in\sigma(A)$ whenever $\sigma(A)\neq\emptyset$,
   and $R(\lambda,A)=\int_0^\infty e^{-\lambda t}T(t)\,dt$, as an improper strong integral, for every
-  $\operatorname{Re}\lambda>s(A)$. On $L^p$, $1\leq p<\infty$, and on
+  $\mathop{\mathrm{Re}}\lambda>s(A)$. On $L^p$, $1\leq p<\infty$, and on
   $C_0(\Omega)$ one has $s(A)=\omega_0$ (Weis on $L^p$), so stability
   follows from the location of the real spectrum. Equality $s(A)=\omega_0$
   holds also on AL spaces and $C_0(\Omega)$ (Derndinger; Batty–Davies for
@@ -269,7 +269,7 @@ $s(A)=\sup\{\operatorname{Re}z:z\in\sigma(A)\}$.
 * **46. Invariance of convex sets.** Let $a$ be such a form with domain
   $V$, and let the metric projection $P_C$ onto a closed convex set
   preserve $V$. Then $C$ is semigroup invariant exactly when
-  $\operatorname{Re}a(P_Cu,u-P_Cu)\geq0$ for all $u\in V$.
+  $\mathop{\mathrm{Re}}a(P_Cu,u-P_Cu)\geq0$ for all $u\in V$.
 * **47. Positivity from a real form.** For a real accretive form on
   $L^2$ whose domain is stable under positive parts, its semigroup is
   positive exactly when $a(u^+,u^-)\leq0$ for every real $u$ in the
@@ -281,7 +281,7 @@ $s(A)=\sup\{\operatorname{Re}z:z\in\sigma(A)\}$.
 * **49. J.-L. Lions' theorem.** Let $V\hookrightarrow H\hookrightarrow V'$
   be a Gelfand triple and $a(t;\cdot,\cdot)$ forms on $V$, measurable in
   $t$, with $|a(t;u,v)|\leq M\|u\|_V\|v\|_V$ and
-  $\operatorname{Re}a(t;u,u)\geq\alpha\|u\|_V^2-\omega\|u\|_H^2$.
+  $\mathop{\mathrm{Re}}a(t;u,u)\geq\alpha\|u\|_V^2-\omega\|u\|_H^2$.
   With $\mathcal A(t):V\to V'$ the associated operators, for
   $f\in L^2(0,T;V')$ and $u_0\in H$ the problem $u'+\mathcal A(t)u=f$,
   $u(0)=u_0$, has a unique solution in
@@ -299,7 +299,7 @@ $s(A)=\sup\{\operatorname{Re}z:z\in\sigma(A)\}$.
 For a possibly multivalued operator $B\subset X\times X$,
 **accretivity** means $\|x-y\|\leq\|x-y+\lambda(u-v)\|$ for
 $(x,u),(y,v)\in B$, $\lambda>0$. It is **m-accretive** if also
-$\operatorname{ran}(I+\lambda B)=X$ for every $\lambda>0$.
+$\mathop{\mathrm{ran}}(I+\lambda B)=X$ for every $\lambda>0$.
 
 * **51. Nonlinear resolvent contraction.** For m-accretive $B$,
   $J_\lambda=(I+\lambda B)^{-1}$ is single valued and nonexpansive
@@ -395,7 +395,7 @@ For Hilbert spaces $X,U,Y$ and bounded $B:U\to X$, $C:X\to Y$,
 consider $x'=Ax+Bu$, $y=Cx$. The **controllability map** at time $T$
 is $\mathcal W_Tu=\int_0^TT(T-s)Bu(s)ds$; the **observation map**
 is $\mathcal O_Tx=CT(\cdot)x$. Exact controllability means
-$\operatorname{ran}\mathcal W_T=X$, and approximate controllability
+$\mathop{\mathrm{ran}}\mathcal W_T=X$, and approximate controllability
 means its range is dense.
 
 * **58. Input–state formula.** For $u\in L^2(0,T;U)$, the controlled

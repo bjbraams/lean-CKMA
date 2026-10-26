@@ -210,7 +210,7 @@ $z\mapsto e^{it}z$.
 * **71. Ball Schwarz lemma.** Holomorphic ball maps fixing zero
   contract Euclidean norm. Ball automorphisms transfer this to the
   invariant distance, with
-  $k_{\mathbb B^n}(0,z)=\operatorname{arctanh}\|z\|$ in the
+  $k_{\mathbb B^n}(0,z)=\mathop{\mathrm{arctanh}}\|z\|$ in the
   curvature-$-4$ disk normalization.
 
 * **72. Lempert theorem.** On a bounded convex domain, Carathéodory
@@ -375,7 +375,7 @@ $\omega+dd^cu\geq0$.
   exactly when its $dd^c$ is positive.
 
 * **48. Poincaré–Lelong formula.** For nonzero holomorphic $f$,
-  $dd^c\log|f|=[\operatorname{div}f]$ as currents.
+  $dd^c\log|f|=[\mathop{\mathrm{div}}f]$ as currents.
   For a Hermitian holomorphic line bundle this becomes the divisor
   current minus its first-Chern curvature form.
 
@@ -448,7 +448,7 @@ $\omega+dd^cu\geq0$.
   polynomial $p$ of degree at most $d$,
   $|p(z)|\leq\|p\|_Ke^{dV_K(z)}$ on $\mathbb C^n$. If $K$ is L-regular
   and polynomially convex and $f\in C(K)$, then
-  $\limsup_d\operatorname{dist}_K(f,\mathcal P_d)^{1/d}\leq1/R$, $R>1$,
+  $\limsup_d\mathop{\mathrm{dist}}_K(f,\mathcal P_d)^{1/d}\leq1/R$, $R>1$,
   exactly when $f$ extends holomorphically to
   $\{V_K<\log R\}$ (Siciak); compare the one-variable SYNOPSIS47, item 37.
 
@@ -507,7 +507,7 @@ $\omega+dd^cu\geq0$.
   with $\omega+dd^cu>0$. Thus a prescribed Ricci form in
   $2\pi c_1(X)$ is realized uniquely in a fixed Kähler class. If
   $c_1(X)<0$, there is a unique Kähler–Einstein metric with
-  $\operatorname{Ric}=-\omega$ (Aubin, Yau); if $c_1(X)=0$, each Kähler
+  $\mathop{\mathrm{Ric}}=-\omega$ (Aubin, Yau); if $c_1(X)=0$, each Kähler
   class contains a unique Ricci-flat metric.
 
 <a id="synopsis-45d"></a>
@@ -588,8 +588,8 @@ The induced tangential complex is denoted $\bar\partial_b$.
   In suitable local holomorphic coordinates $(z,w)$,
   $\Im w=\langle z,z\rangle+\sum_{k,l\geq2}N_{kl}(z,\bar z,\Re w)$,
   with $N_{kl}$ of bidegree $(k,l)$ in $(z,\bar z)$ and
-  $\operatorname{tr}N_{22}=\operatorname{tr}^2N_{32}=
-  \operatorname{tr}^3N_{33}=0$ (for $n=1$: $N_{22}=N_{32}=N_{33}=0$).
+  $\mathop{\mathrm{tr}}N_{22}=\mathop{\mathrm{tr}}^2N_{32}=
+  \mathop{\mathrm{tr}}^3N_{33}=0$ (for $n=1$: $N_{22}=N_{32}=N_{33}=0$).
   The normalization is unique up to the isotropy group of the hyperquadric
   $\Im w=\langle z,z\rangle$. Hence local CR automorphism groups are
   finite-dimensional Lie groups, and $M$ is locally equivalent to the

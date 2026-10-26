@@ -75,7 +75,7 @@ by conic square integrability with weight $\langle\xi\rangle^{2s}$.
   $\mathrm{WF}(u)$ and $\mathrm{WF}(v)$ with zero covectors over their
   supports adjoined, after removing the total zero covector.
 * **19. Pushforward by submersions.** A smooth submersion $F$ proper
-  on $\operatorname{supp}u$ admits a distributional pushforward, using
+  on $\mathop{\mathrm{supp}}u$ admits a distributional pushforward, using
   densities along the fibers. Its wavefront set is contained in
   $\{(y,\eta):\exists x,\ F(x)=y,\ (x,dF_x^T\eta)\in\mathrm{WF}(u)\}$.
 * **20. Conormal singularities.** A distribution locally represented
@@ -90,7 +90,7 @@ $|\partial_x^\alpha\partial_\xi^\beta a(x,\xi)|
 \leq C_{\alpha\beta}\langle\xi\rangle^{m-|\beta|}$, locally uniformly
 in $x$, or globally when global mapping bounds are asserted. Left quantization is
 $$
-\operatorname{Op}(a)u(x)=(2\pi)^{-d}\iint
+\mathop{\mathrm{Op}}(a)u(x)=(2\pi)^{-d}\iint
  e^{i(x-y)\cdot\xi}a(x,\xi)u(y)dy\,d\xi.
 $$
 A **classical symbol** has an expansion in terms homogeneous in $\xi$
@@ -103,8 +103,8 @@ of degrees $m,m-1,\ldots$ for large $|\xi|$.
   $a\in S^m_{1,0}$ with
   $a-\sum_{j<N}a_j\in S^{m-N}_{1,0}$ for every $N$.
   It is unique modulo $S^{-\infty}$ once the full expansion is fixed.
-* **23. Composition formula.** If $A=\operatorname{Op}(a)$ and
-  $B=\operatorname{Op}(b)$, then $AB=\operatorname{Op}(a\#b)$ with
+* **23. Composition formula.** If $A=\mathop{\mathrm{Op}}(a)$ and
+  $B=\mathop{\mathrm{Op}}(b)$, then $AB=\mathop{\mathrm{Op}}(a\#b)$ with
   $$
   a\#b\sim\sum_\alpha\frac{1}{i^{|\alpha|}\alpha!}
        (\partial_\xi^\alpha a)(\partial_x^\alpha b).
@@ -154,12 +154,12 @@ of degrees $m,m-1,\ldots$ for large $|\xi|$.
   for large $|\xi|$ in a conic neighbourhood of it), membership in these
   two wavefront sets is equivalent there.
 * **31. Gårding inequalities.** If $A$ has order $m$ and
-  $\operatorname{Re}a_m(x,\xi)\geq c|\xi|^m$ (strong ellipticity), then
-  $\operatorname{Re}\langle Au,u\rangle\geq c'\|u\|_{H^{m/2}}^2
+  $\mathop{\mathrm{Re}}a_m(x,\xi)\geq c|\xi|^m$ (strong ellipticity), then
+  $\mathop{\mathrm{Re}}\langle Au,u\rangle\geq c'\|u\|_{H^{m/2}}^2
   -C\|u\|_{H^{-N}}^2$ for $u$ supported in a fixed compact set
   (Gårding). If a real scalar $a\in S^m_{1,0}$
   is nonnegative, then
-  $\operatorname{Re}\langle\operatorname{Op}(a)u,u\rangle
+  $\mathop{\mathrm{Re}}\langle\mathop{\mathrm{Op}}(a)u,u\rangle
   \geq-C\|u\|_{H^{(m-1)/2}}^2$, locally with compact support or
   globally under uniform symbol bounds.
 * **32. Paradifferential decomposition.** Smooth dyadic projections give
@@ -172,7 +172,7 @@ of degrees $m,m-1,\ldots$ for large $|\xi|$.
 
 An order-$m$ symbol is **elliptic** where $|a(x,\xi)|\geq c|\xi|^m$
 at large frequencies in the indicated conic region. The complement is
-its characteristic set $\operatorname{Char}(A)$.
+its characteristic set $\mathop{\mathrm{Char}}(A)$.
 Global consequences on closed manifolds (Fredholm property, complex powers,
 Weyl asymptotics) are stated in Section 53 (SYNOPSIS53, items 5, 11, 24–27).
 
@@ -182,7 +182,7 @@ Weyl asymptotics) are stated in Section 53 (SYNOPSIS53, items 5, 11, 24–27).
   Its principal symbol is the reciprocal of the principal symbol of the
   operator.
 * **34. Elliptic wavefront identity.**
-  $\mathrm{WF}(u)\subset\mathrm{WF}(Au)\cup\operatorname{Char}(A)$.
+  $\mathrm{WF}(u)\subset\mathrm{WF}(Au)\cup\mathop{\mathrm{Char}}(A)$.
   Thus $\mathrm{WF}(Au)=\mathrm{WF}(u)$ for elliptic $A$.
 * **35. Interior elliptic estimates.** For cutoffs $\chi\prec\widetilde\chi$
   and an elliptic differential operator $A$ of order $m$,
@@ -199,9 +199,9 @@ Weyl asymptotics) are stated in Section 53 (SYNOPSIS53, items 5, 11, 24–27).
   in $x$, $|a(x,\xi)|\geq c|\xi|^{m'}$ and
   $|\partial_x^\alpha\partial_\xi^\beta a|\leq C_{\alpha\beta}
   |a|\langle\xi\rangle^{-\rho|\beta|+\delta|\alpha|}$. Then
-  $\operatorname{Op}(a)$ has a two-sided parametrix in
+  $\mathop{\mathrm{Op}}(a)$ has a two-sided parametrix in
   $S^{-m'}_{\rho,\delta}$; it is hypoelliptic, and
-  $\operatorname{Op}(a)u\in H^s_{\mathrm{loc}}$ implies
+  $\mathop{\mathrm{Op}}(a)u\in H^s_{\mathrm{loc}}$ implies
   $u\in H^{s+m'}_{\mathrm{loc}}$ (Hörmander). A hypoelliptic
   constant-coefficient $P(D)$ satisfies these bounds with $\delta=0$ and
   some $\rho>0$.
@@ -246,11 +246,11 @@ Weyl asymptotics) are stated in Section 53 (SYNOPSIS53, items 5, 11, 24–27).
   type ($dp$ never proportional to $\xi\,dx$ on $p^{-1}(0)$),
   local solvability is equivalent to the Nirenberg–Trèves condition
   $(\Psi)$ (sufficiency by Dencker): for every smooth nonvanishing $q$,
-  $\operatorname{Im}(qp)$ does not change sign from $-$ to $+$ along
-  bicharacteristics of $\operatorname{Re}(qp)$. In particular $\operatorname{Im}p$
+  $\mathop{\mathrm{Im}}(qp)$ does not change sign from $-$ to $+$ along
+  bicharacteristics of $\mathop{\mathrm{Re}}(qp)$. In particular $\mathop{\mathrm{Im}}p$
   must not change sign from $-$ to $+$ along bicharacteristics of
-  $\operatorname{Re}p$, which excludes Hörmander's condition
-  $\{\operatorname{Re}p,\operatorname{Im}p\}>0$ at a characteristic point.
+  $\mathop{\mathrm{Re}}p$, which excludes Hörmander's condition
+  $\{\mathop{\mathrm{Re}}p,\mathop{\mathrm{Im}}p\}>0$ at a characteristic point.
 * **44. Uniqueness and unique continuation.** If $P$ has analytic
   coefficients and $S$ is a noncharacteristic $C^1$ hypersurface, a
   distribution solution of $Pu=0$ vanishing on one side of $S$ vanishes
@@ -312,7 +312,7 @@ equal-dimensional manifolds are locally $L^2$ bounded.
 
 For $0<h\leq1$, Weyl quantization is
 $$
-\operatorname{Op}_h^w(a)u(x)=(2\pi h)^{-d}\iint
+\mathop{\mathrm{Op}}\nolimits_h^w(a)u(x)=(2\pi h)^{-d}\iint
  e^{i(x-y)\cdot\xi/h}a((x+y)/2,\xi;h)u(y)dy\,d\xi.
 $$
 Unless indicated otherwise, semiclassical statements use symbols with
@@ -320,18 +320,18 @@ uniformly bounded derivatives, or compact phase-space support, and appropriate
 self-adjoint realizations. Semiclassical Sobolev norms use $\langle hD\rangle^s$.
 
 * **52. Uniform boundedness.** The Calderón–Vaillancourt estimate for
-  $\operatorname{Op}_h^w(a)$ is uniform as $h\downarrow0$ when the
+  $\mathop{\mathrm{Op}}_h^w(a)$ is uniform as $h\downarrow0$ when the
   required symbol seminorms are uniform.
 * **53. Semiclassical Weyl calculus.**
-  $\operatorname{Op}_h^w(a)\operatorname{Op}_h^w(b)
-  =\operatorname{Op}_h^w(a\#_hb)$ with
+  $\mathop{\mathrm{Op}}_h^w(a)\mathop{\mathrm{Op}}_h^w(b)
+  =\mathop{\mathrm{Op}}_h^w(a\#_hb)$ with
   $a\#_hb=ab+(h/2i)\{a,b\}+O(h^2)$ in the symbol class.
-  Thus $[\operatorname{Op}_h^w(a),\operatorname{Op}_h^w(b)]
-  =(h/i)\operatorname{Op}_h^w(\{a,b\})+O(h^3)$ for uniform smooth symbols.
+  Thus $[\mathop{\mathrm{Op}}_h^w(a),\mathop{\mathrm{Op}}_h^w(b)]
+  =(h/i)\mathop{\mathrm{Op}}_h^w(\{a,b\})+O(h^3)$ for uniform smooth symbols.
 * **54. Weyl adjoints and positivity.**
-  $\operatorname{Op}_h^w(a)^*=\operatorname{Op}_h^w(\overline a)$.
+  $\mathop{\mathrm{Op}}_h^w(a)^*=\mathop{\mathrm{Op}}_h^w(\overline a)$.
   If $a\geq0$ is a uniform order-zero symbol, sharp Gårding gives
-  $\langle\operatorname{Op}_h^w(a)u,u\rangle\geq-Ch\|u\|_2^2$;
+  $\langle\mathop{\mathrm{Op}}_h^w(a)u,u\rangle\geq-Ch\|u\|_2^2$;
   the scalar Fefferman–Phong estimate improves this to $-Ch^2\|u\|_2^2$.
 * **55. Semiclassical elliptic inversion.** If $|a|\geq c>0$ in a
   region, there is a symbol inverse there modulo $O(h^\infty)$.
@@ -344,7 +344,7 @@ self-adjoint realizations. Semiclassical Sobolev norms use $\langle hD\rangle^s$
   fiber infinity is treated through the chosen symbol compactification.
 * **57. Defect-measure compactness.** Every $L^2$-bounded family $u_h$
   has a subsequence $h_j\downarrow0$ and a positive Radon measure $\mu$
-  with $\langle\operatorname{Op}_{h_j}^w(a)u_{h_j},u_{h_j}\rangle
+  with $\langle\mathop{\mathrm{Op}}_{h_j}^w(a)u_{h_j},u_{h_j}\rangle
   \to\int a\,d\mu$ for each compactly supported smooth symbol.
   Mass can escape in space or frequency unless tightness is assumed.
 * **58. Characteristic support of measures.** If
@@ -358,8 +358,8 @@ self-adjoint realizations. Semiclassical Sobolev norms use $\langle hD\rangle^s$
 * **60. Semiclassical Egorov theorem.** For
   $U_h(t)=e^{-itP_h/h}$ with self-adjoint $P_h$ and principal symbol $p$,
   $$
-  U_h(t)^*\operatorname{Op}_h^w(a)U_h(t)
-  =\operatorname{Op}_h^w(a\circ\Phi_t)+O(h)
+  U_h(t)^*\mathop{\mathrm{Op}}\nolimits_h^w(a)U_h(t)
+  =\mathop{\mathrm{Op}}\nolimits_h^w(a\circ\Phi_t)+O(h)
   $$
   in $L^2$ operator norm on fixed time intervals with controlled flow
   and symbols. Here $\Phi_t$ is the $H_p$ flow.
@@ -367,7 +367,7 @@ self-adjoint realizations. Semiclassical Sobolev norms use $\langle hD\rangle^s$
   $(x_0,\xi_0)$ on spatial scale $\sqrt h$ have defect measure
   $\delta_{(x_0,\xi_0)}$, while WKB states $a(x)e^{i\varphi(x)/h}$
   have measure $|a(x)|^2\,dx\otimes\delta_{\xi=\nabla\varphi(x)}$.
-* **62. Functional calculus.** If $P_h=\operatorname{Op}_h^w(p)$ is
+* **62. Functional calculus.** If $P_h=\mathop{\mathrm{Op}}_h^w(p)$ is
   self-adjoint with real symbol $p$ in a uniform elliptic class and
   $f\in C_c^\infty(\mathbb R)$, then $f(P_h)$ is a semiclassical
   pseudodifferential operator with principal symbol $f\circ p$, as follows
@@ -376,7 +376,7 @@ self-adjoint realizations. Semiclassical Sobolev norms use $\langle hD\rangle^s$
   with an almost analytic extension $\widetilde f$.
 * **63. Semiclassical trace formula.** A smooth symbol of compact
   phase-space support gives a trace-class Weyl operator with
-  $\operatorname{Tr}\operatorname{Op}_h^w(a)
+  $\mathop{\mathrm{Tr}}\mathop{\mathrm{Op}}_h^w(a)
   =(2\pi h)^{-d}\int a(x,\xi)dx\,d\xi$.
   On closed manifolds the corresponding leading formula is invariantly
   expressed using Liouville measure.
@@ -385,7 +385,7 @@ self-adjoint realizations. Semiclassical Sobolev norms use $\langle hD\rangle^s$
   whose boundary energy surfaces have Liouville measure zero,
   $$
   \#\{\text{eigenvalues of }P_h\text{ in }[a,b]\}
-  =(2\pi h)^{-d}\operatorname{vol}\{a\leq|\xi|_g^2+V(x)\leq b\}
+  =(2\pi h)^{-d}\mathop{\mathrm{vol}}\{a\leq|\xi|_g^2+V(x)\leq b\}
   +o(h^{-d}).
   $$
 
@@ -393,7 +393,7 @@ self-adjoint realizations. Semiclassical Sobolev norms use $\langle hD\rangle^s$
 
 For real $V\in L^\infty_{\mathrm{comp}}(\mathbb R^d)$ write
 $R_V(\lambda)=(-\Delta+V-\lambda^2)^{-1}$; it is a bounded operator on
-$L^2$ for $\operatorname{Im}\lambda>0$ except at the finitely many
+$L^2$ for $\mathop{\mathrm{Im}}\lambda>0$ except at the finitely many
 $\lambda\in i(0,\infty)$ with $\lambda^2$ a negative eigenvalue.
 
 * **69. Meromorphic continuation.** For odd $d$, $R_V(\lambda)$ continues
@@ -404,7 +404,7 @@ $\lambda\in i(0,\infty)$ with $\lambda^2$ a negative eigenvalue.
   **resonances** (scattering poles). Resonances in the lower half-plane
   correspond to outgoing solutions of $(-\Delta+V-\lambda^2)u=0$ and
   govern the local decay of waves, the real part as frequency and
-  $-\operatorname{Im}\lambda$ as decay rate.
+  $-\mathop{\mathrm{Im}}\lambda$ as decay rate.
 * **70. Counting resonances.** For $d=1$ and $V\ne0$ with convex hull
   of support of length $L$, the number of resonances with
   $|\lambda|\leq r$, counted with multiplicity, is

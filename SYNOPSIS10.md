@@ -474,7 +474,7 @@ A **coboundary** is a function of the form $u-u\circ T$; its orbit sums telescop
 * **59. Reflexive mean ergodic theorem.** For a power-bounded operator on a
   reflexive Banach space, Cesàro averages converge strongly to a bounded
   projection, and
-  $E=\ker(I-U)\oplus\overline{\operatorname{ran}(I-U)}$.
+  $E=\ker(I-U)\oplus\overline{\mathop{\mathrm{ran}}(I-U)}$.
   This gives a common operator theorem behind many $L^p$ mean-ergodic results.
 * **64. Central limit theorem for Gibbs shifts.** For a Hölder potential on
   a mixing finite-type shift, a real centered Hölder observable satisfies

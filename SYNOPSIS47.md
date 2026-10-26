@@ -331,7 +331,7 @@ index sets have comparable norms uniformly.
   then $d_m(TB)=s_{m+1}$. Best rank-$m$ linear approximation
   has the same worst-case error.
 * **65. Widths of finite-dimensional balls.** The **Gelfand width** is
-  $d^m(A;X)=\inf_{\operatorname{codim}L\leq m}\sup_{f\in A\cap L}\|f\|$
+  $d^m(A;X)=\inf_{\mathop{\mathrm{codim}}L\leq m}\sup_{f\in A\cap L}\|f\|$
   over closed subspaces $L$. The Gelfand widths of the
   $\ell^1$ ball satisfy $d^m(B_1^N;\ell_2^N)\asymp
   \min\{1,((1+\log(N/m))/m)^{1/2}\}$ (Kashin; Garnaev–Gluskin), and by
@@ -383,11 +383,11 @@ $\mathbb R^d$ has the form $x\mapsto g(a\cdot x)$ with $a\neq0$.
   Quasi-Monte Carlo integration therefore converges at almost order
   $N^{-1}$ for fixed $s$, compared with $N^{-1/2}$ for Monte Carlo.
 * **76. Density of ridge functions.** For a set $\Omega$ of directions,
-  $\operatorname{span}\{g(a\cdot x):a\in\Omega,\ g\in C(\mathbb R)\}$
+  $\mathop{\mathrm{span}}\{g(a\cdot x):a\in\Omega,\ g\in C(\mathbb R)\}$
   is dense in $C(\mathbb R^d)$, uniformly on compact sets, exactly when
   no nonzero homogeneous polynomial vanishes on $\Omega$ (Vostrecov–Kreines,
   Lin–Pinkus). For continuous $\sigma:\mathbb R\to\mathbb R$,
-  $\operatorname{span}\{\sigma(w\cdot x+b):w\in\mathbb R^d,\ b\in\mathbb R\}$
+  $\mathop{\mathrm{span}}\{\sigma(w\cdot x+b):w\in\mathbb R^d,\ b\in\mathbb R\}$
   is dense in $C(\mathbb R^d)$ in that topology exactly when $\sigma$
   is not a polynomial (Leshno–Lin–Pinkus–Schocken); this is the
   universal approximation theorem for one-hidden-layer neural networks.

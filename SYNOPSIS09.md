@@ -119,7 +119,7 @@ $\gamma_F=(\langle DF_i,DF_j\rangle_H)_{i,j}$.
   with the corresponding powers of $I-L$.
 
 * **13. Gaussian Poincaré and hypercontractivity.**
-  $\operatorname{Var}F\leq\mathbb E\|DF\|_H^2$, and
+  $\mathop{\mathrm{Var}}F\leq\mathbb E\|DF\|_H^2$, and
   $\|P_tF\|_q\leq\|F\|_p$ when $1<p\leq q$ and
   $q-1\leq e^{2t}(p-1)$. In particular, a fixed Wiener chaos has equivalent
   $L^p$ norms for all finite $p>1$.
@@ -237,16 +237,16 @@ with respect to the compensated measure $\eta-\lambda$.
   with symmetric $f_n\in L^2(\lambda^n)$ given by
   $f_n(x_1,\ldots,x_n)=\frac1{n!}\mathbb E\,D^n_{x_1,\ldots,x_n}F$ and
   $\mathbb EF^2=\sum_nn!\|f_n\|^2$ (Fock-space representation). Moreover
-  $\operatorname{Var}F\leq\mathbb E\int(D_xF)^2\lambda(dx)$.
+  $\mathop{\mathrm{Var}}F\leq\mathbb E\int(D_xF)^2\lambda(dx)$.
 
 * **67. Mecke equation and Poisson integration by parts.** A point process
   $\eta$ is Poisson with intensity $\lambda$ exactly when
   $\mathbb E\int h(x,\eta)\,\eta(dx)=\mathbb E\int h(x,\eta+\delta_x)\,\lambda(dx)$
   for all measurable $h\geq0$ (Mecke). Consequently, for $u\in L^2(\lambda)$
   and $F\in L^2$ with $DF\in L^2(P\otimes\lambda)$,
-  $\operatorname{Cov}(I_1(u),F)=\mathbb E\int u(x)D_xF\,\lambda(dx)$; more
+  $\mathop{\mathrm{Cov}}(I_1(u),F)=\mathbb E\int u(x)D_xF\,\lambda(dx)$; more
   generally
-  $\operatorname{Cov}(F,G)=\mathbb E\int\!\int_0^1D_xF\,P_tD_xG\,dt\,\lambda(dx)$,
+  $\mathop{\mathrm{Cov}}(F,G)=\mathbb E\int\!\int_0^1D_xF\,P_tD_xG\,dt\,\lambda(dx)$,
   where $P_t$ is the Poisson Ornstein–Uhlenbeck (thinning-and-superposition)
   semigroup. These identities underlie Malliavin–Stein bounds on Poisson space.
 
@@ -268,7 +268,7 @@ $|X_{s,t}|\lesssim|t-s|^\alpha$, $|\mathbb X_{s,t}|\lesssim|t-s|^{2\alpha}$,
 and **Chen's relation**
 $\mathbb X_{s,t}=\mathbb X_{s,u}+\mathbb X_{u,t}+X_{s,u}\otimes X_{u,t}$.
 It is **weakly geometric** when
-$\operatorname{Sym}\mathbb X_{s,t}=\frac12X_{s,t}^{\otimes2}$.
+$\mathop{\mathrm{Sym}}\mathbb X_{s,t}=\frac12X_{s,t}^{\otimes2}$.
 Geometric rough paths are limits of iterated-integral lifts of smooth paths
 in the corresponding rough-path topology.
 
@@ -322,7 +322,7 @@ controlled-path space, rather than an equation based only on the first-level pat
 * **28. RDE existence and uniqueness.** For $V\in C_b^3$ and
   $1/3<\alpha\leq1/2$, every initial value and $\alpha$-Hölder rough path
   determine a unique global RDE solution on a finite interval. For general
-  finite $p$-variation, $\operatorname{Lip}^\gamma$ vector fields with
+  finite $p$-variation, $\mathop{\mathrm{Lip}}^\gamma$ vector fields with
   $\gamma>p$ give the corresponding theorem.
 
 * **29. Universal limit theorem.** The RDE solution map is locally Lipschitz
@@ -456,9 +456,9 @@ formula in result 40.
 
 * **36. Trace-class Wiener processes.** A positive self-adjoint covariance
   operator $Q$ on $U$, with eigenpairs $(q_k,e_k)$, defines a $U$-valued
-  Wiener process exactly when $\operatorname{tr}Q<\infty$. Then
+  Wiener process exactly when $\mathop{\mathrm{tr}}Q<\infty$. Then
   $W_t^Q=\sum_k\sqrt{q_k}\beta_k(t)e_k$ in $L^2(\Omega;U)$, and
-  $\mathbb E\|W_t^Q\|^2=t\operatorname{tr}Q$. A cylindrical Wiener process
+  $\mathbb E\|W_t^Q\|^2=t\mathop{\mathrm{tr}}Q$. A cylindrical Wiener process
   takes values in any larger Hilbert space $U_1\supset U$ with Hilbert–Schmidt
   embedding.
 
@@ -472,7 +472,7 @@ formula in result 40.
   $dX=b\,dt+G\,dW$ with integrable $H$-valued drift and square-integrable
   Hilbert–Schmidt diffusion, $\phi\in C_b^2(H)$ satisfies
   $$d\phi(X)=D\phi(X)b\,dt+D\phi(X)G\,dW+
-    \tfrac12\operatorname{tr}(G^*D^2\phi(X)G)dt.$$
+    \tfrac12\mathop{\mathrm{tr}}(G^*D^2\phi(X)G)dt.$$
   Localization allows the usual locally bounded variants.
 
 * **39. Stochastic convolution criterion.** For deterministic $B$,

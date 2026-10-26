@@ -46,7 +46,7 @@ for its closed linear span.
 * **5. Minimal coefficient norm.** Among all $c\in\ell^2$ satisfying
   $C^*c=f$, the canonical coefficients
   $(\langle f,S^{-1}f_k\rangle)$ uniquely minimize $\|c\|_2$;
-  they are the unique solution in $\operatorname{ran}C=(\ker C^*)^\perp$.
+  they are the unique solution in $\mathop{\mathrm{ran}}C=(\ker C^*)^\perp$.
 * **6. Riesz basis characterization.** A complete sequence is a Riesz
   basis exactly when
   $A\sum|c_k|^2\leq\|\sum c_kf_k\|^2\leq B\sum|c_k|^2$
@@ -144,7 +144,7 @@ $(\phi(\cdot-k))_k$ of $V_0$.
 * **23. Coefficient decay for smooth functions.** If $f\in C^N$ near
   the support of a compactly supported $N$-moment wavelet, then
   $|\langle f,\psi_{j,k}\rangle|
-  \leq C2^{-j(N+1/2)}\sup_{\operatorname{supp}\psi_{j,k}}|f^{(N)}|$.
+  \leq C2^{-j(N+1/2)}\sup_{\mathop{\mathrm{supp}}\psi_{j,k}}|f^{(N)}|$.
   For the orthogonal projection $P_j$ onto $V_j$ of such an MRA,
   $\|f-P_jf\|_2\leq C2^{-jN}\|f^{(N)}\|_2$ for $f\in H^N(\mathbb R)$.
 * **24. Perfect reconstruction filter banks.** The low- and high-pass
@@ -374,14 +374,14 @@ is defined by $\langle L_\sigma f,h\rangle=\langle\sigma,W(h,f)\rangle$.
 
 ## Bandlimited and nonuniform sampling
 
-Let $PW_B=\{f\in L^2(\mathbb R):\operatorname{supp}\widehat f
+Let $PW_B=\{f\in L^2(\mathbb R):\mathop{\mathrm{supp}}\widehat f
 \subset[-B,B]\}$, $B>0$, with its continuous entire representative.
 Sampling is **stable** on a set $\Lambda$ if
 $A\|f\|_2^2\leq\sum_{\lambda\in\Lambda}|f(\lambda)|^2\leq B_0\|f\|_2^2$.
 
 * **56. Reproducing kernels.** Point evaluation on $PW_B$ is bounded,
-  with kernel $K_x(t)=2B\operatorname{sinc}(2B(t-x))$,
-  $\operatorname{sinc}u=\sin(\pi u)/(\pi u)$. In particular
+  with kernel $K_x(t)=2B\mathop{\mathrm{sinc}}(2B(t-x))$,
+  $\mathop{\mathrm{sinc}}u=\sin(\pi u)/(\pi u)$. In particular
   $|f(x)|\leq\sqrt{2B}\|f\|_2$.
 * **57. Bernstein and Plancherel–Pólya inequalities.** For $f\in PW_B$,
   $f'\in PW_B$ and $\|f'\|_2\leq2\pi B\|f\|_2$; the same holds in
@@ -392,7 +392,7 @@ $A\|f\|_2^2\leq\sum_{\lambda\in\Lambda}|f(\lambda)|^2\leq B_0\|f\|_2^2$.
   on $PW_B$, so for separated sets only the lower sampling bound is at issue.
 * **58. Shannon sampling theorem.** For $f\in PW_B$,
   $$
-  f(t)=\sum_{k\in\mathbb Z}f(k/(2B))\operatorname{sinc}(2Bt-k),
+  f(t)=\sum_{k\in\mathbb Z}f(k/(2B))\mathop{\mathrm{sinc}}(2Bt-k),
   \qquad \|f\|_2^2=(2B)^{-1}\sum_k|f(k/(2B))|^2.
   $$
   The series converges in $L^2$ and uniformly on the real axis.
@@ -449,7 +449,7 @@ $A\|f\|_2^2\leq\sum_{\lambda\in\Lambda}|f(\lambda)|^2\leq B_0\|f\|_2^2$.
 
 For $A\in\mathbb C^{m\times N}$, a vector is **$s$-sparse** if it has
 at most $s$ nonzero coordinates. Write
-$\sigma_s(x)_1=\inf_{\#\operatorname{supp}z\leq s}\|x-z\|_1$.
+$\sigma_s(x)_1=\inf_{\#\mathop{\mathrm{supp}}z\leq s}\|x-z\|_1$.
 The **restricted isometry constant** $\delta_s$ is the least $\delta$
 with $(1-\delta)\|x\|_2^2\leq\|Ax\|_2^2\leq(1+\delta)\|x\|_2^2$
 for every $s$-sparse $x$.

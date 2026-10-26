@@ -93,7 +93,7 @@ another assumption is stated.
   everywhere. In particular a potential bounded by a constant on
   its supporting charge is bounded by that constant everywhere.
 * **15. Continuity principle.** If $\mu\geq0$ has compact support and
-  the restriction of $U^\mu$ to $\operatorname{supp}\mu$ is finite and
+  the restriction of $U^\mu$ to $\mathop{\mathrm{supp}}\mu$ is finite and
   continuous, then $U^\mu$ is continuous on $\mathbb R^n$
   (Evans–Vasilesco). Every finite-energy measure is an increasing limit
   of measures with continuous potentials.
@@ -101,28 +101,28 @@ another assumption is stated.
 ## Newtonian capacity, equilibrium, and thinness
 
 For compact $K$ define
-$\operatorname{Cap}(K)=\inf\{\int_{\mathbb R^n}|\nabla\phi|^2:
+$\mathop{\mathrm{Cap}}(K)=\inf\{\int_{\mathbb R^n}|\nabla\phi|^2:
 \phi\in C_c^\infty,\ \phi\geq1\text{ near }K\}$.
 Extend first to open sets by compact exhaustion and then to arbitrary
 sets by outer approximation.
 
 * **16. Energy duality.**
-  $\operatorname{Cap}(K)^{-1}=\inf_{\mu(K)=1,\,\mu\geq0}I(\mu)$,
+  $\mathop{\mathrm{Cap}}(K)^{-1}=\inf_{\mu(K)=1,\,\mu\geq0}I(\mu)$,
   with $1/0=\infty$. Positive capacity is equivalent to supporting
   a nonzero finite-energy measure.
 * **17. Equilibrium measure.** If $K$ has positive capacity, there is
   a unique equilibrium charge $\nu_K$ supported on $K$ such that
-  $\nu_K(K)=\operatorname{Cap}(K)$,
+  $\nu_K(K)=\mathop{\mathrm{Cap}}(K)$,
   $U^{\nu_K}=1$ quasi-everywhere on $K$, and $U^{\nu_K}\leq1$
-  everywhere. Its energy is $I(\nu_K)=\operatorname{Cap}(K)$.
+  everywhere. Its energy is $I(\nu_K)=\mathop{\mathrm{Cap}}(K)$.
   For a zero-capacity compact set the capacitary measure and potential are zero.
 * **18. Variational capacitary potential.** The equilibrium potential
   minimizes Dirichlet energy among homogeneous $H^1$ functions at
   least one quasi-everywhere on $K$. Its energy is the capacity;
   it is harmonic outside $K$ and decays at infinity.
 * **19. Ball capacity and scaling.**
-  $\operatorname{Cap}(\overline B_r)=(n-2)|S^{n-1}|r^{n-2}$ and
-  $\operatorname{Cap}(aK)=a^{n-2}\operatorname{Cap}(K)$ for $a>0$.
+  $\mathop{\mathrm{Cap}}(\overline B_r)=(n-2)|S^{n-1}|r^{n-2}$ and
+  $\mathop{\mathrm{Cap}}(aK)=a^{n-2}\mathop{\mathrm{Cap}}(K)$ for $a>0$.
 * **20. Choquet properties.** Capacity is monotone, continuous on
   increasing sequences of sets and decreasing sequences of compact
   sets, and countably subadditive. Analytic sets, in particular Borel
@@ -170,7 +170,7 @@ sets by outer approximation.
   each smaller neighborhood.
 * **30. Wiener's criterion.** For $n\geq3$, a boundary point $x_0$
   is regular exactly when
-  $\sum_{k\geq1}2^{k(n-2)}\operatorname{Cap}(E_k)=\infty$,
+  $\sum_{k\geq1}2^{k(n-2)}\mathop{\mathrm{Cap}}(E_k)=\infty$,
   where $E_k=(\mathbb R^n\setminus\Omega)\cap
   \{2^{-k-1}\leq|x-x_0|\leq2^{-k}\}$. Equivalently, $x_0$ is
   regular exactly when $\mathbb R^n\setminus\Omega$ is not thin at $x_0$;
@@ -252,7 +252,7 @@ $U_\alpha^\mu=k_\alpha*\mu$ and $I_\alpha(\mu)=\iint k_\alpha(x-y)d\mu\,d\mu$.
   $\mathcal H^{n-\alpha}(E)<\infty$, while compact sets of dimension
   greater than $n-\alpha$ have positive capacity (cf. SYNOPSIS37, item 5).
   For $0<\alpha\leq2$ the Frostman maximum principle holds: $U_\alpha^\mu\leq1$
-  on $\operatorname{supp}\mu$ implies $U_\alpha^\mu\leq1$ everywhere. Hence
+  on $\mathop{\mathrm{supp}}\mu$ implies $U_\alpha^\mu\leq1$ everywhere. Hence
   a compact $K$ of positive capacity has an equilibrium measure $\lambda_K$
   with $\lambda_K(K)=C_\alpha(K)$, $U_\alpha^{\lambda_K}=1$ quasi-everywhere
   on $K$, and $U_\alpha^{\lambda_K}\leq1$ everywhere. For $2<\alpha<n$ the
@@ -278,7 +278,7 @@ $U_\alpha^\mu=k_\alpha*\mu$ and $I_\alpha(\mu)=\iint k_\alpha(x-y)d\mu\,d\mu$.
 ## Sobolev capacity and nonlinear potential theory
 
 For $1<p<\infty$, the relative **$p$-capacity** is
-$\operatorname{cap}_p(K,\Omega)=\inf\int_\Omega|\nabla\phi|^p$,
+$\mathop{\mathrm{cap}}_p(K,\Omega)=\inf\int_\Omega|\nabla\phi|^p$,
 over $\phi\in C_c^\infty(\Omega)$ at least one near $K$.
 A **$p$-superharmonic function** is lower semicontinuous, finite on a
 dense set, and satisfies comparison with continuous $p$-harmonic functions
@@ -288,7 +288,7 @@ the capacitary description of $W_0^{1,p}$ are SYNOPSIS26, items 31 and 33.
 * **43. Capacitary minimization.** For compact $K\Subset\Omega$,
   minimization over $W_0^{1,p}$ functions at least one quasi-everywhere
   on $K$ gives the unique capacitary potential. It is $p$-harmonic
-  outside $K$ and has energy $\operatorname{cap}_p(K,\Omega)$.
+  outside $K$ and has energy $\mathop{\mathrm{cap}}_p(K,\Omega)$.
 * **45. Nonlinear comparison.** Weak $p$-harmonic solutions with ordered
   Sobolev boundary data are ordered. The comparison definition extends
   the theory to $p$-superharmonic functions outside the energy class.
@@ -300,15 +300,15 @@ the capacitary description of $W_0^{1,p}$ are SYNOPSIS26, items 31 and 33.
   regular exactly when
   $$
   \int_0^{r_0}\left(
-  \frac{\operatorname{cap}_p((\mathbb R^n\setminus\Omega)\cap\overline B_r(x_0),B_{2r}(x_0))}
-       {\operatorname{cap}_p(\overline B_r(x_0),B_{2r}(x_0))}
+  \frac{\mathop{\mathrm{cap}}\nolimits_p((\mathbb R^n\setminus\Omega)\cap\overline B_r(x_0),B_{2r}(x_0))}
+       {\mathop{\mathrm{cap}}\nolimits_p(\overline B_r(x_0),B_{2r}(x_0))}
   \right)^{1/(p-1)}\frac{dr}{r}=\infty.
   $$
   Sufficiency is due to Maz'ya and necessity to Kilpeläinen–Malý.
 * **48. Nonlinear fundamental solution and scaling.** For $1<p<n$,
   a normalized positive multiple of $|x|^{(p-n)/(p-1)}$ solves
   $-\Delta_pu=\delta_0$, and
-  $\operatorname{cap}_p(\overline B_r,B_{2r})=C_{n,p}r^{n-p}$.
+  $\mathop{\mathrm{cap}}_p(\overline B_r,B_{2r})=C_{n,p}r^{n-p}$.
   At $p=n$ the fundamental singularity is logarithmic. For $p>n$ the
   fundamental solution is bounded and continuous at the origin, and
   points have positive $p$-capacity.
@@ -320,7 +320,7 @@ the capacitary description of $W_0^{1,p}$ are SYNOPSIS26, items 31 and 33.
   $u(x)\leq C\inf_{B_R(x)}u+C\mathbf W_{1,p}^\mu(x,2R)$
   when $B_{2R}(x)$ is interior.
 * **50. Capacitary strong estimate.** For $u\in C_c^\infty(\Omega)$,
-  $\int_0^\infty\operatorname{cap}_p(\{|u|>t\},\Omega)
+  $\int_0^\infty\mathop{\mathrm{cap}}_p(\{|u|>t\},\Omega)
   \,d(t^p)\leq C_p\int|\nabla u|^p$.
   Truncation turns energy control into control of exceptional level sets.
 * **51. Dimension thresholds.** If $1<p<n$, sets of dimension
@@ -353,7 +353,7 @@ $\widehat G_\alpha(\xi)=(1+|\xi|^2)^{-\alpha/2}$ using $e^{-ix\cdot\xi}$.
 For compact $K\subset\mathbb C$, set
 $I_{\log}(\mu)=\iint\log(1/|z-w|)d\mu(z)d\mu(w)$,
 $V_K=\inf_{\mu\in\mathcal P(K)}I_{\log}(\mu)$, and
-$\operatorname{cap}_{\log}(K)=e^{-V_K}$. The Bernstein–Walsh inequality
+$\mathop{\mathrm{cap}}_{\log}(K)=e^{-V_K}$. The Bernstein–Walsh inequality
 is SYNOPSIS47, item 37.
 
 * **55. Jensen's formula for subharmonic functions.** If
@@ -370,17 +370,17 @@ is SYNOPSIS47, item 37.
 * **58. Green function with pole at infinity.** On the unbounded
   complementary component of $K$,
   $g_K(z,\infty)=V_K-U^{\mu_K}_{\log}(z)$ and
-  $g_K(z,\infty)=\log|z|-\log\operatorname{cap}_{\log}(K)+o(1)$
+  $g_K(z,\infty)=\log|z|-\log\mathop{\mathrm{cap}}_{\log}(K)+o(1)$
   at infinity.
 * **59. Conformal characterization.** If that component is simply
   connected and its conformal map to $|w|>1$ is
   $\phi(z)=z/c+O(1)$ at infinity, $c>0$, then
-  $g_K=\log|\phi|$ and $\operatorname{cap}_{\log}(K)=c$.
+  $g_K=\log|\phi|$ and $\mathop{\mathrm{cap}}_{\log}(K)=c$.
   A radius-$R$ disk has capacity $R$; an interval of length $\ell$
   has capacity $\ell/4$.
 * **60. Transfinite diameter.**
   $\lim_{N\to\infty}\max_{z_1,\ldots,z_N\in K}
-  \prod_{i<j}|z_i-z_j|^{2/(N(N-1))}=\operatorname{cap}_{\log}(K)$.
+  \prod_{i<j}|z_i-z_j|^{2/(N(N-1))}=\mathop{\mathrm{cap}}_{\log}(K)$.
 * **61. Fekete-point distribution.** For positive-capacity compact
   $K$, empirical measures of maximizing Fekete configurations converge
   weakly to $\mu_K$. Discrete repulsion selects the continuous

@@ -177,7 +177,7 @@ at total variation distance one.
 * **21. Kolmogorov maximal inequality.** For independent centered variables
   with finite variances,
   $$\mathbb P\!\left(\max_{k\leq n}|S_k|\geq\lambda\right)
-    \leq\lambda^{-2}\sum_{j=1}^n\operatorname{Var}(X_j).$$
+    \leq\lambda^{-2}\sum_{j=1}^n\mathop{\mathrm{Var}}(X_j).$$
 
 * **22. Convergence of centered square-summable series.** If the $X_n$ are
   independent, centered, and $\sum_n\mathbb E X_n^2<\infty$, then
@@ -190,12 +190,12 @@ at total variation distance one.
   converges almost surely exactly when
   $$\sum_n\mathbb P(|X_n|>A)<\infty,\qquad
     \sum_n\mathbb E Y_n\text{ converges},\qquad
-    \sum_n\operatorname{Var}(Y_n)<\infty.$$
+    \sum_n\mathop{\mathrm{Var}}(Y_n)<\infty.$$
 
 * **24. Weak law of large numbers.** For independent identically distributed
   integrable real variables with mean $m$, $S_n/n\to m$ in probability.
   For independent variables with finite variances, the sufficient condition
-  $n^{-2}\sum_{j\leq n}\operatorname{Var}(X_j)\to0$ gives
+  $n^{-2}\sum_{j\leq n}\mathop{\mathrm{Var}}(X_j)\to0$ gives
   $(S_n-\mathbb ES_n)/n\to0$ in probability.
 
 * **25. Strong law of large numbers.** For independent identically distributed
@@ -203,7 +203,7 @@ at total variation distance one.
   Pairwise independence suffices (Etemadi). Conversely, if
   $\mathbb E|X_1|=\infty$, then $\limsup_n|S_n|/n=\infty$ almost surely.
   For independent centered square-integrable $X_n$, the condition
-  $\sum_n\operatorname{Var}(X_n)/n^2<\infty$ also gives $S_n/n\to0$ almost surely.
+  $\sum_n\mathop{\mathrm{Var}}(X_n)/n^2<\infty$ also gives $S_n/n\to0$ almost surely.
 
 * **26. Kronecker's lemma.** If $a_n>0$ increases to infinity and
   $\sum_n x_n/a_n$ converges, then $a_n^{-1}\sum_{j\leq n}x_j\to0$.
@@ -250,7 +250,7 @@ $\exp(i\langle t,m\rangle-\frac12t^{\mathsf T}\Sigma t)$.
   integrability of $|x|^k$ gives convergence of the $k$-th moments.
 
 * **33. Independent identically distributed central limit theorem.** If
-  $\mathbb EX_1=m$ and $\operatorname{Var}(X_1)=\sigma^2\in(0,\infty)$, then
+  $\mathbb EX_1=m$ and $\mathop{\mathrm{Var}}(X_1)=\sigma^2\in(0,\infty)$, then
   $(S_n-nm)/(\sigma\sqrt n)\Rightarrow N(0,1)$. For vectors, finite covariance
   gives $n^{-1/2}\sum_{j\leq n}(X_j-\mathbb EX_j)\Rightarrow N(0,\Sigma)$,
   with singular $\Sigma$ allowed.
@@ -261,7 +261,7 @@ $\exp(i\langle t,m\rangle-\frac12t^{\mathsf T}\Sigma t)$.
   $$s_n^{-2}\sum_k\mathbb E\!
     \left[X_{n,k}^2 1_{\{|X_{n,k}|>\varepsilon s_n\}}\right]\longrightarrow0,$$
   then $s_n^{-1}\sum_kX_{n,k}\Rightarrow N(0,1)$. Under
-  $\max_k\operatorname{Var}(X_{n,k})/s_n^2\to0$, this condition is also necessary.
+  $\max_k\mathop{\mathrm{Var}}(X_{n,k})/s_n^2\to0$, this condition is also necessary.
 
 * **35. Lyapunov criterion.** In result 34, the sufficient condition
   $s_n^{-2-\delta}\sum_k\mathbb E|X_{n,k}|^{2+\delta}\to0$ for some
@@ -280,11 +280,11 @@ $\exp(i\langle t,m\rangle-\frac12t^{\mathsf T}\Sigma t)$.
 * **38. Poisson limit.** For independent Bernoulli variables in each row, with
   success probabilities $p_{n,k}$, the conditions
   $\max_kp_{n,k}\to0$ and $\sum_kp_{n,k}\to\lambda<\infty$ imply convergence
-  of their sum to $\operatorname{Poisson}(\lambda)$.
+  of their sum to $\mathop{\mathrm{Poisson}}(\lambda)$.
 
 * **39. Le Cam's Poisson approximation.** For independent Bernoulli variables
   $I_i$ of parameters $p_i$, $\lambda=\sum_i p_i$, and $S=\sum_iI_i$,
-  $$d_{\mathrm{TV}}(\mathcal L(S),\operatorname{Poisson}(\lambda))
+  $$d_{\mathrm{TV}}(\mathcal L(S),\mathop{\mathrm{Poisson}}(\lambda))
     \leq\sum_i p_i^2.$$
   This quantifies the Poisson limit theorem.
 
@@ -495,7 +495,7 @@ processes is stated with Poisson Malliavin calculus in SYNOPSIS09, item 67.
 
 A **Poisson random measure**
 $N$ of intensity $\mu$ has independent counts on disjoint sets, with
-$N(A)\sim\operatorname{Poisson}(\mu(A))$ when $\mu(A)<\infty$.
+$N(A)\sim\mathop{\mathrm{Poisson}}(\mu(A))$ when $\mu(A)<\infty$.
 
 * **53. Poisson Laplace functional.** A Poisson random measure with given
   $\sigma$-finite intensity $\mu$ exists, and for measurable $f\geq0$,
@@ -537,12 +537,12 @@ $N(A)\sim\operatorname{Poisson}(\mu(A))$ when $\mu(A)<\infty$.
 ### Gaussian random fields
 
 * **72. Kac–Rice formula.** Let $X$ be a Gaussian process on $[a,b]$ with
-  continuously differentiable sample paths and $\operatorname{Var}X(t)>0$ for
+  continuously differentiable sample paths and $\mathop{\mathrm{Var}}X(t)>0$ for
   every $t$. The number $N_u$ of $t\in[a,b]$ with $X(t)=u$ satisfies
   $$\mathbb EN_u=\int_a^b\mathbb E\bigl[|X'(t)|\bigm|X(t)=u\bigr]\,
     p_{X(t)}(u)\,dt,$$
   with $p_{X(t)}$ the density of $X(t)$. For a centered stationary process with
-  $\lambda_0=\operatorname{Var}X(0)$ and $\lambda_2=\operatorname{Var}X'(0)$
+  $\lambda_0=\mathop{\mathrm{Var}}X(0)$ and $\lambda_2=\mathop{\mathrm{Var}}X'(0)$
   this is Rice's formula
   $\mathbb EN_u=\frac{b-a}{\pi}\sqrt{\lambda_2/\lambda_0}\,e^{-u^2/(2\lambda_0)}$.
   In several parameters, the analogous formula for critical points yields the

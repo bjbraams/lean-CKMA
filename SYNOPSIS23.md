@@ -74,13 +74,13 @@ irreducible representation $\pi$, **GCR** (postliminal) if
 $\pi(A)\supset\mathcal K(H_\pi)$ for every such $\pi$, and **type I** if
 $\pi(A)''$ is a type I factor (item 27) for every factor representation $\pi$.
 $\widehat A$ denotes the unitary equivalence classes of irreducible
-representations and $\operatorname{Prim}A$ their kernels, with the
+representations and $\mathop{\mathrm{Prim}}A$ their kernels, with the
 hull–kernel topology.
 
 * **83. Glimm's type I theorem.** For a separable C*-algebra the following
   are equivalent: $A$ is GCR; $A$ is type I; $A$ has a composition series
   with CCR subquotients; irreducible representations with the same kernel
-  are unitarily equivalent, so $\widehat A\to\operatorname{Prim}A$ is a
+  are unitarily equivalent, so $\widehat A\to\mathop{\mathrm{Prim}}A$ is a
   bijection; $\widehat A$ is a $T_0$ space; the Borel structure of
   $\widehat A$ is countably separated. If $A$ is not type I, it has factor
   representations of types II and III and uncountably many inequivalent
@@ -147,7 +147,7 @@ A **factor** has center $\mathbb C1$.
   The same holds for self-adjoint and positive unit balls.
 * **23. Predual theorem.** Every von Neumann algebra has a unique Banach
   predual, consisting of its normal functionals. For $\mathcal B(H)$
-  this is trace class, paired by $\operatorname{tr}(Ta)$. Conversely a
+  this is trace class, paired by $\mathop{\mathrm{tr}}(Ta)$. Conversely a
   C*-algebra that is isometrically a dual Banach space is a von Neumann
   algebra (Sakai).
 * **24. Monotone completeness.** Every bounded increasing net of
@@ -211,7 +211,7 @@ operator**. A II$_1$ **subfactor** is a unital inclusion of II$_1$ factors.
   $\sigma_t(a)=\Delta^{it}a\Delta^{-it}$ is a one-parameter automorphism
   group intrinsic to the faithful normal vector state.
 * **36. Modular KMS relation.** For $a,b\in M$, there is a bounded
-  function analytic in $0<\operatorname{Im}z<1$, continuous on its
+  function analytic in $0<\mathop{\mathrm{Im}}z<1$, continuous on its
   closure, with boundary values
   $F(t)=\varphi(\sigma_t(a)b)$ and
   $F(t+i)=\varphi(b\sigma_t(a))$. This boundary convention fixes the
@@ -227,7 +227,7 @@ operator**. A II$_1$ **subfactor** is a unital inclusion of II$_1$ factors.
 * **39. Connes cocycle and type III classification.** For faithful normal
   states (or weights) $\varphi,\psi$ there is a unitary cocycle
   $u_t=(D\psi:D\varphi)_t$ in $M$ with
-  $\sigma_t^\psi=\operatorname{Ad}u_t\circ\sigma_t^\varphi$ and
+  $\sigma_t^\psi=\mathop{\mathrm{Ad}}u_t\circ\sigma_t^\varphi$ and
   $u_{s+t}=u_s\sigma_s^\varphi(u_t)$. Hence the modular flow is intrinsic
   modulo inner automorphisms, and $M$ is semifinite exactly when
   $\sigma^\varphi$ is inner.
@@ -239,7 +239,7 @@ operator**. A II$_1$ **subfactor** is a unital inclusion of II$_1$ factors.
   ($S=[0,\infty)$).
 * **40. Finite-dimensional Gibbs states.** For dynamics
   $\alpha_t(a)=e^{itH}ae^{-itH}$, the state with density
-  $e^{-\beta H}/\operatorname{tr}(e^{-\beta H})$ satisfies the
+  $e^{-\beta H}/\mathop{\mathrm{tr}}(e^{-\beta H})$ satisfies the
   $\beta$-KMS relation with lower boundary
   $\varphi(a\alpha_t(b))$ and upper boundary
   $\varphi(\alpha_t(b)a)$ at height $\beta>0$.
@@ -334,7 +334,7 @@ An **AF algebra** is an inductive limit of finite-dimensional C*-algebras.
   Morita equivalence
   is equivalent to isomorphism after stabilization by $\mathcal K$.
 * **56. Crossed-product universal property.** For a discrete action
-  $\alpha:G\to\operatorname{Aut}(A)$, representations of the full crossed
+  $\alpha:G\to\mathop{\mathrm{Aut}}(A)$, representations of the full crossed
   product $A\rtimes_\alpha G$ correspond to covariant pairs
   $(\pi,U)$ satisfying $U_g\pi(a)U_g^*=\pi(\alpha_g(a))$.
 * **57. Pimsner–Voiculescu exact sequence.** For an automorphism $\alpha$
@@ -382,8 +382,8 @@ classes of such modules.
   An invertible element of $KK(A,B)$ is a **$KK$-equivalence**.
 * **88. Universal coefficient theorem.** A separable $A$ **satisfies the
   UCT** if for every $\sigma$-unital $B$ there is a natural exact sequence
-  $$0\to\operatorname{Ext}^1_{\mathbb Z}(K_*(A),K_{*+1}(B))\to KK_*(A,B)
-     \to\operatorname{Hom}(K_*(A),K_*(B))\to0,$$
+  $$0\to\mathop{\mathrm{Ext}}\nolimits^1_{\mathbb Z}(K_*(A),K_{*+1}(B))\to KK_*(A,B)
+     \to\mathop{\mathrm{Hom}}(K_*(A),K_*(B))\to0,$$
   split unnaturally. This holds exactly when $A$ is $KK$-equivalent to a
   commutative C*-algebra (Rosenberg–Schochet); the separable nuclear such
   algebras form the **bootstrap class**. Two algebras satisfying the UCT are
@@ -514,12 +514,12 @@ The operator is **Dixmier measurable** if the value is independent of that choic
   Thus the commutator norm recovers the geodesic metric.
 * **80. Dixmier trace theorem.** A positive classical pseudodifferential
   operator $P$ of order $-d$ on a closed $d$-manifold, $d\geq1$, is
-  Dixmier measurable and satisfies $\operatorname{Tr}_\omega P=d^{-1}\operatorname{Res}P$.
-  Here $\operatorname{Res}P=(2\pi)^{-d}\int_{S^*M}
-  \operatorname{tr}\sigma_{-d}(P)$ is the noncommutative residue.
+  Dixmier measurable and satisfies $\mathop{\mathrm{Tr}}_\omega P=d^{-1}\mathop{\mathrm{Res}}P$.
+  Here $\mathop{\mathrm{Res}}P=(2\pi)^{-d}\int_{S^*M}
+  \mathop{\mathrm{tr}}\sigma_{-d}(P)$ is the noncommutative residue.
 * **81. Geometric index pairing.** On an even-dimensional closed spin
   manifold, pairing the Dirac class with a smooth vector bundle $E$ gives
-  $\operatorname{ind}D_E^+=\int_M\widehat A(TM)\operatorname{ch}(E)$
+  $\mathop{\mathrm{ind}}D_E^+=\int_M\widehat A(TM)\mathop{\mathrm{ch}}(E)$
   (Atiyah–Singer).
 
 ## Reference guide

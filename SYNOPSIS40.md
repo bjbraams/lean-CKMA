@@ -19,7 +19,7 @@ Write $\mathcal O(\Omega)$ for its holomorphic functions,
 $\mathbb D=\{|z|<1\}$, and $\widehat{\mathbb C}=\mathbb C\cup\{\infty\}$.
 Contours and cycles are piecewise $C^1$ unless otherwise specified.
 The winding number is
-$\operatorname{Ind}(\gamma,a)=(2\pi i)^{-1}\int_\gamma dz/(z-a)$.
+$\mathop{\mathrm{Ind}}(\gamma,a)=(2\pi i)^{-1}\int_\gamma dz/(z-a)$.
 Convergence in $\mathcal O(\Omega)$ means uniform convergence on compact sets.
 
 ## Holomorphy, integration, and power series
@@ -47,7 +47,7 @@ $\partial_{\bar z}=\frac12(\partial_x+i\partial_y)$.
   has index zero at every point outside $\Omega$, then
   $\int_\gamma f\,dz=0$ for every $f\in\mathcal O(\Omega)$.
 * **6. Cauchy integral formula.** Under the same cycle condition,
-  $\operatorname{Ind}(\gamma,a)f(a)
+  $\mathop{\mathrm{Ind}}(\gamma,a)f(a)
   =(2\pi i)^{-1}\int_\gamma f(z)/(z-a)\,dz$ for
   $a\in\Omega\setminus\gamma$.
 * **7. Analyticity and higher derivatives.** Every holomorphic
@@ -91,7 +91,7 @@ The sectorial Phragmén–Lindelöf principle is SYNOPSIS41, item 17.
 * **14. Local normal form.** Near $a$, a nonconstant holomorphic
   function can be written $f(z)=f(a)+\phi(z)^m$, where $\phi$
   is a local holomorphic coordinate vanishing at $a$ and
-  $m=\operatorname{ord}_a(f-f(a))$.
+  $m=\mathop{\mathrm{ord}}_a(f-f(a))$.
 * **15. Open mapping theorem.** Every nonconstant holomorphic
   function maps open sets to open sets. Its local mapping degree is
   the multiplicity in the preceding normal form.
@@ -155,11 +155,11 @@ in its Laurent expansion.
   statement on the sphere permits at most two exceptions.
 * **30. Residue theorem.** For a cycle null-homologous in the ambient
   domain and avoiding the isolated singularities of $f$,
-  $\int_\gamma f\,dz=2\pi i\sum_a\operatorname{Ind}(\gamma,a)
-  \operatorname{Res}_a f$, where only finitely many terms contribute.
+  $\int_\gamma f\,dz=2\pi i\sum_a\mathop{\mathrm{Ind}}(\gamma,a)
+  \mathop{\mathrm{Res}}_a f$, where only finitely many terms contribute.
 * **31. Residues at infinity.** A meromorphic differential on the
   sphere has total residue zero. In coordinates,
-  $\operatorname{Res}_\infty f(z)dz=-\operatorname{Res}_{w=0}
+  $\mathop{\mathrm{Res}}_\infty f(z)dz=-\mathop{\mathrm{Res}}_{w=0}
   f(1/w)w^{-2}dw$.
 * **32. Rationality on the sphere.** Every meromorphic function on
   $\widehat{\mathbb C}$ is rational. An entire function with a pole
@@ -189,10 +189,10 @@ in its Laurent expansion.
   formula is SYNOPSIS41, item 30.
 * **80. Real integrals by residues.** If $R=P/Q$ is rational with
   $\deg Q\geq\deg P+2$ and no real poles, then
-  $\int_{-\infty}^\infty R=2\pi i\sum_{\Im a>0}\operatorname{Res}_aR$.
+  $\int_{-\infty}^\infty R=2\pi i\sum_{\Im a>0}\mathop{\mathrm{Res}}_aR$.
   If $\deg Q\geq\deg P+1$ and $\lambda>0$, Jordan's lemma gives
   $\int_{-\infty}^\infty R(x)e^{i\lambda x}dx
-  =2\pi i\sum_{\Im a>0}\operatorname{Res}_a(R(z)e^{i\lambda z})$ as an
+  =2\pi i\sum_{\Im a>0}\mathop{\mathrm{Res}}_a(R(z)e^{i\lambda z})$ as an
   improper integral. Integrals of rational functions of $\cos t,\sin t$
   over $[0,2\pi]$ become contour integrals over $|z|=1$; real poles,
   logarithms, and powers are handled by indented contours and keyholes.

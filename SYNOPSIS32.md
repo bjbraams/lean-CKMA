@@ -84,7 +84,7 @@ unique continuation (SYNOPSIS30, item 44), and propagation of singularities
   For $\partial_tu=a(D)u$ on $\mathbb R^d$ the solution is
   $\widehat u(t,\xi)=e^{ta(\xi)}\widehat u_0(\xi)$, and the Cauchy
   problem is well posed in every $H^s$ exactly when
-  $\sup_\xi\operatorname{Re}a(\xi)<\infty$ (Petrowsky condition):
+  $\sup_\xi\mathop{\mathrm{Re}}a(\xi)<\infty$ (Petrowsky condition):
   heat and Schrödinger equations satisfy it, the backward heat equation
   does not.
 
@@ -183,11 +183,11 @@ estimates are stated in Section 33 (SYNOPSIS33, items 3 and 16–17).
 * **26. Dirichlet principle.** If $a^{ij}=a^{ji}$, $b=0$ and $c\geq0$,
   the weak solution
   uniquely minimizes
-  $\tfrac12a(u,u)-\operatorname{Re}\langle f,u\rangle$
+  $\tfrac12a(u,u)-\mathop{\mathrm{Re}}\langle f,u\rangle$
   among functions with the prescribed trace.
 * **27. Gårding coercivity after a shift.** Uniformly elliptic forms
   with bounded lower-order terms satisfy
-  $\operatorname{Re}a(u,u)\geq c\|u\|_{H^1}^2-C\|u\|_2^2$.
+  $\mathop{\mathrm{Re}}a(u,u)\geq c\|u\|_{H^1}^2-C\|u\|_2^2$.
   Adding a sufficiently large positive multiple of the $L^2$ inner
   product makes the form coercive.
 * **28. Fredholm alternative.** On a bounded domain, compactness of
@@ -268,7 +268,7 @@ estimates are stated in Section 33 (SYNOPSIS33, items 3 and 16–17).
   $u\in L^2(0,T;V)$ and $u_t\in L^2(0,T;V^*)$ for a dense
   Hilbert triple $V\subset H\subset V^*$, then
   $u\in C([0,T];H)$ and
-  $d\|u\|_H^2/dt=2\operatorname{Re}\langle u_t,u\rangle$
+  $d\|u\|_H^2/dt=2\mathop{\mathrm{Re}}\langle u_t,u\rangle$
   distributionally. This justifies initial data and energy identities.
 * **46. Duhamel formula.** If $L$ is the positive Dirichlet elliptic
   realization, then
@@ -296,7 +296,7 @@ estimates are stated in Section 33 (SYNOPSIS33, items 3 and 16–17).
   $f\in L^1(0,T;L^2)$.
 * **51. Wave energy.** For homogeneous forcing,
   $E(t)=\tfrac12\int(|u_t|^2+c^2|\nabla u|^2)$ is conserved.
-  With forcing, $E'(t)=\operatorname{Re}\int f\,\overline{u_t}$, giving continuous dependence
+  With forcing, $E'(t)=\mathop{\mathrm{Re}}\int f\,\overline{u_t}$, giving continuous dependence
   and uniqueness by an energy estimate.
 * **52. Finite propagation speed.** A wave solution at $(t,x)$ depends
   only on initial data in $B(x,ct)$ and forcing in its backward cone.
@@ -377,7 +377,7 @@ estimates are stated in Section 33 (SYNOPSIS33, items 3 and 16–17).
   transformations of the independent and dependent variables is a
   symmetry group (mapping solutions to solutions) exactly when the $n$th prolongation of each of
   its infinitesimal generators $v$ satisfies
-  $\operatorname{pr}^{(n)}v(\Delta)=0$ on the solution set (Lie).
+  $\mathop{\mathrm{pr}}^{(n)}v(\Delta)=0$ on the solution set (Lie).
   The symmetries form a Lie algebra computed from linear determining
   equations; group-invariant solutions solve a reduced system in fewer
   variables (Olver).

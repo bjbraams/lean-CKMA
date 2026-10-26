@@ -92,7 +92,7 @@ point from all other contributions.
   +O(\lambda^{-2})$, continued to all orders by repetition.
 * **14. Stationary phase.** A nondegenerate critical point with
   real Hessian $H$ contributes
-  $e^{i\lambda\phi(x_0)+i\pi\operatorname{sgn}H/4}
+  $e^{i\lambda\phi(x_0)+i\pi\mathop{\mathrm{sgn}}H/4}
   (2\pi/\lambda)^{m/2}A(x_0)/\sqrt{|\det H|}$,
   with subsequent powers of $\lambda^{-1}$ and controlled remainder.
   For a unique nondegenerate critical point on the support of the amplitude,
@@ -228,8 +228,8 @@ point from all other contributions.
   zero at $a$, the change
   $\frac23\zeta^{3/2}=\int_a^x\sqrt Q$
   transforms the leading equation to Airy form. Uniform solutions
-  have leading factors $(\zeta/Q)^{1/4}\operatorname{Ai}
-  (\varepsilon^{-2/3}\zeta)$ and the corresponding $\operatorname{Bi}$ term.
+  have leading factors $(\zeta/Q)^{1/4}\mathop{\mathrm{Ai}}
+  (\varepsilon^{-2/3}\zeta)$ and the corresponding $\mathop{\mathrm{Bi}}$ term.
 * **38. Turning-point connection.** For $Q<0$ to the left and
   $Q>0$ to the right of a simple turning point, a decaying term
   $CQ^{-1/4}e^{-\int_a^x\sqrt Q/\varepsilon}$ connects to
@@ -308,7 +308,7 @@ sector about that ray with at most exponential growth there.
   continued across the line, and $\Delta=f-\mathcal S_{+}\widehat f$ its
   exponentially small difference from the lateral sum on the other side
   (entry 50). Truncating near the least term, $N=|F|+O(1)$, gives
-  $f(z)-\sum_{n<N}a_nz^n=\Delta\cdot\frac12[1+\operatorname{erf}\sigma]
+  $f(z)-\sum_{n<N}a_nz^n=\Delta\cdot\frac12[1+\mathop{\mathrm{erf}}\sigma]
   (1+O(|z|^{1/2}))$ near the line. The subdominant exponential is
   switched on smoothly across an angular width $O(|z|^{1/2})$ (Berry);
   re-expanding the remainder in terminant functions gives exponentially

@@ -39,7 +39,7 @@ unless another space is specified.
   A nonempty open subset of $\mathbb R^n$ has Hausdorff dimension $n$,
   and Lipschitz maps do not increase Hausdorff dimension.
 * **3. Lipschitz dimension bound.** A Lipschitz map satisfies
-  $\mathcal H^s(f(E))\leq\operatorname{Lip}(f)^s\mathcal H^s(E)$.
+  $\mathcal H^s(f(E))\leq\mathop{\mathrm{Lip}}(f)^s\mathcal H^s(E)$.
   Bi-Lipschitz maps preserve Hausdorff dimension and null sets of each dimension.
   In particular Lipschitz maps $\mathbb R^n\to\mathbb R^n$ have Lusin's
   property (N).
@@ -49,7 +49,7 @@ unless another space is specified.
   $\mu(B(x,r))\leq Cr^s$. This characterizes lower bounds on dimension.
 * **5. Energy and dimension.** Finite Riesz energy
   $\iint|x-y|^{-s}d\mu(x)d\mu(y)$ for a nonzero finite measure
-  implies $\dim_H\operatorname{supp}\mu\geq s$.
+  implies $\dim_H\mathop{\mathrm{supp}}\mu\geq s$.
   Conversely a compact set of dimension greater than $s$ supports
   a probability measure of finite $s$-energy.
 * **6. Besicovitch differentiation.** For Radon measures $\mu$ and
@@ -139,7 +139,7 @@ Rademacher's theorem and Lipschitz extension are SYNOPSIS05, items 34 and 33.
 
 A function $u\in L^1(\Omega)$ belongs to **$BV$** if its distributional
 gradient $Du$ is a finite vector measure. Its variation is
-$|Du|(\Omega)=\sup\{\int u\operatorname{div}\phi:
+$|Du|(\Omega)=\sup\{\int u\mathop{\mathrm{div}}\phi:
 \phi\in C_c^1(\Omega;\mathbb R^n),\ |\phi|\leq1\}$.
 
 * **23. Lower semicontinuity.** $L^1_{\mathrm{loc}}$ convergence gives
@@ -158,8 +158,8 @@ $|Du|(\Omega)=\sup\{\int u\operatorname{div}\phi:
   every boundary point and enters the integration-by-parts formula:
   for $u\in BV(\Omega)$ and $\phi$ continuously differentiable near
   $\overline\Omega$,
-  $\int_\Omega u\,\operatorname{div}\phi\,dx+\int_\Omega\phi\cdot dDu
-  =\int_{\partial\Omega}\operatorname{Tr}u\,\phi\cdot\nu\,d\mathcal H^{n-1}$,
+  $\int_\Omega u\,\mathop{\mathrm{div}}\phi\,dx+\int_\Omega\phi\cdot dDu
+  =\int_{\partial\Omega}\mathop{\mathrm{Tr}}u\,\phi\cdot\nu\,d\mathcal H^{n-1}$,
   with $\nu$ the outward unit normal.
 * **27. Jump-set structure.** The approximate jump set $J_u$ is
   countably $(n-1)$-rectifiable and has two one-sided approximate
@@ -175,7 +175,7 @@ $|Du|(\Omega)=\sup\{\int u\operatorname{div}\phi:
   the diffuse derivative of $F(u)$ is $F'(\widetilde u)$ times
   the diffuse derivative of $u$, and its jump derivative is
   $(F(u^+)-F(u^-))\nu_u\mathcal H^{n-1}\!\restriction J_u$.
-  Lipschitz $F$ always gives $|D(F(u))|\leq\operatorname{Lip}(F)|Du|$.
+  Lipschitz $F$ always gives $|D(F(u))|\leq\mathop{\mathrm{Lip}}(F)|Du|$.
   The normalization $F(0)=0$ ensures $F(u)\in L^1$.
 * **30. Coarea for BV.** For scalar $u$,
   $|Du|(\Omega)=\int_{\mathbb R}P(\{u>t\};\Omega)dt$.
@@ -229,7 +229,7 @@ SYNOPSIS14, item 1.
   $\partial^*E$ by an $\mathcal H^{n-1}$-null set for a
   finite-perimeter set.
 * **39. Gauss–Green theorem.** For $X\in C_c^1$,
-  $\int_E\operatorname{div}X=\int_{\partial^*E}X\cdot\nu_E
+  $\int_E\mathop{\mathrm{div}}X=\int_{\partial^*E}X\cdot\nu_E
   \,d\mathcal H^{n-1}$. Classical smooth boundaries are unnecessary.
 * **40. Perimeter compactness.** Uniformly bounded perimeters and
   volumes give locally $L^1$ convergent subsequences of characteristic
@@ -274,7 +274,7 @@ A current is **normal** if it and its boundary have finite mass, and
   Lipschitz maps proper on the support define pushforwards of normal
   (more generally flat) currents, with
   $\partial(f_\#T)=f_\#\partial T$ and
-  $\mathbf M(f_\#T)\leq\operatorname{Lip}(f)^m\mathbf M(T)$.
+  $\mathbf M(f_\#T)\leq\mathop{\mathrm{Lip}}(f)^m\mathbf M(T)$.
 * **48. Mass lower semicontinuity.** Weak convergence of currents gives
   $\mathbf M(T)\leq\liminf\mathbf M(T_j)$, also locally.
   Boundary commutes with weak convergence.
@@ -285,7 +285,7 @@ A current is **normal** if it and its boundary have finite mass, and
   map $f$ to $\mathbb R^k$, $k\leq m$, almost every slice is
   an integral $(m-k)$-current and
   $\int\mathbf M(\langle T,f,y\rangle)dy
-  \leq\operatorname{Lip}(f)^k\mathbf M(T)$.
+  \leq\mathop{\mathrm{Lip}}(f)^k\mathbf M(T)$.
 * **51. Deformation theorem.** Integral currents can be approximated
   in flat norm by integral polyhedral chains, with controlled mass,
   boundary mass, and support displacement. The flat norm is
@@ -300,7 +300,7 @@ A current is **normal** if it and its boundary have finite mass, and
 * **54. Plateau existence.** A compactly supported integral boundary
   $S$ in Euclidean space has an integral mass-minimizing filling
   $T$ with $\partial T=S$. A minimizer can be chosen supported
-  in the convex hull of $\operatorname{supp}S$.
+  in the convex hull of $\mathop{\mathrm{supp}}S$.
 * **55. Calibration criterion.** If a closed differential form has
   comass at most one and equals the oriented volume form along a
   current, that current minimizes mass in its homology class.
@@ -321,7 +321,7 @@ An **$m$-varifold** is a Radon measure on
 $\mathbb R^n\times G(n,m)$, with weight measure $\|V\|$.
 Rectifiable varifolds integrate multiplicity over approximate tangent planes;
 integer multiplicity makes them integral. Their first variation is
-$\delta V(X)=\int\operatorname{div}_S X(x)dV(x,S)$.
+$\delta V(X)=\int\mathop{\mathrm{div}}_S X(x)dV(x,S)$.
 
 * **58. Mean curvature and stationarity.** If
   $\delta V(X)=-\int H\cdot X\,d\|V\|$, then $H$ is the
@@ -341,11 +341,11 @@ $\delta V(X)=\int\operatorname{div}_S X(x)dV(x,S)$.
   and total first variation give subsequential varifold convergence;
   limits of integral varifolds remain integral under these bounds.
 * **62. Allard regularity.** Let $V$ be a rectifiable $m$-varifold with
-  $\Theta\geq1$ $\|V\|$-a.e., $x\in\operatorname{supp}\|V\|$,
+  $\Theta\geq1$ $\|V\|$-a.e., $x\in\mathop{\mathrm{supp}}\|V\|$,
   $\|V\|(B_\rho(x))\leq(1+\delta)\omega_m\rho^m$, and
   $\rho^{1-m/p}\|H\|_{L^p(B_\rho(x))}\leq\delta$ for some $p>m$, where
   $\delta=\delta(n,m,p)$ is small. Then near $x$, on a ball of radius
-  comparable to $\rho$, $\operatorname{supp}\|V\|$ is a multiplicity-one
+  comparable to $\rho$, $\mathop{\mathrm{supp}}\|V\|$ is a multiplicity-one
   $C^{1,1-m/p}$ graph. No separate tilt-excess hypothesis is needed.
 * **63. Minimal-submanifold Sobolev inequality.** On a smooth
   $m$-submanifold, $m\geq2$, compactly supported functions satisfy
@@ -356,7 +356,7 @@ $\delta V(X)=\int\operatorname{div}_S X(x)dV(x,S)$.
 
 A closed set is **$k$-Ahlfors regular** if
 $C^{-1}r^k\leq\mathcal H^k(E\cap B(x,r))\leq Cr^k$
-for $x\in E$ and $0<r<\operatorname{diam}E$.
+for $x\in E$ and $0<r<\mathop{\mathrm{diam}}E$.
 It is **uniformly rectifiable** if every such ball captures a fixed
 positive proportion of its measure in an $L$-Lipschitz image of a
 $k$-ball of comparable radius, with uniform constants.
@@ -381,9 +381,9 @@ $k$-ball of comparable radius, with uniform constants.
   normalized distance between the set and plane inside the ball.
 * **66. Analyst's traveling-salesman theorem.** A compact set
   $E\subset\mathbb R^n$ lies in a connected curve of finite length
-  exactly when $\sum_Q\beta_\infty(E,3Q)^2\operatorname{diam}Q<\infty$,
+  exactly when $\sum_Q\beta_\infty(E,3Q)^2\mathop{\mathrm{diam}}Q<\infty$,
   over dyadic cubes meeting $E$. The least containing-curve length
-  is comparable to this sum plus $\operatorname{diam}E$.
+  is comparable to this sum plus $\mathop{\mathrm{diam}}E$.
   The beta number is normalized maximal distance to a best-fitting line
   (Jones in $\mathbb R^2$; Okikiolu in $\mathbb R^n$).
 * **67. Painlevé's problem for finite length.** If compact
@@ -394,7 +394,7 @@ $k$-ball of comparable radius, with uniform constants.
   rectifiability, beyond the polar sets detected by logarithmic capacity.
 * **68. Tolsa's theorem.** For compact $E\subset\mathbb C$, the analytic
   capacity $\gamma(E)$ is comparable to
-  $\sup\{\mu(E):\operatorname{supp}\mu\subset E,\ \mu(B(x,r))\leq r,\
+  $\sup\{\mu(E):\mathop{\mathrm{supp}}\mu\subset E,\ \mu(B(x,r))\leq r,\
   c^2(\mu)\leq\mu(E)\}$, where $c^2(\mu)=\iiint c(x,y,z)^2d\mu^3$ and
   $c(x,y,z)$ is the reciprocal circumradius (Menger curvature). Hence
   $\gamma$ is countably semiadditive up to an absolute constant.

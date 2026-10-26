@@ -31,11 +31,11 @@ Variational $H_0^1$ existence for divergence-form equations and the linear
 parabolic energy theory are stated in Section 32 (SYNOPSIS32, items 24
 and 44).
 
-* **2. Weak comparison.** If $-\operatorname{div}(A\nabla u)
-  \leq-\operatorname{div}(A\nabla v)$ weakly and $(u-v)^+\in H_0^1$,
+* **2. Weak comparison.** If $-\mathop{\mathrm{div}}(A\nabla u)
+  \leq-\mathop{\mathrm{div}}(A\nabla v)$ weakly and $(u-v)^+\in H_0^1$,
   then $u\leq v$ almost everywhere. A nonnegative zeroth-order term
   preserves the conclusion.
-* **3. Caccioppoli estimate.** If $\operatorname{div}(A\nabla u)=0$,
+* **3. Caccioppoli estimate.** If $\mathop{\mathrm{div}}(A\nabla u)=0$,
   then $\int_{B_r}|\nabla u|^2\leq Cr^{-2}\int_{B_{2r}}|u-c|^2$
   for every constant $c$ and $B_{2r}\Subset\Omega$.
   Cutoff-energy arguments give variants with forcing and lower-order terms.
@@ -44,12 +44,12 @@ and 44).
   C(r^{-n}\int_{B_{2r}}|u|^2)^{1/2}$. Subsolutions satisfy the
   corresponding estimate for their positive parts.
 * **5. Weak Harnack inequality.** For nonnegative weak supersolutions
-  of $-\operatorname{div}(A\nabla u)\geq0$, there is $q>0$ with
-  $(\fint_{B_r}u^q)^{1/q}\leq C\operatorname*{ess\,inf}_{B_r}u$,
+  of $-\mathop{\mathrm{div}}(A\nabla u)\geq0$, there is $q>0$ with
+  $(\fint_{B_r}u^q)^{1/q}\leq C\mathop{\mathrm{ess\,inf}}\limits_{B_r}u$,
   assuming the equation on a sufficiently larger concentric ball.
 * **6. De Giorgi–Nash–Moser Harnack inequality.** A nonnegative weak
-  solution satisfies $\operatorname*{ess\,sup}_{B_r}u
-  \leq C\operatorname*{ess\,inf}_{B_r}u$ if $B_{2r}\Subset\Omega$.
+  solution satisfies $\mathop{\mathrm{ess\,sup}}\limits_{B_r}u
+  \leq C\mathop{\mathrm{ess\,inf}}\limits_{B_r}u$ if $B_{2r}\Subset\Omega$.
   Only bounded measurability of the scalar equation's coefficients is needed.
 * **7. Hölder continuity.** Weak solutions have a locally Hölder
   representative, with exponent and estimates depending only on $n$
@@ -65,7 +65,7 @@ and 44).
   depending only on dimension and ellipticity such that homogeneous
   weak solutions have $\nabla u\in L^{2+\varepsilon}_{\mathrm{loc}}$,
   with reverse Hölder bounds. The inhomogeneous estimate applies to
-  $-\operatorname{div}(A\nabla u)=\operatorname{div}f$ for
+  $-\mathop{\mathrm{div}}(A\nabla u)=\mathop{\mathrm{div}}f$ for
   $f\in L^{2+\varepsilon}$ in the corresponding local range.
 * **10. Scalar regularity does not extend to general systems.** In
   dimensions at least three, uniformly elliptic systems with bounded
@@ -94,7 +94,7 @@ and 44).
 * **14. Alexandrov–Bakelman–Pucci estimate.** For $u\in W^{2,n}(\Omega)
   \cap C(\overline\Omega)$, $\Omega$ bounded, and uniformly elliptic $A$,
   $\sup_\Omega u\leq\sup_{\partial\Omega}u^+
-  +C\operatorname{diam}(\Omega)\|(a^{ij}u_{ij})^-\|_{L^n(\Omega)}$.
+  +C\mathop{\mathrm{diam}}(\Omega)\|(a^{ij}u_{ij})^-\|_{L^n(\Omega)}$.
 * **15. Krylov–Safonov theorem.** Nonnegative strong solutions of
   $a^{ij}(x)u_{ij}=0$ with measurable uniformly elliptic coefficients
   satisfy interior Harnack inequalities. General solutions have interior
@@ -115,7 +115,7 @@ and 44).
   controlled by $\|Lu\|_p$ and $\|u\|_p$ on a larger set.
   A coefficient modulus of continuity enters the estimate.
 * **19. Divergence-form Schauder estimate.** If $A,f\in C^{0,\alpha}$
-  and $-\operatorname{div}(A\nabla u)=\operatorname{div}f$, weak
+  and $-\mathop{\mathrm{div}}(A\nabla u)=\mathop{\mathrm{div}}f$, weak
   solutions are locally $C^{1,\alpha}$, with bounds from the data
   and a local norm of $u$.
 * **20. Method of continuity.** A uniformly bounded inverse estimate
@@ -158,7 +158,7 @@ $\overline\Omega\times\mathbb R\times\mathbb R^n$, on a bounded domain.
   reduces to a priori bounds, in order, for $\sup|u|$, for $|Du|$ on
   $\partial\Omega$ (barriers), and for $|Du|$ in $\Omega$.
 * **75. Minimal surface Dirichlet problem.** For a bounded $C^2$ domain,
-  $\operatorname{div}(Du/\sqrt{1+|Du|^2})=0$, $u=\varphi$ on
+  $\mathop{\mathrm{div}}(Du/\sqrt{1+|Du|^2})=0$, $u=\varphi$ on
   $\partial\Omega$, is solvable for every $\varphi\in C^0(\partial\Omega)$
   exactly when $\partial\Omega$ has nonnegative mean curvature
   (Jenkins–Serrin). For constant prescribed mean curvature $H$ the
@@ -167,7 +167,7 @@ $\overline\Omega\times\mathbb R\times\mathbb R^n$, on a bounded domain.
 * **76. Minimal-surface gradient estimate.** A $C^2$ solution of the
   minimal surface equation satisfies
   $|Du(y)|\leq C_1\exp(C_2\sup_\Omega(u-u(y))/d)$,
-  $d=\operatorname{dist}(y,\partial\Omega)$, with $C_1,C_2$ depending
+  $d=\mathop{\mathrm{dist}}(y,\partial\Omega)$, with $C_1,C_2$ depending
   only on $n$ (Bombieri–De Giorgi–Miranda; Trudinger). The exponential
   form cannot be improved; it makes solutions compact under uniform bounds.
 
@@ -204,7 +204,7 @@ partial differential equations* (Bull. Amer. Math. Soc. 1992),
 with coefficient-dependent comparison requiring its additional structural hypotheses.
 
 For $F(D^2u)=f$, use the increasing convention
-$\lambda\operatorname{tr}N\leq F(M+N)-F(M)\leq\Lambda\operatorname{tr}N$
+$\lambda\mathop{\mathrm{tr}}N\leq F(M+N)-F(M)\leq\Lambda\mathop{\mathrm{tr}}N$
 for $N\geq0$. This corresponds to the proper operator $G=f-F$.
 The **Pucci extremal operators** are
 $\mathcal M^+(M)=\Lambda\sum_{\mu_i>0}\mu_i+\lambda\sum_{\mu_i<0}\mu_i$
@@ -268,8 +268,8 @@ $|H(x,p)-H(y,p)|\leq\omega(|x-y|(1+|p|))$ for a modulus $\omega$.
 * **80. Semiconcavity and a.e. solutions.** Lipschitz functions satisfying
   a first-order equation almost everywhere are not unique: for the eikonal
   problem $|Du|=1$ in a bounded $\Omega$, $u=0$ on $\partial\Omega$, the
-  viscosity solution is $\operatorname{dist}(x,\partial\Omega)$, while
-  $-\operatorname{dist}$ and many sawtooth functions are a.e. solutions.
+  viscosity solution is $\mathop{\mathrm{dist}}(x,\partial\Omega)$, while
+  $-\mathop{\mathrm{dist}}$ and many sawtooth functions are a.e. solutions.
   For smooth convex $H(p)$ and Lipschitz $g$, there is at most one
   Lipschitz a.e. solution of $u_t+H(Du)=0$, $u(0)=g$, with the
   one-sided bound $u(x+z,t)-2u(x,t)+u(x-z,t)\leq C(1+1/t)|z|^2$
@@ -282,7 +282,7 @@ $|H(x,p)-H(y,p)|\leq\omega(|x-y|(1+|p|))$ for a modulus $\omega$.
 ## Degenerate elliptic and Monge–Ampère equations
 
 The **$p$-Laplacian** is
-$\Delta_pu=\operatorname{div}(|\nabla u|^{p-2}\nabla u)$, $1<p<\infty$.
+$\Delta_pu=\mathop{\mathrm{div}}(|\nabla u|^{p-2}\nabla u)$, $1<p<\infty$.
 A function is $p$-harmonic when this vanishes weakly.
 
 * **32. $p$-energy minimization.** On a bounded Lipschitz domain,
@@ -303,7 +303,7 @@ A function is $p$-harmonic when this vanishes weakly.
   $p$-harmonic extensions as $p\to\infty$ give it.
 
 For convex $u$, its **Alexandrov Monge–Ampère measure** is
-$\operatorname{MA}_u(E)=|\partial u(E)|$, the Lebesgue measure of the
+$\mathop{\mathrm{MA}}_u(E)=|\partial u(E)|$, the Lebesgue measure of the
 subgradient image. For $C^2$ convex $u$, it equals $\det D^2u\,dx$.
 
 * **36. Alexandrov stability and comparison.** Locally uniform convergence
@@ -351,7 +351,7 @@ time derivative in $L^p$.
   These yield strong solvability with the corresponding initial and
   lateral traces under compatibility conditions.
 * **46. Gaussian fundamental-solution bounds.** For
-  $u_t=\operatorname{div}(A(t,x)\nabla u)$ on all of $\mathbb R^n$,
+  $u_t=\mathop{\mathrm{div}}(A(t,x)\nabla u)$ on all of $\mathbb R^n$,
   bounded measurable uniformly elliptic $A$ gives a positive kernel
   bounded above and below by constant multiples of
   $(t-s)^{-n/2}\exp(-c|x-y|^2/(t-s))$, with different positive constants.
@@ -422,7 +422,7 @@ $u\geq0$, $\Delta u=1_{\{u>0\}}$.
 * **60. Classification of quadratic blowups.** Blowups of the normalized
   classical obstacle problem are either
   $\tfrac12(x\cdot\nu)_+^2$, $|\nu|=1$, or
-  $\tfrac12x\cdot Ax$ with $A\geq0$, $\operatorname{tr}A=1$.
+  $\tfrac12x\cdot Ax$ with $A\geq0$, $\mathop{\mathrm{tr}}A=1$.
   These distinguish regular and singular points.
 * **61. Regular free boundary.** Near a point with half-space blowup,
   the free boundary is $C^{1,\alpha}$, and is smooth for the smooth
@@ -465,7 +465,7 @@ $\partial\{u>0\}$ inside the domain.
 
 For $0<s<1$, the **fractional Laplacian** has Fourier multiplier
 $|\xi|^{2s}$ under the $e^{-ix\cdot\xi}$ convention, equivalently
-$(-\Delta)^su=c_{n,s}\operatorname{pv}\int(u(x)-u(y))|x-y|^{-n-2s}dy$.
+$(-\Delta)^su=c_{n,s}\mathop{\mathrm{pv}}\int(u(x)-u(y))|x-y|^{-n-2s}dy$.
 
 * **69. Nonlocal Dirichlet existence and comparison.** The fractional
   Dirichlet energy gives unique weak solutions with prescribed exterior
@@ -477,7 +477,7 @@ $(-\Delta)^su=c_{n,s}\operatorname{pv}\int(u(x)-u(y))|x-y|^{-n-2s}dy$.
   is not an integer. The estimate includes $\|u\|_{L^\infty(\mathbb R^n)}$.
 * **71. Fractional boundary behavior.** On a bounded smooth domain,
   solutions with bounded forcing and zero exterior value satisfy
-  $|u(x)|\leq C\operatorname{dist}(x,\partial\Omega)^s$.
+  $|u(x)|\leq C\mathop{\mathrm{dist}}(x,\partial\Omega)^s$.
   The quotient by this power extends Hölder continuously to the boundary.
 * **72. Boundary Harnack principles.** Two positive harmonic functions
   in a Lipschitz domain vanishing on a boundary portion have comparable,

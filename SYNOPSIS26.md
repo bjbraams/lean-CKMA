@@ -169,7 +169,7 @@ $1<p<\infty$ explicitly. Spaces are inhomogeneous unless marked otherwise.
   C\|\nabla u\|_{L^p(\mathbb R^d_+)}$ holds for smooth functions
   compactly supported up to the boundary.
 * **30. Hardy inequality.** For bounded Lipschitz $\Omega$ and
-  $1<p<\infty$, $\|u/\operatorname{dist}(\cdot,\partial\Omega)\|_p
+  $1<p<\infty$, $\|u/\mathop{\mathrm{dist}}(\cdot,\partial\Omega)\|_p
   \leq C\|\nabla u\|_p$ for $u\in W_0^{1,p}(\Omega)$. On a half-space
   or a convex domain the sharp constant is $p/(p-1)$.
 * **76. Negative-order spaces and zero boundary values.** For open
@@ -190,7 +190,7 @@ $1<p<\infty$ explicitly. Spaces are inhomogeneous unless marked otherwise.
   $0<\theta<1/2$ and $H^\theta_0(\Omega)$ for $1/2<\theta<1$. At
   $\theta=1/2$ it is
   $H^{1/2}_{00}(\Omega)=\{u\in H^{1/2}(\Omega):\rho^{-1/2}u\in L^2(\Omega)\}$,
-  $\rho=\operatorname{dist}(\cdot,\partial\Omega)$, normed by
+  $\rho=\mathop{\mathrm{dist}}(\cdot,\partial\Omega)$, normed by
   $(\|u\|_{H^{1/2}}^2+\|\rho^{-1/2}u\|_2^2)^{1/2}$. Equivalently it consists
   of the $u$ whose extension by zero lies in $H^{1/2}(\mathbb R^d)$. It is
   dense in $H^{1/2}(\Omega)=H^{1/2}_0(\Omega)$ with a strictly stronger
@@ -237,7 +237,7 @@ $\|(I-\Delta)^{s/2}u\|_p<\infty$ through tempered distributions.
   with equivalent norms; the Gagliardo energy equals a positive constant
   times $\int|\xi|^{2s}|\widehat u(\xi)|^2d\xi$.
 * **38. Fractional Laplacian formula.** For Schwartz $u$ and $0<s<1$,
-  $(-\Delta)^su(x)=c_{d,s}\operatorname{p.v.}\int
+  $(-\Delta)^su(x)=c_{d,s}\mathop{\mathrm{p.v.}}\int
   (u(x)-u(y))/|x-y|^{d+2s}\,dy$, with the positive normalization
   giving Fourier symbol $|\xi|^{2s}$. Its quadratic energy is
   $c_{d,s}[u]_{W^{s,2}}^2/2$.
@@ -386,11 +386,11 @@ values in $X_0$ and $X_1$, with the infimum boundary norm.
   $1\leq q<\infty$. Lions and Peetre proved this when the two source
   spaces or the two target spaces coincide; the general case is Cwikel's.
 * **79. Stein's interpolation of analytic families.** Let $T_z$,
-  $0\leq\operatorname{Re}z\leq1$, be linear maps from simple functions on a
+  $0\leq\mathop{\mathrm{Re}}z\leq1$, be linear maps from simple functions on a
   $\sigma$-finite space to measurable functions on another, such that for
   simple $f,g$ the function $z\mapsto\int(T_zf)g$ is continuous on the
   closed strip, holomorphic inside, and of admissible growth
-  $\log|\int(T_zf)g|\leq Ce^{a|\operatorname{Im}z|}$ with $a<\pi$.
+  $\log|\int(T_zf)g|\leq Ce^{a|\mathop{\mathrm{Im}}z|}$ with $a<\pi$.
   If $\|T_{it}f\|_{q_0}\leq M_0(t)\|f\|_{p_0}$ and
   $\|T_{1+it}f\|_{q_1}\leq M_1(t)\|f\|_{p_1}$ with
   $\log M_j(t)\leq Ce^{b|t|}$, $b<\pi$, then
@@ -420,7 +420,7 @@ $\|f\|_\Phi=\inf\{\lambda>0:\int\Phi(|f|/\lambda)\leq1\}$.
 Its complementary function is $\Psi(s)=\sup_{t\geq0}(st-\Phi(t))$.
 For measurable $1\leq p(x)<\infty$, **variable Lebesgue space** $L^{p(\cdot)}$ uses
 the modular $\rho(f)=\int|f(x)|^{p(x)}dx$ and its Luxemburg norm.
-Write $p_-=\operatorname{ess\,inf}p$, $p_+=\operatorname{ess\,sup}p$.
+Write $p_-=\mathop{\mathrm{ess\,inf}}p$, $p_+=\mathop{\mathrm{ess\,sup}}p$.
 
 * **66. Orlicz completeness and Hölder inequality.** $L^\Phi$ is Banach,
   and $\int|fg|\leq2\|f\|_\Phi\|g\|_\Psi$.
@@ -483,7 +483,7 @@ global integrability.
 * **82. Morrey's Dirichlet growth theorem.** Let $u\in W^{1,1}(\Omega)$
   and $0<\alpha\leq1$. If $\int_{B_r}|\nabla u|\leq Kr^{d-1+\alpha}$ for
   every ball $B_r\subset\Omega$, then $u\in C^{0,\alpha}(\Omega)$ and
-  $\operatorname{osc}_{B_r}u\leq C(d,\alpha)Kr^\alpha$ for such balls. By
+  $\mathop{\mathrm{osc}}_{B_r}u\leq C(d,\alpha)Kr^\alpha$ for such balls. By
   Hölder's inequality the hypothesis follows from
   $\int_{B_r}|\nabla u|^p\leq K^pr^{d-p+\alpha p}$, that is, from
   $\nabla u\in\mathcal M^p_{d-p+\alpha p}$; this is the route from

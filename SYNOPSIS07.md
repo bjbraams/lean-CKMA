@@ -137,11 +137,11 @@ larger than it.
 ### Product spaces, entropy, and geometric concentration
 
 For $Z\geq0$, its **entropy** is
-$\operatorname{Ent}(Z)=\mathbb E(Z\log Z)-\mathbb EZ\log\mathbb EZ$.
+$\mathop{\mathrm{Ent}}(Z)=\mathbb E(Z\log Z)-\mathbb EZ\log\mathbb EZ$.
 A probability $\mu$ satisfies a **Poincaré inequality** with constant $C$ if
-$\operatorname{Var}_\mu f\leq C\int|\nabla f|^2d\mu$, and a
+$\mathop{\mathrm{Var}}_\mu f\leq C\int|\nabla f|^2d\mu$, and a
 **logarithmic Sobolev inequality** with constant $C$ if
-$\operatorname{Ent}_\mu(g^2)\leq2C\int|\nabla g|^2d\mu$.
+$\mathop{\mathrm{Ent}}_\mu(g^2)\leq2C\int|\nabla g|^2d\mu$.
 
 * **12. Azuma–Hoeffding inequality.** If a martingale has differences bounded
   by $|M_i-M_{i-1}|\leq c_i$, then
@@ -160,21 +160,21 @@ $\operatorname{Ent}_\mu(g^2)\leq2C\int|\nabla g|^2d\mu$.
 
 * **14. Efron–Stein inequality.** If $X^{(i)}$ replaces coordinate $i$ by an
   independent copy, then
-  $\operatorname{Var}(f(X))\leq\frac12\sum_i
+  $\mathop{\mathrm{Var}}(f(X))\leq\frac12\sum_i
   \mathbb E(f(X)-f(X^{(i)}))^2$.
 
 * **15. Tensorization of entropy.** For a nonnegative function on a product
   probability space,
-  $\operatorname{Ent}(Z)\leq\sum_i\mathbb E\operatorname{Ent}_i(Z)$,
-  where $\operatorname{Ent}_i$ integrates only coordinate $i$. Logarithmic
+  $\mathop{\mathrm{Ent}}(Z)\leq\sum_i\mathbb E\mathop{\mathrm{Ent}}_i(Z)$,
+  where $\mathop{\mathrm{Ent}}_i$ integrates only coordinate $i$. Logarithmic
   Sobolev inequalities therefore tensorize with the largest coordinate constant.
 
 * **16. Gaussian Poincaré inequality.** For standard Gaussian measure
-  $\gamma_d$, $\operatorname{Var}_{\gamma_d}f\leq\int|\nabla f|^2d\gamma_d$.
+  $\gamma_d$, $\mathop{\mathrm{Var}}_{\gamma_d}f\leq\int|\nabla f|^2d\gamma_d$.
   The bound is independent of dimension.
 
 * **17. Gaussian logarithmic Sobolev inequality.** For smooth $g$,
-  $\operatorname{Ent}_{\gamma_d}(g^2)\leq2\int|\nabla g|^2d\gamma_d$.
+  $\mathop{\mathrm{Ent}}_{\gamma_d}(g^2)\leq2\int|\nabla g|^2d\gamma_d$.
 
 * **19. Herbst argument.** A logarithmic Sobolev inequality with constant $C$
   implies, for $L$-Lipschitz $f$,
@@ -182,7 +182,7 @@ $\operatorname{Ent}_\mu(g^2)\leq2C\int|\nabla g|^2d\mu$.
     \leq e^{CL^2\lambda^2/2}.$$
   In particular, it yields dimension-independent sub-Gaussian concentration.
   A Poincaré inequality with constant $C$ gives only exponential concentration:
-  $\mu(|f-\operatorname{med}f|\geq t)\leq2e^{-t/(3L\sqrt C)}$
+  $\mu(|f-\mathop{\mathrm{med}}f|\geq t)\leq2e^{-t/(3L\sqrt C)}$
   (Gromov–Milman; Ledoux, *Concentration of Measure*, Theorem 3.1 and
   Corollary 3.2). Consequently
   $\mu(|f-\mathbb E_\mu f|\geq t)\leq2e^{-t^2/(2CL^2)}$ under the logarithmic
@@ -195,13 +195,13 @@ $\operatorname{Ent}_\mu(g^2)\leq2C\int|\nabla g|^2d\mu$.
 
 * **22. Concentration on the sphere.** For uniform $U$ on $S^{d-1}$,
   $d\geq2$, an $L$-Lipschitz function for Euclidean distance satisfies
-  $\mathbb P(|f(U)-\operatorname{med}f(U)|>t)
+  $\mathbb P(|f(U)-\mathop{\mathrm{med}}f(U)|>t)
   \leq2\exp(-cdt^2/L^2)$, with a universal $c>0$.
 
 * **24. Convex Lipschitz concentration on products.** If independent
   $X_i\in[-1,1]$ and $f:\mathbb R^n\to\mathbb R$ is convex and
   $L$-Lipschitz, then
-  $\mathbb P(|f(X)-\operatorname{med}f(X)|>t)\leq C e^{-ct^2/L^2}$.
+  $\mathbb P(|f(X)-\mathop{\mathrm{med}}f(X)|>t)\leq C e^{-ct^2/L^2}$.
   Convexity removes the dimension factor present in a direct coordinatewise
   bounded-differences estimate.
 
@@ -260,7 +260,7 @@ where the infimum runs over such sequences of subsets.
 * **27. Dudley's entropy bound.** For a separable centered process with
   sub-Gaussian increments controlled by $d$,
   $$\mathbb E\sup_{t\in T}(X_t-X_{t_0})
-    \leq C\int_0^{\operatorname{diam}T}
+    \leq C\int_0^{\mathop{\mathrm{diam}}T}
       \sqrt{\log N(T,d,\varepsilon)}\,d\varepsilon.$$
   Finiteness together with the corresponding vanishing small-scale entropy
   integral gives a bounded uniformly continuous version under the usual
@@ -514,7 +514,7 @@ $d^{-1}\sum_{j=1}^d\delta_{\lambda_j}$.
 * **66. Stieltjes-transform method.** The Stieltjes transform of a probability
   $\mu$ on $\mathbb R$ is $s_\mu(z)=\int(x-z)^{-1}\,d\mu(x)$, $\Im z>0$; for an
   empirical spectral measure it is the normalized trace of the resolvent,
-  $d^{-1}\operatorname{tr}(A-z)^{-1}$. Probabilities $\mu_n$ converge weakly to
+  $d^{-1}\mathop{\mathrm{tr}}(A-z)^{-1}$. Probabilities $\mu_n$ converge weakly to
   a probability $\mu$ exactly when $s_{\mu_n}(z)\to s_\mu(z)$ for every $z$
   in the upper half-plane, and $\mu$ is recovered by
   $\pi^{-1}\Im s_\mu(x+i\eta)\,dx\to\mu$ as $\eta\downarrow0$. For random
@@ -528,11 +528,11 @@ $d^{-1}\sum_{j=1}^d\delta_{\lambda_j}$.
 ### Gaussian ensembles and determinantal structure
 
 The **Gaussian unitary ensemble** $\mathrm{GUE}_d$ is the law on Hermitian
-$d\times d$ matrices with density proportional to $e^{-\operatorname{tr}H^2/2}$:
+$d\times d$ matrices with density proportional to $e^{-\mathop{\mathrm{tr}}H^2/2}$:
 independent $N(0,1)$ diagonal entries and independent standard complex Gaussian
 entries above the diagonal, with $\mathbb E|H_{ij}|^2=1$. The **Gaussian
 orthogonal ensemble** $\mathrm{GOE}_d$ is the real symmetric analogue with
-density proportional to $e^{-\operatorname{tr}H^2/4}$.
+density proportional to $e^{-\mathop{\mathrm{tr}}H^2/4}$.
 
 * **67. Joint eigenvalue density.** The unordered eigenvalues of
   $\mathrm{GOE}_d$ ($\beta=1$) and $\mathrm{GUE}_d$ ($\beta=2$) have joint
@@ -562,8 +562,8 @@ density proportional to $e^{-\operatorname{tr}H^2/4}$.
   $$\mathbb P\bigl(d^{1/6}(\lambda_{\max}-2\sqrt d)\leq s\bigr)\to F_2(s)
     =\det(I-K_{\mathrm{Ai}})_{L^2(s,\infty)},$$
   with the Airy kernel
-  $K_{\mathrm{Ai}}(u,v)=[\operatorname{Ai}(u)\operatorname{Ai}'(v)
-  -\operatorname{Ai}'(u)\operatorname{Ai}(v)]/(u-v)$ (Tracy–Widom). The
+  $K_{\mathrm{Ai}}(u,v)=[\mathop{\mathrm{Ai}}(u)\mathop{\mathrm{Ai}}'(v)
+  -\mathop{\mathrm{Ai}}'(u)\mathop{\mathrm{Ai}}(v)]/(u-v)$ (Tracy–Widom). The
   orthogonal ensemble has a different limit $F_1$. Edge universality: the same
   limits hold for Wigner matrices whose entries have sufficiently many moments
   and the matching symmetry class (Soshnikov; Tao–Vu; Erdős–Yau–Yin).

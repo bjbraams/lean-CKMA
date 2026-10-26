@@ -21,8 +21,8 @@ viewpoints remain here; linear geometric operators and index theory are in Secti
 Manifolds are connected and smooth, and metrics are smooth. A *closed*
 manifold is compact without boundary; *complete* means geodesically complete,
 without boundary unless
-specified. Write $\Delta=\operatorname{div}\nabla$, so $-\Delta\geq0$,
-$dV$ for volume, $\operatorname{Ric}$ for Ricci curvature, and $R$ for
+specified. Write $\Delta=\mathop{\mathrm{div}}\nabla$, so $-\Delta\geq0$,
+$dV$ for volume, $\mathop{\mathrm{Ric}}$ for Ricci curvature, and $R$ for
 scalar curvature. Constants in local estimates may depend on the indicated
 geometric bounds. A uniform estimate over varying metrics requires such
 bounds; compactness of each individual manifold is insufficient.
@@ -32,7 +32,7 @@ bounds; compactness of each individual manifold is insufficient.
 * **1. Levi-Civita connection.** Every Riemannian metric has a unique
   torsion-free metric connection. Its curvature gives sectional and Ricci
   curvatures; the Bianchi identities imply
-  $\operatorname{div}\operatorname{Ric}=\tfrac12dR$.
+  $\mathop{\mathrm{div}}\mathop{\mathrm{Ric}}=\tfrac12dR$.
 * **2. Hopf–Rinow theorem.** On a connected Riemannian manifold,
   geodesic completeness, metric completeness, and compactness of closed
   bounded subsets are equivalent. Under these conditions any two points
@@ -59,16 +59,16 @@ bounds; compactness of each individual manifold is insufficient.
   Equivalently, a hinge has its opening distance at most that of the
   model hinge.
 * **7. Bonnet–Myers theorem.** A complete $n$-manifold with
-  $\operatorname{Ric}\geq(n-1)k g$, $k>0$, is compact with
+  $\mathop{\mathrm{Ric}}\geq(n-1)k g$, $k>0$, is compact with
   diameter at most $\pi/\sqrt k$ and finite fundamental group.
   Equality of the diameter holds only for the round sphere of
   curvature $k$ (Cheng).
 * **8. Bishop–Gromov comparison.** If
-  $\operatorname{Ric}\geq(n-1)k g$, then
-  $\operatorname{Vol}B(p,r)/V_k(r)$ is nonincreasing in $r$,
+  $\mathop{\mathrm{Ric}}\geq(n-1)k g$, then
+  $\mathop{\mathrm{Vol}}B(p,r)/V_k(r)$ is nonincreasing in $r$,
   within the model radius range. In particular nonnegative Ricci
-  curvature gives $\operatorname{Vol}B(p,2r)\leq2^n
-  \operatorname{Vol}B(p,r)$.
+  curvature gives $\mathop{\mathrm{Vol}}B(p,2r)\leq2^n
+  \mathop{\mathrm{Vol}}B(p,r)$.
   Buser's inequality then gives the scale-invariant Neumann Poincaré
   inequality on balls (a local Poincaré inequality, distinct from Buser's
   converse to the Cheeger inequality).
@@ -82,14 +82,14 @@ bounds; compactness of each individual manifold is insufficient.
   to $\mathbb R\times N$. A line is a geodesic minimizing distance
   between each pair of its points.
 * **11. Compactness with controlled geometry.** Closed
-  $n$-manifolds with $|\operatorname{sec}|\leq C$,
+  $n$-manifolds with $|\mathop{\mathrm{sec}}|\leq C$,
   diameter at most $D$, and volume at least $v>0$ have a
   subsequence converging, after diffeomorphisms, in $C^{1,\alpha}$
   for each $\alpha<1$. Bounds on all covariant derivatives of
   curvature improve this to smooth convergence. The hypotheses also
   yield finiteness of diffeomorphism types.
 * **12. Gromov precompactness.** Complete pointed $n$-manifolds with
-  $\operatorname{Ric}\geq-(n-1)Kg$ form a precompact family in the
+  $\mathop{\mathrm{Ric}}\geq-(n-1)Kg$ form a precompact family in the
   pointed Gromov–Hausdorff topology, and closed ones with diameter at
   most $D$ are precompact in the Gromov–Hausdorff topology. Bishop–Gromov
   doubling gives the uniform covering bounds; limits are length spaces
@@ -117,14 +117,14 @@ bounds; compactness of each individual manifold is insufficient.
 * **17. Bochner identity.** For a smooth function,
   $\tfrac12\Delta|\nabla u|^2=|\nabla^2u|^2+
   \langle\nabla u,\nabla\Delta u\rangle+
-  \operatorname{Ric}(\nabla u,\nabla u)$. Integrated on a closed
+  \mathop{\mathrm{Ric}}(\nabla u,\nabla u)$. Integrated on a closed
   manifold, it converts curvature bounds into gradient and spectral estimates.
 * **18. Bochner vanishing.** On a closed manifold with
-  $\operatorname{Ric}\geq0$, harmonic one-forms are parallel.
+  $\mathop{\mathrm{Ric}}\geq0$, harmonic one-forms are parallel.
   If Ricci curvature is positive definite at one point, the first
   Betti number vanishes.
 * **19. Cheng–Yau gradient estimate.** If a complete manifold has
-  $\operatorname{Ric}\geq-(n-1)K g$ and $u>0$ is harmonic on
+  $\mathop{\mathrm{Ric}}\geq-(n-1)K g$ and $u>0$ is harmonic on
   $B(p,2r)$, then
   $\sup_{B(p,r)}|\nabla\log u|\leq C_n(r^{-1}+\sqrt K)$.
 * **20. Positive harmonic Liouville theorem.** Every positive
@@ -207,7 +207,7 @@ bounds; compactness of each individual manifold is insufficient.
 ## Harmonic maps, regularity, and bubbling
 
 For $u:(M,g)\to(N,h)$, put $E(u)=\tfrac12\int|du|^2dV$.
-The tension field is $\tau(u)=\operatorname{tr}_g\nabla du$;
+The tension field is $\tau(u)=\mathop{\mathrm{tr}}_g\nabla du$;
 harmonic maps are critical points of $E$ and satisfy $\tau(u)=0$.
 
 * **35. First and second variation.** The first variation is
@@ -271,18 +271,18 @@ harmonic maps are critical points of $E$ and satisfy $\tau(u)=0$.
 ## Minimal submanifolds and Plateau problems
 
 * **47. First variation of area.** With mean-curvature vector
-  $\mathbf H=\operatorname{tr}A$, a compactly supported normal
-  variation $V$ gives $\delta\operatorname{Area}=-\int
+  $\mathbf H=\mathop{\mathrm{tr}}A$, a compactly supported normal
+  variation $V$ gives $\delta\mathop{\mathrm{Area}}=-\int
   \langle\mathbf H,V\rangle$. Thus minimal submanifolds are
   precisely the stationary smooth immersions.
 * **48. Stability operator.** For a two-sided minimal hypersurface,
   the second variation in direction $f\nu$ is
-  $\int(|\nabla f|^2-(|A|^2+\operatorname{Ric}(\nu,\nu))f^2)$.
+  $\int(|\nabla f|^2-(|A|^2+\mathop{\mathrm{Ric}}(\nu,\nu))f^2)$.
   Stability means this quadratic form is nonnegative for all compactly
   supported $f$.
 * **49. Minimal graphs.** The graph of $u:\Omega\subset
   \mathbb R^m\to\mathbb R$ is minimal exactly when
-  $\operatorname{div}(\nabla u/\sqrt{1+|\nabla u|^2})=0$.
+  $\mathop{\mathrm{div}}(\nabla u/\sqrt{1+|\nabla u|^2})=0$.
   A smooth solution minimizes area among graph competitors with its
   boundary values, by convexity of the area integrand.
 * **50. Conformal harmonic parametrization.** A conformal immersion
@@ -293,7 +293,7 @@ harmonic maps are critical points of $E$ and satisfy $\tau(u)=0$.
   $\phi_1,\phi_2,\phi_3$ on a Riemann surface satisfying
   $\sum\phi_j^2=0$, having no common zero, and having purely
   imaginary periods give a conformal minimal immersion
-  $X=\operatorname{Re}\int(\phi_1,\phi_2,\phi_3)$ into
+  $X=\mathop{\mathrm{Re}}\int(\phi_1,\phi_2,\phi_3)$ into
   $\mathbb R^3$. Every oriented conformal minimal immersion arises
   in this way; common zeros correspond to branch points.
 * **52. Douglas–Radó Plateau theorem.** Every rectifiable Jordan
@@ -332,7 +332,7 @@ normal choice, and $A$ for the second fundamental form.
   hypersurface has a unique smooth mean curvature flow for a short
   time, up to the usual equivalent parametrized formulations. A graph
   evolves by $u_t=\sqrt{1+|\nabla u|^2}
-  \operatorname{div}(\nabla u/\sqrt{1+|\nabla u|^2})$.
+  \mathop{\mathrm{div}}(\nabla u/\sqrt{1+|\nabla u|^2})$.
 * **59. Evolution identities.** Along a Euclidean hypersurface flow,
   $\partial_td\mu=-H^2d\mu$,
   $(\partial_t-\Delta)H=|A|^2H$, and
@@ -368,9 +368,9 @@ normal choice, and $A$ for the second fundamental form.
 
 ## Ricci flow and curvature normalization
 
-Ricci flow is $\partial_tg=-2\operatorname{Ric}$.
+Ricci flow is $\partial_tg=-2\mathop{\mathrm{Ric}}$.
 A gradient Ricci soliton satisfies
-$\operatorname{Ric}+\nabla^2f=\lambda g$, with positive, zero, or
+$\mathop{\mathrm{Ric}}+\nabla^2f=\lambda g$, with positive, zero, or
 negative $\lambda$ giving shrinking, steady, or expanding solutions.
 
 * **66. Hamilton–DeTurck existence.** A smooth metric on a closed
@@ -379,7 +379,7 @@ negative $\lambda$ giving shrinking, steady, or expanding solutions.
   parabolic system; pulling back recovers Ricci flow.
 * **67. Scalar evolution.** Under Ricci flow,
   $\partial_tdV=-R\,dV$ and
-  $\partial_tR=\Delta R+2|\operatorname{Ric}|^2$.
+  $\partial_tR=\Delta R+2|\mathop{\mathrm{Ric}}|^2$.
   In particular nonnegative scalar curvature is preserved on a closed manifold.
 * **68. Curvature maximum principles.** The tensor maximum
   principle preserves nonnegative curvature operator in every
@@ -402,16 +402,16 @@ negative $\lambda$ giving shrinking, steady, or expanding solutions.
   discussed in Topping's *Lectures on the Ricci Flow*.
 * **72. Perelman $\mathcal F$ monotonicity.** For
   $\mathcal F(g,f)=\int(R+|\nabla f|^2)e^{-f}dV$,
-  $g_t=-2\operatorname{Ric}$ and
+  $g_t=-2\mathop{\mathrm{Ric}}$ and
   $f_t=-\Delta f+|\nabla f|^2-R$ give
-  $d\mathcal F/dt=2\int|\operatorname{Ric}+\nabla^2f|^2e^{-f}dV$.
+  $d\mathcal F/dt=2\int|\mathop{\mathrm{Ric}}+\nabla^2f|^2e^{-f}dV$.
 * **73. Perelman $\mathcal W$ monotonicity.** Put
   $\mathcal W=\int[\tau(R+|\nabla f|^2)+f-n]
   (4\pi\tau)^{-n/2}e^{-f}dV$, with the weighted measure of mass
   one and $\tau_t=-1$. If
   $f_t=-\Delta f+|\nabla f|^2-R+n/(2\tau)$, then
   $d\mathcal W/dt=2\tau\int|
-  \operatorname{Ric}+\nabla^2f-g/(2\tau)|^2
+  \mathop{\mathrm{Ric}}+\nabla^2f-g/(2\tau)|^2
   (4\pi\tau)^{-n/2}e^{-f}dV$.
 * **74. No local collapsing.** For a closed Ricci flow on a finite
   time interval there is $\kappa>0$ such that a metric ball of
@@ -499,9 +499,9 @@ curvature norms.
   determinant line $L$, the unknowns are a unitary connection $A$ on $L$
   and $\psi\in\Gamma(S^+)$, with
   $D_A^+\psi=0$ and $\frac12\rho(F_A^+)=(\psi\psi^*)_0$, where
-  $\rho:\Lambda^+\to\operatorname{End}(S^+)$ is Clifford multiplication and
+  $\rho:\Lambda^+\to\mathop{\mathrm{End}}(S^+)$ is Clifford multiplication and
   $(\cdot)_0$ the traceless part. The gauge group
-  $\operatorname{Map}(X,S^1)$ acts by $u\cdot(A,\psi)=(A-2u^{-1}du,u\psi)$.
+  $\mathop{\mathrm{Map}}(X,S^1)$ acts by $u\cdot(A,\psi)=(A-2u^{-1}du,u\psi)$.
   The Weitzenböck formula
   $D_A^-D_A^+=\nabla_A^*\nabla_A+\frac s4+\frac12\rho(F_A^+)$ and the
   maximum principle give $|\psi|^2\leq c\max(0,-\min_Xs)$, with $c$ fixed
@@ -535,14 +535,14 @@ $\square_g$ plus lower-order terms.
   compactly supported smooth $f$, $u_0$, $u_1$ there is a unique smooth
   $u$ with $Pu=f$, $u|_\Sigma=u_0$, $\nabla_nu|_\Sigma=u_1$; it depends
   continuously on the data, and
-  $\operatorname{supp}u\subset J^+(K)\cup J^-(K)$,
-  $K=\operatorname{supp}f\cup\operatorname{supp}u_0\cup\operatorname{supp}u_1$
+  $\mathop{\mathrm{supp}}u\subset J^+(K)\cup J^-(K)$,
+  $K=\mathop{\mathrm{supp}}f\cup\mathop{\mathrm{supp}}u_0\cup\mathop{\mathrm{supp}}u_1$
   (finite propagation speed). Energy estimates on the slabs of entry 95
   prove this (Leray; Bär–Ginoux–Pfäffle).
 * **97. Green operators.** In that setting $P$ has unique advanced and
   retarded Green operators $G_\pm:C_c^\infty\to C^\infty$, with
-  $PG_\pm=G_\pm P=\operatorname{id}$ on $C_c^\infty$ and
-  $\operatorname{supp}G_\pm f\subset J^\pm(\operatorname{supp}f)$. The
+  $PG_\pm=G_\pm P=\mathop{\mathrm{id}}$ on $C_c^\infty$ and
+  $\mathop{\mathrm{supp}}G_\pm f\subset J^\pm(\mathop{\mathrm{supp}}f)$. The
   causal propagator $G=G_+-G_-$ gives an exact sequence
   $0\to C_c^\infty\xrightarrow{P}C_c^\infty\xrightarrow{G}
   C_{sc}^\infty\xrightarrow{P}C_{sc}^\infty$, $C_{sc}^\infty$ denoting

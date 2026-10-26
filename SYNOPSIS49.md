@@ -84,7 +84,7 @@ consistent branches, ordinarily the principal branch on the cut plane.
   $\Gamma(a,z)=e^{-z}U(1-a,1-a,z)$, and
   $\Gamma(a,z)\sim z^{a-1}e^{-z}\sum_{k\geq0}(a-1)(a-2)\cdots(a-k)z^{-k}$
   as $z\to\infty$ in $|\arg z|\leq3\pi/2-\delta$. Special cases are
-  $\operatorname{erfc}z=\pi^{-1/2}\Gamma(\tfrac12,z^2)$ for $\Re z>0$ and
+  $\mathop{\mathrm{erfc}}z=\pi^{-1/2}\Gamma(\tfrac12,z^2)$ for $\Re z>0$ and
   $E_1(z)=\int_z^\infty e^{-t}t^{-1}dt=\Gamma(0,z)
   =-\gamma-\log z-\sum_{k\geq1}(-z)^k/(k\,k!)$.
 
@@ -237,18 +237,18 @@ $M(a,b,z)={}_1F_1(a;b;z)$.
   $I_\nu(x)\sim e^x/\sqrt{2\pi x}$ and
   $K_\nu(x)\sim\sqrt{\pi/(2x)}e^{-x}$ as $x\to+\infty$.
 * **36. Airy representation.** The Airy equation is $y''=zy$.
-  For real $x$, $\operatorname{Ai}(x)=\pi^{-1}\int_0^\infty
+  For real $x$, $\mathop{\mathrm{Ai}}(x)=\pi^{-1}\int_0^\infty
   \cos(t^3/3+xt)dt$, as an oscillatory integral.
 * **37. Airy normalization and asymptotics.**
-  $W(\operatorname{Ai},\operatorname{Bi})=1/\pi$ and, for positive large $x$,
-  $\operatorname{Ai}(x)\sim x^{-1/4}e^{-2x^{3/2}/3}/(2\sqrt\pi)$,
-  $\operatorname{Bi}(x)\sim x^{-1/4}e^{2x^{3/2}/3}/\sqrt\pi$,
+  $W(\mathop{\mathrm{Ai}},\mathop{\mathrm{Bi}})=1/\pi$ and, for positive large $x$,
+  $\mathop{\mathrm{Ai}}(x)\sim x^{-1/4}e^{-2x^{3/2}/3}/(2\sqrt\pi)$,
+  $\mathop{\mathrm{Bi}}(x)\sim x^{-1/4}e^{2x^{3/2}/3}/\sqrt\pi$,
   while on the negative axis
-  $\operatorname{Ai}(-x)=\pi^{-1/2}x^{-1/4}
+  $\mathop{\mathrm{Ai}}(-x)=\pi^{-1/2}x^{-1/4}
   [\sin(\tfrac23x^{3/2}+\tfrac\pi4)+O(x^{-3/2})]$.
 * **38. Error function.**
-  $\operatorname{erf}z=(2/\sqrt\pi)\int_0^ze^{-t^2}dt$ is entire;
-  $\operatorname{erfc}x\sim e^{-x^2}/(\sqrt\pi x)$ as $x\to+\infty$.
+  $\mathop{\mathrm{erf}}z=(2/\sqrt\pi)\int_0^ze^{-t^2}dt$ is entire;
+  $\mathop{\mathrm{erfc}}x\sim e^{-x^2}/(\sqrt\pi x)$ as $x\to+\infty$.
   The Gaussian integral is $\int_{\mathbb R}e^{-x^2}dx=\sqrt\pi$.
 
 ## Classical polynomial families and spherical functions
@@ -340,10 +340,10 @@ A prime on $K,E$ below means complementary modulus, not differentiation.
 * **49. Arithmetic–geometric mean.** Iteration
   $a_{n+1}=(a_n+b_n)/2$, $b_{n+1}=\sqrt{a_nb_n}$ for
   positive data has a common limit, and
-  $K(k)=\pi/[2\operatorname{AGM}(1,k')]$.
-  The common limit $\operatorname{AGM}(a,b)$ lies between the initial
+  $K(k)=\pi/[2\mathop{\mathrm{AGM}}(1,k')]$.
+  The common limit $\mathop{\mathrm{AGM}}(a,b)$ lies between the initial
   geometric and arithmetic means, is invariant under one iteration, and
-  satisfies Gauss's identity $\operatorname{AGM}(a,b)=\frac\pi2\bigl(\int_0^{\pi/2}
+  satisfies Gauss's identity $\mathop{\mathrm{AGM}}(a,b)=\frac\pi2\bigl(\int_0^{\pi/2}
   d\theta/\sqrt{a^2\cos^2\theta+b^2\sin^2\theta}\bigr)^{-1}$.
 * **85. Carlson symmetric integrals.** For $x,y,z\geq0$, at most one zero,
   $R_F(x,y,z)=\frac12\int_0^\infty[(t+x)(t+y)(t+z)]^{-1/2}dt$ and, for
@@ -357,16 +357,16 @@ A prime on $K,E$ below means complementary modulus, not differentiation.
   equal arguments.
 * **50. Jacobi elliptic identities.** Inverting
   $u=\int_0^\varphi(1-k^2\sin^2t)^{-1/2}dt$ defines
-  $\operatorname{sn}u=\sin\varphi$, $\operatorname{cn}u=\cos\varphi$,
-  $\operatorname{dn}u=d\varphi/du=(1-k^2\sin^2\varphi)^{1/2}>0$
+  $\mathop{\mathrm{sn}}u=\sin\varphi$, $\mathop{\mathrm{cn}}u=\cos\varphi$,
+  $\mathop{\mathrm{dn}}u=d\varphi/du=(1-k^2\sin^2\varphi)^{1/2}>0$
   for real $u$ and $0<k<1$; these extend
-  to meromorphic elliptic functions, $\operatorname{sn}$ with periods
+  to meromorphic elliptic functions, $\mathop{\mathrm{sn}}$ with periods
   $4K$, $2iK'$, with
-  $\operatorname{sn}^2+\operatorname{cn}^2=1$,
-  $\operatorname{dn}^2+k^2\operatorname{sn}^2=1$ on $\mathbb C$ and derivatives
-  $\operatorname{sn}'=\operatorname{cn}\operatorname{dn}$,
-  $\operatorname{cn}'=-\operatorname{sn}\operatorname{dn}$,
-  $\operatorname{dn}'=-k^2\operatorname{sn}\operatorname{cn}$.
+  $\mathop{\mathrm{sn}}^2+\mathop{\mathrm{cn}}^2=1$,
+  $\mathop{\mathrm{dn}}^2+k^2\mathop{\mathrm{sn}}^2=1$ on $\mathbb C$ and derivatives
+  $\mathop{\mathrm{sn}}'=\mathop{\mathrm{cn}}\mathop{\mathrm{dn}}$,
+  $\mathop{\mathrm{cn}}'=-\mathop{\mathrm{sn}}\mathop{\mathrm{dn}}$,
+  $\mathop{\mathrm{dn}}'=-k^2\mathop{\mathrm{sn}}\mathop{\mathrm{cn}}$.
 * **51. Weierstrass equation.** For a lattice $\Lambda$,
   $\wp(z)=z^{-2}+\sum_{\omega\ne0}[(z-\omega)^{-2}-\omega^{-2}]$
   is elliptic and satisfies $(\wp')^2=4\wp^3-g_2\wp-g_3$,

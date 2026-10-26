@@ -101,7 +101,7 @@ Changes:
 - 49 (old 46): added the Federer–Vol'pert decomposition $Du=\nabla u\,\mathcal L^n+$ jump part $+$ Cantor part, with properties of each part.
 - 53 (old 50): extended to derivatives existing off a countable set. Added the consequence that everywhere differentiability with $F'\in L^1$ implies absolute continuity, and the example $x^2\sin(x^{-2})$.
 - 56 (old 53, Whitney extension): removed a redundant trailing sentence.
-- 58 (old 55): replaced the restricted, vaguely qualified indicatrix statement with Banach's indicatrix theorem $\operatorname{Var}F=\int N_F(y)\,dy$, valid for every continuous $F$.
+- 58 (old 55): replaced the restricted, vaguely qualified indicatrix statement with Banach's indicatrix theorem $\mathop{\mathrm{Var}}F=\int N_F(y)\,dy$, valid for every continuous $F$.
 - Reference guide: added pointers for the structure theorem, Aleksandrov, Federer–Vol'pert (Ambrosio–Fusco–Pallara), and Lindenstrauss–Preiss–Tišer.
 
 Numbering map (old → new):
@@ -294,7 +294,7 @@ Changes:
 - New entry 56 (Krasnosel'skiĭ–Mann iteration): Browder–Göhde–Kirk fixed points and weak convergence of KM iterations via Fejér monotonicity and Opial's lemma; the common principle behind entries 57–63 (Bauschke–Combettes Ch. 4–5).
 - Entry 57 (proximal point, old 54): noted Güler's failure of strong convergence and Rockafellar's maximal-monotone version.
 - Entry 60 (accelerated gradient, old 57): added Nesterov's matching lower bound $3L\|x_0-x_*\|^2/(32(k+1)^2)$.
-- Entry 68 (Brøndsted–Rockafellar, old 65): replaced a padding sentence by density of $\operatorname{dom}\partial f$ in $\operatorname{dom}f$.
+- Entry 68 (Brøndsted–Rockafellar, old 65): replaced a padding sentence by density of $\mathop{\mathrm{dom}}\partial f$ in $\mathop{\mathrm{dom}}f$.
 - Entry 69 (Rockafellar cyclic monotonicity, old 66): added uniqueness of the potential up to constants and a concrete counterexample (skew linear maps); removed padding.
 - Internal cross-reference "result 30" (proximal mapping) updated to "result 32".
 
@@ -613,7 +613,7 @@ Changes:
 - Correction/precision (31): independence of $p$ of maximal regularity holds on every Banach space (Dore), and maximal regularity forces analytic generation; previously suggested as a UMD-only fact.
 - New entry 37 (compact semigroups): immediately compact iff immediately norm continuous with compact resolvent; spectral consequences. Core in Pazy and Engel–Nagel.
 - Reformulation (41, quasicompact asymptotics): the vague "part in a far right half-plane" replaced by the precise statement $\omega_0=\max(\omega_{\rm ess},s(A))$, finitely many poles with finite-rank residues beyond any $w>\omega_{\rm ess}$, explicit expansion with remainder $O(e^{wt})$.
-- New entry 44 (spectral bound of positive semigroups): $s(A)\in\sigma(A)$, Laplace representation for $\operatorname{Re}\lambda>s(A)$, $s(A)=\omega_0$ on $L^p$ (Weis) and $C_0(\Omega)$. Core of positive semigroup theory (Engel–Nagel, Bátkai–Kramar Fijavž–Rhandi).
+- New entry 44 (spectral bound of positive semigroups): $s(A)\in\sigma(A)$, Laplace representation for $\mathop{\mathrm{Re}}\lambda>s(A)$, $s(A)=\omega_0$ on $L^p$ (Weis) and $C_0(\Omega)$. Core of positive semigroup theory (Engel–Nagel, Bátkai–Kramar Fijavž–Rhandi).
 - New entry 49 (J.-L. Lions' theorem for nonautonomous forms): the basic $L^2(V)\cap H^1(V')$ well-posedness theorem for parabolic problems.
 - Merge: old 48 (fractional heat evolution, an example) merged into the Bernstein subordination entry (now 50).
 - Precision (52, Crandall–Liggett): removed redundant trailing sentence; convergence stated uniformly on bounded intervals for every $x\in\overline{D(B)}$.
@@ -636,7 +636,7 @@ Sources consulted: Gohberg–Goldberg–Kaashoek, Classes of Linear Operators I,
 Changes:
 - New entry 13 (Fredholm determinant): Fredholm's entire determinant and minor series for continuous kernels, zeros = exceptional parameters, trace-class product formula. Classical core in Kress, Zemyan, Hochstadt, Kanwal.
 - Tightening (16, old 15): removed the redundant second sentence; stated that the range of a compact injective operator on infinite-dimensional Hilbert space is not closed.
-- New entry 21 (Paley–Wiener theorem for convolution Volterra equations on the half-line): $L^1$ resolvent iff $\hat k(z)\neq1$ on $\operatorname{Re}z\geq0$. Core of Volterra theory (Gripenberg–Londen–Staffans, Brunner).
+- New entry 21 (Paley–Wiener theorem for convolution Volterra equations on the half-line): $L^1$ resolvent iff $\hat k(z)\neq1$ on $\mathop{\mathrm{Re}}z\geq0$. Core of Volterra theory (Gripenberg–Londen–Staffans, Brunner).
 - Correction (24, old 22): the weakly singular Volterra solvability and Mittag-Leffler solution hold for all $\alpha>0$, not only $0<\alpha\leq1$.
 - New entry 28 (scalar Riemann–Hilbert problem): solvability according to the index $\kappa$, canonical function. Core of the Muskhelishvili/Gakhov literature in the bibliography, previously absent.
 - Extension (30, old 27, retitled "Toeplitz and Wiener–Hopf operators"): added Krein's Fredholm criterion and index formula for Wiener–Hopf integral operators, with the symbol convention of Gohberg–Goldberg–Kaashoek.
@@ -653,7 +653,7 @@ Numbering map (old → new):
 
 Size: 22535 → 23307 bytes; entries: 72 → 74.
 
-Sources consulted: Leoni, A First Course in Sobolev Spaces, 2nd ed. (Ch. 18 traces: Gagliardo's theorem $\operatorname{Tr}W^{1,1}=L^1(\partial\Omega)$, Peetre's counterexample; App. C.6 Hardy's inequality); existing local copies (Tartar, Lunardi, Triebel, Maz'ya) as background; bib entries Brezis, Evans–Gariepy, Bourgain–Brezis–Mironescu literature.
+Sources consulted: Leoni, A First Course in Sobolev Spaces, 2nd ed. (Ch. 18 traces: Gagliardo's theorem $\mathop{\mathrm{Tr}}W^{1,1}=L^1(\partial\Omega)$, Peetre's counterexample; App. C.6 Hardy's inequality); existing local copies (Tartar, Lunardi, Triebel, Maz'ya) as background; bib entries Brezis, Evans–Gariepy, Bourgain–Brezis–Mironescu literature.
 
 Changes:
 - New entry 11 (difference quotients and Lipschitz functions): characterization of $W^{1,p}$, $1<p\leq\infty$, by translation estimates; $W^{1,\infty}_{\rm loc}$ = locally Lipschitz; Rademacher; $BV$ at $p=1$. Core in Brezis, Evans, Leoni.

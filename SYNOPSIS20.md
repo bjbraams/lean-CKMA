@@ -64,7 +64,7 @@ $(ab)^*=b^*a^*$ and $\|a^*a\|=\|a\|^2$.
   they always agree for C*-subalgebras of C*-algebras.
 * **10. Radical criterion.** The Jacobson radical is a closed two-sided
   ideal, characterized by
-  $a\in\operatorname{rad}A$ exactly when $1-ba$ is invertible for every
+  $a\in\mathop{\mathrm{rad}}A$ exactly when $1-ba$ is invertible for every
   $b\in A$ in the unitization. The quotient by the radical is semisimple.
   Radical elements are quasinilpotent; the converse holds for commutative
   algebras but fails in general (e.g. in matrix algebras).
@@ -72,7 +72,7 @@ $(ab)^*=b^*a^*$ and $\|a^*a\|=\|a\|^2$.
 A left ideal $L$ is **modular** if $a-au\in L$ for some $u$ and all $a$.
 A left $A$-module $X$ is **algebraically irreducible** if $AX\neq0$ and
 $X$ has no submodules other than $0$ and $X$. A **primitive ideal** is the
-annihilator $\{a:aX=0\}$ of such a module; $\operatorname{Prim}A$ is the
+annihilator $\{a:aX=0\}$ of such a module; $\mathop{\mathrm{Prim}}A$ is the
 set of primitive ideals.
 
 * **64. Primitive ideals.** Every maximal modular left ideal $L$ of a
@@ -81,12 +81,12 @@ set of primitive ideals.
   two-sided ideals, of the form $\{a:aA\subset L\}$. The radical is the
   intersection of all primitive ideals, equivalently of all maximal modular
   left ideals. With the hull–kernel (Jacobson) topology,
-  $\operatorname{Prim}A$ is a $T_0$ space, compact when $A$ is unital. For
+  $\mathop{\mathrm{Prim}}A$ is a $T_0$ space, compact when $A$ is unital. For
   commutative $A$ the primitive ideals are the maximal modular ideals, so
-  $\operatorname{Prim}A=\Delta(A)$ as sets.
+  $\mathop{\mathrm{Prim}}A=\Delta(A)$ as sets.
 * **65. Jacobson density theorem.** Let $X$ be an algebraically
   irreducible left module of a Banach algebra $A$. Its commutant
-  $\operatorname{End}_A(X)$ is $\mathbb C$ (Schur's lemma together with
+  $\mathop{\mathrm{End}}_A(X)$ is $\mathbb C$ (Schur's lemma together with
   Gelfand–Mazur, after norming $X\cong A/L$; Rickart). For linearly
   independent $x_1,\ldots,x_n\in X$ and any $y_1,\ldots,y_n\in X$ there
   is $a\in A$ with $ax_i=y_i$ for all $i$. A primitive Banach algebra
@@ -146,7 +146,7 @@ star isomorphism onto $C_0(\Delta(A))$ (SYNOPSIS23, item 7).
   $r(a)=\|\widehat a\|_\infty$. In the nonunital convention used here,
   $\sigma(a)=\widehat a(\Delta(A))\cup\{0\}$.
 * **15. Semisimplicity criterion.**
-  $\operatorname{rad}A=\bigcap_{\varphi\in\Delta(A)}\ker\varphi
+  $\mathop{\mathrm{rad}}A=\bigcap_{\varphi\in\Delta(A)}\ker\varphi
   =\{a:r(a)=0\}$. Hence $A$ is semisimple exactly when the Gelfand
   transform is injective, and exactly when the spectral radius is a norm.
 * **16. Simultaneous invertibility test.** In a commutative unital algebra,

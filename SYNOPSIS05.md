@@ -79,7 +79,7 @@ functions. A **Darboux function** has the intermediate value property on interva
 ## Bounded variation and absolute continuity on the line
 
 The **total variation** of $F:[a,b]\to\mathbb R$ is
-$\operatorname{Var}(F)=\sup\sum_i|F(x_i)-F(x_{i-1})|$, over partitions.
+$\mathop{\mathrm{Var}}(F)=\sup\sum_i|F(x_i)-F(x_{i-1})|$, over partitions.
 The space $BV[a,b]$ consists of functions of finite variation. **Absolute
 continuity** means that for every $\varepsilon>0$ some $\delta>0$ makes
 $\sum_i|F(b_i)-F(a_i)|<\varepsilon$ whenever disjoint subintervals have total
@@ -90,7 +90,7 @@ null images.
   it is a difference of two bounded increasing functions. It has finite
   one-sided limits at every point and at most countably many discontinuities,
   each a jump or a removable discontinuity. For continuous $F$, the variation
-  function $x\mapsto\operatorname{Var}(F|_{[a,x]})$ is continuous.
+  function $x\mapsto\mathop{\mathrm{Var}}(F|_{[a,x]})$ is continuous.
 * **13. Lebesgue's theorem for monotone functions.** An increasing function is
   differentiable with finite derivative almost everywhere. Its derivative is
   nonnegative and integrable, and
@@ -106,13 +106,13 @@ null images.
   $M^+f(x)=\sup_{h>0}h^{-1}\int_x^{x+h}|f|$ and $f\in L^1(\mathbb R)$.
 * **14. Differentiation of $BV$ functions.** A function of bounded variation has
   a finite derivative almost everywhere, with
-  $\int_a^b|F'|\leq\operatorname{Var}(F)$. Its distributional derivative is a
+  $\int_a^b|F'|\leq\mathop{\mathrm{Var}}(F)$. Its distributional derivative is a
   finite signed measure on $(a,b)$, after identification of functions equal
   almost everywhere.
 * **15. Integral characterization of absolute continuity.** A function $F$ is
   absolutely continuous exactly when $F(x)=F(a)+\int_a^x g(t)\,dt$ for some
   $g\in L^1$. Then $F'=g$ almost everywhere and
-  $\operatorname{Var}(F)=\int_a^b|F'|$.
+  $\mathop{\mathrm{Var}}(F)=\int_a^b|F'|$.
 * **16. Banach–Zarecki theorem.** A real function on a compact interval is
   absolutely continuous exactly when it is continuous, has bounded variation,
   and has property $(N)$.
@@ -137,9 +137,9 @@ null images.
   continuous.
 * **58. Length and the Banach indicatrix.** An absolutely continuous curve
   $\gamma:[a,b]\to\mathbb R^m$ is rectifiable and
-  $$\operatorname{length}(\gamma)=\int_a^b|\gamma'(t)|dt.$$
+  $$\mathop{\mathrm{length}}(\gamma)=\int_a^b|\gamma'(t)|dt.$$
   For every continuous real $F$ on $[a,b]$, Banach's indicatrix theorem gives
-  $$\operatorname{Var}(F)=\int_{\mathbb R}\#\{t\in[a,b]:F(t)=y\}\,dy,$$
+  $$\mathop{\mathrm{Var}}(F)=\int_{\mathbb R}\#\{t\in[a,b]:F(t)=y\}\,dy,$$
   both sides possibly infinite: total variation counts level crossings with
   multiplicity.
 
@@ -210,7 +210,7 @@ $$Mf(x)=\sup_{r>0}\frac1{|B(x,r)|}\int_{B(x,r)}|f(y)|\,dy.$$
 A map is **$L$-Lipschitz** if $|f(x)-f(y)|\leq L|x-y|$.
 A measurable $f:U\to\mathbb R^m$ is **approximately differentiable** at $x$ if
 some linear $A$ satisfies
-$\operatorname*{ap\,lim}_{y\to x}|f(y)-f(x)-A(y-x)|/|y-x|=0$; an approximate
+$\mathop{\mathrm{ap\,lim}}\limits_{y\to x}|f(y)-f(x)-A(y-x)|/|y-x|=0$; an approximate
 limit excludes a set of density zero. A **weak derivative** $D_i f=g$ satisfies
 $\int f\partial_i\phi=-\int g\phi$ for all $\phi\in C_c^\infty(U)$.
 The **Sobolev space** $W^{1,p}(U)$ consists of $L^p$ functions whose first weak
@@ -284,7 +284,7 @@ where it exists.
 
 A function $u\in L^1(U)$ is in **$BV(U)$** if its distributional gradient $Du$
 is a finite vector measure. Its variation has the dual formula
-$$|Du|(U)=\sup\left\{\int_Uu\,\operatorname{div}\phi\,dx:
+$$|Du|(U)=\sup\left\{\int_Uu\,\mathop{\mathrm{div}}\phi\,dx:
   \phi\in C_c^1(U;\mathbb R^n),\ |\phi|\leq1\right\}.$$
 A measurable set has **finite perimeter** in $U$ if its locally integrable
 indicator has a distributional gradient of finite total variation there; its

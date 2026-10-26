@@ -23,7 +23,7 @@ Unless specified otherwise, $f:\widehat{\mathbb C}\to\widehat{\mathbb C}$
 is rational of degree $d\geq2$; $f^n$ denotes iteration. The **Fatou set**
 $F(f)$ is the open set where $\{f^n\}$ is normal in the spherical metric;
 the **Julia set** is its complement $J(f)$. The **postcritical set** is
-$P(f)=\overline{\bigcup_{n\geq1}f^n(\operatorname{Crit}f)}$.
+$P(f)=\overline{\bigcup_{n\geq1}f^n(\mathop{\mathrm{Crit}}f)}$.
 The multiplier of a period-$p$ point is $(f^p)'$ in a local coordinate.
 
 ## Julia sets and global iteration

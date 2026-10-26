@@ -36,11 +36,11 @@ a subspace dense in $D(A)$ for the graph norm $\|u\|+\|Au\|$.
   complete in its graph norm. A bounded perturbation of a closed operator
   is closed on the same domain.
 * **3. Nonreal resolvent estimate.** For symmetric $A$ and nonreal $z$,
-  $\|(A-z)u\|\geq|\operatorname{Im}z|\|u\|$. If $A$ is self-adjoint,
-  $z$ is in its resolvent and $\|(A-z)^{-1}\|\leq|\operatorname{Im}z|^{-1}$.
+  $\|(A-z)u\|\geq|\mathop{\mathrm{Im}}z|\|u\|$. If $A$ is self-adjoint,
+  $z$ is in its resolvent and $\|(A-z)^{-1}\|\leq|\mathop{\mathrm{Im}}z|^{-1}$.
 * **4. Self-adjointness by range.** A densely defined symmetric operator
-  is self-adjoint exactly when $\operatorname{ran}(A+i)=
-  \operatorname{ran}(A-i)=H$. It is essentially self-adjoint exactly when
+  is self-adjoint exactly when $\mathop{\mathrm{ran}}(A+i)=
+  \mathop{\mathrm{ran}}(A-i)=H$. It is essentially self-adjoint exactly when
   both these ranges are dense.
 * **5. von Neumann extension theorem.** A closed densely defined symmetric
   $A$ has self-adjoint extensions exactly when its deficiency indices
@@ -116,11 +116,11 @@ decompose into atomic, absolutely continuous, and singular continuous parts.
   $E(\{\lambda\})H=\ker(A-\lambda)$. Spectral projections commute
   with bounded Borel functions of $A$ and preserve $D(A)$.
 * **14. Resolvent norm.** For self-adjoint $A$,
-  $\|(A-z)^{-1}\|=\operatorname{dist}(z,\sigma(A))^{-1}$ off its
+  $\|(A-z)^{-1}\|=\mathop{\mathrm{dist}}(z,\sigma(A))^{-1}$ off its
   spectrum. Spectral distance therefore controls the resolvent exactly.
 * **15. Stone inversion formula.** If $\mu_u(\{a,b\})=0$, then
   $$\mu_u((a,b))=\lim_{\varepsilon\downarrow0}\frac1\pi
-    \int_a^b\operatorname{Im}\langle(A-\lambda-i\varepsilon)^{-1}u,u\rangle
+    \int_a^b\mathop{\mathrm{Im}}\langle(A-\lambda-i\varepsilon)^{-1}u,u\rangle
        \,d\lambda.$$
   At atoms the symmetric limiting formula assigns half of each endpoint mass.
 * **16. Strong resolvent convergence.** If self-adjoint $A_n,A$ satisfy
@@ -248,7 +248,7 @@ form values.
   number of eigenvalues of $K_E$ greater than $1$.
 * **39. Trotter product formula.** If $A$ and $B$ are self-adjoint and
   $A+B$ is essentially self-adjoint on $D(A)\cap D(B)$, then
-  $e^{it\overline{(A+B)}}=\operatorname{s-lim}_{n\to\infty}
+  $e^{it\overline{(A+B)}}=\mathop{\mathrm{s-lim}}_{n\to\infty}
   (e^{itA/n}e^{itB/n})^n$. For $A,B$ bounded below with form domains
   $Q(A),Q(B)$, $(e^{-tA/n}e^{-tB/n})^n$ converges strongly to
   $e^{-t(A\dotplus B)}P$, where $A\dotplus B$ is the form sum on
@@ -348,9 +348,9 @@ translations $U_x$.
   surely, is nonrandom, and equals $\mathbb E\langle\delta_0,
   1_{(-\infty,E]}(H_\omega)\delta_0\rangle$; $\Sigma$ is the set of
   points of increase of $N$, and here
-  $\Sigma=[-2d,2d]+\lambda\operatorname{supp}\mu$ (Kunz–Souillard).
+  $\Sigma=[-2d,2d]+\lambda\mathop{\mathrm{supp}}\mu$ (Kunz–Souillard).
   If $\mu$ has a bounded density $\rho$, $N$ is Lipschitz, by the Wegner
-  estimate $\mathbb E\operatorname{tr}1_I(H_\omega|_\Lambda)\leq
+  estimate $\mathbb E\mathop{\mathrm{tr}}1_I(H_\omega|_\Lambda)\leq
   |\lambda|^{-1}\|\rho\|_\infty|I||\Lambda|$.
 * **74. Anderson localization.** In the setting of item 73 with a bounded
   density, for $|\lambda|$ sufficiently large the spectrum of $H_\omega$ is
@@ -409,7 +409,7 @@ complete eigenfunctions) and Sturm oscillation are in Section 31
 * **55. Weyl–Titchmarsh function.** On a half-line with a regular left
   endpoint and limit-point infinity, the square-integrable solution
   normalized by $u(z,a)=1$ has $m(z)=u'(z,a)$ holomorphic in the upper
-  half-plane with $\operatorname{Im}m(z)>0$. Its Herglotz measure
+  half-plane with $\mathop{\mathrm{Im}}m(z)>0$. Its Herglotz measure
   determines the scalar spectral representation, and $m$ determines $V$
   (Borg–Marchenko uniqueness).
 * **56. Kirchhoff quantum graphs.** On a finite compact metric graph,
@@ -424,7 +424,7 @@ complete eigenfunctions) and Sturm oscillation are in Section 31
 ## Scattering, spectral dynamics, and stability
 
 For self-adjoint $A,A_0$, the **wave operators** are
-$W_\pm=\operatorname{s-lim}_{t\to\pm\infty}e^{itA}e^{-itA_0}P_{\rm ac}(A_0)$,
+$W_\pm=\mathop{\mathrm{s-lim}}_{t\to\pm\infty}e^{itA}e^{-itA_0}P_{\rm ac}(A_0)$,
 when they exist. They are **complete** if their ranges equal $H_{\rm ac}(A)$.
 
 * **58. Intertwining and isometry.** Existing wave operators are
@@ -480,15 +480,15 @@ is $\sigma_\varepsilon(A)=\sigma(A)\cup
   much greater spectral movement than for normal matrices.
 * **67. Numerical range bound.** For bounded $A$, its spectrum lies in
   the closure of $W(A)=\{\langle Au,u\rangle:\|u\|=1\}$, and
-  $\|(A-z)^{-1}\|\leq\operatorname{dist}(z,W(A))^{-1}$ outside
+  $\|(A-z)^{-1}\|\leq\mathop{\mathrm{dist}}(z,W(A))^{-1}$ outside
   that closure.
 * **68. Resolvent and transient growth.** If $A$ generates a semigroup
   with $\|e^{tA}\|\leq M e^{\omega t}$, then
-  $\|(z-A)^{-1}\|\leq M/(\operatorname{Re}z-\omega)$ for
-  $\operatorname{Re}z>\omega$. Large resolvent norms therefore force
+  $\|(z-A)^{-1}\|\leq M/(\mathop{\mathrm{Re}}z-\omega)$ for
+  $\mathop{\mathrm{Re}}z>\omega$. Large resolvent norms therefore force
   large possible growth constants even when the spectrum is stable.
   Conversely, for an $N\times N$ matrix with Kreiss constant
-  $\mathcal K=\sup_{\operatorname{Re}z>0}\operatorname{Re}z\,\|(z-A)^{-1}\|$,
+  $\mathcal K=\sup_{\mathop{\mathrm{Re}}z>0}\mathop{\mathrm{Re}}z\,\|(z-A)^{-1}\|$,
   one has $\mathcal K\leq\sup_{t\geq0}\|e^{tA}\|\leq eN\mathcal K$
   (Kreiss matrix theorem).
 

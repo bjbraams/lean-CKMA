@@ -147,7 +147,7 @@ $Mf(x)=\sup_{Q\ni x}|Q|^{-1}\int_Q|f|$, over axis-parallel cubes.
 * **28. Calderón–Zygmund decomposition.** For $f\in L^1$ and
   $\lambda>0$, there are disjoint dyadic cubes $Q_j$ and $f=g+\sum b_j$
   with $\|g\|_\infty\leq C_d\lambda$, $\|g\|_1\leq C\|f\|_1$,
-  $\operatorname{supp}b_j\subset Q_j$, $\int b_j=0$,
+  $\mathop{\mathrm{supp}}b_j\subset Q_j$, $\int b_j=0$,
   $\sum\|b_j\|_1\leq C\|f\|_1$, and
   $\sum|Q_j|\leq\|f\|_1/\lambda$.
 * **29. Vector-valued maximal inequality.** For $1<p,q<\infty$,
@@ -182,8 +182,8 @@ $0<\delta\leq1$ in each variable away from the diagonal.
   $f\in L^p$, $1\leq p<\infty$. The usual cancellative homogeneous
   convolution kernels satisfy this additional hypothesis.
 * **35. Hilbert transform.**
-  $Hf(x)=\operatorname{pv}\pi^{-1}\int f(y)/(x-y)dy$ has multiplier
-  $-i\operatorname{sgn}\xi$. It is bounded on $L^p$, $1<p<\infty$,
+  $Hf(x)=\mathop{\mathrm{pv}}\pi^{-1}\int f(y)/(x-y)dy$ has multiplier
+  $-i\mathop{\mathrm{sgn}}\xi$. It is bounded on $L^p$, $1<p<\infty$,
   weak type $(1,1)$, and satisfies $H^2=-I$ on $L^2(\mathbb R)$.
 * **36. Riesz transforms.** The multipliers
   $-i\xi_j/|\xi|$ define operators $R_j$ bounded on $L^p$,
@@ -191,7 +191,7 @@ $0<\delta\leq1$ in each variable away from the diagonal.
   On $L^2$, $\sum_jR_j^2=-I$.
 * **37. Homogeneous convolution kernels.** If
   $\Omega\in C^1(S^{d-1})$ and $\int_{S^{d-1}}\Omega=0$, then
-  $\operatorname{pv}\Omega(x/|x|)|x|^{-d}*f$ is a bounded
+  $\mathop{\mathrm{pv}}\Omega(x/|x|)|x|^{-d}*f$ is a bounded
   Calderón–Zygmund singular integral. Cancellation is essential.
 * **38. Mihlin multiplier theorem.** If a bounded $m$ is smooth off
   zero and $|\partial^\alpha m(\xi)|\leq C_\alpha|\xi|^{-|\alpha|}$
@@ -224,10 +224,10 @@ $0<\delta\leq1$ in each variable away from the diagonal.
   $\mathbb Z^d$ is a torus multiplier with no larger norm.
 * **69. Cauchy integral on Lipschitz curves.** Let $A:\mathbb R\to\mathbb R$
   be Lipschitz and $z(x)=x+iA(x)$. The Cauchy integral
-  $C_Af(x)=\operatorname{pv}\frac1{\pi i}\int\frac{f(y)z'(y)}{z(y)-z(x)}dy$
+  $C_Af(x)=\mathop{\mathrm{pv}}\frac1{\pi i}\int\frac{f(y)z'(y)}{z(y)-z(x)}dy$
   is bounded on $L^p(\mathbb R)$, $1<p<\infty$ (Calderón for small
   $\|A'\|_\infty$; Coifman–McIntosh–Meyer in general). So are the Calderón
-  commutators $\operatorname{pv}\int(\frac{A(x)-A(y)}{x-y})^k
+  commutators $\mathop{\mathrm{pv}}\int(\frac{A(x)-A(y)}{x-y})^k
   \frac{f(y)}{x-y}dy$, with norms at most a polynomial in $k$ times
   $C^k\|A'\|_\infty^k$.
   These are the model applications of the $T(1)$ theorem and its accretive
@@ -319,7 +319,7 @@ stated in SYNOPSIS50, items 13–14.
   $\|f\|_p\asymp\|(\int_0^\infty|t\partial_tP_t*f|^2dt/t)^{1/2}\|_p$.
   Lusin area integrals, integrating $|\nabla P_t*f|^2t^{1-d}$ over
   $|y-x|<t$, give equivalent norms, and characterize $H^1$ at $p=1$.
-* **58. Bernstein inequalities.** If $\operatorname{supp}\widehat f
+* **58. Bernstein inequalities.** If $\mathop{\mathrm{supp}}\widehat f
   \subset\{|\xi|\leq R\}$ and $1\leq p\leq q\leq\infty$, then
   $\|\partial^\alpha f\|_q\leq
   C R^{|\alpha|+d(1/p-1/q)}\|f\|_p$.

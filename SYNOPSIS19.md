@@ -390,7 +390,7 @@ $\gcd\{m\geq1:(T^m)_{ii}>0\}$, which for irreducible $T$ is independent of $i$.
 ## Nonlinear Perron–Frobenius theory
 
 Let $K$ be a closed cone in a finite-dimensional real space $V$, with
-interior $\operatorname{int}K$ when $K$ is **solid**. A map $f:K\to K$ is
+interior $\mathop{\mathrm{int}}K$ when $K$ is **solid**. A map $f:K\to K$ is
 **order preserving** if $x\leq y\Rightarrow f(x)\leq f(y)$ and
 **homogeneous** if $f(\lambda x)=\lambda f(x)$ for $\lambda\geq0$. For
 $x,y\in K$ that are **comparable** ($\alpha y\leq x\leq\beta y$ for some
@@ -405,8 +405,8 @@ $\|f\|_K=\sup\{\|f(x)\|:x\in K,\|x\|\leq1\}$.
   $d_T(x,y)=\log\max\{M(x/y),M(y/x)\}$. Then $d_H(x,y)=0$ exactly when
   $x$ is a positive multiple of $y$, and $d_H$ is a metric on the rays of
   each comparability class. If $K$ is solid and
-  $\varphi\in\operatorname{int}K^*$, $d_H$ restricted to
-  $\{x\in\operatorname{int}K:\varphi(x)=1\}$ is a complete metric giving
+  $\varphi\in\mathop{\mathrm{int}}K^*$, $d_H$ restricted to
+  $\{x\in\mathop{\mathrm{int}}K:\varphi(x)=1\}$ is a complete metric giving
   the norm topology, and it coincides there with Hilbert's cross-ratio
   metric of that convex set (Birkhoff, Samelson). Every order-preserving
   map homogeneous of degree $p>0$ satisfies $d_H(f(x),f(y))\leq p\,d_H(x,y)$
@@ -418,7 +418,7 @@ $\|f\|_K=\sup\{\|f(x)\|:x\in K,\|x\|\leq1\}$.
   **projective diameter**. Its contraction ratio for $d_H$ is
   $\kappa(L)=\tanh\bigl(\Delta(L)/4\bigr)$. If $K$ is solid and
   $\Delta(L)<\infty$, then $L$ has, up to scaling, a unique eigenvector in
-  $\operatorname{int}K$, and normalized iterates $L^nx/\varphi(L^nx)$,
+  $\mathop{\mathrm{int}}K$, and normalized iterates $L^nx/\varphi(L^nx)$,
   $x\in K\setminus\{0\}$, converge to it geometrically in $d_H$. For a matrix
   with all entries positive,
   $\Delta(A)=\max_{i,j,k,l}\log\bigl(a_{ik}a_{jl}/(a_{jk}a_{il})\bigr)<\infty$,
@@ -427,20 +427,20 @@ $\|f\|_K=\sup\{\|f(x)\|:x\in K,\|x\|\leq1\}$.
   $f:K\to K$ is continuous, homogeneous, and order preserving, then there is
   $x\in K\setminus\{0\}$ with $f(x)=r_K(f)x$. Moreover
   $r_K(f)=\sup_{x\in K\setminus\{0\}}\limsup_k\|f^k(x)\|^{1/k}$, and the
-  supremum is attained at every $y\in\operatorname{int}K$
+  supremum is attained at every $y\in\mathop{\mathrm{int}}K$
   (Lemmens–Nussbaum). Without order preservation such an eigenvector need
   not exist.
 * **74. Eigenvectors in the interior.** Let
-  $f:\operatorname{int}\mathbb R^n_+\to\operatorname{int}\mathbb R^n_+$ be
+  $f:\mathop{\mathrm{int}}\mathbb R^n_+\to\mathop{\mathrm{int}}\mathbb R^n_+$ be
   homogeneous and order preserving, and let $G_f$ be the digraph on
   $\{1,\ldots,n\}$ with an arc $i\to j$ when $f_i(u^{\{j\}})\to\infty$ as
   $u\to\infty$, where $u^{\{j\}}$ has $j$-th coordinate $u$ and all others
   $1$. If $G_f$ is strongly connected, $f$ has an eigenvector in
-  $\operatorname{int}\mathbb R^n_+$ (Gaubert–Gunawardena). For a
+  $\mathop{\mathrm{int}}\mathbb R^n_+$ (Gaubert–Gunawardena). For a
   nonnegative matrix $G_f$ is its usual graph. If an order-preserving
   homogeneous $f$ on a solid cone has an interior eigenvector $u$ at which
   it is Fréchet differentiable with $Df(u)$ irreducible, then $u$ is, up
-  to scaling, its only eigenvector in $\operatorname{int}K$.
+  to scaling, its only eigenvector in $\mathop{\mathrm{int}}K$.
 
 ## Positive semigroups and approximation
 
@@ -448,7 +448,7 @@ A **positive $C_0$-semigroup** has $T(t)E_+\subset E_+$ for every
 $t\geq0$. Its generator here is $A$, so $T(t)=e^{tA}$ symbolically.
 The **growth bound** $\omega_0$ is the infimum of $\omega$ admitting
 $\|T(t)\|\leq Me^{\omega t}$; the **spectral bound** is
-$s(A)=\sup\{\operatorname{Re}\lambda:\lambda\in\sigma(A)\}$.
+$s(A)=\sup\{\mathop{\mathrm{Re}}\lambda:\lambda\in\sigma(A)\}$.
 The generation and perturbation criteria for positivity and the relation
 $s(A)\in\sigma(A)$, $s(A)\leq\omega_0$ are in Section 24 (SYNOPSIS24,
 items 43–44), the Beurling–Deny criteria in SYNOPSIS39, item 19, and the

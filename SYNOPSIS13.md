@@ -18,7 +18,7 @@ The **Loewner order** is $A\leq B$ when $B-A\geq0$. Hermitian eigenvalues
 $\lambda_1(A)\geq\cdots\geq\lambda_n(A)$ and singular values
 $s_1(A)\geq\cdots\geq s_n(A)\geq0$ are in decreasing order.
 The operator norm is $\|A\|=s_1(A)$; the Schatten norm is
-$\|A\|_p=(\operatorname{tr}|A|^p)^{1/p}$, $|A|=(A^*A)^{1/2}$.
+$\|A\|_p=(\mathop{\mathrm{tr}}|A|^p)^{1/p}$, $|A|=(A^*A)^{1/2}$.
 
 Products of positive matrices need not be Hermitian or positive, so order
 statements use symmetric placements such as $B^{1/2}AB^{1/2}$. Congruence
@@ -48,7 +48,7 @@ arbitrary, permutations of factors.
   Consequently $A\leq B$ implies $\lambda_k(A)\leq\lambda_k(B)$ for every $k$
   (Weyl monotonicity).
 * **6. Ky Fan maximum principle.**
-  $\sum_{i=1}^k\lambda_i(A)=\max_{P}\operatorname{tr}(PA)$, over rank-$k$
+  $\sum_{i=1}^k\lambda_i(A)=\max_{P}\mathop{\mathrm{tr}}(PA)$, over rank-$k$
   orthogonal projections. Hence the sum of the $k$ largest eigenvalues is a
   convex function of $A$.
 * **7. Cauchy interlacing.** Eigenvalues of a Hermitian compression to a
@@ -83,15 +83,15 @@ vector. **Weak majorization** $a\prec_w b$ means all decreasing partial sums
 of $a$ are bounded by those of $b$, without equality of total sums.
 
 * **13. Von Neumann trace inequality.**
-  $|\operatorname{tr}(A^*B)|\leq\sum_i s_i(A)s_i(B)$.
+  $|\mathop{\mathrm{tr}}(A^*B)|\leq\sum_i s_i(A)s_i(B)$.
 * **14. Ky Fan dominance.** $s(A)\prec_w s(B)$ exactly when
   $\|A\|_{\!u}\leq\|B\|_{\!u}$ for every unitarily invariant norm.
 * **15. Mirsky perturbation inequality.** For every unitarily invariant norm,
-  $\|\operatorname{diag}(s(A)-s(B))\|_{\!u}\leq\|A-B\|_{\!u}$.
+  $\|\mathop{\mathrm{diag}}(s(A)-s(B))\|_{\!u}\leq\|A-B\|_{\!u}$.
   Rectangular versions use the corresponding singular-value gauge.
 * **16. Schatten Hölder inequality.** If $1/r=1/p+1/q$ and
   $p,q,r\in[1,\infty]$, then $\|AB\|_r\leq\|A\|_p\|B\|_q$.
-  In particular $|\operatorname{tr}(A^*B)|\leq\|A\|_p\|B\|_{p'}$.
+  In particular $|\mathop{\mathrm{tr}}(A^*B)|\leq\|A\|_p\|B\|_{p'}$.
 * **17. Schatten triangle and duality.** Schatten $p$ norms are norms for
   $p\geq1$, and their dual norms under the trace pairing are Schatten $p'$
   norms, including operator/trace norm duality.
@@ -181,7 +181,7 @@ convexity alone does not imply these stronger properties.
   convex on an interval containing zero, and $f(0)\leq0$, then
   $f(C^*AC)\leq C^*f(A)C$, subject to the spectral-domain condition.
 * **37. Davis compression criterion.** Operator convexity is equivalent to
-  $f(PAP|_{\operatorname{ran}P})\leq Pf(A)P|_{\operatorname{ran}P}$ for all
+  $f(PAP|_{\mathop{\mathrm{ran}}P})\leq Pf(A)P|_{\mathop{\mathrm{ran}}P}$ for all
   finite-dimensional Hermitian $A$ and orthogonal compressions with the relevant
   spectra in the interval.
 * **38. Positive concavity and monotonicity.** A nonnegative function on
@@ -214,7 +214,7 @@ $I\,\sigma\,I=I$.
   concave in $(A,B)$. For a positive linear map $\Phi$ and every operator
   mean $\sigma$, $\Phi(A\,\sigma\,B)\leq\Phi(A)\,\sigma\,\Phi(B)$ (Ando).
 * **43. Affine-invariant distance.** The positive definite cone with metric
-  $g_A(H,K)=\operatorname{tr}(A^{-1}HA^{-1}K)$ has distance
+  $g_A(H,K)=\mathop{\mathrm{tr}}(A^{-1}HA^{-1}K)$ has distance
   $d(A,B)=\|\log(A^{-1/2}BA^{-1/2})\|_2$. Its unique geodesic from $A$ to
   $B$ is $A\#_tB$.
 * **44. Nonpositive curvature.** This metric satisfies
@@ -226,36 +226,36 @@ $I\,\sigma\,I=I$.
 
 * **45. Klein inequality.** For differentiable convex scalar $f$ and Hermitian
   $A,B$ with spectra in its interval,
-  $\operatorname{tr}[f(A)-f(B)-(A-B)f'(B)]\geq0$.
+  $\mathop{\mathrm{tr}}[f(A)-f(B)-(A-B)f'(B)]\geq0$.
   For strictly convex $f$, equality forces $A=B$.
 * **46. Golden–Thompson inequality.** For Hermitian $H,K$,
-  $\operatorname{tr}e^{H+K}\leq\operatorname{tr}(e^He^K)$, with equality
+  $\mathop{\mathrm{tr}}e^{H+K}\leq\mathop{\mathrm{tr}}(e^He^K)$, with equality
   exactly when $H$ and $K$ commute. The analogue for three exponentials fails.
 * **47. Lieb concavity theorem.** For fixed $K$ and $0\leq t\leq1$,
-  $(A,B)\mapsto\operatorname{tr}(K^*A^tKB^{1-t})$ is jointly concave on
+  $(A,B)\mapsto\mathop{\mathrm{tr}}(K^*A^tKB^{1-t})$ is jointly concave on
   positive matrices, with endpoint zeroth powers interpreted as the identity.
 * **48. Araki–Lieb–Thirring inequality.** For $A,B\geq0$, $r\geq1$, $q>0$,
-  $$\operatorname{tr}(B^{1/2}AB^{1/2})^{rq}
-    \leq\operatorname{tr}(B^{r/2}A^rB^{r/2})^q.$$
+  $$\mathop{\mathrm{tr}}(B^{1/2}AB^{1/2})^{rq}
+    \leq\mathop{\mathrm{tr}}(B^{r/2}A^rB^{r/2})^q.$$
   For $0<r<1$ the inequality reverses.
 * **49. Trace convexity.** Scalar convexity of $f$ implies convexity of
-  $A\mapsto\operatorname{tr}f(A)$ on the Hermitian spectral domain. This
+  $A\mapsto\mathop{\mathrm{tr}}f(A)$ on the Hermitian spectral domain. This
   requires less than operator convexity; for concave $f$ the direction reverses.
 * **50. Peierls–Bogoliubov inequality.**
-  $\log\operatorname{tr}e^{H+K}\geq\log\operatorname{tr}e^H+
-  \operatorname{tr}(Ke^H)/\operatorname{tr}e^H$ for Hermitian $H,K$.
+  $\log\mathop{\mathrm{tr}}e^{H+K}\geq\log\mathop{\mathrm{tr}}e^H+
+  \mathop{\mathrm{tr}}(Ke^H)/\mathop{\mathrm{tr}}e^H$ for Hermitian $H,K$.
 * **51. Gibbs variational principle.** For Hermitian $H$,
-  $$\log\operatorname{tr}e^H
-    =\max_{\rho\geq0,\operatorname{tr}\rho=1}
-       \{\operatorname{tr}(\rho H)-\operatorname{tr}(\rho\log\rho)\}.$$
-  The unique maximizer is $e^H/\operatorname{tr}e^H$.
+  $$\log\mathop{\mathrm{tr}}e^H
+    =\max_{\rho\geq0,\mathop{\mathrm{tr}}\rho=1}
+       \{\mathop{\mathrm{tr}}(\rho H)-\mathop{\mathrm{tr}}(\rho\log\rho)\}.$$
+  The unique maximizer is $e^H/\mathop{\mathrm{tr}}e^H$.
 * **52. Positivity of relative entropy.** For density matrices,
-  $D(\rho\|\sigma)=\operatorname{tr}\rho(\log\rho-\log\sigma)\geq0$,
+  $D(\rho\|\sigma)=\mathop{\mathrm{tr}}\rho(\log\rho-\log\sigma)\geq0$,
   with equality exactly for $\rho=\sigma$. It is infinite if
-  $\operatorname{supp}\rho\not\subseteq\operatorname{supp}\sigma$;
+  $\mathop{\mathrm{supp}}\rho\not\subseteq\mathop{\mathrm{supp}}\sigma$;
   $0\log0=0$ on the supported subspace.
 * **70. Lieb exponential concavity.** For fixed Hermitian $H$, the function
-  $A\mapsto\operatorname{tr}\exp(H+\log A)$ is concave on $A>0$. It
+  $A\mapsto\mathop{\mathrm{tr}}\exp(H+\log A)$ is concave on $A>0$. It
   substitutes for factorization of noncommuting exponentials in matrix
   moment-generating-function bounds (Tropp).
 
@@ -264,7 +264,7 @@ $I\,\sigma\,I=I$.
 A map $\Phi$ is **completely positive** if $I_k\otimes\Phi$ preserves
 positivity for every $k$. A **quantum channel** is a completely positive
 trace-preserving map. The von Neumann entropy is
-$S(\rho)=-\operatorname{tr}\rho\log\rho$, in natural-logarithm units.
+$S(\rho)=-\mathop{\mathrm{tr}}\rho\log\rho$, in natural-logarithm units.
 Partial traces define reduced density matrices such as $\rho_{AB}$ and $\rho_B$.
 The Stinespring dilation and the Kadison–Schwarz inequality are SYNOPSIS23,
 items 17 and 14.
@@ -274,7 +274,7 @@ items 17 and 14.
   $\sum_jV_j^*V_j=I$; unitality is $\sum_jV_jV_j^*=I$ on the output space.
 * **54. Choi criterion.** Complete positivity is equivalent to positivity of
   $J(\Phi)=\sum_{ij}E_{ij}\otimes\Phi(E_{ij})$. Trace preservation is
-  $\operatorname{tr}_{\mathrm{out}}J(\Phi)=I_{\mathrm{in}}$.
+  $\mathop{\mathrm{tr}}_{\mathrm{out}}J(\Phi)=I_{\mathrm{in}}$.
 * **57. Majorization by unitary mixing.** For density matrices of the same
   size, $\lambda(\rho)\prec\lambda(\sigma)$ exactly when $\rho$ is a convex
   combination of unitary conjugates of $\sigma$.
@@ -365,13 +365,13 @@ SYNOPSIS21, item 25.
   $\det_2(I+T)=\prod_j(1+\lambda_j(T))e^{-\lambda_j(T)}$ is well defined
   and continuous in Hilbert–Schmidt norm. For $S,T\in\mathcal S_2$,
   $$\det_2((I+S)(I+T))
-    =\det_2(I+S)\det_2(I+T)e^{-\operatorname{tr}(ST)}.$$
+    =\det_2(I+S)\det_2(I+T)e^{-\mathop{\mathrm{tr}}(ST)}.$$
   The function $z\mapsto\det_2(I+zT)$ is entire and vanishes exactly where
   $-1/z$ is a nonzero eigenvalue of $T$.
 * **69. Log-determinant concavity.** On positive definite matrices,
   $A\mapsto\log\det A$ is strictly concave, and
-  $$D\log\det A[H]=\operatorname{tr}(A^{-1}H),\qquad
-    D^2\log\det A[H,H]=-\operatorname{tr}(A^{-1}HA^{-1}H).$$
+  $$D\log\det A[H]=\mathop{\mathrm{tr}}(A^{-1}H),\qquad
+    D^2\log\det A[H,H]=-\mathop{\mathrm{tr}}(A^{-1}HA^{-1}H).$$
   The negative log-determinant is a self-concordant barrier for the positive cone.
 
 ## Perturbation and further trace and entropy inequalities
@@ -389,21 +389,21 @@ part of the spectrum.
 * **67. Davis–Kahan residual bound.** Let $P$ be a spectral projection of
   Hermitian $A$, let $X$ have orthonormal columns, and let $H$ be Hermitian
   of the corresponding column dimension. If the spectrum of $H$ is separated
-  by $\delta>0$ from that of $A$ on $\operatorname{ran}(I-P)$, then
+  by $\delta>0$ from that of $A$ on $\mathop{\mathrm{ran}}(I-P)$, then
   $$\|(I-P)X\|_2\leq\delta^{-1}\|AX-XH\|_2.$$
   Here $\|(I-P)X\|_2$ is the Frobenius norm of the sines of the canonical
-  angles between $\operatorname{ran}X$ and $\operatorname{ran}P$.
+  angles between $\mathop{\mathrm{ran}}X$ and $\mathop{\mathrm{ran}}P$.
 * **72. Wigner–Yanase–Dyson skew information.** For a density matrix and
   Hermitian $H$, $0<t<1$,
-  $$I_t(\rho,H)=\operatorname{tr}(\rho H^2)
-     -\operatorname{tr}(\rho^tH\rho^{1-t}H)\geq0.$$
+  $$I_t(\rho,H)=\mathop{\mathrm{tr}}(\rho H^2)
+     -\mathop{\mathrm{tr}}(\rho^tH\rho^{1-t}H)\geq0.$$
   It is convex in $\rho$ (by Lieb's concavity theorem) and vanishes exactly
   when $\rho$ commutes with $H$.
 * **75. Convex spectral functions.** A symmetric convex function
   $\phi:\mathbb R^n\to\mathbb R$ induces a convex unitarily invariant function
   $A\mapsto\phi(\lambda(A))$ on Hermitian matrices, with conjugate
   $(\phi\circ\lambda)^*=\phi^*\circ\lambda$ and subdifferential consisting of
-  the $U\operatorname{diag}(u)U^*$ with $A=U\operatorname{diag}(\lambda(A))U^*$
+  the $U\mathop{\mathrm{diag}}(u)U^*$ with $A=U\mathop{\mathrm{diag}}(\lambda(A))U^*$
   and $u\in\partial\phi(\lambda(A))$ (Davis, Lewis).
 
 ## Reference guide

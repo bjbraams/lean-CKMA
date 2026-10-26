@@ -257,7 +257,7 @@ where it vanishes.
   continuous functional on $C^\infty(\Omega)$ exactly when its support is
   compact. Every such distribution has finite order, with an estimate on
   some compact neighborhood of its support.
-* **42. Distributions supported at a point.** If $\operatorname{supp}T
+* **42. Distributions supported at a point.** If $\mathop{\mathrm{supp}}T
   \subset\{a\}$, then $T=\sum_{|\alpha|\leq m}c_\alpha\partial^\alpha\delta_a$
   for finitely many coefficients, with $m$ the order of $T$.
 * **43. Local structure theorem.** On each relatively compact open subset,
@@ -292,8 +292,8 @@ $\rho_\varepsilon(x)=\varepsilon^{-n}\rho(x/\varepsilon)$.
   dense in $\mathcal D'$ for distributional convergence.
 * **48. Convolution of distributions.** $S*T$ is defined if one factor
   has compact support, and more generally if addition is proper on
-  $\operatorname{supp}S\times\operatorname{supp}T$. It obeys
-  $\operatorname{supp}(S*T)\subset\operatorname{supp}S+\operatorname{supp}T$
+  $\mathop{\mathrm{supp}}S\times\mathop{\mathrm{supp}}T$. It obeys
+  $\mathop{\mathrm{supp}}(S*T)\subset\mathop{\mathrm{supp}}S+\mathop{\mathrm{supp}}T$
   and commutes with derivatives; associativity holds under the corresponding
   support conditions.
 * **49. Pullback by a submersion.** Every smooth submersion
@@ -341,7 +341,7 @@ On distributions, $\widehat T(\phi)=T(\widehat\phi)$.
     |\xi|^{a-n}.$$
   On $\mathbb R$, the principal value $\mathrm{p.v.}\,1/x$ is a tempered
   distribution of order one with
-  $\widehat{\mathrm{p.v.}\,1/x}=-i\pi\operatorname{sgn}\xi$, and
+  $\widehat{\mathrm{p.v.}\,1/x}=-i\pi\mathop{\mathrm{sgn}}\xi$, and
   $1/(x\pm i0)=\mathrm{p.v.}\,1/x\mp i\pi\delta_0$ (Sokhotski–Plemelj).
 * **57. Fourier transform of convolution.** If $S\in\mathcal E'$ and
   $T\in\mathcal S'$, then $S*T\in\mathcal S'$ and
@@ -354,7 +354,7 @@ On distributions, $\widehat T(\phi)=T(\widehat\phi)$.
 * **59. Paley–Wiener–Schwartz theorem.** For compact convex
   $K\subset\mathbb R^n$, Fourier transforms of distributions supported in
   $K$ are exactly the entire functions $F$ on $\mathbb C^n$ satisfying
-  $$|F(z)|\leq C(1+|z|)^N e^{H_K(\operatorname{Im}z)},
+  $$|F(z)|\leq C(1+|z|)^N e^{H_K(\mathop{\mathrm{Im}}z)},
     \qquad H_K(\eta)=\sup_{x\in K}x\cdot\eta,$$
   for some $C,N$. The distribution is unique.
 * **60. Smooth Paley–Wiener theorem.** Fourier transforms of smooth

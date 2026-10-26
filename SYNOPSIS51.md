@@ -50,10 +50,10 @@ $L=-\partial_x^2+u$.
   requires an explicit power factor.
 * **4. Matrix partial indices.** An invertible Hölder matrix loop on
   the unit circle admits a Birkhoff factorization
-  $v=v_-^{-1}\operatorname{diag}(z^{\kappa_1},\ldots,z^{\kappa_r})v_+$
+  $v=v_-^{-1}\mathop{\mathrm{diag}}(z^{\kappa_1},\ldots,z^{\kappa_r})v_+$
   with holomorphically invertible inside and outside factors. The integer
   partial indices govern homogeneous solutions and solvability;
-  $\sum\kappa_j=\operatorname{wind}\det v$ does not determine them separately.
+  $\sum\kappa_j=\mathop{\mathrm{wind}}\det v$ does not determine them separately.
 * **5. Determinant and uniqueness.** If $\det v=1$ and endpoint
   conditions make the determinant singularities removable, a normalized
   solution has determinant one. The quotient of two solutions is entire
@@ -123,7 +123,7 @@ $L=-\partial_x^2+u$.
 * **16. Jost solutions.** For real $u\in L^1((1+|x|)\,dx)$,
   $Lf=k^2f$ has solutions $f_\pm(x,k)\sim e^{\pm ikx}$ at
   the corresponding ends. After removal of these exponentials they
-  extend analytically to $\operatorname{Im}k>0$ and continuously to
+  extend analytically to $\mathop{\mathrm{Im}}k>0$ and continuously to
   nonzero real $k$, by Volterra integral equations.
 * **17. Scattering unitarity.** Transmission and left/right reflection
   coefficients obey $|T(k)|^2+|R_\pm(k)|^2=1$ for real $k\ne0$,
@@ -162,7 +162,7 @@ $L=-\partial_x^2+u$.
   Evolving these data and reconstructing solves the Schwartz-class
   Cauchy problem.
 * **24. One-soliton solution.** A single eigenvalue and zero reflection
-  give $u(x,t)=-2\kappa^2\operatorname{sech}^2
+  give $u(x,t)=-2\kappa^2\mathop{\mathrm{sech}}^2
   (\kappa(x-4\kappa^2t-x_0))$.
 * **25. Multisoliton determinant.** Reflectionless data give
   $u=-2\partial_x^2\log\det(I+A)$, where
@@ -223,21 +223,21 @@ $L=-\partial_x^2+u$.
 * **70. Zakharov–Shabat direct scattering.** For complex $q\in L^1(\mathbb R)$
   and the focusing system $v_x=\begin{pmatrix}-i\lambda&q\\-\bar q&i\lambda
   \end{pmatrix}v$, Jost solutions normalized at $\mp\infty$ exist for
-  $\operatorname{Im}\lambda\geq0$, and their Wronskian $a(\lambda)$ is
+  $\mathop{\mathrm{Im}}\lambda\geq0$, and their Wronskian $a(\lambda)$ is
   analytic in the upper half-plane, continuous up to $\mathbb R$, and tends
   to $1$ at infinity; on $\mathbb R$, $|a|^2+|b|^2=1$, with $r=b/a$.
   The $L^2$ eigenvalues are the zeros of $a$ in
-  $\operatorname{Im}\lambda>0$, finitely many when $a$ has no real zeros;
+  $\mathop{\mathrm{Im}}\lambda>0$, finitely many when $a$ has no real zeros;
   there are none if $\|q\|_{L^1}<\pi/2$, and for real nonnegative
   single-lobe $q$ they are simple, purely imaginary, and
   $\lfloor\|q\|_{L^1}/\pi+\frac12\rfloor$ in number when
   $\|q\|_{L^1}/\pi+\frac12\notin\mathbb Z$ (Klaus–Shaw; for
-  $q=A\operatorname{sech}x$, Satsuma–Yajima).
+  $q=A\mathop{\mathrm{sech}}x$, Satsuma–Yajima).
   Under the NLS flow of entry 31, $a$ is conserved and $b$ and the norming
   constants evolve by explicit exponential factors in $\lambda^2t$.
 * **31. Focusing NLS soliton.** For
   $iq_t+q_{xx}+2|q|^2q=0$,
-  $q=\eta\operatorname{sech}(\eta(x-2\xi t-x_0))
+  $q=\eta\mathop{\mathrm{sech}}(\eta(x-2\xi t-x_0))
   e^{i(\xi x+(\eta^2-\xi^2)t+\theta_0)}$ is a soliton.
   Simple discrete Zakharov–Shabat data give its multisoliton extensions.
 * **32. Defocusing spectral distinction.** With zero boundary data,
@@ -281,7 +281,7 @@ $L=-\partial_x^2+u$.
   parts and compatibility show that its Hamiltonians are in involution.
 * **38. Classical $r$-matrix mechanism.** A Poisson relation
   $\{L_1,L_2\}=[r_{12},L_1]-[r_{21},L_2]$
-  implies $\{\operatorname{tr}L^j,\operatorname{tr}L^k\}=0$.
+  implies $\{\mathop{\mathrm{tr}}L^j,\mathop{\mathrm{tr}}L^k\}=0$.
   A suitable classical Yang–Baxter identity ensures Jacobi for the
   associated bracket; independence of the integrals remains a separate issue.
 * **39. Periodic spectral bands.** For a real periodic Schrödinger
@@ -379,7 +379,7 @@ these data while singularity positions or irregular types vary.
   meromorphic interpretation in the dependent variable.
 * **54. Hastings–McLeod solution.** PII with $\alpha=0$ has a
   distinguished real pole-free solution satisfying
-  $q(x)\sim\operatorname{Ai}(x)$ as $x\to+\infty$ and
+  $q(x)\sim\mathop{\mathrm{Ai}}(x)$ as $x\to+\infty$ and
   $q(x)\sim\sqrt{-x/2}$ as $x\to-\infty$. The positive Airy
   normalization selects it uniquely.
 * **55. Bäcklund transformations.** Rational transformations of
@@ -390,7 +390,7 @@ these data while singularity positions or irregular types vary.
 * **56. Isomonodromic tau function.** The isomonodromic Hamiltonian
   one-form is closed along the deformation equations. Locally it is
   $d\log\tau$; for Schlesinger deformations its coefficients are
-  $H_i=\sum_{j\ne i}\operatorname{tr}(A_iA_j)/(a_i-a_j)$.
+  $H_i=\sum_{j\ne i}\mathop{\mathrm{tr}}(A_iA_j)/(a_i-a_j)$.
   The tau function is determined up to a nonzero multiplicative constant.
 * **57. Discrete isomonodromy.** Rational gauge transformations that
   shift characteristic exponents by integers preserve monodromy and
@@ -414,7 +414,7 @@ $K_n(x,y)=e^{-n(V(x)+V(y))/2}\sum_{j=0}^{n-1}p_{j,n}(x)p_{j,n}(y)$.
 * **58. Fokas–Its–Kitaev characterization.** For a positive Schwartz
   weight $w$ on $\mathbb R$, the unique problem
   $Y_+=Y_-\begin{pmatrix}1&w\\0&1\end{pmatrix}$,
-  $Y=(I+O(z^{-1}))\operatorname{diag}(z^n,z^{-n})$
+  $Y=(I+O(z^{-1}))\mathop{\mathrm{diag}}(z^n,z^{-n})$
   has $Y_{11}$ equal to the monic orthogonal polynomial of degree $n$.
   Its other entries are neighboring polynomials and their Cauchy transforms.
   This gives the analytic route to strong asymptotics.
@@ -444,8 +444,8 @@ $K_n(x,y)=e^{-n(V(x)+V(y))/2}\sum_{j=0}^{n-1}p_{j,n}(x)p_{j,n}(y)$.
   an appropriate positive constant $c$ gives
   $(cn^{2/3})^{-1}K_n(b+u/(cn^{2/3}),b+v/(cn^{2/3}))
   \to K_{\mathrm{Ai}}(u,v)$, where
-  $K_{\mathrm{Ai}}(u,v)=[\operatorname{Ai}(u)\operatorname{Ai}'(v)
-  -\operatorname{Ai}'(u)\operatorname{Ai}(v)]/(u-v)$.
+  $K_{\mathrm{Ai}}(u,v)=[\mathop{\mathrm{Ai}}(u)\mathop{\mathrm{Ai}}'(v)
+  -\mathop{\mathrm{Ai}}'(u)\mathop{\mathrm{Ai}}(v)]/(u-v)$.
 * **64. Integrable kernels.** For a trace-class kernel with smooth
   compactly supported vector functions $f,g$ on $\mathbb R$,
   $K(x,y)=f(x)^Tg(y)/(x-y)$ with $f(x)^Tg(x)=0$,
@@ -467,7 +467,7 @@ $K_n(x,y)=e^{-n(V(x)+V(y))/2}\sum_{j=0}^{n-1}p_{j,n}(x)p_{j,n}(y)$.
   $q_t=q_{xx}$ on $x>0$, write
   $\widehat q(k,t)=\int_0^\infty e^{-ikx}q(x,t)\,dx$ and
   $\widetilde g_j(k,t)=\int_0^t e^{k^2s}\partial_x^jq(0,s)\,ds$.
-  For smooth decaying data and $\operatorname{Im}k\leq0$,
+  For smooth decaying data and $\mathop{\mathrm{Im}}k\leq0$,
   $e^{k^2t}\widehat q(k,t)=\widehat q(k,0)-
   \widetilde g_1(k,t)-ik\widetilde g_0(k,t)$.
   Analytic continuation and contour deformation eliminate unknown

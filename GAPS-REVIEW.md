@@ -243,7 +243,7 @@ mathematical gaps under the requested criterion.
   can be absorbed into one orthonormal family to bound sums of their absolute
   values. Expand $B$ in its singular vectors, weight these prefix bounds by
   the decreasing singular values of $B$, and apply finite summation by parts.
-  This gives $|\operatorname{tr}(A^*B)|\le\sum_i s_i(A)s_i(B)$.
+  This gives $|\mathop{\mathrm{tr}}(A^*B)|\le\sum_i s_i(A)s_i(B)$.
   The normal-matrix Hoffman–Wielandt matching problem is a different theorem
   and remains in 13.10.
 
@@ -280,8 +280,8 @@ mathematical gaps under the requested criterion.
   `Analysis/Fredholm/CompactPerturbation.lean` proves `isFredholm_one_add`
   for compact perturbations of the identity. If $ST-I$ and $TS-I$ are
   compact, both products are Fredholm. Then $\ker T\subseteq\ker(ST)$
-  is finite-dimensional, while $\operatorname{ran}(TS)\subseteq
-  \operatorname{ran}T$ makes the cokernel finite-dimensional. TauCeti's
+  is finite-dimensional, while $\mathop{\mathrm{ran}}(TS)\subseteq
+  \mathop{\mathrm{ran}}T$ makes the cokernel finite-dimensional. TauCeti's
   finite-kernel/cokernel criterion in `Analysis/Fredholm/ClosedRange.lean`
   finishes the proof; its compact-perturbation proof already uses precisely
   these inclusions. The forward implication uses the existing finite-rank
@@ -290,8 +290,8 @@ mathematical gaps under the requested criterion.
 
 * **25.54, Tikhonov minimizer.** Apply Mathlib
   `Analysis/InnerProductSpace/LaxMilgram.lean` to
-  $B(u,v)=\operatorname{Re}\langle Ku,Kv\rangle+
-  \alpha\operatorname{Re}\langle u,v\rangle$, $\alpha>0$.
+  $B(u,v)=\mathop{\mathrm{Re}}\langle Ku,Kv\rangle+
+  \alpha\mathop{\mathrm{Re}}\langle u,v\rangle$, $\alpha>0$.
   The resulting solution satisfies $(K^*K+\alpha I)u=K^*f^\delta$;
   expanding the quadratic functional proves unique minimality. For complex
   Hilbert spaces use realification; the normal equation recovers complex
@@ -332,7 +332,7 @@ mathematical gaps under the requested criterion.
   not a principal mathematical gap. Inversion pushes $\mu$ to a right Haar
   measure, as is checked by the group identities. The positive continuous
   density $D$ also makes $D\mu$ a right Haar measure. Haar uniqueness,
-  applied to the opposite group, gives $\operatorname{inv}_*\mu=cD\mu$.
+  applied to the opposite group, gives $\mathop{\mathrm{inv}}_*\mu=cD\mu$.
   Applying inversion twice and using $D(g^{-1})D(g)=1$ gives $c^2=1$,
   hence $c=1$. The synopsis uses $\Delta_G=D^{-1}$, so its inversion density
   is $\Delta_G(x^{-1})=D(x)$. This reciprocal convention is now explicit
@@ -730,7 +730,7 @@ Entries: 2 → 1 (removed 1, narrowed 1, kept 0).
 
 #### Section 05: Differentiation and the fine structure of real functions
 Entries: 5 → 3 (removed 2, narrowed 0, kept 3).
-- 05.7 Baire classification of derivatives: REMOVE. Evidence: Mathlib Mathlib/Analysis/Calculus/Deriv/Slope.lean, `hasDerivAt_iff_tendsto_slope` / `hasDerivAt_iff_tendsto_slope_zero` (derivative is the limit of difference quotients); composing with $h_n(x)=\min(1/n,\operatorname{dist}(x,\partial I)/2)$ gives continuous functions converging pointwise to $f'$ on the open interval. Neither library defines "Baire class one" (searched Baire class, BaireOne, pointwise limit of continuous), but the content is this few-line glue. Borderline: the decision rests on the routine-glue criterion, not on a stated theorem.
+- 05.7 Baire classification of derivatives: REMOVE. Evidence: Mathlib Mathlib/Analysis/Calculus/Deriv/Slope.lean, `hasDerivAt_iff_tendsto_slope` / `hasDerivAt_iff_tendsto_slope_zero` (derivative is the limit of difference quotients); composing with $h_n(x)=\min(1/n,\mathop{\mathrm{dist}}(x,\partial I)/2)$ gives continuous functions converging pointwise to $f'$ on the open interval. Neither library defines "Baire class one" (searched Baire class, BaireOne, pointwise limit of continuous), but the content is this few-line glue. Borderline: the decision rests on the routine-glue criterion, not on a stated theorem.
 - 05.10 Denjoy–Young–Saks theorem: KEEP. Searched Dini derivative, diniDeriv, Denjoy, Young–Saks in both libraries. Closest: TauCeti TauCeti/Analysis/GradientFlow/EVI/Basic.lean uses an upper right Dini derivative in the EVI definition only.
 - 05.30 Approximate continuity: REMOVE. Evidence: Mathlib Mathlib/MeasureTheory/Covering/Differentiation.lean, `VitaliFamily.ae_tendsto_average_norm_sub` (Lebesgue points of locally integrable functions along a Vitali family, e.g. closed balls for Lebesgue measure via Besicovitch) and `ae_tendsto_measure_inter_div`. Apply it to the bounded measurable $g=\arctan\circ f$; Markov's inequality on balls shows $\{|g(y)-g(x)|>\delta\}$ has density zero at every Lebesgue point, and continuity of $\tan$ at $g(x)$ converts this into the statement for $f$. Short routine argument; no "approximately continuous" predicate in either library (searched approximate continuity, density zero, aplim). Borderline (a few dozen lines of glue).
 - 05.31 Rectangular differentiation: KEEP. Searched strong maximal, Jessen, Marcinkiewicz–Zygmund, L log L, rectangle differentiation. Closest: TauCeti TauCeti/MeasureTheory/Integral/MaximalFunction.lean (centred Hardy–Littlewood maximal function over balls) and Calderón–Zygmund decomposition files; nothing for rectangles.

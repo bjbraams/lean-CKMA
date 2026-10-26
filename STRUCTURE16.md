@@ -183,7 +183,7 @@ On a finite-dimensional real inner product space, with Mathlib's normalization \
 \[
 \int\langle\mathcal{F}f,\mathcal{F}g\rangle=\int\langle f,g\rangle,
 \]
-and in particular the \(L^2\) norms agree. Pointwise, \(\lVert\mathcal{F}f(x)\rVert\le\lVert f\rVert_{L^1}\) (`Analysis/Distribution/SchwartzSpace/Fourier.lean`). The unitary extension to all of \(L^2\) is constructed in `Analysis/Fourier/LpSpace.lean`; see Section 27. The Fourier transform of a Gaussian \(e^{-b\lVert x\rVert^2}\), \(\operatorname{Re}b>0\), on a finite-dimensional inner product space is computed (`fourier_gaussian_innerProductSpace`, `Analysis/SpecialFunctions/Gaussian/FourierTransform.lean`).
+and in particular the \(L^2\) norms agree. Pointwise, \(\lVert\mathcal{F}f(x)\rVert\le\lVert f\rVert_{L^1}\) (`Analysis/Distribution/SchwartzSpace/Fourier.lean`). The unitary extension to all of \(L^2\) is constructed in `Analysis/Fourier/LpSpace.lean`; see Section 27. The Fourier transform of a Gaussian \(e^{-b\lVert x\rVert^2}\), \(\mathop{\mathrm{Re}}b>0\), on a finite-dimensional inner product space is computed (`fourier_gaussian_innerProductSpace`, `Analysis/SpecialFunctions/Gaussian/FourierTransform.lean`).
 
 **Tempered distributions.**
 
