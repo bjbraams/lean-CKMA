@@ -1,0 +1,22 @@
+name = "CKMA"
+version = "0.1.0"
+defaultTargets = ["CKMA"]
+buildDir = ".lake/build-CKMA"
+
+[leanOptions]
+autoImplicit = false
+relaxedAutoImplicit = false
+
+[[lean_lib]]
+name = "CKMA"
+globs = ["CKMA", "CKMA.+"]
+
+[[require]]
+name = "mathlib"
+scope = "leanprover-community"
+rev = "911003dd6dea5df215dff57f2717be762e11a6ca"
+
+[[require]]
+name = "TauCeti"
+git = "https://github.com/TauCetiProject/TauCeti"
+rev = "a049b4264d2cf4dbf4720796f844a3a3764914a5"

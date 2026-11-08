@@ -5,7 +5,8 @@ level of graduate students and beginning researchers. It compares that core
 with the results proved in the Lean libraries Mathlib and TauCeti. The
 subject is organized by the [bibliography](CKMA-bib.md), whose topical
 sections are numbered 1–55; the mathematical descriptions and the library
-comparison cover the fifty areas 04–53.
+comparison cover the fifty areas 04–53. Formalization under namespace `CKMA` now
+lives in the [CKMA](CKMA) source directory, assembled by [CKMA.lean](CKMA.lean).
 
 ## Main documents
 
@@ -23,9 +24,16 @@ comparison cover the fifty areas 04–53.
 - [GAPS_EASY.md](GAPS_EASY.md) gives short derivations from library
   results for those entries of `GAPS.md` that have one.
 
-The coverage and gap assessments, including the derivations in
-`GAPS_EASY.md`, rest on inspection of the library sources. They have not
-been written or compiled as Lean code.
+- [FORMALIZATION.md](FORMALIZATION.md) describes the Lean library, its proved
+  results, admitted targets, exact scope, and build commands.
+- [formalization.json](formalization.json) tracks all 603 selected gaps and the
+  current declarations with their axiom dependencies.
+
+The coverage and gap assessments are historical comparisons based on library source
+inspection. The local formalization now starts 242 of the 603 selected gaps, including the 59
+short-derivation entries, with substantial admitted proofs and explicit partial scopes. Its
+compiled and audited status is recorded separately in `FORMALIZATION.md`; it does
+not retrospectively change the library coverage inventories.
 
 Supporting files:
 
