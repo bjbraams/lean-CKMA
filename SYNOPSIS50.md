@@ -159,7 +159,7 @@ point from all other contributions.
 
 ## Summation, Mellin transforms, and regular variation
 
-* **23. Euler–Maclaurin formula.** For integers $m<n$ and smooth $f$,
+* **23. Euler–Maclaurin formula.** For integers $m\leq n$ and smooth $f$,
   $$
   \sum_{k=m}^nf(k)=\int_m^nf(x)dx+\frac{f(m)+f(n)}2
   +\sum_{r=1}^p\frac{B_{2r}}{(2r)!}

@@ -54,7 +54,8 @@ variable {X : Type*} [NormedAddCommGroup X] [NormedSpace ℂ X] [CompleteSpace X
 def HasPartialOperatorEigenvalue (A : X →ₗ.[ℂ] X) (z : ℂ) : Prop :=
   ∃ x : A.domain, (x : X) ≠ 0 ∧ A x = z • (x : X)
 
-/-- **24.39**, Gearhart–Prüss on a complex Hilbert space. -/
+/-- **24.39**, Gearhart–Prüss for a uniformly bounded semigroup on a complex Hilbert space.
+This interface includes the uniform bound `IsBoundedSemigroup`. -/
 theorem gearhart_pruss {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H]
     [CompleteSpace H] (S : StronglyContinuousSemigroup H) (hS : S.IsComplexLinear)
     (hb : IsBoundedSemigroup S) :

@@ -11,7 +11,7 @@ public import Mathlib.Analysis.Calculus.ContDiff.Basic
 public import Mathlib.MeasureTheory.Function.LpSpace.Basic
 
 /-!
-# Gaussian entropy and the log-Sobolev inequality (07.16)
+# Gaussian entropy and the log-Sobolev inequality (07.17)
 
 `nonnegativeFunctionEntropy` uses Mathlib's `klFun` to express entropy relative to the
 mean of an integrable nonnegative function on a probability space. Its zero-mean

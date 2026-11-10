@@ -6,15 +6,15 @@ Authors: CKMA contributors
 module
 
 public import Mathlib.MeasureTheory.Covering.DensityTheorem
-public import Mathlib.MeasureTheory.Measure.Lebesgue.VolumeOfBalls
 
 /-!
 # Approximate continuity by shrinking-ball densities
 
 Relative densities in shrinking closed balls and approximate continuity of metric-valued
 functions. Finite small-ball masses are recorded explicitly so extended-real division
-does not turn infinite mass into zero density. The Euclidean almost-everywhere statement
-is for finite measurable real functions and uses the setting of Mathlib's density theorem.
+does not turn infinite mass into zero density. The almost-everywhere statement is for finite
+measurable real functions on a second-countable Borel space carrying a locally finite
+uniformly locally doubling measure; Euclidean volume is included.
 Source: GAPS 05.30. The almost-everywhere proof uses Mathlib's Vitali-family density theorem
 for the complements of preimages of rational intervals, followed by countable intersection.
 -/
@@ -78,17 +78,19 @@ theorem ae_hasDensityZeroAt_of_not_mem [BorelSpace E] [SecondCountableTopology E
 def ApproximatelyContinuousAt (μ : Measure E) (f : E → F) (x : E) : Prop :=
   ∀ ε : ℝ, 0 < ε → HasDensityZeroAt μ {y | ε < dist (f y) (f x)} x
 
-/-- A finite measurable real function on Euclidean space is approximately continuous a.e. -/
-theorem ae_approximatelyContinuousAt {d : ℕ}
-    {f : EuclideanSpace ℝ (Fin d) → ℝ} (hf : Measurable f) :
-    ∀ᵐ x ∂volume, ApproximatelyContinuousAt volume f x := by
-  have hzero (p q : ℚ) : ∀ᵐ x ∂volume,
+/-- A finite measurable real function is approximately continuous almost everywhere for a
+locally finite, uniformly locally doubling measure on a second-countable Borel space. -/
+theorem ae_approximatelyContinuousAt [BorelSpace E] [SecondCountableTopology E]
+    (μ : Measure E) [IsLocallyFiniteMeasure μ] [IsUnifLocDoublingMeasure μ]
+    {f : E → ℝ} (hf : Measurable f) :
+    ∀ᵐ x ∂μ, ApproximatelyContinuousAt μ f x := by
+  have hzero (p q : ℚ) : ∀ᵐ x ∂μ,
       x ∉ f ⁻¹' (Set.Ioo (p : ℝ) q)ᶜ →
-        HasDensityZeroAt volume (f ⁻¹' (Set.Ioo (p : ℝ) q)ᶜ) x :=
-    ae_hasDensityZeroAt_of_not_mem volume ((measurableSet_Ioo.compl).preimage hf)
-  have hall : ∀ᵐ x ∂volume, ∀ p q : ℚ,
+        HasDensityZeroAt μ (f ⁻¹' (Set.Ioo (p : ℝ) q)ᶜ) x :=
+    ae_hasDensityZeroAt_of_not_mem μ ((measurableSet_Ioo.compl).preimage hf)
+  have hall : ∀ᵐ x ∂μ, ∀ p q : ℚ,
       x ∉ f ⁻¹' (Set.Ioo (p : ℝ) q)ᶜ →
-        HasDensityZeroAt volume (f ⁻¹' (Set.Ioo (p : ℝ) q)ᶜ) x :=
+        HasDensityZeroAt μ (f ⁻¹' (Set.Ioo (p : ℝ) q)ᶜ) x :=
     ae_all_iff.2 fun p ↦ ae_all_iff.2 fun q ↦ hzero p q
   filter_upwards [hall] with x hx ε hε
   obtain ⟨p, hp₁, hp₂⟩ := exists_rat_btwn (show f x - ε / 2 < f x by linarith)

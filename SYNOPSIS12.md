@@ -277,10 +277,11 @@ $\partial_Cf(x)=\{u:\langle u,d\rangle\leq f^\circ(x;d)\ \forall d\}$.
   converge in the Mosco sense exactly when their projections converge strongly
   at every point. In finite dimensions this is the usual inner-and-outer
   Painlevé–Kuratowski convergence of sets.
-* **50. Clarke gradient representation.** In finite dimensions, $\partial_Cf(x)$
-  is nonempty compact convex and equals the closed convex hull of limits of
-  ordinary gradients at differentiability points tending to $x$.
-  Its support function is $f^\circ(x;\cdot)$.
+* **50. Clarke gradient representation.** For a locally Lipschitz function
+  on a finite-dimensional space, $\partial_Cf(x)$ is nonempty compact convex
+  and equals the closed convex hull of limits of ordinary gradients at
+  differentiability points tending to $x$. On any real normed space, the
+  support function of $\partial_Cf(x)$ is $f^\circ(x;\cdot)$.
 * **51. Nonsmooth Fermat rule.** A local minimizer of a locally Lipschitz
   function satisfies $0\in\partial_Cf(x)$. This is necessary, rather than
   sufficient, outside convexity.

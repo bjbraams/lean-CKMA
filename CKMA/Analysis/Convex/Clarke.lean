@@ -20,7 +20,8 @@ The generalized gradient consists of continuous linear functionals bounded above
 directional derivative in every direction.
 
 For a finite-dimensional real space and a function Lipschitz on a neighborhood, the gradient is
-the closed convex hull of limits of ordinary derivatives. Its support function is the generalized
+the closed convex hull of limits of ordinary derivatives. On any real normed space, the support
+function of the generalized gradient of a locally Lipschitz function is the generalized
 directional derivative. Source: GAPS 12.50.
 -/
 
@@ -62,8 +63,9 @@ theorem clarkeSubdifferential_representation [FiniteDimensional ℝ E]
       clarkeSubdifferential f x = closure (convexHull ℝ (reachableDerivatives f x)) := by
   sorry
 
-/-- The support function of the generalized gradient is the generalized directional derivative. -/
-theorem sSup_clarkeSubdifferential_eq [FiniteDimensional ℝ E]
+/-- The support function of the generalized gradient is the generalized directional derivative.
+Local Lipschitz control is the regularity hypothesis; finite dimensionality is not required. -/
+theorem sSup_clarkeSubdifferential_eq
     {f : E → ℝ} {x : E} {r : ℝ} (hr : 0 < r) {L : ℝ≥0}
     (hf : LipschitzOnWith L f (Metric.ball x r)) (d : E) :
     ((sSup ((fun u ↦ u d) '' clarkeSubdifferential f x) : ℝ) : EReal) =

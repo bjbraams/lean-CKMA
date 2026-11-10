@@ -72,7 +72,7 @@ def RepresentsHausdorffMoments (μ : Measure ℝ) (s : ℕ → ℝ) : Prop :=
   IsFiniteMeasure μ ∧ μ (Set.Icc (0 : ℝ) 1)ᶜ = 0 ∧ ∀ n : ℕ, ∫ x, x ^ n ∂μ = s n
 
 /-- **48.34**: the Hausdorff existence and uniqueness theorem, including the zero measure. -/
-theorem completelyMonotoneSequence_iff_existsUnique_measure (s : ℕ → ℝ) :
+theorem isCompletelyMonotoneSequence_iff_existsUnique_measure (s : ℕ → ℝ) :
     IsCompletelyMonotoneSequence s ↔ ∃! μ : Measure ℝ, RepresentsHausdorffMoments μ s := by
   sorry
 

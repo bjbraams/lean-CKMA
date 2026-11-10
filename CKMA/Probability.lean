@@ -22,7 +22,8 @@ public import CKMA.Probability.Symmetrization
 # Probability and stochastic processes
 
 This entry module re-exports random-series and central-limit interfaces, concentration
-and dimension reduction, large deviations, moment problems and projective limits.
+and dimension reduction, large deviations, moment problems, projective limits, and
+Lévy–Khintchine triplets for infinitely divisible real laws.
 Brownian motion is treated through continuous-path laws, modifications, stopping times
 and quadratic variation. Empirical symmetrization uses an explicit independent sign space.
 

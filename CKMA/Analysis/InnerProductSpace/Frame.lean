@@ -17,8 +17,10 @@ bounds give bounded analysis into l2; a positive lower bound characterizes inver
 frame operator and surjectivity of synthesis. No countability or nonzero-space assumption is
 built into the definitions.
 
-Inner products are linear in the second variable. The canonical dual has reversed reciprocal
-bounds, and both reconstruction formulas are unconditional sums. Sources: GAPS 29.2 and 29.3.
+Inner products are linear in the second variable. `frameOperatorOfAnalysis` is the bounded
+operator `C^* ∘ C` for an arbitrary index. TauCeti's `frameOperator` is the finite-sum operator
+of a finite family. The canonical dual has reversed reciprocal bounds, and both reconstruction
+formulas are unconditional sums. Sources: GAPS 29.2 and 29.3.
 The analysis construction uses Mathlib's `Memℓp` and
 `lp.norm_le_of_tsum_le`; the operator criteria use Mathlib's
 `ContinuousLinearMap.isUnit_of_forall_le_norm_inner_map` and Banach open mapping theorem.
@@ -123,7 +125,21 @@ theorem IsBesselSequence.exists_analysis {f : ι → H} {B : ℝ} (hf : IsBessel
   exact ⟨L.mkContinuous (Real.sqrt B) hbound, fun _ _ ↦ rfl⟩
 
 /-- The frame operator is analysis followed by synthesis. -/
-def frameOperator (C : H →L[𝕜] lp (fun _ : ι ↦ 𝕜) 2) : H →L[𝕜] H := C.adjoint.comp C
+def frameOperatorOfAnalysis (C : H →L[𝕜] lp (fun _ : ι ↦ 𝕜) 2) : H →L[𝕜] H := C.adjoint.comp C
+
+/-- Applying an invertible representative of the frame operator is synthesis of the analysis. -/
+theorem frameOperatorOfAnalysis_apply
+    {C : H →L[𝕜] lp (fun _ : ι ↦ 𝕜) 2}
+    (S : H ≃L[𝕜] H) (hS : S.toContinuousLinearMap = frameOperatorOfAnalysis C) (x : H) :
+    S x = C.adjoint (C x) :=
+  congrArg (fun T : H →L[𝕜] H ↦ T x) hS
+
+/-- Analysis followed by synthesis inverts the inverse frame operator. -/
+theorem frameOperatorOfAnalysis_adjoint_symm_apply
+    {C : H →L[𝕜] lp (fun _ : ι ↦ 𝕜) 2}
+    (S : H ≃L[𝕜] H) (hS : S.toContinuousLinearMap = frameOperatorOfAnalysis C) (x : H) :
+    C.adjoint (C (S.symm x)) = x := by
+  rw [← frameOperatorOfAnalysis_apply S hS (S.symm x), S.apply_symm_apply]
 
 /-- Surjectivity of synthesis gives a lower frame bound by the open mapping theorem. -/
 theorem IsFrameAnalysis.isFrame_of_surjective_adjoint {f : ι → H}
@@ -146,14 +162,14 @@ theorem IsFrameAnalysis.isFrame_of_surjective_adjoint {f : ι → H}
 
 /-- **29.2**: a Bessel family is a frame precisely when its frame operator is boundedly invertible.
   -/
-theorem isFrame_iff_frameOperator_invertible (f : ι → H)
+theorem isFrame_iff_frameOperatorOfAnalysis_invertible (f : ι → H)
     (C : H →L[𝕜] lp (fun _ : ι ↦ 𝕜) 2) (hC : IsFrameAnalysis f C) :
-    IsFrame (𝕜 := 𝕜) f ↔ ∃ S : H ≃L[𝕜] H, S.toContinuousLinearMap = frameOperator C := by
+    IsFrame (𝕜 := 𝕜) f ↔ ∃ S : H ≃L[𝕜] H, S.toContinuousLinearMap = frameOperatorOfAnalysis C := by
   constructor
   · intro hf
     obtain ⟨c, hc, hlow⟩ := hC.isFrame_iff_exists_lower_bound.1 hf
-    have hunit : IsUnit (frameOperator C) := by
-      apply ContinuousLinearMap.isUnit_of_forall_le_norm_inner_map (frameOperator C)
+    have hunit : IsUnit (frameOperatorOfAnalysis C) := by
+      apply ContinuousLinearMap.isUnit_of_forall_le_norm_inner_map (frameOperatorOfAnalysis C)
         (c := ⟨c ^ 2, sq_nonneg c⟩) (by exact_mod_cast sq_pos_of_pos hc)
       intro x
       change ‖x‖ ^ 2 * c ^ 2 ≤ ‖⟪C.adjoint (C x), x⟫_𝕜‖
@@ -162,15 +178,12 @@ theorem isFrame_iff_frameOperator_invertible (f : ι → H)
       simpa only [mul_pow, mul_comm] using
         pow_le_pow_left₀ (mul_nonneg hc.le (norm_nonneg x)) (hlow x) 2
     obtain ⟨hinj, hsurj⟩ := ContinuousLinearMap.isUnit_iff_bijective.1 hunit
-    exact ⟨ContinuousLinearEquiv.ofBijective (frameOperator C)
+    exact ⟨ContinuousLinearEquiv.ofBijective (frameOperatorOfAnalysis C)
       (LinearMap.ker_eq_bot.2 hinj) (LinearMap.range_eq_top.2 hsurj), rfl⟩
   · rintro ⟨S, hS⟩
     apply hC.isFrame_of_surjective_adjoint
     intro x
-    refine ⟨C (S.symm x), ?_⟩
-    change frameOperator C (S.symm x) = x
-    rw [← hS]
-    exact S.apply_symm_apply x
+    refine ⟨C (S.symm x), frameOperatorOfAnalysis_adjoint_symm_apply S hS x⟩
 
 /-- The equivalent synthesis-surjectivity criterion. -/
 theorem isFrame_iff_surjective_adjoint (f : ι → H)
@@ -178,12 +191,9 @@ theorem isFrame_iff_surjective_adjoint (f : ι → H)
     IsFrame (𝕜 := 𝕜) f ↔ Function.Surjective C.adjoint := by
   constructor
   · intro hf
-    obtain ⟨S, hS⟩ := (isFrame_iff_frameOperator_invertible f C hC).1 hf
+    obtain ⟨S, hS⟩ := (isFrame_iff_frameOperatorOfAnalysis_invertible f C hC).1 hf
     intro x
-    refine ⟨C (S.symm x), ?_⟩
-    change frameOperator C (S.symm x) = x
-    rw [← hS]
-    exact S.apply_symm_apply x
+    refine ⟨C (S.symm x), frameOperatorOfAnalysis_adjoint_symm_apply S hS x⟩
   · exact hC.isFrame_of_surjective_adjoint
 
 /-- The adjoint of analysis sends a single coefficient to the corresponding frame vector. -/
@@ -224,11 +234,11 @@ def canonicalDualFrame (f : ι → H) (S : H ≃L[𝕜] H) : ι → H := fun i �
 /-- The analysis of the canonical dual is analysis composed with the inverse frame operator. -/
 theorem IsFrameAnalysis.canonicalDualFrame {f : ι → H}
     {C : H →L[𝕜] lp (fun _ : ι ↦ 𝕜) 2} (hC : IsFrameAnalysis f C)
-    (S : H ≃L[𝕜] H) (hS : S.toContinuousLinearMap = frameOperator C) :
+    (S : H ≃L[𝕜] H) (hS : S.toContinuousLinearMap = frameOperatorOfAnalysis C) :
     IsFrameAnalysis (canonicalDualFrame f S) (C.comp S.symm.toContinuousLinearMap) := by
-  have hSapply (x : H) : S x = C.adjoint (C x) := congrArg (fun T : H →L[𝕜] H ↦ T x) hS
   have hsym (x y : H) : ⟪S x, y⟫_𝕜 = ⟪x, S y⟫_𝕜 := by
-    rw [hSapply, hSapply, C.adjoint_inner_left, C.adjoint_inner_right]
+    rw [frameOperatorOfAnalysis_apply S hS, frameOperatorOfAnalysis_apply S hS,
+      C.adjoint_inner_left, C.adjoint_inner_right]
   intro x i
   apply (hC (S.symm x) i).trans
   change ⟪f i, S.symm x⟫_𝕜 = ⟪S.symm (f i), x⟫_𝕜
@@ -238,15 +248,14 @@ theorem IsFrameAnalysis.canonicalDualFrame {f : ι → H}
 theorem canonicalDualFrame_isFrameWithBounds (f : ι → H) {A B : ℝ}
     (hf : IsFrameWithBounds (𝕜 := 𝕜) f A B)
     (C : H →L[𝕜] lp (fun _ : ι ↦ 𝕜) 2) (hC : IsFrameAnalysis f C)
-    (S : H ≃L[𝕜] H) (hS : S.toContinuousLinearMap = frameOperator C) :
+    (S : H ≃L[𝕜] H) (hS : S.toContinuousLinearMap = frameOperatorOfAnalysis C) :
     IsFrameWithBounds (𝕜 := 𝕜) (canonicalDualFrame f S) B⁻¹ A⁻¹ := by
   let D := C.comp S.symm.toContinuousLinearMap
   have hD : IsFrameAnalysis (canonicalDualFrame f S) D := hC.canonicalDualFrame S hS
-  have hSapply (x : H) : S x = C.adjoint (C x) := congrArg (fun T : H →L[𝕜] H ↦ T x) hS
   have henergy (x : H) : ‖D x‖ ^ 2 = RCLike.re ⟪S.symm x, x⟫_𝕜 := by
     change ‖C (S.symm x)‖ ^ 2 = _
     rw [← inner_self_eq_norm_sq (𝕜 := 𝕜), ← C.adjoint_inner_right,
-      ← hSapply, S.apply_symm_apply]
+      ← frameOperatorOfAnalysis_apply S hS, S.apply_symm_apply]
   have hBpos : 0 < B := hf.1.trans_le hf.2.1
   have hnormC : ‖C‖ ≤ Real.sqrt B :=
     hC.norm_le_sqrt ⟨hBpos.le, fun x ↦ (hf.2.2 x).2⟩
@@ -255,7 +264,8 @@ theorem canonicalDualFrame_isFrameWithBounds (f : ι → H) {A B : ℝ}
   constructor
   · apply ENNReal.ofReal_le_ofReal
     have hnorm : ‖x‖ ≤ Real.sqrt B * ‖D x‖ := calc
-      ‖x‖ = ‖C.adjoint (C (S.symm x))‖ := by rw [← hSapply, S.apply_symm_apply]
+      ‖x‖ = ‖C.adjoint (C (S.symm x))‖ :=
+        (congrArg norm (frameOperatorOfAnalysis_adjoint_symm_apply S hS x)).symm
       _ ≤ ‖C.adjoint‖ * ‖C (S.symm x)‖ := C.adjoint.le_opNorm _
       _ ≤ Real.sqrt B * ‖D x‖ := by
         change ‖C.adjoint‖ * ‖D x‖ ≤ _
@@ -285,21 +295,21 @@ theorem canonicalDualFrame_isFrameWithBounds (f : ι → H) {A B : ℝ}
 theorem canonicalDualFrame_reconstruction (f : ι → H) {A B : ℝ}
     (hf : IsFrameWithBounds (𝕜 := 𝕜) f A B)
     (C : H →L[𝕜] lp (fun _ : ι ↦ 𝕜) 2) (hC : IsFrameAnalysis f C)
-    (S : H ≃L[𝕜] H) (hS : S.toContinuousLinearMap = frameOperator C) :
+    (S : H ≃L[𝕜] H) (hS : S.toContinuousLinearMap = frameOperatorOfAnalysis C) :
     IsFrameWithBounds (𝕜 := 𝕜) (canonicalDualFrame f S) B⁻¹ A⁻¹ ∧ ∀ x : H,
       HasSum (fun i ↦ ⟪canonicalDualFrame f S i, x⟫_𝕜 • f i) x ∧
       HasSum (fun i ↦ ⟪f i, x⟫_𝕜 • canonicalDualFrame f S i) x := by
-  have hSapply (x : H) : S x = C.adjoint (C x) := congrArg (fun T : H →L[𝕜] H ↦ T x) hS
   let D := C.comp S.symm.toContinuousLinearMap
   have hD : IsFrameAnalysis (canonicalDualFrame f S) D := hC.canonicalDualFrame S hS
   refine ⟨canonicalDualFrame_isFrameWithBounds f hf C hC S hS, fun x ↦ ⟨?_, ?_⟩⟩
   · have hsum := hC.hasSum_synthesis (D x)
     have hout : C.adjoint (D x) = x := by
       change C.adjoint (C (S.symm x)) = x
-      rw [← hSapply, S.apply_symm_apply]
+      exact frameOperatorOfAnalysis_adjoint_symm_apply S hS x
     simpa only [hD x, hout] using hsum
   · have hsum := S.symm.toContinuousLinearMap.hasSum (hC.hasSum_synthesis (C x))
-    have hout : S.symm (C.adjoint (C x)) = x := by rw [← hSapply, S.symm_apply_apply]
+    have hout : S.symm (C.adjoint (C x)) = x := by
+      rw [← frameOperatorOfAnalysis_apply S hS, S.symm_apply_apply]
     simpa only [ContinuousLinearEquiv.coe_coe, map_smul, hC x, hout,
       canonicalDualFrame] using hsum
 

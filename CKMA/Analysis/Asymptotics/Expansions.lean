@@ -49,9 +49,10 @@ theorem hasAsymptoticExpansion_zero {X : Type*} (φ : ℕ → X → ℂ) (l : Fi
   intro N hN
   simp
 
-/-- Coefficients are unique for a nonvanishing asymptotic scale along a nontrivial filter. -/
+/-- Coefficients of a Poincaré expansion are unique when every scale term is eventually nonzero
+along a nontrivial filter. -/
 theorem HasAsymptoticExpansion.coefficients_eq {X : Type*} {l : Filter X} [NeBot l]
-    {φ : ℕ → X → ℂ} (_hφ : IsAsymptoticScale φ l)
+    {φ : ℕ → X → ℂ}
     (hne : ∀ n, ∀ᶠ x in l, φ n x ≠ 0) {f : X → ℂ} {a b : ℕ → ℂ}
     (ha : HasAsymptoticExpansion f a φ l) (hb : HasAsymptoticExpansion f b φ l) : a = b := by
   funext n

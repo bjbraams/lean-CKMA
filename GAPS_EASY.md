@@ -495,7 +495,7 @@ and ordinary change of variables. No Hardy inequality is needed.
 
 **Statement.** For a nonnegative summable sequence,
 $\sum_{n\geq1}(a_1\cdots a_n)^{1/n}\leq e\sum_{n\geq1}a_n$.
-The constant $e$ is optimal.
+The constant $e$ is optimal already for finitely supported sequences.
 
 **Argument.** Weighted AM–GM, a telescoping sum and Stirling's formula suffice.
 
@@ -1904,7 +1904,7 @@ normed-group sum theory. No general Laurent theorem is required here.
 
 ### 50.23. Euler–Maclaurin formula
 
-**Statement.** For integers $m<n$ and smooth $f$,
+**Statement.** For integers $m\leq n$ and smooth $f$,
 $$
 \sum_{k=m}^nf(k)=\int_m^nf(x)dx+\frac{f(m)+f(n)}2
 +\sum_{r=1}^p\frac{B_{2r}}{(2r)!}

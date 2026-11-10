@@ -69,8 +69,9 @@ theorem existsUnique_waveEnergySolution {d : ℕ} {c T : ℝ} (hc : 0 < c) (hT :
   sorry
 
 /-- **32.52**: data agreeing on an initial ball and forcing agreeing in its shrinking
-backward cone give solutions agreeing in every later shrinking ball. All spatial identities
-are almost everywhere, as required for energy-space data. -/
+backward cone give position representatives agreeing in every later shrinking ball.
+The identified quantity is `TauCeti.W1p.value` of the position component. All spatial
+identities are almost everywhere, as required for energy-space data. -/
 theorem wave_finitePropagation {d : ℕ} {c T R : ℝ} (hc : 0 < c) (hT : 0 < T) (hR : 0 < R)
     (x₀ : EuclideanRealSpace d) (u₀ u₁ : WavePositionSpace d)
     (v₀ v₁ : WaveVelocitySpace d) (f g : ℝ → WaveVelocitySpace d)

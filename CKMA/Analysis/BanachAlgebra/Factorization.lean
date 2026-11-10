@@ -6,6 +6,7 @@ Authors: CKMA contributors
 module
 
 public import Mathlib.Analysis.Normed.Algebra.Spectrum
+public import Mathlib.Order.Directed
 public import Mathlib.Topology.ContinuousMap.Compact
 public import Mathlib.MeasureTheory.Group.Measure
 public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
@@ -20,7 +21,7 @@ compact Hausdorff carrier, including the empty carrier. The Tauberian statement 
 L1 equivalence classes and measure-preserving translations on the real line.
 
 Cohen–Hewitt factorization is formulated for a continuous bilinear action of a nonunital
-Banach algebra. Its bounded approximate identity and strong action convergence are sequential.
+real or complex Banach algebra. Its bounded approximate identity is indexed by a directed set.
 Sources: GAPS 20.19, 20.23, 20.41, and 20.47.
 -/
 
@@ -48,7 +49,7 @@ def IsUniformAlgebraBoundary {K : Type*} [TopologicalSpace K] [CompactSpace K]
 
 /-- **20.23**: a uniformly closed point-separating algebra has a smallest closed norming boundary.
 The restriction isometry is expressed by the exact boundary-norm identity in the predicate. -/
-theorem exists_shilovBoundary {K : Type*} [TopologicalSpace K] [CompactSpace K] [T2Space K]
+theorem exists_shilov_boundary {K : Type*} [TopologicalSpace K] [CompactSpace K] [T2Space K]
     (A : Subalgebra ℂ C(K, ℂ)) (hA : IsClosed (A : Set C(K, ℂ)))
     (hsep : ∀ x y : K, x ≠ y → ∃ f : A, f.1 x ≠ f.1 y) :
     ∃ F : Set K, IsUniformAlgebraBoundary A F ∧
@@ -68,21 +69,23 @@ theorem wiener_tauberian_real (f : Lp ℂ 1 (volume : Measure ℝ)) :
       (Submodule.span ℂ (Set.range (lpTranslate f))).topologicalClosure = ⊤ := by
   sorry
 
-/-- A bounded left approximate identity, here indexed by a sequence. -/
-def IsBoundedLeftApproximateIdentity {A : Type*} [NonUnitalNormedRing A]
-    (e : ℕ → A) : Prop :=
-  (∃ M : ℝ, ∀ n, ‖e n‖ ≤ M) ∧ ∀ a : A, Tendsto (fun n ↦ e n * a) atTop (𝓝 a)
+/-- A bounded left approximate identity along `atTop` on a preorder. -/
+def IsBoundedLeftApproximateIdentity {ι A : Type*} [Preorder ι] [NonUnitalNormedRing A]
+    (e : ι → A) : Prop :=
+  (∃ M : ℝ, ∀ i, ‖e i‖ ≤ M) ∧ ∀ a : A, Tendsto (fun i ↦ e i * a) atTop (𝓝 a)
 
-/-- **20.47**, Cohen–Hewitt factorization for a bounded sequential approximate identity
-acting strongly as the identity on a Banach module. The action is a continuous bilinear map,
-which supports genuinely nonunital algebras without requiring a unital Module instance. -/
-theorem cohen_hewitt_factorization {A X : Type*} [NonUnitalNormedRing A]
-    [NormedSpace ℂ A] [CompleteSpace A] [IsScalarTower ℂ A A] [SMulCommClass ℂ A A]
-    [NormedAddCommGroup X] [NormedSpace ℂ X] [CompleteSpace X]
-    (act : A →L[ℂ] X →L[ℂ] X)
+/-- **20.47**, Cohen–Hewitt factorization for a bounded directed approximate identity
+acting strongly as the identity on a real or complex Banach module. The action is a continuous
+bilinear map, which supports genuinely nonunital algebras without requiring a unital Module
+instance. -/
+theorem cohen_hewitt_factorization {𝕜 ι A X : Type*} [RCLike 𝕜] [Preorder ι]
+    [IsDirected ι (· ≤ ·)] [NonUnitalNormedRing A]
+    [NormedSpace 𝕜 A] [CompleteSpace A] [IsScalarTower 𝕜 A A] [SMulCommClass 𝕜 A A]
+    [NormedAddCommGroup X] [NormedSpace 𝕜 X] [CompleteSpace X]
+    (act : A →L[𝕜] X →L[𝕜] X)
     (hassoc : ∀ a b x, act (a * b) x = act a (act b x))
-    (e : ℕ → A) (he : IsBoundedLeftApproximateIdentity e)
-    (hstrong : ∀ x, Tendsto (fun n ↦ act (e n) x) atTop (𝓝 x)) :
+    (e : ι → A) (he : IsBoundedLeftApproximateIdentity e)
+    (hstrong : ∀ x, Tendsto (fun i ↦ act (e i) x) atTop (𝓝 x)) :
     ∀ x : X, ∃ a : A, ∃ y : X, x = act a y := by
   sorry
 

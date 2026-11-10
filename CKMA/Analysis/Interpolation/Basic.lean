@@ -18,9 +18,8 @@ Peetre's K-functional defines real interpolation through the dilation-invariant 
 with a separate supremum formula at exponent infinity.
 
 Complex interpolation uses bounded holomorphic strip functions with continuous endpoint lifts
-vanishing at infinity. The gauges retain the value infinity off their finite-gauge carriers;
-operator estimates are stated at interior parameters and allow zero endpoint operator bounds.
-Sources: GAPS 26.53 and 26.54.
+vanishing at infinity. The gauges retain the value infinity off their finite-gauge carriers.
+The operator bounds are in `CKMA.Analysis.Interpolation.Bounds`.
 -/
 
 @[expose] public section
@@ -114,16 +113,6 @@ structure CoupleMap {𝕜 : Type*} [RCLike 𝕜] (C D : BanachCouple 𝕜) where
   /-- Compatibility on the second endpoint. -/
   right_comm : ∀ x, ambientMap (C.inRight x) = D.inRight (rightMap x)
 
-/-- **26.53**: the exact real interpolation operator bound at the gauge level. -/
-theorem realInterpolationGauge_map_le {𝕜 : Type*} [RCLike 𝕜] {C D : BanachCouple 𝕜}
-    (T : CoupleMap C D) {θ : ℝ} (hθ : 0 < θ) (hθ1 : θ < 1)
-    {q : ℝ≥0∞} (hq : 1 ≤ q) {M₀ M₁ : ℝ} (hM₀ : 0 ≤ M₀) (hM₁ : 0 ≤ M₁)
-    (h₀ : ‖T.leftMap‖ ≤ M₀) (h₁ : ‖T.rightMap‖ ≤ M₁) (x : C.ambient)
-    (hx : x ∈ C.realInterpolationSet θ q) :
-    D.realInterpolationGauge θ q (T.ambientMap x) ≤
-      ENNReal.ofReal (M₀ ^ (1 - θ) * M₁ ^ θ) * C.realInterpolationGauge θ q x := by
-  sorry
-
 /-- Calderón strip functions with continuous endpoint lifts vanishing at infinity. -/
 structure InterpolationStripFunction (C : BanachCouple ℂ) where
   /-- Function on the closed strip, extended arbitrarily outside it. -/
@@ -162,15 +151,5 @@ def BanachCouple.complexInterpolationGauge (C : BanachCouple ℂ)
 /-- Finite-gauge carrier of complex interpolation. -/
 def BanachCouple.complexInterpolationSet (C : BanachCouple ℂ) (θ : ℝ) : Set C.ambient :=
   {x | C.complexInterpolationGauge θ x ≠ ∞}
-
-/-- **26.54**: the complex interpolation operator bound at the gauge level. -/
-theorem complexInterpolationGauge_map_le {C D : BanachCouple ℂ}
-    (T : CoupleMap C D) {θ : ℝ} (hθ : 0 < θ) (hθ1 : θ < 1)
-    {M₀ M₁ : ℝ} (hM₀ : 0 ≤ M₀) (hM₁ : 0 ≤ M₁)
-    (h₀ : ‖T.leftMap‖ ≤ M₀) (h₁ : ‖T.rightMap‖ ≤ M₁) (x : C.ambient)
-    (hx : x ∈ C.complexInterpolationSet θ) :
-    D.complexInterpolationGauge θ (T.ambientMap x) ≤
-      ENNReal.ofReal (M₀ ^ (1 - θ) * M₁ ^ θ) * C.complexInterpolationGauge θ x := by
-  sorry
 
 end CKMA

@@ -66,12 +66,12 @@ def IsUniformlySmoothSeminorm (N : Seminorm ℝ E) : Prop :=
 
 /-- **17.46**, the uniformly convex renorming characterization of real superreflexive Banach spaces.
 An actual seminorm with two-sided norm comparison is supplied, not an arbitrary new predicate. -/
-theorem superreflexive_iff_uniformlyConvex_renorming [CompleteSpace E] :
+theorem superreflexive_iff_exists_isUniformlyConvexSeminorm [CompleteSpace E] :
     IsSuperreflexive E ↔ ∃ N : Seminorm ℝ E, IsEquivalentNorm N ∧ IsUniformlyConvexSeminorm N := by
   sorry
 
 /-- The equivalent uniformly smooth renorming characterization. -/
-theorem superreflexive_iff_uniformlySmooth_renorming [CompleteSpace E] :
+theorem superreflexive_iff_exists_isUniformlySmoothSeminorm [CompleteSpace E] :
     IsSuperreflexive E ↔ ∃ N : Seminorm ℝ E, IsEquivalentNorm N ∧ IsUniformlySmoothSeminorm N := by
   sorry
 

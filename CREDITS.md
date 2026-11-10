@@ -41,6 +41,8 @@ local identifications and proof ingredients include:
   `klFun`. Fourier transforms, Haar measures, characters, Gaussian laws, Gamma and
   Bessel functions, polynomial iteration and derivatives use the imported Mathlib
   conventions specified in the mathematical module headers.
+- Ordered summability is `Summable` along `SummationFilter.conditional`. On `ℕ`
+  that filter is the limit of sums over `Finset.range`.
 
 ## TauCeti interfaces and proof provenance
 
@@ -102,3 +104,24 @@ Other proof ingredients include:
   `NormedSpace.exp_eq_tsum_div`. Gauss regular singularities use explicit analytic
   regularizations. Koebe sharpness uses the quotient derivative, injectivity
   factorization and the omitted point `-1/4`, without the quarter theorem itself.
+
+The extended-real Ekeland principle reduces to the Tau Ceti contributors' real-valued
+`LowerSemicontinuous.exists_add_mul_dist_le_and_lt_add_mul_dist` in
+`TauCeti.Topology.MetricSpace.Ekeland`, on a complete closed finite sublevel.
+Proximal existence uses `TauCeti.exists_affine_le_of_lt` from
+`TauCeti.Analysis.Convex.FenchelMoreau`, then a Hilbert midpoint identity and a
+Cauchy minimizing sequence; it does not assume compactness or finite dimension.
+
+The algebraic Birman–Schwinger transport uses the Tau Ceti contributors'
+`Module.End.eigenspaceCompEquiv`; invertibility of the positive shift follows from
+Mathlib's `ContinuousLinearMap.isUnit_of_forall_le_norm_inner_map`.
+The polydisc coefficient bound uses Mathlib's `norm_torusIntegral_le_of_norm_le_const`
+and TauCeti's `torusMap_mem_pi_sphere`, with explicit normalization cancellation.
+
+Converse sub-Gaussian estimates use Mathlib's layer-cake and improper-integral APIs,
+exponential series, factorial estimates and Lebesgue monotone summation. The centered
+MGF bound uses `Complex.norm_exp_sub_sum_le_norm_mul_exp`, Young's inequality and
+`Real.add_one_le_exp`, with the stated variance proxy unchanged.
+Gauss's ODE uses Mathlib's regularized-hypergeometric coefficient recurrence,
+power-series differentiation, radius bounds and the Gamma scaling relation to
+ordinary hypergeometric functions. Terminating upper parameters are included.

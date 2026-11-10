@@ -5,16 +5,20 @@ Authors: CKMA contributors
 -/
 module
 
-public import CKMA.Analysis.PDE.Viscosity
+public import CKMA.Analysis.PDE.Euclidean
+public import Mathlib.Analysis.Convex.Function
 public import Mathlib.MeasureTheory.Integral.Prod
+public import Mathlib.Topology.MetricSpace.Lipschitz
+public import Mathlib.Analysis.Calculus.LocalExtr.Basic
 
 /-!
 # Kružkov entropy solutions and Hopf–Lax evolution
 
 Bounded scalar conservation laws on positive times, their local initial traces,
 maximum principle and spacetime-almost-everywhere uniqueness. The one-dimensional
-Hopf–Lax formula uses an extended-real Legendre transform until convex superlinearity
-ensures finiteness. Hamilton–Jacobi solutions are defined by first-order viscosity tests.
+Hopf–Lax formula `hopfLaxHamiltonian` uses an extended-real Legendre transform until
+convex superlinearity ensures finiteness. Hamilton–Jacobi solutions are defined by
+first-order viscosity tests. The name is distinct from TauCeti's real Lagrangian formula.
 Integration, convexity and local extrema use Mathlib.
 Sources: GAPS 34.9 and 34.14.
 -/
@@ -76,8 +80,9 @@ theorem kruzhkov_unique {d : ℕ} (f : ℝ → EuclideanRealSpace d) (hf : ContD
 def hamiltonianLegendre (H : ℝ → ℝ) (v : ℝ) : EReal :=
   ⨆ p : ℝ, ((p * v - H p : ℝ) : EReal)
 
-/-- Hopf–Lax's infimum, retaining extended values until coercivity proves it finite. -/
-def hopfLax (H v₀ : ℝ → ℝ) (t x : ℝ) : EReal :=
+/-- The one-dimensional Hamiltonian Hopf–Lax infimum, retaining extended values until coercivity
+proves it finite. -/
+def hopfLaxHamiltonian (H v₀ : ℝ → ℝ) (t x : ℝ) : EReal :=
   ⨅ y : ℝ, (v₀ y : EReal) + (t : EReal) * hamiltonianLegendre H ((x - y) / t)
 
 /-- First-order viscosity tests for the one-dimensional Hamilton–Jacobi equation. -/
@@ -94,10 +99,10 @@ def IsHamiltonJacobiViscositySolution (H : ℝ → ℝ) (v : ℝ × ℝ → ℝ)
 
 /-- **34.14**: the Hopf–Lax infimum is finite and is a viscosity solution with initial data.
 The a.e. derivative-to-entropy bridge remains a separate interface. -/
-theorem hopfLax_viscosity (H v₀ : ℝ → ℝ) (hH : ConvexOn ℝ Set.univ H)
+theorem hopfLaxHamiltonian_viscosity (H v₀ : ℝ → ℝ) (hH : ConvexOn ℝ Set.univ H)
     (hsuper : Tendsto (fun p : ℝ ↦ H p / |p|) (Filter.comap abs atTop) atTop)
     {L : ℝ≥0} (hv₀ : LipschitzWith L v₀) :
-    ∃ v : ℝ × ℝ → ℝ, (∀ t : ℝ, 0 < t → ∀ x, hopfLax H v₀ t x = v (t, x)) ∧
+    ∃ v : ℝ × ℝ → ℝ, (∀ t : ℝ, 0 < t → ∀ x, hopfLaxHamiltonian H v₀ t x = v (t, x)) ∧
       IsHamiltonJacobiViscositySolution H v ∧ ∀ x,
         Tendsto (fun t : ℝ ↦ v (t, x)) (𝓝[>] 0) (𝓝 (v₀ x)) := by
   sorry

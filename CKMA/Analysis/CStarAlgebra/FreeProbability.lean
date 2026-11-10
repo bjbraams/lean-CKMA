@@ -56,7 +56,7 @@ def IsPositiveNoncommutativeState {B : Type*} [Ring B] [StarRing B] [Algebra ℂ
 /-- **23.65**, the free central limit theorem in moments; boundedness is unnecessary for
 this algebraic moment assertion. The state is positive, the variables are self-adjoint,
 and their complete moment sequences agree. -/
-theorem free_centralLimit {B : Type*} [Ring B] [StarRing B] [Algebra ℂ B]
+theorem free_central_limit {B : Type*} [Ring B] [StarRing B] [Algebra ℂ B]
     (φ : B →ₗ[ℂ] ℂ) (hφ : IsPositiveNoncommutativeState φ) (X : ℕ → B)
     (hsa : ∀ i, IsSelfAdjoint (X i)) (hmean : ∀ i, φ (X i) = 0)
     (hvar : ∀ i, φ (X i ^ 2) = 1)

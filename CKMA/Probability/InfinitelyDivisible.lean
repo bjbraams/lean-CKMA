@@ -11,7 +11,7 @@ public import Mathlib.MeasureTheory.Integral.Bochner.Basic
 public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 
 /-!
-# Infinite divisibility and Lévy–Khintchine triplets (06.52)
+# Infinite divisibility and Lévy–Khintchine triplets (06.51)
 
 `convolutionPower` and `IsInfinitelyDivisible` use positive convolution roots of a real
 probability law. `IsLevyMeasure` records the zero atom and integrability of the truncated
@@ -65,7 +65,7 @@ def LevyTriplet.exponent (L : LevyTriplet) (t : ℝ) : ℂ :=
 
 /-- **06.51**: a real probability law is infinitely divisible exactly when it has a unique
 Levy triplet for this fixed truncation convention. -/
-theorem infinitelyDivisible_iff_existsUnique_levyTriplet (μ : Measure ℝ)
+theorem isInfinitelyDivisible_iff_existsUnique_levyTriplet (μ : Measure ℝ)
     [IsProbabilityMeasure μ] :
     IsInfinitelyDivisible μ ↔
       ∃! L : LevyTriplet, ∀ t : ℝ, charFun μ t = Complex.exp (L.exponent t) := by

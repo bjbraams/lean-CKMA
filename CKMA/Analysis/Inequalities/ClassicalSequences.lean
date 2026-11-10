@@ -63,7 +63,7 @@ theorem discrete_hardy {p : ℝ} (hp : 1 < p) (a : ℕ → ℝ) (ha : ∀ n, 0 �
   sorry
 
 /-- The constant in Hardy's inequality is optimal already on finitely supported inputs. -/
-theorem discrete_hardy_constant_le {p C : ℝ} (hp : 1 < p) (hC : 0 ≤ C)
+theorem discrete_hardy_constant_le {p C : ℝ} (hp : 1 < p)
     (hbound : ∀ a : ℕ → ℝ, (∀ n, 0 ≤ a n) → (Function.support a).Finite →
       (∑' n, ENNReal.ofReal (hardyAverage a n ^ p)) ≤
         ENNReal.ofReal C * ∑' n, ENNReal.ofReal (a n ^ p)) :

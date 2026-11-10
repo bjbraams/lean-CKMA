@@ -12,8 +12,9 @@ public import Mathlib.Analysis.MeanInequalities
 # Carleman inequality and its optimal constant
 
 Geometric means of the first `n+1` nonnegative sequence entries and Carleman's summability
-bound with constant `exp 1`. The optimality statement quantifies over summable nonnegative
-sequences. Real powers, finite products and Stirling asymptotics use Mathlib conventions.
+bound with constant `exp 1`. The optimality statement quantifies over finitely supported
+nonnegative sequences. Real powers, finite products and Stirling asymptotics use Mathlib
+conventions.
 Source: GAPS 11.38.
 -/
 
@@ -35,9 +36,9 @@ theorem carleman {a : ℕ → ℝ} (ha : ∀ n, 0 ≤ a n) (hs : Summable a) :
       (∑' n, prefixGeometricMean a n) ≤ Real.exp 1 * ∑' n, a n := by
   sorry
 
-/-- The constant `e` in Carleman's inequality is optimal, even on finite sequences. -/
+/-- The constant `e` in Carleman's inequality is optimal already on finitely supported sequences. -/
 theorem carleman_constant_le {C : ℝ}
-    (hC : ∀ (a : ℕ → ℝ), (∀ n, 0 ≤ a n) → Summable a →
+    (hC : ∀ a : ℕ → ℝ, (∀ n, 0 ≤ a n) → (Function.support a).Finite →
       (∑' n, prefixGeometricMean a n) ≤ C * ∑' n, a n) : Real.exp 1 ≤ C := by
   sorry
 

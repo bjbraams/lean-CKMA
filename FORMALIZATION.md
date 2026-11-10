@@ -2,7 +2,7 @@
 
 The library represents **242 of the 603 selected gaps** in [GAPS.md](GAPS.md),
 including all 59 entries of [GAPS_EASY.md](GAPS_EASY.md). The entry statuses are
-152 statements, 86 partial interfaces, 4 proved entries and
+150 statements, 86 partial interfaces, 6 proved entries and
 361 entries without a local statement. These units are catalogue entries,
 not individual Lean declarations.
 
@@ -46,28 +46,35 @@ statement. The scope list below records these distinctions entry by entry.
 
 ## Completed proofs and admissions
 
-There are **953 inventoried public declarations**: 436 theorems and
-517 definitions, abbreviations or structures. Of the theorems, **110** use only
-standard axioms. **326** depend on `sorryAx`, comprising **323** direct
+There are **958 inventoried public declarations**: 440 theorems and
+518 definitions, abbreviations or structures. Of the theorems, **122** use only
+standard axioms. **318** depend on `sorryAx`, comprising **315** direct
 admissions and three deductions from admitted prerequisites. All inventoried non-theorem
 bodies use only standard axioms. The standard axioms are `propext`,
 `Classical.choice` and `Quot.sound`, or subsets of these.
 
-The fully proved selected entries are derivatives being Baire class one (05.7),
-almost-everywhere approximate continuity (05.30), the arbitrary-pairing weak bipolar
-theorem (16.13), and Atkinson's theorem over real or complex Banach spaces (21.11).
+The fully proved selected entries are:
+
+- **05.7 Baire classification of derivatives**.
+- **05.30 Approximate continuity**.
+- **12.32 Everywhere-defined proximal mapping**.
+- **12.45 Ekeland variational principle**.
+- **16.13 Bipolar theorem for dual pairs**.
+- **21.11 Atkinson theorem**.
 
 The complete frame module proves bounded analysis, the operator and synthesis
 criteria, reciprocal canonical-dual bounds and both unconditional expansions.
 Entries 29.2 and 29.3 retain partial status because the explicit operator-order
 equivalence and optimality of the bounds are not stated. Other supporting proofs
-include proximal subgradient characterization, firm nonexpansiveness and uniqueness,
-compact self-similar attractors, AL-space monotone convergence, Hankel positivity,
-near-best interpolation, asymptotic coefficient uniqueness, Koebe sharpness, Gauss
+include proximal existence, subgradient characterization, firm nonexpansiveness and uniqueness,
+Ekeland's extended-real variational principle, compact self-similar attractors,
+AL-space monotone convergence, Hankel positivity,
+near-best interpolation, asymptotic coefficient uniqueness, Koebe sharpness, Gauss's ODE and
 regular singularities, the Mittag–Leffler exponential specialization and the
-exponential-square implications to tails and moments.
+quantitative sub-Gaussian scale implications and centered MGF bounds. The bounded-operator
+Birman–Schwinger kernel equivalence and polydisc coefficient bound are also proved.
 
-The 2 private proof helpers have registered docstrings and occur in
+The 16 private proof helpers have registered docstrings and occur in
 transitively audited proof terms. They are separate from the public index inventory.
 Their proof role does not introduce additional assumptions or admissions.
 
@@ -83,8 +90,8 @@ The pins are Lean `v4.36.0-rc1`, Mathlib
 `911003dd6dea5df215dff57f2717be762e11a6ca` and TauCeti
 `a049b4264d2cf4dbf4720796f844a3a3764914a5`. [CREDITS.md](CREDITS.md)
 records the imported interfaces and adapted proof provenance. The library uses
-`127` Lean modules and `11525` source lines; the largest file has
-`306` lines. No file approaches the 1,000-line size guideline.
+`127` Lean modules and `12259` source lines; the largest file has
+`477` lines. No file approaches the 1,000-line size guideline.
 
 The ordinary build is `lake build > /tmp/ckma-build.log 2>&1`. The checker
 `python3 scripts/check_formalization.py` validates catalogue membership, locations,
@@ -103,7 +110,7 @@ listed assertions have no admitted dependencies.
 - **04.39 Duality** — statement; [CKMA.Analysis.Measure.LpDuality](CKMA/Analysis/Measure/LpDuality.lean).
 - **05.7 Baire classification of derivatives** — proved; [CKMA.Analysis.Real.Baire](CKMA/Analysis/Real/Baire.lean). Open subsets of the real line, including disconnected sets and the empty set.
 - **05.10 Denjoy–Young–Saks theorem** — statement; [CKMA.Analysis.Real.Dini](CKMA/Analysis/Real/Dini.lean). All finite real functions, with no measurability assumption, and exactly one of four extended Dini types almost everywhere. Left limits use negative increments in the same difference quotient.
-- **05.30 Approximate continuity** — proved; [CKMA.Analysis.Real.ApproximateContinuity](CKMA/Analysis/Real/ApproximateContinuity.lean). Finite measurable real functions on Euclidean space are approximately continuous almost everywhere, including dimension zero.
+- **05.30 Approximate continuity** — proved; [CKMA.Analysis.Real.ApproximateContinuity](CKMA/Analysis/Real/ApproximateContinuity.lean). Finite measurable real functions on a second-countable Borel space, for a locally finite uniformly locally doubling measure, are approximately continuous almost everywhere. Euclidean volume is included.
 - **05.31 Rectangular differentiation** — statement; [CKMA.Analysis.Real.RectangularDifferentiation](CKMA/Analysis/Real/RectangularDifferentiation.lean). Open axis-aligned rectangles with no eccentricity bound, local L(log+ L)^(d-1) differentiation and endpoint maximal inequality, and L1 failure in dimensions at least two. Positive integrals and maximal values retain infinity.
 - **05.33 Kirszbraun's theorem** — statement; [CKMA.Analysis.Real.Kirszbraun](CKMA/Analysis/Real/Kirszbraun.lean). Exact Lipschitz constant on arbitrary subsets of a real inner-product domain into a complete real Hilbert target; empty subsets and zero constants are included.
 - **06.1 Kolmogorov extension theorem** — statement; [CKMA.Probability.ProjectiveLimit](CKMA/Probability/ProjectiveLimit.lean).
@@ -136,14 +143,14 @@ listed assertions have no admitted dependencies.
 - **11.24 Karamata's inequality** — statement; [CKMA.Analysis.Convex.Majorization](CKMA/Analysis/Convex/Majorization.lean).
 - **11.32 Discrete Hardy inequality** — statement; [CKMA.Analysis.Inequalities.ClassicalSequences](CKMA/Analysis/Inequalities/ClassicalSequences.lean). Extended nonnegative sums for arbitrary nonnegative sequences; sharpness already on finitely supported inputs, for every real exponent p>1.
 - **11.37 Hilbert's integral inequality** — partial; [CKMA.Analysis.Inequalities.Hilbert](CKMA/Analysis/Inequalities/Hilbert.lean). Integral and discrete upper bounds with the sharp proposed constant; the optimality assertions remain unstated.
-- **11.38 Carleman's inequality** — statement; [CKMA.Analysis.Inequalities.Carleman](CKMA/Analysis/Inequalities/Carleman.lean).
+- **11.38 Carleman's inequality** — statement; [CKMA.Analysis.Inequalities.Carleman](CKMA/Analysis/Inequalities/Carleman.lean). Nonnegative summable sequences; the constant e is optimal already for finitely supported sequences.
 - **12.9 Choquet representation** — statement; [CKMA.Analysis.Convex.Duality](CKMA/Analysis/Convex/Duality.lean). Compact metrizable convex subsets of locally convex Hausdorff real spaces; probability on the subset, carried by its extreme points, tested by continuous affine maps.
 - **12.21 Subdifferential sum rule** — partial; [CKMA.Analysis.Convex.Duality](CKMA/Analysis/Convex/Duality.lean). Banach sum rule under a common finite-domain continuity qualification; the finite-dimensional relative-interior alternative is not stated.
-- **12.32 Everywhere-defined proximal mapping** — statement; [CKMA.Analysis.Convex.Proximal](CKMA/Analysis/Convex/Proximal.lean). Extended-real functions; graph formulation and a totalized proximalMap. Existence, not the definition, is admitted.
+- **12.32 Everywhere-defined proximal mapping** — proved; [CKMA.Analysis.Convex.Proximal](CKMA/Analysis/Convex/Proximal.lean). Proper lower semicontinuous convex extended-real functions on real Hilbert spaces: proximal existence and uniqueness, subdifferential characterization, firm nonexpansiveness and a guarded totalized proximal map.
 - **12.39 Fenchel–Rockafellar duality** — statement; [CKMA.Analysis.Convex.Duality](CKMA/Analysis/Convex/Duality.lean). Proper lower-semicontinuous convex Banach-space functions, a common finite continuity point, finite primal value; equality and dual attainment, without primal attainment.
 - **12.40 Slater and KKT conditions** — statement; [CKMA.Analysis.Convex.Duality](CKMA/Analysis/Convex/Duality.lean). Finite-dimensional Slater/KKT necessity, and proved sufficiency in arbitrary real normed spaces; explicit subgradient and complementary-slackness data, including empty finite constraint lists.
-- **12.45 Ekeland variational principle** — statement; [CKMA.Analysis.Convex.Ekeland](CKMA/Analysis/Convex/Ekeland.lean). Extended-real proper l.s.c. bounded-below functions on complete metric spaces; positive error epsilon and distance scale, finite initial value. Epsilon positivity is essential for the strict variational inequality.
-- **12.50 Clarke gradient representation** — statement; [CKMA.Analysis.Convex.Clarke](CKMA/Analysis/Convex/Clarke.lean). Joint basepoint/positive-step extended directional limsup, dual-valued generalized gradients, derivative limits, closed-convex-hull and support representations under local Lipschitz control in finite dimensions.
+- **12.45 Ekeland variational principle** — proved; [CKMA.Analysis.Convex.Ekeland](CKMA/Analysis/Convex/Ekeland.lean). Extended-real proper l.s.c. bounded-below functions on complete metric spaces; positive error epsilon and distance scale, finite initial value. Epsilon positivity is essential for the strict variational inequality.
+- **12.50 Clarke gradient representation** — statement; [CKMA.Analysis.Convex.Clarke](CKMA/Analysis/Convex/Clarke.lean). Joint basepoint/positive-step extended directional limsup, dual-valued generalized gradients, and derivative limits. The closed-convex-hull representation assumes finite dimension and local Lipschitz control. The support identity holds for a locally Lipschitz function on any real normed space.
 - **13.7 Cauchy interlacing** — statement; [CKMA.Analysis.InnerProductSpace.MatrixInequalities](CKMA/Analysis/InnerProductSpace/MatrixInequalities.lean). Real or complex finite-dimensional Hilbert endomorphisms. Compression is supplied by a linear isometry; symmetry of the compression is derived internally.
 - **13.8 Weyl inequalities** — statement; [CKMA.Analysis.InnerProductSpace.MatrixInequalities](CKMA/Analysis/InnerProductSpace/MatrixInequalities.lean). Real or complex Hermitian endomorphisms with zero-based sorted indices. Symmetry of the sum follows from the two summands.
 - **13.10 Hoffman–Wielandt inequality** — statement; [CKMA.Analysis.InnerProductSpace.MatrixInequalities](CKMA/Analysis/InnerProductSpace/MatrixInequalities.lean). Real or complex operators with supplied orthonormal eigenbases; unconditional normal eigenbasis existence is a complex-space fact supplied by TauCeti.
@@ -151,7 +158,7 @@ listed assertions have no admitted dependencies.
 - **13.18 Eckart–Young–Mirsky theorem** — statement; [CKMA.Analysis.InnerProductSpace.MatrixInequalities](CKMA/Analysis/InnerProductSpace/MatrixInequalities.lean).
 - **14.40 Nash inequality** — statement; [CKMA.Analysis.Sobolev.Nash](CKMA/Analysis/Sobolev/Nash.lean). Real scalar L1 ∩ H1 with a supplied weak Frechet derivative; positive dimension.
 - **15.28 Eberlein–Šmulian theorem** — statement; [CKMA.Analysis.FunctionalAnalysis.WeakCompactness](CKMA/Analysis/FunctionalAnalysis/WeakCompactness.lean). Real or complex Banach spaces; relative compactness is closure-compactness in the actual weak topology, and subsequence limits are allowed in the ambient space.
-- **15.29 James compactness theorem, sufficiency** — statement; [CKMA.Analysis.FunctionalAnalysis.WeakCompactness](CKMA/Analysis/FunctionalAnalysis/WeakCompactness.lean). Real Banach spaces: a bounded norm-closed convex set is weakly compact when every continuous linear functional attains its supremum. Attainment itself supplies nonemptiness.
+- **15.29 James compactness theorem, sufficiency** — statement; [CKMA.Analysis.FunctionalAnalysis.WeakCompactness](CKMA/Analysis/FunctionalAnalysis/WeakCompactness.lean). Real Banach spaces: a norm-closed convex set is weakly compact when every continuous linear functional attains its supremum. Attainment supplies nonemptiness and boundedness.
 - **15.33 Uniform convexity of $L^p$ away from the Hilbert case** — statement; [CKMA.Analysis.FunctionalAnalysis.WeakCompactness](CKMA/Analysis/FunctionalAnalysis/WeakCompactness.lean). Mathlib UniformConvexSpace for scalar Lp over any measure, real or complex scalars, 1<p<infinity. The Hilbert exponent is included in the general interface.
 - **16.13 Bipolar theorem for dual pairs** — proved; [CKMA.Analysis.LocallyConvex.Bipolar](CKMA/Analysis/LocallyConvex/Bipolar.lean). In fact no separating hypothesis is needed when the closure is explicitly in WeakBilin B.
 - **17.21 Rosenthal $\ell^1$ theorem** — partial; [CKMA.Analysis.BanachSpace.Geometry](CKMA/Analysis/BanachSpace/Geometry.lean). Real Banach spaces; weak Cauchy subsequence versus a subsequence satisfying two-sided l1 finite-coefficient estimates. The complex-scalar version and a bundled Schauder-span equivalence remain.
@@ -170,7 +177,7 @@ listed assertions have no admitted dependencies.
 - **20.23 Shilov boundary theorem** — statement; [CKMA.Analysis.BanachAlgebra.Factorization](CKMA/Analysis/BanachAlgebra/Factorization.lean). Closed point-separating subalgebra of C(K), compact Hausdorff K; smallest closed norming boundary. Supremum convention includes empty K.
 - **20.40 Wiener lemma** — statement; [CKMA.Analysis.BanachAlgebra.Wiener](CKMA/Analysis/BanachAlgebra/Wiener.lean).
 - **20.41 Wiener Tauberian theorem** — partial; [CKMA.Analysis.BanachAlgebra.Factorization](CKMA/Analysis/BanachAlgebra/Factorization.lean). Real-line L1 translates and the Fourier-integral nonvanishing criterion. General LCA groups and the convolution-ideal adapter remain.
-- **20.47 Cohen–Hewitt factorization** — partial; [CKMA.Analysis.BanachAlgebra.Factorization](CKMA/Analysis/BanachAlgebra/Factorization.lean). Genuinely nonunital Banach algebras with a bounded sequential left approximate identity acting strongly on the module. Essential-module-to-strong-action and arbitrary-net interfaces remain.
+- **20.47 Cohen–Hewitt factorization** — partial; [CKMA.Analysis.BanachAlgebra.Factorization](CKMA/Analysis/BanachAlgebra/Factorization.lean). Genuinely nonunital real or complex Banach algebras with a bounded directed left approximate identity acting strongly on the module. The essential-module characterization and norm control on the factor y remain.
 - **21.11 Atkinson theorem** — proved; [CKMA.Analysis.Operator.Fredholm](CKMA/Analysis/Operator/Fredholm.lean). Operators between real or complex Banach spaces, uniformly over RCLike scalars; no quotient Calkin algebra is introduced.
 - **21.15 Analytic Fredholm theorem** — partial; [CKMA.Analysis.Operator.AnalyticFredholm](CKMA/Analysis/Operator/AnalyticFredholm.lean). Invertibility at one point gives isolated exceptional parameters, analytic inverse elsewhere and genuine positive-order inverse poles with nonzero analytic regularizations. Finite-rank principal parts remain.
 - **21.16 Discrete spectrum of self-adjoint operators** — statement; [CKMA.Analysis.Operator.Fredholm](CKMA/Analysis/Operator/Fredholm.lean). The essential spectrum is explicitly the Fredholm essential spectrum; its compact-perturbation invariance is proved.
@@ -201,17 +208,17 @@ listed assertions have no admitted dependencies.
 - **24.39 Gearhart–Prüss theorem** — statement; [CKMA.Analysis.Semigroup.Stability](CKMA/Analysis/Semigroup/Stability.lean). Bounded C0 semigroups on complex Hilbert spaces and the uniform imaginary-axis generator resolvent criterion.
 - **24.40 Arendt–Batty–Lyubich–Vũ theorem** — partial; [CKMA.Analysis.Semigroup.Stability](CKMA/Analysis/Semigroup/Stability.lean). Reflexive complex normed-space branch, with completeness derived from surjectivity of the bidual inclusion, countable imaginary-axis spectrum and no generator eigenvalues there. The general Banach-adjoint criterion remains.
 - **24.52 Crandall–Liggett generation** — statement; [CKMA.Analysis.Semigroup.Accretive](CKMA/Analysis/Semigroup/Accretive.lean). Concrete multivalued accretive graph and guarded resolvent; nonlinear contraction semigroup on the domain closure, Euler convergence there, and uniform time convergence on the actual domain.
-- **25.3 Hilbert–Schmidt kernels** — statement; [CKMA.Analysis.IntegralEquation.HilbertSchmidt](CKMA/Analysis/IntegralEquation/HilbertSchmidt.lean). Sigma-finite measures with a supplied Hilbert basis; exact Hilbert-Schmidt energy and conjugate-transpose adjoint kernel.
-- **25.8 Mercer theorem** — statement; [CKMA.Analysis.IntegralEquation.Mercer](CKMA/Analysis/IntegralEquation/Mercer.lean). Continuous positive-definite kernel on compact Hausdorff D with finite full-support Borel measure; trace-class kernel operator, nonnegative eigenvalues, continuous normalized eigenfunctions, unconditional expansion and uniform absolute tails, including finite-rank/zero kernels.
+- **25.3 Hilbert–Schmidt kernels** — statement; [CKMA.Analysis.IntegralEquation.HilbertSchmidt](CKMA/Analysis/IntegralEquation/HilbertSchmidt.lean). Real or complex scalars. Sigma-finite measures with a supplied Hilbert basis; exact Hilbert-Schmidt energy and scalar-star adjoint kernel.
+- **25.8 Mercer theorem** — statement; [CKMA.Analysis.IntegralEquation.Mercer](CKMA/Analysis/IntegralEquation/Mercer.lean). Continuous positive-semidefinite kernel on compact Hausdorff D with finite full-support Borel measure; trace-class kernel operator, nonnegative eigenvalues, continuous normalized eigenfunctions, unconditional expansion and uniform absolute tails, including finite-rank/zero kernels.
 - **25.18 Volterra solvability** — partial; [CKMA.Analysis.IntegralEquation.Basic](CKMA/Analysis/IntegralEquation/Basic.lean). Existence and uniqueness for continuous triangular kernels. Successive-substitution convergence and continuous data dependence remain.
 - **25.23 Abel inversion** — statement; [CKMA.Analysis.IntegralEquation.Basic](CKMA/Analysis/IntegralEquation/Basic.lean). Real L1(0,T); all identities are a.e., and zero boundary values belong to the absolutely continuous representative. Complex extension remains available by components.
-- **25.47 Collectively compact approximation theorem** — statement; [CKMA.Analysis.IntegralEquation.Basic](CKMA/Analysis/IntegralEquation/Basic.lean).
-- **26.16 Failure of the critical $L^\infty$ embedding** — statement; [CKMA.Analysis.Sobolev.Nash](CKMA/Analysis/Sobolev/Nash.lean). Any nonempty open Euclidean domain, dimension at least two; essential unboundedness is stated by failure of MemLp at infinity.
+- **25.47 Collectively compact approximation theorem** — statement; [CKMA.Analysis.IntegralEquation.CollectiveCompactness](CKMA/Analysis/IntegralEquation/CollectiveCompactness.lean). Strong collectively compact approximation on a real or complex Banach space.
+- **26.16 Failure of the critical $L^\infty$ embedding** — statement; [CKMA.Analysis.Sobolev.Critical](CKMA/Analysis/Sobolev/Critical.lean). Any nonempty open Euclidean domain, dimension at least two; essential unboundedness is stated by failure of MemLp at infinity.
 - **26.31 Quasicontinuity** — statement; [CKMA.Analysis.Sobolev.CapacityAndBBM](CKMA/Analysis/Sobolev/CapacityAndBBM.lean). Inhomogeneous C1,p capacity from smooth compact tests and open outer approximation; real weak first-order functions with finite p>1, including quasi-everywhere uniqueness.
 - **26.37 Fractional Hilbert identity** — statement; [CKMA.Analysis.Sobolev.Fractional](CKMA/Analysis/Sobolev/Fractional.lean). Extended square energies and their quantitative comparison, on L2; bundling the two Sobolev spaces is separate infrastructure.
 - **26.42 Bourgain–Brezis–Mironescu limit** — statement; [CKMA.Analysis.Sobolev.CapacityAndBBM](CKMA/Analysis/Sobolev/CapacityAndBBM.lean). Real scalar W1,p functions, all finite p>=1; exact constant expressed by a unit-ball moment, equivalent to the sphere constant by radial integration.
-- **26.53 Real interpolation theorem** — partial; [CKMA.Analysis.Interpolation.Basic](CKMA/Analysis/Interpolation/Basic.lean). Compatible Banach couples realized in their canonical normed sum, exact K-method gauge bound including q=infinity; bundled interpolation normed spaces, completeness, and construction from arbitrary compatible embeddings remain.
-- **26.54 Complex interpolation theorem** — partial; [CKMA.Analysis.Interpolation.Basic](CKMA/Analysis/Interpolation/Basic.lean). Calderon strip-function and gauge definitions and the exact bound; bundled normed spaces, completeness, and extension from arbitrary ambient embeddings remain.
+- **26.53 Real interpolation theorem** — partial; [CKMA.Analysis.Interpolation.Bounds](CKMA/Analysis/Interpolation/Bounds.lean). Compatible Banach couples realized in their canonical normed sum, exact K-method gauge bound including q=infinity. The endpoint constants need no sign hypothesis. Gauge definitions remain in Interpolation.Basic. Bundled interpolation normed spaces, completeness, and construction from arbitrary compatible embeddings remain.
+- **26.54 Complex interpolation theorem** — partial; [CKMA.Analysis.Interpolation.Bounds](CKMA/Analysis/Interpolation/Bounds.lean). Calderon strip-function and gauge definitions and the exact bound. The endpoint constants need no sign hypothesis. Gauge definitions remain in Interpolation.Basic. Bundled normed spaces, completeness, and extension from arbitrary ambient embeddings remain.
 - **27.4 Hausdorff–Young inequality** — partial; [CKMA.Analysis.Fourier.Inequalities](CKMA/Analysis/Fourier/Inequalities.lean). Fourier-integral inequality on L1 ∩ Lp and failure above p=2 on Schwartz functions. Extension to a bounded Fourier map on all of Lp remains.
 - **27.13 Heisenberg uncertainty** — partial; [CKMA.Analysis.Fourier.Inequalities](CKMA/Analysis/Fourier/Inequalities.lean). Uncentered coordinate inequality with explicit L2 moment assumptions; centered versions and Gaussian equality classification remain.
 - **27.17 Fejér summation** — partial; [CKMA.Analysis.Fourier.CircleSummation](CKMA/Analysis/Fourier/CircleSummation.lean). One-dimensional probability circle: finite-p convergence, uniform convergence for continuous functions, and every lifted Lebesgue point. The product-kernel multidimensional interface remains.
@@ -239,7 +246,7 @@ listed assertions have no admitted dependencies.
 - **31.26 LaSalle invariance principle** — statement; [CKMA.Dynamics.Lyapunov](CKMA/Dynamics/Lyapunov.lean). A compact positively invariant subset of an existing global flow, with no finite-rest-set assumption.
 - **31.38 Poincaré–Bendixson theorem** — statement; [CKMA.Dynamics.ODE.Planar](CKMA/Dynamics/ODE/Planar.lean). Existing global C1 planar flow with an orbit in a compact forward absorbing set; no equilibrium in its omega-limit set, which is identified with a whole periodic orbit.
 - **32.50 Wave Cauchy problem in energy spaces** — statement; [CKMA.Analysis.PDE.Wave](CKMA/Analysis/PDE/Wave.lean). Actual TauCeti W1,2 position states and L2 velocities, continuous on a compact time interval; positive wave speed, L1-in-time L2 forcing, integrated weak velocity equation, and unique time-interval curves.
-- **32.52 Finite propagation speed** — statement; [CKMA.Analysis.PDE.Wave](CKMA/Analysis/PDE/Wave.lean). Two energy solutions whose initial values/velocities agree a.e. on a ball and whose forcing agrees in the backward shrinking cone agree a.e. on later shrinking balls.
+- **32.52 Finite propagation speed** — statement; [CKMA.Analysis.PDE.Wave](CKMA/Analysis/PDE/Wave.lean). Two energy solutions whose initial positions agree a.e. on a ball, whose initial velocities agree there, and whose forcing agrees in the backward shrinking cone have agreeing position components, as TauCeti W1p values, a.e. on later shrinking balls.
 - **33.9 Higher integrability of the gradient** — statement; [CKMA.Analysis.PDE.EllipticEstimates](CKMA/Analysis/PDE/EllipticEstimates.lean). Actual W1,2 weak gradients and bounded measurable uniformly elliptic divergence coefficients; homogeneous and divergence-forcing local Meyers estimate on concentric unit/two balls.
 - **33.14 Alexandrov–Bakelman–Pucci estimate** — partial; [CKMA.Analysis.PDE.EllipticEstimates](CKMA/Analysis/PDE/EllipticEstimates.lean). Classical C2-in-domain, continuous-up-to-boundary ABP inequality on bounded domains with extended source norm; the W2,n strong-solution interface remains.
 - **33.15 Krylov–Safonov theorem** — partial; [CKMA.Analysis.PDE.EllipticEstimates](CKMA/Analysis/PDE/EllipticEstimates.lean). Uniform Harnack and interior Holder estimates for classical C2 solutions with merely measurable uniformly elliptic coefficients. The general strong-solution formulation remains.
@@ -255,7 +262,7 @@ listed assertions have no admitted dependencies.
 - **34.54 Leray–Hopf existence** — partial; [CKMA.Analysis.PDE.NavierStokes](CKMA/Analysis/PDE/NavierStokes.lean). Global Euclidean three-dimensional existence with actual L2 velocity curves, distributional incompressibility/momentum, weak spatial derivatives, finite dissipation, weak continuity and energy inequalities. Torus variant remains.
 - **34.55 Two-dimensional viscous uniqueness** — partial; [CKMA.Analysis.PDE.NavierStokes](CKMA/Analysis/PDE/NavierStokes.lean). Global Euclidean two-dimensional energy-class existence and uniqueness of the nonnegative-time velocity curve; gradient representatives are existential a.e. data. Positive-time smoothness interface remains.
 - **34.70 Boltzmann's $H$ theorem** — partial; [CKMA.Analysis.PDE.Boltzmann](CKMA/Analysis/PDE/Boltzmann.lean). Hard-sphere collision operator and exact negative entropy-production identity for positive measurable densities under explicit four-log absolute integrability, with probability-normalized angular measure. Zero-density extension and spatial transport entropy remain.
-- **35.9 Newton–Kantorovich convergence** — partial; [CKMA.Analysis.Nonlinear.Newton](CKMA/Analysis/Nonlinear/Newton.lean). Concrete totalized Newton iteration, majorant-radius convergence including the L=0 limiting radius, and local quadratic convergence. A separate affine one-step corollary is not stated.
+- **35.9 Newton–Kantorovich convergence** — partial; [CKMA.Analysis.Nonlinear.Newton](CKMA/Analysis/Nonlinear/Newton.lean). Real or complex scalars. Concrete totalized Newton iteration, majorant-radius convergence including the L=0 limiting radius, and local quadratic convergence. The initial step is controlled by a norm bound. A separate affine one-step corollary is not stated.
 - **35.12 Brouwer fixed-point theorem** — statement; [CKMA.Analysis.Nonlinear.FixedPoint](CKMA/Analysis/Nonlinear/FixedPoint.lean).
 - **35.13 Schauder fixed-point theorem** — statement; [CKMA.Analysis.Nonlinear.FixedPoint](CKMA/Analysis/Nonlinear/FixedPoint.lean). Nonempty closed convex subset of a Banach space and continuous self-map with relatively compact total image; the domain may be unbounded.
 - **35.15 Kakutani–Fan–Glicksberg theorem** — statement; [CKMA.Analysis.Nonlinear.FixedPoint](CKMA/Analysis/Nonlinear/FixedPoint.lean). Upper-hemicontinuous multifunction on a nonempty compact convex set in a locally convex Hausdorff space, with nonempty closed convex values in that set.
@@ -339,6 +346,6 @@ listed assertions have no admitted dependencies.
 - **50.6 Borel–Ritt theorem** — statement; [CKMA.Analysis.Asymptotics.Expansions](CKMA/Analysis/Asymptotics/Expansions.lean). Concrete rotated sectors and uniform all-order power remainders on every closed proper subsector, for opening strictly between zero and 2*pi.
 - **50.9 Watson's lemma** — partial; [CKMA.Analysis.Asymptotics.Expansions](CKMA/Analysis/Asymptotics/Expansions.lean). Finite-order and full complex-amplitude Laplace expansions for positive real alpha, with explicit local integrability and exponential tail bounds. Complex alpha with positive real part remains.
 - **50.11 Interior Laplace minimum** — partial; [CKMA.Analysis.Asymptotics.Expansions](CKMA/Analysis/Asymptotics/Expansions.lean). Leading one-dimensional interior-minimum Laplace asymptotic on a finite interval, with phase C2 only on that interval. A scaled limit permits zero amplitude at the minimum; higher coefficients and remainder expansions remain.
-- **50.23 Euler–Maclaurin formula** — statement; [CKMA.Analysis.Asymptotics.EulerMaclaurin](CKMA/Analysis/Asymptotics/EulerMaclaurin.lean). Positive truncation order p; globally C^(2p) real functions and inclusive integer endpoints. The displayed remainder is false at p=0, which is excluded.
+- **50.23 Euler–Maclaurin formula** — statement; [CKMA.Analysis.Asymptotics.EulerMaclaurin](CKMA/Analysis/Asymptotics/EulerMaclaurin.lean). Positive truncation order p; globally C^(2p) real functions; integer endpoints m ≤ n, including equality. The displayed remainder is false at p=0, which is excluded.
 - **50.29 Karamata Tauberian theorem** — statement; [CKMA.Analysis.Asymptotics.Expansions](CKMA/Analysis/Asymptotics/Expansions.lean). Locally finite positive measures supported on the nonnegative half-line, all positive Laplace transforms integrable, and measurable slowly varying functions. Includes rho=0.
-- **50.45 Borel–Laplace theorem** — statement; [CKMA.Analysis.Asymptotics.BorelLaplace](CKMA/Analysis/Asymptotics/BorelLaplace.lean). Actual formal Borel series, directional Laplace integral, analytic continuation with exponential growth, uniform Gevrey-one estimates and a glued holomorphic sector wider than pi. Original-ray agreement is stated in a uniform smaller convergence sector.
+- **50.45 Borel–Laplace theorem** — statement; [CKMA.Analysis.Asymptotics.BorelLaplace](CKMA/Analysis/Asymptotics/BorelLaplace.lean). Actual formal Borel series, directional Laplace integral, analytic continuation of opening β with exponential growth, uniform Gevrey-one estimates, and a holomorphic sum on the sector of opening π+β. Agreement with the original ray holds on the convergence sector of opening π.

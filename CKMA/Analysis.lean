@@ -22,6 +22,7 @@ public import CKMA.Analysis.BoundedVariation.Compactness
 public import CKMA.Analysis.CStarAlgebra.FreeProbability
 public import CKMA.Analysis.CStarAlgebra.OperatorClosures
 public import CKMA.Analysis.CStarAlgebra.Representation
+public import CKMA.Analysis.Complex.Basic
 public import CKMA.Analysis.Complex.Bergman
 public import CKMA.Analysis.Complex.CarlesonInterpolation
 public import CKMA.Analysis.Complex.EntireGrowth
@@ -33,6 +34,7 @@ public import CKMA.Analysis.Complex.Polydisc
 public import CKMA.Analysis.Complex.Univalent
 public import CKMA.Analysis.ComplexGeometry.Beltrami
 public import CKMA.Analysis.ComplexGeometry.HartogsWeierstrass
+public import CKMA.Analysis.Convex.Basic
 public import CKMA.Analysis.Convex.Clarke
 public import CKMA.Analysis.Convex.Duality
 public import CKMA.Analysis.Convex.Ekeland
@@ -56,9 +58,11 @@ public import CKMA.Analysis.InnerProductSpace.Frame
 public import CKMA.Analysis.InnerProductSpace.L2FunctionFamilies
 public import CKMA.Analysis.InnerProductSpace.MatrixInequalities
 public import CKMA.Analysis.IntegralEquation.Basic
+public import CKMA.Analysis.IntegralEquation.CollectiveCompactness
 public import CKMA.Analysis.IntegralEquation.HilbertSchmidt
 public import CKMA.Analysis.IntegralEquation.Mercer
 public import CKMA.Analysis.Interpolation.Basic
+public import CKMA.Analysis.Interpolation.Bounds
 public import CKMA.Analysis.LocallyConvex.Bipolar
 public import CKMA.Analysis.Measure.LpDuality
 public import CKMA.Analysis.Microlocal.Symbols
@@ -97,6 +101,7 @@ public import CKMA.Analysis.Semigroup.Approximation
 public import CKMA.Analysis.Semigroup.Sectorial
 public import CKMA.Analysis.Semigroup.Stability
 public import CKMA.Analysis.Sobolev.CapacityAndBBM
+public import CKMA.Analysis.Sobolev.Critical
 public import CKMA.Analysis.Sobolev.Fractional
 public import CKMA.Analysis.Sobolev.Nash
 public import CKMA.Analysis.SpecialFunctions.BesselAiryMittagLeffler

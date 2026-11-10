@@ -33,8 +33,9 @@ def eulerMaclaurinRemainder (p : ℕ) (f : ℝ → ℝ) (a b : ℝ) : ℝ :=
     periodizedBernoulli (2 * p) (x : AddCircle (1 : ℝ)) * iteratedDeriv (2 * p) f x
 
 /-- **50.23**: inclusive integer-endpoint Euler–Maclaurin with its exact periodic remainder.
-The displayed remainder convention requires `p ≥ 1`; the `p=0` formula is different. -/
-theorem euler_maclaurin {m n : ℤ} (hmn : m < n) {p : ℕ} (hp : 0 < p)
+Equal endpoints are included: both sides reduce to `f m`. The displayed remainder convention
+requires `p ≥ 1`; the `p=0` formula is different. -/
+theorem euler_maclaurin {m n : ℤ} (hmn : m ≤ n) {p : ℕ} (hp : 0 < p)
     (f : ℝ → ℝ) (hf : ContDiff ℝ (2 * p) f) :
     (∑ k ∈ Finset.Icc m n, f k) = (∫ x in (m : ℝ)..n, f x) + (f m + f n) / 2 +
       (∑ r ∈ Finset.range p, ((bernoulli (2 * (r + 1)) : ℚ) : ℝ) /

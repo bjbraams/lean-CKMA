@@ -7,21 +7,15 @@ module
 
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.AbsolutelyContinuousFun
 public import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
-public import Mathlib.Analysis.Normed.Operator.Compact.FredholmAlternative
-public import Mathlib.Topology.ContinuousMap.Compact
 
 /-!
-# Volterra equations, fractional integrals, and compact approximation
+# Volterra equations and fractional integrals
 
 Volterra equations use continuous complex-valued data on a compact real interval and a
 continuous triangular kernel, with arbitrary complex coupling. Real Riemann–Liouville integrals
 carry the Gamma normalization; positive-order semigroup and inverse statements are a.e. identities
 on the open interval. The range criterion uses an absolutely continuous representative vanishing
-at the left endpoint.
-
-Collectively compact operator approximations combine strong convergence with compact closure of
-the union of unit-ball images to control inverses and solutions. Sources: GAPS 25.18, 25.23, and
-  25.47.
+at the left endpoint. Sources: GAPS 25.18 and 25.23.
 -/
 
 @[expose] public section
@@ -74,30 +68,6 @@ theorem fractionalIntegral_deriv_inverse {T α : ℝ} (hT : 0 < T)
     (hg0 : g 0 = 0)
     (heq : g =ᵐ[volume.restrict (Set.Ioo 0 T)] fractionalIntegral (1 - α) f) :
     fractionalIntegral α (deriv g) =ᵐ[volume.restrict (Set.Ioo 0 T)] f := by
-  sorry
-
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] [CompleteSpace E]
-
-/-- Collective compactness of a sequence of operators. -/
-def IsCollectivelyCompact (K : ℕ → E →L[ℂ] E) : Prop :=
-  IsCompact (closure (⋃ n, K n '' Metric.closedBall 0 1))
-
-/-- **25.47**: strong collectively compact approximations have uniformly bounded inverses
-near an invertible limit. The equivalences witness both bijectivity and bounded inverses. -/
-theorem collectivelyCompact_eventually_inverse (K : ℕ → E →L[ℂ] E) (T : E →L[ℂ] E)
-    (hc : IsCollectivelyCompact K) (hconv : ∀ x, Tendsto (fun n ↦ K n x) atTop (𝓝 (T x)))
-    (S : E ≃L[ℂ] E) (hS : S.toContinuousLinearMap = 1 - T) :
-    ∃ C : ℝ, ∀ᶠ n in atTop, ∃ Sₙ : E ≃L[ℂ] E,
-      Sₙ.toContinuousLinearMap = 1 - K n ∧ ‖Sₙ.symm.toContinuousLinearMap‖ ≤ C := by
-  sorry
-
-/-- Solutions for convergent right-hand sides converge under collectively compact approximation. -/
-theorem collectivelyCompact_solution_tendsto (K : ℕ → E →L[ℂ] E) (T : E →L[ℂ] E)
-    (hc : IsCollectivelyCompact K) (hconv : ∀ x, Tendsto (fun n ↦ K n x) atTop (𝓝 (T x)))
-    (S : E ≃L[ℂ] E) (hS : S.toContinuousLinearMap = 1 - T)
-    (f u : ℕ → E) (f₀ : E) (hf : Tendsto f atTop (𝓝 f₀))
-    (hu : ∀ᶠ n in atTop, u n - K n (u n) = f n) :
-    Tendsto u atTop (𝓝 (S.symm f₀)) := by
   sorry
 
 end CKMA

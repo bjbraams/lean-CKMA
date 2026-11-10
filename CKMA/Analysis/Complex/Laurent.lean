@@ -5,6 +5,7 @@ Authors: CKMA contributors
 -/
 module
 
+public import CKMA.Analysis.Complex.Basic
 public import Mathlib.Analysis.Complex.CauchyIntegral
 
 /-!
@@ -12,11 +13,10 @@ public import Mathlib.Analysis.Complex.CauchyIntegral
 
 Contour integrals on positively oriented circles define Laurent coefficients.
 Holomorphic functions on annuli have bilateral expansions, independent of the chosen
-intermediate circle, and normal convergence on compact subsets. Normal summability
-requires each compact supremum to be bounded as well as a summable sequence of those
-supremum norms, so an unbounded real supremum cannot certify convergence.
+intermediate circle, and normal convergence on compact subsets.
 
 Source: GAPS 40.25. Circle integration reuses Mathlib's Cauchy integral API.
+Normal summability is the predicate from `CKMA.Analysis.Complex.Basic`.
 -/
 
 @[expose] public section
@@ -27,22 +27,6 @@ namespace CKMA
 
 open Filter Topology
 open scoped BigOperators
-
-/-- Normal summability on compact subsets, requiring bounded summands and summability
-of their compact supremum norms. -/
-def NormallySummableOn {ι X E : Type*} [TopologicalSpace X] [NormedAddCommGroup E]
-    (f : ι → X → E) (s : Set X) : Prop :=
-  ∀ K : Set X, IsCompact K → K ⊆ s →
-    (∀ i, BddAbove ((fun x ↦ ‖f i x‖) '' K)) ∧
-      Summable (fun i ↦ sSup ((fun x ↦ ‖f i x‖) '' K))
-
-/-- A normally summable family is absolutely summable at each point of its domain. -/
-theorem NormallySummableOn.summable_norm {ι X E : Type*} [TopologicalSpace X]
-    [NormedAddCommGroup E] {f : ι → X → E} {s : Set X}
-    (hf : NormallySummableOn f s) {x : X} (hx : x ∈ s) :
-    Summable (fun i ↦ ‖f i x‖) := by
-  have h := (hf {x} isCompact_singleton (Set.singleton_subset_iff.mpr hx)).2
-  simpa only [Set.image_singleton, csSup_singleton] using h
 
 /-- The open annulus with finite real inner and outer radii. -/
 def complexAnnulus (a : ℂ) (r R : ℝ) : Set ℂ := {z | r < ‖z - a‖ ∧ ‖z - a‖ < R}

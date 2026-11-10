@@ -5,7 +5,7 @@ Authors: CKMA contributors
 -/
 module
 
-public import CKMA.Analysis.Convex.Proximal
+public import CKMA.Analysis.Convex.Basic
 public import TauCeti.Analysis.Convex.FenchelMoreau
 public import Mathlib.Analysis.Convex.Extreme
 public import Mathlib.Tactic

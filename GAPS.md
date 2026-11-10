@@ -1072,7 +1072,7 @@ row and column sum one.
 
 * **11.38. Carleman's inequality.** For a nonnegative summable sequence,
   $\sum_{n\geq1}(a_1\cdots a_n)^{1/n}\leq e\sum_{n\geq1}a_n$.
-  The constant $e$ is optimal.
+  The constant $e$ is optimal already for finitely supported sequences.
 
 ## 12. Convexity, convex analysis, optimization, and variational analysis
 
@@ -1163,10 +1163,11 @@ $\partial_Cf(x)=\{u:\langle u,d\rangle\leq f^\circ(x;d)\ \forall d\}$.
   has $d(x_\varepsilon,x_0)\leq\lambda$, $f(x_\varepsilon)\leq f(x_0)$, and
   $f(y)>f(x_\varepsilon)-(\varepsilon/\lambda)d(y,x_\varepsilon)$ for $y\ne x_\varepsilon$.
 
-* **12.50. Clarke gradient representation.** In finite dimensions, $\partial_Cf(x)$
-  is nonempty compact convex and equals the closed convex hull of limits of
-  ordinary gradients at differentiability points tending to $x$.
-  Its support function is $f^\circ(x;\cdot)$.
+* **12.50. Clarke gradient representation.** For a locally Lipschitz function
+  on a finite-dimensional space, $\partial_Cf(x)$ is nonempty compact convex
+  and equals the closed convex hull of limits of ordinary gradients at
+  differentiability points tending to $x$. On any real normed space, the
+  support function of $\partial_Cf(x)$ is $f^\circ(x;\cdot)$.
 
 ## 13. Matrix analysis, operator monotonicity, and noncommutative inequalities
 
@@ -2487,7 +2488,7 @@ interpretation, not merely a formal integral sign.
   Hilbert–Schmidt with $\|K\|_{S^2}=\|k\|_{L^2}$, and its adjoint has kernel
   $\overline{k(y,x)}$.
 
-* **25.8. Mercer theorem.** A continuous positive definite Hermitian kernel
+* **25.8. Mercer theorem.** A continuous positive semidefinite Hermitian kernel
   on compact $D$ with finite measure of full support has
   $k(x,y)=\sum_n\lambda_ne_n(x)\overline{e_n(y)}$, absolutely and
   uniformly, using its nonzero $L^2$ eigenvalues and continuous eigenfunctions.
@@ -5415,7 +5416,7 @@ point from all other contributions.
 
 $B_j$ are Bernoulli numbers and $\widetilde B_j(x)=B_j(\{x\})$ are periodic Bernoulli polynomials. A positive function $L$ is **slowly varying** if $L(tx)/L(x)\to1$ as $x\to\infty$ for each $t>0$. In 50.29, $U$ is the cumulative function of a locally finite positive measure on $[0,\infty)$.
 
-* **50.23. Euler–Maclaurin formula.** For integers $m<n$ and smooth $f$,
+* **50.23. Euler–Maclaurin formula.** For integers $m\leq n$ and smooth $f$,
   $$
   \sum_{k=m}^nf(k)=\int_m^nf(x)dx+\frac{f(m)+f(n)}2
   +\sum_{r=1}^p\frac{B_{2r}}{(2r)!}

@@ -56,7 +56,7 @@
       "declarations": [
         "CKMA.ae_approximatelyContinuousAt"
       ],
-      "scope": "Finite measurable real functions on Euclidean space are approximately continuous almost everywhere, including dimension zero."
+      "scope": "Finite measurable real functions on a second-countable Borel space, for a locally finite uniformly locally doubling measure, are approximately continuous almost everywhere. Euclidean volume is included."
     },
     {
       "id": "05.31",
@@ -145,7 +145,7 @@
       "status": "statement",
       "module": "CKMA.Probability.InfinitelyDivisible",
       "declarations": [
-        "CKMA.infinitelyDivisible_iff_existsUnique_levyTriplet"
+        "CKMA.isInfinitelyDivisible_iff_existsUnique_levyTriplet"
       ],
       "scope": "Probability convolution roots and actual Levy triplets with no atom at zero. The compensated exponent uses truncation x*1_{|x|<=1}, which fixes uniqueness."
     },
@@ -771,7 +771,7 @@
         "CKMA.carleman",
         "CKMA.carleman_constant_le"
       ],
-      "scope": ""
+      "scope": "Nonnegative summable sequences; the constant e is optimal already for finitely supported sequences."
     },
     {
       "id": "12.9",
@@ -799,14 +799,14 @@
       "id": "12.32",
       "title": "Everywhere-defined proximal mapping",
       "easy": true,
-      "status": "statement",
+      "status": "proved",
       "module": "CKMA.Analysis.Convex.Proximal",
       "declarations": [
         "CKMA.existsUnique_isProximalPoint",
         "CKMA.isProximalPoint_iff_mem_subdifferential",
         "CKMA.IsProximalPoint.norm_sub_sq_le_inner"
       ],
-      "scope": "Extended-real functions; graph formulation and a totalized proximalMap. Existence, not the definition, is admitted."
+      "scope": "Proper lower semicontinuous convex extended-real functions on real Hilbert spaces: proximal existence and uniqueness, subdifferential characterization, firm nonexpansiveness and a guarded totalized proximal map."
     },
     {
       "id": "12.39",
@@ -835,10 +835,10 @@
       "id": "12.45",
       "title": "Ekeland variational principle",
       "easy": false,
-      "status": "statement",
+      "status": "proved",
       "module": "CKMA.Analysis.Convex.Ekeland",
       "declarations": [
-        "CKMA.exists_ekelandPoint"
+        "CKMA.exists_isEkelandPoint"
       ],
       "scope": "Extended-real proper l.s.c. bounded-below functions on complete metric spaces; positive error epsilon and distance scale, finite initial value. Epsilon positivity is essential for the strict variational inequality."
     },
@@ -852,7 +852,7 @@
         "CKMA.clarkeSubdifferential_representation",
         "CKMA.sSup_clarkeSubdifferential_eq"
       ],
-      "scope": "Joint basepoint/positive-step extended directional limsup, dual-valued generalized gradients, derivative limits, closed-convex-hull and support representations under local Lipschitz control in finite dimensions."
+      "scope": "Joint basepoint/positive-step extended directional limsup, dual-valued generalized gradients, and derivative limits. The closed-convex-hull representation assumes finite dimension and local Lipschitz control. The support identity holds for a locally Lipschitz function on any real normed space."
     },
     {
       "id": "13.7",
@@ -1105,7 +1105,7 @@
       "declarations": [
         "CKMA.isCompact_toWeakSpace_image_of_forall_exists_max"
       ],
-      "scope": "Real Banach spaces: a bounded norm-closed convex set is weakly compact when every continuous linear functional attains its supremum. Attainment itself supplies nonemptiness."
+      "scope": "Real Banach spaces: a norm-closed convex set is weakly compact when every continuous linear functional attains its supremum. Attainment supplies nonemptiness and boundedness."
     },
     {
       "id": "15.33",
@@ -1279,8 +1279,8 @@
       "status": "partial",
       "module": "CKMA.Analysis.BanachSpace.Renorming",
       "declarations": [
-        "CKMA.superreflexive_iff_uniformlyConvex_renorming",
-        "CKMA.superreflexive_iff_uniformlySmooth_renorming"
+        "CKMA.superreflexive_iff_exists_isUniformlyConvexSeminorm",
+        "CKMA.superreflexive_iff_exists_isUniformlySmoothSeminorm"
       ],
       "scope": "Real Banach spaces; finite representability is concrete via almost-isometric finite-dimensional embeddings, reflexivity uses the canonical bidual map, and renormings are actual Seminorm objects with positive two-sided comparison and explicit convexity/smoothness inequalities. Bundled normed-space instances and complex analogues remain."
     },
@@ -1480,7 +1480,7 @@
       "status": "statement",
       "module": "CKMA.Analysis.BanachAlgebra.Factorization",
       "declarations": [
-        "CKMA.exists_shilovBoundary"
+        "CKMA.exists_shilov_boundary"
       ],
       "scope": "Closed point-separating subalgebra of C(K), compact Hausdorff K; smallest closed norming boundary. Supremum convention includes empty K."
     },
@@ -1515,7 +1515,7 @@
       "declarations": [
         "CKMA.cohen_hewitt_factorization"
       ],
-      "scope": "Genuinely nonunital Banach algebras with a bounded sequential left approximate identity acting strongly on the module. Essential-module-to-strong-action and arbitrary-net interfaces remain."
+      "scope": "Genuinely nonunital real or complex Banach algebras with a bounded directed left approximate identity acting strongly on the module. The essential-module characterization and norm control on the factor y remain."
     },
     {
       "id": "20.55",
@@ -1903,7 +1903,7 @@
       "status": "statement",
       "module": "CKMA.Analysis.CStarAlgebra.FreeProbability",
       "declarations": [
-        "CKMA.free_centralLimit"
+        "CKMA.free_central_limit"
       ],
       "scope": "Normalized positive algebraic state and identically distributed free centered variance-one self-adjoint variables; convergence of all normalized-sum moments to explicit semicircle (Catalan) moments."
     },
@@ -2055,7 +2055,7 @@
       "declarations": [
         "CKMA.existsUnique_integralOperator"
       ],
-      "scope": "Sigma-finite measures with a supplied Hilbert basis; exact Hilbert-Schmidt energy and conjugate-transpose adjoint kernel."
+      "scope": "Real or complex scalars. Sigma-finite measures with a supplied Hilbert basis; exact Hilbert-Schmidt energy and scalar-star adjoint kernel."
     },
     {
       "id": "25.8",
@@ -2066,7 +2066,7 @@
       "declarations": [
         "CKMA.mercer_expansion"
       ],
-      "scope": "Continuous positive-definite kernel on compact Hausdorff D with finite full-support Borel measure; trace-class kernel operator, nonnegative eigenvalues, continuous normalized eigenfunctions, unconditional expansion and uniform absolute tails, including finite-rank/zero kernels."
+      "scope": "Continuous positive-semidefinite kernel on compact Hausdorff D with finite full-support Borel measure; trace-class kernel operator, nonnegative eigenvalues, continuous normalized eigenfunctions, unconditional expansion and uniform absolute tails, including finite-rank/zero kernels."
     },
     {
       "id": "25.18",
@@ -2124,12 +2124,12 @@
       "title": "Collectively compact approximation theorem",
       "easy": true,
       "status": "statement",
-      "module": "CKMA.Analysis.IntegralEquation.Basic",
+      "module": "CKMA.Analysis.IntegralEquation.CollectiveCompactness",
       "declarations": [
         "CKMA.collectivelyCompact_eventually_inverse",
         "CKMA.collectivelyCompact_solution_tendsto"
       ],
-      "scope": ""
+      "scope": "Strong collectively compact approximation on a real or complex Banach space."
     },
     {
       "id": "26.13",
@@ -2145,7 +2145,7 @@
       "title": "Failure of the critical $L^\\infty$ embedding",
       "easy": true,
       "status": "statement",
-      "module": "CKMA.Analysis.Sobolev.Nash",
+      "module": "CKMA.Analysis.Sobolev.Critical",
       "declarations": [
         "CKMA.exists_memSobolev_not_memLp_top"
       ],
@@ -2219,22 +2219,22 @@
       "title": "Real interpolation theorem",
       "easy": true,
       "status": "partial",
-      "module": "CKMA.Analysis.Interpolation.Basic",
+      "module": "CKMA.Analysis.Interpolation.Bounds",
       "declarations": [
         "CKMA.realInterpolationGauge_map_le"
       ],
-      "scope": "Compatible Banach couples realized in their canonical normed sum, exact K-method gauge bound including q=infinity; bundled interpolation normed spaces, completeness, and construction from arbitrary compatible embeddings remain."
+      "scope": "Compatible Banach couples realized in their canonical normed sum, exact K-method gauge bound including q=infinity. The endpoint constants need no sign hypothesis. Gauge definitions remain in Interpolation.Basic. Bundled interpolation normed spaces, completeness, and construction from arbitrary compatible embeddings remain."
     },
     {
       "id": "26.54",
       "title": "Complex interpolation theorem",
       "easy": true,
       "status": "partial",
-      "module": "CKMA.Analysis.Interpolation.Basic",
+      "module": "CKMA.Analysis.Interpolation.Bounds",
       "declarations": [
         "CKMA.complexInterpolationGauge_map_le"
       ],
-      "scope": "Calderon strip-function and gauge definitions and the exact bound; bundled normed spaces, completeness, and extension from arbitrary ambient embeddings remain."
+      "scope": "Calderon strip-function and gauge definitions and the exact bound. The endpoint constants need no sign hypothesis. Gauge definitions remain in Interpolation.Basic. Bundled normed spaces, completeness, and extension from arbitrary ambient embeddings remain."
     },
     {
       "id": "27.4",
@@ -2255,7 +2255,7 @@
       "status": "partial",
       "module": "CKMA.Analysis.Fourier.Inequalities",
       "declarations": [
-        "CKMA.heisenberg"
+        "CKMA.heisenberg_uncertainty"
       ],
       "scope": "Uncentered coordinate inequality with explicit L2 moment assumptions; centered versions and Gaussian equality classification remain."
     },
@@ -2417,7 +2417,7 @@
       "module": "CKMA.Analysis.InnerProductSpace.Frame",
       "declarations": [
         "CKMA.IsBesselSequence.exists_analysis",
-        "CKMA.isFrame_iff_frameOperator_invertible",
+        "CKMA.isFrame_iff_frameOperatorOfAnalysis_invertible",
         "CKMA.isFrame_iff_surjective_adjoint"
       ],
       "scope": "Concrete coefficient energies, Bessel/frame predicates, analysis criterion and synthesis-surjectivity criterion. The explicit operator-order equivalence remains."
@@ -2823,7 +2823,7 @@
       "declarations": [
         "CKMA.wave_finitePropagation"
       ],
-      "scope": "Two energy solutions whose initial values/velocities agree a.e. on a ball and whose forcing agrees in the backward shrinking cone agree a.e. on later shrinking balls."
+      "scope": "Two energy solutions whose initial positions agree a.e. on a ball, whose initial velocities agree there, and whose forcing agrees in the backward shrinking cone have agreeing position components, as TauCeti W1p values, a.e. on later shrinking balls."
     },
     {
       "id": "32.66",
@@ -3013,7 +3013,7 @@
       "status": "partial",
       "module": "CKMA.Analysis.PDE.Entropy",
       "declarations": [
-        "CKMA.hopfLax_viscosity"
+        "CKMA.hopfLaxHamiltonian_viscosity"
       ],
       "scope": "Concrete extended Legendre transform and Hopf-Lax infimum, finiteness, first-order viscosity solution and initial attainment for superlinear convex Hamiltonians. Spatial derivative/entropy bridge remains."
     },
@@ -3190,7 +3190,7 @@
         "CKMA.newton_kantorovich",
         "CKMA.newton_quadratic"
       ],
-      "scope": "Concrete totalized Newton iteration, majorant-radius convergence including the L=0 limiting radius, and local quadratic convergence. A separate affine one-step corollary is not stated."
+      "scope": "Real or complex scalars. Concrete totalized Newton iteration, majorant-radius convergence including the L=0 limiting radius, and local quadratic convergence. The initial step is controlled by a norm bound. A separate affine one-step corollary is not stated."
     },
     {
       "id": "35.12",
@@ -4945,7 +4945,7 @@
       "status": "statement",
       "module": "CKMA.Probability.Moments.Hausdorff",
       "declarations": [
-        "CKMA.completelyMonotoneSequence_iff_existsUnique_measure"
+        "CKMA.isCompletelyMonotoneSequence_iff_existsUnique_measure"
       ],
       "scope": "Finite measures, including mass zero; concrete forward differences, Bernstein weights and discrete approximants."
     },
@@ -5035,7 +5035,7 @@
       "declarations": [
         "CKMA.gauss_hypergeometric_ode",
         "CKMA.gauss_hypergeometric_unique",
-        "CKMA.gauss_regularSingular"
+        "CKMA.gauss_isRegularSingularAt"
       ],
       "scope": "Denominator parameter avoids nonpositive integers; regular singularity allows removable/ordinary degenerate cases."
     },
@@ -5205,7 +5205,7 @@
       "declarations": [
         "CKMA.euler_maclaurin"
       ],
-      "scope": "Positive truncation order p; globally C^(2p) real functions and inclusive integer endpoints. The displayed remainder is false at p=0, which is excluded."
+      "scope": "Positive truncation order p; globally C^(2p) real functions; integer endpoints m ≤ n, including equality. The displayed remainder is false at p=0, which is excluded."
     },
     {
       "id": "50.29",
@@ -5254,7 +5254,7 @@
       "declarations": [
         "CKMA.exists_borelLaplace_sum"
       ],
-      "scope": "Actual formal Borel series, directional Laplace integral, analytic continuation with exponential growth, uniform Gevrey-one estimates and a glued holomorphic sector wider than pi. Original-ray agreement is stated in a uniform smaller convergence sector."
+      "scope": "Actual formal Borel series, directional Laplace integral, analytic continuation of opening β with exponential growth, uniform Gevrey-one estimates, and a holomorphic sum on the sector of opening π+β. Agreement with the original ray holds on the convergence sector of opening π."
     },
     {
       "id": "50.51",
@@ -6734,7 +6734,7 @@
       "name": "CKMA.euler_maclaurin",
       "kind": "theorem",
       "module": "CKMA.Analysis.Asymptotics.EulerMaclaurin",
-      "line": 37,
+      "line": 38,
       "direct_sorry": true,
       "axioms": [
         "Classical.choice",
@@ -6783,7 +6783,7 @@
       "name": "CKMA.HasAsymptoticExpansion.coefficients_eq",
       "kind": "theorem",
       "module": "CKMA.Analysis.Asymptotics.Expansions",
-      "line": 53,
+      "line": 54,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -6795,7 +6795,7 @@
       "name": "CKMA.complexSector",
       "kind": "def",
       "module": "CKMA.Analysis.Asymptotics.Expansions",
-      "line": 80,
+      "line": 81,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -6807,7 +6807,7 @@
       "name": "CKMA.closedComplexSector",
       "kind": "def",
       "module": "CKMA.Analysis.Asymptotics.Expansions",
-      "line": 84,
+      "line": 85,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -6819,7 +6819,7 @@
       "name": "CKMA.HasSectorialPowerExpansion",
       "kind": "def",
       "module": "CKMA.Analysis.Asymptotics.Expansions",
-      "line": 89,
+      "line": 90,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -6831,7 +6831,7 @@
       "name": "CKMA.borel_ritt",
       "kind": "theorem",
       "module": "CKMA.Analysis.Asymptotics.Expansions",
-      "line": 95,
+      "line": 96,
       "direct_sorry": true,
       "axioms": [
         "Classical.choice",
@@ -6844,7 +6844,7 @@
       "name": "CKMA.asymptoticLaplaceIntegral",
       "kind": "def",
       "module": "CKMA.Analysis.Asymptotics.Expansions",
-      "line": 101,
+      "line": 102,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -6856,7 +6856,7 @@
       "name": "CKMA.HasExponentialTailBound",
       "kind": "def",
       "module": "CKMA.Analysis.Asymptotics.Expansions",
-      "line": 105,
+      "line": 106,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -6868,7 +6868,7 @@
       "name": "CKMA.watson_laplace_remainder",
       "kind": "theorem",
       "module": "CKMA.Analysis.Asymptotics.Expansions",
-      "line": 110,
+      "line": 111,
       "direct_sorry": true,
       "axioms": [
         "Classical.choice",
@@ -6881,7 +6881,7 @@
       "name": "CKMA.watson_laplace_expansion",
       "kind": "theorem",
       "module": "CKMA.Analysis.Asymptotics.Expansions",
-      "line": 121,
+      "line": 122,
       "direct_sorry": true,
       "axioms": [
         "Classical.choice",
@@ -6894,7 +6894,7 @@
       "name": "CKMA.laplace_interior_minimum",
       "kind": "theorem",
       "module": "CKMA.Analysis.Asymptotics.Expansions",
-      "line": 134,
+      "line": 135,
       "direct_sorry": true,
       "axioms": [
         "Classical.choice",
@@ -6907,7 +6907,7 @@
       "name": "CKMA.IsSlowlyVarying",
       "kind": "def",
       "module": "CKMA.Analysis.Asymptotics.Expansions",
-      "line": 146,
+      "line": 147,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -6919,7 +6919,7 @@
       "name": "CKMA.nonnegativeCumulativeMass",
       "kind": "def",
       "module": "CKMA.Analysis.Asymptotics.Expansions",
-      "line": 151,
+      "line": 152,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -6931,7 +6931,7 @@
       "name": "CKMA.laplaceStieltjesTransform",
       "kind": "def",
       "module": "CKMA.Analysis.Asymptotics.Expansions",
-      "line": 154,
+      "line": 155,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -6943,7 +6943,7 @@
       "name": "CKMA.karamatas_tauberian",
       "kind": "theorem",
       "module": "CKMA.Analysis.Asymptotics.Expansions",
-      "line": 159,
+      "line": 160,
       "direct_sorry": true,
       "axioms": [
         "Classical.choice",
@@ -6956,7 +6956,7 @@
       "name": "CKMA.gleason_kahane_zelazko",
       "kind": "theorem",
       "module": "CKMA.Analysis.BanachAlgebra.Factorization",
-      "line": 38,
+      "line": 39,
       "direct_sorry": true,
       "axioms": [
         "Classical.choice",
@@ -6969,7 +6969,7 @@
       "name": "CKMA.IsUniformAlgebraBoundary",
       "kind": "def",
       "module": "CKMA.Analysis.BanachAlgebra.Factorization",
-      "line": 45,
+      "line": 46,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -6978,10 +6978,10 @@
       ]
     },
     {
-      "name": "CKMA.exists_shilovBoundary",
+      "name": "CKMA.exists_shilov_boundary",
       "kind": "theorem",
       "module": "CKMA.Analysis.BanachAlgebra.Factorization",
-      "line": 51,
+      "line": 52,
       "direct_sorry": true,
       "axioms": [
         "Classical.choice",
@@ -6994,7 +6994,7 @@
       "name": "CKMA.lpTranslate",
       "kind": "def",
       "module": "CKMA.Analysis.BanachAlgebra.Factorization",
-      "line": 60,
+      "line": 61,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -7006,7 +7006,7 @@
       "name": "CKMA.wiener_tauberian_real",
       "kind": "theorem",
       "module": "CKMA.Analysis.BanachAlgebra.Factorization",
-      "line": 66,
+      "line": 67,
       "direct_sorry": true,
       "axioms": [
         "Classical.choice",
@@ -7019,7 +7019,7 @@
       "name": "CKMA.IsBoundedLeftApproximateIdentity",
       "kind": "def",
       "module": "CKMA.Analysis.BanachAlgebra.Factorization",
-      "line": 72,
+      "line": 73,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -7031,7 +7031,7 @@
       "name": "CKMA.cohen_hewitt_factorization",
       "kind": "theorem",
       "module": "CKMA.Analysis.BanachAlgebra.Factorization",
-      "line": 79,
+      "line": 81,
       "direct_sorry": true,
       "axioms": [
         "Classical.choice",
@@ -7311,7 +7311,7 @@
       ]
     },
     {
-      "name": "CKMA.superreflexive_iff_uniformlyConvex_renorming",
+      "name": "CKMA.superreflexive_iff_exists_isUniformlyConvexSeminorm",
       "kind": "theorem",
       "module": "CKMA.Analysis.BanachSpace.Renorming",
       "line": 69,
@@ -7324,7 +7324,7 @@
       ]
     },
     {
-      "name": "CKMA.superreflexive_iff_uniformlySmooth_renorming",
+      "name": "CKMA.superreflexive_iff_exists_isUniformlySmoothSeminorm",
       "kind": "theorem",
       "module": "CKMA.Analysis.BanachSpace.Renorming",
       "line": 74,
@@ -7447,7 +7447,7 @@
       ]
     },
     {
-      "name": "CKMA.free_centralLimit",
+      "name": "CKMA.free_central_limit",
       "kind": "theorem",
       "module": "CKMA.Analysis.CStarAlgebra.FreeProbability",
       "line": 59,
@@ -7692,6 +7692,30 @@
         "Quot.sound",
         "propext",
         "sorryAx"
+      ]
+    },
+    {
+      "name": "CKMA.NormallySummableOn",
+      "kind": "def",
+      "module": "CKMA.Analysis.Complex.Basic",
+      "line": 30,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.NormallySummableOn.summable_norm",
+      "kind": "theorem",
+      "module": "CKMA.Analysis.Complex.Basic",
+      "line": 37,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
       ]
     },
     {
@@ -8444,34 +8468,10 @@
       ]
     },
     {
-      "name": "CKMA.NormallySummableOn",
-      "kind": "def",
-      "module": "CKMA.Analysis.Complex.Laurent",
-      "line": 33,
-      "direct_sorry": false,
-      "axioms": [
-        "Classical.choice",
-        "Quot.sound",
-        "propext"
-      ]
-    },
-    {
-      "name": "CKMA.NormallySummableOn.summable_norm",
-      "kind": "theorem",
-      "module": "CKMA.Analysis.Complex.Laurent",
-      "line": 40,
-      "direct_sorry": false,
-      "axioms": [
-        "Classical.choice",
-        "Quot.sound",
-        "propext"
-      ]
-    },
-    {
       "name": "CKMA.complexAnnulus",
       "kind": "def",
       "module": "CKMA.Analysis.Complex.Laurent",
-      "line": 48,
+      "line": 32,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -8483,7 +8483,7 @@
       "name": "CKMA.laurentCoefficient",
       "kind": "def",
       "module": "CKMA.Analysis.Complex.Laurent",
-      "line": 51,
+      "line": 35,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -8495,7 +8495,7 @@
       "name": "CKMA.hasSum_laurentSeries",
       "kind": "theorem",
       "module": "CKMA.Analysis.Complex.Laurent",
-      "line": 55,
+      "line": 39,
       "direct_sorry": true,
       "axioms": [
         "Classical.choice",
@@ -8508,7 +8508,7 @@
       "name": "CKMA.normallySummableOn_laurentSeries",
       "kind": "theorem",
       "module": "CKMA.Analysis.Complex.Laurent",
-      "line": 62,
+      "line": 46,
       "direct_sorry": true,
       "axioms": [
         "Classical.choice",
@@ -8521,7 +8521,7 @@
       "name": "CKMA.laurentCoefficient_eq",
       "kind": "theorem",
       "module": "CKMA.Analysis.Complex.Laurent",
-      "line": 70,
+      "line": 54,
       "direct_sorry": true,
       "axioms": [
         "Classical.choice",
@@ -8534,7 +8534,7 @@
       "name": "CKMA.eq_laurentCoefficient",
       "kind": "theorem",
       "module": "CKMA.Analysis.Complex.Laurent",
-      "line": 77,
+      "line": 61,
       "direct_sorry": true,
       "axioms": [
         "Classical.choice",
@@ -8696,7 +8696,7 @@
       "name": "CKMA.polydisc",
       "kind": "def",
       "module": "CKMA.Analysis.Complex.Polydisc",
-      "line": 33,
+      "line": 34,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -8708,7 +8708,7 @@
       "name": "CKMA.closedPolydisc",
       "kind": "def",
       "module": "CKMA.Analysis.Complex.Polydisc",
-      "line": 37,
+      "line": 38,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -8720,7 +8720,7 @@
       "name": "CKMA.polydiscTaylorCoefficient",
       "kind": "def",
       "module": "CKMA.Analysis.Complex.Polydisc",
-      "line": 41,
+      "line": 42,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -8732,33 +8732,44 @@
       "name": "CKMA.polydisc_taylor",
       "kind": "theorem",
       "module": "CKMA.Analysis.Complex.Polydisc",
-      "line": 47,
+      "line": 48,
       "direct_sorry": true,
       "axioms": [
         "Classical.choice",
         "Quot.sound",
         "propext",
         "sorryAx"
+      ]
+    },
+    {
+      "name": "CKMA.norm_polydiscTaylorCoefficient_le_of_bound",
+      "kind": "theorem",
+      "module": "CKMA.Analysis.Complex.Polydisc",
+      "line": 60,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
       ]
     },
     {
       "name": "CKMA.norm_polydiscTaylorCoefficient_le",
       "kind": "theorem",
       "module": "CKMA.Analysis.Complex.Polydisc",
-      "line": 59,
-      "direct_sorry": true,
+      "line": 121,
+      "direct_sorry": false,
       "axioms": [
         "Classical.choice",
         "Quot.sound",
-        "propext",
-        "sorryAx"
+        "propext"
       ]
     },
     {
       "name": "CKMA.differentiableOn_of_locallyUniformLimit",
       "kind": "theorem",
       "module": "CKMA.Analysis.Complex.Polydisc",
-      "line": 68,
+      "line": 128,
       "direct_sorry": true,
       "axioms": [
         "Classical.choice",
@@ -9225,10 +9236,22 @@
       ]
     },
     {
+      "name": "CKMA.IsProperERealFunction",
+      "kind": "def",
+      "module": "CKMA.Analysis.Convex.Basic",
+      "line": 22,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
       "name": "CKMA.clarkeDirectionalDerivative",
       "kind": "def",
       "module": "CKMA.Analysis.Convex.Clarke",
-      "line": 40,
+      "line": 41,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -9240,7 +9263,7 @@
       "name": "CKMA.clarkeSubdifferential",
       "kind": "def",
       "module": "CKMA.Analysis.Convex.Clarke",
-      "line": 45,
+      "line": 46,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -9252,7 +9275,7 @@
       "name": "CKMA.reachableDerivatives",
       "kind": "def",
       "module": "CKMA.Analysis.Convex.Clarke",
-      "line": 49,
+      "line": 50,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -9264,7 +9287,7 @@
       "name": "CKMA.clarkeSubdifferential_representation",
       "kind": "theorem",
       "module": "CKMA.Analysis.Convex.Clarke",
-      "line": 57,
+      "line": 58,
       "direct_sorry": true,
       "axioms": [
         "Classical.choice",
@@ -9277,7 +9300,7 @@
       "name": "CKMA.sSup_clarkeSubdifferential_eq",
       "kind": "theorem",
       "module": "CKMA.Analysis.Convex.Clarke",
-      "line": 66,
+      "line": 68,
       "direct_sorry": true,
       "axioms": [
         "Classical.choice",
@@ -9438,7 +9461,7 @@
       "name": "CKMA.IsEkelandPoint",
       "kind": "def",
       "module": "CKMA.Analysis.Convex.Ekeland",
-      "line": 28,
+      "line": 32,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -9447,16 +9470,15 @@
       ]
     },
     {
-      "name": "CKMA.exists_ekelandPoint",
+      "name": "CKMA.exists_isEkelandPoint",
       "kind": "theorem",
       "module": "CKMA.Analysis.Convex.Ekeland",
-      "line": 33,
-      "direct_sorry": true,
+      "line": 37,
+      "direct_sorry": false,
       "axioms": [
         "Classical.choice",
         "Quot.sound",
-        "propext",
-        "sorryAx"
+        "propext"
       ]
     },
     {
@@ -9535,22 +9557,10 @@
       ]
     },
     {
-      "name": "CKMA.IsProperERealFunction",
-      "kind": "def",
-      "module": "CKMA.Analysis.Convex.Proximal",
-      "line": 36,
-      "direct_sorry": false,
-      "axioms": [
-        "Classical.choice",
-        "Quot.sound",
-        "propext"
-      ]
-    },
-    {
       "name": "CKMA.proximalObjective",
       "kind": "def",
       "module": "CKMA.Analysis.Convex.Proximal",
-      "line": 40,
+      "line": 41,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -9562,7 +9572,7 @@
       "name": "CKMA.IsProximalPoint",
       "kind": "def",
       "module": "CKMA.Analysis.Convex.Proximal",
-      "line": 44,
+      "line": 45,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -9574,7 +9584,7 @@
       "name": "CKMA.proximalMap",
       "kind": "def",
       "module": "CKMA.Analysis.Convex.Proximal",
-      "line": 49,
+      "line": 50,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -9586,7 +9596,7 @@
       "name": "CKMA.isProximalPoint_proximalMap",
       "kind": "theorem",
       "module": "CKMA.Analysis.Convex.Proximal",
-      "line": 55,
+      "line": 56,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -9598,7 +9608,7 @@
       "name": "CKMA.IsProximalPoint.apply_ne_bot",
       "kind": "theorem",
       "module": "CKMA.Analysis.Convex.Proximal",
-      "line": 72,
+      "line": 73,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -9610,7 +9620,7 @@
       "name": "CKMA.isProximalPoint_of_mem_subdifferential",
       "kind": "theorem",
       "module": "CKMA.Analysis.Convex.Proximal",
-      "line": 81,
+      "line": 82,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -9622,7 +9632,7 @@
       "name": "CKMA.IsProximalPoint.mem_subdifferential",
       "kind": "theorem",
       "module": "CKMA.Analysis.Convex.Proximal",
-      "line": 105,
+      "line": 106,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -9631,23 +9641,10 @@
       ]
     },
     {
-      "name": "CKMA.existsUnique_isProximalPoint",
-      "kind": "theorem",
-      "module": "CKMA.Analysis.Convex.Proximal",
-      "line": 145,
-      "direct_sorry": true,
-      "axioms": [
-        "Classical.choice",
-        "Quot.sound",
-        "propext",
-        "sorryAx"
-      ]
-    },
-    {
       "name": "CKMA.isProximalPoint_iff_mem_subdifferential",
       "kind": "theorem",
       "module": "CKMA.Analysis.Convex.Proximal",
-      "line": 152,
+      "line": 145,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -9659,7 +9656,7 @@
       "name": "CKMA.IsProximalPoint.norm_sub_sq_le_inner",
       "kind": "theorem",
       "module": "CKMA.Analysis.Convex.Proximal",
-      "line": 160,
+      "line": 153,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -9671,7 +9668,19 @@
       "name": "CKMA.IsProximalPoint.eq",
       "kind": "theorem",
       "module": "CKMA.Analysis.Convex.Proximal",
-      "line": 177,
+      "line": 170,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.existsUnique_isProximalPoint",
+      "kind": "theorem",
+      "module": "CKMA.Analysis.Convex.Proximal",
+      "line": 245,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -9945,7 +9954,7 @@
       ]
     },
     {
-      "name": "CKMA.heisenberg",
+      "name": "CKMA.heisenberg_uncertainty",
       "kind": "theorem",
       "module": "CKMA.Analysis.Fourier.Inequalities",
       "line": 52,
@@ -10456,7 +10465,7 @@
       "name": "CKMA.isCompact_toWeakSpace_image_of_forall_exists_max",
       "kind": "theorem",
       "module": "CKMA.Analysis.FunctionalAnalysis.WeakCompactness",
-      "line": 89,
+      "line": 90,
       "direct_sorry": true,
       "axioms": [
         "Classical.choice",
@@ -10469,7 +10478,7 @@
       "name": "CKMA.uniformConvexSpace_lp",
       "kind": "theorem",
       "module": "CKMA.Analysis.FunctionalAnalysis.WeakCompactness",
-      "line": 99,
+      "line": 100,
       "direct_sorry": true,
       "axioms": [
         "Classical.choice",
@@ -10482,7 +10491,7 @@
       "name": "CKMA.dunford_pettis",
       "kind": "theorem",
       "module": "CKMA.Analysis.FunctionalAnalysis.WeakCompactness",
-      "line": 106,
+      "line": 107,
       "direct_sorry": true,
       "axioms": [
         "Classical.choice",
@@ -10570,7 +10579,7 @@
       "name": "CKMA.prefixGeometricMean",
       "kind": "def",
       "module": "CKMA.Analysis.Inequalities.Carleman",
-      "line": 29,
+      "line": 30,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -10582,7 +10591,7 @@
       "name": "CKMA.carleman",
       "kind": "theorem",
       "module": "CKMA.Analysis.Inequalities.Carleman",
-      "line": 33,
+      "line": 34,
       "direct_sorry": true,
       "axioms": [
         "Classical.choice",
@@ -10595,7 +10604,7 @@
       "name": "CKMA.carleman_constant_le",
       "kind": "theorem",
       "module": "CKMA.Analysis.Inequalities.Carleman",
-      "line": 39,
+      "line": 40,
       "direct_sorry": true,
       "axioms": [
         "Classical.choice",
@@ -10734,7 +10743,7 @@
       "name": "CKMA.frameEnergy",
       "kind": "def",
       "module": "CKMA.Analysis.InnerProductSpace.Frame",
-      "line": 41,
+      "line": 43,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -10746,7 +10755,7 @@
       "name": "CKMA.IsBesselSequence",
       "kind": "def",
       "module": "CKMA.Analysis.InnerProductSpace.Frame",
-      "line": 44,
+      "line": 46,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -10758,7 +10767,7 @@
       "name": "CKMA.IsFrameWithBounds",
       "kind": "def",
       "module": "CKMA.Analysis.InnerProductSpace.Frame",
-      "line": 48,
+      "line": 50,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -10770,7 +10779,7 @@
       "name": "CKMA.IsFrame",
       "kind": "def",
       "module": "CKMA.Analysis.InnerProductSpace.Frame",
-      "line": 53,
+      "line": 55,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -10782,7 +10791,7 @@
       "name": "CKMA.IsFrameAnalysis",
       "kind": "def",
       "module": "CKMA.Analysis.InnerProductSpace.Frame",
-      "line": 57,
+      "line": 59,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -10794,7 +10803,7 @@
       "name": "CKMA.IsFrameAnalysis.frameEnergy_eq",
       "kind": "theorem",
       "module": "CKMA.Analysis.InnerProductSpace.Frame",
-      "line": 62,
+      "line": 64,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -10806,7 +10815,7 @@
       "name": "CKMA.IsFrameAnalysis.isFrame_iff_exists_lower_bound",
       "kind": "theorem",
       "module": "CKMA.Analysis.InnerProductSpace.Frame",
-      "line": 74,
+      "line": 76,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -10818,7 +10827,7 @@
       "name": "CKMA.IsBesselSequence.exists_analysis",
       "kind": "theorem",
       "module": "CKMA.Analysis.InnerProductSpace.Frame",
-      "line": 103,
+      "line": 105,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -10827,10 +10836,34 @@
       ]
     },
     {
-      "name": "CKMA.frameOperator",
+      "name": "CKMA.frameOperatorOfAnalysis",
       "kind": "def",
       "module": "CKMA.Analysis.InnerProductSpace.Frame",
-      "line": 126,
+      "line": 128,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.frameOperatorOfAnalysis_apply",
+      "kind": "theorem",
+      "module": "CKMA.Analysis.InnerProductSpace.Frame",
+      "line": 131,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.frameOperatorOfAnalysis_adjoint_symm_apply",
+      "kind": "theorem",
+      "module": "CKMA.Analysis.InnerProductSpace.Frame",
+      "line": 138,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -10842,7 +10875,7 @@
       "name": "CKMA.IsFrameAnalysis.isFrame_of_surjective_adjoint",
       "kind": "theorem",
       "module": "CKMA.Analysis.InnerProductSpace.Frame",
-      "line": 129,
+      "line": 145,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -10851,10 +10884,10 @@
       ]
     },
     {
-      "name": "CKMA.isFrame_iff_frameOperator_invertible",
+      "name": "CKMA.isFrame_iff_frameOperatorOfAnalysis_invertible",
       "kind": "theorem",
       "module": "CKMA.Analysis.InnerProductSpace.Frame",
-      "line": 149,
+      "line": 165,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -10866,7 +10899,7 @@
       "name": "CKMA.isFrame_iff_surjective_adjoint",
       "kind": "theorem",
       "module": "CKMA.Analysis.InnerProductSpace.Frame",
-      "line": 176,
+      "line": 189,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -10878,7 +10911,7 @@
       "name": "CKMA.IsFrameAnalysis.adjoint_single",
       "kind": "theorem",
       "module": "CKMA.Analysis.InnerProductSpace.Frame",
-      "line": 190,
+      "line": 200,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -10890,7 +10923,7 @@
       "name": "CKMA.IsFrameAnalysis.hasSum_synthesis",
       "kind": "theorem",
       "module": "CKMA.Analysis.InnerProductSpace.Frame",
-      "line": 200,
+      "line": 210,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -10902,7 +10935,7 @@
       "name": "CKMA.IsFrameAnalysis.norm_le_sqrt",
       "kind": "theorem",
       "module": "CKMA.Analysis.InnerProductSpace.Frame",
-      "line": 209,
+      "line": 219,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -10914,7 +10947,7 @@
       "name": "CKMA.canonicalDualFrame",
       "kind": "def",
       "module": "CKMA.Analysis.InnerProductSpace.Frame",
-      "line": 222,
+      "line": 232,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -10926,7 +10959,7 @@
       "name": "CKMA.IsFrameAnalysis.canonicalDualFrame",
       "kind": "theorem",
       "module": "CKMA.Analysis.InnerProductSpace.Frame",
-      "line": 225,
+      "line": 235,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -10938,7 +10971,7 @@
       "name": "CKMA.canonicalDualFrame_isFrameWithBounds",
       "kind": "theorem",
       "module": "CKMA.Analysis.InnerProductSpace.Frame",
-      "line": 238,
+      "line": 248,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -10950,7 +10983,7 @@
       "name": "CKMA.canonicalDualFrame_reconstruction",
       "kind": "theorem",
       "module": "CKMA.Analysis.InnerProductSpace.Frame",
-      "line": 285,
+      "line": 295,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -10962,7 +10995,7 @@
       "name": "CKMA.HilbertSpaceModel",
       "kind": "structure",
       "module": "CKMA.Analysis.InnerProductSpace.HilbertModel",
-      "line": 26,
+      "line": 25,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -11271,7 +11304,7 @@
       "name": "CKMA.volterraIntegral",
       "kind": "def",
       "module": "CKMA.Analysis.IntegralEquation.Basic",
-      "line": 36,
+      "line": 30,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -11283,7 +11316,7 @@
       "name": "CKMA.existsUnique_volterra",
       "kind": "theorem",
       "module": "CKMA.Analysis.IntegralEquation.Basic",
-      "line": 41,
+      "line": 35,
       "direct_sorry": true,
       "axioms": [
         "Classical.choice",
@@ -11296,7 +11329,7 @@
       "name": "CKMA.fractionalIntegral",
       "kind": "def",
       "module": "CKMA.Analysis.IntegralEquation.Basic",
-      "line": 50,
+      "line": 44,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -11308,7 +11341,7 @@
       "name": "CKMA.fractionalIntegral_add",
       "kind": "theorem",
       "module": "CKMA.Analysis.IntegralEquation.Basic",
-      "line": 54,
+      "line": 48,
       "direct_sorry": true,
       "axioms": [
         "Classical.choice",
@@ -11321,7 +11354,7 @@
       "name": "CKMA.mem_range_fractionalIntegral_iff",
       "kind": "theorem",
       "module": "CKMA.Analysis.IntegralEquation.Basic",
-      "line": 62,
+      "line": 56,
       "direct_sorry": true,
       "axioms": [
         "Classical.choice",
@@ -11334,7 +11367,7 @@
       "name": "CKMA.fractionalIntegral_deriv_inverse",
       "kind": "theorem",
       "module": "CKMA.Analysis.IntegralEquation.Basic",
-      "line": 71,
+      "line": 65,
       "direct_sorry": true,
       "axioms": [
         "Classical.choice",
@@ -11346,8 +11379,8 @@
     {
       "name": "CKMA.IsCollectivelyCompact",
       "kind": "def",
-      "module": "CKMA.Analysis.IntegralEquation.Basic",
-      "line": 82,
+      "module": "CKMA.Analysis.IntegralEquation.CollectiveCompactness",
+      "line": 31,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -11358,8 +11391,8 @@
     {
       "name": "CKMA.collectivelyCompact_eventually_inverse",
       "kind": "theorem",
-      "module": "CKMA.Analysis.IntegralEquation.Basic",
-      "line": 87,
+      "module": "CKMA.Analysis.IntegralEquation.CollectiveCompactness",
+      "line": 36,
       "direct_sorry": true,
       "axioms": [
         "Classical.choice",
@@ -11371,8 +11404,8 @@
     {
       "name": "CKMA.collectivelyCompact_solution_tendsto",
       "kind": "theorem",
-      "module": "CKMA.Analysis.IntegralEquation.Basic",
-      "line": 95,
+      "module": "CKMA.Analysis.IntegralEquation.CollectiveCompactness",
+      "line": 44,
       "direct_sorry": true,
       "axioms": [
         "Classical.choice",
@@ -11407,10 +11440,10 @@
       ]
     },
     {
-      "name": "CKMA.IsPositiveDefiniteKernel",
+      "name": "CKMA.IsPositiveSemidefiniteKernel",
       "kind": "def",
       "module": "CKMA.Analysis.IntegralEquation.Mercer",
-      "line": 37,
+      "line": 39,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -11422,7 +11455,7 @@
       "name": "CKMA.mercerTerm",
       "kind": "def",
       "module": "CKMA.Analysis.IntegralEquation.Mercer",
-      "line": 41,
+      "line": 43,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -11434,7 +11467,7 @@
       "name": "CKMA.HasUniformAbsoluteMercerTails",
       "kind": "def",
       "module": "CKMA.Analysis.IntegralEquation.Mercer",
-      "line": 46,
+      "line": 48,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -11446,7 +11479,7 @@
       "name": "CKMA.mercer_expansion",
       "kind": "theorem",
       "module": "CKMA.Analysis.IntegralEquation.Mercer",
-      "line": 54,
+      "line": 56,
       "direct_sorry": true,
       "axioms": [
         "Classical.choice",
@@ -11459,7 +11492,7 @@
       "name": "CKMA.BanachCouple",
       "kind": "structure",
       "module": "CKMA.Analysis.Interpolation.Basic",
-      "line": 39,
+      "line": 38,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -11471,7 +11504,7 @@
       "name": "CKMA.BanachCouple.kFunctional",
       "kind": "def",
       "module": "CKMA.Analysis.Interpolation.Basic",
-      "line": 81,
+      "line": 80,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -11483,7 +11516,7 @@
       "name": "CKMA.interpolationMeasure",
       "kind": "def",
       "module": "CKMA.Analysis.Interpolation.Basic",
-      "line": 87,
+      "line": 86,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -11495,7 +11528,7 @@
       "name": "CKMA.BanachCouple.realInterpolationGauge",
       "kind": "def",
       "module": "CKMA.Analysis.Interpolation.Basic",
-      "line": 91,
+      "line": 90,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -11507,7 +11540,7 @@
       "name": "CKMA.BanachCouple.realInterpolationSet",
       "kind": "def",
       "module": "CKMA.Analysis.Interpolation.Basic",
-      "line": 100,
+      "line": 99,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -11519,7 +11552,7 @@
       "name": "CKMA.CoupleMap",
       "kind": "structure",
       "module": "CKMA.Analysis.Interpolation.Basic",
-      "line": 105,
+      "line": 104,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -11528,23 +11561,10 @@
       ]
     },
     {
-      "name": "CKMA.realInterpolationGauge_map_le",
-      "kind": "theorem",
-      "module": "CKMA.Analysis.Interpolation.Basic",
-      "line": 118,
-      "direct_sorry": true,
-      "axioms": [
-        "Classical.choice",
-        "Quot.sound",
-        "propext",
-        "sorryAx"
-      ]
-    },
-    {
       "name": "CKMA.InterpolationStripFunction",
       "kind": "structure",
       "module": "CKMA.Analysis.Interpolation.Basic",
-      "line": 128,
+      "line": 117,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -11556,7 +11576,7 @@
       "name": "CKMA.InterpolationStripFunction.boundaryNorm",
       "kind": "def",
       "module": "CKMA.Analysis.Interpolation.Basic",
-      "line": 151,
+      "line": 140,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -11568,7 +11588,7 @@
       "name": "CKMA.BanachCouple.complexInterpolationGauge",
       "kind": "def",
       "module": "CKMA.Analysis.Interpolation.Basic",
-      "line": 157,
+      "line": 146,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -11580,7 +11600,7 @@
       "name": "CKMA.BanachCouple.complexInterpolationSet",
       "kind": "def",
       "module": "CKMA.Analysis.Interpolation.Basic",
-      "line": 163,
+      "line": 152,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -11589,10 +11609,23 @@
       ]
     },
     {
+      "name": "CKMA.realInterpolationGauge_map_le",
+      "kind": "theorem",
+      "module": "CKMA.Analysis.Interpolation.Bounds",
+      "line": 29,
+      "direct_sorry": true,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext",
+        "sorryAx"
+      ]
+    },
+    {
       "name": "CKMA.complexInterpolationGauge_map_le",
       "kind": "theorem",
-      "module": "CKMA.Analysis.Interpolation.Basic",
-      "line": 167,
+      "module": "CKMA.Analysis.Interpolation.Bounds",
+      "line": 39,
       "direct_sorry": true,
       "axioms": [
         "Classical.choice",
@@ -12014,7 +12047,7 @@
       "name": "CKMA.kantorovichRadius",
       "kind": "def",
       "module": "CKMA.Analysis.Nonlinear.Newton",
-      "line": 36,
+      "line": 37,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -12026,7 +12059,7 @@
       "name": "CKMA.newtonStep",
       "kind": "def",
       "module": "CKMA.Analysis.Nonlinear.Newton",
-      "line": 41,
+      "line": 42,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -12038,7 +12071,7 @@
       "name": "CKMA.newtonIterate",
       "kind": "def",
       "module": "CKMA.Analysis.Nonlinear.Newton",
-      "line": 45,
+      "line": 46,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -12050,7 +12083,7 @@
       "name": "CKMA.newtonIterate_zero",
       "kind": "theorem",
       "module": "CKMA.Analysis.Nonlinear.Newton",
-      "line": 49,
+      "line": 50,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -12062,7 +12095,7 @@
       "name": "CKMA.newtonIterate_succ",
       "kind": "theorem",
       "module": "CKMA.Analysis.Nonlinear.Newton",
-      "line": 52,
+      "line": 53,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -12074,7 +12107,7 @@
       "name": "CKMA.newton_kantorovich",
       "kind": "theorem",
       "module": "CKMA.Analysis.Nonlinear.Newton",
-      "line": 58,
+      "line": 60,
       "direct_sorry": true,
       "axioms": [
         "Classical.choice",
@@ -12087,7 +12120,7 @@
       "name": "CKMA.newton_quadratic",
       "kind": "theorem",
       "module": "CKMA.Analysis.Nonlinear.Newton",
-      "line": 73,
+      "line": 75,
       "direct_sorry": true,
       "axioms": [
         "Classical.choice",
@@ -12570,10 +12603,22 @@
       ]
     },
     {
+      "name": "CKMA.birmanSchwingerKernelEquiv",
+      "kind": "def",
+      "module": "CKMA.Analysis.Operator.SpectralDynamics",
+      "line": 42,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
       "name": "CKMA.birmanSchwingerOperator",
       "kind": "def",
       "module": "CKMA.Analysis.Operator.SpectralDynamics",
-      "line": 39,
+      "line": 84,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -12585,20 +12630,19 @@
       "name": "CKMA.birman_schwinger_kernel_equiv",
       "kind": "theorem",
       "module": "CKMA.Analysis.Operator.SpectralDynamics",
-      "line": 45,
-      "direct_sorry": true,
+      "line": 90,
+      "direct_sorry": false,
       "axioms": [
         "Classical.choice",
         "Quot.sound",
-        "propext",
-        "sorryAx"
+        "propext"
       ]
     },
     {
       "name": "CKMA.boundedSpectralEvolution",
       "kind": "def",
       "module": "CKMA.Analysis.Operator.SpectralDynamics",
-      "line": 54,
+      "line": 120,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -12610,7 +12654,7 @@
       "name": "CKMA.purePointOperatorSubspace",
       "kind": "def",
       "module": "CKMA.Analysis.Operator.SpectralDynamics",
-      "line": 58,
+      "line": 124,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -12622,7 +12666,7 @@
       "name": "CKMA.rage_continuous",
       "kind": "theorem",
       "module": "CKMA.Analysis.Operator.SpectralDynamics",
-      "line": 63,
+      "line": 129,
       "direct_sorry": true,
       "axioms": [
         "Classical.choice",
@@ -12635,7 +12679,7 @@
       "name": "CKMA.rage_purePoint",
       "kind": "theorem",
       "module": "CKMA.Analysis.Operator.SpectralDynamics",
-      "line": 71,
+      "line": 137,
       "direct_sorry": true,
       "axioms": [
         "Classical.choice",
@@ -13714,7 +13758,7 @@
       "name": "CKMA.kruzhkovFlux",
       "kind": "def",
       "module": "CKMA.Analysis.PDE.Entropy",
-      "line": 32,
+      "line": 36,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -13726,7 +13770,7 @@
       "name": "CKMA.IsKruzhkovSolution",
       "kind": "def",
       "module": "CKMA.Analysis.PDE.Entropy",
-      "line": 37,
+      "line": 41,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -13738,7 +13782,7 @@
       "name": "CKMA.HasLocalInitialTrace",
       "kind": "def",
       "module": "CKMA.Analysis.PDE.Entropy",
-      "line": 50,
+      "line": 54,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -13750,7 +13794,7 @@
       "name": "CKMA.exists_kruzhkovSolution",
       "kind": "theorem",
       "module": "CKMA.Analysis.PDE.Entropy",
-      "line": 57,
+      "line": 61,
       "direct_sorry": true,
       "axioms": [
         "Classical.choice",
@@ -13763,7 +13807,7 @@
       "name": "CKMA.kruzhkov_unique",
       "kind": "theorem",
       "module": "CKMA.Analysis.PDE.Entropy",
-      "line": 67,
+      "line": 71,
       "direct_sorry": true,
       "axioms": [
         "Classical.choice",
@@ -13776,7 +13820,7 @@
       "name": "CKMA.hamiltonianLegendre",
       "kind": "def",
       "module": "CKMA.Analysis.PDE.Entropy",
-      "line": 76,
+      "line": 80,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -13785,10 +13829,10 @@
       ]
     },
     {
-      "name": "CKMA.hopfLax",
+      "name": "CKMA.hopfLaxHamiltonian",
       "kind": "def",
       "module": "CKMA.Analysis.PDE.Entropy",
-      "line": 80,
+      "line": 85,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -13800,7 +13844,7 @@
       "name": "CKMA.IsHamiltonJacobiViscositySolution",
       "kind": "def",
       "module": "CKMA.Analysis.PDE.Entropy",
-      "line": 84,
+      "line": 89,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -13809,10 +13853,10 @@
       ]
     },
     {
-      "name": "CKMA.hopfLax_viscosity",
+      "name": "CKMA.hopfLaxHamiltonian_viscosity",
       "kind": "theorem",
       "module": "CKMA.Analysis.PDE.Entropy",
-      "line": 97,
+      "line": 102,
       "direct_sorry": true,
       "axioms": [
         "Classical.choice",
@@ -14348,7 +14392,7 @@
       "name": "CKMA.wave_finitePropagation",
       "kind": "theorem",
       "module": "CKMA.Analysis.PDE.Wave",
-      "line": 74,
+      "line": 75,
       "direct_sorry": true,
       "axioms": [
         "Classical.choice",
@@ -14718,7 +14762,7 @@
       "name": "CKMA.ae_approximatelyContinuousAt",
       "kind": "theorem",
       "module": "CKMA.Analysis.Real.ApproximateContinuity",
-      "line": 82,
+      "line": 83,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -15520,7 +15564,7 @@
       "name": "CKMA.gearhart_pruss",
       "kind": "theorem",
       "module": "CKMA.Analysis.Semigroup.Stability",
-      "line": 58,
+      "line": 59,
       "direct_sorry": true,
       "axioms": [
         "Classical.choice",
@@ -15533,7 +15577,7 @@
       "name": "CKMA.arendt_batty_lyubich_vu_reflexive",
       "kind": "theorem",
       "module": "CKMA.Analysis.Semigroup.Stability",
-      "line": 69,
+      "line": 70,
       "direct_sorry": true,
       "axioms": [
         "Classical.choice",
@@ -15666,6 +15710,31 @@
       ]
     },
     {
+      "name": "CKMA.criticalSobolevProfile",
+      "kind": "def",
+      "module": "CKMA.Analysis.Sobolev.Critical",
+      "line": 31,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.exists_memSobolev_not_memLp_top",
+      "kind": "theorem",
+      "module": "CKMA.Analysis.Sobolev.Critical",
+      "line": 36,
+      "direct_sorry": true,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext",
+        "sorryAx"
+      ]
+    },
+    {
       "name": "CKMA.fractionalEnergy",
       "kind": "def",
       "module": "CKMA.Analysis.Sobolev.Fractional",
@@ -15732,32 +15801,7 @@
       "name": "CKMA.nash",
       "kind": "theorem",
       "module": "CKMA.Analysis.Sobolev.Nash",
-      "line": 31,
-      "direct_sorry": true,
-      "axioms": [
-        "Classical.choice",
-        "Quot.sound",
-        "propext",
-        "sorryAx"
-      ]
-    },
-    {
-      "name": "CKMA.criticalSobolevProfile",
-      "kind": "def",
-      "module": "CKMA.Analysis.Sobolev.Nash",
-      "line": 42,
-      "direct_sorry": false,
-      "axioms": [
-        "Classical.choice",
-        "Quot.sound",
-        "propext"
-      ]
-    },
-    {
-      "name": "CKMA.exists_memSobolev_not_memLp_top",
-      "kind": "theorem",
-      "module": "CKMA.Analysis.Sobolev.Nash",
-      "line": 47,
+      "line": 29,
       "direct_sorry": true,
       "axioms": [
         "Classical.choice",
@@ -15981,7 +16025,7 @@
       "name": "CKMA.gamma_multiplication",
       "kind": "theorem",
       "module": "CKMA.Analysis.SpecialFunctions.Classical",
-      "line": 37,
+      "line": 41,
       "direct_sorry": true,
       "axioms": [
         "Classical.choice",
@@ -15994,7 +16038,19 @@
       "name": "CKMA.gaussDifferentialExpression",
       "kind": "def",
       "module": "CKMA.Analysis.SpecialFunctions.Classical",
-      "line": 45,
+      "line": 49,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.gauss_regularized_hypergeometric_ode",
+      "kind": "theorem",
+      "module": "CKMA.Analysis.SpecialFunctions.Classical",
+      "line": 143,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -16006,20 +16062,19 @@
       "name": "CKMA.gauss_hypergeometric_ode",
       "kind": "theorem",
       "module": "CKMA.Analysis.SpecialFunctions.Classical",
-      "line": 50,
-      "direct_sorry": true,
+      "line": 183,
+      "direct_sorry": false,
       "axioms": [
         "Classical.choice",
         "Quot.sound",
-        "propext",
-        "sorryAx"
+        "propext"
       ]
     },
     {
       "name": "CKMA.gauss_hypergeometric_unique",
       "kind": "theorem",
       "module": "CKMA.Analysis.SpecialFunctions.Classical",
-      "line": 57,
+      "line": 198,
       "direct_sorry": true,
       "axioms": [
         "Classical.choice",
@@ -16032,7 +16087,7 @@
       "name": "CKMA.IsRegularSingularAt",
       "kind": "def",
       "module": "CKMA.Analysis.SpecialFunctions.Classical",
-      "line": 66,
+      "line": 207,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -16044,7 +16099,7 @@
       "name": "CKMA.IsRegularSingularAtInfinity",
       "kind": "def",
       "module": "CKMA.Analysis.SpecialFunctions.Classical",
-      "line": 72,
+      "line": 213,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -16053,10 +16108,10 @@
       ]
     },
     {
-      "name": "CKMA.gauss_regularSingular",
+      "name": "CKMA.gauss_isRegularSingularAt",
       "kind": "theorem",
       "module": "CKMA.Analysis.SpecialFunctions.Classical",
-      "line": 76,
+      "line": 217,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -16068,7 +16123,7 @@
       "name": "CKMA.hasSum_bessel_generating",
       "kind": "theorem",
       "module": "CKMA.Analysis.SpecialFunctions.Classical",
-      "line": 129,
+      "line": 270,
       "direct_sorry": true,
       "axioms": [
         "Classical.choice",
@@ -16081,7 +16136,7 @@
       "name": "CKMA.normallySummableOn_bessel_generating",
       "kind": "theorem",
       "module": "CKMA.Analysis.SpecialFunctions.Classical",
-      "line": 135,
+      "line": 276,
       "direct_sorry": true,
       "axioms": [
         "Classical.choice",
@@ -16999,7 +17054,7 @@
       "name": "CKMA.HasPsiTwoBound",
       "kind": "def",
       "module": "CKMA.Probability.Concentration",
-      "line": 43,
+      "line": 50,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -17011,7 +17066,7 @@
       "name": "CKMA.psiTwoGauge",
       "kind": "def",
       "module": "CKMA.Probability.Concentration",
-      "line": 47,
+      "line": 54,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -17023,7 +17078,7 @@
       "name": "CKMA.HasGaussianTail",
       "kind": "def",
       "module": "CKMA.Probability.Concentration",
-      "line": 51,
+      "line": 58,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -17035,7 +17090,7 @@
       "name": "CKMA.HasGaussianMoments",
       "kind": "def",
       "module": "CKMA.Probability.Concentration",
-      "line": 56,
+      "line": 63,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -17047,7 +17102,7 @@
       "name": "CKMA.HasPsiTwoBound.psiTwoGauge_le",
       "kind": "theorem",
       "module": "CKMA.Probability.Concentration",
-      "line": 61,
+      "line": 68,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -17059,7 +17114,7 @@
       "name": "CKMA.bernstein",
       "kind": "theorem",
       "module": "CKMA.Probability.Concentration",
-      "line": 66,
+      "line": 73,
       "direct_sorry": true,
       "axioms": [
         "Classical.choice",
@@ -17072,7 +17127,7 @@
       "name": "CKMA.HasPsiTwoBound.hasGaussianTail",
       "kind": "theorem",
       "module": "CKMA.Probability.Concentration",
-      "line": 75,
+      "line": 82,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -17084,20 +17139,19 @@
       "name": "CKMA.HasGaussianTail.hasPsiTwoBound",
       "kind": "theorem",
       "module": "CKMA.Probability.Concentration",
-      "line": 104,
-      "direct_sorry": true,
+      "line": 156,
+      "direct_sorry": false,
       "axioms": [
         "Classical.choice",
         "Quot.sound",
-        "propext",
-        "sorryAx"
+        "propext"
       ]
     },
     {
       "name": "CKMA.HasPsiTwoBound.hasGaussianMoments",
       "kind": "theorem",
       "module": "CKMA.Probability.Concentration",
-      "line": 135,
+      "line": 210,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -17109,33 +17163,55 @@
       "name": "CKMA.HasGaussianMoments.hasPsiTwoBound",
       "kind": "theorem",
       "module": "CKMA.Probability.Concentration",
-      "line": 179,
-      "direct_sorry": true,
+      "line": 322,
+      "direct_sorry": false,
       "axioms": [
         "Classical.choice",
         "Quot.sound",
-        "propext",
-        "sorryAx"
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.HasPsiTwoBound.integrable_exp_sq",
+      "kind": "theorem",
+      "module": "CKMA.Probability.Concentration",
+      "line": 386,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.HasPsiTwoBound.integrable_exp_mul",
+      "kind": "theorem",
+      "module": "CKMA.Probability.Concentration",
+      "line": 394,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
       ]
     },
     {
       "name": "CKMA.HasPsiTwoBound.hasSubgaussianMGF",
       "kind": "theorem",
       "module": "CKMA.Probability.Concentration",
-      "line": 186,
-      "direct_sorry": true,
+      "line": 421,
+      "direct_sorry": false,
       "axioms": [
         "Classical.choice",
         "Quot.sound",
-        "propext",
-        "sorryAx"
+        "propext"
       ]
     },
     {
       "name": "CKMA.johnson_lindenstrauss",
       "kind": "theorem",
       "module": "CKMA.Probability.Concentration",
-      "line": 194,
+      "line": 469,
       "direct_sorry": true,
       "axioms": [
         "Classical.choice",
@@ -17279,7 +17355,7 @@
       ]
     },
     {
-      "name": "CKMA.infinitelyDivisible_iff_existsUnique_levyTriplet",
+      "name": "CKMA.isInfinitelyDivisible_iff_existsUnique_levyTriplet",
       "kind": "theorem",
       "module": "CKMA.Probability.InfinitelyDivisible",
       "line": 68,
@@ -17342,9 +17418,9 @@
     },
     {
       "name": "CKMA.IsOrderedSummable",
-      "kind": "def",
+      "kind": "abbrev",
       "module": "CKMA.Probability.LimitTheorems.IndependentSums",
-      "line": 39,
+      "line": 44,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -17356,7 +17432,7 @@
       "name": "CKMA.isOrderedSummable_of_summable",
       "kind": "theorem",
       "module": "CKMA.Probability.LimitTheorems.IndependentSums",
-      "line": 43,
+      "line": 48,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -17368,7 +17444,7 @@
       "name": "CKMA.IsOrderedSummable.add",
       "kind": "theorem",
       "module": "CKMA.Probability.LimitTheorems.IndependentSums",
-      "line": 48,
+      "line": 53,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -17380,7 +17456,7 @@
       "name": "CKMA.symmetricTruncation",
       "kind": "def",
       "module": "CKMA.Probability.LimitTheorems.IndependentSums",
-      "line": 56,
+      "line": 59,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -17392,7 +17468,7 @@
       "name": "CKMA.HasThreeSeries",
       "kind": "def",
       "module": "CKMA.Probability.LimitTheorems.IndependentSums",
-      "line": 61,
+      "line": 64,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -17404,7 +17480,7 @@
       "name": "CKMA.kolmogorov_threeSeries",
       "kind": "theorem",
       "module": "CKMA.Probability.LimitTheorems.IndependentSums",
-      "line": 68,
+      "line": 71,
       "direct_sorry": true,
       "axioms": [
         "Classical.choice",
@@ -17417,7 +17493,7 @@
       "name": "CKMA.iteratedLogScale",
       "kind": "def",
       "module": "CKMA.Probability.LimitTheorems.IndependentSums",
-      "line": 75,
+      "line": 78,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -17429,7 +17505,7 @@
       "name": "CKMA.hartman_wintner",
       "kind": "theorem",
       "module": "CKMA.Probability.LimitTheorems.IndependentSums",
-      "line": 80,
+      "line": 83,
       "direct_sorry": true,
       "axioms": [
         "Classical.choice",
@@ -17442,7 +17518,7 @@
       "name": "CKMA.arrayRowVariance",
       "kind": "def",
       "module": "CKMA.Probability.LimitTheorems.IndependentSums",
-      "line": 92,
+      "line": 96,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -17454,7 +17530,7 @@
       "name": "CKMA.HasLindebergCondition",
       "kind": "def",
       "module": "CKMA.Probability.LimitTheorems.IndependentSums",
-      "line": 97,
+      "line": 101,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -17466,7 +17542,7 @@
       "name": "CKMA.HasFellerCondition",
       "kind": "def",
       "module": "CKMA.Probability.LimitTheorems.IndependentSums",
-      "line": 104,
+      "line": 108,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -17478,7 +17554,7 @@
       "name": "CKMA.normalizedArraySum",
       "kind": "def",
       "module": "CKMA.Probability.LimitTheorems.IndependentSums",
-      "line": 110,
+      "line": 115,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -17490,7 +17566,7 @@
       "name": "CKMA.lindeberg_feller",
       "kind": "theorem",
       "module": "CKMA.Probability.LimitTheorems.IndependentSums",
-      "line": 116,
+      "line": 121,
       "direct_sorry": true,
       "axioms": [
         "Classical.choice",
@@ -17503,7 +17579,7 @@
       "name": "CKMA.lindeberg_feller_iff",
       "kind": "theorem",
       "module": "CKMA.Probability.LimitTheorems.IndependentSums",
-      "line": 126,
+      "line": 131,
       "direct_sorry": true,
       "axioms": [
         "Classical.choice",
@@ -17516,7 +17592,7 @@
       "name": "CKMA.kolmogorovDistance",
       "kind": "def",
       "module": "CKMA.Probability.LimitTheorems.IndependentSums",
-      "line": 137,
+      "line": 142,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -17528,7 +17604,7 @@
       "name": "CKMA.berry_esseen",
       "kind": "theorem",
       "module": "CKMA.Probability.LimitTheorems.IndependentSums",
-      "line": 141,
+      "line": 146,
       "direct_sorry": true,
       "axioms": [
         "Classical.choice",
@@ -17720,7 +17796,7 @@
       ]
     },
     {
-      "name": "CKMA.completelyMonotoneSequence_iff_existsUnique_measure",
+      "name": "CKMA.isCompletelyMonotoneSequence_iff_existsUnique_measure",
       "kind": "theorem",
       "module": "CKMA.Probability.Moments.Hausdorff",
       "line": 75,
@@ -17778,69 +17854,73 @@
     "CKMA/Analysis/Approximation/Korovkin.lean": "6522f18cb7a980b4fbd724428b6683b4c886f5e43efab327381291af49ea80e1",
     "CKMA/Analysis/Approximation/Polynomial.lean": "b37d633abc7dac96caa81a6faced4a1aed6c889c7e6b80176f9e45f654f91033",
     "CKMA/Analysis/Approximation/Trigonometric.lean": "8c95dd1ab89eab3fea0d929b6d47e8bcfcf42cbd7609890e6a649df261cb07d2",
-    "CKMA/Analysis/Asymptotics/BorelLaplace.lean": "7898bbe326c84d544d77151f851737e2883cd99ea5b4600afa25a3ac55365bbb",
-    "CKMA/Analysis/Asymptotics/EulerMaclaurin.lean": "9af601c6f344e67359c4664eca307e0632b74f016ef16443be58f2c7accffd2f",
-    "CKMA/Analysis/Asymptotics/Expansions.lean": "023e8789138e59e52a2663243c0022af22686447f6e30a10ee7e723463becd6d",
-    "CKMA/Analysis/BanachAlgebra/Factorization.lean": "f4405b6b7e90b35d14ae071a17b3b49cf798a1b283870e263a5db4f19e1c43aa",
+    "CKMA/Analysis/Asymptotics/BorelLaplace.lean": "fbdee8741d1f3dccdff378f0a957d798d21fa93a4319b81b578a04b029d23da0",
+    "CKMA/Analysis/Asymptotics/EulerMaclaurin.lean": "15601a39b6302c86645f4f143b135fa93d6251a661d8932c0c50ceb60e1b348f",
+    "CKMA/Analysis/Asymptotics/Expansions.lean": "019def5573a28b52c905b383be67b6a5baf12338bcb976a9b6e14260f4bc982c",
+    "CKMA/Analysis/BanachAlgebra/Factorization.lean": "537a952150741d0a83abf37583587d81b3478701924f61a8b3a3fcdc8a4f1ebb",
     "CKMA/Analysis/BanachAlgebra/Wiener.lean": "c14080082d6186d4a15dcfd817d2c92fabf7be1e74e05f295e428aa75603faf1",
     "CKMA/Analysis/BanachSpace/Geometry.lean": "d14bf649fe17202884ea557e90889cf00a5ae01e60a1550a74a0386cf39c8633",
     "CKMA/Analysis/BanachSpace/Pietsch.lean": "d9dbf304de6e706e54c5bab186693343a7778ff5f2d097980e3788f8474350d9",
-    "CKMA/Analysis/BanachSpace/Renorming.lean": "46e3efdb1f91770862639b6cdbebc02158b20e0155508aa3cfef89d6eda283d9",
+    "CKMA/Analysis/BanachSpace/Renorming.lean": "b8cb38bfc743aca58680e15519e33cdf61d20e7cd7241b0f3b31d9a6c87b5cc9",
     "CKMA/Analysis/BoundedVariation/Compactness.lean": "a255dc9f50800eda474a5e6af53bfe579db80ebddb46e919e1182f80699ccd43",
-    "CKMA/Analysis/CStarAlgebra/FreeProbability.lean": "8673075f8d508274f7e988defb4bc6d4ac4b4d948bc41f27924de85a2866a6ca",
+    "CKMA/Analysis/CStarAlgebra/FreeProbability.lean": "3f9db8a26a873e2f3eec69b9ce7561ae89b177d8117acabd9deca36c8f3d8bd4",
     "CKMA/Analysis/CStarAlgebra/OperatorClosures.lean": "164a4b0b44d154ae87660f97a2a409ef78dd6dd996bb1e052c7588b1bbb0bab8",
     "CKMA/Analysis/CStarAlgebra/Representation.lean": "103cb204a2dbe03bc1e9e8ec763819f4f32a0f0ff2bed421b0ca55cc0d3dbae1",
+    "CKMA/Analysis/Complex/Basic.lean": "c69eb76bdeaedf5fb4d5c28821aba57a251af9d521da49d1a93a2cda7e123b4f",
     "CKMA/Analysis/Complex/Bergman.lean": "af9802360ccc33248c0d9cdd3ea8bdb199d6abf186966dee484628358c963f49",
     "CKMA/Analysis/Complex/CarlesonInterpolation.lean": "051596f3c7ed0f9a05181a380a4f3a5683f467de06025da52f2185ab74bff607",
     "CKMA/Analysis/Complex/EntireGrowth.lean": "739863dbb1d882fbd25e0c62d9425911a721499eaf74974a0bc2d0d3fb3de728",
     "CKMA/Analysis/Complex/Fock.lean": "e2044b544315bccae99d9fb7916f9c881d022a14e1bf927258025f971a604119",
     "CKMA/Analysis/Complex/Hardy.lean": "26671814057521b1566bd37f2cb8882f3480f525bdfee64d8664d69a6f4faa41",
-    "CKMA/Analysis/Complex/Laurent.lean": "2074eb30cc0b346fc9c82cad47b4f2c5ee85313cbba3275a43ec3bbb8a1ea0bc",
+    "CKMA/Analysis/Complex/Laurent.lean": "94ed18add800ef6edb371e5d118cba5ff0a9b7ce3252b4162201c25a5695c2ba",
     "CKMA/Analysis/Complex/PlaneApproximation.lean": "41d904cd122d7e386ed00995f6fe0a9f035a55d6c3074e7e7d24f47943a410a9",
-    "CKMA/Analysis/Complex/Polydisc.lean": "67a1768a92bbc28377d541009cb94d7d78f740a6bc93e461fb9154bc09b753a1",
+    "CKMA/Analysis/Complex/Polydisc.lean": "d4c7bc03c67594b5131c5b4eccc96b23c3eca54fa4b6f84353bab7385056f3fc",
     "CKMA/Analysis/Complex/Univalent.lean": "f66857c6d015c774489f09182961078fb1980bc75372cb3e04c6c5507c076eee",
     "CKMA/Analysis/ComplexGeometry/Beltrami.lean": "b3fe783bcca80691539f7ada9b0176f6e5613bbc8259efb491180299f3c523cf",
     "CKMA/Analysis/ComplexGeometry/HartogsWeierstrass.lean": "2f0f8de0f988d06be636b098d0f1bbdbd86a1335ac75388f015dfe2e20c46dac",
-    "CKMA/Analysis/Convex/Clarke.lean": "49c4283b2baac021d6b66ee6fb58921a4b69a0376833ec79a62f200e427e7e04",
-    "CKMA/Analysis/Convex/Duality.lean": "53924bb1f2faa1e010a15d3d56c391cec06c84da95b42b75a4d7e5287285575f",
-    "CKMA/Analysis/Convex/Ekeland.lean": "8d5a758c1eb46283f107b5d17a1f09058945fbf7f0663d93496c41d447ec903f",
+    "CKMA/Analysis/Convex/Basic.lean": "99bf318c70a6ff226e28504246d2fdd91860dd851b94df4aef76d0d108f64a9e",
+    "CKMA/Analysis/Convex/Clarke.lean": "bea4a1414337c6d347de0e41e06b858632c899cf2749cb971f1eebce33d1afeb",
+    "CKMA/Analysis/Convex/Duality.lean": "428416dda4ff7f8f39f4f8f7782856d897d54ded521553f8a8c1d8e2cf83ae49",
+    "CKMA/Analysis/Convex/Ekeland.lean": "3cc816fccc1af8fc2e64acaa8b8e9c6b32e50d6f41f3008f5150b2c670f0fcac",
     "CKMA/Analysis/Convex/Majorization.lean": "de1db396b6bf255e765d78c94e5e943c94915c1a5963b3cd03af918919b416e7",
-    "CKMA/Analysis/Convex/Proximal.lean": "d95a7cf514f22e7b69eecf87520b01fe8a6a1a71a1d24a894e0d8a35ee9745e3",
+    "CKMA/Analysis/Convex/Proximal.lean": "800bf091acd8a1f4922841ab312807f1520e2f86c3eeb11f275aa8001578a787",
     "CKMA/Analysis/Fourier/CircleSummation.lean": "24dd158ea28c8faac3cffb2c8c3da09b67c647af6b36a900cbf9d588e8ed97a4",
     "CKMA/Analysis/Fourier/Gabor.lean": "16f3ed4cd2589ae36414746669efb712ba7a123521abe91a4a64bd8145455f80",
     "CKMA/Analysis/Fourier/HilbertTransform.lean": "1568e333bfd356c25785d00de61273490c7fe771d9535af07e1fb87c0d1459b5",
-    "CKMA/Analysis/Fourier/Inequalities.lean": "3ef6edf8f0d3f7c85ee9df267f6cc2cbe50afbd5f0386dc104391dcbed4b5d29",
+    "CKMA/Analysis/Fourier/Inequalities.lean": "009eb4d56ef0b304369fcff296e4ddc9bccbbf3618215a5a96d35f2ecb4020bb",
     "CKMA/Analysis/Fourier/InvariantMean.lean": "d0ad995b2d1c3bef1109ba3b5a7bf8eca85e752b1886c315a29f0ce226c62878",
     "CKMA/Analysis/Fourier/LocallyCompactAbelian.lean": "2af18895365a4a4060ced7a48887c0fed765976772e63d63113768b9ba96e421",
     "CKMA/Analysis/Fourier/NonuniformSampling.lean": "929ade224aee462e1277713edc48e179ee2b89e4e3f54e678a89c1d431bc6a30",
     "CKMA/Analysis/Fourier/Sampling.lean": "524302a879406897beaa0b6e63aabab68b4a66320009a44dc6146ff3116ede03",
     "CKMA/Analysis/Fourier/WeightedMaximal.lean": "3f08398b75ee179c1d8a5dc3bfff98a242fc3be4d09e68079a58b874c83bc4c6",
-    "CKMA/Analysis/FunctionalAnalysis/WeakCompactness.lean": "721d5feaf04c4a6d2220e6a9f7a47d2523cafb82486aea25068f83d406b55d5f",
+    "CKMA/Analysis/FunctionalAnalysis/WeakCompactness.lean": "f36f5929907a3fafbf6fbabbe47c4ad956bc5c4db0b03690886658f76c2850c8",
     "CKMA/Analysis/GeometricMeasure/Dimension.lean": "66ed2744320ab5b553ca2a244e59d61a7dfb3e6342d29e12ad1a98e4dc010221",
-    "CKMA/Analysis/Inequalities/Carleman.lean": "fdf5593518a39a4ba584441f9b956f7dd5b0d62302d2120cee0c6a54805d528a",
-    "CKMA/Analysis/Inequalities/ClassicalSequences.lean": "02492b0caa2006468d8d530b3bb273a8bac12f81c7be9050fa096f0cf83038a4",
+    "CKMA/Analysis/Inequalities/Carleman.lean": "4a3dd7ad61d1efd36f6ab9740cc7371f8be538c96a7837777bb8b230cf824688",
+    "CKMA/Analysis/Inequalities/ClassicalSequences.lean": "287c8cc7a78ac7a4abbe7ae7340d9d760f57012a85455e37e284c4685a8feb9d",
     "CKMA/Analysis/Inequalities/Hilbert.lean": "f0d121b58a6fee7a11c2a1969656289e300adb3947233102aa0c0736ea37d7f6",
-    "CKMA/Analysis/InnerProductSpace/Frame.lean": "6520cf6c5fb67607f9c37d2ac10a437458ec2b03d99529d867554180e7fddf3a",
-    "CKMA/Analysis/InnerProductSpace/HilbertModel.lean": "b10248d145c5b2baf12d453ce2d84727ee9e508bb5eda95982e300df307b8b9a",
+    "CKMA/Analysis/InnerProductSpace/Frame.lean": "6575cd3f8d88c429f137d7565adf30b70625cb75fb9cee2f6856f8e06f610a45",
+    "CKMA/Analysis/InnerProductSpace/HilbertModel.lean": "144ead6b242a64238af61ea6185fb9253120c8c0dea9ccf3555bae143ceebfea",
     "CKMA/Analysis/InnerProductSpace/L2FunctionFamilies.lean": "e0b46b87cc87ee5b429208b82b37da1c28c15cbe2f65094f93d46d2f4f47b0ec",
     "CKMA/Analysis/InnerProductSpace/MatrixInequalities.lean": "afafceba6882b0ffe39cdd10bafedab189fcf2c0b1fd4cb3beed8fc8e7bb270d",
-    "CKMA/Analysis/IntegralEquation/Basic.lean": "653ed95f64924d0a9921af3fcfad76c7a16f76893bcebffae42442ac15fd9587",
-    "CKMA/Analysis/IntegralEquation/HilbertSchmidt.lean": "7d0d905b556a9cdd9da55673eefbfdf97b060f4610505563791eb5eb7fb0f516",
-    "CKMA/Analysis/IntegralEquation/Mercer.lean": "2498c4d0a3f7b6fe4c28fa6f339e94432fcd3403523cd9c19951c55509647c97",
-    "CKMA/Analysis/Interpolation/Basic.lean": "0ca42f61e147fd440b4cb80c4eae3d1d69dc84831c06cea41a2cf69aa45d0fa1",
+    "CKMA/Analysis/IntegralEquation/Basic.lean": "f3a5303d14bf1e040731d0b128c285b5e02de7925ba236a138981d8ab3e8100e",
+    "CKMA/Analysis/IntegralEquation/CollectiveCompactness.lean": "0464053357515bb827cefc32055466da70117244c810b58a84f70dead2fad002",
+    "CKMA/Analysis/IntegralEquation/HilbertSchmidt.lean": "ceb8d751ce90c25ae3843ff279a01e4e80f3707b7f4c3d4f06cea13db38178e4",
+    "CKMA/Analysis/IntegralEquation/Mercer.lean": "07bfba45eff93bf1f055e77f55a581b7cd2c050000c987b14eb388567838482f",
+    "CKMA/Analysis/Interpolation/Basic.lean": "f9f4763cbcc4feb37670f2ecc8fe4af2007caf236dc0a5957ee10937ab26c214",
+    "CKMA/Analysis/Interpolation/Bounds.lean": "2bb7a77178bb8b8c0cb3b135fb049339e400273efc095e45e6aa2eaa6a4e6cc5",
     "CKMA/Analysis/LocallyConvex/Bipolar.lean": "54c2e347961dc7d22c86bbaad55b110d0b5e94b843cc773ba52ea4a0b10541ea",
     "CKMA/Analysis/Measure/LpDuality.lean": "97764025fc7779afe2075cdc98b6a32b406ae1a01622dfcf23e5cb8e19f84760",
     "CKMA/Analysis/Microlocal/Symbols.lean": "03f232f1a334a20ab9bc9ce41cf3a694c730c14ab18efdecde96fc2e8e676329",
     "CKMA/Analysis/Nonlinear/FixedPoint.lean": "d22aeec0eed3f651f86c29a62431e133a7b5e28003c15db8bb31d6d00d66dcf3",
     "CKMA/Analysis/Nonlinear/Monotone.lean": "0dbf024dbdf6270d0a414988c7156a08dd28545654af02904fb06c06281d3985",
-    "CKMA/Analysis/Nonlinear/Newton.lean": "441949fdd02a3fe6232f43efb85a5e019936610a63efad1ac4a4951d00537263",
+    "CKMA/Analysis/Nonlinear/Newton.lean": "1a79ef9c0790f7462c5354b7a65a6821ca58f3f5e605c4ec94c5e4ab304e2433",
     "CKMA/Analysis/ODE/PeriodicAndSturm.lean": "dbb2bc5a890208c96b76d8d881109689394d87e62351a5ea6c106afda9408ab0",
     "CKMA/Analysis/Operator/AnalyticFredholm.lean": "00cdec515d60d903233a2483b3fed4d2ca2fb95ec3c79d976477f46f77fe68a2",
     "CKMA/Analysis/Operator/ClosedForms.lean": "bffe935bf092d3fd10d51c9dad2ef344ae083a9c7a9465df2584dbd42189da8d",
     "CKMA/Analysis/Operator/Dilation.lean": "5e137b547931bb5d70179530efd3e7c5f86fc71643c8b57b3953c47c66d4be20",
     "CKMA/Analysis/Operator/Fredholm.lean": "8bee0419561b1f7898276b3f87bb5099c0e5375c09e521c158151f2e48cf5b7f",
     "CKMA/Analysis/Operator/KatoRellich.lean": "b2bb193a266520978462e4c0fb8dbcbde7e3e87b240bdd9edb20690c359f9737",
-    "CKMA/Analysis/Operator/SpectralDynamics.lean": "d0d188ebda2401daf7a3e24b34bf7a36f5b0b7a1ab0cb3d9d5de0579959a79fd",
+    "CKMA/Analysis/Operator/SpectralDynamics.lean": "cbe61eb032164372a0f0ef5def3fcfb575fbe002c15f0f28147c7f155d78618d",
     "CKMA/Analysis/Operator/TraceIdeals.lean": "36747aa96f9ea480d17f20fcb4610ef199f381b6425279245e2507132a03238f",
     "CKMA/Analysis/OrderedSpace/Bands.lean": "feb1314f1d45a9926712ee433246d114e27a114bafe8be5789d9fe7fea0ae158",
     "CKMA/Analysis/OrderedSpace/Representation.lean": "b75bc233fe97fb0f686b9776bf265bedfc405bab77a40936915b2e81b43b90d3",
@@ -17848,15 +17928,15 @@
     "CKMA/Analysis/OrthogonalPolynomial/MomentExistence.lean": "bb0d4678851fc63613e1d51a37ccf1affe112bd97b4fae3b1156335ebd0a2db0",
     "CKMA/Analysis/PDE/Boltzmann.lean": "ddef26811d1cf2984c7f3b8bcb2989423425cf4320bad8d0875eefd6ca0437b4",
     "CKMA/Analysis/PDE/EllipticEstimates.lean": "b2f24c3a3b698293acec8c7b6380ff5528099a35d9e65ff258520f8f8d6365db",
-    "CKMA/Analysis/PDE/Entropy.lean": "96847f874d19a81622ad6afe8b848da942396f0f6118fc7d94994b29d4e542d7",
+    "CKMA/Analysis/PDE/Entropy.lean": "2b56e7d7efc1219eb35f55b06c664a694b19486be04b3af923a64f21b3dc0ee6",
     "CKMA/Analysis/PDE/Euclidean.lean": "092fd2c4812755fb0765afa885b906bf06464f0063f63ca2409a22079acccd07",
     "CKMA/Analysis/PDE/NavierStokes.lean": "955cc0e16eba93258a03e26f6f795b86118e9c582516f6cc400c23a15b7c23be",
     "CKMA/Analysis/PDE/Schrodinger.lean": "1125f4e206337ea7c82ee6f5c3386af4bd59662a39dc5b7a698a6dc698be6631",
     "CKMA/Analysis/PDE/Viscosity.lean": "985e7492cd1ea7fe7acee22792077ce063ce9d0a6f48b15ef82d04f4f4bf86dc",
-    "CKMA/Analysis/PDE/Wave.lean": "4f4e7e2ca8d38a689b96025dd09b132069a185cb855015c3a5c8dba813a86a2d",
+    "CKMA/Analysis/PDE/Wave.lean": "108e0eb6ba46f2a491c83d97840b95529672c6f057a57ecc0ce8d58e6f4a93e3",
     "CKMA/Analysis/Potential/Capacity.lean": "4afd4b14fb0d82b2e78ddadccf4122a443e1a90186dd53b8a23413e6064b234c",
     "CKMA/Analysis/Potential/Cutoff.lean": "6a9da68dfb8756ea38ddb8ee611b81f1e1d20393014446ab2cf6d911338aa880",
-    "CKMA/Analysis/Real/ApproximateContinuity.lean": "36f5191519c6243bf4582f86a6af6232c8e15251e0befad8d13ac125035558de",
+    "CKMA/Analysis/Real/ApproximateContinuity.lean": "8624d9e2bbdffb8b7ceab4c6e42949bc216a1e8ae041126a27eee9fad8a8308d",
     "CKMA/Analysis/Real/Baire.lean": "199c303f6afb2e18fcdfe501af57a84b635bf222fedd9ec92ee66bb810d5fc4f",
     "CKMA/Analysis/Real/Dini.lean": "5af0f88c96ff3f8bca05f387fd9f798993538785807bdc57015f09bbd5a1c733",
     "CKMA/Analysis/Real/Kirszbraun.lean": "5e67adbc6d6b94aa5c172fa3d76cd53c14cbf5a9969ad64a469d846e881bcb0b",
@@ -17865,15 +17945,16 @@
     "CKMA/Analysis/Semigroup/Accretive.lean": "779c667e13864e28f1eae5dccc023ecd9341f72eb072d157677b14e37c76de97",
     "CKMA/Analysis/Semigroup/Approximation.lean": "6802c2327cc75cb66adceefe9ea6fc15d26717662b929a5cf97230d2d1274668",
     "CKMA/Analysis/Semigroup/Sectorial.lean": "b80ffe4b291234df4af1b601019d56c84e7902720758bc9e2715447d23701069",
-    "CKMA/Analysis/Semigroup/Stability.lean": "9e93f883cba72833532f4a775a257073b712308475fe8338c9928c32097a31fc",
+    "CKMA/Analysis/Semigroup/Stability.lean": "453beea53c25281401d0d6200dccc3bf286c5eeddbeb3019c508dfd692d3cba9",
     "CKMA/Analysis/Sobolev/CapacityAndBBM.lean": "d21a7169e6479d90773f9f4ed674ec321c9f514a8d1741379ea1d64b0d5ff8f3",
+    "CKMA/Analysis/Sobolev/Critical.lean": "14555ae716176f1f3a1dddbd6e5209945d22ec9e3860c678e3fce5045943c2be",
     "CKMA/Analysis/Sobolev/Fractional.lean": "dbb775f123f9d890d51ba0ddc26fbdbdb541f837ff69fd8da1c60aafe81d2e29",
-    "CKMA/Analysis/Sobolev/Nash.lean": "59b76524fed80ae3af87d396fefb3e73220f90a26fd0e1e1e89e6334a4e54c24",
+    "CKMA/Analysis/Sobolev/Nash.lean": "9efc6ba10c9ddb3b84226f9f9190c40d2771086fefbd82ba4c6fd218bab1d257",
     "CKMA/Analysis/SpecialFunctions/BesselAiryMittagLeffler.lean": "ebc49b142b2ebf2b610d5f096b53770d45f345ee6e8445025cfa28ccc5ef7f34",
-    "CKMA/Analysis/SpecialFunctions/Classical.lean": "a75ffcc57b3cbada45e269e304d234b14815bc6bc9de8076c7624f971e97204e",
+    "CKMA/Analysis/SpecialFunctions/Classical.lean": "fd4a749882f80ef1598784882ccde122c2cac5215d563acbfdb6829dda5910ac",
     "CKMA/Analysis/Variational/EulerLagrange.lean": "fb52692171980d083bf0e139c6ee8c1d5c002bce7cdec4a6880804c826c30cfa",
     "CKMA/Analysis/Variational/MountainPass.lean": "05bedcbcbd18d8672f7aaabd3dab8a41f7137f0e4c54eb83c3e096dc09491bf4",
-    "CKMA/Analysis.lean": "7efaf87bde9b3bbafe58bfa8c1cefc9b3e784d0a3a519b5b1a3512fc8fcda1ad",
+    "CKMA/Analysis.lean": "f76d370be5e1e2a6f8c50561cfd1ffb7218d3625c7ed6cf1c92c0d0a310f5ef1",
     "CKMA/Dynamics/Complex/Linearization.lean": "ac76559f34b089a3d5815163052a77284369bdf82e6e75b9d038314aa46de933",
     "CKMA/Dynamics/Complex/PolynomialJulia.lean": "c316633a96c0a1e48b283afdc053260d2e468f60b4dfbb01bedb3c80d736f6bb",
     "CKMA/Dynamics/Ergodic/Pointwise.lean": "58bb3456b5ae2d00e2e0f2f528ef8aed6a96cf26de654fc516ff41ae64ea9fff",
@@ -17888,17 +17969,17 @@
     "CKMA/MeasureTheory.lean": "cc18b6d6dbabde27b2dbf85670fef52154b79ec73656e78b148005a7fae5d36a",
     "CKMA/Probability/BrownianQuadraticVariation.lean": "bb190a2ad57e9d7748a38e5b303f0240f941e7346a8e8cac3df23819a2858786",
     "CKMA/Probability/BrownianTheory.lean": "4167e27cc4312854744afad13388fbbc4ab98c1e3f348891fd15e70830978e1a",
-    "CKMA/Probability/Concentration.lean": "983035adae119e6f691d28ad80eb18f16bd32548d2dc5ed629d7b3e17ed57064",
-    "CKMA/Probability/GaussianLogSobolev.lean": "14637e9621a3106e0d3caee2c193da40b518c5f6e237f644acaf5216c3001fb4",
-    "CKMA/Probability/HansonWright.lean": "f68759ec826b6c0496cfa54b963b8399d409d8c16853e5c90d6c040a8172c8f9",
-    "CKMA/Probability/InfinitelyDivisible.lean": "bda122d6275805b3038f141602f3305476780a5dcc86f575d6b369dfda49d82a",
+    "CKMA/Probability/Concentration.lean": "e9c189b1451ffb7290fbe2c9c05bfb987b53a568ab87c543b6e16396b17cf96a",
+    "CKMA/Probability/GaussianLogSobolev.lean": "ce78efaa7ad89d109e69d339f6cda56ff64ab852f3682423355af79405e1bc7e",
+    "CKMA/Probability/HansonWright.lean": "373c936e6f5a1ebd03025ac2da37b49ea21e1a4d60e61f36449eda9a35b8d7b4",
+    "CKMA/Probability/InfinitelyDivisible.lean": "5d33f773186909482a85d983dfce2789680d5f24e88652ff48092664df90d6e9",
     "CKMA/Probability/LargeDeviations.lean": "8075e1e417f605c93cf269c91c1b942024233719753d937618875145b86c4277",
-    "CKMA/Probability/LimitTheorems/IndependentSums.lean": "df1f9a2e4e3be9533d5a89a2c53eb9b2c0d16888e2cdede3e2d0e15cf7ec8238",
+    "CKMA/Probability/LimitTheorems/IndependentSums.lean": "0c59c27225c55a7b6cef51b732e209a486684b02524ce7980a9a3721e9ae630e",
     "CKMA/Probability/LimitTheorems/LargeDeviations.lean": "1188aba425573d1a419d31b0d8e65f4e8e3438dcfdfb265b21efa5f908640201",
-    "CKMA/Probability/Moments/Hausdorff.lean": "0dfe87bfc9a4229aba1ed1c48474b700598b977f646f2008c7dedcb4b2b0e616",
+    "CKMA/Probability/Moments/Hausdorff.lean": "2089a3e43520be0fcd040c5237579cc5a4d72a4e71002c670dedbbf4f312a5e6",
     "CKMA/Probability/ProjectiveLimit.lean": "e2bce255694d49aba349a684ff8104d2be8de3f65ac29b6fe74b4d741f859401",
     "CKMA/Probability/Symmetrization.lean": "39238c2f00ec77318625318bd9aeffd44bcb5f7f2c1100c8c82b4fe5ed1b8430",
-    "CKMA/Probability.lean": "51b4d86456b657af1d9dcedba9b6246c6342b09f11bc60eb5023893bf199f655"
+    "CKMA/Probability.lean": "922bdcbeb9af9fa0e98b5cfa369657a9e1678f5feeb0e901942e1cce56f2c747"
   },
   "batches": [
     {

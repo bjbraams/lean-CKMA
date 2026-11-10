@@ -54,7 +54,7 @@ interpretation, not merely a formal integral sign.
   $R_\lambda(x,y)=\sum_{n\geq1}\lambda^{n-1}k_n(x,y)$ gives
   $u=f+\lambda R_\lambda f$. Iterated kernels satisfy
   $k_{n+1}(x,y)=\int k(x,z)k_n(z,y)dz$.
-* **8. Mercer theorem.** A continuous positive definite Hermitian kernel
+* **8. Mercer theorem.** A continuous positive semidefinite Hermitian kernel
   on compact $D$ with finite measure of full support has
   $k(x,y)=\sum_n\lambda_ne_n(x)\overline{e_n(y)}$, absolutely and
   uniformly, using its nonzero $L^2$ eigenvalues and continuous eigenfunctions.

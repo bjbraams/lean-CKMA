@@ -10,7 +10,7 @@ public import Mathlib.Analysis.InnerProductSpace.PiL2
 public import Mathlib.Analysis.Normed.Module.FiniteDimension
 
 /-!
-# Hanson–Wright concentration for quadratic forms (07.24)
+# Hanson–Wright concentration for quadratic forms (07.43)
 
 The matrix adapters are the squared Frobenius norm and Euclidean operator norm of a
 real finite matrix. `sampledQuadraticForm` evaluates the corresponding form on a random

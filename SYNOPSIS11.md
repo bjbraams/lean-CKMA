@@ -227,7 +227,7 @@ The Euclidean Hardy inequality for gradients is SYNOPSIS14, item 9.
   $m,n\geq1$.
 * **38. Carleman's inequality.** For a nonnegative summable sequence,
   $\sum_{n\geq1}(a_1\cdots a_n)^{1/n}\leq e\sum_{n\geq1}a_n$.
-  The constant $e$ is optimal.
+  The constant $e$ is optimal already for finitely supported sequences.
 * **39. Continuous geometric-mean inequality.** For positive integrable $f$,
   $$\int_0^\infty\exp\left(\frac1x\int_0^x\log f(t)dt\right)dx
     \leq e\int_0^\infty f(x)dx,$$

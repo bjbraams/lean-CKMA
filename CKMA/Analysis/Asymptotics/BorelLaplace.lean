@@ -52,15 +52,15 @@ def HasBorelContinuation (a : ℕ → ℂ) (b : ℂ → ℂ) (θ β : ℝ) : Pro
     ∀ ξ : ℂ, ‖ξ‖ < r → HasSum (fun n : ℕ ↦ a (n + 1) * ξ ^ n / (n.factorial : ℂ)) (b ξ)) ∧
   ∃ C A : ℝ, 0 < C ∧ 0 < A ∧ ∀ ξ ∈ complexSector θ β, ‖b ξ‖ ≤ C * Real.exp (A * ‖ξ‖)
 
-/-- **50.45**: rotated directional sums glue to a holomorphic sum on a sector wider than `π`,
-with a uniform Gevrey-one expansion. Agreement with the original ray is asserted only in
-its convergence sector; outside that sector the glued function is analytic continuation. -/
+/-- **50.45**: a Borel continuation of opening `β` sums to a function holomorphic on the sector
+of opening `π + β`, with a uniform Gevrey-one expansion on its proper subsectors. Agreement
+with the directional Laplace integral holds on the convergence sector of opening `π`. -/
 theorem exists_borelLaplace_sum (a : ℕ → ℂ) (b : ℂ → ℂ) (θ : ℝ) {β : ℝ}
     (hβ : 0 < β) (hβπ : β < Real.pi) (hb : HasBorelContinuation a b θ β) :
     ∃ (f : ℂ → ℂ) (r : ℝ), 0 < r ∧
-      DifferentiableOn ℂ f (complexSector θ (Real.pi + β / 2) ∩ Metric.ball 0 r) ∧
-      HasSectorialGevreyOneExpansion f a θ (Real.pi + β / 2) ∧
-      ∀ z ∈ complexSector θ (Real.pi / 2), ‖z‖ < r →
+      DifferentiableOn ℂ f (complexSector θ (Real.pi + β) ∩ Metric.ball 0 r) ∧
+      HasSectorialGevreyOneExpansion f a θ (Real.pi + β) ∧
+      ∀ z ∈ complexSector θ Real.pi, ‖z‖ < r →
         f z = directionalBorelLaplaceSum (a 0) b θ z := by
   sorry
 

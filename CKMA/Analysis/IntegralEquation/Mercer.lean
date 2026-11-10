@@ -12,9 +12,10 @@ public import Mathlib.MeasureTheory.Measure.Support
 public import Mathlib.Topology.ContinuousMap.Compact
 
 /-!
-# Mercer expansions of continuous positive kernels
+# Mercer expansions of continuous positive-semidefinite kernels
 
-Positivity is tested by finite Gram matrices on a compact Hausdorff carrier. A finite measure
+Positive-semidefiniteness is tested by finite Gram matrices on a compact Hausdorff carrier.
+A finite measure
 with full support determines the integral operator and its continuous positive-eigenvalue
 representatives. The expansion permits zero eigenvalue tails, including finite-rank and zero
 kernels.
@@ -33,8 +34,9 @@ namespace CKMA
 open MeasureTheory Filter Topology
 open scoped BigOperators ComplexConjugate ComplexOrder
 
-/-- Kernel positivity through all finite Gram matrices, using Mathlib's matrix predicate. -/
-def IsPositiveDefiniteKernel {D : Type*} (k : D → D → ℂ) : Prop :=
+/-- Kernel positive-semidefiniteness through all finite Gram matrices.
+Zero eigenvalues, finite rank, and the zero kernel are allowed. -/
+def IsPositiveSemidefiniteKernel {D : Type*} (k : D → D → ℂ) : Prop :=
   ∀ n : ℕ, ∀ x : Fin n → D, Matrix.PosSemidef (fun i j : Fin n ↦ k (x i) (x j))
 
 /-- The kth Mercer summand with its continuous eigenfunction representative. -/
@@ -48,14 +50,14 @@ def HasUniformAbsoluteMercerTails {D : Type*} [TopologicalSpace D]
   ∀ ε : ℝ, 0 < ε → ∃ N : ℕ, ∀ s : Finset ℕ, (∀ n ∈ s, N ≤ n) →
     ∀ p : D × D, (∑ n ∈ s, ‖mercerTerm a e n p‖) < ε
 
-/-- **25.8**, Mercer: the compact positive kernel has a uniform absolutely convergent spectral
-expansion, with continuous normalized eigenfunctions at every positive eigenvalue. Zero tails
-are allowed, so finite-rank and zero kernels are included. -/
+/-- **25.8**, Mercer: the compact positive-semidefinite kernel has a uniform absolutely
+convergent spectral expansion, with continuous normalized eigenfunctions at every positive
+eigenvalue. Zero tails are allowed, so finite-rank and zero kernels are included. -/
 theorem mercer_expansion {D : Type*} [TopologicalSpace D] [CompactSpace D] [T2Space D]
     [MeasurableSpace D] [BorelSpace D] (μ : Measure D) [IsFiniteMeasure μ]
     (hsupport : ∀ U : Set D, IsOpen U → U.Nonempty → 0 < μ U)
     (k : D → D → ℂ) (hc : Continuous (fun p : D × D ↦ k p.1 p.2))
-    (hk : IsPositiveDefiniteKernel k) :
+    (hk : IsPositiveSemidefiniteKernel k) :
     ∃ a : ℕ → ℝ, ∃ e : ℕ → C(D, ℂ), ∃ T : Lp ℂ 2 μ →L[ℂ] Lp ℂ 2 μ,
       (∀ n, 0 ≤ a n) ∧ Antitone a ∧ Summable a ∧
       IsTraceClassOperator T ∧ HasIntegralKernel μ T (fun p ↦ k p.1 p.2) ∧

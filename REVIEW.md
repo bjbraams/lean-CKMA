@@ -1,7 +1,7 @@
 # Lean structural assessment of CKMA
 
-The library has 127 Lean modules, 953 inventoried public declarations and 57 structure
-fields, plus 2 documented private proof helpers. Every module has a mathematical
+The library has 132 Lean modules, 960 inventoried public declarations and 57 structure
+fields, plus 18 documented private proof helpers. Every module has a mathematical
 doc header; every inventoried declaration and structure field has a registered formal docstring. All mathematical declarations live in the
 `CKMA` namespace. Concrete public definitions are exposed to importing modules.
 
@@ -30,7 +30,7 @@ doc header; every inventoried declaration and structure field has a registered f
 
 Files follow their mathematical subjects; the planar flow theorem has no PDE-module
 import. Entry modules assemble every implementation module exactly once as checked
-by the index script. The largest file is `CKMA/Analysis/InnerProductSpace/Frame.lean` at 306 lines;
+by the index script. The largest file is `CKMA/Probability/Concentration.lean` at 477 lines;
 there are no size-driven splits or source lines beyond 100 columns.
 
 Definitions use Mathlib-style capitalization and theorem names retain their predicate
@@ -41,30 +41,31 @@ image explicitly. Conventional historical theorem names remain where useful.
 
 ## Proof status and remaining mathematical work
 
-There are 110 fully proved public theorems and 323 direct admissions. Three further
-theorem proof terms depend on admitted targets. All 517 definitions, abbreviations
-and structures have concrete bodies without `sorryAx`. The frame and approximate-continuity modules have no admissions. The main remaining task is
+There are 124 fully proved public theorems and 315 direct admissions. Three further
+theorem proof terms depend on admitted targets. All 518 definitions, abbreviations
+and structures have concrete bodies without `sorryAx`. The frame, approximate-continuity, proximal and Ekeland modules have no admissions. The main remaining task is
 proof completion, with scopes in [FORMALIZATION.md](FORMALIZATION.md).
 
 Broader APIs that are useful extensions, rather than prerequisites for the current
-statements, include net-indexed approximate identities/Cohen–Hewitt, bundled closed
-form norms, fully bundled interpolation spaces, and further locally uniform and
-operator-closure equivalences. The signed-real Newton generalization and wider
-geometric variants can be developed independently; the current positive-data and
-explicitly specialized targets retain valid documented scope. Substantial proofs may
+statements, include bundled closed form norms, fully bundled interpolation spaces, and
+further locally uniform and operator-closure equivalences. Cohen–Hewitt is stated for a
+bounded directed left approximate identity; the essential-module characterization and norm
+control on the factor remain. Newton iteration is stated for real or complex scalars. The
+current positive-data and explicitly specialized targets retain valid documented scope.
+Substantial proofs may
 justify splitting Choquet from optimization or the branches of integral equations;
 present file sizes do not require it.
 
 ## Validation
 
-- Full build: success, 9,019 jobs.
+- Full build: success, 9,033 jobs.
 - Strict source checks: the public entry and all files changed by the current proof effort pass with `autoImplicit=false` and
   `relaxedAutoImplicit=false`.
-- Catalogue/index checks: 603 entries, 242 started; 953 declarations, source hashes
+- Catalogue/index checks: 603 entries, 242 started; 960 declarations, source hashes
   and subject-entry membership verified.
-- Fresh axiom audit: 326 declarations depend on `sorryAx`; 627 use
+- Fresh axiom audit: 318 declarations depend on `sorryAx`; 642 use
   only standard axioms; no unexpected axioms or admitted non-theorem definitions.
-- Compiled doc audit: 953 public declarations, 57 fields and 2 private helpers checked, zero missing.
+- Compiled doc audit: 960 public declarations, 57 fields and 18 private helpers checked, zero missing.
 - Compiled unused-argument and `defsWithUnderscore` checks: no findings. The
   unused-argument linter skips admissions, so mathematical redundancy is assessed
   separately from syntactic usage.

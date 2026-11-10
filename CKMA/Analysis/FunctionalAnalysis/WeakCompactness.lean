@@ -85,10 +85,11 @@ theorem eberlein_smulian [CompleteSpace E] (s : Set E) :
         ∃ r : ℕ → ℕ, StrictMono r ∧ ∃ x : E, WeaklyConverges 𝕜 (u ∘ r) x := by
   sorry
 
-/-- **15.29**, the sufficiency direction of James's compactness theorem over the real scalars. -/
+/-- **15.29**, the sufficiency direction of James's compactness theorem over the real scalars.
+Attainment of every real functional supplies boundedness, so no separate bound is assumed. -/
 theorem isCompact_toWeakSpace_image_of_forall_exists_max {X : Type*} [NormedAddCommGroup X]
   [NormedSpace ℝ X]
-    [CompleteSpace X] {s : Set X} (hb : Bornology.IsBounded s)
+    [CompleteSpace X] {s : Set X}
     (hc : IsClosed s) (hv : Convex ℝ s)
     (hattain : ∀ ℓ : X →L[ℝ] ℝ, ∃ x ∈ s, ∀ y ∈ s, ℓ y ≤ ℓ x) :
     IsCompact (toWeakSpace ℝ X '' s) := by

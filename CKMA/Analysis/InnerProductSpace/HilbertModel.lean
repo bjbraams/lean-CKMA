@@ -11,8 +11,7 @@ public import Mathlib.Analysis.InnerProductSpace.Basic
 # Bundled Hilbert spaces over real or complex scalars
 
 The carrier universe is independent of the scalar universe. A single bundle records a normed
-additive group, a compatible inner product, and completeness; real and complex representation
-statements specialize the scalar parameter while retaining the chosen carrier universe.
+additive group, a compatible inner product, and completeness.
 -/
 
 @[expose] public section

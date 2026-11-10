@@ -49,7 +49,8 @@ theorem not_hausdorff_young {d : ℕ} (hd : 0 < d) {p q : ℝ≥0∞}
 
 /-- **27.13**: coordinate uncertainty at Mathlib's `exp(-2πix·ξ)` normalization.
 The input and Fourier-side second moments are explicit, and the input has unit `L²` norm. -/
-theorem heisenberg {d : ℕ} (j : Fin d) (f : Lp ℂ 2 (volume : Measure (EuclideanSpace ℝ (Fin d))))
+theorem heisenberg_uncertainty {d : ℕ} (j : Fin d)
+    (f : Lp ℂ 2 (volume : Measure (EuclideanSpace ℝ (Fin d))))
     (hf : ‖f‖ = 1)
     (hx : MemLp (fun x ↦ (x j : ℂ) * f x) 2 volume)
     (hξ : MemLp (fun ξ ↦ (ξ j : ℂ) * (𝓕 f) ξ) 2 volume) :
