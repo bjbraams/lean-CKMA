@@ -169,11 +169,11 @@ private theorem simpleEigenPartial_isInvertible (A0 : X →L[ℂ] X) (z₀ : ℂ
       _ = Q := by rw [sub_self, sub_zero]
   have happL (w : ℂ) (x : X) :
       simpleEigenPartial A0 z₀ u₀ phi (w, x) = (phi x, B x - w • u₀) := by
-    simp [simpleEigenPartial, B, prod_apply, comp_apply, smulRight_apply, coe_fst', coe_snd']
+    simp [simpleEigenPartial, B, ContinuousLinearMap.prod_apply, comp_apply, smulRight_apply, coe_fst', coe_snd']
   have happS (alpha : ℂ) (y : X) :
       simpleEigenPartialInv u₀ phi R (alpha, y) =
         (-phi y, (alpha - phi (R (Q y))) • u₀ + R (Q y)) := by
-    simp [simpleEigenPartialInv, Q, P, prod_apply, comp_apply, smulRight_apply, coe_fst',
+    simp [simpleEigenPartialInv, Q, P, ContinuousLinearMap.prod_apply, comp_apply, smulRight_apply, coe_fst',
       coe_snd', map_sub]
   have hLS : simpleEigenPartial A0 z₀ u₀ phi ∘L simpleEigenPartialInv u₀ phi R =
       .id ℂ (ℂ × X) := by

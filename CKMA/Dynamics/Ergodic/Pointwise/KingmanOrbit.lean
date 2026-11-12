@@ -167,7 +167,7 @@ theorem kingman_orbit_bound {u : ℕ → ℕ → ℝ}
         ∑ i ∈ Ico (n - k) n, kingmanMx u slope k (s + i) := by
   intro n
   induction n using Nat.strong_induction_on with
-  | h n ih =>
+  | ind n ih =>
     intro s hn
     obtain ⟨j, hj0, hjk, hblock⟩ := kingman_block_le_sum_psi (u := u) (slope := slope)
       (k := k) (s := s) hk

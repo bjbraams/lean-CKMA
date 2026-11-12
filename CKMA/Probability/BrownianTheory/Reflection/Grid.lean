@@ -266,7 +266,7 @@ lemma measurableSet_isTauSet {C : ℝ≥0 → Ω → ℝ} (hm : ∀ u, Measurabl
       measurableSet_Ici.preimage (hm _)
     have hprev : MeasurableSet {ω | ∀ j, j < k → C (grid t n j) ω < b} := by
       have hfin : MeasurableSet (⋂ j ∈ Finset.range k, {ω | C (grid t n j) ω < b}) :=
-        MeasurableSet.biInter (Finset.countable_toSet _) fun j hj =>
+        MeasurableSet.biInter (Set.to_countable _) fun j hj =>
           measurableSet_Iio.preimage (hm _)
       convert hfin using 1
       ext ω

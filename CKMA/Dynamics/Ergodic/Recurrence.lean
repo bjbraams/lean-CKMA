@@ -468,7 +468,7 @@ private lemma exists_isDisjointPreimage_of_pos (ha : IsAperiodicModMeasure T μ)
     have hsep_meas : ∀ δ : ℝ, MeasurableSet
         (⋂ k ∈ Finset.Ioo 0 M, {x | δ ≤ dist x ((T^[k]) x)}) := by
       intro δ
-      refine MeasurableSet.biInter (Finset.countable_toSet _) fun k _ => ?_
+      refine MeasurableSet.biInter (Set.to_countable _) fun k _ => ?_
       exact measurableSet_le measurable_const (measurable_id.dist (T.measurable.iterate k))
     have hscale : ∃ m : ℕ, 0 < μ (J ∩ ⋂ k ∈ Finset.Ioo 0 M,
         {x | (1 : ℝ) / (m + 1) ≤ dist x ((T^[k]) x)}) := by
@@ -681,7 +681,7 @@ private lemma exists_tower_of_forward (hT : MeasurePreserving T μ μ) {A : Set 
   have hent : ∀ k, MeasurableSet (entrance T A k) := by
     intro k
     exact (hA.preimage (T.measurable.iterate k)).diff
-      (MeasurableSet.biUnion (Finset.countable_toSet _) fun j _ =>
+      (MeasurableSet.biUnion (Set.to_countable _) fun j _ =>
         hA.preimage (T.measurable.iterate j))
   have hS : MeasurableSet S := MeasurableSet.iUnion fun q => hent _
   set B := (T^[n - 1]) ⁻¹' S
@@ -795,7 +795,7 @@ theorem rokhlin_tower [StandardBorelSpace Ω] [IsProbabilityMeasure μ]
   refine ⟨B, hB, hdisj, ?_⟩
   set C := ⋃ i ∈ Finset.range n, towerLevel T B i
   have hCmeas : MeasurableSet C := by
-    refine MeasurableSet.biUnion (Finset.countable_toSet _) fun i _ => ?_
+    refine MeasurableSet.biUnion (Set.to_countable _) fun i _ => ?_
     rw [towerLevel, image_iterate_eq_preimage_symm T]
     exact hB.preimage (T.symm.measurable.iterate i)
   have hC1 : μ C ≤ 1 := by

@@ -61,10 +61,9 @@ private theorem continuous_prod_realOperator (S : StronglyContinuousSemigroup X)
     rw [S.realOperator_def, Real.toNNReal_of_nonpos hp.1]
     exact S.map_zero_apply p.2
   have hpos : ContinuousOn (fun p : ℝ × X => S.realOperator p.1 p.2)
-      (Set.Ici 0 ×ˢ Set.univ) := fun p hp =>
+      (Set.Ici 0 ×ˢ Set.univ) := fun p _ =>
     S.tendsto_realOperator_apply
       (continuous_fst.continuousAt.tendsto.mono_left nhdsWithin_le_nhds)
-      (eventually_nhdsWithin_of_forall fun q hq => hq.1) hp.1
       (continuous_snd.continuousAt.tendsto.mono_left nhdsWithin_le_nhds)
   have hunion := hneg.union_of_isClosed hpos (isClosed_Iic.prod isClosed_univ)
     (isClosed_Ici.prod isClosed_univ)
@@ -513,19 +512,19 @@ private theorem integrated_at_of_continuous (S : StronglyContinuousSemigroup X) 
     have hmemO : Iorb ∈ S.domain := by
       rw [show Iorb = ∫ s in Set.Ioc 0 t, S.realOperator s x by
         simpa [Iorb, orbit] using (integral_of_le ht.le)]
-      exact S.integral_orbit_mem_domain x ht
+      exact S.integral_orbit_mem_domain x t
     have hmemO' : Iorb ∈ S.generator.domain := by
       rw [S.generator_domain]
       exact hmemO
     have hpackO : (⟨Iorb, hmemO'⟩ : S.generator.domain) =
         ⟨∫ s in Set.Ioc 0 t, S.realOperator s x, by
           rw [S.generator_domain]
-          exact S.integral_orbit_mem_domain x ht⟩ := by
+          exact S.integral_orbit_mem_domain x t⟩ := by
       apply Subtype.ext
       simpa [Iorb, orbit] using (integral_of_le ht.le)
     have hAO : S.generator ⟨Iorb, hmemO'⟩ = S.realOperator t x - x := by
       rw [hpackO]
-      exact S.generator_integral_orbit x ht
+      exact S.generator_integral_orbit x t
     have htend := tendsto_quot_duhamelIntegral S hf ht
     have hmemD : Iduh ∈ S.domain :=
       (S.mem_domain_iff_tendsto Iduh).mpr ⟨_, by simpa [Iduh, duh] using htend⟩
@@ -877,7 +876,7 @@ private theorem hasDerivWithinAt_integratedInterpolate (S : StronglyContinuousSe
     rw [← S.generator_domain]
     exact hmem⟩
   have hfull := S.realOperator_hasDerivWithinAt_Ici y (sub_pos.mpr hst).le
-  rw [S.realOperator_generator_map (sub_pos.mpr hst).le y] at hfull
+  rw [S.realOperator_generator_map (s := t - s) y] at hfull
   have hAy : S.generator ⟨(y : X), by
       rw [S.generator_domain]
       exact y.property⟩ = dx := by
@@ -891,9 +890,7 @@ private theorem hasDerivWithinAt_integratedInterpolate (S : StronglyContinuousSe
   rw [hasDerivWithinAt_iff_tendsto_slope, Set.Ici_sdiff_left] at hprim hback ⊢
   have htime : Tendsto (fun r : ℝ => t - r) (nhdsWithin s (Set.Ioi s)) (nhds (t - s)) :=
     ((continuous_sub_left t).tendsto s).mono_left nhdsWithin_le_nhds
-  have hlim := S.tendsto_realOperator_apply htime
-    ((htime.eventually_const_lt (sub_pos.mpr hst)).mono fun _ h => h.le)
-    (sub_pos.mpr hst).le hprim
+  have hlim := S.tendsto_realOperator_apply htime hprim
   have hsum := hlim.add hback
   rw [add_neg_cancel] at hsum
   refine hsum.congr fun r => ?_
@@ -952,7 +949,7 @@ private theorem eqOn_integrated (S : StronglyContinuousSemigroup X) {T : ℝ} {x
       have hgcont : ContinuousOn g (Set.Icc 0 t) := by
         simpa [g, Set.uIcc_of_le htpos.le] using continuousOn_primitive_interval hintUcc
       have hconst := S.realOperator_apply_eq_of_hasDerivWithinAt_zero (f := fun s => t - s)
-        (g := g) (continuous_sub_left t).continuousOn (fun s hs => sub_nonneg.mpr hs.2) hgcont
+        (g := g) (continuous_sub_left t).continuousOn hgcont
         (fun s hs => by
           have hex := hkey s ⟨hs.1, hs.2.le.trans ht.2⟩
           have hgs : g s ∈ S.generator.domain := by simpa [g] using hex.choose

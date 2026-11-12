@@ -57,7 +57,7 @@ theorem HasAsymptoticExpansion.coefficients_eq {X : Type*} {l : Filter X} [NeBot
     (ha : HasAsymptoticExpansion f a φ l) (hb : HasAsymptoticExpansion f b φ l) : a = b := by
   funext n
   induction n using Nat.strong_induction_on with
-  | h n ih =>
+  | ind n ih =>
     have hpre : ∀ x, (∑ k ∈ Finset.range n, a k * φ k x) =
         ∑ k ∈ Finset.range n, b k * φ k x := by
       intro x

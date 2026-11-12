@@ -8,7 +8,7 @@ module
 public import TauCeti.Analysis.OperatorIdeal.Family.Schatten
 public import TauCeti.Analysis.OperatorIdeal.ApproximationNumber.Basic
 public import TauCeti.Analysis.OperatorIdeal.ApproximationNumber.KyFan
-public import TauCeti.Analysis.Normed.Operator.Compact.FiniteRank
+public import TauCeti.Analysis.Normed.Operator.Compact.Finite.Rank
 public import TauCeti.Analysis.InnerProductSpace.Parseval
 public import Mathlib.Analysis.InnerProductSpace.l2Space
 public import Mathlib.Analysis.InnerProductSpace.Adjoint

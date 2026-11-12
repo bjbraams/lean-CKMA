@@ -58,7 +58,7 @@ lemma gridHit_eq_iUnion (C : ℝ≥0 → Ω → ℝ) (t : ℝ≥0) (b : ℝ) (n 
 lemma measurableSet_gridHit {C : ℝ≥0 → Ω → ℝ} (hm : ∀ u, Measurable (C u)) (t : ℝ≥0) (b : ℝ)
     (n : ℕ) : MeasurableSet (gridHit C t b n) := by
   rw [gridHit_eq_iUnion]
-  exact MeasurableSet.biUnion (Finset.countable_toSet _) fun k _ =>
+  exact MeasurableSet.biUnion (Set.to_countable _) fun k _ =>
     measurableSet_isTauSet hm t b n k
 
 /-- Paths that meet level `b` at some time up to the horizon. -/

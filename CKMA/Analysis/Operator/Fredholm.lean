@@ -7,7 +7,7 @@ module
 
 public import TauCeti.Analysis.Fredholm.Adjoint
 public import TauCeti.Analysis.Fredholm.CompactPerturbation
-public import TauCeti.Analysis.Normed.Operator.Compact.FiniteRank
+public import TauCeti.Analysis.Normed.Operator.Compact.Finite.Rank
 public import Mathlib.Algebra.Module.Submodule.Invariant
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Basic
 public import Mathlib.Analysis.CStarAlgebra.ContinuousLinearMap

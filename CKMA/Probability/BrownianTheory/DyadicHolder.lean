@@ -50,15 +50,15 @@ lemma lt_two_mul_largestPowerOfTwoLe {m : ℕ} (hm : 0 < m) :
 
 /-- Highest power of two dividing `a`, with the value `0` at `a = 0`. -/
 def twoAdicPow (a : ℕ) : ℕ :=
-  if a = 0 then 0 else 2 ^ padicValNat 2 a
+  if a = 0 then 0 else 2 ^ multiplicity 2 a
 
 /-- The highest power of two dividing a positive integer divides that integer. -/
 lemma twoAdicPow_dvd {a : ℕ} (ha : a ≠ 0) : twoAdicPow a ∣ a := by
-  simpa [twoAdicPow, ha] using pow_padicValNat_dvd (p := 2) (n := a)
+  simpa [twoAdicPow, ha] using pow_multiplicity_dvd 2 a
 
 /-- The highest power of two dividing a positive integer is itself a power of two. -/
 lemma twoAdicPow_eq_pow {a : ℕ} (ha : a ≠ 0) :
-    twoAdicPow a = 2 ^ padicValNat 2 a := by
+    twoAdicPow a = 2 ^ multiplicity 2 a := by
   simp [twoAdicPow, ha]
 
 /-- The minimum of two powers of two is the power for the smaller exponent. -/
@@ -80,7 +80,7 @@ lemma greedyStep_eq_pow {a b : ℕ} (h : a < b) : ∃ k, greedyStep a b = 2 ^ k 
     have hb : 0 < b := by omega
     simp only [greedyStep, ha, Nat.sub_zero]
     exact largestPowerOfTwoLe_of_pos hb
-  · refine ⟨min (padicValNat 2 a) ((b - a).log2), ?_⟩
+  · refine ⟨min (multiplicity 2 a) ((b - a).log2), ?_⟩
     simp [greedyStep, ha, twoAdicPow_eq_pow ha, largestPowerOfTwoLe_of_pos hpos, min_two_pow]
 
 /-- A greedy step does not exceed the remaining gap. -/
@@ -103,9 +103,9 @@ lemma greedyStep_dvd {a b : ℕ} (h : a < b) : greedyStep a b ∣ a := by
   · simp [ha]
   · have hpos : 0 < b - a := by omega
     have hstep : greedyStep a b =
-        min (2 ^ padicValNat 2 a) (2 ^ (b - a).log2) := by
+        min (2 ^ multiplicity 2 a) (2 ^ (b - a).log2) := by
       simp [greedyStep, ha, twoAdicPow_eq_pow ha, largestPowerOfTwoLe_of_pos hpos]
-    have hpow : 2 ^ padicValNat 2 a ∣ a := by
+    have hpow : 2 ^ multiplicity 2 a ∣ a := by
       simpa [twoAdicPow_eq_pow ha] using twoAdicPow_dvd ha
     rw [hstep, min_two_pow]
     exact (Nat.pow_dvd_pow 2 (Nat.min_le_left _ _)).trans hpow
@@ -120,14 +120,14 @@ lemma remaining_lt_of_eq_largest {a b : ℕ} (h : a < b)
   omega
 
 /-- Adding the exact power of two dividing `a` raises the 2-adic valuation by one. -/
-lemma two_pow_succ_dvd_add {a q : ℕ} (ha : a ≠ 0) (hq : padicValNat 2 a = q) :
+lemma two_pow_succ_dvd_add {a q : ℕ} (ha : a ≠ 0) (hq : multiplicity 2 a = q) :
     2 ^ (q + 1) ∣ a + 2 ^ q := by
   have hdvd : 2 ^ q ∣ a :=
-    (Nat.pow_dvd_iff_le_padicValNat (by decide) ha).mpr (by omega)
+    (Nat.pow_dvd_iff_le_multiplicity (by decide) ha).mpr (by omega)
   obtain ⟨m, hm⟩ := hdvd
   have hnot : ¬ 2 ^ (q + 1) ∣ a := by
     intro h
-    have := (Nat.pow_dvd_iff_le_padicValNat (by decide) ha).mp h
+    have := (Nat.pow_dvd_iff_le_multiplicity (by decide) ha).mp h
     omega
   have hodd : ¬ 2 ∣ m := by
     intro h2
@@ -272,20 +272,20 @@ lemma greedyStep_eq_largest_of_le_exp {a b r q : ℕ} (h : a < b)
   by_cases ha : a = 0
   · simp [greedyStep, ha]
   · have hpos : 0 < b - a := by omega
-    have hv : q + 1 ≤ padicValNat 2 a :=
-      (Nat.pow_dvd_iff_le_padicValNat (by decide) ha).mp hdiv
+    have hv : q + 1 ≤ multiplicity 2 a :=
+      (Nat.pow_dvd_iff_le_multiplicity (by decide) ha).mp hdiv
     have hsdef : greedyStep a b =
-        min (2 ^ padicValNat 2 a) (2 ^ (b - a).log2) := by
+        min (2 ^ multiplicity 2 a) (2 ^ (b - a).log2) := by
       simp [greedyStep, ha, twoAdicPow_eq_pow ha, largestPowerOfTwoLe_of_pos hpos]
     have hs0 : greedyStep a b = 2 ^ r := hs
     rw [hsdef, min_two_pow] at hs
     have hinj := Nat.pow_right_injective (by decide : 1 < 2) hs
-    have hnot : ¬ padicValNat 2 a ≤ (b - a).log2 := by
+    have hnot : ¬ multiplicity 2 a ≤ (b - a).log2 := by
       intro hle
-      have : min (padicValNat 2 a) (b - a).log2 = padicValNat 2 a := min_eq_left hle
+      have : min (multiplicity 2 a) (b - a).log2 = multiplicity 2 a := min_eq_left hle
       omega
-    have hlog : (b - a).log2 ≤ padicValNat 2 a := le_of_not_ge hnot
-    have hmin : min (padicValNat 2 a) (b - a).log2 = (b - a).log2 := min_eq_right hlog
+    have hlog : (b - a).log2 ≤ multiplicity 2 a := le_of_not_ge hnot
+    have hmin : min (multiplicity 2 a) (b - a).log2 = (b - a).log2 := min_eq_right hlog
     have hlogeq : (b - a).log2 = r := by omega
     rw [largestPowerOfTwoLe_of_pos hpos, hlogeq]
     exact hs0
@@ -326,11 +326,11 @@ lemma count_greedyJumps_bounds (d : ℕ) :
             have hdvdq : 2 ^ q ∣ a := by
               rw [← heq]
               exact greedyStep_dvd hlt
-            have hv : padicValNat 2 a = q := by
-              have hlev := (Nat.pow_dvd_iff_le_padicValNat (by decide) ha).mp hdvdq
-              have hnot : ¬ q + 1 ≤ padicValNat 2 a := by
+            have hv : multiplicity 2 a = q := by
+              have hlev := (Nat.pow_dvd_iff_le_multiplicity (by decide) ha).mp hdvdq
+              have hnot : ¬ q + 1 ≤ multiplicity 2 a := by
                 intro h
-                exact hdiva ((Nat.pow_dvd_iff_le_padicValNat (by decide) ha).mpr h)
+                exact hdiva ((Nat.pow_dvd_iff_le_multiplicity (by decide) ha).mpr h)
               omega
             have hnext : 2 ^ (q + 1) ∣ a + greedyStep a b := by
               rw [heq]

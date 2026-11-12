@@ -5,7 +5,7 @@ Authors: CKMA contributors
 -/
 module
 
-public import TauCeti.Analysis.Normed.Operator.AbsolutelySumming
+public import TauCeti.Analysis.Normed.Operator.AbsolutelySumming.Basic
 public import Mathlib.MeasureTheory.Integral.Bochner.Basic
 public import Mathlib.Analysis.Normed.Module.WeakDual
 public import Mathlib.MeasureTheory.Measure.Regular

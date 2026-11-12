@@ -1110,8 +1110,7 @@ private lemma tendsto_cesaro_normSq_inner_both (A : H →L[ℂ] H) [IsStarNormal
     have hg : IntervalIntegrable (fun t : ℝ => ((4 : ℝ)⁻¹) * ∑ j : Fin 4,
         ‖⟪polVec x y j, boundedSpectralEvolution A t (polVec x y j)⟫_ℂ‖ ^ 2) volume 0 T := by
       refine IntervalIntegrable.const_mul ?_ _
-      refine IntervalIntegrable.sum Finset.univ fun j _ => ?_
-      exact (continuous_normSq_inner_evolution A (polVec x y j)
+      exact (continuous_finsetSum _ fun j _ => continuous_normSq_inner_evolution A (polVec x y j)
         (polVec x y j)).intervalIntegrable 0 T
     have hint := intervalIntegral.integral_mono hT.le hf hg
       fun t => normSq_inner_pol_le (boundedSpectralEvolution A t) x y

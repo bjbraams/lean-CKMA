@@ -18,7 +18,7 @@ public import Mathlib.Analysis.Normed.Affine.AddTorsorBases
 public import Mathlib.Topology.Algebra.Module.FiniteDimension
 public import Mathlib.Analysis.Normed.Module.FiniteDimension
 public import TauCeti.AlgebraicTopology.Sphere.Contractible
-public import TauCeti.Analysis.Convex.Uniform
+public import TauCeti.Analysis.Convex.Uniform.Basic
 public import TauCeti.Analysis.Normed.Module.Dual.Reflexive.WeakCompact
 public import Mathlib.Analysis.LocallyConvex.WeakSpace
 public import Mathlib.Analysis.InnerProductSpace.Continuous
