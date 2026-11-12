@@ -12,6 +12,10 @@ public import Mathlib.MeasureTheory.MeasurableSpace.Invariants
 public import Mathlib.MeasureTheory.Function.LpSeminorm.Basic
 public import Mathlib.Probability.Notation
 
+import CKMA.Dynamics.Ergodic.Pointwise.Maximal
+import CKMA.Dynamics.Ergodic.Pointwise.Birkhoff
+import CKMA.Dynamics.Ergodic.Pointwise.KingmanClosure
+
 /-!
 # Pointwise and subadditive ergodic theorems (10.5, 10.7)
 
@@ -44,22 +48,22 @@ def maximalErgodicSet (T : Ω → Ω) (f : Ω → ℝ) (N : ℕ) : Set Ω :=
 theorem maximal_ergodic [IsProbabilityMeasure μ] {T : Ω → Ω}
     (hT : MeasurePreserving T μ μ) {f : Ω → ℝ} (hf : Integrable f μ) (N : ℕ) :
     0 ≤ ∫ ω in maximalErgodicSet T f N, f ω ∂μ := by
-  sorry
+  simpa [maximalErgodicSet] using integral_nonneg_maximalErgodicSet hT hf N
 
 /-- **10.5**, Birkhoff's pointwise theorem with the invariant conditional-expectation limit.
 The result needs no standard-Borel restriction on the probability space. -/
 theorem birkhoff_pointwise [IsProbabilityMeasure μ] {T : Ω → Ω}
     (hT : MeasurePreserving T μ μ) {f : Ω → ℝ} (hf : Integrable f μ) :
     ∀ᵐ ω ∂μ, Tendsto (fun n : ℕ ↦ birkhoffAverage ℝ T f n ω) atTop
-      (𝓝 ((μ[f | MeasurableSpace.invariants T]) ω)) := by
-  sorry
+      (𝓝 ((μ[f | MeasurableSpace.invariants T]) ω)) :=
+  birkhoffAverage_ae_tendsto_condExp hT hf
 
 /-- In an ergodic system the Birkhoff limit is the scalar mean. -/
 theorem birkhoff_pointwise_of_ergodic [IsProbabilityMeasure μ] {T : Ω → Ω}
     (hT : Ergodic T μ) {f : Ω → ℝ} (hf : Integrable f μ) :
     ∀ᵐ ω ∂μ, Tendsto (fun n : ℕ ↦ birkhoffAverage ℝ T f n ω) atTop
-      (𝓝 (∫ ω, f ω ∂μ)) := by
-  sorry
+      (𝓝 (∫ ω, f ω ∂μ)) :=
+  birkhoffAverage_ae_tendsto_integral_of_ergodic hT hf
 
 /-- Subadditivity along a transformation, on positive lengths; no artificial value for `f₀`
 is imposed. Almost-everywhere inequalities are used in each pair of lengths. -/
@@ -83,7 +87,8 @@ theorem kingman_subadditive [IsProbabilityMeasure μ] {T : Ω → Ω}
       Tendsto (fun n : ℕ ↦ eLpNorm (fun ω ↦ (n + 1 : ℝ)⁻¹ * f (n + 1) ω - g ω) 1 μ)
         atTop (𝓝 0) ∧
       (∫ ω, g ω ∂μ) = subadditiveMeanRate f μ := by
-  sorry
+  simpa [IsSubadditiveProcess, subadditiveMeanRate, kingmanFekete] using
+    kingman_of_integrable hT hf hsub hlower
 
 /-- The subadditive ergodic limit is constant and equal to the infimum mean rate. -/
 theorem kingman_subadditive_of_ergodic [IsProbabilityMeasure μ] {T : Ω → Ω}
@@ -93,6 +98,7 @@ theorem kingman_subadditive_of_ergodic [IsProbabilityMeasure μ] {T : Ω → Ω}
     (hlower : ∃ c : ℝ, ∀ n : ℕ, 0 < n → c ≤ (n : ℝ)⁻¹ * ∫ ω, f n ω ∂μ) :
     ∀ᵐ ω ∂μ, Tendsto (fun n : ℕ ↦ (n + 1 : ℝ)⁻¹ * f (n + 1) ω) atTop
       (𝓝 (subadditiveMeanRate f μ)) := by
-  sorry
+  simpa [IsSubadditiveProcess, subadditiveMeanRate, kingmanFekete] using
+    kingman_ae_tendsto_of_ergodic hT hf hsub hlower
 
 end CKMA

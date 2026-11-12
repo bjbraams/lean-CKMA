@@ -6,6 +6,8 @@ Authors: CKMA contributors
 module
 
 public import CKMA.Analysis.Interpolation.Basic
+public import CKMA.Analysis.Interpolation.Bounds.Real
+public import CKMA.Analysis.Interpolation.Bounds.Complex
 
 /-!
 # Real and complex interpolation bounds
@@ -33,7 +35,15 @@ theorem realInterpolationGauge_map_le {𝕜 : Type*} [RCLike 𝕜] {C D : Banach
     (hx : x ∈ C.realInterpolationSet θ q) :
     D.realInterpolationGauge θ q (T.ambientMap x) ≤
       ENNReal.ofReal (M₀ ^ (1 - θ) * M₁ ^ θ) * C.realInterpolationGauge θ q x := by
-  sorry
+  have hM₀ : 0 ≤ M₀ := (norm_nonneg _).trans h₀
+  have hM₁ : 0 ≤ M₁ := (norm_nonneg _).trans h₁
+  refine le_of_endpointFactor_eps hθ hθ1 hM₀ hM₁ ?_ fun ε hε => ?_
+  · rw [BanachCouple.realInterpolationSet, Set.mem_ofPred_eq] at hx
+    exact hx
+  · exact realInterpolationGauge_map_le_of_pos T hq
+      (add_pos_of_nonneg_of_pos hM₀ hε) (add_pos_of_nonneg_of_pos hM₁ hε)
+      (h₀.trans (le_add_of_nonneg_right hε.le))
+      (h₁.trans (le_add_of_nonneg_right hε.le)) x
 
 /-- **26.54**: the complex interpolation operator bound at the gauge level. -/
 theorem complexInterpolationGauge_map_le {C D : BanachCouple ℂ}
@@ -43,6 +53,14 @@ theorem complexInterpolationGauge_map_le {C D : BanachCouple ℂ}
     (hx : x ∈ C.complexInterpolationSet θ) :
     D.complexInterpolationGauge θ (T.ambientMap x) ≤
       ENNReal.ofReal (M₀ ^ (1 - θ) * M₁ ^ θ) * C.complexInterpolationGauge θ x := by
-  sorry
+  have hM₀ : 0 ≤ M₀ := (norm_nonneg _).trans h₀
+  have hM₁ : 0 ≤ M₁ := (norm_nonneg _).trans h₁
+  refine le_of_endpointFactor_eps hθ hθ1 hM₀ hM₁ ?_ fun ε hε => ?_
+  · rw [BanachCouple.complexInterpolationSet, Set.mem_ofPred_eq] at hx
+    exact hx
+  · exact complexInterpolationGauge_map_le_of_pos T hθ hθ1
+      (add_pos_of_nonneg_of_pos hM₀ hε) (add_pos_of_nonneg_of_pos hM₁ hε)
+      (h₀.trans (le_add_of_nonneg_right hε.le))
+      (h₁.trans (le_add_of_nonneg_right hε.le)) x
 
 end CKMA

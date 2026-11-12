@@ -6,6 +6,8 @@ Authors: CKMA contributors
 module
 
 public import CKMA.Analysis.OrderedSpace.Bands
+public import CKMA.Analysis.OrderedSpace.Representation.AL.Gluing.Sum
+public import CKMA.Analysis.OrderedSpace.Representation.AM
 public import Mathlib.Topology.ContinuousMap.Compact
 public import Mathlib.Topology.Category.CompHaus.Basic
 public import Mathlib.Topology.ContinuousMap.Ordered
@@ -79,13 +81,16 @@ Hausdorff continuous-function space, with that unit represented by the constant 
 theorem exists_amSpace_representation [CompleteSpace E] {e : E} (he : IsAMSpaceUnit e) :
     ∃ K : CompactHausdorffModel.{u}, ∃ U : E ≃ₗᵢ[ℝ] C(K.Carrier, ℝ),
       U e = 1 ∧ ∀ x y, U (x ⊔ y) = U x ⊔ U y := by
-  sorry
+  rcases he with ⟨-, he0, hball⟩
+  obtain ⟨K, U, hU, hsup⟩ := exists_am_representation (E := E) he0 hball
+  exact ⟨K, U, hU, hsup⟩
 
 /-- **19.29**, Kakutani: an AL Banach lattice is lattice isometric to some real L1 space. -/
 theorem exists_alSpace_representation [CompleteSpace E] (hE : IsALSpace E) :
     ∃ M : MeasureSpaceModel.{u}, ∃ U : E ≃ₗᵢ[ℝ] Lp ℝ 1 M.measure,
       ∀ x y, U (x ⊔ y) = U x ⊔ U y := by
-  sorry
+  obtain ⟨X, mX, μ, U, hsup⟩ := exists_al_representation (E := E) hE
+  exact ⟨{ Carrier := X, measurableSpace := mX, measure := μ }, U, hsup⟩
 
 omit [NormedSpace ℝ E] [IsOrderedModule ℝ E] [HasSolidNorm E] in
 /-- The monotone-completeness consequence of the AL identity.

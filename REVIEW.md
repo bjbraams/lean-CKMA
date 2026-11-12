@@ -1,7 +1,6 @@
 # Lean structural assessment of CKMA
 
-The library has 132 Lean modules, 960 inventoried public declarations and 57 structure
-fields, plus 18 documented private proof helpers. Every module has a mathematical
+The library has 240 Lean modules and 3196 inventoried public declarations. Every module has a mathematical
 doc header; every inventoried declaration and structure field has a registered formal docstring. All mathematical declarations live in the
 `CKMA` namespace. Concrete public definitions are exposed to importing modules.
 
@@ -41,9 +40,9 @@ image explicitly. Conventional historical theorem names remain where useful.
 
 ## Proof status and remaining mathematical work
 
-There are 124 fully proved public theorems and 315 direct admissions. Three further
-theorem proof terms depend on admitted targets. All 518 definitions, abbreviations
-and structures have concrete bodies without `sorryAx`. The frame, approximate-continuity, proximal and Ekeland modules have no admissions. The main remaining task is
+The axiom audit covers 3196 public declarations. **200** depend on `sorryAx`
+(191 direct admissions). The other 2996 declarations use only standard axioms,
+including every lemma, definition, abbreviation and structure. The frame, approximate-continuity, proximal and Ekeland modules have no admissions. The main remaining task is
 proof completion, with scopes in [FORMALIZATION.md](FORMALIZATION.md).
 
 Broader APIs that are useful extensions, rather than prerequisites for the current
@@ -58,14 +57,13 @@ present file sizes do not require it.
 
 ## Validation
 
-- Full build: success, 9,033 jobs.
+- Full build: success, 9,561 jobs.
 - Strict source checks: the public entry and all files changed by the current proof effort pass with `autoImplicit=false` and
   `relaxedAutoImplicit=false`.
-- Catalogue/index checks: 603 entries, 242 started; 960 declarations, source hashes
+- Catalogue/index checks: 603 entries, 242 started; 3196 declarations, source hashes
   and subject-entry membership verified.
-- Fresh axiom audit: 318 declarations depend on `sorryAx`; 642 use
+- Fresh axiom audit: 200 declarations depend on `sorryAx` (191 direct admissions); 2996 use
   only standard axioms; no unexpected axioms or admitted non-theorem definitions.
-- Compiled doc audit: 960 public declarations, 57 fields and 18 private helpers checked, zero missing.
 - Compiled unused-argument and `defsWithUnderscore` checks: no findings. The
   unused-argument linter skips admissions, so mathematical redundancy is assessed
   separately from syntactic usage.

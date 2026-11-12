@@ -6,6 +6,8 @@ Authors: CKMA contributors
 module
 
 public import CKMA.Analysis.Convex.Basic
+public import CKMA.Analysis.Convex.Duality.Choquet
+public import CKMA.Analysis.Convex.Duality.KKT
 public import TauCeti.Analysis.Convex.FenchelMoreau
 public import Mathlib.Analysis.Convex.Extreme
 public import Mathlib.Tactic
@@ -46,8 +48,8 @@ theorem exists_choquetMeasure {V : Type*} [AddCommGroup V] [Module ℝ V]
     [TopologicalSpace.MetrizableSpace K] [MeasurableSpace K] [BorelSpace K] (x : K) :
     ∃ μ : Measure K, IsProbabilityMeasure μ ∧
       μ {y : K | y.1 ∉ Set.extremePoints ℝ K} = 0 ∧
-      ∀ a : V →ᴬ[ℝ] ℝ, (∫ y : K, a y.1 ∂μ) = a x.1 := by
-  sorry
+      ∀ a : V →ᴬ[ℝ] ℝ, (∫ y : K, a y.1 ∂μ) = a x.1 :=
+  exists_choquetMeasure_of_compact K hK hc x
 
 section Banach
 
@@ -79,7 +81,11 @@ theorem dualSubdifferential_add [CompleteSpace E] {f g : E → EReal}
     {x₀ : E} (hfin : f x₀ ≠ ⊤ ∧ g x₀ ≠ ⊤) (hcont : ContinuousAt g x₀) (x : E) :
     dualSubdifferential (fun y ↦ f y + g y) x =
       dualSubdifferential f x + dualSubdifferential g x := by
-  sorry
+  let _ := hlf
+  let _ := hlg
+  have _ := ‹CompleteSpace E›
+  simpa [dualSubdifferential] using
+    subdifferential_add_eq hf hg hcf hcg hfin hcont x
 
 /-- The primal Fenchel value, in extended reals. -/
 def fenchelPrimalValue (f : E → EReal) (g : F → EReal) (A : E →L[ℝ] F) : EReal :=
@@ -105,7 +111,17 @@ theorem exists_fenchelDual_maximizer [CompleteSpace E] [CompleteSpace F]
     (hval : fenchelPrimalValue f g A ≠ ⊥ ∧ fenchelPrimalValue f g A ≠ ⊤) :
     ∃ u : StrongDual ℝ F, fenchelPrimalValue f g A = fenchelDualValue f g A u ∧
       ∀ v, fenchelDualValue f g A v ≤ fenchelDualValue f g A u := by
-  sorry
+  let _ := hlf
+  let _ := hlg
+  have _ := ‹CompleteSpace E›
+  have _ := ‹CompleteSpace F›
+  have hval' : marginalValue f g A 0 ≠ ⊥ ∧ marginalValue f g A 0 ≠ ⊤ := by
+    have hEq : marginalValue f g A 0 = fenchelPrimalValue f g A := by
+      simp [marginalValue, fenchelPrimalValue, add_zero]
+    rw [hEq]
+    exact hval
+  simpa [fenchelPrimalValue, fenchelDualValue, marginalValue, add_zero] using
+    exists_fenchelDual_maximizer_of_qual A hf hg hcf hcg hfin hcont hval'
 
 /-- Feasibility for finitely many convex inequalities and affine equalities. -/
 def convexFeasibleSet {m n : ℕ} (g : Fin n → E → ℝ)
@@ -131,7 +147,16 @@ theorem exists_convexKKTMultipliers [FiniteDimensional ℝ E] {m n : ℕ}
     (hx : x ∈ convexFeasibleSet g A b)
     (hmin : ∀ z ∈ convexFeasibleSet g A b, f x ≤ f z) :
     HasConvexKKTMultipliers f g A x := by
-  sorry
+  obtain ⟨c, u, v, y, hc, hu, hv, hstat, hcomp⟩ :=
+    exists_convexKKTMultipliers_of_slater f g A b hf hg hslater
+      (by simpa [convexFeasibleSet] using hx)
+      (by
+        intro z hgz hAz
+        exact hmin z (by simpa [convexFeasibleSet] using And.intro hgz hAz))
+  refine ⟨c, u, v, y, hc, ?_, ?_, hstat, hcomp⟩
+  · simpa [realSubdifferential, dualSubdifferential] using hu
+  · intro i
+    simpa [realSubdifferential, dualSubdifferential] using hv i
 
 /-- KKT conditions are sufficient even without Slater's condition, in any normed space. -/
 theorem HasConvexKKTMultipliers.isMinOn {m n : ℕ}

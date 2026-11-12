@@ -6,6 +6,11 @@ Authors: CKMA contributors
 module
 
 public import CKMA.Analysis.CStarAlgebra.Representation
+public import CKMA.Analysis.Operator.Dilation.Minimal
+public import CKMA.Analysis.Operator.Dilation.UnitaryExists
+public import CKMA.Analysis.Operator.Dilation.UnitaryUnique
+public import CKMA.Analysis.Operator.Dilation.Wold
+public import CKMA.Analysis.Operator.Dilation.CommutantLift
 public import Mathlib.Analysis.InnerProductSpace.Adjoint
 
 /-!
@@ -35,14 +40,6 @@ variable {H K L : Type u}
     [NormedAddCommGroup K] [InnerProductSpace ℂ K] [CompleteSpace K]
     [NormedAddCommGroup L] [InnerProductSpace ℂ L] [CompleteSpace L]
 
-/-- The wandering subspace `ker V*` of an isometry. -/
-def woldWanderingSubspace (V : H →ₗᵢ[ℂ] H) : Submodule ℂ H :=
-  LinearMap.ker V.toContinuousLinearMap.adjoint.toLinearMap
-
-/-- The unitary part is the intersection of all forward ranges. -/
-def woldUnitarySubspace (V : H →ₗᵢ[ℂ] H) : Submodule ℂ H :=
-  ⨅ n : ℕ, LinearMap.range ((V.toContinuousLinearMap ^ n).toLinearMap)
-
 /-- **21.26**: Wold's orthogonal unitary/shift decomposition. The shift multiplicity is
 represented by the actual coefficient space `ker V*`, and the expansion is unconditional. -/
 theorem wold_decomposition (V : H →ₗᵢ[ℂ] H) :
@@ -53,8 +50,9 @@ theorem wold_decomposition (V : H →ₗᵢ[ℂ] H) :
     (∀ u ∈ woldUnitarySubspace V, ∀ n : ℕ, ∀ w : woldWanderingSubspace V,
       ⟪u, (V.toContinuousLinearMap ^ n) w⟫_ℂ = 0) ∧
     ∀ x : H, ∃ u ∈ woldUnitarySubspace V, ∃ w : ℕ → woldWanderingSubspace V,
-      HasSum (fun n ↦ (V.toContinuousLinearMap ^ n) (w n)) (x - u) := by
-  sorry
+      HasSum (fun n ↦ (V.toContinuousLinearMap ^ n) (w n)) (x - u) :=
+  ⟨woldUnitarySubspace_invariant V, woldUnitarySubspace_preimage V, woldShift_inner_eq_zero V,
+    woldUnitary_inner_shift_eq_zero V, wold_hasSum_decomposition V⟩
 
 /-- Power dilation and two-sided orbit minimality for a unitary realization. -/
 def IsMinimalUnitaryPowerDilation (T : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K)
@@ -66,7 +64,8 @@ def IsMinimalUnitaryPowerDilation (T : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K)
 theorem exists_minimalUnitaryPowerDilation (T : H →L[ℂ] H) (hT : ‖T‖ ≤ 1) :
     ∃ M : ComplexHilbertSpace.{u}, ∃ J : H →ₗᵢ[ℂ] M.Carrier,
       ∃ U : M.Carrier ≃ₗᵢ[ℂ] M.Carrier, IsMinimalUnitaryPowerDilation T J U := by
-  sorry
+  obtain ⟨M, J, U, hpow, hmin⟩ := exists_minimalUnitaryPowerDilation_data T hT
+  exact ⟨M, J, U, ⟨hpow, hmin⟩⟩
 
 /-- Uniqueness is the unique unitary preserving the embedded original space and intertwining
 both dilations; it follows from their two-sided orbit minimality. -/
@@ -74,7 +73,9 @@ theorem minimalUnitaryPowerDilation_unique (T : H →L[ℂ] H)
     (J : H →ₗᵢ[ℂ] K) (U : K ≃ₗᵢ[ℂ] K) (hU : IsMinimalUnitaryPowerDilation T J U)
     (J' : H →ₗᵢ[ℂ] L) (U' : L ≃ₗᵢ[ℂ] L) (hU' : IsMinimalUnitaryPowerDilation T J' U') :
     ∃! W : K ≃ₗᵢ[ℂ] L, (∀ x, W (J x) = J' x) ∧ ∀ y, W (U y) = U' (W y) := by
-  sorry
+  rcases hU with ⟨hpow, hmin⟩
+  rcases hU' with ⟨hpow', hmin'⟩
+  exact minimalUnitaryPowerDilation_unique_of T J U hpow hmin J' U' hpow' hmin'
 
 /-- Minimal isometric dilation with the original space co-invariant. -/
 def IsMinimalIsometricDilation (T : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K)
@@ -87,7 +88,8 @@ def IsMinimalIsometricDilation (T : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K)
 theorem exists_minimalIsometricDilation (T : H →L[ℂ] H) (hT : ‖T‖ ≤ 1) :
     ∃ M : ComplexHilbertSpace.{u}, ∃ J : H →ₗᵢ[ℂ] M.Carrier,
       ∃ V : M.Carrier →ₗᵢ[ℂ] M.Carrier, IsMinimalIsometricDilation T J V := by
-  sorry
+  obtain ⟨M, J, V, hcoin, hmin⟩ := exists_minimalIsometricDilationData T hT
+  exact ⟨M, J, V, ⟨hcoin, hmin⟩⟩
 
 /-- **21.37**: an operator commuting with a contraction has a norm-preserving commuting lift
 on its minimal isometric dilation, with the full coextension identity. -/
@@ -95,6 +97,7 @@ theorem commutant_lifting (T X : H →L[ℂ] H) (hT : ‖T‖ ≤ 1) (hXT : Comm
     (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K) (hd : IsMinimalIsometricDilation T J V) :
     ∃ Y : K →L[ℂ] K, Commute Y V.toContinuousLinearMap ∧ ‖Y‖ = ‖X‖ ∧
       ∀ y : K, J.toContinuousLinearMap.adjoint (Y y) = X (J.toContinuousLinearMap.adjoint y) := by
-  sorry
+  rcases hd with ⟨hcoin, _⟩
+  exact commutant_lifting_of T X hT hXT J V hcoin
 
 end CKMA

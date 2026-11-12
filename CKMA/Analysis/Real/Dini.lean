@@ -5,10 +5,8 @@ Authors: CKMA contributors
 -/
 module
 
-public import Mathlib.Analysis.Calculus.Deriv.Slope
-public import Mathlib.Data.EReal.Operations
-public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
-public import Mathlib.Order.LiminfLimsup
+public import CKMA.Analysis.Real.Dini.Basic
+public import CKMA.Analysis.Real.Dini.Assembly
 
 /-!
 # Dini derivatives and Denjoy–Young–Saks alternatives
@@ -26,45 +24,12 @@ noncomputable section
 
 namespace CKMA
 
-open Filter Topology MeasureTheory
-
-/-- The real difference quotient, embedded in the extended real line. -/
-def extendedDifferenceQuotient (f : ℝ → ℝ) (x h : ℝ) : EReal :=
-  ((f (x + h) - f x) / h : ℝ)
-
-/-- Upper right Dini derivative, with positive increments tending to zero. -/
-def upperRightDiniDerivative (f : ℝ → ℝ) (x : ℝ) : EReal :=
-  limsup (extendedDifferenceQuotient f x) (𝓝[>] 0)
-
-/-- Lower right Dini derivative. -/
-def lowerRightDiniDerivative (f : ℝ → ℝ) (x : ℝ) : EReal :=
-  liminf (extendedDifferenceQuotient f x) (𝓝[>] 0)
-
-/-- Upper left Dini derivative, with negative increments increasing to zero. -/
-def upperLeftDiniDerivative (f : ℝ → ℝ) (x : ℝ) : EReal :=
-  limsup (extendedDifferenceQuotient f x) (𝓝[<] 0)
-
-/-- Lower left Dini derivative. -/
-def lowerLeftDiniDerivative (f : ℝ → ℝ) (x : ℝ) : EReal :=
-  liminf (extendedDifferenceQuotient f x) (𝓝[<] 0)
-
-/-- The four alternatives of Denjoy–Young–Saks, numbered from zero.
-The left derivatives use the same quotient `(f(x+h)-f(x))/h` with `h<0`. -/
-def HasDiniType (f : ℝ → ℝ) (x : ℝ) (i : Fin 4) : Prop :=
-  match i.val with
-  | 0 => ∃ a : ℝ, upperRightDiniDerivative f x = a ∧ lowerRightDiniDerivative f x = a ∧
-      upperLeftDiniDerivative f x = a ∧ lowerLeftDiniDerivative f x = a
-  | 1 => upperRightDiniDerivative f x = ⊤ ∧ upperLeftDiniDerivative f x = ⊤ ∧
-      lowerRightDiniDerivative f x = ⊥ ∧ lowerLeftDiniDerivative f x = ⊥
-  | 2 => upperRightDiniDerivative f x = ⊤ ∧ lowerLeftDiniDerivative f x = ⊥ ∧
-      ∃ a : ℝ, lowerRightDiniDerivative f x = a ∧ upperLeftDiniDerivative f x = a
-  | _ => upperLeftDiniDerivative f x = ⊤ ∧ lowerRightDiniDerivative f x = ⊥ ∧
-      ∃ a : ℝ, lowerLeftDiniDerivative f x = a ∧ upperRightDiniDerivative f x = a
+open MeasureTheory
 
 /-- **05.10**: any finite real function has exactly one Dini type at almost every point.
 No measurability or continuity assumption on the function is imposed. -/
 theorem ae_existsUnique_diniType (f : ℝ → ℝ) :
-    ∀ᵐ x ∂volume, ∃! i : Fin 4, HasDiniType f x i := by
-  sorry
+    ∀ᵐ x ∂volume, ∃! i : Fin 4, HasDiniType f x i :=
+  ae_diniType f
 
 end CKMA

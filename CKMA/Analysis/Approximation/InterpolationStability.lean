@@ -5,9 +5,23 @@ Authors: CKMA contributors
 -/
 module
 
+public import CKMA.Analysis.Approximation.InterpolationStability.Upper
+
 public import CKMA.Analysis.Approximation.Polynomial
 public import Mathlib.LinearAlgebra.Lagrange
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Bounds
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev.Basic
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
+public import Mathlib.Analysis.Calculus.Deriv.MeanValue
+public import Mathlib.Analysis.SpecialFunctions.Log.Deriv
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Inverse
+public import Mathlib.Analysis.Real.Pi.Bounds
+public import Mathlib.Algebra.Polynomial.Derivative
+public import Mathlib.Algebra.Polynomial.Div
+public import Mathlib.NumberTheory.Harmonic.Bounds
+public import Mathlib.Algebra.Order.Floor.Semiring
+public import Mathlib.Algebra.Order.Archimedean.Real.Basic
 
 /-!
 # Polynomial interpolation and Lebesgue constants
@@ -18,6 +32,8 @@ Chebyshev extrema have Lebesgue constants `(2/π) log(n+1) + O(1)`, and the Lebe
 constant controls interpolation error by the best uniform polynomial approximation error.
 The estimate uses Mathlib's polynomial reproduction theorem `Lagrange.eq_interpolate`
 and compact supremum bounds, without assuming that a best approximant is attained.
+Nodal estimates are in `InterpolationStability.Estimates` and the comparison bounds in
+`InterpolationStability.Upper`.
 
 Source: GAPS 47.35.
 -/
@@ -31,34 +47,66 @@ namespace CKMA
 open Polynomial
 open scoped BigOperators
 
-/-- Mathlib's Lagrange cardinal polynomial for all supplied nodes.
-Distinctness is a hypothesis of interpolation theorems rather than of this definition. -/
-abbrev lagrangeCardinalPolynomial {n : ℕ} (x : Fin n → ℝ) (i : Fin n) : ℝ[X] :=
-  Lagrange.basis Finset.univ x i
-
-/-- The absolute sum of cardinal polynomials at an evaluation point. -/
-def lebesgueFunction {n : ℕ} (x : Fin n → ℝ) (t : ℝ) : ℝ :=
-  ∑ i : Fin n, |(lagrangeCardinalPolynomial x i).eval t|
-
-/-- The Lebesgue constant on `[-1,1]` for a specified finite node set. -/
-def interpolationLebesgueConstant {n : ℕ} (x : Fin n → ℝ) : ℝ :=
-  sSup (lebesgueFunction x '' Set.Icc (-1 : ℝ) 1)
-
-/-- The Chebyshev extrema, in decreasing order; `n=0` is harmlessly totalized at the point one. -/
-def chebyshevExtremalNodes (n : ℕ) (i : Fin (n + 1)) : ℝ :=
-  Real.cos (Real.pi * i.val / n)
-
-/-- The polynomial interpolant at a supplied finite collection of interval nodes. -/
-abbrev polynomialInterpolation {n : ℕ} (x : Fin n → Set.Icc (-1 : ℝ) 1)
-    (f : ApproximationIntervalMap) : ℝ[X] :=
-  Lagrange.interpolate Finset.univ (fun j ↦ (x j).1) (fun j ↦ f (x j))
-
 /-- **47.35**, asymptotic clause: the Chebyshev-extrema Lebesgue constants equal
 `(2/π) log n + O(1)`. Using `log(n+1)` includes the zero-degree convention. -/
 theorem chebyshev_lebesgueConstant_log_bound : ∃ C : ℝ, 0 ≤ C ∧ ∀ n : ℕ,
     |interpolationLebesgueConstant (chebyshevExtremalNodes n) -
       (2 / Real.pi) * Real.log (n + 1)| ≤ C := by
-  sorry
+  refine ⟨chebyshevLebesgueSlack, chebyshevLebesgueSlack_nonneg, fun n => ?_⟩
+  by_cases hn0 : n = 0
+  · subst hn0
+    have hfun (t : ℝ) : lebesgueFunction (chebyshevExtremalNodes 0) t = 1 := by
+      unfold lebesgueFunction
+      rw [Fin.sum_univ_one]
+      have huniv : (Finset.univ : Finset (Fin 1)) = {(0 : Fin 1)} := by
+        ext i
+        simp [Fin.eq_zero]
+      rw [lagrangeCardinalPolynomial, huniv, Lagrange.basis_singleton]
+      simp
+    have him : lebesgueFunction (chebyshevExtremalNodes 0) '' Set.Icc (-1 : ℝ) 1 = {1} := by
+      ext y
+      simp only [Set.mem_image, Set.mem_Icc, Set.mem_singleton_iff]
+      constructor
+      · rintro ⟨t, _, rfl⟩
+        exact hfun t
+      · intro hy
+        refine ⟨0, by norm_num, ?_⟩
+        rw [hfun, hy]
+    rw [interpolationLebesgueConstant, him, csSup_singleton]
+    rw [Nat.cast_zero, zero_add, Real.log_one, mul_zero, sub_zero, abs_one]
+    exact one_le_chebyshevLebesgueSlack
+  · have hn : 1 ≤ n := by omega
+    let Λ : ℝ := interpolationLebesgueConstant (chebyshevExtremalNodes n)
+    let L : ℝ := (2 / Real.pi) * Real.log ((n : ℝ) + 1)
+    let C : ℝ := chebyshevLebesgueSlack
+    change |Λ - L| ≤ C
+    have hbdd : BddAbove
+        (lebesgueFunction (chebyshevExtremalNodes n) '' Set.Icc (-1 : ℝ) 1) := by
+      refine ⟨L + C, ?_⟩
+      rintro y ⟨t, ht, rfl⟩
+      exact lebesgueFunction_chebyshev_upper hn ht
+    have hup : Λ ≤ L + C := by
+      unfold Λ
+      rw [interpolationLebesgueConstant]
+      refine csSup_le ⟨lebesgueFunction (chebyshevExtremalNodes n) 0, 0, by norm_num, rfl⟩ ?_
+      rintro _ ⟨t, ht, rfl⟩
+      exact lebesgueFunction_chebyshev_upper hn ht
+    have hpt := lebesgueFunction_chebyshev_midpoint_ge hn
+    let tθ : ℝ := Real.cos ((((n - 1) / 2 : ℕ) + (1 : ℝ) / 2) * Real.pi / n)
+    have hlo : L - C ≤ Λ := by
+      have hval : lebesgueFunction (chebyshevExtremalNodes n) tθ ≤ Λ := by
+        unfold Λ
+        rw [interpolationLebesgueConstant]
+        exact le_csSup hbdd ⟨tθ, Real.cos_mem_Icc _, rfl⟩
+      exact ((sub_le_sub_left chebyshevMidpointDeficit_le_slack L).trans hpt).trans hval
+    have hlow : -C ≤ Λ - L := by
+      have h := sub_le_sub_right hlo L
+      rw [sub_right_comm, sub_self, zero_sub] at h
+      exact h
+    have hhigh : Λ - L ≤ C := by
+      have h := sub_le_sub_right hup L
+      rwa [add_sub_cancel_left] at h
+    exact abs_le.mpr ⟨hlow, hhigh⟩
 
 /-- The Lebesgue function of a finite node family is continuous. -/
 theorem continuous_lebesgueFunction {n : ℕ} (x : Fin n → ℝ) :
@@ -156,5 +204,6 @@ theorem interpolation_error_le {n : ℕ} (x : Fin (n + 1) → Set.Icc (-1 : ℝ)
   · rintro r ⟨q, hq, rfl⟩
     apply (div_le_iff₀ hC).mpr
     simpa only [mul_comm] using interpolation_error_le_polynomial_error x hx f q hq
+
 
 end CKMA

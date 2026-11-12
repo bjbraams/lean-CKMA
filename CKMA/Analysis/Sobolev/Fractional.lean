@@ -7,13 +7,15 @@ module
 
 public import Mathlib.Analysis.Fourier.LpSpace
 public import Mathlib.MeasureTheory.Measure.Lebesgue.VolumeOfBalls
+public import CKMA.Analysis.Sobolev.Fractional.Kernel
 
 /-!
 # Fractional Hilbert and Bessel-potential energies
 
 Gagliardo fractional square energy and Bessel-potential energy on L² for orders strictly
 between zero and one. The Fourier identity has a positive finite normalization constant;
-finite energies describe the same functions and the inhomogeneous energies are comparable.
+`phase_kernel_integral` evaluates the translation weight that produces it.
+Finite energies describe the same functions and the inhomogeneous energies are comparable.
 The Fourier transform is Mathlib's L² operator and all energies retain extended values.
 Source: GAPS 26.37.
 -/

@@ -16,7 +16,8 @@ import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
 INDEX = ROOT / 'formalization.json'
-DECL = re.compile(r'^(?:noncomputable )?(theorem|lemma|def|abbrev|structure) ([\w.\']+)', re.M)
+DECL = re.compile(
+    r'^(private )?(noncomputable )?(theorem|lemma|def|abbrev|structure) ([\w.\']+)')
 STANDARD_AXIOMS = {'propext', 'Classical.choice', 'Quot.sound'}
 
 
@@ -65,23 +66,60 @@ def mask_comments_and_strings(source):
     return ''.join(chars)
 
 
+SCOPE = re.compile(r'^(namespace|section|end)(?:\s+([\w.]+))?\s*$')
+
+
+def declaration_names(code):
+    """Fully qualified names, following `namespace` and ignoring `section`."""
+    stack = []
+    found = []
+    offset = 0
+    for line in code.splitlines(keepends=True):
+        scope = SCOPE.match(line)
+        if scope:
+            kind, name = scope.group(1), scope.group(2)
+            if kind == 'namespace':
+                stack.extend(('ns', part) for part in name.split('.'))
+            elif kind == 'section':
+                stack.append(('sec', name))
+            elif name is None:
+                stack.pop()
+            else:
+                parts = name.split('.')
+                if len(parts) == 1 and stack and stack[-1] == ('sec', parts[0]):
+                    stack.pop()
+                else:
+                    del stack[-len(parts):]
+        else:
+            match = DECL.match(line)
+            if match:
+                prefix = '.'.join(part for kind, part in stack if kind == 'ns')
+                short = match[4]
+                found.append((offset + match.start(), offset + match.end(), match[3],
+                              f'{prefix}.{short}' if prefix else short, match[1] is not None))
+        offset += len(line)
+    return found
+
+
 def inventory():
     result = []
     for path in sorted((ROOT / 'CKMA').rglob('*.lean')):
         source = path.read_text()
         code = mask_comments_and_strings(source)
-        matches = list(DECL.finditer(code))
+        matches = declaration_names(code)
         if matches:
             assert 'namespace CKMA' in source, f'Missing namespace: {path}'
             assert '_root_' not in source, f'Unexpected root declaration: {path}'
-        for i, match in enumerate(matches):
-            end = matches[i + 1].start() if i + 1 < len(matches) else len(source)
+        for i, (start, match_end, kind, full_name, private) in enumerate(matches):
+            end = matches[i + 1][0] if i + 1 < len(matches) else len(source)
+            if private:
+                continue
             result.append({
-                'name': 'CKMA.' + match[2],
-                'kind': match[1],
+                'name': full_name,
+                'kind': kind,
                 'module': '.'.join(path.relative_to(ROOT).with_suffix('').parts),
-                'line': source.count('\n', 0, match.start()) + 1,
-                'direct_sorry': bool(re.search(r'^\s*sorry\s*$', code[match.end():end], re.M)),
+                'line': source.count('\n', 0, start) + 1,
+                'direct_sorry': bool(re.search(r'^\s*sorry\s*$', code[match_end:end], re.M)),
             })
     return result
 
@@ -148,8 +186,28 @@ def audit(data):
         Path('/tmp/ckma-axioms.log').write_text(run.stdout)
         assert run.returncode == 0, 'Lean axiom audit failed; see /tmp/ckma-axioms.log'
         axioms = {}
-        for match in re.finditer(r"'([^']+)' (?:depends on axioms: \[([^\]]*)\]|does not depend on any axioms)", run.stdout):
-            axioms[match[1]] = sorted(filter(None, (s.strip() for s in (match[2] or '').split(','))))
+        lines = run.stdout.splitlines()
+        index = 0
+        while index < len(lines):
+            line = lines[index]
+            none = re.match(r"^'(.*)' does not depend on any axioms$", line)
+            one = re.match(r"^'(.*)' depends on axioms: \[(.*)\]$", line)
+            many = re.match(r"^'(.*)' depends on axioms: \[(.*)$", line)
+            if none:
+                axioms[none[1]] = []
+            elif one:
+                axioms[one[1]] = sorted(
+                    filter(None, (part.strip() for part in one[2].split(','))))
+            elif many:
+                parts = [many[2]]
+                index += 1
+                while index < len(lines) and ']' not in lines[index]:
+                    parts.append(lines[index])
+                    index += 1
+                parts.append(lines[index].split(']', 1)[0])
+                axioms[many[1]] = sorted(
+                    filter(None, (part.strip() for part in ','.join(parts).split(','))))
+            index += 1
         for decl in data['declarations']:
             assert decl['name'] in axioms, f"Missing audit output: {decl['name']}"
             decl['axioms'] = axioms[decl['name']]

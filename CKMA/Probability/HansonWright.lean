@@ -5,10 +5,29 @@ Authors: CKMA contributors
 -/
 module
 
-public import CKMA.Probability.Concentration
-public import Mathlib.Analysis.InnerProductSpace.PiL2
-public import Mathlib.Analysis.Normed.Module.FiniteDimension
+public import CKMA.Probability.HansonWright.Bound
 
+public import CKMA.Probability.Concentration
+public import Mathlib.Analysis.CStarAlgebra.Matrix
+public import Mathlib.Analysis.Complex.Exponential
+public import Mathlib.Analysis.Complex.ExponentialBounds
+public import Mathlib.Analysis.Convex.SpecificFunctions.Basic
+public import Mathlib.Analysis.SpecialFunctions.Log.Deriv
+public import Mathlib.Data.Fintype.BigOperators
+public import Mathlib.Analysis.Matrix.Spectrum
+public import Mathlib.Analysis.SpecialFunctions.Gaussian.GaussianIntegral
+public import Mathlib.LinearAlgebra.Matrix.PosDef
+public import Mathlib.LinearAlgebra.Matrix.Trace
+public import Mathlib.MeasureTheory.Constructions.Pi
+public import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
+public import Mathlib.MeasureTheory.Integral.DominatedConvergence
+public import Mathlib.MeasureTheory.Integral.Pi
+public import Mathlib.Probability.Distributions.Gaussian.Multivariate
+public import Mathlib.Probability.Distributions.Gaussian.Real
+public import Mathlib.Probability.Independence.Integration
+public import Mathlib.Probability.Moments.Basic
+public import Mathlib.Topology.Algebra.InfiniteSum.Order
+public import Mathlib.Topology.Algebra.InfiniteSum.Ring
 /-!
 # Hanson–Wright concentration for quadratic forms (07.43)
 
@@ -16,6 +35,9 @@ The matrix adapters are the squared Frobenius norm and Euclidean operator norm o
 real finite matrix. `sampledQuadraticForm` evaluates the corresponding form on a random
 vector. `hanson_wright` gives the two-scale exponential bound for its centered value
 under independent centered sub-Gaussian coordinates.
+
+Diagonal tails are in `HansonWright.Estimates`, the off-diagonal comparison is in
+`HansonWright.OffDiagonal`, and the combination is in `HansonWright.Bound`.
 
 Matrices need not be symmetric. The universal constant is independent of dimension,
 and positive threshold and scale hypotheses specify the meaningful concentration range.
@@ -28,22 +50,9 @@ noncomputable section
 namespace CKMA
 
 open MeasureTheory ProbabilityTheory
-open scoped BigOperators ENNReal
+open scoped BigOperators ENNReal NNReal RealInnerProductSpace Matrix Matrix.Norms.L2Operator
 
 universe u
-
-/-- The squared Frobenius norm of a real matrix, given by its entries. -/
-def realMatrixFrobeniusSq {n : ℕ} (A : Matrix (Fin n) (Fin n) ℝ) : ℝ :=
-  ∑ i, ∑ j, (A i j) ^ 2
-
-/-- Euclidean operator norm, as distinct from the entrywise matrix norm. -/
-def realMatrixOperatorNorm {n : ℕ} (A : Matrix (Fin n) (Fin n) ℝ) : ℝ :=
-  ‖(Matrix.toEuclideanLin A).toContinuousLinearMap‖
-
-/-- The real quadratic form sampled at a coordinate family. -/
-def sampledQuadraticForm {Ω : Type*} {n : ℕ}
-    (A : Matrix (Fin n) (Fin n) ℝ) (X : Fin n → Ω → ℝ) (ω : Ω) : ℝ :=
-  ∑ i, ∑ j, A i j * X i ω * X j ω
 
 /-- **07.43**: Hanson–Wright with a constant uniform over dimensions, probability spaces,
 coordinate laws and matrices. The Frobenius denominator is squared, and the operator norm is
@@ -58,6 +67,6 @@ theorem hanson_wright : ∃ c : ℝ, 0 < c ∧
         ENNReal.ofReal (2 * Real.exp (-c * min
           (t ^ 2 / (K ^ 4 * realMatrixFrobeniusSq A))
           (t / (K ^ 2 * realMatrixOperatorNorm A)))) := by
-  sorry
+  exact ⟨1 / 2359296, by norm_num, hanson_wright_explicit⟩
 
 end CKMA

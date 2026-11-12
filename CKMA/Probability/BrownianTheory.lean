@@ -5,6 +5,8 @@ Authors: CKMA contributors
 -/
 module
 
+public import CKMA.Probability.BrownianTheory.Existence
+public import CKMA.Probability.BrownianTheory.Reflection.Bound
 public import Mathlib.Probability.BrownianMotion.Basic
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.ContinuousMap
 public import Mathlib.Probability.Process.Stopping
@@ -37,7 +39,7 @@ open scoped NNReal ENNReal
 The coordinate process is continuous for every sample path. -/
 theorem exists_brownianMeasure : ∃ μ : Measure C(ℝ≥0, ℝ),
     IsProbabilityMeasure μ ∧ IsBrownianReal (fun t ω ↦ ω t) μ := by
-  sorry
+  exact exists_wienerMeasure
 
 /-- A pre-Brownian process has a continuous modification with every subcritical local Holder
   exponent. -/
@@ -47,7 +49,8 @@ theorem exists_holder_brownianModification {Ω : Type*} [MeasurableSpace Ω]
     ∃ C : ℝ≥0 → Ω → ℝ, IsBrownianReal C μ ∧
       (∀ t, C t =ᵐ[μ] B t) ∧ ∀ᵐ ω ∂μ, ∀ α : ℝ≥0, 0 < α → α < 1 / 2 →
         ∀ T : ℝ≥0, ∃ K : ℝ≥0, HolderOnWith K α (fun t ↦ C t ω) (Set.Icc 0 T) := by
-  sorry
+  obtain ⟨C, _, _, hBr, hmod, hH⟩ := exists_continuous_holder_modification hB
+  exact ⟨C, hBr, hmod, hH⟩
 
 /-- The shifted process after a finite-valued stopping time. -/
 def brownianShift {Ω : Type*} (B : ℝ≥0 → Ω → ℝ) (T : Ω → ℝ≥0)
@@ -74,6 +77,6 @@ theorem brownian_reflection {Ω : Type*} [MeasurableSpace Ω]
     (μ : Measure Ω) [IsProbabilityMeasure μ] {B : ℝ≥0 → Ω → ℝ}
     (hB : IsBrownianReal B μ) {a : ℝ} (ha : 0 < a) (t : ℝ≥0) :
     μ {ω | ∃ s : ℝ≥0, s ≤ t ∧ a ≤ B s ω} = 2 * μ {ω | a ≤ B t ω} := by
-  sorry
+  exact reflection_principle μ hB ha t
 
 end CKMA

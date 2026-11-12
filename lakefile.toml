@@ -14,9 +14,9 @@ globs = ["CKMA", "CKMA.+"]
 [[require]]
 name = "mathlib"
 scope = "leanprover-community"
-rev = "911003dd6dea5df215dff57f2717be762e11a6ca"
+rev = "1b1ccf4b088b32fa3f23f2de1127433254a81e1e"
 
 [[require]]
 name = "TauCeti"
 git = "https://github.com/TauCetiProject/TauCeti"
-rev = "a049b4264d2cf4dbf4720796f844a3a3764914a5"
+rev = "396c3bd971e9722aa8656231760e710fe641d8cf"

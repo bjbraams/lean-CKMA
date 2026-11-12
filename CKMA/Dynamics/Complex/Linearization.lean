@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Analysis.Complex.TaylorSeries
 public import Mathlib.Analysis.Calculus.Deriv.Basic
+public import CKMA.Dynamics.Complex.Linearization.Koenigs
+public import CKMA.Dynamics.Complex.Linearization.Boettcher
 
 /-!
 # Koenigs and Böttcher local conjugacies (46.10, 46.11)
@@ -38,14 +40,25 @@ The derivative-one normalization guarantees a local analytic inverse. -/
 theorem exists_koenigsCoordinate {f : ℂ → ℂ} (hf : AnalyticAt ℂ f 0)
     (hf₀ : f 0 = 0) (hc : deriv f 0 ≠ 0) (hunit : ‖deriv f 0‖ ≠ 1) :
     ∃ φ, IsKoenigsCoordinate f (deriv f 0) φ := by
-  sorry
+  by_cases hlt : ‖deriv f 0‖ < 1
+  · obtain ⟨phi, hphi, h0, hd, he⟩ :=
+      exists_koenigsCoordinate_of_norm_lt_one hf hf₀ hc hlt
+    exact ⟨phi, hf, hf₀, hphi, h0, hd, he⟩
+  · have hgt : 1 < ‖deriv f 0‖ :=
+      lt_of_le_of_ne (not_lt.mp hlt) hunit.symm
+    obtain ⟨phi, hphi, h0, hd, he⟩ :=
+      exists_koenigsCoordinate_of_norm_gt_one hf hf₀ hc hgt
+    exact ⟨phi, hf, hf₀, hphi, h0, hd, he⟩
 
 /-- Uniqueness means equality as germs, since the coordinate away from zero is arbitrary. -/
 theorem koenigsCoordinate_eventuallyEq {f φ ψ : ℂ → ℂ} {c : ℂ}
     (hc : c ≠ 0) (hunit : ‖c‖ ≠ 1)
     (hφ : IsKoenigsCoordinate f c φ) (hψ : IsKoenigsCoordinate f c ψ) :
     φ =ᶠ[𝓝 (0 : ℂ)] ψ := by
-  sorry
+  obtain ⟨hf, hf0, hφa, hφ0, hφd, hφe⟩ := hφ
+  obtain ⟨_, _, hψa, hψ0, hψd, hψe⟩ := hψ
+  exact koenigsCoordinate_eventuallyEq_of hc hunit hf hf0 hφa hφ0 hφd hφe
+    hψa hψ0 hψd hψe
 
 /-- A local analytic Böttcher coordinate, without a derivative normalization. -/
 def IsBoettcherCoordinate (f : ℂ → ℂ) (k : ℕ) (φ : ℂ → ℂ) : Prop :=
@@ -59,12 +72,23 @@ theorem exists_boettcherCoordinate {f g : ℂ → ℂ} {k : ℕ} (hk : 2 ≤ k)
     (hf : ∀ᶠ z in 𝓝 (0 : ℂ), f z = z ^ k * g z)
     {c : ℂ} (hc : c ^ (k - 1) = g 0) :
     ∃ φ, IsBoettcherCoordinate f k φ ∧ deriv φ 0 = c := by
-  sorry
+  obtain ⟨phi, hfa, hf0, hphia, hphi0, hd, he⟩ :=
+    exists_boettcher_data hk hg hg₀ hf hc
+  have hc0 : c ≠ 0 := by
+    intro hzero
+    apply hg₀
+    rw [← hc, hzero, zero_pow (by omega : k - 1 ≠ 0)]
+  have hd0 : deriv phi 0 ≠ 0 := by
+    rw [hd]
+    exact hc0
+  exact ⟨phi, ⟨hfa, hf0, hphia, hphi0, hd0, he⟩, hd⟩
 
 /-- Böttcher coordinates differ by a `(k-1)`st root of unity. -/
 theorem boettcherCoordinate_unique_up_to_root {f φ ψ : ℂ → ℂ} {k : ℕ} (hk : 2 ≤ k)
     (hφ : IsBoettcherCoordinate f k φ) (hψ : IsBoettcherCoordinate f k ψ) :
     ∃ ζ : ℂ, ζ ^ (k - 1) = 1 ∧ ∀ᶠ z in 𝓝 (0 : ℂ), ψ z = ζ * φ z := by
-  sorry
+  obtain ⟨hf, hf0, hφa, hφ0, hφd, hφe⟩ := hφ
+  obtain ⟨_, _, hψa, hψ0, hψd, hψe⟩ := hψ
+  exact boettcherCoordinate_eq_mul_unity hk hf hf0 hφa hφ0 hφd hφe hψa hψ0 hψd hψe
 
 end CKMA
