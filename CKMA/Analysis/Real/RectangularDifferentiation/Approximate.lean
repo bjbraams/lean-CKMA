@@ -37,6 +37,22 @@ import Mathlib.Topology.Metrizable.Uniformity
 Continuous compactly supported functions are differentiated by every axis-parallel rectangle.
 The strong maximal inequality then passes to the global class `L(log⁺L)^{d-1}` by truncating in
 height and approximating in `L¹`.
+
+## Main definitions
+
+* `CKMA.HasGlobalLLog`: global `L(log⁺ L)^{d-1}` integrability condition.
+* `CKMA.rectOscillation`: oscillation of rectangular averages at a point.
+
+## Main results
+
+* `CKMA.rectDifferentiateAt_of_continuous`: rectangular differentiation at every point for
+  continuous functions.
+* `CKMA.ae_rectanglesDifferentiateAt_of_hasGlobalLLog`: almost-everywhere rectangular
+  differentiation for functions in the global `L(log⁺ L)^{d-1}` class.
+
+## Notation
+
+* Standard Mathlib measure and filter notation.
 -/
 
 @[expose] public section

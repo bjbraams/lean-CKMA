@@ -41,6 +41,22 @@ The main theorem characterizes these sequences by a unique finite positive measu
 concentrated on `[0,1]`. No probability normalization is imposed, so zero mass is included.
 Existence extracts a weak limit of the approximants by Prokhorov's theorem. Uniqueness uses
 the Weierstrass approximation theorem on `[0,1]`.
+
+## Main definitions
+
+* `CKMA.forwardDifference`: forward difference of a real sequence.
+* `CKMA.IsCompletelyMonotoneSequence`: complete monotonicity of a real sequence.
+* `CKMA.hausdorffWeight`: Bernstein discrete moment weight.
+* `CKMA.hausdorffApproximant`: discrete measure on `[0, 1]` built from Bernstein weights.
+* `CKMA.RepresentsHausdorffMoments`: predicate that a finite measure on `[0, 1]` has moments `s`.
+
+## Main results
+
+* `CKMA.isCompletelyMonotoneSequence_iff_existsUnique_measure`: Hausdorff moment theorem (**48.34**).
+
+## Notation
+
+No new notation is introduced.
 -/
 
 @[expose] public section
@@ -366,8 +382,8 @@ private lemma sum_choose_mul_choose_neg (m j : ℕ) :
       omega
     simp [Nat.choose_eq_zero_of_lt hklt]
 
-/-- Expanded form of a Bernstein weight, for `k ≤ N`. -/
-private lemma hausdorffWeight_eq_sum (s : ℕ → ℝ) (N k : ℕ) (_hk : k ≤ N) :
+/-- Expanded form of a Bernstein weight. -/
+private lemma hausdorffWeight_eq_sum (s : ℕ → ℝ) (N k : ℕ) :
     hausdorffWeight s N k =
       ∑ j ∈ Finset.range (N - k + 1),
         (N.choose k : ℝ) * ((N - k).choose j : ℝ) * (-1 : ℝ) ^ j * s (k + j) := by
@@ -391,8 +407,8 @@ private lemma sum_hausdorffWeight (s : ℕ → ℝ) (N : ℕ) :
       ∑ k ∈ Finset.range (N + 1), hausdorffWeight s N k =
         ∑ k ∈ Finset.range (N + 1), ∑ j ∈ Finset.range (N - k + 1),
           (N.choose k : ℝ) * ((N - k).choose j : ℝ) * (-1 : ℝ) ^ j * s (k + j) := by
-    refine Finset.sum_congr rfl fun k hk => ?_
-    exact hausdorffWeight_eq_sum s N k (Nat.lt_succ_iff.mp (Finset.mem_range.mp hk))
+    refine Finset.sum_congr rfl fun k _hk => ?_
+    exact hausdorffWeight_eq_sum s N k
   rw [hsum, sum_triangle]
   have hindex :
       ∑ m ∈ Finset.range (N + 1), ∑ k ∈ Finset.range (m + 1),
@@ -452,8 +468,8 @@ private lemma sum_hausdorffWeight_mul_choose (s : ℕ → ℝ) (N j : ℕ) :
           (∑ i ∈ Finset.range (N - k + 1),
             (N.choose k : ℝ) * ((N - k).choose i : ℝ) * (-1 : ℝ) ^ i * s (k + i)) *
             (k.choose j : ℝ) := by
-    refine Finset.sum_congr rfl fun k hk => ?_
-    rw [hausdorffWeight_eq_sum s N k (Nat.lt_succ_iff.mp (Finset.mem_range.mp hk))]
+    refine Finset.sum_congr rfl fun k _hk => ?_
+    rw [hausdorffWeight_eq_sum s N k]
   rw [hsum]
   simp_rw [Finset.sum_mul]
   have htri := sum_triangle N (fun k i =>
@@ -588,8 +604,7 @@ private lemma hausdorffApproximant_finite {s : ℕ → ℝ}
   ⟨by simp [hausdorffApproximant_univ hs N]⟩
 
 /-- Every Bernstein node lies in `[0,1]`, so the approximant is supported there. -/
-private lemma hausdorffApproximant_compl {s : ℕ → ℝ}
-    (_hs : IsCompletelyMonotoneSequence s) (N : ℕ) :
+private lemma hausdorffApproximant_compl (s : ℕ → ℝ) (N : ℕ) :
     hausdorffApproximant s N (Set.Icc (0 : ℝ) 1)ᶜ = 0 := by
   unfold hausdorffApproximant
   rw [Measure.finsetSum_apply]
@@ -812,8 +827,7 @@ private lemma integral_continuous_eq_of_same_moments
       filter_upwards with x
       rw [Real.norm_eq_abs, abs_pow, abs_of_nonneg x.2.1]
       exact pow_le_one₀ x.2.1 x.2.2
-  have herr (ρ : Measure I) [IsFiniteMeasure ρ]
-      (_hρ : ∀ n, ∫ x, (x : ℝ) ^ n ∂ρ = s n) :
+  have herr (ρ : Measure I) [IsFiniteMeasure ρ] :
       |∫ x, φ x ∂ρ - ∫ x, p.eval (x : ℝ) ∂ρ| ≤ ε * ρ.real Set.univ := by
     have : CompactSpace I := isCompact_iff_compactSpace.mp isCompact_Icc
     have hφi : Integrable φ ρ := by
@@ -856,7 +870,7 @@ private lemma integral_continuous_eq_of_same_moments
         rw [← hmid]
         exact abs_sub_le _ _ _
       _ ≤ ε * μ.real Set.univ + ε * ν.real Set.univ :=
-        add_le_add (herr μ hμ) (by simpa [abs_sub_comm] using herr ν hν)
+        add_le_add (herr μ) (by simpa [abs_sub_comm] using herr ν)
       _ = 2 * ε * s 0 := by rw [hmassμ, hmassν]; ring
   refine hbound.trans ?_
   by_cases h0 : s 0 = 0
@@ -934,7 +948,7 @@ private lemma exists_represents_of_isCompletelyMonotone {s : ℕ → ℝ}
         ENNReal.toNNReal_coe, C]
       exact le_rfl
     · rw [FiniteMeasure.null_iff_toMeasure_null]
-      simpa [μs, K] using hausdorffApproximant_compl hs N
+      simpa [μs, K] using hausdorffApproximant_compl s N
   let u : Ultrafilter ℕ := Ultrafilter.of atTop
   have hu : (u : Filter ℕ) ≤ atTop := Ultrafilter.of_le _
   let uf : Ultrafilter (FiniteMeasure ℝ) := u.map μs
@@ -953,7 +967,7 @@ private lemma exists_represents_of_isCompletelyMonotone {s : ℕ → ℝ}
         ∫ x, x ^ n ∂(μs N : Measure ℝ) := by
       intro N
       apply integral_congr_ae
-      filter_upwards [(mem_ae_iff).mpr (hausdorffApproximant_compl hs N)] with x hx
+      filter_upwards [(mem_ae_iff).mpr (hausdorffApproximant_compl s N)] with x hx
       exact hausdorffMomentTest_eq_on_Icc n hx
     have htend_test :
         Tendsto (fun N => ∫ x, hausdorffMomentTest n x ∂(μs N : Measure ℝ)) u
@@ -965,13 +979,6 @@ private lemma exists_represents_of_isCompletelyMonotone {s : ℕ → ℝ}
       exact hmoment.congr fun N => (htest N).symm
     have hint_test : ∫ x, hausdorffMomentTest n x ∂(μF : Measure ℝ) = s n :=
       tendsto_nhds_unique htend_test hmoment'
-    have hint_pow : Integrable (fun x : ℝ => x ^ n) (μF : Measure ℝ) := by
-      apply integrable_of_bound_on_Icc (FiniteMeasure.isFiniteMeasure μF)
-        (by rw [← FiniteMeasure.null_iff_toMeasure_null]; exact hμFT.2)
-        (Continuous.aestronglyMeasurable (by fun_prop))
-      intro x hx
-      rw [Real.norm_eq_abs, abs_pow, abs_of_nonneg hx.1]
-      exact pow_le_one₀ hx.1 hx.2
     rw [← hint_test]
     apply integral_congr_ae
     filter_upwards [(mem_ae_iff).mpr (by

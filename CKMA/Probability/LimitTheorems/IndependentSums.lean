@@ -27,6 +27,23 @@ central limit theorem and its converse under Feller's condition, and a Berry–E
 Row second-moment sums are uncentered; they are variances under the centering hypothesis
 of the limit theorems. The LIL index shift avoids the initial logarithmic singularities
 without changing the limiting assertions.
+
+## Main definitions
+
+* `CKMA.IsOrderedSummable`: convergence of partial sums in their given order.
+* `CKMA.symmetricTruncation`: symmetric truncation of a real random variable at threshold `A`.
+* `CKMA.SatisfiesLindebergCondition`: Lindeberg condition for a triangular array.
+
+## Main results
+
+* `CKMA.kolmogorov_three_series`: Kolmogorov's three-series theorem (**06.23**).
+* `CKMA.law_of_the_iterated_logarithm`: Hartman–Wintner law of the iterated logarithm (**06.27**).
+* `CKMA.lindeberg_feller`: Lindeberg–Feller central limit theorem and converse (**06.34**).
+* `CKMA.berry_esseen`: Berry–Esseen theorem (**06.36**).
+
+## Notation
+
+No new notation is introduced.
 -/
 
 @[expose] public section

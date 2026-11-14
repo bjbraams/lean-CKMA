@@ -26,6 +26,20 @@ import Mathlib.Topology.Instances.NNReal.Lemmas
 Jordan's cosine bound integrates to a comparison between `1 ∧ x²` and `1 - sinc`.
 Integrating `1 - Re φ` of a convolution root against that comparison bounds the total
 mass and the tails of the quadratically weighted roots, uniformly in the root order.
+
+## Main definitions
+
+* `CKMA.idRootMeasure`: quadratically weighted finite measure associated to the `(n + 1)`-th
+  convolution root.
+
+## Main results
+
+* `CKMA.isCompact_closure_range_idRootMeasure`: the quadratically weighted convolution roots have
+  relatively compact range in `FiniteMeasure ℝ`.
+
+## Notation
+
+No new notation is introduced.
 -/
 
 @[expose] public section

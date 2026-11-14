@@ -19,6 +19,26 @@ smoothness modulus used in Jackson's direct and inverse estimates. Bernstein's
 inequality bounds iterated derivatives by the corresponding power of the degree.
 
 Sources: GAPS 47.20, 47.21 and 47.23.
+
+## Main definitions
+
+* `CKMA.trigonometricPeriodMeasure`: Lebesgue measure restricted to `[-π, π]`.
+* `CKMA.trigonometricPolynomial`: trigonometric polynomial of degree at most `n`.
+* `CKMA.translationDifference`: forward translation difference operator.
+* `CKMA.periodicSmoothnessModulus`: order-`r` modulus of smoothness in `Lᵖ` on one period.
+* `CKMA.bestTrigonometricError`: best trigonometric approximation error in `Lᵖ`.
+
+## Main results
+
+* `CKMA.bestTrigonometricError_le`: any trigonometric polynomial bounds the best error.
+* `CKMA.jackson_trigonometric`: Jackson's direct theorem for trigonometric approximation.
+* `CKMA.inverse_trigonometric`: inverse theorem for trigonometric approximation.
+* `CKMA.bernstein_trigonometric`: Bernstein's inequality for derivatives of trigonometric
+  polynomials.
+
+## Notation
+
+No new notation is introduced.
 -/
 
 @[expose] public section

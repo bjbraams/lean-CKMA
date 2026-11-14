@@ -12,6 +12,21 @@ public import Mathlib.Analysis.InnerProductSpace.Basic
 
 The carrier universe is independent of the scalar universe. A single bundle records a normed
 additive group, a compatible inner product, and completeness.
+
+## Main definitions
+
+* `CKMA.HilbertSpaceModel`: bundled Hilbert space over a scalar field `𝕜` satisfying `[RCLike 𝕜]`.
+* `CKMA.RealHilbertModel`: abbreviation for `HilbertSpaceModel ℝ`.
+* `CKMA.ComplexHilbertSpace`: abbreviation for `HilbertSpaceModel ℂ`.
+
+## Main results
+
+* Typeclass instances exporting `NormedAddCommGroup`, `InnerProductSpace`, and `CompleteSpace`
+  on `H.carrier`.
+
+## Notation
+
+No new notation is introduced in this module.
 -/
 
 @[expose] public section
@@ -20,19 +35,25 @@ namespace CKMA
 
 universe u
 
-/-- A Hilbert-space carrier over real or complex scalars, with its compatible norm and completeness.
-  -/
+/-- A Hilbert-space carrier over real or complex scalars, with its compatible norm and
+completeness. -/
 structure HilbertSpaceModel (𝕜 : Type*) [RCLike 𝕜] where
   /-- Underlying carrier. -/
-  Carrier : Type u
+  carrier : Type u
   /-- Normed additive structure. -/
-  [normedAddCommGroup : NormedAddCommGroup Carrier]
+  [normedAddCommGroup : NormedAddCommGroup carrier]
   /-- Inner product inducing that norm. -/
-  [innerProductSpace : InnerProductSpace 𝕜 Carrier]
+  [innerProductSpace : InnerProductSpace 𝕜 carrier]
   /-- Hilbert completeness. -/
-  [completeSpace : CompleteSpace Carrier]
+  [completeSpace : CompleteSpace carrier]
 
 attribute [instance] HilbertSpaceModel.normedAddCommGroup HilbertSpaceModel.innerProductSpace
   HilbertSpaceModel.completeSpace
+
+/-- A real Hilbert-space model with an explicitly chosen carrier universe. -/
+abbrev RealHilbertModel := HilbertSpaceModel.{u} ℝ
+
+/-- A complex Hilbert-space model with an explicitly chosen carrier universe. -/
+abbrev ComplexHilbertSpace := HilbertSpaceModel.{u} ℂ
 
 end CKMA

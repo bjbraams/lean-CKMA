@@ -5,7 +5,10 @@ Authors: CKMA contributors
 -/
 module
 
+
 public import CKMA.Probability.BrownianQuadraticVariation
+public import CKMA.Probability.BrownianQuadraticVariation.KolmogorovMaximal
+public import CKMA.Probability.BrownianQuadraticVariation.TimePartition
 public import CKMA.Probability.BrownianTheory
 public import CKMA.Probability.BrownianTheory.DyadicHolder
 public import CKMA.Probability.BrownianTheory.DyadicLimit
@@ -18,8 +21,12 @@ public import CKMA.Probability.BrownianTheory.Reflection.Bound
 public import CKMA.Probability.BrownianTheory.Reflection.Grid
 public import CKMA.Probability.BrownianTheory.Reflection.Past
 public import CKMA.Probability.Concentration
+public import CKMA.Probability.Concentration.Basic
+public import CKMA.Probability.Concentration.Bernstein
+public import CKMA.Probability.Concentration.JohnsonLindenstrauss
 public import CKMA.Probability.GaussianLogSobolev
 public import CKMA.Probability.GaussianLogSobolev.Entropy
+public import CKMA.Probability.GaussianLogSobolev.IntegrationByParts
 public import CKMA.Probability.GaussianLogSobolev.OneDim
 public import CKMA.Probability.GaussianLogSobolev.OneDimLSI
 public import CKMA.Probability.HansonWright

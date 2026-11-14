@@ -28,6 +28,19 @@ holds. The argument separates the slack set from the open negative orthant, norm
 the positive objective weight, and reads stationarity from the sum rule: the indicator of
 the affine fiber is the unqualified summand, and the Lagrangian carries the continuity.
 Sources: Boyd–Vandenberghe, *Convex Optimization*, §§5.5 and 5.9; GAPS 12.40.
+
+## Main definitions
+
+* (No new public definitions; provides the subgradient KKT multiplier existence theorem.)
+
+## Main results
+
+* `CKMA.exists_convexKKTMultipliers_of_slater`: existence of subgradient KKT multipliers under
+  Slater's strict feasibility condition (GAPS 12.40).
+
+## Notation
+
+* Standard Mathlib notation is used throughout.
 -/
 
 @[expose] public section
@@ -76,16 +89,6 @@ private lemma subdifferential_zero_fun (x : E) :
   · rintro rfl z
     rw [dualPairing_apply, IsZeroApply.zero_apply]
     simp
-
-/-- A real-valued function has convex epigraph after coercion to `EReal`. -/
-private lemma convex_epigraph_coe {f : E → ℝ} (hf : ConvexOn ℝ Set.univ f) :
-    Convex ℝ {p : E × ℝ | (f p.1 : EReal) ≤ p.2} := by
-  have hset : {p : E × ℝ | (f p.1 : EReal) ≤ p.2} =
-      {p : E × ℝ | f p.1 ≤ p.2} := by
-    ext p
-    simp [EReal.coe_le_coe_iff]
-  rw [hset]
-  simpa using hf.convex_epigraph
 
 omit [NormedSpace ℝ E] in
 /-- A real-valued function, viewed in `EReal`, is proper. -/
@@ -166,92 +169,118 @@ private lemma subdifferential_const_mul [FiniteDimensional ℝ E] {c : ℝ} (hc 
         ring
       linarith
 
-/-- A nonnegative combination of convex functions is convex. -/
-private lemma convexOn_weighted_sum {n : ℕ} (c : Fin n → ℝ) (hc : ∀ i, 0 ≤ c i)
-    (g : Fin n → E → ℝ) (hg : ∀ i, ConvexOn ℝ Set.univ (g i)) :
-    ConvexOn ℝ Set.univ (fun z => ∑ i, c i * g i z) := by
-  induction n with
-  | zero =>
-    have hfun : (fun z : E => ∑ i : Fin 0, c i * g i z) = fun _ => (0 : ℝ) := by
+/-- A nonnegative combination of convex functions over a finset is convex. -/
+private lemma convexOn_weighted_sum_finset {ι : Type*} (s : Finset ι) (c : ι → ℝ)
+    (hc : ∀ i ∈ s, 0 ≤ c i) (g : ι → E → ℝ) (hg : ∀ i ∈ s, ConvexOn ℝ Set.univ (g i)) :
+    ConvexOn ℝ Set.univ (fun z => ∑ i ∈ s, c i * g i z) := by
+  classical
+  induction s using Finset.induction_on with
+  | empty =>
+    have hfun : (fun z : E => ∑ i ∈ (∅ : Finset ι), c i * g i z) = fun _ => (0 : ℝ) := by
       ext z
       simp
     rw [hfun]
     exact convexOn_const 0 convex_univ
-  | succ n ih =>
-    let f1 : E → ℝ := fun z => c 0 * g 0 z
-    let f2 : E → ℝ := fun z => ∑ i : Fin n, c i.succ * g i.succ z
+  | @insert a s ha ih =>
+    let f1 : E → ℝ := fun z => c a * g a z
+    let f2 : E → ℝ := fun z => ∑ i ∈ s, c i * g i z
     have hf1 : ConvexOn ℝ Set.univ f1 := by
-      simpa [f1, smul_eq_mul] using (hg 0).smul (hc 0)
+      simpa [f1, smul_eq_mul] using (hg a (Finset.mem_insert_self a s)).smul
+        (hc a (Finset.mem_insert_self a s))
     have hf2 : ConvexOn ℝ Set.univ f2 :=
-      ih (fun i => c i.succ) (fun i => hc i.succ) (fun i => g i.succ) (fun i => hg i.succ)
-    have hfun : (fun z => ∑ i, c i * g i z) = f1 + f2 := by
+      ih (fun i hi => hc i (Finset.mem_insert_of_mem hi))
+        (fun i hi => hg i (Finset.mem_insert_of_mem hi))
+    have hfun : (fun z => ∑ i ∈ insert a s, c i * g i z) = f1 + f2 := by
       ext z
-      simp [f1, f2, Fin.sum_univ_succ]
+      simp [f1, f2, Finset.sum_insert ha]
     rw [hfun]
     exact hf1.add hf2
 
-/-- A subgradient of a weighted sum splits into scaled subgradients. -/
-private lemma exists_subdifferential_weighted_sum [FiniteDimensional ℝ E] {n : ℕ}
-    (c : Fin n → ℝ)
-    (hc : ∀ i, 0 ≤ c i) (g : Fin n → E → ℝ) (hg : ∀ i, ConvexOn ℝ Set.univ (g i))
-    {x : E} {w : StrongDual ℝ E}
+/-- A nonnegative combination of convex functions is convex. -/
+private lemma convexOn_weighted_sum {ι : Type*} [Fintype ι] (c : ι → ℝ) (hc : ∀ i, 0 ≤ c i)
+    (g : ι → E → ℝ) (hg : ∀ i, ConvexOn ℝ Set.univ (g i)) :
+    ConvexOn ℝ Set.univ (fun z => ∑ i, c i * g i z) :=
+  convexOn_weighted_sum_finset Finset.univ c (fun i _ => hc i) g (fun i _ => hg i)
+
+/-- A subgradient of a weighted sum over a finset splits into scaled subgradients. -/
+private lemma exists_subdifferential_weighted_sum_finset [FiniteDimensional ℝ E] {ι : Type*}
+    (s : Finset ι) (c : ι → ℝ) (hc : ∀ i ∈ s, 0 ≤ c i) (g : ι → E → ℝ)
+    (hg : ∀ i ∈ s, ConvexOn ℝ Set.univ (g i)) {x : E} {w : StrongDual ℝ E}
     (hw : w ∈ TauCeti.subdifferential (dualPairing E)
-      (fun z => ((∑ i, c i * g i z : ℝ) : EReal)) x) :
-    ∃ v : Fin n → StrongDual ℝ E,
-      (∀ i, v i ∈ TauCeti.subdifferential (dualPairing E)
+      (fun z => ((∑ i ∈ s, c i * g i z : ℝ) : EReal)) x) :
+    ∃ v : ι → StrongDual ℝ E,
+      (∀ i ∈ s, v i ∈ TauCeti.subdifferential (dualPairing E)
         (fun z => (g i z : EReal)) x) ∧
-      w = ∑ i, c i • v i := by
-  induction n generalizing w with
-  | zero =>
+      w = ∑ i ∈ s, c i • v i := by
+  classical
+  induction s using Finset.induction_on generalizing w with
+  | empty =>
     have hw0 : w ∈ TauCeti.subdifferential (dualPairing E)
         (fun _ : E => ((0 : ℝ) : EReal)) x := by
       simpa using hw
     rw [subdifferential_zero_fun] at hw0
     simp only [Set.mem_singleton_iff] at hw0
     subst hw0
-    refine ⟨Fin.elim0, fun i => i.elim0, ?_⟩
-    simp
-  | succ n ih =>
-    let f1 : E → ℝ := fun z => c 0 * g 0 z
-    let f2 : E → ℝ := fun z => ∑ i : Fin n, c i.succ * g i.succ z
-    have hfun : (fun z => ((∑ i, c i * g i z : ℝ) : EReal)) =
+    exact ⟨fun _ => 0, fun _ h => (Finset.notMem_empty _ h).elim, by simp⟩
+  | @insert a s ha ih =>
+    let f1 : E → ℝ := fun z => c a * g a z
+    let f2 : E → ℝ := fun z => ∑ i ∈ s, c i * g i z
+    have hfun : (fun z => ((∑ i ∈ insert a s, c i * g i z : ℝ) : EReal)) =
         fun z => ((f1 z + f2 z : ℝ) : EReal) := by
       funext z
-      exact congrArg (fun r : ℝ => (r : EReal)) (by simp [f1, f2, Fin.sum_univ_succ])
+      exact congrArg (fun r : ℝ => (r : EReal)) (by simp [f1, f2, Finset.sum_insert ha])
     rw [hfun] at hw
+    have hca := hc a (Finset.mem_insert_self a s)
+    have hga := hg a (Finset.mem_insert_self a s)
+    have hcs : ∀ i ∈ s, 0 ≤ c i := fun i hi => hc i (Finset.mem_insert_of_mem hi)
+    have hgs : ∀ i ∈ s, ConvexOn ℝ Set.univ (g i) :=
+      fun i hi => hg i (Finset.mem_insert_of_mem hi)
     have hf1 : ConvexOn ℝ Set.univ f1 := by
-      simpa [f1, smul_eq_mul] using (hg 0).smul (hc 0)
-    have hf2 : ConvexOn ℝ Set.univ f2 :=
-      convexOn_weighted_sum (fun i => c i.succ) (fun i => hc i.succ)
-        (fun i => g i.succ) (fun i => hg i.succ)
+      simpa [f1, smul_eq_mul] using hga.smul hca
+    have hf2 : ConvexOn ℝ Set.univ f2 := convexOn_weighted_sum_finset s c hcs g hgs
     rw [subdifferential_add_coe hf1 hf2 x] at hw
     obtain ⟨w1, hw1, w2, hw2, hwadd⟩ := Set.mem_add.mp hw
-    rw [subdifferential_const_mul (hc 0) (hg 0) x] at hw1
+    rw [subdifferential_const_mul hca hga x] at hw1
     obtain ⟨v0, hv0, hv0eq⟩ := Set.mem_smul_set.mp hw1
     have hw2' : w2 ∈ TauCeti.subdifferential (dualPairing E)
-        (fun z => ((∑ i : Fin n, c i.succ * g i.succ z : ℝ) : EReal)) x := by
+        (fun z => ((∑ i ∈ s, c i * g i z : ℝ) : EReal)) x := by
       simpa [f2] using hw2
-    obtain ⟨vrest, hvrest, hvsum⟩ :=
-      ih (fun i => c i.succ) (fun i => hc i.succ) (fun i => g i.succ)
-        (fun i => hg i.succ) hw2'
-    refine ⟨Fin.cons v0 vrest, ?_, ?_⟩
-    · intro i
-      refine Fin.cases ?_ ?_ i
-      · simpa [Fin.cons_zero] using hv0
-      · intro j
-        simpa [Fin.cons_succ] using hvrest j
-    · rw [← hwadd, ← hv0eq, hvsum, Fin.sum_univ_succ]
-      simp [Fin.cons_zero, Fin.cons_succ]
+    obtain ⟨vrest, hvrest, hvsum⟩ := ih hcs hgs hw2'
+    refine ⟨Function.update vrest a v0, ?_, ?_⟩
+    · intro i hi
+      rcases Finset.mem_insert.mp hi with rfl | his
+      · simpa using hv0
+      · have hia : i ≠ a := fun h => ha (h ▸ his)
+        simpa [Function.update_of_ne hia] using hvrest i his
+    · rw [← hwadd, ← hv0eq, hvsum, Finset.sum_insert ha]
+      simp only [Function.update_self, add_right_inj]
+      refine Finset.sum_congr rfl fun i hi => ?_
+      have hia : i ≠ a := fun h => ha (h ▸ hi)
+      simp [Function.update_of_ne hia]
+
+/-- A subgradient of a weighted sum splits into scaled subgradients. -/
+private lemma exists_subdifferential_weighted_sum [FiniteDimensional ℝ E]
+    {ι : Type*} [Fintype ι] (c : ι → ℝ) (hc : ∀ i, 0 ≤ c i) (g : ι → E → ℝ)
+    (hg : ∀ i, ConvexOn ℝ Set.univ (g i)) {x : E} {w : StrongDual ℝ E}
+    (hw : w ∈ TauCeti.subdifferential (dualPairing E)
+      (fun z => ((∑ i, c i * g i z : ℝ) : EReal)) x) :
+    ∃ v : ι → StrongDual ℝ E,
+      (∀ i, v i ∈ TauCeti.subdifferential (dualPairing E)
+        (fun z => (g i z : EReal)) x) ∧
+      w = ∑ i, c i • v i := by
+  obtain ⟨v, hv, hw⟩ := exists_subdifferential_weighted_sum_finset Finset.univ c
+    (fun i _ => hc i) g (fun i _ => hg i) hw
+  exact ⟨v, fun i => hv i (Finset.mem_univ i), hw⟩
 
 /-- A subgradient of the Lagrangian splits into objective and constraint subgradients. -/
-private lemma exists_subdifferential_lagrangian [FiniteDimensional ℝ E] {n : ℕ}
-    (c : Fin n → ℝ)
+private lemma exists_subdifferential_lagrangian [FiniteDimensional ℝ E]
+    {ι : Type*} [Fintype ι] (c : ι → ℝ)
     (hc : ∀ i, 0 ≤ c i) (f : E → ℝ) (hf : ConvexOn ℝ Set.univ f)
-    (g : Fin n → E → ℝ) (hg : ∀ i, ConvexOn ℝ Set.univ (g i)) {x : E}
+    (g : ι → E → ℝ) (hg : ∀ i, ConvexOn ℝ Set.univ (g i)) {x : E}
     {w : StrongDual ℝ E}
     (hw : w ∈ TauCeti.subdifferential (dualPairing E)
       (fun z => ((f z + ∑ i, c i * g i z : ℝ) : EReal)) x) :
-    ∃ u : StrongDual ℝ E, ∃ v : Fin n → StrongDual ℝ E,
+    ∃ u : StrongDual ℝ E, ∃ v : ι → StrongDual ℝ E,
       u ∈ TauCeti.subdifferential (dualPairing E) (fun z => (f z : EReal)) x ∧
       (∀ i, v i ∈ TauCeti.subdifferential (dualPairing E)
         (fun z => (g i z : EReal)) x) ∧
@@ -331,27 +360,28 @@ private lemma exists_dual_factor {m : ℕ} (A : E →L[ℝ] (Fin m → ℝ))
   rw [hyz, hnz]
 
 /-- First coordinate of a convex combination in the slack space. -/
-private lemma fst_combo {n : ℕ} (a d : ℝ) (p q : (Fin n → ℝ) × ℝ) (i : Fin n) :
+private lemma fst_combo {ι : Type*} (a d : ℝ) (p q : (ι → ℝ) × ℝ) (i : ι) :
     (a • p + d • q).1 i = a * p.1 i + d * q.1 i := by
   rw [Prod.fst_add, Prod.smul_fst, Prod.smul_fst, Pi.add_apply, Pi.smul_apply,
     Pi.smul_apply, smul_eq_mul, smul_eq_mul]
 
 /-- Second coordinate of a convex combination in the slack space. -/
-private lemma snd_combo {n : ℕ} (a d : ℝ) (p q : (Fin n → ℝ) × ℝ) :
+private lemma snd_combo {ι : Type*} (a d : ℝ) (p q : (ι → ℝ) × ℝ) :
     (a • p + d • q).2 = a * p.2 + d * q.2 := by
   rw [Prod.snd_add, Prod.smul_snd, Prod.smul_snd, smul_eq_mul, smul_eq_mul]
 
 /-- Separation against the negative orthant produces the KKT weights. -/
-private lemma exists_kkt_weights {m n : ℕ} (f : E → ℝ) (g : Fin n → E → ℝ)
+private lemma exists_kkt_weights {m : ℕ} {ι : Type*} [Fintype ι] (f : E → ℝ) (g : ι → E → ℝ)
     (A : E →L[ℝ] (Fin m → ℝ)) (b : Fin m → ℝ)
     (hf : ConvexOn ℝ Set.univ f) (hg : ∀ i, ConvexOn ℝ Set.univ (g i))
     (hslater : ∃ x₀, A x₀ = b ∧ ∀ i, g i x₀ < 0) {x : E}
     (hx : (∀ i, g i x ≤ 0) ∧ A x = b)
     (hmin : ∀ z, (∀ i, g i z ≤ 0) → A z = b → f x ≤ f z) :
-    ∃ c : Fin n → ℝ, (∀ i, 0 ≤ c i) ∧ (∀ i, c i * g i x = 0) ∧
+    ∃ c : ι → ℝ, (∀ i, 0 ≤ c i) ∧ (∀ i, c i * g i x = 0) ∧
       ∀ z, A z = b →
         f x + ∑ i, c i * g i x ≤ f z + ∑ i, c i * g i z := by
-  let P := (Fin n → ℝ) × ℝ
+  classical
+  let P := (ι → ℝ) × ℝ
   let U : Set P := {p | (∀ i, p.1 i < 0) ∧ p.2 < 0}
   let S : Set P := {p | ∃ z : E, A z = b ∧ (∀ i, g i z ≤ p.1 i) ∧ f z - f x ≤ p.2}
   have hUopen : IsOpen U := by
@@ -445,7 +475,7 @@ private lemma exists_kkt_weights {m n : ℕ} (f : E → ℝ) (g : Fin n → E �
     exact (not_le_of_gt hbetter) (hmin z hfeas hzA)
   obtain ⟨sep, level, hUsep, hSsep⟩ :=
     geometric_hahn_banach_open hUconv hUopen hSconv hdisj
-  have h0S : ((0 : Fin n → ℝ), (0 : ℝ)) ∈ S := by
+  have h0S : ((0 : ι → ℝ), (0 : ℝ)) ∈ S := by
     refine ⟨x, hx.2, ?_, ?_⟩
     · intro i
       simpa using hx.1 i
@@ -454,8 +484,8 @@ private lemma exists_kkt_weights {m n : ℕ} (f : E → ℝ) (g : Fin n → E �
     have h0 := hSsep _ h0S
     rw [← Prod.zero_eq_mk, map_zero] at h0
     exact h0
-  let slope := sep.comp (inl ℝ (Fin n → ℝ) ℝ)
-  let multMap := sep.comp (inr ℝ (Fin n → ℝ) ℝ)
+  let slope := sep.comp (inl ℝ (ι → ℝ) ℝ)
+  let multMap := sep.comp (inr ℝ (ι → ℝ) ℝ)
   let mult : ℝ := multMap 1
   have hsep_apply (p : P) : sep p = slope p.1 + p.2 * mult := by
     have hsplit := comp_inl_add_comp_inr sep p
@@ -464,8 +494,8 @@ private lemma exists_kkt_weights {m n : ℕ} (f : E → ℝ) (g : Fin n → E �
         toSpanSingleton_apply_map_one (c := multMap)
       rw [← hmap, toSpanSingleton_apply, smul_eq_mul]
     linarith
-  let weight : Fin n → ℝ := fun i => slope (Pi.single i 1)
-  have hslope (s : Fin n → ℝ) : slope s = ∑ i, weight i * s i := by
+  let weight : ι → ℝ := fun i => slope (Pi.single i 1)
+  have hslope (s : ι → ℝ) : slope s = ∑ i, weight i * s i := by
     calc
       slope s = slope (∑ i, s i • Pi.single i 1) := by
         congr 1
@@ -477,7 +507,7 @@ private lemma exists_kkt_weights {m n : ℕ} (f : E → ℝ) (g : Fin n → E �
       _ = ∑ i, weight i * s i := by
         refine Finset.sum_congr rfl fun i _ => ?_
         rw [mul_comm]
-  have hweight (i : Fin n) (r : ℝ) : slope (Pi.single i r) = weight i * r := by
+  have hweight (i : ι) (r : ℝ) : slope (Pi.single i r) = weight i * r := by
     rw [hslope, Finset.sum_eq_single i]
     · simp [Pi.single_eq_same, mul_comm]
     · intro j _ hji
@@ -506,7 +536,7 @@ private lemma exists_kkt_weights {m n : ℕ} (f : E → ℝ) (g : Fin n → E �
       rw [hrdef, div_mul_eq_mul_div, mul_div_assoc, div_neg, div_self hwne]
       ring
     linarith
-  have horth (r : ℝ) : sep ((0 : Fin n → ℝ), r) = r * mult := by
+  have horth (r : ℝ) : sep ((0 : ι → ℝ), r) = r * mult := by
     rw [hsep_apply, hslope]
     simp
   have hmult_nonneg : 0 ≤ mult := by
@@ -514,7 +544,7 @@ private lemma exists_kkt_weights {m n : ℕ} (f : E → ℝ) (g : Fin n → E �
     have hlt' : mult < 0 := lt_of_not_ge hlt
     set r : ℝ := (1 - level) / (-mult) with hrdef
     have hrpos : 0 < r := div_pos (by linarith) (by linarith)
-    have hmem : ((0 : Fin n → ℝ), r) ∈ S := by
+    have hmem : ((0 : ι → ℝ), r) ∈ S := by
       refine ⟨x, hx.2, ?_, ?_⟩
       · intro i
         simpa using hx.1 i
@@ -525,7 +555,7 @@ private lemma exists_kkt_weights {m n : ℕ} (f : E → ℝ) (g : Fin n → E �
       rw [hrdef, div_mul_eq_mul_div, mul_div_assoc, div_neg, div_self hmne]
       ring
     linarith [horth r]
-  have hsep_neg (ε : ℝ) : sep (fun _ : Fin n => -ε, -ε) =
+  have hsep_neg (ε : ℝ) : sep (fun _ : ι => -ε, -ε) =
       -ε * (∑ i, weight i + mult) := by
     rw [hsep_apply, hslope]
     have hsum : ∑ i, weight i * (-ε) = -ε * ∑ i, weight i := by
@@ -534,7 +564,7 @@ private lemma exists_kkt_weights {m n : ℕ} (f : E → ℝ) (g : Fin n → E �
       ring
     rw [hsum]
     ring
-  have hUneg (ε : ℝ) (hε : 0 < ε) : (fun _ : Fin n => -ε, -ε) ∈ U := by
+  have hUneg (ε : ℝ) (hε : 0 < ε) : (fun _ : ι => -ε, -ε) ∈ U := by
     refine ⟨fun i => ?_, neg_lt_zero.mpr hε⟩
     simpa using (neg_lt_zero.mpr hε)
   let sigma : ℝ := ∑ i, weight i + mult
@@ -585,9 +615,9 @@ private lemma exists_kkt_weights {m n : ℕ} (f : E → ℝ) (g : Fin n → E �
       exact (mul_eq_zero.mp hi).resolve_right (hx₀g i).ne
     have hsig : sigma = 0 := by simp [sigma, hweight0, hzero]
     exact hsigma_pos.ne' hsig
-  let c : Fin n → ℝ := fun i => weight i / mult
+  let c : ι → ℝ := fun i => weight i / mult
   have hc : ∀ i, 0 ≤ c i := fun i => div_nonneg (hweight_nonneg i) hmult_pos.le
-  have hweight_c (i : Fin n) : weight i = c i * mult := by
+  have hweight_c (i : ι) : weight i = c i * mult := by
     simp [c]
     field_simp
   have hlag_ge : ∀ z, A z = b → 0 ≤ ∑ i, c i * g i z + (f z - f x) := by
@@ -630,15 +660,15 @@ private lemma exists_kkt_weights {m n : ℕ} (f : E → ℝ) (g : Fin n → E �
   linarith [hlag_ge z hz]
 
 /-- Minimizing the Lagrangian on the affine fiber produces KKT subgradients. -/
-private lemma exists_kkt_from_lagrange [FiniteDimensional ℝ E] {m n : ℕ}
-    (f : E → ℝ) (g : Fin n → E → ℝ)
+private lemma exists_kkt_from_lagrange [FiniteDimensional ℝ E] {m : ℕ}
+    {ι : Type*} [Fintype ι] (f : E → ℝ) (g : ι → E → ℝ)
     (A : E →L[ℝ] (Fin m → ℝ)) (b : Fin m → ℝ)
     (hf : ConvexOn ℝ Set.univ f) (hg : ∀ i, ConvexOn ℝ Set.univ (g i))
     (hslater : ∃ x₀, A x₀ = b ∧ ∀ i, g i x₀ < 0) {x : E} (hxA : A x = b)
-    (c : Fin n → ℝ) (hc : ∀ i, 0 ≤ c i)
+    (c : ι → ℝ) (hc : ∀ i, 0 ≤ c i)
     (hminL : ∀ z, A z = b →
       f x + ∑ i, c i * g i x ≤ f z + ∑ i, c i * g i z) :
-    ∃ u : StrongDual ℝ E, ∃ v : Fin n → StrongDual ℝ E,
+    ∃ u : StrongDual ℝ E, ∃ v : ι → StrongDual ℝ E,
       ∃ y : StrongDual ℝ (Fin m → ℝ),
       u ∈ TauCeti.subdifferential (dualPairing E) (fun z => (f z : EReal)) x ∧
       (∀ i, v i ∈ TauCeti.subdifferential (dualPairing E)
@@ -743,14 +773,14 @@ private lemma exists_kkt_from_lagrange [FiniteDimensional ℝ E] {m n : ℕ}
   exact hsum0
 
 /-- **12.40**: strict feasibility gives subgradient KKT multipliers at a minimizer. -/
-theorem exists_convexKKTMultipliers_of_slater [FiniteDimensional ℝ E] {m n : ℕ}
-    (f : E → ℝ)
-    (g : Fin n → E → ℝ) (A : E →L[ℝ] (Fin m → ℝ)) (b : Fin m → ℝ)
+theorem exists_convexKKTMultipliers_of_slater [FiniteDimensional ℝ E] {m : ℕ}
+    {ι : Type*} [Fintype ι] (f : E → ℝ)
+    (g : ι → E → ℝ) (A : E →L[ℝ] (Fin m → ℝ)) (b : Fin m → ℝ)
     (hf : ConvexOn ℝ Set.univ f) (hg : ∀ i, ConvexOn ℝ Set.univ (g i))
     (hslater : ∃ x₀, A x₀ = b ∧ ∀ i, g i x₀ < 0) {x : E}
     (hx : (∀ i, g i x ≤ 0) ∧ A x = b)
     (hmin : ∀ z, (∀ i, g i z ≤ 0) → A z = b → f x ≤ f z) :
-    ∃ (c : Fin n → ℝ) (u : StrongDual ℝ E) (v : Fin n → StrongDual ℝ E)
+    ∃ (c : ι → ℝ) (u : StrongDual ℝ E) (v : ι → StrongDual ℝ E)
       (y : StrongDual ℝ (Fin m → ℝ)),
       (∀ i, 0 ≤ c i) ∧
       u ∈ TauCeti.subdifferential (topDualPairing ℝ E).flip

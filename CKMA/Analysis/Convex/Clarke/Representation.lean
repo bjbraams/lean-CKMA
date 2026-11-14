@@ -39,6 +39,23 @@ difference quotients.
 
 In finite dimensions the canonical embedding into the double dual is surjective, and the
 support function of a set is unchanged by passing to the closed convex hull.
+
+## Main definitions
+
+* (No new public definitions; provides finite-dimensional Rademacher and dual lemmas.)
+
+## Main results
+
+* `CKMA.sSup_image_closure_convexHull_eq`: invariance of the support function under closed
+  convex hull.
+* `CKMA.exists_tendsto_fderiv_of_lipschitzOn`: existence of a convergent sequence of derivatives
+  approaching `x`.
+* `CKMA.differenceQuotient_eventually_le_of_fderiv_le`: upper bound on nearby difference quotients
+  from a uniform bound on directional derivatives.
+
+## Notation
+
+* Standard Mathlib notation is used throughout.
 -/
 
 @[expose] public section

@@ -22,6 +22,27 @@ with uniqueness of the resulting germs. Polynomially convex compact sets admit
 Oka–Weil approximation by multivariate polynomials.
 
 Sources: GAPS 45.1, 45.5, 45.7, 45.8 and 45.20.
+
+## Main definitions
+
+* `CKMA.IsSeparatelyHolomorphicOn`: separate holomorphy in each coordinate.
+* `CKMA.IsDistinguishedCoefficientFamily`, `CKMA.distinguishedPolynomial`,
+  `CKMA.distinguishedRemainder`: Weierstrass polynomial and remainder data.
+* `CKMA.IsWeierstrassPreparation`, `CKMA.IsWeierstrassDivision`: germ predicates for Weierstrass
+  preparation and division.
+* `CKMA.complexPolynomialHull`: polynomial hull of a subset of `ℂⁿ`.
+
+## Main results
+
+* `CKMA.differentiableOn_of_separatelyHolomorphic`: Hartogs's theorem on separate analyticity.
+* `CKMA.hartogs_extension`: Hartogs's extension theorem across compact holes for `n ≥ 2`.
+* `CKMA.weierstrass_preparation`: Weierstrass preparation theorem.
+* `CKMA.weierstrass_division`: Weierstrass division theorem.
+* `CKMA.polynomial_oka_weil`: Oka–Weil polynomial approximation theorem.
+
+## Notation
+
+No new notation is introduced.
 -/
 
 @[expose] public section

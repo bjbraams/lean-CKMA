@@ -35,6 +35,23 @@ compact sets is itself relatively weakly compact.
 The truncation scheme follows Albiac and Kalton, *Topics in Banach Space Theory*, second edition,
 Theorem 5.2.8, (ii) ⇒ (i). Reflexivity of a complete inner product space is the Fréchet–Riesz
 theorem, arranged so that the bidual inclusion is linear rather than conjugate-linear.
+
+## Main definitions
+
+* `CKMA.WeakCompactness.truncFun`: scalar truncation at height `M`.
+
+## Main results
+
+* `CKMA.WeakCompactness.surjective_inclusionInDoubleDual_of_complete_innerProductSpace`: a complete
+  inner product space is reflexive.
+* `CKMA.WeakCompactness.isCompact_closure_toWeakSpace_of_norm_approx`: a set that can be
+  norm-approximated by relatively weakly compact sets is relatively weakly compact.
+* `CKMA.WeakCompactness.isCompact_closure_toWeakSpace_of_uniformIntegrable`: uniform integrability
+  implies relative weak compactness in `L¹` on a finite measure space.
+
+## Notation
+
+* Standard Mathlib notation for `Lp` spaces and weak spaces.
 -/
 
 @[expose] public section
@@ -176,7 +193,7 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 /-- A point of the weak-star closure of `s` lies within `ε` of the canonical image when `s` lies
 within `ε` of a relatively weakly compact set. -/
 theorem exists_norm_sub_inclusion_le_of_norm_approx [CompleteSpace E] {s : Set E} {ε : ℝ}
-    (_hε : 0 < ε) {t : Set E} (ht : IsCompact (closure (toWeakSpace 𝕜 E '' t)))
+    {t : Set E} (ht : IsCompact (closure (toWeakSpace 𝕜 E '' t)))
     (happ : ∀ x ∈ s, ∃ y ∈ t, ‖x - y‖ ≤ ε) {φ : WeakDual 𝕜 (StrongDual 𝕜 E)}
     (hφ : φ ∈ closure (inclusionInDoubleDualWeak 𝕜 E '' (toWeakSpace 𝕜 E '' s))) :
     ∃ z : E, ‖WeakDual.toStrongDual φ - inclusionInDoubleDual 𝕜 E z‖ ≤ ε := by
@@ -291,7 +308,7 @@ theorem isCompact_closure_toWeakSpace_of_norm_approx [CompleteSpace E] {s : Set 
       (hr x hx).trans (le_max_left _ _)
     have hδ : 0 < η / (ρ + 1) := div_pos hη (by positivity)
     obtain ⟨t, ht, happ⟩ := h (η / (ρ + 1)) hδ
-    obtain ⟨z, hz⟩ := exists_norm_sub_inclusion_le_of_norm_approx hδ ht happ hφ
+    obtain ⟨z, hz⟩ := exists_norm_sub_inclusion_le_of_norm_approx ht happ hφ
     refine ⟨inclusionInDoubleDual 𝕜 E z, ⟨z, rfl⟩, hsub ?_⟩
     intro x hx
     refine hηV ?_

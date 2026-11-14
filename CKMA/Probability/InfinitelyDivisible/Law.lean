@@ -23,6 +23,21 @@ A finite Lévy measure, compensated on `{|x| ≤ 1}`, together with a Gaussian f
 characteristic function `exp` of the Lévy–Khintchine exponent. Truncating a general Lévy measure
 away from zero and passing to the limit produces a probability law with that exponent, and every
 such law is infinitely divisible.
+
+## Main definitions
+
+* `CKMA.truncCompensator`: truncation `x * 1_{|x| ≤ 1}` used in the Lévy compensator.
+
+## Main results
+
+* `CKMA.exists_probabilityMeasure_charFun_eq_exp`: every Lévy triplet is the characteristic
+  exponent of a probability measure.
+* `CKMA.isInfinitelyDivisible_of_forall_charFun_eq_exp`: any probability measure whose
+  characteristic function is `exp (L.exponent t)` is infinitely divisible.
+
+## Notation
+
+No new notation is introduced.
 -/
 
 @[expose] public section

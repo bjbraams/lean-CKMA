@@ -16,7 +16,21 @@ the integral inversion formula.
 
 The ambient group is locally compact and Hausdorff. The character convention is the
 reciprocal of the commonly used modular function `Δ`; the measure identity explicitly
-uses Borel structure and second countability.
+uses Borel structure.
+
+## Main definitions
+
+* None (uses `MeasureTheory.Measure.modularCharacter` from Mathlib).
+
+## Main results
+
+* `CKMA.continuous_modularCharacter`: continuity of Mathlib's modular character.
+* `CKMA.map_inv_haar`: inversion of left Haar measure has density given by the modular
+  character.
+
+## Notation
+
+* Standard Mathlib notation `ℝ≥0` and `ℝ≥0∞`.
 -/
 
 @[expose] public section
@@ -37,7 +51,7 @@ theorem continuous_modularCharacter : Continuous (modularCharacter : G → ℝ�
 
 /-- Inversion of left Haar measure has density Mathlib's modular character.
 This measure identity also supplies the integral inversion formula. -/
-theorem map_inv_haar [MeasurableSpace G] [BorelSpace G] [SecondCountableTopology G]
+theorem map_inv_haar [MeasurableSpace G] [BorelSpace G]
     (μ : Measure G) [IsHaarMeasure μ] :
     μ.map Inv.inv = μ.withDensity (fun x ↦ (modularCharacter x : ℝ≥0∞)) := by
   sorry

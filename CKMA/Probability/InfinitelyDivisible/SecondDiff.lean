@@ -20,6 +20,22 @@ The drift is linear and the compensator is linear in the frequency, so both have
 differences. The Gaussian term contributes a constant multiple of `h²`, and the jump integrand
 contributes `-4 sin(h x / 2)² exp(I t x)`. The resulting finite sine measure has that second
 difference, up to sign, as its characteristic function.
+
+## Main definitions
+
+* `CKMA.secondDiff`: second symmetric difference of a function `ℝ → ℂ` at step `h`.
+* `CKMA.sineWeight`: weight `4 * sin(h * x / 2)²` appearing in the second difference.
+* `CKMA.sineMeasure`: finite measure with density `sineWeight h` with respect to the jump measure.
+
+## Main results
+
+* `CKMA.secondDiff_exponent`: formula for the second symmetric difference of `L.exponent`.
+* `CKMA.charFun_sineMeasure`: the characteristic function of `sineMeasure L h` is determined by
+  `secondDiff L.exponent h`.
+
+## Notation
+
+No new notation is introduced.
 -/
 
 @[expose] public section

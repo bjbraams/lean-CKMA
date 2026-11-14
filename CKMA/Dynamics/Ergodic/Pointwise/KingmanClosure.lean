@@ -22,6 +22,20 @@ import Mathlib.Topology.MetricSpace.Pseudo.Defs
 Height cuts reduce a measurable subadditive process to the linearly bounded case. The bad set
 where the limsup is `⊥` is null because its truncated means fall below the Fekete lower bound.
 Monotone convergence identifies the mean, and the truncated L¹ convergence passes to the limit.
+
+## Main definitions
+
+* None (uses `CKMA.kingmanTrunc`, `CKMA.kingmanLiminfReal`, and `CKMA.kingmanFekete`).
+
+## Main results
+
+* `CKMA.kingman_of_measurable`: Kingman's theorem for a measurable subadditive process.
+* `CKMA.kingman_of_integrable`: Kingman's theorem for an integrable subadditive process.
+* `CKMA.kingman_ae_tendsto_of_ergodic`: Kingman's theorem for ergodic transformations.
+
+## Notation
+
+* Standard Mathlib notation for `EReal`, `eLpNorm`, and Bochner integrals.
 -/
 
 @[expose] public section

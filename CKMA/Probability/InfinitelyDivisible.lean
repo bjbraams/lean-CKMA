@@ -19,6 +19,22 @@ with its characteristic exponent using the stated truncation near zero.
 The main equivalence characterizes infinite divisibility by a unique triplet. Its drift
 and uniqueness are relative to this fixed truncation, rather than independent of that
 convention.
+
+## Main definitions
+
+* `CKMA.convolutionPower`: additive convolution power of a real measure.
+* `CKMA.IsInfinitelyDivisible`: infinite divisibility of a real probability measure.
+* `CKMA.IsLevyMeasure`: Lévy measure condition on `ℝ`.
+* `CKMA.LevyTriplet`: Lévy–Khintchine triplet `(σ², b, ν)`.
+
+## Main results
+
+* `CKMA.isInfinitelyDivisible_iff_existsUnique_levyTriplet`: Lévy–Khintchine representation
+  theorem (**06.51**).
+
+## Notation
+
+No new notation is introduced.
 -/
 
 @[expose] public section

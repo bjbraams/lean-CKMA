@@ -17,6 +17,21 @@ Laplace integrals, using the complex line element on each ray. These sums extend
 holomorphic sectorial function with uniform Gevrey-one remainders on proper subsectors.
 
 Source: GAPS 50.45.
+
+## Main definitions
+
+* `CKMA.borelTransformSeries`: formal Borel transform of a power series.
+* `CKMA.directionalBorelLaplaceSum`: directional Laplace sum along a ray.
+* `CKMA.HasSectorialGevreyOneExpansion`: uniform Gevrey-one asymptotic expansion on subsectors.
+* `CKMA.HasBorelContinuation`: analytic continuation of the Borel transform with exponential growth.
+
+## Main results
+
+* `CKMA.exists_borelLaplace_sum`: Borel–Laplace summation on a sector of opening `π + β`.
+
+## Notation
+
+No new notation is introduced.
 -/
 
 @[expose] public section

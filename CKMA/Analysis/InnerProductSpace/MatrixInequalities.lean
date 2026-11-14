@@ -27,7 +27,30 @@ overlaps by Birkhoff's theorem.
 Frobenius energy and SVD truncation use TauCeti's canonical singular-value data. The low-rank
 statements include all unitarily invariant seminorms, the Frobenius tail, and the operator-norm
 tail, with zero-padding beyond the available rank. Sources: GAPS 13.7, 13.8, 13.10, 13.13, and
-  13.18.
+13.18.
+
+## Main definitions
+
+* `CKMA.orderedEigenvalues`: decreasing real eigenvalues of a Hermitian endomorphism.
+* `CKMA.frobeniusNormSq`: squared Frobenius norm defined as the sum of squared singular values.
+* `CKMA.hermitianCompression`: compression `V^* A V` along a linear isometric inclusion `V`.
+* `CKMA.svdTruncation`: rank-`k` singular value decomposition truncation.
+
+## Main results
+
+* `CKMA.cauchy_interlacing`: Cauchy eigenvalue interlacing for a codimension-one compression
+  (**13.7**).
+* `CKMA.weyl_eigenvalue_add`, `CKMA.eigenvalue_rank_perturbation`: Weyl additive eigenvalue
+  inequality and rank-perturbation interlacing (**13.8**).
+* `CKMA.hoffman_wielandt`: Hoffman–Wielandt eigenvalue perturbation inequality (**13.10**).
+* `CKMA.norm_trace_adjoint_comp_le`: von Neumann singular-value trace inequality (**13.13**).
+* `CKMA.svdTruncation_minimizes`, `CKMA.frobeniusNormSq_sub_svdTruncation`,
+  `CKMA.norm_sub_svdTruncation`: Mirsky / Eckart–Young low-rank approximation properties
+  (**13.18**).
+
+## Notation
+
+Uses `⟪·, ·⟫_𝕜` from `InnerProductSpace`.
 -/
 
 @[expose] public section
@@ -193,8 +216,8 @@ theorem cauchy_interlacing (A : E →ₗ[𝕜] E) (hA : A.IsSymmetric)
       _ = RCLike.re ⟪A x, x⟫_𝕜 := by rw [hre, hxy]
       _ ≤ orderedEigenvalues A hA j := by simpa [orderedEigenvalues] using hxup
 
-/-- **13.8**: the mixed-index Weyl inequality. Indices start at zero, so the output index is `i+j`.
-  -/
+/-- **13.8**: the mixed-index Weyl inequality. Indices start at zero, so the output index is
+`i+j`. -/
 theorem weyl_eigenvalue_add (A B : E →ₗ[𝕜] E) (hA : A.IsSymmetric)
     (hB : B.IsSymmetric)
     (i j k : Fin (finrank 𝕜 E)) (hk : k.val = i.val + j.val) :

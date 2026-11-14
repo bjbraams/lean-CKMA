@@ -24,6 +24,20 @@ Peetre's `K`-functional scales by the endpoint bounds of a compatible couple map
 `dt/t` is invariant under positive dilations, so the real interpolation gauge obeys the bound
 `M₀ ^ (1 - θ) * M₁ ^ θ` whenever those endpoint bounds are positive. Nonnegative endpoint bounds
 follow by replacing `Mᵢ` with `Mᵢ + ε` and passing to the limit.
+
+## Main definitions
+
+* No new public definitions are introduced in this file.
+
+## Main results
+
+* `CKMA.realInterpolationGauge_map_le_of_pos`: the real interpolation gauge bound for positive
+  endpoint bounds `M₀, M₁ > 0`.
+* `CKMA.le_of_endpointFactor_eps`: passage to the limit as `ε → 0⁺` in endpoint bounds `Mᵢ + ε`.
+
+## Notation
+
+* Standard Mathlib notation for `ENNReal` integrals and suprema.
 -/
 
 @[expose] public section
@@ -293,8 +307,8 @@ theorem realInterpolationGauge_map_le_of_pos (T : CoupleMap C D) {θ : ℝ}
     simpa [φD, φC, factor] using hpow
 
 /-- If a bound holds for every `Mᵢ + ε`, it holds for nonnegative `Mᵢ`. -/
-theorem le_of_endpointFactor_eps {θ : ℝ} (hθ : 0 < θ) (hθ1 : θ < 1) {M₀ M₁ : ℝ} (_hM₀ : 0 ≤ M₀)
-    (_hM₁ : 0 ≤ M₁) {a G : ℝ≥0∞} (hG : G ≠ ∞)
+theorem le_of_endpointFactor_eps {θ : ℝ} (hθ : 0 < θ) (hθ1 : θ < 1) {M₀ M₁ : ℝ}
+    {a G : ℝ≥0∞} (hG : G ≠ ∞)
     (h : ∀ ε : ℝ, 0 < ε →
       a ≤ ENNReal.ofReal ((M₀ + ε) ^ (1 - θ) * (M₁ + ε) ^ θ) * G) :
     a ≤ ENNReal.ofReal (M₀ ^ (1 - θ) * M₁ ^ θ) * G := by

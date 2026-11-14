@@ -19,6 +19,23 @@ inputs. Focusing NLS energy and spatial variance give the classical virial ident
 for smooth rapidly decaying solutions with local uniform bounds on spacetime derivatives.
 Essential suprema and Lebesgue norms use Mathlib's measure-theoretic infrastructure.
 Sources: GAPS 34.24 and 34.32.
+
+## Main definitions
+
+* `CKMA.mixedLebesgueGauge`: mixed `L_t^q L_x^r` spacetime norm gauge.
+* `CKMA.IsSchrodingerAdmissible`: Schrödinger-admissible exponent pairs `(q, r)`.
+* `CKMA.freeSchrodinger`: free Schrödinger evolution via the Fourier transform.
+* `CKMA.focusingNlsEnergy`, `CKMA.spatialVariance`: energy and spatial variance for focusing NLS.
+
+## Main results
+
+* `CKMA.homogeneous_strichartz`: global homogeneous Strichartz estimate on Schwartz inputs
+  (**34.24**).
+* `CKMA.focusing_nls_virial`: the classical Glassey virial identity for focusing NLS (**34.32**).
+
+## Notation
+
+* `𝓕`: Fourier transform from Mathlib.
 -/
 
 @[expose] public section

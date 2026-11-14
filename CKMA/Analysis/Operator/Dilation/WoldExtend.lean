@@ -15,6 +15,21 @@ Wold's decomposition realises an isometry as a unitary on the unitary part plus 
 shift. Padding the wandering coefficients by zero on the negative integers extends that shift
 to a bilateral unitary. The closed span of the two-sided orbit is the whole extended space.
 This is the unitary extension in Sz.-Nagy–Foiaş–Bercovici–Kérchy, Chapter I.
+
+## Main definitions
+
+* `CKMA.woldSummandInt`: bilateral summands indexed by `Option ℤ`.
+* `CKMA.woldExtensionIncl`: isometric inclusion of `H` into the bilateral `ℓ²` sum.
+* `CKMA.woldBilateralEquiv`: bilateral unitary extension of an isometry.
+
+## Main results
+
+* `CKMA.woldExtension_pow`: nonnegative powers of the bilateral unitary agree with the isometry.
+* `CKMA.woldExtension_minimal`: density of the two-sided orbit of `H` in the bilateral extension.
+
+## Notation
+
+* `⟪x, y⟫_ℂ`: complex inner product.
 -/
 
 @[expose] public section

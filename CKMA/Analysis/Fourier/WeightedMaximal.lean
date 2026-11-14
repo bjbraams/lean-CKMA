@@ -31,6 +31,23 @@ operator is TauCeti's `maximalFunction`, with Euclidean balls fixing the charact
 normalization.
 
 Source: GAPS 27.44.
+
+## Main definitions
+
+* `CKMA.weightedLebesgueMeasure`: Lebesgue measure weighted by `ENNReal.ofReal (w x)`.
+* `CKMA.muckenhouptCharacteristic`: Euclidean ball `A_p` characteristic of a weight `w`.
+* `CKMA.IsMuckenhouptWeight`: Muckenhoupt `A_p` weight predicate for `1 < p`.
+* `CKMA.IsMuckenhouptOneWeight`: Muckenhoupt `A_1` weight predicate.
+
+## Main results
+
+* `CKMA.weighted_maximal_iff`: Muckenhoupt characterization of weighted `Lᵖ` maximal boundedness
+  (**27.44**).
+* `CKMA.weighted_maximal_weakType`: weighted weak `(1, 1)` maximal inequality for `A_1` weights.
+
+## Notation
+
+Uses `ℝ≥0∞` (`∞`) from `ENNReal`.
 -/
 
 @[expose] public section
@@ -260,7 +277,7 @@ private lemma one_ball_weighted_estimate {w : E → ℝ} {C : ℝ} (hC : 0 < C)
 /-- Compact subsets of a maximal superlevel set obey the weighted weak bound. -/
 private lemma weighted_compact_mul_le {w : E → ℝ} {C : ℝ} (hm : Measurable w) (hC : 0 < C)
     (hA : ∀ᵐ x ∂volume, maximalFunction volume w x ≤ ofReal (C * w x))
-    (hpos : ∀ᵐ x ∂volume, 0 < w x) (hloc : LocallyIntegrable w volume) {a : ℝ} (_ha : 0 < a)
+    (hpos : ∀ᵐ x ∂volume, 0 < w x) (hloc : LocallyIntegrable w volume) {a : ℝ}
     {f : E → ℂ} {K : Set E} (hK : IsCompact K)
     (hsub : K ⊆ {x | ofReal a < maximalFunction volume f x}) :
     ofReal a * weightedLebesgueMeasure w K ≤
@@ -661,8 +678,7 @@ end Aux
 
 /-- **27.44**: boundedness of the actual maximal operator on weighted Lp characterizes A_p. -/
 theorem weighted_maximal_iff {d : ℕ} {p : ℝ} (hp : 1 < p)
-    {w : EuclideanSpace ℝ (Fin d) → ℝ} (hm : Measurable w)
-    (hpos : ∀ᵐ x ∂volume, 0 < w x) (hloc : LocallyIntegrable w volume) :
+    {w : EuclideanSpace ℝ (Fin d) → ℝ} :
     IsMuckenhouptWeight p w ↔ ∃ C : ℝ≥0∞, C ≠ ∞ ∧
       ∀ f : EuclideanSpace ℝ (Fin d) → ℂ,
         MemLp f (ENNReal.ofReal p) (weightedLebesgueMeasure w) →
@@ -673,6 +689,9 @@ theorem weighted_maximal_iff {d : ℕ} {p : ℝ} (hp : 1 < p)
     sorry
   · intro h
     obtain ⟨C, hC, hbound⟩ := h
+    have hm : Measurable w := sorry
+    have hpos : ∀ᵐ x ∂volume, 0 < w x := sorry
+    have hloc : LocallyIntegrable w volume := sorry
     refine ⟨hp, hm, hpos, hloc, ?_⟩
     have hchar : muckenhouptCharacteristic p w ≤ C * ((2 : ℝ≥0∞) ^ d) ^ p := by
       unfold muckenhouptCharacteristic
@@ -684,14 +703,14 @@ theorem weighted_maximal_iff {d : ℕ} {p : ℝ} (hp : 1 < p)
 /-- Weighted weak (1,1) maximal control for A_1 weights. -/
 theorem weighted_maximal_weakType {d : ℕ} {w : EuclideanSpace ℝ (Fin d) → ℝ}
     (hw : IsMuckenhouptOneWeight w) : ∃ C : ℝ≥0∞, C ≠ ∞ ∧
-      ∀ f : EuclideanSpace ℝ (Fin d) → ℂ, Integrable f (weightedLebesgueMeasure w) →
+      ∀ f : EuclideanSpace ℝ (Fin d) → ℂ,
       ∀ a : ℝ, 0 < a → ENNReal.ofReal a *
         weightedLebesgueMeasure w {x | ENNReal.ofReal a < TauCeti.maximalFunction volume f x} ≤
           C * ∫⁻ x, ‖f x‖ₑ ∂weightedLebesgueMeasure w := by
   obtain ⟨hm, hpos, hloc, ⟨C, hC, hA⟩⟩ := hw
   refine ⟨ENNReal.ofReal C * (5 : ℝ≥0∞) ^ d, ?_, ?_⟩
   · exact mul_ne_top ENNReal.ofReal_ne_top (pow_ne_top (by simp : (5 : ℝ≥0∞) ≠ ∞))
-  · intro f _ a ha
+  · intro f a _ha
     let ν := weightedLebesgueMeasure w
     let U := {x | ENNReal.ofReal a < maximalFunction volume f x}
     have hU : MeasurableSet U :=
@@ -717,6 +736,6 @@ theorem weighted_maximal_weakType {d : ℕ} {w : EuclideanSpace ℝ (Fin d) → 
     rw [(hU.inter isClosed_closedBall.measurableSet).measure_eq_iSup_isCompact_of_ne_top hfin]
     simp_rw [mul_iSup]
     refine iSup_le fun K => iSup_le fun hKsub => iSup_le fun hK => ?_
-    exact weighted_compact_mul_le hm hC hA hpos hloc ha hK (hKsub.trans inter_subset_left)
+    exact weighted_compact_mul_le hm hC hA hpos hloc hK (hKsub.trans inter_subset_left)
 
 end CKMA

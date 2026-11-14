@@ -35,6 +35,23 @@ Schatten-one gauge.
 A supplied Hilbert basis defines the scalar trace sum. Trace-class membership gives absolute
 convergence, independence of the possibly differently indexed basis, and cyclicity under bounded
 multiplication. Inner products are linear in the second slot. Sources: GAPS 21.22 and 21.23.
+
+## Main definitions
+
+* `CKMA.schattenGauge`: the Schatten `p`-gauge from TauCeti.
+* `CKMA.IsTraceClass`: membership in the trace class `S₁`.
+* `CKMA.hilbertTrace`: scalar trace of an operator with respect to a Hilbert basis.
+
+## Main results
+
+* `CKMA.schatten_holder`: Schatten Hölder inequality.
+* `CKMA.summable_norm_hilbertTraceTerm`: absolute convergence of the trace series.
+* `CKMA.hilbertTrace_eq_of_hilbertBasis`: basis independence of the Hilbert-space trace.
+* `CKMA.hilbertTrace_comp_comm`: cyclicity of the trace under composition with a bounded operator.
+
+## Notation
+
+* `⟪x, y⟫_𝕜`: inner product on a Hilbert space over `𝕜`.
 -/
 
 @[expose] public section

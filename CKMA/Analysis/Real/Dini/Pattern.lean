@@ -14,30 +14,37 @@ If each opposite pair of Dini derivatives is either a common finite value or the
 `⊤` with `⊥`, then exactly one of the four Denjoy–Young–Saks alternatives holds. The comparison
 of a lower derivative with the corresponding upper derivative is `liminf_le_limsup`.
 Source: GAPS 05.10.
+
+## Main definitions
+
+No new definitions are introduced; this file works with `CKMA.HasDiniType`.
+
+## Main results
+
+* `CKMA.Dini.hasDiniType_zero`, `CKMA.Dini.hasDiniType_one`, `CKMA.Dini.hasDiniType_two`,
+  `CKMA.Dini.hasDiniType_three`: constructors for the four Dini patterns.
+* `CKMA.Dini.existsUnique_diniType_of_patterns`: the two opposite-pair patterns determine a
+  unique Dini type.
+
+## Notation
+
+No new notation is introduced.
 -/
 
 @[expose] public section
 
 noncomputable section
 
-namespace CKMA
+namespace CKMA.Dini
 
 open Filter Topology
 
-/-- The extended quotient is bounded above. -/
-private lemma diniQuotient_bddAbove (f : ℝ → ℝ) (x : ℝ) (l : Filter ℝ) :
-    l.IsBoundedUnder (· ≤ ·) (extendedDifferenceQuotient f x) :=
-  ⟨⊤, Eventually.of_forall fun _ => le_top⟩
-
-/-- The extended quotient is bounded below. -/
-private lemma diniQuotient_bddBelow (f : ℝ → ℝ) (x : ℝ) (l : Filter ℝ) :
-    l.IsBoundedUnder (· ≥ ·) (extendedDifferenceQuotient f x) :=
-  ⟨⊥, Eventually.of_forall fun _ => bot_le⟩
-
+/-- The lower right Dini derivative is at most the upper right Dini derivative. -/
 private lemma right_le (f : ℝ → ℝ) (x : ℝ) :
     lowerRightDiniDerivative f x ≤ upperRightDiniDerivative f x :=
   liminf_le_limsup (h := diniQuotient_bddAbove f x _) (h' := diniQuotient_bddBelow f x _)
 
+/-- The lower left Dini derivative is at most the upper left Dini derivative. -/
 private lemma left_le (f : ℝ → ℝ) (x : ℝ) :
     lowerLeftDiniDerivative f x ≤ upperLeftDiniDerivative f x :=
   liminf_le_limsup (h := diniQuotient_bddAbove f x _) (h' := diniQuotient_bddBelow f x _)
@@ -78,9 +85,11 @@ lemma hasDiniType_three {f : ℝ → ℝ} {x a : ℝ}
   simp
   exact ⟨hUL, hLR, a, hLL, hUR⟩
 
+/-- An `EReal` value cannot simultaneously equal a finite real number and `⊤`. -/
 private lemma ne_zero_of_top {a : ℝ} {z : EReal} (hz : z = a) (ht : z = ⊤) : False :=
   EReal.coe_ne_top a (hz.symm.trans ht)
 
+/-- An `EReal` value cannot simultaneously equal a finite real number and `⊥`. -/
 private lemma ne_zero_of_bot {a : ℝ} {z : EReal} (hz : z = a) (ht : z = ⊥) : False :=
   EReal.coe_ne_bot a (hz.symm.trans ht)
 
@@ -160,4 +169,4 @@ theorem existsUnique_diniType_of_patterns (f : ℝ → ℝ) (x : ℝ)
         rcases hj with ⟨-, -, c, -, hc⟩
         exact False.elim (ne_zero_of_top hc haU)
 
-end CKMA
+end CKMA.Dini

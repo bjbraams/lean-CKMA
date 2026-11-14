@@ -30,6 +30,19 @@ of the bidual is normed up to the factor two by finitely many functionals from t
 The subspace is realized as the image of a Lipschitz linear combination on a finite product of
 scalars, and the estimate is made on the quotient by the kernel, whose norm agrees with the metric
 used by the sphere.
+
+## Main definitions
+
+* No new public definitions are introduced in this file.
+
+## Main results
+
+* `CKMA.EberleinSmulian.exists_list_norming`: Whitley's finite-dimensional norming lemma in the
+  bidual.
+
+## Notation
+
+* Standard Mathlib notation for `StrongDual` and finite sums.
 -/
 
 @[expose] public section
@@ -56,50 +69,6 @@ theorem exists_list_norming {ι : Type*} [Finite ι]
   let Tlin := Fintype.linearCombination 𝕜 v
   let C : ℝ := ∑ i, ‖v i‖
   have hCnonneg : 0 ≤ C := Finset.sum_nonneg fun i _ ↦ opNorm_nonneg (v i)
-  have hlip : LipschitzWith (Real.toNNReal C) Tlin := by
-    refine LipschitzWith.of_dist_le' (K := C) fun c d ↦ ?_
-    have hcd : dist (Tlin c) (Tlin d) = ‖Tlin c - Tlin d‖ := by
-      convert dist_eq_norm (Tlin c) (Tlin d)
-    have hdom : dist c d = ‖c - d‖ := dist_eq_norm _ _
-    rw [hcd, hdom]
-    have hsplit : (∑ i, c i • v i) - (∑ i, d i • v i) =
-        ∑ i, (c i • v i - d i • v i) :=
-      (Finset.sum_sub_distrib (s := Finset.univ) (f := fun i ↦ c i • v i)
-        (g := fun i ↦ d i • v i)).symm
-    have hsub : ∑ i, (c i • v i - d i • v i) = ∑ i, (c i - d i) • v i := by
-      refine Finset.sum_congr rfl fun i _ ↦ ?_
-      ext φ
-      rw [sub_apply, smul_apply, smul_apply, smul_apply, smul_eq_mul, smul_eq_mul,
-        smul_eq_mul, sub_mul]
-    have hdiff : Tlin c - Tlin d = ∑ i, (c i - d i) • v i := by
-      change (∑ i, c i • v i) - (∑ i, d i • v i) = _
-      exact hsplit.trans hsub
-    rw [hdiff]
-    refine opNorm_le_bound (∑ i, (c i - d i) • v i) (M := C * ‖c - d‖)
-      (mul_nonneg hCnonneg (norm_nonneg _)) ?_
-    intro φ
-    have happ : (∑ i, (c i - d i) • v i) φ = ∑ i, (c i - d i) * (v i) φ := by
-      simp only [sum_apply, smul_apply, smul_eq_mul]
-    rw [happ]
-    calc
-      ‖∑ i, (c i - d i) * (v i) φ‖ ≤ ∑ i, ‖(c i - d i) * (v i) φ‖ := norm_sum_le _ _
-      _ ≤ ∑ i, ‖c i - d i‖ * ‖(v i) φ‖ := by
-        refine Finset.sum_le_sum fun i _ ↦ ?_
-        rw [norm_mul]
-      _ ≤ ∑ i, ‖c i - d i‖ * (‖v i‖ * ‖φ‖) := by
-        refine Finset.sum_le_sum fun i _ ↦ ?_
-        exact mul_le_mul_of_nonneg_left (le_opNorm (v i) φ) (norm_nonneg _)
-      _ = (∑ i, ‖c i - d i‖ * ‖v i‖) * ‖φ‖ := by
-        simp_rw [← mul_assoc]
-        rw [← Finset.sum_mul]
-      _ ≤ (C * ‖c - d‖) * ‖φ‖ := by
-        refine mul_le_mul_of_nonneg_right ?_ (norm_nonneg _)
-        calc
-          ∑ i, ‖c i - d i‖ * ‖v i‖ ≤ ∑ i, ‖c - d‖ * ‖v i‖ := by
-            refine Finset.sum_le_sum fun i _ ↦
-              mul_le_mul_of_nonneg_right (norm_le_pi_norm (c - d) i) (opNorm_nonneg _)
-          _ = ‖c - d‖ * C := by rw [← Finset.mul_sum]
-          _ = C * ‖c - d‖ := mul_comm _ _
   have hTlin_le (c : ι → 𝕜) : ‖Tlin c‖ ≤ C * ‖c‖ := by
     refine opNorm_le_bound (Tlin c) (M := C * ‖c‖)
       (mul_nonneg hCnonneg (norm_nonneg _)) ?_
@@ -127,6 +96,13 @@ theorem exists_list_norming {ι : Type*} [Finite ι]
               mul_le_mul_of_nonneg_right (norm_le_pi_norm c i) (opNorm_nonneg _)
           _ = ‖c‖ * C := by rw [← Finset.mul_sum]
           _ = C * ‖c‖ := mul_comm _ _
+  have hlip : LipschitzWith (Real.toNNReal C) Tlin := by
+    refine LipschitzWith.of_dist_le' (K := C) fun c d ↦ ?_
+    have hcd : dist (Tlin c) (Tlin d) = ‖Tlin (c - d)‖ := by
+      rw [map_sub]
+      exact dist_eq_norm (Tlin c) (Tlin d)
+    rw [hcd, dist_eq_norm]
+    exact hTlin_le (c - d)
   let T : (ι → 𝕜) →L[𝕜] StrongDual 𝕜 (StrongDual 𝕜 E) :=
     { toLinearMap := Tlin
       cont := by exact hlip.continuous }

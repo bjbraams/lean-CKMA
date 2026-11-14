@@ -14,6 +14,20 @@ public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Restrict
 On the intersection of the forward ranges, an isometry is unitary. Its inverse is the adjoint.
 This is the unitary summand in Wold's decomposition, as in Sz.-Nagy–Foiaş–Bercovici–Kérchy,
 Chapter I, Section 1.
+
+## Main definitions
+
+* `CKMA.woldUnitaryIsometry`: restriction of `V` to `woldUnitarySubspace V` as a linear isometry.
+* `CKMA.woldUnitaryEquiv`: restriction of `V` to `woldUnitarySubspace V` as a unitary equivalence.
+
+## Main results
+
+* `CKMA.isClosed_woldUnitarySubspace`: the unitary subspace `woldUnitarySubspace V` is closed.
+* `CKMA.coe_woldUnitaryEquiv`: action of `woldUnitaryEquiv` agrees with `V`.
+
+## Notation
+
+* `⟪x, y⟫_ℂ`: complex inner product.
 -/
 
 @[expose] public section

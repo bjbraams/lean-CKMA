@@ -21,6 +21,31 @@ of capacity, capacitability, the Wiener boundary criterion, Perron resolutivity 
 harmonic measure. Zero capacity and infinite potential energies are retained explicitly.
 The fundamental solution and Perron envelope reuse TauCeti's Euclidean PDE modules.
 Sources: GAPS 38.17, 38.20, 38.28 and 38.30.
+
+## Main definitions
+
+* `CKMA.dirichletEnergy`: squared Dirichlet energy of a scalar function on `ℝ^d`.
+* `CKMA.compactNewtonianCapacity`, `CKMA.openNewtonianCapacity`, `CKMA.newtonianCapacity`:
+  variational, inner, and outer Newtonian capacities.
+* `CKMA.newtonianPotential`, `CKMA.newtonianMutualEnergy`: Newtonian potential and mutual energy of
+  Borel measures.
+* `CKMA.IsDirichletRegularBoundaryPoint`, `CKMA.SatisfiesWienerCriterion`: Dirichlet boundary
+  regularity and the Wiener series criterion.
+
+## Main results
+
+* `CKMA.newtonianCapacity_choquet`: Choquet capacitability and continuity properties of Newtonian
+  capacity (**38.17**).
+* `CKMA.equilibrium_measure_exists`: existence of the capacitary equilibrium measure on compact
+  sets (**38.20**).
+* `CKMA.wiener_criterion_iff_regular`: Wiener's necessary and sufficient criterion for boundary
+  regularity (**38.28**).
+* `CKMA.perron_brelot_harmonic_measure`: Perron–Brelot resolutivity and harmonic measure
+  representation (**38.30**).
+
+## Notation
+
+* Standard Mathlib notation for extended nonnegative reals `ℝ≥0∞` and Lebesgue integrals.
 -/
 
 @[expose] public section

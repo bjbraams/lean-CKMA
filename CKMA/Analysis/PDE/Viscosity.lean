@@ -18,6 +18,24 @@ ellipticity convention is increasing and measured against trace. The comparison 
 has positive zeroth order, while Evans–Krylov treats convex or concave uniformly elliptic
 operators with Hölder forcing. Semicontinuity, local extrema and derivatives use Mathlib.
 Sources: GAPS 33.23 and 33.30.
+
+## Main definitions
+
+* `CKMA.IsDegenerateElliptic`: degenerate ellipticity of a second-order operator.
+* `CKMA.IsViscositySubsolution`, `CKMA.IsViscositySupersolution`, `CKMA.IsViscositySolution`:
+  viscosity subsolutions, supersolutions, and solutions.
+* `CKMA.IsUniformlyEllipticHessianOperator`: uniform ellipticity of a pure Hessian operator.
+
+## Main results
+
+* `CKMA.viscosity_comparison`: comparison principle for viscosity sub- and supersolutions on
+  bounded open domains (**33.30**).
+* `CKMA.evans_krylov_interior_c2alpha`: interior `C^{2,α}` regularity for convex or concave fully
+  nonlinear uniformly elliptic equations (**33.23**).
+
+## Notation
+
+* Standard Mathlib notation for continuous linear maps and Hölder seminorms.
 -/
 
 @[expose] public section

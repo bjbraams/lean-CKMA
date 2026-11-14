@@ -15,12 +15,30 @@ public import Mathlib.Analysis.Calculus.LocalExtr.Basic
 # Kružkov entropy solutions and Hopf–Lax evolution
 
 Bounded scalar conservation laws on positive times, their local initial traces,
-maximum principle and spacetime-almost-everywhere uniqueness. The one-dimensional
+maximum principle and spacetime-almost-everywhere uniqueness. The Euclidean
 Hopf–Lax formula `hopfLaxHamiltonian` uses an extended-real Legendre transform until
 convex superlinearity ensures finiteness. Hamilton–Jacobi solutions are defined by
 first-order viscosity tests. The name is distinct from TauCeti's real Lagrangian formula.
 Integration, convexity and local extrema use Mathlib.
 Sources: GAPS 34.9 and 34.14.
+
+## Main definitions
+
+* `CKMA.kruzhkovFlux`, `CKMA.IsKruzhkovSolution`, `CKMA.HasLocalInitialTrace`:
+  Kružkov entropy flux, bounded entropy solution predicate, and local `L¹` initial trace.
+* `CKMA.hamiltonianLegendre`, `CKMA.hopfLaxHamiltonian`, `CKMA.IsHamiltonJacobiViscositySolution`:
+  Euclidean Legendre transform, Hopf–Lax infimum, and Hamilton–Jacobi viscosity solutions.
+
+## Main results
+
+* `CKMA.exists_kruzhkovSolution`, `CKMA.kruzhkov_unique` (**34.9**): existence and uniqueness of
+  Kružkov entropy solutions for bounded initial data.
+* `CKMA.hopfLaxHamiltonian_viscosity` (**34.14**): the Hopf–Lax formula is finite and solves the
+  Hamilton–Jacobi equation in the viscosity sense.
+
+## Notation
+
+No new notation is introduced in this file.
 -/
 
 @[expose] public section
@@ -76,33 +94,39 @@ theorem kruzhkov_unique {d : ℕ} (f : ℝ → EuclideanRealSpace d) (hf : ContD
       (Set.Ioi 0 ×ˢ Set.univ)] Function.uncurry v := by
   sorry
 
-/-- The one-dimensional Legendre transform of a finite Hamiltonian. -/
-def hamiltonianLegendre (H : ℝ → ℝ) (v : ℝ) : EReal :=
-  ⨆ p : ℝ, ((p * v - H p : ℝ) : EReal)
+/-- The Euclidean Legendre transform of a finite Hamiltonian. -/
+def hamiltonianLegendre {d : ℕ} (H : EuclideanRealSpace d → ℝ)
+    (v : EuclideanRealSpace d) : EReal :=
+  ⨆ p : EuclideanRealSpace d, ((⟪p, v⟫_ℝ - H p : ℝ) : EReal)
 
-/-- The one-dimensional Hamiltonian Hopf–Lax infimum, retaining extended values until coercivity
+/-- The Euclidean Hamiltonian Hopf–Lax infimum, retaining extended values until coercivity
 proves it finite. -/
-def hopfLaxHamiltonian (H v₀ : ℝ → ℝ) (t x : ℝ) : EReal :=
-  ⨅ y : ℝ, (v₀ y : EReal) + (t : EReal) * hamiltonianLegendre H ((x - y) / t)
+def hopfLaxHamiltonian {d : ℕ} (H v₀ : EuclideanRealSpace d → ℝ)
+    (t : ℝ) (x : EuclideanRealSpace d) : EReal :=
+  ⨅ y : EuclideanRealSpace d,
+    (v₀ y : EReal) + (t : EReal) * hamiltonianLegendre H (t⁻¹ • (x - y))
 
-/-- First-order viscosity tests for the one-dimensional Hamilton–Jacobi equation. -/
-def IsHamiltonJacobiViscositySolution (H : ℝ → ℝ) (v : ℝ × ℝ → ℝ) : Prop :=
+/-- First-order viscosity tests for the Euclidean Hamilton–Jacobi equation. -/
+def IsHamiltonJacobiViscositySolution {d : ℕ} (H : EuclideanRealSpace d → ℝ)
+    (v : ℝ × EuclideanRealSpace d → ℝ) : Prop :=
   ContinuousOn v (Set.Ioi (0 : ℝ) ×ˢ Set.univ) ∧
-  (∀ z ∈ Set.Ioi (0 : ℝ) ×ˢ Set.univ, ∀ φ : ℝ × ℝ → ℝ,
+  (∀ z ∈ Set.Ioi (0 : ℝ) ×ˢ Set.univ, ∀ φ : ℝ × EuclideanRealSpace d → ℝ,
     ContDiffAt ℝ 1 φ z → IsLocalMaxOn (fun y ↦ v y - φ y)
       (Set.Ioi (0 : ℝ) ×ˢ Set.univ) z →
-        fderiv ℝ φ z (1, 0) + H (fderiv ℝ φ z (0, 1)) ≤ 0) ∧
-  (∀ z ∈ Set.Ioi (0 : ℝ) ×ˢ Set.univ, ∀ φ : ℝ × ℝ → ℝ,
+        fderiv ℝ φ z (1, 0) + H (gradient (fun x ↦ φ (z.1, x)) z.2) ≤ 0) ∧
+  (∀ z ∈ Set.Ioi (0 : ℝ) ×ˢ Set.univ, ∀ φ : ℝ × EuclideanRealSpace d → ℝ,
     ContDiffAt ℝ 1 φ z → IsLocalMinOn (fun y ↦ v y - φ y)
       (Set.Ioi (0 : ℝ) ×ˢ Set.univ) z →
-        0 ≤ fderiv ℝ φ z (1, 0) + H (fderiv ℝ φ z (0, 1)))
+        0 ≤ fderiv ℝ φ z (1, 0) + H (gradient (fun x ↦ φ (z.1, x)) z.2))
 
 /-- **34.14**: the Hopf–Lax infimum is finite and is a viscosity solution with initial data.
 The a.e. derivative-to-entropy bridge remains a separate interface. -/
-theorem hopfLaxHamiltonian_viscosity (H v₀ : ℝ → ℝ) (hH : ConvexOn ℝ Set.univ H)
-    (hsuper : Tendsto (fun p : ℝ ↦ H p / |p|) (Filter.comap abs atTop) atTop)
+theorem hopfLaxHamiltonian_viscosity {d : ℕ} (H v₀ : EuclideanRealSpace d → ℝ)
+    (hH : ConvexOn ℝ Set.univ H)
+    (hsuper : Tendsto (fun p : EuclideanRealSpace d ↦ H p / ‖p‖) (Filter.comap norm atTop) atTop)
     {L : ℝ≥0} (hv₀ : LipschitzWith L v₀) :
-    ∃ v : ℝ × ℝ → ℝ, (∀ t : ℝ, 0 < t → ∀ x, hopfLaxHamiltonian H v₀ t x = v (t, x)) ∧
+    ∃ v : ℝ × EuclideanRealSpace d → ℝ,
+      (∀ t : ℝ, 0 < t → ∀ x, hopfLaxHamiltonian H v₀ t x = v (t, x)) ∧
       IsHamiltonJacobiViscositySolution H v ∧ ∀ x,
         Tendsto (fun t : ℝ ↦ v (t, x)) (𝓝[>] 0) (𝓝 (v₀ x)) := by
   sorry

@@ -22,6 +22,28 @@ principal parts and positive zero divisors are realized by meromorphic and holom
 functions, respectively.
 
 Sources: GAPS 40.29 and 40.60–40.64.
+
+## Main definitions
+
+* `CKMA.IsPlaneDomain`: nonempty connected open subset of `ℂ`.
+* `CKMA.IsLocallyFiniteIn`: relative local finiteness on compact subsets.
+* `CKMA.HasEssentialSingularityAt`: isolated essential singularity.
+* `CKMA.MeetsBoundedComplementaryComponents`: pole set condition for Runge's theorem.
+* `CKMA.finitePrincipalPart`: polynomial in `(z - a)⁻¹`.
+
+## Main results
+
+* `CKMA.IsLocallyFiniteIn.mono`, `CKMA.isLocallyFiniteIn_of_finite`: basic properties of relative
+  local finiteness.
+* `CKMA.great_picard`: Great Picard theorem for essential singularities.
+* `CKMA.runge_approximation`: Runge's rational approximation theorem.
+* `CKMA.mergelyan_approximation`: Mergelyan's polynomial approximation theorem.
+* `CKMA.exists_mittagLeffler`: Mittag–Leffler theorem on prescribed principal parts.
+* `CKMA.exists_holomorphic_prescribed_zeros`: Weierstrass theorem on prescribed zeros.
+
+## Notation
+
+No new notation is introduced.
 -/
 
 @[expose] public section

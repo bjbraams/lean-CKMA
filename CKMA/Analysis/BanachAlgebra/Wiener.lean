@@ -17,6 +17,20 @@ summable coefficient norms. Circle elements are nonzero, so negative integer pow
 well-defined. Coefficient convolution records multiplication of these series; Wiener's lemma
 asserts closure under pointwise inversion for functions with no zero on the circle.
 Source: GAPS 20.40.
+
+## Main definitions
+
+* `CKMA.wienerSeries`: bilateral Fourier series evaluated on the unit circle.
+* `CKMA.HasAbsolutelyConvergentFourierSeries`: representation by an `ℓ¹(ℤ)` Fourier series.
+* `CKMA.wienerConvolution`: bilateral convolution of integer-indexed sequences.
+
+## Main results
+
+* `CKMA.HasAbsolutelyConvergentFourierSeries.inv`: Wiener's `1/f` lemma on the unit circle.
+
+## Notation
+
+No new notation is introduced.
 -/
 
 @[expose] public section

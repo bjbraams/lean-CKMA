@@ -8,7 +8,6 @@ module
 public import Mathlib.Analysis.Calculus.ContDiff.Basic
 public import Mathlib.Topology.ContinuousMap.Compact
 public import Mathlib.Order.Filter.Basic
-public import Mathlib.Tactic
 
 import Mathlib.Algebra.BigOperators.Field
 import Mathlib.Algebra.BigOperators.Ring.Finset
@@ -47,6 +46,22 @@ continuous pathwise pseudogradient, built from the operator norm on a finite cha
 of the maximum set. Ekeland's principle selects the path, in the form
 `LowerSemicontinuous.exists_add_mul_dist_le_and_lt_add_mul_dist` from
 `TauCeti.Topology.MetricSpace.Ekeland`. Source: GAPS 36.35.
+
+## Main definitions
+
+* `CKMA.HasPalaisSmaleAt`: the Palais–Smale subsequence condition at an energy level.
+* `CKMA.mountainPassPaths`: continuous paths on `[0, 1]` from `0` to a second well `e`.
+* `CKMA.mountainPassPathMaximum`: maximum of a functional along a path.
+* `CKMA.mountainPassLevel`: the mountain-pass minimax energy level.
+
+## Main results
+
+* `CKMA.le_mountainPassLevel`: positive sphere barrier bounds the mountain-pass level below.
+* `CKMA.exists_mountainPass_criticalPoint`: Ambrosetti–Rabinowitz mountain-pass theorem.
+
+## Notation
+
+No new notation is introduced.
 -/
 
 @[expose] public section

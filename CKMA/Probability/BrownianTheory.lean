@@ -24,6 +24,22 @@ positive local Hölder exponent below one half.
 Markov interface uses the raw natural filtration and finite-dimensional independence;
 the reflection principle uses a strictly positive level and includes time zero.
 The target statements correspond to the indicated entries of `GAPS.md`.
+
+## Main definitions
+
+* `CKMA.brownianShift`: shifted process after a finite-valued stopping time.
+
+## Main results
+
+* `CKMA.exists_brownianMeasure`: existence of Wiener measure on `C(ℝ≥0, ℝ)` (**08.1**).
+* `CKMA.exists_holder_brownianModification`: existence of a continuous modification with every
+  local Hölder exponent below `1 / 2`.
+* `CKMA.brownian_strongMarkov`: strong Markov property for Brownian motion (**08.3**).
+* `CKMA.brownian_reflection`: reflection principle for Brownian motion (**08.4**).
+
+## Notation
+
+No new notation is introduced.
 -/
 
 @[expose] public section

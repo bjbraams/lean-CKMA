@@ -24,6 +24,25 @@ import Mathlib.Topology.Order.Basic
 Axis-parallel rectangles, the strong maximal operator, and the uncentered weak-type bound on
 the line. The endpoint growth is `u(1+log⁺u)^(d-1)`, and the iteration kernel compares a
 half-scaled growth of order `n` with the growth of order `n + 1`.
+
+## Main definitions
+
+* `CKMA.OpenRectangle`: bounded open axis-parallel rectangles in `ℝ^d` with positive side lengths.
+* `CKMA.strongMaximalFunction`: the uncentered strong maximal operator.
+* `CKMA.strongMaximalGrowth`: the Orlicz growth function `u (1 + log⁺ u)^{d-1}`.
+* `CKMA.IsLocallyLLog`, `CKMA.RectanglesDifferentiateAt`: local `L(log⁺ L)^{d-1}` integrability and
+  pointwise rectangular differentiation.
+
+## Main results
+
+* `CKMA.uncenteredMaximal_weakType_one`: weak-type `(1, 1)` inequality for the one-dimensional
+  uncentered maximal function.
+* `CKMA.strongMaximalGrowth_integral_le`: Fubini–layer-cake kernel inequality relating growth of
+  order `n` and order `n + 1`.
+
+## Notation
+
+* Standard Mathlib notation for `volume`, `∫⁻`, and `ℝ≥0∞`.
 -/
 
 @[expose] public section

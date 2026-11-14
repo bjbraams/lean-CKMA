@@ -17,6 +17,19 @@ public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpo
 For a contraction `T`, the operator `1 - T* T` is positive, and its continuous functional
 calculus square root is the defect operator. The identity `‖T x‖² + ‖D_T x‖² = ‖x‖²` is the
 norm computation behind Schäffer's isometric dilation.
+
+## Main definitions
+
+* `CKMA.defectOperator`: the defect operator `(1 - T* T)^{1/2}` of a contraction `T`.
+
+## Main results
+
+* `CKMA.contraction_one_sub_star_mul_self_nonneg`: positivity of `1 - T* T` for a contraction.
+* `CKMA.norm_sq_apply_add_defectOperator_sq`: Pythagorean identity `‖T x‖² + ‖D_T x‖² = ‖x‖²`.
+
+## Notation
+
+* `⟪x, y⟫_ℂ`: complex inner product.
 -/
 
 @[expose] public section

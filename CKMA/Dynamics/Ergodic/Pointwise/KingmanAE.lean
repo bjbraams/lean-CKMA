@@ -20,6 +20,23 @@ import Mathlib.Tactic
 Integrable cocycles are negligible along orbits. Under a linear pointwise lower bound the
 Avila–Bochi estimate identifies the liminf, and Birkhoff's theorem along multiples controls the
 limsup.
+
+## Main definitions
+
+* `CKMA.kingmanRatio`: positive-length normalized values `(n + 1)⁻¹ * f (n + 1) ω`.
+* `CKMA.kingmanLiminf`: the extended liminf of the normalized subadditive process.
+* `CKMA.kingmanLimsup`: the extended limsup of the normalized subadditive process.
+* `CKMA.kingmanLiminfReal`: the real representative of the extended liminf.
+
+## Main results
+
+* `CKMA.tendsto_comp_iterate_div`: an integrable observable divided by `n` vanishes along orbits.
+* `CKMA.kingmanLiminfReal_integrable_le`: Fatou bound on the integrable liminf.
+* `CKMA.kingmanLiminfReal_ae_invariant`: almost-everywhere invariance of the real liminf.
+
+## Notation
+
+* Standard Mathlib notation for `EReal` and Bochner/Lebesgue integrals.
 -/
 
 @[expose] public section

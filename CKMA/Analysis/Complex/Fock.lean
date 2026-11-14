@@ -5,7 +5,8 @@ Authors: CKMA contributors
 -/
 module
 
-public import CKMA.Analysis.Complex.Hardy
+public import Mathlib.Analysis.Calculus.Deriv.Basic
+public import Mathlib.MeasureTheory.Function.LpSpace.Basic
 public import Mathlib.MeasureTheory.Measure.Lebesgue.Complex
 public import Mathlib.MeasureTheory.Measure.WithDensity
 
@@ -18,6 +19,22 @@ node counts. Stable weighted point sampling is characterized by lower uniform de
 strictly greater than `α/π`.
 
 Source: GAPS 42.82.
+
+## Main definitions
+
+* `CKMA.fockMeasure`, `CKMA.MemFockClass`, `CKMA.fockEnergy`: Gaussian area measure, Fock space
+  membership, and Fock energy.
+* `CKMA.IsPlanarSeparated`, `CKMA.planarNodeCount`: uniform separation and ball node count.
+* `CKMA.lowerPlanarDensity`, `CKMA.upperPlanarDensity`: lower and upper Beurling planar densities.
+* `CKMA.fockSamplingEnergy`: discrete Gaussian-weighted sampling energy.
+
+## Main results
+
+* `CKMA.fock_sampling_iff`: Seip–Wallstén density characterization of Fock sampling sets.
+
+## Notation
+
+No new notation is introduced.
 -/
 
 @[expose] public section

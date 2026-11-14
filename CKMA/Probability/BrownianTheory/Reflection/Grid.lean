@@ -21,6 +21,21 @@ public import Mathlib.Topology.UniformSpace.HeineCantor
 Nonnegative rationals are dense, so continuous modifications that agree on them agree at every
 time. The reflection argument then uses the uniform mesh `t / 2 ^ n` and the largest consecutive
 increment on that mesh.
+
+## Main definitions
+
+* `CKMA.grid`: uniform dyadic grid `t * k / 2 ^ n` on `[0, t]`.
+* `CKMA.gridOsc`: largest consecutive increment on the dyadic grid of `[0, t]`.
+
+## Main results
+
+* `CKMA.ae_eq_of_continuous_of_nnrat`: continuous modifications that agree on nonnegative
+  rationals agree everywhere almost surely.
+* `CKMA.tendsto_gridOsc`: grid oscillation of a continuous path tends to zero as `n → ∞`.
+
+## Notation
+
+No new notation is introduced.
 -/
 
 @[expose] public section

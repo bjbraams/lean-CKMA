@@ -5,6 +5,8 @@ Authors: CKMA contributors
 -/
 module
 
+public import CKMA.Probability.BrownianQuadraticVariation.TimePartition
+public import CKMA.Probability.BrownianQuadraticVariation.KolmogorovMaximal
 public import Mathlib.Probability.BrownianMotion.Basic
 public import Mathlib.MeasureTheory.Function.ConvergenceInMeasure
 
@@ -42,6 +44,27 @@ reals; covariance normalization is the standard Brownian one.
 The uniform estimate is Kolmogorov's maximal inequality applied to the centered sum of
 squared increments. The Gaussian fourth moment is read from the fourth derivative of the
 moment-generating function. Cross variation reduces to quadratic variation by polarization.
+
+## Main definitions
+
+* `CKMA.TimePartition`: finite deterministic partition of `[0, T]`
+  (in `BrownianQuadraticVariation.TimePartition`).
+* `CKMA.TimePartition.mesh`: largest time increment of a partition
+  (in `BrownianQuadraticVariation.TimePartition`).
+* `CKMA.TimePartition.covariation`: quadratic covariation sum over completed partition intervals
+  (in `BrownianQuadraticVariation.TimePartition`).
+
+## Main results
+
+* `CKMA.brownian_quadraticVariation_ucp`: uniform-on-compact convergence in probability of
+  Brownian quadratic variation along deterministic partitions with vanishing mesh.
+* `CKMA.brownian_quadraticVariation_ae`: almost-sure uniform convergence under summable meshes.
+* `CKMA.brownian_covariation_ucp`: diagonal quadratic covariation for independent Brownian
+  coordinates.
+
+## Notation
+
+No new notation is introduced in this file.
 -/
 
 @[expose] public section
@@ -50,668 +73,9 @@ noncomputable section
 
 namespace CKMA
 
-open scoped NNReal ENNReal ProbabilityTheory
-
+open scoped NNReal ENNReal ProbabilityTheory BigOperators
 open Classical
 open MeasureTheory ProbabilityTheory Filter Topology
-open scoped BigOperators
-
-/-- A finite deterministic partition of `[0,T]`. Repeated nodes are allowed. -/
-structure TimePartition (T : ℝ≥0) where
-  /-- Number of increments. -/
-  size : ℕ
-  /-- Partition nodes, including both endpoints. -/
-  node : Fin (size + 1) → ℝ≥0
-  /-- Time ordering. -/
-  monotone_node : Monotone node
-  /-- Initial endpoint. -/
-  node_zero : node 0 = 0
-  /-- Terminal endpoint. -/
-  node_last : node (Fin.last size) = T
-
-/-- Largest time increment of a finite partition. -/
-def TimePartition.mesh {T : ℝ≥0} (π : TimePartition T) : ℝ≥0 :=
-  Finset.univ.sup fun i : Fin π.size ↦ π.node i.succ - π.node i.castSucc
-
-/-- Quadratic covariation using completed partition intervals up to time `t`.
-It is constant between adjacent nodes, as in the argument of `GAPS_EASY.md`. -/
-def TimePartition.covariation {Ω : Type*} {T : ℝ≥0} (π : TimePartition T)
-    (B C : ℝ≥0 → Ω → ℝ) (t : ℝ≥0) (ω : Ω) : ℝ :=
-  ∑ i : Fin π.size, if π.node i.succ ≤ t then
-    (B (π.node i.succ) ω - B (π.node i.castSucc) ω) *
-    (C (π.node i.succ) ω - C (π.node i.castSucc) ω) else 0
-
-namespace TimePartition
-
-variable {T : ℝ≥0} (π : TimePartition T)
-
-/-- Number of partition intervals completed by time `t`. -/
-def completedCount (t : ℝ≥0) : ℕ :=
-  (Finset.univ.filter fun i : Fin π.size ↦ π.node i.succ ≤ t).card
-
-/-- The completed-count index is at most the number of increments. -/
-lemma completedCount_le_size (t : ℝ≥0) : π.completedCount t ≤ π.size := by
-  simpa only [completedCount, Finset.card_univ, Fintype.card_fin] using
-    Finset.card_filter_le (Finset.univ : Finset (Fin π.size))
-      fun i : Fin π.size ↦ π.node i.succ ≤ t
-
-/-- Right endpoint of the last interval completed by time `t`. -/
-def covered (t : ℝ≥0) : ℝ≥0 :=
-  π.node ⟨π.completedCount t, Nat.lt_succ_of_le (π.completedCount_le_size t)⟩
-
-/-- Completed intervals form an initial segment of the partition. -/
-lemma completed_iff_val_lt (t : ℝ≥0) (i : Fin π.size) :
-    π.node i.succ ≤ t ↔ i.val < π.completedCount t := by
-  have hdown : ∀ a b : Fin π.size, a ≤ b → π.node b.succ ≤ t → π.node a.succ ≤ t := by
-    intro a b hab hb
-    exact (π.monotone_node (Fin.succ_le_succ_iff.mpr hab)).trans hb
-  constructor
-  · intro hi
-    have hsub : Finset.Iic i ⊆ Finset.univ.filter fun j : Fin π.size ↦ π.node j.succ ≤ t := by
-      intro j hj
-      rw [Finset.mem_Iic] at hj
-      rw [Finset.mem_filter]
-      exact ⟨Finset.mem_univ _, hdown j i hj hi⟩
-    have hcard : (Finset.Iic i).card ≤ π.completedCount t := by
-      simpa only [completedCount] using Finset.card_le_card hsub
-    have hic : (Finset.Iic i).card = i.val + 1 := by
-      simpa using Fin.card_Iic i
-    omega
-  · intro hi
-    by_contra hnot
-    have hsub : Finset.univ.filter (fun j : Fin π.size ↦ π.node j.succ ≤ t) ⊆ Finset.Iio i := by
-      intro j hj
-      rw [Finset.mem_filter] at hj
-      rw [Finset.mem_Iio]
-      by_contra hge
-      exact hnot (hdown i j (le_of_not_gt hge) hj.2)
-    have hcard : π.completedCount t ≤ i.val := by
-      refine le_trans (Finset.card_le_card hsub) ?_
-      simpa using Fin.card_Iio i
-    omega
-
-/-- Real length of one partition increment. -/
-def increment (i : Fin π.size) : ℝ :=
-  ((π.node i.succ - π.node i.castSucc : ℝ≥0) : ℝ)
-
-/-- Sum of the first `m` real increments equals the corresponding node. -/
-lemma sum_increment_initial :
-    ∀ m (hm : m ≤ π.size),
-      ∑ i ∈ Finset.univ.filter fun i : Fin π.size ↦ i.val < m, π.increment i =
-        (π.node ⟨m, Nat.lt_succ_of_le hm⟩ : ℝ) := by
-  intro m
-  induction m with
-  | zero =>
-    intro hm
-    simp only [Nat.not_lt_zero, Finset.filter_false, Finset.sum_empty]
-    have hz : (⟨0, Nat.lt_succ_of_le hm⟩ : Fin (π.size + 1)) = 0 := by ext; simp
-    simp [hz, π.node_zero]
-  | succ m ih =>
-    intro hm
-    have hm' : m < π.size := Nat.lt_of_succ_le hm
-    have hmle : m ≤ π.size := Nat.le_of_lt hm'
-    let j : Fin π.size := ⟨m, hm'⟩
-    have hnot : j ∉ Finset.univ.filter fun i : Fin π.size ↦ i.val < m := by
-      simp [j]
-    have hsplit : Finset.univ.filter (fun i : Fin π.size ↦ i.val < m + 1) =
-        insert j (Finset.univ.filter fun i : Fin π.size ↦ i.val < m) := by
-      ext i
-      simp only [Finset.mem_filter, Finset.mem_univ, true_and, Finset.mem_insert, j]
-      constructor
-      · intro hi
-        rcases lt_or_eq_of_le (Nat.lt_succ_iff.mp hi) with hlt | heq
-        · exact Or.inr hlt
-        · exact Or.inl (by apply Fin.ext; simpa [j] using heq)
-      · intro hi
-        rcases hi with hEq | hlt
-        · simp [hEq, j]
-        · omega
-    rw [hsplit, Finset.sum_insert hnot, ih hmle, increment]
-    have hsucc : j.succ = ⟨m + 1, Nat.lt_succ_of_le hm⟩ := by
-      apply Fin.ext
-      simp only [Fin.val_succ, Fin.val_mk, j]
-    have hcast : j.castSucc = ⟨m, Nat.lt_succ_of_le hmle⟩ := by
-      apply Fin.ext
-      simp only [Fin.val_castSucc, Fin.val_mk, j]
-    rw [hsucc, hcast]
-    have hle : π.node ⟨m, Nat.lt_succ_of_le hmle⟩ ≤
-        π.node ⟨m + 1, Nat.lt_succ_of_le hm⟩ :=
-      π.monotone_node (by rw [← hcast, ← hsucc]; exact Fin.castSucc_le_succ j)
-    rw [NNReal.coe_sub hle]
-    ring
-
-/-- The increments of a partition of `[0,T]` sum to `T`. -/
-lemma sum_increment : ∑ i : Fin π.size, π.increment i = (T : ℝ) := by
-  have h := π.sum_increment_initial π.size le_rfl
-  have hfilter : Finset.univ.filter (fun i : Fin π.size ↦ i.val < π.size) = Finset.univ := by
-    ext i; simp [i.isLt]
-  have hlast : (⟨π.size, Nat.lt_succ_self π.size⟩ : Fin (π.size + 1)) = Fin.last π.size := by
-    ext; simp [Fin.val_last]
-  simpa [hfilter, hlast, π.node_last] using h
-
-/-- Each real increment is at most the mesh. -/
-lemma increment_le_mesh (i : Fin π.size) : π.increment i ≤ π.mesh := by
-  simpa only [increment, mesh] using
-    (NNReal.coe_le_coe.mpr
-      (Finset.le_sup (f := fun j : Fin π.size ↦ π.node j.succ - π.node j.castSucc)
-        (Finset.mem_univ i)))
-
-/-- Sum of squared increments is at most mesh times `T`. -/
-lemma sum_sq_increment_le : ∑ i : Fin π.size, π.increment i ^ 2 ≤ (π.mesh : ℝ) * (T : ℝ) := by
-  calc
-    ∑ i : Fin π.size, π.increment i ^ 2
-        ≤ ∑ i : Fin π.size, (π.mesh : ℝ) * π.increment i := by
-          refine Finset.sum_le_sum fun i _ ↦ ?_
-          have hinc : 0 ≤ π.increment i := by simp [increment]
-          nlinarith [π.increment_le_mesh i, hinc, sq_nonneg (π.increment i)]
-    _ = (π.mesh : ℝ) * ∑ i : Fin π.size, π.increment i := by rw [Finset.mul_sum]
-    _ = (π.mesh : ℝ) * (T : ℝ) := by rw [π.sum_increment]
-
-/-- On `[0,T]`, time differs from the covered node by at most the mesh. -/
-lemma abs_t_sub_covered_le_mesh {t : ℝ≥0} (ht : t ≤ T) :
-    |(t : ℝ) - (π.covered t : ℝ)| ≤ π.mesh := by
-  have hk : π.completedCount t ≤ π.size := π.completedCount_le_size t
-  by_cases h0 : π.completedCount t = 0
-  · have hcov : π.covered t = 0 := by simp [covered, h0, π.node_zero]
-    rw [hcov, NNReal.coe_zero, sub_zero, abs_of_nonneg (NNReal.coe_nonneg _)]
-    by_cases hsize : π.size = 0
-    · have hlast0 : Fin.last π.size = (0 : Fin (π.size + 1)) := by
-        apply Fin.ext
-        simp [hsize, Fin.val_last]
-      have hT : T = 0 := by
-        simpa [hlast0, π.node_zero, eq_comm] using π.node_last
-      have ht0 : t = 0 := le_antisymm (ht.trans (le_of_eq hT)) (zero_le : 0 ≤ t)
-      simp [ht0]
-    · let i0 : Fin π.size := ⟨0, Nat.pos_of_ne_zero hsize⟩
-      have hnot : ¬ π.node i0.succ ≤ t := by
-        intro hle
-        have hlt := (π.completed_iff_val_lt t i0).1 hle
-        simp [h0, i0, Fin.val_mk] at hlt
-      have htlt : (t : ℝ) < π.node i0.succ := NNReal.coe_lt_coe.mpr (not_le.mp hnot)
-      have hstep : (π.node i0.succ : ℝ) ≤ π.mesh := by
-        have hinc := π.increment_le_mesh i0
-        have hcast : i0.castSucc = 0 := by
-          apply Fin.ext
-          simp [i0]
-        have hle0 : π.node 0 ≤ π.node i0.succ := by simp [π.node_zero]
-        rw [increment, hcast] at hinc
-        rw [NNReal.coe_sub hle0, π.node_zero, NNReal.coe_zero, sub_zero] at hinc
-        exact hinc
-      exact (le_of_lt htlt).trans hstep
-  · by_cases hlast : π.completedCount t = π.size
-    · have hidx : (⟨π.size, Nat.lt_succ_self π.size⟩ : Fin (π.size + 1)) =
-          Fin.last π.size := by
-        apply Fin.ext
-        simp [Fin.val_last]
-      have hcov : π.covered t = T := by
-        simp [covered, hlast, hidx, π.node_last]
-      have hsize : 0 < π.size := Nat.pos_of_ne_zero (fun hzero ↦ h0 (hlast.trans hzero))
-      let i : Fin π.size := ⟨π.size - 1, Nat.sub_lt hsize (by decide)⟩
-      have hi : i.val = π.size - 1 := by simp [i, Fin.val_mk]
-      have hval : i.val < π.completedCount t := by
-        rw [hi, hlast]
-        omega
-      have hcomp : π.node i.succ ≤ t := (π.completed_iff_val_lt t i).2 hval
-      have hsucc : i.succ = Fin.last π.size := by
-        apply Fin.ext
-        simp only [Fin.val_succ, Fin.val_last, hi]
-        omega
-      have hTle : T ≤ t := by simpa [hsucc, π.node_last] using hcomp
-      have htEq : t = T := le_antisymm ht hTle
-      subst htEq
-      simp [hcov]
-    · have hkpos : 0 < π.completedCount t := Nat.pos_of_ne_zero h0
-      have hklt : π.completedCount t < π.size := lt_of_le_of_ne hk hlast
-      let ileft : Fin π.size := ⟨π.completedCount t - 1, by omega⟩
-      let iright : Fin π.size := ⟨π.completedCount t, hklt⟩
-      have hleftVal : ileft.val = π.completedCount t - 1 := by simp [ileft, Fin.val_mk]
-      have hrightVal : iright.val = π.completedCount t := by simp [iright, Fin.val_mk]
-      have hleft : π.node ileft.succ ≤ t :=
-        (π.completed_iff_val_lt t ileft).2 (by omega)
-      have hright : ¬ π.node iright.succ ≤ t := by
-        intro hle
-        have hlt := (π.completed_iff_val_lt t iright).1 hle
-        rw [hrightVal] at hlt
-        omega
-      have hcovL : π.covered t = π.node ileft.succ := by
-        apply congrArg π.node
-        apply Fin.ext
-        simp only [covered, Fin.val_mk, Fin.val_succ, hleftVal]
-        omega
-      have hcovR : π.covered t = π.node iright.castSucc := by
-        apply congrArg π.node
-        apply Fin.ext
-        simp only [covered, Fin.val_mk, Fin.val_castSucc, hrightVal]
-      have hs_le_t : (π.covered t : ℝ) ≤ t := by
-        rw [hcovL]
-        exact NNReal.coe_le_coe.mpr hleft
-      have ht_lt : (t : ℝ) < π.node iright.succ := NNReal.coe_lt_coe.mpr (not_le.mp hright)
-      have hstep : (π.node iright.succ : ℝ) - (π.covered t : ℝ) ≤ π.mesh := by
-        have hleNodes : π.node iright.castSucc ≤ π.node iright.succ :=
-          π.monotone_node (Fin.castSucc_le_succ iright)
-        have hsub : (π.node iright.succ : ℝ) - (π.node iright.castSucc : ℝ) ≤ π.mesh := by
-          rw [← NNReal.coe_sub hleNodes]
-          exact π.increment_le_mesh iright
-        rw [hcovR]
-        exact hsub
-      have hdiff : (t : ℝ) - (π.covered t : ℝ) ≤ π.mesh :=
-        le_of_lt (lt_of_lt_of_le (by linarith) hstep)
-      rw [abs_of_nonneg (sub_nonneg.mpr hs_le_t)]
-      exact hdiff
-
-end TimePartition
-
-/-- A finite sum of measurable real functions is measurable. -/
-private lemma measurable_finset_sum {α ι : Type*} [MeasurableSpace α] {s : Finset ι}
-    {f : ι → α → ℝ} (hf : ∀ i ∈ s, Measurable (f i)) :
-    Measurable (fun a ↦ ∑ i ∈ s, f i a) := by
-  classical
-  induction s using Finset.induction_on with
-  | empty =>
-    simp
-  | insert a s ha ih =>
-    simp only [Finset.sum_insert ha]
-    exact (hf a (Finset.mem_insert_self a s)).add
-      (ih fun i hi ↦ hf i (Finset.mem_insert_of_mem hi))
-
-/-- Indices strictly before a partial-sum time. -/
-private def pastFinset (n : ℕ) (k : Fin (n + 1)) : Finset (Fin n) :=
-  Finset.univ.filter fun i ↦ i.val < k.val
-
-/-- Indices at or after a partial-sum time. -/
-private def futureFinset (n : ℕ) (k : Fin (n + 1)) : Finset (Fin n) :=
-  Finset.univ.filter fun i ↦ k.val ≤ i.val
-
-/-- Sum of the family over indices strictly before `k`. -/
-private def partialSum {Ω : Type*} {n : ℕ} (X : Fin n → Ω → ℝ) (k : Fin (n + 1)) : Ω → ℝ :=
-  fun ω ↦ ∑ i ∈ pastFinset n k, X i ω
-
-/-- The last partial sum is the sum of the whole family. -/
-private lemma partialSum_last {Ω : Type*} {n : ℕ} (X : Fin n → Ω → ℝ) (ω : Ω) :
-    partialSum X (Fin.last n) ω = ∑ i : Fin n, X i ω := by
-  have hpast : pastFinset n (Fin.last n) = Finset.univ := by
-    ext i
-    simp [pastFinset, Fin.val_last, i.isLt]
-  simp [partialSum, hpast]
-
-/-- Past and future index sets partition the family. -/
-private lemma past_future_partition (n : ℕ) (k : Fin (n + 1)) :
-    Disjoint (pastFinset n k) (futureFinset n k) ∧
-      pastFinset n k ∪ futureFinset n k = Finset.univ := by
-  constructor
-  · rw [Finset.disjoint_left]
-    intro i hi hf
-    exact not_le_of_gt (Finset.mem_filter.mp hi).2 (Finset.mem_filter.mp hf).2
-  · ext i
-    constructor
-    · intro _
-      exact Finset.mem_univ i
-    · intro _
-      rcases lt_or_ge i.val k.val with hlt | hge
-      · exact Finset.mem_union_left _ (by simp [pastFinset, hlt])
-      · exact Finset.mem_union_right _ (by simp [futureFinset, hge])
-
-/-- The full sum splits as the partial sum plus the future sum. -/
-private lemma partialSum_add_future {Ω : Type*} {n : ℕ} (X : Fin n → Ω → ℝ)
-    (k : Fin (n + 1)) (ω : Ω) :
-    partialSum X (Fin.last n) ω =
-      partialSum X k ω + ∑ i ∈ futureFinset n k, X i ω := by
-  have hlast : pastFinset n (Fin.last n) = Finset.univ := by
-    ext i
-    simp [pastFinset, Fin.val_last, i.isLt]
-  rw [partialSum, partialSum, hlast, ← (past_future_partition n k).2,
-    Finset.sum_union (past_future_partition n k).1]
-
-/-- First time the partial sums reach height `ε`. -/
-private def firstHitSet {Ω : Type*} {n : ℕ} (X : Fin n → Ω → ℝ) (ε : ℝ)
-    (k : Fin (n + 1)) : Set Ω :=
-  {ω | ε ≤ |partialSum X k ω|} ∩
-    {ω | ∀ j : Fin (n + 1), j < k → |partialSum X j ω| < ε}
-
-/-- Partial sums of a measurable family are measurable. -/
-private lemma measurable_partialSum {Ω : Type*} [MeasurableSpace Ω] {n : ℕ}
-    {X : Fin n → Ω → ℝ} (hX : ∀ i, Measurable (X i)) (k : Fin (n + 1)) :
-    Measurable (partialSum X k) :=
-  measurable_finset_sum fun i _ ↦ hX i
-
-/-- The first-hit set of a measurable family is measurable. -/
-private lemma measurableSet_firstHit {Ω : Type*} [MeasurableSpace Ω] {n : ℕ}
-    {X : Fin n → Ω → ℝ} (hX : ∀ i, Measurable (X i)) (ε : ℝ) (k : Fin (n + 1)) :
-    MeasurableSet (firstHitSet X ε k) := by
-  refine MeasurableSet.inter ?_ ?_
-  · exact measurableSet_le measurable_const
-      (continuous_abs.measurable.comp (measurable_partialSum hX k))
-  · have hset : {ω | ∀ j : Fin (n + 1), j < k → |partialSum X j ω| < ε} =
-        ⋂ j : {j : Fin (n + 1) // j < k}, {ω | |partialSum X j.1 ω| < ε} := by
-      ext ω
-      simp
-    rw [hset]
-    refine MeasurableSet.iInter fun j ↦ ?_
-    exact measurableSet_lt
-      (continuous_abs.measurable.comp (measurable_partialSum hX j.1)) measurable_const
-
-/-- Distinct first-hit sets are disjoint. -/
-private lemma pairwise_firstHit {Ω : Type*} {n : ℕ} (X : Fin n → Ω → ℝ) (ε : ℝ) :
-    Pairwise fun k m ↦ Disjoint (firstHitSet X ε k) (firstHitSet X ε m) := by
-  intro k m hkm
-  rcases lt_or_gt_of_ne hkm with hlt | hgt
-  · refine Set.disjoint_left.2 fun ω hωk hωm ↦ ?_
-    have hltAbs : |partialSum X k ω| < ε := hωm.2 k hlt
-    have hge : ε ≤ |partialSum X k ω| := hωk.1
-    exact not_lt_of_ge hge hltAbs
-  · refine Set.disjoint_left.2 fun ω hωk hωm ↦ ?_
-    have hltAbs : |partialSum X m ω| < ε := hωk.2 m hgt
-    have hge : ε ≤ |partialSum X m ω| := hωm.1
-    exact not_lt_of_ge hge hltAbs
-
-/-- The first-hit sets cover every path whose partial sums reach height `ε`. -/
-private lemma iUnion_firstHit {Ω : Type*} {n : ℕ} (X : Fin n → Ω → ℝ) (ε : ℝ) :
-    ⋃ k, firstHitSet X ε k = {ω | ∃ k : Fin (n + 1), ε ≤ |partialSum X k ω|} := by
-  ext ω
-  constructor
-  · intro hω
-    obtain ⟨k, hk⟩ := Set.mem_iUnion.1 hω
-    exact ⟨k, hk.1⟩
-  · intro hω
-    obtain ⟨k0, hk0⟩ := hω
-    let s : Finset (Fin (n + 1)) :=
-      Finset.univ.filter fun k ↦ ε ≤ |partialSum X k ω|
-    have hs : s.Nonempty := ⟨k0, by simp [s, hk0]⟩
-    let k := s.min' hs
-    have hkmem : k ∈ s := Finset.min'_mem s hs
-    have hkle : ε ≤ |partialSum X k ω| := by
-      simpa [s] using hkmem
-    have hearly : ∀ j : Fin (n + 1), j < k → |partialSum X j ω| < ε := by
-      intro j hj
-      have hnot : j ∉ s := by
-        intro hjs
-        have hmin := Finset.min'_le s j hjs
-        exact not_le_of_gt hj hmin
-      have hlt : ¬ ε ≤ |partialSum X j ω| := by simpa [s] using hnot
-      exact lt_of_not_ge hlt
-    exact Set.mem_iUnion.2 ⟨k, ⟨hkle, hearly⟩⟩
-
-/-- Partial sum of a past tuple, using only coordinates before `j`. -/
-private def subtypeSum {n : ℕ} (k j : Fin (n + 1))
-    (f : {i : Fin n // i ∈ pastFinset n k} → ℝ) : ℝ :=
-  ∑ i : pastFinset n k, if i.1.val < j.val then f i else 0
-
-/-- Value of the past tuple on the first-hit event, and zero otherwise. -/
-private def hitOfPast {n : ℕ} (k : Fin (n + 1)) (ε : ℝ)
-    (f : {i : Fin n // i ∈ pastFinset n k} → ℝ) : ℝ :=
-  if (∀ j : Fin (n + 1), j < k → |subtypeSum k j f| < ε) ∧ ε ≤ |subtypeSum k k f| then
-    subtypeSum k k f else 0
-
-/-- Sum of a future tuple. -/
-private def tailOfFuture {n : ℕ} (k : Fin (n + 1))
-    (g : {i : Fin n // i ∈ futureFinset n k} → ℝ) : ℝ :=
-  ∑ i, g i
-
-/-- A coordinatewise truncated sum of a tuple is measurable. -/
-private lemma measurable_subtypeSum {n : ℕ} (k j : Fin (n + 1)) :
-    Measurable (subtypeSum k j) := by
-  unfold subtypeSum
-  refine measurable_finset_sum fun i _ ↦ ?_
-  by_cases h : i.1.val < j.val
-  · simpa [h] using measurable_pi_apply i
-  · simpa [h] using measurable_const
-
-/-- The first-hit functional of the past tuple is measurable. -/
-private lemma measurable_hitOfPast {n : ℕ} (k : Fin (n + 1)) (ε : ℝ) :
-    Measurable (hitOfPast k ε) := by
-  have hset : MeasurableSet {f |
-      (∀ j : Fin (n + 1), j < k → |subtypeSum k j f| < ε) ∧
-        ε ≤ |subtypeSum k k f|} := by
-    have hrewrite : {f |
-        (∀ j : Fin (n + 1), j < k → |subtypeSum k j f| < ε) ∧
-          ε ≤ |subtypeSum k k f|} =
-        (⋂ j : {j : Fin (n + 1) // j < k}, {f | |subtypeSum k j.1 f| < ε}) ∩
-          {f | ε ≤ |subtypeSum k k f|} := by
-      ext f
-      simp
-    rw [hrewrite]
-    refine MeasurableSet.inter ?_ ?_
-    · refine MeasurableSet.iInter fun j ↦ ?_
-      exact measurableSet_lt (continuous_abs.measurable.comp (measurable_subtypeSum k j.1))
-        measurable_const
-    · exact measurableSet_le measurable_const
-        (continuous_abs.measurable.comp (measurable_subtypeSum k k))
-  unfold hitOfPast
-  exact (measurable_subtypeSum k k).ite hset measurable_const
-
-/-- The future-sum functional is measurable. -/
-private lemma measurable_tailOfFuture {n : ℕ} (k : Fin (n + 1)) :
-    Measurable (tailOfFuture k) := by
-  unfold tailOfFuture
-  exact measurable_finset_sum fun i _ ↦ measurable_pi_apply i
-
-/-- Reading the past from the family reproduces partial sums up to time `k`. -/
-private lemma subtypeSum_eq_partialSum {Ω : Type*} {n : ℕ} (X : Fin n → Ω → ℝ)
-    (k j : Fin (n + 1)) (hj : j ≤ k) (ω : Ω) :
-    subtypeSum k j (fun i ↦ X i.1 ω) = partialSum X j ω := by
-  rw [subtypeSum, partialSum]
-  have hcoe := Finset.sum_coe_sort (s := pastFinset n k)
-    (fun i ↦ if i.val < j.val then X i ω else 0)
-  rw [hcoe, ← Finset.sum_filter]
-  have hjv : j.val ≤ k.val := (Fin.le_def).mp hj
-  have hfilt : (pastFinset n k).filter (fun i ↦ i.val < j.val) = pastFinset n j := by
-    ext i
-    simp only [pastFinset, Finset.mem_filter, Finset.mem_univ, true_and]
-    constructor
-    · intro h
-      exact h.2
-    · intro h
-      exact ⟨lt_of_lt_of_le h hjv, h⟩
-  rw [hfilt]
-
-/-- The past functional reproduces the partial sum on the first-hit set. -/
-private lemma hitOfPast_eq_indicator {Ω : Type*} {n : ℕ} (X : Fin n → Ω → ℝ)
-    (k : Fin (n + 1)) (ε : ℝ) (ω : Ω) :
-    hitOfPast k ε (fun i ↦ X i.1 ω) =
-      (firstHitSet X ε k).indicator (partialSum X k) ω := by
-  have hps : ∀ j : Fin (n + 1), j ≤ k →
-      subtypeSum k j (fun i ↦ X i.1 ω) = partialSum X j ω :=
-    fun j hj ↦ subtypeSum_eq_partialSum X k j hj ω
-  by_cases hmem : ω ∈ firstHitSet X ε k
-  · rw [Set.indicator_of_mem hmem]
-    have hcond : (∀ j : Fin (n + 1), j < k →
-        |subtypeSum k j (fun i ↦ X i.1 ω)| < ε) ∧
-        ε ≤ |subtypeSum k k (fun i ↦ X i.1 ω)| := by
-      constructor
-      · intro j hj
-        rw [hps j hj.le]
-        exact hmem.2 j hj
-      · rw [hps k le_rfl]
-        exact hmem.1
-    rw [hitOfPast, ite_eq_left hcond]
-    exact hps k le_rfl
-  · rw [Set.indicator_of_notMem hmem]
-    have hcond : ¬ ((∀ j : Fin (n + 1), j < k →
-        |subtypeSum k j (fun i ↦ X i.1 ω)| < ε) ∧
-        ε ≤ |subtypeSum k k (fun i ↦ X i.1 ω)|) := by
-      intro h
-      apply hmem
-      refine ⟨?_, ?_⟩
-      · have h2 := h.2
-        rw [hps k le_rfl] at h2
-        exact h2
-      · intro j hj
-        have h1 := h.1 j hj
-        rw [hps j hj.le] at h1
-        exact h1
-    rw [hitOfPast, ite_eq_right hcond]
-
-/-- The future functional reproduces the future sum. -/
-private lemma tailOfFuture_eq {Ω : Type*} {n : ℕ} (X : Fin n → Ω → ℝ)
-    (k : Fin (n + 1)) (ω : Ω) :
-    tailOfFuture k (fun i ↦ X i.1 ω) = ∑ i ∈ futureFinset n k, X i ω := by
-  unfold tailOfFuture
-  exact Finset.sum_coe_sort (s := futureFinset n k) (f := fun i ↦ X i ω)
-
-/-- On a first-hit set, the squared full sum dominates `ε ^ 2` times the measure. -/
-private lemma firstHit_integral_lower {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω}
-    [IsProbabilityMeasure μ] {n : ℕ} {X : Fin n → Ω → ℝ}
-    (hX : ∀ i, Measurable (X i)) (hmean : ∀ i, ∫ ω, X i ω ∂μ = 0)
-    (hLp : ∀ i, MemLp (X i) 2 μ) (hind : iIndepFun X μ) {ε : ℝ} (hε : 0 < ε)
-    (k : Fin (n + 1)) :
-    ε ^ 2 * μ.real (firstHitSet X ε k) ≤
-      ∫ ω, (firstHitSet X ε k).indicator
-        (fun ω ↦ (partialSum X (Fin.last n) ω) ^ 2) ω ∂μ := by
-  let A := firstHitSet X ε k
-  have hA : MeasurableSet A := measurableSet_firstHit hX ε k
-  let Sk := partialSum X k
-  let tail : Ω → ℝ := fun ω ↦ ∑ i ∈ futureFinset n k, X i ω
-  have hsplit : ∀ ω, partialSum X (Fin.last n) ω = Sk ω + tail ω :=
-    fun ω ↦ partialSum_add_future X k ω
-  have hSkLp : MemLp Sk 2 μ := by
-    unfold Sk partialSum
-    exact memLp_finsetSum (pastFinset n k) fun i _ ↦ hLp i
-  have htailLp : MemLp tail 2 μ :=
-    memLp_finsetSum (futureFinset n k) fun i _ ↦ hLp i
-  have hSkSq : Integrable (fun ω ↦ Sk ω ^ 2) μ := hSkLp.integrable_sq
-  have htailSq : Integrable (fun ω ↦ tail ω ^ 2) μ := htailLp.integrable_sq
-  have hprod : Integrable (fun ω ↦ Sk ω * tail ω) μ := by
-    convert hSkLp.integrable_mul htailLp using 1
-  have hInd1 : Integrable (A.indicator fun ω ↦ Sk ω ^ 2) μ := hSkSq.indicator hA
-  have hInd2 : Integrable (A.indicator fun ω ↦ Sk ω * tail ω) μ := hprod.indicator hA
-  have hInd3 : Integrable (A.indicator fun ω ↦ tail ω ^ 2) μ := htailSq.indicator hA
-  have hcross : ∫ ω, A.indicator (fun ω ↦ Sk ω * tail ω) ω ∂μ = 0 := by
-    let pastRead : Ω → {i : Fin n // i ∈ pastFinset n k} → ℝ := fun ω i ↦ X i.1 ω
-    let futureRead : Ω → {i : Fin n // i ∈ futureFinset n k} → ℝ := fun ω i ↦ X i.1 ω
-    have hpastMeas : Measurable pastRead :=
-      Measurable.of_eval fun i ↦ hX i.1
-    have hfutureMeas : Measurable futureRead :=
-      Measurable.of_eval fun i ↦ hX i.1
-    have hdisj : Disjoint (pastFinset n k) (futureFinset n k) :=
-      (past_future_partition n k).1
-    have hindep := (hind.indepFun_finset (pastFinset n k) (futureFinset n k) hdisj hX).comp
-      (measurable_hitOfPast k ε) (measurable_tailOfFuture k)
-    let Xp : Ω → ℝ := fun ω ↦ hitOfPast k ε (pastRead ω)
-    let Yf : Ω → ℝ := fun ω ↦ tailOfFuture k (futureRead ω)
-    have hindep' : Xp ⟂ᵢ[μ] Yf := by
-      simpa [Xp, Yf, Function.comp_def] using hindep
-    have hfac := hindep'.integral_fun_mul_eq_mul_integral
-      ((measurable_hitOfPast k ε).comp hpastMeas).aestronglyMeasurable
-      ((measurable_tailOfFuture k).comp hfutureMeas).aestronglyMeasurable
-    have hpoint : (fun ω ↦ Xp ω * Yf ω) = A.indicator (fun ω ↦ Sk ω * tail ω) := by
-      ext ω
-      unfold Xp Yf pastRead futureRead Sk tail
-      rw [hitOfPast_eq_indicator X k ε ω, tailOfFuture_eq X k ω]
-      by_cases hω : ω ∈ A
-      · rw [Set.indicator_of_mem hω, Set.indicator_of_mem hω]
-      · rw [Set.indicator_of_notMem hω, Set.indicator_of_notMem hω]
-        ring
-    have htail0 : ∫ ω, Yf ω ∂μ = 0 := by
-      have hint : ∀ i ∈ futureFinset n k, Integrable (X i) μ := by
-        intro i _
-        exact memLp_one_iff_integrable.1
-          ((hLp i).mono_exponent (by simp : (1 : ℝ≥0∞) ≤ 2))
-      rw [show (fun ω ↦ Yf ω) = fun ω ↦ ∑ i ∈ futureFinset n k, X i ω by
-        ext ω; exact tailOfFuture_eq X k ω, integral_finsetSum _ hint]
-      exact Finset.sum_eq_zero fun i _ ↦ hmean i
-    rw [← hpoint, hfac, htail0, mul_zero]
-  have hexpand : ∫ ω, A.indicator (fun ω ↦ (partialSum X (Fin.last n) ω) ^ 2) ω ∂μ =
-      ∫ ω, A.indicator (fun ω ↦ Sk ω ^ 2) ω ∂μ +
-      2 * ∫ ω, A.indicator (fun ω ↦ Sk ω * tail ω) ω ∂μ +
-      ∫ ω, A.indicator (fun ω ↦ tail ω ^ 2) ω ∂μ := by
-    have hpt : ∀ ω, A.indicator (fun η ↦ (partialSum X (Fin.last n) η) ^ 2) ω =
-        A.indicator (fun η ↦ Sk η ^ 2) ω +
-        2 * A.indicator (fun η ↦ Sk η * tail η) ω +
-        A.indicator (fun η ↦ tail η ^ 2) ω := by
-      intro ω
-      by_cases hω : ω ∈ A
-      · rw [Set.indicator_of_mem hω, Set.indicator_of_mem hω, Set.indicator_of_mem hω,
-          Set.indicator_of_mem hω, hsplit ω]
-        ring
-      · rw [Set.indicator_of_notMem hω, Set.indicator_of_notMem hω,
-          Set.indicator_of_notMem hω, Set.indicator_of_notMem hω]
-        ring
-    rw [integral_congr_ae (ae_of_all _ hpt), integral_add, integral_add, integral_const_mul]
-    · exact hInd1
-    · exact hInd2.const_mul 2
-    · exact hInd1.add (hInd2.const_mul 2)
-    · exact hInd3
-  have hsqLower : ε ^ 2 * μ.real A ≤ ∫ ω, A.indicator (fun ω ↦ Sk ω ^ 2) ω ∂μ := by
-    have hpt : ∀ ω, ε ^ 2 * A.indicator (1 : Ω → ℝ) ω ≤
-        A.indicator (fun η ↦ Sk η ^ 2) ω := by
-      intro ω
-      by_cases hω : ω ∈ A
-      · rw [Set.indicator_of_mem hω, Set.indicator_of_mem hω]
-        simp only [Pi.one_apply, mul_one]
-        have hsqAbs : |ε| ≤ |partialSum X k ω| := by
-          rw [abs_of_pos hε]
-          exact hω.1
-        simpa [Sk] using sq_le_sq.mpr hsqAbs
-      · rw [Set.indicator_of_notMem hω, Set.indicator_of_notMem hω]
-        simp
-    have hint : Integrable (fun ω ↦ ε ^ 2 * A.indicator (1 : Ω → ℝ) ω) μ :=
-      (integrable_const _).indicator hA |>.const_mul _
-    rw [← integral_indicator_one hA, ← integral_const_mul]
-    exact integral_mono hint hInd1 hpt
-  have htailNonneg : 0 ≤ ∫ ω, A.indicator (fun ω ↦ tail ω ^ 2) ω ∂μ :=
-    integral_nonneg fun ω ↦ by
-      by_cases hω : ω ∈ A
-      · simp [Set.indicator_of_mem hω, sq_nonneg]
-      · simp [Set.indicator_of_notMem hω]
-  linarith [hcross, hexpand, hsqLower, htailNonneg]
-
-/-- Kolmogorov's maximal inequality for a finite independent mean-zero family. -/
-private lemma kolmogorov_maximal {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω}
-    [IsProbabilityMeasure μ] {n : ℕ} {X : Fin n → Ω → ℝ}
-    (hX : ∀ i, Measurable (X i)) (hmean : ∀ i, ∫ ω, X i ω ∂μ = 0)
-    (hLp : ∀ i, MemLp (X i) 2 μ) (hind : iIndepFun X μ) {ε : ℝ} (hε : 0 < ε) :
-    μ {ω | ∃ k : Fin (n + 1), ε ≤ |partialSum X k ω|} ≤
-      ENNReal.ofReal ((∫ ω, (partialSum X (Fin.last n) ω) ^ 2 ∂μ) / ε ^ 2) := by
-  have hmeas : ∀ k, MeasurableSet (firstHitSet X ε k) := fun k ↦ measurableSet_firstHit hX ε k
-  have hSLp : MemLp (partialSum X (Fin.last n)) 2 μ := by
-    unfold partialSum
-    rw [show pastFinset n (Fin.last n) = Finset.univ by
-      ext i; simp [pastFinset, Fin.val_last, i.isLt]]
-    exact memLp_finsetSum (Finset.univ : Finset (Fin n)) fun i _ ↦ hLp i
-  have hSSq : Integrable (fun ω ↦ (partialSum X (Fin.last n) ω) ^ 2) μ := hSLp.integrable_sq
-  have hsumLe : ε ^ 2 * μ.real (⋃ k, firstHitSet X ε k) ≤
-      ∫ ω, (partialSum X (Fin.last n) ω) ^ 2 ∂μ := by
-    rw [measureReal_iUnion_fintype (pairwise_firstHit X ε) hmeas
-      (fun _ ↦ measure_ne_top μ _)]
-    rw [Finset.mul_sum]
-    have hint : ∑ k, ∫ ω, (firstHitSet X ε k).indicator
-        (fun ω ↦ (partialSum X (Fin.last n) ω) ^ 2) ω ∂μ ≤
-        ∫ ω, (partialSum X (Fin.last n) ω) ^ 2 ∂μ := by
-      rw [← integral_finsetSum]
-      · have hpt : ∀ ω, ∑ k, (firstHitSet X ε k).indicator
-            (fun η ↦ (partialSum X (Fin.last n) η) ^ 2) ω ≤
-            (partialSum X (Fin.last n) ω) ^ 2 := by
-          intro ω
-          have hdisj := pairwise_firstHit X ε
-          by_cases hmem : ω ∈ ⋃ k, firstHitSet X ε k
-          · obtain ⟨k, hk⟩ := Set.mem_iUnion.1 hmem
-            rw [Finset.sum_eq_single k]
-            · rw [Set.indicator_of_mem hk]
-            · intro m _ hmk
-              have hnot : ω ∉ firstHitSet X ε m :=
-                Set.disjoint_left.1 (hdisj hmk.symm) hk
-              rw [Set.indicator_of_notMem hnot]
-            · intro hknot
-              exact (hknot (Finset.mem_univ k)).elim
-          · rw [Finset.sum_eq_zero]
-            · exact sq_nonneg _
-            · intro k _
-              have hnot : ω ∉ firstHitSet X ε k := by
-                intro hk
-                exact hmem (Set.mem_iUnion.2 ⟨k, hk⟩)
-              rw [Set.indicator_of_notMem hnot]
-        exact integral_mono
-          (integrable_finsetSum _ fun k _ ↦ hSSq.indicator (hmeas k)) hSSq hpt
-      · intro k _
-        exact hSSq.indicator (hmeas k)
-    refine le_trans (Finset.sum_le_sum fun k _ ↦ firstHit_integral_lower hX hmean hLp hind hε k)
-      hint
-  have hreal : μ.real {ω | ∃ k : Fin (n + 1), ε ≤ |partialSum X k ω|} ≤
-      (∫ ω, (partialSum X (Fin.last n) ω) ^ 2 ∂μ) / ε ^ 2 := by
-    rw [← iUnion_firstHit X ε, le_div_iff₀ (sq_pos_of_pos hε), mul_comm]
-    exact hsumLe
-  rw [← ENNReal.ofReal_toReal (measure_ne_top μ _)]
-  exact ENNReal.ofReal_le_ofReal hreal
 
 /-- Real Gaussian parameter of one partition increment. -/
 private lemma increment_eq_nndist {T : ℝ≥0} (π : TimePartition T) (i : Fin π.size) :
@@ -833,6 +197,26 @@ private lemma integral_pow_four_increment {Ω : Type*} [MeasurableSpace Ω] {μ 
     _ = 3 * (v : ℝ) ^ 2 := integral_id_pow_four_gaussianReal v
     _ = 3 * π.increment i ^ 2 := by rw [hv]
 
+/-- Fourth-moment and squared second-moment `L^p` bounds for a measurable version of a
+pre-Brownian increment. -/
+private lemma memLp_increment_and_sq {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω}
+    [IsProbabilityMeasure μ] {B : ℝ≥0 → Ω → ℝ} (hB : IsPreBrownianReal B μ)
+    {T : ℝ≥0} (π : TimePartition T) {Y : Fin π.size → Ω → ℝ}
+    (hYmeas : ∀ i, Measurable (Y i))
+    (hYae : ∀ i, (fun ω ↦ B (π.node i.succ) ω - B (π.node i.castSucc) ω) =ᵐ[μ] Y i)
+    (i : Fin π.size) :
+    MemLp (Y i) 4 μ ∧ MemLp (fun ω ↦ Y i ω ^ 2) 2 μ := by
+  have hYLp4 : MemLp (Y i) 4 μ := by
+    have hlaw := hB.hasLaw_sub (π.node i.succ) (π.node i.castSucc)
+    exact (hlaw.memLp (memLp_id_gaussianReal' 4 (by simp))).ae_eq (hYae i)
+  refine ⟨hYLp4, ?_⟩
+  rw [memLp_two_iff_integrable_sq ((hYmeas i).pow_const 2).aestronglyMeasurable]
+  convert hYLp4.integrable_norm_pow (by decide : (4 : ℕ) ≠ 0) using 1
+  ext x
+  rw [Real.norm_eq_abs]
+  have hinner : Y i x ^ 2 = |Y i x| ^ 2 := (sq_abs (Y i x)).symm
+  rw [hinner, ← pow_mul]
+
 /-- Energy of the centered squared increments is at most twice mesh times `T`. -/
 private lemma centeredIncrement_energy_le {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω}
     [IsProbabilityMeasure μ] {B : ℝ≥0 → Ω → ℝ} (hB : IsPreBrownianReal B μ)
@@ -853,21 +237,8 @@ private lemma centeredIncrement_energy_le {Ω : Type*} [MeasurableSpace Ω] {μ 
         fun ω ↦ (Y i ω) ^ 4 := (hYae i).mono fun ω h ↦ by simp [h]
     rw [← integral_congr_ae hpow]
     exact integral_pow_four_increment hB π i
-  have hYLp4 (i : Fin π.size) : MemLp (Y i) 4 μ := by
-    let raw : Ω → ℝ := fun ω ↦ B (π.node i.succ) ω - B (π.node i.castSucc) ω
-    have hlaw : HasLaw raw (gaussianReal 0
-        (nndist (π.node i.succ : ℝ) (π.node i.castSucc : ℝ))) μ :=
-      hB.hasLaw_sub _ _
-    have hraw : MemLp raw 4 μ :=
-      hlaw.memLp (memLp_id_gaussianReal' 4 (by simp))
-    exact hraw.ae_eq (hYae i)
-  have hsqLp (i : Fin π.size) : MemLp (fun ω ↦ Y i ω ^ 2) 2 μ := by
-    rw [memLp_two_iff_integrable_sq ((hYmeas i).pow_const 2).aestronglyMeasurable]
-    convert (hYLp4 i).integrable_norm_pow (by decide : (4 : ℕ) ≠ 0) using 1
-    ext x
-    rw [Real.norm_eq_abs]
-    have hinner : Y i x ^ 2 = |Y i x| ^ 2 := (sq_abs (Y i x)).symm
-    rw [hinner, ← pow_mul]
+  have hsqLp (i : Fin π.size) : MemLp (fun ω ↦ Y i ω ^ 2) 2 μ :=
+    (memLp_increment_and_sq hB π hYmeas hYae i).2
   have hmeanX (i : Fin π.size) : ∫ ω, X i ω ∂μ = 0 := by
     have hint : Integrable (fun ω ↦ Y i ω ^ 2) μ :=
       memLp_one_iff_integrable.1 ((hsqLp i).mono_exponent (by simp : (1 : ℝ≥0∞) ≤ 2))
@@ -915,7 +286,7 @@ private lemma centeredIncrement_energy_le {Ω : Type*} [MeasurableSpace Ω] {μ 
     have hvarFun : variance (fun ω ↦ ∑ i : Fin π.size, X i ω) μ =
         ∫ ω, (∑ i : Fin π.size, X i ω) ^ 2 ∂μ :=
       variance_of_integral_eq_zero
-        (measurable_finset_sum fun i _ ↦
+        (Finset.measurable_sum Finset.univ fun i _ ↦
           ((hYmeas i).pow_const 2).sub measurable_const).aemeasurable hmeanSum
     have hvarI (i : Fin π.size) : variance (X i) μ = ∫ ω, (X i ω) ^ 2 ∂μ :=
       variance_of_integral_eq_zero
@@ -948,6 +319,8 @@ private lemma quadraticVariation_measure_le {Ω : Type*} [MeasurableSpace Ω] {�
   have hYae : ∀ i, raw i =ᵐ[μ] Y i := fun i ↦ (hAe i).ae_eq_mk
   have hYindep : iIndepFun Y μ :=
     (iIndepFun_congr hYae).1 (hB.hasIndepIncrements π.size π.node π.monotone_node)
+  have hsqLp (i : Fin π.size) : MemLp (fun ω ↦ Y i ω ^ 2) 2 μ :=
+    (memLp_increment_and_sq hB π hYmeas hYae i).2
   let X : Fin π.size → Ω → ℝ := fun i ω ↦ (Y i ω) ^ 2 - π.increment i
   have hXmeas : ∀ i, Measurable (X i) :=
     fun i ↦ ((hYmeas i).pow_const 2).sub measurable_const
@@ -959,34 +332,12 @@ private lemma quadraticVariation_measure_le {Ω : Type*} [MeasurableSpace Ω] {�
       rw [← integral_congr_ae hpow]
       unfold raw
       exact integral_sq_increment hB π i
-    have hLpY : MemLp (Y i) 4 μ := by
-      have hlaw := hB.hasLaw_sub (π.node i.succ) (π.node i.castSucc)
-      exact (hlaw.memLp (memLp_id_gaussianReal' 4 (by simp))).ae_eq (hYae i)
-    have hsqLp : MemLp (fun ω ↦ Y i ω ^ 2) 2 μ := by
-      rw [memLp_two_iff_integrable_sq ((hYmeas i).pow_const 2).aestronglyMeasurable]
-      convert hLpY.integrable_norm_pow (by decide : (4 : ℕ) ≠ 0) using 1
-      ext x
-      rw [Real.norm_eq_abs]
-      have hinner : Y i x ^ 2 = |Y i x| ^ 2 := (sq_abs (Y i x)).symm
-      rw [hinner, ← pow_mul]
     have hint : Integrable (fun ω ↦ Y i ω ^ 2) μ :=
-      memLp_one_iff_integrable.1 (hsqLp.mono_exponent (by simp : (1 : ℝ≥0∞) ≤ 2))
+      memLp_one_iff_integrable.1 ((hsqLp i).mono_exponent (by simp : (1 : ℝ≥0∞) ≤ 2))
     rw [show X i = fun ω ↦ Y i ω ^ 2 - π.increment i by rfl,
       integral_sub hint (integrable_const _), hsq, integral_const, probReal_univ]
     simp
-  have hXLp : ∀ i, MemLp (X i) 2 μ := by
-    intro i
-    have hLpY : MemLp (Y i) 4 μ := by
-      have hlaw := hB.hasLaw_sub (π.node i.succ) (π.node i.castSucc)
-      exact (hlaw.memLp (memLp_id_gaussianReal' 4 (by simp))).ae_eq (hYae i)
-    have hsqLp : MemLp (fun ω ↦ Y i ω ^ 2) 2 μ := by
-      rw [memLp_two_iff_integrable_sq ((hYmeas i).pow_const 2).aestronglyMeasurable]
-      convert hLpY.integrable_norm_pow (by decide : (4 : ℕ) ≠ 0) using 1
-      ext x
-      rw [Real.norm_eq_abs]
-      have hinner : Y i x ^ 2 = |Y i x| ^ 2 := (sq_abs (Y i x)).symm
-      rw [hinner, ← pow_mul]
-    exact hsqLp.sub (memLp_const _)
+  have hXLp : ∀ i, MemLp (X i) 2 μ := fun i ↦ (hsqLp i).sub (memLp_const _)
   have hXindep : iIndepFun X μ := by
     have hcomp := hYindep.comp (fun i x ↦ x ^ 2 - π.increment i)
       (fun _ ↦ (measurable_id.pow_const 2).sub measurable_const)

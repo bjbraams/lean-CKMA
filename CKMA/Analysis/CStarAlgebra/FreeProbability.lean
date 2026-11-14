@@ -21,6 +21,27 @@ variables, without an unnecessary boundedness assumption on those algebraic vari
 Free cumulants are defined by a triangular moment recursion. Coefficientwise additivity is
 algebraic; analytic R-transform additivity is restricted to a genuine common convergence disk
 for bounded variables and a continuous normalized functional. Sources: GAPS 23.65 and 23.68.
+
+## Main definitions
+
+* `CKMA.AreFreeSubalgebras`: algebraic freeness of unital subalgebras with respect to a linear
+  functional.
+* `CKMA.noncommutativeMoments`: scalar moments `φ (a ^ n)` of a noncommutative variable.
+* `CKMA.semicircleMoment`: Catalan moments of the centered variance-one semicircle law.
+* `CKMA.IsPositiveNoncommutativeState`: normalized positive linear functional on a star algebra.
+* `CKMA.momentCompositionCoefficient`: composition coefficients of a scalar moment series.
+* `CKMA.freeCumulants`: free cumulants defined by the triangular moment-cumulant recursion.
+* `CKMA.freeRTransform`: formal power series of the R-transform near zero.
+
+## Main results
+
+* `CKMA.free_central_limit`: free central limit theorem in moments (**23.65**).
+* `CKMA.freeCumulants_add`: additivity of free cumulants for free variables (**23.68**).
+* `CKMA.freeRTransform_add`: analytic R-transform additivity on a common disk of convergence.
+
+## Notation
+
+No new notation is introduced in this module.
 -/
 
 @[expose] public section

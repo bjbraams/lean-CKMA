@@ -5,6 +5,7 @@ Authors: CKMA contributors
 -/
 module
 
+public import CKMA.Analysis.Complex.Basic
 public import Mathlib.MeasureTheory.Function.LpSpace.Basic
 public import Mathlib.MeasureTheory.Integral.Bochner.Basic
 public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
@@ -24,6 +25,27 @@ factorization of nonzero Hardy functions. The infinity endpoint has no asserted
 radial L∞ norm convergence.
 
 Sources: GAPS 42.1 and 42.7.
+
+## Main definitions
+
+* `CKMA.unitCirclePoint`, `CKMA.normalizedAngularMeasure`: angular parametrization and normalized
+  measure on the unit circle.
+* `CKMA.hardyRadialMean`, `CKMA.hardyGauge`, `CKMA.MemHardySpace`: finite-exponent analytic Hardy
+  gauge and membership predicate.
+* `CKMA.hardyInfinityGauge`, `CKMA.MemHardyInfinitySpace`: bounded analytic Hardy gauge and
+  membership predicate.
+* `CKMA.HasRadialBoundaryLimit`, `CKMA.IsBlaschkeSequence`, `CKMA.IsInnerFunction`,
+  `CKMA.IsOuterFunction`: boundary-value and canonical-factor predicates.
+
+## Main results
+
+* `CKMA.hardy_boundary_realization`, `CKMA.hardyInfinity_boundary_realization`: radial boundary
+  limits and norm representation (**42.1**).
+* `CKMA.exists_hardy_factorization`: canonical Blaschke–inner–outer factorization (**42.7**).
+
+## Notation
+
+No new notation is introduced in this module.
 -/
 
 @[expose] public section
@@ -34,13 +56,6 @@ namespace CKMA
 
 open Filter Topology MeasureTheory
 open scoped BigOperators ENNReal ComplexConjugate
-
-/-- The open unit disk, shared by the analytic function-space interfaces. -/
-def complexUnitDisk : Set ℂ := Metric.ball 0 1
-
-/-- The shared unit disk is open. This exported lemma avoids unfolding its implementation
-from downstream modules. -/
-theorem isOpen_complexUnitDisk : IsOpen complexUnitDisk := Metric.isOpen_ball
 
 /-- The angular parametrization of the unit circle. -/
 def unitCirclePoint (t : ℝ) : ℂ := Complex.exp ((t : ℂ) * Complex.I)

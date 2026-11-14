@@ -21,6 +21,21 @@ public import Mathlib.Topology.Algebra.InfiniteSum.ENNReal
 The characteristic function of an additive convolution power is the corresponding power of the
 characteristic function. A finite jump intensity determines a compound Poisson probability, whose
 characteristic function is the exponential of `∫ (exp(I t x) - 1)`.
+
+## Main definitions
+
+* `CKMA.compoundPoisson`: compound Poisson probability law associated to a finite jump measure.
+
+## Main results
+
+* `CKMA.charFun_convolutionPower`: the characteristic function of a convolution power is the power
+  of the characteristic function.
+* `CKMA.charFun_compoundPoisson`: the characteristic function of a compound Poisson law is
+  `exp (∫ x, (exp (I * t * x) - 1) ∂ν)`.
+
+## Notation
+
+No new notation is introduced.
 -/
 
 @[expose] public section

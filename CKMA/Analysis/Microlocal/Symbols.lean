@@ -5,7 +5,7 @@ Authors: CKMA contributors
 -/
 module
 
-public import CKMA.Analysis.PDE.Euclidean
+public import CKMA.Analysis.PDE.Basic
 public import Mathlib.Analysis.Fourier.FourierTransform
 public import Mathlib.Analysis.Fourier.LpSpace
 
@@ -18,6 +18,27 @@ include the Calderón–Vaillancourt bound, Sobolev mapping on Schwartz inputs a
 Gårding. Fourier inversion uses `(2*pi)^(-d)`; squared Sobolev energies retain extended
 values. Derivatives, Schwartz maps and integration reuse Mathlib.
 Sources: GAPS 30.27, 30.28 and 30.31.
+
+## Main definitions
+
+* `CKMA.symbolMixedDerivative`: mixed spatial and frequency iterated Fréchet derivative of a
+  symbol.
+* `CKMA.IsGlobalSymbol`: global Hörmander symbol class `S^m_{1,0}` on `ℝ^d × ℝ^d`.
+* `CKMA.physicalFourier`: Fourier integral in the physical `exp(-i x·ξ)` normalization.
+* `CKMA.leftQuantization`: left Kohn–Nirenberg quantization of a symbol on scalar functions.
+* `CKMA.physicalSobolevEnergy`: squared Sobolev norm of order `s` in the physical Fourier
+  convention.
+
+## Main results
+
+* `CKMA.calderon_vaillancourt`: Calderón–Vaillancourt `L²` boundedness theorem (**30.27**).
+* `CKMA.sobolevEnergy_leftQuantization_le`: Sobolev mapping estimate for `S^m_{1,0}` symbols
+  (**30.28**).
+* `CKMA.sharp_garding`: sharp Gårding inequality for nonnegative scalar symbols (**30.31**).
+
+## Notation
+
+Uses `ℝ≥0∞` from `ENNReal` and `conj` from `ComplexConjugate`.
 -/
 
 @[expose] public section

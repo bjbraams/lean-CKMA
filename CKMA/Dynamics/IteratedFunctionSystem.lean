@@ -33,6 +33,20 @@ assumption is imposed. It is the pushforward of the Banach fixed point of the we
 mixture on the 1-Wasserstein space of the compact attractor. Strictly positive weights
 are unnecessary for this conclusion, although they matter when identifying the support
 with the full compact attractor.
+
+## Main definitions
+
+* None (uses `TopologicalSpace.NonemptyCompacts` and `MeasureTheory.Measure`).
+
+## Main results
+
+* `CKMA.existsUnique_selfSimilar_compact`: Hutchinson's unique nonempty compact attractor.
+* `CKMA.existsUnique_selfSimilar_measure`: unique invariant Borel probability measure for an
+  iterated function system.
+
+## Notation
+
+* Standard Mathlib notation `ℝ≥0` and `ℝ≥0∞`.
 -/
 
 @[expose] public section
@@ -199,7 +213,8 @@ private theorem measure_compl_selfSimilar_eq_zero [MeasurableSpace X] [BorelSpac
     exact Set.mem_iUnion.2 ⟨n, hn⟩
   exact measure_mono_null hcover (measure_iUnion_null fun n ↦ hzero (by positivity))
 
-open TauCeti in
+open TauCeti
+
 /-- Nonnegative weights of total mass one give a unique invariant Borel probability measure.
 Uniqueness is among all invariant probabilities, without a moment assumption. -/
 theorem existsUnique_selfSimilar_measure [MeasurableSpace X] [BorelSpace X]

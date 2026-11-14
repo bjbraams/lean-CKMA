@@ -24,6 +24,19 @@ Kirszbraun extension preserves the Lipschitz bound of a map from an arbitrary su
 of a real inner-product space into a complete real Hilbert space. The subset may be
 empty and the source need not be complete. Norms, distances and Lipschitz predicates
 are Mathlib's. Source: GAPS 05.33.
+
+## Main definitions
+
+No new public definitions are introduced in this file.
+
+## Main results
+
+* `CKMA.exists_lipschitzWith_extension` (**05.33**): Kirszbraun's Lipschitz extension theorem
+  for maps into a complete real inner-product space.
+
+## Notation
+
+No new notation is introduced in this file.
 -/
 
 @[expose] public section
@@ -171,6 +184,48 @@ private lemma sum_pairwise_sq_mono {ι : Type*} [Fintype ι]
     pow_le_pow_left₀ (norm_nonneg _) (h i j) 2
   exact mul_le_mul_of_nonneg_left hsq hcoef
 
+/-- Parallelogram-law bound on the squared distance between two points in a common intersection
+of closed balls. -/
+private lemma dist_sq_le_of_forall_dist_le
+    {K : Type*} [NormedAddCommGroup K] [InnerProductSpace ℝ K]
+    {ι : Type*} (c : ι → K) (r : ι → ℝ) (s : Finset ι) {x y : K}
+    (hx : ∀ i ∈ s, dist x (c i) ≤ r i) (hy : ∀ i ∈ s, dist y (c i) ≤ r i) :
+    dist x y ^ 2 ≤
+      2 * ‖x‖ ^ 2 + 2 * ‖y‖ ^ 2 -
+        4 * sInf (norm '' {z : K | ∀ i ∈ s, dist z (c i) ≤ r i}) ^ 2 := by
+  let feasible : Set K := {z | ∀ i ∈ s, dist z (c i) ≤ r i}
+  let normImg : Set ℝ := norm '' feasible
+  have hbb : BddBelow normImg := ⟨0, fun ρ hρ => by
+    obtain ⟨_, _, rfl⟩ := hρ
+    exact norm_nonneg _⟩
+  have hne : normImg.Nonempty := ⟨‖x‖, x, hx, rfl⟩
+  have hα_nonneg : 0 ≤ sInf normImg := le_csInf hne fun ρ hρ => by
+    obtain ⟨_, _, rfl⟩ := hρ
+    exact norm_nonneg _
+  let mid : K := (1 / 2 : ℝ) • x + (1 / 2 : ℝ) • y
+  have hmid : mid ∈ feasible := by
+    intro i hi
+    have : mid ∈ closedBall (c i) (r i) :=
+      (convex_closedBall (c i) (r i)) (hx i hi) (hy i hi)
+        (by positivity) (by positivity) (by norm_num : (1 / 2 : ℝ) + 1 / 2 = 1)
+    simpa [mem_closedBall] using this
+  have hnorm_mid : sInf normImg ≤ ‖mid‖ := csInf_le hbb ⟨mid, hmid, rfl⟩
+  have hpara := parallelogram_law_with_norm ℝ x y
+  have hsum : ‖x + y‖ = 2 * ‖mid‖ := by
+    have : x + y = (2 : ℝ) • mid := by
+      simp only [mid, smul_add, smul_smul]
+      have hcoef : (2 : ℝ) * (1 / 2) = 1 := by norm_num
+      rw [hcoef, one_smul, one_smul]
+    rw [this, norm_smul, Real.norm_of_nonneg (by norm_num : (0 : ℝ) ≤ 2)]
+  calc
+    dist x y ^ 2 = ‖x - y‖ ^ 2 := by rw [dist_eq_norm]
+    _ = 2 * ‖x‖ ^ 2 + 2 * ‖y‖ ^ 2 - ‖x + y‖ ^ 2 := by linarith [hpara]
+    _ = 2 * ‖x‖ ^ 2 + 2 * ‖y‖ ^ 2 - 4 * ‖mid‖ ^ 2 := by rw [hsum]; ring
+    _ ≤ 2 * ‖x‖ ^ 2 + 2 * ‖y‖ ^ 2 - 4 * sInf normImg ^ 2 := by
+      have hsq : sInf normImg ^ 2 ≤ ‖mid‖ ^ 2 :=
+        pow_le_pow_left₀ hα_nonneg hnorm_mid 2
+      linarith
+
 /-- In a complete real inner-product space, closed balls with the finite-intersection property
 have nonempty total intersection. -/
 private lemma exists_iInter_closedBall_of_forall_finset
@@ -291,102 +346,37 @@ private lemma exists_iInter_closedBall_of_forall_finset
         dist (zSeq n) (zSeq m) ^ 2 ≤
           2 * ‖zSeq n‖ ^ 2 + 2 * ‖zSeq m‖ ^ 2 - 4 * α (sSeq n) ^ 2 := by
       intro n m hnm
-      have hzn : zSeq n ∈ feasible (sSeq n) := (hzSeq n).1
-      have hzm : zSeq m ∈ feasible (sSeq n) := fun i hi =>
-        (hzSeq m).1 i (hs_mono hnm hi)
-      let mid : K := (1 / 2 : ℝ) • zSeq n + (1 / 2 : ℝ) • zSeq m
-      have hmid : mid ∈ feasible (sSeq n) := by
-        intro i hi
-        have hnball := hzn i hi
-        have hmball := hzm i hi
-        have : mid ∈ closedBall (c i) (r i) :=
-          (convex_closedBall (c i) (r i)) hnball hmball (by positivity) (by positivity)
-            (by norm_num : (1 / 2 : ℝ) + 1 / 2 = 1)
-        simpa [mem_closedBall] using this
-      have hnorm_mid : α (sSeq n) ≤ ‖mid‖ :=
-        csInf_le (hbb (sSeq n)) ⟨mid, hmid, rfl⟩
-      have hpara := parallelogram_law_with_norm ℝ (zSeq n) (zSeq m)
-      have hsum : ‖zSeq n + zSeq m‖ = 2 * ‖mid‖ := by
-        have : zSeq n + zSeq m = (2 : ℝ) • mid := by
-          simp only [mid, smul_add, smul_smul]
-          have hcoef : (2 : ℝ) * (1 / 2) = 1 := by norm_num
-          rw [hcoef, one_smul, one_smul]
-        rw [this, norm_smul, Real.norm_of_nonneg (by norm_num : (0 : ℝ) ≤ 2)]
-      calc
-        dist (zSeq n) (zSeq m) ^ 2 = ‖zSeq n - zSeq m‖ ^ 2 := by rw [dist_eq_norm]
-        _ = 2 * ‖zSeq n‖ ^ 2 + 2 * ‖zSeq m‖ ^ 2 - ‖zSeq n + zSeq m‖ ^ 2 := by
-              linarith [hpara]
-        _ = 2 * ‖zSeq n‖ ^ 2 + 2 * ‖zSeq m‖ ^ 2 - 4 * ‖mid‖ ^ 2 := by
-              rw [hsum]
-              ring
-        _ ≤ 2 * ‖zSeq n‖ ^ 2 + 2 * ‖zSeq m‖ ^ 2 - 4 * α (sSeq n) ^ 2 := by
-              have hsq : α (sSeq n) ^ 2 ≤ ‖mid‖ ^ 2 :=
-                pow_le_pow_left₀ (hα_nonneg _) hnorm_mid 2
-              linarith
+      exact dist_sq_le_of_forall_dist_le c r (sSeq n) (hzSeq n).1
+        (fun i hi => (hzSeq m).1 i (hs_mono hnm hi))
     have hCauchy : CauchySeq zSeq := by
       rw [Metric.cauchySeq_iff]
       intro ε hε
       have hη : 0 < ε ^ 2 / 8 := by positivity
       obtain ⟨N1, hN1⟩ := (Metric.tendsto_atTop.mp hnorm_sq_lim) (ε ^ 2 / 8) hη
       obtain ⟨N2, hN2⟩ := (Metric.tendsto_atTop.mp hα_sq_lim) (ε ^ 2 / 8) hη
-      refine ⟨max N1 N2, ?_⟩
-      intro m hm n hn
-      have hdist_sq : dist (zSeq m) (zSeq n) ^ 2 < ε ^ 2 := by
+      have hstep : ∀ {k l}, max N1 N2 ≤ k → max N1 N2 ≤ l → k ≤ l →
+          dist (zSeq k) (zSeq l) ^ 2 < ε ^ 2 := by
+        intro k l hk hl hkl
+        have hbound := hmid_le hkl
+        have hkA : |‖zSeq k‖ ^ 2 - A ^ 2| < ε ^ 2 / 8 :=
+          hN1 k (le_trans (le_max_left _ _) hk)
+        have hlA : |‖zSeq l‖ ^ 2 - A ^ 2| < ε ^ 2 / 8 :=
+          hN1 l (le_trans (le_max_left _ _) hl)
+        have hαA : |α (sSeq k) ^ 2 - A ^ 2| < ε ^ 2 / 8 :=
+          hN2 k (le_trans (le_max_right _ _) hk)
+        have hαle : α (sSeq k) ^ 2 ≤ A ^ 2 :=
+          pow_le_pow_left₀ (hα_nonneg _) (hα_le_A _) 2
+        have hupper :
+            2 * ‖zSeq k‖ ^ 2 + 2 * ‖zSeq l‖ ^ 2 - 4 * α (sSeq k) ^ 2 < ε ^ 2 := by
+          rw [abs_lt] at hkA hlA hαA
+          nlinarith [hαle]
+        exact lt_of_le_of_lt hbound hupper
+      refine ⟨max N1 N2, fun m hm n hn => ?_⟩
+      have hsq : dist (zSeq m) (zSeq n) ^ 2 < ε ^ 2 := by
         rcases le_total m n with hmn | hnm
-        · have hbound := hmid_le hmn
-          have hmA : |‖zSeq m‖ ^ 2 - A ^ 2| < ε ^ 2 / 8 :=
-            hN1 m (le_trans (le_max_left _ _) hm)
-          have hnA : |‖zSeq n‖ ^ 2 - A ^ 2| < ε ^ 2 / 8 := hN1 n (le_trans (le_max_left _ _) hn)
-          have hαA : |α (sSeq m) ^ 2 - A ^ 2| < ε ^ 2 / 8 :=
-            hN2 m (le_trans (le_max_right _ _) hm)
-          have hαle : α (sSeq m) ^ 2 ≤ A ^ 2 := by
-            have hαnn : 0 ≤ α (sSeq m) :=
-              le_csInf (hnorm_ne _) fun ρ hρ => by
-                obtain ⟨_, _, rfl⟩ := hρ
-                exact norm_nonneg _
-            have hAnn : 0 ≤ A := le_trans hαnn (hα_le_A _)
-            exact pow_le_pow_left₀ hαnn (hα_le_A _) 2
-          have hupper :
-              2 * ‖zSeq m‖ ^ 2 + 2 * ‖zSeq n‖ ^ 2 - 4 * α (sSeq m) ^ 2 < ε ^ 2 := by
-            have hm' : ‖zSeq m‖ ^ 2 < A ^ 2 + ε ^ 2 / 8 := by
-              rw [abs_lt] at hmA
-              linarith
-            have hn' : ‖zSeq n‖ ^ 2 < A ^ 2 + ε ^ 2 / 8 := by
-              rw [abs_lt] at hnA
-              linarith
-            have hα' : A ^ 2 - ε ^ 2 / 8 < α (sSeq m) ^ 2 := by
-              rw [abs_lt] at hαA
-              linarith
-            nlinarith [hαle]
-          have : dist (zSeq m) (zSeq n) ^ 2 < ε ^ 2 := lt_of_le_of_lt hbound hupper
-          exact this
+        · exact hstep hm hn hmn
         · rw [dist_comm]
-          have hbound := hmid_le hnm
-          have hnA : |‖zSeq n‖ ^ 2 - A ^ 2| < ε ^ 2 / 8 :=
-            hN1 n (le_trans (le_max_left _ _) hn)
-          have hmA : |‖zSeq m‖ ^ 2 - A ^ 2| < ε ^ 2 / 8 := hN1 m (le_trans (le_max_left _ _) hm)
-          have hαA : |α (sSeq n) ^ 2 - A ^ 2| < ε ^ 2 / 8 :=
-            hN2 n (le_trans (le_max_right _ _) hn)
-          have hαnn : 0 ≤ α (sSeq n) :=
-            le_csInf (hnorm_ne _) fun ρ hρ => by
-              obtain ⟨_, _, rfl⟩ := hρ
-              exact norm_nonneg _
-          have hAnn : 0 ≤ A := le_trans hαnn (hα_le_A _)
-          have hαle : α (sSeq n) ^ 2 ≤ A ^ 2 := pow_le_pow_left₀ hαnn (hα_le_A _) 2
-          have hupper :
-              2 * ‖zSeq n‖ ^ 2 + 2 * ‖zSeq m‖ ^ 2 - 4 * α (sSeq n) ^ 2 < ε ^ 2 := by
-            have hn' : ‖zSeq n‖ ^ 2 < A ^ 2 + ε ^ 2 / 8 := by
-              rw [abs_lt] at hnA
-              linarith
-            have hm' : ‖zSeq m‖ ^ 2 < A ^ 2 + ε ^ 2 / 8 := by
-              rw [abs_lt] at hmA
-              linarith
-            have hα' : A ^ 2 - ε ^ 2 / 8 < α (sSeq n) ^ 2 := by
-              rw [abs_lt] at hαA
-              linarith
-            nlinarith [hαle]
-          exact lt_of_le_of_lt hbound hupper
-      have hsq : dist (zSeq m) (zSeq n) ^ 2 < ε ^ 2 := hdist_sq
+          exact hstep hn hm hnm
       have := (sq_lt_sq).1 hsq
       rwa [abs_of_nonneg dist_nonneg, abs_of_pos hε] at this
     obtain ⟨z, hz⟩ := cauchySeq_tendsto_of_complete hCauchy
@@ -425,37 +415,9 @@ private lemma exists_iInter_closedBall_of_forall_finset
         (fun n => (hwSeq n).2.le)
     have hdist_lim : Tendsto (fun n => dist (wSeq n) (zSeq n)) atTop (𝓝 0) := by
       have hsq_le : ∀ n, dist (wSeq n) (zSeq n) ^ 2 ≤
-          2 * ‖wSeq n‖ ^ 2 + 2 * ‖zSeq n‖ ^ 2 - 4 * α (sSeq n) ^ 2 := by
-        intro n
-        have hw_feas : wSeq n ∈ feasible (sSeq n) := fun i hi =>
-          (hwSeq n).1 i (Finset.mem_insert_of_mem hi)
-        have hz_feas : zSeq n ∈ feasible (sSeq n) := (hzSeq n).1
-        let mid : K := (1 / 2 : ℝ) • wSeq n + (1 / 2 : ℝ) • zSeq n
-        have hmid : mid ∈ feasible (sSeq n) := by
-          intro i hi
-          have : mid ∈ closedBall (c i) (r i) :=
-            (convex_closedBall (c i) (r i)) (hw_feas i hi) (hz_feas i hi)
-              (by positivity) (by positivity) (by norm_num : (1 / 2 : ℝ) + 1 / 2 = 1)
-          simpa [mem_closedBall] using this
-        have hnorm_mid : α (sSeq n) ≤ ‖mid‖ :=
-          csInf_le (hbb (sSeq n)) ⟨mid, hmid, rfl⟩
-        have hpara := parallelogram_law_with_norm ℝ (wSeq n) (zSeq n)
-        have hsum : ‖wSeq n + zSeq n‖ = 2 * ‖mid‖ := by
-          have : wSeq n + zSeq n = (2 : ℝ) • mid := by
-            simp only [mid, smul_add, smul_smul]
-            have hcoef : (2 : ℝ) * (1 / 2) = 1 := by norm_num
-            rw [hcoef, one_smul, one_smul]
-          rw [this, norm_smul, Real.norm_of_nonneg (by norm_num : (0 : ℝ) ≤ 2)]
-        calc
-          dist (wSeq n) (zSeq n) ^ 2 = ‖wSeq n - zSeq n‖ ^ 2 := by rw [dist_eq_norm]
-          _ = 2 * ‖wSeq n‖ ^ 2 + 2 * ‖zSeq n‖ ^ 2 - ‖wSeq n + zSeq n‖ ^ 2 := by
-                linarith [hpara]
-          _ = 2 * ‖wSeq n‖ ^ 2 + 2 * ‖zSeq n‖ ^ 2 - 4 * ‖mid‖ ^ 2 := by
-                rw [hsum]; ring
-          _ ≤ 2 * ‖wSeq n‖ ^ 2 + 2 * ‖zSeq n‖ ^ 2 - 4 * α (sSeq n) ^ 2 := by
-                have hsq : α (sSeq n) ^ 2 ≤ ‖mid‖ ^ 2 :=
-                  pow_le_pow_left₀ (hα_nonneg _) hnorm_mid 2
-                linarith
+          2 * ‖wSeq n‖ ^ 2 + 2 * ‖zSeq n‖ ^ 2 - 4 * α (sSeq n) ^ 2 := fun n =>
+        dist_sq_le_of_forall_dist_le c r (sSeq n)
+          (fun i hi => (hwSeq n).1 i (Finset.mem_insert_of_mem hi)) (hzSeq n).1
       have hupper_lim : Tendsto (fun n =>
           2 * ‖wSeq n‖ ^ 2 + 2 * ‖zSeq n‖ ^ 2 - 4 * α (sSeq n) ^ 2) atTop (𝓝 0) := by
         have hwsq := hwnorm_lim.pow 2

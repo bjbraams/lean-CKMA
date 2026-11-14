@@ -12,6 +12,21 @@ public import CKMA.Probability.GaussianLogSobolev.OneDim
 
 For a smooth positive function with bounded derivatives, the Gaussian entropy along the
 Ornstein–Uhlenbeck semigroup decreases at the rate of the Fisher information.
+
+## Main definitions
+
+No new definitions are introduced in this file.
+
+## Main results
+
+* `CKMA.hasDerivAt_entropy_ouSemigroup`: Time derivative of the entropy along the
+  Ornstein–Uhlenbeck semigroup equals minus the Fisher information.
+* `CKMA.gaussian_entropy_le_half_fisher`: One-dimensional Gaussian entropy bound by half the
+  Fisher information for smooth positive functions with bounded derivatives.
+
+## Notation
+
+No new notation is introduced in this file.
 -/
 
 @[expose] public section

@@ -30,6 +30,21 @@ an a.e. integral identity. A supplied, possibly non-countably indexed Hilbert ba
 exact Hilbert–Schmidt energy without a separability assumption. The adjoint kernel is obtained by
 transposing the variables and applying the scalar star. Source: GAPS 25.3; the Hilbert–Schmidt
 energy is TauCeti's existing construction.
+
+## Main definitions
+
+* `CKMA.HasIntegralKernel`: predicate stating that a bounded operator on `L²(μ)` is given almost
+  everywhere by integration against a measurable kernel on `X × X`.
+
+## Main results
+
+* `CKMA.existsUnique_integralOperator` (**25.3**): an `L²(μ ⊗ μ)` kernel defines a unique bounded
+  integral operator on `L²(μ)` whose Hilbert–Schmidt energy equals the squared `L²` norm of the
+  kernel and whose adjoint has the conjugate-transposed kernel.
+
+## Notation
+
+* Standard Mathlib and TauCeti notation for `Lp`, `HilbertBasis`, and `hilbertSchmidtEnergy`.
 -/
 
 @[expose] public section
@@ -235,15 +250,15 @@ private theorem orthogonal_span_star_eq_bot {ι : Type*} (b : HilbertBasis ι �
 
 omit [SigmaFinite μ] in
 /-- The starred copy of a supplied Hilbert basis. -/
-private noncomputable def hilbertBasis_star {ι : Type*} (b : HilbertBasis ι 𝕜 (Lp 𝕜 2 μ)) :
+private noncomputable def hilbertBasisStar {ι : Type*} (b : HilbertBasis ι 𝕜 (Lp 𝕜 2 μ)) :
     HilbertBasis ι 𝕜 (Lp 𝕜 2 μ) :=
   HilbertBasis.mkOfOrthogonalEqBot (orthonormal_star b) (orthogonal_span_star_eq_bot b)
 
 omit [SigmaFinite μ] in
 /-- The starred basis evaluates to the scalar star of the original basis vector. -/
-private theorem hilbertBasis_star_apply {ι : Type*} (b : HilbertBasis ι 𝕜 (Lp 𝕜 2 μ)) (i : ι) :
-    hilbertBasis_star b i = star (b i) := by
-  rw [hilbertBasis_star, HilbertBasis.coe_mkOfOrthogonalEqBot]
+private theorem hilbertBasisStar_apply {ι : Type*} (b : HilbertBasis ι 𝕜 (Lp 𝕜 2 μ)) (i : ι) :
+    hilbertBasisStar b i = star (b i) := by
+  rw [hilbertBasisStar, HilbertBasis.coe_mkOfOrthogonalEqBot]
 
 /-- A vector orthogonal to every basis tensor is orthogonal to every elementary tensor. -/
 private theorem inner_prodMul_eq_zero_of_forall_basis {ι : Type*}
@@ -335,8 +350,8 @@ private theorem orthogonal_span_range_prodMul_eq_bot {ι : Type*}
   have hz : ∀ (F G : Lp 𝕜 2 μ), inner 𝕜 (prodMul F G) h = 0 := by
     intro F G
     rw [inner_eq_zero_symm]
-    refine inner_prodMul_eq_zero_of_forall_basis b (hilbertBasis_star b) (fun i j ↦ ?_) F G
-    rw [inner_eq_zero_symm, hilbertBasis_star_apply]
+    refine inner_prodMul_eq_zero_of_forall_basis b (hilbertBasisStar b) (fun i j ↦ ?_) F G
+    rw [inner_eq_zero_symm, hilbertBasisStar_apply]
     exact hh _ (Submodule.subset_span ⟨(i, j), rfl⟩)
   have hae := Lp.ae_eq_zero_of_forall_setIntegral_eq_zero h (by norm_num) (by norm_num)
     (fun s _ hs' ↦ integrableOn_Lp_of_measure_ne_top h one_le_two hs'.ne)
@@ -358,14 +373,14 @@ private theorem orthonormal_tensor {ι : Type*} (b : HilbertBasis ι 𝕜 (Lp �
       · rw [b.orthonormal.inner_eq_zero h1, zero_mul]⟩
 
 /-- The product Hilbert basis of `L²(μ ⊗ μ)` indexed by pairs of the supplied basis. -/
-private noncomputable def hilbertBasis_prod {ι : Type*} (b : HilbertBasis ι 𝕜 (Lp 𝕜 2 μ)) :
+private noncomputable def hilbertBasisProd {ι : Type*} (b : HilbertBasis ι 𝕜 (Lp 𝕜 2 μ)) :
     HilbertBasis (ι × ι) 𝕜 (Lp 𝕜 2 (μ.prod μ)) :=
   HilbertBasis.mkOfOrthogonalEqBot (orthonormal_tensor b) (orthogonal_span_range_prodMul_eq_bot b)
 
 /-- A product-basis vector is the tensor of the factor vector and the starred factor vector. -/
-private theorem hilbertBasis_prod_apply {ι : Type*} (b : HilbertBasis ι 𝕜 (Lp 𝕜 2 μ))
-    (ij : ι × ι) : hilbertBasis_prod b ij = prodMul (b ij.1) (star (b ij.2)) := by
-  rw [hilbertBasis_prod, HilbertBasis.coe_mkOfOrthogonalEqBot]
+private theorem hilbertBasisProd_apply {ι : Type*} (b : HilbertBasis ι 𝕜 (Lp 𝕜 2 μ))
+    (ij : ι × ι) : hilbertBasisProd b ij = prodMul (b ij.1) (star (b ij.2)) := by
+  rw [hilbertBasisProd, HilbertBasis.coe_mkOfOrthogonalEqBot]
 
 /-- Sections of an `L²` product function are square-integrable for almost every first coordinate. -/
 private theorem ae_memLp_section {k : X × X → 𝕜} (hk : MemLp k 2 (μ.prod μ)) :
@@ -581,15 +596,15 @@ private theorem inner_basis_apply_eq {k : X × X → 𝕜} (hk : MemLp k 2 (μ.p
       inner 𝕜 (prodMul (b j) (star (b i))) (hk.toLp k) := by
   rw [inner_integralKernel_eq, inner_prodMul_star_toLp]
 
-/-- The integral operator has Hilbert–Schmidt energy equal to the squared `L²` norm of the kernel.
--/
+/-- The integral operator has Hilbert–Schmidt energy equal to the squared `L²` norm of the
+kernel. -/
 private theorem hilbertSchmidtEnergy_integralKernel {k : X × X → 𝕜} (hk : MemLp k 2 (μ.prod μ))
     {ι : Type*} (b : HilbertBasis ι 𝕜 (Lp 𝕜 2 μ)) :
     (integralKernelCLM hk).hilbertSchmidtEnergy b = (eLpNorm k 2 (μ.prod μ)) ^ 2 := by
   rw [hilbertSchmidtEnergy_eq_tsum_tsum (integralKernelCLM hk) b b, ENNReal.tsum_comm]
   simp_rw [inner_basis_apply_eq hk b]
-  have hP := (hilbertBasis_prod b).tsum_enorm_sq_inner (hk.toLp k)
-  simp_rw [hilbertBasis_prod_apply] at hP
+  have hP := (hilbertBasisProd b).tsum_enorm_sq_inner (hk.toLp k)
+  simp_rw [hilbertBasisProd_apply] at hP
   have hsum := (ENNReal.tsum_prod' (f := fun ij : ι × ι ↦
     ‖inner 𝕜 (prodMul (b ij.1) (star (b ij.2))) (hk.toLp k)‖ₑ ^ 2)).symm
   rw [hsum]

@@ -35,6 +35,23 @@ import Mathlib.Order.Filter.AtTopBot.CountablyGenerated
 Translates of the strip union cover a definite fraction of the inner square. The
 higher-dimensional set is the product of that plane set with a thin rectangle, and the
 integrable function is the sum of the corresponding rectangular spikes.
+
+## Main definitions
+
+* `CKMA.Bohr.shiftHit`: points of the inner square whose translated picture meets the strip union.
+* `CKMA.Bohr.badCover`: finite union of translated Bohr strip sets covering a positive fraction of
+  the unit square.
+* `CKMA.Bohr.spike`: the `L¹`-normalized indicator spike at generation `k`.
+
+## Main results
+
+* `CKMA.Bohr.measure_badCover_ge`: lower bound on the two-dimensional measure of `badCover k`.
+* `CKMA.Bohr.integrable_spike`, `CKMA.Bohr.lintegral_spike_le`: `L¹` norm bounds for the
+  generation-`k` spike.
+
+## Notation
+
+* Standard Mathlib measure and Finset big-operator notation.
 -/
 
 @[expose] public section

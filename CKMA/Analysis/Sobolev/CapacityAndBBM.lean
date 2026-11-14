@@ -5,8 +5,8 @@ Authors: CKMA contributors
 -/
 module
 
-public import CKMA.Analysis.PDE.Euclidean
-public import CKMA.Analysis.Potential.Cutoff
+public import CKMA.Analysis.PDE.Basic
+public import CKMA.Analysis.Potential.Basic
 public import Mathlib.Topology.Semicontinuity.Basic
 
 /-!
@@ -17,6 +17,26 @@ outside capacity-zero sets. Fractional Gagliardo p-energy converges to gradient 
 in the Bourgain–Brezis–Mironescu limit, including p=1. The exact constant is a unit-ball
 moment with factor `(d+p)/p`. Weak derivatives reuse TauCeti; extended energies and
 integration use Mathlib. Sources: GAPS 26.31 and 26.42.
+
+## Main definitions
+
+* `CKMA.sobolevTestEnergy`: inhomogeneous first-order `p`-energy of a smooth test.
+* `CKMA.compactSobolevCapacity`: variational `C_{1,p}` capacity on compact sets.
+* `CKMA.sobolevCapacity`: outer Sobolev capacity on arbitrary sets.
+* `CKMA.IsSobolevQuasicontinuous`: quasicontinuity with respect to Sobolev capacity.
+* `CKMA.fractionalPEnergy`: fractional Gagliardo `p`-energy.
+* `CKMA.bbmConstant`: Bourgain–Brezis–Mironescu unit-ball moment constant.
+
+## Main results
+
+* `CKMA.exists_sobolevQuasicontinuous_representative`: existence of quasicontinuous
+  representatives for weak first-order Sobolev functions.
+* `CKMA.sobolevQuasicontinuous_unique`: uniqueness outside a capacity-zero set.
+* `CKMA.tendsto_fractionalPEnergy_bbm`: Bourgain–Brezis–Mironescu limit as `s → 1⁻`.
+
+## Notation
+
+No new notation is introduced.
 -/
 
 @[expose] public section

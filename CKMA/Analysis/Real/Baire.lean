@@ -9,17 +9,33 @@ public import Mathlib.Analysis.Calculus.Deriv.Slope
 public import Mathlib.Topology.Instances.Real.Lemmas
 public import Mathlib.Topology.MetricSpace.HausdorffDistance
 public import Mathlib.Analysis.SpecificLimits.Basic
-public import Mathlib.Tactic
+import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.Positivity
 
 /-!
 # Baire class one and derivatives
 
 Baire class one on a subset is defined by pointwise limits of functions continuous there.
 Restriction and continuous-function inclusion hold for arbitrary topological targets.
-The derivative of a differentiable real function on an open set is approximated by
-continuous difference quotients with positive interior step sizes. The proof uses
+The derivative of a differentiable normed-space-valued function on an open set is approximated
+by continuous difference quotients with positive interior step sizes. The proof uses
 Mathlib's distance-to-complement and derivative slope-limit lemmas.
 Source: GAPS 05.7.
+
+## Main definitions
+
+* `CKMA.IsBaireOneOn`: functions on a set that are pointwise limits of continuous functions.
+
+## Main results
+
+* `CKMA.IsBaireOneOn.mono`: restriction of a Baire class one function.
+* `CKMA.ContinuousOn.isBaireOneOn`: continuous functions are of Baire class one.
+* `CKMA.DifferentiableOn.isBaireOneOn_deriv`: the derivative on an open set in `ℝ` of a
+  differentiable normed-space-valued function is of Baire class one.
+
+## Notation
+
+No new notation is introduced.
 -/
 
 @[expose] public section
@@ -49,7 +65,8 @@ theorem ContinuousOn.isBaireOneOn {f : X → Y} {s : Set X}
   ⟨fun _ ↦ f, fun _ ↦ hf, fun _ _ ↦ tendsto_const_nhds⟩
 
 /-- **05.7**: the derivative on an open set is of Baire class one. -/
-theorem DifferentiableOn.isBaireOneOn_deriv {f : ℝ → ℝ} {s : Set ℝ}
+theorem DifferentiableOn.isBaireOneOn_deriv {E : Type*} [NormedAddCommGroup E]
+    [NormedSpace ℝ E] {f : ℝ → E} {s : Set ℝ}
     (hf : DifferentiableOn ℝ f s) (hs : IsOpen s) : IsBaireOneOn (deriv f) s := by
   classical
   let d : ℝ → ℝ := fun x ↦ if sᶜ.Nonempty then Metric.infDist x sᶜ / 2 else 1
@@ -84,9 +101,9 @@ theorem DifferentiableOn.isBaireOneOn_deriv {f : ℝ → ℝ} {s : Set ℝ}
       linarith
     · have hs' : s = Set.univ := by simpa using (Set.not_nonempty_iff_eq_empty.mp hne)
       simp [hs']
-  refine ⟨fun n x ↦ (h n x)⁻¹ * (f (x + h n x) - f x), ?_, ?_⟩
+  refine ⟨fun n x ↦ (h n x)⁻¹ • (f (x + h n x) - f x), ?_, ?_⟩
   · intro n
-    exact ((hhcont n).continuousOn.inv₀ (fun x hx ↦ ne_of_gt (hhpos n x hx))).mul
+    exact ((hhcont n).continuousOn.inv₀ (fun x hx ↦ ne_of_gt (hhpos n x hx))).smul
       ((hf.continuousOn.comp (continuous_id.add (hhcont n)).continuousOn
         (fun x hx ↦ hmem n x hx)).sub hf.continuousOn)
   · intro x hx
@@ -97,7 +114,7 @@ theorem DifferentiableOn.isBaireOneOn_deriv {f : ℝ → ℝ} {s : Set ℝ}
     have hhne : Tendsto (fun n ↦ h n x) atTop (𝓝[≠] (0 : ℝ)) :=
       tendsto_nhdsWithin_iff.mpr ⟨hhzero, Filter.Eventually.of_forall
         (fun n ↦ ne_of_gt (hhpos n x hx))⟩
-    simpa [smul_eq_mul, Function.comp_def] using
+    simpa [Function.comp_def] using
       ((hf x hx).differentiableAt (hs.mem_nhds hx)).hasDerivAt.tendsto_slope_zero.comp hhne
 
 end CKMA

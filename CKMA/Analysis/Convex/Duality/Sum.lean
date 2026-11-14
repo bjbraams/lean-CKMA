@@ -16,6 +16,19 @@ other tilts `f` by the candidate subgradient, so that `x` minimizes the tilted s
 the splitting off the Fenchel–Rockafellar dual maximizer at the identity. Lower semicontinuity
 and completeness are not used. Source: Borwein–Lewis, *Convex Analysis and Nonlinear
 Optimization*, Theorem 4.1.6; GAPS 12.21.
+
+## Main definitions
+
+* (No new public definitions; uses `TauCeti.subdifferential`.)
+
+## Main results
+
+* `CKMA.subdifferential_add_eq`: Moreau–Rockafellar subdifferential sum rule under a continuity
+  qualification (GAPS 12.21).
+
+## Notation
+
+* Standard Mathlib notation is used throughout.
 -/
 
 @[expose] public section

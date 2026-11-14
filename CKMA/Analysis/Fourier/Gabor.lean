@@ -5,7 +5,7 @@ Authors: CKMA contributors
 -/
 module
 
-public import CKMA.Analysis.InnerProductSpace.L2FunctionFamilies
+public import CKMA.Analysis.InnerProductSpace.Basic
 public import Mathlib.Analysis.Fourier.LpSpace
 public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 
@@ -18,6 +18,21 @@ density in opposite directions, so a Riesz basis has critical density. A Gabor R
 basis cannot have finite second moments in both time and frequency.
 
 Sources: GAPS 29.46 and 29.51. The frequency moment uses Mathlib's L² Fourier unitary.
+
+## Main definitions
+
+* `CKMA.gaborAtom`: rectangular time-frequency translate `exp(2πi b p.2 t) * g (t - a p.1)`.
+
+## Main results
+
+* `CKMA.gabor_frame_density`: frame density bound `a * b ≤ 1` (**29.46**).
+* `CKMA.gabor_rieszSequence_density`: Riesz-sequence density bound `1 ≤ a * b`.
+* `CKMA.gabor_rieszBasis_density`: critical density `a * b = 1` for a Gabor Riesz basis.
+* `CKMA.balian_low`: Balian–Low uncertainty obstruction for Gabor Riesz bases (**29.51**).
+
+## Notation
+
+Uses `𝓕` from `FourierTransform` for the `L²` Fourier transform on `Lp ℂ 2 volume`.
 -/
 
 @[expose] public section

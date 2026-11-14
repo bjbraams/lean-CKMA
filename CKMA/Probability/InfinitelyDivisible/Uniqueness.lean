@@ -20,6 +20,21 @@ Equal exponentials of continuous branches vanishing at the origin are equal, bec
 difference takes values in `2πiℤ` and the zero set is clopen. Second differences at steps `1` and
 `√2` recover the Gaussian variance and the jump measure, and the drift is the remaining linear
 term.
+
+## Main definitions
+
+No new definitions are introduced in this file.
+
+## Main results
+
+* `CKMA.eq_of_exp_eq_of_continuous`: continuous logarithms of the same nowhere-vanishing function
+  that agree at `0` are equal everywhere.
+* `CKMA.levyTriplet_eq_of_forall_charFun_eq`: uniqueness of the Lévy triplet for a given
+  characteristic function.
+
+## Notation
+
+No new notation is introduced.
 -/
 
 @[expose] public section

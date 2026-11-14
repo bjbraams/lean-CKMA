@@ -47,6 +47,27 @@ Carleson–Hunt interface combines maximal control with almost-everywhere conver
 of ordinary partial sums for `p > 1`.
 
 Sources: GAPS 27.17 and 27.22.
+
+## Main definitions
+
+* `CKMA.fourierPartialSum`: symmetric `N`-th Fourier partial sum on `AddCircle 1`.
+* `CKMA.fejerSum`: `N`-th Fejér (Cesàro) mean of the symmetric Fourier partial sums.
+* `CKMA.fejerKernel` and `CKMA.fejerKernelReal`: the Fejér kernel on `AddCircle 1` and its lifted
+  real periodic form.
+* `CKMA.carlesonMaximal`: the Carleson maximal operator of symmetric Fourier partial sums.
+
+## Main results
+
+* `CKMA.fejerSum_eq_convolution`: convolution representation of the Fejér mean against
+  `fejerKernel`.
+* `CKMA.fejerKernel_nonneg` and `CKMA.integral_fejerKernel`: nonnegativity and unit mass of the
+  Fejér kernel.
+* `CKMA.carleson_hunt` (**27.22**): `L^p` boundedness of the Carleson maximal operator and almost
+  everywhere convergence of symmetric Fourier partial sums for `1 < p`.
+
+## Notation
+
+* Standard Mathlib notation for `AddCircle 1`, `fourier`, and `fourierCoeff`.
 -/
 
 @[expose] public section

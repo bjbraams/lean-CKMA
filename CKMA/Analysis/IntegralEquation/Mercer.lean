@@ -5,7 +5,7 @@ Authors: CKMA contributors
 -/
 module
 
-public import CKMA.Analysis.Operator.TraceIdeals
+public import CKMA.Analysis.Operator.Basic
 public import CKMA.Analysis.IntegralEquation.HilbertSchmidt
 public import Mathlib.Analysis.Matrix.PosDef
 public import Mathlib.MeasureTheory.Measure.Support
@@ -23,6 +23,22 @@ kernels.
 Uniform absolute convergence means uniform control of every finite absolute tail sum; it does
 not impose the stronger summability of individual supremum norms. The sum of eigenvalues is
 the integral of the diagonal. Source: GAPS 25.8.
+
+## Main definitions
+
+* `CKMA.IsPositiveSemidefiniteKernel`: positive-semidefiniteness of a kernel via finite Gram
+  matrices.
+* `CKMA.mercerTerm`: individual rank-one summand `a n * e n x * conj (e n y)` in Mercer's series.
+* `CKMA.HasUniformAbsoluteMercerTails`: uniform Cauchy condition on finite absolute tail sums.
+
+## Main results
+
+* `CKMA.mercer_expansion`: Mercer's spectral expansion and trace formula for continuous
+  positive-semidefinite kernels (**25.8**).
+
+## Notation
+
+Uses `C(D, ℂ)` for continuous maps and `conj` for complex conjugation.
 -/
 
 @[expose] public section

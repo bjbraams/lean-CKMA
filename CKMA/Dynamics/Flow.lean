@@ -17,6 +17,21 @@ structure. `largestInvariantSubset` takes the points whose full orbit remains in
 
 These common interfaces support Lyapunov criteria, LaSalle invariance and planar
 omega-limit arguments without introducing a dependency on a PDE module.
+
+## Main definitions
+
+* `CKMA.FlowHasGenerator`: predicate that an autonomous vector field generates a global flow.
+* `CKMA.IsLyapunovStable`: forward Lyapunov stability of a point for a flow.
+* `CKMA.IsLocallyAttracting`: local forward attraction to a point for a flow.
+* `CKMA.largestInvariantSubset`: points whose full real-time orbit stays in a given set.
+
+## Main results
+
+* None.
+
+## Notation
+
+* Standard Mathlib notation for `Flow ℝ X`.
 -/
 
 @[expose] public section

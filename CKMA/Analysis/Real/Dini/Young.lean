@@ -18,13 +18,31 @@ The set where the upper right derivative lies strictly below the lower left deri
 countable, and likewise with the two sides exchanged. Both sets are Lebesgue null. The
 argument uses only the strict limsup and liminf inequalities, so the function is an arbitrary
 map `ℝ → ℝ`. Source: GAPS 05.10.
+
+## Main definitions
+
+* `CKMA.Dini.uniformCross`: points where short right slopes lie below `p` and short left slopes
+  lie above `p`.
+
+## Main results
+
+* `CKMA.Dini.countable_lt_upperRight_lowerLeft`,
+  `CKMA.Dini.countable_lt_upperLeft_lowerRight`: countability of strict opposite-side Dini
+  inequalities.
+* `CKMA.Dini.volume_lt_upperRight_lowerLeft`,
+  `CKMA.Dini.volume_lt_upperLeft_lowerRight`: Lebesgue nullity of strict opposite-side Dini
+  inequalities.
+
+## Notation
+
+No new notation is introduced.
 -/
 
 @[expose] public section
 
 noncomputable section
 
-namespace CKMA
+namespace CKMA.Dini
 
 open Set Filter Topology MeasureTheory
 
@@ -169,16 +187,6 @@ lemma lowerLeftDiniDerivative_neg (f : ℝ → ℝ) (x : ℝ) :
     exact extendedDifferenceQuotient_neg f x h
   rw [hfun, EReal.liminf_neg]
 
-/-- The image of an extended quotient lies below every extended-real upper bound. -/
-lemma diniQuotient_bddAbove (f : ℝ → ℝ) (x : ℝ) (l : Filter ℝ) :
-    l.IsBoundedUnder (· ≤ ·) (extendedDifferenceQuotient f x) :=
-  ⟨⊤, Eventually.of_forall fun _ => le_top⟩
-
-/-- The image of an extended quotient lies above every extended-real lower bound. -/
-lemma diniQuotient_bddBelow (f : ℝ → ℝ) (x : ℝ) (l : Filter ℝ) :
-    l.IsBoundedUnder (· ≥ ·) (extendedDifferenceQuotient f x) :=
-  ⟨⊥, Eventually.of_forall fun _ => bot_le⟩
-
 /-- Where the upper right derivative is strictly below the lower left derivative, the set is
 countable. -/
 theorem countable_lt_upperRight_lowerLeft (f : ℝ → ℝ) :
@@ -248,4 +256,4 @@ theorem volume_lt_upperLeft_lowerRight (f : ℝ → ℝ) :
     volume {x | upperLeftDiniDerivative f x < lowerRightDiniDerivative f x} = 0 :=
   (countable_lt_upperLeft_lowerRight f).measure_zero volume
 
-end CKMA
+end CKMA.Dini

@@ -17,6 +17,22 @@ measurable real functions on a second-countable Borel space carrying a locally f
 uniformly locally doubling measure; Euclidean volume is included.
 Source: GAPS 05.30. The almost-everywhere proof uses Mathlib's Vitali-family density theorem
 for the complements of preimages of rational intervals, followed by countable intersection.
+
+## Main definitions
+
+* `CKMA.HasDensityZeroAt`: density zero of a set at a point in shrinking closed balls.
+* `CKMA.IsApproximatelyContinuousAt`: approximate continuity of a function at a point.
+
+## Main results
+
+* `CKMA.ContinuousAt.isApproximatelyContinuousAt`: ordinary continuity implies approximate
+  continuity under locally finite measures.
+* `CKMA.Measurable.ae_isApproximatelyContinuousAt`: Lusin–Denjoy theorem that every measurable real
+  function is approximately continuous almost everywhere (**05.30**).
+
+## Notation
+
+* Standard Mathlib filter and measure notation (`𝓝[>] 0`, `∀ᵐ x ∂μ`).
 -/
 
 @[expose] public section

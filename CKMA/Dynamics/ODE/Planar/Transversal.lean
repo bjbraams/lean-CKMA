@@ -23,6 +23,24 @@ segment is the real inner product against the rotate of the segment direction. A
 is transverse when this height increases along every orbit that meets it. A regular point
 lies on such a segment, an orbit meets the segment in isolated times, and every orbit that
 passes close to an interior point crosses the open segment in a short time.
+
+## Main definitions
+
+* `CKMA.transverseSide`: signed height of `z` from the oriented line through `a` and `b`.
+* `CKMA.lineParam`: real coordinate of `z` along the direction `b - a`.
+* `CKMA.IsTransverseSegment`: predicate that a segment meets a vector field transversely.
+
+## Main results
+
+* `CKMA.exists_isTransverseSegment`: every regular point is the midpoint of a transverse segment.
+* `CKMA.exists_crossing_time`: orbits near an interior point of a transverse segment cross it in a
+  short time.
+* `CKMA.finite_orbit_segment`: a compact time interval meets a transverse segment in finitely many
+  times.
+
+## Notation
+
+* `⟪x, y⟫_ℝ`: real inner product.
 -/
 
 @[expose] public section
@@ -616,7 +634,7 @@ theorem exists_crossing_time {φ : Flow ℝ ℂ} {F : ℂ → ℂ} (hgen : FlowH
 
 /-- A compact time interval meets a transverse segment in finitely many times. -/
 theorem finite_orbit_segment {φ : Flow ℝ ℂ} {F : ℂ → ℂ} (hgen : FlowHasGenerator φ F)
-    {a b : ℂ} (htr : IsTransverseSegment F a b) (x : ℂ) {t₁ t₂ : ℝ} (ht : t₁ ≤ t₂) :
+    {a b : ℂ} (htr : IsTransverseSegment F a b) (x : ℂ) {t₁ t₂ : ℝ} :
     {t : ℝ | t ∈ Icc t₁ t₂ ∧ φ t x ∈ segment ℝ a b}.Finite := by
   set S : Set ℝ := {t : ℝ | t ∈ Icc t₁ t₂ ∧ φ t x ∈ segment ℝ a b}
   have hcont : Continuous fun t : ℝ ↦ φ t x := continuous_id.flow φ continuous_const
@@ -663,7 +681,6 @@ theorem finite_orbit_segment {φ : Flow ℝ ℂ} {F : ℂ → ℂ} (hgen : FlowH
       have ht' : t = t₀ := by simpa using ht
       subst ht'
       exact ⟨⟨by linarith, by linarith⟩, ht₀⟩
-  have _ : t₁ ≤ t₂ := ht
   exact hcomp.finite hdisc
 
 end CKMA

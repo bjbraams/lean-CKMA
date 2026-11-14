@@ -16,6 +16,20 @@ The scalar pairing integrates `f * star g`, so it is linear in the first argumen
 conjugate-linear in the representing function. On sigma-finite measure spaces, every continuous
 linear functional on Lp for finite `p ≥ 1` is represented by a unique conjugate-exponent Lq
 function with the same norm. The endpoint `p=1, q=∞` is included. Source: GAPS 04.39.
+
+## Main definitions
+
+* `CKMA.lpDualPairing`: sesquilinear integral pairing `∫ x, f x * star (g x) ∂μ` between `Lp` and
+  `Lq`.
+
+## Main results
+
+* `CKMA.existsUnique_lpDualRepresentation`: Riesz representation of continuous linear functionals
+  on `Lp 𝕜 p μ` for `1 ≤ p < ∞` on sigma-finite measure spaces (**04.39**).
+
+## Notation
+
+Uses `ℝ≥0∞` (`∞`) from `ENNReal`.
 -/
 
 @[expose] public section
@@ -29,8 +43,8 @@ open scoped ENNReal
 
 variable {𝕜 X : Type*} [RCLike 𝕜] [MeasurableSpace X]
 
-/-- The scalar `Lᵖ` dual pairing, linear in its first argument and conjugate-linear in its second.
-  -/
+/-- The scalar `Lᵖ` dual pairing, linear in its first argument and conjugate-linear in its
+second. -/
 def lpDualPairing {p q : ℝ≥0∞} {μ : Measure X} (f : Lp 𝕜 p μ) (g : Lp 𝕜 q μ) : 𝕜 :=
   ∫ x, f x * star (g x) ∂μ
 

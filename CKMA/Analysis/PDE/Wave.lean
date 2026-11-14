@@ -17,6 +17,24 @@ Solutions are continuous energy-space curves on a compact time interval, with a 
 position derivative and an integrated weak velocity equation. Initial and forcing data
 agreeing on a backward cone give spatial almost-everywhere agreement in its later balls.
 Sources: GAPS 32.50 and 32.52. Compact curves and Bochner integrals use Mathlib.
+
+## Main definitions
+
+* `CKMA.WavePositionSpace`, `CKMA.WaveVelocitySpace`: `H¹(ℝ^d)` position and `L²(ℝ^d)` velocity
+  spaces for finite-energy waves.
+* `CKMA.IsWaveEnergySolution`: weak finite-energy solutions of the forced linear wave equation.
+* `CKMA.waveEnergy`: total kinetic and potential wave energy at a given time.
+
+## Main results
+
+* `CKMA.wave_energy_wellPosed`: existence, uniqueness, and energy identity for finite-energy wave
+  solutions (**32.50**).
+* `CKMA.wave_finite_speed_of_propagation`: finite speed of propagation on backward light cones
+  (**32.52**).
+
+## Notation
+
+* Standard Mathlib notation for `C(Set.Icc 0 T, E)` and interval integrals.
 -/
 
 @[expose] public section

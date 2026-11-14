@@ -32,6 +32,20 @@ Spatially separated modulated bumps have almost disjoint Fourier packets, so the
 ratio of the two norms is unbounded.
 
 Source: GAPS 27.4.
+
+## Main definitions
+
+No new public definitions are introduced in this module.
+
+## Main results
+
+* `CKMA.hausdorff_young`: Hausdorff–Young inequality on `L¹ ∩ Lᵖ` for `1 ≤ p ≤ 2` (**27.4**).
+* `CKMA.not_hausdorff_young`: failure of the Hausdorff–Young inequality for `p > 2` in positive
+  dimension, already on Schwartz functions.
+
+## Notation
+
+Uses `𝓕` from `FourierTransform` and `ℝ≥0∞` from `ENNReal`.
 -/
 
 @[expose] public section
@@ -45,7 +59,7 @@ open scoped BigOperators Complex ENNReal FourierTransform RealInnerProductSpace
 
 /-- **27.4**: Hausdorff–Young on the dense intersection `L¹ ∩ Lᵖ`, with the `p=1` endpoint.
 This formulation uses the Fourier integral; extension to all of `Lᵖ` needs a bounded-map
-  construction. -/
+construction. -/
 theorem hausdorff_young {d : ℕ} {p q : ℝ≥0∞} (hp : 1 ≤ p) (hp2 : p ≤ 2)
     (hpq : p⁻¹ + q⁻¹ = 1) {f : EuclideanSpace ℝ (Fin d) → ℂ}
     (hf1 : Integrable f volume) (hfp : MemLp f p volume) :

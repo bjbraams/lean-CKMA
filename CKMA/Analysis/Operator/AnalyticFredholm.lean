@@ -24,7 +24,23 @@ on a punctured neighborhood. At-most-pole regularizations are kept as a separate
 An algebraically simple eigenpair is expressed by a rank-one projection and a two-sided reduced
 resolvent identity. Its analytic continuation supplies an eigenvalue and a nonzero eigenvector
 branch. Sources: GAPS 21.15 and 22.34; finite-rank principal parts are outside the displayed pole
-  clause.
+clause.
+
+## Main definitions
+
+* `CKMA.fredholmExceptionalSet`: noninvertibility set of a compact Fredholm family.
+* `CKMA.HasFiniteOrderInverseRegularization`: finite-order analytic regularization of the inverse.
+* `CKMA.HasOperatorInversePole`: genuine finite-order inverse pole.
+* `CKMA.IsSimpleSpectralEigenpair`: algebraically simple eigenpair in reduced-resolvent form.
+
+## Main results
+
+* `CKMA.analytic_fredholm`: analytic Fredholm theorem.
+* `CKMA.analytic_simple_eigenpair`: analytic continuation of a simple eigenpair.
+
+## Notation
+
+* `𝓝[≠] a`: punctured neighborhood filter at `a`.
 -/
 
 @[expose] public section

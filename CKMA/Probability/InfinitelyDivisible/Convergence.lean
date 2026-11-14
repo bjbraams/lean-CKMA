@@ -17,6 +17,19 @@ import Mathlib.Topology.Sequences
 Pointwise convergence of characteristic functions to a limit continuous at the origin produces a
 probability measure with that characteristic function, by tightness, Prokhorov compactness, and
 Lévy's continuity theorem along a weakly convergent subsequence.
+
+## Main definitions
+
+No new definitions are introduced in this file.
+
+## Main results
+
+* `CKMA.exists_isProbabilityMeasure_of_tendsto_charFun`: a pointwise limit of characteristic
+  functions that is continuous at `0` is the characteristic function of a probability measure.
+
+## Notation
+
+No new notation is introduced.
 -/
 
 @[expose] public section

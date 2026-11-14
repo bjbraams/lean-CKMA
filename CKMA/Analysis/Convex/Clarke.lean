@@ -51,6 +51,24 @@ directional derivative. Source: GAPS 12.50.
 The support-function proof builds a real sublinear function from the directional derivative and
 extends a partial functional dominated by it, using Mathlib's Hahn–Banach theorem
 `exists_extension_of_le_sublinear`.
+
+## Main definitions
+
+* `CKMA.clarkeDirectionalDerivative`: Clarke's generalized directional derivative in `EReal`.
+* `CKMA.clarkeSubdifferential`: the Clarke generalized gradient in the continuous dual.
+* `CKMA.reachableDerivatives`: limits of ordinary derivatives at points approaching `x`.
+* `CKMA.clarkeReal`: real-valued limsup of the Clarke difference quotient.
+
+## Main results
+
+* `CKMA.clarkeSubdifferential_representation`: finite-dimensional representation of the Clarke
+  subdifferential as the closed convex hull of reachable derivatives (GAPS 12.50).
+* `CKMA.sSup_clarkeSubdifferential_eq`: the support function of the Clarke subdifferential is the
+  Clarke directional derivative.
+
+## Notation
+
+* Standard Mathlib notation is used throughout.
 -/
 
 @[expose] public section
@@ -297,7 +315,7 @@ lemma clarkeReal_zero (f : E → ℝ) (x : E) : clarkeReal f x 0 = 0 := by
   rw [clarkeReal, h0, limsup_const]
 
 /-- The real Clarke derivative is bounded by the Lipschitz constant. -/
-lemma clarkeReal_abs_le {f : E → ℝ} {x : E} {r : ℝ} (hr : 0 < r) {L : ℝ≥0}
+lemma abs_clarkeReal_le {f : E → ℝ} {x : E} {r : ℝ} (hr : 0 < r) {L : ℝ≥0}
     (hf : LipschitzOnWith L f (Metric.ball x r)) (d : E) :
     |clarkeReal f x d| ≤ (L : ℝ) * ‖d‖ := by
   rw [abs_le, clarkeReal]
@@ -401,9 +419,9 @@ lemma exists_mem_clarkeSubdifferential_eq_clarkeReal {f : E → ℝ} {x : E} {r 
       · have hneg := hg_le (-y)
         rw [map_neg] at hneg
         have hpy : clarkeReal f x (-y) ≤ (L : ℝ) * ‖y‖ := by
-          simpa [norm_neg] using (abs_le.mp (clarkeReal_abs_le hr hf (-y))).2
+          simpa [norm_neg] using (abs_le.mp (abs_clarkeReal_le hr hf (-y))).2
         linarith
-      · exact (hg_le y).trans (abs_le.mp (clarkeReal_abs_le hr hf y)).2
+      · exact (hg_le y).trans (abs_le.mp (abs_clarkeReal_le hr hf y)).2
   let u := g.mkContinuous ((L : ℝ)) hbound
   refine ⟨u, ?_, ?_⟩
   · intro e
@@ -511,10 +529,10 @@ lemma norm_le_of_mem_clarkeSubdifferential
     have h := hu e
     rw [clarkeDirectionalDerivative_eq_coe_clarkeReal hr hf e, EReal.coe_le_coe_iff] at h
     exact h
-  refine ⟨?_, (hder d).trans (abs_le.mp (clarkeReal_abs_le hr hf d)).2⟩
+  refine ⟨?_, (hder d).trans (abs_le.mp (abs_clarkeReal_le hr hf d)).2⟩
   have hneg := hder (-d)
   rw [map_neg] at hneg
-  have habs := (abs_le.mp (clarkeReal_abs_le hr hf (-d))).2
+  have habs := (abs_le.mp (abs_clarkeReal_le hr hf (-d))).2
   rw [norm_neg] at habs
   linarith
 

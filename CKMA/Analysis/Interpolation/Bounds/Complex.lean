@@ -27,6 +27,21 @@ Multiplying an admissible strip function by this weight and by the ambient opera
 admissible strip function for the target couple, whose boundary norm is at most
 `M₀ ^ (1 - θ) * M₁ ^ θ` times the source boundary norm. The complex interpolation gauge is the
 infimum of those boundary norms.
+
+## Main definitions
+
+* `CKMA.stripWeight`: entire scalar weight `exp ((z - θ) * (log M₀ - log M₁))`.
+* `CKMA.CoupleMap.pushStrip`: image of an admissible strip function under a compatible couple map
+  twisted by `stripWeight`.
+
+## Main results
+
+* `CKMA.complexInterpolationGauge_map_le_of_pos`: the complex interpolation gauge bound for
+  positive endpoint bounds `M₀, M₁ > 0`.
+
+## Notation
+
+* Standard Mathlib notation for complex exponentials and `ENNReal`.
 -/
 
 @[expose] public section

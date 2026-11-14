@@ -16,6 +16,21 @@ For a co-invariant isometric embedding `J` of a contraction, the defect
 Its forward orbit under `V` is pairwise orthogonal, and the identity extends from the
 algebraic range of `D` to the closure. That closure is the multiplicity space of the
 commutant-lifting series.
+
+## Main definitions
+
+* `CKMA.dilationDefect`: the defect map `V (J x) - J (T x)` of a coextension.
+* `CKMA.dilationDefectSpace`: closed range of `dilationDefect`.
+
+## Main results
+
+* `CKMA.norm_sq_dilationDefect`: Pythagorean identity for `dilationDefect`.
+* `CKMA.inner_embed_defectSpace_pow_eq_zero`: orthogonality of `J x` and shifted defect vectors.
+* `CKMA.inner_defectSpace_pow_eq_zero`: pairwise orthogonality of shifted defect subspaces.
+
+## Notation
+
+* `⟪x, y⟫_ℂ`: complex inner product.
 -/
 
 @[expose] public section

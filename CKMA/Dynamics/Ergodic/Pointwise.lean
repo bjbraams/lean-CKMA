@@ -27,6 +27,24 @@ a scalar-mean specialization for ergodic probability-preserving transformations.
 the length-zero value unconstrained. Kingman's targets give an invariant integrable
 limit, pointwise and L¹ convergence, and the infimum formula for its mean under a lower
 bound on the normalized expectations.
+
+## Main definitions
+
+* `CKMA.maximalErgodicSet`: the finite maximal-positive Birkhoff-sum set.
+* `CKMA.IsSubadditiveProcess`: subadditivity of a sequence of observables along `T`.
+* `CKMA.subadditiveMeanRate`: the infimum of normalized positive-length expectations.
+
+## Main results
+
+* `CKMA.maximal_ergodic`: the maximal ergodic inequality.
+* `CKMA.birkhoff_pointwise`: Birkhoff's pointwise ergodic theorem.
+* `CKMA.birkhoff_pointwise_of_ergodic`: Birkhoff's theorem for ergodic transformations.
+* `CKMA.kingman_subadditive`: Kingman's subadditive ergodic theorem.
+* `CKMA.kingman_subadditive_of_ergodic`: Kingman's theorem for ergodic transformations.
+
+## Notation
+
+* `μ[f | m]`: conditional expectation of `f` with respect to a sub-σ-algebra `m`.
 -/
 
 @[expose] public section
@@ -44,8 +62,8 @@ variable {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω}
 def maximalErgodicSet (T : Ω → Ω) (f : Ω → ℝ) (N : ℕ) : Set Ω :=
   {ω | ∃ n : ℕ, 0 < n ∧ n ≤ N ∧ 0 < birkhoffSum T f n ω}
 
-/-- **10.5**, the maximal ergodic inequality on a probability-preserving system. -/
-theorem maximal_ergodic [IsProbabilityMeasure μ] {T : Ω → Ω}
+/-- **10.5**, the maximal ergodic inequality on a measure-preserving system. -/
+theorem maximal_ergodic {T : Ω → Ω}
     (hT : MeasurePreserving T μ μ) {f : Ω → ℝ} (hf : Integrable f μ) (N : ℕ) :
     0 ≤ ∫ ω in maximalErgodicSet T f N, f ω ∂μ := by
   simpa [maximalErgodicSet] using integral_nonneg_maximalErgodicSet hT hf N

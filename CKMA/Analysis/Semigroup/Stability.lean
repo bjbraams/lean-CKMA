@@ -19,6 +19,24 @@ semigroups by their imaginary-axis resolvents. The reflexive Arendt–Batty–Ly
 criterion uses countable imaginary spectrum and absence of generator eigenvalues.
 Semigroups and complex generators reuse TauCeti; duality and limits use Mathlib.
 Sources: GAPS 24.39 and 24.40.
+
+## Main definitions
+
+* `CKMA.IsBoundedSemigroup`: uniform operator-norm boundedness of a `C₀`-semigroup.
+* `CKMA.IsExponentiallyStableSemigroup`: exponential operator-norm decay of a `C₀`-semigroup.
+* `CKMA.IsStronglyStableSemigroup`: strong orbit decay to zero as `t → ∞`.
+* `CKMA.HasPartialOperatorEigenvalue`: point-spectrum predicate for a partial linear operator.
+
+## Main results
+
+* `CKMA.gearhart_pruss`: the Gearhart–Prüss theorem characterizing exponential stability on Hilbert
+  spaces via uniform resolvent bounds on the imaginary axis (**24.39**).
+* `CKMA.arendt_batty_lyubich_vu`: the Arendt–Batty–Lyubich–Vũ strong stability theorem on reflexive
+  Banach spaces (**24.40**).
+
+## Notation
+
+* Standard TauCeti notation for `StronglyContinuousSemigroup` and complex generators.
 -/
 
 @[expose] public section

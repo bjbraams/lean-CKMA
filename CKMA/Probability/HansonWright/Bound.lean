@@ -13,6 +13,20 @@ public import CKMA.Probability.HansonWright.OffDiagonal
 The centered quadratic form splits into a diagonal and an off-diagonal sum. Boolean slices
 of the off-diagonal sum are linear in one coordinate block, so the sub-Gaussian product
 bound closes the moment generating function.
+
+## Main definitions
+
+No new public definitions are introduced in this file.
+
+## Main results
+
+* `CKMA.offDiagonalDeviation_tail`: two-scale tail bound for the off-diagonal quadratic form.
+* `CKMA.hanson_wright_explicit`: explicit Hanson–Wright concentration bound with constant
+  `1 / 2359296`.
+
+## Notation
+
+No new notation is introduced in this file.
 -/
 
 @[expose] public section

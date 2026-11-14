@@ -23,6 +23,31 @@ criteria give Hamburger and Stieltjes uniqueness, including zero moments.
 The quadratic-form identity uses Mathlib's `Polynomial.lsum` and matrix positivity API.
 
 Sources: GAPS 48.4, 48.32, 48.33 and 48.36.
+
+## Main definitions
+
+* `CKMA.momentFunctional`: linear functional on `ℝ[X]` sending `X ^ n` to `s n`.
+* `CKMA.momentHankelMatrix`: finite shifted Hankel matrix of a moment sequence.
+* `CKMA.HasPositiveHankelMatrices`: positive semidefiniteness of all unshifted Hankel matrices.
+* `CKMA.RepresentsRealMoments`: finite Borel measure with moments `s`.
+* `CKMA.jacobiMonicPolynomial`: monic orthogonal polynomial sequence defined by a three-term
+  recurrence.
+* `CKMA.HamburgerCarlemanCondition`: Carleman divergence condition for the Hamburger moment problem.
+* `CKMA.StieltjesCarlemanCondition`: Carleman divergence condition for the Stieltjes moment problem.
+
+## Main results
+
+* `CKMA.hamburger_moment_iff`: Hamburger moment existence theorem.
+* `CKMA.stieltjes_moment_iff`: Stieltjes moment existence theorem.
+* `CKMA.positiveHankelMatrices_iff_squares`: equivalence of Hankel positivity and nonnegativity of
+  `momentFunctional` on polynomial squares.
+* `CKMA.exists_favard_measure`: Favard's theorem for monic Jacobi recurrences.
+* `CKMA.measure_eq_of_hamburgerCarleman`: Carleman uniqueness for the Hamburger moment problem.
+* `CKMA.measure_eq_of_stieltjesCarleman`: Carleman uniqueness for the Stieltjes moment problem.
+
+## Notation
+
+No new notation is introduced in this file.
 -/
 
 @[expose] public section
@@ -140,8 +165,8 @@ theorem jacobiMonicPolynomial_recurrence (a b : ℕ → ℝ) (n : ℕ) :
 theorem exists_favard_measure (a b : ℕ → ℝ) (ha : ∀ n, 0 < a n) :
     ∃ μ : Measure ℝ, IsProbabilityMeasure μ ∧ HasFiniteMoments μ ∧ μ.support.Infinite ∧
       ∀ n m : ℕ, n ≠ m →
-        ∫ x, (jacobiMonicPolynomial a b n).eval x * (jacobiMonicPolynomial a b m).eval x ∂μ = 0 :=
-          by
+        ∫ x, (jacobiMonicPolynomial a b n).eval x *
+          (jacobiMonicPolynomial a b m).eval x ∂μ = 0 := by
   sorry
 
 /-- Hamburger's Carleman divergence criterion. Extended powers give value `∞` at a zero moment,
@@ -153,11 +178,11 @@ def HamburgerCarlemanCondition (s : ℕ → ℝ) : Prop :=
 def StieltjesCarlemanCondition (s : ℕ → ℝ) : Prop :=
   (∑' n : ℕ, (ENNReal.ofReal (s (n + 1))) ^ (-1 / (2 * (n + 1) : ℝ))) = ∞
 
-/-- **48.36**: Hamburger Carleman divergence gives uniqueness among all real representing measures.
-  -/
+/-- **48.36**: Hamburger Carleman divergence gives uniqueness among all real representing
+measures. -/
 theorem measure_eq_of_hamburgerCarleman {s : ℕ → ℝ} (hs : HamburgerCarlemanCondition s)
-    {μ ν : Measure ℝ} (hμ : RepresentsRealMoments μ s) (hν : RepresentsRealMoments ν s) : μ = ν :=
-      by
+    {μ ν : Measure ℝ} (hμ : RepresentsRealMoments μ s) (hν : RepresentsRealMoments ν s) :
+    μ = ν := by
   sorry
 
 /-- Stieltjes Carleman divergence gives uniqueness among half-line representing measures. -/

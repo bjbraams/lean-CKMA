@@ -19,6 +19,21 @@ public import Mathlib.Data.Nat.Choose.Sum
 Helpers for a germ `f(z) = z ^ k * g(z)` with `k ≥ 2` and `g 0 ≠ 0`. The coordinate is
 `φ(z) = c * z * exp (S z)`, where `S` sums the branched logarithm of `g` along the orbit,
 and `c ^ (k - 1) = g 0`.
+
+## Main definitions
+
+* None.
+
+## Main results
+
+* `CKMA.exists_boettcher_data`: existence of a local analytic Böttcher coordinate with prescribed
+  compatible leading coefficient.
+* `CKMA.boettcherCoordinate_eq_mul_unity`: uniqueness of Böttcher coordinates up to a `(k - 1)`st
+  root of unity.
+
+## Notation
+
+* Standard Mathlib complex analysis notation.
 -/
 
 @[expose] public section

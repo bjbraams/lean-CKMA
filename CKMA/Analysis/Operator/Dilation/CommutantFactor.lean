@@ -15,6 +15,20 @@ public import Mathlib.Analysis.Normed.Operator.Extend
 If `‖B x‖ ≤ ‖A x‖` for every vector, then `B` factors as a contraction following `A`. The factor
 is built on the closure of the range and extended by the orthogonal projection, which is the form
 used for the blocks in the commutant lifting iteration.
+
+## Main definitions
+
+* `CKMA.contractionFactor`: chosen contraction `C` with `C.comp A = B`.
+
+## Main results
+
+* `CKMA.exists_contraction_factor`: Douglas factorization through the closure of the range.
+* `CKMA.contractionFactor_norm_le`: operator norm of `contractionFactor` is at most `1`.
+* `CKMA.contractionFactor_comp`: factorization identity ` (contractionFactor ...).comp A = B`.
+
+## Notation
+
+* `Rᗮ`: orthogonal complement of a submodule `R`.
 -/
 
 @[expose] public section

@@ -34,6 +34,20 @@ lower semicontinuity and compact finite sublevels.
 `varadhan` states the Laplace principle for bounded continuous test functions under the
 full LDP. Goodness is not required for this bounded form. Both the rate function and
 the variational supremum retain their extended values.
+
+## Main definitions
+
+* `CKMA.IsGoodRateFunction`: rate function with lower semicontinuity and compact sublevels.
+* `CKMA.logProbabilityRate`: normalized logarithmic probability at speed `n + 1`.
+* `CKMA.HasLargeDeviationPrinciple`: open lower and closed upper large deviation bounds.
+
+## Main results
+
+* `CKMA.varadhan`: Varadhan's integral lemma for bounded continuous functions (**06.62**).
+
+## Notation
+
+No new notation is introduced.
 -/
 
 @[expose] public section
@@ -69,7 +83,7 @@ private noncomputable def laplaceRate (P : ℕ → Measure X) (f : X → ℝ) (n
   (n + 1 : ℝ)⁻¹ * Real.log (∫ x, Real.exp ((n + 1 : ℝ) * f x) ∂P n)
 
 /-- The bounded continuous Laplace integrand is integrable, and its integral is positive. -/
-private lemma laplaceIntegral_pos [BorelSpace X] (P : Measure X) [IsProbabilityMeasure P]
+private lemma laplaceIntegral_pos [OpensMeasurableSpace X] (P : Measure X) [IsProbabilityMeasure P]
     {f : X → ℝ} (hf : Continuous f) {M : ℝ} (hM : ∀ x, |f x| ≤ M) (n : ℕ) :
     Integrable (fun x ↦ Real.exp ((n + 1 : ℝ) * f x)) P ∧
       0 < ∫ x, Real.exp ((n + 1 : ℝ) * f x) ∂P := by
@@ -136,7 +150,7 @@ private lemma limsup_finset_sup_le {ι : Type*} (K : Finset ι) (φ : ι → ℕ
   exact (Finset.sup_lt_iff hybot).2 hn
 
 /-- Each value `f x - I x` lies under the liminf of the Laplace rate. -/
-private lemma sub_le_liminf_laplaceRate [BorelSpace X] (P : ℕ → Measure X)
+private lemma sub_le_liminf_laplaceRate [OpensMeasurableSpace X] (P : ℕ → Measure X)
     [∀ n, IsProbabilityMeasure (P n)] {I : X → ℝ≥0∞}
     (hP : HasLargeDeviationPrinciple P I) {f : X → ℝ} (hf : Continuous f)
     {M : ℝ} (hM : ∀ x, |f x| ≤ M) (x : X) :
@@ -221,7 +235,7 @@ private lemma sub_le_liminf_laplaceRate [BorelSpace X] (P : ℕ → Measure X)
   exact this
 
 /-- The Laplace rate has limsup at most the variational supremum. -/
-private lemma limsup_laplaceRate_le [BorelSpace X] (P : ℕ → Measure X)
+private lemma limsup_laplaceRate_le [OpensMeasurableSpace X] (P : ℕ → Measure X)
     [∀ n, IsProbabilityMeasure (P n)] {I : X → ℝ≥0∞}
     (hP : HasLargeDeviationPrinciple P I) {f : X → ℝ} (hf : Continuous f)
     {M : ℝ} (hM : ∀ x, |f x| ≤ M) :
@@ -524,7 +538,7 @@ private lemma limsup_laplaceRate_le [BorelSpace X] (P : ℕ → Measure X)
 /-- **06.62**: Varadhan's integral lemma for bounded continuous functions.
 The real logarithm on the left is legitimate because each integral is strictly positive.
 The extended supremum on the right includes points where `I = ∞`. -/
-theorem varadhan [BorelSpace X] (P : ℕ → Measure X)
+theorem varadhan [OpensMeasurableSpace X] (P : ℕ → Measure X)
     [∀ n, IsProbabilityMeasure (P n)] {I : X → ℝ≥0∞}
     (hP : HasLargeDeviationPrinciple P I)
     {f : X → ℝ} (hf : Continuous f) (hb : ∃ M : ℝ, ∀ x, |f x| ≤ M) :

@@ -23,6 +23,23 @@ public import Mathlib.Topology.Order.IntermediateValue
 An infinitely divisible real probability has a nowhere-vanishing characteristic function. On the
 line that function admits a continuous logarithm vanishing at the origin, and every convolution
 root has characteristic function `exp` of that logarithm divided by the order of the root.
+
+## Main definitions
+
+* `CKMA.convolutionRoot`: positive convolution root of an infinitely divisible law.
+* `CKMA.positiveRoot`: `(n + 1)`-th convolution root of an infinitely divisible law.
+* `CKMA.charExponent`: continuous logarithm of the characteristic function vanishing at `0`.
+
+## Main results
+
+* `CKMA.charFun_ne_zero_of_isInfinitelyDivisible`: the characteristic function of an infinitely
+  divisible law never vanishes.
+* `CKMA.charFun_positiveRoot`: the characteristic function of the `(n + 1)`-th root is
+  `exp (charExponent h t / (n + 1))`.
+
+## Notation
+
+No new notation is introduced.
 -/
 
 @[expose] public section

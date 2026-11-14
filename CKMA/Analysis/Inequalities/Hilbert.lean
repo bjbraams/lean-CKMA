@@ -35,6 +35,20 @@ and Euler's reflection formula are Mathlib's `Complex.betaIntegral` and
 `Real.Gamma_mul_Gamma_one_sub`. The bilinear bound is Hölder's inequality in
 `ENNReal`, and the sequence bound compares the decreasing kernel with that integral.
 Source: GAPS 11.37.
+
+## Main definitions
+
+* `CKMA.hilbertConstant`: Hilbert's sharp constant `π / sin (π / p)`.
+
+## Main results
+
+* `CKMA.hilbert_lintegral` (**11.37**): Hilbert's integral inequality on `(0, ∞)`.
+* `CKMA.hilbert_tsum` (**11.37**): the discrete Hilbert inequality for sequences in `ℓ^p` and
+  `ℓ^q`.
+
+## Notation
+
+* Standard Mathlib notation for Lebesgue integrals, `eLpNorm`, and `ENNReal` series.
 -/
 
 @[expose] public section

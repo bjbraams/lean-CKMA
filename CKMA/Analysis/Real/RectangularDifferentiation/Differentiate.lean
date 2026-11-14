@@ -26,6 +26,21 @@ A continuous compactly supported cutoff reduces a function of local class `L(log
 global class already differentiated by the strong maximal inequality. The cutoff equals one on a
 ball about almost every point, so the rectangular averages of the original function agree with
 those of the cutoff product.
+
+## Main definitions
+
+* None (uses `CKMA.IsLocallyLLog` and `CKMA.RectanglesDifferentiateAt` from `Base.lean`).
+
+## Main results
+
+* `CKMA.exists_compactCutoff`: existence of a continuous compactly supported cutoff preserving the
+  local `L(log⁺ L)^{d-1}` class.
+* `CKMA.ae_rectanglesDifferentiateAt_of_strongMaximal`: almost-everywhere rectangular
+  differentiation for functions in `L(log⁺ L)^{d-1}_{loc}`.
+
+## Notation
+
+* Standard Mathlib measure and metric ball notation.
 -/
 
 @[expose] public section

@@ -13,6 +13,20 @@ public import CKMA.Analysis.Semigroup.Accretive.Estimates
 Implicit Euler products of an m-accretive resolvent converge to a nonlinear contraction
 semigroup on the closure of the graph domain. Uniform convergence on bounded time
 intervals holds for initial values in the graph. Source: GAPS 24.52.
+
+## Main definitions
+
+* Re-exports `CKMA.accretiveGraphDomain`, `CKMA.IsAccretiveGraph`, `CKMA.IsMAccretiveGraph`,
+  `CKMA.accretiveResolvent`, and `CKMA.accretiveEulerProduct` from `Accretive.Estimates`.
+
+## Main results
+
+* `CKMA.crandall_liggett`: the Crandall–Liggett generation theorem for m-accretive graphs on Banach
+  spaces (**24.52**).
+
+## Notation
+
+* Standard Mathlib notation for `ℝ≥0` and `Tendsto`.
 -/
 
 @[expose] public section

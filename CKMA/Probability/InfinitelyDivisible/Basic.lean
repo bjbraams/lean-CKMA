@@ -17,6 +17,21 @@ public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 probability law. `IsLevyMeasure` records the zero atom and integrability of the truncated
 quadratic jump size. `LevyTriplet` packages Gaussian variance, drift and jump measure,
 with its characteristic exponent using the truncation `x * 1_{|x| ≤ 1}`.
+
+## Main definitions
+
+* `CKMA.convolutionPower`: additive convolution power of a real measure.
+* `CKMA.IsInfinitelyDivisible`: infinite divisibility of a real probability law.
+* `CKMA.IsLevyMeasure`: Lévy measure condition on `ℝ`.
+* `CKMA.LevyTriplet`: Lévy triplet with characteristic exponent `CKMA.LevyTriplet.exponent`.
+
+## Main results
+
+No theorems are proved in this file.
+
+## Notation
+
+No new notation is introduced.
 -/
 
 @[expose] public section

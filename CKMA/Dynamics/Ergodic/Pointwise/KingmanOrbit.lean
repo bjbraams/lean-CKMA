@@ -16,6 +16,20 @@ import Mathlib.Tactic
 
 A subadditive cocycle along one orbit is bounded by a greedy window of length `k`. The bound is
 the deterministic step in Avila and Bochi's proof of the liminf estimate.
+
+## Main definitions
+
+* `CKMA.IsKingmanWindow`: predicate that a cocycle falls below a target slope on `1, …, k`.
+* `CKMA.kingmanPsi`: the comparison function on windows of length `k`.
+* `CKMA.kingmanMx`: the tail majorant of the comparison function and one-step increment.
+
+## Main results
+
+* `CKMA.kingman_orbit_bound`: the deterministic Avila–Bochi orbit bound.
+
+## Notation
+
+* Standard Finset summation notation.
 -/
 
 @[expose] public section
@@ -29,12 +43,12 @@ open Finset
 attribute [local instance] Classical.propDecidable
 
 /-- A length in `1, …, k` on which the cocycle lies strictly below the target slope. -/
-def kingmanWindow (u : ℕ → ℕ → ℝ) (slope : ℝ) (k i : ℕ) : Prop :=
+def IsKingmanWindow (u : ℕ → ℕ → ℝ) (slope : ℝ) (k i : ℕ) : Prop :=
   ∃ j, 0 < j ∧ j ≤ k ∧ u i j < (j : ℝ) * slope
 
 /-- The comparison function: the target slope on a successful window, otherwise one step. -/
 def kingmanPsi (u : ℕ → ℕ → ℝ) (slope : ℝ) (k i : ℕ) : ℝ :=
-  if kingmanWindow u slope k i then slope else u i 1
+  if IsKingmanWindow u slope k i then slope else u i 1
 
 /-- The tail majorant, at least both the comparison function and the one-step increment. -/
 def kingmanMx (u : ℕ → ℕ → ℝ) (slope : ℝ) (k i : ℕ) : ℝ :=
@@ -42,18 +56,18 @@ def kingmanMx (u : ℕ → ℕ → ℝ) (slope : ℝ) (k i : ℕ) : ℝ :=
 
 /-- Outside every window the one-step increment is the comparison function. -/
 lemma kingmanPsi_of_not_window {u : ℕ → ℕ → ℝ} {slope : ℝ} {k i : ℕ}
-    (h : ¬ kingmanWindow u slope k i) : kingmanPsi u slope k i = u i 1 := by
+    (h : ¬ IsKingmanWindow u slope k i) : kingmanPsi u slope k i = u i 1 := by
   simp [kingmanPsi, h]
 
 /-- A successful window uses the target slope as the comparison value. -/
 lemma kingmanPsi_of_window {u : ℕ → ℕ → ℝ} {slope : ℝ} {k i : ℕ}
-    (h : kingmanWindow u slope k i) : kingmanPsi u slope k i = slope := by
+    (h : IsKingmanWindow u slope k i) : kingmanPsi u slope k i = slope := by
   simp [kingmanPsi, h]
 
 /-- Every site is at least the target slope when `k` is positive. -/
 lemma le_kingmanPsi {u : ℕ → ℕ → ℝ} {slope : ℝ} {k : ℕ} (hk : 0 < k) (i : ℕ) :
     slope ≤ kingmanPsi u slope k i := by
-  by_cases h : kingmanWindow u slope k i
+  by_cases h : IsKingmanWindow u slope k i
   · rw [kingmanPsi_of_window h]
   · rw [kingmanPsi_of_not_window h]
     have h1 : ¬ u i 1 < (1 : ℝ) * slope := by
@@ -144,7 +158,7 @@ lemma kingmanPsi_prefix_le {u : ℕ → ℕ → ℝ} {slope : ℝ} {k n j s : �
 lemma kingman_block_le_sum_psi {u : ℕ → ℕ → ℝ} {slope : ℝ} {k s : ℕ} (hk : 0 < k) :
     ∃ j, 0 < j ∧ j ≤ k ∧
       u s j ≤ ∑ i ∈ range j, kingmanPsi u slope k (s + i) := by
-  by_cases hwin : kingmanWindow u slope k s
+  by_cases hwin : IsKingmanWindow u slope k s
   · obtain ⟨j, hj0, hjk, hjlt⟩ := hwin
     refine ⟨j, hj0, hjk, ?_⟩
     have hconst : ∑ i ∈ range j, slope = (j : ℝ) * slope := by

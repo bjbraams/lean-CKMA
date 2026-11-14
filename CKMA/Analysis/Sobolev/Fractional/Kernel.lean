@@ -28,6 +28,21 @@ public import Mathlib.Topology.Algebra.ConstMulAction
 The squared modulus `|exp(2πi ⟨h, ξ⟩) - 1|² / |h|^{d + 2s}` is integrable on Euclidean space
 precisely for `0 < s < 1`. Rotation and dilation reduce its integral to a positive finite
 multiple of `‖ξ‖^{2s}`.
+
+## Main definitions
+
+* `CKMA.gagliardoFourierConstant`: the positive normalization constant of the Fourier
+  characterization of the Gagliardo seminorm.
+
+## Main results
+
+* `CKMA.gagliardoFourierConstant_pos`: positivity of `gagliardoFourierConstant d s`.
+* `CKMA.lintegral_fourierPhase_div_norm`: identity relating the integral of the fractional
+  Fourier phase kernel to `gagliardoFourierConstant d s * ‖ξ‖ ^ (2 * s)`.
+
+## Notation
+
+No new notation is introduced in this file.
 -/
 
 @[expose] public section
@@ -99,7 +114,7 @@ private theorem continuousAt_phaseKernel (d : ℕ) (hd : 0 < d) {s : ℝ} (hs : 
   exact (Real.rpow_pos_of_pos (norm_pos_iff.mpr hx) _).ne'
 
 /-- On the ball of radius `(2π)⁻¹`, the phase kernel is bounded by `|x|^{2-d-2s}`. -/
-private theorem phaseKernel_le_near (d : ℕ) (hd : 0 < d) {s : ℝ} (_hs : 0 < s) {x : Euc d}
+private theorem phaseKernel_le_near (d : ℕ) (hd : 0 < d) {s : ℝ} {x : Euc d}
     (hx : ‖x‖ ≤ (2 * Real.pi)⁻¹) :
     phaseKernel d hd s x ≤
       16 * Real.pi ^ 2 * ‖x‖ ^ (-(fracPower d s - 2)) := by
@@ -220,7 +235,7 @@ private theorem phaseKernel_integrable {d : ℕ} (hd : 0 < d) {s : ℝ} (hs : 0 
         have hlt : ‖x‖ < δ := by simpa [mem_ball_zero_iff] using hx
         simpa [δ] using hlt.le
       rw [Real.norm_eq_abs, abs_of_nonneg (phaseKernel_nonneg d hd s x)]
-      exact phaseKernel_le_near d hd hs hxle
+      exact phaseKernel_le_near d hd hxle
     · exact (measurable_phaseKernel d hd hs.le).aestronglyMeasurable
   have htail : IntegrableOn (phaseKernel d hd s) (ball 0 δ)ᶜ volume := by
     have hp : ↑(Module.finrank ℝ (Euc d)) < fracPower d s := by

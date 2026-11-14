@@ -30,6 +30,24 @@ of the tower complement under the standard probability-space hypotheses.
 The multiple-recurrence definitions record simultaneous return sets and their Cesàro
 averages. Furstenberg's target supplies a positive limiting upper average for a positive
 measure set, with the number of returns and averaging convention explicit.
+
+## Main definitions
+
+* `CKMA.IsAperiodicModMeasure`: Every positive iterate has a null fixed-point set.
+* `CKMA.towerLevel`: The `i`-th level `(T^[i]) '' B` of a Rokhlin tower with base `B`.
+* `CKMA.multipleRecurrenceSet`: Intersection of preimages along an arithmetic progression.
+* `CKMA.multipleRecurrenceAverage`: Cesàro average of measures of multiple recurrence sets.
+
+## Main results
+
+* `CKMA.rokhlin_tower`: Rokhlin's tower lemma for an aperiodic invertible probability-preserving
+  transformation on a standard Borel space.
+* `CKMA.furstenberg_multiple_recurrence`: Furstenberg's multiple recurrence theorem in
+  positive-liminf form.
+
+## Notation
+
+No new notation is introduced in this file.
 -/
 
 @[expose] public section
@@ -69,29 +87,21 @@ private lemma one_sub_lt_one_sub {a b : ℝ≥0∞} (hb : b ≤ 1) (h : a < b) :
     ENNReal.add_lt_add_left (ne_top_of_le_ne_top ENNReal.one_ne_top tsub_le_self) h
   rwa [hcancel] at hlt
 
+omit [StandardBorelSpace Ω] [IsProbabilityMeasure μ] in
 /-- Inverse iterates undo forward iterates. -/
 private lemma symm_iterate_apply (i : ℕ) (x : Ω) : (T.symm^[i]) ((T^[i]) x) = x := by
-  induction i with
+  induction i generalizing x with
   | zero => rfl
   | succ i ih =>
-    calc
-      (T.symm^[i + 1]) ((T^[i + 1]) x)
-          = (T.symm^[i]) (T.symm ((T^[i + 1]) x)) := by rw [iterate_succ_apply]
-      _ = (T.symm^[i]) (T.symm (T ((T^[i]) x))) := by rw [iterate_succ_apply']
-      _ = (T.symm^[i]) ((T^[i]) x) := by rw [MeasurableEquiv.symm_apply_apply]
-      _ = x := ih
+    rw [Function.iterate_succ, Function.iterate_succ_apply', Function.comp_apply, T.symm_apply_apply, ih]
 
+omit [StandardBorelSpace Ω] [IsProbabilityMeasure μ] in
 /-- Forward iterates undo inverse iterates. -/
 private lemma iterate_symm_apply (i : ℕ) (x : Ω) : (T^[i]) ((T.symm^[i]) x) = x := by
-  induction i with
+  induction i generalizing x with
   | zero => rfl
   | succ i ih =>
-    calc
-      (T^[i + 1]) ((T.symm^[i + 1]) x)
-          = (T^[i]) (T ((T.symm^[i + 1]) x)) := by rw [iterate_succ_apply]
-      _ = (T^[i]) (T (T.symm ((T.symm^[i]) x))) := by rw [iterate_succ_apply']
-      _ = (T^[i]) ((T.symm^[i]) x) := by rw [MeasurableEquiv.apply_symm_apply]
-      _ = x := ih
+    rw [Function.iterate_succ, Function.iterate_succ_apply', Function.comp_apply, T.apply_symm_apply, ih]
 
 /-- `(T^[a])` after `(T^[b])` is the iterate of length `b + a`. -/
 private lemma iterate_apply_add (a b : ℕ) (x : Ω) :
@@ -208,7 +218,7 @@ private lemma isAdmissible_empty (M : ℕ) (P : Set Ω) : IsAdmissible T M P ∅
   ⟨isDisjointPreimage_empty T M, empty_subset _⟩
 
 /-- Every admissible set has measure at most one. -/
-private lemma measure_admissible_le_one {M : ℕ} {P A : Set Ω} (_hA : IsAdmissible T M P A) :
+private lemma measure_admissible_le_one (A : Set Ω) :
     μ A ≤ 1 := by
   calc
     μ A ≤ μ (Set.univ : Set Ω) := measure_mono (Set.subset_univ A)
@@ -218,17 +228,17 @@ private lemma measure_admissible_le_one {M : ℕ} {P A : Set Ω} (_hA : IsAdmiss
 private lemma adm_bddAbove (M : ℕ) (P : Set Ω) :
     BddAbove (μ '' {A | IsAdmissible T M P A}) := by
   refine ⟨1, fun x hx => ?_⟩
-  rcases hx with ⟨A, hA, hxμ⟩
+  rcases hx with ⟨A, _, hxμ⟩
   rw [← hxμ]
-  exact measure_admissible_le_one T hA
+  exact measure_admissible_le_one A
 
 /-- The supremum of admissible measures is at most one. -/
 private lemma admSup_le_one (M : ℕ) (P : Set Ω) :
     sSup (μ '' {A | IsAdmissible T M P A}) ≤ 1 := by
   refine csSup_le' fun x hx => ?_
-  rcases hx with ⟨A, hA, hxμ⟩
+  rcases hx with ⟨A, _, hxμ⟩
   rw [← hxμ]
-  exact measure_admissible_le_one T hA
+  exact measure_admissible_le_one A
 
 /-- An admissible base whose measure is at least half the supremum. -/
 private lemma exists_halfPiece (M : ℕ) (P : Set Ω) :
@@ -323,7 +333,7 @@ private lemma cum_subset_sweep (M n : ℕ) : cum (μ := μ) T M n ⊆ sweep (μ 
     · exact mem_iUnion.2 ⟨n, hx⟩
 
 /-- The sweep is a disjoint-preimage set. -/
-private lemma sweep_isDisjointPreimage (M : ℕ) (_hM : 0 < M) :
+private lemma sweep_isDisjointPreimage (M : ℕ) :
     IsDisjointPreimage T M (sweep (μ := μ) T M) := by
   refine ⟨MeasurableSet.iUnion fun n => (halfPiece_spec T M (cum (μ := μ) T M n)).1.1.1, ?_⟩
   intro i j hi hj hij
@@ -406,7 +416,7 @@ private lemma disjoint_entrance {A : Set Ω} {k m : ℕ} (hkm : k ≠ m) :
     exact hx.2 (mem_iUnion₂.2 ⟨m, Finset.mem_range.mpr hlt, hxm.1⟩)
 
 /-- Preimages of the skyscraper under distinct shifts of length less than `n` are disjoint. -/
-private lemma disjoint_skyscraper_shifts {A : Set Ω} {n : ℕ} (_hn : 0 < n) {r s : ℕ}
+private lemma disjoint_skyscraper_shifts {A : Set Ω} {n r s : ℕ}
     (hr : r < n) (hs : s < n) (hrs : r ≠ s) :
     Disjoint ((T^[r]) ⁻¹' skyscraper T A n) ((T^[s]) ⁻¹' skyscraper T A n) := by
   have hone : ∀ {r s}, r < s → s < n →
@@ -567,7 +577,7 @@ private lemma exists_sweep (hT : MeasurePreserving T μ μ) (ha : IsAperiodicMod
     {M : ℕ} (hM : 0 < M) :
     ∃ A : Set Ω, MeasurableSet A ∧ μ A ≤ 1 / (M : ℝ≥0∞) ∧ μ (forwardSat T A)ᶜ = 0 := by
   set A := sweep (μ := μ) T M
-  have hAdisj : IsDisjointPreimage T M A := sweep_isDisjointPreimage T M hM
+  have hAdisj : IsDisjointPreimage T M A := sweep_isDisjointPreimage T M
   have hAμ : μ A ≤ 1 / (M : ℝ≥0∞) := measure_le_inv T hT hM hAdisj
   have hHmeas : ∀ n, MeasurableSet (halfPiece (μ := μ) T M (cum (μ := μ) T M n)) :=
     fun n => (halfPiece_spec T M (cum (μ := μ) T M n)).1.1.1
@@ -618,7 +628,7 @@ private lemma exists_sweep (hT : MeasurePreserving T μ μ) (ha : IsAperiodicMod
       intro n
       exact (hFle n).trans (by
         simpa [Nat.zero_add] using mul_le_mul_right
-          (ENNReal.le_tsum
+          (le_tsum
             (f := fun k => μ (halfPiece (μ := μ) T M (cum (μ := μ) T M (k + n)))) 0) 2)
     obtain ⟨N, hN⟩ := eventually_atTop.mp (htail (isOpen_Iio.mem_nhds hF0))
     exact (hN N le_rfl).not_ge (htail_le N)
@@ -703,7 +713,7 @@ private lemma exists_tower_of_forward (hT : MeasurePreserving T μ μ) {A : Set 
       Disjoint (towerLevel T B i) (towerLevel T B j) := by
     intro i j hi hj hij
     rw [hlevel i hi, hlevel j hj]
-    exact disjoint_skyscraper_shifts T hn (by omega) (by omega) (by omega)
+    exact disjoint_skyscraper_shifts T (by omega) (by omega) (by omega)
   set C := ⋃ i ∈ Finset.range n, towerLevel T B i
   set small := ⋃ j ∈ Finset.range n, entrance T A j
   have hsmall : μ small ≤ (n : ℝ≥0∞) * μ A := by

@@ -14,6 +14,21 @@ public import Mathlib.Probability.Independence.Basic
 The increment after a fixed time is independent of the stopped path and is a symmetric Gaussian.
 A measurable condition on that path is therefore equally likely to be followed by an up-crossing
 of a level or by its reflected down-crossing.
+
+## Main definitions
+
+* `CKMA.past`: the path stopped at time `s`.
+* `CKMA.firstPassage`: paths whose first grid visit to level `b` is at index `k`.
+* `CKMA.isTauSet`: event that the first grid visit to level `b` occurs at index `k`.
+
+## Main results
+
+* `CKMA.measure_isTau_reflect`: symmetry of the post-passage increment conditioned on the first
+  grid visit at index `k`.
+
+## Notation
+
+No new notation is introduced.
 -/
 
 @[expose] public section

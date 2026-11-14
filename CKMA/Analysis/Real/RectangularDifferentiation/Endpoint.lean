@@ -22,6 +22,21 @@ The strong maximal function in dimension `n + 1` is controlled by the uncentered
 one-dimensional maximal function, taken in the last coordinate, of the strong maximal
 function of the slices. Fubini, the one-dimensional weak-type bound, and one application
 of the logarithmic iteration kernel raise the Orlicz exponent by one.
+
+## Main definitions
+
+* `CKMA.partialStrongMax`: strong maximal operator in the last `n` coordinates.
+* `CKMA.sliceStrongMax`: one-dimensional maximal function applied to `partialStrongMax`.
+
+## Main results
+
+* `CKMA.measurable_partialStrongMax`: measurability of the slice strong maximal function.
+* `CKMA.strongMaximalFunction_le_slice`: pointwise domination of the `(n + 1)`-dimensional strong
+  maximal function by the iterated maximal operator.
+
+## Notation
+
+* Standard Mathlib product measure and extended integral notation.
 -/
 
 @[expose] public section

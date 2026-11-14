@@ -5,7 +5,7 @@ Authors: CKMA contributors
 -/
 module
 
-public import CKMA.Analysis.InnerProductSpace.HilbertModel
+public import CKMA.Analysis.InnerProductSpace.Basic
 public import Mathlib.Algebra.Algebra.Unitization
 public import Mathlib.Algebra.Order.Star.Basic
 public import Mathlib.Analysis.CStarAlgebra.Classes
@@ -36,6 +36,25 @@ The sum is indexed by a universe lift of the algebra, so the carrier lies in the
 A non-unital C*-algebra is handled by the same construction on its unitization: the inclusion
 into the unitization is an isometric non-unital star homomorphism, and the restriction of an
 isometry along it remains an isometry with closed range.
+
+## Main definitions
+
+* `CKMA.stateNormSq`: chosen state sending `star b * b` to `‖b‖ ^ 2`.
+* `CKMA.lpDiagonal`: diagonal non-unital star representation on an `ℓ²` direct sum of Hilbert
+  spaces.
+
+## Main results
+
+* `CKMA.exists_state_of_nonneg`: existence of a state attaining the norm on a positive element.
+* `CKMA.exists_state_normSq`: existence of a state sending `star b * b` to `‖b‖ ^ 2`.
+* `CKMA.lpDiagonal_isometry`: sufficient condition for a diagonal representation to be isometric.
+* `CKMA.exists_isometric_representation_unital`: isometric representation of a unital C*-algebra.
+* `CKMA.exists_isometric_representation_gns`: isometric Gelfand–Naimark representation of a
+  possibly non-unital C*-algebra.
+
+## Notation
+
+Uses `→ₚ[ℂ]` for positive linear maps and `→⋆ₙₐ[ℂ]` for non-unital star algebra homomorphisms.
 -/
 
 @[expose] public section
@@ -159,8 +178,8 @@ theorem norm_gnsCyclic [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A] (f 
   have hreal : ‖f.toPreGNS (1 : A)‖ ^ 2 = 1 := by exact_mod_cast hsq
   exact (sq_eq_sq₀ (norm_nonneg _) zero_le_one).1 (hreal.trans (one_pow 2).symm)
 
-/-- Left multiplication by `a` on the cyclic vector has norm `‖a‖` when `f (star a * a) = ‖a‖ ^ 2`.
-  -/
+/-- Left multiplication by `a` on the cyclic vector has norm `‖a‖` when
+`f (star a * a) = ‖a‖ ^ 2`. -/
 theorem norm_gns_apply_cyclic [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
     (f : A →ₚ[ℂ] ℂ) (a : A) (hfa : f (star a * a) = ‖a‖ ^ 2) :
     ‖f.gnsNonUnitalStarAlgHom a (f.toPreGNS (1 : A) : f.GNS)‖ = ‖a‖ := by
@@ -254,8 +273,8 @@ theorem lpDiagonal_single [NonUnitalCStarAlgebra A] [DecidableEq ι]
     simp [lpDiagonal_apply_apply, lp.single_apply, Pi.single_eq_same]
   · simp [lpDiagonal_apply_apply, lp.single_apply, Pi.single_eq_of_ne hji, map_zero]
 
-/-- A diagonal representation that attains `‖a‖` on some unit vector of each element is isometric.
-  -/
+/-- A diagonal representation that attains `‖a‖` on some unit vector of each element is
+isometric. -/
 theorem lpDiagonal_isometry [NonUnitalCStarAlgebra A]
     (pi : ∀ i, A →⋆ₙₐ[ℂ] (E i →L[ℂ] E i))
     (h : ∀ a, ∃ i, ∃ v : E i, ‖v‖ = 1 ∧ ‖pi i a v‖ = ‖a‖) : Isometry (lpDiagonal pi) := by
@@ -281,7 +300,7 @@ The index is a universe lift of the algebra, so the carrier has type `Type (u + 
 theorem exists_isometric_representation_unital [CStarAlgebra A] [Nontrivial A] [PartialOrder A]
     [StarOrderedRing A] :
     ∃ H : HilbertSpaceModel.{u + 1} ℂ,
-      ∃ pi : A →⋆ₙₐ[ℂ] (H.Carrier →L[ℂ] H.Carrier),
+      ∃ pi : A →⋆ₙₐ[ℂ] (H.carrier →L[ℂ] H.carrier),
         Isometry pi ∧ IsClosed (Set.range pi) := by
   let phi : A → A →ₚ[ℂ] ℂ := fun b => stateNormSq (A := A) b
   let G : ULift.{u + 1} A → Type u := fun i => (phi i.down).GNS
@@ -292,20 +311,20 @@ theorem exists_isometric_representation_unital [CStarAlgebra A] [Nontrivial A] [
     · exact norm_gnsCyclic (phi a) (stateNormSq_one (A := A) a)
     · exact norm_gns_apply_cyclic (phi a) a
         (stateNormSq_star_mul_self (A := A) a)
-  exact ⟨{ Carrier := lp G 2 }, lpDiagonal rep, hdiag, hdiag.isClosedEmbedding.isClosed_range⟩
+  exact ⟨{ carrier := lp G 2 }, lpDiagonal rep, hdiag, hdiag.isClosedEmbedding.isClosed_range⟩
 
 /-- **Gelfand–Naimark.** A C*-algebra has an isometric non-unital star representation on a
 Hilbert space, with norm-closed range. -/
 theorem exists_isometric_representation_gns [NonUnitalCStarAlgebra A] :
     ∃ H : HilbertSpaceModel.{u + 1} ℂ,
-      ∃ pi : A →⋆ₙₐ[ℂ] (H.Carrier →L[ℂ] H.Carrier),
+      ∃ pi : A →⋆ₙₐ[ℂ] (H.carrier →L[ℂ] H.carrier),
         Isometry pi ∧ IsClosed (Set.range pi) := by
   let B := Unitization ℂ A
   let : PartialOrder B := CStarAlgebra.spectralOrder B
   have : StarOrderedRing B := CStarAlgebra.spectralOrderedRing B
   have : Nontrivial B := NormOneClass.nontrivial
   obtain ⟨H, pi, hIso, _⟩ := exists_isometric_representation_unital (A := B)
-  let rho : A →⋆ₙₐ[ℂ] (H.Carrier →L[ℂ] H.Carrier) :=
+  let rho : A →⋆ₙₐ[ℂ] (H.carrier →L[ℂ] H.carrier) :=
     pi.comp (inrNonUnitalStarAlgHom ℂ A)
   have hnorm : ∀ a : A, ‖rho a‖ = ‖a‖ := by
     intro a

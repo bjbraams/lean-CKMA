@@ -15,6 +15,21 @@ set contains no equilibrium, has that omega-limit set equal to one periodic orbi
 Crossings of a transverse segment are ordered toward the forward endpoint of the segment;
 from that ordering, the omega-limit set meets the segment once, a point of the limit set
 is periodic, and connectedness identifies the whole limit set with the orbit.
+
+## Main definitions
+
+* None (uses `CKMA.IsTransverseSegment` from `CKMA.Dynamics.ODE.Planar.Transversal`).
+
+## Main results
+
+* `CKMA.transverse_monotone`: monotonicity of successive crossings of a transverse segment.
+* `CKMA.omega_openSegment_singleton`: the omega-limit set meets an open transverse segment in at
+  most one point.
+* `CKMA.poincare_bendixson_complex`: the Poincaré–Bendixson theorem for a `C¹` flow on `ℂ`.
+
+## Notation
+
+* Standard Mathlib notation for flows, segments, and omega-limit sets.
 -/
 
 @[expose] public section
@@ -91,7 +106,7 @@ private theorem mem_openSegment_of_near {a b u v q : ℂ} (hab : a ≠ b)
   exact (mem_openSegment_right_iff hab hu hq).mpr hgt
 
 /-- An omega-limit set meets an open transverse segment in at most one point. -/
-private theorem no_two_omega_openSegment {φ : Flow ℝ ℂ} {F : ℂ → ℂ}
+private theorem eq_of_mem_omegaLimit_of_mem_openSegment {φ : Flow ℝ ℂ} {F : ℂ → ℂ}
     (hgen : FlowHasGenerator φ F) {a b : ℂ} (htr : IsTransverseSegment F a b)
     {x u v : ℂ} (hu : u ∈ omegaLimit atTop φ {x}) (huab : u ∈ openSegment ℝ a b)
     (hv : v ∈ omegaLimit atTop φ {x}) (hvab : v ∈ openSegment ℝ a b)
@@ -154,7 +169,7 @@ theorem omega_openSegment_singleton {φ : Flow ℝ ℂ} {F : ℂ → ℂ}
     · have hvb : v ∈ openSegment ℝ u b :=
         (mem_openSegment_right_iff htr.ne huab hvab).mpr hlt
       exact False.elim
-        (no_two_omega_openSegment hgen htr hu huab hvω hvab hvb)
+        (eq_of_mem_omegaLimit_of_mem_openSegment hgen htr hu huab hvω hvab hvb)
     · have hsideu : transverseSide a b u = 0 :=
         ((mem_openSegment_iff_lineParam htr.ne).mp huab).1
       have hsidev : transverseSide a b v = 0 :=
@@ -167,7 +182,7 @@ theorem omega_openSegment_singleton {φ : Flow ℝ ℂ} {F : ℂ → ℂ}
     · have hub : u ∈ openSegment ℝ v b :=
         (mem_openSegment_right_iff htr.ne hvab huab).mpr hgt
       exact False.elim
-        (no_two_omega_openSegment hgen htr hvω hvab hu huab hub)
+        (eq_of_mem_omegaLimit_of_mem_openSegment hgen htr hvω hvab hu huab hub)
   · intro hv
     rw [mem_singleton_iff] at hv
     subst hv

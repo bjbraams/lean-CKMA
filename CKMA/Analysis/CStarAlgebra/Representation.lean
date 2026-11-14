@@ -6,7 +6,7 @@ Authors: CKMA contributors
 module
 
 public import Mathlib.Analysis.CStarAlgebra.GelfandNaimarkSegal
-public import CKMA.Analysis.InnerProductSpace.HilbertModel
+public import CKMA.Analysis.InnerProductSpace.Basic
 public import Mathlib.Analysis.CStarAlgebra.Classes
 public import Mathlib.Analysis.InnerProductSpace.LinearMap
 public import Mathlib.Analysis.Normed.Operator.Extend
@@ -23,6 +23,24 @@ unitary preserving their cyclic vectors and intertwining the actions.
 The faithful representation statement includes nonunital C-star algebras and norm-closed image.
 Its Hilbert carrier is allowed in a larger universe for the sum over states.
 Sources: GAPS 23.9 and 23.10.
+
+## Main definitions
+
+* `CKMA.IsCyclicVector`: density of the algebra orbit `a ↦ π a Ω` in a Hilbert space.
+* `CKMA.RealizesFunctional`: vector state representation `φ a = ⟪Ω, π a Ω⟫_ℂ`.
+* `CKMA.cyclicOrbit`: linear map `a ↦ π a Ω` associated with a representation vector.
+
+## Main results
+
+* `CKMA.inner_cyclicOrbit_star_mul`: inner product of orbit vectors realizing a functional.
+* `CKMA.existsUnique_cyclicRepresentation_equiv`: uniqueness of the unitary intertwiner between
+  cyclic realizations of the same functional (**23.9**).
+* `CKMA.exists_isometric_representation`: Gelfand–Naimark isometric representation theorem
+  (**23.10**).
+
+## Notation
+
+Uses `⟪·, ·⟫_ℂ` from `InnerProductSpace` and `→⋆ₙₐ[ℂ]` for non-unital star algebra homomorphisms.
 -/
 
 @[expose] public section
@@ -36,9 +54,6 @@ open ContinuousLinearMap Set
 
 universe u
 
-/-- A complex Hilbert-space model with an explicitly chosen carrier universe. -/
-abbrev ComplexHilbertSpace := HilbertSpaceModel.{u} ℂ
-
 variable {A H K : Type*} [NonUnitalCStarAlgebra A]
     [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
     [NormedAddCommGroup K] [InnerProductSpace ℂ K] [CompleteSpace K]
@@ -48,8 +63,8 @@ no separate linear span is necessary. -/
 def IsCyclicVector (π : A →⋆ₙₐ[ℂ] (H →L[ℂ] H)) (Ω : H) : Prop :=
   DenseRange (fun a ↦ π a Ω)
 
-/-- The vector realizes `φ`, using Mathlib's inner product, which is linear in the second variable.
-  -/
+/-- The vector realizes `φ`, using Mathlib's inner product, which is linear in the second
+variable. -/
 def RealizesFunctional (π : A →⋆ₙₐ[ℂ] (H →L[ℂ] H)) (Ω : H) (φ : A → ℂ) : Prop :=
   ∀ a, φ a = ⟪Ω, π a Ω⟫_ℂ
 
@@ -59,6 +74,7 @@ def cyclicOrbit (π : A →⋆ₙₐ[ℂ] (H →L[ℂ] H)) (Ω : H) : A →ₗ[�
   map_add' a b := by simp [map_add]
   map_smul' c a := by simp [map_smul]
 
+/-- Evaluation of `cyclicOrbit` at an algebra element. -/
 @[simp]
 theorem cyclicOrbit_apply (π : A →⋆ₙₐ[ℂ] (H →L[ℂ] H)) (Ω : H) (a : A) :
     cyclicOrbit π Ω a = π a Ω :=
@@ -109,6 +125,7 @@ private def cyclicRepresentationIsometry (π : A →⋆ₙₐ[ℂ] (H →L[ℂ] 
   (cyclicOrbit ρ Ω').extendOfIsometry (e := cyclicOrbit π Ω) hπ
     (fun a => norm_cyclicOrbit_eq hφπ hφρ a)
 
+/-- `cyclicRepresentationIsometry` sends `π a Ω` to `ρ a Ω'`. -/
 @[simp]
 private theorem cyclicRepresentationIsometry_apply (π : A →⋆ₙₐ[ℂ] (H →L[ℂ] H))
     (ρ : A →⋆ₙₐ[ℂ] (K →L[ℂ] K)) (Ω : H) (Ω' : K) (hπ : IsCyclicVector π Ω)
@@ -145,6 +162,7 @@ private def cyclicRepresentationEquiv (π : A →⋆ₙₐ[ℂ] (H →L[ℂ] H))
     (cyclicRepresentationIsometry π ρ Ω Ω' hπ φ hφπ hφρ)
     (cyclicRepresentationIsometry_surjective π ρ Ω Ω' hπ hρ φ hφπ hφρ)
 
+/-- `cyclicRepresentationEquiv` sends `π a Ω` to `ρ a Ω'`. -/
 @[simp]
 private theorem cyclicRepresentationEquiv_apply (π : A →⋆ₙₐ[ℂ] (H →L[ℂ] H))
     (ρ : A →⋆ₙₐ[ℂ] (K →L[ℂ] K)) (Ω : H) (Ω' : K) (hπ : IsCyclicVector π Ω)
@@ -209,8 +227,8 @@ private theorem cyclicRepresentation_unique {π : A →⋆ₙₐ[ℂ] (H →L[�
   exact congr_fun hagree x
 
 /-- **23.9**, uniqueness clause: two cyclic realizations of the same functional have a unique
-unitary intertwiner preserving their cyclic vectors. Existence for nonunital algebras is separate.
-  -/
+unitary intertwiner preserving their cyclic vectors. Existence for nonunital algebras is
+separate. -/
 theorem existsUnique_cyclicRepresentation_equiv
     (π : A →⋆ₙₐ[ℂ] (H →L[ℂ] H)) (ρ : A →⋆ₙₐ[ℂ] (K →L[ℂ] K))
     (Ω : H) (Ω' : K) (hπ : IsCyclicVector π Ω) (hρ : IsCyclicVector ρ Ω')
@@ -235,7 +253,7 @@ theorem existsUnique_cyclicRepresentation_equiv
 with closed image. The larger universe permits the Hilbert sum over all states. -/
 theorem exists_isometric_representation (A : Type u) [NonUnitalCStarAlgebra A] :
     ∃ H : ComplexHilbertSpace.{u + 1},
-      ∃ π : A →⋆ₙₐ[ℂ] (H.Carrier →L[ℂ] H.Carrier), Isometry π ∧ IsClosed (Set.range π) :=
+      ∃ π : A →⋆ₙₐ[ℂ] (H.carrier →L[ℂ] H.carrier), Isometry π ∧ IsClosed (Set.range π) :=
   exists_isometric_representation_gns (A := A)
 
 end CKMA

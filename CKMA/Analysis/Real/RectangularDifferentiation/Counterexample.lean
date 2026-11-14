@@ -35,6 +35,23 @@ import Mathlib.Order.Filter.AtTopBot.CountablyGenerated
 Each stage of the Saks picture is a harmonic family of axis-aligned strips in a scaled square.
 The packing of translates, the higher-dimensional product, and the integrable spike sum are in
 `CounterexampleCover`.
+
+## Main definitions
+
+* `CKMA.Bohr.stageScale`, `CKMA.Bohr.boxSide`, `CKMA.Bohr.areaLower`: stage scaling parameters.
+* `CKMA.Bohr.stripRect`, `CKMA.Bohr.badPlane`: harmonic strips and their union at stage `k`.
+* `CKMA.Bohr.innerRect`, `CKMA.Bohr.removalRatio`, `CKMA.Bohr.copyCount`: inner domain and copy
+  count for stage `k`.
+
+## Main results
+
+* `CKMA.Bohr.areaLower_le_volume_badPlane`: lower bound on the area of `badPlane k`.
+* `CKMA.Bohr.exists_heavy_translate`: existence of a translate meeting any positive subset of the
+  inner square in a definite fraction.
+
+## Notation
+
+No new notation is introduced in this file.
 -/
 
 @[expose] public section
@@ -440,6 +457,25 @@ lemma inner_side (d k : ℕ) (hd : 2 ≤ d) (i : Fin d) :
   · simp only [innerRect, innerLower, innerUpper, hi, ite_false]
     ring
 
+/-- In dimension `d ≥ 2`, the first two indices of `Fin d` are `0` and `1`. -/
+lemma filter_val_le_one_eq_pair (d : ℕ) (hd : 2 ≤ d) :
+    Finset.univ.filter (fun i : Fin d => i.val ≤ 1) =
+      ({⟨0, by omega⟩, ⟨1, by omega⟩} : Finset (Fin d)) := by
+  ext i
+  simp only [Finset.mem_filter, Finset.mem_univ, true_and, Finset.mem_insert,
+    Finset.mem_singleton]
+  constructor
+  · intro hi
+    rcases (show i.val = 0 ∨ i.val = 1 by omega) with h0 | h1
+    · left
+      ext
+      simp [h0]
+    · right
+      ext
+      simp [h1]
+  · intro h
+    rcases h with rfl | rfl <;> simp
+
 /-- Two coordinates carry the Bohr picture. -/
 lemma card_plane (d : ℕ) (hd : 2 ≤ d) :
     (Finset.univ.filter (fun i : Fin d => i.val ≤ 1)).card = 2 := by
@@ -450,25 +486,7 @@ lemma card_plane (d : ℕ) (hd : 2 ≤ d) :
     intro h
     have := congrArg Fin.val h
     simp [z, o] at this
-  have hset : Finset.univ.filter (fun i : Fin d => i.val ≤ 1) = {z, o} := by
-    ext i
-    simp only [Finset.mem_filter, Finset.mem_univ, true_and, Finset.mem_insert,
-      Finset.mem_singleton]
-    constructor
-    · intro hi
-      have hval : i.val = 0 ∨ i.val = 1 := by omega
-      rcases hval with h0 | h1
-      · left
-        ext
-        simp [z, h0]
-      · right
-        ext
-        simp [o, h1]
-    · intro h
-      rcases h with rfl | rfl
-      · simp [z]
-      · simp [o]
-  rw [hset]
+  rw [filter_val_le_one_eq_pair d hd]
   exact (Finset.card_pair_eq_two_iff).mpr hne
 
 /-- The remaining coordinates form a face of dimension `d - 2`. -/

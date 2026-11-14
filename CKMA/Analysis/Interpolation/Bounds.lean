@@ -17,6 +17,21 @@ The complex bound is the exact Calderón gauge estimate.
 Both are stated at an interior interpolation parameter. Endpoint operator norms may vanish;
 their nonnegativity is the operator-norm axiom and is not a separate hypothesis.
 Sources: GAPS 26.53 and 26.54.
+
+## Main definitions
+
+* No new public definitions are introduced in this file; see `CKMA.Analysis.Interpolation.Basic`.
+
+## Main results
+
+* `CKMA.realInterpolationGauge_map_le` (**26.53**): the exact real interpolation operator bound at
+  the gauge level.
+* `CKMA.complexInterpolationGauge_map_le` (**26.54**): the exact complex interpolation operator
+  bound at the gauge level.
+
+## Notation
+
+* Standard Mathlib notation for `ENNReal` and real powers.
 -/
 
 @[expose] public section
@@ -37,7 +52,7 @@ theorem realInterpolationGauge_map_le {𝕜 : Type*} [RCLike 𝕜] {C D : Banach
       ENNReal.ofReal (M₀ ^ (1 - θ) * M₁ ^ θ) * C.realInterpolationGauge θ q x := by
   have hM₀ : 0 ≤ M₀ := (norm_nonneg _).trans h₀
   have hM₁ : 0 ≤ M₁ := (norm_nonneg _).trans h₁
-  refine le_of_endpointFactor_eps hθ hθ1 hM₀ hM₁ ?_ fun ε hε => ?_
+  refine le_of_endpointFactor_eps hθ hθ1 ?_ fun ε hε => ?_
   · rw [BanachCouple.realInterpolationSet, Set.mem_ofPred_eq] at hx
     exact hx
   · exact realInterpolationGauge_map_le_of_pos T hq
@@ -55,7 +70,7 @@ theorem complexInterpolationGauge_map_le {C D : BanachCouple ℂ}
       ENNReal.ofReal (M₀ ^ (1 - θ) * M₁ ^ θ) * C.complexInterpolationGauge θ x := by
   have hM₀ : 0 ≤ M₀ := (norm_nonneg _).trans h₀
   have hM₁ : 0 ≤ M₁ := (norm_nonneg _).trans h₁
-  refine le_of_endpointFactor_eps hθ hθ1 hM₀ hM₁ ?_ fun ε hε => ?_
+  refine le_of_endpointFactor_eps hθ hθ1 ?_ fun ε hε => ?_
   · rw [BanachCouple.complexInterpolationSet, Set.mem_ofPred_eq] at hx
     exact hx
   · exact complexInterpolationGauge_map_le_of_pos T hθ hθ1

@@ -9,7 +9,6 @@ public import Mathlib.Analysis.Normed.Order.Lattice
 public import Mathlib.Algebra.Order.Module.Defs
 public import Mathlib.LinearAlgebra.Projection
 public import Mathlib.Algebra.Order.Hom.Monoid
-public import Mathlib.Tactic
 public import CKMA.Analysis.OrderedSpace.Bands.Lattice
 public import CKMA.Analysis.OrderedSpace.Bands.Freudenthal
 
@@ -24,6 +23,30 @@ than positive-element domination in a linear order.
 Band projections, Freudenthal component approximation, and Riesz–Kantorovich suprema are
 formulated through their order characterizations. Positive maps reuse Mathlib's monotonicity
 criterion; regular maps are differences of positive maps. Sources: GAPS 19.5, 19.8, and 19.20.
+
+## Main definitions
+
+* `CKMA.RieszIdeal`: solid linear subspace of a Riesz space.
+* `CKMA.RieszIdeal.IsBand`: ideal closed under existing suprema of nonempty positive subsets.
+* `CKMA.IsPositiveLinearMap`: positive linear operator between ordered real vector spaces.
+* `CKMA.IsRegularLinearMap`: difference of two positive linear operators.
+* `CKMA.IsOrderBoundedLinearMap`: linear operator preserving order boundedness on intervals.
+* `CKMA.IsDedekindCompleteRieszSpace`: Dedekind completeness of a Riesz space.
+* `CKMA.HasPrincipalBandProjections`: principal band projection property.
+
+## Main results
+
+* `CKMA.exists_bandProjection`: existence of the band projection onto a band in a Dedekind-complete
+  Riesz space.
+* `CKMA.freudenthal_approximation`: Freudenthal spectral theorem from principal band projections.
+* `CKMA.orderBounded_iff_regular`: Riesz–Kantorovich theorem characterizing order-bounded operators
+  as regular operators.
+* `CKMA.riesz_kantorovich`: explicit supremum, infimum, and modulus formulas for order-bounded
+  operators into a Dedekind-complete Riesz space.
+
+## Notation
+
+No new notation is introduced in this file.
 -/
 
 @[expose] public section
@@ -394,10 +417,9 @@ def principalOrderIdeal (u : E) : Set E := {x | ∃ c : ℝ, 0 ≤ c ∧ |x| ≤
 /-- The order-unit gauge, used only on the principal ideal when `u` is nonnegative. -/
 def orderUnitGauge (u x : E) : ℝ := sInf {c : ℝ | 0 ≤ c ∧ |x| ≤ c • u}
 
-set_option linter.unusedVariables false in
-/-- **19.8**, Freudenthal approximation in the equivalent order-error form.
-The Archimedean hypothesis is explicit, as required by the usual spectral theorem. -/
-theorem freudenthal_approximation (ha : IsArchimedeanRieszSpace E)
+/-- **19.8**, Freudenthal approximation in the equivalent order-error form from the principal
+projection property. -/
+theorem freudenthal_approximation
     (hp : HasPrincipalBandProjections E) {u x : E} (hu : 0 ≤ u)
     (hx : x ∈ principalOrderIdeal u) {ε : ℝ} (hε : 0 < ε) :
     ∃ (n : ℕ) (a : Fin n → ℝ) (v : Fin n → E),

@@ -20,6 +20,20 @@ import Mathlib.Tactic
 Garsia's proof that the integral of an integrable observable over the set where a positive-length
 Birkhoff sum is strictly positive is nonnegative. The finite sets increase to the strict supremum
 set, and the inequality passes to strictly invariant subsets.
+
+## Main definitions
+
+* `CKMA.birkhoffSumMax`: partial maxima of the Birkhoff sums, including the empty sum `0`.
+
+## Main results
+
+* `CKMA.integral_nonneg_maximalErgodicSet`: the maximal ergodic inequality on finite horizons.
+* `CKMA.setIntegral_ge_const_of_invariant_subset_positive`: lower bound for the integral over a
+  strictly invariant subset of the positivity set of `f - α`.
+
+## Notation
+
+* Standard Mathlib notation for Birkhoff sums and Bochner integrals.
 -/
 
 @[expose] public section
@@ -376,7 +390,7 @@ lemma setIntegral_nonneg_of_invariant_subset_positive {T : Ω → Ω}
   rwa [heq] at hnonneg
 
 /-- Shift of a constant does not change the shape of the maximal inequality on an invariant set. -/
-lemma setIntegral_ge_const_of_invariant_subset_positive [IsProbabilityMeasure μ]
+lemma setIntegral_ge_const_of_invariant_subset_positive [IsFiniteMeasure μ]
     {T : Ω → Ω} (hT : MeasurePreserving T μ μ) {f : Ω → ℝ} (hf : Integrable f μ)
     (hf_meas : Measurable f) {E : Set Ω} (hE : MeasurableSet E) (hinv : T ⁻¹' E = E)
     {α : ℝ}

@@ -32,6 +32,21 @@ quantitative remainder for defect exponent greater than one. Young integration i
 stated for Hölder paths and for continuous paths of complementary finite variation
 exponents. Hölder predicates and compact continuous maps use Mathlib.
 Sources: GAPS 09.21 and 09.22.
+
+## Main definitions
+
+* `CKMA.youngIncrement`: left-point Young increment `Y s (X t - X s)`.
+
+## Main results
+
+* `CKMA.sewing_lemma`: Gubinelli's sewing lemma with a normalized continuous primitive.
+* `CKMA.young_holder`: Young integration for Hölder paths with complementary exponents.
+* `CKMA.young_variation`: Young integration for continuous paths of complementary finite
+  variation.
+
+## Notation
+
+No new notation is introduced.
 -/
 
 @[expose] public section

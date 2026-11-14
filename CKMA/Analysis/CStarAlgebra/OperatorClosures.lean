@@ -22,6 +22,27 @@ Bicommutants are considered for unital star subalgebras. Kaplansky density allow
 norm-closed star subalgebras but explicitly assumes a nondegenerate action on the Hilbert space.
 Inner products follow Mathlib's convention of linearity in the second variable.
 Sources: GAPS 23.21 and 23.22.
+
+## Main definitions
+
+* `CKMA.boundedOperatorCommutant`: commutant of a set of bounded Hilbert-space operators.
+* `CKMA.IsStrongOperatorApproximable`: strong-operator closure criterion on finite vector tuples.
+* `CKMA.IsWeakOperatorApproximable`: weak-operator closure criterion on finite matrix coefficients.
+
+## Main results
+
+* `CKMA.mem_boundedOperatorCommutant_iff`: characterization of membership in the commutant.
+* `CKMA.tendsto_weakOperator_iff`: characterization of weak-operator convergence via matrix
+  coefficients.
+* `CKMA.IsWeakOperatorApproximable.of_mem_closure`: WOT closure implies finite-coefficient
+  weak-operator approximability.
+* `CKMA.bicommutant_closures`: von Neumann bicommutant theorem (**23.21**).
+* `CKMA.kaplansky_density`, `CKMA.kaplansky_density_selfAdjoint`: Kaplansky density theorem
+  (**23.22**).
+
+## Notation
+
+Uses `⟪·, ·⟫_ℂ` from `InnerProductSpace` and `→WOT[ℂ]` for the weak-operator topology.
 -/
 
 @[expose] public section

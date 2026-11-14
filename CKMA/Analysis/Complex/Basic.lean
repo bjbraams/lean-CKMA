@@ -5,25 +5,50 @@ Authors: CKMA contributors
 -/
 module
 
+public import Mathlib.Analysis.Complex.Basic
 public import Mathlib.Analysis.Normed.Group.Basic
 public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 public import Mathlib.Topology.Algebra.InfiniteSum.Basic
 public import Mathlib.Topology.Compactness.Compact
 
 /-!
-# Normal summability
+# Normal summability and basic complex domains
 
 Normal summability is a predicate on families of functions into a normed additive group.
 On a set, every compact subset must have bounded summands and a summable sequence of
-compact-supremum norms. An unbounded real supremum does not certify convergence.
-The predicate is not special to complex scalars; Laurent series and polydisc expansions use it.
+compact-supremum norms. This module also defines the open unit disk in `ℂ` shared across
+complex analysis and complex geometry.
+
+## Main definitions
+
+* `CKMA.NormallySummableOn`: normal summability of a function family on compact subsets of a set.
+* `CKMA.complexUnitDisk`: the open unit disk `Metric.ball (0 : ℂ) 1`.
+
+## Main results
+
+* `CKMA.NormallySummableOn.summable_norm`: normal summability on `s` implies pointwise absolute
+  summability at each `x ∈ s`.
+* `CKMA.isOpen_complexUnitDisk`: `complexUnitDisk` is open.
+
+## Notation
+
+No new notation is introduced in this module.
 -/
 
 @[expose] public section
 
+noncomputable section
+
 namespace CKMA
 
 open scoped BigOperators
+
+/-- The open unit disk, shared by the analytic function-space interfaces. -/
+def complexUnitDisk : Set ℂ := Metric.ball 0 1
+
+/-- The shared unit disk is open. This exported lemma avoids unfolding its implementation
+from downstream modules. -/
+theorem isOpen_complexUnitDisk : IsOpen complexUnitDisk := Metric.isOpen_ball
 
 /-- Normal summability on compact subsets, requiring bounded summands and summability
 of their compact supremum norms. -/

@@ -19,6 +19,25 @@ carrier universe and uses surjectivity of the canonical bidual inclusion.
 Equivalent seminorms are separated by two-sided comparison with the original norm. Uniform
 convexity is formulated on their unit balls, and uniform smoothness uses a uniform symmetric
 increment estimate. Both characterizations include the zero space. Source: GAPS 17.46.
+
+## Main definitions
+
+* `CKMA.IsFinitelyRepresentableIn`: finite representability of one normed space in another.
+* `CKMA.IsSuperreflexive`: superreflexivity of a Banach space.
+* `CKMA.IsEquivalentNorm`: two-sided equivalence of a seminorm with the ambient norm.
+* `CKMA.IsUniformlyConvexSeminorm`, `CKMA.IsUniformlySmoothSeminorm`: uniform convexity and
+  uniform smoothness of a seminorm.
+
+## Main results
+
+* `CKMA.superreflexive_iff_exists_isUniformlyConvexSeminorm`: Enflo–James uniformly convex
+  renorming characterization of superreflexivity.
+* `CKMA.superreflexive_iff_exists_isUniformlySmoothSeminorm`: uniformly smooth renorming
+  characterization of superreflexivity.
+
+## Notation
+
+No new notation is introduced.
 -/
 
 @[expose] public section

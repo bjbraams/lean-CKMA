@@ -16,6 +16,20 @@ The bilateral extension of a minimal isometric dilation is a minimal unitary pow
 Nonnegative powers reproduce the isometry, and the two-sided orbit stays dense because the
 forward isometric orbit was already dense. This is Sz.-Nagy’s unitary dilation, Chapter I of
 Sz.-Nagy–Foiaş–Bercovici–Kérchy.
+
+## Main definitions
+
+* None (uses `HilbertSpaceModel` and `woldBilateralEquiv`).
+
+## Main results
+
+* `CKMA.minimalUnitary_of_minimalIsometric`: density of the bilateral orbit from density of the
+  forward isometric orbit.
+* `CKMA.exists_minimalUnitaryPowerDilation_data`: existence of a minimal unitary power dilation.
+
+## Notation
+
+* `⟪x, y⟫_ℂ`: complex inner product.
 -/
 
 @[expose] public section
@@ -163,16 +177,16 @@ theorem minimalUnitary_of_minimalIsometric (J0 : H →ₗᵢ[ℂ] K) (V : K →�
 /-- A contraction has a minimal unitary power dilation, obtained by extending its minimal
 isometric dilation. -/
 theorem exists_minimalUnitaryPowerDilation_data (T : H →L[ℂ] H) (hT : ‖T‖ ≤ 1) :
-    ∃ M : HilbertSpaceModel.{u} ℂ, ∃ J : H →ₗᵢ[ℂ] M.Carrier,
-      ∃ U : M.Carrier ≃ₗᵢ[ℂ] M.Carrier,
+    ∃ M : HilbertSpaceModel.{u} ℂ, ∃ J : H →ₗᵢ[ℂ] M.carrier,
+      ∃ U : M.carrier ≃ₗᵢ[ℂ] M.carrier,
         (∀ n : ℕ, ∀ x : H, J.toContinuousLinearMap.adjoint ((U^[n]) (J x)) = (T ^ n) x) ∧
-        (span ℂ {y : M.Carrier | ∃ k : ℤ, ∃ x : H, y = (U ^ k) (J x)}).topologicalClosure = ⊤ := by
-  obtain ⟨M0, J0, V, hcoin, hmin⟩ := exists_minimalIsometricDilationData T hT
+        (span ℂ {y : M.carrier | ∃ k : ℤ, ∃ x : H, y = (U ^ k) (J x)}).topologicalClosure = ⊤ := by
+  obtain ⟨M0, J0, V, hcoin, hmin⟩ := exists_minimalIsometricDilation_data T hT
   let L := lp (woldSummandInt V) 2
-  let ι : M0.Carrier →ₗᵢ[ℂ] L := woldExtensionIncl V
+  let ι : M0.carrier →ₗᵢ[ℂ] L := woldExtensionIncl V
   let U : L ≃ₗᵢ[ℂ] L := woldBilateralEquiv V
   let J : H →ₗᵢ[ℂ] L := ι.comp J0
-  refine ⟨{ Carrier := L }, J, U, ?_, ?_⟩
+  refine ⟨{ carrier := L }, J, U, ?_, ?_⟩
   · intro n x
     have hiter : (U^[n]) (J x) = (U ^ n) (J x) := equiv_iterate_pow_apply U n (J x)
     have horbit : (U ^ n) (J x) = ι ((V ^ n) (J0 x)) := by

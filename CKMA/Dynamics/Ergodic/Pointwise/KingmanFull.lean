@@ -18,6 +18,22 @@ A measurable cocycle controlled from below is already covered by
 `kingman_pointwise_of_linear`. The height `-K n` truncation keeps subadditivity and creates
 that bound. Sending `K` to infinity, as in the comparison of Avila and Bochi, identifies the
 liminf and the limsup. The truncated L¹ convergence then passes to the original process.
+
+## Main definitions
+
+* `CKMA.kingmanFekete`: the Fekete infimum of normalized positive-length integrals.
+* `CKMA.kingmanMk`: a measurable representative of each positive-length integrable function.
+* `CKMA.kingmanTrunc`: the height truncation `max(f n, -K n)`.
+
+## Main results
+
+* `CKMA.kingmanLiminf_trunc`, `CKMA.kingmanLimsup_trunc`: truncation formulas for the extended
+  liminf and limsup.
+* `CKMA.tendsto_integral_kingmanTrunc`: normalized integrals of truncations converge.
+
+## Notation
+
+* Standard Mathlib notation for `EReal` and Bochner integrals.
 -/
 
 @[expose] public section
@@ -33,10 +49,6 @@ variable {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} {T : Ω → Ω}
 
 attribute [local instance] Classical.propDecidable
 
-/-- The Fekete infimum of the normalized positive-length integrals. -/
-def kingmanFekete (f : ℕ → Ω → ℝ) (μ : Measure Ω) : ℝ :=
-  sInf {a : ℝ | ∃ n : ℕ, 0 < n ∧ a = (n : ℝ)⁻¹ * ∫ ω, f n ω ∂μ}
-
 omit [MeasurableSpace Ω] in
 /-- On `EReal`, the linear maximum agrees with the lattice supremum. -/
 lemma ereal_max_eq_sup (a b : EReal) : max a b = a ⊔ b := by
@@ -49,20 +61,24 @@ lemma ereal_max_eq_sup (a b : EReal) : max a b = a ⊔ b := by
       _ = a ⊔ b := (sup_of_le_left hba).symm
 
 omit [MeasurableSpace Ω] in
-/-- A nonpositive floor does not increase the absolute value of a maximum. -/
-lemma abs_max_le_abs_of_nonpos {a c : ℝ} (hc : c ≤ 0) : |max a c| ≤ |a| := by
-  rcases le_total a c with hac | hca
-  · rw [max_eq_right hac, abs_of_nonpos hc, abs_of_nonpos (hac.trans hc)]
-    linarith
-  · rw [max_eq_left hca]
-
-omit [MeasurableSpace Ω] in
 /-- The coercion into `EReal` preserves binary maxima. -/
 lemma ereal_coe_max (a b : ℝ) :
     ((max a b : ℝ) : EReal) = max (a : EReal) (b : EReal) := by
   rcases le_total a b with hab | hba
   · rw [max_eq_right hab, max_eq_right (EReal.coe_le_coe_iff.mpr hab)]
   · rw [max_eq_left hba, max_eq_left (EReal.coe_le_coe_iff.mpr hba)]
+
+/-- The Fekete infimum of the normalized positive-length integrals. -/
+def kingmanFekete (f : ℕ → Ω → ℝ) (μ : Measure Ω) : ℝ :=
+  sInf {a : ℝ | ∃ n : ℕ, 0 < n ∧ a = (n : ℝ)⁻¹ * ∫ ω, f n ω ∂μ}
+
+omit [MeasurableSpace Ω] in
+/-- A nonpositive floor does not increase the absolute value of a maximum. -/
+lemma abs_max_le_abs_of_nonpos {a c : ℝ} (hc : c ≤ 0) : |max a c| ≤ |a| := by
+  rcases le_total a c with hac | hca
+  · rw [max_eq_right hac, abs_of_nonpos hc, abs_of_nonpos (hac.trans hc)]
+    linarith
+  · rw [max_eq_left hca]
 
 omit [MeasurableSpace Ω] in
 /-- Extended reals that share every negative-integer truncation are equal when the larger one

@@ -16,6 +16,19 @@ public import Mathlib.MeasureTheory.Constructions.Projective
 Kolmogorov extension supplies a coordinate pre-Brownian process on `ℝ≥0 → ℝ`.
 The dyadic-floor modification pushes forward to a probability on `C(ℝ≥0, ℝ)`
 whose coordinate process is Brownian.
+
+## Main definitions
+
+* `CKMA.coordinatePreBrownian`: coordinate projections of a process indexed by nonnegative time.
+* `CKMA.wienerOfPreBrownian`: law of the continuous modification pushed forward to path space.
+
+## Main results
+
+* `CKMA.exists_wienerMeasure`: existence of Wiener measure on `C(ℝ≥0, ℝ)`.
+
+## Notation
+
+No new notation is introduced.
 -/
 
 @[expose] public section

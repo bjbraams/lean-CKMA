@@ -20,6 +20,20 @@ import Mathlib.Tactic
 The normalized integrals converge by Fekete's lemma. Under a linear pointwise lower bound the
 liminf is identified by the Avila–Bochi orbit estimate, and Birkhoff's theorem along multiples
 controls the limsup. Truncation removes the lower bound, and Scheffé's lemma gives L¹ convergence.
+
+## Main definitions
+
+* `CKMA.kingmanIntegral`: integral of each positive length, with length zero set to `0`.
+
+## Main results
+
+* `CKMA.kingmanIntegral_subadditive`: subadditivity of the padded integral sequence.
+* `CKMA.tendsto_kingmanIntegral_div`: normalized positive-length integrals converge to their
+  infimum.
+
+## Notation
+
+* Standard Mathlib notation for `EReal` and Bochner integrals.
 -/
 
 @[expose] public section

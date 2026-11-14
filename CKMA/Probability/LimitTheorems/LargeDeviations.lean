@@ -33,6 +33,22 @@ Sanov's theorem is formulated in the weak topology of probability measures on a 
 space. Empirical measures reuse the Tau Ceti contributors' finite-population construction
 in `TauCeti.Probability.Process.EmpiricalMeasure`; the rate is Mathlib's relative entropy
 `InformationTheory.klDiv`.
+
+## Main definitions
+
+* `CKMA.extendedLogMGF`: extended logarithmic moment-generating function.
+* `CKMA.cramerRate`: Cramér rate function (Legendre conjugate of `extendedLogMGF`).
+* `CKMA.sampleMeanLaws`: laws of empirical means at sample size `n + 1`.
+* `CKMA.empiricalLawDistribution`: law of the empirical measure of the first `n + 1` observations.
+
+## Main results
+
+* `CKMA.cramer`: Cramér's large deviation theorem for real i.i.d. random variables (**06.60**).
+* `CKMA.sanov`: Sanov's large deviation theorem for empirical measures (**06.61**).
+
+## Notation
+
+No new notation is introduced.
 -/
 
 @[expose] public section
@@ -352,17 +368,8 @@ private lemma isGoodRateFunction_cramerRate {Ω : Type*} [MeasurableSpace Ω]
 /-- Partial sums of measurable real random variables are measurable. -/
 private lemma measurable_partialSum {Ω : Type*} [MeasurableSpace Ω]
     {X : ℕ → Ω → ℝ} (hm : ∀ n, Measurable (X n)) (n : ℕ) :
-    Measurable (fun ω ↦ ∑ j ∈ Finset.range n, X j ω) := by
-  induction n with
-  | zero =>
-    simp
-  | succ n ih =>
-    have hfun : (fun ω ↦ ∑ j ∈ Finset.range (n + 1), X j ω) =
-        (fun ω ↦ ∑ j ∈ Finset.range n, X j ω) + X n := by
-      ext ω
-      simp [Finset.sum_range_succ]
-    rw [hfun]
-    exact ih.add (hm n)
+    Measurable (fun ω ↦ ∑ j ∈ Finset.range n, X j ω) :=
+  Finset.measurable_sum (Finset.range n) fun j _ ↦ hm j
 
 /-- The empirical-mean map is measurable. -/
 private lemma measurable_sampleMean {Ω : Type*} [MeasurableSpace Ω]

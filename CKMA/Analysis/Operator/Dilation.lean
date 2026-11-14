@@ -5,7 +5,7 @@ Authors: CKMA contributors
 -/
 module
 
-public import CKMA.Analysis.CStarAlgebra.Representation
+public import CKMA.Analysis.InnerProductSpace.Basic
 public import CKMA.Analysis.Operator.Dilation.Minimal
 public import CKMA.Analysis.Operator.Dilation.UnitaryExists
 public import CKMA.Analysis.Operator.Dilation.UnitaryUnique
@@ -23,6 +23,24 @@ unconditional sum with coefficients in that actual wandering space.
 Unitary power dilation uses two-sided orbit minimality; isometric dilation uses forward orbits
 and an explicit co-invariance identity. Commutant lifting preserves the norm and the full
 coextension identity. Sources: GAPS 21.26, 21.30, and 21.37.
+
+## Main definitions
+
+* `CKMA.IsMinimalUnitaryPowerDilation`: minimal unitary power dilation of a contraction.
+* `CKMA.IsMinimalIsometricDilation`: minimal co-invariant isometric dilation of a contraction.
+
+## Main results
+
+* `CKMA.wold_decomposition`: Wold's orthogonal unitary/shift decomposition of an isometry.
+* `CKMA.exists_minimalUnitaryPowerDilation`: Sz.-Nagy's minimal unitary power dilation theorem.
+* `CKMA.minimalUnitaryPowerDilation_unique`: uniqueness of a minimal unitary power dilation up to
+  unitary equivalence.
+* `CKMA.exists_minimalIsometricDilation`: existence of a minimal isometric dilation.
+* `CKMA.commutant_lifting`: Sz.-Nagy–Foiaş commutant lifting theorem.
+
+## Notation
+
+* `⟪x, y⟫_ℂ`: complex inner product.
 -/
 
 @[expose] public section
@@ -62,8 +80,8 @@ def IsMinimalUnitaryPowerDilation (T : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K)
 
 /-- **21.30**: every contraction admits a minimal unitary power dilation. -/
 theorem exists_minimalUnitaryPowerDilation (T : H →L[ℂ] H) (hT : ‖T‖ ≤ 1) :
-    ∃ M : ComplexHilbertSpace.{u}, ∃ J : H →ₗᵢ[ℂ] M.Carrier,
-      ∃ U : M.Carrier ≃ₗᵢ[ℂ] M.Carrier, IsMinimalUnitaryPowerDilation T J U := by
+    ∃ M : ComplexHilbertSpace.{u}, ∃ J : H →ₗᵢ[ℂ] M.carrier,
+      ∃ U : M.carrier ≃ₗᵢ[ℂ] M.carrier, IsMinimalUnitaryPowerDilation T J U := by
   obtain ⟨M, J, U, hpow, hmin⟩ := exists_minimalUnitaryPowerDilation_data T hT
   exact ⟨M, J, U, ⟨hpow, hmin⟩⟩
 
@@ -86,18 +104,18 @@ def IsMinimalIsometricDilation (T : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K)
 
 /-- The minimal isometric dilation required by the commutant-lifting interface exists. -/
 theorem exists_minimalIsometricDilation (T : H →L[ℂ] H) (hT : ‖T‖ ≤ 1) :
-    ∃ M : ComplexHilbertSpace.{u}, ∃ J : H →ₗᵢ[ℂ] M.Carrier,
-      ∃ V : M.Carrier →ₗᵢ[ℂ] M.Carrier, IsMinimalIsometricDilation T J V := by
-  obtain ⟨M, J, V, hcoin, hmin⟩ := exists_minimalIsometricDilationData T hT
+    ∃ M : ComplexHilbertSpace.{u}, ∃ J : H →ₗᵢ[ℂ] M.carrier,
+      ∃ V : M.carrier →ₗᵢ[ℂ] M.carrier, IsMinimalIsometricDilation T J V := by
+  obtain ⟨M, J, V, hcoin, hmin⟩ := exists_minimalIsometricDilation_data T hT
   exact ⟨M, J, V, ⟨hcoin, hmin⟩⟩
 
 /-- **21.37**: an operator commuting with a contraction has a norm-preserving commuting lift
 on its minimal isometric dilation, with the full coextension identity. -/
-theorem commutant_lifting (T X : H →L[ℂ] H) (hT : ‖T‖ ≤ 1) (hXT : Commute X T)
+theorem commutant_lifting (T X : H →L[ℂ] H) (hXT : Commute X T)
     (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K) (hd : IsMinimalIsometricDilation T J V) :
     ∃ Y : K →L[ℂ] K, Commute Y V.toContinuousLinearMap ∧ ‖Y‖ = ‖X‖ ∧
       ∀ y : K, J.toContinuousLinearMap.adjoint (Y y) = X (J.toContinuousLinearMap.adjoint y) := by
   rcases hd with ⟨hcoin, _⟩
-  exact commutant_lifting_of T X hT hXT J V hcoin
+  exact commutant_lifting_of T X hXT J V hcoin
 
 end CKMA

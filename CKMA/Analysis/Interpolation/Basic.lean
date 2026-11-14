@@ -20,6 +20,28 @@ with a separate supremum formula at exponent infinity.
 Complex interpolation uses bounded holomorphic strip functions with continuous endpoint lifts
 vanishing at infinity. The gauges retain the value infinity off their finite-gauge carriers.
 The operator bounds are in `CKMA.Analysis.Interpolation.Bounds`.
+
+## Main definitions
+
+* `CKMA.BanachCouple`: a pair of Banach spaces embedded in a common ambient normed space with the
+  canonical sum norm.
+* `CKMA.CoupleMap`: a compatible morphism between Banach couples.
+* `CKMA.interpolationMeasure`: the dilation-invariant measure `dt/t` on `(0, ∞)`.
+* `CKMA.BanachCouple.kFunctional`: Peetre's `K`-functional.
+* `CKMA.BanachCouple.realInterpolationGauge` and `CKMA.BanachCouple.realInterpolationSet`: the real
+  interpolation gauge and its finite-gauge carrier.
+* `CKMA.BanachCouple.AdmissibleStrip`, `CKMA.BanachCouple.complexInterpolationGauge`, and
+  `CKMA.BanachCouple.complexInterpolationSet`: Calderón's admissible strip functions, the complex
+  interpolation gauge, and its finite-gauge carrier.
+
+## Main results
+
+* This file provides the core definitions for real and complex interpolation; the operator bounds
+  are proved in `CKMA.Analysis.Interpolation.Bounds`.
+
+## Notation
+
+* Standard Mathlib notation for `ENNReal` integrals and infima/suprema.
 -/
 
 @[expose] public section

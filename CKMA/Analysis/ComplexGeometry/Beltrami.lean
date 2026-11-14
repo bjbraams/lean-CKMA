@@ -5,8 +5,9 @@ Authors: CKMA contributors
 -/
 module
 
-public import CKMA.Analysis.Complex.Hardy
+public import CKMA.Analysis.Complex.Basic
 public import TauCeti.Analysis.Sobolev.WeakDeriv.Basic
+public import Mathlib.MeasureTheory.Function.LpSpace.Basic
 public import Mathlib.MeasureTheory.Measure.Lebesgue.Complex
 
 /-!
@@ -19,6 +20,22 @@ one determines the normalized homeomorphism fixing zero and one; normalized disk
 self-maps satisfy Astala's area exponent.
 
 Sources: GAPS 44.38 and 44.49. Weak differentials reuse TauCeti's Sobolev API.
+
+## Main definitions
+
+* `CKMA.wirtingerZ`, `CKMA.wirtingerBar`: Wirtinger derivatives of an `ℝ`-linear map `ℂ →L[ℝ] ℂ`.
+* `CKMA.IsWeakW12FieldOn`: local `W^{1,2}` weak differentiability on an open set.
+* `CKMA.IsBeltramiSolutionOn`: weak `W^{1,2}_{\mathrm{loc}}` solution of the Beltrami equation.
+* `CKMA.IsQuasiconformalOn`: analytic definition of `K`-quasiconformality.
+
+## Main results
+
+* `CKMA.measurable_riemann_mapping`: Ahlfors–Bers measurable Riemann mapping theorem.
+* `CKMA.astala_disk_area`: Astala's area distortion theorem for quasiconformal disk maps.
+
+## Notation
+
+No new notation is introduced.
 -/
 
 @[expose] public section

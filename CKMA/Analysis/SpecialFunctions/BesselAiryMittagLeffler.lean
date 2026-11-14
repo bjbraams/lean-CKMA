@@ -22,6 +22,26 @@ arbitrary complex second parameter and include the exponential at parameters `(1
 
 Sources: GAPS 49.26, 49.36 and 49.76. First-kind Bessel and Gamma functions reuse Mathlib.
 The exponential specialization uses Mathlib's Gamma factorial values and exponential series.
+
+## Main definitions
+
+* `CKMA.besselYConnection`, `CKMA.besselY`: Weber's Bessel function of the second kind `Y_ν(z)`.
+* `CKMA.hankelOne`, `CKMA.hankelTwo`: Hankel functions `H_ν^{(1)}` and `H_ν^{(2)}`.
+* `CKMA.airyAi`, `CKMA.airyBi`: the Airy functions `Ai` and `Bi`.
+* `CKMA.mittagLeffler`: the two-parameter Mittag–Leffler function `E_{α,β}(z)`.
+
+## Main results
+
+* `CKMA.besselY_ode`, `CKMA.bessel_wronskian`: Bessel's differential equation and Wronskian for
+  `J_ν` and `Y_ν` on the slit plane (**49.26**).
+* `CKMA.airy_ode`, `CKMA.airy_wronskian`, `CKMA.airyAi_oscillatory_integral`: Airy differential
+  equation, Wronskian, and oscillatory integral representation (**49.36**).
+* `CKMA.differentiable_mittagLeffler`, `CKMA.mittagLeffler_one_one`: entireness of `E_{α,β}` for
+  `α > 0` and specialization `E_{1,1}(z) = exp z` (**49.76**).
+
+## Notation
+
+* Standard Mathlib notation for `Complex.besselJ`, `Complex.Gamma`, and `iteratedDeriv`.
 -/
 
 @[expose] public section

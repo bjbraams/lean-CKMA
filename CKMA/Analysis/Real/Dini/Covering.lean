@@ -9,8 +9,12 @@ public import Mathlib.Basic.Real.Basic
 public import Mathlib.Data.Finset.Max
 public import Mathlib.MeasureTheory.Covering.Vitali
 public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
-public import Mathlib.Tactic
 public import Mathlib.Topology.Order.DenselyOrdered
+import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.NormNum
+import Mathlib.Tactic.Positivity
+import Mathlib.Tactic.Ring
 
 /-!
 # Slope packing for Dini derivatives
@@ -20,13 +24,28 @@ increments, controls the Lebesgue outer measure of an arbitrary set on a short i
 The estimate is the telescope used by Hanson for the Denjoy–Young–Saks theorem: selected
 intervals contribute the steep slope and the complementary gaps contribute the left slope.
 The sets need not be measurable. Source: GAPS 05.10.
+
+## Main definitions
+
+* `CKMA.Dini.steepRight`: pairs in `(a, b]` based at `E` with right slope steeper than `k`.
+
+## Main results
+
+* `CKMA.Dini.finset_packing_lower`: telescoping lower bound for finite disjoint steep intervals.
+* `CKMA.Dini.slopePacking_volume_le`: outer-measure bound from a left slope and steep right cover.
+* `CKMA.Dini.volume_eq_zero_of_arbitrarily_steep`: vanishing outer measure when arbitrarily steep
+  right increments are available.
+
+## Notation
+
+No new notation is introduced.
 -/
 
 @[expose] public section
 
 noncomputable section
 
-namespace CKMA
+namespace CKMA.Dini
 
 open Set Filter Topology MeasureTheory Metric
 open scoped BigOperators ENNReal NNReal
@@ -65,6 +84,7 @@ lemma exists_finset_sum_gt {ι : Type*} (φ : ι → ℝ) (hφ : ∀ i, 0 ≤ φ
   rw [← ENNReal.ofReal_sum_of_nonneg (fun i _ => hφ i)] at ht
   exact ⟨t, ((ENNReal.ofReal_lt_ofReal_iff').1 ht).1⟩
 
+/-- Inductive telescoping lower bound for finite disjoint steep intervals. -/
 private lemma finset_packing_lower_aux (f : ℝ → ℝ) (E : Set ℝ) (c k δ fin : ℝ)
     (hleft : ∀ x ∈ E, ∀ u, x - δ < u → u < x → c < (f x - f u) / (x - u))
     (hfin : fin ∈ E) :
@@ -292,4 +312,4 @@ theorem volume_eq_zero_of_arbitrarily_steep (f : ℝ → ℝ) (E : Set ℝ) {c �
   · exact h0
   · exact absurd htop hvolfin
 
-end CKMA
+end CKMA.Dini

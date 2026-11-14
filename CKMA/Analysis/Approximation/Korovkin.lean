@@ -25,6 +25,20 @@ The direct estimate is the quadratic domination
 `|f y - f x| ≤ ε + 2 * ‖f‖ * δ⁻² * (y - x)²` coming from uniform continuity.
 
 Source: GAPS 47.17.
+
+## Main definitions
+
+* `CKMA.UnitIntervalContinuousMap`: real continuous functions on `[0, 1]`.
+* `CKMA.unitIntervalId`: the coordinate function on `[0, 1]`.
+* `CKMA.IsPositiveContinuousMapOperator`: order preservation for operators on `C([0, 1], ℝ)`.
+
+## Main results
+
+* `CKMA.korovkin_iff`: Korovkin's theorem characterizing strong convergence by three test functions.
+
+## Notation
+
+No new notation is introduced.
 -/
 
 @[expose] public section
@@ -70,6 +84,7 @@ private lemma monotone_iff_map_nonneg (L : UnitIntervalContinuousMap →L[ℝ]
 private def unitIntervalQuadratic (x : Set.Icc (0 : ℝ) 1) : UnitIntervalContinuousMap :=
   unitIntervalId ^ 2 - (2 * x.1) • unitIntervalId + (x.1 ^ 2) • 1
 
+/-- Pointwise evaluation of `unitIntervalQuadratic x` at `y` is `(y - x) ^ 2`. -/
 private lemma unitIntervalQuadratic_apply (x y : Set.Icc (0 : ℝ) 1) :
     unitIntervalQuadratic x y = (y.1 - x.1) ^ 2 := by
   unfold unitIntervalQuadratic unitIntervalId
@@ -77,6 +92,7 @@ private lemma unitIntervalQuadratic_apply (x y : Set.Icc (0 : ℝ) 1) :
     ContinuousMap.smul_apply, ContinuousMap.one_apply, ContinuousMap.coe_mk, smul_eq_mul]
   ring
 
+/-- The quadratic test function `unitIntervalQuadratic x` is nonnegative on `[0, 1]`. -/
 private lemma unitIntervalQuadratic_nonneg (x : Set.Icc (0 : ℝ) 1) :
     0 ≤ unitIntervalQuadratic x := by
   rw [ContinuousMap.le_def]
@@ -120,6 +136,7 @@ private def korovkinDeviation (L : UnitIntervalContinuousMap →L[ℝ] UnitInter
   L (unitIntervalId ^ 2) - (2 : ℝ) • (unitIntervalId * L unitIntervalId) +
     unitIntervalId ^ 2 * L 1
 
+/-- Applying `L` to `unitIntervalQuadratic x` and evaluating at `x` yields `korovkinDeviation`. -/
 private lemma eval_unitIntervalQuadratic (L : UnitIntervalContinuousMap →L[ℝ]
     UnitIntervalContinuousMap) (x : Set.Icc (0 : ℝ) 1) :
     (L (unitIntervalQuadratic x)) x = korovkinDeviation L x := by
@@ -130,6 +147,7 @@ private lemma eval_unitIntervalQuadratic (L : UnitIntervalContinuousMap →L[ℝ
     smul_eq_mul]
   ring
 
+/-- Convergence on `1`, `t`, and `t²` implies convergence of `korovkinDeviation` to `0`. -/
 private lemma korovkinDeviation_tendsto_zero (L : ℕ → UnitIntervalContinuousMap →L[ℝ]
     UnitIntervalContinuousMap) (h1 : Tendsto (fun n ↦ L n 1) atTop (𝓝 1))
     (hid : Tendsto (fun n ↦ L n unitIntervalId) atTop (𝓝 unitIntervalId))
@@ -154,6 +172,7 @@ private lemma korovkinDeviation_tendsto_zero (L : ℕ → UnitIntervalContinuous
     ring
   simpa [korovkinDeviation, mul_one, hlim] using (hid2.sub hsmul).add hmulSq
 
+/-- The constant function `1` is nonnegative on `[0, 1]`. -/
 private lemma one_nonneg_unitInterval : (0 : UnitIntervalContinuousMap) ≤ 1 := by
   rw [ContinuousMap.le_def]
   intro x
@@ -229,6 +248,7 @@ private lemma abs_eval_sub_le (L : UnitIntervalContinuousMap →L[ℝ] UnitInter
       exact add_le_add (add_le_add (mul_le_mul_of_nonneg_left h1x hε)
         (mul_le_mul_of_nonneg_left hdevx hc)) le_rfl
 
+/-- Supremum-norm Korovkin estimate for a positive continuous linear operator on `C([0, 1], ℝ)`. -/
 private lemma norm_sub_le_korovkin (L : UnitIntervalContinuousMap →L[ℝ] UnitIntervalContinuousMap)
     (hL : Monotone L) (f : UnitIntervalContinuousMap) {ε δ : ℝ} (hε : 0 ≤ ε) (hδ : 0 < δ)
     (hf : ∀ {x y : Set.Icc (0 : ℝ) 1}, dist x y < δ → dist (f x) (f y) < ε) :

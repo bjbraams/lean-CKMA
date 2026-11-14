@@ -7,6 +7,8 @@ module
 
 public import CKMA.Analysis.OrderedSpace.Bands.Lattice
 public import Mathlib.Algebra.Order.Hom.Monoid
+public import Mathlib.Algebra.Module.Submodule.Range
+public import Mathlib.Algebra.Module.LinearMap.Basic
 
 /-!
 # Contractive projections on Riesz spaces
@@ -15,6 +17,22 @@ A linear projection is contractive when it fixes the positive cone inside the or
 interval from zero to its argument. Such maps are the order projections of a Riesz
 space: they are disjoint from the complementary projection, absolute values pass
 inside, and a smaller range yields a smaller projection.
+
+## Main definitions
+
+No new definitions are introduced in this file.
+
+## Main results
+
+* `CKMA.contractiveProjection_abs`: absolute value commutes with a contractive positive map.
+* `CKMA.contractiveProjection_disjoint`: a contractive projection is lattice-disjoint from its
+  complement.
+* `CKMA.contractiveProjection_sub`: the difference of nested contractive projections is again a
+  contractive projection.
+
+## Notation
+
+No new notation is introduced in this file.
 -/
 
 @[expose] public section
@@ -76,7 +94,7 @@ theorem contractiveProjection_disjoint_nonneg {P : E →ₗ[ℝ] E}
 
 /-- Absolute value passes inside a contractive projection. -/
 theorem contractiveProjection_abs {P : E →ₗ[ℝ] E}
-    (_hidem : ∀ x, P (P x) = P x) (hcon : ∀ x, 0 ≤ x → 0 ≤ P x ∧ P x ≤ x)
+    (hcon : ∀ x, 0 ≤ x → 0 ≤ P x ∧ P x ≤ x)
     (x : E) : |P x| = P |x| := by
   have hpos : ∀ z, 0 ≤ z → 0 ≤ P z := fun z hz => (hcon z hz).1
   have hle : ∀ z, 0 ≤ z → P z ≤ z := fun z hz => (hcon z hz).2
@@ -86,8 +104,7 @@ theorem contractiveProjection_abs {P : E →ₗ[ℝ] E}
       (le_of_eq (posPart_inf_negPart_eq_zero x))
   have habs : |P x⁺ - P x⁻| = P x⁺ + P x⁻ := by
     rw [← posPart_add_negPart (P x⁺ - P x⁻)]
-    have hparts := eq_posPart_negPart_of_inf_eq_zero (hpos _ (posPart_nonneg x))
-      (hpos _ (negPart_nonneg x)) hdisj rfl
+    have hparts := eq_posPart_negPart_of_inf_eq_zero hdisj rfl
     rw [hparts.1, hparts.2]
   calc
     |P x| = |P (x⁺ - x⁻)| := by rw [posPart_sub_negPart]
@@ -98,7 +115,7 @@ theorem contractiveProjection_abs {P : E →ₗ[ℝ] E}
 
 /-- Absolute value passes inside the complementary projection. -/
 theorem contractiveProjection_complement_abs {P : E →ₗ[ℝ] E}
-    (_hidem : ∀ x, P (P x) = P x) (hcon : ∀ x, 0 ≤ x → 0 ≤ P x ∧ P x ≤ x)
+    (hcon : ∀ x, 0 ≤ x → 0 ≤ P x ∧ P x ≤ x)
     (x : E) : |x - P x| = |x| - P |x| := by
   have hpos : ∀ z, 0 ≤ z → 0 ≤ P z := fun z hz => (hcon z hz).1
   have hle : ∀ z, 0 ≤ z → P z ≤ z := fun z hz => (hcon z hz).2
@@ -114,7 +131,7 @@ theorem contractiveProjection_complement_abs {P : E →ₗ[ℝ] E}
     exact hleab.trans (le_of_eq (posPart_inf_negPart_eq_zero x))
   have habs : |a - b| = a + b := by
     rw [← posPart_add_negPart (a - b)]
-    have hparts := eq_posPart_negPart_of_inf_eq_zero ha hb hdisj rfl
+    have hparts := eq_posPart_negPart_of_inf_eq_zero hdisj rfl
     rw [hparts.1, hparts.2]
   have hx' : x = x⁺ - x⁻ := (posPart_sub_negPart x).symm
   have hsplit : x - P x = a - b := by
@@ -139,8 +156,8 @@ theorem contractiveProjection_complement_abs {P : E →ₗ[ℝ] E}
 theorem contractiveProjection_disjoint {P : E →ₗ[ℝ] E}
     (hidem : ∀ x, P (P x) = P x) (hcon : ∀ x, 0 ≤ x → 0 ≤ P x ∧ P x ≤ x)
     (x y : E) : LatticeDisjoint (P x) (y - P y) := by
-  rw [LatticeDisjoint, contractiveProjection_abs hidem hcon x,
-    contractiveProjection_complement_abs hidem hcon y]
+  rw [LatticeDisjoint, contractiveProjection_abs hcon x,
+    contractiveProjection_complement_abs hcon y]
   exact contractiveProjection_disjoint_nonneg hidem hcon (abs_nonneg x) (abs_nonneg y)
 
 /-- On the positive cone, a contractive projection is the maximum of its range

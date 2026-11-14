@@ -20,6 +20,22 @@ interface assumes second countability. Character groups use Mathlib's compact-op
 Pontryagin dual.
 
 Sources: GAPS 28.24 and 28.29.
+
+## Main definitions
+
+* `CKMA.groupFourierIntegral`: Fourier integral on a locally compact abelian group against a
+  continuous unitary character.
+
+## Main results
+
+* `CKMA.exists_pontryaginDual_equiv`: Pontryagin biduality isomorphism for locally compact abelian
+  groups (**28.24**).
+* `CKMA.exists_groupPlancherel`: Plancherel theorem and Hausdorff–Young inequality on
+  second-countable locally compact abelian groups (**28.29**).
+
+## Notation
+
+Uses `PontryaginDual` for the character group and `conj` for complex conjugation.
 -/
 
 @[expose] public section

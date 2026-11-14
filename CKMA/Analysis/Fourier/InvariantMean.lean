@@ -19,6 +19,22 @@ their own Haar measure. Translation invariance is stated intrinsically at the le
 L∞ equivalence classes.
 
 Source: GAPS 28.58.
+
+## Main definitions
+
+* `CKMA.IsHaarInvariantMean`: positive normalized left-invariant continuous linear functional on
+  `Lp ℝ ∞ μ`.
+* `CKMA.IsHaarAmenable`: existence of a left-invariant mean on `Lp ℝ ∞ μ`.
+
+## Main results
+
+* `CKMA.isHaarAmenable_of_compact`: compact Hausdorff groups are amenable (**28.58**).
+* `CKMA.isHaarAmenable_of_commutative`: locally compact abelian groups are amenable.
+* `CKMA.isHaarAmenable_closed_subgroup`: closed subgroups of amenable groups are amenable.
+
+## Notation
+
+Uses `ℝ≥0∞` (`∞`) from `ENNReal`.
 -/
 
 @[expose] public section
@@ -31,7 +47,7 @@ open MeasureTheory
 open scoped ENNReal
 
 variable {G : Type*} [Group G] [TopologicalSpace G] [IsTopologicalGroup G]
-    [MeasurableSpace G] [BorelSpace G]
+    [MeasurableSpace G]
 
 /-- A positive normalized left-invariant bounded functional on Haar L-infinity.
 Translation is specified by a.e. representative equality, so no chosen representative is shifted
@@ -50,8 +66,8 @@ theorem isHaarAmenable_of_compact [CompactSpace G] [T2Space G]
   sorry
 
 /-- Locally compact abelian groups admit invariant means, including noncompact groups. -/
-theorem isHaarAmenable_of_commutative [LocallyCompactSpace G] [T2Space G]
-    (hcomm : ∀ x y : G, x * y = y * x)
+theorem isHaarAmenable_of_commutative {G : Type*} [CommGroup G] [TopologicalSpace G]
+    [IsTopologicalGroup G] [MeasurableSpace G] [LocallyCompactSpace G] [T2Space G]
     (μ : Measure G) [Measure.IsHaarMeasure μ] : IsHaarAmenable μ := by
   sorry
 

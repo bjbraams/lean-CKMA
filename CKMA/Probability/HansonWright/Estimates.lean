@@ -5,7 +5,7 @@ Authors: CKMA contributors
 -/
 module
 
-public import CKMA.Probability.Concentration
+public import CKMA.Probability.Concentration.Basic
 public import Mathlib.Analysis.CStarAlgebra.Matrix
 public import Mathlib.Analysis.Complex.Exponential
 public import Mathlib.Analysis.Complex.ExponentialBounds
@@ -32,6 +32,22 @@ public import Mathlib.Topology.Algebra.InfiniteSum.Ring
 Squared Frobenius norm, Euclidean operator norm, and the sampled quadratic form.
 Sub-Gaussian moment generating functions give the diagonal contribution to the
 Hanson–Wright tail.
+
+## Main definitions
+
+* `CKMA.realMatrixFrobeniusSq`: squared Frobenius norm of a real matrix.
+* `CKMA.realMatrixOperatorNorm`: Euclidean operator norm of a real matrix.
+* `CKMA.sampledQuadraticForm`: quadratic form evaluated on a random coordinate vector.
+
+## Main results
+
+* `CKMA.mgf_centered_sq_le`: MGF bound for a centered squared sub-Gaussian variable.
+* `CKMA.diagonalDeviation_tail`: Bernstein-type tail bound for the diagonal part of a quadratic
+  form.
+
+## Notation
+
+No new notation is introduced in this file.
 -/
 
 @[expose] public section
@@ -236,7 +252,7 @@ lemma integral_abs_pow_centered_sq [IsProbabilityMeasure μ] {X : Ω → ℝ} (h
     Integrable (fun ω ↦ |X ω ^ 2 - ∫ η, X η ^ 2 ∂μ| ^ m) μ ∧
       ∫ ω, |X ω ^ 2 - ∫ η, X η ^ 2 ∂μ| ^ m ∂μ ≤ (64 * (m : ℝ) * K ^ 2) ^ m := by
   have hG : HasGaussianMoments X μ (4 * K) := by
-    simpa [show 2 * (2 * K) = 4 * K by ring] using h.hasGaussianMoments hm
+    simpa [show 2 * (2 * K) = 4 * K by ring] using hasGaussianMoments_of_hasPsiTwoBound hm h
   have hmem2 : MemLp X (ENNReal.ofReal 2) μ :=
     (hG.2 2 (by norm_num)).trans_lt ENNReal.ofReal_lt_top
   have hX2 : Integrable (fun ω ↦ X ω ^ 2) μ := by
@@ -352,7 +368,7 @@ lemma mgf_centered_sq_le [IsProbabilityMeasure μ] {X : Ω → ℝ} (hm : Measur
   have hσnn : 0 ≤ σ := integral_nonneg fun _ ↦ sq_nonneg _
   have hX2 : Integrable (fun ω ↦ X ω ^ 2) μ := by
     have hG : HasGaussianMoments X μ (4 * K) := by
-      simpa [show 2 * (2 * K) = 4 * K by ring] using h.hasGaussianMoments hm
+      simpa [show 2 * (2 * K) = 4 * K by ring] using hasGaussianMoments_of_hasPsiTwoBound hm h
     have hmem2 : MemLp X (ENNReal.ofReal 2) μ :=
       (hG.2 2 (by norm_num)).trans_lt ENNReal.ofReal_lt_top
     have : MemLp X 2 μ := by simpa using hmem2

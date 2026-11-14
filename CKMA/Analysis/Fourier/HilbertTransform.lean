@@ -18,6 +18,22 @@ and on L² is the Fourier multiplier `-i sign` at Mathlib's Fourier normalizatio
 The multiplier identity uses the bundled L² Fourier unitary.
 
 Source: GAPS 27.35.
+
+## Main definitions
+
+* `CKMA.truncatedHilbertTransform`: symmetric small-distance truncation of the Hilbert transform.
+* `CKMA.hilbertPrincipalValue`: principal-value limit as `ε → 0⁺`.
+
+## Main results
+
+* `CKMA.ae_tendsto_truncatedHilbertTransform`: almost-everywhere existence of the principal-value
+  Hilbert transform on `Lᵖ` for `1 ≤ p < ∞` (**27.35**).
+* `CKMA.existsUnique_hilbertTransform_L2`: `L²` Fourier multiplier characterization `-i sign ξ`.
+* `CKMA.hilbertPrincipalValue_weakType`: weak `(1, 1)` estimate for `hilbertPrincipalValue`.
+
+## Notation
+
+Uses `ℝ≥0∞` from `ENNReal` and `Lp.fourierTransformₗᵢ` for the `L²` Plancherel transform.
 -/
 
 @[expose] public section
@@ -50,7 +66,8 @@ theorem existsUnique_hilbertTransform_L2 (f : Lp ℂ 2 (volume : Measure ℝ)) :
     ∃! Hf : Lp ℂ 2 (volume : Measure ℝ),
       Hf =ᵐ[volume] hilbertPrincipalValue f ∧
       (Lp.fourierTransformₗᵢ ℝ ℂ Hf : ℝ → ℂ) =ᵐ[volume]
-        (fun ξ ↦ -(Complex.I * (SignType.sign ξ : ℂ)) * (𝓕 f) ξ) := by
+        (fun ξ ↦ -(Complex.I * (SignType.sign ξ : ℂ)) *
+          (Lp.fourierTransformₗᵢ ℝ ℂ f : ℝ → ℂ) ξ) := by
   sorry
 
 /-- Weak (1,1) control of the actual principal-value function. -/

@@ -5,11 +5,10 @@ Authors: CKMA contributors
 -/
 module
 
-public import CKMA.Analysis.FunctionalAnalysis.WeakCompactness
-public import CKMA.Analysis.InnerProductSpace.HilbertModel
+public import CKMA.Analysis.FunctionalAnalysis.Basic
+public import CKMA.Analysis.InnerProductSpace.Basic
 public import Mathlib.Analysis.InnerProductSpace.PiL2
 public import Mathlib.Analysis.Normed.Operator.Basic
-public import Mathlib.Tactic
 
 /-!
 # Weak sequence structure and local Hilbert geometry
@@ -22,6 +21,25 @@ Hilbert norm, rather than the parallelogram identity for the original norm.
 Dvoretzky's theorem uses scaled embeddings, and the real Grothendieck bound has a universal
 constant independent of every finite dimension. Dimension-zero cases are included.
 Sources: GAPS 17.21, 17.38, 17.39, and 17.57.
+
+## Main definitions
+
+* `CKMA.IsEquivalentToEllOneBasis`: two-sided finite `ℓ¹` coefficient bounds for a sequence.
+* `CKMA.rademacherEnergy`: second moment of a finite Rademacher sum.
+* `CKMA.HasRademacherType`, `CKMA.HasRademacherCotype`: Rademacher type `p` and cotype `q`.
+* `CKMA.IsHilbertizable`: existence of a continuous linear equivalence with a Hilbert space.
+* `CKMA.grothendieckScalarBound`: scalar sign-choice supremum for a finite matrix.
+
+## Main results
+
+* `CKMA.rosenthal_ellOne`: Rosenthal's `ℓ¹` theorem.
+* `CKMA.kwapien`: Kwapień's characterization of Hilbertizable Banach spaces.
+* `CKMA.dvoretzky`: Dvoretzky's theorem on almost-isometric Euclidean subspaces.
+* `CKMA.grothendieck_real`: the real Grothendieck inequality.
+
+## Notation
+
+No new notation is introduced.
 -/
 
 @[expose] public section
@@ -34,9 +52,6 @@ open Filter Topology
 open scoped BigOperators
 
 universe u
-
-/-- A real Hilbert-space model, allowing an equivalent Hilbert norm on its carrier. -/
-abbrev RealHilbertModel := HilbertSpaceModel.{u} ℝ
 
 variable {E : Type u} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
@@ -71,7 +86,7 @@ def HasRademacherCotype (E : Type u) [NormedAddCommGroup E] [NormedSpace ℝ E] 
 
 /-- A concrete Hilbert-space isomorphism criterion for the original Banach norm. -/
 def IsHilbertizable (E : Type u) [NormedAddCommGroup E] [NormedSpace ℝ E] : Prop :=
-  ∃ H : RealHilbertModel.{u}, Nonempty (E ≃L[ℝ] H.Carrier)
+  ∃ H : RealHilbertModel.{u}, Nonempty (E ≃L[ℝ] H.carrier)
 
 /-- **17.38**, Kwapień: type two and cotype two characterize Hilbert-isomorphic Banach spaces. -/
 theorem kwapien [CompleteSpace E] :
@@ -87,15 +102,15 @@ theorem dvoretzky [CompleteSpace E] (hE : ¬ FiniteDimensional ℝ E) (n : ℕ) 
 
 /-- The scalar sign optimum in the real Grothendieck inequality. The set is nonempty even
 if one index type is empty. -/
-def grothendieckScalarBound {m n : ℕ} (a : Fin m → Fin n → ℝ) : ℝ :=
-  sSup {b | ∃ s : Fin m → ℝ, ∃ t : Fin n → ℝ,
+def grothendieckScalarBound {α β : Type*} [Fintype α] [Fintype β] (a : α → β → ℝ) : ℝ :=
+  sSup {b | ∃ s : α → ℝ, ∃ t : β → ℝ,
     (∀ i, |s i| ≤ 1) ∧ (∀ j, |t j| ≤ 1) ∧ b = |∑ i, ∑ j, a i j * s i * t j|}
 
 /-- **17.57**, the real Grothendieck inequality, with a universal constant independent of
-both matrix sizes and Hilbert-space dimension. -/
-theorem grothendieck_real : ∃ K : ℝ, 0 < K ∧ ∀ (m n d : ℕ)
-    (a : Fin m → Fin n → ℝ) (v : Fin m → EuclideanSpace ℝ (Fin d))
-    (w : Fin n → EuclideanSpace ℝ (Fin d)),
+both index types and the real inner product space. -/
+theorem grothendieck_real : ∃ K : ℝ, 0 < K ∧ ∀ {α β H : Type*} [Fintype α] [Fintype β]
+    [NormedAddCommGroup H] [InnerProductSpace ℝ H]
+    (a : α → β → ℝ) (v : α → H) (w : β → H),
     (∀ i, ‖v i‖ ≤ 1) → (∀ j, ‖w j‖ ≤ 1) →
       |∑ i, ∑ j, a i j * inner ℝ (v i) (w j)| ≤ K * grothendieckScalarBound a := by
   sorry

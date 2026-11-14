@@ -42,6 +42,24 @@ real or complex Banach algebra. Its bounded approximate identity is indexed by a
 The Gleason–Kahane–Żelazko argument follows Kaniuth’s comparison of polynomial coefficients.
 The Shilov boundary is the intersection of maximizing sets, as in Bonsall–Duncan.
 Sources: GAPS 20.19, 20.23, 20.41, and 20.47.
+
+## Main definitions
+
+* `CKMA.IsUniformAlgebraBoundary`: closed norming boundary for a subalgebra of `C(K, ℂ)`.
+* `CKMA.lpTranslate`: translation of an `L¹(ℝ)` equivalence class.
+* `CKMA.IsBoundedLeftApproximateIdentity`: bounded left approximate identity along `atTop`.
+
+## Main results
+
+* `CKMA.eq_zero_of_norm_le_div_nat`: a vector bounded in norm by `C / n` for all `n ≥ 2` is zero.
+* `CKMA.gleason_kahane_zelazko`: Gleason–Kahane–Żelazko theorem.
+* `CKMA.exists_shilov_boundary`: existence of the Shilov boundary.
+* `CKMA.wiener_tauberian_real`: Wiener's Tauberian theorem on `L¹(ℝ)`.
+* `CKMA.cohen_hewitt_factorization`: Cohen–Hewitt factorization theorem.
+
+## Notation
+
+No new notation is introduced.
 -/
 
 @[expose] public section
@@ -53,8 +71,8 @@ namespace CKMA
 open Filter Topology MeasureTheory FourierTransform Polynomial
 open scoped FourierTransform
 
-/-- A complex number bounded by `C / n` for every integer `n ≥ 2` is zero. -/
-private theorem complex_norm_le_div_nat_zero {z : ℂ} {C : ℝ}
+/-- A vector bounded in norm by `C / n` for every integer `n ≥ 2` is zero. -/
+theorem eq_zero_of_norm_le_div_nat {E : Type*} [NormedAddCommGroup E] {z : E} {C : ℝ}
     (h : ∀ n : ℕ, 2 ≤ n → ‖z‖ ≤ C / (n : ℝ)) : z = 0 := by
   by_cases hC : 0 < C
   · by_contra hz
@@ -372,7 +390,7 @@ private theorem gkz_preserves_sq {A : Type*} [NormedRing A] [NormedAlgebra ℂ A
       le_of_mul_le_mul_left hmul hnpos
     rw [le_div_iff₀ hnpos, mul_comm]
     exact hcancel
-  exact eq_comm.mp (sub_eq_zero.mp (complex_norm_le_div_nat_zero hδ))
+  exact eq_comm.mp (sub_eq_zero.mp (eq_zero_of_norm_le_div_nat hδ))
 
 /-- **20.19**, Gleason–Kahane–Żelazko: a normalized complex linear functional nonzero on
 units is multiplicative. Continuity and commutativity are not assumed. -/
@@ -657,14 +675,13 @@ private theorem exists_open_boundary_sdiff {K : Type*} [TopologicalSpace K] [Com
     exact Set.notMem_empty y0 hy0cap
   exact le_antisymm hNle hρle
 
-/-- **20.23**: a uniformly closed point-separating algebra has a smallest closed norming boundary.
+/-- **20.23**: a point-separating algebra has a smallest closed norming boundary.
 The restriction isometry is expressed by the exact boundary-norm identity in the predicate. -/
-theorem exists_shilov_boundary {K : Type*} [TopologicalSpace K] [CompactSpace K] [T2Space K]
-    (A : Subalgebra ℂ C(K, ℂ)) (hA : IsClosed (A : Set C(K, ℂ)))
+theorem exists_shilov_boundary {K : Type*} [TopologicalSpace K] [CompactSpace K]
+    (A : Subalgebra ℂ C(K, ℂ))
     (hsep : ∀ x y : K, x ≠ y → ∃ f : A, f.1 x ≠ f.1 y) :
     ∃ F : Set K, IsUniformAlgebraBoundary A F ∧
       ∀ G : Set K, IsUniformAlgebraBoundary A G → F ⊆ G := by
-  have _hA := hA
   let boundaries : Set (Set K) := {F | IsUniformAlgebraBoundary A F}
   let S : Set K := ⋂₀ boundaries
   have hSclosed : IsClosed S := isClosed_sInter fun _ hB => hB.1

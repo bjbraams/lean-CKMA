@@ -16,6 +16,21 @@ public import Mathlib.Analysis.Normed.Lp.ProdLp
 On `H ⊕ ℓ²(ℕ, H)`, the operator sending `(h, f)` to `(T h, D_T h ⊕ S f)` is an isometry when
 `T` is a contraction, and the copy of `H` is co-invariant. Minimality is obtained afterwards by
 restricting to the closed forward orbit of that copy.
+
+## Main definitions
+
+* `CKMA.SchafferSpace`: the Hilbert direct sum `H ⊕ ℓ²(ℕ, H)`.
+* `CKMA.schafferEmbed`: isometric embedding of `H` into the first summand of `SchafferSpace H`.
+* `CKMA.schafferIsometry`: Schäffer's isometric coextension on `SchafferSpace H`.
+
+## Main results
+
+* `CKMA.schaffer_coinvariant`: co-invariance identity `J* (V y) = T (J* y)` for Schäffer's
+  isometry.
+
+## Notation
+
+* `⟪x, y⟫_ℂ`: complex inner product.
 -/
 
 @[expose] public section

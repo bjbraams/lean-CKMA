@@ -26,6 +26,28 @@ The analysis construction uses Mathlib's `Memℓp` and
 `ContinuousLinearMap.isUnit_of_forall_le_norm_inner_map` and Banach open mapping theorem.
 Unconditional synthesis and reconstruction use Mathlib's `lp.hasSum_single` and continuity of
 bounded linear maps.
+
+## Main definitions
+
+* `CKMA.frameEnergy`: extended nonnegative sum of squared inner products `∑' i, ‖⟪f i, x⟫_𝕜‖ ^ 2`.
+* `CKMA.IsBesselSequence`, `CKMA.IsFrameWithBounds`, `CKMA.IsFrame`: Bessel and frame predicates.
+* `CKMA.IsFrameAnalysis`: specification of the bounded analysis operator of a family.
+* `CKMA.frameOperatorOfAnalysis`: bounded frame operator `C.adjoint.comp C`.
+* `CKMA.canonicalDualFrame`: canonical dual family `i ↦ S.symm (f i)`.
+
+## Main results
+
+* `CKMA.IsBesselSequence.exists_analysis`: existence of a bounded analysis operator for a Bessel
+  family.
+* `CKMA.isFrame_iff_frameOperatorOfAnalysis_invertible`: frame characterization via invertibility
+  of the frame operator (**29.2**).
+* `CKMA.isFrame_iff_surjective_adjoint`: frame characterization via surjectivity of synthesis.
+* `CKMA.canonicalDualFrame_reconstruction`: reciprocal bounds and unconditional reconstruction
+  series for the canonical dual frame (**29.3**).
+
+## Notation
+
+Uses `⟪·, ·⟫_𝕜` from `InnerProductSpace` and `ℝ≥0∞` from `ENNReal`.
 -/
 
 @[expose] public section
@@ -54,8 +76,8 @@ def IsFrameWithBounds (f : ι → H) (A B : ℝ) : Prop :=
 /-- A frame admits some positive lower and finite upper bound. -/
 def IsFrame (f : ι → H) : Prop := ∃ A B, IsFrameWithBounds (𝕜 := 𝕜) f A B
 
-/-- A bounded operator is the analysis operator of `f` when its coordinates are the inner products.
-  -/
+/-- A bounded operator is the analysis operator of `f` when its coordinates are the inner
+products. -/
 def IsFrameAnalysis (f : ι → H) (C : H →L[𝕜] lp (fun _ : ι ↦ 𝕜) 2) : Prop :=
   ∀ x i, C x i = ⟪f i, x⟫_𝕜
 
@@ -160,8 +182,8 @@ theorem IsFrameAnalysis.isFrame_of_surjective_adjoint {f : ι → H}
     have hcancel : ‖x‖ ≤ K * ‖C x‖ := by nlinarith
     exact (inv_mul_le_iff₀ hK).2 hcancel
 
-/-- **29.2**: a Bessel family is a frame precisely when its frame operator is boundedly invertible.
-  -/
+/-- **29.2**: a Bessel family is a frame precisely when its frame operator is boundedly
+invertible. -/
 theorem isFrame_iff_frameOperatorOfAnalysis_invertible (f : ι → H)
     (C : H →L[𝕜] lp (fun _ : ι ↦ 𝕜) 2) (hC : IsFrameAnalysis f C) :
     IsFrame (𝕜 := 𝕜) f ↔ ∃ S : H ≃L[𝕜] H, S.toContinuousLinearMap = frameOperatorOfAnalysis C := by
@@ -291,7 +313,7 @@ theorem canonicalDualFrame_isFrameWithBounds (f : ι → H) {A B : ℝ}
     exact (le_inv_mul_iff₀ hf.1).2 hfin
 
 /-- **29.3**: the canonical dual has the reciprocal reversed bounds and both unconditional
-  expansions. -/
+expansions. -/
 theorem canonicalDualFrame_reconstruction (f : ι → H) {A B : ℝ}
     (hf : IsFrameWithBounds (𝕜 := 𝕜) f A B)
     (C : H →L[𝕜] lp (fun _ : ι ↦ 𝕜) 2) (hC : IsFrameAnalysis f C)

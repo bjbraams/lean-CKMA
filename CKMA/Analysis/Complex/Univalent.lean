@@ -21,6 +21,31 @@ have nested univalent images, exponential derivative normalization and local abs
 continuity; their evolution is described by a measurable normalized Herglotz field.
 
 Sources: GAPS 43.1, 43.3, 43.5, 43.8, 43.21 and 43.31.
+
+## Main definitions
+
+* `CKMA.IsSchlicht`: normalized univalent holomorphic functions on the unit disk.
+* `CKMA.koebeFunction`, `CKMA.koebeRotation`: the Koebe function and its rotations.
+* `CKMA.schlichtCoefficient`: Taylor coefficients of a function at the origin.
+* `CKMA.exteriorUnitDisk`, `CKMA.IsExteriorSchlicht`, `CKMA.exteriorCoefficientEnergy`: exterior
+  schlicht class and Laurent area energy.
+* `CKMA.schwarzianDerivative`: Schwarzian derivative of a complex function.
+* `CKMA.IsLocallyAbsolutelyContinuousDiskFamily`, `CKMA.IsRadialLoewnerChain`: radial Loewner
+  subordination chains.
+
+## Main results
+
+* `CKMA.koebeFunction_zero`: the Koebe function vanishes at `0`.
+* `CKMA.gronwall_area`: Grönwall's area theorem.
+* `CKMA.koebe_quarter`, `CKMA.koebe_quarter_sharp`: Koebe's `1/4`-theorem and its sharpness.
+* `CKMA.schlicht_derivative_distortion`: Koebe distortion theorem for derivatives.
+* `CKMA.de_branges`: de Branges's theorem on the Bieberbach conjecture.
+* `CKMA.nehari_univalent`: Nehari's univalence criterion via the Schwarzian derivative.
+* `CKMA.loewner_kufarev`: Loewner–Kufarev differential equation for radial chains.
+
+## Notation
+
+No new notation is introduced.
 -/
 
 @[expose] public section

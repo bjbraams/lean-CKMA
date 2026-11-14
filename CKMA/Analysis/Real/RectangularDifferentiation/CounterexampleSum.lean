@@ -27,6 +27,23 @@ import Mathlib.Topology.Algebra.InfiniteSum.Ring
 The rectangular spikes form a measurable integrable function. On the limsup of the stage
 sets, a witness rectangle has average at least the stage height and total width tending to
 zero, so rectangular differentiation fails on a set of positive measure.
+
+## Main definitions
+
+* `CKMA.Bohr.witnessRect`, `CKMA.Bohr.interRect`: witnessing rectangle through one strip and its
+  intersection with the corner spike.
+* `CKMA.Bohr.failSet`: limsup of the stage failure sets.
+
+## Main results
+
+* `CKMA.Bohr.integrable_saks`: the Saks spike sum is integrable.
+* `CKMA.exists_integrable_not_rectangularlyDifferentiable` (**06.27**, negative part): in dimension
+  `d ≥ 2`, there exists an integrable function whose rectangular averages diverge on a set of
+  positive measure.
+
+## Notation
+
+No new notation is introduced in this file.
 -/
 
 @[expose] public section
@@ -276,23 +293,7 @@ lemma witness_totalWidth_le (d : ℕ) (hd : 2 ≤ d) (k : ℕ) (v : Fin 2 → �
     intro h
     have := congrArg Fin.val h
     simp [z0, z1] at this
-  have hset : Finset.univ.filter p = {z0, z1} := by
-    ext i
-    simp only [Finset.mem_filter, Finset.mem_univ, true_and, Finset.mem_insert,
-      Finset.mem_singleton, p]
-    constructor
-    · intro hi
-      rcases (show i.val = 0 ∨ i.val = 1 by omega) with h0 | h1
-      · left
-        ext
-        simp [z0, h0]
-      · right
-        ext
-        simp [z1, h1]
-    · intro h
-      rcases h with rfl | rfl
-      · simp [z0]
-      · simp [z1]
+  have hset : Finset.univ.filter p = {z0, z1} := filter_val_le_one_eq_pair d hd
   have hplane : ∑ i ∈ Finset.univ.filter p, (R.upper i - R.lower i) =
       stageScale k * (j : ℝ) + stageScale k * (stageCount k : ℝ) / j := by
     rw [hset, Finset.sum_pair hne]
@@ -397,23 +398,7 @@ lemma volume_real_witness (d : ℕ) (hd : 2 ≤ d) (k : ℕ) (v : Fin 2 → ℝ)
     intro h
     have := congrArg Fin.val h
     simp [z0, z1] at this
-  have hset : Finset.univ.filter p = {z0, z1} := by
-    ext i
-    simp only [Finset.mem_filter, Finset.mem_univ, true_and, Finset.mem_insert,
-      Finset.mem_singleton, p]
-    constructor
-    · intro hi
-      rcases (show i.val = 0 ∨ i.val = 1 by omega) with h0 | h1
-      · left
-        ext
-        simp [z0, h0]
-      · right
-        ext
-        simp [z1, h1]
-    · intro h
-      rcases h with rfl | rfl
-      · simp [z0]
-      · simp [z1]
+  have hset : Finset.univ.filter p = {z0, z1} := filter_val_le_one_eq_pair d hd
   have hplane : ∏ i ∈ Finset.univ.filter p, (R.upper i - R.lower i) =
       (stageScale k * (j : ℝ)) * (stageScale k * (stageCount k : ℝ) / j) := by
     rw [hset, Finset.prod_pair hne]
@@ -443,23 +428,7 @@ lemma volume_real_inter (d : ℕ) (hd : 2 ≤ d) (k : ℕ) (v : Fin 2 → ℝ) (
     intro h
     have := congrArg Fin.val h
     simp [z0, z1] at this
-  have hset : Finset.univ.filter p = {z0, z1} := by
-    ext i
-    simp only [Finset.mem_filter, Finset.mem_univ, true_and, Finset.mem_insert,
-      Finset.mem_singleton, p]
-    constructor
-    · intro hi
-      rcases (show i.val = 0 ∨ i.val = 1 by omega) with h0 | h1
-      · left
-        ext
-        simp [z0, h0]
-      · right
-        ext
-        simp [z1, h1]
-    · intro h
-      rcases h with rfl | rfl
-      · simp [z0]
-      · simp [z1]
+  have hset : Finset.univ.filter p = {z0, z1} := filter_val_le_one_eq_pair d hd
   have hplane : ∏ i ∈ Finset.univ.filter p, (R.upper i - R.lower i) =
       stageScale k * stageScale k := by
     rw [hset, Finset.prod_pair hne]

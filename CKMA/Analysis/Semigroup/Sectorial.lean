@@ -19,6 +19,28 @@ with the sign convention that `-B` generates the semigroup. Balakrishnan integra
 gives spectral mapping after removing zero. Partial operators, generators and complex
 resolvents reuse TauCeti; holomorphic maps and integration use Mathlib.
 Sources: GAPS 24.20, 24.23 and 24.35.
+
+## Main definitions
+
+* `CKMA.operatorSector`, `CKMA.closedOperatorSector`: open punctured and closed sectors in `ℂ`.
+* `CKMA.IsSectorialOperator`: sectoriality of a closed densely defined complex partial linear
+  operator.
+* `CKMA.HasBoundedAnalyticSemigroupExtension`: bounded holomorphic semigroup extension on a sector.
+* `CKMA.balakrishnanCore`, `CKMA.IsBalakrishnanPower`: Balakrishnan integral and graph-closed
+  fractional powers.
+
+## Main results
+
+* `CKMA.analyticSemigroup_iff_neg_sectorial`: equivalence between bounded holomorphic semigroup
+  generation and sectoriality of the negative generator (**24.20**).
+* `CKMA.balakrishnan_fractional_powers`: closure and additivity of Balakrishnan fractional powers
+  (**24.23**).
+* `CKMA.spectral_mapping_eventually_norm_continuous`: spectral mapping theorem away from zero for
+  eventually norm-continuous semigroups (**24.35**).
+
+## Notation
+
+* `X →ₗ.[ℂ] X`: complex partial linear operators from TauCeti.
 -/
 
 @[expose] public section

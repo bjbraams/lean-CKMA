@@ -17,6 +17,23 @@ intermediate circle, and normal convergence on compact subsets.
 
 Source: GAPS 40.25. Circle integration reuses Mathlib's Cauchy integral API.
 Normal summability is the predicate from `CKMA.Analysis.Complex.Basic`.
+
+## Main definitions
+
+* `CKMA.complexAnnulus`: open concentric annulus `{z | r < ‖z - a‖ ∧ ‖z - a‖ < R}`.
+* `CKMA.laurentCoefficient`: contour integral defining the `n`th Laurent coefficient on a circle.
+
+## Main results
+
+* `CKMA.laurentCoefficient_eq`: independence of Laurent coefficients from the intermediate radius.
+* `CKMA.hasSum_laurentSeries`: pointwise Laurent expansion on an annulus.
+* `CKMA.normallySummableOn_laurentSeries`: normal convergence of the Laurent series on compact
+  subsets.
+* `CKMA.eq_laurentCoefficient`: uniqueness of Laurent coefficients.
+
+## Notation
+
+No new notation is introduced.
 -/
 
 @[expose] public section
@@ -175,11 +192,6 @@ lemma circleIntegral_inv_of_outside {a z : ℂ} {radius : ℝ} (hpos : 0 ≤ rad
     rw [sub_eq_zero.mp hwz] at hwNorm
     exact lt_irrefl _ (lt_of_lt_of_le hwNorm hout.le)
 
-/-- The kernel of an interior point integrates to `2πI`. -/
-lemma circleIntegral_inv_of_inside {a z : ℂ} {radius : ℝ} (hin : ‖z - a‖ < radius) :
-    (∮ w in C(a, radius), (w - z)⁻¹) = 2 * π * I :=
-  circleIntegral.integral_sub_inv_of_mem_ball (mem_ball_iff_norm.mpr hin)
-
 /-- Two-circle Cauchy formula on a finite annulus. -/
 lemma two_pi_I_mul_eq_circleIntegral_sub {f : ℂ → ℂ} {a z : ℂ} {r R innerRadius outerRadius : ℝ}
     (hr : 0 ≤ r) (hf : DifferentiableOn ℂ f (complexAnnulus a r R))
@@ -232,7 +244,7 @@ lemma two_pi_I_mul_eq_circleIntegral_sub {f : ℂ → ℂ} {a z : ℂ} {r R inne
       (circleIntegral_slope_sub hinner0 hne_inner
         (hf.continuousOn.mono (sphere_subset_complexAnnulus hinner
           (lt_trans hinside (lt_trans houtside houter)))))
-  have hinv_outer := circleIntegral_inv_of_inside (a := a) (z := z) houtside
+  have hinv_outer := circleIntegral.integral_sub_inv_of_mem_ball (mem_ball_iff_norm.mpr houtside)
   have hinv_inner := circleIntegral_inv_of_outside (a := a) (z := z) hinner0.le hinside
   have houter_split :
       (∮ w in C(a, outerRadius), dslope f z w) =

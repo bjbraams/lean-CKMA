@@ -27,6 +27,27 @@ properness and finite-domain continuity hypotheses control the sum rule and Fenc
 dual attainment. The finite-dimensional KKT interface separates feasibility from nonnegative
 multipliers, stationarity, and complementary slackness; sufficiency holds in any normed space.
 Sources: GAPS 12.9, 12.21, 12.39, and 12.40.
+
+## Main definitions
+
+* `CKMA.dualSubdifferential`: continuous-dual subdifferential of an extended-real function.
+* `CKMA.realSubdifferential`: continuous-dual subdifferential of a real-valued function.
+* `CKMA.fenchelPrimalValue`: primal Fenchel objective value.
+* `CKMA.fenchelDualValue`: dual Fenchel objective value.
+* `CKMA.convexFeasibleSet`: feasible set for convex inequalities and affine equalities.
+* `CKMA.HasConvexKKTMultipliers`: subgradient KKT multiplier conditions.
+
+## Main results
+
+* `CKMA.exists_choquetMeasure`: Choquet representation on compact metrizable convex sets (12.9).
+* `CKMA.dualSubdifferential_add`: Banach-space Moreau–Rockafellar sum rule (12.21).
+* `CKMA.exists_fenchelDual_maximizer`: Fenchel–Rockafellar strong duality and attainment (12.39).
+* `CKMA.exists_convexKKTMultipliers`: KKT multipliers under Slater's condition (12.40).
+* `CKMA.HasConvexKKTMultipliers.isMinOn`: sufficiency of KKT conditions.
+
+## Notation
+
+* Standard Mathlib notation is used throughout.
 -/
 
 @[expose] public section
@@ -73,17 +94,13 @@ theorem mem_realSubdifferential_iff {f : E → ℝ} {x : E} {u : StrongDual ℝ 
 
 /-- **12.21**: the Banach-space sum rule with a common finite-domain continuity point.
 The relative-interior alternative in finite dimensions is a separate target. -/
-theorem dualSubdifferential_add [CompleteSpace E] {f g : E → EReal}
+theorem dualSubdifferential_add {f g : E → EReal}
     (hf : IsProperERealFunction f) (hg : IsProperERealFunction g)
-    (hlf : LowerSemicontinuous f) (hlg : LowerSemicontinuous g)
     (hcf : Convex ℝ {p : E × ℝ | f p.1 ≤ p.2})
     (hcg : Convex ℝ {p : E × ℝ | g p.1 ≤ p.2})
     {x₀ : E} (hfin : f x₀ ≠ ⊤ ∧ g x₀ ≠ ⊤) (hcont : ContinuousAt g x₀) (x : E) :
     dualSubdifferential (fun y ↦ f y + g y) x =
       dualSubdifferential f x + dualSubdifferential g x := by
-  let _ := hlf
-  let _ := hlg
-  have _ := ‹CompleteSpace E›
   simpa [dualSubdifferential] using
     subdifferential_add_eq hf hg hcf hcg hfin hcont x
 
@@ -101,20 +118,15 @@ def fenchelDualValue (f : E → EReal) (g : F → EReal) (A : E →L[ℝ] F)
 /-- **12.39**: Fenchel–Rockafellar equality and dual attainment.
 Primal attainment is deliberately not asserted. The continuity point belongs to both
 finite domains, and the primal infimum is a finite real value. -/
-theorem exists_fenchelDual_maximizer [CompleteSpace E] [CompleteSpace F]
+theorem exists_fenchelDual_maximizer
     {f : E → EReal} {g : F → EReal} (A : E →L[ℝ] F)
     (hf : IsProperERealFunction f) (hg : IsProperERealFunction g)
-    (hlf : LowerSemicontinuous f) (hlg : LowerSemicontinuous g)
     (hcf : Convex ℝ {p : E × ℝ | f p.1 ≤ p.2})
     (hcg : Convex ℝ {p : F × ℝ | g p.1 ≤ p.2})
     {x₀ : E} (hfin : f x₀ ≠ ⊤ ∧ g (A x₀) ≠ ⊤) (hcont : ContinuousAt g (A x₀))
     (hval : fenchelPrimalValue f g A ≠ ⊥ ∧ fenchelPrimalValue f g A ≠ ⊤) :
     ∃ u : StrongDual ℝ F, fenchelPrimalValue f g A = fenchelDualValue f g A u ∧
       ∀ v, fenchelDualValue f g A v ≤ fenchelDualValue f g A u := by
-  let _ := hlf
-  let _ := hlg
-  have _ := ‹CompleteSpace E›
-  have _ := ‹CompleteSpace F›
   have hval' : marginalValue f g A 0 ≠ ⊥ ∧ marginalValue f g A 0 ≠ ⊤ := by
     have hEq : marginalValue f g A 0 = fenchelPrimalValue f g A := by
       simp [marginalValue, fenchelPrimalValue, add_zero]
@@ -124,24 +136,24 @@ theorem exists_fenchelDual_maximizer [CompleteSpace E] [CompleteSpace F]
     exists_fenchelDual_maximizer_of_qual A hf hg hcf hcg hfin hcont hval'
 
 /-- Feasibility for finitely many convex inequalities and affine equalities. -/
-def convexFeasibleSet {m n : ℕ} (g : Fin n → E → ℝ)
+def convexFeasibleSet {m : ℕ} {ι : Type*} (g : ι → E → ℝ)
     (A : E →L[ℝ] (Fin m → ℝ)) (b : Fin m → ℝ) : Set E :=
   {x | (∀ i, g i x ≤ 0) ∧ A x = b}
 
 /-- Subgradient KKT data, including nonnegative multipliers, stationarity and
 complementary slackness. Feasibility is kept separate. -/
-def HasConvexKKTMultipliers {m n : ℕ} (f : E → ℝ) (g : Fin n → E → ℝ)
+def HasConvexKKTMultipliers {m : ℕ} {ι : Type*} [Fintype ι] (f : E → ℝ) (g : ι → E → ℝ)
     (A : E →L[ℝ] (Fin m → ℝ)) (x : E) : Prop :=
-  ∃ (c : Fin n → ℝ) (u : StrongDual ℝ E)
-    (v : Fin n → StrongDual ℝ E) (y : StrongDual ℝ (Fin m → ℝ)),
+  ∃ (c : ι → ℝ) (u : StrongDual ℝ E)
+    (v : ι → StrongDual ℝ E) (y : StrongDual ℝ (Fin m → ℝ)),
     (∀ i, 0 ≤ c i) ∧ u ∈ realSubdifferential f x ∧
     (∀ i, v i ∈ realSubdifferential (g i) x) ∧
     u + (∑ i, c i • v i) + y.comp A = 0 ∧ ∀ i, c i * g i x = 0
 
 /-- **12.40**: strict feasibility gives KKT multipliers at every finite-dimensional minimizer.
 The objective and inequality constraints are finite convex functions. -/
-theorem exists_convexKKTMultipliers [FiniteDimensional ℝ E] {m n : ℕ}
-    (f : E → ℝ) (g : Fin n → E → ℝ) (A : E →L[ℝ] (Fin m → ℝ)) (b : Fin m → ℝ)
+theorem exists_convexKKTMultipliers [FiniteDimensional ℝ E] {m : ℕ} {ι : Type*} [Fintype ι]
+    (f : E → ℝ) (g : ι → E → ℝ) (A : E →L[ℝ] (Fin m → ℝ)) (b : Fin m → ℝ)
     (hf : ConvexOn ℝ Set.univ f) (hg : ∀ i, ConvexOn ℝ Set.univ (g i))
     (hslater : ∃ x₀, A x₀ = b ∧ ∀ i, g i x₀ < 0) {x : E}
     (hx : x ∈ convexFeasibleSet g A b)
@@ -159,8 +171,8 @@ theorem exists_convexKKTMultipliers [FiniteDimensional ℝ E] {m n : ℕ}
     simpa [realSubdifferential, dualSubdifferential] using hv i
 
 /-- KKT conditions are sufficient even without Slater's condition, in any normed space. -/
-theorem HasConvexKKTMultipliers.isMinOn {m n : ℕ}
-    {f : E → ℝ} {g : Fin n → E → ℝ} {A : E →L[ℝ] (Fin m → ℝ)} {b : Fin m → ℝ}
+theorem HasConvexKKTMultipliers.isMinOn {m : ℕ} {ι : Type*} [Fintype ι]
+    {f : E → ℝ} {g : ι → E → ℝ} {A : E →L[ℝ] (Fin m → ℝ)} {b : Fin m → ℝ}
     {x : E} (hKKT : HasConvexKKTMultipliers f g A x) (hx : x ∈ convexFeasibleSet g A b) :
     ∀ z ∈ convexFeasibleSet g A b, f x ≤ f z := by
   obtain ⟨c, u, v, y, hc, hu, hv, hstat, hcomp⟩ := hKKT

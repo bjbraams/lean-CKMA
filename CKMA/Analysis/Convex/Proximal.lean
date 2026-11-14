@@ -24,6 +24,23 @@ of a particular choice function. Its proof uses TauCeti's proved subgradient mon
 and finite-value supporting-inequality APIs. Existence uses TauCeti's continuous affine-minorant
 theorem to bound the objective below; the Hilbert midpoint identity then makes a minimizing
 sequence Cauchy. Source: GAPS 12.32.
+
+## Main definitions
+
+* `CKMA.proximalObjective`: Moreau's quadratic proximal objective.
+* `CKMA.IsProximalPoint`: predicate for a finite minimizer of the proximal objective.
+* `CKMA.proximalMap`: totalized proximal operator.
+
+## Main results
+
+* `CKMA.isProximalPoint_iff_mem_subdifferential`: subgradient characterization of proximal points.
+* `CKMA.IsProximalPoint.inner_sub_ge_norm_sq`: firm nonexpansiveness of proximal points.
+* `CKMA.existsUnique_isProximalPoint`: existence and uniqueness of proximal points for proper
+  lower semicontinuous convex functions on a real Hilbert space (GAPS 12.32).
+
+## Notation
+
+* Standard Mathlib notation is used throughout.
 -/
 
 @[expose] public section

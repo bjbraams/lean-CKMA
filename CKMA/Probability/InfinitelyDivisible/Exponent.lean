@@ -17,6 +17,21 @@ public import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
 The Lévy–Khintchine integrand is bounded by a multiple of `1 ∧ x²`, hence integrable for every
 Lévy measure. The resulting exponent is continuous, vanishes at zero, is compatible with
 conjugation, and scales by `1 / n` under division of the triplet by `n`.
+
+## Main definitions
+
+* `CKMA.levyIntegrand`: the Lévy–Khintchine integrand at frequency `t` and jump size `x`.
+* `CKMA.LevyTriplet.scale`: scaling of a Lévy triplet by a positive factor.
+
+## Main results
+
+* `CKMA.integrable_levyIntegrand`: the Lévy–Khintchine integrand is integrable with respect to any
+  Lévy measure.
+* `CKMA.continuous_exponent`: the characteristic exponent of a Lévy triplet is continuous.
+
+## Notation
+
+No new notation is introduced.
 -/
 
 @[expose] public section

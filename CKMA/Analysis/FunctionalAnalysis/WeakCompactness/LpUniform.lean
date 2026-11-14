@@ -28,6 +28,19 @@ is Hanche-Olsen's, *On the uniform convexity of Lp*, Proceedings of the American
 Society 134 (2006), 2359–2362 (arXiv:math/0502021). A Young defect controls thin slices of the unit
 ball of `Lp` on a probability space, and the general slice is reduced to that case by the measure
 `‖v‖ ^ p ∂μ` built from an explicit dual weight.
+
+## Main definitions
+
+* `CKMA.WeakCompactness.phaseQuotient`: quotient `u / v` off `{v = 0}`, taking value `0` at `0`.
+
+## Main results
+
+* `CKMA.WeakCompactness.exists_eLpNorm_sub_one_lt`: Hanche-Olsen's Lemma 1 on a probability space.
+* `CKMA.WeakCompactness.uniformConvexSpace_lp`: scalar `Lp` is uniformly convex for `1 < p < ∞`.
+
+## Notation
+
+* Standard Mathlib notation for `Lp` spaces and `eLpNorm`.
 -/
 
 @[expose] public section
@@ -207,6 +220,7 @@ theorem exists_eLpNorm_sub_one_lt {p₀ : ℝ} (hp : 1 < p₀) {η : ℝ} (hη :
 def phaseQuotient (p₀ : ℝ) (u v : 𝕜) : 𝕜 :=
   u * lpDualFun p₀ v / RCLike.ofReal (‖v‖ ^ p₀)
 
+/-- Evaluating `phaseQuotient` at zero in the denominator yields zero. -/
 @[simp]
 theorem phaseQuotient_zero (p₀ : ℝ) (u : 𝕜) : phaseQuotient p₀ u 0 = 0 := by
   simp [phaseQuotient, lpDualFun_zero]

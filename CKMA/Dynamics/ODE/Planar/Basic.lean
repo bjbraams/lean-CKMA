@@ -31,6 +31,22 @@ omega-limit set of a periodic orbit is the orbit itself.
 
 The standard plane is identified with `ℂ` by the coordinate equivalence `planeEquivComplex`,
 so Jordan separation, which is stated for subsets of `ℂ`, applies to planar flows.
+
+## Main definitions
+
+* `CKMA.conjFlow`: transport of a flow along a continuous linear equivalence.
+* `CKMA.planeEquivComplex`: coordinate equivalence of the standard plane with `ℂ`.
+
+## Main results
+
+* `CKMA.eq_of_hasDerivAt_generator`: uniqueness of integral curves of a `C¹` vector field.
+* `CKMA.omegaLimit_eq_range_of_periodic`: the omega-limit set of a periodic orbit is the orbit.
+* `CKMA.isPreconnected_omegaLimit_of_forward`: preconnectedness of the omega-limit set of a
+  compactly trapped forward orbit.
+
+## Notation
+
+* Standard Mathlib notation for flows and omega-limit sets.
 -/
 
 @[expose] public section

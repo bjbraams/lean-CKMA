@@ -20,6 +20,22 @@ Two-sided orbit vectors of a unitary power dilation have inner products determin
 original contraction. The resulting linear isometry of the dense orbit extends to the unique
 unitary intertwiner. The argument is the uniqueness half of Sz.-Nagy's dilation theorem, as in
 Sz.-Nagy–Foiaş–Bercovici–Kérchy, Chapter I.
+
+## Main definitions
+
+* `CKMA.unitaryDilationOrbit`: two-sided orbit of the embedded space under a unitary operator.
+* `CKMA.unitaryDilationIntertwiner`: unitary equivalence between two minimal unitary power
+  dilations.
+
+## Main results
+
+* `CKMA.inner_unitaryDilation_zpow`: inner products of orbit vectors depend only on `T`.
+* `CKMA.minimalUnitaryPowerDilation_unique_of`: uniqueness of a minimal unitary power dilation up
+  to a unique intertwining unitary.
+
+## Notation
+
+* `⟪x, y⟫_ℂ`: complex inner product.
 -/
 
 @[expose] public section

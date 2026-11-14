@@ -17,6 +17,24 @@ public import Mathlib.Topology.Algebra.InfiniteSum.Real
 The wandering subspace is `ker V*`, and the unitary part is the intersection of the forward
 ranges. Their orthogonality and the unconditional shift expansion are the content of Wold's
 theorem. The argument follows Sz.-Nagy–Foiaş–Bercovici–Kérchy, Chapter I, Section 1.
+
+## Main definitions
+
+* `CKMA.woldWanderingSubspace`: the wandering subspace `ker V*`.
+* `CKMA.woldUnitarySubspace`: the unitary subspace `⨅ n, range (Vⁿ)`.
+* `CKMA.woldShift`: shifted inclusion of the wandering subspace.
+* `CKMA.woldCoefficient`: Fourier coefficient along the `n`-th wandering shift.
+
+## Main results
+
+* `CKMA.woldShift_orthogonalFamily`: shifted copies of the wandering subspace are pairwise
+  orthogonal.
+* `CKMA.wold_hasSum_decomposition`: orthogonal decomposition into unitary part and wandering shift
+  series.
+
+## Notation
+
+* `⟪x, y⟫_ℂ`: complex inner product.
 -/
 
 @[expose] public section
@@ -121,6 +139,7 @@ theorem isClosed_woldWanderingSubspace (V : H →ₗᵢ[ℂ] H) :
     IsClosed (woldWanderingSubspace V : Set H) := by
   simpa [woldWanderingSubspace] using isClosed_ker V.toContinuousLinearMap.adjoint
 
+/-- The wandering subspace is a complete space. -/
 instance completeSpace_woldWanderingSubspace (V : H →ₗᵢ[ℂ] H) :
     CompleteSpace (woldWanderingSubspace V) :=
   (isClosed_woldWanderingSubspace V).completeSpace_coe
@@ -151,6 +170,7 @@ theorem mem_woldUnitarySubspace_iff (V : H →ₗᵢ[ℂ] H) {x : H} :
 def woldShift (V : H →ₗᵢ[ℂ] H) (n : ℕ) : woldWanderingSubspace V →ₗᵢ[ℂ] H :=
   (V ^ n).comp (woldWanderingSubspace V).subtypeₗᵢ
 
+/-- Applying `woldShift V n` to a wandering vector applies `Vⁿ`. -/
 theorem woldShift_apply (V : H →ₗᵢ[ℂ] H) (n : ℕ) (w : woldWanderingSubspace V) :
     woldShift V n w = (V.toContinuousLinearMap ^ n) (w : H) := by
   rw [woldShift, LinearIsometry.coe_comp, Function.comp_apply, Submodule.coe_subtypeₗᵢ]
@@ -313,6 +333,8 @@ theorem woldUnitary_inner_shift_eq_zero (V : H →ₗᵢ[ℂ] H) :
 def woldCoefficient (V : H →ₗᵢ[ℂ] H) (x : H) (n : ℕ) : woldWanderingSubspace V :=
   (woldShift V n).toContinuousLinearMap.adjoint x
 
+/-- Inner product against a shifted wandering vector equals the inner product in the wandering
+subspace against `woldCoefficient`. -/
 theorem inner_woldShift_woldCoefficient (V : H →ₗᵢ[ℂ] H) (x : H) (n : ℕ)
     (w : woldWanderingSubspace V) :
     ⟪woldShift V n w, x⟫_ℂ = ⟪w, woldCoefficient V x n⟫_ℂ := by

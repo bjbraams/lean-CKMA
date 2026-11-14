@@ -17,6 +17,23 @@ The projection statements use Lebesgue-almost every angle and include positive l
 when the source has dimension greater than one. Hausdorff measures and dimension are
 Mathlib's; source measurability and finite length are explicit where required.
 Sources: GAPS 37.4, 37.8 and 37.21.
+
+## Main definitions
+
+* `CKMA.HasFrostmanBound`: Frostman ball-growth condition `μ (ball x r) ≤ C r ^ s`.
+* `CKMA.planarProjection`: orthogonal scalar projection in the Euclidean plane at angle `θ`.
+* `CKMA.IsPurelyOneUnrectifiable`: pure one-unrectifiability in the plane tested against Lipschitz
+  curves.
+
+## Main results
+
+* `CKMA.frostman_compact` (**37.4**): Frostman's lemma on compact Euclidean sets.
+* `CKMA.planar_projection_dimension` (**37.8**): Marstrand's planar projection theorem.
+* `CKMA.planar_besicovitch_federer` (**37.21**): the planar Besicovitch–Federer projection theorem.
+
+## Notation
+
+* `dimH`: Hausdorff dimension from Mathlib.
 -/
 
 @[expose] public section

@@ -27,6 +27,20 @@ nonnegative series (`summable_of_sum_range_le`). Sharpness uses
 the harmonic series. Real powers, finite products and Stirling asymptotics use Mathlib
 conventions.
 Source: GAPS 11.38.
+
+## Main definitions
+
+* `CKMA.prefixGeometricMean`: the geometric mean of the first `n + 1` entries of a sequence.
+
+## Main results
+
+* `CKMA.carleman_tsum_le` (**11.38**): Carleman's inequality with constant `Real.exp 1`.
+* `CKMA.carleman_constant_optimal` (**11.38**): optimality of the constant `Real.exp 1` over
+  finitely supported nonnegative sequences.
+
+## Notation
+
+* Standard Mathlib notation for finite products, sums, and factorials.
 -/
 
 @[expose] public section

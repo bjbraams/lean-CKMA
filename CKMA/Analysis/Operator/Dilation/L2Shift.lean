@@ -14,6 +14,22 @@ public import Mathlib.Topology.Algebra.InfiniteSum.NatInt
 Schäffer's isometric dilation inserts the defect vector at index zero and shifts the existing
 `ℓ²` sequence one step to the right. Both maps are linear isometries up to the inserted vector,
 and the inserted vector is orthogonal to the shifted sequence.
+
+## Main definitions
+
+* `CKMA.l2ShiftRight`: right shift on `ℓ²(ℕ, H)`.
+* `CKMA.l2InsertZero`: isometric insertion of a vector at index `0` in `ℓ²(ℕ, H)`.
+
+## Main results
+
+* `CKMA.norm_l2ShiftRight`: the right shift on `ℓ²(ℕ, H)` is isometric.
+* `CKMA.norm_l2InsertZero`: insertion at index `0` is isometric.
+* `CKMA.inner_l2InsertZero_l2ShiftRight`: orthogonality of the inserted vector and the shifted
+  sequence.
+
+## Notation
+
+* `⟪x, y⟫_ℂ`: complex inner product.
 -/
 
 @[expose] public section

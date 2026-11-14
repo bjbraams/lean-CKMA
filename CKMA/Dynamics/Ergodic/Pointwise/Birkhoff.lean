@@ -19,6 +19,21 @@ import Mathlib.Tactic
 The almost-everywhere limit of the Birkhoff averages is the conditional expectation on the
 invariant σ-algebra. Bounded observables are identified by dominated convergence, and the
 integrable case follows by truncation.
+
+## Main definitions
+
+* `CKMA.birkhoffTruncate`: truncation of a real observable to `[-M, M]`.
+
+## Main results
+
+* `CKMA.birkhoffAverage_ae_tendsto_condExp`: Birkhoff averages converge almost everywhere to the
+  invariant conditional expectation.
+* `CKMA.birkhoffAverage_ae_tendsto_integral_of_ergodic`: in an ergodic system the limit is the
+  scalar mean.
+
+## Notation
+
+* `μ[f | m]`: conditional expectation of `f` with respect to a sub-σ-algebra `m`.
 -/
 
 @[expose] public section

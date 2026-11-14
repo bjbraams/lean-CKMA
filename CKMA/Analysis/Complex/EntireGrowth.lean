@@ -5,7 +5,6 @@ Authors: CKMA contributors
 -/
 module
 
-public import CKMA.Analysis.Complex.PlaneApproximation
 public import Mathlib.Analysis.Complex.ValueDistribution.CharacteristicFunction
 public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 public import Mathlib.Analysis.SpecialFunctions.Log.ENNRealLog
@@ -22,6 +21,27 @@ Logarithmic-derivative estimates permit an exceptional set of finite linear meas
 four shared finite values determine a nonconstant entire function.
 
 Sources: GAPS 41.10, 41.26, 41.38 and 41.48.
+
+## Main definitions
+
+* `CKMA.maximumModulus`, `CKMA.entireGrowthOrder`: maximum modulus on circles and order of growth.
+* `CKMA.IsEntireExponentialType`: entire functions of finite exponential type.
+* `CKMA.weierstrassElementaryFactor`, `CKMA.canonicalProductFactor`,
+  `CKMA.fixedGenusCanonicalProduct`: Weierstrass canonical products of fixed genus.
+* `CKMA.entireIndicator`: Phragmén–Lindelöf indicator function.
+* `CKMA.IsCartwrightFunction`, `CKMA.entireZeroCountingMeasure`: Cartwright class and zero-counting
+  measure.
+
+## Main results
+
+* `CKMA.hadamard_factorization`: Hadamard's factorization theorem for finite-order entire functions.
+* `CKMA.cartwright_zero_distribution`: Cartwright's theorem on zero distribution.
+* `CKMA.logarithmic_derivative_estimate`: Nevanlinna's lemma on the logarithmic derivative.
+* `CKMA.four_value_entire`: Nevanlinna's four-value theorem for entire functions.
+
+## Notation
+
+No new notation is introduced.
 -/
 
 @[expose] public section

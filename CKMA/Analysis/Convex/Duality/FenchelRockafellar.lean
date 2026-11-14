@@ -19,6 +19,21 @@ bounded above near `0`, so it has a subgradient there. The conjugate of the valu
 splits as `f⋆(-A* u) + g⋆(u)`, and Fenchel–Young therefore produces a maximizer of the dual
 objective. Lower semicontinuity and completeness are not used. Source: Borwein–Lewis,
 *Convex Analysis and Nonlinear Optimization*, Theorem 3.3.5; GAPS 12.39.
+
+## Main definitions
+
+* `CKMA.marginalValue`: the perturbation value function `y ↦ ⨅ x, f x + g (A x + y)`.
+
+## Main results
+
+* `CKMA.fenchelConjugate_marginalValue`: Fenchel conjugate of the marginal value function.
+* `CKMA.fenchelDual_le_marginalValue`: weak Fenchel duality inequality.
+* `CKMA.exists_fenchelDual_maximizer_of_qual`: Fenchel–Rockafellar strong duality and dual
+  attainment under a continuity qualification (GAPS 12.39).
+
+## Notation
+
+* Standard Mathlib notation is used throughout.
 -/
 
 @[expose] public section

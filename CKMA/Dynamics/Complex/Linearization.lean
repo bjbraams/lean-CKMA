@@ -20,6 +20,22 @@ the Böttcher interface uses the exact superattracting order and a compatible le
 Existence and uniqueness are statements about germs: equality is eventual near zero,
 with the root-of-unity ambiguity specified in the superattracting case. Global
 conjugacies or convergence on the entire basin are not assumed.
+
+## Main definitions
+
+* `CKMA.IsKoenigsCoordinate`: predicate for a normalized Koenigs coordinate at `0`.
+* `CKMA.IsBoettcherCoordinate`: predicate for a local analytic Böttcher coordinate at `0`.
+
+## Main results
+
+* `CKMA.exists_koenigsCoordinate`, `CKMA.koenigsCoordinate_eventuallyEq`: existence and germ
+  uniqueness of Koenigs coordinates.
+* `CKMA.exists_boettcherCoordinate`, `CKMA.boettcherCoordinate_unique_up_to_root`: existence and
+  uniqueness up to a root of unity of Böttcher coordinates.
+
+## Notation
+
+* Standard Mathlib complex analysis and filter notation.
 -/
 
 @[expose] public section

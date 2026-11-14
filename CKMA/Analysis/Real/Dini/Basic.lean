@@ -16,6 +16,23 @@ public import Mathlib.Order.LiminfLimsup
 The four one-sided upper and lower Dini derivatives take values in the extended real
 line. Both left derivatives use the quotient `(f(x + h) - f(x)) / h` with negative `h`.
 Limits and extended-real operations use Mathlib. Source: GAPS 05.10.
+
+## Main definitions
+
+* `CKMA.extendedDifferenceQuotient`: real difference quotient in `EReal`.
+* `CKMA.upperRightDiniDerivative`, `CKMA.lowerRightDiniDerivative`: right Dini derivatives.
+* `CKMA.upperLeftDiniDerivative`, `CKMA.lowerLeftDiniDerivative`: left Dini derivatives.
+* `CKMA.HasDiniType`: the four Denjoy–Young–Saks derivative patterns.
+
+## Main results
+
+* `CKMA.differenceQuotient_rev`: symmetry of the difference quotient.
+* `CKMA.diniQuotient_bddAbove`, `CKMA.diniQuotient_bddBelow`: `EReal` boundedness of the
+  extended difference quotient under any filter.
+
+## Notation
+
+No new notation is introduced.
 -/
 
 @[expose] public section
@@ -50,6 +67,16 @@ def lowerLeftDiniDerivative (f : ℝ → ℝ) (x : ℝ) : EReal :=
 lemma differenceQuotient_rev (f : ℝ → ℝ) (a b : ℝ) :
     (f a - f b) / (a - b) = (f b - f a) / (b - a) := by
   rw [(neg_sub b a).symm, div_neg, ← neg_div, neg_sub]
+
+/-- The extended difference quotient is bounded above in `EReal` under any filter. -/
+lemma diniQuotient_bddAbove (f : ℝ → ℝ) (x : ℝ) (l : Filter ℝ) :
+    l.IsBoundedUnder (· ≤ ·) (extendedDifferenceQuotient f x) :=
+  ⟨⊤, Eventually.of_forall fun _ => le_top⟩
+
+/-- The extended difference quotient is bounded below in `EReal` under any filter. -/
+lemma diniQuotient_bddBelow (f : ℝ → ℝ) (x : ℝ) (l : Filter ℝ) :
+    l.IsBoundedUnder (· ≥ ·) (extendedDifferenceQuotient f x) :=
+  ⟨⊥, Eventually.of_forall fun _ => bot_le⟩
 
 /-- The four alternatives of Denjoy–Young–Saks, numbered from zero.
 The left derivatives use the same quotient `(f(x+h)-f(x))/h` with `h<0`. -/

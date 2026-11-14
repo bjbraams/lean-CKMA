@@ -18,6 +18,21 @@ derivative-under-the-integral identity is supplied explicitly, by Mathlib's
 `IsLocalMin.hasDerivAt_eq_zero`. This interface separates the variational argument from
 the analytic growth conditions needed for differentiation under the integral.
 Source: GAPS 36.1.
+
+## Main definitions
+
+* `CKMA.variationalAction`: integral action functional `∫ L(x, u(x), U(x)) dμ`.
+* `CKMA.firstVariationIntegrand`: directional derivative of the Lagrangian with respect to `(u, U)`
+  in direction `(φ, Dφ)`.
+
+## Main results
+
+* `CKMA.integral_firstVariation_eq_zero`: vanishing of the weak Euler–Lagrange first variation at a
+  local minimizer (**36.1**).
+
+## Notation
+
+* Standard Mathlib Bochner integral and Fréchet derivative notation.
 -/
 
 @[expose] public section

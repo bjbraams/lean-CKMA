@@ -20,6 +20,19 @@ gradient energy for a finite-dimensional real Gaussian law.
 
 The theorem supplies the L² and gradient integrability conditions needed by the raw
 entropy formula; inner products and covariance follow Mathlib's Gaussian conventions.
+
+## Main definitions
+
+* `CKMA.nonnegativeFunctionEntropy`: Extended entropy of a nonnegative function over a probability
+  measure using `InformationTheory.klFun`.
+
+## Main results
+
+* `CKMA.gaussian_logSobolev`: Gaussian logarithmic Sobolev inequality with sharp constant `2`.
+
+## Notation
+
+No new notation is introduced in this file.
 -/
 
 @[expose] public section

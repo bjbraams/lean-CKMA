@@ -18,6 +18,23 @@ between zero and one. The Fourier identity has a positive finite normalization c
 Finite energies describe the same functions and the inhomogeneous energies are comparable.
 The Fourier transform is Mathlib's L² operator and all energies retain extended values.
 Source: GAPS 26.37.
+
+## Main definitions
+
+* `CKMA.fractionalEnergy`: Gagliardo squared fractional `H^s` seminorm on `ℝ^d`.
+* `CKMA.besselPotentialEnergy`: inhomogeneous Bessel-potential `H^s` energy via the `L²` Fourier
+  transform.
+
+## Main results
+
+* `CKMA.fractionalEnergy_eq_fourier`: Fourier representation of the Gagliardo fractional `H^s`
+  seminorm (**26.37**).
+* `CKMA.fractionalEnergy_ne_top_iff`, `CKMA.fractional_bessel_energy_comparable`: equivalence of
+  finite Gagliardo and Bessel-potential energies on `L²(ℝ^d)`.
+
+## Notation
+
+* `𝓕`: the `L²` Fourier transform from Mathlib.
 -/
 
 @[expose] public section

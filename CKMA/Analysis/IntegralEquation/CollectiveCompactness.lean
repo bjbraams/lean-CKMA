@@ -23,6 +23,19 @@ Collectively compact operator approximations combine strong convergence with com
 the union of unit-ball images. The scalar field is real or complex. The statements control
 inverses of `1 - Kₙ` and convergence of solutions.
 Source: GAPS 25.47.
+
+## Main definitions
+
+* `CKMA.IsCollectivelyCompact`: collective compactness of a sequence of bounded linear operators.
+
+## Main results
+
+* `CKMA.collectivelyCompact_invertible` (**25.47**): uniform invertibility of `1 - K n` and strong
+  convergence of solutions under collectively compact approximation.
+
+## Notation
+
+* Standard Mathlib notation for continuous linear maps and equivalences.
 -/
 
 @[expose] public section

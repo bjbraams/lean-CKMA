@@ -44,6 +44,19 @@ Bochner-integrable. A singleton is a Dirac mass. Otherwise a countable separatin
 produces a continuous strictly convex series, the barycentric functional on the span of
 that series and the ambient affine restrictions is dominated by the concave envelope, and
 the Riesz measure of a positive extension is the representing measure.
+
+## Main definitions
+
+* (No new public definitions; uses `MeasureTheory.IsProbabilityMeasure` and `Set.extremePoints`.)
+
+## Main results
+
+* `CKMA.exists_choquetMeasure_of_compact`: Choquet representation theorem on compact metrizable
+  convex sets (GAPS 12.9).
+
+## Notation
+
+* Standard Mathlib notation is used throughout.
 -/
 
 @[expose] public section
@@ -74,7 +87,7 @@ private lemma affine_combo (a : V →ᴬ[ℝ] ℝ) {s t : ℝ} (hst : s + t = 1)
   ring
 
 /-- A singleton compact convex set is represented by the Dirac mass at its point. -/
-private theorem exists_choquet_dirac (K : Set V) (_hK : IsCompact K) (_hc : Convex ℝ K)
+private theorem exists_choquet_dirac (K : Set V)
     [TopologicalSpace.MetrizableSpace K] [MeasurableSpace K] [BorelSpace K] (x : K)
     (hsub : Subsingleton K) :
     ∃ μ : Measure K, IsProbabilityMeasure μ ∧
@@ -500,7 +513,7 @@ private lemma envelope_concave {K : Set V} [CompactSpace K] (ell : ℕ → Stron
 
 /-- A non-extreme point is a point of strict inequality for the series and its envelope. -/
 private lemma fStrict_lt_envelope_of_not_extreme {K : Set V} [CompactSpace K]
-    (_hc : Convex ℝ K) (ell : ℕ → StrongDual ℝ V)
+    (ell : ℕ → StrongDual ℝ V)
     (hell : ∀ ⦃p q : K⦄, p ≠ q → ∃ n, ell n p.1 ≠ ell n q.1) {y : K}
     (hy : y.1 ∉ K.extremePoints ℝ) :
     fStrict ell y < envelope (fStrict ell) y := by
@@ -926,7 +939,7 @@ private theorem exists_choquet_bonsall (K : Set V) (hK : IsCompact K) (hc : Conv
   have hextreme : μ {y : K | y.1 ∉ K.extremePoints ℝ} = 0 := by
     refine measure_mono_null ?_ hlt_null
     intro y hy
-    exact fStrict_lt_envelope_of_not_extreme hc ell hell hy
+    exact fStrict_lt_envelope_of_not_extreme ell hell hy
   exact ⟨μ, hprob, hextreme, haff_int⟩
 
 /-- **12.9**: every point of a compact metrizable convex set is the barycenter of a
@@ -939,7 +952,7 @@ theorem exists_choquetMeasure_of_compact {V : Type*} [AddCommGroup V] [Module �
       μ {y : K | y.1 ∉ K.extremePoints ℝ} = 0 ∧
       ∀ a : V →ᴬ[ℝ] ℝ, (∫ y : K, a y.1 ∂μ) = a x.1 := by
   by_cases hsub : Subsingleton K
-  · exact exists_choquet_dirac K hK hc x hsub
+  · exact exists_choquet_dirac K x hsub
   · exact exists_choquet_bonsall K hK hc hsub x
 
 end CKMA

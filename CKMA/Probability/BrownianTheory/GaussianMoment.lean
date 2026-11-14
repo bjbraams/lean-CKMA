@@ -14,6 +14,21 @@ public import Mathlib.MeasureTheory.Integral.Bochner.L1
 A centered Gaussian of variance `v` is the law of `√v` times a standard normal. Absolute moments
 therefore scale by `v ^ (p / 2)`. Pre-Brownian increments are exactly those Gaussians, so they
 obey the Kolmogorov moment bound with every exponent strictly above `2`.
+
+## Main definitions
+
+* `CKMA.gaussianAbsMoment`: absolute moment of order `p` of a standard real Gaussian.
+
+## Main results
+
+* `CKMA.integral_abs_rpow_gaussianReal`: scaling identity for absolute moments of centered real
+  Gaussians.
+* `CKMA.IsPreBrownianReal.integral_abs_sub_rpow_le`: Kolmogorov moment bound for pre-Brownian
+  increments.
+
+## Notation
+
+No new notation is introduced.
 -/
 
 @[expose] public section

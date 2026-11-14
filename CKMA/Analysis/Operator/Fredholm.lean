@@ -25,11 +25,28 @@ remainders, and conversely. The proof uses TauCeti's compact-perturbation theore
 kernel/cokernel squeezing argument of the Tau Ceti contributors in
 `TauCeti.Analysis.Fredholm.CompactPerturbation`.
 
-For complex endomorphisms the Fredholm essential spectrum is invariant under compact
-perturbations. For self-adjoint Hilbert-space operators, its spectral complement is the set of
-isolated finite-multiplicity eigenvalues. The identification uses the closed-range adjoint
-theorem in `TauCeti.Analysis.Fredholm.Adjoint` and Mathlib's continuous functional calculus.
+For endomorphisms the Fredholm essential spectrum is invariant under compact perturbations.
+For self-adjoint Hilbert-space operators, its spectral complement is the set of isolated
+finite-multiplicity eigenvalues. The identification uses the closed-range adjoint theorem in
+`TauCeti.Analysis.Fredholm.Adjoint` and Mathlib's continuous functional calculus.
 Sources: GAPS 21.11 and 21.16.
+
+## Main definitions
+
+* `CKMA.essentialSpectrum`: the Fredholm essential spectrum of a bounded endomorphism.
+* `CKMA.IsIsolatedIn`: isolated point of a subset of a topological space.
+
+## Main results
+
+* `CKMA.isFredholm_iff_exists_compact_remainders`: Atkinson's characterization of Fredholm
+  operators.
+* `CKMA.essentialSpectrum_add_compact`: stability of the Fredholm essential spectrum under
+  compact perturbations.
+* `CKMA.mem_spectrum_sdiff_essentialSpectrum_iff`: discrete spectrum of a self-adjoint operator.
+
+## Notation
+
+* `Kᗮ`: orthogonal complement of a submodule `K`.
 -/
 
 @[expose] public section
@@ -38,7 +55,7 @@ noncomputable section
 
 namespace CKMA
 
-open ContinuousLinearMap
+open ContinuousLinearMap Filter Topology
 
 section Atkinson
 
@@ -93,19 +110,19 @@ theorem isFredholm_iff_exists_compact_remainders (T : E →L[𝕜] F) :
 
 end Atkinson
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] [CompleteSpace E]
+variable {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] [CompleteSpace E]
 
 /-- The Fredholm essential spectrum. Other notions of essential spectrum need not agree
 for non-self-adjoint operators. -/
-def essentialSpectrum (T : E →L[ℂ] E) : Set ℂ :=
-  {z | ¬ IsFredholm (T - z • (1 : E →L[ℂ] E))}
+def essentialSpectrum (T : E →L[𝕜] E) : Set 𝕜 :=
+  {z | ¬ IsFredholm (T - z • (1 : E →L[𝕜] E))}
 
 /-- Compact perturbations preserve the Fredholm essential spectrum, without self-adjointness. -/
-theorem essentialSpectrum_add_compact (T K : E →L[ℂ] E) (hK : IsCompactOperator K) :
+theorem essentialSpectrum_add_compact (T K : E →L[𝕜] E) (hK : IsCompactOperator K) :
     essentialSpectrum (T + K) = essentialSpectrum T := by
   ext z
-  have hf : IsFredholm (T + K - z • (1 : E →L[ℂ] E)) ↔
-      IsFredholm (T - z • (1 : E →L[ℂ] E)) := by
+  have hf : IsFredholm (T + K - z • (1 : E →L[𝕜] E)) ↔
+      IsFredholm (T - z • (1 : E →L[𝕜] E)) := by
     constructor
     · intro h
       have h' := h.add_of_isCompactOperator (show IsCompactOperator (-K) from by
@@ -118,9 +135,9 @@ theorem essentialSpectrum_add_compact (T K : E →L[ℂ] E) (hK : IsCompactOpera
       abel
   exact not_congr hf
 
-/-- An isolated point of a set, using a punctured neighbourhood. -/
-def IsIsolatedIn (z : ℂ) (s : Set ℂ) : Prop :=
-  z ∈ s ∧ ∃ ε : ℝ, 0 < ε ∧ ∀ w ∈ s, dist w z < ε → w = z
+/-- An isolated point of a subset of a topological space. -/
+def IsIsolatedIn {X : Type*} [TopologicalSpace X] (x : X) (s : Set X) : Prop :=
+  x ∈ s ∧ ∀ᶠ y in 𝓝 x, y ∈ s → y = x
 
 /-- The indicator of an isolated point is continuous along the ambient set. -/
 private lemma continuousOn_indicator_isolated {z : ℂ} {s : Set ℂ} (h : IsIsolatedIn z s) :
@@ -128,13 +145,11 @@ private lemma continuousOn_indicator_isolated {z : ℂ} {s : Set ℂ} (h : IsIso
   intro x _hx
   rw [Metric.continuousWithinAt_iff]
   intro eps heps
-  have h' := h
-  simp only [IsIsolatedIn] at h'
-  obtain ⟨_, δ, hδ, hball⟩ := h'
+  obtain ⟨δ, hδ, hball⟩ := Metric.eventually_nhds_iff.mp h.2
   by_cases hxz : x = z
   · refine ⟨δ, hδ, fun y hy hyd => ?_⟩
     rw [hxz] at hyd
-    have hyz : y = z := hball y hy hyd
+    have hyz : y = z := hball hyd hy
     simp only [hxz, hyz, ↓reduceIte, dist_self]
     exact heps
   · refine ⟨dist x z, dist_pos.mpr hxz, fun y hy hyd => ?_⟩
@@ -152,13 +167,11 @@ private lemma continuousOn_resolvent_isolated {z : ℂ} {s : Set ℂ} (h : IsIso
   intro x _hx
   rw [Metric.continuousWithinAt_iff]
   intro eps heps
-  have h' := h
-  simp only [IsIsolatedIn] at h'
-  obtain ⟨_, δ, hδ, hball⟩ := h'
+  obtain ⟨δ, hδ, hball⟩ := Metric.eventually_nhds_iff.mp h.2
   by_cases hxz : x = z
   · refine ⟨δ, hδ, fun y hy hyd => ?_⟩
     rw [hxz] at hyd
-    have hyz : y = z := hball y hy hyd
+    have hyz : y = z := hball hyd hy
     simp only [hxz, hyz, ↓reduceIte, dist_self]
     exact heps
   · have hinv : ContinuousAt (fun w : ℂ => (w - z)⁻¹) x :=
@@ -366,14 +379,10 @@ theorem mem_spectrum_sdiff_essentialSpectrum_iff {H : Type*} [NormedAddCommGroup
       rw [hshift]
       exact hunitSc.neg
     refine ⟨?_, hker_ne, hfred.finite_ker⟩
-    simp only [IsIsolatedIn]
-    exact ⟨hzspec, ⟨eps, heps, hiso⟩⟩
+    exact ⟨hzspec, Metric.eventually_nhds_iff.mpr ⟨eps, heps, fun w hdist hw => hiso w hw hdist⟩⟩
   · rintro ⟨hiso, _, hfin⟩
     let Sz : H →L[ℂ] H := T - z • (1 : H →L[ℂ] H)
-    have hzspec : z ∈ spectrum ℂ T := by
-      have h := hiso
-      simp only [IsIsolatedIn] at h
-      exact h.1
+    have hzspec : z ∈ spectrum ℂ T := hiso.1
     have : IsStarNormal T := hT.isStarNormal
     let f : ℂ → ℂ := fun w => if w = z then 1 else 0
     let q : ℂ → ℂ := fun w => if w = z then 0 else (w - z)⁻¹

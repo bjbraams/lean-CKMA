@@ -16,6 +16,20 @@ import Mathlib.Tactic
 
 Birkhoff's theorem along `T^[m]` bounds the limsup of a linearly controlled subadditive process.
 The liminf and limsup therefore agree, and Scheffé's identity gives L¹ convergence.
+
+## Main definitions
+
+* `CKMA.kingmanLimsupReal`: the real representative of the extended limsup.
+
+## Main results
+
+* `CKMA.kingmanRatio_ae_tendsto_linear`: almost-everywhere convergence under a linear lower bound.
+* `CKMA.kingman_eLpNorm_tendsto_of_linear`: L¹ convergence under a linear lower bound.
+* `CKMA.kingman_pointwise_of_linear`: Kingman's theorem under a linear lower bound.
+
+## Notation
+
+* `μ[f | m]`: conditional expectation of `f` with respect to a sub-σ-algebra `m`.
 -/
 
 @[expose] public section
@@ -70,7 +84,7 @@ lemma ereal_le_of_forall_pos_le_add {a b : EReal}
 
 omit [MeasurableSpace Ω] in
 /-- A convex weight does not increase a value beyond the slack in a lower bound. -/
-lemma kingman_convex_mul_le {a c C : ℝ} (ha : -C ≤ a) (_hc0 : 0 ≤ c) (hc1 : c ≤ 1) :
+lemma kingman_convex_mul_le {a c C : ℝ} (ha : -C ≤ a) (hc1 : c ≤ 1) :
     c * a ≤ a + (1 - c) * C := by
   have hgap : 0 ≤ 1 - c := by linarith
   have hneg : -a ≤ C := by linarith
@@ -179,14 +193,13 @@ lemma kingman_one_ratio_lt {f : ℕ → Ω → ℝ} {C φ δ : ℝ} {m n : ℕ} 
     let c : ℝ := ((q * m : ℕ) : ℝ) / (n : ℝ)
     let a : ℝ := f (q * m) ω / ((q * m : ℕ) : ℝ)
     have hn0 : (0 : ℝ) < (n : ℝ) := Nat.cast_pos.mpr hn
-    have hc0 : 0 ≤ c := div_nonneg (Nat.cast_nonneg _) hn0.le
     have hc1 : c ≤ 1 := by
       rw [div_le_one₀ hn0]
       exact Nat.cast_le.mpr hqm_le
     have ha_low : -C ≤ a := by
       rw [le_div_iff₀ (Nat.cast_pos.mpr hqm_pos)]
       exact hC (q * m) hqm_pos
-    have hconv := kingman_convex_mul_le ha_low hc0 hc1
+    have hconv := kingman_convex_mul_le ha_low hc1
     have hsum : ((q * m : ℕ) : ℝ) + (r : ℝ) = (n : ℝ) := by
       rw [← Nat.cast_add, hdiv]
     have hc_id : 1 - c = (r : ℝ) / (n : ℝ) := by

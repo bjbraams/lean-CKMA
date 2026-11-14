@@ -15,6 +15,22 @@ public import Mathlib.Topology.Order.OrderClosed
 
 An up-crossing of a positive level is compared with the endpoint by reflecting the first grid
 passage. Sending the mesh and the gap above the level to zero removes the overshoot.
+
+## Main definitions
+
+* `CKMA.gridHit`: event that the process reaches level `b` on the dyadic grid of `[0, t]`.
+* `CKMA.hitSet`: event that the process reaches level `a` on `[0, t]`.
+* `CKMA.endpointSet`: event that the process is at least `a` at time `t`.
+
+## Main results
+
+* `CKMA.measure_hit_le`: the closed hitting measure is at most twice the endpoint measure.
+* `CKMA.two_mul_endpoint_le_hit`: twice the endpoint measure is at most the hitting measure.
+* `CKMA.reflection_principle`: the reflection principle for a real Brownian motion.
+
+## Notation
+
+No new notation is introduced.
 -/
 
 @[expose] public section
@@ -225,7 +241,7 @@ lemma strictHit_subset_iUnion_tail {C : ℝ≥0 → Ω → ℝ}
 /-- Strict crossing is at most twice the closed endpoint. -/
 lemma measure_strictHit_le {C : ℝ≥0 → Ω → ℝ} (hC : IsBrownianReal C μ)
     (hm : ∀ u, Measurable (C u)) (hcont : ∀ ω, Continuous (fun u => C u ω)) {t : ℝ≥0}
-    (ht : 0 < t) {b : ℝ} (_hb : 0 < b) :
+    (ht : 0 < t) {b : ℝ} :
     μ (strictHit C t b) ≤ 2 * μ (endpointSet C t b) := by
   have hmono : Monotone (gridTail C t b) := monotone_gridTail C t b
   have hsup : ⨆ N, μ (gridTail C t b N) ≤ 2 * μ (endpointSet C t b) := by
@@ -249,7 +265,7 @@ lemma hit_subset_strict (C : ℝ≥0 → Ω → ℝ) (t : ℝ≥0) {b a : ℝ} (
 
 /-- The closed hitting measure is at most twice the endpoint. -/
 lemma measure_hit_le {C : ℝ≥0 → Ω → ℝ} (hC : IsBrownianReal C μ) (hm : ∀ u, Measurable (C u))
-    (hcont : ∀ ω, Continuous (fun u => C u ω)) {t : ℝ≥0} (ht : 0 < t) {a : ℝ} (ha : 0 < a) :
+    (hcont : ∀ ω, Continuous (fun u => C u ω)) {t : ℝ≥0} (ht : 0 < t) {a : ℝ} :
     μ (hitSet C t a) ≤ 2 * μ (endpointSet C t a) := by
   let εm : ℕ → ℝ := fun m => 1 / ((m : ℝ) + 1)
   let b : ℕ → ℝ := fun m => a - εm m
@@ -276,14 +292,11 @@ lemma measure_hit_le {C : ℝ≥0 → Ω → ℝ} (hC : IsBrownianReal C μ) (hm
       exact le_of_tendsto' hb h
     · intro h m
       exact le_trans (by unfold b εm; linarith [show 0 ≤ εm m from by positivity]) h
-  have hbpos : ∀ᶠ m in atTop, 0 < b m := by
-    filter_upwards [hε.eventually (Iio_mem_nhds ha)] with m hm
-    exact sub_pos.mpr hm
   have hle : ∀ᶠ m in atTop, μ (hitSet C t a) ≤ 2 * μ (endpointSet C t (b m)) := by
-    filter_upwards [hbpos] with m hmpos
+    refine Eventually.of_forall fun m => ?_
     have hba : b m < a := sub_lt_self a (by positivity : 0 < εm m)
     exact (measure_mono (hit_subset_strict C t hba)).trans
-      (measure_strictHit_le hC hm hcont ht hmpos)
+      (measure_strictHit_le hC hm hcont ht)
   have hmeas : ∀ m, NullMeasurableSet (endpointSet C t (b m)) μ :=
     fun m => (measurableSet_endpoint hm t (b m)).nullMeasurableSet
   have hlim := tendsto_measure_iInter_atTop hmeas hanti ⟨0, measure_ne_top μ _⟩
@@ -293,7 +306,7 @@ lemma measure_hit_le {C : ℝ≥0 → Ω → ℝ} (hC : IsBrownianReal C μ) (hm
 
 /-- One grid still controls the endpoint up to a band and an oscillation event. -/
 lemma two_mul_endpoint_le_aux {C : ℝ≥0 → Ω → ℝ} (hC : IsBrownianReal C μ)
-    (hm : ∀ u, Measurable (C u)) {t : ℝ≥0} {a : ℝ} (ha : 0 < a) {ε : ℝ} (_hε : 0 < ε)
+    (hm : ∀ u, Measurable (C u)) {t : ℝ≥0} {a : ℝ} (ha : 0 < a) {ε : ℝ}
     (n : ℕ) :
     2 * μ (endpointSet C t a) ≤
       μ (hitSet C t a) + μ (bandSet C t a ε) + μ (oscSet C t ε n) := by
@@ -469,7 +482,7 @@ lemma two_mul_endpoint_le_hit {C : ℝ≥0 → Ω → ℝ} (hC : IsBrownianReal 
       (ENNReal.mul_ne_top (by simp) (measure_ne_top μ _))
       (ENNReal.add_ne_top.2 ⟨measure_ne_top μ _, measure_ne_top μ _⟩)
       (fun _ => measure_ne_top μ _)
-      (fun n => two_mul_endpoint_le_aux hC hm ha hε n) hosc
+      (fun n => two_mul_endpoint_le_aux hC hm ha n) hosc
   let εm : ℕ → ℝ := fun m => 1 / ((m : ℝ) + 1)
   have hεtend : Tendsto εm atTop (𝓝 0) := by
     have hinv : Tendsto (fun m : ℕ => ((m : ℝ) + 1)⁻¹) atTop (𝓝 0) :=
@@ -532,7 +545,7 @@ lemma reflection_continuous {C : ℝ≥0 → Ω → ℝ} (hC : IsBrownianReal C 
     (ha : 0 < a) (t : ℝ≥0) : μ (hitSet C t a) = 2 * μ (endpointSet C t a) := by
   by_cases ht : t = 0
   · exact reflection_zero hC ha ht
-  · exact le_antisymm (measure_hit_le hC hm hcont (pos_iff_ne_zero.mpr ht) ha)
+  · exact le_antisymm (measure_hit_le hC hm hcont (pos_iff_ne_zero.mpr ht))
       (two_mul_endpoint_le_hit hC hm hcont (pos_iff_ne_zero.mpr ht) ha)
 
 /-- **08.4**: the reflection principle for a real Brownian motion. -/

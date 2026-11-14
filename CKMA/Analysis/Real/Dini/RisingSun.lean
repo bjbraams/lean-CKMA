@@ -16,13 +16,27 @@ public import Mathlib.Topology.Sequences
 On a compact interval, a continuous real function attains a rightmost maximum on every
 right-hand subinterval. A strict rise stops at the first point where that maximum value
 is attained, and the function stays strictly below the maximum on the intervening segment.
+
+## Main definitions
+
+* `CKMA.Dini.RightmostMaximum`: rightmost maximizer of a function on `[x, b]`.
+
+## Main results
+
+* `CKMA.Dini.exists_rightmostMaximum`: existence of a rightmost maximum for a continuous
+  function on a compact interval.
+* `CKMA.Dini.risingSun_rightmost`: Riesz rising sun lemma for the rightmost maximum.
+
+## Notation
+
+No new notation is introduced.
 -/
 
 @[expose] public section
 
 noncomputable section
 
-namespace CKMA
+namespace CKMA.Dini
 
 open Set Filter Topology
 
@@ -129,4 +143,4 @@ theorem risingSun_rightmost {f : ℝ → ℝ} {a b x : ℝ} (hf : ContinuousOn f
     have hwI : w ∈ Icc x b := ⟨hdmem.1.1.trans hw.1.le, hw.2⟩
     exact (R.isMax hwI).trans_eq hdmem.2.symm
 
-end CKMA
+end CKMA.Dini

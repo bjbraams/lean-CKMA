@@ -24,6 +24,22 @@ The Ornstein–Uhlenbeck entropy derivative of `Entropy.lean` yields the inequal
 positive functions with bounded derivatives. Compactly supported squares are reduced to that case
 by adding a positive constant, and a general smooth square-integrable function is recovered by
 smooth cutoffs and Fatou's lemma. The constant is the sharp constant `2` of `gaussianReal 0 1`.
+
+## Main definitions
+
+* `CKMA.entropyExpr`: Extended entropy of a real function written with `InformationTheory.klFun`.
+* `CKMA.oneDimCutoff`: Smooth cutoff equal to `1` on `[-R, R]` and `0` outside `[-R - 1, R + 1]`.
+
+## Main results
+
+* `CKMA.gaussian_realEntropy_sq_add_le`: Real Gaussian entropy bound for `φ ^ 2 + δ` with compactly
+  supported `φ`.
+* `CKMA.gaussian_logSobolev_oneDim`: One-dimensional Gaussian logarithmic Sobolev inequality with
+  constant `2`.
+
+## Notation
+
+No new notation is introduced in this file.
 -/
 
 @[expose] public section
@@ -506,7 +522,7 @@ lemma deriv_oneDimCutoff (R x : ℝ) :
   rw [deriv_fun_mul hdl hdr, hleft, hright]
 
 /-- The cutoff derivative is bounded independently of the radius. -/
-lemma abs_deriv_oneDimCutoff_le {C R x : ℝ} (_hC0 : 0 ≤ C)
+lemma abs_deriv_oneDimCutoff_le {C R x : ℝ}
     (hC : ∀ y, |deriv Real.smoothTransition y| ≤ C) :
     |deriv (oneDimCutoff R) x| ≤ 2 * C := by
   rw [deriv_oneDimCutoff]
@@ -521,14 +537,12 @@ lemma abs_deriv_oneDimCutoff_le {C R x : ℝ} (_hC0 : 0 ≤ C)
     (Real.smoothTransition (R + 1 - x) * (deriv Real.smoothTransition (R + 1 + x) * 1))
   have h1 : |deriv Real.smoothTransition (R + 1 - x) * (-1) *
       Real.smoothTransition (R + 1 + x)| ≤ C := by
-    rw [abs_mul, abs_mul, abs_neg, abs_one]
-    have := hC (R + 1 - x)
-    nlinarith [this, hρ1, abs_nonneg (deriv Real.smoothTransition (R + 1 - x)), _hC0]
+    rw [abs_mul, abs_mul, abs_neg, abs_one, mul_one]
+    exact (mul_le_of_le_one_right (abs_nonneg _) hρ1).trans (hC (R + 1 - x))
   have h2 : |Real.smoothTransition (R + 1 - x) *
       (deriv Real.smoothTransition (R + 1 + x) * 1)| ≤ C := by
-    rw [abs_mul, abs_mul, abs_one]
-    have := hC (R + 1 + x)
-    nlinarith [this, hρ2, abs_nonneg (deriv Real.smoothTransition (R + 1 + x)), _hC0]
+    rw [abs_mul, abs_mul, abs_one, mul_one]
+    exact (mul_le_of_le_one_left (abs_nonneg _) hρ2).trans (hC (R + 1 + x))
   linarith
 
 /-- Inside the flat region the cutoff does not change the derivative. -/
@@ -559,7 +573,7 @@ lemma sq_deriv_mul_cutoff_le {φ : ℝ → ℝ} {C R x : ℝ} (hφ : Differentia
     have hmem := oneDimCutoff_mem_Icc R x
     rw [abs_of_nonneg hmem.1]
     exact hmem.2
-  have hη' : |deriv (oneDimCutoff R) x| ≤ 2 * C := abs_deriv_oneDimCutoff_le hC0 hC
+  have hη' : |deriv (oneDimCutoff R) x| ≤ 2 * C := abs_deriv_oneDimCutoff_le hC
   have hle : |deriv (fun y => φ y * oneDimCutoff R y) x| ≤
       |deriv φ x| + 2 * C * |φ x| := by
     rw [hprod]
@@ -579,13 +593,12 @@ lemma sq_deriv_mul_cutoff_le {φ : ℝ → ℝ} {C R x : ℝ} (hφ : Differentia
 
 /-- Fatou lower semicontinuity of `entropyExpr` along a sequence of bounded approximants. -/
 lemma entropyExpr_le_of_nat_approx {hApprox : ℕ → ℝ → ℝ} {hLim : ℝ → ℝ} {c : ℕ → ℝ} {c0 : ℝ}
-    (hcont : ∀ n, Continuous (hApprox n)) (_hcontLim : Continuous hLim)
-    (_hnn : ∀ n x, 0 ≤ hApprox n x) (hnnLim : ∀ x, 0 ≤ hLim x)
+    (hcont : ∀ n, Continuous (hApprox n)) (hnnLim : ∀ x, 0 ≤ hLim x)
     (hpt : ∀ x, Tendsto (fun n => hApprox n x) atTop (𝓝 (hLim x)))
     (hmass : Tendsto (fun n => ∫ x, hApprox n x ∂gaussianReal 0 1) atTop
       (𝓝 (∫ x, hLim x ∂gaussianReal 0 1)))
     (hineq : ∀ n, entropyExpr (gaussianReal 0 1) (hApprox n) ≤ ENNReal.ofReal (c n))
-    (_hcnn : ∀ n, 0 ≤ c n) (hc : Tendsto c atTop (𝓝 c0)) (hc0 : 0 ≤ c0) :
+    (hc : Tendsto c atTop (𝓝 c0)) (hc0 : 0 ≤ c0) :
     entropyExpr (gaussianReal 0 1) hLim ≤ ENNReal.ofReal c0 := by
   let γ : Measure ℝ := gaussianReal 0 1
   let mass : ℕ → ℝ := fun n => ∫ x, hApprox n x ∂γ
@@ -784,12 +797,9 @@ lemma gaussian_entropyExpr_sq_add_le {φ : ℝ → ℝ} {δ : ℝ}
     (c := fun n => 2 * ∫ x, (deriv (φn n) x) ^ 2 ∂γ)
     (c0 := 2 * ∫ x, (deriv φ x) ^ 2 ∂γ)
     (fun n => ((hφnC n).continuous.fun_pow 2).fun_add continuous_const)
-    ((hφ.continuous.fun_pow 2).fun_add continuous_const)
-    (fun _ _ => add_nonneg (sq_nonneg _) hδ.le)
     (fun _ => add_nonneg (sq_nonneg _) hδ.le)
     hpt_sq (by simpa [γ] using htend_mass)
     (fun n => by simpa [γ] using hineq n)
-    (fun n => mul_nonneg (by norm_num) (integral_nonneg fun _ => sq_nonneg _))
     (by simpa using htend_energy.const_mul 2)
     (mul_nonneg (by norm_num) (integral_nonneg fun _ => sq_nonneg _))
   simpa [γ] using happ
@@ -836,8 +846,6 @@ theorem gaussian_logSobolev_oneDim (φ : ℝ → ℝ) (hφ : ContDiff ℝ (↑(�
       (c := fun _ : ℕ => 2 * ∫ x, (deriv φ x) ^ 2 ∂γ)
       (c0 := 2 * ∫ x, (deriv φ x) ^ 2 ∂γ)
       (fun _ => (hφ.continuous.fun_pow 2).fun_add continuous_const)
-      (hφ.continuous.fun_pow 2)
-      (fun _ _ => add_nonneg (sq_nonneg _) (by positivity))
       (fun x => sq_nonneg _)
       (fun x => by
         have hlim := (tendsto_const_nhds (x := φ x ^ 2)).add
@@ -849,7 +857,6 @@ theorem gaussian_logSobolev_oneDim (φ : ℝ → ℝ) (hφ : ContDiff ℝ (↑(�
         exact hlim)
       (by simpa [γ] using htend_mass)
       (fun n => hineq_δ n)
-      (fun _ => mul_nonneg (by norm_num) (integral_nonneg fun _ => sq_nonneg _))
       tendsto_const_nhds
       (mul_nonneg (by norm_num) (integral_nonneg fun _ => sq_nonneg _))
     have hnn : 0 ≤ᵐ[γ] fun x => (deriv φ x) ^ 2 := ae_of_all _ fun _ => sq_nonneg _

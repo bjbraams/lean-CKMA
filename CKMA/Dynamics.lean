@@ -5,6 +5,7 @@ Authors: CKMA contributors
 -/
 module
 
+
 public import CKMA.Dynamics.Complex.Linearization
 public import CKMA.Dynamics.Complex.Linearization.Boettcher
 public import CKMA.Dynamics.Complex.Linearization.Koenigs
@@ -22,6 +23,7 @@ public import CKMA.Dynamics.Ergodic.Pointwise.KingmanLimit
 public import CKMA.Dynamics.Ergodic.Pointwise.KingmanOrbit
 public import CKMA.Dynamics.Ergodic.Pointwise.Maximal
 public import CKMA.Dynamics.Ergodic.Recurrence
+public import CKMA.Dynamics.Ergodic.Recurrence.Combinatorics
 public import CKMA.Dynamics.Ergodic.Recurrence.Multiple
 public import CKMA.Dynamics.Flow
 public import CKMA.Dynamics.IteratedFunctionSystem

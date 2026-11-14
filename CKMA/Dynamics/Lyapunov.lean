@@ -25,12 +25,27 @@ public import Mathlib.Topology.Order.MonotoneConvergence
 
 The derivative `lyapunovDerivative` is evaluated along an explicit generator of an
 existing global flow. The local positive-definite criteria imply metric stability and,
-for a strictly decreasing function, local attraction. Finite dimension supplies the
+for a strictly decreasing function, local attraction. A proper metric space supplies the
 compactness needed for these local criteria.
 
 LaSalle's principle uses a compact positively invariant set and the largest full-flow
 invariant subset of the zero-derivative locus. It makes no finiteness assumption on the
 rest set. Common flow, stability and invariant-subset definitions are in `CKMA.Dynamics.Flow`.
+
+## Main definitions
+
+* `CKMA.lyapunovDerivative`: derivative of a Lyapunov function `V` along a vector field `F`.
+
+## Main results
+
+* `CKMA.isLyapunovStable_of_lyapunov`: the non-strict Lyapunov stability criterion.
+* `CKMA.isLocallyAttracting_of_strict_lyapunov`: the strict Lyapunov criterion for local
+  asymptotic stability.
+* `CKMA.lasalle`: LaSalle's invariance principle on a compact positively invariant set.
+
+## Notation
+
+* Standard Mathlib notation for flows, Fréchet derivatives, and metric balls.
 -/
 
 @[expose] public section
@@ -153,10 +168,9 @@ private theorem tendsto_atTop_of_antitoneOn_Ici {f : ℝ → ℝ} (hf : Antitone
 
 /-- **31.24**: the non-strict Lyapunov criterion, stated for an existing flow.
 Local ODE construction and continuation are not conclusions of this interface. -/
-theorem isLyapunovStable_of_lyapunov [FiniteDimensional ℝ E]
+theorem isLyapunovStable_of_lyapunov [ProperSpace E]
     (ϕ : Flow ℝ E) (F : E → E) (V : E → ℝ) (x₀ : E)
-    (hflow : FlowHasGenerator ϕ F)
-    (_heq : ∀ t, ϕ t x₀ = x₀) {r : ℝ} (hr : 0 < r)
+    (hflow : FlowHasGenerator ϕ F) {r : ℝ} (hr : 0 < r)
     (hV : ContDiffOn ℝ 1 V (Metric.ball x₀ r)) (hV₀ : V x₀ = 0)
     (hpos : ∀ x ∈ Metric.ball x₀ r, x ≠ x₀ → 0 < V x)
     (hdec : ∀ x ∈ Metric.ball x₀ r, lyapunovDerivative F V x ≤ 0) :
@@ -270,7 +284,7 @@ theorem isLyapunovStable_of_lyapunov [FiniteDimensional ℝ E]
     exact hε
 
 /-- The strict Lyapunov criterion implies local asymptotic stability. -/
-theorem isLocallyAttracting_of_strict_lyapunov [FiniteDimensional ℝ E]
+theorem isLocallyAttracting_of_strict_lyapunov [ProperSpace E]
     (ϕ : Flow ℝ E) (F : E → E) (V : E → ℝ) (x₀ : E)
     (hflow : FlowHasGenerator ϕ F)
     (heq : ∀ t, ϕ t x₀ = x₀) {r : ℝ} (hr : 0 < r)
@@ -287,7 +301,7 @@ theorem isLocallyAttracting_of_strict_lyapunov [FiniteDimensional ℝ E]
     · exact le_of_eq hzero
     · exact (hdec y hy hy0).le
   have hstable : IsLyapunovStable ϕ x₀ :=
-    isLyapunovStable_of_lyapunov ϕ F V x₀ hflow heq hr hV hV₀ hpos hdec_le
+    isLyapunovStable_of_lyapunov ϕ F V x₀ hflow hr hV hV₀ hpos hdec_le
   refine ⟨hstable, ?_⟩
   obtain ⟨δ, hδ_pos, hδ⟩ := hstable (r / 2) (half_pos hr)
   refine ⟨δ, hδ_pos, ?_⟩
@@ -418,15 +432,12 @@ theorem isLocallyAttracting_of_strict_lyapunov [FiniteDimensional ℝ E]
 /-- **31.26**: LaSalle on a compact positively invariant set, without a finite-rest-set hypothesis.
   -/
 theorem lasalle (ϕ : Flow ℝ E) (F : E → E) (V : E → ℝ)
-    (hflow : FlowHasGenerator ϕ F)
-    (hF : Continuous F) (hV : ContDiff ℝ 1 V)
+    (hflow : FlowHasGenerator ϕ F) (hV : ContDiff ℝ 1 V)
     (K : Set E) (hK : IsCompact K) (hinv : ∀ t : ℝ, 0 ≤ t → Set.MapsTo (ϕ t) K K)
     (hdec : ∀ x ∈ K, lyapunovDerivative F V x ≤ 0) {x : E} (hx : x ∈ K) :
     ∀ ε : ℝ, 0 < ε → ∀ᶠ t in atTop,
       ∃ y ∈ largestInvariantSubset ϕ {z ∈ K | lyapunovDerivative F V z = 0},
         dist (ϕ t x) y < ε := by
-  have _hLyap_cont : Continuous (lyapunovDerivative F V) :=
-    (hV.continuous_fderiv one_ne_zero).clm_apply hF
   have hstayK : ∀ t, 0 ≤ t → ϕ t x ∈ K := fun t ht ↦ hinv t ht hx
   have htail_sub : closure (image2 ϕ (Ici 0) {x}) ⊆ K := by
     refine closure_minimal ?_ hK.isClosed

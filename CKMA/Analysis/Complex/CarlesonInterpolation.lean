@@ -17,6 +17,27 @@ The interpolation interfaces include Carleson's sequence criterion, positivity o
 finite Nevanlinna–Pick matrices, and the finite corona theorem with uniform bounds.
 
 Sources: GAPS 42.20, 42.24, 42.26 and 42.27.
+
+## Main definitions
+
+* `CKMA.carlesonBox`: Carleson box on the unit disk.
+* `CKMA.IsDiskCarlesonMeasure`: Carleson measure on the open unit disk.
+* `CKMA.pseudohyperbolicDistance`, `CKMA.diskSeparationProduct`: pseudohyperbolic metric and
+  Blaschke separation product.
+* `CKMA.IsHardyInterpolatingSequence`: `H^∞` interpolating sequence in the unit disk.
+* `CKMA.pickMatrix`: Nevanlinna–Pick interpolation matrix.
+
+## Main results
+
+* `CKMA.carleson_embedding_iff`: Carleson's theorem on `Hᵖ` embedding into `Lᵖ(μ)`.
+* `CKMA.carleson_interpolation_iff`: Carleson's uniform separation criterion for `H^∞`
+  interpolation.
+* `CKMA.nevanlinna_pick`: Nevanlinna–Pick interpolation theorem.
+* `CKMA.disk_corona`: Carleson's corona theorem on the unit disk.
+
+## Notation
+
+No new notation is introduced.
 -/
 
 @[expose] public section
@@ -39,8 +60,7 @@ def IsDiskCarlesonMeasure (μ : Measure ℂ) : Prop :=
     μ (carlesonBox θ ℓ) ≤ ENNReal.ofReal (C * ℓ)
 
 /-- **42.20**: the Hardy embedding criterion for every finite positive exponent. -/
-theorem carleson_embedding_iff (μ : Measure ℂ) [IsFiniteMeasure μ]
-    (hμ : μ complexUnitDiskᶜ = 0) {p : ℝ} (hp : 0 < p) :
+theorem carleson_embedding_iff (μ : Measure ℂ) {p : ℝ} (hp : 0 < p) :
     IsDiskCarlesonMeasure μ ↔ ∃ C : ℝ, 0 < C ∧ ∀ f : ℂ → ℂ, MemHardyClass p f →
       (∫⁻ z, (ENNReal.ofReal ‖f z‖) ^ p ∂μ) ≤ ENNReal.ofReal C * (hardyGauge p f) ^ p := by
   sorry
@@ -61,8 +81,7 @@ def IsHardyInterpolatingSequence (a : ℕ → ℂ) : Prop :=
       diskSupGauge f ≤ ENNReal.ofReal C ∧ ∀ n, f (a n) = b n
 
 /-- **42.24**: Carleson's uniform separation criterion. -/
-theorem carleson_interpolation_iff (a : ℕ → ℂ) (ha : ∀ n, a n ∈ complexUnitDisk)
-    (hinj : Function.Injective a) :
+theorem carleson_interpolation_iff (a : ℕ → ℂ) :
     IsHardyInterpolatingSequence a ↔ ∃ δ : ℝ, 0 < δ ∧ ∀ j, δ ≤ diskSeparationProduct a j := by
   sorry
 

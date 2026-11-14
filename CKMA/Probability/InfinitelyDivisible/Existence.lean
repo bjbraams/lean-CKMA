@@ -18,6 +18,20 @@ Quadratically weighted convolution roots are tight. Along an ultrafilter, their 
 converge, and the compensating drifts converge with them. The atom at the origin is the Gaussian
 variance. Inverting the quadratic weight off the origin produces the Lévy measure. A bounded
 correction on `{1 / 2 ≤ |x| ≤ 1}` replaces the continuous cutoff by the truncation `|x| ≤ 1`.
+
+## Main definitions
+
+* `CKMA.levyMeasureOfLimit`: Lévy measure extracted from a weak limit of quadratically weighted
+  convolution roots.
+
+## Main results
+
+* `CKMA.exists_levyTriplet_of_isInfinitelyDivisible`: every infinitely divisible probability law
+  admits a Lévy–Khintchine triplet.
+
+## Notation
+
+No new notation is introduced.
 -/
 
 @[expose] public section

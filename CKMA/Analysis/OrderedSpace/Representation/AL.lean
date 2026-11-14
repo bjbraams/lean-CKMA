@@ -28,6 +28,23 @@ functional makes evaluation into `L¹` an isometry for the original norm, and a 
 the ideal dense. A maximal disjoint family reduces the general case to weak units of the
 closed principal bands, glued by the sum of the pushed-forward measures.
 Sources: GAPS 19.29; Aliprantis–Burkinshaw, Theorem 4.27; Schaefer, Theorem II.8.5.
+
+## Main definitions
+
+* `CKMA.alNormFunctional`: linear functional extending the norm on the positive cone of an AL-space.
+* `CKMA.OrderUnitSpace`: principal order ideal of a positive vector equipped with the order-unit
+  gauge norm.
+
+## Main results
+
+* `CKMA.tendsto_trunc_of_weakUnit`: truncations against a weak unit converge in norm.
+* `CKMA.denseRange_orderUnit`: the principal ideal of a weak unit is norm-dense.
+* `CKMA.exists_al_representation_of_weakUnit`: Kakutani representation of an AL-space with a weak
+  unit as `L¹(μ)`.
+
+## Notation
+
+No new notation is introduced in this file.
 -/
 
 @[expose] public section
@@ -180,9 +197,7 @@ theorem abs_add_of_latticeDisjoint {x y : E} (h : LatticeDisjoint x y) :
     nth_rw 1 [← posPart_sub_negPart x]
     nth_rw 1 [← posPart_sub_negPart y]
     abel
-  have hsplit := eq_posPart_negPart_of_inf_eq_zero
-      (add_nonneg (posPart_nonneg x) (posPart_nonneg y))
-      (add_nonneg (negPart_nonneg x) (negPart_nonneg y)) hcross hdiff
+  have hsplit := eq_posPart_negPart_of_inf_eq_zero hcross hdiff
   calc |x + y| = (x + y)⁺ + (x + y)⁻ := by rw [← posPart_add_negPart]
     _ = (x⁺ + y⁺) + (x⁻ + y⁻) := by rw [hsplit.1, hsplit.2]
     _ = (x⁺ + x⁻) + (y⁺ + y⁻) := by abel

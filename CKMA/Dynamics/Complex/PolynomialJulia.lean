@@ -23,6 +23,28 @@ limit and connectedness through finite critical orbits for degree at least two.
 The quadratic critical-orbit convention defines the Mandelbrot set. The entire-function
 branch defines escaping orbits and states the nonemptiness and unbounded-closure-component
 clauses of Eremenko's theorem. Derivatives and iteration use Mathlib's conventions.
+
+## Main definitions
+
+* `CKMA.polynomialFilledJuliaSet`: the filled Julia set of a complex polynomial.
+* `CKMA.polynomialJuliaSet`: the polynomial Julia set as the boundary of the filled Julia set.
+* `CKMA.repellingComplexPeriodicPoints`: repelling periodic points of a complex map.
+* `CKMA.polynomialEscapeRate`: the logarithmic escape-rate function of a polynomial.
+* `CKMA.quadraticFamily`, `CKMA.mandelbrotSet`: the quadratic family `z² + c` and Mandelbrot set.
+* `CKMA.complexEscapingSet`, `CKMA.IsTranscendentalEntire`: escaping set and transcendental entire
+  predicates.
+
+## Main results
+
+* `CKMA.closure_repellingPeriodicPoints`: density of repelling periodic points in the Julia set.
+* `CKMA.polynomial_escapeRate_properties`: existence and properties of the Green escape-rate limit.
+* `CKMA.polynomial_julia_connected_iff`: critical-orbit characterization of connectedness.
+* `CKMA.mandelbrot_properties`: compactness, connectedness, and escape bound of the Mandelbrot set.
+* `CKMA.eremenko_escaping`: Eremenko's theorem on the escaping set of a transcendental entire map.
+
+## Notation
+
+* `ℂ[X]`: polynomial ring over `ℂ`.
 -/
 
 @[expose] public section

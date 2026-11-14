@@ -38,6 +38,25 @@ Vitali–Hahn–Saks argument and the Baire property give uniform absolute conti
 integrals. A decomposition into sign sets of the real and imaginary parts upgrades the estimate to
 the integral of the norm. Eberlein–Šmulian extracts a weakly convergent subsequence from any
 sequence in a relatively weakly compact set.
+
+## Main definitions
+
+* `CKMA.WeakCompactness.indicatorConstLinf`: bounded indicator functional in `L∞`.
+* `CKMA.WeakCompactness.setIntegralCLM`: continuous linear functional integrating an `L¹` function
+  over a measurable set.
+
+## Main results
+
+* `CKMA.WeakCompactness.uniformIntegrable_of_tendsto_weak`: a weakly convergent sequence in `L¹`
+  is uniformly integrable.
+* `CKMA.WeakCompactness.unifIntegrable_of_isCompact_closure_toWeakSpace`: a relatively weakly
+  compact subset of `L¹` on a finite measure space is uniformly integrable.
+* `CKMA.WeakCompactness.isCompact_closure_toWeakSpace_iff_uniformIntegrable`: the Dunford–Pettis
+  characterization of relative weak compactness in `L¹` on a finite measure space.
+
+## Notation
+
+* Standard Mathlib notation for `Lp` spaces, weak spaces, and symmetric differences.
 -/
 
 @[expose] public section

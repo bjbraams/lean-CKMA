@@ -6,7 +6,7 @@ Authors: CKMA contributors
 module
 
 public import CKMA.Analysis.Fourier.Sampling
-public import CKMA.Analysis.InnerProductSpace.L2FunctionFamilies
+public import CKMA.Analysis.InnerProductSpace.Basic
 public import Mathlib.Data.Set.Card
 
 /-!
@@ -19,6 +19,28 @@ interpolation of inverse-integral bandlimited representatives obey Landau's nece
 density bounds at bandwidth `[-B,B]`.
 
 Sources: GAPS 29.61 and 29.62.
+
+## Main definitions
+
+* `CKMA.samplingExponential`: normalized exponential `(2B)⁻¹/² exp(-2πi λ ξ)` on `[-B, B]`.
+* `CKMA.IsUniformlySeparatedSamples`: positive minimum separation between distinct sample points.
+* `CKMA.sampleCount`, `CKMA.lowerSampleDensity`, `CKMA.upperSampleDensity`: sample counting and
+  lower/upper uniform Beurling densities.
+* `CKMA.HasFrequencyBand`: spectral support inside `[-B, B]`.
+* `CKMA.IsStableBandSampling`, `CKMA.IsStableBandInterpolation`: stable sampling and interpolation
+  predicates for bandlimited functions.
+
+## Main results
+
+* `CKMA.kadec_oneQuarter`: Kadec's `1/4` perturbation theorem for exponential Riesz bases
+  (**29.61**).
+* `CKMA.kadec_oneQuarter_sharp`: sharpness of the `1/4` threshold in Kadec's theorem.
+* `CKMA.landau_sampling_density`, `CKMA.landau_interpolation_density`: Landau's necessary Beurling
+  density bounds for stable sampling and interpolation (**29.62**).
+
+## Notation
+
+Uses `ℝ≥0∞` from `ENNReal`.
 -/
 
 @[expose] public section

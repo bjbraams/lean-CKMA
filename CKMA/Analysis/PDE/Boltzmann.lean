@@ -17,6 +17,23 @@ with a probability-normalized angular measure. Entropy production has factor `1/
 the H identity uses positive densities and explicit integrability of all four logarithmic
 collision tests. Iterated integrals use Mathlib's product-measure and Bochner APIs.
 Source: GAPS 34.70.
+
+## Main definitions
+
+* `CKMA.hardSphereAngularMeasure`: uniform angular probability measure on the unit sphere in `ℝ³`.
+* `CKMA.postCollisionVelocity`: post-collision velocities for elastic hard-sphere collisions.
+* `CKMA.hardSphereCollisionOperator`: the hard-sphere Boltzmann collision operator.
+* `CKMA.hardSphereEntropyProduction`: the nonnegative collision entropy production functional.
+
+## Main results
+
+* `CKMA.hardSphereEntropyProduction_nonneg`: nonnegativity of the hard-sphere entropy production.
+* `CKMA.boltzmann_h_identity`: Boltzmann's H identity relating logarithmic collision tests to
+  entropy production (**34.70**).
+
+## Notation
+
+* Standard Mathlib notation for `EuclideanRealSpace 3` and Bochner integrals.
 -/
 
 @[expose] public section

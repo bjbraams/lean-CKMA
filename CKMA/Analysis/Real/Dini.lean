@@ -16,6 +16,20 @@ line. Both left derivatives use the quotient `(f(x+h)-f(x))/h` with negative h.
 Denjoy–Young–Saks assigns one of four mutually exclusive derivative patterns almost
 everywhere to an arbitrary finite real function, without measurability assumptions.
 Limits and extended-real operations use Mathlib. Source: GAPS 05.10.
+
+## Main definitions
+
+This file re-exports the Dini derivative definitions and `CKMA.HasDiniType` from
+`CKMA.Analysis.Real.Dini.Basic`.
+
+## Main results
+
+* `CKMA.ae_existsUnique_diniType`: the Denjoy–Young–Saks theorem for arbitrary finite real
+  functions.
+
+## Notation
+
+No new notation is introduced.
 -/
 
 @[expose] public section
@@ -30,6 +44,6 @@ open MeasureTheory
 No measurability or continuity assumption on the function is imposed. -/
 theorem ae_existsUnique_diniType (f : ℝ → ℝ) :
     ∀ᵐ x ∂volume, ∃! i : Fin 4, HasDiniType f x i :=
-  ae_diniType f
+  Dini.ae_diniType f
 
 end CKMA

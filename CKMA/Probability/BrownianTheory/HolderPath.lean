@@ -14,6 +14,22 @@ public import Mathlib.MeasureTheory.Constructions.BorelSpace.Metrizable
 On the full-measure set of paths with summable dyadic increments, dyadic floors form a
 Cauchy sequence. The limit is continuous, agrees with the original process at each fixed
 time, and is locally Hölder for every exponent strictly below one half.
+
+## Main definitions
+
+* `CKMA.HasIncrementTail`: eventual dyadic increment bound on one integer cell.
+* `CKMA.holderPath`: continuous modification constructed as the limit along dyadic floors.
+
+## Main results
+
+* `CKMA.continuous_holderPath`: every modified path is continuous.
+* `CKMA.holderPath_isBrownian`: the dyadic-floor limit is a Brownian motion.
+* `CKMA.exists_continuous_holder_modification`: a pre-Brownian process has an everywhere
+  continuous Hölder modification.
+
+## Notation
+
+No new notation is introduced.
 -/
 
 @[expose] public section
@@ -52,7 +68,7 @@ lemma snap_of_nonneg (hB : IsPreBrownianReal B μ) (ω : Ω) {x : ℝ} (hx : 0 �
 
 /-- Dyadic floor of a nonnegative time, as a nonnegative time. -/
 def floorTime (n : ℕ) (t : ℝ≥0) : ℝ≥0 :=
-  ⟨dyadicFloorReal n (t : ℝ), dyadicFloorReal_nonneg t.2⟩
+  ⟨dyadicFloorReal n (t : ℝ), dyadicFloorReal_nonneg⟩
 
 /-- Real value of a dyadic floor. -/
 lemma coe_floorTime (n : ℕ) (t : ℝ≥0) : (floorTime n t : ℝ) = dyadicFloorReal n (t : ℝ) := rfl
@@ -69,7 +85,7 @@ lemma measurable_approx (hB : IsPreBrownianReal B μ) (n : ℕ) (t : ℝ≥0) :
 /-- `snap` at a dyadic floor is the dyadic approximation. -/
 lemma snap_floor (hB : IsPreBrownianReal B μ) (ω : Ω) (n : ℕ) (t : ℝ≥0) :
     snap hB ω (dyadicFloorReal n (t : ℝ)) = approx hB n t ω := by
-  have hx : 0 ≤ dyadicFloorReal n (t : ℝ) := dyadicFloorReal_nonneg t.2
+  have hx : 0 ≤ dyadicFloorReal n (t : ℝ) := dyadicFloorReal_nonneg
   unfold snap approx floorTime
   split_ifs
   exact congrArg (fun u => version hB u ω) (Subtype.ext rfl)
@@ -84,7 +100,7 @@ lemma le_natFloor_add_one (t : ℝ≥0) :
 lemma abs_floorTime_sub (n : ℕ) (t : ℝ≥0) :
     |(floorTime n t : ℝ) - (t : ℝ)| ≤ 1 / 2 ^ n := by
   have hle : dyadicFloorReal n (t : ℝ) ≤ (t : ℝ) := dyadicFloorReal_le t.2
-  have hlt : (t : ℝ) < dyadicFloorReal n (t : ℝ) + 1 / 2 ^ n := lt_dyadicFloorReal_add t.2
+  have hlt : (t : ℝ) < dyadicFloorReal n (t : ℝ) + 1 / 2 ^ n := lt_dyadicFloorReal_add
   rw [coe_floorTime, abs_sub_comm, abs_of_nonneg (sub_nonneg.2 hle)]
   exact le_of_lt (by linarith)
 
@@ -236,14 +252,14 @@ lemma ae_tendsto_version_floor (hB : IsPreBrownianReal B μ) (t : ℝ≥0) :
   exact hlt.trans hrootε
 
 /-- Eventual dyadic increment bound on one integer cell. -/
-def incrementTail (hB : IsPreBrownianReal B μ) (ω : Ω) (k j N : ℕ) : Prop :=
+def HasIncrementTail (hB : IsPreBrownianReal B μ) (ω : Ω) (k j N : ℕ) : Prop :=
   ∀ n, N ≤ n → ∀ i : ℕ, i < 2 ^ n →
     |snap hB ω (↑j + (↑i + 1) / 2 ^ n) - snap hB ω (↑j + (↑i : ℝ) / 2 ^ n)| ≤
       ((1 : ℝ) / 2 ^ n) ^ subHalf k
 
 /-- A good path has some finite increment threshold on each cell. -/
 lemma exists_incrementTail (hB : IsPreBrownianReal B μ) {ω : Ω} (hω : ω ∈ good hB)
-    (k j : ℕ) : ∃ N, incrementTail hB ω k j N := by
+    (k j : ℕ) : ∃ N, HasIncrementTail hB ω k j N := by
   rcases eventually_atTop.1 (hω k j) with ⟨N, hN⟩
   refine ⟨N, ?_⟩
   intro n hn i hi
@@ -278,7 +294,7 @@ def goodLevel (hB : IsPreBrownianReal B μ) (ω : Ω) (k j : ℕ) : ℕ :=
 
 /-- The selected level really starts the Hölder tail. -/
 lemma incrementTail_goodLevel (hB : IsPreBrownianReal B μ) {ω : Ω} (hω : ω ∈ good hB)
-    (k j : ℕ) : incrementTail hB ω k j (goodLevel hB ω k j) := by
+    (k j : ℕ) : HasIncrementTail hB ω k j (goodLevel hB ω k j) := by
   have hlevel : goodLevel hB ω k j = Nat.find (exists_incrementTail hB hω k j) := by
     simp [goodLevel, hω]
   rw [hlevel]
@@ -296,9 +312,8 @@ lemma cellConst_nonneg (hB : IsPreBrownianReal B μ) (ω : Ω) (k j : ℕ) :
 /-- A good path has dyadic Hölder increments on every integer cell. -/
 lemma hasDyadic_snap (hB : IsPreBrownianReal B μ) {ω : Ω} (hω : ω ∈ good hB)
     (k j : ℕ) : HasDyadicIncrements (snap hB ω) (subHalf k) (cellConst hB ω k j) j := by
-  simpa [cellConst, incrementTail] using
-    hasDyadicIncrements_of_eventually (subHalf_pos k).le
-      (incrementTail_goodLevel hB hω k j)
+  simpa [cellConst, HasIncrementTail] using
+    hasDyadicIncrements_of_eventually (incrementTail_goodLevel hB hω k j)
 
 /-- Limit of the dyadic floors, and zero off the good set. -/
 def holderPath (hB : IsPreBrownianReal B μ) (t : ℝ≥0) (ω : Ω) : ℝ :=
@@ -401,9 +416,9 @@ lemma holderOnWith_subHalf (hB : IsPreBrownianReal B μ) {ω : Ω} (hω : ω ∈
 
 /-- Every positive exponent below one half is attained on each compact interval. -/
 lemma holderOnWith_of_le_subHalf (hB : IsPreBrownianReal B μ) {ω : Ω}
-    (hω : ω ∈ good hB) {α : ℝ≥0} (_hα0 : 0 < α) (hα : (α : ℝ) < 1 / 2) (T : ℝ≥0) :
+    (hω : ω ∈ good hB) {α : ℝ≥0} (hα : (α : ℝ) < 1 / 2) (T : ℝ≥0) :
     ∃ K : ℝ≥0, HolderOnWith K α (fun t => holderPath hB t ω) (Icc 0 T) := by
-  obtain ⟨k, hk⟩ := exists_subHalf_ge (NNReal.coe_nonneg α) hα
+  obtain ⟨k, hk⟩ := exists_subHalf_ge hα
   obtain ⟨C, hC⟩ := holderOnWith_subHalf hB hω k T
   have hle : α ≤ subHalfNN k := by
     rw [← NNReal.coe_le_coe, coe_subHalfNN]
@@ -478,8 +493,8 @@ theorem exists_continuous_holder_modification (hB : IsPreBrownianReal B μ) :
               HolderOnWith K α (fun t => C t ω) (Icc 0 T) := by
   refine ⟨holderPath hB, measurable_holderPath hB, continuous_holderPath hB,
     holderPath_isBrownian hB, holderPath_ae_eq hB, ?_⟩
-  filter_upwards [ae_mem_good hB] with ω hω α hα0 hα T
+  filter_upwards [ae_mem_good hB] with ω hω α _hα0 hα T
   have hα' : (α : ℝ) < 1 / 2 := by exact_mod_cast hα
-  exact holderOnWith_of_le_subHalf hB hω hα0 hα' T
+  exact holderOnWith_of_le_subHalf hB hω hα' T
 
 end CKMA

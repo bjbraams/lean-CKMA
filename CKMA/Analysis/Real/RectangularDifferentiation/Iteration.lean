@@ -20,6 +20,23 @@ The strong maximal function in dimension `n + 1` is at most the uncentered one-d
 maximal function, in the last coordinate, of the strong maximal function of the slices. The
 resulting distribution function is estimated by Fubini, the one-dimensional weak-type bound,
 and one application of the logarithmic iteration kernel.
+
+## Main definitions
+
+* `CKMA.coordEquiv`, `CKMA.sliceFunction`, `CKMA.partialStrongMax`: coordinate splitting,
+  slice function, and strong maximal function on slices.
+* `CKMA.RatRectangle`: open axis-parallel rectangle with rational endpoints.
+
+## Main results
+
+* `CKMA.strongMaximal_le_partial`: the `(n + 1)`-dimensional strong maximal function is bounded by
+  the one-dimensional maximal function of `partialStrongMax`.
+* `CKMA.strongMaximal_iteration_scale`: scaled logarithmic kernel estimate for strong maximal
+  iteration.
+
+## Notation
+
+No new notation is introduced in this file.
 -/
 
 @[expose] public section
@@ -228,7 +245,7 @@ theorem strongMaximalFunction_mono {d : ℕ} {f g : (Fin d → ℝ) → ℝ}
 
 /-- A pointwise bound by a constant bounds the strong maximal function. -/
 theorem strongMaximalFunction_le_ofReal {d : ℕ} {f : (Fin d → ℝ) → ℝ} {c : ℝ}
-    (_hc : 0 ≤ c) (hf : ∀ x, |f x| ≤ c) (x : Fin d → ℝ) :
+    (hf : ∀ x, |f x| ≤ c) (x : Fin d → ℝ) :
     strongMaximalFunction f x ≤ ENNReal.ofReal c := by
   refine iSup_le fun R ↦ iSup_le fun _ ↦ ?_
   have hnum : ∫⁻ y in R.carrier, ENNReal.ofReal |f y| ≤
@@ -316,8 +333,7 @@ theorem strongMaximal_lt_trunc {d : ℕ} {t : ℝ} (ht : 0 < t) {f : (Fin d → 
       exact div_nonneg ht.le (by norm_num : (0 : ℝ) ≤ 2)
     · simpa [small, hy] using le_of_not_gt hy
   have hle := strongMaximalFunction_le_add hbig hsplit x
-  have hconst := strongMaximalFunction_le_ofReal (div_nonneg ht.le (by norm_num : (0 : ℝ) ≤ 2))
-    hsmall_le x
+  have hconst := strongMaximalFunction_le_ofReal hsmall_le x
   by_contra hnot
   have hbig_le : strongMaximalFunction big x ≤ ENNReal.ofReal (t / 2) := not_lt.mp hnot
   have : strongMaximalFunction f x ≤ ENNReal.ofReal t := by
@@ -478,7 +494,7 @@ def average {d : ℕ} (g : (Fin d → ℝ) → ℝ≥0∞) (J : RatRectangle d) 
 end RatRectangle
 
 /-- An infinite rectangular integral stays infinite on a rational enlargement. -/
-theorem exists_ratRectangle_enlargement_top {d : ℕ} (_hd : 0 < d)
+theorem exists_ratRectangle_enlargement_top {d : ℕ}
     (g : (Fin d → ℝ) → ℝ≥0∞) (R : OpenRectangle d)
     (hinf : ∫⁻ x in R.carrier, g x = ∞) :
     ∃ J : RatRectangle d, R.carrier ⊆ J.carrier ∧ ∫⁻ x in J.carrier, g x = ∞ := by
@@ -634,7 +650,7 @@ theorem exists_ratRectangle_of_average_gt {d : ℕ} (hd : 0 < d)
     ∃ J : RatRectangle d, R.carrier ⊆ J.carrier ∧
       ENNReal.ofReal α < RatRectangle.average g J := by
   by_cases hfin : ∫⁻ x in R.carrier, g x = ∞
-  · obtain ⟨J, hsub, hJ⟩ := exists_ratRectangle_enlargement_top hd g R hfin
+  · obtain ⟨J, hsub, hJ⟩ := exists_ratRectangle_enlargement_top g R hfin
     have hvol_ne : volume J.carrier ≠ ∞ := J.toOpen.volume_carrier_lt_top.ne
     have havgJ : RatRectangle.average g J = ∞ := by
       unfold RatRectangle.average

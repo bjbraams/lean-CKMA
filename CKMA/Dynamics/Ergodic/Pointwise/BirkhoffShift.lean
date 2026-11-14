@@ -16,6 +16,21 @@ import Mathlib.Tactic
 
 The identity `Aₙ₊₁(Tω) = ((n+2)/(n+1)) Aₙ₊₂(ω) - f(ω)/(n+1)` implies that the extended
 limsup and liminf of the Birkhoff averages are strictly invariant.
+
+## Main definitions
+
+* `CKMA.birkhoffCoeff`: the ratio `(n + 2) / (n + 1)` relating consecutive Birkhoff averages.
+* `CKMA.birkhoffLimsup`: extended limsup of the Birkhoff averages at `ω`.
+* `CKMA.birkhoffLiminf`: extended liminf of the Birkhoff averages at `ω`.
+
+## Main results
+
+* `CKMA.birkhoffLimsup_comp`: shift invariance of the extended limsup of Birkhoff averages.
+* `CKMA.birkhoffLiminf_comp`: shift invariance of the extended liminf of Birkhoff averages.
+
+## Notation
+
+* Standard Mathlib notation for Birkhoff averages and `EReal`.
 -/
 
 @[expose] public section

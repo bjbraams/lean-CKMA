@@ -18,6 +18,22 @@ expresses total variation through perimeters of superlevel sets, retaining infin
 Variation, perimeter and their lower semicontinuity are the objects of TauCeti's
 `Analysis.BoundedVariation.TotalVariation` and `Perimeter` modules.
 Sources: GAPS 37.24 and 37.30.
+
+## Main definitions
+
+* `CKMA.IsBVFunctionOn`: integrable functions of finite total variation on an open set.
+* `CKMA.bvSizeOn`: extended `L¹`-plus-variation gauge.
+
+## Main results
+
+* `CKMA.isBVFunctionOn_zero`: the zero function has bounded variation.
+* `CKMA.bv_compactness_of_compact_support`: Rellich-type `L¹` compactness for BV functions
+  with common compact support.
+* `CKMA.bv_coarea`: Fleming–Rishel coarea formula for BV functions.
+
+## Notation
+
+No new notation is introduced.
 -/
 
 @[expose] public section

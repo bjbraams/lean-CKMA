@@ -22,6 +22,21 @@ import Mathlib.Topology.Order.Lattice
 Fubini and the one-dimensional weak-type bound control the distribution of the strong maximal
 function in dimension `n + 1` by the truncated strong maximal function of the slices. The
 logarithmic kernel turns that distribution into the endpoint growth of order `n + 1`.
+
+## Main definitions
+
+* None (uses `CKMA.strongMaximalFunction` and `CKMA.strongMaximalGrowth` from `Base.lean`).
+
+## Main results
+
+* `CKMA.strongMaximal_step`: inductive step raising the dimension and logarithmic exponent in the
+  Jessen–Marcinkiewicz–Zygmund inequality.
+* `CKMA.strongMaximal_orlicz`: the global Orlicz weak-type bound for `strongMaximalFunction` in all
+  dimensions `d ≥ 1`.
+
+## Notation
+
+* Standard Mathlib interval and Lebesgue integral notation.
 -/
 
 @[expose] public section

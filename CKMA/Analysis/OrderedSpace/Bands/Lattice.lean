@@ -7,12 +7,13 @@ module
 
 public import Mathlib.Algebra.BigOperators.Fin
 public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 public import Mathlib.Algebra.Order.Group.PosPart
 public import Mathlib.Algebra.Order.Module.Basic
 public import Mathlib.Algebra.Module.LinearMap.Defs
 public import Mathlib.Algebra.Order.Archimedean.Real.Basic
 public import Mathlib.Order.Bounds.Basic
-public import Mathlib.Tactic
+public import Mathlib.Tactic.Abel
 
 /-!
 # Lattice calculus for real Riesz spaces
@@ -20,6 +21,23 @@ public import Mathlib.Tactic
 Decomposition, scalar identities, and least-upper-bound calculus used for band projections,
 Freudenthal approximation, and the Riesz–Kantorovich formulas. The arguments follow the
 standard identities in Aliprantis–Burkinshaw, *Positive Operators*, §§1.1 and 1.3.
+
+## Main definitions
+
+* `CKMA.LatticeDisjoint`: lattice disjointness `|x| ⊓ |y| = 0` in a Riesz space.
+* `CKMA.latticeDisjointComplement`: the disjoint complement of a subset of a Riesz space.
+* `CKMA.coneAdditiveLinearMap`: linear extension of an additive positively homogeneous map on
+  the positive cone.
+
+## Main results
+
+* `CKMA.eq_posPart_negPart_of_inf_eq_zero`: canonical Jordan decomposition when `y ⊓ z = 0`.
+* `CKMA.exists_add_eq_of_le_add`: Riesz decomposition property on the positive cone.
+* `CKMA.coneAdditive_isLinearMap`: Jordan extension of an additive positively homogeneous cone map.
+
+## Notation
+
+No new notation is introduced in this file.
 -/
 
 @[expose] public section
@@ -133,8 +151,8 @@ theorem posPart_eq_zero_of_nonpos {x : E} (hx : x ≤ 0) : x⁺ = 0 :=
 theorem negPart_eq_zero_of_nonneg {x : E} (hx : 0 ≤ x) : x⁻ = 0 := by
   rw [negPart_def, sup_eq_right.2 (neg_nonpos.2 hx)]
 
-/-- Canonical decomposition of a difference of nonnegative elements with infimum zero. -/
-theorem eq_posPart_negPart_of_inf_eq_zero {x y z : E} (_hy : 0 ≤ y) (_hz : 0 ≤ z)
+/-- Canonical decomposition of a difference of elements with infimum zero. -/
+theorem eq_posPart_negPart_of_inf_eq_zero {x y z : E}
     (hinf : y ⊓ z = 0) (hx : x = y - z) : x⁺ = y ∧ x⁻ = z := by
   have hsup : y ⊔ z = y + z := by
     have hsum : y ⊓ z + (y ⊔ z) = y + z := inf_add_sup y z
@@ -188,15 +206,13 @@ theorem smul_inf_of_nonneg {c : ℝ} (hc : 0 ≤ c) (x y : E) :
 
 /-- Positive and negative parts scale by a nonnegative real. -/
 theorem posPart_smul_of_nonneg {c : ℝ} (hc : 0 ≤ c) (x : E) : (c • x)⁺ = c • x⁺ :=
-  (eq_posPart_negPart_of_inf_eq_zero (smul_nonneg hc (posPart_nonneg x))
-    (smul_nonneg hc (negPart_nonneg x))
+  (eq_posPart_negPart_of_inf_eq_zero
     (by rw [← smul_inf_of_nonneg hc, posPart_inf_negPart_eq_zero, smul_zero])
     (by rw [← smul_sub, posPart_sub_negPart])).1
 
 /-- Negative parts scale by a nonnegative real. -/
 theorem negPart_smul_of_nonneg {c : ℝ} (hc : 0 ≤ c) (x : E) : (c • x)⁻ = c • x⁻ :=
-  (eq_posPart_negPart_of_inf_eq_zero (smul_nonneg hc (posPart_nonneg x))
-    (smul_nonneg hc (negPart_nonneg x))
+  (eq_posPart_negPart_of_inf_eq_zero
     (by rw [← smul_inf_of_nonneg hc, posPart_inf_negPart_eq_zero, smul_zero])
     (by rw [← smul_sub, posPart_sub_negPart])).2
 
@@ -403,8 +419,7 @@ theorem coneAdditive_isLinearMap (f : E → F)
     exact (sub_eq_sub_iff_add_eq_add).2 hf.symm
   have hposneg : ∀ {c : ℝ} {x : E}, 0 ≤ c → (c • x)⁺ = c • x⁺ ∧ (c • x)⁻ = c • x⁻ := by
     intro c x hc
-    exact eq_posPart_negPart_of_inf_eq_zero (smul_nonneg hc (posPart_nonneg _))
-      (smul_nonneg hc (negPart_nonneg _))
+    exact eq_posPart_negPart_of_inf_eq_zero
       (by rw [← smul_inf_of_nonneg hc, posPart_inf_negPart_eq_zero, smul_zero])
       (by rw [← smul_sub, posPart_sub_negPart])
   let g : E → F := fun x ↦ f x⁺ - f x⁻

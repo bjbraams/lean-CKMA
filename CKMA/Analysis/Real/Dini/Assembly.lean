@@ -15,13 +15,29 @@ Young's strict comparisons, the two infinite mismatches, and the finite gap are 
 that null set each opposite pair of Dini derivatives is either a common finite value or the pair
 `⊤` with `⊥`. The four combinations are exactly the four `HasDiniType` alternatives, and the
 comparisons `lower ≤ upper` make the choice unique. Source: GAPS 05.10.
+
+## Main definitions
+
+* `CKMA.Dini.exceptional`: the union of the five exceptional sets where opposite-pair Dini
+  patterns fail.
+
+## Main results
+
+* `CKMA.Dini.volume_exceptional`: `exceptional f` has Lebesgue measure zero.
+* `CKMA.Dini.ae_oppositePair`: almost every point has matching or opposite-infinite upper-right
+  and lower-left Dini derivatives.
+* `CKMA.Dini.ae_diniType`: almost every point realizes a unique `HasDiniType` alternative.
+
+## Notation
+
+No new notation is introduced.
 -/
 
 @[expose] public section
 
 noncomputable section
 
-namespace CKMA
+namespace CKMA.Dini
 
 open Set Filter Topology MeasureTheory
 
@@ -141,4 +157,4 @@ theorem ae_diniType (f : ℝ → ℝ) :
   filter_upwards [ae_oppositePair f, ae_oppositePair (-f)] with x hx hx'
   exact existsUnique_diniType_of_patterns f x hx (opposite_of_neg f hx')
 
-end CKMA
+end CKMA.Dini

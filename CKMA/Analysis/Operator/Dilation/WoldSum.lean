@@ -16,6 +16,22 @@ An isometry splits its Hilbert space into the unitary part and the orthogonal sh
 wandering subspace. The resulting orthogonal family is a Hilbert sum, and the coordinates of
 `Vx` are the shifted coordinates of `x`. The argument is Sz.-Nagy–Foiaş–Bercovici–Kérchy,
 Chapter I, Section 1.
+
+## Main definitions
+
+* `CKMA.woldSummand`: summands indexed by `Option ℕ` (unitary part at `none`, wandering subspace at
+  `some n`).
+* `CKMA.woldHilbertSum`: isometric equivalence between `H` and the `ℓ²` sum of `woldSummand V`.
+
+## Main results
+
+* `CKMA.woldFamily_isHilbertSum`: the unitary part and shifted wandering subspaces form a Hilbert
+  sum.
+* `CKMA.woldHilbertSum_apply_isometry`: action of `V` in Wold Hilbert-sum coordinates.
+
+## Notation
+
+* `⟪x, y⟫_ℂ`: complex inner product.
 -/
 
 @[expose] public section

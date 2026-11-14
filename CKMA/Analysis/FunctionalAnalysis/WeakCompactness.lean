@@ -5,12 +5,10 @@ Authors: CKMA contributors
 -/
 module
 
-public import Mathlib.Analysis.LocallyConvex.WeakSpace
-public import Mathlib.Analysis.Normed.Module.Dual
+public import CKMA.Analysis.FunctionalAnalysis.Basic
 public import Mathlib.Analysis.Convex.Uniform
 public import Mathlib.MeasureTheory.Function.LpSpace.Basic
 public import Mathlib.MeasureTheory.Function.UniformIntegrable
-public import Mathlib.Analysis.RCLike.Basic
 public import CKMA.Analysis.FunctionalAnalysis.WeakCompactness.DunfordPettis.Converse
 public import CKMA.Analysis.FunctionalAnalysis.WeakCompactness.EberleinSmulian
 public import CKMA.Analysis.FunctionalAnalysis.WeakCompactness.LpUniform
@@ -26,6 +24,25 @@ criterion concerns attainment of real continuous linear functionals on closed co
 Scalar Lp uniform convexity includes every exponent strictly between one and infinity, including
 two. On finite measure spaces, Dunford–Pettis uses Mathlib's uniform-integrability predicate,
 which includes a uniform L1 bound. Sources: GAPS 15.28, 15.29, 15.33, and 17.23.
+
+## Main definitions
+
+* Re-exports `CKMA.WeaklyTendsto`, `CKMA.WeaklyConverges`, `CKMA.IsRelativelyWeaklyCompact`, and
+  `CKMA.IsWeaklyCauchy` from `CKMA.Analysis.FunctionalAnalysis.Basic`.
+
+## Main results
+
+* `CKMA.eberlein_smulian`: weak relative compactness is equivalent to weak sequential relative
+  compactness (**15.28**).
+* `CKMA.isCompact_toWeakSpace_image_of_forall_exists_max`: James's weak compactness criterion
+  (**15.29**).
+* `CKMA.uniformConvexSpace_lp`: uniform convexity of `Lp 𝕜 p μ` for `1 < p < ∞` (**15.33**).
+* `CKMA.dunford_pettis`: Dunford–Pettis characterization of relative weak compactness in `L¹`
+  (**17.23**).
+
+## Notation
+
+Uses `∞` from `ENNReal`.
 -/
 
 @[expose] public section
@@ -39,47 +56,6 @@ open scoped ENNReal
 
 variable {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
-/-- Convergence against every continuous linear functional along an arbitrary filter. -/
-def WeaklyTendsto (𝕜 : Type*) [RCLike 𝕜] {α E : Type*} [NormedAddCommGroup E]
-    [NormedSpace 𝕜 E] (u : α → E) (l : Filter α) (x : E) : Prop :=
-  ∀ ℓ : E →L[𝕜] 𝕜, Tendsto (fun a ↦ ℓ (u a)) l (𝓝 (ℓ x))
-
-/-- Scalar weak convergence is convergence in Mathlib's weak-space topology. -/
-theorem weaklyTendsto_iff_tendsto {α : Type*} (u : α → E) (l : Filter α) (x : E) :
-    WeaklyTendsto 𝕜 u l x ↔
-      Tendsto (fun a ↦ toWeakSpace 𝕜 E (u a)) l (𝓝 (toWeakSpace 𝕜 E x)) := by
-  have hi : Function.Injective (topDualPairing 𝕜 E).flip := by
-    intro x y h
-    exact SeparatingDual.eq_iff_forall_dual_eq.2 fun ℓ ↦ congrArg (fun f ↦ f ℓ) h
-  exact (WeakBilin.tendsto_iff_forall_eval_tendsto (topDualPairing 𝕜 E).flip hi).symm
-
-/-- Weak convergence of a sequence, expressed on the original carrier. -/
-def WeaklyConverges (𝕜 : Type*) [RCLike 𝕜] {E : Type*} [NormedAddCommGroup E]
-    [NormedSpace 𝕜 E] (u : ℕ → E) (x : E) : Prop :=
-  WeaklyTendsto 𝕜 u atTop x
-
-/-- Sequence weak convergence is convergence of the sequence viewed in `WeakSpace`. -/
-theorem weaklyConverges_iff_tendsto (u : ℕ → E) (x : E) :
-    WeaklyConverges 𝕜 u x ↔
-      Tendsto (fun n ↦ toWeakSpace 𝕜 E (u n)) atTop (𝓝 (toWeakSpace 𝕜 E x)) :=
-  weaklyTendsto_iff_tendsto u atTop x
-
-/-- Relative compactness for the weak topology, retaining ambient-space limit points. -/
-def IsRelativelyWeaklyCompact (𝕜 : Type*) [RCLike 𝕜] {E : Type*}
-    [NormedAddCommGroup E] [NormedSpace 𝕜 E] (s : Set E) : Prop :=
-  IsCompact (closure (toWeakSpace 𝕜 E '' s))
-
-/-- A sequence is weakly Cauchy when all of its continuous scalar images are Cauchy. -/
-def IsWeaklyCauchy (𝕜 : Type*) [RCLike 𝕜] {E : Type*} [NormedAddCommGroup E]
-    [NormedSpace 𝕜 E] (u : ℕ → E) : Prop :=
-  ∀ ℓ : E →L[𝕜] 𝕜, CauchySeq (fun n ↦ ℓ (u n))
-
-/-- Weak convergence implies the weak Cauchy property. -/
-theorem WeaklyConverges.isWeaklyCauchy {u : ℕ → E} {x : E}
-    (hu : WeaklyConverges 𝕜 u x) : IsWeaklyCauchy 𝕜 u := by
-  intro ℓ
-  exact (hu ℓ).cauchySeq
-
 /-- **15.28**, Eberlein–Šmulian: weak relative compactness is weak sequential relative compactness.
 The subsequence limit is in the ambient Banach space, not necessarily in `s`. -/
 theorem eberlein_smulian [CompleteSpace E] (s : Set E) :
@@ -89,14 +65,14 @@ theorem eberlein_smulian [CompleteSpace E] (s : Set E) :
   simpa [IsRelativelyWeaklyCompact, WeaklyConverges, weaklyTendsto_iff_tendsto] using
     EberleinSmulian.eberlein_smulian (𝕜 := 𝕜) s
 
+omit [NormedSpace 𝕜 E] in
 /-- **15.29**, the sufficiency direction of James's compactness theorem over the real scalars.
 Attainment of every real functional supplies boundedness, so no separate bound is assumed. -/
-theorem isCompact_toWeakSpace_image_of_forall_exists_max {X : Type*} [NormedAddCommGroup X]
-  [NormedSpace ℝ X]
-    [CompleteSpace X] {s : Set X}
+theorem isCompact_toWeakSpace_image_of_forall_exists_max [NormedSpace ℝ E]
+    [CompleteSpace E] {s : Set E}
     (hc : IsClosed s) (hv : Convex ℝ s)
-    (hattain : ∀ ℓ : X →L[ℝ] ℝ, ∃ x ∈ s, ∀ y ∈ s, ℓ y ≤ ℓ x) :
-    IsCompact (toWeakSpace ℝ X '' s) := by
+    (hattain : ∀ ℓ : E →L[ℝ] ℝ, ∃ x ∈ s, ∀ y ∈ s, ℓ y ≤ ℓ x) :
+    IsCompact (toWeakSpace ℝ E '' s) := by
   sorry
 
 /-- **15.33**: scalar Lp is uniformly convex for every exponent strictly between one and infinity.

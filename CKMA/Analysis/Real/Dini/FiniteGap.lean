@@ -9,7 +9,9 @@ public import CKMA.Analysis.Real.Dini.Infinite
 public import Mathlib.MeasureTheory.Covering.Differentiation
 public import Mathlib.MeasureTheory.Covering.OneDim
 public import Mathlib.MeasureTheory.Measure.Continuity
-public import Mathlib.Tactic
+import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.Positivity
+import Mathlib.Tactic.Ring
 
 /-!
 # Finite gaps between opposite Dini derivatives
@@ -19,13 +21,31 @@ packing and the same packing for the reflected function force the outer measure 
 fraction of the length. Lebesgue density points then make each such set null, and a countable
 union absorbs every point at which the lower left derivative is finite, strictly below the upper
 right derivative, and the upper right derivative is finite. Source: GAPS 05.10.
+
+## Main definitions
+
+* `CKMA.Dini.finiteGap`: points with uniform slope bounds and a rational gap between lower left
+  and upper right Dini derivatives.
+* `CKMA.Dini.finiteStrict`: countable union of all rational-witness `finiteGap` sets.
+
+## Main results
+
+* `CKMA.Dini.finiteGap_volume_le`: outer-measure bound by the gap ratio on short intervals.
+* `CKMA.Dini.volume_finiteGap_eq_zero`: each `finiteGap` set has Lebesgue measure zero.
+* `CKMA.Dini.volume_finiteStrict`: `finiteStrict f` has Lebesgue measure zero.
+* `CKMA.Dini.mem_finiteStrict_of_lt`: any finite strict inequality between lower left and upper
+  right Dini derivatives lies in `finiteStrict f`.
+
+## Notation
+
+No new notation is introduced.
 -/
 
 @[expose] public section
 
 noncomputable section
 
-namespace CKMA
+namespace CKMA.Dini
 
 open Set Filter Topology MeasureTheory IsUnifLocDoublingMeasure
 open scoped ENNReal
@@ -491,4 +511,4 @@ lemma mem_finiteStrict_of_lt {f : ℝ → ℝ} {x : ℝ}
   refine mem_iUnion.2 ⟨p, mem_iUnion.2 ⟨r, mem_iUnion.2 ⟨s, mem_iUnion.2 ⟨q,
     mem_iUnion.2 ⟨n, ⟨hqs, hsr, hrp, hxGap⟩⟩⟩⟩⟩⟩
 
-end CKMA
+end CKMA.Dini

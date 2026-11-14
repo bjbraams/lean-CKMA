@@ -33,6 +33,24 @@ This agrees with decreasing partial sums and includes empty finite index types.
 The mixing characterization uses Mathlib's doubly stochastic matrices. Convex functions preserve
 the resulting sum inequality; strict convexity characterizes equality by a permutation.
 Sources: GAPS 11.22 and 11.24.
+
+## Main definitions
+
+* `CKMA.IsMajorizedBy`: majorization order on `Fin n → ℝ`.
+* `CKMA.sumInitial`: sum of the first `k` coordinates.
+* `CKMA.sumLargest`: sum of the `k` largest coordinates.
+
+## Main results
+
+* `CKMA.isMajorizedBy_iff_exists_doublyStochastic`: Hardy–Littlewood–Pólya characterization of
+  majorization via doubly stochastic matrices (GAPS 11.22).
+* `CKMA.IsMajorizedBy.sum_convex_le`: Karamata's inequality (GAPS 11.24).
+* `CKMA.IsMajorizedBy.sum_strictConvex_eq_iff`: equality condition in Karamata's inequality for
+  strictly convex functions.
+
+## Notation
+
+* Standard Mathlib notation is used throughout.
 -/
 
 @[expose] public section

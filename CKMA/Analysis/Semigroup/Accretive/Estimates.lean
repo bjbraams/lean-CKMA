@@ -25,6 +25,25 @@ resolvents and implicit Euler products. The resolvent is the identity at scale z
 and a contraction at positive scales. In a Banach space the product estimates below
 feed the Crandall–Liggett semigroup constructed in
 `CKMA.Analysis.Semigroup.Accretive`. Source: GAPS 24.52.
+
+## Main definitions
+
+* `CKMA.accretiveGraphDomain`: domain of a multivalued operator graph.
+* `CKMA.IsAccretiveGraph`, `CKMA.IsMAccretiveGraph`: accretive and m-accretive graphs.
+* `CKMA.accretiveResolvent`: the nonlinear resolvent `J_t = (I + t A)⁻¹`.
+* `CKMA.accretiveEulerProduct`: the implicit Euler product `(I + (t / (n + 1)) A)^{-(n+1)}`.
+
+## Main results
+
+* `CKMA.accretiveResolvent_nonexpansive`: nonexpansiveness of the nonlinear resolvent.
+* `CKMA.norm_accretiveEulerProduct_sub_le`: quantitative Crandall–Liggett binomial comparison
+  estimate between Euler products of different step sizes.
+* `CKMA.accretiveEulerProduct_cauchy_closure`: Cauchy convergence of Euler products on the closure
+  of the graph domain.
+
+## Notation
+
+* Standard Mathlib notation for `ℝ≥0` and Finset sums.
 -/
 
 @[expose] public section

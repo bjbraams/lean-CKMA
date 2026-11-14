@@ -17,6 +17,19 @@ without requiring that it separate points. Inserting zero handles the empty-set 
 
 The proof transports TauCeti's strong-dual bipolar theorem through Mathlib's surjectivity of the
 dual embedding for weak bilinear spaces. Source: GAPS 16.13.
+
+## Main definitions
+
+No new public definitions are introduced in this module.
+
+## Main results
+
+* `CKMA.bipolar_eq_weakClosure_absConvexHull`: bipolar theorem for a bilinear pairing in the
+  `WeakBilin` topology (**16.13**).
+
+## Notation
+
+No new notation is introduced in this module.
 -/
 
 @[expose] public section
@@ -34,7 +47,7 @@ variable {𝕜 E F : Type*} [RCLike 𝕜] [AddCommGroup E] [Module 𝕜 E]
 
 /-- **16.13**: the bipolar for a bilinear pairing is the weakly closed absolutely convex hull.
 The topology is explicitly `WeakBilin B`, rather than an arbitrary topology on `E`. Separating
-  hypotheses are unnecessary.
+hypotheses are unnecessary.
 The proof transports TauCeti's `StrongDual.bipolar_eq_closedAbsConvexHull` through
 Mathlib's `LinearMap.dualEmbedding_surjective`. -/
 theorem bipolar_eq_weakClosure_absConvexHull (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)

@@ -18,6 +18,18 @@ inequality. The real lower bound and finite initial value already imply properne
 The proof applies TauCeti's real-valued variational principle on the complete closed sublevel
 through the initial point, then extends the strict inequality to the full space.
 Source: GAPS 12.45.
+
+## Main definitions
+
+* `CKMA.IsEkelandPoint`: strict penalized variational inequality at a point.
+
+## Main results
+
+* `CKMA.exists_isEkelandPoint`: Ekeland's variational principle on complete metric spaces (12.45).
+
+## Notation
+
+* Standard Mathlib notation is used throughout.
 -/
 
 @[expose] public section

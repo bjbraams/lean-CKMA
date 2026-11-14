@@ -14,6 +14,20 @@ import Mathlib.Tactic
 
 Under a linear pointwise lower bound, the Avila–Bochi comparison integrates to the Fekete
 infimum, so the integrable liminf has that mean.
+
+## Main definitions
+
+* `CKMA.HasKingmanExcursion`: predicate that a site has an excursion below the slope on `1, …, k`.
+* `CKMA.kingmanCompare`: comparison value (the slope on an excursion, and one step otherwise).
+* `CKMA.kingmanMajor`: tail majorant of the comparison value and the one-step increment.
+
+## Main results
+
+* `CKMA.kingmanLiminfReal_integral_eq`: the liminf has integral equal to the Fekete infimum.
+
+## Notation
+
+* Standard Finset summation and Bochner integral notation.
 -/
 
 @[expose] public section
@@ -30,12 +44,12 @@ variable {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} {T : Ω → Ω}
 attribute [local instance] Classical.propDecidable
 
 /-- A site has an excursion when some positive length at most `k` lies below the slope. -/
-def kingmanExcursion (f : ℕ → Ω → ℝ) (slope : Ω → ℝ) (k : ℕ) (ω : Ω) : Prop :=
+def HasKingmanExcursion (f : ℕ → Ω → ℝ) (slope : Ω → ℝ) (k : ℕ) (ω : Ω) : Prop :=
   ∃ j, 0 < j ∧ j ≤ k ∧ f j ω < (j : ℝ) * slope ω
 
 /-- Comparison value: the slope on an excursion, and one step otherwise. -/
 def kingmanCompare (f : ℕ → Ω → ℝ) (slope : Ω → ℝ) (k : ℕ) (ω : Ω) : ℝ :=
-  if kingmanExcursion f slope k ω then slope ω else f 1 ω
+  if HasKingmanExcursion f slope k ω then slope ω else f 1 ω
 
 /-- Tail majorant of the comparison value and the one-step increment. -/
 def kingmanMajor (f : ℕ → Ω → ℝ) (slope : Ω → ℝ) (k : ℕ) (ω : Ω) : ℝ :=
@@ -44,11 +58,11 @@ def kingmanMajor (f : ℕ → Ω → ℝ) (slope : Ω → ℝ) (k : ℕ) (ω : �
 /-- Excursion sets of a measurable cocycle and a measurable slope are measurable. -/
 lemma measurableSet_kingmanExcursion {f : ℕ → Ω → ℝ} {slope : Ω → ℝ} {k : ℕ}
     (hf : ∀ j : ℕ, 0 < j → Measurable (f j)) (hs : Measurable slope) :
-    MeasurableSet {ω | kingmanExcursion f slope k ω} := by
-  have hunion : {ω | kingmanExcursion f slope k ω} =
+    MeasurableSet {ω | HasKingmanExcursion f slope k ω} := by
+  have hunion : {ω | HasKingmanExcursion f slope k ω} =
       ⋃ j : ℕ, {ω | 0 < j ∧ j ≤ k ∧ f j ω < (j : ℝ) * slope ω} := by
     ext ω
-    simp [kingmanExcursion]
+    simp [HasKingmanExcursion]
   rw [hunion]
   refine MeasurableSet.iUnion fun j => ?_
   by_cases hj : 0 < j ∧ j ≤ k
@@ -100,13 +114,13 @@ lemma kingman_orbit_compare_le {f : ℕ → Ω → ℝ} {slope : ℝ} {k n : ℕ
       kingmanCompare f (fun _ : Ω => slope) k ((T^[i]) ω) := by
     intro i
     unfold kingmanPsi kingmanCompare
-    have hiff : kingmanWindow u slope k i ↔
-        kingmanExcursion f (fun _ : Ω => slope) k ((T^[i]) ω) := by
-      simp [kingmanWindow, kingmanExcursion, u]
-    by_cases hwin : kingmanWindow u slope k i
-    · have hexc : kingmanExcursion f (fun _ : Ω => slope) k ((T^[i]) ω) := hiff.mp hwin
+    have hiff : IsKingmanWindow u slope k i ↔
+        HasKingmanExcursion f (fun _ : Ω => slope) k ((T^[i]) ω) := by
+      simp [IsKingmanWindow, HasKingmanExcursion, u]
+    by_cases hwin : IsKingmanWindow u slope k i
+    · have hexc : HasKingmanExcursion f (fun _ : Ω => slope) k ((T^[i]) ω) := hiff.mp hwin
       rw [ite_eq_left hwin, ite_eq_left hexc]
-    · have hexc : ¬ kingmanExcursion f (fun _ : Ω => slope) k ((T^[i]) ω) :=
+    · have hexc : ¬ HasKingmanExcursion f (fun _ : Ω => slope) k ((T^[i]) ω) :=
         fun h => hwin (hiff.mpr h)
       rw [ite_eq_right hwin, ite_eq_right hexc]
   have hmx : ∀ i, kingmanMx u slope k i =
@@ -176,7 +190,7 @@ lemma kingmanLiminfReal_integral_eq [IsProbabilityMeasure μ] (hT : MeasurePrese
     (hg_int.add (integrable_const ε)).abs.add (hf 1 Nat.one_pos).abs
   have habsψ : ∀ k ω, |ψ k ω| ≤ |slope ω| + |f 1 ω| := by
     intro k ω
-    by_cases hex : kingmanExcursion f slope k ω
+    by_cases hex : HasKingmanExcursion f slope k ω
     · unfold ψ
       rw [kingmanCompare, ite_eq_left hex]
       exact le_add_of_nonneg_right (abs_nonneg _)
@@ -185,7 +199,7 @@ lemma kingmanLiminfReal_integral_eq [IsProbabilityMeasure μ] (hT : MeasurePrese
       exact le_add_of_nonneg_left (abs_nonneg _)
   have habsmx : ∀ k ω, |mx k ω| ≤ |slope ω| + |f 1 ω| := by
     intro k ω
-    by_cases hex : kingmanExcursion f slope k ω
+    by_cases hex : HasKingmanExcursion f slope k ω
     · unfold mx
       rw [kingmanMajor]
       have hcmp : kingmanCompare f slope k ω = slope ω := by
@@ -261,9 +275,9 @@ lemma kingmanLiminfReal_integral_eq [IsProbabilityMeasure μ] (hT : MeasurePrese
         intro i
         have hgs : kingmanLiminfReal f ((T^[i]) ω) = kingmanLiminfReal f ω := hconstω i
         unfold ψ kingmanCompare slope
-        by_cases hex : kingmanExcursion f (fun _ : Ω => kingmanLiminfReal f ω + ε) k
+        by_cases hex : HasKingmanExcursion f (fun _ : Ω => kingmanLiminfReal f ω + ε) k
             ((T^[i]) ω)
-        · have hex' : kingmanExcursion f slope k ((T^[i]) ω) := by
+        · have hex' : HasKingmanExcursion f slope k ((T^[i]) ω) := by
             obtain ⟨j, hj0, hjk, hjlt⟩ := hex
             refine ⟨j, hj0, hjk, ?_⟩
             change f j ((T^[i]) ω) < (j : ℝ) * (kingmanLiminfReal f ((T^[i]) ω) + ε)
@@ -271,7 +285,7 @@ lemma kingmanLiminfReal_integral_eq [IsProbabilityMeasure μ] (hT : MeasurePrese
             exact hjlt
           rw [ite_eq_left hex, ite_eq_left hex']
           rw [hgs]
-        · have hex' : ¬ kingmanExcursion f slope k ((T^[i]) ω) := by
+        · have hex' : ¬ HasKingmanExcursion f slope k ((T^[i]) ω) := by
             intro hexv
             apply hex
             obtain ⟨j, hj0, hjk, hjlt⟩ := hexv
@@ -415,7 +429,7 @@ lemma kingmanLiminfReal_integral_eq [IsProbabilityMeasure μ] (hT : MeasurePrese
     filter_upwards [hcatch] with ω ⟨j, hj0, hjlt⟩
     refine tendsto_const_nhds.congr' ?_
     filter_upwards [eventually_ge_atTop j] with k hk
-    have hex : kingmanExcursion f slope k ω := by
+    have hex : HasKingmanExcursion f slope k ω := by
       refine ⟨j, hj0, hk, ?_⟩
       simpa only [slope] using hjlt
     unfold ψ

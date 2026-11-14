@@ -19,6 +19,24 @@ local finite dissipation and energy inequalities from time zero and almost every
 time. The existence statement is three-dimensional; velocity uniqueness is two-dimensional
 and does not identify arbitrary representatives of the weak gradient.
 Sources: GAPS 34.54 and 34.55. Weak derivatives use TauCeti; L² and integration use Mathlib.
+
+## Main definitions
+
+* `CKMA.VelocityLTwo`: square-integrable velocity fields on `ℝ^d`.
+* `CKMA.IsDivergenceFreeField`: distributional incompressibility of a velocity field.
+* `CKMA.SatisfiesWeakNavierStokes`: the unforced viscous weak momentum equation.
+* `CKMA.IsLerayHopfSolution`: Leray–Hopf weak solutions satisfying the global energy inequality.
+
+## Main results
+
+* `CKMA.navierStokes_lerayHopf_exists`: existence of global Leray–Hopf weak solutions in dimension
+  three (**34.54**).
+* `CKMA.navierStokes_lerayHopf_unique_twoD`: uniqueness of Leray–Hopf velocity curves in dimension
+  two (**34.55**).
+
+## Notation
+
+* Standard Mathlib notation for `Lp`, `ℝ≥0`, and inner products.
 -/
 
 @[expose] public section

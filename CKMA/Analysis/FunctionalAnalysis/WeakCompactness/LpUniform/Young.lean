@@ -31,6 +31,23 @@ American Mathematical Society 134 (2006), 2359–2362 (arXiv:math/0502021). The 
 `‖u‖ ^ p - 1 + p * (1 - re u)` is nonnegative for `1 < p`, vanishes only at `1`, and controls
 `‖u - 1‖ ^ p` once `‖u - 1‖` is bounded below. The dual weight `star z * ‖z‖ ^ (p - 2)` satisfies
 `z * lpDualFun p z = ‖z‖ ^ p` and `‖lpDualFun p z‖ = ‖z‖ ^ (p - 1)`.
+
+## Main definitions
+
+* `CKMA.WeakCompactness.youngDefect`: scalar Young defect `‖u‖ ^ p - 1 + p * (1 - re u)`.
+* `CKMA.WeakCompactness.lpDualFun`: scalar dual weight `star z * ‖z‖ ^ (p - 2)`.
+
+## Main results
+
+* `CKMA.WeakCompactness.youngDefect_nonneg`: the Young defect is nonnegative for `1 < p`.
+* `CKMA.WeakCompactness.exists_youngDefect_mul_le`: outside any ball around `1`, the Young defect
+  controls `‖u - 1‖ ^ p`.
+* `CKMA.WeakCompactness.mul_lpDualFun` and `CKMA.WeakCompactness.norm_lpDualFun`: algebraic and norm
+  identities for the scalar dual weight.
+
+## Notation
+
+* Standard Mathlib notation for `RCLike` scalars and real powers.
 -/
 
 @[expose] public section

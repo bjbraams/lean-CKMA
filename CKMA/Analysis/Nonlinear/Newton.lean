@@ -24,6 +24,7 @@ import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Analysis.SpecificLimits.Normed
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
+import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 import Mathlib.Order.Filter.AtTopBot.Basic
 import Mathlib.Topology.Algebra.Group.ContinuousDiv
 import Mathlib.Topology.Algebra.InfiniteSum.Basic
@@ -42,9 +43,26 @@ supply invertibility on the relevant iterates rather than assuming the totalized
 behaves as an inverse.
 
 The Kantorovich radius includes the affine `L=0` limit. The scalar field is real or complex.
-The semilocal statement uses a normalized derivative Lipschitz bound and differentiability on an
+The Semilocal statement uses a normalized derivative Lipschitz bound and differentiability on an
 open neighborhood of the majorant ball; the local statement gives quadratic convergence near a
 regular zero. The initial step length is controlled by a norm bound. Source: GAPS 35.9.
+
+## Main definitions
+
+* `CKMA.kantorovichRadius`: The majorant root, including the affine `L = 0` limit.
+* `CKMA.newtonStep`: One Newton step using Mathlib's totalized operator inverse.
+* `CKMA.newtonIterate`: Sequence of Newton iterates starting at `x₀`.
+
+## Main results
+
+* `CKMA.newtonIterate_zero`: The zeroth Newton iterate is the starting point.
+* `CKMA.newtonIterate_succ`: Each subsequent iterate applies `newtonStep`.
+* `CKMA.newton_kantorovich`: Semilocal Kantorovich convergence theorem (**35.9**).
+* `CKMA.newton_quadratic`: Local quadratic convergence near a regular zero.
+
+## Notation
+
+* Standard norm and continuous linear map notation from Mathlib.
 -/
 
 @[expose] public section
@@ -108,13 +126,13 @@ private lemma kantorovichMajorant_one (L η : ℝ) : kantorovichMajorant L η 1 
   simp [kantorovichMajorant_succ, kantorovichQuadratic]
 
 /-- The discriminant of the Kantorovich quadratic is positive. -/
-private lemma kantorovich_discriminant_pos {L η : ℝ} (_hL : 0 ≤ L) (_hη : 0 ≤ η)
+private lemma kantorovich_discriminant_pos {L η : ℝ}
     (hsmall : L * η < 1 / 2) : 0 < 1 - 2 * L * η := by
   linarith [hsmall]
 
 /-- The Kantorovich radius is nonnegative. -/
-private lemma kantorovichRadius_nonneg {L η : ℝ} (hL : 0 ≤ L) (hη : 0 ≤ η)
-    (_hsmall : L * η < 1 / 2) : 0 ≤ kantorovichRadius L η := by
+private lemma kantorovichRadius_nonneg {L η : ℝ} (hL : 0 ≤ L) (hη : 0 ≤ η) :
+    0 ≤ kantorovichRadius L η := by
   by_cases hL0 : L = 0
   · simp [kantorovichRadius, hL0, hη]
   · have hLpos : 0 < L := lt_of_le_of_ne hL (Ne.symm hL0)
@@ -124,11 +142,11 @@ private lemma kantorovichRadius_nonneg {L η : ℝ} (hL : 0 ≤ L) (hη : 0 ≤ 
     exact div_nonneg (sub_nonneg.mpr hs) hLpos.le
 
 /-- The radius stays strictly below the pole `1 / L` of the majorant. -/
-private lemma kantorovichRadius_mul_lt_one {L η : ℝ} (hL : 0 ≤ L) (hη : 0 ≤ η)
+private lemma kantorovichRadius_mul_lt_one {L η : ℝ} (hL : 0 ≤ L)
     (hsmall : L * η < 1 / 2) : L * kantorovichRadius L η < 1 := by
   by_cases hL0 : L = 0
   · simp [kantorovichRadius, hL0]
-  · have hdisc : 0 < 1 - 2 * L * η := kantorovich_discriminant_pos hL hη hsmall
+  · have hdisc : 0 < 1 - 2 * L * η := kantorovich_discriminant_pos hsmall
     have hs : 0 < Real.sqrt (1 - 2 * L * η) := Real.sqrt_pos.mpr hdisc
     have hLpos : 0 < L := lt_of_le_of_ne hL (Ne.symm hL0)
     rw [kantorovichRadius, ite_eq_right hL0]
@@ -138,12 +156,12 @@ private lemma kantorovichRadius_mul_lt_one {L η : ℝ} (hL : 0 ≤ L) (hη : 0 
       _ < 1 := by linarith
 
 /-- The quadratic majorant vanishes at the Kantorovich radius. -/
-private lemma kantorovichQuadratic_radius {L η : ℝ} (hL : 0 ≤ L) (hη : 0 ≤ η)
+private lemma kantorovichQuadratic_radius {L η : ℝ} (hL : 0 ≤ L)
     (hsmall : L * η < 1 / 2) :
     kantorovichQuadratic L η (kantorovichRadius L η) = 0 := by
   by_cases hL0 : L = 0
   · simp [kantorovichQuadratic, kantorovichRadius, hL0]
-  · have hdisc : 0 ≤ 1 - 2 * L * η := (kantorovich_discriminant_pos hL hη hsmall).le
+  · have hdisc : 0 ≤ 1 - 2 * L * η := (kantorovich_discriminant_pos hsmall).le
     have hLpos : 0 < L := lt_of_le_of_ne hL (Ne.symm hL0)
     set s := Real.sqrt (1 - 2 * L * η) with hsdef
     have hs : s ^ 2 = 1 - 2 * L * η := Real.sq_sqrt hdisc
@@ -162,22 +180,22 @@ private lemma kantorovichQuadratic_radius {L η : ℝ} (hL : 0 ≤ L) (hη : 0 �
 /-- The initial residual bound does not exceed the radius. -/
 private lemma kantorovichRadius_ge_eta {L η : ℝ} (hL : 0 ≤ L) (hη : 0 ≤ η)
     (hsmall : L * η < 1 / 2) : η ≤ kantorovichRadius L η := by
-  have hroot := kantorovichQuadratic_radius hL hη hsmall
+  have hroot := kantorovichQuadratic_radius hL hsmall
   simp only [kantorovichQuadratic] at hroot
   set ρ := kantorovichRadius L η
   have hηeq : η = ρ - (L / 2) * ρ ^ 2 := by linarith
-  have hρ : 0 ≤ ρ := kantorovichRadius_nonneg hL hη hsmall
-  have hLρ : L * ρ < 1 := kantorovichRadius_mul_lt_one hL hη hsmall
+  have hρ : 0 ≤ ρ := kantorovichRadius_nonneg hL hη
+  have hLρ : L * ρ < 1 := kantorovichRadius_mul_lt_one hL hsmall
   rw [hηeq]
   nlinarith [sq_nonneg ρ, mul_nonneg hL hρ]
 
 /-- Factor `φ(t)` through the root at the Kantorovich radius. -/
-private lemma kantorovichQuadratic_factor {L η t : ℝ} (hL : 0 ≤ L) (hη : 0 ≤ η)
+private lemma kantorovichQuadratic_factor {L η t : ℝ} (hL : 0 ≤ L)
     (hsmall : L * η < 1 / 2) :
     kantorovichQuadratic L η t =
       (kantorovichRadius L η - t) *
         (1 - (L / 2) * (kantorovichRadius L η + t)) := by
-  have hroot := kantorovichQuadratic_radius hL hη hsmall
+  have hroot := kantorovichQuadratic_radius hL hsmall
   simp only [kantorovichQuadratic] at hroot ⊢
   set ρ := kantorovichRadius L η
   have hηeq : η = ρ - (L / 2) * ρ ^ 2 := by linarith
@@ -185,24 +203,24 @@ private lemma kantorovichQuadratic_factor {L η t : ℝ} (hL : 0 ≤ L) (hη : 0
   ring
 
 /-- The quadratic majorant is nonnegative on the segment from `0` to the radius. -/
-private lemma kantorovichQuadratic_nonneg {L η t : ℝ} (hL : 0 ≤ L) (hη : 0 ≤ η)
-    (hsmall : L * η < 1 / 2) (_ht0 : 0 ≤ t) (ht : t ≤ kantorovichRadius L η) :
+private lemma kantorovichQuadratic_nonneg {L η t : ℝ} (hL : 0 ≤ L)
+    (hsmall : L * η < 1 / 2) (ht : t ≤ kantorovichRadius L η) :
     0 ≤ kantorovichQuadratic L η t := by
-  rw [kantorovichQuadratic_factor hL hη hsmall]
+  rw [kantorovichQuadratic_factor hL hsmall]
   set ρ := kantorovichRadius L η
-  have hLρ : L * ρ < 1 := kantorovichRadius_mul_lt_one hL hη hsmall
+  have hLρ : L * ρ < 1 := kantorovichRadius_mul_lt_one hL hsmall
   have hsecond : 0 ≤ 1 - (L / 2) * (ρ + t) := by
     have : (L / 2) * (ρ + t) ≤ L * ρ := by nlinarith [sq_nonneg ρ]
     linarith
   exact mul_nonneg (by linarith) hsecond
 
 /-- The quadratic majorant is positive before the radius. -/
-private lemma kantorovichQuadratic_pos {L η t : ℝ} (hL : 0 ≤ L) (hη : 0 ≤ η)
-    (hsmall : L * η < 1 / 2) (_ht0 : 0 ≤ t) (ht : t < kantorovichRadius L η) :
+private lemma kantorovichQuadratic_pos {L η t : ℝ} (hL : 0 ≤ L)
+    (hsmall : L * η < 1 / 2) (ht : t < kantorovichRadius L η) :
     0 < kantorovichQuadratic L η t := by
-  rw [kantorovichQuadratic_factor hL hη hsmall]
+  rw [kantorovichQuadratic_factor hL hsmall]
   set ρ := kantorovichRadius L η
-  have hLρ : L * ρ < 1 := kantorovichRadius_mul_lt_one hL hη hsmall
+  have hLρ : L * ρ < 1 := kantorovichRadius_mul_lt_one hL hsmall
   have hhalf : (L / 2) * (ρ + t) < 1 := by
     by_cases hL0 : L = 0
     · simp [hL0]
@@ -216,12 +234,12 @@ private lemma kantorovichQuadratic_pos {L η t : ℝ} (hL : 0 ≤ L) (hη : 0 �
   exact mul_pos (by linarith) (by linarith)
 
 /-- One Newton step of the quadratic, starting in `[0, radius]`, remains at most the radius. -/
-private lemma kantorovich_newton_le_radius {L η s : ℝ} (hL : 0 ≤ L) (hη : 0 ≤ η)
-    (hsmall : L * η < 1 / 2) (_hs0 : 0 ≤ s) (hs : s ≤ kantorovichRadius L η)
+private lemma kantorovich_newton_le_radius {L η s : ℝ} (hL : 0 ≤ L)
+    (hsmall : L * η < 1 / 2) (hs : s ≤ kantorovichRadius L η)
     (hden : 0 < 1 - L * s) :
     s + kantorovichQuadratic L η s / (1 - L * s) ≤ kantorovichRadius L η := by
   set ρ := kantorovichRadius L η
-  have hφ := kantorovichQuadratic_factor (t := s) hL hη hsmall
+  have hφ := kantorovichQuadratic_factor (t := s) hL hsmall
   rw [hφ]
   have hsub : 0 ≤ ρ - s := by linarith
   have hcd : 1 - (L / 2) * (ρ + s) ≤ 1 - L * s := by nlinarith
@@ -258,7 +276,7 @@ private lemma kantorovichMajorant_bounds {L η : ℝ} (hL : 0 ≤ L) (hη : 0 �
           kantorovichMajorant L η n ≤ kantorovichMajorant L η (n + 1) := by
   induction n with
   | zero =>
-    refine ⟨le_rfl, kantorovichRadius_nonneg hL hη hsmall, by simp, ?_⟩
+    refine ⟨le_rfl, kantorovichRadius_nonneg hL hη, by simp, ?_⟩
     simpa [kantorovichMajorant_one] using hη
   | succ n ih =>
     rcases ih with ⟨hs0, hsle, hden, hmono⟩
@@ -267,19 +285,19 @@ private lemma kantorovichMajorant_bounds {L η : ℝ} (hL : 0 ≤ L) (hη : 0 �
     have hu : u = s + kantorovichQuadratic L η s / (1 - L * s) := by
       simpa [s, u] using kantorovichMajorant_succ L η n
     have hφ : 0 ≤ kantorovichQuadratic L η s :=
-      kantorovichQuadratic_nonneg hL hη hsmall hs0 hsle
+      kantorovichQuadratic_nonneg hL hsmall hsle
     have hu0 : 0 ≤ u := by
       rw [hu]
       exact add_nonneg hs0 (div_nonneg hφ hden.le)
     have hule : u ≤ kantorovichRadius L η := by
       rw [hu]
-      exact kantorovich_newton_le_radius hL hη hsmall hs0 hsle hden
+      exact kantorovich_newton_le_radius hL hsmall hsle hden
     have hdenu : 0 < 1 - L * u := by
-      have hLρ : L * kantorovichRadius L η < 1 := kantorovichRadius_mul_lt_one hL hη hsmall
+      have hLρ : L * kantorovichRadius L η < 1 := kantorovichRadius_mul_lt_one hL hsmall
       have : L * u ≤ L * kantorovichRadius L η := mul_le_mul_of_nonneg_left hule hL
       linarith
     have hφu : 0 ≤ kantorovichQuadratic L η u :=
-      kantorovichQuadratic_nonneg hL hη hsmall hu0 hule
+      kantorovichQuadratic_nonneg hL hsmall hule
     refine ⟨hu0, hule, hdenu, ?_⟩
     rw [kantorovichMajorant_succ]
     exact le_add_of_nonneg_right (div_nonneg hφu hdenu.le)
@@ -328,7 +346,7 @@ private lemma tendsto_kantorovichMajorant {L η : ℝ} (hL : 0 ≤ L) (hη : 0 �
   have hden_tend : Tendsto (fun n => 1 - L * t n) atTop (𝓝 (1 - L * s)) :=
     tendsto_const_nhds.sub ((tendsto_const_nhds (x := L)).mul htend)
   have hden_lim : 0 < 1 - L * s := by
-    have hLρ : L * ρ < 1 := kantorovichRadius_mul_lt_one hL hη hsmall
+    have hLρ : L * ρ < 1 := kantorovichRadius_mul_lt_one hL hsmall
     have : L * s ≤ L * ρ := mul_le_mul_of_nonneg_left hs_le hL
     linarith
   have hφlim : Tendsto (fun n => kantorovichQuadratic L η (t n)) atTop
@@ -357,7 +375,7 @@ private lemma tendsto_kantorovichMajorant {L η : ℝ} (hL : 0 ≤ L) (hη : 0 �
   have hs_eq : s = ρ := by
     rcases eq_or_lt_of_le hs_le with h | h
     · exact h
-    · exact absurd hφ0 (kantorovichQuadratic_pos hL hη hsmall hs0 h).ne'
+    · exact absurd hφ0 (kantorovichQuadratic_pos hL hsmall h).ne'
   simpa [s, hs_eq, ρ] using htend
 
 /-- If an endomorphism is within distance less than `1` of the identity, it is invertible and the
@@ -393,18 +411,6 @@ private lemma isInvertible_of_norm_sub_id_lt [CompleteSpace E] {f : E →L[𝕜]
     _ ≤ ∑' n : ℕ, ‖t‖ ^ n := hsum_pow.tsum_le_tsum hpow hsum
     _ = (1 - ‖t‖)⁻¹ := tsum_geometric_of_lt_one (norm_nonneg _) ht
     _ = (1 - ‖f - ContinuousLinearMap.id 𝕜 E‖)⁻¹ := by simp [t, norm_sub_rev]
-
-/-- Integral of the identity on `[0, 1]`. -/
-private lemma integral_id_zero_one : ∫ t in (0 : ℝ)..1, t = 1 / 2 := by
-  have hderiv : ∀ u ∈ Set.uIcc (0 : ℝ) 1, HasDerivAt (fun t : ℝ => t ^ 2 / 2) u u := by
-    intro u _
-    convert (hasDerivAt_pow 2 u).div_const 2 using 1
-    rw [show (2 - 1 : ℕ) = 1 by rfl, pow_one]
-    ring
-  have hint : IntervalIntegrable (fun t : ℝ => t) MeasureTheory.volume 0 1 :=
-    continuous_id.intervalIntegrable 0 1
-  have hftc := intervalIntegral.integral_eq_sub_of_hasDerivAt (a := 0) (b := 1) hderiv hint
-  simpa using hftc
 
 /-- Quadratic Taylor remainder on a convex set, from a Lipschitz bound on the derivative. -/
 private lemma norm_taylor_remainder_le [NormedSpace ℝ E] [CompleteSpace E] {G : E → E}
@@ -492,7 +498,7 @@ private lemma norm_taylor_remainder_le [NormedSpace ℝ E] [CompleteSpace E] {G 
             = ∫ t in (0 : ℝ)..1, (K * ‖y - x‖ ^ 2) * t := by
               refine intervalIntegral.integral_congr fun t _ => ?_
               ring
-        _ = (K * ‖y - x‖ ^ 2) * (1 / 2) := by rw [hpull, integral_id_zero_one]
+        _ = (K * ‖y - x‖ ^ 2) * ((1 ^ 2 - 0 ^ 2) / 2) := by rw [hpull, integral_id]
         _ = (K / 2) * ‖y - x‖ ^ 2 := by ring
     have hrem : G y - G x - (fderiv 𝕜 G x) (y - x) =
         ∫ t in (0 : ℝ)..1, (φ' t - φ' 0) := by
@@ -524,7 +530,7 @@ theorem newton_kantorovich [CompleteSpace E] {F : E → E} (x₀ : E) (S : E ≃
   have hGfun : ∀ y, G y = S.symm (F y) := fun y => rfl
   have hbounds := kantorovichMajorant_bounds hL hη hsmall
   have htend_t : Tendsto t atTop (𝓝 ρ) := tendsto_kantorovichMajorant hL hη hsmall
-  have hLρ : L * ρ < 1 := kantorovichRadius_mul_lt_one hL hη hsmall
+  have hLρ : L * ρ < 1 := kantorovichRadius_mul_lt_one hL hsmall
   have hGderiv : ∀ y ∈ Metric.closedBall x₀ r,
       fderiv 𝕜 G y = S.symm.toContinuousLinearMap.comp (fderiv 𝕜 F y) := by
     intro y hy
@@ -542,71 +548,80 @@ theorem newton_kantorovich [CompleteSpace E] {F : E → E} (x₀ : E) (S : E ≃
     rw [hGderiv a ha, hGderiv b hb, ← ContinuousLinearMap.comp_sub]
     exact hLip a ha b hb
   have hball : Convex ℝ (Metric.closedBall x₀ r) := convex_closedBall x₀ r
+  have hstep_le : ∀ n,
+      ‖S.symm.toContinuousLinearMap.comp (fderiv 𝕜 F (x n)) -
+          ContinuousLinearMap.id 𝕜 E‖ ≤ L * t n →
+      ‖G (x n)‖ ≤ (t (n + 1) - t n) * (1 - L * t n) →
+      (fderiv 𝕜 F (x n)).IsInvertible ∧ ‖x (n + 1) - x n‖ ≤ t (n + 1) - t n := by
+    intro n hAnorm hGnorm
+    have hden : 0 < 1 - L * t n := (hbounds n).2.2.1
+    have htn : t n ≤ ρ := (hbounds n).2.1
+    have hA : ‖S.symm.toContinuousLinearMap.comp (fderiv 𝕜 F (x n)) -
+        ContinuousLinearMap.id 𝕜 E‖ < 1 := by
+      have : L * t n ≤ L * ρ := mul_le_mul_of_nonneg_left htn hL
+      exact lt_of_le_of_lt hAnorm (by linarith)
+    let A : E →L[𝕜] E := S.symm.toContinuousLinearMap.comp (fderiv 𝕜 F (x n))
+    have hAinv : A.IsInvertible ∧ ‖A.inverse‖ ≤ (1 - ‖A - ContinuousLinearMap.id 𝕜 E‖)⁻¹ :=
+      isInvertible_of_norm_sub_id_lt hA
+    have hAeq : (S : E →L[𝕜] E) ∘L A = fderiv 𝕜 F (x n) := by
+      simp only [A]
+      rw [← ContinuousLinearMap.comp_assoc]
+      simp [ContinuousLinearMap.id_comp]
+    have hFinv : (fderiv 𝕜 F (x n)).IsInvertible := by
+      rw [← hAeq]
+      exact (ContinuousLinearMap.isInvertible_equiv_comp).2 hAinv.1
+    have hinv_formula : (fderiv 𝕜 F (x n)).inverse =
+        A.inverse ∘L S.symm.toContinuousLinearMap := by
+      rw [← hAeq]
+      simp [ContinuousLinearMap.inverse_equiv_comp (e := S) (f := A)]
+    have hstep_vec : x (n + 1) - x n = -((fderiv 𝕜 F (x n)).inverse (F (x n))) := by
+      simp [x, newtonIterate_succ, newtonStep]
+    refine ⟨hFinv, ?_⟩
+    have happly : (fderiv 𝕜 F (x n)).inverse (F (x n)) = A.inverse (G (x n)) := by
+      rw [hinv_formula, hGfun]
+      simp
+    have hinv_le : ‖A.inverse‖ ≤ (1 - L * t n)⁻¹ := by
+      refine hAinv.2.trans ?_
+      have hcmp : 1 - L * t n ≤ 1 - ‖A - ContinuousLinearMap.id 𝕜 E‖ := by
+        have : ‖A - ContinuousLinearMap.id 𝕜 E‖ ≤ L * t n := by simpa [A] using hAnorm
+        linarith
+      exact inv_anti₀ hden hcmp
+    calc
+      ‖x (n + 1) - x n‖ = ‖A.inverse (G (x n))‖ := by
+        rw [hstep_vec, norm_neg, happly]
+      _ ≤ ‖A.inverse‖ * ‖G (x n)‖ := A.inverse.le_opNorm _
+      _ ≤ (1 - L * t n)⁻¹ * ‖G (x n)‖ :=
+        mul_le_mul_of_nonneg_right hinv_le (norm_nonneg _)
+      _ ≤ (1 - L * t n)⁻¹ * ((t (n + 1) - t n) * (1 - L * t n)) :=
+        mul_le_mul_of_nonneg_left hGnorm (inv_nonneg.mpr hden.le)
+      _ = t (n + 1) - t n := by field_simp [hden.ne']
   have invar : ∀ n,
       x n ∈ Metric.closedBall x₀ r ∧
         (fderiv 𝕜 F (x n)).IsInvertible ∧
           ‖S.symm.toContinuousLinearMap.comp (fderiv 𝕜 F (x n)) -
               ContinuousLinearMap.id 𝕜 E‖ ≤ L * t n ∧
             ‖G (x n)‖ ≤ (t (n + 1) - t n) * (1 - L * t n) ∧
-              ‖x n - x₀‖ ≤ t n := by
+              ‖x n - x₀‖ ≤ t n ∧
+                ‖x (n + 1) - x n‖ ≤ t (n + 1) - t n := by
     intro n
     induction n with
     | zero =>
-      refine ⟨Metric.mem_closedBall_self hrpos.le, ?_, ?_, ?_, ?_⟩
-      · simp only [x, newtonIterate_zero]
-        rw [hS]
-        exact ContinuousLinearMap.isInvertible_equiv
-      · have hid : S.symm.toContinuousLinearMap.comp (fderiv 𝕜 F x₀) =
+      have hA0 : ‖S.symm.toContinuousLinearMap.comp (fderiv 𝕜 F (x 0)) -
+          ContinuousLinearMap.id 𝕜 E‖ ≤ L * t 0 := by
+        have hid : S.symm.toContinuousLinearMap.comp (fderiv 𝕜 F x₀) =
             ContinuousLinearMap.id 𝕜 E := by
           rw [hS]
           exact ContinuousLinearEquiv.coe_symm_comp_coe S
         simp [x, newtonIterate_zero, hid, t]
-      · simpa [x, newtonIterate_zero, G, t, kantorovichMajorant_one] using hfirst
-      · simp [x, newtonIterate_zero, t]
+      have hG0 : ‖G (x 0)‖ ≤ (t 1 - t 0) * (1 - L * t 0) := by
+        simpa [x, newtonIterate_zero, G, t, kantorovichMajorant_one] using hfirst
+      obtain ⟨hFinv0, hstep0⟩ := hstep_le 0 hA0 hG0
+      exact ⟨Metric.mem_closedBall_self hrpos.le, hFinv0, hA0, hG0,
+        by simp [x, newtonIterate_zero, t], hstep0⟩
     | succ n ih =>
-      rcases ih with ⟨hmem, hinv, hAnorm, hGnorm, hdist⟩
-      have hden : 0 < 1 - L * t n := (hbounds n).2.2.1
-      have htn : t n ≤ ρ := (hbounds n).2.1
-      have hA : ‖S.symm.toContinuousLinearMap.comp (fderiv 𝕜 F (x n)) -
-          ContinuousLinearMap.id 𝕜 E‖ < 1 := by
-        have : L * t n ≤ L * ρ := mul_le_mul_of_nonneg_left htn hL
-        exact lt_of_le_of_lt hAnorm (by linarith)
-      let A : E →L[𝕜] E := S.symm.toContinuousLinearMap.comp (fderiv 𝕜 F (x n))
-      have hAinv : A.IsInvertible ∧ ‖A.inverse‖ ≤ (1 - ‖A - ContinuousLinearMap.id 𝕜 E‖)⁻¹ :=
-        isInvertible_of_norm_sub_id_lt hA
-      have hAeq : (S : E →L[𝕜] E) ∘L A = fderiv 𝕜 F (x n) := by
-        simp only [A]
-        rw [← ContinuousLinearMap.comp_assoc]
-        simp [ContinuousLinearMap.id_comp]
-      have hFinv : (fderiv 𝕜 F (x n)).IsInvertible := by
-        rw [← hAeq]
-        exact (ContinuousLinearMap.isInvertible_equiv_comp).2 hAinv.1
-      have hinv_formula : (fderiv 𝕜 F (x n)).inverse =
-          A.inverse ∘L S.symm.toContinuousLinearMap := by
-        rw [← hAeq]
-        simp [ContinuousLinearMap.inverse_equiv_comp (e := S) (f := A)]
+      rcases ih with ⟨hmem, hinv, _, _, hdist, hstep_norm⟩
       have hstep_vec : x (n + 1) - x n = -((fderiv 𝕜 F (x n)).inverse (F (x n))) := by
         simp [x, newtonIterate_succ, newtonStep]
-      have hstep_norm : ‖x (n + 1) - x n‖ ≤ t (n + 1) - t n := by
-        have happly : (fderiv 𝕜 F (x n)).inverse (F (x n)) = A.inverse (G (x n)) := by
-          rw [hinv_formula, hGfun]
-          simp
-        have hinv_le : ‖A.inverse‖ ≤ (1 - L * t n)⁻¹ := by
-          refine hAinv.2.trans ?_
-          have hgap : 0 < 1 - ‖A - ContinuousLinearMap.id 𝕜 E‖ := sub_pos.mpr hA
-          have hcmp : 1 - L * t n ≤ 1 - ‖A - ContinuousLinearMap.id 𝕜 E‖ := by
-            have : ‖A - ContinuousLinearMap.id 𝕜 E‖ ≤ L * t n := by simpa [A] using hAnorm
-            linarith
-          exact inv_anti₀ hden hcmp
-        calc
-          ‖x (n + 1) - x n‖ = ‖A.inverse (G (x n))‖ := by
-            rw [hstep_vec, norm_neg, happly]
-          _ ≤ ‖A.inverse‖ * ‖G (x n)‖ := A.inverse.le_opNorm _
-          _ ≤ (1 - L * t n)⁻¹ * ‖G (x n)‖ :=
-            mul_le_mul_of_nonneg_right hinv_le (norm_nonneg _)
-          _ ≤ (1 - L * t n)⁻¹ * ((t (n + 1) - t n) * (1 - L * t n)) :=
-            mul_le_mul_of_nonneg_left hGnorm (inv_nonneg.mpr hden.le)
-          _ = t (n + 1) - t n := by field_simp [hden.ne']
       have hdist' : ‖x (n + 1) - x₀‖ ≤ t (n + 1) := by
         calc
           ‖x (n + 1) - x₀‖ ≤ ‖x (n + 1) - x n‖ + ‖x n - x₀‖ := by
@@ -629,22 +644,8 @@ theorem newton_kantorovich [CompleteSpace E] {F : E → E} (x₀ : E) (S : E ≃
               (fderiv 𝕜 F (x (n + 1)) - fderiv 𝕜 F x₀)‖ ≤ L * ‖x (n + 1) - x₀‖ :=
             hLip _ hmem' _ (Metric.mem_closedBall_self hrpos.le)
           _ ≤ L * t (n + 1) := mul_le_mul_of_nonneg_left hdist' hL
-      have hAlt : ‖S.symm.toContinuousLinearMap.comp (fderiv 𝕜 F (x (n + 1))) -
-          ContinuousLinearMap.id 𝕜 E‖ < 1 := by
-        have : L * t (n + 1) ≤ L * ρ := mul_le_mul_of_nonneg_left htn1 hL
-        exact lt_of_le_of_lt hA' (by linarith)
-      have hFinv' : (fderiv 𝕜 F (x (n + 1))).IsInvertible := by
-        let B : E →L[𝕜] E :=
-          S.symm.toContinuousLinearMap.comp (fderiv 𝕜 F (x (n + 1)))
-        have hB : B.IsInvertible := (isInvertible_of_norm_sub_id_lt hAlt).1
-        have hBeq : (S : E →L[𝕜] E) ∘L B = fderiv 𝕜 F (x (n + 1)) := by
-          simp only [B]
-          rw [← ContinuousLinearMap.comp_assoc]
-          simp [ContinuousLinearMap.id_comp]
-        rw [← hBeq]
-        exact (ContinuousLinearMap.isInvertible_equiv_comp).2 hB
       have hnewton : F (x n) + (fderiv 𝕜 F (x n)) (x (n + 1) - x n) = 0 := by
-        have happly := hFinv.self_apply_inverse (F (x n))
+        have happly := hinv.self_apply_inverse (F (x n))
         rw [hstep_vec, map_neg, happly, add_neg_cancel]
       have hrem : ‖G (x (n + 1))‖ ≤ (L / 2) * ‖x (n + 1) - x n‖ ^ 2 := by
         have htail := norm_taylor_remainder_le (G := G) hL hball hGdiff hLipG hmem hmem'
@@ -675,7 +676,8 @@ theorem newton_kantorovich [CompleteSpace E] {F : E → E} (x₀ : E) (S : E ≃
           _ = (t (n + 2) - t (n + 1)) * (1 - L * t (n + 1)) := by
             rw [hinc]
             field_simp [hden1.ne']
-      exact ⟨hmem', hFinv', hA', hG', hdist'⟩
+      obtain ⟨hFinv', hstep'⟩ := hstep_le (n + 1) hA' hG'
+      exact ⟨hmem', hFinv', hA', hG', hdist', hstep'⟩
   have htele : ∀ {m n : ℕ}, n ≤ m → ‖x m - x n‖ ≤ t m - t n := by
     intro m n hnm
     induction m with
@@ -688,52 +690,8 @@ theorem newton_kantorovich [CompleteSpace E] {F : E → E} (x₀ : E) (S : E ≃
         calc
           ‖x (m + 1) - x n‖ = ‖(x (m + 1) - x m) + (x m - x n)‖ := by abel
           _ ≤ ‖x (m + 1) - x m‖ + ‖x m - x n‖ := norm_add_le _ _
-          _ ≤ (t (m + 1) - t m) + (t m - t n) := by
-            have hstep : ‖x (m + 1) - x m‖ ≤ t (m + 1) - t m := by
-              have hmem := (invar m).1
-              have hmem' := (invar (m + 1)).1
-              have hden := (hbounds m).2.2.1
-              have hAnorm := (invar m).2.2.1
-              have hGnorm := (invar m).2.2.2.1
-              have hA : ‖S.symm.toContinuousLinearMap.comp (fderiv 𝕜 F (x m)) -
-                  ContinuousLinearMap.id 𝕜 E‖ < 1 := by
-                have : L * t m ≤ L * ρ :=
-                  mul_le_mul_of_nonneg_left (hbounds m).2.1 hL
-                exact lt_of_le_of_lt hAnorm (by linarith)
-              let A : E →L[𝕜] E := S.symm.toContinuousLinearMap.comp (fderiv 𝕜 F (x m))
-              have hAinv := isInvertible_of_norm_sub_id_lt hA
-              have hAeq : (S : E →L[𝕜] E) ∘L A = fderiv 𝕜 F (x m) := by
-                simp only [A]
-                rw [← ContinuousLinearMap.comp_assoc]
-                simp [ContinuousLinearMap.id_comp]
-              have hinv_formula : (fderiv 𝕜 F (x m)).inverse =
-                  A.inverse ∘L S.symm.toContinuousLinearMap := by
-                have hFinv : (fderiv 𝕜 F (x m)).IsInvertible := (invar m).2.1
-                rw [← hAeq]
-                simp [ContinuousLinearMap.inverse_equiv_comp (e := S) (f := A)]
-              have hinv_le : ‖A.inverse‖ ≤ (1 - L * t m)⁻¹ := by
-                refine hAinv.2.trans ?_
-                have hcmp : 1 - L * t m ≤ 1 - ‖A - ContinuousLinearMap.id 𝕜 E‖ := by
-                  have : ‖A - ContinuousLinearMap.id 𝕜 E‖ ≤ L * t m := by
-                    simpa [A] using hAnorm
-                  linarith
-                exact inv_anti₀ hden hcmp
-              have hstep_vec : x (m + 1) - x m =
-                  -((fderiv 𝕜 F (x m)).inverse (F (x m))) := by
-                simp [x, newtonIterate_succ, newtonStep]
-              calc
-                ‖x (m + 1) - x m‖ = ‖A.inverse (G (x m))‖ := by
-                  rw [hstep_vec, norm_neg, hinv_formula]
-                  simp [hGfun]
-                _ ≤ ‖A.inverse‖ * ‖G (x m)‖ := A.inverse.le_opNorm _
-                _ ≤ (1 - L * t m)⁻¹ * ‖G (x m)‖ :=
-                  mul_le_mul_of_nonneg_right hinv_le (norm_nonneg _)
-                _ ≤ (1 - L * t m)⁻¹ * ((t (m + 1) - t m) * (1 - L * t m)) :=
-                  mul_le_mul_of_nonneg_left hGnorm (inv_nonneg.mpr hden.le)
-                _ = t (m + 1) - t m := by
-                  rw [mul_comm (t (m + 1) - t m) (1 - L * t m), ← mul_assoc,
-                    inv_mul_cancel₀ hden.ne', one_mul]
-            exact add_le_add hstep (ih hnm')
+          _ ≤ (t (m + 1) - t m) + (t m - t n) :=
+            add_le_add (invar m).2.2.2.2.2 (ih hnm')
           _ = t (m + 1) - t n := by ring
       · simp
   have hcauchy : CauchySeq x := by
@@ -751,7 +709,7 @@ theorem newton_kantorovich [CompleteSpace E] {F : E → E} (x₀ : E) (S : E ≃
     have hnorm : Tendsto (fun n => ‖x n - x₀‖) atTop (𝓝 ‖z - x₀‖) :=
       (continuous_norm.tendsto _).comp (Filter.Tendsto.sub htend_x tendsto_const_nhds)
     exact le_of_tendsto hnorm <| Eventually.of_forall fun n =>
-      (invar n).2.2.2.2.trans (hbounds n).2.1
+      (invar n).2.2.2.2.1.trans (hbounds n).2.1
   have hzρ : z ∈ Metric.closedBall x₀ ρ := by rwa [Metric.mem_closedBall, dist_eq_norm]
   have hzU : z ∈ U := hsub (Metric.closedBall_subset_closedBall hr hzρ)
   have hFcont : ContinuousAt F z := hF.continuousOn.continuousAt (hU.mem_nhds hzU)

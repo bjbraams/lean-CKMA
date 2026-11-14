@@ -21,6 +21,22 @@ public import Mathlib.Topology.MetricSpace.Holder
 Dyadic increments of a pre-Brownian process satisfy a summable Markov bound at every exponent
 strictly below one half. Borel--Cantelli produces one full-measure set on which every such
 exponent is locally Hölder, and the dyadic floors converge to a continuous modification.
+
+## Main definitions
+
+* `CKMA.subHalf`: exponent `(k + 1) / (2 (k + 2))` strictly between `0` and `1 / 2`.
+* `CKMA.version`: measurable version of one time marginal of a pre-Brownian process.
+* `CKMA.good`: full-measure event on which all dyadic increments eventually satisfy the Hölder
+  bound.
+
+## Main results
+
+* `CKMA.exists_subHalf_ge`: every exponent strictly below `1 / 2` is bounded by some `subHalf k`.
+* `CKMA.ae_mem_good`: almost every sample path belongs to `good`.
+
+## Notation
+
+No new notation is introduced.
 -/
 
 @[expose] public section
@@ -74,7 +90,7 @@ lemma moment_gap (k : ℕ) :
   ring
 
 /-- Every exponent strictly below one half is bounded by some `subHalf k`. -/
-lemma exists_subHalf_ge {α : ℝ} (_hα0 : 0 ≤ α) (hα : α < 1 / 2) :
+lemma exists_subHalf_ge {α : ℝ} (hα : α < 1 / 2) :
     ∃ k : ℕ, α ≤ subHalf k := by
   by_cases hquart : α ≤ (1 : ℝ) / 4
   · refine ⟨0, ?_⟩

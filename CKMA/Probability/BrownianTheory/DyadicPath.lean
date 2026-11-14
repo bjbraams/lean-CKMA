@@ -13,6 +13,23 @@ public import CKMA.Probability.BrownianTheory.DyadicHolder
 Consecutive dyadic increments on each integer interval determine a Hölder bound on the dyadic
 points of a compact time interval. Dyadic floors of two real times stay within one mesh of the
 times themselves, so the same bound passes to every uniform limit of the floors.
+
+## Main definitions
+
+* `CKMA.HasDyadicIncrements`: dyadic increment bound on one integer interval.
+* `CKMA.holderConstFrom`: Hölder constant dominating `1` and all increment ratios below level `N`.
+* `CKMA.dyadicFloorReal`: left dyadic floor of a nonnegative real at mesh `2 ^ (-n)`.
+
+## Main results
+
+* `CKMA.hasDyadicIncrements_of_eventually`: eventual unit increment bounds yield a finite dyadic
+  Hölder constant.
+* `CKMA.abs_sub_dyadicFloor_le`: values at dyadic floors obey the Hölder bound of the increments.
+* `CKMA.abs_sub_dyadicFloor_levels`: values at dyadic floors of two meshes obey the Hölder bound.
+
+## Notation
+
+No new notation is introduced.
 -/
 
 @[expose] public section
@@ -76,7 +93,7 @@ lemma mem_ratioList {f : ℝ → ℝ} {α : ℝ} {j N n i : ℕ} (hn : n < N) (h
   exact List.mem_map.2 ⟨i, List.mem_range.2 hi, rfl⟩
 
 /-- `(1 / 2 ^ n) ^ α` is the negative real power `2 ^ (-α n)`. -/
-lemma one_div_two_pow_rpow {α : ℝ} (_hα : 0 ≤ α) (n : ℕ) :
+lemma one_div_two_pow_rpow {α : ℝ} (n : ℕ) :
     ((1 : ℝ) / 2 ^ n) ^ α = (2 : ℝ) ^ (-(α * ↑n)) := by
   have h2 : (0 : ℝ) ≤ 2 := by positivity
   calc
@@ -87,7 +104,7 @@ lemma one_div_two_pow_rpow {α : ℝ} (_hα : 0 ≤ α) (n : ℕ) :
     _ = (2 : ℝ) ^ (-(α * ↑n)) := by ring_nf
 
 /-- Eventual unit increment bounds produce a finite dyadic Hölder constant. -/
-lemma hasDyadicIncrements_of_eventually {f : ℝ → ℝ} {α : ℝ} {j N : ℕ} (hα : 0 ≤ α)
+lemma hasDyadicIncrements_of_eventually {f : ℝ → ℝ} {α : ℝ} {j N : ℕ}
     (hN : ∀ n, N ≤ n → ∀ i : ℕ, i < 2 ^ n →
       |f (↑j + (↑i + 1) / 2 ^ n) - f (↑j + (↑i : ℝ) / 2 ^ n)| ≤ ((1 : ℝ) / 2 ^ n) ^ α) :
     HasDyadicIncrements f α (holderConstFrom f α j N) j := by
@@ -105,7 +122,7 @@ lemma hasDyadicIncrements_of_eventually {f : ℝ → ℝ} {α : ℝ} {j N : ℕ}
           holderConstFrom f α j N / (2 : ℝ) ^ (α * ↑n) := hΔ
       _ = holderConstFrom f α j N * (2 : ℝ) ^ (-(α * ↑n)) := by
         rw [div_eq_mul_inv, ← Real.rpow_neg (by positivity)]
-      _ = holderConstFrom f α j N * ((1 : ℝ) / 2 ^ n) ^ α := by rw [one_div_two_pow_rpow hα]
+      _ = holderConstFrom f α j N * ((1 : ℝ) / 2 ^ n) ^ α := by rw [one_div_two_pow_rpow]
   · have hn' : N ≤ n := by omega
     exact (hN n hn' i hi).trans <| by
       nth_rw 1 [← one_mul (((1 : ℝ) / 2 ^ n) ^ α)]
@@ -242,7 +259,7 @@ def dyadicFloorReal (n : ℕ) (t : ℝ) : ℝ :=
   (Nat.floor (t * 2 ^ n) : ℝ) / 2 ^ n
 
 /-- The dyadic floor of a nonnegative real is nonnegative. -/
-lemma dyadicFloorReal_nonneg {n : ℕ} {t : ℝ} (_ht : 0 ≤ t) : 0 ≤ dyadicFloorReal n t := by
+lemma dyadicFloorReal_nonneg {n : ℕ} {t : ℝ} : 0 ≤ dyadicFloorReal n t := by
   dsimp [dyadicFloorReal]
   positivity
 
@@ -253,7 +270,7 @@ lemma dyadicFloorReal_le {n : ℕ} {t : ℝ} (ht : 0 ≤ t) : dyadicFloorReal n 
   exact_mod_cast Nat.floor_le (mul_nonneg ht (pow_nonneg (by norm_num : (0 : ℝ) ≤ 2) n))
 
 /-- A nonnegative real lies strictly below its dyadic floor plus one mesh. -/
-lemma lt_dyadicFloorReal_add {n : ℕ} {t : ℝ} (_ht : 0 ≤ t) :
+lemma lt_dyadicFloorReal_add {n : ℕ} {t : ℝ} :
     t < dyadicFloorReal n t + 1 / 2 ^ n := by
   dsimp [dyadicFloorReal]
   have hlt : t * 2 ^ n < (Nat.floor (t * 2 ^ n) : ℝ) + 1 := Nat.lt_floor_add_one _
@@ -267,9 +284,9 @@ lemma abs_dyadicFloorReal_sub {n : ℕ} {s t : ℝ} (hs : 0 ≤ s) (ht : 0 ≤ t
   have hsle : dyadicFloorReal n s ≤ s := dyadicFloorReal_le (n := n) hs
   have htle : dyadicFloorReal n t ≤ t := dyadicFloorReal_le (n := n) ht
   have hsge : s - 1 / 2 ^ n ≤ dyadicFloorReal n s :=
-    le_of_lt (by linarith [lt_dyadicFloorReal_add (n := n) hs])
+    le_of_lt (by linarith [lt_dyadicFloorReal_add (n := n) (t := s)])
   have htge : t - 1 / 2 ^ n ≤ dyadicFloorReal n t :=
-    le_of_lt (by linarith [lt_dyadicFloorReal_add (n := n) ht])
+    le_of_lt (by linarith [lt_dyadicFloorReal_add (n := n) (t := t)])
   refine abs_le.2 ⟨?_, ?_⟩
   · calc
       -( |s - t| + 1 / 2 ^ n) ≤ (s - 1 / 2 ^ n) - t := by
@@ -395,7 +412,7 @@ lemma abs_sub_dyadic_num {f : ℝ → ℝ} {α : ℝ} {K : ℕ → ℝ} {N L a b
       (Finset.sum_nonneg fun j hj => hK j (mem_range.mp hj))
 
 /-- A coarser dyadic floor, written on a finer dyadic grid. -/
-lemma dyadicFloorReal_refine {n m : ℕ} {t : ℝ} (_ht : 0 ≤ t) (hnm : n ≤ m) :
+lemma dyadicFloorReal_refine {n m : ℕ} {t : ℝ} (hnm : n ≤ m) :
     dyadicFloorReal n t =
       ((Nat.floor (t * 2 ^ n) * 2 ^ (m - n) : ℕ) : ℝ) / 2 ^ m := by
   have hpos : (2 : ℝ) ^ (m - n) ≠ 0 := by positivity
@@ -427,7 +444,7 @@ lemma abs_dyadicFloorReal_levels {n m : ℕ} {t : ℝ} (ht : 0 ≤ t) :
     |dyadicFloorReal n t - dyadicFloorReal m t| ≤ 1 / 2 ^ n + 1 / 2 ^ m := by
   have hdist (k : ℕ) : |t - dyadicFloorReal k t| ≤ 1 / 2 ^ k := by
     have hle : dyadicFloorReal k t ≤ t := dyadicFloorReal_le ht
-    have hlt : t < dyadicFloorReal k t + 1 / 2 ^ k := lt_dyadicFloorReal_add ht
+    have hlt : t < dyadicFloorReal k t + 1 / 2 ^ k := lt_dyadicFloorReal_add
     rw [abs_of_nonneg (sub_nonneg.2 hle)]
     exact le_of_lt (by linarith)
   have hn : |dyadicFloorReal n t - t| ≤ 1 / 2 ^ n := by
@@ -447,7 +464,7 @@ lemma abs_sub_dyadicFloor_levels {f : ℝ → ℝ} {α : ℝ} {K : ℕ → ℝ} 
   set a : ℕ := Nat.floor (t * 2 ^ n) * 2 ^ (m - n)
   set b : ℕ := Nat.floor (t * 2 ^ m)
   have ha : dyadicFloorReal n t = (a : ℝ) / 2 ^ m := by
-    simpa [a] using dyadicFloorReal_refine ht0 hnm
+    simpa [a] using dyadicFloorReal_refine hnm
   have hb : dyadicFloorReal m t = (b : ℝ) / 2 ^ m := rfl
   have ha_le : a ≤ N * 2 ^ m := dyadicFloorReal_refine_num_le ht0 htN hnm
   have hb_le : b ≤ N * 2 ^ m := dyadicFloorReal_num_le ht0 htN

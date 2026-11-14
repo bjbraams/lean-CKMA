@@ -12,6 +12,18 @@ public import Mathlib.Data.EReal.Operations
 
 Properness for an extended-real function means that no value is `-∞` and some value is finite.
 The predicate does not use a norm, an inner product, or convexity.
+
+## Main definitions
+
+* `CKMA.IsProperERealFunction`: properness predicate for extended-real functions.
+
+## Main results
+
+* (No standalone theorems; provides the foundational properness predicate.)
+
+## Notation
+
+* Standard Mathlib notation is used throughout.
 -/
 
 @[expose] public section

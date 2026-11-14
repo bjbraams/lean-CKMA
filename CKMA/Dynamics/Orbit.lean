@@ -15,6 +15,20 @@ public import Mathlib.Logic.Function.Iterate
 bornological space. Adjoining or deleting the initial point does not change this property.
 For normed additive groups a bridge identifies it with a uniform bound on iterate norms.
 This interface is independent of the complex-analytic polynomial applications.
+
+## Main definitions
+
+* `CKMA.HasBoundedOrbit`: predicate that the forward iterate range of a point is bounded.
+
+## Main results
+
+* `CKMA.HasBoundedOrbit.map`, `CKMA.HasBoundedOrbit.of_map`: invariance of orbit boundedness under
+  one forward step.
+* `CKMA.hasBoundedOrbit_iff_exists_norm_le`: norm characterization in a normed additive group.
+
+## Notation
+
+* `f^[n]`: `n`-fold iterate of `f`.
 -/
 
 @[expose] public section

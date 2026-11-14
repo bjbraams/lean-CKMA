@@ -18,6 +18,22 @@ The truncation `x` on `{|x| ≤ 1}` makes the Lévy integrand discontinuous on t
 A continuous cutoff, equal to the identity on `[-1/2, 1/2]` and vanishing for `|x| ≥ 1`,
 produces a bounded continuous kernel. Against the quadratically weighted convolution roots,
 its integral recovers `n` times one minus the root characteristic function, up to a real drift.
+
+## Main definitions
+
+* `CKMA.quadTrunc`: quadratic weight `min(1, x²)`.
+* `CKMA.contCutoff`: continuous cutoff function equal to `x` on `[-1/2, 1/2]` and `0` on `|x| ≥ 1`.
+* `CKMA.levyKernel`: bounded continuous Lévy kernel at frequency `t`.
+* `CKMA.contDrift`: compensating drift associated to `contCutoff`.
+
+## Main results
+
+* `CKMA.nat_mul_charFun_sub_one_eq`: `n * (charFun ν t - 1)` equals the integral of `levyKernel t`
+  against the quadratically weighted measure plus `I * t * contDrift n ν`.
+
+## Notation
+
+No new notation is introduced.
 -/
 
 @[expose] public section

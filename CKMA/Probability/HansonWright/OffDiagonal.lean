@@ -6,33 +6,29 @@ Authors: CKMA contributors
 module
 
 public import CKMA.Probability.HansonWright.Estimates
+public import CKMA.Probability.Concentration.Basic
 
-public import CKMA.Probability.Concentration
-public import Mathlib.Analysis.CStarAlgebra.Matrix
-public import Mathlib.Analysis.Complex.Exponential
-public import Mathlib.Analysis.Complex.ExponentialBounds
-public import Mathlib.Analysis.Convex.SpecificFunctions.Basic
-public import Mathlib.Analysis.SpecialFunctions.Log.Deriv
-public import Mathlib.Data.Fintype.BigOperators
-public import Mathlib.Analysis.Matrix.Spectrum
-public import Mathlib.Analysis.SpecialFunctions.Gaussian.GaussianIntegral
-public import Mathlib.LinearAlgebra.Matrix.PosDef
-public import Mathlib.LinearAlgebra.Matrix.Trace
-public import Mathlib.MeasureTheory.Constructions.Pi
-public import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
-public import Mathlib.MeasureTheory.Integral.DominatedConvergence
-public import Mathlib.MeasureTheory.Integral.Pi
-public import Mathlib.Probability.Distributions.Gaussian.Multivariate
-public import Mathlib.Probability.Distributions.Gaussian.Real
-public import Mathlib.Probability.Independence.Integration
-public import Mathlib.Probability.Moments.Basic
-public import Mathlib.Topology.Algebra.InfiniteSum.Order
-public import Mathlib.Topology.Algebra.InfiniteSum.Ring
 /-!
 # Hanson–Wright off-diagonal comparison
 
 A Bernoulli average separates the off-diagonal quadratic form. Gaussian integrals
 bound the resulting moment generating function.
+
+## Main definitions
+
+* `CKMA.maskedMatrix`: matrix with entries retained on a Boolean cut.
+* `CKMA.offDiagonalForm`: off-diagonal part of a quadratic form.
+* `CKMA.bernoulliSlice`: one Boolean slice of the off-diagonal quadratic form.
+
+## Main results
+
+* `CKMA.integral_exp_mulVec_sq_gaussian`: Gaussian MGF bound for `‖M x‖²`.
+* `CKMA.integral_exp_mulVec_sq_subgaussian`: sub-Gaussian product MGF bound for `‖M x‖²`.
+* `CKMA.offDiagonalForm_eq_average`: decoupling representation via Boolean slices.
+
+## Notation
+
+No new notation is introduced in this file.
 -/
 
 @[expose] public section
@@ -326,7 +322,7 @@ variable {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω}
 lemma hasSubgaussianMGF_scale [IsProbabilityMeasure μ] {X : Ω → ℝ} (hm : Measurable X)
     (h0 : ∫ ω, X ω ∂μ = 0) {K : ℝ} (h : HasPsiTwoBound X μ (2 * K)) :
     HasSubgaussianMGF X (⟨64 * K ^ 2, by positivity⟩ : ℝ≥0) μ := by
-  have hsub := h.hasSubgaussianMGF hm h0
+  have hsub := hasSubgaussianMGF_of_hasPsiTwoBound hm h0 h
   have hnum : (16 : ℝ) * (2 * K) ^ 2 = 64 * K ^ 2 := by
     rw [mul_pow]
     have h4 : (2 : ℝ) ^ 2 = 4 := by norm_num
@@ -419,7 +415,8 @@ lemma integral_sampledQuadraticForm [IsProbabilityMeasure μ] (X : Fin n → Ω 
   have hsq : ∀ i, Integrable (fun ω ↦ X i ω ^ 2) μ := by
     intro i
     have hG : HasGaussianMoments (X i) μ (4 * K) := by
-      simpa [show 2 * (2 * K) = 4 * K by ring] using (hpsi i).hasGaussianMoments (hmeas i)
+      simpa [show 2 * (2 * K) = 4 * K by ring] using
+        hasGaussianMoments_of_hasPsiTwoBound (hmeas i) (hpsi i)
     have hmem : MemLp (X i) 2 μ := by
       rw [show (2 : ℝ≥0∞) = ENNReal.ofReal 2 by simp]
       exact (hG.2 2 (by norm_num)).trans_lt ENNReal.ofReal_lt_top

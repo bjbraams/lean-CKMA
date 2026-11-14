@@ -24,6 +24,25 @@ holomorphic functions. Monomial norms, closedness of the analytic subspace and t
 orthogonal projection describe the Hilbert case; kernel bounds also cover `1 < p < ∞`.
 
 Sources: GAPS 42.51 and 42.52.
+
+## Main definitions
+
+* `CKMA.bergmanMeasure`: normalized radially weighted area measure on the unit disk.
+* `CKMA.bergmanKernel`: weighted Bergman reproducing kernel.
+* `CKMA.bergmanSet`: analytic subspace of weighted `Lᵖ` on the unit disk.
+* `CKMA.bergmanIntegral`: weighted Bergman integral operator.
+
+## Main results
+
+* `CKMA.bergman_reproducing`: reproducing formula on `A²_α(𝔻)`.
+* `CKMA.integral_norm_monomial_sq`: weighted `L²` norm of monomials.
+* `CKMA.isClosed_bergmanSet`: closedness of `A²_α(𝔻)` in `L²`.
+* `CKMA.exists_bergmanProjection`: orthogonal Bergman projection on `L²`.
+* `CKMA.bergmanIntegral_bounded`: `Lᵖ` boundedness of the Bergman integral for `1 < p < ∞`.
+
+## Notation
+
+No new notation is introduced.
 -/
 
 @[expose] public section

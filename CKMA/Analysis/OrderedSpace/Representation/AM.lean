@@ -27,6 +27,23 @@ homomorphisms. Evaluation on the weak-star closure of those homomorphisms is a
 lattice isometry onto `C(K, ℝ)`, by Krein–Milman and Stone–Weierstrass. The zero
 space is represented by the empty compact carrier. The argument follows Schaefer,
 *Banach Lattices and Positive Operators*, Proposition II.4.4 and Theorem II.7.4.
+
+## Main definitions
+
+* `CKMA.amStateSpace`: weak-star state space of positive unit-normalized functionals on an AM
+  space.
+* `CKMA.amCarrier`: weak-star closure of the lattice-homomorphic states.
+* `CKMA.amEvalIsometry`: isometric lattice embedding into `C(amCarrier e, ℝ)`.
+
+## Main results
+
+* `CKMA.extremePoints_amStateSpace_latticeHom`: extreme points of `amStateSpace e` preserve lattice
+  operations.
+* `CKMA.exists_am_representation`: Kakutani representation of an AM Banach lattice with unit.
+
+## Notation
+
+No new notation is introduced in this file.
 -/
 
 @[expose] public section
@@ -322,7 +339,7 @@ theorem truncImage_nonempty (φ : E →ₗ[ℝ] ℝ) (v : E) {y : E} (hy : 0 ≤
   ⟨φ 0, 0, zero_mem_truncAdmissible hy, rfl⟩
 
 /-- A monotone functional bounds the truncated image. -/
-theorem truncImage_bddAbove {φ : E →ₗ[ℝ] ℝ} (hmono : Monotone φ) (v : E) {y : E} (_hy : 0 ≤ y) :
+theorem truncImage_bddAbove {φ : E →ₗ[ℝ] ℝ} (hmono : Monotone φ) (v y : E) :
     BddAbove (φ '' truncAdmissible v y) :=
   ⟨φ y, by rintro _ ⟨z, ⟨_, hzle, _⟩, rfl⟩; exact hmono hzle⟩
 
@@ -332,7 +349,7 @@ theorem truncSup_nonneg {φ : E →ₗ[ℝ] ℝ} (hmono : Monotone φ) (v : E) {
   have h0 : (0 : ℝ) ∈ φ '' truncAdmissible v y := by
     rw [show (0 : ℝ) = φ 0 by simp]
     exact ⟨0, zero_mem_truncAdmissible hy, rfl⟩
-  exact le_csSup (truncImage_bddAbove hmono v hy) h0
+  exact le_csSup (truncImage_bddAbove hmono v y) h0
 
 /-- A monotone functional dominates its truncated supremum. -/
 theorem truncSup_le {φ : E →ₗ[ℝ] ℝ} (hmono : Monotone φ) (v : E) {y : E} (hy : 0 ≤ y) :
@@ -346,7 +363,7 @@ theorem truncSup_self {φ : E →ₗ[ℝ] ℝ} (hmono : Monotone φ) {v : E} (hv
     truncSup φ v v = φ v := by
   have hvmem : v ∈ truncAdmissible v v := ⟨hv, le_rfl, 1, by positivity, by simp⟩
   apply le_antisymm (truncSup_le hmono v hv)
-  exact le_csSup (truncImage_bddAbove hmono v hv) ⟨v, hvmem, rfl⟩
+  exact le_csSup (truncImage_bddAbove hmono v v) ⟨v, hvmem, rfl⟩
 
 /-- Admissible truncations add. -/
 theorem add_mem_truncAdmissible {v y₁ y₂ z₁ z₂ : E}
@@ -359,19 +376,13 @@ theorem add_mem_truncAdmissible {v y₁ y₂ z₁ z₂ : E}
     z₁ + z₂ ≤ c₁ • v + c₂ • v := add_le_add h1c h2c
     _ = (c₁ + c₂) • v := by rw [add_smul]
 
-/-- Real comparison by an arbitrary positive slack. -/
-theorem le_of_forall_pos_le_add {a b : ℝ} (h : ∀ ε, 0 < ε → a ≤ b + ε) : a ≤ b := by
-  contrapose! h
-  refine ⟨(a - b) / 2, by linarith, ?_⟩
-  linarith
-
 /-- Truncated suprema are additive on the positive cone. -/
 theorem truncSup_add {φ : E →ₗ[ℝ] ℝ} (hmono : Monotone φ) (v y₁ y₂ : E)
     (hy₁ : 0 ≤ y₁) (hy₂ : 0 ≤ y₂) :
     truncSup φ v (y₁ + y₂) = truncSup φ v y₁ + truncSup φ v y₂ := by
-  have hb₁ := truncImage_bddAbove hmono v hy₁
-  have hb₂ := truncImage_bddAbove hmono v hy₂
-  have hb := truncImage_bddAbove hmono v (add_nonneg hy₁ hy₂)
+  have hb₁ := truncImage_bddAbove hmono v y₁
+  have hb₂ := truncImage_bddAbove hmono v y₂
+  have hb := truncImage_bddAbove hmono v (y₁ + y₂)
   have hn₁ := truncImage_nonempty φ v hy₁
   have hn₂ := truncImage_nonempty φ v hy₂
   have hn := truncImage_nonempty φ v (add_nonneg hy₁ hy₂)
@@ -413,8 +424,8 @@ theorem truncSup_smul {φ : E →ₗ[ℝ] ℝ} (hmono : Monotone φ) (v : E) {c 
   · have himage : φ '' truncAdmissible v (0 : E) = {0} := by
       rw [truncAdmissible_zero, image_singleton, map_zero]
     simp [truncSup, zero_smul, himage]
-  · have hby := truncImage_bddAbove hmono v hy
-    have hbc := truncImage_bddAbove hmono v (smul_nonneg hc.le hy)
+  · have hby := truncImage_bddAbove hmono v y
+    have hbc := truncImage_bddAbove hmono v (c • y)
     have hny := truncImage_nonempty φ v hy
     have hnc := truncImage_nonempty φ v (smul_nonneg hc.le hy)
     apply le_antisymm

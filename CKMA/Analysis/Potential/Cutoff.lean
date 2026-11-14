@@ -16,6 +16,20 @@ Capacity-admissible functions are smooth compactly supported real functions at l
 on an open neighbourhood of the prescribed set. This common condition is used for both
 homogeneous Newtonian and inhomogeneous Sobolev energies. Smoothness, topological support
 and open neighbourhoods use Mathlib.
+
+## Main definitions
+
+* `CKMA.IsCapacityAdmissible`: predicate for smooth compactly supported functions dominating `1`
+  on an open neighbourhood of a set.
+
+## Main results
+
+* `CKMA.IsCapacityAdmissible.mono`: monotonicity of capacity admissibility with respect to set
+  inclusion.
+
+## Notation
+
+* No new notation is introduced in this module.
 -/
 
 @[expose] public section

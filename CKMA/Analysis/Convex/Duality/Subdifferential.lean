@@ -25,6 +25,22 @@ lies in that interior.
 The argument is the Hahn–Banach step of the continuity-qualified Fenchel–Rockafellar theorem
 and of the Banach subdifferential sum rule. Sources: Borwein–Lewis, *Convex Analysis and
 Nonlinear Optimization*, Theorem 4.1.6; GAPS 12.21 and 12.39.
+
+## Main definitions
+
+* (No new public definitions; uses `TauCeti.subdifferential`.)
+
+## Main results
+
+* `CKMA.exists_mem_subdifferential_of_boundedAbove`: subgradient existence from local upper
+  boundedness of a convex extended-real function.
+* `CKMA.convex_epigraph_coe`: convexity of the `EReal` epigraph of a real convex function.
+* `CKMA.exists_mem_subdifferential_of_convexOn`: subgradient existence for finite-dimensional
+  real convex functions.
+
+## Notation
+
+* Standard Mathlib notation is used throughout.
 -/
 
 @[expose] public section
@@ -143,6 +159,16 @@ theorem exists_mem_subdifferential_of_boundedAbove {f : E → EReal}
   simp only [LinearMap.flip_apply, topDualPairing_apply, happ]
   linarith
 
+/-- A real-valued function has convex epigraph after coercion to `EReal`. -/
+lemma convex_epigraph_coe {f : E → ℝ} (hf : ConvexOn ℝ Set.univ f) :
+    Convex ℝ {p : E × ℝ | (f p.1 : EReal) ≤ p.2} := by
+  have hset : {p : E × ℝ | (f p.1 : EReal) ≤ p.2} =
+      {p : E × ℝ | f p.1 ≤ p.2} := by
+    ext p
+    simp [EReal.coe_le_coe_iff]
+  rw [hset]
+  simpa using hf.convex_epigraph
+
 /-- Every point of a finite-dimensional real convex function has a subgradient. -/
 theorem exists_mem_subdifferential_of_convexOn [FiniteDimensional ℝ E] {f : E → ℝ}
     (hf : ConvexOn ℝ Set.univ f) (x : E) :
@@ -153,14 +179,7 @@ theorem exists_mem_subdifferential_of_convexOn [FiniteDimensional ℝ E] {f : E 
     continuousOn_univ.mp (hf.continuousOn isOpen_univ)
   have hE : Continuous fun y : E => (f y : EReal) :=
     continuous_coe_real_ereal.comp hcont
-  have hconv : Convex ℝ {p : E × ℝ | (f p.1 : EReal) ≤ p.2} := by
-    have hset :
-        {p : E × ℝ | (f p.1 : EReal) ≤ p.2} = {p : E × ℝ | f p.1 ≤ p.2} := by
-      ext p
-      simp [EReal.coe_le_coe_iff]
-    have hepi := hf.convex_epigraph
-    rw [hset]
-    simpa using hepi
+  have hconv : Convex ℝ {p : E × ℝ | (f p.1 : EReal) ≤ p.2} := convex_epigraph_coe hf
   have hbot : ∀ y : E, (f y : EReal) ≠ ⊥ := fun _ => EReal.coe_ne_bot _
   obtain ⟨U, hU, M, hM⟩ :=
     exists_boundedAbove_of_continuousAt hE.continuousAt (EReal.coe_ne_top _) (hbot x)

@@ -26,6 +26,26 @@ space; no sigma-finiteness restriction is imposed on the general AL representati
 implication uses Mathlib's bounded monotone convergence of real sequences and its metric
 Cauchy criterion, with the AL identity converting norm differences into distances.
 Sources: GAPS 19.27 and 19.29.
+
+## Main definitions
+
+* `CKMA.CompactHausdorffModel`: compact Hausdorff representation carrier for AM spaces.
+* `CKMA.MeasureSpaceModel`: measure-space representation carrier for AL spaces.
+* `CKMA.IsAMSpace`: Banach lattice with `‖x ⊔ y‖ = max ‖x‖ ‖y‖` on the positive cone.
+* `CKMA.IsAMSpaceUnit`: positive unit whose order interval is the closed norm unit ball.
+* `CKMA.IsALSpace`: Banach lattice with `‖x + y‖ = ‖x‖ + ‖y‖` on the positive cone.
+* `CKMA.IsKBSpace`: Banach lattice with norm convergence of bounded monotone positive sequences.
+
+## Main results
+
+* `CKMA.exists_amSpace_representation`: Kakutani representation of an AM space with unit as
+  `C(K, ℝ)`.
+* `CKMA.exists_alSpace_representation`: Kakutani representation of an AL space as `L¹(μ)`.
+* `CKMA.IsALSpace.isKBSpace`: every AL space is a KB space.
+
+## Notation
+
+No new notation is introduced in this file.
 -/
 
 @[expose] public section
@@ -42,17 +62,17 @@ universe u
 abbrev CompactHausdorffModel := CompHaus.{u}
 
 /-- The underlying carrier of a compact Hausdorff representation space. -/
-abbrev CompactHausdorffModel.Carrier (K : CompactHausdorffModel.{u}) : Type u := K
+abbrev CompactHausdorffModel.carrier (K : CompactHausdorffModel.{u}) : Type u := K
 
 /-- A measure-space carrier for an AL representation, without an unnecessary sigma-finiteness
 restriction on a general AL space. -/
 structure MeasureSpaceModel where
   /-- Underlying type. -/
-  Carrier : Type u
+  carrier : Type u
   /-- Sigma algebra. -/
-  [measurableSpace : MeasurableSpace Carrier]
+  [measurableSpace : MeasurableSpace carrier]
   /-- Representing measure. -/
-  measure : Measure Carrier
+  measure : Measure carrier
 
 attribute [instance] MeasureSpaceModel.measurableSpace
 
@@ -79,7 +99,7 @@ def IsKBSpace (E : Type*) [NormedAddCommGroup E] [Lattice E] : Prop :=
 /-- **19.27**, Kakutani: an AM Banach lattice with unit is lattice isometric to a compact
 Hausdorff continuous-function space, with that unit represented by the constant one. -/
 theorem exists_amSpace_representation [CompleteSpace E] {e : E} (he : IsAMSpaceUnit e) :
-    ∃ K : CompactHausdorffModel.{u}, ∃ U : E ≃ₗᵢ[ℝ] C(K.Carrier, ℝ),
+    ∃ K : CompactHausdorffModel.{u}, ∃ U : E ≃ₗᵢ[ℝ] C(K.carrier, ℝ),
       U e = 1 ∧ ∀ x y, U (x ⊔ y) = U x ⊔ U y := by
   rcases he with ⟨-, he0, hball⟩
   obtain ⟨K, U, hU, hsup⟩ := exists_am_representation (E := E) he0 hball
@@ -90,7 +110,7 @@ theorem exists_alSpace_representation [CompleteSpace E] (hE : IsALSpace E) :
     ∃ M : MeasureSpaceModel.{u}, ∃ U : E ≃ₗᵢ[ℝ] Lp ℝ 1 M.measure,
       ∀ x y, U (x ⊔ y) = U x ⊔ U y := by
   obtain ⟨X, mX, μ, U, hsup⟩ := exists_al_representation (E := E) hE
-  exact ⟨{ Carrier := X, measurableSpace := mX, measure := μ }, U, hsup⟩
+  exact ⟨{ carrier := X, measurableSpace := mX, measure := μ }, U, hsup⟩
 
 omit [NormedSpace ℝ E] [IsOrderedModule ℝ E] [HasSolidNorm E] in
 /-- The monotone-completeness consequence of the AL identity.

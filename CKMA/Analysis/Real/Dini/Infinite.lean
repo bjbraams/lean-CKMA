@@ -9,7 +9,9 @@ public import CKMA.Analysis.Real.Dini.Covering
 public import CKMA.Analysis.Real.Dini.Young
 public import Mathlib.MeasureTheory.Group.Measure
 public import Mathlib.MeasureTheory.Measure.Haar.Unique
-public import Mathlib.Tactic
+import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.Positivity
+import Mathlib.Tactic.Ring
 
 /-!
 # Infinite Dini mismatches are null
@@ -18,13 +20,29 @@ For an arbitrary `f : ℝ → ℝ`, the set where the upper right derivative is 
 left derivative is not `⊥` is a countable union of sets controlled by
 `volume_eq_zero_of_arbitrarily_steep`. Reflection `x ↦ f (-x)` carries the opposite mismatch
 to the same statement. Source: GAPS 05.10.
+
+## Main definitions
+
+* `CKMA.Dini.leftSteep`: points with upper right derivative `⊤` and short left slopes above `q`.
+* `CKMA.Dini.infiniteUp`: points with upper right derivative `⊤` and lower left derivative `≠ ⊥`.
+* `CKMA.Dini.infiniteDown`: points with lower left derivative `⊥` and upper right derivative `≠ ⊤`.
+
+## Main results
+
+* `CKMA.Dini.volume_leftSteep_eq_zero`: each uniformly left-steep set is null.
+* `CKMA.Dini.volume_infiniteUp`: `infiniteUp f` has Lebesgue measure zero.
+* `CKMA.Dini.volume_infiniteDown`: `infiniteDown f` has Lebesgue measure zero.
+
+## Notation
+
+No new notation is introduced.
 -/
 
 @[expose] public section
 
 noncomputable section
 
-namespace CKMA
+namespace CKMA.Dini
 
 open Set Filter Topology MeasureTheory
 open scoped ENNReal
@@ -341,4 +359,4 @@ theorem volume_infiniteDown (f : ℝ → ℝ) : volume (infiniteDown f) = 0 := b
   rw [infiniteDown_eq_preimage, Measure.measure_preimage_neg]
   exact volume_infiniteUp fun t => f (-t)
 
-end CKMA
+end CKMA.Dini

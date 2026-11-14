@@ -30,6 +30,23 @@ import Mathlib.Analysis.Convex.SpecificFunctions.Basic
 Every second node of a monotone sequence carries a light Young control.
 Reflection and almost-subadditivity give continuity of finite `p`-variation,
 and short intervals carry an arbitrarily small control.
+
+## Main definitions
+
+* `CKMA.YoungLoeve.youngStep`: left-point Young increment `Y s (X t - X s)`.
+* `CKMA.YoungLoeve.timeReflect`: time reflection of a path on `[c, d]`.
+
+## Main results
+
+* `CKMA.YoungLoeve.exists_light_ctrl`: existence of an interior node with merged control at most
+  twice the average.
+* `CKMA.YoungLoeve.young_step_bound`: loose Young–Loeve bound on partition sums by point deletion.
+* `CKMA.YoungLoeve.variation_almost_subadd`: almost-subadditivity of finite `p`-variation for
+  continuous paths.
+
+## Notation
+
+No new notation is introduced.
 -/
 
 @[expose] public section
@@ -153,6 +170,7 @@ def youngStep {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [NormedAddCommGroup F] [NormedSpace ℝ F] (X : ℝ → E) (Y : ℝ → E →L[ℝ] F) (s t : ℝ) : F :=
   Y s (X t - X s)
 
+/-- The three-point defect of `youngStep` is bounded by `youngModulus`. -/
 lemma norm_young_defect {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [NormedAddCommGroup F] [NormedSpace ℝ F] {s u t : ℝ} (hsu : s ≤ u) (hut : u ≤ t)
     {p q : ℝ} (hp : 1 ≤ p) (hq : 1 ≤ q) (X : ℝ → E)

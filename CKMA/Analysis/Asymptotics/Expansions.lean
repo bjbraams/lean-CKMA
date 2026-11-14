@@ -22,6 +22,31 @@ the leading Laplace term. Karamata's equivalence relates positive half-line meas
 their Laplace–Stieltjes transforms and regularly varying cumulative mass.
 
 Sources: GAPS 50.6, 50.9, 50.11 and 50.29.
+
+## Main definitions
+
+* `CKMA.IsAsymptoticScale`: a sequence of functions where each term is little-o of the previous.
+* `CKMA.HasAsymptoticExpansion`: Poincaré asymptotic expansion with respect to a scale.
+* `CKMA.complexSector`, `CKMA.closedComplexSector`: open and closed complex sectors.
+* `CKMA.HasSectorialPowerExpansion`: uniform asymptotic power expansion on subsectors.
+* `CKMA.asymptoticLaplaceIntegral`: Laplace integral on `(0, ∞)`.
+* `CKMA.HasExponentialTailBound`: exponential growth bound at infinity.
+* `CKMA.IsSlowlyVarying`: Karamata slow variation at infinity.
+* `CKMA.nonnegativeCumulativeMass`, `CKMA.laplaceStieltjesTransform`: cumulative mass and
+  Laplace–Stieltjes transform of a measure.
+
+## Main results
+
+* `CKMA.hasAsymptoticExpansion_zero`: the zero function has the zero asymptotic expansion.
+* `CKMA.HasAsymptoticExpansion.coefficients_eq`: uniqueness of asymptotic expansion coefficients.
+* `CKMA.borel_ritt`: Borel–Ritt realization of formal power series on sectors.
+* `CKMA.watson_laplace_remainder`, `CKMA.watson_laplace_expansion`: Watson's lemma.
+* `CKMA.laplace_interior_minimum`: Laplace's method at an interior minimum.
+* `CKMA.karamatas_tauberian`: Karamata's Tauberian theorem.
+
+## Notation
+
+No new notation is introduced.
 -/
 
 @[expose] public section
@@ -34,26 +59,26 @@ open MeasureTheory Filter Topology Asymptotics
 open scoped BigOperators
 
 /-- An asymptotic scale consists of successive terms which are little-o of their predecessors. -/
-def IsAsymptoticScale {X : Type*} (φ : ℕ → X → ℂ) (l : Filter X) : Prop :=
+def IsAsymptoticScale {X 𝕜 : Type*} [NormedField 𝕜] (φ : ℕ → X → 𝕜) (l : Filter X) : Prop :=
   ∀ n, (φ (n + 1)) =o[l] (φ n)
 
 /-- A Poincaré expansion in an arbitrary scalar asymptotic scale. The `N=0` truncation is omitted.
   -/
-def HasAsymptoticExpansion {X : Type*} (f : X → ℂ) (a : ℕ → ℂ)
-    (φ : ℕ → X → ℂ) (l : Filter X) : Prop :=
+def HasAsymptoticExpansion {X 𝕜 : Type*} [NormedField 𝕜] (f : X → 𝕜) (a : ℕ → 𝕜)
+    (φ : ℕ → X → 𝕜) (l : Filter X) : Prop :=
   ∀ N : ℕ, 0 < N → (fun x ↦ f x - ∑ n ∈ Finset.range N, a n * φ n x) =o[l] (φ (N - 1))
 
 /-- Zero has its zero-coefficient expansion in every scale. -/
-theorem hasAsymptoticExpansion_zero {X : Type*} (φ : ℕ → X → ℂ) (l : Filter X) :
+theorem hasAsymptoticExpansion_zero {X 𝕜 : Type*} [NormedField 𝕜] (φ : ℕ → X → 𝕜) (l : Filter X) :
     HasAsymptoticExpansion (fun _ ↦ 0) (fun _ ↦ 0) φ l := by
   intro N hN
   simp
 
 /-- Coefficients of a Poincaré expansion are unique when every scale term is eventually nonzero
 along a nontrivial filter. -/
-theorem HasAsymptoticExpansion.coefficients_eq {X : Type*} {l : Filter X} [NeBot l]
-    {φ : ℕ → X → ℂ}
-    (hne : ∀ n, ∀ᶠ x in l, φ n x ≠ 0) {f : X → ℂ} {a b : ℕ → ℂ}
+theorem HasAsymptoticExpansion.coefficients_eq {X 𝕜 : Type*} [NormedField 𝕜]
+    {l : Filter X} [NeBot l] {φ : ℕ → X → 𝕜}
+    (hne : ∀ n, ∀ᶠ x in l, φ n x ≠ 0) {f : X → 𝕜} {a b : ℕ → 𝕜}
     (ha : HasAsymptoticExpansion f a φ l) (hb : HasAsymptoticExpansion f b φ l) : a = b := by
   funext n
   induction n using Nat.strong_induction_on with

@@ -18,7 +18,6 @@ public import Mathlib.Basic.Sign.Basic
 public import Mathlib.LinearAlgebra.Lagrange
 public import Mathlib.MeasureTheory.Integral.Bochner.Basic
 public import Mathlib.MeasureTheory.Measure.Support
-public import Mathlib.Tactic
 public import Mathlib.Topology.Algebra.Polynomial
 public import Mathlib.Topology.Compactness.Lindelof
 public import Mathlib.Topology.Instances.Sign
@@ -34,6 +33,24 @@ positive Gaussian quadrature rule at these roots, exact through degree `2n-1`, w
 weights given by the reciprocal diagonal Christoffel kernel.
 
 Sources: GAPS 48.6 and 48.14.
+
+## Main definitions
+
+* `CKMA.HasFiniteMoments`: integrability of all monomial powers `x ^ n` with respect to `μ`.
+* `CKMA.IsOrthogonalPolynomial`: nonzero polynomial orthogonal to all polynomials of lower degree.
+* `CKMA.IsOrthonormalPolynomialSequence`: orthonormal sequence of polynomials with `natDegree = n`.
+* `CKMA.christoffelDiagonal`: diagonal Christoffel kernel `∑ k ∈ range n, (P k).eval x ^ 2`.
+
+## Main results
+
+* `CKMA.orthogonalPolynomial_roots_simple_in_interior`: simple real roots in the interior of the
+  convex hull of `μ.support`.
+* `CKMA.exists_unique_gaussian_quadrature`: existence, uniqueness, positivity, and Christoffel
+  weight formula for Gaussian quadrature.
+
+## Notation
+
+No new notation is introduced in this file.
 -/
 
 @[expose] public section

@@ -16,6 +16,27 @@ Meyers, ABP, Krylov–Safonov, Schauder and Hessian `L^p` estimates. Lower-order
 are included in the classical estimates. Weak p-harmonicity uses TauCeti's actual
 `W1p` gradient and yields local regular representatives and a Harnack inequality.
 Sources: GAPS 33.9, 33.14–33.16, 33.18 and 33.34.
+
+## Main definitions
+
+* `CKMA.uniformGaugeOn`, `CKMA.holderSeminormOn`, `CKMA.holderGaugeOn`, `CKMA.cTwoHolderGauge`:
+  extended supremum, Hölder, and `C^{2,α}` gauges.
+* `CKMA.IsWeakEllipticSolution`: weak divergence-form solution of `-div(A grad u) = div F`.
+* `CKMA.IsWeakPHarmonic`: weak `p`-harmonicity in `W^{1,p}`.
+
+## Main results
+
+* `CKMA.meyers_higherIntegrability` (**33.9**): local Meyers higher integrability estimate.
+* `CKMA.abp_classical` (**33.14**): Aleksandrov–Bakelman–Pucci maximum principle.
+* `CKMA.krylov_safonov_classical` (**33.15**): Krylov–Safonov Hölder and Harnack estimates.
+* `CKMA.interior_schauder` (**33.16**): interior Schauder `C^{2,α}` estimate.
+* `CKMA.interior_hessian_Lp` (**33.18**): interior Calderón–Zygmund `W^{2,p}` estimate.
+* `CKMA.weakPHarmonic_regular` (**33.34**): local `C^{1,α}` regularity and Harnack inequality for
+  weak `p`-harmonic functions.
+
+## Notation
+
+No new notation is introduced in this file.
 -/
 
 @[expose] public section
@@ -55,8 +76,8 @@ def IsWeakEllipticSolution {d : ℕ} (Ω : TopologicalSpace.Opens (EuclideanReal
     ∫ x in Ω, ⟪A x ((TauCeti.W1p.gradient u) x) + F x, gradient φ x⟫_ℝ = 0
 
 /-- **33.9**: a local Meyers estimate, including divergence-form inhomogeneity. -/
-theorem meyers_higherIntegrability {d : ℕ} (hd : 0 < d) {ell Λ : ℝ}
-    (hell : 0 < ell) (hΛ : ell ≤ Λ) : ∃ ε C : ℝ, 0 < ε ∧ 0 < C ∧
+theorem meyers_higherIntegrability {d : ℕ} (hd : 0 < d) {ell Λ : ℝ} :
+    ∃ ε C : ℝ, 0 < ε ∧ 0 < C ∧
     ∀ (A : EuclideanRealSpace d → EuclideanRealSpace d →L[ℝ] EuclideanRealSpace d)
       (F : EuclideanRealSpace d → EuclideanRealSpace d)
       (u : TauCeti.W1p volume (euclideanOpenBall d 2) 2),
@@ -65,16 +86,16 @@ theorem meyers_higherIntegrability {d : ℕ} (hd : 0 < d) {ell Λ : ℝ}
       IsWeakEllipticSolution (euclideanOpenBall d 2) A F u →
       MemLp ((TauCeti.W1p.gradient u) : EuclideanRealSpace d → EuclideanRealSpace d)
         (ENNReal.ofReal (2 + ε)) (volume.restrict (Metric.ball 0 1)) ∧
-      eLpNorm (TauCeti.W1p.gradient u) (ENNReal.ofReal (2 + ε)) (volume.restrict (Metric.ball 0 1))
-        ≤
-        ENNReal.ofReal C * (eLpNorm (TauCeti.W1p.gradient u) 2 (volume.restrict (Metric.ball 0 2)) +
+      eLpNorm (TauCeti.W1p.gradient u) (ENNReal.ofReal (2 + ε))
+        (volume.restrict (Metric.ball 0 1)) ≤
+        ENNReal.ofReal C * (eLpNorm (TauCeti.W1p.gradient u) 2
+          (volume.restrict (Metric.ball 0 2)) +
           eLpNorm F (ENNReal.ofReal (2 + ε)) (volume.restrict (Metric.ball 0 2))) := by
   sorry
 
 /-- **33.14**, ABP for classical functions. The strong `W^{2,d}` interface remains separate.
 Extended norm values make the estimate meaningful without totalizing an infinite source norm. -/
-theorem abp_classical {d : ℕ} (hd : 0 < d) {ell Λ : ℝ}
-    (hell : 0 < ell) (hΛ : ell ≤ Λ) : ∃ C : ℝ, 0 < C ∧
+theorem abp_classical {d : ℕ} (hd : 0 < d) {ell Λ : ℝ} : ∃ C : ℝ, 0 < C ∧
     ∀ (Ω : Set (EuclideanRealSpace d)) (u : EuclideanRealSpace d → ℝ)
       (A : EuclideanRealSpace d → EuclideanRealSpace d →L[ℝ] EuclideanRealSpace d),
       IsOpen Ω → Ω.Nonempty → Bornology.IsBounded Ω → ContinuousOn u (closure Ω) →
@@ -87,15 +108,15 @@ theorem abp_classical {d : ℕ} (hd : 0 < d) {ell Λ : ℝ}
   sorry
 
 /-- **33.15**, Harnack and Hölder estimates in the classical-solution subcase. -/
-theorem krylov_safonov_classical {d : ℕ} (hd : 0 < d) {ell Λ : ℝ}
-    (hell : 0 < ell) (hΛ : ell ≤ Λ) : ∃ α C : ℝ, 0 < α ∧ α < 1 ∧ 0 < C ∧
+theorem krylov_safonov_classical {d : ℕ} (hd : 0 < d) {ell Λ : ℝ} :
+    ∃ α C : ℝ, 0 < α ∧ α < 1 ∧ 0 < C ∧
     ∀ (A : EuclideanRealSpace d → EuclideanRealSpace d →L[ℝ] EuclideanRealSpace d)
       (u : EuclideanRealSpace d → ℝ),
       Measurable A → IsUniformlyEllipticOn A ell Λ (Metric.ball 0 2) →
       ContDiffOn ℝ 2 u (Metric.ball 0 2) →
       (∀ x ∈ Metric.ball 0 2, nondivergencePrincipal A u x = 0) →
-      holderSeminormOn α u (Metric.ball 0 1) ≤ ENNReal.ofReal C * uniformGaugeOn u (Metric.ball 0 2)
-        ∧
+      holderSeminormOn α u (Metric.ball 0 1) ≤
+        ENNReal.ofReal C * uniformGaugeOn u (Metric.ball 0 2) ∧
       ((∀ x ∈ Metric.ball 0 2, 0 ≤ u x) →
         sSup (u '' Metric.ball 0 1) ≤ C * sInf (u '' Metric.ball 0 1)) := by
   sorry

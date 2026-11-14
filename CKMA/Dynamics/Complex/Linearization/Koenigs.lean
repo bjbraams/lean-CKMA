@@ -41,6 +41,22 @@ public import Mathlib.Topology.MetricSpace.Pseudo.Defs
 Helpers for the germ conjugacy of `f(z) = λz + O(z²)` with multiplication by `λ`,
 when `0 < ‖λ‖ ≠ 1`. The normalized coordinate is built from rescaled iterates in the
 attracting case and transferred along a local inverse in the repelling case.
+
+## Main definitions
+
+* None.
+
+## Main results
+
+* `CKMA.exists_koenigsCoordinate_of_norm_lt_one`: existence of a Koenigs coordinate in the
+  attracting case `0 < ‖deriv f 0‖ < 1`.
+* `CKMA.exists_koenigsCoordinate_of_norm_gt_one`: existence of a Koenigs coordinate in the
+  repelling case `1 < ‖deriv f 0‖`.
+* `CKMA.koenigsCoordinate_eventuallyEq_of`: germ uniqueness of normalized Koenigs coordinates.
+
+## Notation
+
+* Standard Mathlib complex analysis notation.
 -/
 
 @[expose] public section

@@ -15,6 +15,19 @@ In dimension at least two, every nonempty open set contains an essentially unbou
 `W^{1,d}` function. A logarithmic radial profile describes the local singularity before
 a smooth cutoff. Weak derivatives reuse TauCeti, and Lebesgue norms use Mathlib.
 Source: GAPS 26.16.
+
+## Main definitions
+
+* `CKMA.criticalSobolevProfile`: the radial double-logarithmic singularity `log (log (e / ‖x‖))`.
+
+## Main results
+
+* `CKMA.exists_memSobolev_not_memLp_top`: failure of the critical Sobolev embedding `W^{1,d}(Ω) ↪
+  L^∞(Ω)` in dimensions `d ≥ 2` (**26.16**).
+
+## Notation
+
+* Standard Mathlib and TauCeti notation for `MemLp` and `HasWeakFDerivOn`.
 -/
 
 @[expose] public section

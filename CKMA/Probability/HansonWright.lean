@@ -6,28 +6,8 @@ Authors: CKMA contributors
 module
 
 public import CKMA.Probability.HansonWright.Bound
+public import CKMA.Probability.Concentration.Basic
 
-public import CKMA.Probability.Concentration
-public import Mathlib.Analysis.CStarAlgebra.Matrix
-public import Mathlib.Analysis.Complex.Exponential
-public import Mathlib.Analysis.Complex.ExponentialBounds
-public import Mathlib.Analysis.Convex.SpecificFunctions.Basic
-public import Mathlib.Analysis.SpecialFunctions.Log.Deriv
-public import Mathlib.Data.Fintype.BigOperators
-public import Mathlib.Analysis.Matrix.Spectrum
-public import Mathlib.Analysis.SpecialFunctions.Gaussian.GaussianIntegral
-public import Mathlib.LinearAlgebra.Matrix.PosDef
-public import Mathlib.LinearAlgebra.Matrix.Trace
-public import Mathlib.MeasureTheory.Constructions.Pi
-public import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
-public import Mathlib.MeasureTheory.Integral.DominatedConvergence
-public import Mathlib.MeasureTheory.Integral.Pi
-public import Mathlib.Probability.Distributions.Gaussian.Multivariate
-public import Mathlib.Probability.Distributions.Gaussian.Real
-public import Mathlib.Probability.Independence.Integration
-public import Mathlib.Probability.Moments.Basic
-public import Mathlib.Topology.Algebra.InfiniteSum.Order
-public import Mathlib.Topology.Algebra.InfiniteSum.Ring
 /-!
 # Hanson–Wright concentration for quadratic forms (07.43)
 
@@ -41,6 +21,23 @@ Diagonal tails are in `HansonWright.Estimates`, the off-diagonal comparison is i
 
 Matrices need not be symmetric. The universal constant is independent of dimension,
 and positive threshold and scale hypotheses specify the meaningful concentration range.
+
+## Main definitions
+
+* `CKMA.realMatrixFrobeniusSq`: squared Frobenius norm of a real matrix
+  (in `HansonWright.Estimates`).
+* `CKMA.realMatrixOperatorNorm`: Euclidean operator norm of a real matrix
+  (in `HansonWright.Estimates`).
+* `CKMA.sampledQuadraticForm`: quadratic form sampled at a coordinate family
+  (in `HansonWright.Estimates`).
+
+## Main results
+
+* `CKMA.hanson_wright`: Hanson–Wright concentration inequality with a universal constant.
+
+## Notation
+
+No new notation is introduced in this file.
 -/
 
 @[expose] public section

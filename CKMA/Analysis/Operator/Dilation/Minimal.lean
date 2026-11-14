@@ -5,7 +5,7 @@ Authors: CKMA contributors
 -/
 module
 
-public import CKMA.Analysis.InnerProductSpace.HilbertModel
+public import CKMA.Analysis.InnerProductSpace.Basic
 public import CKMA.Analysis.Operator.Dilation.Schaffer
 public import CKMA.Analysis.Operator.Dilation.Wold
 public import Mathlib.Analysis.InnerProductSpace.LinearMap
@@ -17,6 +17,23 @@ Schäffer's isometry on `H ⊕ ℓ²(ℕ, H)` coextends a contraction, and the c
 orbit of the embedded copy of `H` is a minimal isometric dilation. The argument follows
 Sz.-Nagy–Foiaş–Bercovici–Kérchy, Chapter I, the passage from an isometric coextension to its
 minimal part.
+
+## Main definitions
+
+* `CKMA.isometricDilationOrbit`: forward orbit of the embedded copy of `H`.
+* `CKMA.isometricDilationSpace`: closed span of the forward orbit.
+* `CKMA.isometricDilationIsometry`: restriction of the isometry to the closed forward orbit.
+* `CKMA.isometricDilationEmbed`: embedding of `H` into the closed forward orbit.
+
+## Main results
+
+* `CKMA.isometricDilation_coinvariant`: co-invariance on the closed forward orbit.
+* `CKMA.isometricDilation_minimal`: minimality of the closed forward orbit.
+* `CKMA.exists_minimalIsometricDilation_data`: existence of a minimal isometric dilation.
+
+## Notation
+
+* `⟪x, y⟫_ℂ`: complex inner product.
 -/
 
 @[expose] public section
@@ -236,16 +253,16 @@ variable (T : H →L[ℂ] H)
 
 /-- A contraction has a minimal isometric dilation on the closed forward orbit of Schäffer's
 coextension. -/
-theorem exists_minimalIsometricDilationData (hT : ‖T‖ ≤ 1) :
-    ∃ M : HilbertSpaceModel.{u} ℂ, ∃ J : H →ₗᵢ[ℂ] M.Carrier,
-      ∃ V : M.Carrier →ₗᵢ[ℂ] M.Carrier,
-        (∀ y : M.Carrier, J.toContinuousLinearMap.adjoint (V y) =
+theorem exists_minimalIsometricDilation_data (hT : ‖T‖ ≤ 1) :
+    ∃ M : HilbertSpaceModel.{u} ℂ, ∃ J : H →ₗᵢ[ℂ] M.carrier,
+      ∃ V : M.carrier →ₗᵢ[ℂ] M.carrier,
+        (∀ y : M.carrier, J.toContinuousLinearMap.adjoint (V y) =
           T (J.toContinuousLinearMap.adjoint y)) ∧
-        (span ℂ {y : M.Carrier | ∃ n : ℕ, ∃ x : H,
+        (span ℂ {y : M.carrier | ∃ n : ℕ, ∃ x : H,
           y = (V.toContinuousLinearMap ^ n) (J x)}).topologicalClosure = ⊤ := by
   let J0 : H →ₗᵢ[ℂ] SchafferSpace H := schafferEmbed
   let V0 : SchafferSpace H →ₗᵢ[ℂ] SchafferSpace H := schafferIsometry T hT
-  refine ⟨{ Carrier := ↥(isometricDilationSpace J0 V0) },
+  refine ⟨{ carrier := ↥(isometricDilationSpace J0 V0) },
     isometricDilationEmbed J0 V0, isometricDilationIsometry J0 V0, ?_, ?_⟩
   · intro y
     exact isometricDilation_coinvariant T J0 V0 (schaffer_coinvariant T hT) y

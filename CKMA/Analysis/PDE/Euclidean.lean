@@ -20,6 +20,26 @@ fields; nondivergence operators contract their coefficients with the Hessian.
 The definitions use Mathlib's Euclidean spaces and Fréchet calculus and TauCeti's
 weak-Sobolev infrastructure. The smooth-test and identity-coefficient adapters connect
 these expressions to Mathlib's `TestFunction` and orthonormal-basis Laplacian APIs.
+
+## Main definitions
+
+* `CKMA.EuclideanRealSpace`: real Euclidean space `EuclideanSpace ℝ (Fin d)`.
+* `CKMA.IsCompactSmoothTestOn`: smooth compactly supported test functions on a region.
+* `CKMA.euclideanHessianTrace`, `CKMA.euclideanDivergence`, `CKMA.vectorGradientNormSq`:
+  differential expressions in Euclidean coordinates.
+* `CKMA.IsUniformlyEllipticOn`, `CKMA.nondivergenceOperator`: uniformly elliptic coefficient
+  matrices and nondivergence second-order operators.
+
+## Main results
+
+* `CKMA.IsCompactSmoothTestOn.toTestFunction`: packages a smooth compactly supported test function
+  on an open set as a Mathlib `TestFunction`.
+* `CKMA.nondivergenceOperator_one_eq_laplacian`: the nondivergence operator with identity
+  coefficients equals the Euclidean Laplacian.
+
+## Notation
+
+* Standard Mathlib inner product and Fréchet derivative notation.
 -/
 
 @[expose] public section

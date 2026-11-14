@@ -16,6 +16,24 @@ positive strong maximal operator. Shrinking rectangles have unrestricted eccentr
 The endpoint estimate uses `u(1+log⁺u)^(d-1)`; this local integrability class is differentiated
 almost everywhere, whereas L¹ alone is insufficient in dimension at least two.
 Measures, real logarithms and extended integrals use Mathlib. Source: GAPS 05.31.
+
+## Main definitions
+
+* Re-exports `CKMA.OpenRectangle`, `CKMA.strongMaximalFunction`, `CKMA.strongMaximalGrowth`,
+  `CKMA.IsLocallyLLog`, and `CKMA.RectanglesDifferentiateAt`.
+
+## Main results
+
+* `CKMA.strongMaximal_endpoint`: the Jessen–Marcinkiewicz–Zygmund endpoint weak-type bound for the
+  strong maximal operator (**05.31**).
+* `CKMA.ae_rectanglesDifferentiateAt`: almost-everywhere rectangular differentiation of functions in
+  `L(log⁺ L)^{d-1}_{loc}`.
+* `CKMA.exists_integrable_not_rectangularlyDifferentiable`: existence of an integrable function on
+  `ℝ^d` (`d ≥ 2`) whose rectangular averages fail to converge on a set of positive measure.
+
+## Notation
+
+* Standard Mathlib notation for `volume` and Lebesgue integrals.
 -/
 
 @[expose] public section

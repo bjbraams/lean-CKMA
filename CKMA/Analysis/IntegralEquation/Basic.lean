@@ -22,6 +22,25 @@ carry the Gamma normalization; positive-order semigroup and inverse statements a
 on the open interval. The range criterion uses an absolutely continuous representative vanishing
 at the left endpoint. The semigroup identity uses
 `TauCeti.integral_rpow_mul_one_sub_rpow`. Sources: GAPS 25.18 and 25.23.
+
+## Main definitions
+
+* `CKMA.volterraIntegral`: the scalar Volterra integral operator `∫ s in 0..t, k t s * u s`.
+* `CKMA.fractionalIntegral`: Riemann–Liouville fractional integration of order `α` with the Gamma
+  normalization.
+
+## Main results
+
+* `CKMA.existsUnique_volterra` (**25.18**): unique continuous solvability of linear Volterra
+  integral equations of the second kind.
+* `CKMA.fractionalIntegral_add`: the positive-order Riemann–Liouville semigroup law `I^α I^β = I^{α+β}`
+  almost everywhere on `(0, T)`.
+* `CKMA.mem_range_fractionalIntegral_iff` and `CKMA.fractionalIntegral_deriv_inverse` (**25.23**):
+  Abel range characterization and inversion formula for `I^α` on `L¹(0, T)` for `0 < α < 1`.
+
+## Notation
+
+* Standard Mathlib notation for interval integrals and `Real.Gamma`.
 -/
 
 @[expose] public section
@@ -593,6 +612,206 @@ private lemma fractionalIntegral_sub_ae {T α : ℝ} (hT : 0 < T) (hα : 0 < α)
     ring
   exact hsub
 
+/-- Joint integrand on `ℝ × ℝ` for the iterated fractional integral at height `t`. -/
+private def iteratedKernelIntegrand (T α β t : ℝ) (u : ℝ → ℝ) : ℝ × ℝ → ℝ :=
+  fun p =>
+    (if p.2 < p.1 then kernelPow (β - 1) (p.1 - p.2) * indicator (Ioo 0 T) u p.2 else 0) *
+      kernelPow (α - 1) (t - p.1)
+
+/-- Uncurried integrand for swapping the iterated interval integrals at height `t`. -/
+private def iteratedKernelSwap (α β t : ℝ) (u : ℝ → ℝ) (r s : ℝ) : ℝ :=
+  (if s < r then kernelPow (β - 1) (r - s) * u s else 0) * kernelPow (α - 1) (t - r)
+
+/-- Strong measurability of `iteratedKernelIntegrand` on the product space. -/
+private lemma aestronglyMeasurable_iteratedKernelIntegrand {T α β t : ℝ} {u : ℝ → ℝ}
+    (hu : IntegrableOn u (Ioo 0 T)) :
+    AEStronglyMeasurable (iteratedKernelIntegrand T α β t u) (volume.prod volume) := by
+  let u0 := indicator (Ioo 0 T) u
+  have hu0 : Integrable u0 := hu.integrable_indicator measurableSet_Ioo
+  have hcut : AEStronglyMeasurable (fun p : ℝ × ℝ =>
+      if p.2 < p.1 then kernelPow (β - 1) (p.1 - p.2) else (0 : ℝ)) (volume.prod volume) := by
+    refine Measurable.aestronglyMeasurable ?_
+    refine Measurable.ite (measurableSet_lt measurable_snd measurable_fst)
+      ((measurable_kernelPow _).comp (measurable_fst.sub measurable_snd)) measurable_const
+  have hpow : AEStronglyMeasurable (fun p : ℝ × ℝ => kernelPow (α - 1) (t - p.1))
+      (volume.prod volume) :=
+    ((measurable_kernelPow _).comp
+      (measurable_const.sub measurable_fst)).aestronglyMeasurable
+  have hΨ : iteratedKernelIntegrand T α β t u = fun p =>
+      (if p.2 < p.1 then kernelPow (β - 1) (p.1 - p.2) else 0) * u0 p.2 *
+        kernelPow (α - 1) (t - p.1) := by
+    ext p
+    by_cases hp : p.2 < p.1 <;> simp [iteratedKernelIntegrand, u0, hp]
+  rw [hΨ]
+  exact (hcut.mul hu0.aestronglyMeasurable.comp_snd).mul hpow
+
+/-- Almost every horizontal slice of `iteratedKernelIntegrand` is integrable on `(0, t]`. -/
+private lemma integrable_iteratedKernelIntegrand_slice {T α β t : ℝ} (htT : t < T) {u : ℝ → ℝ}
+    (hinn : ∀ᵐ r ∂volume.restrict (Ioc 0 t),
+      IntervalIntegrable (fun s => (r - s) ^ (β - 1) * u s) volume 0 r) :
+    ∀ᵐ r ∂volume.restrict (Ioc 0 t),
+      Integrable (fun s => iteratedKernelIntegrand T α β t u (r, s))
+        (volume.restrict (Ioc 0 t)) := by
+  let u0 := indicator (Ioo 0 T) u
+  refine (ae_restrict_iff' measurableSet_Ioc).2 ?_
+  filter_upwards [(ae_restrict_iff' measurableSet_Ioc).1 hinn] with r hr hrI
+  by_cases hrt : r < t
+  · have hr0 : 0 < r := hrI.1
+    have hker : IntervalIntegrable (fun s => kernelPow (β - 1) (r - s) * u s) volume 0 r := by
+      refine (hr hrI).congr_uIoo ?_
+      intro s hs
+      rw [uIoo_of_le hr0.le] at hs
+      dsimp only
+      rw [← kernelPow_eq_rpow (sub_pos.mpr hs.2)]
+    have hkerOn : IntegrableOn (fun s => kernelPow (β - 1) (r - s) * u s) (Ioc 0 r) :=
+      (intervalIntegrable_iff_integrableOn_Ioc_of_le hr0.le).1 hker
+    let f : ℝ → ℝ := fun s => if s < r then kernelPow (β - 1) (r - s) * u s else 0
+    have hf : IntegrableOn f (Ioc 0 t) := by
+      have hind : Integrable (indicator (Ioc 0 r)
+          (fun s => kernelPow (β - 1) (r - s) * u s)) :=
+        hkerOn.integrable_indicator measurableSet_Ioc
+      refine hind.integrableOn.congr_fun ?_ measurableSet_Ioc
+      intro s hs
+      by_cases hsr : s < r
+      · have hsR : s ∈ Ioc 0 r := ⟨hs.1, hsr.le⟩
+        simp only [f, hsr, true_and, and_true, ↓reduceIte, indicator_of_mem hsR]
+      · have hge : r ≤ s := le_of_not_gt hsr
+        have hzero_f : f s = 0 := by simp only [f, hsr, true_and, and_true, ↓reduceIte]
+        have hzero_ind : indicator (Ioc 0 r)
+            (fun s => kernelPow (β - 1) (r - s) * u s) s = 0 := by
+          by_cases hsR : s ∈ Ioc 0 r
+          · have hseq : s = r := le_antisymm hsR.2 hge
+            rw [indicator_of_mem hsR]
+            simp only [hseq, kernelPow, sub_self, lt_irrefl, ↓reduceIte, zero_mul]
+          · simp only [indicator_of_notMem hsR]
+        rw [hzero_f, hzero_ind]
+    have hconst : IntegrableOn (fun s => kernelPow (α - 1) (t - r) * f s) (Ioc 0 t) :=
+      hf.smul (kernelPow (α - 1) (t - r))
+    refine hconst.congr_fun ?_ measurableSet_Ioc
+    intro s hs
+    have hsU : s ∈ Ioo 0 T := ⟨hs.1, hs.2.trans_lt htT⟩
+    simp only [iteratedKernelIntegrand, u0, indicator_of_mem hsU, f, smul_eq_mul]
+    ring
+  · have hseq : r = t := le_antisymm hrI.2 (le_of_not_gt hrt)
+    have h0 : (fun s => iteratedKernelIntegrand T α β t u (r, s)) = fun _ => (0 : ℝ) := by
+      ext s
+      simp only [iteratedKernelIntegrand, hseq, kernelPow, sub_self, lt_irrefl, true_and,
+        and_true, ↓reduceIte, mul_zero]
+    rw [h0]
+    exact integrable_zero _ _ _
+
+/-- The slice norm integral of `iteratedKernelIntegrand` matches `kernelProd`. -/
+private lemma integral_norm_iteratedKernelIntegrand_eq {T α β t : ℝ} (ht0 : 0 < t) (htT : t < T)
+    (u : ℝ → ℝ) {r : ℝ} (hr : r ∈ Ioc 0 t) :
+    ∫ s, ‖iteratedKernelIntegrand T α β t u (r, s)‖ ∂volume.restrict (Ioc 0 t) =
+      kernelProd T α (kernelSlice T β u) (t, r) := by
+  let u0 := indicator (Ioo 0 T) u
+  have hr0 : 0 < r := hr.1
+  by_cases hlt : r < t
+  · have hc : 0 ≤ kernelPow (α - 1) (t - r) := kernelPow_nonneg _ _
+    have habs_int : ∫ s in (0 : ℝ)..t, ‖iteratedKernelIntegrand T α β t u (r, s)‖ =
+        kernelPow (α - 1) (t - r) *
+          ∫ s in (0 : ℝ)..r, kernelPow (β - 1) (r - s) * |u s| := by
+      have hcongr : ∫ s in (0 : ℝ)..t, ‖iteratedKernelIntegrand T α β t u (r, s)‖ =
+          ∫ s in (0 : ℝ)..t, kernelPow (α - 1) (t - r) *
+            (if s < r then kernelPow (β - 1) (r - s) * |u s| else 0) := by
+        refine integral_congr_Ioo_of_le ht0.le ?_
+        intro s hs
+        dsimp only
+        have hsU : s ∈ Ioo 0 T := ⟨hs.1, hs.2.trans htT⟩
+        rw [show iteratedKernelIntegrand T α β t u (r, s) =
+            (if s < r then kernelPow (β - 1) (r - s) * u s else 0) *
+              kernelPow (α - 1) (t - r) by
+          simp only [iteratedKernelIntegrand, u0, indicator_of_mem hsU]]
+        rw [Real.norm_eq_abs, abs_mul, abs_of_nonneg hc, mul_comm]
+        by_cases hsr : s < r
+        · simp only [hsr, true_and, and_true, ↓reduceIte, abs_mul,
+            abs_of_nonneg (kernelPow_nonneg _ _)]
+        · simp only [hsr, ↓reduceIte, abs_zero, mul_zero]
+      rw [hcongr, intervalIntegral.integral_const_mul,
+        ← integral_of_lt_indicator hr0.le hlt.le
+          (fun s => kernelPow (β - 1) (r - s) * |u s|)]
+    rw [← integral_of_le ht0.le, habs_int,
+      ← kernelSlice_eq_kernelPow hr0 (hlt.trans htT)]
+    have hrI : r ∈ Ioo 0 T := ⟨hr0, hlt.trans htT⟩
+    have hcond : r < t ∧ 0 < t ∧ t < T := ⟨hlt, ht0, htT⟩
+    simp only [kernelProd, hcond, true_and, and_true, ↓reduceIte, absCut,
+      indicator_of_mem hrI]
+    rw [abs_of_nonneg (kernelSlice_nonneg T β u r)]
+  · have hseq : r = t := le_antisymm hr.2 (le_of_not_gt hlt)
+    have hzero : ∀ s, iteratedKernelIntegrand T α β t u (r, s) = 0 := by
+      intro s
+      simp only [iteratedKernelIntegrand, hseq, kernelPow, sub_self, lt_irrefl, true_and,
+        and_true, ↓reduceIte, mul_zero]
+    have hprod : kernelProd T α (kernelSlice T β u) (t, r) = 0 := by
+      simp only [kernelProd, hseq, lt_irrefl, false_and, true_and, and_true, ↓reduceIte]
+    rw [hprod]
+    simp only [hzero, norm_zero, MeasureTheory.integral_zero]
+
+/-- Outer-then-inner integral of `iteratedKernelSwap` recovers the iterated fractional integral. -/
+private lemma iteratedKernelSwap_left_eq {α β t : ℝ} (ht0 : 0 < t) (u : ℝ → ℝ) :
+    ∫ r in (0 : ℝ)..t, ∫ s in (0 : ℝ)..t, iteratedKernelSwap α β t u r s =
+      ∫ r in (0 : ℝ)..t, (t - r) ^ (α - 1) *
+        ∫ s in (0 : ℝ)..r, (r - s) ^ (β - 1) * u s := by
+  refine integral_congr_Ioo_of_le ht0.le ?_
+  intro r hr
+  dsimp only
+  have hr0 : 0 < r := hr.1
+  have hrt : r < t := hr.2
+  have hconst : ∫ s in (0 : ℝ)..t, iteratedKernelSwap α β t u r s =
+      kernelPow (α - 1) (t - r) * ∫ s in (0 : ℝ)..t,
+        (if s < r then kernelPow (β - 1) (r - s) * u s else 0) := by
+    rw [← intervalIntegral.integral_const_mul]
+    refine integral_congr fun s _ => ?_
+    by_cases hsr : s < r <;> simp [iteratedKernelSwap, hsr, mul_comm]
+  rw [hconst, kernelPow_eq_rpow (sub_pos.mpr hrt),
+    ← integral_of_lt_indicator hr0.le hrt.le (fun s => kernelPow (β - 1) (r - s) * u s),
+    integral_kernelPow_eq hr0.le]
+
+/-- Inner-then-outer integral of `iteratedKernelSwap` evaluates the beta kernel. -/
+private lemma iteratedKernelSwap_right_eq {α β t : ℝ} (ht0 : 0 < t) (hα : 0 < α) (hβ : 0 < β)
+    (u : ℝ → ℝ) :
+    ∫ s in (0 : ℝ)..t, ∫ r in (0 : ℝ)..t, iteratedKernelSwap α β t u r s =
+      ProbabilityTheory.beta β α *
+        ∫ s in (0 : ℝ)..t, (t - s) ^ (α + β - 1) * u s := by
+  have hstep : ∫ s in (0 : ℝ)..t, ∫ r in (0 : ℝ)..t, iteratedKernelSwap α β t u r s =
+      ∫ s in (0 : ℝ)..t, u s * ∫ r in s..t,
+        kernelPow (α - 1) (t - r) * kernelPow (β - 1) (r - s) := by
+    refine integral_congr_Ioo_of_le ht0.le ?_
+    intro s hs
+    dsimp only
+    have hpull : ∫ r in (0 : ℝ)..t, iteratedKernelSwap α β t u r s =
+        u s * ∫ r in (0 : ℝ)..t,
+          (if s < r then kernelPow (α - 1) (t - r) * kernelPow (β - 1) (r - s) else 0) := by
+      rw [← intervalIntegral.integral_const_mul]
+      refine integral_congr fun r _ => ?_
+      by_cases hsr : s < r
+      · simp only [iteratedKernelSwap, hsr, ↓reduceIte]
+        ring
+      · simp only [iteratedKernelSwap, hsr, ↓reduceIte]
+        ring
+    rw [hpull, integral_of_gt_indicator hs.1.le hs.2.le]
+  rw [hstep]
+  have hbeta : ∫ s in (0 : ℝ)..t, u s * ∫ r in s..t,
+        kernelPow (α - 1) (t - r) * kernelPow (β - 1) (r - s) =
+      ∫ s in (0 : ℝ)..t,
+        (u s * (t - s) ^ (α + β - 1)) * ProbabilityTheory.beta β α := by
+    refine integral_congr_Ioo_of_le ht0.le ?_
+    intro s hs
+    dsimp only
+    have hpow : ∫ r in s..t, kernelPow (α - 1) (t - r) * kernelPow (β - 1) (r - s) =
+        ∫ r in s..t, (t - r) ^ (α - 1) * (r - s) ^ (β - 1) := by
+      refine integral_congr_Ioo_of_le hs.2.le ?_
+      intro r hr
+      dsimp only
+      rw [kernelPow_eq_rpow (sub_pos.mpr hr.2), kernelPow_eq_rpow (sub_pos.mpr hr.1)]
+    rw [hpow, integral_betaKernel_beta hs.2 hα hβ]
+    ring
+  rw [hbeta, intervalIntegral.integral_mul_const, mul_comm]
+  congr 1
+  refine integral_congr fun s _ => ?_
+  ring
+
 /-- The iterated kernels multiply by the beta constant, almost everywhere on `(0, T)`. -/
 private lemma rawFractional_comm {T α β : ℝ} (hT : 0 < T) (hα : 0 < α) (hβ : 0 < β)
     {u : ℝ → ℝ} (hu : IntegrableOn u (Ioo 0 T)) :
@@ -608,139 +827,27 @@ private lemma rawFractional_comm {T α β : ℝ} (hT : 0 < T) (hα : 0 < α) (h�
   filter_upwards [houter] with t htOut htI
   have ht0 : 0 < t := htI.1
   have htT : t < T := htI.2
-  let u0 := indicator (Ioo 0 T) u
-  have hu0 : Integrable u0 := hu.integrable_indicator measurableSet_Ioo
-  let Ψ : ℝ × ℝ → ℝ := fun p =>
-    (if p.2 < p.1 then kernelPow (β - 1) (p.1 - p.2) * u0 p.2 else 0) *
-      kernelPow (α - 1) (t - p.1)
-  have hASM0 : AEStronglyMeasurable Ψ (volume.prod volume) := by
-    have hcut : AEStronglyMeasurable (fun p : ℝ × ℝ =>
-        if p.2 < p.1 then kernelPow (β - 1) (p.1 - p.2) else (0 : ℝ)) (volume.prod volume) := by
-      refine Measurable.aestronglyMeasurable ?_
-      refine Measurable.ite (measurableSet_lt measurable_snd measurable_fst)
-        ((measurable_kernelPow _).comp (measurable_fst.sub measurable_snd)) measurable_const
-    have hpow : AEStronglyMeasurable (fun p : ℝ × ℝ => kernelPow (α - 1) (t - p.1))
-        (volume.prod volume) :=
-      ((measurable_kernelPow _).comp
-        (measurable_const.sub measurable_fst)).aestronglyMeasurable
-    have hΨ : Ψ = fun p =>
-        (if p.2 < p.1 then kernelPow (β - 1) (p.1 - p.2) else 0) * u0 p.2 *
-          kernelPow (α - 1) (t - p.1) := by
-      ext p
-      by_cases hp : p.2 < p.1
-      · simp only [Ψ, hp, ↓reduceIte]
-      · simp only [Ψ, hp, ↓reduceIte, zero_mul]
-    rw [hΨ]
-    exact (hcut.mul hu0.aestronglyMeasurable.comp_snd).mul hpow
+  let Ψ := iteratedKernelIntegrand T α β t u
   have hle : (volume.restrict (Ioc 0 t)).prod (volume.restrict (Ioc 0 t)) ≤ volume.prod volume := by
     rw [Measure.prod_restrict]
     exact Measure.restrict_le_self
   have hASM : AEStronglyMeasurable Ψ
-      ((volume.restrict (Ioc 0 t)).prod (volume.restrict (Ioc 0 t))) := hASM0.mono_measure hle
+      ((volume.restrict (Ioc 0 t)).prod (volume.restrict (Ioc 0 t))) :=
+    (aestronglyMeasurable_iteratedKernelIntegrand hu).mono_measure hle
   have hsubI : Ioc 0 t ⊆ Ioo 0 T := fun s hs => ⟨hs.1, hs.2.trans_lt htT⟩
   have hinn : ∀ᵐ r ∂volume.restrict (Ioc 0 t),
       IntervalIntegrable (fun s => (r - s) ^ (β - 1) * u s) volume 0 r :=
     ae_restrict_of_ae_restrict_of_subset hsubI hinner
-  have hslice : ∀ᵐ r ∂volume.restrict (Ioc 0 t),
-      Integrable (fun s => Ψ (r, s)) (volume.restrict (Ioc 0 t)) := by
-    refine (ae_restrict_iff' measurableSet_Ioc).2 ?_
-    filter_upwards [(ae_restrict_iff' measurableSet_Ioc).1 hinn] with r hr hrI
-    by_cases hrt : r < t
-    · have hr0 : 0 < r := hrI.1
-      have hker : IntervalIntegrable (fun s => kernelPow (β - 1) (r - s) * u s) volume 0 r := by
-        refine (hr hrI).congr_uIoo ?_
-        intro s hs
-        rw [uIoo_of_le hr0.le] at hs
-        dsimp only
-        rw [← kernelPow_eq_rpow (sub_pos.mpr hs.2)]
-      have hkerOn : IntegrableOn (fun s => kernelPow (β - 1) (r - s) * u s) (Ioc 0 r) :=
-        (intervalIntegrable_iff_integrableOn_Ioc_of_le hr0.le).1 hker
-      let f : ℝ → ℝ := fun s => if s < r then kernelPow (β - 1) (r - s) * u s else 0
-      have hf : IntegrableOn f (Ioc 0 t) := by
-        have hind : Integrable (indicator (Ioc 0 r)
-            (fun s => kernelPow (β - 1) (r - s) * u s)) :=
-          hkerOn.integrable_indicator measurableSet_Ioc
-        refine hind.integrableOn.congr_fun ?_ measurableSet_Ioc
-        intro s hs
-        by_cases hsr : s < r
-        · have hsR : s ∈ Ioc 0 r := ⟨hs.1, hsr.le⟩
-          simp only [f, hsr, true_and, and_true, ↓reduceIte, indicator_of_mem hsR]
-        · have hge : r ≤ s := le_of_not_gt hsr
-          have hzero_f : f s = 0 := by simp only [f, hsr, true_and, and_true, ↓reduceIte]
-          have hzero_ind : indicator (Ioc 0 r)
-              (fun s => kernelPow (β - 1) (r - s) * u s) s = 0 := by
-            by_cases hsR : s ∈ Ioc 0 r
-            · have hseq : s = r := le_antisymm hsR.2 hge
-              rw [indicator_of_mem hsR]
-              simp only [hseq, kernelPow, sub_self, lt_irrefl, ↓reduceIte, zero_mul]
-            · simp only [indicator_of_notMem hsR]
-          rw [hzero_f, hzero_ind]
-      have hconst : IntegrableOn (fun s => kernelPow (α - 1) (t - r) * f s) (Ioc 0 t) :=
-        hf.smul (kernelPow (α - 1) (t - r))
-      refine hconst.congr_fun ?_ measurableSet_Ioc
-      intro s hs
-      have hsU : s ∈ Ioo 0 T := ⟨hs.1, hs.2.trans_lt htT⟩
-      simp only [Ψ, u0, indicator_of_mem hsU, f, smul_eq_mul]
-      ring
-    · have hseq : r = t := le_antisymm hrI.2 (le_of_not_gt hrt)
-      have h0 : (fun s => Ψ (r, s)) = fun _ => (0 : ℝ) := by
-        ext s
-        simp only [Ψ, hseq, kernelPow, sub_self, lt_irrefl, true_and, and_true,
-          ↓reduceIte, mul_zero]
-      rw [h0]
-      exact integrable_zero _ _ _
-  have hnorm_eq : ∀ r ∈ Ioc 0 t,
-      ∫ s, ‖Ψ (r, s)‖ ∂volume.restrict (Ioc 0 t) = kernelProd T α w (t, r) := by
-    intro r hr
-    have hr0 : 0 < r := hr.1
-    by_cases hlt : r < t
-    · have hc : 0 ≤ kernelPow (α - 1) (t - r) := kernelPow_nonneg _ _
-      have habs_int : ∫ s in (0 : ℝ)..t, ‖Ψ (r, s)‖ =
-          kernelPow (α - 1) (t - r) *
-            ∫ s in (0 : ℝ)..r, kernelPow (β - 1) (r - s) * |u s| := by
-        have hcongr : ∫ s in (0 : ℝ)..t, ‖Ψ (r, s)‖ =
-            ∫ s in (0 : ℝ)..t, kernelPow (α - 1) (t - r) *
-              (if s < r then kernelPow (β - 1) (r - s) * |u s| else 0) := by
-          refine integral_congr_Ioo_of_le ht0.le ?_
-          intro s hs
-          dsimp only
-          have hsU : s ∈ Ioo 0 T := ⟨hs.1, hs.2.trans htT⟩
-          rw [show Ψ (r, s) = (if s < r then kernelPow (β - 1) (r - s) * u s else 0) *
-              kernelPow (α - 1) (t - r) by simp only [Ψ, u0, indicator_of_mem hsU]]
-          rw [Real.norm_eq_abs, abs_mul, abs_of_nonneg hc, mul_comm]
-          by_cases hsr : s < r
-          · simp only [hsr, true_and, and_true, ↓reduceIte, abs_mul,
-              abs_of_nonneg (kernelPow_nonneg _ _)]
-          · simp only [hsr, ↓reduceIte, abs_zero, mul_zero]
-        rw [hcongr, intervalIntegral.integral_const_mul,
-          ← integral_of_lt_indicator hr0.le hlt.le
-            (fun s => kernelPow (β - 1) (r - s) * |u s|)]
-      rw [← integral_of_le ht0.le, habs_int,
-        ← kernelSlice_eq_kernelPow hr0 (hlt.trans htT)]
-      have hrI : r ∈ Ioo 0 T := ⟨hr0, hlt.trans htT⟩
-      have hcond : r < t ∧ 0 < t ∧ t < T := ⟨hlt, ht0, htT⟩
-      simp only [w, kernelProd, hcond, true_and, and_true, ↓reduceIte, absCut,
-        indicator_of_mem hrI]
-      rw [abs_of_nonneg (kernelSlice_nonneg T β u r)]
-    · have hseq : r = t := le_antisymm hr.2 (le_of_not_gt hlt)
-      have hzero : ∀ s, Ψ (r, s) = 0 := by
-        intro s
-        simp only [Ψ, hseq, kernelPow, sub_self, lt_irrefl, true_and, and_true,
-          ↓reduceIte, mul_zero]
-      have hprod : kernelProd T α w (t, r) = 0 := by
-        simp only [kernelProd, hseq, lt_irrefl, false_and, true_and, and_true, ↓reduceIte]
-      rw [hprod]
-      simp only [hzero, norm_zero, MeasureTheory.integral_zero]
+  have hslice := integrable_iteratedKernelIntegrand_slice htT hinn (T := T) (α := α)
   have hnorm : Integrable (fun r => ∫ s, ‖Ψ (r, s)‖ ∂volume.restrict (Ioc 0 t))
       (volume.restrict (Ioc 0 t)) := by
     refine htOut.integrableOn.congr_fun ?_ measurableSet_Ioc
     intro r hr
-    exact (hnorm_eq r hr).symm
+    exact (integral_norm_iteratedKernelIntegrand_eq ht0 htT u hr).symm
   have hprod : Integrable Ψ
       ((volume.restrict (Ioc 0 t)).prod (volume.restrict (Ioc 0 t))) :=
     (integrable_prod_iff hASM).2 ⟨hslice, hnorm⟩
-  let G : ℝ → ℝ → ℝ := fun r s =>
-    (if s < r then kernelPow (β - 1) (r - s) * u s else 0) * kernelPow (α - 1) (t - r)
+  let G := iteratedKernelSwap α β t u
   have hOn : IntegrableOn G.uncurry (uIoc 0 t ×ˢ uIoc 0 t) := by
     rw [uIoc_of_le ht0.le]
     refine (show IntegrableOn Ψ (Ioc 0 t ×ˢ Ioc 0 t) by
@@ -749,70 +856,9 @@ private lemma rawFractional_comm {T α β : ℝ} (hT : 0 < T) (hα : 0 < α) (h�
     intro p hp
     have hsU : p.2 ∈ Ioo 0 T := ⟨hp.2.1, hp.2.2.trans_lt htT⟩
     rw [Function.uncurry_apply_pair]
-    simp only [Ψ, G, u0, indicator_of_mem hsU]
-  have hswap := intervalIntegral_intervalIntegral_swap (F := G) hOn
-  have hLeft : ∫ r in (0 : ℝ)..t, ∫ s in (0 : ℝ)..t, G r s =
-      ∫ r in (0 : ℝ)..t, (t - r) ^ (α - 1) *
-        ∫ s in (0 : ℝ)..r, (r - s) ^ (β - 1) * u s := by
-    refine integral_congr_Ioo_of_le ht0.le ?_
-    intro r hr
-    dsimp only
-    have hr0 : 0 < r := hr.1
-    have hrt : r < t := hr.2
-    have hconst : ∫ s in (0 : ℝ)..t, G r s =
-        kernelPow (α - 1) (t - r) * ∫ s in (0 : ℝ)..t,
-          (if s < r then kernelPow (β - 1) (r - s) * u s else 0) := by
-      rw [← intervalIntegral.integral_const_mul]
-      refine integral_congr fun s _ => ?_
-      by_cases hsr : s < r
-      · simp only [G, hsr, ↓reduceIte]
-        ring
-      · simp only [G, hsr, ↓reduceIte]
-        ring
-    rw [hconst, kernelPow_eq_rpow (sub_pos.mpr hrt),
-      ← integral_of_lt_indicator hr0.le hrt.le (fun s => kernelPow (β - 1) (r - s) * u s),
-      integral_kernelPow_eq hr0.le]
-  have hRight : ∫ s in (0 : ℝ)..t, ∫ r in (0 : ℝ)..t, G r s =
-      ProbabilityTheory.beta β α *
-        ∫ s in (0 : ℝ)..t, (t - s) ^ (α + β - 1) * u s := by
-    have hstep : ∫ s in (0 : ℝ)..t, ∫ r in (0 : ℝ)..t, G r s =
-        ∫ s in (0 : ℝ)..t, u s * ∫ r in s..t,
-          kernelPow (α - 1) (t - r) * kernelPow (β - 1) (r - s) := by
-      refine integral_congr_Ioo_of_le ht0.le ?_
-      intro s hs
-      dsimp only
-      have hpull : ∫ r in (0 : ℝ)..t, G r s =
-          u s * ∫ r in (0 : ℝ)..t,
-            (if s < r then kernelPow (α - 1) (t - r) * kernelPow (β - 1) (r - s) else 0) := by
-        rw [← intervalIntegral.integral_const_mul]
-        refine integral_congr fun r _ => ?_
-        by_cases hsr : s < r
-        · simp only [G, hsr, ↓reduceIte]
-          ring
-        · simp only [G, hsr, ↓reduceIte]
-          ring
-      rw [hpull, integral_of_gt_indicator hs.1.le hs.2.le]
-    rw [hstep]
-    have hbeta : ∫ s in (0 : ℝ)..t, u s * ∫ r in s..t,
-          kernelPow (α - 1) (t - r) * kernelPow (β - 1) (r - s) =
-        ∫ s in (0 : ℝ)..t,
-          (u s * (t - s) ^ (α + β - 1)) * ProbabilityTheory.beta β α := by
-      refine integral_congr_Ioo_of_le ht0.le ?_
-      intro s hs
-      dsimp only
-      have hpow : ∫ r in s..t, kernelPow (α - 1) (t - r) * kernelPow (β - 1) (r - s) =
-          ∫ r in s..t, (t - r) ^ (α - 1) * (r - s) ^ (β - 1) := by
-        refine integral_congr_Ioo_of_le hs.2.le ?_
-        intro r hr
-        dsimp only
-        rw [kernelPow_eq_rpow (sub_pos.mpr hr.2), kernelPow_eq_rpow (sub_pos.mpr hr.1)]
-      rw [hpow, integral_betaKernel_beta hs.2 hα hβ]
-      ring
-    rw [hbeta, intervalIntegral.integral_mul_const, mul_comm]
-    congr 1
-    refine integral_congr fun s _ => ?_
-    ring
-  rw [← hLeft, hswap, hRight]
+    simp only [Ψ, iteratedKernelIntegrand, G, iteratedKernelSwap, indicator_of_mem hsU]
+  rw [← iteratedKernelSwap_left_eq ht0 u, intervalIntegral_intervalIntegral_swap (F := G) hOn,
+    iteratedKernelSwap_right_eq ht0 hα hβ u]
 
 /-- Vanishing of the order-one integral forces the density to vanish almost everywhere. -/
 private lemma ae_eq_zero_of_fractionalIntegral_one {T : ℝ} (hT : 0 < T) {u : ℝ → ℝ}

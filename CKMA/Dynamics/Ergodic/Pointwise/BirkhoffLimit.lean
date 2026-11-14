@@ -17,6 +17,23 @@ import Mathlib.Tactic
 Strict invariance of the extended limsup, the maximal ergodic inequality, and a countable
 rational upcrossing argument show that the averages converge almost everywhere to a finite
 invariant limit.
+
+## Main definitions
+
+* `CKMA.birkhoffLimit`: pointwise finite part of the extended limsup of the averages.
+* `CKMA.birkhoffSeparated`: upcrossing set where the liminf lies below `p` and the limsup lies
+  above `q`.
+
+## Main results
+
+* `CKMA.measure_birkhoffSeparated_eq_zero`: separated finite liminf and limsup occur only on a
+  null set.
+* `CKMA.birkhoffAverage_ae_tendsto_birkhoffLimit`: outside a null set the averages converge to
+  `birkhoffLimit`.
+
+## Notation
+
+* Standard Mathlib notation for Birkhoff averages and `EReal`.
 -/
 
 @[expose] public section
