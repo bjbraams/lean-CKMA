@@ -29,10 +29,6 @@ weak compactness in normed spaces over `RCLike` scalars.
   `WeakSpace 𝕜 E`.
 * `CKMA.weaklyConverges_iff_tendsto`: sequential specialization of `weaklyTendsto_iff_tendsto`.
 * `CKMA.WeaklyConverges.isWeaklyCauchy`: weakly convergent sequences are weakly Cauchy.
-
-## Notation
-
-Uses `𝓝` and `atTop` from `Topology` and `Filter`.
 -/
 
 @[expose] public section

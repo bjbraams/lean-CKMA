@@ -52,10 +52,6 @@ support function of a set is unchanged by passing to the closed convex hull.
   approaching `x`.
 * `CKMA.differenceQuotient_eventually_le_of_fderiv_le`: upper bound on nearby difference quotients
   from a uniform bound on directional derivatives.
-
-## Notation
-
-* Standard Mathlib notation is used throughout.
 -/
 
 @[expose] public section

@@ -31,10 +31,6 @@ convention.
 
 * `CKMA.isInfinitelyDivisible_iff_existsUnique_levyTriplet`: Lévy–Khintchine representation
   theorem (**06.51**).
-
-## Notation
-
-No new notation is introduced.
 -/
 
 @[expose] public section

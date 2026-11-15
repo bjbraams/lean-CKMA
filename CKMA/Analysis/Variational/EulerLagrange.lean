@@ -29,10 +29,6 @@ Source: GAPS 36.1.
 
 * `CKMA.integral_firstVariation_eq_zero`: vanishing of the weak Euler–Lagrange first variation at a
   local minimizer (**36.1**).
-
-## Notation
-
-* Standard Mathlib Bochner integral and Fréchet derivative notation.
 -/
 
 @[expose] public section

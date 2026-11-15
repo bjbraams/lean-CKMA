@@ -40,10 +40,6 @@ Sources: GAPS 11.9.
   nonnegative multiset.
 * `CKMA.maclaurin_elemMean`: Maclaurin's comparison of normalized elementary means of a
   nonnegative multiset.
-
-## Notation
-
-No new notation is introduced.
 -/
 
 @[expose] public section
@@ -141,7 +137,7 @@ section SymmetricPolynomial
 open Polynomial
 
 /-- Each linear factor `X + C r` is `X - C (-r)`. -/
-private theorem x_add_c_eq_x_sub_c_neg (r : ℝ) : X + C r = X - C (-r) := by
+private theorem X_add_C_eq_X_sub_C_neg (r : ℝ) : X + C r = X - C (-r) := by
   have h : (C r : ℝ[X]) = -C (-r) := by rw [C_neg, neg_neg]
   rw [h, sub_eq_add_neg]
 
@@ -218,7 +214,7 @@ private theorem exists_derivative_elemMean {s : Multiset ℝ} (hs : ∀ x ∈ s,
     have hp_eq : p = ((s.map Neg.neg).map fun a => X - C a).prod := by
       rw [Multiset.map_map]
       exact congrArg Multiset.prod
-        (Multiset.map_congr rfl fun r _ => x_add_c_eq_x_sub_c_neg r)
+        (Multiset.map_congr rfl fun r _ => X_add_C_eq_X_sub_C_neg r)
     rw [hp_eq, roots_multiset_prod_X_sub_C]
   have hcard_roots : p.roots.card = p.natDegree := by
     rw [hp_roots, Multiset.card_map, hp_deg]

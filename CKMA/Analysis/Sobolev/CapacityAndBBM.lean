@@ -33,10 +33,6 @@ integration use Mathlib. Sources: GAPS 26.31 and 26.42.
   representatives for weak first-order Sobolev functions.
 * `CKMA.sobolevQuasicontinuous_unique`: uniqueness outside a capacity-zero set.
 * `CKMA.tendsto_fractionalPEnergy_bbm`: Bourgain–Brezis–Mironescu limit as `s → 1⁻`.
-
-## Notation
-
-No new notation is introduced.
 -/
 
 @[expose] public section

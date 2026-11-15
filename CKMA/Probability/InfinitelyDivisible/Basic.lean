@@ -28,10 +28,6 @@ with its characteristic exponent using the truncation `x * 1_{|x| ≤ 1}`.
 ## Main results
 
 No theorems are proved in this file.
-
-## Notation
-
-No new notation is introduced.
 -/
 
 @[expose] public section

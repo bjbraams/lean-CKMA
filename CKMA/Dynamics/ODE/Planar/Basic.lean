@@ -43,10 +43,6 @@ so Jordan separation, which is stated for subsets of `ℂ`, applies to planar fl
 * `CKMA.omegaLimit_eq_range_of_periodic`: the omega-limit set of a periodic orbit is the orbit.
 * `CKMA.isPreconnected_omegaLimit_of_forward`: preconnectedness of the omega-limit set of a
   compactly trapped forward orbit.
-
-## Notation
-
-* Standard Mathlib notation for flows and omega-limit sets.
 -/
 
 @[expose] public section

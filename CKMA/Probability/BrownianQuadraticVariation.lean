@@ -61,10 +61,6 @@ moment-generating function. Cross variation reduces to quadratic variation by po
 * `CKMA.brownian_quadraticVariation_ae`: almost-sure uniform convergence under summable meshes.
 * `CKMA.brownian_covariation_ucp`: diagonal quadratic covariation for independent Brownian
   coordinates.
-
-## Notation
-
-No new notation is introduced in this file.
 -/
 
 @[expose] public section

@@ -30,10 +30,6 @@ for `CKMA.bandlimitedRepresentative`, `CKMA.normalizedSinc`, and `CKMA.shannonTe
   sampling series to `bandlimitedRepresentative B u`.
 * `CKMA.shannon_sampling_L2`: `L²` convergence of the Shannon sampling partial sums.
 * `CKMA.shannon_norm_identity`: exact sampling Parseval identity.
-
-## Notation
-
-No new notation is introduced.
 -/
 
 @[expose] public section

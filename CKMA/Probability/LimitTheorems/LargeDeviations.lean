@@ -45,10 +45,6 @@ in `TauCeti.Probability.Process.EmpiricalMeasure`; the rate is Mathlib's relativ
 
 * `CKMA.cramer`: Cramér's large deviation theorem for real i.i.d. random variables (**06.60**).
 * `CKMA.sanov`: Sanov's large deviation theorem for empirical measures (**06.61**).
-
-## Notation
-
-No new notation is introduced.
 -/
 
 @[expose] public section

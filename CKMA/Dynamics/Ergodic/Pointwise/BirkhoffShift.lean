@@ -27,10 +27,6 @@ limsup and liminf of the Birkhoff averages are strictly invariant.
 
 * `CKMA.birkhoffLimsup_comp`: shift invariance of the extended limsup of Birkhoff averages.
 * `CKMA.birkhoffLiminf_comp`: shift invariance of the extended liminf of Birkhoff averages.
-
-## Notation
-
-* Standard Mathlib notation for Birkhoff averages and `EReal`.
 -/
 
 @[expose] public section

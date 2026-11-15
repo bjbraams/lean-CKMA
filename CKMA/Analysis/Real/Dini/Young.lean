@@ -32,10 +32,6 @@ map `ℝ → ℝ`. Source: GAPS 05.10.
 * `CKMA.Dini.volume_lt_upperRight_lowerLeft`,
   `CKMA.Dini.volume_lt_upperLeft_lowerRight`: Lebesgue nullity of strict opposite-side Dini
   inequalities.
-
-## Notation
-
-No new notation is introduced.
 -/
 
 @[expose] public section

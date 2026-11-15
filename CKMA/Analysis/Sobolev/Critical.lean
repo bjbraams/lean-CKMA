@@ -24,10 +24,6 @@ Source: GAPS 26.16.
 
 * `CKMA.exists_memSobolev_not_memLp_top`: failure of the critical Sobolev embedding `W^{1,d}(Ω) ↪
   L^∞(Ω)` in dimensions `d ≥ 2` (**26.16**).
-
-## Notation
-
-* Standard Mathlib and TauCeti notation for `MemLp` and `HasWeakFDerivOn`.
 -/
 
 @[expose] public section

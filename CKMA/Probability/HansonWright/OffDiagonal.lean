@@ -25,10 +25,6 @@ bound the resulting moment generating function.
 * `CKMA.integral_exp_mulVec_sq_gaussian`: Gaussian MGF bound for `‖M x‖²`.
 * `CKMA.integral_exp_mulVec_sq_subgaussian`: sub-Gaussian product MGF bound for `‖M x‖²`.
 * `CKMA.offDiagonalForm_eq_average`: decoupling representation via Boolean slices.
-
-## Notation
-
-No new notation is introduced in this file.
 -/
 
 @[expose] public section

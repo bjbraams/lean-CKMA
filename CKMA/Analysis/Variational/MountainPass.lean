@@ -58,10 +58,6 @@ of the maximum set. Ekeland's principle selects the path, in the form
 
 * `CKMA.le_mountainPassLevel`: positive sphere barrier bounds the mountain-pass level below.
 * `CKMA.exists_mountainPass_criticalPoint`: Ambrosetti–Rabinowitz mountain-pass theorem.
-
-## Notation
-
-No new notation is introduced.
 -/
 
 @[expose] public section

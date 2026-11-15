@@ -42,10 +42,6 @@ No new public definitions are introduced in this module.
 * `CKMA.hausdorff_young`: Hausdorff–Young inequality on `L¹ ∩ Lᵖ` for `1 ≤ p ≤ 2` (**27.4**).
 * `CKMA.not_hausdorff_young`: failure of the Hausdorff–Young inequality for `p > 2` in positive
   dimension, already on Schwartz functions.
-
-## Notation
-
-Uses `𝓕` from `FourierTransform` and `ℝ≥0∞` from `ENNReal`.
 -/
 
 @[expose] public section

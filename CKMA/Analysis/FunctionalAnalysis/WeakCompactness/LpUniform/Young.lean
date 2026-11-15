@@ -44,10 +44,6 @@ American Mathematical Society 134 (2006), 2359–2362 (arXiv:math/0502021). The 
   controls `‖u - 1‖ ^ p`.
 * `CKMA.WeakCompactness.mul_lpDualFun` and `CKMA.WeakCompactness.norm_lpDualFun`: algebraic and norm
   identities for the scalar dual weight.
-
-## Notation
-
-* Standard Mathlib notation for `RCLike` scalars and real powers.
 -/
 
 @[expose] public section

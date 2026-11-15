@@ -34,10 +34,6 @@ integration-by-parts identity relating the generator action on `log u` to the Fi
 * `CKMA.deriv_ouSemigroup_space`: Commutation relation `∂_x (P_t f) = e^{-t} P_t (f')`.
 * `CKMA.deriv_ouSemigroup_eq_generator`: Generator equation `∂_t u = ∂_{xx} u - x ∂_x u`.
 * `CKMA.integral_generator_mul_log`: Integration by parts `∫ (∂_t u) log u dγ = -∫ (u')² / u dγ`.
-
-## Notation
-
-No new notation is introduced in this file.
 -/
 
 @[expose] public section

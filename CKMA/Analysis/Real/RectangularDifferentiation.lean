@@ -30,10 +30,6 @@ Measures, real logarithms and extended integrals use Mathlib. Source: GAPS 05.31
   `L(log⁺ L)^{d-1}_{loc}`.
 * `CKMA.exists_integrable_not_rectangularlyDifferentiable`: existence of an integrable function on
   `ℝ^d` (`d ≥ 2`) whose rectangular averages fail to converge on a set of positive measure.
-
-## Notation
-
-* Standard Mathlib notation for `volume` and Lebesgue integrals.
 -/
 
 @[expose] public section

@@ -43,10 +43,6 @@ and short intervals carry an arbitrarily small control.
 * `CKMA.YoungLoeve.young_step_bound`: loose Young–Loeve bound on partition sums by point deletion.
 * `CKMA.YoungLoeve.variation_almost_subadd`: almost-subadditivity of finite `p`-variation for
   continuous paths.
-
-## Notation
-
-No new notation is introduced.
 -/
 
 @[expose] public section

@@ -25,10 +25,6 @@ independent mean-zero square-integrable family.
 
 * `CKMA.kolmogorov_maximal`: Kolmogorov's maximal inequality for partial sums of a finite
   independent mean-zero `L²` family.
-
-## Notation
-
-No new notation is introduced in this file.
 -/
 
 @[expose] public section

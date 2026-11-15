@@ -36,10 +36,6 @@ smooth cutoffs and Fatou's lemma. The constant is the sharp constant `2` of `gau
   supported `φ`.
 * `CKMA.gaussian_logSobolev_oneDim`: One-dimensional Gaussian logarithmic Sobolev inequality with
   constant `2`.
-
-## Notation
-
-No new notation is introduced in this file.
 -/
 
 @[expose] public section

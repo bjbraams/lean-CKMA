@@ -23,10 +23,6 @@ No new public definitions are introduced in this file.
 * `CKMA.offDiagonalDeviation_tail`: two-scale tail bound for the off-diagonal quadratic form.
 * `CKMA.hanson_wright_explicit`: explicit Hanson–Wright concentration bound with constant
   `1 / 2359296`.
-
-## Notation
-
-No new notation is introduced in this file.
 -/
 
 @[expose] public section

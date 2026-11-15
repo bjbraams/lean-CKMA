@@ -25,10 +25,6 @@ Optimization*, Theorem 4.1.6; GAPS 12.21.
 
 * `CKMA.subdifferential_add_eq`: Moreau–Rockafellar subdifferential sum rule under a continuity
   qualification (GAPS 12.21).
-
-## Notation
-
-* Standard Mathlib notation is used throughout.
 -/
 
 @[expose] public section

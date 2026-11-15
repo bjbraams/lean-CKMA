@@ -31,10 +31,6 @@ avoids a zero-sample mean convention.
 
 * `CKMA.symmetrization`: empirical symmetrization inequality for a nonempty countable function
   class with an integrable envelope (**07.33**).
-
-## Notation
-
-No new notation is introduced.
 -/
 
 @[expose] public section

@@ -40,10 +40,6 @@ space is represented by the empty compact carrier. The argument follows Schaefer
 * `CKMA.extremePoints_amStateSpace_latticeHom`: extreme points of `amStateSpace e` preserve lattice
   operations.
 * `CKMA.exists_am_representation`: Kakutani representation of an AM Banach lattice with unit.
-
-## Notation
-
-No new notation is introduced in this file.
 -/
 
 @[expose] public section

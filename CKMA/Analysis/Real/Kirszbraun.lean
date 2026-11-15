@@ -33,10 +33,6 @@ No new public definitions are introduced in this file.
 
 * `CKMA.exists_lipschitzWith_extension` (**05.33**): Kirszbraun's Lipschitz extension theorem
   for maps into a complete real inner-product space.
-
-## Notation
-
-No new notation is introduced in this file.
 -/
 
 @[expose] public section

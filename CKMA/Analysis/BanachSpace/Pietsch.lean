@@ -27,10 +27,6 @@ normed spaces is imposed. Source: GAPS 17.54.
 ## Main results
 
 * `CKMA.pietsch_domination`: Pietsch's domination theorem for `p`-summing operators.
-
-## Notation
-
-No new notation is introduced.
 -/
 
 @[expose] public section

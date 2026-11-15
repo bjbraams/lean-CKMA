@@ -48,10 +48,6 @@ theorem, arranged so that the bidual inclusion is linear rather than conjugate-l
   norm-approximated by relatively weakly compact sets is relatively weakly compact.
 * `CKMA.WeakCompactness.isCompact_closure_toWeakSpace_of_uniformIntegrable`: uniform integrability
   implies relative weak compactness in `L¹` on a finite measure space.
-
-## Notation
-
-* Standard Mathlib notation for `Lp` spaces and weak spaces.
 -/
 
 @[expose] public section

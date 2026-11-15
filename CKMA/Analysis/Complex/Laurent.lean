@@ -30,10 +30,6 @@ Normal summability is the predicate from `CKMA.Analysis.Complex.Basic`.
 * `CKMA.normallySummableOn_laurentSeries`: normal convergence of the Laurent series on compact
   subsets.
 * `CKMA.eq_laurentCoefficient`: uniqueness of Laurent coefficients.
-
-## Notation
-
-No new notation is introduced.
 -/
 
 @[expose] public section

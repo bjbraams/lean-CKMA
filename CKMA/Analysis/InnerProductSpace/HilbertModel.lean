@@ -23,10 +23,6 @@ additive group, a compatible inner product, and completeness.
 
 * Typeclass instances exporting `NormedAddCommGroup`, `InnerProductSpace`, and `CompleteSpace`
   on `H.carrier`.
-
-## Notation
-
-No new notation is introduced in this module.
 -/
 
 @[expose] public section

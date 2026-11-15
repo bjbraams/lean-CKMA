@@ -44,10 +44,6 @@ finite variation are in `VariationEstimate`.
 * `CKMA.YoungLoeve.pathVariationPower_superadd`: superadditivity of `p`-variation power.
 * `CKMA.YoungLoeve.youngCtrl_superadd`: superadditivity of the weighted Young control.
 * `CKMA.YoungLoeve.ctrl_chain`: superadditivity along every second node of a monotone sequence.
-
-## Notation
-
-No new notation is introduced.
 -/
 
 @[expose] public section

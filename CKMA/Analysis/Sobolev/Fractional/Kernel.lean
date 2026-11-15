@@ -39,10 +39,6 @@ multiple of `‖ξ‖^{2s}`.
 * `CKMA.gagliardoFourierConstant_pos`: positivity of `gagliardoFourierConstant d s`.
 * `CKMA.lintegral_fourierPhase_div_norm`: identity relating the integral of the fractional
   Fourier phase kernel to `gagliardoFourierConstant d s * ‖ξ‖ ^ (2 * s)`.
-
-## Notation
-
-No new notation is introduced in this file.
 -/
 
 @[expose] public section

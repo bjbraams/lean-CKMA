@@ -33,10 +33,6 @@ logarithmic kernel turns that distribution into the endpoint growth of order `n 
   Jessen–Marcinkiewicz–Zygmund inequality.
 * `CKMA.strongMaximal_orlicz`: the global Orlicz weak-type bound for `strongMaximalFunction` in all
   dimensions `d ≥ 1`.
-
-## Notation
-
-* Standard Mathlib interval and Lebesgue integral notation.
 -/
 
 @[expose] public section

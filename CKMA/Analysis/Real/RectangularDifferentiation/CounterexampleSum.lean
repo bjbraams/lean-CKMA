@@ -40,10 +40,6 @@ zero, so rectangular differentiation fails on a set of positive measure.
 * `CKMA.exists_integrable_not_rectangularlyDifferentiable` (**06.27**, negative part): in dimension
   `d ≥ 2`, there exists an integrable function whose rectangular averages diverge on a set of
   positive measure.
-
-## Notation
-
-No new notation is introduced in this file.
 -/
 
 @[expose] public section

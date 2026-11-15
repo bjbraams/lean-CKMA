@@ -28,10 +28,6 @@ Source: GAPS 50.45.
 ## Main results
 
 * `CKMA.exists_borelLaplace_sum`: Borel–Laplace summation on a sector of opening `π + β`.
-
-## Notation
-
-No new notation is introduced.
 -/
 
 @[expose] public section

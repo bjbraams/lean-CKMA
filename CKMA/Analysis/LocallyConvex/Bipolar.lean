@@ -26,10 +26,6 @@ No new public definitions are introduced in this module.
 
 * `CKMA.bipolar_eq_weakClosure_absConvexHull`: bipolar theorem for a bilinear pairing in the
   `WeakBilin` topology (**16.13**).
-
-## Notation
-
-No new notation is introduced in this module.
 -/
 
 @[expose] public section

@@ -34,10 +34,6 @@ such law is infinitely divisible.
   exponent of a probability measure.
 * `CKMA.isInfinitelyDivisible_of_forall_charFun_eq_exp`: any probability measure whose
   characteristic function is `exp (L.exponent t)` is infinitely divisible.
-
-## Notation
-
-No new notation is introduced.
 -/
 
 @[expose] public section

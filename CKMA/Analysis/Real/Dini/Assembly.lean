@@ -27,10 +27,6 @@ comparisons `lower ≤ upper` make the choice unique. Source: GAPS 05.10.
 * `CKMA.Dini.ae_oppositePair`: almost every point has matching or opposite-infinite upper-right
   and lower-left Dini derivatives.
 * `CKMA.Dini.ae_diniType`: almost every point realizes a unique `HasDiniType` alternative.
-
-## Notation
-
-No new notation is introduced.
 -/
 
 @[expose] public section

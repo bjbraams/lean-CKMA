@@ -44,10 +44,6 @@ bounded linear maps.
 * `CKMA.isFrame_iff_surjective_adjoint`: frame characterization via surjectivity of synthesis.
 * `CKMA.canonicalDualFrame_reconstruction`: reciprocal bounds and unconditional reconstruction
   series for the canonical dual frame (**29.3**).
-
-## Notation
-
-Uses `⟪·, ·⟫_𝕜` from `InnerProductSpace` and `ℝ≥0∞` from `ENNReal`.
 -/
 
 @[expose] public section

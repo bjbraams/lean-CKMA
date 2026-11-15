@@ -33,10 +33,6 @@ and one application of the logarithmic iteration kernel.
   the one-dimensional maximal function of `partialStrongMax`.
 * `CKMA.strongMaximal_iteration_scale`: scaled logarithmic kernel estimate for strong maximal
   iteration.
-
-## Notation
-
-No new notation is introduced in this file.
 -/
 
 @[expose] public section

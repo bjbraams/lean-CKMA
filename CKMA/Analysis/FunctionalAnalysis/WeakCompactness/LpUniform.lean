@@ -37,10 +37,6 @@ ball of `Lp` on a probability space, and the general slice is reduced to that ca
 
 * `CKMA.WeakCompactness.exists_eLpNorm_sub_one_lt`: Hanche-Olsen's Lemma 1 on a probability space.
 * `CKMA.WeakCompactness.uniformConvexSpace_lp`: scalar `Lp` is uniformly convex for `1 < p < ∞`.
-
-## Notation
-
-* Standard Mathlib notation for `Lp` spaces and `eLpNorm`.
 -/
 
 @[expose] public section

@@ -35,10 +35,6 @@ The sets need not be measurable. Source: GAPS 05.10.
 * `CKMA.Dini.slopePacking_volume_le`: outer-measure bound from a left slope and steep right cover.
 * `CKMA.Dini.volume_eq_zero_of_arbitrarily_steep`: vanishing outer measure when arbitrarily steep
   right increments are available.
-
-## Notation
-
-No new notation is introduced.
 -/
 
 @[expose] public section

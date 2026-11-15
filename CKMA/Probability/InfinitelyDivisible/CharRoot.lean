@@ -36,10 +36,6 @@ root has characteristic function `exp` of that logarithm divided by the order of
   divisible law never vanishes.
 * `CKMA.charFun_positiveRoot`: the characteristic function of the `(n + 1)`-th root is
   `exp (charExponent h t / (n + 1))`.
-
-## Notation
-
-No new notation is introduced.
 -/
 
 @[expose] public section

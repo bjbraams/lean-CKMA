@@ -30,10 +30,6 @@ its integral recovers `n` times one minus the root characteristic function, up t
 
 * `CKMA.nat_mul_charFun_sub_one_eq`: `n * (charFun ν t - 1)` equals the integral of `levyKernel t`
   against the quadratically weighted measure plus `I * t * contDrift n ν`.
-
-## Notation
-
-No new notation is introduced.
 -/
 
 @[expose] public section

@@ -49,10 +49,6 @@ height and approximating in `L¹`.
   continuous functions.
 * `CKMA.ae_rectanglesDifferentiateAt_of_hasGlobalLLog`: almost-everywhere rectangular
   differentiation for functions in the global `L(log⁺ L)^{d-1}` class.
-
-## Notation
-
-* Standard Mathlib measure and filter notation.
 -/
 
 @[expose] public section

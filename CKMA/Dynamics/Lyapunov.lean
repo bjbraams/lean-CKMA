@@ -42,10 +42,6 @@ rest set. Common flow, stability and invariant-subset definitions are in `CKMA.D
 * `CKMA.isLocallyAttracting_of_strict_lyapunov`: the strict Lyapunov criterion for local
   asymptotic stability.
 * `CKMA.lasalle`: LaSalle's invariance principle on a compact positively invariant set.
-
-## Notation
-
-* Standard Mathlib notation for flows, Fréchet derivatives, and metric balls.
 -/
 
 @[expose] public section

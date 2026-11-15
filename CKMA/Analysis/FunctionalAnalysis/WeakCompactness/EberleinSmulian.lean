@@ -52,10 +52,6 @@ the short argument below is taken from that development and proved from Mathlib'
 * `CKMA.EberleinSmulian.isCompact_closure_toWeakSpace_of_seq`: in a Banach space, relative weak
   sequential compactness implies relative weak compactness.
 * `CKMA.EberleinSmulian.isCompact_closure_toWeakSpace_iff_seq`: the Eberlein–Šmulian equivalence.
-
-## Notation
-
-* Standard Mathlib notation for weak spaces and double duals.
 -/
 
 @[expose] public section

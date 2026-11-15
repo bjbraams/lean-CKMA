@@ -42,10 +42,6 @@ Sources: GAPS 42.1 and 42.7.
 * `CKMA.hardy_boundary_realization`, `CKMA.hardyInfinity_boundary_realization`: radial boundary
   limits and norm representation (**42.1**).
 * `CKMA.exists_hardy_factorization`: canonical Blaschke–inner–outer factorization (**42.7**).
-
-## Notation
-
-No new notation is introduced in this module.
 -/
 
 @[expose] public section

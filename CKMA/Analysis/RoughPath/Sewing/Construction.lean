@@ -31,10 +31,6 @@ the triangle, and approximated by every ordered partition at rate `mesh ^ (γ - 
 * `CKMA.Sewing.sewnIncrement_add`: `sewnIncrement` is additive on every subinterval of `[a, b]`.
 * `CKMA.Sewing.norm_partition_sub`: partition sums approach `sewnIncrement` at rate `mesh ^ (γ - 1)`.
 * `CKMA.Sewing.partitionLimit_unique`: uniqueness of partition-sum limits.
-
-## Notation
-
-No new notation is introduced in this file.
 -/
 
 @[expose] public section

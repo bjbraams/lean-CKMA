@@ -34,10 +34,6 @@ reciprocal Gamma product.
 
 * `CKMA.gamma_multiplication`: Gauss's multiplication formula at all nonpolar complex parameters
   (**49.6**).
-
-## Notation
-
-* Standard Mathlib notation for `Real.Gamma`, `Complex.Gamma`, and finite products.
 -/
 
 @[expose] public section

@@ -42,10 +42,6 @@ meets only countably many bands.
   family.
 * `CKMA.indexProjection_tsum`: every vector is the unconditional sum of its band projections.
 * `CKMA.tsum_norm_indexProjection_eq`: the norms of the band projections sum to the ambient norm.
-
-## Notation
-
-No new notation is introduced in this file.
 -/
 
 @[expose] public section

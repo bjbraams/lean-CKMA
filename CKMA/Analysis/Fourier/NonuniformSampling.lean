@@ -37,10 +37,6 @@ Sources: GAPS 29.61 and 29.62.
 * `CKMA.kadec_oneQuarter_sharp`: sharpness of the `1/4` threshold in Kadec's theorem.
 * `CKMA.landau_sampling_density`, `CKMA.landau_interpolation_density`: Landau's necessary Beurling
   density bounds for stable sampling and interpolation (**29.62**).
-
-## Notation
-
-Uses `ℝ≥0∞` from `ENNReal`.
 -/
 
 @[expose] public section

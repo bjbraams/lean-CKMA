@@ -44,10 +44,6 @@ Sources: GAPS 48.4, 48.32, 48.33 and 48.36.
 * `CKMA.exists_favard_measure`: Favard's theorem for monic Jacobi recurrences.
 * `CKMA.measure_eq_of_hamburgerCarleman`: Carleman uniqueness for the Hamburger moment problem.
 * `CKMA.measure_eq_of_stieltjesCarleman`: Carleman uniqueness for the Stieltjes moment problem.
-
-## Notation
-
-No new notation is introduced in this file.
 -/
 
 @[expose] public section

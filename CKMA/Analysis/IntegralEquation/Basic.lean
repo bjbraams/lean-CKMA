@@ -37,10 +37,6 @@ at the left endpoint. The semigroup identity uses
   almost everywhere on `(0, T)`.
 * `CKMA.mem_range_fractionalIntegral_iff` and `CKMA.fractionalIntegral_deriv_inverse` (**25.23**):
   Abel range characterization and inversion formula for `I^α` on `L¹(0, T)` for `0 < α < 1`.
-
-## Notation
-
-* Standard Mathlib notation for interval integrals and `Real.Gamma`.
 -/
 
 @[expose] public section

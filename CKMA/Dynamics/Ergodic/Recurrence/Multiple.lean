@@ -39,10 +39,6 @@ averaging applies to every longer progression.
 
 * `CKMA.multiple_recurrence_liminf`: Positive measure yields a positive liminf of multiple-return
   averages.
-
-## Notation
-
-No new notation is introduced in this file.
 -/
 
 @[expose] public section

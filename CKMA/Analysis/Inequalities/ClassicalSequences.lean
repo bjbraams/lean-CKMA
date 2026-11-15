@@ -38,10 +38,6 @@ Sources: GAPS 11.9 and 11.32.
 * `CKMA.discrete_hardy`: **11.32** Hardy's discrete inequality with constant `(p / (p - 1)) ^ p`.
 * `CKMA.discrete_hardy_constant_le`: optimality of the constant `(p / (p - 1)) ^ p` in Hardy's
   discrete inequality.
-
-## Notation
-
-No new notation is introduced.
 -/
 
 @[expose] public section

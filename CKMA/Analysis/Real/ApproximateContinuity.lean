@@ -29,10 +29,6 @@ for the complements of preimages of rational intervals, followed by countable in
   continuity under locally finite measures.
 * `CKMA.Measurable.ae_isApproximatelyContinuousAt`: Lusin–Denjoy theorem that every measurable real
   function is approximately continuous almost everywhere (**05.30**).
-
-## Notation
-
-* Standard Mathlib filter and measure notation (`𝓝[>] 0`, `∀ᵐ x ∂μ`).
 -/
 
 @[expose] public section

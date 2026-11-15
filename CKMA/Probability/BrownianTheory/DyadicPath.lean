@@ -26,10 +26,6 @@ times themselves, so the same bound passes to every uniform limit of the floors.
   Hölder constant.
 * `CKMA.abs_sub_dyadicFloor_le`: values at dyadic floors obey the Hölder bound of the increments.
 * `CKMA.abs_sub_dyadicFloor_levels`: values at dyadic floors of two meshes obey the Hölder bound.
-
-## Notation
-
-No new notation is introduced.
 -/
 
 @[expose] public section

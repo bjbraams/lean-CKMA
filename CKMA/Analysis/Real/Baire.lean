@@ -32,10 +32,6 @@ Source: GAPS 05.7.
 * `CKMA.ContinuousOn.isBaireOneOn`: continuous functions are of Baire class one.
 * `CKMA.DifferentiableOn.isBaireOneOn_deriv`: the derivative on an open set in `ℝ` of a
   differentiable normed-space-valued function is of Baire class one.
-
-## Notation
-
-No new notation is introduced.
 -/
 
 @[expose] public section

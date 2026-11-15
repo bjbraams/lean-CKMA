@@ -27,10 +27,6 @@ Source: GAPS 20.40.
 ## Main results
 
 * `CKMA.HasAbsolutelyConvergentFourierSeries.inv`: Wiener's `1/f` lemma on the unit circle.
-
-## Notation
-
-No new notation is introduced.
 -/
 
 @[expose] public section

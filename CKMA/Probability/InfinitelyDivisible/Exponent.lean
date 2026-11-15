@@ -28,10 +28,6 @@ conjugation, and scales by `1 / n` under division of the triplet by `n`.
 * `CKMA.integrable_levyIntegrand`: the Lévy–Khintchine integrand is integrable with respect to any
   Lévy measure.
 * `CKMA.continuous_exponent`: the characteristic exponent of a Lévy triplet is continuous.
-
-## Notation
-
-No new notation is introduced.
 -/
 
 @[expose] public section

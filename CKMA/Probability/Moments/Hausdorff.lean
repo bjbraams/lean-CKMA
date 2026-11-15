@@ -53,10 +53,6 @@ the Weierstrass approximation theorem on `[0,1]`.
 ## Main results
 
 * `CKMA.isCompletelyMonotoneSequence_iff_existsUnique_measure`: Hausdorff moment theorem (**48.34**).
-
-## Notation
-
-No new notation is introduced.
 -/
 
 @[expose] public section

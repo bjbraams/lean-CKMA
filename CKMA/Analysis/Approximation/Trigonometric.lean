@@ -35,10 +35,6 @@ Sources: GAPS 47.20, 47.21 and 47.23.
 * `CKMA.inverse_trigonometric`: inverse theorem for trigonometric approximation.
 * `CKMA.bernstein_trigonometric`: Bernstein's inequality for derivatives of trigonometric
   polynomials.
-
-## Notation
-
-No new notation is introduced.
 -/
 
 @[expose] public section

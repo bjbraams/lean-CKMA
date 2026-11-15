@@ -31,10 +31,6 @@ Source: GAPS 42.82.
 ## Main results
 
 * `CKMA.fock_sampling_iff`: Seip–Wallstén density characterization of Fock sampling sets.
-
-## Notation
-
-No new notation is introduced.
 -/
 
 @[expose] public section

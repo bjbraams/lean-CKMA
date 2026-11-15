@@ -28,10 +28,6 @@ Sources: GAPS 26.53 and 26.54.
   the gauge level.
 * `CKMA.complexInterpolationGauge_map_le` (**26.54**): the exact complex interpolation operator
   bound at the gauge level.
-
-## Notation
-
-* Standard Mathlib notation for `ENNReal` and real powers.
 -/
 
 @[expose] public section

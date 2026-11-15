@@ -44,10 +44,6 @@ the variational supremum retain their extended values.
 ## Main results
 
 * `CKMA.varadhan`: Varadhan's integral lemma for bounded continuous functions (**06.62**).
-
-## Notation
-
-No new notation is introduced.
 -/
 
 @[expose] public section

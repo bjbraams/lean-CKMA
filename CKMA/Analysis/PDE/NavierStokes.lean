@@ -33,10 +33,6 @@ Sources: GAPS 34.54 and 34.55. Weak derivatives use TauCeti; L² and integration
   three (**34.54**).
 * `CKMA.navierStokes_lerayHopf_unique_twoD`: uniqueness of Leray–Hopf velocity curves in dimension
   two (**34.55**).
-
-## Notation
-
-* Standard Mathlib notation for `Lp`, `ℝ≥0`, and inner products.
 -/
 
 @[expose] public section

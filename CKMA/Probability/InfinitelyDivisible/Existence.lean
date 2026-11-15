@@ -28,10 +28,6 @@ correction on `{1 / 2 ≤ |x| ≤ 1}` replaces the continuous cutoff by the trun
 
 * `CKMA.exists_levyTriplet_of_isInfinitelyDivisible`: every infinitely divisible probability law
   admits a Lévy–Khintchine triplet.
-
-## Notation
-
-No new notation is introduced.
 -/
 
 @[expose] public section

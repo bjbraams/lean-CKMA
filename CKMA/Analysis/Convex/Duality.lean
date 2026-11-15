@@ -44,10 +44,6 @@ Sources: GAPS 12.9, 12.21, 12.39, and 12.40.
 * `CKMA.exists_fenchelDual_maximizer`: Fenchel–Rockafellar strong duality and attainment (12.39).
 * `CKMA.exists_convexKKTMultipliers`: KKT multipliers under Slater's condition (12.40).
 * `CKMA.HasConvexKKTMultipliers.isMinOn`: sufficiency of KKT conditions.
-
-## Notation
-
-* Standard Mathlib notation is used throughout.
 -/
 
 @[expose] public section

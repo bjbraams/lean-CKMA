@@ -34,10 +34,6 @@ standard identities in Aliprantis–Burkinshaw, *Positive Operators*, §§1.1 an
 * `CKMA.eq_posPart_negPart_of_inf_eq_zero`: canonical Jordan decomposition when `y ⊓ z = 0`.
 * `CKMA.exists_add_eq_of_le_add`: Riesz decomposition property on the positive cone.
 * `CKMA.coneAdditive_isLinearMap`: Jordan extension of an additive positively homogeneous cone map.
-
-## Notation
-
-No new notation is introduced in this file.
 -/
 
 @[expose] public section

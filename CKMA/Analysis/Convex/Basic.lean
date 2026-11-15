@@ -20,10 +20,6 @@ The predicate does not use a norm, an inner product, or convexity.
 ## Main results
 
 * (No standalone theorems; provides the foundational properness predicate.)
-
-## Notation
-
-* Standard Mathlib notation is used throughout.
 -/
 
 @[expose] public section

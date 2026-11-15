@@ -34,10 +34,6 @@ No new definitions are introduced in this file.
   spaces.
 * `CKMA.exists_bound_of_deriv_eq_zero`: Boundedness of differentiable functions with compactly
   supported derivative.
-
-## Notation
-
-No new notation is introduced in this file.
 -/
 
 @[expose] public section

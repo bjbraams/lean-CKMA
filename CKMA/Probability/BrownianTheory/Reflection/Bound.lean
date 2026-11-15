@@ -27,10 +27,6 @@ passage. Sending the mesh and the gap above the level to zero removes the oversh
 * `CKMA.measure_hit_le`: the closed hitting measure is at most twice the endpoint measure.
 * `CKMA.two_mul_endpoint_le_hit`: twice the endpoint measure is at most the hitting measure.
 * `CKMA.reflection_principle`: the reflection principle for a real Brownian motion.
-
-## Notation
-
-No new notation is introduced.
 -/
 
 @[expose] public section

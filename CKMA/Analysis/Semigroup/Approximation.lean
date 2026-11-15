@@ -30,10 +30,6 @@ Sources: GAPS 24.13, 24.17 and 24.18.
   `C¹` forcing.
 * `CKMA.trotter_kato` (**24.17**): Trotter–Kato approximation theorem.
 * `CKMA.chernoff_product` (**24.18**): Chernoff product formula.
-
-## Notation
-
-No new notation is introduced in this file.
 -/
 
 @[expose] public section

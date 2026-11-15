@@ -26,10 +26,6 @@ is periodic, and connectedness identifies the whole limit set with the orbit.
 * `CKMA.omega_openSegment_singleton`: the omega-limit set meets an open transverse segment in at
   most one point.
 * `CKMA.poincare_bendixson_complex`: the Poincaré–Bendixson theorem for a `C¹` flow on `ℂ`.
-
-## Notation
-
-* Standard Mathlib notation for flows, segments, and omega-limit sets.
 -/
 
 @[expose] public section

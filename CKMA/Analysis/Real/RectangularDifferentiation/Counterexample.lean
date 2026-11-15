@@ -48,10 +48,6 @@ The packing of translates, the higher-dimensional product, and the integrable sp
 * `CKMA.Bohr.areaLower_le_volume_badPlane`: lower bound on the area of `badPlane k`.
 * `CKMA.Bohr.exists_heavy_translate`: existence of a translate meeting any positive subset of the
   inner square in a definite fraction.
-
-## Notation
-
-No new notation is introduced in this file.
 -/
 
 @[expose] public section

@@ -29,10 +29,6 @@ Sources: GAPS 29.46 and 29.51. The frequency moment uses Mathlib's L² Fourier u
 * `CKMA.gabor_rieszSequence_density`: Riesz-sequence density bound `1 ≤ a * b`.
 * `CKMA.gabor_rieszBasis_density`: critical density `a * b = 1` for a Gabor Riesz basis.
 * `CKMA.balian_low`: Balian–Low uncertainty obstruction for Gabor Riesz bases (**29.51**).
-
-## Notation
-
-Uses `𝓕` from `FourierTransform` for the `L²` Fourier transform on `Lp ℂ 2 volume`.
 -/
 
 @[expose] public section

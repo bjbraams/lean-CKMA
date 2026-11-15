@@ -34,10 +34,6 @@ follow by replacing `Mᵢ` with `Mᵢ + ε` and passing to the limit.
 * `CKMA.realInterpolationGauge_map_le_of_pos`: the real interpolation gauge bound for positive
   endpoint bounds `M₀, M₁ > 0`.
 * `CKMA.le_of_endpointFactor_eps`: passage to the limit as `ε → 0⁺` in endpoint bounds `Mᵢ + ε`.
-
-## Notation
-
-* Standard Mathlib notation for `ENNReal` integrals and suprema.
 -/
 
 @[expose] public section

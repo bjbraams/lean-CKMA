@@ -26,10 +26,6 @@ This file re-exports the Dini derivative definitions and `CKMA.HasDiniType` from
 
 * `CKMA.ae_existsUnique_diniType`: the Denjoy–Young–Saks theorem for arbitrary finite real
   functions.
-
-## Notation
-
-No new notation is introduced.
 -/
 
 @[expose] public section

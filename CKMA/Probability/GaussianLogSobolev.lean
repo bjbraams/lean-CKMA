@@ -29,10 +29,6 @@ entropy formula; inner products and covariance follow Mathlib's Gaussian convent
 ## Main results
 
 * `CKMA.gaussian_logSobolev`: Gaussian logarithmic Sobolev inequality with sharp constant `2`.
-
-## Notation
-
-No new notation is introduced in this file.
 -/
 
 @[expose] public section

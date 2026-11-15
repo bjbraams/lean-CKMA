@@ -64,10 +64,6 @@ Sources: GAPS 27.17 and 27.22.
   Fejér kernel.
 * `CKMA.carleson_hunt` (**27.22**): `L^p` boundedness of the Carleson maximal operator and almost
   everywhere convergence of symmetric Fourier partial sums for `1 < p`.
-
-## Notation
-
-* Standard Mathlib notation for `AddCircle 1`, `fourier`, and `fourierCoeff`.
 -/
 
 @[expose] public section

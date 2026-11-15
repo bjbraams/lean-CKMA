@@ -26,10 +26,6 @@ function with the same norm. The endpoint `p=1, q=∞` is included. Source: GAPS
 
 * `CKMA.existsUnique_lpDualRepresentation`: Riesz representation of continuous linear functionals
   on `Lp 𝕜 p μ` for `1 ≤ p < ∞` on sigma-finite measure spaces (**04.39**).
-
-## Notation
-
-Uses `ℝ≥0∞` (`∞`) from `ENNReal`.
 -/
 
 @[expose] public section

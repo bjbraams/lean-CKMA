@@ -39,10 +39,6 @@ underlying Chebyshev's alternation theorem on `[-1, 1]`.
 * `CKMA.isBestPolynomialApproximation_of_hasPolynomialAlternation`: sufficiency of alternation.
 * `CKMA.hasPolynomialAlternation_of_isBestPolynomialApproximation`: necessity of alternation.
 * `CKMA.eq_of_isBestPolynomialApproximation`: uniqueness of the best polynomial approximant.
-
-## Notation
-
-No new notation is introduced in this file.
 -/
 
 @[expose] public section

@@ -30,10 +30,6 @@ invariant limit.
   null set.
 * `CKMA.birkhoffAverage_ae_tendsto_birkhoffLimit`: outside a null set the averages converge to
   `birkhoffLimit`.
-
-## Notation
-
-* Standard Mathlib notation for Birkhoff averages and `EReal`.
 -/
 
 @[expose] public section

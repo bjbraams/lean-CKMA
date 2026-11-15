@@ -23,10 +23,6 @@ intervals holds for initial values in the graph. Source: GAPS 24.52.
 
 * `CKMA.crandall_liggett`: the Crandall–Liggett generation theorem for m-accretive graphs on Banach
   spaces (**24.52**).
-
-## Notation
-
-* Standard Mathlib notation for `ℝ≥0` and `Tendsto`.
 -/
 
 @[expose] public section

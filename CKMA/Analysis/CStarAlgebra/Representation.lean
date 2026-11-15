@@ -37,10 +37,6 @@ Sources: GAPS 23.9 and 23.10.
   cyclic realizations of the same functional (**23.9**).
 * `CKMA.exists_isometric_representation`: Gelfand–Naimark isometric representation theorem
   (**23.10**).
-
-## Notation
-
-Uses `⟪·, ·⟫_ℂ` from `InnerProductSpace` and `→⋆ₙₐ[ℂ]` for non-unital star algebra homomorphisms.
 -/
 
 @[expose] public section

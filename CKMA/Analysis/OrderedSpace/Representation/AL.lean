@@ -41,10 +41,6 @@ Sources: GAPS 19.29; Aliprantis–Burkinshaw, Theorem 4.27; Schaefer, Theorem II
 * `CKMA.denseRange_orderUnit`: the principal ideal of a weak unit is norm-dense.
 * `CKMA.exists_al_representation_of_weakUnit`: Kakutani representation of an AL-space with a weak
   unit as `L¹(μ)`.
-
-## Notation
-
-No new notation is introduced in this file.
 -/
 
 @[expose] public section

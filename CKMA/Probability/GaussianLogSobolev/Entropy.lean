@@ -23,10 +23,6 @@ No new definitions are introduced in this file.
   Ornstein–Uhlenbeck semigroup equals minus the Fisher information.
 * `CKMA.gaussian_entropy_le_half_fisher`: One-dimensional Gaussian entropy bound by half the
   Fisher information for smooth positive functions with bounded derivatives.
-
-## Notation
-
-No new notation is introduced in this file.
 -/
 
 @[expose] public section

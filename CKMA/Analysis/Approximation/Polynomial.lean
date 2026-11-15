@@ -41,10 +41,6 @@ Sources: GAPS 47.6, 47.13, 47.24 and 47.40.
 * `CKMA.polynomial_markov`: Markov's sharp first-derivative inequality.
 * `CKMA.muntz_szasz`: Müntz–Szász theorem.
 * `CKMA.newman_rational_approximation`: Newman's rational approximation rate for `|x|`.
-
-## Notation
-
-No new notation is introduced in this file.
 -/
 
 @[expose] public section

@@ -36,10 +36,6 @@ Sources: GAPS 17.21, 17.38, 17.39, and 17.57.
 * `CKMA.kwapien`: Kwapień's characterization of Hilbertizable Banach spaces.
 * `CKMA.dvoretzky`: Dvoretzky's theorem on almost-isometric Euclidean subspaces.
 * `CKMA.grothendieck_real`: the real Grothendieck inequality.
-
-## Notation
-
-No new notation is introduced.
 -/
 
 @[expose] public section

@@ -37,10 +37,6 @@ Nonlinear Optimization*, Theorem 4.1.6; GAPS 12.21 and 12.39.
 * `CKMA.convex_epigraph_coe`: convexity of the `EReal` epigraph of a real convex function.
 * `CKMA.exists_mem_subdifferential_of_convexOn`: subgradient existence for finite-dimensional
   real convex functions.
-
-## Notation
-
-* Standard Mathlib notation is used throughout.
 -/
 
 @[expose] public section

@@ -42,10 +42,6 @@ Sources: GAPS 19.27 and 19.29.
   `C(K, ℝ)`.
 * `CKMA.exists_alSpace_representation`: Kakutani representation of an AL space as `L¹(μ)`.
 * `CKMA.IsALSpace.isKBSpace`: every AL space is a KB space.
-
-## Notation
-
-No new notation is introduced in this file.
 -/
 
 @[expose] public section

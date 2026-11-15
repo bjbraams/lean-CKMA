@@ -38,10 +38,6 @@ The exponential specialization uses Mathlib's Gamma factorial values and exponen
   equation, Wronskian, and oscillatory integral representation (**49.36**).
 * `CKMA.differentiable_mittagLeffler`, `CKMA.mittagLeffler_one_one`: entireness of `E_{α,β}` for
   `α > 0` and specialization `E_{1,1}(z) = exp z` (**49.76**).
-
-## Notation
-
-* Standard Mathlib notation for `Complex.besselJ`, `Complex.Gamma`, and `iteratedDeriv`.
 -/
 
 @[expose] public section

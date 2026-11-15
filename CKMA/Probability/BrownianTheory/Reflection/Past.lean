@@ -25,10 +25,6 @@ of a level or by its reflected down-crossing.
 
 * `CKMA.measure_isTau_reflect`: symmetry of the post-passage increment conditioned on the first
   grid visit at index `k`.
-
-## Notation
-
-No new notation is introduced.
 -/
 
 @[expose] public section

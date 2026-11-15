@@ -32,10 +32,6 @@ conjugacies or convergence on the entire basin are not assumed.
   uniqueness of Koenigs coordinates.
 * `CKMA.exists_boettcherCoordinate`, `CKMA.boettcherCoordinate_unique_up_to_root`: existence and
   uniqueness up to a root of unity of Böttcher coordinates.
-
-## Notation
-
-* Standard Mathlib complex analysis and filter notation.
 -/
 
 @[expose] public section

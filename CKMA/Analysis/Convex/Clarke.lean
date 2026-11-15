@@ -65,10 +65,6 @@ extends a partial functional dominated by it, using Mathlib's Hahn–Banach theo
   subdifferential as the closed convex hull of reachable derivatives (GAPS 12.50).
 * `CKMA.sSup_clarkeSubdifferential_eq`: the support function of the Clarke subdifferential is the
   Clarke directional derivative.
-
-## Notation
-
-* Standard Mathlib notation is used throughout.
 -/
 
 @[expose] public section

@@ -34,10 +34,6 @@ and positive threshold and scale hypotheses specify the meaningful concentration
 ## Main results
 
 * `CKMA.hanson_wright`: Hanson–Wright concentration inequality with a universal constant.
-
-## Notation
-
-No new notation is introduced in this file.
 -/
 
 @[expose] public section

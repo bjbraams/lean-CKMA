@@ -29,10 +29,6 @@ conventions come from Mathlib and the common `CKMA.Dynamics.Flow` interface.
 ## Main results
 
 * `CKMA.poincare_bendixson`: the Poincaré–Bendixson theorem on `EuclideanSpace ℝ (Fin 2)`.
-
-## Notation
-
-* Standard Mathlib notation for flows and omega-limit sets.
 -/
 
 @[expose] public section

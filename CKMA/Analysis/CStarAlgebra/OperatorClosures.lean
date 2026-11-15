@@ -39,10 +39,6 @@ Sources: GAPS 23.21 and 23.22.
 * `CKMA.bicommutant_closures`: von Neumann bicommutant theorem (**23.21**).
 * `CKMA.kaplansky_density`, `CKMA.kaplansky_density_selfAdjoint`: Kaplansky density theorem
   (**23.22**).
-
-## Notation
-
-Uses `⟪·, ·⟫_ℂ` from `InnerProductSpace` and `→WOT[ℂ]` for the weak-operator topology.
 -/
 
 @[expose] public section

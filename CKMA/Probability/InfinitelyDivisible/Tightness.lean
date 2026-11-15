@@ -36,10 +36,6 @@ mass and the tails of the quadratically weighted roots, uniformly in the root or
 
 * `CKMA.isCompact_closure_range_idRootMeasure`: the quadratically weighted convolution roots have
   relatively compact range in `FiniteMeasure ℝ`.
-
-## Notation
-
-No new notation is introduced.
 -/
 
 @[expose] public section

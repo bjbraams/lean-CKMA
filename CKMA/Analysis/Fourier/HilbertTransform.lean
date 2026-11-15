@@ -30,10 +30,6 @@ Source: GAPS 27.35.
   Hilbert transform on `Lᵖ` for `1 ≤ p < ∞` (**27.35**).
 * `CKMA.existsUnique_hilbertTransform_L2`: `L²` Fourier multiplier characterization `-i sign ξ`.
 * `CKMA.hilbertPrincipalValue_weakType`: weak `(1, 1)` estimate for `hilbertPrincipalValue`.
-
-## Notation
-
-Uses `ℝ≥0∞` from `ENNReal` and `Lp.fourierTransformₗᵢ` for the `L²` Plancherel transform.
 -/
 
 @[expose] public section

@@ -40,10 +40,6 @@ feed the Crandall–Liggett semigroup constructed in
   estimate between Euler products of different step sizes.
 * `CKMA.accretiveEulerProduct_cauchy_closure`: Cauchy convergence of Euler products on the closure
   of the graph domain.
-
-## Notation
-
-* Standard Mathlib notation for `ℝ≥0` and Finset sums.
 -/
 
 @[expose] public section

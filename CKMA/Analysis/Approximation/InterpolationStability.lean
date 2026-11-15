@@ -33,10 +33,6 @@ No new public definitions are introduced in this file; see
 * `CKMA.interpolation_error_le_polynomial_error`: interpolation error compared with any polynomial
   of degree at most `n`.
 * `CKMA.interpolation_error_le`: Lebesgue's near-best interpolation estimate.
-
-## Notation
-
-No new notation is introduced in this file.
 -/
 
 @[expose] public section

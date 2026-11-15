@@ -33,10 +33,6 @@ exponent is locally Hölder, and the dyadic floors converge to a continuous modi
 
 * `CKMA.exists_subHalf_ge`: every exponent strictly below `1 / 2` is bounded by some `subHalf k`.
 * `CKMA.ae_mem_good`: almost every sample path belongs to `good`.
-
-## Notation
-
-No new notation is introduced.
 -/
 
 @[expose] public section

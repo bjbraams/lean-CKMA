@@ -43,10 +43,6 @@ criterion; regular maps are differences of positive maps. Sources: GAPS 19.5, 19
   as regular operators.
 * `CKMA.riesz_kantorovich`: explicit supremum, infimum, and modulus formulas for order-bounded
   operators into a Dedekind-complete Riesz space.
-
-## Notation
-
-No new notation is introduced in this file.
 -/
 
 @[expose] public section

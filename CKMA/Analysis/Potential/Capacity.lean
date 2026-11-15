@@ -42,10 +42,6 @@ Sources: GAPS 38.17, 38.20, 38.28 and 38.30.
   regularity (**38.28**).
 * `CKMA.perron_brelot_harmonic_measure`: Perron–Brelot resolutivity and harmonic measure
   representation (**38.30**).
-
-## Notation
-
-* Standard Mathlib notation for extended nonnegative reals `ℝ≥0∞` and Lebesgue integrals.
 -/
 
 @[expose] public section

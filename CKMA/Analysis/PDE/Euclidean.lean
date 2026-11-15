@@ -36,10 +36,6 @@ these expressions to Mathlib's `TestFunction` and orthonormal-basis Laplacian AP
   on an open set as a Mathlib `TestFunction`.
 * `CKMA.nondivergenceOperator_one_eq_laplacian`: the nondivergence operator with identity
   coefficients equals the Euclidean Laplacian.
-
-## Notation
-
-* Standard Mathlib inner product and Fréchet derivative notation.
 -/
 
 @[expose] public section

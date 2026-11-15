@@ -47,10 +47,6 @@ Sources: GAPS 11.22 and 11.24.
 * `CKMA.IsMajorizedBy.sum_convex_le`: Karamata's inequality (GAPS 11.24).
 * `CKMA.IsMajorizedBy.sum_strictConvex_eq_iff`: equality condition in Karamata's inequality for
   strictly convex functions.
-
-## Notation
-
-* Standard Mathlib notation is used throughout.
 -/
 
 @[expose] public section

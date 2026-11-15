@@ -25,10 +25,6 @@ Source: GAPS 50.23. Bernoulli functions and numbers reuse Mathlib's zeta-value A
 ## Main results
 
 * `CKMA.euler_maclaurin`: Euler–Maclaurin summation formula with exact periodic remainder.
-
-## Notation
-
-No new notation is introduced.
 -/
 
 @[expose] public section
@@ -48,7 +44,7 @@ def eulerMaclaurinRemainder (p : ℕ) (f : ℝ → ℝ) (a b : ℝ) : ℝ :=
 Equal endpoints are included: both sides reduce to `f m`. The displayed remainder convention
 requires `p ≥ 1`; the `p=0` formula is different. -/
 theorem euler_maclaurin {m n : ℤ} (hmn : m ≤ n) {p : ℕ} (hp : 0 < p)
-    (f : ℝ → ℝ) (hf : ContDiffOn ℝ (2 * p) f (Set.Icc (m : ℝ) n)) :
+    (f : ℝ → ℝ) (hf : ContDiff ℝ (2 * p) f) :
     (∑ k ∈ Finset.Icc m n, f k) = (∫ x in (m : ℝ)..n, f x) + (f m + f n) / 2 +
       (∑ r ∈ Finset.range p, ((bernoulli (2 * (r + 1)) : ℚ) : ℝ) /
         (2 * (r + 1)).factorial *

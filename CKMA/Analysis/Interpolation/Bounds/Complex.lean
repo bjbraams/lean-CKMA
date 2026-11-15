@@ -38,10 +38,6 @@ infimum of those boundary norms.
 
 * `CKMA.complexInterpolationGauge_map_le_of_pos`: the complex interpolation gauge bound for
   positive endpoint bounds `M₀, M₁ > 0`.
-
-## Notation
-
-* Standard Mathlib notation for complex exponentials and `ENNReal`.
 -/
 
 @[expose] public section

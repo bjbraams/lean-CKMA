@@ -43,10 +43,6 @@ with the full compact attractor.
 * `CKMA.existsUnique_selfSimilar_compact`: Hutchinson's unique nonempty compact attractor.
 * `CKMA.existsUnique_selfSimilar_measure`: unique invariant Borel probability measure for an
   iterated function system.
-
-## Notation
-
-* Standard Mathlib notation `ℝ≥0` and `ℝ≥0∞`.
 -/
 
 @[expose] public section

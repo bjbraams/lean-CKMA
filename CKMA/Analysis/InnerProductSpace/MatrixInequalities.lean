@@ -47,10 +47,6 @@ tail, with zero-padding beyond the available rank. Sources: GAPS 13.7, 13.8, 13.
 * `CKMA.svdTruncation_minimizes`, `CKMA.frobeniusNormSq_sub_svdTruncation`,
   `CKMA.norm_sub_svdTruncation`: Mirsky / Eckart–Young low-rank approximation properties
   (**13.18**).
-
-## Notation
-
-Uses `⟪·, ·⟫_𝕜` from `InnerProductSpace`.
 -/
 
 @[expose] public section

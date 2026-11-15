@@ -39,10 +39,6 @@ Sources: GAPS 42.51 and 42.52.
 * `CKMA.isClosed_bergmanSet`: closedness of `A²_α(𝔻)` in `L²`.
 * `CKMA.exists_bergmanProjection`: orthogonal Bergman projection on `L²`.
 * `CKMA.bergmanIntegral_bounded`: `Lᵖ` boundedness of the Bergman integral for `1 < p < ∞`.
-
-## Notation
-
-No new notation is introduced.
 -/
 
 @[expose] public section

@@ -26,10 +26,6 @@ time, and is locally Hölder for every exponent strictly below one half.
 * `CKMA.holderPath_isBrownian`: the dyadic-floor limit is a Brownian motion.
 * `CKMA.exists_continuous_holder_modification`: a pre-Brownian process has an everywhere
   continuous Hölder modification.
-
-## Notation
-
-No new notation is introduced.
 -/
 
 @[expose] public section

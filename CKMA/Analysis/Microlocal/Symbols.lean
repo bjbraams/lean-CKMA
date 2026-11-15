@@ -35,10 +35,6 @@ Sources: GAPS 30.27, 30.28 and 30.31.
 * `CKMA.sobolevEnergy_leftQuantization_le`: Sobolev mapping estimate for `S^m_{1,0}` symbols
   (**30.28**).
 * `CKMA.sharp_garding`: sharp Gårding inequality for nonnegative scalar symbols (**30.31**).
-
-## Notation
-
-Uses `ℝ≥0∞` from `ENNReal` and `conj` from `ComplexConjugate`.
 -/
 
 @[expose] public section

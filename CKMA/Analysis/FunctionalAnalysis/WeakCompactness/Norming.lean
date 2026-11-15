@@ -39,10 +39,6 @@ used by the sphere.
 
 * `CKMA.EberleinSmulian.exists_list_norming`: Whitley's finite-dimensional norming lemma in the
   bidual.
-
-## Notation
-
-* Standard Mathlib notation for `StrongDual` and finite sums.
 -/
 
 @[expose] public section

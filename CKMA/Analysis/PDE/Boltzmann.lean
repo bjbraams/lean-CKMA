@@ -30,10 +30,6 @@ Source: GAPS 34.70.
 * `CKMA.hardSphereEntropyProduction_nonneg`: nonnegativity of the hard-sphere entropy production.
 * `CKMA.boltzmann_h_identity`: Boltzmann's H identity relating logarithmic collision tests to
   entropy production (**34.70**).
-
-## Notation
-
-* Standard Mathlib notation for `EuclideanRealSpace 3` and Bochner integrals.
 -/
 
 @[expose] public section

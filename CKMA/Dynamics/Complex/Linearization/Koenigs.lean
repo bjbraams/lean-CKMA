@@ -53,10 +53,6 @@ attracting case and transferred along a local inverse in the repelling case.
 * `CKMA.exists_koenigsCoordinate_of_norm_gt_one`: existence of a Koenigs coordinate in the
   repelling case `1 < ‖deriv f 0‖`.
 * `CKMA.koenigsCoordinate_eventuallyEq_of`: germ uniqueness of normalized Koenigs coordinates.
-
-## Notation
-
-* Standard Mathlib complex analysis notation.
 -/
 
 @[expose] public section

@@ -34,10 +34,6 @@ Source: GAPS 14.40. The critical unboundedness statement is in `CKMA.Analysis.So
 
 * `CKMA.nash_inequality`: Nash's interpolation inequality `‖u‖₂^{1+2/d} ≤ C ‖u‖₁^{2/d} ‖∇u‖₂` on
   `ℝ^d` (**14.40**).
-
-## Notation
-
-* Standard Mathlib and TauCeti notation for `eLpNorm`, `MemLp`, and `HasWeakFDerivOn`.
 -/
 
 @[expose] public section

@@ -22,8 +22,4 @@ definitions and basic API for use across sections.
 ## Main results
 
 * Re-exports the trace-ideal API from `CKMA.Analysis.Operator.TraceIdeals`.
-
-## Notation
-
-No new notation is introduced in this module.
 -/

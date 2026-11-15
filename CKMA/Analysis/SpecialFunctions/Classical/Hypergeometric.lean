@@ -34,10 +34,6 @@ singular, as witnessed by analytic rational germs in local and reciprocal coordi
 * `CKMA.gauss_hypergeometric_unique`: uniqueness of the normalized analytic solution germ at `0`.
 * `CKMA.gauss_isRegularSingularAt`: `0`, `1`, and `∞` are regular singular points of Gauss's
   equation.
-
-## Notation
-
-* Standard Mathlib notation for `ordinaryHypergeometric` and `Complex.regularizedGaussHGFun`.
 -/
 
 @[expose] public section

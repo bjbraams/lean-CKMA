@@ -39,10 +39,6 @@ Sources: GAPS 45.1, 45.5, 45.7, 45.8 and 45.20.
 * `CKMA.weierstrass_preparation`: Weierstrass preparation theorem.
 * `CKMA.weierstrass_division`: Weierstrass division theorem.
 * `CKMA.polynomial_oka_weil`: Oka–Weil polynomial approximation theorem.
-
-## Notation
-
-No new notation is introduced.
 -/
 
 @[expose] public section

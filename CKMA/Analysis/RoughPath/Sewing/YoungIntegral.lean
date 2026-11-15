@@ -31,10 +31,6 @@ for `YoungData`, `youngGrid`, and `youngLimit`.
   `sewingConstant (p⁻¹ + q⁻¹)`.
 * `CKMA.YoungLoeve.young_integral` (**09.21**, variation form): existence and uniqueness of the
   Young integral of complementary finite-variation paths.
-
-## Notation
-
-No new notation is introduced in this file.
 -/
 
 @[expose] public section

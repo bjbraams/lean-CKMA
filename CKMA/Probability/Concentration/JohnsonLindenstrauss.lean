@@ -30,10 +30,6 @@ No new public definitions are introduced in this file.
 
 * `CKMA.johnson_lindenstrauss_explicit`: explicit dimension reduction bound via scaled Rademacher
   sign matrices.
-
-## Notation
-
-No new notation is introduced in this file.
 -/
 
 @[expose] public section

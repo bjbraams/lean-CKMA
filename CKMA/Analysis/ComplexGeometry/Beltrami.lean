@@ -32,10 +32,6 @@ Sources: GAPS 44.38 and 44.49. Weak differentials reuse TauCeti's Sobolev API.
 
 * `CKMA.measurable_riemann_mapping`: Ahlfors–Bers measurable Riemann mapping theorem.
 * `CKMA.astala_disk_area`: Astala's area distortion theorem for quasiconformal disk maps.
-
-## Notation
-
-No new notation is introduced.
 -/
 
 @[expose] public section

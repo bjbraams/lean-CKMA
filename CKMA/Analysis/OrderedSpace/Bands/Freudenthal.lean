@@ -27,10 +27,6 @@ No new definitions are introduced in this file.
 * `CKMA.projection_eq_posPart`: a contractive projection onto `{z⁺}ᵈᵈ` maps `z` to `z⁺`.
 * `CKMA.freudenthal_increment_bounds`: scalar bounds for an increment of principal projections.
 * `CKMA.freudenthal_components`: Freudenthal spectral approximation by disjoint components.
-
-## Notation
-
-No new notation is introduced in this file.
 -/
 
 @[expose] public section

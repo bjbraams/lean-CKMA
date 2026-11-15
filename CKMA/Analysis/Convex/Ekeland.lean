@@ -26,10 +26,6 @@ Source: GAPS 12.45.
 ## Main results
 
 * `CKMA.exists_isEkelandPoint`: Ekeland's variational principle on complete metric spaces (12.45).
-
-## Notation
-
-* Standard Mathlib notation is used throughout.
 -/
 
 @[expose] public section

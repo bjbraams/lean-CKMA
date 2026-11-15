@@ -56,10 +56,6 @@ Sources: GAPS 20.19, 20.23, 20.41, and 20.47.
 * `CKMA.exists_shilov_boundary`: existence of the Shilov boundary.
 * `CKMA.wiener_tauberian_real`: Wiener's Tauberian theorem on `L¹(ℝ)`.
 * `CKMA.cohen_hewitt_factorization`: Cohen–Hewitt factorization theorem.
-
-## Notation
-
-No new notation is introduced.
 -/
 
 @[expose] public section

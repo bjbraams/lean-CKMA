@@ -25,10 +25,6 @@ No new definitions are introduced; this file works with `CKMA.HasDiniType`.
   `CKMA.Dini.hasDiniType_three`: constructors for the four Dini patterns.
 * `CKMA.Dini.existsUnique_diniType_of_patterns`: the two opposite-pair patterns determine a
   unique Dini type.
-
-## Notation
-
-No new notation is introduced.
 -/
 
 @[expose] public section

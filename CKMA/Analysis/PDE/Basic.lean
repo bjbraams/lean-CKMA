@@ -23,8 +23,4 @@ microlocal analysis.
 ## Main results
 
 * Re-exports the foundational Euclidean PDE definitions from `CKMA.Analysis.PDE.Euclidean`.
-
-## Notation
-
-No new notation is introduced in this module.
 -/

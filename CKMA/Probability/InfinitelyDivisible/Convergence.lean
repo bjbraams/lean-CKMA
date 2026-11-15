@@ -26,10 +26,6 @@ No new definitions are introduced in this file.
 
 * `CKMA.exists_isProbabilityMeasure_of_tendsto_charFun`: a pointwise limit of characteristic
   functions that is continuous at `0` is the characteristic function of a probability measure.
-
-## Notation
-
-No new notation is introduced.
 -/
 
 @[expose] public section

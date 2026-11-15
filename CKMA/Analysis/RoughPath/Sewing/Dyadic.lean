@@ -38,10 +38,6 @@ continuous on the sewing triangle.
 * `CKMA.Sewing.tendsto_dyadicIncrement`: dyadic increment sums converge to `sewnIncrement`.
 * `CKMA.Sewing.norm_sewnIncrement_sub`: remainder bound for `sewnIncrement`.
 * `CKMA.Sewing.continuousOn_sewnIncrement`: `sewnIncrement` is continuous on `sewingTriangle a b`.
-
-## Notation
-
-No new notation is introduced in this file.
 -/
 
 @[expose] public section

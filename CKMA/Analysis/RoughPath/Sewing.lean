@@ -43,10 +43,6 @@ Sources: GAPS 09.21 and 09.22.
 * `CKMA.young_holder`: Young integration for Hölder paths with complementary exponents.
 * `CKMA.young_variation`: Young integration for continuous paths of complementary finite
   variation.
-
-## Notation
-
-No new notation is introduced.
 -/
 
 @[expose] public section

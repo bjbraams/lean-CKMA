@@ -40,10 +40,6 @@ Sources: GAPS 40.29 and 40.60–40.64.
 * `CKMA.mergelyan_approximation`: Mergelyan's polynomial approximation theorem.
 * `CKMA.exists_mittagLeffler`: Mittag–Leffler theorem on prescribed principal parts.
 * `CKMA.exists_holomorphic_prescribed_zeros`: Weierstrass theorem on prescribed zeros.
-
-## Notation
-
-No new notation is introduced.
 -/
 
 @[expose] public section

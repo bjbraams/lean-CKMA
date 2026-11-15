@@ -35,10 +35,6 @@ right derivative, and the upper right derivative is finite. Source: GAPS 05.10.
 * `CKMA.Dini.volume_finiteStrict`: `finiteStrict f` has Lebesgue measure zero.
 * `CKMA.Dini.mem_finiteStrict_of_lt`: any finite strict inequality between lower left and upper
   right Dini derivatives lies in `finiteStrict f`.
-
-## Notation
-
-No new notation is introduced.
 -/
 
 @[expose] public section

@@ -37,10 +37,6 @@ sequence Cauchy. Source: GAPS 12.32.
 * `CKMA.IsProximalPoint.inner_sub_ge_norm_sq`: firm nonexpansiveness of proximal points.
 * `CKMA.existsUnique_isProximalPoint`: existence and uniqueness of proximal points for proper
   lower semicontinuous convex functions on a real Hilbert space (GAPS 12.32).
-
-## Notation
-
-* Standard Mathlib notation is used throughout.
 -/
 
 @[expose] public section

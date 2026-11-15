@@ -34,10 +34,6 @@ increment estimate. Both characterizations include the zero space. Source: GAPS 
   renorming characterization of superreflexivity.
 * `CKMA.superreflexive_iff_exists_isUniformlySmoothSeminorm`: uniformly smooth renorming
   characterization of superreflexivity.
-
-## Notation
-
-No new notation is introduced.
 -/
 
 @[expose] public section

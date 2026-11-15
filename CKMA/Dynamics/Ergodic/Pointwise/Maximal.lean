@@ -30,10 +30,6 @@ set, and the inequality passes to strictly invariant subsets.
 * `CKMA.integral_nonneg_maximalErgodicSet`: the maximal ergodic inequality on finite horizons.
 * `CKMA.setIntegral_ge_const_of_invariant_subset_positive`: lower bound for the integral over a
   strictly invariant subset of the positivity set of `f - α`.
-
-## Notation
-
-* Standard Mathlib notation for Birkhoff sums and Bochner integrals.
 -/
 
 @[expose] public section

@@ -29,10 +29,6 @@ No new definitions are introduced in this file.
   complement.
 * `CKMA.contractiveProjection_sub`: the difference of nested contractive projections is again a
   contractive projection.
-
-## Notation
-
-No new notation is introduced in this file.
 -/
 
 @[expose] public section

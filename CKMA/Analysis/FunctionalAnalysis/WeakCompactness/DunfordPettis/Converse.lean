@@ -53,10 +53,6 @@ sequence in a relatively weakly compact set.
   compact subset of `L¹` on a finite measure space is uniformly integrable.
 * `CKMA.WeakCompactness.isCompact_closure_toWeakSpace_iff_uniformIntegrable`: the Dunford–Pettis
   characterization of relative weak compactness in `L¹` on a finite measure space.
-
-## Notation
-
-* Standard Mathlib notation for `Lp` spaces, weak spaces, and symmetric differences.
 -/
 
 @[expose] public section

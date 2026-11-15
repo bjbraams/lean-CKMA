@@ -32,10 +32,6 @@ increment on that mesh.
 * `CKMA.ae_eq_of_continuous_of_nnrat`: continuous modifications that agree on nonnegative
   rationals agree everywhere almost surely.
 * `CKMA.tendsto_gridOsc`: grid oscillation of a continuous path tends to zero as `n → ∞`.
-
-## Notation
-
-No new notation is introduced.
 -/
 
 @[expose] public section

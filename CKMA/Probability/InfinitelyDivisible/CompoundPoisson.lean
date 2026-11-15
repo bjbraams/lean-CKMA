@@ -32,10 +32,6 @@ characteristic function is the exponential of `∫ (exp(I t x) - 1)`.
   of the characteristic function.
 * `CKMA.charFun_compoundPoisson`: the characteristic function of a compound Poisson law is
   `exp (∫ x, (exp (I * t * x) - 1) ∂ν)`.
-
-## Notation
-
-No new notation is introduced.
 -/
 
 @[expose] public section

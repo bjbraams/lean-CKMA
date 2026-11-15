@@ -32,10 +32,6 @@ sums.
 * `CKMA.TimePartition.sum_sq_increment_le`: sum of squared increments is at most `mesh * T`.
 * `CKMA.TimePartition.abs_t_sub_covered_le_mesh`: distance from `t` to the last completed node is
   at most the mesh.
-
-## Notation
-
-No new notation is introduced in this file.
 -/
 
 @[expose] public section

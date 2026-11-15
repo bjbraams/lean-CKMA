@@ -30,10 +30,6 @@ controls the limsup. Truncation removes the lower bound, and Scheffé's lemma gi
 * `CKMA.kingmanIntegral_subadditive`: subadditivity of the padded integral sequence.
 * `CKMA.tendsto_kingmanIntegral_div`: normalized positive-length integrals converge to their
   infimum.
-
-## Notation
-
-* Standard Mathlib notation for `EReal` and Bochner integrals.
 -/
 
 @[expose] public section

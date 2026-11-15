@@ -30,10 +30,6 @@ Sources: GAPS 37.24 and 37.30.
 * `CKMA.bv_compactness_of_compact_support`: Rellich-type `L¹` compactness for BV functions
   with common compact support.
 * `CKMA.bv_coarea`: Fleming–Rishel coarea formula for BV functions.
-
-## Notation
-
-No new notation is introduced.
 -/
 
 @[expose] public section

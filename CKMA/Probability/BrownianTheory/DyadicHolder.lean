@@ -29,10 +29,6 @@ dyadic grid of `[0, 1]`.
   decomposition.
 * `CKMA.abs_sub_le_jumps`: chaining the greedy jumps bounds a grid increment by the sum of the
   jump powers.
-
-## Notation
-
-No new notation is introduced.
 -/
 
 @[expose] public section

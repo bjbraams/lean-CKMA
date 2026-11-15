@@ -30,10 +30,6 @@ liminf and the limsup. The truncated L¹ convergence then passes to the original
 * `CKMA.kingmanLiminf_trunc`, `CKMA.kingmanLimsup_trunc`: truncation formulas for the extended
   liminf and limsup.
 * `CKMA.tendsto_integral_kingmanTrunc`: normalized integrals of truncations converge.
-
-## Notation
-
-* Standard Mathlib notation for `EReal` and Bochner integrals.
 -/
 
 @[expose] public section

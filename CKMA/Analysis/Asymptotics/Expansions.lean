@@ -43,10 +43,6 @@ Sources: GAPS 50.6, 50.9, 50.11 and 50.29.
 * `CKMA.watson_laplace_remainder`, `CKMA.watson_laplace_expansion`: Watson's lemma.
 * `CKMA.laplace_interior_minimum`: Laplace's method at an interior minimum.
 * `CKMA.karamatas_tauberian`: Karamata's Tauberian theorem.
-
-## Notation
-
-No new notation is introduced.
 -/
 
 @[expose] public section

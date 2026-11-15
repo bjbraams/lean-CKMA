@@ -30,10 +30,6 @@ converges pointwise and normally on compact subsets of `ℂ × (ℂ \ {0})`.
 * `CKMA.hasSum_bessel_generating`: the bilateral Bessel generating series identity (**49.30**).
 * `CKMA.normallySummableOn_bessel_generating`: normal convergence on compact subsets of
   `ℂ × (ℂ \ {0})`.
-
-## Notation
-
-* Standard Mathlib notation for `Complex.besselJ` and `HasSum`.
 -/
 
 @[expose] public section

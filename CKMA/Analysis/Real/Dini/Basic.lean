@@ -29,10 +29,6 @@ Limits and extended-real operations use Mathlib. Source: GAPS 05.10.
 * `CKMA.differenceQuotient_rev`: symmetry of the difference quotient.
 * `CKMA.diniQuotient_bddAbove`, `CKMA.diniQuotient_bddBelow`: `EReal` boundedness of the
   extended difference quotient under any filter.
-
-## Notation
-
-No new notation is introduced.
 -/
 
 @[expose] public section

@@ -30,10 +30,6 @@ bound on the Lebesgue constant.
   `(2 / π) log (n + 1)`.
 * `CKMA.chebyshevLebesgueCorr_zero_le`, `CKMA.chebyshevLebesgueCorr_last_le`: endpoint correction
   estimates on `(0, π / 2]`.
-
-## Notation
-
-No new notation is introduced in this file.
 -/
 
 @[expose] public section

@@ -32,10 +32,6 @@ Source: GAPS 25.47.
 
 * `CKMA.collectivelyCompact_invertible` (**25.47**): uniform invertibility of `1 - K n` and strong
   convergence of solutions under collectively compact approximation.
-
-## Notation
-
-* Standard Mathlib notation for continuous linear maps and equivalences.
 -/
 
 @[expose] public section

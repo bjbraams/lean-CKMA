@@ -32,10 +32,6 @@ to the same statement. Source: GAPS 05.10.
 * `CKMA.Dini.volume_leftSteep_eq_zero`: each uniformly left-steep set is null.
 * `CKMA.Dini.volume_infiniteUp`: `infiniteUp f` has Lebesgue measure zero.
 * `CKMA.Dini.volume_infiniteDown`: `infiniteDown f` has Lebesgue measure zero.
-
-## Notation
-
-No new notation is introduced.
 -/
 
 @[expose] public section

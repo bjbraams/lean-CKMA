@@ -48,10 +48,6 @@ integrable function is the sum of the corresponding rectangular spikes.
 * `CKMA.Bohr.measure_badCover_ge`: lower bound on the two-dimensional measure of `badCover k`.
 * `CKMA.Bohr.integrable_spike`, `CKMA.Bohr.lintegral_spike_le`: `L¹` norm bounds for the
   generation-`k` spike.
-
-## Notation
-
-* Standard Mathlib measure and Finset big-operator notation.
 -/
 
 @[expose] public section

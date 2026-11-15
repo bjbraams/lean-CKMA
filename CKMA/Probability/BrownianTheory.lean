@@ -36,10 +36,6 @@ The target statements correspond to the indicated entries of `GAPS.md`.
   local Hölder exponent below `1 / 2`.
 * `CKMA.brownian_strongMarkov`: strong Markov property for Brownian motion (**08.3**).
 * `CKMA.brownian_reflection`: reflection principle for Brownian motion (**08.4**).
-
-## Notation
-
-No new notation is introduced.
 -/
 
 @[expose] public section

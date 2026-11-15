@@ -29,10 +29,6 @@ No new public definitions are introduced in this file.
 ## Main results
 
 * `CKMA.kolmogorov_extension`: Kolmogorov extension theorem for arbitrary index sets (**06.1**).
-
-## Notation
-
-No new notation is introduced.
 -/
 
 @[expose] public section

@@ -35,10 +35,6 @@ Source: GAPS 47.17.
 ## Main results
 
 * `CKMA.korovkin_iff`: Korovkin's theorem characterizing strong convergence by three test functions.
-
-## Notation
-
-No new notation is introduced.
 -/
 
 @[expose] public section

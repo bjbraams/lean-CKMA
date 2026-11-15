@@ -30,10 +30,6 @@ additive and continuous on the sewing triangle.
 * `CKMA.YoungLoeve.tendsto_youngGrid`: uniform Young sums converge to `youngLimit`.
 * `CKMA.YoungLoeve.continuousOn_youngLimit`: `youngLimit` is continuous on `sewingTriangle a b`.
 * `CKMA.YoungLoeve.youngLimit_add`: `youngLimit` is additive on every subinterval.
-
-## Notation
-
-No new notation is introduced in this file.
 -/
 
 @[expose] public section

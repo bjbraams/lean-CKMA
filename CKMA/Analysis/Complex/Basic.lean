@@ -29,10 +29,6 @@ complex analysis and complex geometry.
 * `CKMA.NormallySummableOn.summable_norm`: normal summability on `s` implies pointwise absolute
   summability at each `x ∈ s`.
 * `CKMA.isOpen_complexUnitDisk`: `complexUnitDisk` is open.
-
-## Notation
-
-No new notation is introduced in this module.
 -/
 
 @[expose] public section

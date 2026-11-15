@@ -25,10 +25,6 @@ whose coordinate process is Brownian.
 ## Main results
 
 * `CKMA.exists_wienerMeasure`: existence of Wiener measure on `C(ℝ≥0, ℝ)`.
-
-## Notation
-
-No new notation is introduced.
 -/
 
 @[expose] public section

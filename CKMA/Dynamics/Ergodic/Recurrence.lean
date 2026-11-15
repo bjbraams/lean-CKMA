@@ -44,10 +44,6 @@ measure set, with the number of returns and averaging convention explicit.
   transformation on a standard Borel space.
 * `CKMA.furstenberg_multiple_recurrence`: Furstenberg's multiple recurrence theorem in
   positive-liminf form.
-
-## Notation
-
-No new notation is introduced in this file.
 -/
 
 @[expose] public section

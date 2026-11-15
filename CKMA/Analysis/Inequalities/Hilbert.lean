@@ -45,10 +45,6 @@ Source: GAPS 11.37.
 * `CKMA.hilbert_lintegral` (**11.37**): Hilbert's integral inequality on `(0, ∞)`.
 * `CKMA.hilbert_tsum` (**11.37**): the discrete Hilbert inequality for sequences in `ℓ^p` and
   `ℓ^q`.
-
-## Notation
-
-* Standard Mathlib notation for Lebesgue integrals, `eLpNorm`, and `ENNReal` series.
 -/
 
 @[expose] public section

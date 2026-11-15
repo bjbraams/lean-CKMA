@@ -30,10 +30,6 @@ objective. Lower semicontinuity and completeness are not used. Source: Borweinâ€
 * `CKMA.fenchelDual_le_marginalValue`: weak Fenchel duality inequality.
 * `CKMA.exists_fenchelDual_maximizer_of_qual`: Fenchelâ€“Rockafellar strong duality and dual
   attainment under a continuity qualification (GAPS 12.39).
-
-## Notation
-
-* Standard Mathlib notation is used throughout.
 -/
 
 @[expose] public section

@@ -35,10 +35,6 @@ Sources: GAPS 34.9 and 34.14.
   Kružkov entropy solutions for bounded initial data.
 * `CKMA.hopfLaxHamiltonian_viscosity` (**34.14**): the Hopf–Lax formula is finite and solves the
   Hamilton–Jacobi equation in the viscosity sense.
-
-## Notation
-
-No new notation is introduced in this file.
 -/
 
 @[expose] public section

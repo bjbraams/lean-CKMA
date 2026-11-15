@@ -47,10 +47,6 @@ Sources: GAPS 48.6 and 48.14.
   convex hull of `μ.support`.
 * `CKMA.exists_unique_gaussian_quadrature`: existence, uniqueness, positivity, and Christoffel
   weight formula for Gaussian quadrature.
-
-## Notation
-
-No new notation is introduced in this file.
 -/
 
 @[expose] public section

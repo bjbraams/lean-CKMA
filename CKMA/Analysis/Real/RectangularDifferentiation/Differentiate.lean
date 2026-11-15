@@ -37,10 +37,6 @@ those of the cutoff product.
   local `L(log⁺ L)^{d-1}` class.
 * `CKMA.ae_rectanglesDifferentiateAt_of_strongMaximal`: almost-everywhere rectangular
   differentiation for functions in `L(log⁺ L)^{d-1}_{loc}`.
-
-## Notation
-
-* Standard Mathlib measure and metric ball notation.
 -/
 
 @[expose] public section

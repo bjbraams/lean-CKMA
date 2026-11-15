@@ -28,10 +28,6 @@ omega-limit arguments without introducing a dependency on a PDE module.
 ## Main results
 
 * None.
-
-## Notation
-
-* Standard Mathlib notation for `Flow ℝ X`.
 -/
 
 @[expose] public section

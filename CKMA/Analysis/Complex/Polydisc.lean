@@ -55,10 +55,6 @@ Source: GAPS 45.2.
 * `CKMA.polydisc_taylor`: normally convergent Taylor expansion on an open polydisc.
 * `CKMA.differentiableOn_of_locallyUniformLimit`: Weierstrass theorem for locally uniform limits
   of holomorphic functions on open subsets of `ℂⁿ`.
-
-## Notation
-
-No new notation is introduced.
 -/
 
 @[expose] public section

@@ -38,10 +38,6 @@ The operator bounds are in `CKMA.Analysis.Interpolation.Bounds`.
 
 * This file provides the core definitions for real and complex interpolation; the operator bounds
   are proved in `CKMA.Analysis.Interpolation.Bounds`.
-
-## Notation
-
-* Standard Mathlib notation for `ENNReal` integrals and infima/suprema.
 -/
 
 @[expose] public section

@@ -32,10 +32,6 @@ Monotone convergence identifies the mean, and the truncated L¹ convergence pass
 * `CKMA.kingman_of_measurable`: Kingman's theorem for a measurable subadditive process.
 * `CKMA.kingman_of_integrable`: Kingman's theorem for an integrable subadditive process.
 * `CKMA.kingman_ae_tendsto_of_ergodic`: Kingman's theorem for ergodic transformations.
-
-## Notation
-
-* Standard Mathlib notation for `EReal`, `eLpNorm`, and Bochner integrals.
 -/
 
 @[expose] public section

@@ -25,10 +25,6 @@ obey the Kolmogorov moment bound with every exponent strictly above `2`.
   Gaussians.
 * `CKMA.IsPreBrownianReal.integral_abs_sub_rpow_le`: Kolmogorov moment bound for pre-Brownian
   increments.
-
-## Notation
-
-No new notation is introduced.
 -/
 
 @[expose] public section

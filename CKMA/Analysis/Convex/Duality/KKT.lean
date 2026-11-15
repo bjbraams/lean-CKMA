@@ -37,10 +37,6 @@ Sources: Boyd–Vandenberghe, *Convex Optimization*, §§5.5 and 5.9; GAPS 12.40
 
 * `CKMA.exists_convexKKTMultipliers_of_slater`: existence of subgradient KKT multipliers under
   Slater's strict feasibility condition (GAPS 12.40).
-
-## Notation
-
-* Standard Mathlib notation is used throughout.
 -/
 
 @[expose] public section

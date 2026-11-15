@@ -37,10 +37,6 @@ semigroup modules; integration uses Mathlib.
   is an integrated solution.
 * `CKMA.eqOn_integrated`: integrated solutions with the same initial datum and forcing agree
   on `[0, T]`.
-
-## Notation
-
-No new notation is introduced in this file.
 -/
 
 @[expose] public section

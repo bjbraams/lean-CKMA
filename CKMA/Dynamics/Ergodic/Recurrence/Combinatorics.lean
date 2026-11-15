@@ -34,10 +34,6 @@ arithmetic progressions in dense subsets of `{0, …, N - 1}` from Roth's theore
   quadratically many 3-term progressions.
 * `CKMA.numerous_progression_long`: Positive-density subsets of long intervals contain
   quadratically many `L`-term progressions for `L ≥ 4`.
-
-## Notation
-
-No new notation is introduced in this file.
 -/
 
 @[expose] public section

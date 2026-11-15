@@ -31,10 +31,6 @@ No new definitions are introduced in this file.
   that agree at `0` are equal everywhere.
 * `CKMA.levyTriplet_eq_of_forall_charFun_eq`: uniqueness of the Lévy triplet for a given
   characteristic function.
-
-## Notation
-
-No new notation is introduced.
 -/
 
 @[expose] public section

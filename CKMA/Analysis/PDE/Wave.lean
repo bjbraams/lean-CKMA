@@ -31,10 +31,6 @@ Sources: GAPS 32.50 and 32.52. Compact curves and Bochner integrals use Mathlib.
   solutions (**32.50**).
 * `CKMA.wave_finite_speed_of_propagation`: finite speed of propagation on backward light cones
   (**32.52**).
-
-## Notation
-
-* Standard Mathlib notation for `C(Set.Icc 0 T, E)` and interval integrals.
 -/
 
 @[expose] public section

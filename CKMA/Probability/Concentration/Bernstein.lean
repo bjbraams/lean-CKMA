@@ -25,10 +25,6 @@ No new public definitions are introduced in this file.
 
 * `CKMA.bernstein_of_bounded`: two-sided Bernstein tail bound for independent centered
   almost-everywhere bounded summands.
-
-## Notation
-
-No new notation is introduced in this file.
 -/
 
 @[expose] public section

@@ -32,10 +32,6 @@ difference, up to sign, as its characteristic function.
 * `CKMA.secondDiff_exponent`: formula for the second symmetric difference of `L.exponent`.
 * `CKMA.charFun_sineMeasure`: the characteristic function of `sineMeasure L h` is determined by
   `secondDiff L.exponent h`.
-
-## Notation
-
-No new notation is introduced.
 -/
 
 @[expose] public section

@@ -21,8 +21,4 @@ and Sobolev capacity estimates.
 ## Main results
 
 * Re-exports the cutoff API from `CKMA.Analysis.Potential.Cutoff`.
-
-## Notation
-
-No new notation is introduced in this module.
 -/

@@ -42,10 +42,6 @@ Sources: GAPS 43.1, 43.3, 43.5, 43.8, 43.21 and 43.31.
 * `CKMA.de_branges`: de Branges's theorem on the Bieberbach conjecture.
 * `CKMA.nehari_univalent`: Nehari's univalence criterion via the Schwarzian derivative.
 * `CKMA.loewner_kufarev`: Loewner–Kufarev differential equation for radial chains.
-
-## Notation
-
-No new notation is introduced.
 -/
 
 @[expose] public section

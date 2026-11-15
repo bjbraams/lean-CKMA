@@ -36,10 +36,6 @@ Source: GAPS 29.58.
   `(2 * B)⁻¹` times the sample at `k / (2 * B)`.
 * `CKMA.integral_norm_sq_remainder`: squared `L²` norm of the frequency remainder as the
   tail of Parseval's series on `AddCircle (2 * B)`.
-
-## Notation
-
-No new notation is introduced.
 -/
 
 @[expose] public section

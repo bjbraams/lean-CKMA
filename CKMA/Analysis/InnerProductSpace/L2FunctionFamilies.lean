@@ -44,10 +44,6 @@ a.e. equivalence classes, and frame energies are extended nonnegative sums over 
 * `CKMA.inner_l2FamilyVectors`: integral formula for inner products with `l2FamilyVectors`.
 * `CKMA.isL2FrameFamily_iff_isFrame`: equivalence between `IsL2FrameFamily` and `IsFrame`.
 * `CKMA.IsL2RieszBasis.isFrameFamily`: every `L²` Riesz basis is an `L²` frame family.
-
-## Notation
-
-Uses `conj` from `ComplexConjugate` and `ℝ≥0∞` from `ENNReal`.
 -/
 
 @[expose] public section

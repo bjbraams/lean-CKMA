@@ -26,10 +26,6 @@ is attained, and the function stays strictly below the maximum on the intervenin
 * `CKMA.Dini.exists_rightmostMaximum`: existence of a rightmost maximum for a continuous
   function on a compact interval.
 * `CKMA.Dini.risingSun_rightmost`: Riesz rising sun lemma for the rightmost maximum.
-
-## Notation
-
-No new notation is introduced.
 -/
 
 @[expose] public section

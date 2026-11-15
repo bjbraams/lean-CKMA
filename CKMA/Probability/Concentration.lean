@@ -38,10 +38,6 @@ normalizations are explicit at the theorem interfaces.
 * `CKMA.HasPsiTwoBound.hasSubgaussianMGF`: centered exponential square control implies
   sub-Gaussian MGF.
 * `CKMA.johnson_lindenstrauss`: Johnson–Lindenstrauss finite-set dimension reduction.
-
-## Notation
-
-No new notation is introduced in this file.
 -/
 
 @[expose] public section

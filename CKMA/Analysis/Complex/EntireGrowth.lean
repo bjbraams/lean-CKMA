@@ -38,10 +38,6 @@ Sources: GAPS 41.10, 41.26, 41.38 and 41.48.
 * `CKMA.cartwright_zero_distribution`: Cartwright's theorem on zero distribution.
 * `CKMA.logarithmic_derivative_estimate`: Nevanlinna's lemma on the logarithmic derivative.
 * `CKMA.four_value_entire`: Nevanlinna's four-value theorem for entire functions.
-
-## Notation
-
-No new notation is introduced.
 -/
 
 @[expose] public section

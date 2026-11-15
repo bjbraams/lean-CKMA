@@ -44,10 +44,6 @@ Hanson–Wright tail.
 * `CKMA.mgf_centered_sq_le`: MGF bound for a centered squared sub-Gaussian variable.
 * `CKMA.diagonalDeviation_tail`: Bernstein-type tail bound for the diagonal part of a quadratic
   form.
-
-## Notation
-
-No new notation is introduced in this file.
 -/
 
 @[expose] public section

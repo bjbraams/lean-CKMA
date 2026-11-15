@@ -40,10 +40,6 @@ without changing the limiting assertions.
 * `CKMA.law_of_the_iterated_logarithm`: Hartman–Wintner law of the iterated logarithm (**06.27**).
 * `CKMA.lindeberg_feller`: Lindeberg–Feller central limit theorem and converse (**06.34**).
 * `CKMA.berry_esseen`: Berry–Esseen theorem (**06.36**).
-
-## Notation
-
-No new notation is introduced.
 -/
 
 @[expose] public section

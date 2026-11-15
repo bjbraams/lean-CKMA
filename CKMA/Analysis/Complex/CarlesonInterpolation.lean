@@ -34,10 +34,6 @@ Sources: GAPS 42.20, 42.24, 42.26 and 42.27.
   interpolation.
 * `CKMA.nevanlinna_pick`: Nevanlinna–Pick interpolation theorem.
 * `CKMA.disk_corona`: Carleson's corona theorem on the unit disk.
-
-## Notation
-
-No new notation is introduced.
 -/
 
 @[expose] public section
@@ -81,7 +77,8 @@ def IsHardyInterpolatingSequence (a : ℕ → ℂ) : Prop :=
       diskSupGauge f ≤ ENNReal.ofReal C ∧ ∀ n, f (a n) = b n
 
 /-- **42.24**: Carleson's uniform separation criterion. -/
-theorem carleson_interpolation_iff (a : ℕ → ℂ) :
+theorem carleson_interpolation_iff (a : ℕ → ℂ) (ha : ∀ n, a n ∈ complexUnitDisk)
+    (hinj : Function.Injective a) :
     IsHardyInterpolatingSequence a ↔ ∃ δ : ℝ, 0 < δ ∧ ∀ j, δ ≤ diskSeparationProduct a j := by
   sorry
 

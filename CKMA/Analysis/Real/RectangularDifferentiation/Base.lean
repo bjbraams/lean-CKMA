@@ -39,10 +39,6 @@ half-scaled growth of order `n` with the growth of order `n + 1`.
   uncentered maximal function.
 * `CKMA.strongMaximalGrowth_integral_le`: Fubini–layer-cake kernel inequality relating growth of
   order `n` and order `n + 1`.
-
-## Notation
-
-* Standard Mathlib notation for `volume`, `∫⁻`, and `ℝ≥0∞`.
 -/
 
 @[expose] public section

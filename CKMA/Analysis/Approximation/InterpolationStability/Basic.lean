@@ -45,10 +45,6 @@ and its supremum is the Lebesgue constant. Chebyshev extrema are the nodes
 * `CKMA.abs_derivative_chebyshevExtremalNodal`: absolute derivative of the nodal polynomial at
   each Chebyshev extremal node.
 * `CKMA.lebesgueFunction_chebyshev_node`: the Lebesgue function equals `1` at each extremal node.
-
-## Notation
-
-No new notation is introduced in this file.
 -/
 
 @[expose] public section

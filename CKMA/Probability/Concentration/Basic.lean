@@ -32,10 +32,6 @@ Basic predicates and equivalence estimates for sub-Gaussian real random variable
 * `CKMA.hasPsiTwoBound_of_hasGaussianMoments`: moment growth implies exponential square bound.
 * `CKMA.hasSubgaussianMGF_of_hasPsiTwoBound`: centered exponential square bound implies
   sub-Gaussian MGF.
-
-## Notation
-
-No new notation is introduced in this file.
 -/
 
 @[expose] public section

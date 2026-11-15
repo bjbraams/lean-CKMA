@@ -26,10 +26,6 @@ No new definitions are introduced in this file.
   sequence.
 * `CKMA.abs_sub_dyadicFloor_lim`: limits of dyadic floors are Hölder with the summed dyadic
   constant.
-
-## Notation
-
-No new notation is introduced.
 -/
 
 @[expose] public section

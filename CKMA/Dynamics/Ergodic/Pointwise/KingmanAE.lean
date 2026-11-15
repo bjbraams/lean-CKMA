@@ -33,10 +33,6 @@ limsup.
 * `CKMA.tendsto_comp_iterate_div`: an integrable observable divided by `n` vanishes along orbits.
 * `CKMA.kingmanLiminfReal_integrable_le`: Fatou bound on the integrable liminf.
 * `CKMA.kingmanLiminfReal_ae_invariant`: almost-everywhere invariance of the real liminf.
-
-## Notation
-
-* Standard Mathlib notation for `EReal` and Bochner/Lebesgue integrals.
 -/
 
 @[expose] public section

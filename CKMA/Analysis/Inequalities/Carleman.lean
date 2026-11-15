@@ -37,10 +37,6 @@ Source: GAPS 11.38.
 * `CKMA.carleman_tsum_le` (**11.38**): Carleman's inequality with constant `Real.exp 1`.
 * `CKMA.carleman_constant_optimal` (**11.38**): optimality of the constant `Real.exp 1` over
   finitely supported nonnegative sequences.
-
-## Notation
-
-* Standard Mathlib notation for finite products, sums, and factorials.
 -/
 
 @[expose] public section

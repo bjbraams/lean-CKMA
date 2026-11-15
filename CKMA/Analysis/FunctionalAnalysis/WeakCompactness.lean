@@ -39,10 +39,6 @@ which includes a uniform L1 bound. Sources: GAPS 15.28, 15.29, 15.33, and 17.23.
 * `CKMA.uniformConvexSpace_lp`: uniform convexity of `Lp 𝕜 p μ` for `1 < p < ∞` (**15.33**).
 * `CKMA.dunford_pettis`: Dunford–Pettis characterization of relative weak compactness in `L¹`
   (**17.23**).
-
-## Notation
-
-Uses `∞` from `ENNReal`.
 -/
 
 @[expose] public section

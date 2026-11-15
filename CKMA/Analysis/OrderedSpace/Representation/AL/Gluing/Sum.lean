@@ -30,10 +30,6 @@ vector meets only countably many bands, and the norm series forces the rest to v
 * `CKMA.alRep_sup`: `alRep` preserves binary suprema.
 * `CKMA.exists_al_representation`: Kakutani representation of a general complete AL-space as
   `L¹(μ)`.
-
-## Notation
-
-No new notation is introduced in this file.
 -/
 
 @[expose] public section

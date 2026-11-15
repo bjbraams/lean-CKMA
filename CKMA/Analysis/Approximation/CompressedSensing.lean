@@ -30,10 +30,6 @@ Source: GAPS 29.68.
 
 * `CKMA.isCoordinateSparse_zero`: the zero vector is sparse at every order.
 * `CKMA.restricted_isometry_stable_recovery`: stable basis-pursuit recovery below `√2 - 1`.
-
-## Notation
-
-No new notation is introduced.
 -/
 
 @[expose] public section

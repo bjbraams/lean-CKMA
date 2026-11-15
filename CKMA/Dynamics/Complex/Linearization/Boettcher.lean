@@ -30,10 +30,6 @@ and `c ^ (k - 1) = g 0`.
   compatible leading coefficient.
 * `CKMA.boettcherCoordinate_eq_mul_unity`: uniqueness of Böttcher coordinates up to a `(k - 1)`st
   root of unity.
-
-## Notation
-
-* Standard Mathlib complex analysis notation.
 -/
 
 @[expose] public section

@@ -41,10 +41,6 @@ energy is TauCeti's existing construction.
 * `CKMA.existsUnique_integralOperator` (**25.3**): an `L²(μ ⊗ μ)` kernel defines a unique bounded
   integral operator on `L²(μ)` whose Hilbert–Schmidt energy equals the squared `L²` norm of the
   kernel and whose adjoint has the conjugate-transposed kernel.
-
-## Notation
-
-* Standard Mathlib and TauCeti notation for `Lp`, `HilbertBasis`, and `hilbertSchmidtEnergy`.
 -/
 
 @[expose] public section

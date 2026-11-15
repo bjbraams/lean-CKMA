@@ -33,10 +33,6 @@ Sources: GAPS 33.9, 33.14–33.16, 33.18 and 33.34.
 * `CKMA.interior_hessian_Lp` (**33.18**): interior Calderón–Zygmund `W^{2,p}` estimate.
 * `CKMA.weakPHarmonic_regular` (**33.34**): local `C^{1,α}` regularity and Harnack inequality for
   weak `p`-harmonic functions.
-
-## Notation
-
-No new notation is introduced in this file.
 -/
 
 @[expose] public section

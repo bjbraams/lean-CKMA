@@ -38,10 +38,6 @@ for bounded variables and a continuous normalized functional. Sources: GAPS 23.6
 * `CKMA.free_central_limit`: free central limit theorem in moments (**23.65**).
 * `CKMA.freeCumulants_add`: additivity of free cumulants for free variables (**23.68**).
 * `CKMA.freeRTransform_add`: analytic R-transform additivity on a common disk of convergence.
-
-## Notation
-
-No new notation is introduced in this module.
 -/
 
 @[expose] public section

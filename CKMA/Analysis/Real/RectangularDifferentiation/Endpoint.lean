@@ -33,10 +33,6 @@ of the logarithmic iteration kernel raise the Orlicz exponent by one.
 * `CKMA.measurable_partialStrongMax`: measurability of the slice strong maximal function.
 * `CKMA.strongMaximalFunction_le_slice`: pointwise domination of the `(n + 1)`-dimensional strong
   maximal function by the iterated maximal operator.
-
-## Notation
-
-* Standard Mathlib product measure and extended integral notation.
 -/
 
 @[expose] public section

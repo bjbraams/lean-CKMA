@@ -53,10 +53,6 @@ the Riesz measure of a positive extension is the representing measure.
 
 * `CKMA.exists_choquetMeasure_of_compact`: Choquet representation theorem on compact metrizable
   convex sets (GAPS 12.9).
-
-## Notation
-
-* Standard Mathlib notation is used throughout.
 -/
 
 @[expose] public section

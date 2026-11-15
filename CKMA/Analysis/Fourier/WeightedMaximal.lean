@@ -44,10 +44,6 @@ Source: GAPS 27.44.
 * `CKMA.weighted_maximal_iff`: Muckenhoupt characterization of weighted `Lᵖ` maximal boundedness
   (**27.44**).
 * `CKMA.weighted_maximal_weakType`: weighted weak `(1, 1)` maximal inequality for `A_1` weights.
-
-## Notation
-
-Uses `ℝ≥0∞` (`∞`) from `ENNReal`.
 -/
 
 @[expose] public section
@@ -678,7 +674,8 @@ end Aux
 
 /-- **27.44**: boundedness of the actual maximal operator on weighted Lp characterizes A_p. -/
 theorem weighted_maximal_iff {d : ℕ} {p : ℝ} (hp : 1 < p)
-    {w : EuclideanSpace ℝ (Fin d) → ℝ} :
+    {w : EuclideanSpace ℝ (Fin d) → ℝ} (hm : Measurable w)
+    (hpos : ∀ᵐ x ∂volume, 0 < w x) (hloc : LocallyIntegrable w volume) :
     IsMuckenhouptWeight p w ↔ ∃ C : ℝ≥0∞, C ≠ ∞ ∧
       ∀ f : EuclideanSpace ℝ (Fin d) → ℂ,
         MemLp f (ENNReal.ofReal p) (weightedLebesgueMeasure w) →
@@ -689,9 +686,6 @@ theorem weighted_maximal_iff {d : ℕ} {p : ℝ} (hp : 1 < p)
     sorry
   · intro h
     obtain ⟨C, hC, hbound⟩ := h
-    have hm : Measurable w := sorry
-    have hpos : ∀ᵐ x ∂volume, 0 < w x := sorry
-    have hloc : LocallyIntegrable w volume := sorry
     refine ⟨hp, hm, hpos, hloc, ?_⟩
     have hchar : muckenhouptCharacteristic p w ≤ C * ((2 : ℝ≥0∞) ^ d) ^ p := by
       unfold muckenhouptCharacteristic

@@ -26,10 +26,6 @@ No new public definitions are introduced in this file.
   Lebesgue function on `[-1, 1]`.
 * `CKMA.chebyshev_lebesgueConstant_upper_bound`: upper bound `(2 / π) log (n + 1) + C` for the
   Chebyshev-extrema Lebesgue constant.
-
-## Notation
-
-No new notation is introduced in this file.
 -/
 
 @[expose] public section
