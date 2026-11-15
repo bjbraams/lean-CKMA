@@ -61,7 +61,6 @@ theorem sewing_lemma {E : Type*} [NormedAddCommGroup E] [CompleteSpace E]
     {a b γ C : ℝ} (hab : a ≤ b) (hγ : 1 < γ) (hC : 0 ≤ C) (A : ℝ → ℝ → E)
     (hcont : ContinuousOn (fun p : ℝ × ℝ ↦ A p.1 p.2)
       {p | a ≤ p.1 ∧ p.1 ≤ p.2 ∧ p.2 ≤ b})
-    (hdiag : ∀ s ∈ Set.Icc a b, A s s = 0)
     (hdefect : ∀ s u t : ℝ, a ≤ s → s ≤ u → u ≤ t → t ≤ b →
       ‖A s t - A s u - A u t‖ ≤ C * |t - s| ^ γ) :
     ∃! I : C(Set.Icc a b, E), IsLeftNormalized I ∧
@@ -74,7 +73,7 @@ theorem sewing_lemma {E : Type*} [NormedAddCommGroup E] [CompleteSpace E]
       (continuous_const.prodMk continuous_subtype_val) fun x => ⟨le_rfl, x.2.1, x.2.2⟩⟩
   have hinc : ∀ {s t : Set.Icc a b}, s.val ≤ t.val → I t - I s = Z s.val t.val := by
     intro s t hst
-    have hadd := Sewing.sewnIncrement_add hab hγ hC hcontT hdiag hdefect le_rfl
+    have hadd := Sewing.sewnIncrement_add hab hγ hC hcontT hdefect le_rfl
       s.2.1 hst t.2.2
     have hIt : I t = Z a t.val := rfl
     have hIs : I s = Z a s.val := rfl
@@ -87,18 +86,19 @@ theorem sewing_lemma {E : Type*} [NormedAddCommGroup E] [CompleteSpace E]
     intro x hx
     change Z a x.val = 0
     rw [hx]
-    exact Sewing.sewnIncrement_same hdiag le_rfl hab
+    exact Sewing.sewnIncrement_same
+      (Sewing.apply_self_eq_zero_of_defect (zero_lt_one.trans hγ) hdefect) le_rfl hab
   have hrem : HasSewingRemainder A I γ (sewingConstant γ * C) := by
     intro s t hst
     rw [hinc hst]
-    exact Sewing.norm_sewnIncrement_sub hγ hC hdefect s.2.1 hst t.2.2
+    exact Sewing.norm_sewnIncrement_sub hγ hdefect s.2.1 hst t.2.2
   have hlim : HasPartitionSumLimit A I := by
     intro s t hst ε hε
     let L := sewingConstant γ * C * (t.val - s.val)
     by_cases hL0 : L = 0
     · refine ⟨1, one_pos, fun π _ => ?_⟩
       rw [hinc hst]
-      refine lt_of_le_of_lt (Sewing.norm_partition_sub hab hγ hC hcontT hdiag hdefect
+      refine lt_of_le_of_lt (Sewing.norm_partition_sub hab hγ hC hcontT hdefect
         s.2.1 t.2.2 π) ?_
       rw [show sewingConstant γ * C * (π.mesh : ℝ) ^ (γ - 1) * (t.val - s.val) = 0 by
         rw [show sewingConstant γ * C * (π.mesh : ℝ) ^ (γ - 1) * (t.val - s.val) =
@@ -110,7 +110,7 @@ theorem sewing_lemma {E : Type*} [NormedAddCommGroup E] [CompleteSpace E]
       refine ⟨(ε / L) ^ (γ - 1)⁻¹, Real.rpow_pos_of_pos (div_pos hε hLpos) _,
         fun π hmesh => ?_⟩
       rw [hinc hst]
-      refine lt_of_le_of_lt (Sewing.norm_partition_sub hab hγ hC hcontT hdiag hdefect
+      refine lt_of_le_of_lt (Sewing.norm_partition_sub hab hγ hC hcontT hdefect
         s.2.1 t.2.2 π) ?_
       have hγ1 : 0 < γ - 1 := sub_pos.mpr hγ
       have hpow : (π.mesh : ℝ) ^ (γ - 1) < ε / L := by
@@ -165,9 +165,6 @@ theorem young_holder {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   have hcont : ContinuousOn (fun p : ℝ × ℝ => A p.1 p.2)
       {p | a ≤ p.1 ∧ p.1 ≤ p.2 ∧ p.2 ≤ b} := by
     simpa [sewingTriangle] using hcontA
-  have hdiag : ∀ s ∈ Set.Icc a b, A s s = 0 := by
-    intro s _
-    simp [A, youngIncrement, map_zero]
   have hdefect : ∀ s u t : ℝ, a ≤ s → s ≤ u → u ≤ t → t ≤ b →
       ‖A s t - A s u - A u t‖ ≤ (Hx : ℝ) * Hy * |t - s| ^ (↑(α + β) : ℝ) := by
     intro s u t hs hsu hut ht
@@ -220,14 +217,16 @@ theorem young_holder {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
           rw [← Real.rpow_add hpos]
         _ = (Hx : ℝ) * Hy * |t - s| ^ (↑(α + β) : ℝ) := by
           rw [add_comm (β : ℝ), ← NNReal.coe_add]
-  rcases sewing_lemma hab hγ hC A hcont hdiag hdefect with ⟨I, hI, huniq⟩
+  rcases sewing_lemma hab hγ hC A hcont hdefect with ⟨I, hI, huniq⟩
   rcases hI with ⟨hleft, hrem, hlim⟩
   refine ⟨I, ⟨⟨hleft, hlim, ?_⟩, ?_⟩⟩
   · simpa [mul_assoc, A] using hrem
   · intro J hJ
     exact huniq J ⟨hJ.1, by simpa [mul_assoc, A] using hJ.2.2, hJ.2.1⟩
 
-/-- Young integration for continuous paths of complementary finite variation exponents. -/
+/-- **09.21**, variation form: Young integration for continuous paths of complementary finite
+variation exponents, with the Young–Loeve remainder `sewingConstant (p⁻¹ + q⁻¹)` times the
+product of the variation moduli. -/
 theorem young_variation {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F]
     {a b p q : ℝ} (hab : a ≤ b) (hp : 1 ≤ p) (hq : 1 ≤ q) (hpq : 1 < p⁻¹ + q⁻¹)
@@ -241,6 +240,45 @@ theorem young_variation {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
           sewingConstant (p⁻¹ + q⁻¹) *
             (pathVariationPower p X s.val t.val).toReal ^ p⁻¹ *
             (pathVariationPower q Y s.val t.val).toReal ^ q⁻¹ := by
-  exact YoungLoeve.young_integral hab hp hq hpq X Y hX hY hVp hVq
+  let D : YoungLoeve.YoungData E F := ⟨a, b, p, q, hab, hp, hq, hpq, X, Y, hX, hY, hVp, hVq⟩
+  let g : Set.Icc a b → ℝ × ℝ := fun x => (a, x.val)
+  have hg : Continuous g := continuous_const.prodMk continuous_subtype_val
+  have hcomp : Continuous ((fun z : ℝ × ℝ => D.youngLimit z.1 z.2) ∘ g) :=
+    D.continuousOn_youngLimit.comp_continuous hg fun x => ⟨le_rfl, x.2.1, x.2.2⟩
+  let I : C(Set.Icc a b, F) := ⟨fun x => D.youngLimit a x.val, hcomp⟩
+  have hinc : ∀ {s t : Set.Icc a b}, s.val ≤ t.val →
+      I t - I s = D.youngLimit s.val t.val := by
+    intro s t hst
+    have hadd : D.youngLimit a t.val = D.youngLimit a s.val + D.youngLimit s.val t.val :=
+      D.youngLimit_add le_rfl s.2.1 hst t.2.2
+    change D.youngLimit a t.val - D.youngLimit a s.val = D.youngLimit s.val t.val
+    rw [hadd]
+    abel
+  have hleft : IsLeftNormalized I := by
+    intro x hx
+    change D.youngLimit a x.val = 0
+    rw [hx]
+    exact D.youngLimit_same le_rfl hab
+  have hlim : HasPartitionSumLimit (youngIncrement X Y) I := by
+    intro s t hst ε hε
+    obtain ⟨δ, hδ, hδπ⟩ := D.exists_partition_close s.2.1 t.2.2 ε hε
+    refine ⟨δ, hδ, fun π hmesh => ?_⟩
+    rw [hinc hst]
+    exact hδπ π hmesh
+  refine ⟨I, ⟨⟨hleft, hlim, ?_⟩, ?_⟩⟩
+  · intro s t hst
+    rw [hinc hst]
+    exact D.norm_youngLimit_sharp s.2.1 hst t.2.2
+  · intro J hJ
+    apply ContinuousMap.ext
+    intro x
+    let a0 : Set.Icc a b := ⟨a, ⟨le_rfl, hab⟩⟩
+    have hI0 := hleft a0 rfl
+    have hJ0 := hJ.1 a0 rfl
+    have hEq := Sewing.partitionLimit_unique x.2.1 (hlim a0 x x.2.1) (hJ.2.1 a0 x x.2.1)
+    simpa [hI0, hJ0] using hEq.symm
+
+@[deprecated young_variation (since := "2026-11-15")]
+alias YoungLoeve.young_integral := young_variation
 
 end CKMA

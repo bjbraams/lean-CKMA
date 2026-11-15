@@ -44,7 +44,7 @@ theorem transverse_monotone {φ : Flow ℝ ℂ} {F : ℂ → ℂ} (hgen : FlowHa
 
 /-- An orbit clustering at an interior segment point crosses the segment at arbitrarily
 large times, with the crossing kept inside a prescribed distance of that point. -/
-theorem exists_late_crossing {φ : Flow ℝ ℂ} {F : ℂ → ℂ} (hgen : FlowHasGenerator φ F)
+private theorem exists_late_crossing {φ : Flow ℝ ℂ} {F : ℂ → ℂ} (hgen : FlowHasGenerator φ F)
     {a b : ℂ} (htr : IsTransverseSegment F a b) {p : ℂ} (hp : p ∈ openSegment ℝ a b)
     {x : ℂ} (hcluster : MapClusterPt p atTop fun t ↦ φ t x) {ε : ℝ} (hε : 0 < ε)
     (T : ℝ) : ∃ t : ℝ, T < t ∧ dist (φ t x) p < ε ∧ φ t x ∈ openSegment ℝ a b := by
@@ -182,7 +182,7 @@ theorem omega_openSegment_singleton {φ : Flow ℝ ℂ} {F : ℂ → ℂ}
 
 /-- A periodic orbit contained in a critical-point-free compact omega-limit set is
 the whole omega-limit set. -/
-theorem periodic_orbit_eq_omega {φ : Flow ℝ ℂ} {F : ℂ → ℂ} (hF : ContDiff ℝ 1 F)
+private theorem periodic_orbit_eq_omega {φ : Flow ℝ ℂ} {F : ℂ → ℂ} (hF : ContDiff ℝ 1 F)
     (hgen : FlowHasGenerator φ F) {x : ℂ} {K : Set ℂ} (hK : IsCompact K)
     (hstay : ∀ t : ℝ, 0 ≤ t → φ t x ∈ K)
     (hrest : ∀ y ∈ omegaLimit atTop φ {x}, F y ≠ 0) {y : ℂ} {T : ℝ}

@@ -61,7 +61,7 @@ def kingmanLimsup (f : ℕ → Ω → ℝ) (ω : Ω) : EReal :=
   limsup (fun n => (kingmanRatio f n ω : EReal)) atTop
 
 /-- Tail measures of an integrable nonnegative function are summable. -/
-lemma tsum_meas_ge_lt_top [IsProbabilityMeasure μ] {g : Ω → ℝ} (hg : Integrable g μ)
+private lemma tsum_meas_ge_lt_top [IsProbabilityMeasure μ] {g : Ω → ℝ} (hg : Integrable g μ)
     (hg0 : ∀ ω, 0 ≤ g ω) (hg_meas : Measurable g) :
     (∑' n : ℕ, μ {ω | (n : ℝ) ≤ g ω}) < ⊤ := by
   let φ : ℝ → ℝ := fun t => μ.real {ω | t ≤ g ω}
@@ -223,7 +223,7 @@ lemma measurable_kingmanLiminf {f : ℕ → Ω → ℝ}
   exact (measurable_kingmanRatio (hf (n + 1) (Nat.succ_pos n))).coe_real_ereal
 
 /-- Along almost every orbit the liminf does not increase under `T`. -/
-lemma kingmanLiminf_le_comp {f : ℕ → Ω → ℝ} {C : ℝ}
+private lemma kingmanLiminf_le_comp {f : ℕ → Ω → ℝ} {C : ℝ}
     (hsub : ∀ n m : ℕ, 0 < n → 0 < m → ∀ᵐ ω ∂μ,
       f (n + m) ω ≤ f n ω + f m ((T^[n]) ω))
     (hC : ∀ n : ℕ, 0 < n → ∀ ω, -C * (n : ℝ) ≤ f n ω) :
@@ -379,7 +379,7 @@ lemma tendsto_integral_kingmanShift [IsProbabilityMeasure μ] (hT : MeasurePrese
   exact (hdiv.add tendsto_const_nhds).congr fun n => (hint n).symm
 
 /-- `ENNReal.ofReal` preserves a constant shift of an extended liminf. -/
-lemma liminf_ofReal_add_const {z : ℕ → ℝ} {C : ℝ} :
+private lemma liminf_ofReal_add_const {z : ℕ → ℝ} {C : ℝ} :
     liminf (fun n => ENNReal.ofReal (z n + C)) atTop =
       (liminf (fun n => (z n : EReal)) atTop + (C : EReal)).toENNReal := by
   have hadd := liminf_add_tendsto (u := fun n => (z n : EReal))

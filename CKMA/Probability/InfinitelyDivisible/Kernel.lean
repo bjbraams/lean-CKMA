@@ -21,23 +21,25 @@ its integral recovers `n` times one minus the root characteristic function, up t
 
 ## Main definitions
 
-* `CKMA.quadTrunc`: quadratic weight `min(1, x²)`.
-* `CKMA.contTrunc`: continuous cutoff function equal to `x` on `[-1/2, 1/2]` and `0` on `|x| ≥ 1`.
-* `CKMA.levyKernel`: bounded continuous Lévy kernel at frequency `t`.
-* `CKMA.quadWeighted`: the measure `n • min(1, x²) ν`.
-* `CKMA.contDrift`: compensating drift associated to `contTrunc`.
+All declarations are in the namespace `CKMA.InfinitelyDivisible`.
+
+* `quadTrunc`: quadratic weight `min(1, x²)`.
+* `contTrunc`: continuous cutoff function equal to `x` on `[-1/2, 1/2]` and `0` on `|x| ≥ 1`.
+* `levyKernel`: bounded continuous Lévy kernel at frequency `t`.
+* `quadWeighted`: the measure `n • min(1, x²) ν`.
+* `contDrift`: compensating drift associated to `contTrunc`.
 
 ## Main results
 
-* `CKMA.nat_mul_charFun_sub_one_eq`: `n * (charFun ν t - 1)` equals the integral of `levyKernel t`
-  against the quadratically weighted measure plus `I * t * contDrift n ν`.
+* `natCast_mul_charFun_sub_one_eq`: `n * (charFun ν t - 1)` equals the integral of
+  `levyKernel t` against the quadratically weighted measure plus `I * t * contDrift n ν`.
 -/
 
 @[expose] public section
 
 noncomputable section
 
-namespace CKMA
+namespace CKMA.InfinitelyDivisible
 
 open MeasureTheory Complex Filter Topology Finset
 open scoped NNReal ENNReal BoundedContinuousFunction
@@ -64,7 +66,7 @@ lemma quadTrunc_eq_zero_iff {x : ℝ} : quadTrunc x = 0 ↔ x = 0 := by
     simp
 
 /-- On `{|x| ≤ 1}` the quadratic weight equals `x²`. -/
-lemma quadTrunc_eq_sq_of_abs_le_one {x : ℝ} (hx : |x| ≤ 1) : quadTrunc x = x ^ 2 := by
+private lemma quadTrunc_eq_sq_of_abs_le_one {x : ℝ} (hx : |x| ≤ 1) : quadTrunc x = x ^ 2 := by
   have : x ^ 2 ≤ 1 := by
     rw [← sq_abs]
     exact pow_le_one₀ (abs_nonneg _) hx
@@ -78,11 +80,6 @@ def contTrunc (x : ℝ) : ℝ := x * max 0 (min 1 (2 - 2 * |x|))
 lemma continuous_contTrunc : Continuous contTrunc := by
   unfold contTrunc
   fun_prop
-
-/-- The cutoff factor lies in the unit interval. -/
-lemma contTrunc_factor_bounds (x : ℝ) :
-    0 ≤ max 0 (min 1 (2 - 2 * |x|)) ∧ max 0 (min 1 (2 - 2 * |x|)) ≤ 1 :=
-  ⟨le_max_left _ _, max_le (by norm_num) (min_le_left _ _)⟩
 
 /-- The continuous cutoff is bounded by one. -/
 lemma abs_contTrunc_le_one (x : ℝ) : |contTrunc x| ≤ 1 := by
@@ -107,7 +104,7 @@ lemma contTrunc_eq_zero_of_one_le_abs {x : ℝ} (hx : 1 ≤ |x|) : contTrunc x =
   simp [contTrunc, min_eq_right (this.trans zero_le_one), max_eq_left this]
 
 /-- On the unit interval the cutoff differs from the identity by at most one. -/
-lemma abs_sub_contTrunc_le_of_abs_le_one {x : ℝ} (hx : |x| ≤ 1) :
+private lemma abs_sub_contTrunc_le_of_abs_le_one {x : ℝ} (hx : |x| ≤ 1) :
     |x - contTrunc x| ≤ 1 := by
   by_cases hhalf : |x| ≤ 1 / 2
   · simp [contTrunc_eq_id_of_abs_le_half hhalf]
@@ -131,7 +128,7 @@ def levyKernel (t x : ℝ) : ℂ :=
   if x = 0 then -((t : ℂ) ^ 2) / 2 else contIntegrand t x / ↑(quadTrunc x)
 
 /-- Second-order Taylor remainder of the complex exponential. -/
-lemma norm_exp_sub_taylor2_le (y : ℂ) :
+private lemma norm_exp_sub_taylor2_le (y : ℂ) :
     ‖exp y - 1 - y - y ^ 2 / 2‖ ≤ ‖y‖ ^ 3 * Real.exp ‖y‖ := by
   have h := norm_exp_sub_sum_le_norm_mul_exp y 3
   have hs : ∑ m ∈ range 3, y ^ m / (m.factorial : ℂ) = 1 + y + y ^ 2 / 2 := by
@@ -144,7 +141,7 @@ lemma norm_exp_sub_taylor2_le (y : ℂ) :
   exact heq.trans_le h
 
 /-- First-order remainder of the complex exponential. -/
-lemma norm_exp_sub_one_sub_le (y : ℂ) :
+private lemma norm_exp_sub_one_sub_le (y : ℂ) :
     ‖exp y - 1 - y‖ ≤ ‖y‖ ^ 2 * Real.exp ‖y‖ := by
   have h := norm_exp_sub_sum_le_norm_mul_exp y 2
   have hs : ∑ m ∈ range 2, y ^ m / (m.factorial : ℂ) = 1 + y := by
@@ -156,11 +153,11 @@ lemma norm_exp_sub_one_sub_le (y : ℂ) :
   exact heq.trans_le h
 
 /-- `(exp y - 1 - y) / y²`, with value `1/2` at the origin. -/
-def expTaylorQuotient (y : ℂ) : ℂ :=
+private def expTaylorQuotient (y : ℂ) : ℂ :=
   if y = 0 then 1 / 2 else (exp y - 1 - y) / y ^ 2
 
 /-- The normalized remainder tends to `1/2`. -/
-lemma tendsto_expTaylorQuotient :
+private lemma tendsto_expTaylorQuotient :
     Tendsto expTaylorQuotient (𝓝 (0 : ℂ)) (𝓝 ((1 : ℂ) / 2)) := by
   have hnorm : ∀ y, ‖expTaylorQuotient y - 1 / 2‖ ≤ ‖y‖ * Real.exp ‖y‖ := by
     intro y
@@ -195,7 +192,7 @@ lemma tendsto_expTaylorQuotient :
   exact hadd
 
 /-- Near the origin the kernel is the second-order Taylor quotient of `exp`. -/
-lemma levyKernel_eq_taylor_of_abs_le_half {t x : ℝ} (hx : |x| ≤ 1 / 2) :
+private lemma levyKernel_eq_taylor_of_abs_le_half {t x : ℝ} (hx : |x| ≤ 1 / 2) :
     levyKernel t x = expTaylorQuotient (I * ↑t * ↑x) * (I * ↑t) ^ 2 := by
   by_cases hx0 : x = 0
   · simp only [levyKernel, expTaylorQuotient, hx0, Complex.ofReal_zero, mul_zero]
@@ -402,7 +399,7 @@ lemma continuous_quadTrunc : Continuous quadTrunc := by
   fun_prop
 
 /-- The frequency exponential is integrable on a finite measure. -/
-lemma integrable_exp_frequency {ν : Measure ℝ} [IsFiniteMeasure ν] (t : ℝ) :
+private lemma integrable_exp_frequency {ν : Measure ℝ} [IsFiniteMeasure ν] (t : ℝ) :
     Integrable (fun x : ℝ => exp (I * ↑t * ↑x)) ν := by
   refine (integrable_const (1 : ℝ)).mono'
     (by fun_prop : Continuous fun x : ℝ => exp (I * ↑t * ↑x)).aestronglyMeasurable ?_
@@ -412,15 +409,8 @@ lemma integrable_exp_frequency {ν : Measure ℝ} [IsFiniteMeasure ν] (t : ℝ)
     simp [mul_assoc]
   exact le_of_eq this
 
-/-- The continuous cutoff is integrable on a finite measure. -/
-lemma integrable_contTrunc {ν : Measure ℝ} [IsFiniteMeasure ν] :
-    Integrable contTrunc ν := by
-  refine (integrable_const (1 : ℝ)).mono' continuous_contTrunc.aestronglyMeasurable ?_
-  refine ae_of_all _ fun x => ?_
-  simpa [Real.norm_eq_abs] using abs_contTrunc_le_one x
-
 /-- `(I t)` times the continuous cutoff is integrable on a finite measure. -/
-lemma integrable_contCompensator {ν : Measure ℝ} [IsFiniteMeasure ν] (t : ℝ) :
+private lemma integrable_contCompensator {ν : Measure ℝ} [IsFiniteMeasure ν] (t : ℝ) :
     Integrable (fun x : ℝ => (I * ↑t) * ↑(contTrunc x)) ν := by
   have hmeas : AEStronglyMeasurable (fun x : ℝ => (I * ↑t) * ↑(contTrunc x)) ν := by
     fun_prop
@@ -431,18 +421,8 @@ lemma integrable_contCompensator {ν : Measure ℝ} [IsFiniteMeasure ν] (t : �
   have habs : 0 ≤ |t| := abs_nonneg t
   nlinarith [habs, abs_contTrunc_le_one x]
 
-/-- The continuous compensator is integrable on a finite measure. -/
-lemma integrable_contIntegrand {ν : Measure ℝ} [IsFiniteMeasure ν] (t : ℝ) :
-    Integrable (contIntegrand t) ν := by
-  have hsub : contIntegrand t = fun x : ℝ =>
-      (exp (I * ↑t * ↑x) - 1) - (I * ↑t) * ↑(contTrunc x) := by
-    ext x
-    simp [contIntegrand]
-  rw [hsub]
-  exact (integrable_exp_frequency t).sub (integrable_const _) |>.sub (integrable_contCompensator t)
-
 /-- Integrating the continuous compensator recovers the characteristic function. -/
-lemma integral_contIntegrand {ν : Measure ℝ} [IsProbabilityMeasure ν] (t : ℝ) :
+private lemma integral_contIntegrand {ν : Measure ℝ} [IsProbabilityMeasure ν] (t : ℝ) :
     ∫ x, contIntegrand t x ∂ν =
       charFun ν t - 1 - I * ↑t * ↑(∫ x, contTrunc x ∂ν) := by
   have hchar : charFun ν t = ∫ x, exp (I * ↑t * ↑x) ∂ν := by
@@ -484,7 +464,7 @@ def contDrift (n : ℕ) (ν : Measure ℝ) : ℝ :=
   (n : ℝ) * ∫ x, contTrunc x ∂ν
 
 /-- The kernel integral against the weighted law is `n` times the compensator. -/
-lemma integral_levyKernel_quadWeighted {ν : Measure ℝ} [IsProbabilityMeasure ν] (n : ℕ)
+private lemma integral_levyKernel_quadWeighted {ν : Measure ℝ} [IsProbabilityMeasure ν] (n : ℕ)
     (t : ℝ) :
     ∫ x, levyKernel t x ∂quadWeighted n ν =
       (n : ℂ) * ∫ x, contIntegrand t x ∂ν := by
@@ -505,7 +485,7 @@ lemma integral_levyKernel_quadWeighted {ν : Measure ℝ} [IsProbabilityMeasure 
   exact congrArg (fun w : ℂ => w * ∫ x, contIntegrand t x ∂ν) (Complex.ofReal_natCast n)
 
 /-- `n` times one minus a root characteristic function splits into kernel and drift. -/
-lemma nat_mul_charFun_sub_one_eq {ν : Measure ℝ} [IsProbabilityMeasure ν] (n : ℕ) (t : ℝ) :
+lemma natCast_mul_charFun_sub_one_eq {ν : Measure ℝ} [IsProbabilityMeasure ν] (n : ℕ) (t : ℝ) :
     (n : ℂ) * (charFun ν t - 1) =
       ∫ x, levyKernel t x ∂quadWeighted n ν + I * ↑t * ↑(contDrift n ν) := by
   rw [integral_levyKernel_quadWeighted, integral_contIntegrand, contDrift]
@@ -513,7 +493,7 @@ lemma nat_mul_charFun_sub_one_eq {ν : Measure ℝ} [IsProbabilityMeasure ν] (n
   ring_nf
 
 /-- Scalar multiplication by `n` sends the exponential increment to the exponent. -/
-lemma tendsto_nat_mul_exp_div_sub_one (z : ℂ) :
+lemma tendsto_natCast_mul_exp_div_sub_one (z : ℂ) :
     Tendsto (fun n : ℕ => (n : ℂ) * (exp (z / (n : ℂ)) - 1)) atTop (𝓝 z) := by
   by_cases hz : z = 0
   · simp [hz]
@@ -536,7 +516,7 @@ lemma tendsto_nat_mul_exp_div_sub_one (z : ℂ) :
     simpa [mul_one] using hmul
 
 /-- The exponential increment of order `n` is controlled by the exponent. -/
-lemma norm_nat_mul_exp_div_sub_one_le {n : ℕ} (hn : 0 < n) (z : ℂ) :
+lemma norm_natCast_mul_exp_div_sub_one_le {n : ℕ} (hn : 0 < n) (z : ℂ) :
     ‖(n : ℂ) * (exp (z / (n : ℂ)) - 1)‖ ≤ ‖z‖ * (1 + ‖z‖ * Real.exp ‖z‖) := by
   set y : ℂ := z / (n : ℂ)
   have hnR : (1 : ℝ) ≤ n := by exact_mod_cast hn
@@ -574,4 +554,4 @@ lemma norm_nat_mul_exp_div_sub_one_le {n : ℕ} (hn : 0 < n) (z : ℂ) :
       linarith
     _ = ‖z‖ * (1 + ‖z‖ * Real.exp ‖z‖) := by ring
 
-end CKMA
+end CKMA.InfinitelyDivisible

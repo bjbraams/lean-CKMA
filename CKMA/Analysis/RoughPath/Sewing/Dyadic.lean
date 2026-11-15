@@ -116,18 +116,18 @@ noncomputable def sewnIncrement {E : Type*} [NormedAddCommGroup E]
   A s t + ∑' n : ℕ, (dyadicIncrement A s t (n + 1) - dyadicIncrement A s t n)
 
 /-- Node at index `0` is the left endpoint. -/
-lemma dyadicNode_zero (s t : ℝ) (n : ℕ) : dyadicNode s t n 0 = s := by
+private lemma dyadicNode_zero (s t : ℝ) (n : ℕ) : dyadicNode s t n 0 = s := by
   simp [dyadicNode]
 
 /-- Node at index `2^n` is the right endpoint. -/
-lemma dyadicNode_last (s t : ℝ) (n : ℕ) : dyadicNode s t n (2 ^ n) = t := by
+private lemma dyadicNode_last (s t : ℝ) (n : ℕ) : dyadicNode s t n (2 ^ n) = t := by
   unfold dyadicNode
   have hpow : ((2 ^ n : ℕ) : ℝ) = (2 : ℝ) ^ n := by simp
   rw [hpow, div_self (pow_ne_zero n (by norm_num : (2 : ℝ) ≠ 0)), mul_one]
   abel
 
 /-- Consecutive dyadic nodes differ by `(t - s) / 2^n`. -/
-lemma dyadicNode_sub (s t : ℝ) (n k : ℕ) :
+private lemma dyadicNode_sub (s t : ℝ) (n k : ℕ) :
     dyadicNode s t n (k + 1) - dyadicNode s t n k = (t - s) / (2 : ℝ) ^ n := by
   unfold dyadicNode
   rw [add_sub_add_left_eq_sub, ← mul_sub, div_sub_div_same]
@@ -135,7 +135,7 @@ lemma dyadicNode_sub (s t : ℝ) (n k : ℕ) :
   rw [mul_one_div]
 
 /-- Doubling the level repeats even nodes. -/
-lemma dyadicNode_two_mul (s t : ℝ) (n k : ℕ) :
+private lemma dyadicNode_two_mul (s t : ℝ) (n k : ℕ) :
     dyadicNode s t n k = dyadicNode s t (n + 1) (2 * k) := by
   unfold dyadicNode
   congr 1
@@ -144,7 +144,7 @@ lemma dyadicNode_two_mul (s t : ℝ) (n k : ℕ) :
   ring
 
 /-- On a nontrivial interval the nodes increase with the index. -/
-lemma dyadicNode_mono {s t : ℝ} (hst : s ≤ t) (n : ℕ) {k j : ℕ} (hkj : k ≤ j) :
+private lemma dyadicNode_mono {s t : ℝ} (hst : s ≤ t) (n : ℕ) {k j : ℕ} (hkj : k ≤ j) :
     dyadicNode s t n k ≤ dyadicNode s t n j := by
   unfold dyadicNode
   have hc : 0 ≤ t - s := sub_nonneg.mpr hst
@@ -153,7 +153,7 @@ lemma dyadicNode_mono {s t : ℝ} (hst : s ≤ t) (n : ℕ) {k j : ℕ} (hkj : k
   exact div_le_div_of_nonneg_right (Nat.cast_le.mpr hkj) hden
 
 /-- Dyadic nodes of `[s, t]` stay inside `[s, t]` up to index `2^n`. -/
-lemma dyadicNode_mem_interval {s t : ℝ} (hst : s ≤ t) (n : ℕ) {k : ℕ} (hk : k ≤ 2 ^ n) :
+private lemma dyadicNode_mem_interval {s t : ℝ} (hst : s ≤ t) (n : ℕ) {k : ℕ} (hk : k ≤ 2 ^ n) :
     s ≤ dyadicNode s t n k ∧ dyadicNode s t n k ≤ t := by
   constructor
   · simpa [dyadicNode_zero] using dyadicNode_mono hst n (Nat.zero_le k)
@@ -161,7 +161,7 @@ lemma dyadicNode_mem_interval {s t : ℝ} (hst : s ≤ t) (n : ℕ) {k : ℕ} (h
     simpa [dyadicNode_last] using hlast
 
 /-- The level-`0` dyadic sum is the increment itself. -/
-lemma dyadicIncrement_zero {E : Type*} [AddCommMonoid E] (A : ℝ → ℝ → E) (s t : ℝ) :
+private lemma dyadicIncrement_zero {E : Type*} [AddCommMonoid E] (A : ℝ → ℝ → E) (s t : ℝ) :
     dyadicIncrement A s t 0 = A s t := by
   unfold dyadicIncrement
   simp only [pow_zero, range_one, sum_singleton, dyadicNode_zero]
@@ -180,7 +180,7 @@ lemma sum_range_two_mul {M : Type*} [AddCommMonoid M] (f : ℕ → M) (n : ℕ) 
     ac_rfl
 
 /-- Left half of the dyadic grid is the dyadic grid of `[s, (s + t) / 2]`. -/
-lemma dyadicNode_mid_left (s t : ℝ) (n i : ℕ) :
+private lemma dyadicNode_mid_left (s t : ℝ) (n i : ℕ) :
     dyadicNode s ((s + t) / 2) n i = dyadicNode s t (n + 1) i := by
   unfold dyadicNode
   have hm : (s + t) / 2 - s = (t - s) / 2 := by ring
@@ -189,7 +189,7 @@ lemma dyadicNode_mid_left (s t : ℝ) (n i : ℕ) :
   ring
 
 /-- Right half of the dyadic grid is the shifted grid of `[(s + t) / 2, t]`. -/
-lemma dyadicNode_mid_right (s t : ℝ) (n i : ℕ) :
+private lemma dyadicNode_mid_right (s t : ℝ) (n i : ℕ) :
     dyadicNode ((s + t) / 2) t n i = dyadicNode s t (n + 1) (2 ^ n + i) := by
   unfold dyadicNode
   have hm : t - (s + t) / 2 = (t - s) / 2 := by ring
@@ -198,7 +198,7 @@ lemma dyadicNode_mid_right (s t : ℝ) (n i : ℕ) :
   ring_nf
 
 /-- One refinement step splits as the sum of the two half-interval dyadic sums. -/
-lemma dyadicIncrement_succ_midpoint {E : Type*} [AddCommMonoid E]
+private lemma dyadicIncrement_succ_midpoint {E : Type*} [AddCommMonoid E]
     (A : ℝ → ℝ → E) (s t : ℝ) (n : ℕ) :
     dyadicIncrement A s t (n + 1) =
       dyadicIncrement A s ((s + t) / 2) n + dyadicIncrement A ((s + t) / 2) t n := by
@@ -218,7 +218,8 @@ lemma dyadicIncrement_succ_midpoint {E : Type*} [AddCommMonoid E]
     simp [Nat.add_assoc]
 
 /-- Refining one dyadic level subtracts the sum of defects on the parent intervals. -/
-lemma dyadicIncrement_step_eq {E : Type*} [AddCommGroup E] (A : ℝ → ℝ → E) (s t : ℝ) (n : ℕ) :
+private lemma dyadicIncrement_step_eq {E : Type*} [AddCommGroup E] (A : ℝ → ℝ → E) (s t : ℝ)
+    (n : ℕ) :
     dyadicIncrement A s t n - dyadicIncrement A s t (n + 1) =
       ∑ k ∈ range (2 ^ n),
         (A (dyadicNode s t (n + 1) (2 * k)) (dyadicNode s t (n + 1) (2 * k + 2)) -
@@ -253,7 +254,7 @@ lemma sewingRatio_mem {γ : ℝ} (hγ : 1 < γ) :
   exact Real.rpow_lt_one_of_one_lt_of_neg (by norm_num) (by linarith)
 
 /-- The sewing constant is the sum of the geometric refinement ratios. -/
-lemma sewingConstant_eq_tsum {γ : ℝ} (hγ : 1 < γ) :
+private lemma sewingConstant_eq_tsum {γ : ℝ} (hγ : 1 < γ) :
     sewingConstant γ = ∑' n : ℕ, ((2 : ℝ) ^ (1 - γ)) ^ n := by
   rw [sewingConstant, tsum_geometric_of_lt_one (sewingRatio_mem hγ).1 (sewingRatio_mem hγ).2]
 
@@ -272,7 +273,7 @@ lemma nat_mul_div_rpow {n : ℕ} (hn : 0 < n) {L γ : ℝ} (hL : 0 ≤ L) (hγ :
       _ = L ^ γ * (n : ℝ) ^ (1 - γ) := by rw [hsub]
 
 /-- Scaling identity for one dyadic parent interval. -/
-lemma dyadic_weight {L γ : ℝ} (hL : 0 ≤ L) (hγ : γ ≠ 0) (n : ℕ) :
+private lemma dyadic_weight {L γ : ℝ} (hL : 0 ≤ L) (hγ : γ ≠ 0) (n : ℕ) :
     (2 ^ n : ℝ) * (L / (2 : ℝ) ^ n) ^ γ = L ^ γ * ((2 : ℝ) ^ (1 - γ)) ^ n := by
   have hpos : 0 < 2 ^ n := pow_pos (by norm_num) n
   have hnat := nat_mul_div_rpow hpos hL hγ
@@ -283,7 +284,7 @@ lemma dyadic_weight {L γ : ℝ} (hL : 0 ≤ L) (hγ : γ ≠ 0) (n : ℕ) :
   rw [hnat, hexp]
 
 /-- Two fine steps make one coarse dyadic step. -/
-lemma dyadicNode_two_step (s t : ℝ) (n k : ℕ) :
+private lemma dyadicNode_two_step (s t : ℝ) (n k : ℕ) :
     dyadicNode s t (n + 1) (2 * k + 2) - dyadicNode s t (n + 1) (2 * k) =
       (t - s) / (2 : ℝ) ^ n := by
   have h1 := dyadicNode_sub s t (n + 1) (2 * k)
@@ -303,7 +304,7 @@ lemma dyadicNode_two_step (s t : ℝ) (n k : ℕ) :
           ring
 
 /-- One dyadic refinement changes the sum by at most `C |t - s|^γ 2^{n(1 - γ)}`. -/
-lemma norm_dyadicIncrement_step_le {E : Type*} [NormedAddCommGroup E]
+private lemma norm_dyadicIncrement_step_le {E : Type*} [NormedAddCommGroup E]
     {a b γ C : ℝ} {A : ℝ → ℝ → E} (hγ : 1 < γ)
     (hdefect : ∀ s u t : ℝ, a ≤ s → s ≤ u → u ≤ t → t ≤ b →
       ‖A s t - A s u - A u t‖ ≤ C * |t - s| ^ γ)
@@ -362,7 +363,7 @@ variable {E : Type*} [NormedAddCommGroup E] [CompleteSpace E] {a b γ C : ℝ}
 variable {A : ℝ → ℝ → E}
 
 /-- Dyadic steps are absolutely summable on every subinterval of `[a, b]`. -/
-lemma summable_dyadic_step (hγ : 1 < γ)
+private lemma summable_dyadic_step (hγ : 1 < γ)
     (hdefect : ∀ s u t : ℝ, a ≤ s → s ≤ u → u ≤ t → t ≤ b →
       ‖A s t - A s u - A u t‖ ≤ C * |t - s| ^ γ)
     {s t : ℝ} (hs : a ≤ s) (hst : s ≤ t) (ht : t ≤ b) :
@@ -376,7 +377,7 @@ lemma summable_dyadic_step (hγ : 1 < γ)
   simpa [norm_sub_rev, mul_assoc] using hstep
 
 /-- Level-`n` dyadic sums converge to the sewn increment. -/
-lemma tendsto_dyadicIncrement (hγ : 1 < γ) (_hC : 0 ≤ C)
+lemma tendsto_dyadicIncrement (hγ : 1 < γ)
     (hdefect : ∀ s u t : ℝ, a ≤ s → s ≤ u → u ≤ t → t ≤ b →
       ‖A s t - A s u - A u t‖ ≤ C * |t - s| ^ γ)
     {s t : ℝ} (hs : a ≤ s) (hst : s ≤ t) (ht : t ≤ b) :
@@ -399,8 +400,9 @@ lemma tendsto_dyadicIncrement (hγ : 1 < γ) (_hC : 0 ≤ C)
   rw [hfun, sewnIncrement]
   exact hsum.hasSum.tendsto_sum_nat.const_add (A s t)
 
+omit [CompleteSpace E] in
 /-- The sewn increment approximates `A` with constant `sewingConstant γ * C`. -/
-lemma norm_sewnIncrement_sub (hγ : 1 < γ) (_hC : 0 ≤ C)
+lemma norm_sewnIncrement_sub (hγ : 1 < γ)
     (hdefect : ∀ s u t : ℝ, a ≤ s → s ≤ u → u ≤ t → t ≤ b →
       ‖A s t - A s u - A u t‖ ≤ C * |t - s| ^ γ)
     {s t : ℝ} (hs : a ≤ s) (hst : s ≤ t) (ht : t ≤ b) :
@@ -415,6 +417,17 @@ lemma norm_sewnIncrement_sub (hγ : 1 < γ) (_hC : 0 ≤ C)
   intro n
   simpa [norm_sub_rev, mul_assoc] using
     norm_dyadicIncrement_step_le hγ hdefect hs hst ht n
+
+omit [CompleteSpace E] in
+/-- A defect bound with a positive exponent forces `A` to vanish on the diagonal of `[a, b]`. -/
+lemma apply_self_eq_zero_of_defect (hγ : 0 < γ)
+    (hdefect : ∀ s u t : ℝ, a ≤ s → s ≤ u → u ≤ t → t ≤ b →
+      ‖A s t - A s u - A u t‖ ≤ C * |t - s| ^ γ) :
+    ∀ s ∈ Set.Icc a b, A s s = 0 := by
+  intro s hs
+  have h := hdefect s s s hs.1 le_rfl le_rfl hs.2
+  simp only [sub_self, zero_sub, norm_neg, abs_zero, Real.zero_rpow hγ.ne', mul_zero] at h
+  exact norm_le_zero_iff.mp h
 
 omit [CompleteSpace E] in
 /-- Sewing a point to itself produces zero. -/
@@ -432,7 +445,7 @@ lemma sewnIncrement_same
   simp [sewnIncrement, hS, hdiag s ⟨hs, hsb⟩]
 
 /-- The sewn increment is additive across the midpoint. -/
-lemma sewnIncrement_midpoint (hγ : 1 < γ) (hC : 0 ≤ C)
+lemma sewnIncrement_midpoint (hγ : 1 < γ)
     (hdefect : ∀ s u t : ℝ, a ≤ s → s ≤ u → u ≤ t → t ≤ b →
       ‖A s t - A s u - A u t‖ ≤ C * |t - s| ^ γ)
     {s t : ℝ} (hs : a ≤ s) (hst : s ≤ t) (ht : t ≤ b) :
@@ -443,9 +456,9 @@ lemma sewnIncrement_midpoint (hγ : 1 < γ) (hC : 0 ≤ C)
   have hmt : m ≤ t := by dsimp [m]; linarith
   have hma : a ≤ m := le_trans hs hsm
   have hmb : m ≤ b := le_trans hmt ht
-  have h := tendsto_dyadicIncrement hγ hC hdefect hs hst ht
-  have hL := tendsto_dyadicIncrement hγ hC hdefect hs hsm hmb
-  have hR := tendsto_dyadicIncrement hγ hC hdefect hma hmt ht
+  have h := tendsto_dyadicIncrement hγ hdefect hs hst ht
+  have hL := tendsto_dyadicIncrement hγ hdefect hs hsm hmb
+  have hR := tendsto_dyadicIncrement hγ hdefect hma hmt ht
   have hshift :
       Tendsto (fun n => dyadicIncrement A s t (n + 1)) atTop (𝓝 (sewnIncrement A s t)) :=
     (tendsto_add_atTop_iff_nat 1).mpr h
@@ -460,13 +473,13 @@ lemma sewnIncrement_midpoint (hγ : 1 < γ) (hC : 0 ≤ C)
   exact tendsto_nhds_unique hshift hsplit
 
 /-- Dyadic nodes depend continuously on the endpoints. -/
-lemma continuous_dyadicNode (n k : ℕ) :
+private lemma continuous_dyadicNode (n k : ℕ) :
     Continuous (fun p : ℝ × ℝ => dyadicNode p.1 p.2 n k) := by
   unfold dyadicNode
   exact continuous_fst.add ((continuous_snd.sub continuous_fst).mul continuous_const)
 
 /-- Consecutive dyadic nodes of a triangle point stay inside the triangle. -/
-lemma dyadicEndpoints_mapsTo {a b : ℝ} (n k : ℕ) (hk : k + 1 ≤ 2 ^ n) :
+private lemma dyadicEndpoints_mapsTo {a b : ℝ} (n k : ℕ) (hk : k + 1 ≤ 2 ^ n) :
     Set.MapsTo (fun p : ℝ × ℝ =>
       (dyadicNode p.1 p.2 n k, dyadicNode p.1 p.2 n (k + 1)))
       (sewingTriangle a b) (sewingTriangle a b) := by
@@ -477,8 +490,9 @@ lemma dyadicEndpoints_mapsTo {a b : ℝ} (n k : ℕ) (hk : k + 1 ≤ 2 ^ n) :
   have h2 := dyadicNode_mem_interval hst n hk
   exact ⟨le_trans hp.1 h1.1, dyadicNode_mono hst n (Nat.le_succ k), le_trans h2.2 hp.2.2⟩
 
+omit [CompleteSpace E] in
 /-- One summand of a dyadic increment is continuous on the triangle. -/
-lemma continuousOn_dyadicPiece
+private lemma continuousOn_dyadicPiece
     (hcont : ContinuousOn (fun p : ℝ × ℝ => A p.1 p.2) (sewingTriangle a b))
     (n k : ℕ) (hk : k < 2 ^ n) :
     ContinuousOn (fun p : ℝ × ℝ =>
@@ -488,16 +502,18 @@ lemma continuousOn_dyadicPiece
   exact ((continuous_dyadicNode n k).prodMk
     (continuous_dyadicNode n (k + 1))).continuousOn
 
+omit [CompleteSpace E] in
 /-- Dyadic increment sums are continuous on the triangle. -/
-lemma continuousOn_dyadicIncrement
+private lemma continuousOn_dyadicIncrement
     (hcont : ContinuousOn (fun p : ℝ × ℝ => A p.1 p.2) (sewingTriangle a b)) (n : ℕ) :
     ContinuousOn (fun p : ℝ × ℝ => dyadicIncrement A p.1 p.2 n) (sewingTriangle a b) := by
   unfold dyadicIncrement
   refine continuousOn_finsetSum _ fun k hk => ?_
   exact continuousOn_dyadicPiece hcont n k (Finset.mem_range.mp hk)
 
+omit [CompleteSpace E] in
 /-- Uniform majorant of one dyadic step on the whole triangle. -/
-lemma norm_dyadic_step_triangle (hab : a ≤ b) (hγ : 1 < γ) (hC : 0 ≤ C)
+private lemma norm_dyadic_step_triangle (hab : a ≤ b) (hγ : 1 < γ) (hC : 0 ≤ C)
     (hdefect : ∀ s u t : ℝ, a ≤ s → s ≤ u → u ≤ t → t ≤ b →
       ‖A s t - A s u - A u t‖ ≤ C * |t - s| ^ γ)
     {p : ℝ × ℝ} (hp : p ∈ sewingTriangle a b) (n : ℕ) :
@@ -552,6 +568,7 @@ lemma sewingConstant_pos (hγ : 1 < γ) : 0 < sewingConstant γ := by
   rw [sewingConstant]
   exact inv_pos.mpr (sub_pos.mpr (sewingRatio_mem hγ).2)
 
+omit [CompleteSpace E] in
 /-- A midpoint-additive increment of order greater than one vanishes. -/
 lemma vanishes_of_midpoint (hγ : 1 < γ) (Z : ℝ → ℝ → E) (M : ℝ)
     (hadd : ∀ s t : ℝ, a ≤ s → s ≤ t → t ≤ b →

@@ -23,7 +23,7 @@ obey the Kolmogorov moment bound with every exponent strictly above `2`.
 
 * `CKMA.integral_abs_rpow_gaussianReal`: scaling identity for absolute moments of centered real
   Gaussians.
-* `CKMA.IsPreBrownianReal.integral_abs_sub_rpow_le`: Kolmogorov moment bound for pre-Brownian
+* `CKMA.integral_abs_sub_rpow_le_of_isPreBrownianReal`: Kolmogorov moment bound for pre-Brownian
   increments.
 -/
 
@@ -52,7 +52,7 @@ lemma integrable_abs_rpow_gaussianReal {p : ℝ} (hp : 0 < p) :
   simpa [Real.norm_eq_abs, hpow] using hint
 
 /-- `√v` raised to `p` is the variance raised to `p / 2`. -/
-lemma sqrt_rpow_eq_rpow_div_two {p : ℝ} {v : ℝ≥0} :
+private lemma sqrt_rpow_eq_rpow_div_two {p : ℝ} {v : ℝ≥0} :
     Real.sqrt (v : ℝ) ^ p = (v : ℝ) ^ (p / 2) := by
   have hc0 : 0 ≤ Real.sqrt (v : ℝ) := Real.sqrt_nonneg _
   calc
@@ -111,13 +111,12 @@ lemma integrable_abs_rpow_gaussianReal_var {p : ℝ} (hp : 0 < p) (v : ℝ≥0) 
   refine (integrable_map_measure (by fun_prop) (by fun_prop)).2 ?_
   simpa [Function.comp_def] using hint
 
-/-- The scaled absolute moment is nonnegative. -/
-lemma gaussianAbsMoment_nonneg {p : ℝ} (hp : 0 < p) : 0 ≤ gaussianAbsMoment p := by
-  have _ : 0 ≤ p := hp.le
-  exact integral_nonneg fun _ ↦ Real.rpow_nonneg (abs_nonneg _) _
+/-- The standard Gaussian absolute moment is nonnegative. -/
+lemma gaussianAbsMoment_nonneg (p : ℝ) : 0 ≤ gaussianAbsMoment p :=
+  integral_nonneg fun _ ↦ Real.rpow_nonneg (abs_nonneg _) _
 
 /-- Absolute moments of pre-Brownian increments scale with the elapsed time. -/
-lemma IsPreBrownianReal.integral_abs_sub_rpow {Ω : Type*} [MeasurableSpace Ω]
+private lemma integral_abs_sub_rpow_of_isPreBrownianReal {Ω : Type*} [MeasurableSpace Ω]
     {μ : Measure Ω} {B : ℝ≥0 → Ω → ℝ} (hB : IsPreBrownianReal B μ)
     {p : ℝ} (hp : 0 < p) (s t : ℝ≥0) :
     ∫ ω, |B s ω - B t ω| ^ p ∂μ =
@@ -134,14 +133,17 @@ lemma IsPreBrownianReal.integral_abs_sub_rpow {Ω : Type*} [MeasurableSpace Ω]
   simpa using integral_abs_rpow_gaussianReal hp (nndist (s : ℝ) (t : ℝ))
 
 /-- Kolmogorov bound for a pre-Brownian increment of order `p > 0`. -/
-lemma IsPreBrownianReal.integral_abs_sub_rpow_le {Ω : Type*} [MeasurableSpace Ω]
+lemma integral_abs_sub_rpow_le_of_isPreBrownianReal {Ω : Type*} [MeasurableSpace Ω]
     {μ : Measure Ω} {B : ℝ≥0 → Ω → ℝ} (hB : IsPreBrownianReal B μ)
     {p : ℝ} (hp : 0 < p) (s t : ℝ≥0) :
     ∫ ω, |B s ω - B t ω| ^ p ∂μ ≤
       gaussianAbsMoment p * |(s : ℝ) - t| ^ (p / 2) := by
-  rw [IsPreBrownianReal.integral_abs_sub_rpow hB hp s t, mul_comm]
+  rw [integral_abs_sub_rpow_of_isPreBrownianReal hB hp s t, mul_comm]
   have hdist : (nndist (s : ℝ) (t : ℝ) : ℝ) = |(s : ℝ) - t| := by
     rw [nndist_eq_nnnorm, coe_nnnorm, Real.norm_eq_abs]
   rw [hdist]
+
+@[deprecated (since := "2026-11-15")]
+alias IsPreBrownianReal.integral_abs_sub_rpow_le := integral_abs_sub_rpow_le_of_isPreBrownianReal
 
 end CKMA

@@ -29,17 +29,20 @@ mass and the tails of the quadratically weighted roots, uniformly in the root or
 
 ## Main definitions
 
-* `CKMA.positiveRoot`: `(n + 1)`-th convolution root of an infinitely divisible law.
-* `CKMA.idRootMeasure`: quadratically weighted finite measure associated to the `(n + 1)`-th
+All declarations are in the namespace `CKMA.InfinitelyDivisible`.
+
+* `positiveRoot`: `(n + 1)`-th convolution root of an infinitely divisible law.
+* `idMass`, `idTail`: bounds on the mass and on the tails of the weighted roots.
+* `idRootMeasure`: quadratically weighted finite measure associated to the `(n + 1)`-th
   convolution root.
 
 ## Main results
 
-* `CKMA.charFun_positiveRoot`: the characteristic function of the `(n + 1)`-th root is
+* `charFun_positiveRoot`: the characteristic function of the `(n + 1)`-th root is
   `exp (charExponent h t / (n + 1))`.
-* `CKMA.idRootMeasure_mem`: every quadratically weighted root has mass at most `idMass h` and
+* `idRootMeasure_mem`: every quadratically weighted root has mass at most `idMass h` and
   tails bounded by `idTail h`.
-* `CKMA.isCompact_idApproximant`: the set of finite measures with these mass and tail bounds is
+* `isCompact_idApproximant`: the set of finite measures with these mass and tail bounds is
   compact in `FiniteMeasure ℝ`.
 -/
 
@@ -47,7 +50,7 @@ mass and the tails of the quadratically weighted roots, uniformly in the root or
 
 noncomputable section
 
-namespace CKMA
+namespace CKMA.InfinitelyDivisible
 
 open MeasureTheory Complex Filter Topology Set Function
 open scoped NNReal ENNReal
@@ -56,25 +59,25 @@ open scoped NNReal ENNReal
 def sincComparison : ℝ := 3 * Real.pi ^ 2 / 2
 
 /-- The constant `3 π² / 2` is positive. -/
-lemma sincComparison_pos : 0 < sincComparison := by
+private lemma sincComparison_pos : 0 < sincComparison := by
   unfold sincComparison
   positivity
 
 /-- Coefficient `2 / (3 π²)` reciprocal to `sincComparison`. -/
-def sincCoeff : ℝ := 2 / (3 * Real.pi ^ 2)
+private def sincCoeff : ℝ := 2 / (3 * Real.pi ^ 2)
 
 /-- The sinc coefficient is nonnegative. -/
-lemma sincCoeff_nonneg : 0 ≤ sincCoeff := by
+private lemma sincCoeff_nonneg : 0 ≤ sincCoeff := by
   unfold sincCoeff
   positivity
 
 /-- `sincComparison` and `sincCoeff` are reciprocals. -/
-lemma sincComparison_mul_sincCoeff : sincComparison * sincCoeff = 1 := by
+private lemma sincComparison_mul_sincCoeff : sincComparison * sincCoeff = 1 := by
   unfold sincComparison sincCoeff
   field_simp
 
 /-- On `[0, π]`, sine lies under the cubic from the integrated cosine bound. -/
-lemma sin_le_sub_sincCube {x : ℝ} (hx0 : 0 ≤ x) (hx : x ≤ Real.pi) :
+private lemma sin_le_sub_sincCube {x : ℝ} (hx0 : 0 ≤ x) (hx : x ≤ Real.pi) :
     Real.sin x ≤ x - sincCoeff * x ^ 3 := by
   let c : ℝ := 2 / Real.pi ^ 2
   have hder : ∀ u ∈ uIcc (0 : ℝ) x,
@@ -114,7 +117,7 @@ lemma sin_le_sub_sincCube {x : ℝ} (hx0 : 0 ≤ x) (hx : x ≤ Real.pi) :
   exact hmono.trans_eq hpoly
 
 /-- `2 / (3 π²)` does not exceed `1 - 1/π`. -/
-lemma sincCoeff_le_one_sub_inv_pi : sincCoeff ≤ 1 - Real.pi⁻¹ := by
+private lemma sincCoeff_le_one_sub_inv_pi : sincCoeff ≤ 1 - Real.pi⁻¹ := by
   have htwo : (2 : ℝ) ≤ 3 * Real.pi * (Real.pi - 1) := by
     nlinarith [Real.pi_gt_three]
   have hform : 1 - Real.pi⁻¹ = (Real.pi - 1) / Real.pi := by
@@ -128,7 +131,7 @@ lemma sincCoeff_le_one_sub_inv_pi : sincCoeff ≤ 1 - Real.pi⁻¹ := by
     _ = (Real.pi - 1) * (3 * Real.pi ^ 2) := by ring
 
 /-- `sincCoeff` times the quadratic weight is at most `1 - sinc`. -/
-lemma sincCoeff_mul_quadTrunc_le (x : ℝ) :
+private lemma sincCoeff_mul_quadTrunc_le (x : ℝ) :
     sincCoeff * quadTrunc x ≤ 1 - Real.sinc x := by
   suffices hsuff : sincCoeff * quadTrunc |x| ≤ 1 - Real.sinc |x| by
     have hquad : quadTrunc x = quadTrunc |x| := by simp [quadTrunc, sq_abs]
@@ -165,7 +168,7 @@ lemma sincCoeff_mul_quadTrunc_le (x : ℝ) :
     linarith
 
 /-- The quadratic weight is dominated by a constant multiple of `1 - sinc`. -/
-lemma quadTrunc_le_sincComparison_mul (x : ℝ) :
+private lemma quadTrunc_le_sincComparison_mul (x : ℝ) :
     quadTrunc x ≤ sincComparison * (1 - Real.sinc x) := by
   have hmul := mul_le_mul_of_nonneg_left (sincCoeff_mul_quadTrunc_le x)
     sincComparison_pos.le
@@ -175,12 +178,12 @@ lemma quadTrunc_le_sincComparison_mul (x : ℝ) :
 def exponentModulus (r : ℝ) : ℝ := r * (1 + r * Real.exp r)
 
 /-- The exponential-increment modulus is continuous. -/
-lemma continuous_exponentModulus : Continuous exponentModulus := by
+private lemma continuous_exponentModulus : Continuous exponentModulus := by
   unfold exponentModulus
   fun_prop
 
 /-- The exponential-increment modulus is monotone on the nonnegative reals. -/
-lemma exponentModulus_mono {a b : ℝ} (ha : 0 ≤ a) (hab : a ≤ b) :
+private lemma exponentModulus_mono {a b : ℝ} (ha : 0 ≤ a) (hab : a ≤ b) :
     exponentModulus a ≤ exponentModulus b := by
   unfold exponentModulus
   have hexp : Real.exp a ≤ Real.exp b := Real.exp_le_exp.mpr hab
@@ -190,7 +193,7 @@ lemma exponentModulus_mono {a b : ℝ} (ha : 0 ≤ a) (hab : a ≤ b) :
   exact mul_le_mul hab hinner (by positivity) (ha.trans hab)
 
 /-- The exponential-increment modulus is nonnegative on the nonnegative reals. -/
-lemma exponentModulus_nonneg {r : ℝ} (hr : 0 ≤ r) : 0 ≤ exponentModulus r := by
+private lemma exponentModulus_nonneg {r : ℝ} (hr : 0 ≤ r) : 0 ≤ exponentModulus r := by
   unfold exponentModulus
   positivity
 
@@ -214,20 +217,20 @@ def charExponentMax {μ : Measure ℝ} [IsProbabilityMeasure μ]
   ‖charExponent h (charExponentArg h δ)‖
 
 /-- The maximizer lies in `[-|δ|, |δ|]`. -/
-lemma abs_charExponentArg_le {μ : Measure ℝ} [IsProbabilityMeasure μ]
+private lemma abs_charExponentArg_le {μ : Measure ℝ} [IsProbabilityMeasure μ]
     (h : IsInfinitelyDivisible μ) (δ : ℝ) : |charExponentArg h δ| ≤ |δ| := by
   have hmem := (Classical.choose_spec (exists_norm_charExponent_isMaxOn h δ)).1
   exact abs_le.mpr hmem
 
 /-- On `[-|δ|, |δ|]` the exponent norm does not exceed `charExponentMax`. -/
-lemma norm_charExponent_le_charExponentMax {μ : Measure ℝ} [IsProbabilityMeasure μ]
+private lemma norm_charExponent_le_charExponentMax {μ : Measure ℝ} [IsProbabilityMeasure μ]
     (h : IsInfinitelyDivisible μ) (δ : ℝ) {t : ℝ} (ht : |t| ≤ |δ|) :
     ‖charExponent h t‖ ≤ charExponentMax h δ := by
   have hspec := Classical.choose_spec (exists_norm_charExponent_isMaxOn h δ)
   exact hspec.2 (abs_le.mp ht)
 
 /-- The maximal exponent norm on `[-1/(n+1), 1/(n+1)]` tends to zero. -/
-lemma tendsto_charExponentMax_inv {μ : Measure ℝ} [IsProbabilityMeasure μ]
+private lemma tendsto_charExponentMax_inv {μ : Measure ℝ} [IsProbabilityMeasure μ]
     (h : IsInfinitelyDivisible μ) :
     Tendsto (fun n : ℕ => charExponentMax h (1 / (n + 1 : ℝ))) atTop (𝓝 0) := by
   let t : ℕ → ℝ := fun n => charExponentArg h (1 / (n + 1 : ℝ))
@@ -268,7 +271,7 @@ lemma charFun_positiveRoot {μ : Measure ℝ} [IsProbabilityMeasure μ]
   charFun_convolutionRoot h (Nat.succ_pos n) t
 
 /-- Integral of `1 - cos(t x)` over `[-δ, δ]`. -/
-lemma intervalIntegral_one_sub_cos {δ x : ℝ} (hδ : 0 ≤ δ) :
+private lemma intervalIntegral_one_sub_cos {δ x : ℝ} (hδ : 0 ≤ δ) :
     ∫ t in (-δ)..δ, (1 - Real.cos (t * x)) = 2 * δ * (1 - Real.sinc (δ * x)) := by
   by_cases hx : x = 0
   · simp [hx, Real.cos_zero, Real.sinc_zero, sub_self, intervalIntegral.integral_zero]
@@ -300,7 +303,7 @@ lemma intervalIntegral_one_sub_cos {δ x : ℝ} (hδ : 0 ≤ δ) :
   ring
 
 /-- `1` minus the real part of a characteristic function is an integral of `1 - cos`. -/
-lemma one_sub_re_charFun {ν : Measure ℝ} [IsProbabilityMeasure ν] (t : ℝ) :
+private lemma one_sub_re_charFun {ν : Measure ℝ} [IsProbabilityMeasure ν] (t : ℝ) :
     1 - (charFun ν t).re = ∫ x, (1 - Real.cos (t * x)) ∂ν := by
   have hchar : charFun ν t = ∫ x, exp (↑t * ↑x * I) ∂ν := by
     rw [charFun_apply_real]
@@ -338,7 +341,7 @@ lemma one_sub_re_charFun {ν : Measure ℝ} [IsProbabilityMeasure ν] (t : ℝ) 
     _ = ∫ x, ((1 : ℝ) - Real.cos (t * x)) ∂ν := hsub.symm
 
 /-- The product integrand `1 - cos(t x)` is integrable on a bounded time interval. -/
-lemma integrable_one_sub_cos_prod {ν : Measure ℝ} [IsProbabilityMeasure ν] {δ : ℝ}
+private lemma integrable_one_sub_cos_prod {ν : Measure ℝ} [IsProbabilityMeasure ν] {δ : ℝ}
     (hδ : 0 < δ) :
     Integrable (uncurry fun t x => 1 - Real.cos (t * x))
       ((volume.restrict (uIoc (-δ) δ)).prod ν) := by
@@ -354,7 +357,7 @@ lemma integrable_one_sub_cos_prod {ν : Measure ℝ} [IsProbabilityMeasure ν] {
   linarith
 
 /-- `n + 1` times `1 - Re φ` of a root is bounded by the exponent modulus. -/
-lemma nat_mul_one_sub_re_le {μ : Measure ℝ} [IsProbabilityMeasure μ]
+private lemma natCast_mul_one_sub_re_le {μ : Measure ℝ} [IsProbabilityMeasure μ]
     (h : IsInfinitelyDivisible μ) (n : ℕ) {t δ : ℝ} (ht : |t| ≤ |δ|) :
     ((n + 1 : ℕ) : ℝ) * (1 - (charFun (positiveRoot h n) t).re) ≤
       exponentModulus (charExponentMax h δ) := by
@@ -380,7 +383,7 @@ lemma nat_mul_one_sub_re_le {μ : Measure ℝ} [IsProbabilityMeasure μ]
         rw [show (1 : ℂ) - exp (charExponent h t / ((n + 1 : ℕ) : ℂ)) =
             -(exp (charExponent h t / ((n + 1 : ℕ) : ℂ)) - 1) by ring]
         rw [mul_neg, norm_neg]
-  have hinc := norm_nat_mul_exp_div_sub_one_le hm (charExponent h t)
+  have hinc := norm_natCast_mul_exp_div_sub_one_le hm (charExponent h t)
   have hmax : ‖charExponent h t‖ ≤ charExponentMax h δ :=
     norm_charExponent_le_charExponentMax h δ ht
   have hmod : exponentModulus ‖charExponent h t‖ ≤
@@ -390,7 +393,7 @@ lemma nat_mul_one_sub_re_le {μ : Measure ℝ} [IsProbabilityMeasure μ]
   simpa [exponentModulus] using hmod
 
 /-- Integrating `1 - sinc(δ x)` against a root costs at most the exponent modulus. -/
-lemma integral_one_sub_sinc_le {μ : Measure ℝ} [IsProbabilityMeasure μ]
+private lemma integral_one_sub_sinc_le {μ : Measure ℝ} [IsProbabilityMeasure μ]
     (h : IsInfinitelyDivisible μ) (n : ℕ) {δ : ℝ} (hδ : 0 < δ) :
     ∫ x, (1 - Real.sinc (δ * x)) ∂positiveRoot h n ≤
       exponentModulus (charExponentMax h δ) / (n + 1 : ℝ) := by
@@ -405,7 +408,7 @@ lemma integral_one_sub_sinc_le {μ : Measure ℝ} [IsProbabilityMeasure μ]
       rw [abs_of_nonneg hδ.le]
       exact abs_le.mpr ht
     rw [le_div_iff₀ hmpos, mul_comm]
-    simpa [ν, m] using nat_mul_one_sub_re_le h n habs
+    simpa [ν, m] using natCast_mul_one_sub_re_le h n habs
   have hint1 : IntervalIntegrable (fun t : ℝ => 1 - (charFun ν t).re) volume (-δ) δ :=
     (continuous_const.sub
       (continuous_re.comp continuous_charFun)).intervalIntegrable (-δ) δ
@@ -447,7 +450,7 @@ lemma integral_one_sub_sinc_le {μ : Measure ℝ} [IsProbabilityMeasure μ]
   exact (mul_le_mul_iff_of_pos_left (by positivity : 0 < 2 * δ)).mp hbound
 
 /-- `1 - sinc(δ x)` is integrable on a probability space. -/
-lemma integrable_one_sub_sinc_mul {ν : Measure ℝ} [IsProbabilityMeasure ν] (δ : ℝ) :
+private lemma integrable_one_sub_sinc_mul {ν : Measure ℝ} [IsProbabilityMeasure ν] (δ : ℝ) :
     Integrable (fun x : ℝ => 1 - Real.sinc (δ * x)) ν := by
   refine (integrable_const (2 : ℝ)).mono' (by fun_prop) ?_
   refine ae_of_all _ fun x => ?_
@@ -457,7 +460,7 @@ lemma integrable_one_sub_sinc_mul {ν : Measure ℝ} [IsProbabilityMeasure ν] (
   linarith [Real.neg_one_le_sinc (δ * x)]
 
 /-- The quadratic weight is integrable on a finite measure. -/
-lemma integrable_quadTrunc_prob {ν : Measure ℝ} [IsFiniteMeasure ν] :
+private lemma integrable_quadTrunc_prob {ν : Measure ℝ} [IsFiniteMeasure ν] :
     Integrable quadTrunc ν := by
   refine (integrable_const (1 : ℝ)).mono' continuous_quadTrunc.aestronglyMeasurable ?_
   refine ae_of_all _ fun x => ?_
@@ -465,7 +468,7 @@ lemma integrable_quadTrunc_prob {ν : Measure ℝ} [IsFiniteMeasure ν] :
   exact quadTrunc_le_one x
 
 /-- Integrated quadratic weight of a root, scaled by the root order in the denominator. -/
-lemma integral_quadTrunc_le {μ : Measure ℝ} [IsProbabilityMeasure μ]
+private lemma integral_quadTrunc_le {μ : Measure ℝ} [IsProbabilityMeasure μ]
     (h : IsInfinitelyDivisible μ) (n : ℕ) :
     ∫ x, quadTrunc x ∂positiveRoot h n ≤
       sincComparison * exponentModulus (charExponentMax h 1) / (n + 1 : ℝ) := by
@@ -491,7 +494,7 @@ lemma integral_quadTrunc_le {μ : Measure ℝ} [IsProbabilityMeasure μ]
     ((mul_le_mul_of_nonneg_left hle2 sincComparison_pos.le).trans_eq hassoc)
 
 /-- Total mass of a quadratically weighted positive root. -/
-lemma quadWeighted_univ_le {μ : Measure ℝ} [IsProbabilityMeasure μ]
+private lemma quadWeighted_univ_le {μ : Measure ℝ} [IsProbabilityMeasure μ]
     (h : IsInfinitelyDivisible μ) (n : ℕ) :
     quadWeighted (n + 1) (positiveRoot h n) univ ≤
       ENNReal.ofReal (sincComparison * exponentModulus (charExponentMax h 1)) := by
@@ -518,7 +521,7 @@ lemma quadWeighted_univ_le {μ : Measure ℝ} [IsProbabilityMeasure μ]
     _ = sincComparison * exponentModulus (charExponentMax h 1) := hassoc
 
 /-- The quadratic weight equals one once `|x|` is at least one. -/
-lemma quadTrunc_eq_one_of_one_le_abs {x : ℝ} (hx : 1 ≤ |x|) : quadTrunc x = 1 := by
+private lemma quadTrunc_eq_one_of_one_le_abs {x : ℝ} (hx : 1 ≤ |x|) : quadTrunc x = 1 := by
   have : (1 : ℝ) ≤ x ^ 2 := by
     rw [← sq_abs]
     exact one_le_pow₀ hx
@@ -528,7 +531,7 @@ lemma quadTrunc_eq_one_of_one_le_abs {x : ℝ} (hx : 1 ≤ |x|) : quadTrunc x = 
 def tailSet (n : ℕ) : Set ℝ := Icc (-(n + 1 : ℝ)) (n + 1 : ℝ)
 
 /-- The tail intervals increase with the index. -/
-lemma monotone_tailSet : Monotone tailSet := by
+private lemma monotone_tailSet : Monotone tailSet := by
   intro a b hab x hx
   have hcast : (a : ℝ) + 1 ≤ (b : ℝ) + 1 := by
     simpa [add_comm] using add_le_add_right (Nat.cast_le.mpr hab) (1 : ℝ)
@@ -537,7 +540,7 @@ lemma monotone_tailSet : Monotone tailSet := by
   exact hneg.trans hx.1
 
 /-- Outside `[-k-1, k+1]` the quadratic weight is dominated by `1 - sinc`. -/
-lemma quadTrunc_le_of_not_mem_tailSet {k : ℕ} {x : ℝ} (hx : x ∉ tailSet k) :
+private lemma quadTrunc_le_of_notMem_tailSet {k : ℕ} {x : ℝ} (hx : x ∉ tailSet k) :
     quadTrunc x ≤ sincComparison *
       (1 - Real.sinc ((1 / (k + 1 : ℝ)) * x)) := by
   have hR : (k + 1 : ℝ) < |x| := by
@@ -579,7 +582,7 @@ def idTail {μ : Measure ℝ} [IsProbabilityMeasure μ] (h : IsInfinitelyDivisib
     exponentModulus (charExponentMax h (1 / (k + 1 : ℝ))))
 
 /-- The uniform tail bounds tend to zero. -/
-lemma tendsto_idTail {μ : Measure ℝ} [IsProbabilityMeasure μ]
+private lemma tendsto_idTail {μ : Measure ℝ} [IsProbabilityMeasure μ]
     (h : IsInfinitelyDivisible μ) : Tendsto (idTail h) atTop (𝓝 0) := by
   have hmax := tendsto_charExponentMax_inv h
   have hzero : exponentModulus 0 = 0 := by
@@ -599,7 +602,7 @@ lemma tendsto_idTail {μ : Measure ℝ} [IsProbabilityMeasure μ]
   exact hto
 
 /-- Mass of a weighted root outside `[-k-1, k+1]`. -/
-lemma quadWeighted_tail_le {μ : Measure ℝ} [IsProbabilityMeasure μ]
+private lemma quadWeighted_tail_le {μ : Measure ℝ} [IsProbabilityMeasure μ]
     (h : IsInfinitelyDivisible μ) (n k : ℕ) :
     quadWeighted (n + 1) (positiveRoot h n) (tailSet k)ᶜ ≤
       ENNReal.ofReal (sincComparison *
@@ -612,7 +615,7 @@ lemma quadWeighted_tail_le {μ : Measure ℝ} [IsProbabilityMeasure μ]
   have hpt : ∀ x ∈ (tailSet k)ᶜ, ENNReal.ofReal (quadTrunc x) ≤
       ENNReal.ofReal (sincComparison * (1 - Real.sinc (δ * x))) := by
     intro x hx
-    exact ENNReal.ofReal_le_ofReal (by simpa [δ] using quadTrunc_le_of_not_mem_tailSet hx)
+    exact ENNReal.ofReal_le_ofReal (by simpa [δ] using quadTrunc_le_of_notMem_tailSet hx)
   have hmono := setLIntegral_mono' (μ := positiveRoot h n) hs hpt
   have hf : Integrable (fun x => sincComparison * (1 - Real.sinc (δ * x)))
       (positiveRoot h n) :=
@@ -697,4 +700,4 @@ lemma isCompact_idApproximant {μ : Measure ℝ} [IsProbabilityMeasure μ]
         (isCompact_Icc : IsCompact (Icc (-(k + 1 : ℝ)) (k + 1 : ℝ))))
     (Or.inr monotone_tailSet)
 
-end CKMA
+end CKMA.InfinitelyDivisible

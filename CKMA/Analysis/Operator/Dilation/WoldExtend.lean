@@ -71,7 +71,7 @@ def woldExtendIndex : Option ℕ → Option ℤ
   | some n => some (n : ℤ)
 
 /-- The inclusion of nonnegative times is injective. -/
-theorem woldExtendIndex_injective : Function.Injective woldExtendIndex := by
+private theorem woldExtendIndex_injective : Function.Injective woldExtendIndex := by
   intro a b h
   cases a with
   | none =>
@@ -86,11 +86,11 @@ theorem woldExtendIndex_injective : Function.Injective woldExtendIndex := by
       exact congrArg some h
 
 /-- The unitary slot stays in the unitary slot. -/
-@[simp] theorem woldExtendIndex_none : woldExtendIndex none = none :=
+@[simp] private theorem woldExtendIndex_none : woldExtendIndex none = none :=
   rfl
 
 /-- A nonnegative time is sent to the same integer. -/
-@[simp] theorem woldExtendIndex_some (n : ℕ) : woldExtendIndex (some n) = some (n : ℤ) :=
+@[simp] private theorem woldExtendIndex_some (n : ℕ) : woldExtendIndex (some n) = some (n : ℤ) :=
   rfl
 
 /-- Extend a finitely supported nonnegative coefficient by zero on negative times. -/
@@ -100,17 +100,17 @@ def woldPadFun (V : H →ₗᵢ[ℂ] H) (f : ∀ i, woldSummandNat V i) :
   | some k => if _h : 0 ≤ k then f (some k.toNat) else 0
 
 /-- Padding does not change the unitary coordinate. -/
-theorem woldPadFun_none (V : H →ₗᵢ[ℂ] H) (f : ∀ i, woldSummandNat V i) :
+private theorem woldPadFun_none (V : H →ₗᵢ[ℂ] H) (f : ∀ i, woldSummandNat V i) :
     woldPadFun V f none = f none :=
   rfl
 
 /-- Padding reads a nonnegative time at its integer index. -/
-theorem woldPadFun_nat (V : H →ₗᵢ[ℂ] H) (f : ∀ i, woldSummandNat V i) (n : ℕ) :
+private theorem woldPadFun_nat (V : H →ₗᵢ[ℂ] H) (f : ∀ i, woldSummandNat V i) (n : ℕ) :
     woldPadFun V f (some (n : ℤ)) = f (some n) := by
   simp [woldPadFun, Int.toNat_natCast]
 
 /-- Padding vanishes at a negative time. -/
-theorem woldPadFun_neg (V : H →ₗᵢ[ℂ] H) (f : ∀ i, woldSummandNat V i) {k : ℤ}
+private theorem woldPadFun_neg (V : H →ₗᵢ[ℂ] H) (f : ∀ i, woldSummandNat V i) {k : ℤ}
     (hk : k < 0) : woldPadFun V f (some k) = 0 := by
   simp [woldPadFun, not_le.mpr hk]
 
@@ -159,7 +159,7 @@ def woldPad (V : H →ₗᵢ[ℂ] H) (f : lp (woldSummandNat V) 2) : lp (woldSum
         (summable_norm_sq_woldPadFun V f))⟩
 
 /-- Evaluation of a padded sequence. -/
-theorem woldPad_apply (V : H →ₗᵢ[ℂ] H) (f : lp (woldSummandNat V) 2) (i : Option ℤ) :
+private theorem woldPad_apply (V : H →ₗᵢ[ℂ] H) (f : lp (woldSummandNat V) 2) (i : Option ℤ) :
     woldPad V f i = woldPadFun V f i :=
   rfl
 
@@ -258,10 +258,10 @@ def woldSlotSource : Option ℤ ≃ Option ℤ where
     | some k => simp
 
 /-- The unitary slot is fixed by the source reindexing. -/
-@[simp] theorem woldSlotSource_none : woldSlotSource none = none := rfl
+@[simp] private theorem woldSlotSource_none : woldSlotSource none = none := rfl
 
 /-- A wandering slot is read from the preceding time. -/
-@[simp] theorem woldSlotSource_some (k : ℤ) : woldSlotSource (some k) = some (k - 1) := rfl
+@[simp] private theorem woldSlotSource_some (k : ℤ) : woldSlotSource (some k) = some (k - 1) := rfl
 
 /-- The inverse source map fixes the unitary slot. -/
 @[simp] theorem woldSlotSource_symm_none : woldSlotSource.symm none = none := rfl
@@ -283,7 +283,7 @@ def woldBilateralInvFun (V : H →ₗᵢ[ℂ] H) (f : ∀ i, woldSummandInt V i)
   | some k => f (some (k + 1))
 
 /-- A bilateral step preserves squared coordinate norms up to reindexing. -/
-theorem norm_sq_woldBilateralFun (V : H →ₗᵢ[ℂ] H) (f : ∀ i, woldSummandInt V i)
+private theorem norm_sq_woldBilateralFun (V : H →ₗᵢ[ℂ] H) (f : ∀ i, woldSummandInt V i)
     (i : Option ℤ) :
     ‖woldBilateralFun V f i‖ ^ 2 = ‖f (woldSlotSource i)‖ ^ 2 := by
   cases i with
@@ -319,7 +319,7 @@ def woldBilateral (V : H →ₗᵢ[ℂ] H) (f : lp (woldSummandInt V) 2) :
         (summable_norm_sq_woldBilateralFun V f))⟩
 
 /-- Evaluation of one bilateral step. -/
-theorem woldBilateral_apply (V : H →ₗᵢ[ℂ] H) (f : lp (woldSummandInt V) 2) (i : Option ℤ) :
+private theorem woldBilateral_apply (V : H →ₗᵢ[ℂ] H) (f : lp (woldSummandInt V) 2) (i : Option ℤ) :
     woldBilateral V f i = woldBilateralFun V f i :=
   rfl
 
@@ -412,7 +412,7 @@ def woldBilateralInv (V : H →ₗᵢ[ℂ] H) (f : lp (woldSummandInt V) 2) :
         hsum)⟩
 
 /-- The inverse step undoes a bilateral step. -/
-theorem woldBilateralInv_woldBilateral (V : H →ₗᵢ[ℂ] H) (f : lp (woldSummandInt V) 2) :
+private theorem woldBilateralInv_woldBilateral (V : H →ₗᵢ[ℂ] H) (f : lp (woldSummandInt V) 2) :
     woldBilateralInv V (woldBilateral V f) = f := by
   apply lp.ext
   funext i
@@ -425,7 +425,7 @@ theorem woldBilateralInv_woldBilateral (V : H →ₗᵢ[ℂ] H) (f : lp (woldSum
     rw [add_sub_cancel_right]
 
 /-- A bilateral step undoes the inverse step. -/
-theorem woldBilateral_woldBilateralInv (V : H →ₗᵢ[ℂ] H) (f : lp (woldSummandInt V) 2) :
+private theorem woldBilateral_woldBilateralInv (V : H →ₗᵢ[ℂ] H) (f : lp (woldSummandInt V) 2) :
     woldBilateral V (woldBilateralInv V f) = f := by
   apply lp.ext
   funext i
@@ -505,7 +505,7 @@ def woldBilateralEquiv (V : H →ₗᵢ[ℂ] H) :
     (woldBilateralLinear_comp_inv V) (woldBilateralInvLinear_comp V)
 
 /-- Evaluation of the bilateral unitary. -/
-theorem woldBilateralEquiv_apply (V : H →ₗᵢ[ℂ] H) (f : lp (woldSummandInt V) 2) :
+private theorem woldBilateralEquiv_apply (V : H →ₗᵢ[ℂ] H) (f : lp (woldSummandInt V) 2) :
     woldBilateralEquiv V f = woldBilateral V f :=
   rfl
 
@@ -514,7 +514,7 @@ def woldExtensionIncl (V : H →ₗᵢ[ℂ] H) : H →ₗᵢ[ℂ] lp (woldSumman
   (woldPadIsometry V).comp (wold_isHilbertSum V).linearIsometryEquiv.toLinearIsometry
 
 /-- The extension of an isometry intertwines it with the bilateral unitary. -/
-theorem woldExtension_intertwining (V : H →ₗᵢ[ℂ] H) (x : H) :
+private theorem woldExtension_intertwining (V : H →ₗᵢ[ℂ] H) (x : H) :
     woldBilateralEquiv V (woldExtensionIncl V x) = woldExtensionIncl V (V x) := by
   apply lp.ext
   funext i
@@ -568,13 +568,13 @@ theorem woldExtension_pow (V : H →ₗᵢ[ℂ] H) (n : ℕ) (x : H) :
     exact woldExtension_intertwining V ((V ^ n) x)
 
 /-- The Hilbert-sum coordinate of an included summand is the corresponding basis vector. -/
-theorem wold_coord_incl (V : H →ₗᵢ[ℂ] H) (i : Option ℕ) (a : woldSummandNat V i) :
+private theorem wold_coord_incl (V : H →ₗᵢ[ℂ] H) (i : Option ℕ) (a : woldSummandNat V i) :
     (wold_isHilbertSum V).linearIsometryEquiv (woldSummandIncl V i a) = lp.single 2 i a := by
   rw [← (wold_isHilbertSum V).linearIsometryEquiv_symm_apply_single (i := i) a]
   exact (wold_isHilbertSum V).linearIsometryEquiv.apply_symm_apply (lp.single 2 i a)
 
 /-- Padding of a unitary basis function, before passing to `ℓ²`. -/
-theorem woldPadFun_single_none (V : H →ₗᵢ[ℂ] H) (a : woldUnitarySubspace V) (j : Option ℤ) :
+private theorem woldPadFun_single_none (V : H →ₗᵢ[ℂ] H) (a : woldUnitarySubspace V) (j : Option ℤ) :
     woldPadFun V (Pi.single none a) j = Pi.single none a j := by
   cases j with
   | none =>
@@ -595,7 +595,7 @@ theorem woldPadFun_single_none (V : H →ₗᵢ[ℂ] H) (a : woldUnitarySubspace
     · rw [woldPadFun_neg V _ (lt_of_not_ge hk), Pi.single_eq_of_ne hne]
 
 /-- Padding fixes a unitary basis vector. -/
-theorem woldPad_single_none (V : H →ₗᵢ[ℂ] H) (a : woldUnitarySubspace V) :
+private theorem woldPad_single_none (V : H →ₗᵢ[ℂ] H) (a : woldUnitarySubspace V) :
     woldPad V (lp.single 2 none a) = lp.single 2 none a := by
   apply lp.ext
   funext j
@@ -609,7 +609,7 @@ theorem woldPad_single_none (V : H →ₗᵢ[ℂ] H) (a : woldUnitarySubspace V)
     ((woldPadFun_single_none V a j).trans (congrFun hint j).symm))
 
 /-- Padding of a wandering basis function, before passing to `ℓ²`. -/
-theorem woldPadFun_single_some (V : H →ₗᵢ[ℂ] H) (n : ℕ) (a : woldWanderingSubspace V)
+private theorem woldPadFun_single_some (V : H →ₗᵢ[ℂ] H) (n : ℕ) (a : woldWanderingSubspace V)
     (j : Option ℤ) :
     woldPadFun V (Pi.single (some n) a) j = Pi.single (some (n : ℤ)) a j := by
   cases j with
@@ -653,7 +653,7 @@ theorem woldPadFun_single_some (V : H →ₗᵢ[ℂ] H) (n : ℕ) (a : woldWande
       rw [woldPadFun_neg V _ (lt_of_not_ge hk), Pi.single_eq_of_ne hne]
 
 /-- Padding keeps a wandering basis vector at the same integer time. -/
-theorem woldPad_single_some (V : H →ₗᵢ[ℂ] H) (n : ℕ) (a : woldWanderingSubspace V) :
+private theorem woldPad_single_some (V : H →ₗᵢ[ℂ] H) (n : ℕ) (a : woldWanderingSubspace V) :
     woldPad V (lp.single 2 (some n) a) = lp.single 2 (some (n : ℤ)) a := by
   apply lp.ext
   funext j
@@ -667,32 +667,32 @@ theorem woldPad_single_some (V : H →ₗᵢ[ℂ] H) (n : ℕ) (a : woldWanderin
     ((woldPadFun_single_some V n a j).trans (congrFun hint j).symm))
 
 /-- A time-zero wandering vector is included as itself. -/
-theorem woldSummandIncl_zero (V : H →ₗᵢ[ℂ] H) (a : woldWanderingSubspace V) :
+private theorem woldSummandIncl_zero (V : H →ₗᵢ[ℂ] H) (a : woldWanderingSubspace V) :
     woldSummandIncl V (some 0) a = (a : H) := by
   rw [woldSummandIncl_some, woldShift_apply, pow_zero, one_apply_eq_self]
 
 /-- The extension inclusion, before the padding step. -/
-theorem woldExtensionIncl_apply (V : H →ₗᵢ[ℂ] H) (x : H) :
+private theorem woldExtensionIncl_apply (V : H →ₗᵢ[ℂ] H) (x : H) :
     woldExtensionIncl V x =
       woldPad V ((wold_isHilbertSum V).linearIsometryEquiv x) := by
   simp [woldExtensionIncl, woldPadIsometry, woldPadLinear, LinearIsometry.coe_comp,
     LinearIsometryEquiv.coe_toLinearIsometry, Function.comp_apply]
 
 /-- The extension inclusion sends a wandering vector to the time-zero basis vector. -/
-theorem woldExtensionIncl_wandering (V : H →ₗᵢ[ℂ] H) (a : woldWanderingSubspace V) :
+private theorem woldExtensionIncl_wandering (V : H →ₗᵢ[ℂ] H) (a : woldWanderingSubspace V) :
     woldExtensionIncl V (a : H) = lp.single 2 (some 0) a := by
   rw [woldExtensionIncl_apply, ← woldSummandIncl_zero V a, wold_coord_incl,
     woldPad_single_some]
   rfl
 
 /-- The extension inclusion sends a unitary vector to the unitary basis vector. -/
-theorem woldExtensionIncl_unitary (V : H →ₗᵢ[ℂ] H) (u : woldUnitarySubspace V) :
+private theorem woldExtensionIncl_unitary (V : H →ₗᵢ[ℂ] H) (u : woldUnitarySubspace V) :
     woldExtensionIncl V (u : H) = lp.single 2 none u := by
   rw [woldExtensionIncl_apply, ← woldSummandIncl_none V u, wold_coord_incl,
     woldPad_single_none]
 
 /-- One bilateral step on a wandering basis function, before passing to `ℓ²`. -/
-theorem woldBilateralFun_single_some (V : H →ₗᵢ[ℂ] H) (k : ℤ) (a : woldWanderingSubspace V)
+private theorem woldBilateralFun_single_some (V : H →ₗᵢ[ℂ] H) (k : ℤ) (a : woldWanderingSubspace V)
     (i : Option ℤ) :
     woldBilateralFun V (Pi.single (some k) a) i = Pi.single (some (k + 1)) a i := by
   cases i with
@@ -718,14 +718,14 @@ theorem woldBilateralFun_single_some (V : H →ₗᵢ[ℂ] H) (k : ℤ) (a : wol
       rw [Pi.single_eq_of_ne hpred, Pi.single_eq_of_ne hne]
 
 /-- One bilateral step shifts a wandering basis vector one time forward. -/
-theorem woldBilateral_single_some (V : H →ₗᵢ[ℂ] H) (k : ℤ) (a : woldWanderingSubspace V) :
+private theorem woldBilateral_single_some (V : H →ₗᵢ[ℂ] H) (k : ℤ) (a : woldWanderingSubspace V) :
     woldBilateralEquiv V (lp.single 2 (some k) a) = lp.single 2 (some (k + 1)) a := by
   apply lp.ext
   funext i
   exact woldBilateralFun_single_some V k a i
 
 /-- Nonnegative powers shift the time-zero wandering vector to time `n`. -/
-theorem woldBilateral_pow_single (V : H →ₗᵢ[ℂ] H) (n : ℕ) (a : woldWanderingSubspace V) :
+private theorem woldBilateral_pow_single (V : H →ₗᵢ[ℂ] H) (n : ℕ) (a : woldWanderingSubspace V) :
     (woldBilateralEquiv V ^ n) (lp.single 2 (some 0) a) = lp.single 2 (some (n : ℤ)) a := by
   induction n with
   | zero => simp [pow_zero]
@@ -735,12 +735,12 @@ theorem woldBilateral_pow_single (V : H →ₗᵢ[ℂ] H) (n : ℕ) (a : woldWan
     simpa [Nat.cast_add, Nat.cast_one] using hshift
 
 /-- The inverse bilateral unitary, evaluated on `ℓ²`. -/
-theorem woldBilateralEquiv_symm_apply (V : H →ₗᵢ[ℂ] H) (f : lp (woldSummandInt V) 2) :
+private theorem woldBilateralEquiv_symm_apply (V : H →ₗᵢ[ℂ] H) (f : lp (woldSummandInt V) 2) :
     (woldBilateralEquiv V).symm f = woldBilateralInv V f := by
   simp [woldBilateralEquiv, woldBilateralInvLinear, LinearIsometryEquiv.coe_ofLinearIsometry_symm]
 
 /-- The inverse step on a wandering basis function, before passing to `ℓ²`. -/
-theorem woldBilateralInvFun_single_some (V : H →ₗᵢ[ℂ] H) (k : ℤ)
+private theorem woldBilateralInvFun_single_some (V : H →ₗᵢ[ℂ] H) (k : ℤ)
     (a : woldWanderingSubspace V) (i : Option ℤ) :
     woldBilateralInvFun V (Pi.single (some k) a) i = Pi.single (some (k - 1)) a i := by
   cases i with
@@ -766,14 +766,16 @@ theorem woldBilateralInvFun_single_some (V : H →ₗᵢ[ℂ] H) (k : ℤ)
       rw [Pi.single_eq_of_ne hsrc, Pi.single_eq_of_ne hne]
 
 /-- The inverse step shifts a wandering basis vector one time backward. -/
-theorem woldBilateralInv_single_some (V : H →ₗᵢ[ℂ] H) (k : ℤ) (a : woldWanderingSubspace V) :
+private theorem woldBilateralInv_single_some (V : H →ₗᵢ[ℂ] H) (k : ℤ)
+    (a : woldWanderingSubspace V) :
     woldBilateralInv V (lp.single 2 (some k) a) = lp.single 2 (some (k - 1)) a := by
   apply lp.ext
   funext i
   exact woldBilateralInvFun_single_some V k a i
 
 /-- Negative powers shift the time-zero wandering vector to time `-n`. -/
-theorem woldBilateral_inv_pow_single (V : H →ₗᵢ[ℂ] H) (n : ℕ) (a : woldWanderingSubspace V) :
+private theorem woldBilateral_inv_pow_single (V : H →ₗᵢ[ℂ] H) (n : ℕ)
+    (a : woldWanderingSubspace V) :
     ((woldBilateralEquiv V).symm ^ n) (lp.single 2 (some 0) a) =
       lp.single 2 (some (-n : ℤ)) a := by
   induction n with
@@ -785,7 +787,7 @@ theorem woldBilateral_inv_pow_single (V : H →ₗᵢ[ℂ] H) (n : ℕ) (a : wol
     rw [Nat.cast_add, Nat.cast_one, neg_add, sub_eq_add_neg]
 
 /-- Every bilateral basis vector lies on the two-sided orbit of an included Wold vector. -/
-theorem wold_single_mem_orbit (V : H →ₗᵢ[ℂ] H) (i : Option ℤ) (a : woldSummandInt V i) :
+private theorem wold_single_mem_orbit (V : H →ₗᵢ[ℂ] H) (i : Option ℤ) (a : woldSummandInt V i) :
     ∃ k : ℤ, ∃ x : H, lp.single 2 i a =
       (woldBilateralEquiv V ^ k) (woldExtensionIncl V x) := by
   cases i with

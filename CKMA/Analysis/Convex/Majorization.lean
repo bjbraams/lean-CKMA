@@ -90,7 +90,7 @@ def sumLargest (x : Fin n → ℝ) (k : ℕ) : ℝ :=
   sumInitial (x ∘ Tuple.sortDesc x) k
 
 /-- The initial-segment sum is the corresponding sum over `range k`. -/
-lemma sumInitial_eq_sum_range (f : Fin n → ℝ) {k : ℕ} (hk : k ≤ n) : sumInitial f k =
+private lemma sumInitial_eq_sum_range (f : Fin n → ℝ) {k : ℕ} (hk : k ≤ n) : sumInitial f k =
     ∑ i ∈ range k, if h : i < n then f ⟨i, h⟩ else 0 := by
   unfold sumInitial
   refine sum_bij (fun (i : Fin n) (_ : i ∈ _) => (i : ℕ)) ?_ ?_ ?_ ?_
@@ -105,7 +105,7 @@ lemma sumInitial_eq_sum_range (f : Fin n → ℝ) {k : ℕ} (hk : k ≤ n) : sum
     simp [i.isLt]
 
 /-- Once `k` meets the length, the initial-segment sum is the total sum. -/
-lemma sumInitial_eq_sum_of_card_le (f : Fin n → ℝ) {k : ℕ} (hk : n ≤ k) :
+private lemma sumInitial_eq_sum_of_card_le (f : Fin n → ℝ) {k : ℕ} (hk : n ≤ k) :
     sumInitial f k = ∑ i, f i := by
   have hfilter : univ.filter (fun i : Fin n => (i : ℕ) < k) = univ := by
     ext i
@@ -113,7 +113,7 @@ lemma sumInitial_eq_sum_of_card_le (f : Fin n → ℝ) {k : ℕ} (hk : n ≤ k) 
   simp [sumInitial, hfilter]
 
 /-- The initial segment of length `k ≤ n` has `k` indices. -/
-lemma card_filter_val_lt {k : ℕ} (hk : k ≤ n) :
+private lemma card_filter_val_lt {k : ℕ} (hk : k ≤ n) :
     (univ.filter fun i : Fin n => (i : ℕ) < k).card = k := by
   conv_rhs => rw [← card_range k]
   refine card_bij (fun (i : Fin n) (_ : i ∈ _) => (i : ℕ)) ?_ ?_ ?_
@@ -126,7 +126,7 @@ lemma card_filter_val_lt {k : ℕ} (hk : k ≤ n) :
     exact ⟨⟨m, Nat.lt_of_lt_of_le hm' hk⟩, by simp [hm'], rfl⟩
 
 /-- An antitone tuple maximizes initial segments among subsets of the same size. -/
-lemma sum_le_sumInitial_of_antitone {f : Fin n → ℝ} (hf : Antitone f) (s : Finset (Fin n)) :
+private lemma sum_le_sumInitial_of_antitone {f : Fin n → ℝ} (hf : Antitone f) (s : Finset (Fin n)) :
     ∑ i ∈ s, f i ≤ sumInitial f s.card := by
   have hk : s.card ≤ n := by simpa [Fintype.card_fin] using s.card_le_univ
   let e := s.orderEmbOfFin rfl
@@ -152,7 +152,7 @@ lemma sum_le_sumInitial_of_antitone {f : Fin n → ℝ} (hf : Antitone f) (s : F
       simp [Nat.lt_of_lt_of_le i.isLt hk]
 
 /-- Every coordinate subset sum is at most the decreasing rearrangement of the same length. -/
-lemma sum_le_sumLargest (x : Fin n → ℝ) (s : Finset (Fin n)) :
+private lemma sum_le_sumLargest (x : Fin n → ℝ) (s : Finset (Fin n)) :
     ∑ i ∈ s, x i ≤ sumLargest x s.card := by
   let sigma := Tuple.sortDesc x
   let a := x ∘ sigma
@@ -168,7 +168,7 @@ lemma sum_le_sumLargest (x : Fin n → ℝ) (s : Finset (Fin n)) :
     _ = sumLargest x s.card := by rw [card_map, sumLargest]
 
 /-- Majorization bounds every decreasing partial sum. -/
-lemma IsMajorizedBy.sumLargest_le {x y : Fin n → ℝ} (hxy : IsMajorizedBy x y) (k : ℕ) :
+private lemma IsMajorizedBy.sumLargest_le {x y : Fin n → ℝ} (hxy : IsMajorizedBy x y) (k : ℕ) :
     sumLargest x k ≤ sumLargest y k := by
   rcases Nat.lt_or_ge n k with hk | hk
   · have hn : n ≤ k := hk.le
@@ -188,7 +188,7 @@ lemma IsMajorizedBy.sumLargest_le {x y : Fin n → ℝ} (hxy : IsMajorizedBy x y
     exact hx ▸ hst.trans hty
 
 /-- A dot product is at most the dot product of the decreasing rearrangements. -/
-lemma dotProduct_le_dotProduct_sortDesc (c x : Fin n → ℝ) :
+private lemma dotProduct_le_dotProduct_sortDesc (c x : Fin n → ℝ) :
     dotProduct c x ≤
       dotProduct (c ∘ Tuple.sortDesc c) (x ∘ Tuple.sortDesc x) := by
   let sc := Tuple.sortDesc c
@@ -212,7 +212,7 @@ lemma dotProduct_le_dotProduct_sortDesc (c x : Fin n → ℝ) :
     _ = dotProduct c' x' := by simp [dotProduct]
 
 /-- The decreasing rearrangements realize the maximal permuted dot product. -/
-lemma exists_dotProduct_comp_perm_eq_sortDesc (c y : Fin n → ℝ) :
+private lemma exists_dotProduct_comp_perm_eq_sortDesc (c y : Fin n → ℝ) :
     ∃ σ : Equiv.Perm (Fin n), dotProduct c (y ∘ σ) =
       dotProduct (c ∘ Tuple.sortDesc c) (y ∘ Tuple.sortDesc y) := by
   let sc := Tuple.sortDesc c
@@ -227,7 +227,7 @@ lemma exists_dotProduct_comp_perm_eq_sortDesc (c y : Fin n → ℝ) :
   simp [sigma, sc, sy, Function.comp_apply]
 
 /-- Abel summation: an antitone weight favors the tuple with larger initial sums. -/
-lemma dotProduct_le_of_sumInitial_le {c x y : Fin n → ℝ} (hc : Antitone c)
+private lemma dotProduct_le_of_sumInitial_le {c x y : Fin n → ℝ} (hc : Antitone c)
     (hsum : ∑ i, x i = ∑ i, y i) (hpart : ∀ k, sumInitial x k ≤ sumInitial y k) :
     dotProduct c x ≤ dotProduct c y := by
   let natOf (f : Fin n → ℝ) : ℕ → ℝ := fun i => if h : i < n then f ⟨i, h⟩ else 0
@@ -265,7 +265,7 @@ lemma dotProduct_le_of_sumInitial_le {c x y : Fin n → ℝ} (hc : Antitone c)
   exact sub_nonneg.mp (hdiff ▸ hnonnegMul)
 
 /-- Under majorization, a dot product is at most the sorted dot product with `y`. -/
-lemma IsMajorizedBy.dotProduct_sortDesc_le {x y c : Fin n → ℝ} (hxy : IsMajorizedBy x y) :
+private lemma IsMajorizedBy.dotProduct_sortDesc_le {x y c : Fin n → ℝ} (hxy : IsMajorizedBy x y) :
     dotProduct c x ≤
       dotProduct (c ∘ Tuple.sortDesc c) (y ∘ Tuple.sortDesc y) := by
   let c' := c ∘ Tuple.sortDesc c
@@ -285,7 +285,7 @@ lemma IsMajorizedBy.dotProduct_sortDesc_le {x y c : Fin n → ℝ} (hxy : IsMajo
       dotProduct_le_of_sumInitial_le (Tuple.antitone_sortDesc c) hsum hpart
 
 /-- Majorization puts `x` in the permutohedron of `y`. -/
-lemma mem_convexHull_range_comp_perm_of_isMajorizedBy {x y : Fin n → ℝ}
+private lemma mem_convexHull_range_comp_perm_of_isMajorizedBy {x y : Fin n → ℝ}
     (hxy : IsMajorizedBy x y) :
     x ∈ convexHull ℝ (Set.range fun σ : Equiv.Perm (Fin n) => y ∘ σ) := by
   let C : Set (Fin n → ℝ) := convexHull ℝ (Set.range fun σ : Equiv.Perm (Fin n) => y ∘ σ)
@@ -310,7 +310,7 @@ lemma mem_convexHull_range_comp_perm_of_isMajorizedBy {x y : Fin n → ℝ}
   exact hle.not_gt (hlt.trans hxu)
 
 /-- **11.22**, Hardy–Littlewood–Pólya, from majorization to a doubly stochastic matrix. -/
-lemma exists_doublyStochastic_of_isMajorizedBy (x y : Fin n → ℝ) (hxy : IsMajorizedBy x y) :
+private lemma exists_doublyStochastic_of_isMajorizedBy (x y : Fin n → ℝ) (hxy : IsMajorizedBy x y) :
     ∃ D ∈ doublyStochastic ℝ (Fin n), x = D.mulVec y := by
   obtain ⟨ι, ιFin, w, z, hw0, hw1, hz, hx⟩ :=
     mem_convexHull_iff_exists_fintype.1 (mem_convexHull_range_comp_perm_of_isMajorizedBy hxy)
@@ -333,7 +333,7 @@ lemma exists_doublyStochastic_of_isMajorizedBy (x y : Fin n → ℝ) (hxy : IsMa
     _ = x := hx
 
 /-- A doubly stochastic image is majorized by the original vector. -/
-lemma isMajorizedBy_of_mem_doublyStochastic {D : Matrix (Fin n) (Fin n) ℝ}
+private lemma isMajorizedBy_of_mem_doublyStochastic {D : Matrix (Fin n) (Fin n) ℝ}
     (hD : D ∈ doublyStochastic ℝ (Fin n)) (y : Fin n → ℝ) :
     IsMajorizedBy (D.mulVec y) y := by
   refine ⟨sum_mulVec_of_mem_doublyStochastic hD, ?_⟩
@@ -389,7 +389,7 @@ theorem IsMajorizedBy.sum_convex_le {x y : Fin n → ℝ} (hxy : IsMajorizedBy x
     _ = ∑ j, φ (y j) := by simp [sum_col_of_mem_doublyStochastic hD]
 
 /-- Equal value multiplicities mean that the vectors differ by a permutation. -/
-lemma exists_perm_of_forall_filter_card_eq {x y : Fin n → ℝ}
+private lemma exists_perm_of_forall_filter_card_eq {x y : Fin n → ℝ}
     (h : ∀ v, (univ.filter fun i => x i = v).card = (univ.filter fun i => y i = v).card) :
     ∃ σ : Equiv.Perm (Fin n), x = y ∘ σ := by
   classical
@@ -419,7 +419,7 @@ lemma exists_perm_of_forall_filter_card_eq {x y : Fin n → ℝ}
   simpa [Equiv.Perm.mul_apply] using happly
 
 /-- Equality for a strictly convex sum forces a permutation. -/
-lemma IsMajorizedBy.eq_comp_perm_of_sum_strictConvex_eq {x y : Fin n → ℝ}
+private lemma IsMajorizedBy.eq_comp_perm_of_sum_strictConvex_eq {x y : Fin n → ℝ}
     (hxy : IsMajorizedBy x y) {s : Set ℝ} {φ : ℝ → ℝ} (hφ : StrictConvexOn ℝ s φ)
     (hx : ∀ i, x i ∈ s) (hy : ∀ i, y i ∈ s)
     (hsum : (∑ i, φ (x i)) = ∑ i, φ (y i)) :

@@ -29,7 +29,7 @@ sums.
 ## Main results
 
 * `CKMA.TimePartition.sum_increment`: partition increments sum to `T`.
-* `CKMA.TimePartition.abs_t_sub_covered_le_mesh`: distance from `t` to the last completed node is
+* `CKMA.TimePartition.abs_sub_covered_le_mesh`: distance from `t` to the last completed node is
   at most the mesh.
 -/
 
@@ -188,7 +188,7 @@ lemma increment_le_mesh (i : Fin π.size) : π.increment i ≤ π.mesh := by
         (Finset.mem_univ i)))
 
 /-- On `[0,T]`, time differs from the covered node by at most the mesh. -/
-lemma abs_t_sub_covered_le_mesh {t : ℝ≥0} (ht : t ≤ T) :
+lemma abs_sub_covered_le_mesh {t : ℝ≥0} (ht : t ≤ T) :
     |(t : ℝ) - (π.covered t : ℝ)| ≤ π.mesh := by
   have hk : π.completedCount t ≤ π.size := π.completedCount_le_size t
   by_cases h0 : π.completedCount t = 0
@@ -278,6 +278,8 @@ lemma abs_t_sub_covered_le_mesh {t : ℝ≥0} (ht : t ≤ T) :
         le_of_lt (lt_of_lt_of_le (by linarith) hstep)
       rw [abs_of_nonneg (sub_nonneg.mpr hs_le_t)]
       exact hdiff
+
+@[deprecated (since := "2026-11-15")] alias abs_t_sub_covered_le_mesh := abs_sub_covered_le_mesh
 
 end TimePartition
 

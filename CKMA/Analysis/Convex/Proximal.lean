@@ -87,7 +87,7 @@ private lemma proximal_norm_segment_sq (x p y : H) (t : ℝ) :
 
 omit [InnerProductSpace ℝ H] in
 /-- A finite proximal minimizer rules out negative-infinite values everywhere. -/
-theorem IsProximalPoint.apply_ne_bot {γ : ℝ} {f : H → EReal} {x p : H}
+private theorem IsProximalPoint.apply_ne_bot {γ : ℝ} {f : H → EReal} {x p : H}
     (hp : IsProximalPoint γ f x p) (y : H) : f y ≠ ⊥ := by
   intro hy
   have h := hp.2.2 y
@@ -96,7 +96,8 @@ theorem IsProximalPoint.apply_ne_bot {γ : ℝ} {f : H → EReal} {x p : H}
   exact hp.1 h
 
 /-- The subgradient optimality condition gives a proximal point, without a convexity assumption. -/
-theorem isProximalPoint_of_mem_subdifferential {f : H → EReal} {γ : ℝ} (hγ : 0 < γ) (x p : H)
+private theorem isProximalPoint_of_mem_subdifferential {f : H → EReal} {γ : ℝ} (hγ : 0 < γ)
+    (x p : H)
     (hp : γ⁻¹ • (x - p) ∈ TauCeti.subdifferential (innerₗ H) f p) :
     IsProximalPoint γ f x p := by
   refine ⟨TauCeti.ne_bot_of_mem_subdifferential (innerₗ H) hp,
@@ -120,7 +121,7 @@ theorem isProximalPoint_of_mem_subdifferential {f : H → EReal} {γ : ℝ} (hγ
     _ ≤ _ := add_le_add hs (le_refl _)
 
 /-- Convexity turns proximal minimality into the subgradient optimality condition. -/
-theorem IsProximalPoint.mem_subdifferential {f : H → EReal}
+private theorem IsProximalPoint.mem_subdifferential {f : H → EReal}
     (hc : Convex ℝ {p : H × ℝ | f p.1 ≤ p.2}) {γ : ℝ} (hγ : 0 < γ) (x p : H)
     (hp : IsProximalPoint γ f x p) :
     γ⁻¹ • (x - p) ∈ TauCeti.subdifferential (innerₗ H) f p := by

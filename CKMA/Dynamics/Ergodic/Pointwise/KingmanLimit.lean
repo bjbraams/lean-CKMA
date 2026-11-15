@@ -78,14 +78,14 @@ lemma measurableSet_hasKingmanExcursion {f : ℕ → Ω → ℝ} {slope : Ω →
 alias measurableSet_kingmanExcursion := measurableSet_hasKingmanExcursion
 
 /-- The comparison function is measurable. -/
-lemma measurable_kingmanCompare {f : ℕ → Ω → ℝ} {slope : Ω → ℝ} {k : ℕ}
+private lemma measurable_kingmanCompare {f : ℕ → Ω → ℝ} {slope : Ω → ℝ} {k : ℕ}
     (hf : ∀ j : ℕ, 0 < j → Measurable (f j)) (hs : Measurable slope) :
     Measurable (kingmanCompare f slope k) := by
   unfold kingmanCompare
   exact Measurable.ite (measurableSet_hasKingmanExcursion hf hs) hs (hf 1 Nat.one_pos)
 
 /-- The tail majorant is measurable. -/
-lemma measurable_kingmanMajor {f : ℕ → Ω → ℝ} {slope : Ω → ℝ} {k : ℕ}
+private lemma measurable_kingmanMajor {f : ℕ → Ω → ℝ} {slope : Ω → ℝ} {k : ℕ}
     (hf : ∀ j : ℕ, 0 < j → Measurable (f j)) (hs : Measurable slope) :
     Measurable (kingmanMajor f slope k) := by
   unfold kingmanMajor
@@ -95,7 +95,7 @@ lemma measurable_kingmanMajor {f : ℕ → Ω → ℝ} {slope : Ω → ℝ} {k :
 
 omit [MeasurableSpace Ω] in
 /-- A constant slope along one orbit reproduces the deterministic window bound. -/
-lemma kingman_orbit_compare_le {f : ℕ → Ω → ℝ} {slope : ℝ} {k n : ℕ} {ω : Ω}
+private lemma kingman_orbit_compare_le {f : ℕ → Ω → ℝ} {slope : ℝ} {k n : ℕ} {ω : Ω}
     (hsub : ∀ i a b : ℕ, 0 < a → 0 < b →
       f (a + b) ((T^[i]) ω) ≤ f a ((T^[i]) ω) + f b ((T^[i + a]) ω))
     (hk : 0 < k) (hn : k ≤ n) :
@@ -142,7 +142,8 @@ lemma kingman_orbit_compare_le {f : ℕ → Ω → ℝ} {slope : ℝ} {k n : ℕ
   exact hbound
 
 /-- Invariance propagates along almost every forward orbit. -/
-lemma kingmanLiminfReal_ae_const_orbit [IsProbabilityMeasure μ] (hT : MeasurePreserving T μ μ)
+private lemma kingmanLiminfReal_ae_const_orbit [IsProbabilityMeasure μ]
+    (hT : MeasurePreserving T μ μ)
     {f : ℕ → Ω → ℝ} {C : ℝ} (hf : ∀ n : ℕ, 0 < n → Integrable (f n) μ)
     (hf_meas : ∀ n : ℕ, 0 < n → Measurable (f n))
     (hsub : ∀ n m : ℕ, 0 < n → 0 < m → ∀ᵐ ω ∂μ,

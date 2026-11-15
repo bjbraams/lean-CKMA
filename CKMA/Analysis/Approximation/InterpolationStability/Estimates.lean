@@ -26,8 +26,6 @@ bound on the Lebesgue constant.
 
 * `CKMA.lebesgueFunction_cos_eq`: off the nodes, the Lebesgue function is the sum of main and
   correction terms.
-* `CKMA.abs_cardinal_eq_main_add_corr`: off a node, each cardinal polynomial is the sum of its
-  main and correction terms.
 * `CKMA.sum_chebyshevLebesgueMain_le`: sum of the cotangent main terms compared with
   `(2 / π) log (n + 1)`.
 * `CKMA.chebyshevLebesgueCorr_zero_le`, `CKMA.chebyshevLebesgueCorr_last_le`: endpoint correction
@@ -124,8 +122,8 @@ private lemma isRoot_chebyshevExtremalNodal {n : ℕ} (hn : 1 ≤ n) (i : Fin (n
     IsRoot (chebyshevExtremalNodal n) (chebyshevExtremalNodes n i) := by
   rw [IsRoot.def, chebyshevExtremalNodes_eq_cos, eval_chebyshevExtremalNodal hn]
   have hn0 : (n : ℝ) ≠ 0 := by exact_mod_cast (by omega : n ≠ 0)
-  have hangle : (n : ℝ) * nodeAngle n i = (i.val : ℝ) * π := by
-    unfold nodeAngle
+  have hangle : (n : ℝ) * chebyshevNodeAngle n i = (i.val : ℝ) * π := by
+    unfold chebyshevNodeAngle
     field_simp
   rw [hangle, sin_nat_mul_pi, mul_zero]
 
@@ -274,7 +272,7 @@ private lemma cardinal_comp_neg {n : ℕ} (hn : 1 ≤ n) (i : Fin (n + 1)) :
     have hnegX : (-X).eval (x j) = -x j := by simp
     rw [hnegX]
     have hneg : -x j = x j.rev :=
-      (chebyshevExtremalNodes_reflect (by omega) j).symm
+      (chebyshevExtremalNodes_rev (by omega) j).symm
     rw [hneg]
     by_cases hji : j.rev = i
     · have hj : j = i.rev := by
@@ -308,17 +306,17 @@ lemma lebesgueFunction_neg {n : ℕ} (hn : 1 ≤ n) (t : ℝ) :
 
 /-- Sign of an off-node angle relative to a node angle. -/
 def chebyshevAngleSign (n : ℕ) (θ : ℝ) (i : Fin (n + 1)) : ℝ :=
-  if nodeAngle n i < θ then 1 else -1
+  if chebyshevNodeAngle n i < θ then 1 else -1
 
 /-- Cotangent main term in the angular formula for a cardinal polynomial. -/
 def chebyshevLebesgueMain (n : ℕ) (θ : ℝ) (i : Fin (n + 1)) : ℝ :=
   |sin ((n : ℝ) * θ)| / (2 * (n : ℝ) * chebyshevExtremalWeight n i) *
-    cot (|θ - nodeAngle n i| / 2)
+    cot (|θ - chebyshevNodeAngle n i| / 2)
 
 /-- Cotangent correction in the angular formula for a cardinal polynomial. -/
 def chebyshevLebesgueCorr (n : ℕ) (θ : ℝ) (i : Fin (n + 1)) : ℝ :=
   |sin ((n : ℝ) * θ)| / (2 * (n : ℝ) * chebyshevExtremalWeight n i) *
-    chebyshevAngleSign n θ i * cot ((θ + nodeAngle n i) / 2)
+    chebyshevAngleSign n θ i * cot ((θ + chebyshevNodeAngle n i) / 2)
 
 /-- Cosine difference in product form. -/
 private lemma abs_cos_sub_cos (θ φ : ℝ) :
@@ -394,13 +392,13 @@ private lemma sin_div_gap {θ φ : ℝ} (hθ : θ ∈ Set.Ioo 0 π) (hφ : φ �
     ring
 
 /-- Off a node, each cardinal polynomial is the sum of its main and correction terms. -/
-lemma abs_cardinal_eq_main_add_corr {n : ℕ} (hn : 1 ≤ n) {θ : ℝ}
-    (hθ : θ ∈ Set.Ioo 0 π) (hnode : ∀ i, θ ≠ nodeAngle n i) (i : Fin (n + 1)) :
+private lemma abs_cardinal_eq_main_add_corr {n : ℕ} (hn : 1 ≤ n) {θ : ℝ}
+    (hθ : θ ∈ Set.Ioo 0 π) (hnode : ∀ i, θ ≠ chebyshevNodeAngle n i) (i : Fin (n + 1)) :
     |(lagrangeCardinalPolynomial (chebyshevExtremalNodes n) i).eval (cos θ)| =
       chebyshevLebesgueMain n θ i + chebyshevLebesgueCorr n θ i := by
   have hn0 : n ≠ 0 := by omega
-  have hφmem : nodeAngle n i ∈ Set.Icc 0 π := nodeAngle_mem_Icc hn0 i
-  have hne : θ ≠ nodeAngle n i := hnode i
+  have hφmem : chebyshevNodeAngle n i ∈ Set.Icc 0 π := chebyshevNodeAngle_mem_Icc hn0 i
+  have hne : θ ≠ chebyshevNodeAngle n i := hnode i
   have hcosne : cos θ ≠ chebyshevExtremalNodes n i := by
     rw [chebyshevExtremalNodes_eq_cos]
     intro h
@@ -410,46 +408,48 @@ lemma abs_cardinal_eq_main_add_corr {n : ℕ} (hn : 1 ≤ n) {θ : ℝ}
       |sin θ| * |sin ((n : ℝ) * θ)| := by
     rw [eval_chebyshevExtremalNodal hn, abs_mul]
   have hder := abs_derivative_chebyshevExtremalNodal hn i
-  have hdiff := abs_cos_sub_cos θ (nodeAngle n i)
+  have hdiff := abs_cos_sub_cos θ (chebyshevNodeAngle n i)
   have hsinθ : 0 < sin θ := sin_pos_of_pos_of_lt_pi hθ.1 hθ.2
   have hu := nodeGap_mem_Ioo hθ hφmem hne
   have havg := nodeAverage_mem_Ioo hθ hφmem
-  have hsinu : 0 < sin (|θ - nodeAngle n i| / 2) :=
+  have hsinu : 0 < sin (|θ - chebyshevNodeAngle n i| / 2) :=
     sin_pos_of_pos_of_lt_pi hu.1 (hu.2.trans (by linarith [pi_pos]))
-  have hsinavg : 0 < sin ((θ + nodeAngle n i) / 2) :=
+  have hsinavg : 0 < sin ((θ + chebyshevNodeAngle n i) / 2) :=
     sin_pos_of_pos_of_lt_pi havg.1 havg.2
   have hweight : 0 < chebyshevExtremalWeight n i := chebyshevExtremalWeight_pos n i
   have hnpos : (0 : ℝ) < n := by exact_mod_cast (by omega : 0 < n)
   have hsplit := sin_div_gap hθ hφmem hne
   rw [habs, heval, hder, chebyshevExtremalNodes_eq_cos, hdiff, abs_of_pos hsinθ]
-  rw [abs_sin_div_two_abs (θ - nodeAngle n i), abs_of_pos hsinu, abs_of_pos hsinavg]
+  rw [abs_sin_div_two_abs (θ - chebyshevNodeAngle n i), abs_of_pos hsinu, abs_of_pos hsinavg]
   unfold chebyshevLebesgueMain chebyshevLebesgueCorr chebyshevAngleSign
-  have hcomm : sin θ / (sin ((θ + nodeAngle n i) / 2) * sin (|θ - nodeAngle n i| / 2)) =
-      cot (|θ - nodeAngle n i| / 2) +
-        (if nodeAngle n i < θ then (1 : ℝ) else -1) *
-          cot ((θ + nodeAngle n i) / 2) := by
+  have hcomm : sin θ / (sin ((θ + chebyshevNodeAngle n i) / 2) *
+      sin (|θ - chebyshevNodeAngle n i| / 2)) =
+      cot (|θ - chebyshevNodeAngle n i| / 2) +
+        (if chebyshevNodeAngle n i < θ then (1 : ℝ) else -1) *
+          cot ((θ + chebyshevNodeAngle n i) / 2) := by
     rw [mul_comm]
     exact hsplit
   calc
       sin θ * |sin ((n : ℝ) * θ)| /
-          (2 * sin ((θ + nodeAngle n i) / 2) * sin (|θ - nodeAngle n i| / 2) *
+          (2 * sin ((θ + chebyshevNodeAngle n i) / 2) * sin (|θ - chebyshevNodeAngle n i| / 2) *
             ((n : ℝ) * chebyshevExtremalWeight n i))
         = |sin ((n : ℝ) * θ)| / (2 * (n : ℝ) * chebyshevExtremalWeight n i) *
-            (sin θ / (sin ((θ + nodeAngle n i) / 2) * sin (|θ - nodeAngle n i| / 2))) := by
+            (sin θ / (sin ((θ + chebyshevNodeAngle n i) / 2) *
+              sin (|θ - chebyshevNodeAngle n i| / 2))) := by
           field_simp [hsinu.ne', hsinavg.ne', hweight.ne', hnpos.ne']
     _ = |sin ((n : ℝ) * θ)| / (2 * (n : ℝ) * chebyshevExtremalWeight n i) *
-          (cot (|θ - nodeAngle n i| / 2) +
-            (if nodeAngle n i < θ then (1 : ℝ) else -1) *
-              cot ((θ + nodeAngle n i) / 2)) := by
+          (cot (|θ - chebyshevNodeAngle n i| / 2) +
+            (if chebyshevNodeAngle n i < θ then (1 : ℝ) else -1) *
+              cot ((θ + chebyshevNodeAngle n i) / 2)) := by
         rw [hcomm]
     _ = |sin ((n : ℝ) * θ)| / (2 * (n : ℝ) * chebyshevExtremalWeight n i) *
-          cot (|θ - nodeAngle n i| / 2) +
+          cot (|θ - chebyshevNodeAngle n i| / 2) +
         (|sin ((n : ℝ) * θ)| / (2 * (n : ℝ) * chebyshevExtremalWeight n i) *
-          (if nodeAngle n i < θ then (1 : ℝ) else -1)) *
-          cot ((θ + nodeAngle n i) / 2) := by ring
+          (if chebyshevNodeAngle n i < θ then (1 : ℝ) else -1)) *
+          cot ((θ + chebyshevNodeAngle n i) / 2) := by ring
 
 /-- On `(0, π/2)`, cotangent lies above `1/u - u/2`. -/
-lemma cot_ge_inv_sub {u : ℝ} (hu : u ∈ Set.Ioo 0 (π / 2)) :
+lemma one_div_sub_div_two_le_cot {u : ℝ} (hu : u ∈ Set.Ioo 0 (π / 2)) :
     1 / u - u / 2 ≤ cot u := by
   have hu0 : 0 < u := hu.1
   have hsin : 0 < sin u :=
@@ -470,6 +470,8 @@ lemma cot_ge_inv_sub {u : ℝ} (hu : u ∈ Set.Ioo 0 (π / 2)) :
   rw [cot_eq_cos_div_sin, ← hlin]
   exact hlower.trans hquot
 
+@[deprecated (since := "2026-11-15")] alias cot_ge_inv_sub := one_div_sub_div_two_le_cot
+
 /-- Harmonic numbers increase with the upper index. -/
 private lemma harmonic_mono {a b : ℕ} (h : a ≤ b) : (harmonic a : ℝ) ≤ harmonic b := by
   have hsub : range a ⊆ range b := Finset.range_subset_range.mpr h
@@ -480,36 +482,36 @@ private lemma harmonic_mono {a b : ℕ} (h : a ≤ b) : (harmonic a : ℝ) ≤ h
 
 /-- Single-term upper bound for the cotangent main term. -/
 private lemma chebyshevLebesgueMain_le_sin_div {n : ℕ} (hn : 1 ≤ n) {θ : ℝ}
-    (hθ : θ ∈ Set.Ioo 0 π) (hnode : ∀ i, θ ≠ nodeAngle n i) (i : Fin (n + 1)) :
+    (hθ : θ ∈ Set.Ioo 0 π) (hnode : ∀ i, θ ≠ chebyshevNodeAngle n i) (i : Fin (n + 1)) :
     chebyshevLebesgueMain n θ i ≤
       |sin ((n : ℝ) * θ)| / (π * |(i.val : ℝ) - (n : ℝ) * θ / π|) := by
   have hn0 : (0 : ℝ) < n := by exact_mod_cast (by omega : 0 < n)
   have hnpos : (n : ℝ) ≠ 0 := hn0.ne'
   let ν : ℝ := (n : ℝ) * θ / π
-  have hφ : nodeAngle n i ∈ Set.Icc 0 π := nodeAngle_mem_Icc (by omega) i
-  have hneθ : θ ≠ nodeAngle n i := hnode i
+  have hφ : chebyshevNodeAngle n i ∈ Set.Icc 0 π := chebyshevNodeAngle_mem_Icc (by omega) i
+  have hneθ : θ ≠ chebyshevNodeAngle n i := hnode i
   have hu := nodeGap_mem_Ioo hθ hφ hneθ
   have hαpos := chebyshevExtremalWeight_pos n i
   have hα1 := one_le_chebyshevExtremalWeight n i
   have hdpos : 0 < |(i.val : ℝ) - ν| := by
     rw [abs_pos]
     intro hzero
-    have hθeq : θ = nodeAngle n i := by
+    have hθeq : θ = chebyshevNodeAngle n i := by
       have hiν : (i.val : ℝ) = ν := by linarith
-      unfold nodeAngle
+      unfold chebyshevNodeAngle
       rw [hiν, show ν = (n : ℝ) * θ / π from rfl]
       field_simp
     exact hneθ hθeq
-  have hgap : |θ - nodeAngle n i| = π * |(i.val : ℝ) - ν| / n := by
+  have hgap : |θ - chebyshevNodeAngle n i| = π * |(i.val : ℝ) - ν| / n := by
     have hθv : θ = π * ν / n := by
       unfold ν
       field_simp
-    rw [hθv, nodeAngle]
+    rw [hθv, chebyshevNodeAngle]
     have hsub : π * ν / n - π * (i.val : ℝ) / n =
         π * (ν - (i.val : ℝ)) / n := by
       field_simp
     rw [hsub, abs_div, abs_mul, abs_of_pos pi_pos, abs_of_pos hn0, abs_sub_comm]
-  have hu_eq : |θ - nodeAngle n i| / 2 =
+  have hu_eq : |θ - chebyshevNodeAngle n i| / 2 =
       π * |(i.val : ℝ) - ν| / (2 * n) := by
     rw [hgap]
     ring
@@ -520,10 +522,10 @@ private lemma chebyshevLebesgueMain_le_sin_div {n : ℕ} (hn : 1 ≤ n) {θ : �
   calc chebyshevLebesgueMain n θ i
       = |sin ((n : ℝ) * θ)| /
           (2 * (n : ℝ) * chebyshevExtremalWeight n i) *
-          cot (|θ - nodeAngle n i| / 2) := rfl
+          cot (|θ - chebyshevNodeAngle n i| / 2) := rfl
     _ ≤ |sin ((n : ℝ) * θ)| /
           (2 * (n : ℝ) * chebyshevExtremalWeight n i) *
-          (1 / (|θ - nodeAngle n i| / 2)) :=
+          (1 / (|θ - chebyshevNodeAngle n i| / 2)) :=
         mul_le_mul_of_nonneg_left hcot hfac
     _ = |sin ((n : ℝ) * θ)| /
           (chebyshevExtremalWeight n i * π * |(i.val : ℝ) - ν|) := by
@@ -589,7 +591,7 @@ private lemma sum_sin_div_right_le_harmonic (l : ℕ) {frac : ℝ} (hfrac_lt : f
 
 /-- Sum of the cotangent main terms, compared with `(2/π) log(n+1)`. -/
 lemma sum_chebyshevLebesgueMain_le {n : ℕ} (hn : 1 ≤ n) {θ : ℝ}
-    (hθ : θ ∈ Set.Ioo 0 π) (hnode : ∀ i, θ ≠ nodeAngle n i) :
+    (hθ : θ ∈ Set.Ioo 0 π) (hnode : ∀ i, θ ≠ chebyshevNodeAngle n i) :
     ∑ i, chebyshevLebesgueMain n θ i ≤
       (2 / π) * log ((n : ℝ) + 1) + 2 + 2 / π := by
   have hn0 : (0 : ℝ) < n := by exact_mod_cast (by omega : 0 < n)
@@ -610,8 +612,8 @@ lemma sum_chebyshevLebesgueMain_le {n : ℕ} (hn : 1 ≤ n) {θ : ℝ}
     apply lt_of_le_of_ne hfrac_nonneg
     intro hzero
     have hνeq : ν = m := by unfold frac at hzero; linarith
-    have hθeq : θ = nodeAngle n ⟨m, by omega⟩ := by
-      unfold nodeAngle
+    have hθeq : θ = chebyshevNodeAngle n ⟨m, by omega⟩ := by
+      unfold chebyshevNodeAngle
       rw [show (m : ℝ) = ν from hνeq.symm]
       have hνdef : ν = (n : ℝ) * θ / π := rfl
       rw [hνdef]
@@ -722,8 +724,8 @@ lemma sum_chebyshevLebesgueMain_le {n : ℕ} (hn : 1 ≤ n) {θ : ℝ}
     _ ≤ (2 / π) * log ((n : ℝ) + 1) + 2 + 2 / π := by linarith [hlogMul]
 
 /-- Cotangent decreases on `(0, π)`. -/
-lemma cot_antitone_Ioo {x y : ℝ} (hx : x ∈ Set.Ioo 0 π) (hy : y ∈ Set.Ioo 0 π)
-    (hxy : x ≤ y) : cot y ≤ cot x := by
+lemma antitoneOn_cot : AntitoneOn cot (Set.Ioo 0 π) := by
+  intro x hx y hy hxy
   have hsx : 0 < sin x := sin_pos_of_pos_of_lt_pi hx.1 hx.2
   have hsy : 0 < sin y := sin_pos_of_pos_of_lt_pi hy.1 hy.2
   rw [cot_eq_cos_div_sin, cot_eq_cos_div_sin, div_le_div_iff₀ hsy hsx]
@@ -737,6 +739,8 @@ lemma cot_antitone_Ioo {x y : ℝ} (hx : x ∈ Set.Ioo 0 π) (hy : y ∈ Set.Ioo
   rw [← sub_nonpos, hsub]
   exact hsin
 
+@[deprecated (since := "2026-11-15")] alias cot_antitone_Ioo := antitoneOn_cot
+
 /-- Interior extremal weights equal one. -/
 lemma chebyshevExtremalWeight_of_interior {n : ℕ} {i : Fin (n + 1)}
     (h0 : i.val ≠ 0) (hn : i.val ≠ n) : chebyshevExtremalWeight n i = 1 := by
@@ -746,12 +750,12 @@ lemma chebyshevExtremalWeight_of_interior {n : ℕ} {i : Fin (n + 1)}
 
 /-- The angle-comparison sign is `1` when the node lies to the left. -/
 lemma chebyshevAngleSign_of_lt {n : ℕ} {θ : ℝ} {i : Fin (n + 1)}
-    (h : nodeAngle n i < θ) : chebyshevAngleSign n θ i = 1 := by
+    (h : chebyshevNodeAngle n i < θ) : chebyshevAngleSign n θ i = 1 := by
   simp [chebyshevAngleSign, h]
 
 /-- The angle-comparison sign is `-1` when the node is not to the left. -/
 lemma chebyshevAngleSign_of_not_lt {n : ℕ} {θ : ℝ} {i : Fin (n + 1)}
-    (h : ¬ nodeAngle n i < θ) : chebyshevAngleSign n θ i = -1 := by
+    (h : ¬ chebyshevNodeAngle n i < θ) : chebyshevAngleSign n θ i = -1 := by
   simp [chebyshevAngleSign, h]
 
 /-- Left-endpoint correction on `(0, π/2]`. -/
@@ -761,7 +765,7 @@ lemma chebyshevLebesgueCorr_zero_le {n : ℕ} (hn : 1 ≤ n) {θ : ℝ}
   have hθ0 : 0 < θ := hθ.1
   have hθ2 : θ ≤ π / 2 := hθ.2
   let i0 : Fin (n + 1) := ⟨0, by omega⟩
-  have hφ : nodeAngle n i0 = 0 := by simp [nodeAngle, i0]
+  have hφ : chebyshevNodeAngle n i0 = 0 := by simp [chebyshevNodeAngle, i0]
   have hsign : chebyshevAngleSign n θ i0 = 1 :=
     chebyshevAngleSign_of_lt (by simpa [hφ] using hθ0)
   have hw : chebyshevExtremalWeight n i0 = 2 := by simp [chebyshevExtremalWeight, i0]
@@ -812,8 +816,8 @@ lemma chebyshevLebesgueCorr_last_le {n : ℕ} (hn : 1 ≤ n) {θ : ℝ}
   have hθ2 : θ ≤ π / 2 := hθ.2
   let iN : Fin (n + 1) := ⟨n, by omega⟩
   have hn0 : (n : ℝ) ≠ 0 := by exact_mod_cast (by omega : n ≠ 0)
-  have hφ : nodeAngle n iN = π := by
-    simp [nodeAngle, iN]
+  have hφ : chebyshevNodeAngle n iN = π := by
+    simp [chebyshevNodeAngle, iN]
     field_simp
   have hsign : chebyshevAngleSign n θ iN = -1 :=
     chebyshevAngleSign_of_not_lt (by
@@ -867,7 +871,7 @@ lemma chebyshevLebesgueCorr_last_le {n : ℕ} (hn : 1 ≤ n) {θ : ℝ}
 
 /-- Off the nodes, the Lebesgue function is the sum of main and correction terms. -/
 lemma lebesgueFunction_cos_eq {n : ℕ} (hn : 1 ≤ n) {θ : ℝ}
-    (hθ : θ ∈ Set.Ioo 0 π) (hnode : ∀ i, θ ≠ nodeAngle n i) :
+    (hθ : θ ∈ Set.Ioo 0 π) (hnode : ∀ i, θ ≠ chebyshevNodeAngle n i) :
     lebesgueFunction (chebyshevExtremalNodes n) (cos θ) =
       (∑ i, chebyshevLebesgueMain n θ i) + ∑ i, chebyshevLebesgueCorr n θ i := by
   unfold lebesgueFunction

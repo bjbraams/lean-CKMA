@@ -43,7 +43,7 @@ universe u
 variable {H : Type u} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
 
 /-- A contraction satisfies `T* T ≤ 1`. -/
-theorem contraction_star_mul_self_le_one (T : H →L[ℂ] H) (hT : ‖T‖ ≤ 1) :
+private theorem star_mul_self_le_one_of_norm_le_one (T : H →L[ℂ] H) (hT : ‖T‖ ≤ 1) :
     star T * T ≤ 1 := by
   simpa [ContinuousLinearMap.star_eq_adjoint, ContinuousLinearMap.mul_def] using
     (ContinuousLinearMap.self_comp_adjoint_le_one_iff (ContinuousLinearMap.adjoint T)).2
@@ -52,26 +52,21 @@ theorem contraction_star_mul_self_le_one (T : H →L[ℂ] H) (hT : ‖T‖ ≤ 1
 /-- The defect element `1 - T* T` of a contraction is positive. -/
 theorem contraction_one_sub_star_mul_self_nonneg (T : H →L[ℂ] H) (hT : ‖T‖ ≤ 1) :
     0 ≤ (1 - star T * T : H →L[ℂ] H) :=
-  sub_nonneg.mpr (contraction_star_mul_self_le_one T hT)
+  sub_nonneg.mpr (star_mul_self_le_one_of_norm_le_one T hT)
 
 /-- The defect operator `√(1 - T* T)` of an operator on a Hilbert space. -/
 def defectOperator (T : H →L[ℂ] H) : H →L[ℂ] H :=
   CFC.sqrt (1 - star T * T)
 
-/-- The defect operator is the continuous functional calculus square root of `1 - T* T`. -/
-theorem defectOperator_def (T : H →L[ℂ] H) :
-    defectOperator T = CFC.sqrt (1 - star T * T) :=
-  rfl
-
 /-- The defect operator of a contraction squares to `1 - T* T`. -/
 theorem defectOperator_mul_self (T : H →L[ℂ] H) (hT : ‖T‖ ≤ 1) :
     defectOperator T * defectOperator T = 1 - star T * T := by
-  rw [defectOperator_def]
+  rw [defectOperator]
   exact CFC.sqrt_mul_sqrt_self _
     (contraction_one_sub_star_mul_self_nonneg T hT)
 
 /-- The defect operator of any operator is self-adjoint. -/
-theorem defectOperator_adjoint (T : H →L[ℂ] H) :
+private theorem defectOperator_adjoint (T : H →L[ℂ] H) :
     (defectOperator T).adjoint = defectOperator T := by
   rw [← ContinuousLinearMap.star_eq_adjoint]
   exact (CFC.sqrt_nonneg (1 - star T * T)).star_eq

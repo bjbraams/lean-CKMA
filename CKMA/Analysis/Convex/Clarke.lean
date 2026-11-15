@@ -109,7 +109,7 @@ instance clarkeStepNhds_neBot (x : E) : (clarkeStepNhds x).NeBot := by
   exact mem_prod.mpr ⟨mem_univ x, le_rfl⟩
 
 /-- The quotient in direction `d₁ + d₂` splits into successive increments of `d₁` and `d₂`. -/
-lemma clarkeQuotient_add (f : E → ℝ) (d₁ d₂ : E) (p : E × ℝ) :
+private lemma clarkeQuotient_add (f : E → ℝ) (d₁ d₂ : E) (p : E × ℝ) :
     clarkeQuotient f (d₁ + d₂) p =
       clarkeQuotient f d₁ p + clarkeQuotient f d₂ (p.1 + p.2 • d₁, p.2) := by
   unfold clarkeQuotient
@@ -126,7 +126,7 @@ lemma clarkeQuotient_add (f : E → ℝ) (d₁ d₂ : E) (p : E × ℝ) :
   exact ((add_comm (b - c) (a - b)).trans hsum).symm
 
 /-- Rescaling the direction by a nonzero scalar rescales the step in the quotient. -/
-lemma clarkeQuotient_smul {c : ℝ} (hc : c ≠ 0) (f : E → ℝ) (d : E) (p : E × ℝ) :
+private lemma clarkeQuotient_smul {c : ℝ} (hc : c ≠ 0) (f : E → ℝ) (d : E) (p : E × ℝ) :
     clarkeQuotient f (c • d) p = c * clarkeQuotient f d (p.1, c * p.2) := by
   unfold clarkeQuotient
   have hsm : p.2 • (c • d) = (c * p.2) • d := by rw [smul_smul, mul_comm]
@@ -135,12 +135,12 @@ lemma clarkeQuotient_smul {c : ℝ} (hc : c ≠ 0) (f : E → ℝ) (d : E) (p : 
   rw [← mul_div_assoc, mul_div_mul_left a p.2 hc]
 
 /-- The quotient in the zero direction vanishes for every step. -/
-lemma clarkeQuotient_zero (f : E → ℝ) (p : E × ℝ) : clarkeQuotient f 0 p = 0 := by
+private lemma clarkeQuotient_zero (f : E → ℝ) (p : E × ℝ) : clarkeQuotient f 0 p = 0 := by
   simp [clarkeQuotient]
 
 omit [NormedSpace ℝ E] in
 /-- Multiplying the step by `c > 0` preserves the positive-step filter. -/
-lemma tendsto_clarkeRescale {c : ℝ} (hc : 0 < c) (x : E) :
+private lemma tendsto_clarkeRescale {c : ℝ} (hc : 0 < c) (x : E) :
     Tendsto (fun p : E × ℝ ↦ (p.1, c * p.2)) (clarkeStepNhds x) (clarkeStepNhds x) := by
   unfold clarkeStepNhds
   refine tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ ?_ ?_
@@ -155,7 +155,7 @@ lemma tendsto_clarkeRescale {c : ℝ} (hc : 0 < c) (x : E) :
 
 omit [NormedSpace ℝ E] in
 /-- Positive rescaling of the step induces the identity on the positive-step filter. -/
-lemma map_clarkeRescale {c : ℝ} (hc : 0 < c) (x : E) :
+private lemma map_clarkeRescale {c : ℝ} (hc : 0 < c) (x : E) :
     map (fun p : E × ℝ ↦ (p.1, c * p.2)) (clarkeStepNhds x) = clarkeStepNhds x := by
   set ρ : ℝ → E × ℝ → E × ℝ := fun a p ↦ (p.1, a * p.2)
   have hright : ρ c ∘ ρ c⁻¹ = id := by
@@ -175,7 +175,7 @@ lemma map_clarkeRescale {c : ℝ} (hc : 0 < c) (x : E) :
     _ ≤ map (ρ c) (clarkeStepNhds x) := map_mono h2
 
 /-- Shifting the base point by the current step in a fixed direction preserves the filter. -/
-lemma tendsto_clarkeShift (d x : E) :
+private lemma tendsto_clarkeShift (d x : E) :
     Tendsto (fun p : E × ℝ ↦ (p.1 + p.2 • d, p.2)) (clarkeStepNhds x) (clarkeStepNhds x) := by
   unfold clarkeStepNhds
   refine tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ ?_ ?_
@@ -190,7 +190,7 @@ lemma tendsto_clarkeShift (d x : E) :
 
 /-- Near `(x, 0)` with positive step, both sample points lie in the Lipschitz ball, so the
 quotient is bounded by `L ‖d‖`. -/
-lemma eventually_abs_clarkeQuotient_le {f : E → ℝ} {x : E} {r : ℝ} (hr : 0 < r) {L : ℝ≥0}
+private lemma eventually_abs_clarkeQuotient_le {f : E → ℝ} {x : E} {r : ℝ} (hr : 0 < r) {L : ℝ≥0}
     (hf : LipschitzOnWith L f (Metric.ball x r)) (d : E) :
     ∀ᶠ p in clarkeStepNhds x, |clarkeQuotient f d p| ≤ (L : ℝ) * ‖d‖ := by
   set δ : ℝ := r / (2 * (1 + ‖d‖))
@@ -247,7 +247,7 @@ lemma eventually_abs_clarkeQuotient_le {f : E → ℝ} {x : E} {r : ℝ} (hr : 0
       _ = (L : ℝ) * ‖d‖ * p.2 := by ring
 
 /-- On a Lipschitz ball the Clarke derivative is finite and lies in `[-L‖d‖, L‖d‖]`. -/
-lemma clarkeDirectionalDerivative_mem_Icc {f : E → ℝ} {x : E} {r : ℝ} (hr : 0 < r) {L : ℝ≥0}
+private lemma clarkeDirectionalDerivative_mem_Icc {f : E → ℝ} {x : E} {r : ℝ} (hr : 0 < r) {L : ℝ≥0}
     (hf : LipschitzOnWith L f (Metric.ball x r)) (d : E) :
     clarkeDirectionalDerivative f x d ∈
       Icc ((-((L : ℝ) * ‖d‖) : ℝ) : EReal) (((L : ℝ) * ‖d‖ : ℝ) : EReal) := by
@@ -272,27 +272,27 @@ def clarkeReal (f : E → ℝ) (x d : E) : ℝ :=
   limsup (clarkeQuotient f d) (clarkeStepNhds x)
 
 /-- The Clarke quotient is eventually bounded above by the Lipschitz constant. -/
-lemma clarkeQuotient_boundedAbove {f : E → ℝ} {x : E} {r : ℝ} (hr : 0 < r) {L : ℝ≥0}
+private lemma clarkeQuotient_boundedAbove {f : E → ℝ} {x : E} {r : ℝ} (hr : 0 < r) {L : ℝ≥0}
     (hf : LipschitzOnWith L f (Metric.ball x r)) (d : E) :
     IsBoundedUnder (· ≤ ·) (clarkeStepNhds x) (clarkeQuotient f d) :=
   ⟨(L : ℝ) * ‖d‖,
     (eventually_abs_clarkeQuotient_le hr hf d).mono fun _ h ↦ (abs_le.mp h).2⟩
 
 /-- The Clarke quotient is eventually bounded below by the negative Lipschitz constant. -/
-lemma clarkeQuotient_boundedBelow {f : E → ℝ} {x : E} {r : ℝ} (hr : 0 < r) {L : ℝ≥0}
+private lemma clarkeQuotient_boundedBelow {f : E → ℝ} {x : E} {r : ℝ} (hr : 0 < r) {L : ℝ≥0}
     (hf : LipschitzOnWith L f (Metric.ball x r)) (d : E) :
     IsBoundedUnder (· ≥ ·) (clarkeStepNhds x) (clarkeQuotient f d) :=
   ⟨-((L : ℝ) * ‖d‖),
     (eventually_abs_clarkeQuotient_le hr hf d).mono fun _ h ↦ (abs_le.mp h).1⟩
 
 /-- Local boundedness below makes the Clarke quotient cobounded for real limsup lemmas. -/
-lemma clarkeQuotient_cobounded {f : E → ℝ} {x : E} {r : ℝ} (hr : 0 < r) {L : ℝ≥0}
+private lemma clarkeQuotient_cobounded {f : E → ℝ} {x : E} {r : ℝ} (hr : 0 < r) {L : ℝ≥0}
     (hf : LipschitzOnWith L f (Metric.ball x r)) (d : E) :
     IsCoboundedUnder (· ≤ ·) (clarkeStepNhds x) (clarkeQuotient f d) :=
   (clarkeQuotient_boundedBelow hr hf d).isCoboundedUnder_le
 
 /-- The extended-real Clarke derivative is the coercion of its real limsup. -/
-lemma clarkeDirectionalDerivative_eq_coe_clarkeReal {f : E → ℝ} {x : E} {r : ℝ} (hr : 0 < r)
+private lemma clarkeDirectionalDerivative_eq_coe_clarkeReal {f : E → ℝ} {x : E} {r : ℝ} (hr : 0 < r)
     {L : ℝ≥0} (hf : LipschitzOnWith L f (Metric.ball x r)) (d : E) :
     clarkeDirectionalDerivative f x d = clarkeReal f x d := by
   rw [clarkeDirectionalDerivative, clarkeReal]
@@ -304,14 +304,14 @@ lemma clarkeDirectionalDerivative_eq_coe_clarkeReal {f : E → ℝ} {x : E} {r :
     (clarkeQuotient_cobounded hr hf d)).symm
 
 /-- The Clarke derivative of the zero direction is zero. -/
-lemma clarkeReal_zero (f : E → ℝ) (x : E) : clarkeReal f x 0 = 0 := by
+private lemma clarkeReal_zero (f : E → ℝ) (x : E) : clarkeReal f x 0 = 0 := by
   have h0 : clarkeQuotient f 0 = fun _ ↦ (0 : ℝ) := by
     ext p
     exact clarkeQuotient_zero f p
   rw [clarkeReal, h0, limsup_const]
 
 /-- The real Clarke derivative is bounded by the Lipschitz constant. -/
-lemma abs_clarkeReal_le {f : E → ℝ} {x : E} {r : ℝ} (hr : 0 < r) {L : ℝ≥0}
+private lemma abs_clarkeReal_le {f : E → ℝ} {x : E} {r : ℝ} (hr : 0 < r) {L : ℝ≥0}
     (hf : LipschitzOnWith L f (Metric.ball x r)) (d : E) :
     |clarkeReal f x d| ≤ (L : ℝ) * ‖d‖ := by
   rw [abs_le, clarkeReal]
@@ -323,7 +323,7 @@ lemma abs_clarkeReal_le {f : E → ℝ} {x : E} {r : ℝ} (hr : 0 < r) {L : ℝ�
       ((eventually_abs_clarkeQuotient_le hr hf d).mono fun _ h ↦ (abs_le.mp h).2)
 
 /-- The real Clarke derivative is positively homogeneous. -/
-lemma clarkeReal_smul {f : E → ℝ} {x : E} {r : ℝ} (hr : 0 < r) {L : ℝ≥0}
+private lemma clarkeReal_smul {f : E → ℝ} {x : E} {r : ℝ} (hr : 0 < r) {L : ℝ≥0}
     (hf : LipschitzOnWith L f (Metric.ball x r)) {c : ℝ} (hc : 0 < c) (d : E) :
     clarkeReal f x (c • d) = c * clarkeReal f x d := by
   set ρ : E × ℝ → E × ℝ := fun p ↦ (p.1, c * p.2)
@@ -344,7 +344,7 @@ lemma clarkeReal_smul {f : E → ℝ} {x : E} {r : ℝ} (hr : 0 < r) {L : ℝ≥
     (clarkeQuotient_cobounded hr hf d)).symm
 
 /-- The real Clarke derivative is subadditive. -/
-lemma clarkeReal_add {f : E → ℝ} {x : E} {r : ℝ} (hr : 0 < r) {L : ℝ≥0}
+private lemma clarkeReal_add {f : E → ℝ} {x : E} {r : ℝ} (hr : 0 < r) {L : ℝ≥0}
     (hf : LipschitzOnWith L f (Metric.ball x r)) (d₁ d₂ : E) :
     clarkeReal f x (d₁ + d₂) ≤ clarkeReal f x d₁ + clarkeReal f x d₂ := by
   let shift : E × ℝ → E × ℝ := fun p ↦ (p.1 + p.2 • d₁, p.2)
@@ -369,7 +369,7 @@ lemma clarkeReal_add {f : E → ℝ} {x : E} {r : ℝ} (hr : 0 < r) {L : ℝ≥0
   exact htend.limsup_comp_le_limsup hv_co (clarkeQuotient_boundedAbove hr hf d₂)
 
 /-- A scalar multiple of the derivative lies below the derivative of the scaled direction. -/
-lemma clarkeReal_smul_le {f : E → ℝ} {x : E} {r : ℝ} (hr : 0 < r) {L : ℝ≥0}
+private lemma clarkeReal_smul_le {f : E → ℝ} {x : E} {r : ℝ} (hr : 0 < r) {L : ℝ≥0}
     (hf : LipschitzOnWith L f (Metric.ball x r)) (c : ℝ) (d : E) :
     c * clarkeReal f x d ≤ clarkeReal f x (c • d) := by
   rcases lt_trichotomy c 0 with hc | rfl | hc
@@ -386,7 +386,8 @@ lemma clarkeReal_smul_le {f : E → ℝ} {x : E} {r : ℝ} (hr : 0 < r) {L : ℝ
 set_option backward.isDefEq.respectTransparency false in
 /-- Hahn–Banach supplies a continuous linear functional in the subdifferential that attains the
 directional derivative at `d`. -/
-lemma exists_mem_clarkeSubdifferential_eq_clarkeReal {f : E → ℝ} {x : E} {r : ℝ} (hr : 0 < r)
+private lemma exists_mem_clarkeSubdifferential_eq_clarkeReal {f : E → ℝ} {x : E} {r : ℝ}
+    (hr : 0 < r)
     {L : ℝ≥0} (hf : LipschitzOnWith L f (Metric.ball x r)) (d : E) :
     ∃ u : StrongDual ℝ E, u ∈ clarkeSubdifferential f x ∧ u d = clarkeReal f x d := by
   have H : ∀ c : ℝ, c • d = 0 → c • clarkeReal f x d = 0 := by
@@ -433,7 +434,7 @@ lemma exists_mem_clarkeSubdifferential_eq_clarkeReal {f : E → ℝ} {x : E} {r 
     rw [LinearPMap.mkSpanSingleton'_apply_self]
 
 /-- A limit of derivatives at points tending to `x` lies in the Clarke subdifferential. -/
-lemma reachableDerivatives_subset_clarkeSubdifferential
+private lemma reachableDerivatives_subset_clarkeSubdifferential
     {f : E → ℝ} {x : E} {r : ℝ} (hr : 0 < r) {L : ℝ≥0}
     (hf : LipschitzOnWith L f (ball x r)) :
     reachableDerivatives f x ⊆ clarkeSubdifferential f x := by
@@ -515,7 +516,7 @@ lemma reachableDerivatives_subset_clarkeSubdifferential
   exact hup
 
 /-- Every Clarke subgradient of a Lipschitz function is bounded by the Lipschitz constant. -/
-lemma norm_le_of_mem_clarkeSubdifferential
+private lemma norm_le_of_mem_clarkeSubdifferential
     {f : E → ℝ} {x : E} {r : ℝ} (hr : 0 < r) {L : ℝ≥0}
     (hf : LipschitzOnWith L f (ball x r)) {u : StrongDual ℝ E}
     (hu : u ∈ clarkeSubdifferential f x) : ‖u‖ ≤ (L : ℝ) := by
@@ -533,7 +534,7 @@ lemma norm_le_of_mem_clarkeSubdifferential
   linarith
 
 /-- The Clarke subdifferential of a Lipschitz function is closed. -/
-lemma isClosed_clarkeSubdifferential
+private lemma isClosed_clarkeSubdifferential
     {f : E → ℝ} {x : E} {r : ℝ} (hr : 0 < r) {L : ℝ≥0}
     (hf : LipschitzOnWith L f (ball x r)) : IsClosed (clarkeSubdifferential f x) := by
   have hEq : clarkeSubdifferential f x =
@@ -552,7 +553,7 @@ lemma isClosed_clarkeSubdifferential
     isClosed_Iic.preimage (ContinuousLinearMap.apply ℝ ℝ d).continuous
 
 /-- The Clarke subdifferential of a Lipschitz function is convex. -/
-lemma convex_clarkeSubdifferential
+private lemma convex_clarkeSubdifferential
     {f : E → ℝ} {x : E} {r : ℝ} (hr : 0 < r) {L : ℝ≥0}
     (hf : LipschitzOnWith L f (ball x r)) : Convex ℝ (clarkeSubdifferential f x) := by
   intro u hu v hv a b ha hb hab d
@@ -570,7 +571,7 @@ lemma convex_clarkeSubdifferential
     _ = clarkeReal f x d := by rw [← add_mul, hab, one_mul]
 
 /-- In finite dimensions the Clarke subdifferential of a Lipschitz function is compact. -/
-lemma isCompact_clarkeSubdifferential [FiniteDimensional ℝ E]
+private lemma isCompact_clarkeSubdifferential [FiniteDimensional ℝ E]
     {f : E → ℝ} {x : E} {r : ℝ} (hr : 0 < r) {L : ℝ≥0}
     (hf : LipschitzOnWith L f (ball x r)) : IsCompact (clarkeSubdifferential f x) := by
   have : FiniteDimensional ℝ (StrongDual ℝ E) := finiteDimensional_strongDual
@@ -581,7 +582,7 @@ lemma isCompact_clarkeSubdifferential [FiniteDimensional ℝ E]
   exact norm_le_of_mem_clarkeSubdifferential hr hf hu
 
 /-- Pairings of reachable derivatives against a fixed direction are bounded above. -/
-lemma bddAbove_reachable_pairing
+private lemma bddAbove_reachable_pairing
     {f : E → ℝ} {x : E} {r : ℝ} (hr : 0 < r) {L : ℝ≥0}
     (hf : LipschitzOnWith L f (ball x r)) (d : E) :
     BddAbove ((fun u : StrongDual ℝ E => u d) '' reachableDerivatives f x) := by
@@ -595,7 +596,7 @@ lemma bddAbove_reachable_pairing
     _ ≤ (L : ℝ) * ‖d‖ := mul_le_mul_of_nonneg_right hnorm (norm_nonneg _)
 
 /-- The support function of the reachable derivatives is the Clarke directional derivative. -/
-lemma sSup_reachableDerivatives_eq_clarkeReal [FiniteDimensional ℝ E]
+private lemma sSup_reachableDerivatives_eq_clarkeReal [FiniteDimensional ℝ E]
     {f : E → ℝ} {x : E} {r : ℝ} (hr : 0 < r) {L : ℝ≥0}
     (hf : LipschitzOnWith L f (ball x r)) (d : E) :
     sSup ((fun u : StrongDual ℝ E => u d) '' reachableDerivatives f x) =

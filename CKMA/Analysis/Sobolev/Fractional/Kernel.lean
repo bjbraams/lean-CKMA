@@ -31,8 +31,9 @@ reduce its integral to a positive finite multiple of `‖ξ‖^{2s}`.
 
 ## Main results
 
-* `CKMA.phase_kernel_integral`: there is a constant `C > 0` such that the integral of the
-  fractional Fourier phase kernel equals `C * ‖ξ‖ ^ (2 * s)` for every `ξ`.
+* `CKMA.exists_lintegral_fourierChar_sub_one_sq_div_rpow`: there is a constant `C > 0` such
+  that the integral of the fractional Fourier phase kernel equals `C * ‖ξ‖ ^ (2 * s)` for
+  every `ξ`.
 -/
 
 @[expose] public section
@@ -443,7 +444,8 @@ private theorem lintegral_phase_smul {d : ℕ} {s : ℝ} {t : ℝ} (ht : 0 < t) 
       rw [hpow]
 
 /-- Integrating the phase weight produces `C ‖ξ‖^{2s}` with `0 < C < ∞`. -/
-public theorem phase_kernel_integral {d : ℕ} (hd : 0 < d) {s : ℝ} (hs : 0 < s) (hs1 : s < 1) :
+theorem exists_lintegral_fourierChar_sub_one_sq_div_rpow {d : ℕ} (hd : 0 < d) {s : ℝ} (hs : 0 < s)
+    (hs1 : s < 1) :
     ∃ C : ℝ, 0 < C ∧ ∀ ξ : EuclideanSpace ℝ (Fin d),
       ∫⁻ h, ENNReal.ofReal
           (‖(Real.fourierChar ⟪h, ξ⟫ : ℂ) - 1‖ ^ 2 / ‖h‖ ^ ((d : ℝ) + 2 * s)) =
@@ -462,5 +464,8 @@ public theorem phase_kernel_integral {d : ℕ} (hd : 0 < d) {s : ℝ} (hs : 0 < 
       simp [w, smul_smul, mul_inv_cancel₀ ht.ne', one_smul]
     rw [hξeq, lintegral_phase_smul ht, lintegral_phase_unit hd hs hs1 hw]
     rw [← ENNReal.ofReal_mul' (fourierConst_pos hd hs hs1).le, mul_comm]
+
+@[deprecated (since := "2026-11-15")]
+alias phase_kernel_integral := exists_lintegral_fourierChar_sub_one_sq_div_rpow
 
 end CKMA

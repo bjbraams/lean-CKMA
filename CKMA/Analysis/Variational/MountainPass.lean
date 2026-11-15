@@ -38,9 +38,9 @@ import TauCeti.Topology.MetricSpace.Ekeland
 # Palais–Smale compactness and mountain-pass critical points
 
 Continuous paths from zero to a second well define the mountain-pass minimax level.
-Positive energy on a separating sphere and negative endpoint energy give a positive
-barrier. A C¹ functional on a real Banach space has a critical point at this level
-when the Palais–Smale subsequence condition holds there. Compact paths, derivatives
+An energy barrier `α` on a separating sphere, with both endpoint energies below `α`,
+bounds this level from below. A C¹ functional on a real Banach space has a critical point at
+this level when the Palais–Smale subsequence condition holds there. Compact paths, derivatives
 and filter convergence use Mathlib. The deformation is a straight-line push by a
 continuous pathwise pseudogradient, built from the operator norm on a finite chart
 of the maximum set. Ekeland's principle selects the path, in the form
@@ -649,12 +649,13 @@ private lemma exists_small_fderiv_of_slope {I : E → ℝ} (hI : ContDiff ℝ 1 
   have hpos : 0 < κ * hstep * (1 - θ) := mul_pos (mul_pos hκ hhstep) (sub_pos.mpr hθ)
   linarith [hslope σ hσmem, hslack, hpos]
 
-/-- **36.35**: mountain-pass geometry and Palais–Smale compactness produce a critical point
-at the minimax level. The Palais–Smale condition is needed only at that level. -/
+/-- **36.35**: if `I 0` and `I e` lie below an energy barrier `α` on a sphere of radius
+`r < ‖e‖`, and the Palais–Smale condition holds at the minimax level, then that level is at
+least `α` and is a critical value. The Palais–Smale condition is needed only at that level. -/
 theorem exists_mountainPass_criticalPoint [CompleteSpace E] (I : E → ℝ)
-    (hI : ContDiff ℝ 1 I) (hzero : I 0 = 0) {r α : ℝ} (hr : 0 < r) (hα : 0 < α)
+    (hI : ContDiff ℝ 1 I) {r α : ℝ} (hr : 0 < r) (hI0 : I 0 < α)
     (hbarrier : ∀ x : E, ‖x‖ = r → α ≤ I x) {e : E} (he : r < ‖e‖)
-    (hIe : I e < 0) (hPS : HasPalaisSmaleAt I (mountainPassLevel I e)) :
+    (hIe : I e < α) (hPS : HasPalaisSmaleAt I (mountainPassLevel I e)) :
     α ≤ mountainPassLevel I e ∧ ∃ x, I x = mountainPassLevel I e ∧ fderiv ℝ I x = 0 := by
   have hIc : Continuous I := hI.continuous
   have hlevel : α ≤ mountainPassLevel I e := mountainPassLevel_ge hIc hr hbarrier he
@@ -698,13 +699,11 @@ theorem exists_mountainPass_criticalPoint [CompleteSpace E] (I : E → ℝ)
         exact hlt.le
     have h0 : I (y.1 ⟨0, by norm_num⟩) < pathMaxEnergy I y.1 := by
       calc I (y.1 ⟨0, by norm_num⟩) = I 0 := by rw [y.2.1]
-        _ = 0 := hzero
-        _ < α := hα
+        _ < α := hI0
         _ ≤ pathMaxEnergy I y.1 := hlevel.trans hy_ge
     have h1 : I (y.1 ⟨1, by norm_num⟩) < pathMaxEnergy I y.1 := by
       calc I (y.1 ⟨1, by norm_num⟩) = I e := by rw [y.2.2]
-        _ < 0 := hIe
-        _ < α := hα
+        _ < α := hIe
         _ ≤ pathMaxEnergy I y.1 := hlevel.trans hy_ge
     obtain ⟨t, ht, hder⟩ :=
       exists_small_fderiv_of_slope hI y.2 hκ hslope_all h0 h1

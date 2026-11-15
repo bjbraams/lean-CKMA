@@ -52,7 +52,7 @@ theorem embed_adjoint_leftInverse (J : H →ₗᵢ[ℂ] K) (x : H) :
   exact hs
 
 /-- Co-invariance passes to the adjoint as `V* J = J T*`. -/
-theorem adjoint_coinvariant (T : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K)
+private theorem adjoint_coinvariant (T : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K)
     (hcoin : ∀ y : K, J.toContinuousLinearMap.adjoint (V y) =
       T (J.toContinuousLinearMap.adjoint y)) :
     V.toContinuousLinearMap.adjoint.comp J.toContinuousLinearMap =
@@ -76,7 +76,7 @@ theorem dilationDefect_apply (T : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K) (V : K
   simp [dilationDefect, sub_apply, comp_apply, LinearIsometry.coe_toContinuousLinearMap]
 
 /-- The embedded copy of `H` is orthogonal to the coextension defect. -/
-theorem dilationDefect_adjoint_apply (T : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K)
+private theorem dilationDefect_adjoint_apply (T : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K)
     (hcoin : ∀ y : K, J.toContinuousLinearMap.adjoint (V y) =
       T (J.toContinuousLinearMap.adjoint y)) (x : H) :
     J.toContinuousLinearMap.adjoint (dilationDefect T J V x) = 0 := by
@@ -84,7 +84,7 @@ theorem dilationDefect_adjoint_apply (T : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K
     embed_adjoint_leftInverse, sub_self]
 
 /-- The coextension defect takes values in the orthogonal of the embedded copy. -/
-theorem dilationDefect_mem_orthogonal (T : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K)
+private theorem dilationDefect_mem_orthogonal (T : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K)
     (hcoin : ∀ y : K, J.toContinuousLinearMap.adjoint (V y) =
       T (J.toContinuousLinearMap.adjoint y)) (x : H) :
     dilationDefect T J V x ∈ (LinearMap.range J.toLinearMap)ᗮ := by
@@ -96,7 +96,7 @@ theorem dilationDefect_mem_orthogonal (T : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] 
   simpa using hinner.symm
 
 /-- Applying `V*` to the defect returns the embedded action of `1 - T* T`. -/
-theorem adjoint_dilationDefect (T : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K)
+private theorem adjoint_dilationDefect (T : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K)
     (hcoin : ∀ y : K, J.toContinuousLinearMap.adjoint (V y) =
       T (J.toContinuousLinearMap.adjoint y)) (y : H) :
     V.toContinuousLinearMap.adjoint (dilationDefect T J V y) =
@@ -112,7 +112,7 @@ theorem adjoint_dilationDefect (T : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K) (V :
   congr 1
 
 /-- Every forward image of the defect stays orthogonal to the embedded copy. -/
-theorem dilationDefect_pow_mem_orthogonal (T : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K)
+private theorem dilationDefect_pow_mem_orthogonal (T : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K)
     (hcoin : ∀ y : K, J.toContinuousLinearMap.adjoint (V y) =
       T (J.toContinuousLinearMap.adjoint y)) (n : ℕ) (x : H) :
     (V.toContinuousLinearMap ^ n) (dilationDefect T J V x) ∈
@@ -124,7 +124,7 @@ theorem dilationDefect_pow_mem_orthogonal (T : H →L[ℂ] H) (J : H →ₗᵢ[�
     rw [mem_orthogonal]
     intro u hu
     obtain ⟨z, rfl⟩ := hu
-    rw [clm_pow_succ'_apply]
+    rw [continuousLinearMap_pow_succ'_apply]
     simp only [LinearIsometry.coe_toLinearMap]
     rw [← adjoint_inner_left V.toContinuousLinearMap
       ((V.toContinuousLinearMap ^ n) (dilationDefect T J V x)) (J z)]
@@ -158,7 +158,7 @@ theorem norm_sq_dilationDefect (T : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K) (V :
   ring
 
 /-- Distinct forward images of defect vectors are orthogonal. -/
-theorem inner_dilationDefect_pow_eq_zero (T : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K)
+private theorem inner_dilationDefect_pow_eq_zero (T : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K)
     (hcoin : ∀ y : K, J.toContinuousLinearMap.adjoint (V y) =
       T (J.toContinuousLinearMap.adjoint y)) {m n : ℕ} (hmn : m < n) (x y : H) :
     ⟪(V.toContinuousLinearMap ^ m) (dilationDefect T J V x),
@@ -167,9 +167,9 @@ theorem inner_dilationDefect_pow_eq_zero (T : H →L[ℂ] H) (J : H →ₗᵢ[�
   have hk : 0 < n - m := Nat.sub_pos_of_lt hmn
   rw [inner_eq_zero_symm]
   have hadd : n = m + (n - m) := (Nat.add_sub_of_le hle).symm
-  rw [hadd, inner_clm_pow_add_left]
+  rw [hadd, linearIsometry_inner_pow_add_apply_pow_apply]
   obtain ⟨j, hj⟩ := Nat.exists_eq_succ_of_ne_zero (Nat.ne_of_gt hk)
-  rw [hj, clm_pow_succ'_apply]
+  rw [hj, continuousLinearMap_pow_succ'_apply]
   rw [← adjoint_inner_right V.toContinuousLinearMap
     ((V.toContinuousLinearMap ^ j) (dilationDefect T J V y)) (dilationDefect T J V x)]
   rw [adjoint_dilationDefect T J V hcoin]
@@ -189,7 +189,7 @@ theorem dilationDefect_mem_space (T : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K) (V
 
 omit [CompleteSpace H] [CompleteSpace K] in
 /-- A vector of the closed defect space lies in the closure of the algebraic range. -/
-theorem mem_closure_of_mem_dilationDefectSpace (T : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K)
+private theorem mem_closure_of_mem_dilationDefectSpace (T : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K)
     (V : K →ₗᵢ[ℂ] K) {w : K} (hw : w ∈ dilationDefectSpace T J V) :
     w ∈ closure (LinearMap.range (dilationDefect T J V).toLinearMap : Set K) := by
   rw [dilationDefectSpace] at hw
@@ -197,7 +197,7 @@ theorem mem_closure_of_mem_dilationDefectSpace (T : H →L[ℂ] H) (J : H →ₗ
   rwa [topologicalClosure_coe] at hw
 
 /-- Forward images of the closed defect space stay orthogonal to the embedded copy. -/
-theorem dilationDefectSpace_pow_mem_orthogonal (T : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K)
+private theorem dilationDefectSpace_pow_mem_orthogonal (T : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K)
     (V : K →ₗᵢ[ℂ] K)
     (hcoin : ∀ y : K, J.toContinuousLinearMap.adjoint (V y) =
       T (J.toContinuousLinearMap.adjoint y)) (n : ℕ) {w : K}
@@ -224,7 +224,7 @@ theorem inner_embed_defectSpace_pow_eq_zero (T : H →L[ℂ] H) (J : H →ₗᵢ
     (dilationDefectSpace_pow_mem_orthogonal T J V hcoin n hw)
 
 /-- Forward images of the closed defect space with a smaller index are orthogonal. -/
-theorem inner_defectSpace_pow_lt_eq_zero (T : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K)
+private theorem inner_defectSpace_pow_lt_eq_zero (T : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K)
     (hcoin : ∀ y : K, J.toContinuousLinearMap.adjoint (V y) =
       T (J.toContinuousLinearMap.adjoint y)) {m n : ℕ} (hmn : m < n) {w₁ w₂ : K}
     (hw₁ : w₁ ∈ dilationDefectSpace T J V) (hw₂ : w₂ ∈ dilationDefectSpace T J V) :

@@ -14,7 +14,8 @@ public import CKMA.Analysis.Sobolev.Fractional.Kernel
 
 Gagliardo fractional square energy and Bessel-potential energy on L² for orders strictly
 between zero and one. The Fourier identity has a positive finite normalization constant;
-`phase_kernel_integral` evaluates the translation weight that produces it.
+`exists_lintegral_fourierChar_sub_one_sq_div_rpow` evaluates the translation weight that
+produces it.
 Finite energies describe the same functions and the inhomogeneous energies are comparable.
 The Fourier transform is Mathlib's L² operator and all energies retain extended values.
 Source: GAPS 26.37.
@@ -54,7 +55,7 @@ def besselPotentialEnergy {d : ℕ} (s : ℝ)
 
 /-- **26.37**: the fractional Hilbert identity with a positive finite convention-dependent constant.
   -/
-theorem fractionalEnergy_eq_fourier {d : ℕ} (hd : 0 < d) {s : ℝ}
+theorem fractionalEnergy_eq_fourier {d : ℕ} {s : ℝ}
     (hs : 0 < s) (hs1 : s < 1) : ∃ C : ℝ, 0 < C ∧
       ∀ u : Lp ℂ 2 (volume : Measure (EuclideanSpace ℝ (Fin d))),
         fractionalEnergy s u = ENNReal.ofReal C *
@@ -62,7 +63,7 @@ theorem fractionalEnergy_eq_fourier {d : ℕ} (hd : 0 < d) {s : ℝ}
   sorry
 
 /-- Finite Gagliardo energy and finite Bessel energy describe the same `L²` functions. -/
-theorem fractionalEnergy_ne_top_iff {d : ℕ} (hd : 0 < d) {s : ℝ}
+theorem fractionalEnergy_ne_top_iff {d : ℕ} {s : ℝ}
     (hs : 0 < s) (hs1 : s < 1)
     (u : Lp ℂ 2 (volume : Measure (EuclideanSpace ℝ (Fin d)))) :
     fractionalEnergy s u ≠ ∞ ↔ besselPotentialEnergy s u ≠ ∞ := by

@@ -27,9 +27,8 @@ integrable case follows by truncation.
 ## Main results
 
 * `CKMA.birkhoffAverage_ae_tendsto_condExp`: Birkhoff averages converge almost everywhere to the
-  invariant conditional expectation.
-* `CKMA.birkhoffAverage_ae_tendsto_integral_of_ergodic`: in an ergodic system the limit is the
-  scalar mean.
+  invariant conditional expectation. `CKMA.birkhoff_pointwise` restates it, and
+  `CKMA.birkhoff_pointwise_of_ergodic` treats the ergodic case, in `Dynamics.Ergodic.Pointwise`.
 -/
 
 @[expose] public section
@@ -47,7 +46,7 @@ def birkhoffTruncate (M : ℝ) (f : Ω → ℝ) : Ω → ℝ :=
   fun ω => max (-M) (min (f ω) M)
 
 /-- Truncation preserves measurability. -/
-lemma measurable_birkhoffTruncate {M : ℝ} (hf : Measurable f) :
+private lemma measurable_birkhoffTruncate {M : ℝ} (hf : Measurable f) :
     Measurable (birkhoffTruncate M f) := by
   unfold birkhoffTruncate
   exact (measurable_const : Measurable fun _ : Ω => (-M : ℝ)).max
@@ -58,7 +57,7 @@ section
 omit [MeasurableSpace Ω]
 
 /-- A nonnegative truncation radius bounds the truncated observable. -/
-lemma abs_birkhoffTruncate_le {M : ℝ} (hM : 0 ≤ M) (ω : Ω) :
+private lemma abs_birkhoffTruncate_le {M : ℝ} (hM : 0 ≤ M) (ω : Ω) :
     |birkhoffTruncate M f ω| ≤ M := by
   unfold birkhoffTruncate
   set x := f ω
@@ -66,7 +65,7 @@ lemma abs_birkhoffTruncate_le {M : ℝ} (hM : 0 ≤ M) (ω : Ω) :
   refine max_le (by linarith) (min_le_right _ _)
 
 /-- Distance to the truncation is at most the distance to zero. -/
-lemma abs_sub_birkhoffTruncate_le {M : ℝ} (hM : 0 ≤ M) (ω : Ω) :
+private lemma abs_sub_birkhoffTruncate_le {M : ℝ} (hM : 0 ≤ M) (ω : Ω) :
     |f ω - birkhoffTruncate M f ω| ≤ |f ω| := by
   unfold birkhoffTruncate
   set x := f ω
@@ -87,7 +86,7 @@ lemma abs_sub_birkhoffTruncate_le {M : ℝ} (hM : 0 ≤ M) (ω : Ω) :
     linarith
 
 /-- Integer truncations converge pointwise to the original observable. -/
-lemma tendsto_birkhoffTruncate (ω : Ω) :
+private lemma tendsto_birkhoffTruncate (ω : Ω) :
     Tendsto (fun M : ℕ => birkhoffTruncate (M : ℝ) f ω) atTop (𝓝 (f ω)) := by
   rw [Metric.tendsto_atTop]
   intro ε hε
@@ -106,7 +105,7 @@ section
 omit [MeasurableSpace Ω]
 
 /-- A nonnegative observable has nonnegative Birkhoff averages. -/
-lemma birkhoffAverage_nonneg {T : Ω → Ω} {f : Ω → ℝ} (hf : ∀ ω, 0 ≤ f ω) (n : ℕ) (ω : Ω) :
+private lemma birkhoffAverage_nonneg {T : Ω → Ω} {f : Ω → ℝ} (hf : ∀ ω, 0 ≤ f ω) (n : ℕ) (ω : Ω) :
     0 ≤ birkhoffAverage ℝ T f n ω := by
   unfold birkhoffAverage birkhoffSum
   rw [smul_eq_mul]
@@ -115,7 +114,7 @@ lemma birkhoffAverage_nonneg {T : Ω → Ω} {f : Ω → ℝ} (hf : ∀ ω, 0 �
 end
 
 /-- Integrating a Birkhoff sum counts the integral once for each summand. -/
-lemma integral_birkhoffSum (hT : MeasurePreserving T μ μ) (hf : Integrable f μ) (n : ℕ) :
+private lemma integral_birkhoffSum (hT : MeasurePreserving T μ μ) (hf : Integrable f μ) (n : ℕ) :
     ∫ ω, birkhoffSum T f n ω ∂μ = (n : ℝ) * ∫ ω, f ω ∂μ := by
   induction n with
   | zero =>
@@ -134,7 +133,7 @@ lemma integral_birkhoffSum (hT : MeasurePreserving T μ μ) (hf : Integrable f �
     rw [hcast, add_mul, one_mul, add_comm]
 
 /-- A positive-length Birkhoff average has the same integral as the observable. -/
-lemma integral_birkhoffAverage (hT : MeasurePreserving T μ μ) (hf : Integrable f μ)
+private lemma integral_birkhoffAverage (hT : MeasurePreserving T μ μ) (hf : Integrable f μ)
     {n : ℕ} (hn : 0 < n) :
     ∫ ω, birkhoffAverage ℝ T f n ω ∂μ = ∫ ω, f ω ∂μ := by
   unfold birkhoffAverage
@@ -147,7 +146,7 @@ section
 omit [MeasurableSpace Ω]
 
 /-- On a strictly invariant set, averaging commutes with the indicator. -/
-lemma birkhoffAverage_indicator_invariant {E : Set Ω} (hinv : T ⁻¹' E = E) (n : ℕ) (ω : Ω) :
+private lemma birkhoffAverage_indicator_invariant {E : Set Ω} (hinv : T ⁻¹' E = E) (n : ℕ) (ω : Ω) :
     birkhoffAverage ℝ T (E.indicator f) n ω =
       E.indicator (fun ω => birkhoffAverage ℝ T f n ω) ω := by
   unfold birkhoffAverage
@@ -159,7 +158,7 @@ lemma birkhoffAverage_indicator_invariant {E : Set Ω} (hinv : T ⁻¹' E = E) (
 end
 
 /-- Invariant sets do not change the integral of a positive-length average. -/
-lemma setIntegral_birkhoffAverage_of_invariant (hT : MeasurePreserving T μ μ)
+private lemma setIntegral_birkhoffAverage_of_invariant (hT : MeasurePreserving T μ μ)
     (hf : Integrable f μ) {E : Set Ω} (hE : MeasurableSet E) (hinv : T ⁻¹' E = E)
     {n : ℕ} (hn : 0 < n) :
     ∫ ω in E, birkhoffAverage ℝ T f n ω ∂μ = ∫ ω in E, f ω ∂μ := by
@@ -175,7 +174,7 @@ section
 omit [MeasurableSpace Ω]
 
 /-- A uniform bound passes to the finite Birkhoff limit. -/
-lemma abs_birkhoffLimit_le_of_abs_le {M : ℝ} (hM : 0 ≤ M) (hf : ∀ ω, |f ω| ≤ M) (ω : Ω) :
+private lemma abs_birkhoffLimit_le_of_abs_le {M : ℝ} (hM : 0 ≤ M) (hf : ∀ ω, |f ω| ≤ M) (ω : Ω) :
     |birkhoffLimit T f ω| ≤ M := by
   have hupper : birkhoffLimsup T f ω ≤ (M : EReal) := by
     unfold birkhoffLimsup
@@ -228,7 +227,7 @@ lemma abs_birkhoffLimit_le_of_abs_le {M : ℝ} (hM : 0 ≤ M) (hf : ∀ ω, |f �
 end
 
 /-- For a bounded measurable observable the Birkhoff limit is the conditional expectation. -/
-lemma birkhoffLimit_ae_eq_condExp_of_bounded [IsProbabilityMeasure μ]
+private lemma birkhoffLimit_ae_eq_condExp_of_bounded [IsProbabilityMeasure μ]
     (hT : MeasurePreserving T μ μ) (hf : Integrable f μ) (hf_meas : Measurable f)
     {M : ℝ} (hM : 0 ≤ M) (hbound : ∀ ω, |f ω| ≤ M) :
     birkhoffLimit T f =ᵐ[μ] μ[f | MeasurableSpace.invariants T] := by
@@ -282,7 +281,7 @@ lemma birkhoffLimit_ae_eq_condExp_of_bounded [IsProbabilityMeasure μ]
       |>.aestronglyMeasurable)
 
 /-- A nonnegative Birkhoff limit is integrable, and its integral is at most that of `f`. -/
-lemma birkhoffLimit_integrable_le_of_nonneg [IsProbabilityMeasure μ]
+private lemma birkhoffLimit_integrable_le_of_nonneg [IsProbabilityMeasure μ]
     (hT : MeasurePreserving T μ μ) (hf : Integrable f μ) (hf_meas : Measurable f)
     (hf0 : ∀ ω, 0 ≤ f ω) :
     Integrable (birkhoffLimit T f) μ ∧
@@ -353,7 +352,7 @@ lemma birkhoffLimit_integrable_le_of_nonneg [IsProbabilityMeasure μ]
   exact ⟨hφ_int, (ENNReal.ofReal_le_ofReal_iff (integral_nonneg hf0)).1 hlin⟩
 
 /-- The distance between Birkhoff limits is controlled by the limit of the absolute difference. -/
-lemma abs_birkhoffLimit_sub_le_ae [IsProbabilityMeasure μ] (hT : MeasurePreserving T μ μ)
+private lemma abs_birkhoffLimit_sub_le_ae [IsProbabilityMeasure μ] (hT : MeasurePreserving T μ μ)
     {g : Ω → ℝ} (hf : Integrable f μ) (hg : Integrable g μ) (hf_meas : Measurable f)
     (hg_meas : Measurable g) :
     (fun ω => |birkhoffLimit T f ω - birkhoffLimit T g ω|) ≤ᵐ[μ]
@@ -377,7 +376,8 @@ lemma abs_birkhoffLimit_sub_le_ae [IsProbabilityMeasure μ] (hT : MeasurePreserv
         simp [Pi.sub_apply]
 
 /-- Integrals of distances between Birkhoff limits contract like the observables. -/
-lemma integral_abs_birkhoffLimit_sub_le [IsProbabilityMeasure μ] (hT : MeasurePreserving T μ μ)
+private lemma integral_abs_birkhoffLimit_sub_le [IsProbabilityMeasure μ]
+    (hT : MeasurePreserving T μ μ)
     {g : Ω → ℝ} (hf : Integrable f μ) (hg : Integrable g μ) (hf_meas : Measurable f)
     (hg_meas : Measurable g) :
     ∫ ω, |birkhoffLimit T f ω - birkhoffLimit T g ω| ∂μ ≤ ∫ ω, |f ω - g ω| ∂μ := by
@@ -396,7 +396,8 @@ lemma integral_abs_birkhoffLimit_sub_le [IsProbabilityMeasure μ] (hT : MeasureP
   exact (integral_mono_ae hleft hφ.1 hle).trans hφ.2
 
 /-- Integer truncations converge to the observable in L¹. -/
-lemma tendsto_integral_abs_sub_birkhoffTruncate (hf : Integrable f μ) (hf_meas : Measurable f) :
+private lemma tendsto_integral_abs_sub_birkhoffTruncate (hf : Integrable f μ)
+    (hf_meas : Measurable f) :
     Tendsto (fun M : ℕ => ∫ ω, |f ω - birkhoffTruncate (M : ℝ) f ω| ∂μ) atTop (𝓝 0) := by
   have hmeas : ∀ M : ℕ, AEStronglyMeasurable
       (fun ω => |f ω - birkhoffTruncate (M : ℝ) f ω|) μ := fun M =>
@@ -421,7 +422,7 @@ lemma tendsto_integral_abs_sub_birkhoffTruncate (hf : Integrable f μ) (hf_meas 
   simpa [integral_zero] using hdom
 
 /-- For a measurable integrable observable the Birkhoff limit is the conditional expectation. -/
-lemma birkhoffLimit_ae_eq_condExp_of_measurable [IsProbabilityMeasure μ]
+private lemma birkhoffLimit_ae_eq_condExp_of_measurable [IsProbabilityMeasure μ]
     (hT : MeasurePreserving T μ μ) (hf : Integrable f μ) (hf_meas : Measurable f) :
     birkhoffLimit T f =ᵐ[μ] μ[f | MeasurableSpace.invariants T] := by
   let fM : ℕ → Ω → ℝ := fun M => birkhoffTruncate (M : ℝ) f
@@ -560,35 +561,6 @@ lemma birkhoffAverage_ae_tendsto_condExp [IsProbabilityMeasure μ]
   have htend := hlimω.congr fun n => (havgω n).symm
   rw [heqω, hcondω] at htend
   exact htend
-
-/-- In an ergodic system the conditional expectation is almost everywhere the scalar mean. -/
-lemma birkhoffAverage_ae_tendsto_integral_of_ergodic [IsProbabilityMeasure μ]
-    (hT : Ergodic T μ) (hf : Integrable f μ) :
-    ∀ᵐ ω ∂μ, Tendsto (fun n : ℕ => birkhoffAverage ℝ T f n ω) atTop
-      (𝓝 (∫ ω, f ω ∂μ)) := by
-  have hconv := birkhoffAverage_ae_tendsto_condExp hT.toMeasurePreserving hf
-  let cexp : Ω → ℝ := μ[f | MeasurableSpace.invariants T]
-  have hmeas : Measurable[MeasurableSpace.invariants T] cexp :=
-    stronglyMeasurable_condExp.measurable
-  have hmeas0 : Measurable cexp := hmeas.mono (MeasurableSpace.invariants_le T) le_rfl
-  have hinv : cexp ∘ T = cexp :=
-    MeasurableSpace.comp_eq_of_measurable_invariants hmeas
-  obtain ⟨c, hc⟩ := hT.ae_eq_const_of_ae_eq_comp₀ hmeas0.aemeasurable.nullMeasurable
-    (EventuallyEq.of_eq hinv)
-  have : SigmaFinite (μ.trim (MeasurableSpace.invariants_le T)) := inferInstance
-  have hint : ∫ ω, cexp ω ∂μ = ∫ ω, f ω ∂μ :=
-    integral_condExp (MeasurableSpace.invariants_le T)
-  have hconst : ∫ ω, cexp ω ∂μ = c := by
-    have heq : cexp =ᵐ[μ] fun _ : Ω => c := hc.mono fun _ hω => by
-      simpa [Function.const_apply] using hω
-    rw [integral_congr_ae heq, integral_const]
-    simp [measureReal_def, IsProbabilityMeasure.measure_univ]
-  filter_upwards [hconv, hc] with ω hω hcω
-  have hval : (μ[f | MeasurableSpace.invariants T]) ω = ∫ η, f η ∂μ := by
-    have hcval : (μ[f | MeasurableSpace.invariants T]) ω = c := by
-      simpa [cexp, Function.const_apply] using hcω
-    rw [hcval, ← hint, hconst]
-  simpa [hval] using hω
 
 end CKMA
 

@@ -35,11 +35,11 @@ noncomputable section
 
 namespace CKMA
 
-open MeasureTheory Complex Set Topology Filter
+open InfinitelyDivisible MeasureTheory Complex Set Topology Filter
 open scoped NNReal ENNReal
 
 /-- The modulus of an integral multiple of `2πi`. -/
-lemma norm_int_mul_two_pi_I (n : ℤ) :
+private lemma norm_int_mul_two_pi_I (n : ℤ) :
     ‖n * (2 * Real.pi * I)‖ = |(n : ℝ)| * (2 * Real.pi) := by
   have hpi : 0 < Real.pi := Real.pi_pos
   calc
@@ -108,7 +108,7 @@ lemma LevyTriplet.exponent_eq_of_exp_eq {L M : LevyTriplet}
   exact congrFun hfun t
 
 /-- The nodal sets of `sin(x / 2)` and `sin(√2 x / 2)` cover every nonzero real. -/
-lemma sineSet_one_union_sqrt_eq_compl :
+private lemma sineSet_one_union_sqrt_eq_compl :
     sineSet 1 ∪ sineSet (Real.sqrt 2) = {(0 : ℝ)}ᶜ := by
   ext x
   simp only [mem_union, mem_compl_iff, mem_singleton_iff]
@@ -156,7 +156,7 @@ lemma sineSet_one_union_sqrt_eq_compl :
     exact irrational_sqrt_two.ne_rational m n hrational
 
 /-- Mass away from the origin is the sum of the two sine restrictions. -/
-lemma measure_inter_compl_singleton (μ : Measure ℝ) {u : Set ℝ} (hu : MeasurableSet u) :
+private lemma measure_inter_compl_singleton (μ : Measure ℝ) {u : Set ℝ} (hu : MeasurableSet u) :
     μ (u ∩ {(0 : ℝ)}ᶜ) =
       μ.restrict (sineSet 1) u +
         μ.restrict (sineSet (Real.sqrt 2)) (u ∩ (sineSet 1)ᶜ) := by
@@ -202,7 +202,7 @@ lemma measure_inter_compl_singleton (μ : Measure ℝ) {u : Set ℝ} (hu : Measu
   rw [hA, hB]
 
 /-- A measure with no atom at the origin is determined by its mass off zero. -/
-lemma measure_eq_inter_compl {μ : Measure ℝ} (h0 : μ {(0 : ℝ)} = 0) {u : Set ℝ}
+private lemma measure_eq_inter_compl {μ : Measure ℝ} (h0 : μ {(0 : ℝ)} = 0) {u : Set ℝ}
     (hu : MeasurableSet u) : μ u = μ (u ∩ {(0 : ℝ)}ᶜ) := by
   have hdis : Disjoint (u ∩ {(0 : ℝ)}) (u ∩ {(0 : ℝ)}ᶜ) := by
     refine disjoint_left.2 ?_
@@ -222,7 +222,7 @@ lemma measure_eq_inter_compl {μ : Measure ℝ} (h0 : μ {(0 : ℝ)} = 0) {u : S
     _ = μ (u ∩ {(0 : ℝ)}ᶜ) := by rw [zero_add]
 
 /-- Agreement of the sine measures at steps `1` and `√2` determines the jump measure. -/
-lemma jumpMeasure_eq_of_sineMeasures {L M : LevyTriplet}
+private lemma jumpMeasure_eq_of_sineMeasures {L M : LevyTriplet}
     (h1 : sineMeasure L 1 = sineMeasure M 1)
     (h2 : sineMeasure L (Real.sqrt 2) = sineMeasure M (Real.sqrt 2)) :
     L.jumpMeasure = M.jumpMeasure := by
@@ -238,7 +238,7 @@ lemma jumpMeasure_eq_of_sineMeasures {L M : LevyTriplet}
     measure_inter_compl_singleton M.jumpMeasure hu, hrest1, hrest2]
 
 /-- The Gaussian coefficient is the atom of the sine measure at step `1`. -/
-lemma gaussianVariance_eq_of_sineMeasure {L M : LevyTriplet}
+private lemma gaussianVariance_eq_of_sineMeasure {L M : LevyTriplet}
     (h : sineMeasure L 1 = sineMeasure M 1) :
     L.gaussianVariance = M.gaussianVariance := by
   have hreal := congrArg (fun μ : Measure ℝ => μ.real {(0 : ℝ)}) h
@@ -246,7 +246,7 @@ lemma gaussianVariance_eq_of_sineMeasure {L M : LevyTriplet}
   exact Subtype.coe_injective (by simpa using hreal)
 
 /-- Triplets with the same Gaussian coefficient, jump measure and exponent have the same drift. -/
-lemma drift_eq_of_exponent_eq {L M : LevyTriplet}
+private lemma drift_eq_of_exponent_eq {L M : LevyTriplet}
     (hγ : L.gaussianVariance = M.gaussianVariance) (hν : L.jumpMeasure = M.jumpMeasure)
     (hexp : ∀ t, L.exponent t = M.exponent t) : L.drift = M.drift := by
   have h1 := hexp 1

@@ -52,13 +52,13 @@ def isometricDilationOrbit (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K) : S
   {y : K | ∃ n : ℕ, ∃ x : H, y = (V.toContinuousLinearMap ^ n) (J x)}
 
 /-- The isometry preserves the forward orbit. -/
-theorem isometricDilationOrbit_mapsTo (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K) :
+private theorem isometricDilationOrbit_mapsTo (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K) :
     Set.MapsTo (⇑V) (isometricDilationOrbit J V) (isometricDilationOrbit J V) := by
   intro y hy
   rcases hy with ⟨n, x, rfl⟩
   refine ⟨n + 1, x, ?_⟩
   rw [← LinearIsometry.coe_toContinuousLinearMap V]
-  exact (clm_pow_succ'_apply V.toContinuousLinearMap n (J x)).symm
+  exact (continuousLinearMap_pow_succ'_apply V.toContinuousLinearMap n (J x)).symm
 
 /-- The closed span of the forward orbit. -/
 def isometricDilationSpace (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K) : Submodule ℂ K :=
@@ -107,7 +107,7 @@ def isometricDilationIsometry (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K) 
     exact V.norm_map (y : K)
 
 /-- Evaluation of the restricted isometry. -/
-theorem isometricDilationIsometry_apply (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K)
+private theorem isometricDilationIsometry_apply (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K)
     (y : isometricDilationSpace J V) :
     isometricDilationIsometry J V y = isometricDilationRestrictCLM J V y :=
   rfl
@@ -128,25 +128,25 @@ def isometricDilationEmbed (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K) :
     exact J.norm_map x
 
 /-- Evaluation of the orbit embedding. -/
-theorem isometricDilationEmbed_apply (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K) (x : H) :
+private theorem isometricDilationEmbed_apply (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K) (x : H) :
     isometricDilationEmbed J V x = isometricDilationEmbedCLM J V x :=
   rfl
 
 /-- The orbit embedding agrees in `K` with the original embedding. -/
-theorem coe_isometricDilationEmbed (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K) (x : H) :
+private theorem coe_isometricDilationEmbed (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K) (x : H) :
     (isometricDilationEmbed J V x : K) = J x := by
   simp [isometricDilationEmbed_apply, isometricDilationEmbedCLM,
     LinearIsometry.coe_toContinuousLinearMap]
 
 /-- One application of the restricted isometry agrees in `K` with the original isometry. -/
-theorem coe_isometricDilationIsometry (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K)
+private theorem coe_isometricDilationIsometry (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K)
     (y : isometricDilationSpace J V) :
     (isometricDilationIsometry J V y : K) = V (y : K) := by
   simp [isometricDilationIsometry_apply, isometricDilationRestrictCLM,
     LinearIsometry.coe_toContinuousLinearMap]
 
 /-- Powers of the restricted isometry agree in `K` with powers of the original isometry. -/
-theorem coe_isometricDilationIsometry_pow (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K) (n : ℕ)
+private theorem coe_isometricDilationIsometry_pow (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K) (n : ℕ)
     (y : isometricDilationSpace J V) :
     (((isometricDilationIsometry J V).toContinuousLinearMap ^ n) y : K) =
       (V.toContinuousLinearMap ^ n) (y : K) := by
@@ -154,7 +154,7 @@ theorem coe_isometricDilationIsometry_pow (J : H →ₗᵢ[ℂ] K) (V : K →ₗ
   | zero =>
     simp [pow_zero]
   | succ n ih =>
-    rw [clm_pow_succ'_apply, clm_pow_succ'_apply]
+    rw [continuousLinearMap_pow_succ'_apply, continuousLinearMap_pow_succ'_apply]
     simp only [LinearIsometry.coe_toContinuousLinearMap, isometricDilationIsometry_apply,
       isometricDilationRestrictCLM]
     rw [ContinuousLinearMap.coe_restrict_apply, ih, LinearIsometry.coe_toContinuousLinearMap]
@@ -167,7 +167,7 @@ instance completeSpace_isometricDilationSpace (J : H →ₗᵢ[ℂ] K) (V : K �
   topologicalClosure.completeSpace (span ℂ (isometricDilationOrbit J V))
 
 /-- The adjoint of the orbit embedding is the original adjoint, read in `K`. -/
-theorem isometricDilationEmbed_adjoint_apply (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K)
+private theorem isometricDilationEmbed_adjoint_apply (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K)
     (y : isometricDilationSpace J V) :
     (isometricDilationEmbed J V).toContinuousLinearMap.adjoint y =
       J.toContinuousLinearMap.adjoint (y : K) := by

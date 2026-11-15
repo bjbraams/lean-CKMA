@@ -41,15 +41,15 @@ height and approximating in `L¹`.
 
 ## Main definitions
 
-* `CKMA.heightClamp`: truncation `max (-N) (min t N)` of a real value at height `N`.
-* `CKMA.rectangleOscillation`: points at which, at every scale, some rectangle average misses
+* `heightClamp`: truncation `max (-N) (min t N)` of a real value at height `N`.
+* `rectangleOscillation`: points at which, at every scale, some rectangle average misses
   the value by at least `ε`.
 
 ## Main results
 
-* `CKMA.rectanglesDifferentiateAt_of_hasCompactSupport`: rectangular differentiation at every
+* `rectanglesDifferentiateAt_of_hasCompactSupport`: rectangular differentiation at every
   point for continuous compactly supported functions.
-* `CKMA.volume_rectangleOscillation_eq_zero`: the rectangular oscillation set of a function with
+* `volume_rectangleOscillation_eq_zero`: the rectangular oscillation set of a function with
   globally integrable endpoint growth is null.
 * `CKMA.ae_rectanglesDifferentiateAt_of_integrable_growth`: almost-everywhere rectangular
   differentiation for measurable functions with `strongMaximalGrowth d |f|` integrable.
@@ -85,7 +85,7 @@ theorem strongMaximalGrowth_mono {d : ℕ} {u v : ℝ} (hu : 0 ≤ u) (huv : u �
       mul_le_mul_of_nonneg_left (pow_le_pow_left₀ hbase (by linarith) _) hv
 
 /-- A bound on the argument gives a linear bound of the same growth order. -/
-theorem strongMaximalGrowth_le_mul_of_le {d : ℕ} {u M : ℝ} (hu : 0 ≤ u) (huM : u ≤ M) :
+private theorem strongMaximalGrowth_le_mul_of_le {d : ℕ} {u M : ℝ} (hu : 0 ≤ u) (huM : u ≤ M) :
     strongMaximalGrowth d u ≤ (1 + max 0 (Real.log M)) ^ (d - 1) * u := by
   have hlog : max 0 (Real.log u) ≤ max 0 (Real.log M) :=
     Real.posLog_le_posLog (by linarith) huM
@@ -99,7 +99,7 @@ theorem strongMaximalGrowth_le_mul_of_le {d : ℕ} {u M : ℝ} (hu : 0 ≤ u) (h
     _ = (1 + max 0 (Real.log M)) ^ (d - 1) * u := by ring
 
 /-- Scaling the argument of the endpoint growth preserves the order. -/
-theorem strongMaximalGrowth_mul_le {d : ℕ} {c u : ℝ} (hc : 0 < c) (hu : 0 ≤ u) :
+private theorem strongMaximalGrowth_mul_le {d : ℕ} {c u : ℝ} (hc : 0 < c) (hu : 0 ≤ u) :
     strongMaximalGrowth d (c * u) ≤
       c * (1 + |Real.log c|) ^ (d - 1) * strongMaximalGrowth d u := by
   by_cases hu0 : u = 0
@@ -133,7 +133,7 @@ theorem strongMaximalGrowth_mul_le {d : ℕ} {c u : ℝ} (hc : 0 < c) (hu : 0 �
         ring
 
 /-- Dividing by a positive constant preserves the growth order. -/
-theorem strongMaximalGrowth_div_const_le {d : ℕ} {a u : ℝ} (ha : 0 < a) (hu : 0 ≤ u) :
+private theorem strongMaximalGrowth_div_const_le {d : ℕ} {a u : ℝ} (ha : 0 < a) (hu : 0 ≤ u) :
     strongMaximalGrowth d (u / a) ≤
       a⁻¹ * (1 + |Real.log a|) ^ (d - 1) * strongMaximalGrowth d u := by
   have h := strongMaximalGrowth_mul_le (d := d) (inv_pos.2 ha) hu
@@ -143,11 +143,11 @@ theorem strongMaximalGrowth_div_const_le {d : ℕ} {a u : ℝ} (ha : 0 < a) (hu 
   exact h
 
 /-- The coefficient comparing a maximal height `a` with the unscaled growth. -/
-def strongMaximalScale (d : ℕ) (C a : ℝ) : ℝ :=
+private def strongMaximalScale (d : ℕ) (C a : ℝ) : ℝ :=
   C * a⁻¹ * (1 + |Real.log a|) ^ (d - 1)
 
 /-- The scale coefficient is positive for a positive height and a positive constant. -/
-theorem strongMaximalScale_pos {d : ℕ} {C a : ℝ} (hC : 0 < C) (ha : 0 < a) :
+private theorem strongMaximalScale_pos {d : ℕ} {C a : ℝ} (hC : 0 < C) (ha : 0 < a) :
     0 < strongMaximalScale d C a := by
   unfold strongMaximalScale
   positivity
@@ -177,7 +177,7 @@ theorem OpenRectangle.dist_lt_totalWidth {d : ℕ} (hd : 0 < d) (R : OpenRectang
   exact (hside j).trans_le (hle j)
 
 /-- The absolute value of a signed average is at most the average of the absolute value. -/
-theorem OpenRectangle.abs_average_le {d : ℕ} (R : OpenRectangle d)
+private theorem OpenRectangle.abs_average_le {d : ℕ} (R : OpenRectangle d)
     (g : (Fin d → ℝ) → ℝ) :
     |R.average g| ≤ R.average (fun y ↦ |g y|) := by
   unfold OpenRectangle.average
@@ -186,7 +186,7 @@ theorem OpenRectangle.abs_average_le {d : ℕ} (R : OpenRectangle d)
   exact mul_le_mul_of_nonneg_left abs_integral_le_integral_abs hv
 
 /-- A uniform oscillation bound passes to the average. -/
-theorem OpenRectangle.abs_average_sub_le {d : ℕ} (R : OpenRectangle d)
+private theorem OpenRectangle.abs_average_sub_le {d : ℕ} (R : OpenRectangle d)
     {g : (Fin d → ℝ) → ℝ} {c η : ℝ} (hg : IntegrableOn g R.carrier)
     (hbound : ∀ y ∈ R.carrier, |g y - c| ≤ η) : |R.average g - c| ≤ η := by
   have hvpos : 0 < volume.real R.carrier :=
@@ -221,7 +221,7 @@ theorem OpenRectangle.abs_average_sub_le {d : ℕ} (R : OpenRectangle d)
     _ = η := by rw [← mul_assoc, inv_mul_cancel₀ hvpos.ne', one_mul]
 
 /-- An integrable absolute average is a strong-maximal average. -/
-theorem OpenRectangle.ofReal_average_abs_le_strongMaximal {d : ℕ} (R : OpenRectangle d)
+private theorem OpenRectangle.ofReal_average_abs_le_strongMaximal {d : ℕ} (R : OpenRectangle d)
     {g : (Fin d → ℝ) → ℝ} (hg : IntegrableOn (fun y ↦ |g y|) R.carrier)
     {x : Fin d → ℝ} (hx : x ∈ R.carrier) :
     ENNReal.ofReal (R.average (fun y ↦ |g y|)) ≤ strongMaximalFunction g x := by
@@ -240,41 +240,41 @@ theorem OpenRectangle.ofReal_average_abs_le_strongMaximal {d : ℕ} (R : OpenRec
       (∫⁻ y in S.carrier, ENNReal.ofReal |g y|) / volume S.carrier) R)
 
 /-- Truncation of a real number to the interval `[-N, N]`. -/
-def heightClamp (N t : ℝ) : ℝ := max (-N) (min t N)
+private def heightClamp (N t : ℝ) : ℝ := max (-N) (min t N)
 
 /-- Truncation to a symmetric interval is 1-Lipschitz. -/
-theorem heightClamp_lipschitz (N : ℝ) : LipschitzWith 1 (heightClamp N) := by
+private theorem heightClamp_lipschitz (N : ℝ) : LipschitzWith 1 (heightClamp N) := by
   unfold heightClamp
   exact (LipschitzWith.id.min_const N).const_max (-N)
 
 /-- Truncation does not increase distances. -/
-theorem abs_heightClamp_sub_le (N s t : ℝ) :
+private theorem abs_heightClamp_sub_le (N s t : ℝ) :
     |heightClamp N s - heightClamp N t| ≤ |s - t| := by
   have h := (heightClamp_lipschitz N).dist_le_mul s t
   simpa [Real.dist_eq, NNReal.coe_one, one_mul] using h
 
 /-- Truncation fixes zero when the height is nonnegative. -/
-theorem heightClamp_zero {N : ℝ} (hN : 0 ≤ N) : heightClamp N 0 = 0 := by
+private theorem heightClamp_zero {N : ℝ} (hN : 0 ≤ N) : heightClamp N 0 = 0 := by
   unfold heightClamp
   rw [min_eq_left hN, max_eq_right (neg_nonpos.2 hN)]
 
 /-- Truncation fixes every point of the interval `[-N, N]`. -/
-theorem heightClamp_eq_self {N t : ℝ} (ht : |t| ≤ N) : heightClamp N t = t := by
+private theorem heightClamp_eq_self {N t : ℝ} (ht : |t| ≤ N) : heightClamp N t = t := by
   rw [abs_le] at ht
   unfold heightClamp
   rw [min_eq_left ht.2, max_eq_right ht.1]
 
 /-- Truncation does not increase the absolute value. -/
-theorem abs_heightClamp_le {N t : ℝ} (hN : 0 ≤ N) : |heightClamp N t| ≤ |t| := by
+private theorem abs_heightClamp_le {N t : ℝ} (hN : 0 ≤ N) : |heightClamp N t| ≤ |t| := by
   simpa [heightClamp_zero hN, sub_zero] using abs_heightClamp_sub_le N t 0
 
 /-- A truncated value stays inside the truncation window. -/
-theorem abs_heightClamp_le_height {N t : ℝ} (hN : 0 ≤ N) : |heightClamp N t| ≤ N := by
+private theorem abs_heightClamp_le_height {N t : ℝ} (hN : 0 ≤ N) : |heightClamp N t| ≤ N := by
   unfold heightClamp
   exact abs_le.2 ⟨le_max_left _ _, max_le (neg_le_self hN) (min_le_right _ _)⟩
 
 /-- The distance from a real number to its truncation is at most its absolute value. -/
-theorem abs_sub_heightClamp_le {N t : ℝ} (hN : 0 ≤ N) : |t - heightClamp N t| ≤ |t| := by
+private theorem abs_sub_heightClamp_le {N t : ℝ} (hN : 0 ≤ N) : |t - heightClamp N t| ≤ |t| := by
   by_cases hhi : N < t
   · have hclamp : heightClamp N t = N := by
       unfold heightClamp
@@ -295,17 +295,17 @@ theorem abs_sub_heightClamp_le {N t : ℝ} (hN : 0 ≤ N) : |t - heightClamp N t
       simp [heightClamp_eq_self ht, abs_nonneg]
 
 /-- Truncation is continuous. -/
-theorem continuous_heightClamp (N : ℝ) : Continuous (heightClamp N) :=
+private theorem continuous_heightClamp (N : ℝ) : Continuous (heightClamp N) :=
   (heightClamp_lipschitz N).continuous
 
 /-- Truncation preserves compact support. -/
-theorem HasCompactSupport.heightClamp {X : Type*} [TopologicalSpace X] {N : ℝ} (hN : 0 ≤ N)
+private theorem HasCompactSupport.heightClamp {X : Type*} [TopologicalSpace X] {N : ℝ} (hN : 0 ≤ N)
     {f : X → ℝ} (hf : HasCompactSupport f) :
     HasCompactSupport (fun x ↦ heightClamp N (f x)) :=
   hf.comp_left (heightClamp_zero hN)
 
 /-- Continuous compactly supported functions are differentiated at every point. -/
-theorem rectanglesDifferentiateAt_of_hasCompactSupport {d : ℕ} (hd : 0 < d)
+private theorem rectanglesDifferentiateAt_of_hasCompactSupport {d : ℕ} (hd : 0 < d)
     {h : (Fin d → ℝ) → ℝ} (hh : Continuous h) (hs : HasCompactSupport h) (x : Fin d → ℝ) :
     RectanglesDifferentiateAt h x := by
   intro ε hε
@@ -324,7 +324,7 @@ theorem rectanglesDifferentiateAt_of_hasCompactSupport {d : ℕ} (hd : 0 < d)
   exact (R.abs_average_sub_le hint hclose).trans_lt (half_lt_self hε)
 
 /-- Global integrability of the endpoint growth implies ordinary integrability. -/
-theorem integrable_of_strongMaximalGrowth {d : ℕ} {f : (Fin d → ℝ) → ℝ} (hm : Measurable f)
+private theorem integrable_of_strongMaximalGrowth {d : ℕ} {f : (Fin d → ℝ) → ℝ} (hm : Measurable f)
     (hG : Integrable (fun x ↦ strongMaximalGrowth d |f x|)) : Integrable f := by
   refine hG.mono' hm.aestronglyMeasurable ?_
   filter_upwards with x
@@ -332,7 +332,8 @@ theorem integrable_of_strongMaximalGrowth {d : ℕ} {f : (Fin d → ℝ) → ℝ
   exact strongMaximalGrowth_ge_self (abs_nonneg _)
 
 /-- Raising the truncation height sends the endpoint integral of the error to zero. -/
-theorem tendsto_integral_growth_heightClamp {d : ℕ} {f : (Fin d → ℝ) → ℝ} (hm : Measurable f)
+private theorem tendsto_integral_growth_heightClamp {d : ℕ} {f : (Fin d → ℝ) → ℝ}
+    (hm : Measurable f)
     (hG : Integrable (fun x ↦ strongMaximalGrowth d |f x|)) :
     Tendsto (fun n : ℕ ↦ ∫ x, strongMaximalGrowth d |f x - heightClamp (n : ℝ) (f x)|)
       atTop (𝓝 0) := by
@@ -362,7 +363,7 @@ theorem tendsto_integral_growth_heightClamp {d : ℕ} {f : (Fin d → ℝ) → �
 
 /-- A measurable function bounded by `N` can be replaced by a continuous compactly supported
 function with a small endpoint integral. -/
-theorem exists_continuous_growth_small {d : ℕ} {N : ℝ} (hN : 0 ≤ N)
+private theorem exists_continuous_growth_small {d : ℕ} {N : ℝ} (hN : 0 ≤ N)
     {f : (Fin d → ℝ) → ℝ} (hm : Measurable f) (hf : Integrable f)
     (hbound : ∀ x, |f x| ≤ N) {δ : ℝ} (hδ : 0 < δ) :
     ∃ h : (Fin d → ℝ) → ℝ, Continuous h ∧ HasCompactSupport h ∧
@@ -424,7 +425,7 @@ theorem exists_continuous_growth_small {d : ℕ} {N : ℝ} (hN : 0 ≤ N)
   exact ⟨h, hh, hhs, hGi, hsmall⟩
 
 /-- The distribution of the strong maximal function is an integral of the same-order growth. -/
-theorem strongMaximal_distribution_le {d : ℕ} {g : (Fin d → ℝ) → ℝ}
+private theorem strongMaximal_distribution_le {d : ℕ} {g : (Fin d → ℝ) → ℝ}
     (hG : Integrable (fun x ↦ strongMaximalGrowth d |g x|)) {a C : ℝ} (ha : 0 < a)
     (hC : 0 < C)
     (hmax : volume {x | ENNReal.ofReal a < strongMaximalFunction g x} ≤
@@ -467,7 +468,7 @@ theorem strongMaximal_distribution_le {d : ℕ} {g : (Fin d → ℝ) → ℝ}
   exact hbound.trans_eq (by rw [hrew, hscale])
 
 /-- Markov's inequality for the endpoint growth, which dominates the absolute value. -/
-theorem volume_growth_ge_le {d : ℕ} {g : (Fin d → ℝ) → ℝ} (hg : Measurable g)
+private theorem volume_growth_ge_le {d : ℕ} {g : (Fin d → ℝ) → ℝ} (hg : Measurable g)
     (hG : Integrable (fun x ↦ strongMaximalGrowth d |g x|)) {a : ℝ} (ha : 0 < a) :
     volume {x | a ≤ |g x|} ≤
       ENNReal.ofReal ((∫ x, strongMaximalGrowth d |g x|) / a) := by
@@ -487,7 +488,7 @@ theorem volume_growth_ge_le {d : ℕ} {g : (Fin d → ℝ) → ℝ} (hg : Measur
 
 /-- Height truncation followed by a continuous compactly supported correction splits off two
 small endpoint errors. -/
-theorem exists_split_growth_small {d : ℕ} {f : (Fin d → ℝ) → ℝ} (hm : Measurable f)
+private theorem exists_split_growth_small {d : ℕ} {f : (Fin d → ℝ) → ℝ} (hm : Measurable f)
     (hG : Integrable (fun x ↦ strongMaximalGrowth d |f x|)) {δ : ℝ} (hδ : 0 < δ) :
     ∃ g1 g2 h : (Fin d → ℝ) → ℝ,
       Measurable g1 ∧ Measurable g2 ∧ Continuous h ∧ HasCompactSupport h ∧
@@ -539,7 +540,7 @@ theorem exists_split_growth_small {d : ℕ} {f : (Fin d → ℝ) → ℝ} (hm : 
 
 /-- Outside a small set, a split into two small errors and one continuous function has small
 rectangular oscillation. -/
-theorem exists_rectangle_width {d : ℕ} (hd : 0 < d) {g1 g2 h : (Fin d → ℝ) → ℝ}
+private theorem exists_rectangle_width {d : ℕ} (hd : 0 < d) {g1 g2 h : (Fin d → ℝ) → ℝ}
     {x : Fin d → ℝ} {ε : ℝ} (hg1 : Integrable g1) (hg2 : Integrable g2) (hh : Continuous h)
     (hs : HasCompactSupport h)
     (hM1 : strongMaximalFunction g1 x ≤ ENNReal.ofReal (ε / 5))
@@ -605,16 +606,19 @@ theorem exists_rectangle_width {d : ℕ} (hd : 0 < d) {g1 g2 h : (Fin d → ℝ)
   linarith
 
 /-- Points where every scale of rectangle misses the value by a fixed amount. -/
-def rectangleOscillation {d : ℕ} (f : (Fin d → ℝ) → ℝ) (ε : ℝ) : Set (Fin d → ℝ) :=
+private def rectangleOscillation {d : ℕ} (f : (Fin d → ℝ) → ℝ) (ε : ℝ) : Set (Fin d → ℝ) :=
   {x | ∀ δ : ℝ, 0 < δ → ∃ R : OpenRectangle d, x ∈ R.carrier ∧ R.totalWidth < δ ∧
     ε ≤ |R.average f - f x|}
 
 /-- The strong maximal inequality makes the rectangular oscillation of a globally integrable
 endpoint function a null set. -/
-theorem volume_rectangleOscillation_eq_zero {d : ℕ} (hd : 1 ≤ d) {f : (Fin d → ℝ) → ℝ}
+private theorem volume_rectangleOscillation_eq_zero {d : ℕ} (hd : 1 ≤ d) {f : (Fin d → ℝ) → ℝ}
     (hm : Measurable f) (hG : Integrable (fun x ↦ strongMaximalGrowth d |f x|)) {ε : ℝ}
     (hε : 0 < ε) : volume (rectangleOscillation f ε) = 0 := by
-  refine eq_zero_of_forall_le_ofReal fun η hη ↦ ?_
+  refine le_antisymm (ENNReal.le_of_forall_pos_le_add fun η' hη' _ ↦ ?_) bot_le
+  rw [zero_add, ← ENNReal.ofReal_coe_nnreal]
+  have hη : (0 : ℝ) < η' := hη'
+  generalize (η' : ℝ) = η at hη ⊢
   obtain ⟨C, hC, hmax⟩ := strongMaximal_orlicz hd
   set a : ℝ := ε / 5
   have ha : 0 < a := by

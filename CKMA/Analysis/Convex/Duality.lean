@@ -84,7 +84,7 @@ def realSubdifferential (f : E → ℝ) (x : E) : Set (StrongDual ℝ E) :=
 
 /-- Real-valued subgradients satisfy the ordinary real supporting-line inequality.
 This adapter is TauCeti's `mem_subdifferential_coe_iff` at the continuous-dual pairing. -/
-theorem mem_realSubdifferential_iff {f : E → ℝ} {x : E} {u : StrongDual ℝ E} :
+private theorem mem_realSubdifferential_iff {f : E → ℝ} {x : E} {u : StrongDual ℝ E} :
     u ∈ realSubdifferential f x ↔ ∀ z, f x + u (z - x) ≤ f z :=
   TauCeti.mem_subdifferential_coe_iff (topDualPairing ℝ E).flip f
 

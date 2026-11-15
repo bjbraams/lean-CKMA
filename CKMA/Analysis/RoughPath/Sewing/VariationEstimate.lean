@@ -59,7 +59,7 @@ namespace YoungLoeve
 variable {E : Type*} [SeminormedAddCommGroup E]
 
 /-- Odd interior indices stay below the length of the node sequence. -/
-lemma index_odd_lt {k n : ℕ} (hk : k < n / 2) : 2 * k + 1 < n := by
+private lemma index_odd_lt {k n : ℕ} (hk : k < n / 2) : 2 * k + 1 < n := by
   have hmul : 2 * (k + 1) ≤ 2 * (n / 2) := Nat.mul_le_mul_left 2 (Nat.succ_le_of_lt hk)
   have hself : 2 * (n / 2) ≤ n := by simpa [Nat.mul_comm] using Nat.div_mul_le_self n 2
   have : 2 * k + 2 ≤ n := by
@@ -70,7 +70,7 @@ lemma index_odd_lt {k n : ℕ} (hk : k < n / 2) : 2 * k + 1 < n := by
   omega
 
 /-- Even interior indices stay below the length of the node sequence. -/
-lemma index_even_lt {k n : ℕ} (hk : k < (n - 1) / 2) : 2 * k + 2 < n := by
+private lemma index_even_lt {k n : ℕ} (hk : k < (n - 1) / 2) : 2 * k + 2 < n := by
   have hmul : 2 * (k + 1) ≤ 2 * ((n - 1) / 2) :=
     Nat.mul_le_mul_left 2 (Nat.succ_le_of_lt hk)
   have hself : 2 * ((n - 1) / 2) ≤ n - 1 := by
@@ -98,7 +98,7 @@ lemma exists_light_ctrl {n : ℕ} (hn : 2 ≤ n) (c : ℕ → ℝ) (hc : Monoton
   have hΩ : 0 ≤ Ω := youngCtrl_nonneg X Y (c 0) (c n)
   have htail : 2 * (n / 2) ≤ n := by omega
   have hodd_le : ∑ k ∈ range (n / 2), youngCtrl p q X Y (c (2 * k)) (c (2 * k + 2)) ≤ Ω := by
-    have hsum := ctrl_chain hp hq hpq X Y (n / 2) c hc
+    have hsum := sum_youngCtrl_two_mul_le hp hq hpq X Y (n / 2) c hc
       (ne_top_of_le_ne_top hX (pathVariationPower_mono (le_refl _) (hc htail) p X))
       (ne_top_of_le_ne_top hY (pathVariationPower_mono (le_refl _) (hc htail) q Y))
     exact hsum.trans (youngCtrl_mono (le_refl (c 0)) (hc (by omega : (0 : ℕ) ≤ 2 * (n / 2)))
@@ -118,7 +118,7 @@ lemma exists_light_ctrl {n : ℕ} (hn : 2 ≤ n) (c : ℕ → ℝ) (hc : Monoton
       have hY' : pathVariationPower q Y (c' 0) (c' (2 * ((n - 1) / 2))) ≠ ∞ := by
         simpa [c'] using ne_top_of_le_ne_top hY
           (pathVariationPower_mono hleft (hc hend) q Y)
-      have hsum := ctrl_chain hp hq hpq X Y ((n - 1) / 2) c' hc' hX' hY'
+      have hsum := sum_youngCtrl_two_mul_le hp hq hpq X Y ((n - 1) / 2) c' hc' hX' hY'
       have hwide := youngCtrl_mono hleft (hc (by omega : 1 ≤ 2 * ((n - 1) / 2) + 1))
         (hc hend) hp hq hpq X Y hX hY
       simpa [c'] using hsum.trans hwide
@@ -300,7 +300,7 @@ lemma young_step_bound {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
           rw [← youngPartial_step (by omega : 0 < n)]
 
 /-- Tail of an ordered partition, beginning at node `k`. -/
-def suffixPart {s u : ℝ} (π : OrderedIntervalPartition s u) (k : ℕ) (hk : k ≤ π.size) :
+private def suffixPart {s u : ℝ} (π : OrderedIntervalPartition s u) (k : ℕ) (hk : k ≤ π.size) :
     OrderedIntervalPartition (nodeSeq π k) u where
   size := π.size - k
   node := fun i => π.node ⟨k + i.val, by have := i.isLt; omega⟩
@@ -325,7 +325,7 @@ def suffixPart {s u : ℝ} (π : OrderedIntervalPartition s u) (k : ℕ) (hk : k
     rw [hlast, π.node_last]
 
 /-- Nodes of a tail are nodes of the original partition. -/
-lemma nodeSeq_suffix {s u : ℝ} (π : OrderedIntervalPartition s u) {k i : ℕ}
+private lemma nodeSeq_suffix {s u : ℝ} (π : OrderedIntervalPartition s u) {k i : ℕ}
     (hk : k ≤ π.size) (hi : i ≤ π.size - k) :
     nodeSeq (suffixPart π k hk) i = nodeSeq π (k + i) := by
   unfold nodeSeq suffixPart
@@ -334,7 +334,7 @@ lemma nodeSeq_suffix {s u : ℝ} (π : OrderedIntervalPartition s u) {k i : ℕ}
   simp [hmin1, hmin2]
 
 /-- A variation sum splits into a prefix and the tail partition. -/
-lemma variationSum_take (p : ℝ) (X : ℝ → E) {s u : ℝ} (π : OrderedIntervalPartition s u)
+private lemma variationSum_take (p : ℝ) (X : ℝ → E) {s u : ℝ} (π : OrderedIntervalPartition s u)
     {k : ℕ} (hk : k ≤ π.size) :
     variationSum p X π =
       (∑ i ∈ range k, ENNReal.ofReal (‖X (nodeSeq π (i + 1)) - X (nodeSeq π i)‖ ^ p)) +
@@ -361,7 +361,7 @@ def timeReflect (c d : ℝ) (X : ℝ → E) (u : ℝ) : E :=
   X (c + d - u)
 
 /-- The partition read from right to left after time reflection. -/
-def reflectPart (c d : ℝ) {s t : ℝ} (π : OrderedIntervalPartition s t) :
+private def reflectPart (c d : ℝ) {s t : ℝ} (π : OrderedIntervalPartition s t) :
     OrderedIntervalPartition (c + d - t) (c + d - s) where
   size := π.size
   node := fun i => c + d - π.node ⟨π.size - i.val, by have := i.isLt; omega⟩
@@ -390,7 +390,7 @@ def reflectPart (c d : ℝ) {s t : ℝ} (π : OrderedIntervalPartition s t) :
     rw [hzero, π.node_zero]
 
 /-- Reflection preserves sums of increment powers. -/
-lemma variationSum_reflect (c d p : ℝ) (X : ℝ → E) {s t : ℝ}
+private lemma variationSum_reflect (c d p : ℝ) (X : ℝ → E) {s t : ℝ}
     (π : OrderedIntervalPartition s t) :
     variationSum p (timeReflect c d X) (reflectPart c d π) = variationSum p X π := by
   unfold variationSum
@@ -424,14 +424,14 @@ lemma variationSum_reflect (c d p : ℝ) (X : ℝ → E) {s t : ℝ}
   rw [hEq, norm_neg]
 
 /-- Transport an ordered partition across propositionally equal endpoints. -/
-def castPart {s t s' t' : ℝ} (hs : s = s') (ht : t = t')
+private def castPart {s t s' t' : ℝ} (hs : s = s') (ht : t = t')
     (π : OrderedIntervalPartition s t) : OrderedIntervalPartition s' t' := by
   cases hs
   cases ht
   exact π
 
 /-- Endpoint transport does not change a variation sum. -/
-lemma variationSum_cast {s t s' t' : ℝ} (hs : s = s') (ht : t = t') (p : ℝ) (X : ℝ → E)
+private lemma variationSum_cast {s t s' t' : ℝ} (hs : s = s') (ht : t = t') (p : ℝ) (X : ℝ → E)
     (π : OrderedIntervalPartition s t) :
     variationSum p X (castPart hs ht π) = variationSum p X π := by
   cases hs
@@ -439,7 +439,7 @@ lemma variationSum_cast {s t s' t' : ℝ} (hs : s = s') (ht : t = t') (p : ℝ) 
   rfl
 
 /-- Reflected paths have the reflected `p`-variation. -/
-lemma pathVariationPower_reflect {c d s t : ℝ} (p : ℝ) (X : ℝ → E) :
+private lemma pathVariationPower_reflect {c d s t : ℝ} (p : ℝ) (X : ℝ → E) :
     pathVariationPower p (timeReflect c d X) (c + d - t) (c + d - s) =
       pathVariationPower p X s t := by
   apply le_antisymm
@@ -462,7 +462,7 @@ lemma pathVariationPower_reflect {c d s t : ℝ} (p : ℝ) (X : ℝ → E) :
       (le_iSup (variationSum p (timeReflect c d X)) (reflectPart c d π))
 
 /-- Deleting the first positive step leaves a definite fraction of the variation. -/
-lemma exists_variation_tail {a b p : ℝ} (hp : 1 ≤ p) (X : ℝ → E)
+private lemma exists_variation_tail {a b p : ℝ} (hp : 1 ≤ p) (X : ℝ → E)
     {t u η δ : ℝ}
     (ht : a ≤ t) (htu : t < u) (hub : u ≤ b) (hδ : u - t < δ) (hη : 0 < η)
     (hclose : ∀ r ∈ Set.Icc a b, |r - t| < δ → ‖X r - X t‖ ^ p < η / 8)
@@ -539,7 +539,7 @@ lemma exists_variation_tail {a b p : ℝ} (hp : 1 ≤ p) (X : ℝ → E)
   exact ⟨m, hmt, hmlt, suffixPart π j hjle, htail⟩
 
 /-- Convex increments of `x ^ p` increase with the left endpoint. -/
-lemma rpow_sub_le {p M α β : ℝ} (hp : 1 ≤ p) (hM : 0 ≤ M) (hα : 0 ≤ α) (hαM : α ≤ M)
+private lemma rpow_sub_le {p M α β : ℝ} (hp : 1 ≤ p) (hM : 0 ≤ M) (hα : 0 ≤ α) (hαM : α ≤ M)
     (hβ : 0 ≤ β) : (α + β) ^ p - α ^ p ≤ (M + β) ^ p - M ^ p := by
   rcases eq_or_lt_of_le hβ with rfl | hβ0
   · simp
@@ -562,7 +562,7 @@ lemma rpow_sub_le {p M α β : ℝ} (hp : 1 ≤ p) (hM : 0 ≤ M) (hα : 0 ≤ �
     linarith
 
 /-- A uniform positive lower bound on right variation upgrades by the factor `7 / 4`. -/
-lemma variation_right_boost {a b p : ℝ} (hp : 1 ≤ p) (X : ℝ → E)
+private lemma variation_right_boost {a b p : ℝ} (hp : 1 ≤ p) (X : ℝ → E)
     (hX : ContinuousOn X (Set.Icc a b)) (hfin : pathVariationPower p X a b ≠ ∞)
     {t η : ℝ} (ht : a ≤ t) (htb : t < b) (hη : 0 < η)
     (hlow : ∀ u, t < u → u ≤ b → η ≤ variationReal p X t u) :
@@ -607,7 +607,7 @@ lemma variation_right_boost {a b p : ℝ} (hp : 1 ≤ p) (X : ℝ → E)
         (ne_top_of_le_ne_top hfin (pathVariationPower_mono ht hub p X)))
 
 /-- Right variation of a continuous finite-variation path vanishes at the diagonal. -/
-lemma variation_right_vanish {a b p : ℝ} (hp : 1 ≤ p) (X : ℝ → E)
+private lemma variation_right_vanish {a b p : ℝ} (hp : 1 ≤ p) (X : ℝ → E)
     (hX : ContinuousOn X (Set.Icc a b)) (hfin : pathVariationPower p X a b ≠ ∞)
     {t : ℝ} (ht : a ≤ t) (htb : t ≤ b) :
     ∀ ε > 0, ∃ δ > 0, ∀ u, t < u → u ≤ b → u - t < δ → variationReal p X t u < ε := by
@@ -643,13 +643,13 @@ lemma variation_right_vanish {a b p : ℝ} (hp : 1 ≤ p) (X : ℝ → E)
   exact lt_irrefl _ (hlt.trans_le (hiter n b htb' le_rfl))
 
 /-- Time reflection preserves real `p`-variation. -/
-lemma variationReal_reflect {c d s t : ℝ} (p : ℝ) (X : ℝ → E) :
+private lemma variationReal_reflect {c d s t : ℝ} (p : ℝ) (X : ℝ → E) :
     variationReal p (timeReflect c d X) (c + d - t) (c + d - s) =
       variationReal p X s t := by
   simp [variationReal, pathVariationPower_reflect]
 
 /-- Left variation vanishes at the diagonal by reflecting time. -/
-lemma variation_left_vanish {a b p : ℝ} (hp : 1 ≤ p) (X : ℝ → E)
+private lemma variation_left_vanish {a b p : ℝ} (hp : 1 ≤ p) (X : ℝ → E)
     (hX : ContinuousOn X (Set.Icc a b)) (hfin : pathVariationPower p X a b ≠ ∞)
     {t : ℝ} (ht : a ≤ t) (htb : t ≤ b) :
     ∀ ε > 0, ∃ δ > 0, ∀ s, a ≤ s → s < t → t - s < δ → variationReal p X s t < ε := by
@@ -670,7 +670,7 @@ lemma variation_left_vanish {a b p : ℝ} (hp : 1 ≤ p) (X : ℝ → E)
   simpa [Z, variationReal_reflect] using hrev
 
 /-- Head of an ordered partition, stopping at node `k`. -/
-def prefixPart {s u : ℝ} (π : OrderedIntervalPartition s u) (k : ℕ) (hk : k ≤ π.size) :
+private def prefixPart {s u : ℝ} (π : OrderedIntervalPartition s u) (k : ℕ) (hk : k ≤ π.size) :
     OrderedIntervalPartition s (nodeSeq π k) where
   size := k
   node := fun i => π.node ⟨i.val, by have := i.isLt; omega⟩
@@ -686,7 +686,7 @@ def prefixPart {s u : ℝ} (π : OrderedIntervalPartition s u) (k : ℕ) (hk : k
     rw [hidx, nodeSeq_of_le π hk]
 
 /-- The head partition carries the first variation steps. -/
-lemma variationSum_prefix (p : ℝ) (X : ℝ → E) {s u : ℝ} (π : OrderedIntervalPartition s u)
+private lemma variationSum_prefix (p : ℝ) (X : ℝ → E) {s u : ℝ} (π : OrderedIntervalPartition s u)
     {k : ℕ} (hk : k ≤ π.size) :
     variationSum p X (prefixPart π k hk) =
       ∑ i ∈ range k, ENNReal.ofReal (‖X (nodeSeq π (i + 1)) - X (nodeSeq π i)‖ ^ p) := by
@@ -875,7 +875,7 @@ lemma continuousOn_variationReal {a b p : ℝ} (hp : 1 ≤ p) (X : ℝ → E)
       simpa [Real.dist_eq, abs_of_nonneg (sub_nonneg.mpr hmono), abs_sub_comm] using hdiff
 
 /-- Short intervals carry arbitrarily small `p`-variation. -/
-lemma exists_variation_short {a b p : ℝ} (hp : 1 ≤ p) (X : ℝ → E)
+private lemma exists_variation_short {a b p : ℝ} (hp : 1 ≤ p) (X : ℝ → E)
     (hX : ContinuousOn X (Set.Icc a b)) (hfin : pathVariationPower p X a b ≠ ∞) :
     ∀ ε > 0, ∃ δ > 0, ∀ s t, a ≤ s → s ≤ t → t ≤ b → t - s < δ →
       variationReal p X s t < ε := by

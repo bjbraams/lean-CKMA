@@ -57,8 +57,8 @@ private lemma integrable_fejerKernel_mul_norm_sub {f : 𝕋 → ℂ} (hf : Integ
   have hint1 : Integrable (fun t => (fejerKernel N t : ℂ) * f (x - t)) haar :=
     hshift.bdd_mul hker hbound
   have hint2 : Integrable (fun t => (fejerKernel N t : ℂ) * f x) haar :=
-    (integrable_of_continuous
-      (Complex.continuous_ofReal.comp (continuous_fejerKernel N))).mul_const (f x)
+    ((Complex.continuous_ofReal.comp (continuous_fejerKernel N)).integrable_of_hasCompactSupport
+      (.of_compactSpace _)).mul_const (f x)
   have hint : Integrable (fun t => (fejerKernel N t : ℂ) * (f (x - t) - f x)) haar :=
     (hint1.sub hint2).congr <| ae_of_all _ fun t => by
       simp only [Pi.sub_apply]
@@ -101,7 +101,7 @@ theorem fejerMean_tendstoUniformly {f : AddCircle (1 : ℝ) → ℂ} (hf : Conti
     have hnn := setIntegral_nonneg (μ := haar) hs0 fun y _ => fejerKernel_nonneg N y
     rwa [Real.dist_0_eq_abs, abs_of_nonneg hnn] at hN
   filter_upwards [hkerTail] with N hN x
-  have hintf : Integrable f haar := integrable_of_continuous hf
+  have hintf : Integrable f haar := hf.integrable_of_hasCompactSupport (.of_compactSpace _)
   let s : Set 𝕋 := {y | δ ≤ ‖y‖}
   have hs : MeasurableSet s := measurableSet_le measurable_const continuous_norm.measurable
   let φ : 𝕋 → ℝ := fun t => fejerKernel N t * ‖f (x - t) - f x‖
@@ -369,7 +369,8 @@ theorem fejerMean_tendsto_Lp {p : ℝ≥0∞} (hp : 1 ≤ p) (hpt : p < ∞)
   have hε3 : 0 < ε / 3 := ENNReal.div_pos hε.ne' (by simp)
   obtain ⟨g, hgLp, hgMem⟩ := hf.exists_boundedContinuous_eLpNorm_sub_le hpt.ne hε3.ne'
   have hintf : Integrable f haar := hf.integrable hp
-  have hintg : Integrable (g : 𝕋 → ℂ) haar := integrable_of_continuous g.continuous
+  have hintg : Integrable (g : 𝕋 → ℂ) haar :=
+    g.continuous.integrable_of_hasCompactSupport (.of_compactSpace _)
   have hdiffMem : MemLp (f - (g : 𝕋 → ℂ)) p haar := hf.sub hgMem
   have hgu := fejerMean_tendstoUniformly g.continuous
   rw [Metric.tendstoUniformly_iff] at hgu

@@ -9,6 +9,10 @@ public import CKMA.Analysis.Interpolation.Basic
 public import CKMA.Analysis.Interpolation.Bounds.Real
 public import CKMA.Analysis.Interpolation.Bounds.Complex
 
+import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
+import Mathlib.Topology.Algebra.Order.Field
+import Mathlib.Topology.Instances.ENNReal.Lemmas
+
 /-!
 # Real and complex interpolation bounds
 
@@ -32,7 +36,30 @@ noncomputable section
 
 namespace CKMA
 
+open Filter Topology
 open scoped ENNReal
+
+/-- If a bound holds for every `Mᵢ + ε`, it holds for nonnegative `Mᵢ`. -/
+private theorem le_of_endpointFactor_eps {θ : ℝ} (hθ : 0 < θ) (hθ1 : θ < 1) {M₀ M₁ : ℝ}
+    {a G : ℝ≥0∞} (hG : G ≠ ∞)
+    (h : ∀ ε : ℝ, 0 < ε →
+      a ≤ ENNReal.ofReal ((M₀ + ε) ^ (1 - θ) * (M₁ + ε) ^ θ) * G) :
+    a ≤ ENNReal.ofReal (M₀ ^ (1 - θ) * M₁ ^ θ) * G := by
+  let εn : ℕ → ℝ := fun n => (↑(n + 1) : ℝ)⁻¹
+  have hεpos : ∀ n, 0 < εn n := fun n => inv_pos.mpr (Nat.cast_pos.mpr n.succ_pos)
+  have hεlim : Tendsto εn atTop (𝓝 0) :=
+    tendsto_inv_atTop_zero.comp (tendsto_natCast_atTop_atTop.comp (tendsto_add_atTop_nat 1))
+  have hpow0 : Tendsto (fun n => (M₀ + εn n) ^ (1 - θ)) atTop (𝓝 (M₀ ^ (1 - θ))) := by
+    simpa [add_zero] using
+      (tendsto_const_nhds.add hεlim).rpow_const (Or.inr (sub_nonneg.mpr hθ1.le))
+  have hpow1 : Tendsto (fun n => (M₁ + εn n) ^ θ) atTop (𝓝 (M₁ ^ θ)) := by
+    simpa [add_zero] using (tendsto_const_nhds.add hεlim).rpow_const (Or.inr hθ.le)
+  have hprod : Tendsto (fun n => (M₀ + εn n) ^ (1 - θ) * (M₁ + εn n) ^ θ) atTop
+      (𝓝 (M₀ ^ (1 - θ) * M₁ ^ θ)) := hpow0.mul hpow1
+  have hmul : Tendsto (fun n => ENNReal.ofReal ((M₀ + εn n) ^ (1 - θ) * (M₁ + εn n) ^ θ) * G)
+      atTop (𝓝 (ENNReal.ofReal (M₀ ^ (1 - θ) * M₁ ^ θ) * G)) :=
+    ENNReal.Tendsto.mul_const (ENNReal.tendsto_ofReal hprod) (Or.inr hG)
+  exact le_of_tendsto_of_tendsto' tendsto_const_nhds hmul fun n => h (εn n) (hεpos n)
 
 /-- **26.53**: the exact real interpolation operator bound at the gauge level. -/
 theorem realInterpolationGauge_map_le {𝕜 : Type*} [RCLike 𝕜] {C D : BanachCouple 𝕜}

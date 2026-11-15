@@ -65,9 +65,12 @@ abbrev IsOrderedSummable {E : Type*} [AddCommMonoid E] [TopologicalSpace E] (a :
   Summable a (SummationFilter.conditional ℕ)
 
 /-- Unconditional summability implies ordered summability. -/
-theorem isOrderedSummable_of_summable {E : Type*} [TopologicalSpace E] [AddCommMonoid E]
+theorem Summable.isOrderedSummable {E : Type*} [TopologicalSpace E] [AddCommMonoid E]
     {a : ℕ → E} (ha : Summable a) : IsOrderedSummable a :=
   ha.mono_filter (SummationFilter.conditional ℕ).le_atTop
+
+@[deprecated (since := "2026-11-15")]
+alias isOrderedSummable_of_summable := Summable.isOrderedSummable
 
 /-- Symmetric truncation of a real random variable. -/
 def symmetricTruncation {Ω : Type*} (A : ℝ) (X : Ω → ℝ) (ω : Ω) : ℝ :=

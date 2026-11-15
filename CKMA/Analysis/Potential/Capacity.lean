@@ -27,7 +27,7 @@ Sources: GAPS 38.17, 38.20, 38.28 and 38.30.
 * `CKMA.dirichletEnergy`: squared Dirichlet energy of a scalar function on `ℝ^d`.
 * `CKMA.compactNewtonianCapacity`, `CKMA.openNewtonianCapacity`, `CKMA.newtonianCapacity`:
   variational, inner, and outer Newtonian capacities.
-* `CKMA.newtonianKernelENN`, `CKMA.newtonianPotential`, `CKMA.newtonianMeasureEnergy`: the
+* `CKMA.newtonianKernelENNReal`, `CKMA.newtonianPotential`, `CKMA.newtonianMeasureEnergy`: the
   extended Newtonian kernel, potential, and energy of a measure.
 * `CKMA.IsNewtonianEquilibriumCharge`: the equilibrium-charge conditions on a compact set.
 * `CKMA.IsNewtonianRegularBoundaryPoint`, `CKMA.wienerAnnularPiece`: Perron boundary regularity
@@ -103,13 +103,15 @@ theorem newtonianCapacity_mono {d : ℕ} {A B : Set (EuclideanSpace ℝ (Fin d))
 /-- The nonnegative Newtonian kernel in dimensions at least three, with value `∞` at its pole.
 Away from zero it reuses TauCeti's normalized fundamental solution for `-Δ`.
 In lower dimensions this is only the positive-part adapter of the corresponding real kernel. -/
-def newtonianKernelENN (d : ℕ) (x : EuclideanSpace ℝ (Fin d)) : ℝ≥0∞ :=
+def newtonianKernelENNReal (d : ℕ) (x : EuclideanSpace ℝ (Fin d)) : ℝ≥0∞ :=
   if x = 0 then ∞ else ENNReal.ofReal (TauCeti.newtonianKernel d x)
+
+@[deprecated (since := "2026-11-15")] alias newtonianKernelENN := newtonianKernelENNReal
 
 /-- Newtonian potential of a positive measure. Infinite values are retained. -/
 def newtonianPotential {d : ℕ} (μ : Measure (EuclideanSpace ℝ (Fin d)))
     (x : EuclideanSpace ℝ (Fin d)) : ℝ≥0∞ :=
-  ∫⁻ y, newtonianKernelENN d (x - y) ∂μ
+  ∫⁻ y, newtonianKernelENNReal d (x - y) ∂μ
 
 /-- Newtonian energy, with the singular diagonal retained rather than discarded. -/
 def newtonianMeasureEnergy {d : ℕ} (μ : Measure (EuclideanSpace ℝ (Fin d))) : ℝ≥0∞ :=

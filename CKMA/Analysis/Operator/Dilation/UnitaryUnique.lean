@@ -33,8 +33,10 @@ Sz.-Nagy–Foiaş–Bercovici–Kérchy, Chapter I.
   same contraction have the same inner products.
 * `CKMA.unitaryDilationEquiv_unique`: a unitary intertwiner fixing the embedded space equals
   `unitaryDilationEquiv`.
-* `CKMA.minimalUnitaryPowerDilation_unique_of`: uniqueness of a minimal unitary power dilation up
-  to a unique intertwining unitary.
+* `CKMA.unitaryDilationEquiv_embed`, `CKMA.unitaryDilationEquiv_intertwining`: the equivalence
+  fixes the embedded space and intertwines the two unitaries.
+
+These assemble to `CKMA.minimalUnitaryPowerDilation_unique` in `CKMA.Analysis.Operator.Dilation`.
 -/
 
 @[expose] public section
@@ -51,7 +53,7 @@ universe u
 variable {K : Type u} [NormedAddCommGroup K] [InnerProductSpace ℂ K]
 
 /-- A natural-number power of a unitary agrees with iteration of the underlying map. -/
-theorem linearIsometryEquiv_pow_apply (U : K ≃ₗᵢ[ℂ] K) (n : ℕ) (x : K) :
+private theorem linearIsometryEquiv_pow_apply (U : K ≃ₗᵢ[ℂ] K) (n : ℕ) (x : K) :
     (U ^ n) x = (U^[n]) x := by
   induction n with
   | zero =>
@@ -62,12 +64,12 @@ theorem linearIsometryEquiv_pow_apply (U : K ≃ₗᵢ[ℂ] K) (n : ℕ) (x : K)
       Function.comp_apply, ih]
 
 /-- An integer power with a natural value agrees with iteration. -/
-theorem linearIsometryEquiv_zpow_natCast (U : K ≃ₗᵢ[ℂ] K) (n : ℕ) (x : K) :
+private theorem linearIsometryEquiv_zpow_natCast (U : K ≃ₗᵢ[ℂ] K) (n : ℕ) (x : K) :
     (U ^ (n : ℤ)) x = (U^[n]) x := by
   rw [zpow_natCast, linearIsometryEquiv_pow_apply]
 
 /-- A negative successor power is iteration of the inverse unitary. -/
-theorem linearIsometryEquiv_zpow_negSucc (U : K ≃ₗᵢ[ℂ] K) (n : ℕ) (x : K) :
+private theorem linearIsometryEquiv_zpow_negSucc (U : K ≃ₗᵢ[ℂ] K) (n : ℕ) (x : K) :
     (U ^ Int.negSucc n) x = (U.symm^[n + 1]) x := by
   rw [zpow_negSucc, ← inv_pow, LinearIsometryEquiv.inv_def, linearIsometryEquiv_pow_apply]
 
@@ -83,7 +85,7 @@ def unitaryOrbit (U : K ≃ₗᵢ[ℂ] K) (J : H →ₗᵢ[ℂ] K) :
   Finsupp.linearCombination ℂ (unitaryOrbitVec U J)
 
 /-- A single coefficient reproduces the corresponding orbit vector. -/
-theorem unitaryOrbit_single (U : K ≃ₗᵢ[ℂ] K) (J : H →ₗᵢ[ℂ] K) (p : ℤ × H) (a : ℂ) :
+private theorem unitaryOrbit_single (U : K ≃ₗᵢ[ℂ] K) (J : H →ₗᵢ[ℂ] K) (p : ℤ × H) (a : ℂ) :
     unitaryOrbit U J (Finsupp.single p a) = a • unitaryOrbitVec U J p := by
   rw [unitaryOrbit, Finsupp.linearCombination_single]
 
@@ -93,18 +95,18 @@ def unitaryOrbitShift (c : (ℤ × H) →₀ ℂ) : (ℤ × H) →₀ ℂ :=
 
 omit [NormedAddCommGroup H] [InnerProductSpace ℂ H] in
 /-- The time shift is additive. -/
-theorem unitaryOrbitShift_add (f g : (ℤ × H) →₀ ℂ) :
+private theorem unitaryOrbitShift_add (f g : (ℤ × H) →₀ ℂ) :
     unitaryOrbitShift (f + g) = unitaryOrbitShift f + unitaryOrbitShift g := by
   rw [unitaryOrbitShift, unitaryOrbitShift, unitaryOrbitShift, Finsupp.mapDomain_add]
 
 omit [NormedAddCommGroup H] [InnerProductSpace ℂ H] in
 /-- The time shift sends a single coefficient to the shifted index. -/
-theorem unitaryOrbitShift_single (p : ℤ × H) (a : ℂ) :
+private theorem unitaryOrbitShift_single (p : ℤ × H) (a : ℂ) :
     unitaryOrbitShift (Finsupp.single p a) = Finsupp.single (p.1 + 1, p.2) a := by
   rw [unitaryOrbitShift, Finsupp.mapDomain_single]
 
 /-- Applying the unitary moves an orbit combination onto the shifted coefficient. -/
-theorem unitary_apply_unitaryOrbit (U : K ≃ₗᵢ[ℂ] K) (J : H →ₗᵢ[ℂ] K)
+private theorem unitary_apply_unitaryOrbit (U : K ≃ₗᵢ[ℂ] K) (J : H →ₗᵢ[ℂ] K)
     (c : (ℤ × H) →₀ ℂ) :
     U (unitaryOrbit U J c) = unitaryOrbit U J (unitaryOrbitShift c) := by
   induction c using Finsupp.induction_linear with
@@ -134,7 +136,7 @@ theorem unitary_apply_unitaryOrbit (U : K ≃ₗᵢ[ℂ] K) (J : H →ₗᵢ[ℂ
     exact congrArg (fun k : ℤ => (U ^ k) (J p.2)) (add_comm 1 p.1)
 
 /-- The inner product of two finite combinations expands over the two supports. -/
-theorem inner_linearCombination_eq_sum {ι : Type*} (v : ι → K) (f g : ι →₀ ℂ) :
+private theorem inner_linearCombination_eq_sum {ι : Type*} (v : ι → K) (f g : ι →₀ ℂ) :
     ⟪Finsupp.linearCombination ℂ v f, Finsupp.linearCombination ℂ v g⟫_ℂ =
       ∑ i ∈ f.support, ∑ j ∈ g.support,
         (star (f i) * g j) * ⟪v i, v j⟫_ℂ := by
@@ -151,7 +153,7 @@ variable [CompleteSpace H] [CompleteSpace K]
 
 omit [CompleteSpace H] [CompleteSpace K] in
 /-- Moving both legs of an orbit inner product by the same negative power reduces the times. -/
-theorem inner_unitary_zpow_sub (U : K ≃ₗᵢ[ℂ] K) (J : H →ₗᵢ[ℂ] K) (m n : ℤ) (x y : H) :
+private theorem inner_unitary_zpow_sub (U : K ≃ₗᵢ[ℂ] K) (J : H →ₗᵢ[ℂ] K) (m n : ℤ) (x y : H) :
     ⟪(U ^ m) (J x), (U ^ n) (J y)⟫_ℂ = ⟪(U ^ (m - n)) (J x), J y⟫_ℂ := by
   have hleft : (U ^ (-n)) ((U ^ m) (J x)) = (U ^ (m - n)) (J x) := by
     have hmul : (U ^ (-n) * U ^ m) (J x) = (U ^ (-n)) ((U ^ m) (J x)) := by
@@ -172,7 +174,7 @@ theorem inner_unitary_zpow_sub (U : K ≃ₗᵢ[ℂ] K) (J : H →ₗᵢ[ℂ] K)
           rw [hleft, hright]
 
 /-- Nonnegative and negative orbit inner products are the powers of the original contraction. -/
-theorem inner_unitary_orbit_power (T : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K) (U : K ≃ₗᵢ[ℂ] K)
+private theorem inner_unitary_orbit_power (T : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K) (U : K ≃ₗᵢ[ℂ] K)
     (hpow : ∀ n : ℕ, ∀ x : H,
       J.toContinuousLinearMap.adjoint ((U^[n]) (J x)) = (T ^ n) x)
     (m n : ℤ) (x y : H) :
@@ -213,7 +215,7 @@ theorem inner_unitary_orbit_power (T : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K) (
 variable {L : Type u} [NormedAddCommGroup L] [InnerProductSpace ℂ L] [CompleteSpace L]
 
 /-- Orbit inner products of two unitary power dilations of one contraction agree. -/
-theorem inner_unitaryOrbitVec_eq (T : H →L[ℂ] H)
+private theorem inner_unitaryOrbitVec_eq (T : H →L[ℂ] H)
     (J : H →ₗᵢ[ℂ] K) (U : K ≃ₗᵢ[ℂ] K)
     (hpow : ∀ n : ℕ, ∀ x : H,
       J.toContinuousLinearMap.adjoint ((U^[n]) (J x)) = (T ^ n) x)
@@ -297,7 +299,7 @@ def unitaryDilationIsometry (T : H →L[ℂ] H)
     (fun c => norm_unitaryOrbit_eq T J U hpow J' U' hpow' c)
 
 /-- The orbit isometry acts as the identity on coefficients. -/
-theorem unitaryDilationIsometry_apply (T : H →L[ℂ] H)
+private theorem unitaryDilationIsometry_apply (T : H →L[ℂ] H)
     (J : H →ₗᵢ[ℂ] K) (U : K ≃ₗᵢ[ℂ] K)
     (hpow : ∀ n : ℕ, ∀ x : H,
       J.toContinuousLinearMap.adjoint ((U^[n]) (J x)) = (T ^ n) x)
@@ -352,7 +354,7 @@ def unitaryDilationEquiv (T : H →L[ℂ] H)
     (unitaryDilationIsometry_surjective T J U hpow hmin J' U' hpow' hmin')
 
 /-- The unitary dilation equivalence acts as the identity on coefficients. -/
-theorem unitaryDilationEquiv_apply (T : H →L[ℂ] H)
+private theorem unitaryDilationEquiv_apply (T : H →L[ℂ] H)
     (J : H →ₗᵢ[ℂ] K) (U : K ≃ₗᵢ[ℂ] K)
     (hpow : ∀ n : ℕ, ∀ x : H,
       J.toContinuousLinearMap.adjoint ((U^[n]) (J x)) = (T ^ n) x)
@@ -413,7 +415,7 @@ theorem unitaryDilationEquiv_intertwining (T : H →L[ℂ] H)
 
 omit [CompleteSpace K] [CompleteSpace L] in
 /-- Iteration of an intertwiner agrees with the intertwiner of the iterates. -/
-theorem intertwining_iterate (U : K ≃ₗᵢ[ℂ] K) (U' : L ≃ₗᵢ[ℂ] L) (W : K ≃ₗᵢ[ℂ] L)
+private theorem intertwining_iterate (U : K ≃ₗᵢ[ℂ] K) (U' : L ≃ₗᵢ[ℂ] L) (W : K ≃ₗᵢ[ℂ] L)
     (hW : ∀ y, W (U y) = U' (W y)) (n : ℕ) (y : K) :
     W ((U^[n]) y) = (U'^[n]) (W y) := by
   induction n generalizing y with
@@ -425,7 +427,7 @@ theorem intertwining_iterate (U : K ≃ₗᵢ[ℂ] K) (U' : L ≃ₗᵢ[ℂ] L) 
 
 omit [CompleteSpace K] [CompleteSpace L] in
 /-- An intertwiner commutes with the inverse unitary. -/
-theorem intertwining_symm (U : K ≃ₗᵢ[ℂ] K) (U' : L ≃ₗᵢ[ℂ] L) (W : K ≃ₗᵢ[ℂ] L)
+private theorem intertwining_symm (U : K ≃ₗᵢ[ℂ] K) (U' : L ≃ₗᵢ[ℂ] L) (W : K ≃ₗᵢ[ℂ] L)
     (hW : ∀ y, W (U y) = U' (W y)) (y : K) :
     W (U.symm y) = U'.symm (W y) := by
   have h1 : W y = U' (W (U.symm y)) := by
@@ -436,7 +438,7 @@ theorem intertwining_symm (U : K ≃ₗᵢ[ℂ] K) (U' : L ≃ₗᵢ[ℂ] L) (W 
 
 omit [CompleteSpace K] [CompleteSpace L] in
 /-- Iteration of the inverse intertwines as well. -/
-theorem intertwining_symm_iterate (U : K ≃ₗᵢ[ℂ] K) (U' : L ≃ₗᵢ[ℂ] L) (W : K ≃ₗᵢ[ℂ] L)
+private theorem intertwining_symm_iterate (U : K ≃ₗᵢ[ℂ] K) (U' : L ≃ₗᵢ[ℂ] L) (W : K ≃ₗᵢ[ℂ] L)
     (hW : ∀ y, W (U y) = U' (W y)) (n : ℕ) (y : K) :
     W ((U.symm^[n]) y) = (U'.symm^[n]) (W y) := by
   induction n generalizing y with
@@ -449,7 +451,7 @@ theorem intertwining_symm_iterate (U : K ≃ₗᵢ[ℂ] K) (U' : L ≃ₗᵢ[ℂ
 
 omit [CompleteSpace H] [CompleteSpace K] [CompleteSpace L] in
 /-- An intertwiner fixing the embedded space preserves every two-sided orbit vector. -/
-theorem intertwining_orbit_vec (J : H →ₗᵢ[ℂ] K) (U : K ≃ₗᵢ[ℂ] K)
+private theorem intertwining_orbit_vec (J : H →ₗᵢ[ℂ] K) (U : K ≃ₗᵢ[ℂ] K)
     (J' : H →ₗᵢ[ℂ] L) (U' : L ≃ₗᵢ[ℂ] L) (W : K ≃ₗᵢ[ℂ] L)
     (hJ : ∀ x, W (J x) = J' x) (hW : ∀ y, W (U y) = U' (W y))
     (k : ℤ) (x : H) :
@@ -465,7 +467,7 @@ theorem intertwining_orbit_vec (J : H →ₗᵢ[ℂ] K) (U : K ≃ₗᵢ[ℂ] K)
 
 omit [CompleteSpace H] [CompleteSpace K] [CompleteSpace L] in
 /-- Every unitary intertwiner fixing the embedded space agrees on finite orbit combinations. -/
-theorem intertwining_unitaryOrbit (J : H →ₗᵢ[ℂ] K) (U : K ≃ₗᵢ[ℂ] K)
+private theorem intertwining_unitaryOrbit (J : H →ₗᵢ[ℂ] K) (U : K ≃ₗᵢ[ℂ] K)
     (J' : H →ₗᵢ[ℂ] L) (U' : L ≃ₗᵢ[ℂ] L) (W : K ≃ₗᵢ[ℂ] L)
     (hJ : ∀ x, W (J x) = J' x) (hW : ∀ y, W (U y) = U' (W y))
     (c : (ℤ × H) →₀ ℂ) :
@@ -501,25 +503,5 @@ theorem unitaryDilationEquiv_unique (T : H →L[ℂ] H)
     (denseRange_unitaryOrbit U J hmin) W'.continuous W.continuous hcomp
   ext y
   exact congr_fun hagree y
-
-/-- Two minimal unitary power dilations are intertwined by a unique unitary fixing `H`. -/
-theorem minimalUnitaryPowerDilation_unique_of (T : H →L[ℂ] H)
-    (J : H →ₗᵢ[ℂ] K) (U : K ≃ₗᵢ[ℂ] K)
-    (hpow : ∀ n : ℕ, ∀ x : H,
-      J.toContinuousLinearMap.adjoint ((U^[n]) (J x)) = (T ^ n) x)
-    (hmin : (span ℂ {y : K | ∃ k : ℤ, ∃ x : H, y = (U ^ k) (J x)}).topologicalClosure = ⊤)
-    (J' : H →ₗᵢ[ℂ] L) (U' : L ≃ₗᵢ[ℂ] L)
-    (hpow' : ∀ n : ℕ, ∀ x : H,
-      J'.toContinuousLinearMap.adjoint ((U'^[n]) (J' x)) = (T ^ n) x)
-    (hmin' : (span ℂ {y : L | ∃ k : ℤ, ∃ x : H, y = (U' ^ k) (J' x)}).topologicalClosure = ⊤) :
-    ∃! W : K ≃ₗᵢ[ℂ] L, (∀ x, W (J x) = J' x) ∧ ∀ y, W (U y) = U' (W y) := by
-  let W := unitaryDilationEquiv T J U hpow hmin J' U' hpow' hmin'
-  refine ⟨W, ⟨?_, ?_⟩, ?_⟩
-  · intro x
-    exact unitaryDilationEquiv_embed T J U hpow hmin J' U' hpow' hmin' x
-  · intro y
-    exact unitaryDilationEquiv_intertwining T J U hpow hmin J' U' hpow' hmin' y
-  · intro W' hW'
-    exact unitaryDilationEquiv_unique T J U hpow hmin J' U' hpow' hmin' W' hW'.1 hW'.2
 
 end CKMA

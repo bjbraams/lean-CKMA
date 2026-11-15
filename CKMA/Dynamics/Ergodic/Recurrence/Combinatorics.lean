@@ -30,10 +30,9 @@ arithmetic progressions in dense subsets of `{0, …, N - 1}` from Roth's theore
 
 ## Main results
 
-* `CKMA.numerous_progression_three`: Positive-density subsets of long intervals contain
-  quadratically many 3-term progressions.
-* `CKMA.numerous_progression_long`: Positive-density subsets of long intervals contain
-  quadratically many `L`-term progressions for `L ≥ 4`.
+* `CKMA.exists_pos_mul_sq_le_progressionCount`: for `L ≥ 3`, positive-density subsets of long
+  intervals contain quadratically many `L`-term progressions. The case `L = 3` is proved from
+  Roth's theorem; the case `L ≥ 4` is stated with `sorry`.
 -/
 
 @[expose] public section
@@ -548,7 +547,7 @@ private lemma card_good_le_mul_progressionCount {M N : ℕ} {S : Finset ℕ} {go
   exact hmul.trans (Nat.mul_le_mul_left _ hcount)
 
 /-- Positive-density subsets of long intervals contain quadratically many 3-term progressions. -/
-lemma numerous_progression_three {δ : ℝ} (hδ : 0 < δ) :
+private lemma numerous_progression_three {δ : ℝ} (hδ : 0 < δ) :
     ∃ c : ℝ, 0 < c ∧ ∃ N0 : ℕ, ∀ N, N0 ≤ N → ∀ S : Finset ℕ,
       S ⊆ range N → δ * (N : ℝ) ≤ (S.card : ℝ) →
       c * (N : ℝ) ^ 2 ≤ (progressionCount 3 N S : ℝ) := by
@@ -817,10 +816,20 @@ lemma numerous_progression_three {δ : ℝ} (hδ : 0 < δ) :
 
 /-- Every positive-density subset of a long interval contains quadratically many
 nontrivial arithmetic progressions of length `L ≥ 4`. -/
-theorem numerous_progression_long {L : ℕ} (hL : 4 ≤ L) {δ : ℝ} (hδ : 0 < δ) :
+private theorem numerous_progression_long {L : ℕ} (hL : 4 ≤ L) {δ : ℝ} (hδ : 0 < δ) :
     ∃ c : ℝ, 0 < c ∧ ∃ N0 : ℕ, ∀ N, N0 ≤ N → ∀ S : Finset ℕ,
       S ⊆ range N → δ * (N : ℝ) ≤ (S.card : ℝ) →
       c * (N : ℝ) ^ 2 ≤ (progressionCount L N S : ℝ) := by
   sorry
+
+/-- **Varnavides counting**: for `L ≥ 3`, every positive-density subset of a long interval
+`{0, …, N - 1}` contains quadratically many nontrivial `L`-term arithmetic progressions. -/
+theorem exists_pos_mul_sq_le_progressionCount {L : ℕ} (hL : 3 ≤ L) {δ : ℝ} (hδ : 0 < δ) :
+    ∃ c : ℝ, 0 < c ∧ ∃ N0 : ℕ, ∀ N, N0 ≤ N → ∀ S : Finset ℕ,
+      S ⊆ range N → δ * (N : ℝ) ≤ (S.card : ℝ) →
+      c * (N : ℝ) ^ 2 ≤ (progressionCount L N S : ℝ) := by
+  rcases eq_or_lt_of_le hL with rfl | hL
+  · exact numerous_progression_three hδ
+  · exact numerous_progression_long hL hδ
 
 end CKMA

@@ -48,12 +48,12 @@ def l2ShiftRightFun (f : ℕ → H) (n : ℕ) : H :=
 
 omit [InnerProductSpace ℂ H] in
 /-- The right shift vanishes at index zero. -/
-theorem l2ShiftRightFun_zero (f : ℕ → H) : l2ShiftRightFun f 0 = 0 := by
+private theorem l2ShiftRightFun_zero (f : ℕ → H) : l2ShiftRightFun f 0 = 0 := by
   simp [l2ShiftRightFun]
 
 omit [InnerProductSpace ℂ H] in
 /-- The right shift moves the value at `n` to index `n + 1`. -/
-theorem l2ShiftRightFun_succ (f : ℕ → H) (n : ℕ) : l2ShiftRightFun f (n + 1) = f n := by
+private theorem l2ShiftRightFun_succ (f : ℕ → H) (n : ℕ) : l2ShiftRightFun f (n + 1) = f n := by
   simp [l2ShiftRightFun]
 
 omit [InnerProductSpace ℂ H] in
@@ -79,7 +79,7 @@ def l2ShiftRightElem (f : lp (fun _ : ℕ => H) 2) : lp (fun _ : ℕ => H) 2 :=
       simpa [ENNReal.toReal_ofNat] using summable_norm_sq_l2ShiftRightFun f)⟩
 
 /-- Evaluation of the right shift. -/
-theorem l2ShiftRightElem_apply (f : lp (fun _ : ℕ => H) 2) (n : ℕ) :
+private theorem l2ShiftRightElem_apply (f : lp (fun _ : ℕ => H) 2) (n : ℕ) :
     l2ShiftRightElem f n = l2ShiftRightFun (f : ℕ → H) n :=
   rfl
 
@@ -150,7 +150,7 @@ def l2ShiftRight : lp (fun _ : ℕ => H) 2 →L[ℂ] lp (fun _ : ℕ => H) 2 :=
     simpa [l2ShiftRightLinear] using (norm_l2ShiftRightElem f).le
 
 /-- Evaluation of the continuous right shift. -/
-theorem l2ShiftRight_apply (f : lp (fun _ : ℕ => H) 2) :
+private theorem l2ShiftRight_apply (f : lp (fun _ : ℕ => H) 2) :
     l2ShiftRight f = l2ShiftRightElem f :=
   rfl
 
@@ -159,7 +159,7 @@ def l2InsertZero : H →L[ℂ] lp (fun _ : ℕ => H) 2 :=
   lp.singleContinuousLinearMap ℂ (fun _ : ℕ => H) 2 0
 
 /-- Inserting a vector agrees with `lp.single`. -/
-theorem l2InsertZero_apply (v : H) : l2InsertZero v = lp.single 2 0 v :=
+private theorem l2InsertZero_apply (v : H) : l2InsertZero v = lp.single 2 0 v :=
   rfl
 
 /-- Insertion at index zero preserves norms. -/

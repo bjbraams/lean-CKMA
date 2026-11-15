@@ -85,7 +85,7 @@ theorem lineParam_line {a b : ℂ} (hab : a ≠ b) (θ : ℝ) :
     Complex.ofReal_re]
 
 /-- Height is the squared length of `b - a` times the imaginary part of `(z - a) / (b - a)`. -/
-theorem transverseSide_eq_normSq_mul_im (a b z : ℂ) :
+private theorem transverseSide_eq_normSq_mul_im (a b z : ℂ) :
     transverseSide a b z = ‖b - a‖ ^ 2 * ((z - a) / (b - a)).im := by
   by_cases hab : a = b
   · simp [hab, transverseSide, sub_self, mul_zero, inner_zero_right, div_zero,
@@ -189,7 +189,7 @@ theorem dist_eq_abs_sub_mul_norm {a b p q : ℂ} (hab : a ≠ b)
   rw [dist_eq_norm, hsub, norm_smul, Real.norm_eq_abs]
 
 /-- The open segment from an interior point toward `b` stays inside the original segment. -/
-theorem openSegment_subset_openSegment_right {a b u : ℂ} (hab : a ≠ b)
+private theorem openSegment_subset_openSegment_right {a b u : ℂ} (hab : a ≠ b)
     (hu : u ∈ openSegment ℝ a b) :
     openSegment ℝ u b ⊆ openSegment ℝ a b := by
   intro z hz
@@ -219,7 +219,7 @@ theorem openSegment_subset_openSegment_right {a b u : ℂ} (hab : a ≠ b)
     linarith
 
 /-- The open segment from `a` to an interior point stays inside the original segment. -/
-theorem openSegment_subset_openSegment_left {a b u : ℂ} (hab : a ≠ b)
+private theorem openSegment_subset_openSegment_left {a b u : ℂ} (hab : a ≠ b)
     (hu : u ∈ openSegment ℝ a b) :
     openSegment ℝ a u ⊆ openSegment ℝ a b := by
   intro z hz
@@ -290,7 +290,7 @@ theorem mem_openSegment_right_iff {a b p q : ℂ} (hab : a ≠ b)
     simpa using hz
 
 /-- A point of the open segment whose line coordinate is smaller than `v` lies before `v`. -/
-theorem mem_openSegment_of_lineParam_lt {a b v x : ℂ} (hab : a ≠ b)
+private theorem mem_openSegment_of_lineParam_lt {a b v x : ℂ} (hab : a ≠ b)
     (hv : v ∈ openSegment ℝ a b) (hx : x ∈ openSegment ℝ a b)
     (hlt : lineParam a b x < lineParam a b v) : x ∈ openSegment ℝ a v := by
   set px : ℝ := lineParam a b x
@@ -517,7 +517,7 @@ theorem exists_isTransverseSegment {F : ℂ → ℂ} (hF : Continuous F) {p : �
     exact mul_pos (div_pos (mul_pos two_pos hδ0) hv0) (hpos z hz)
 
 /-- A small ball about an interior point meets the line only inside the open segment. -/
-theorem exists_ball_subset_openSegment {a b p : ℂ} (hab : a ≠ b)
+private theorem exists_ball_subset_openSegment {a b p : ℂ} (hab : a ≠ b)
     (hp : p ∈ openSegment ℝ a b) :
     ∃ ρ > 0, ∀ z, dist z p < ρ → transverseSide a b z = 0 →
       z ∈ openSegment ℝ a b := by

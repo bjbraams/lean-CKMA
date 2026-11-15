@@ -17,18 +17,17 @@ A greedy decomposition writes an integer gap as a sum of powers of two, with eac
 appearing at most twice. Summing the corresponding increments gives the Hölder estimate on the
 dyadic grid of `[0, 1]`.
 
+The greedy decomposition (largest aligned power of two that fits in the remaining gap) is an
+internal construction of this file.
+
 ## Main definitions
 
-* `CKMA.greedyStep`: largest aligned power of two that fits in a gap.
-* `CKMA.greedyJumps`: greedy decomposition of a gap into powers of two.
-* `CKMA.dyadicHolderFactor`: constant in the unit-interval dyadic Hölder estimate.
+* `CKMA.Brownian.dyadicHolderFactor`: constant in the unit-interval dyadic Hölder estimate.
 
 ## Main results
 
-* `CKMA.count_greedyJumps_le_two`: each power of two occurs at most twice in a greedy
-  decomposition.
-* `CKMA.abs_sub_le_jumps`: chaining the greedy jumps bounds a grid increment by the sum of the
-  jump powers.
+* `CKMA.Brownian.abs_sub_le_of_dyadic_grid`: Hölder control of a function on one level of the
+  dyadic grid of `[0, 1]` from bounds on its consecutive dyadic increments.
 -/
 
 @[expose] public section
@@ -39,54 +38,56 @@ namespace CKMA
 
 open Finset
 
+namespace Brownian
+
 /-- Largest power of two not exceeding `m`, with the value `0` at `m = 0`. -/
-def largestPowerOfTwoLe (m : ℕ) : ℕ :=
+private def largestPowerOfTwoLe (m : ℕ) : ℕ :=
   if m = 0 then 0 else 2 ^ m.log2
 
 /-- The positive largest power of two below `m` is `2 ^ log2 m`. -/
-lemma largestPowerOfTwoLe_of_pos {m : ℕ} (hm : 0 < m) :
+private lemma largestPowerOfTwoLe_of_pos {m : ℕ} (hm : 0 < m) :
     largestPowerOfTwoLe m = 2 ^ m.log2 := by
   simp [largestPowerOfTwoLe, hm.ne']
 
 /-- `largestPowerOfTwoLe m` does not exceed `m`. -/
-lemma largestPowerOfTwoLe_le (m : ℕ) : largestPowerOfTwoLe m ≤ m := by
+private lemma largestPowerOfTwoLe_le (m : ℕ) : largestPowerOfTwoLe m ≤ m := by
   by_cases hm : m = 0
   · simp [largestPowerOfTwoLe, hm]
   · have h := (Nat.log2_eq_iff hm).mp rfl
     simpa [largestPowerOfTwoLe, hm] using h.1
 
 /-- A positive integer is strictly less than twice its largest power of two. -/
-lemma lt_two_mul_largestPowerOfTwoLe {m : ℕ} (hm : 0 < m) :
+private lemma lt_two_mul_largestPowerOfTwoLe {m : ℕ} (hm : 0 < m) :
     m < 2 * largestPowerOfTwoLe m := by
   have h := (Nat.log2_eq_iff hm.ne').mp rfl
   simpa [largestPowerOfTwoLe, hm.ne', pow_succ, Nat.mul_comm] using h.2
 
 /-- Highest power of two dividing `a`, with the value `0` at `a = 0`. -/
-def twoAdicPow (a : ℕ) : ℕ :=
+private def twoAdicPow (a : ℕ) : ℕ :=
   if a = 0 then 0 else 2 ^ multiplicity 2 a
 
 /-- The highest power of two dividing a positive integer divides that integer. -/
-lemma twoAdicPow_dvd {a : ℕ} (ha : a ≠ 0) : twoAdicPow a ∣ a := by
+private lemma twoAdicPow_dvd {a : ℕ} (ha : a ≠ 0) : twoAdicPow a ∣ a := by
   simpa [twoAdicPow, ha] using pow_multiplicity_dvd 2 a
 
 /-- The highest power of two dividing a positive integer is itself a power of two. -/
-lemma twoAdicPow_eq_pow {a : ℕ} (ha : a ≠ 0) :
+private lemma twoAdicPow_eq_pow {a : ℕ} (ha : a ≠ 0) :
     twoAdicPow a = 2 ^ multiplicity 2 a := by
   simp [twoAdicPow, ha]
 
 /-- The minimum of two powers of two is the power for the smaller exponent. -/
-lemma min_two_pow (k l : ℕ) : min (2 ^ k) (2 ^ l) = 2 ^ min k l := by
+private lemma min_two_pow (k l : ℕ) : min (2 ^ k) (2 ^ l) = 2 ^ min k l := by
   rcases le_total k l with h | h
   · rw [min_eq_left h, min_eq_left (Nat.pow_le_pow_right (by decide) h)]
   · rw [min_eq_right h, min_eq_right (Nat.pow_le_pow_right (by decide) h)]
 
 /-- One greedy step from `a` toward `b`: the largest aligned power of two that fits. -/
-def greedyStep (a b : ℕ) : ℕ :=
+private def greedyStep (a b : ℕ) : ℕ :=
   let maxPow := largestPowerOfTwoLe (b - a)
   if a = 0 then maxPow else min (twoAdicPow a) maxPow
 
 /-- A greedy step across a positive gap is a positive power of two. -/
-lemma greedyStep_eq_pow {a b : ℕ} (h : a < b) : ∃ k, greedyStep a b = 2 ^ k := by
+private lemma greedyStep_eq_pow {a b : ℕ} (h : a < b) : ∃ k, greedyStep a b = 2 ^ k := by
   have hpos : 0 < b - a := by omega
   by_cases ha : a = 0
   · refine ⟨b.log2, ?_⟩
@@ -97,7 +98,7 @@ lemma greedyStep_eq_pow {a b : ℕ} (h : a < b) : ∃ k, greedyStep a b = 2 ^ k 
     simp [greedyStep, ha, twoAdicPow_eq_pow ha, largestPowerOfTwoLe_of_pos hpos, min_two_pow]
 
 /-- A greedy step does not exceed the remaining gap. -/
-lemma greedyStep_le {a b : ℕ} : greedyStep a b ≤ b - a := by
+private lemma greedyStep_le (a b : ℕ) : greedyStep a b ≤ b - a := by
   have hmax := largestPowerOfTwoLe_le (b - a)
   by_cases ha : a = 0
   · simpa [greedyStep, ha] using hmax
@@ -105,13 +106,13 @@ lemma greedyStep_le {a b : ℕ} : greedyStep a b ≤ b - a := by
       (min_le_right (twoAdicPow a) (largestPowerOfTwoLe (b - a))).trans hmax
 
 /-- A greedy step is strictly positive when the gap is positive. -/
-lemma greedyStep_pos {a b : ℕ} (h : a < b) : 0 < greedyStep a b := by
+private lemma greedyStep_pos {a b : ℕ} (h : a < b) : 0 < greedyStep a b := by
   obtain ⟨k, hk⟩ := greedyStep_eq_pow h
   rw [hk]
   exact Nat.two_pow_pos k
 
 /-- A greedy step divides the starting point. -/
-lemma greedyStep_dvd {a b : ℕ} (h : a < b) : greedyStep a b ∣ a := by
+private lemma greedyStep_dvd {a b : ℕ} (h : a < b) : greedyStep a b ∣ a := by
   by_cases ha : a = 0
   · simp [ha]
   · have hpos : 0 < b - a := by omega
@@ -124,16 +125,16 @@ lemma greedyStep_dvd {a b : ℕ} (h : a < b) : greedyStep a b ∣ a := by
     exact (Nat.pow_dvd_pow 2 (Nat.min_le_left _ _)).trans hpow
 
 /-- If the greedy step is the largest power fitting in the gap, the remainder is smaller. -/
-lemma remaining_lt_of_eq_largest {a b : ℕ} (h : a < b)
+private lemma remaining_lt_of_eq_largest {a b : ℕ} (h : a < b)
     (hs : greedyStep a b = largestPowerOfTwoLe (b - a)) :
     b - (a + greedyStep a b) < greedyStep a b := by
   have hm : 0 < b - a := by omega
   have hlt := lt_two_mul_largestPowerOfTwoLe hm
-  have hsle : greedyStep a b ≤ b - a := greedyStep_le
+  have hsle : greedyStep a b ≤ b - a := greedyStep_le a b
   omega
 
 /-- Adding the exact power of two dividing `a` raises the 2-adic valuation by one. -/
-lemma two_pow_succ_dvd_add {a q : ℕ} (ha : a ≠ 0) (hq : multiplicity 2 a = q) :
+private lemma two_pow_succ_dvd_add {a q : ℕ} (ha : a ≠ 0) (hq : multiplicity 2 a = q) :
     2 ^ (q + 1) ∣ a + 2 ^ q := by
   have hdvd : 2 ^ q ∣ a :=
     (Nat.pow_dvd_iff_le_multiplicity (by decide) ha).mpr (by omega)
@@ -162,7 +163,7 @@ lemma two_pow_succ_dvd_add {a q : ℕ} (ha : a ≠ 0) (hq : multiplicity 2 a = q
   rw [Nat.dvd_iff_mod_eq_zero, Nat.add_mod, hmod]
 
 /-- Greedy jumps from `a` toward `b`, with an explicit fuel bound. -/
-def greedyJumpsAux : ℕ → ℕ → ℕ → List ℕ
+private def greedyJumpsAux : ℕ → ℕ → ℕ → List ℕ
   | 0, _, _ => []
   | fuel + 1, a, b =>
     if a < b then
@@ -171,7 +172,7 @@ def greedyJumpsAux : ℕ → ℕ → ℕ → List ℕ
       []
 
 /-- Extra fuel does not change the greedy jump list once the fuel meets the gap. -/
-lemma greedyJumpsAux_eq (fuel fuel' a b : ℕ) (hf : b - a ≤ fuel) (hf' : b - a ≤ fuel') :
+private lemma greedyJumpsAux_eq (fuel fuel' a b : ℕ) (hf : b - a ≤ fuel) (hf' : b - a ≤ fuel') :
     greedyJumpsAux fuel a b = greedyJumpsAux fuel' a b := by
   induction fuel generalizing fuel' a b with
   | zero =>
@@ -190,27 +191,27 @@ lemma greedyJumpsAux_eq (fuel fuel' a b : ℕ) (hf : b - a ≤ fuel) (hf' : b - 
             congr 1
             apply ih
             · have hpos := greedyStep_pos hlt
-              have hle : greedyStep a b ≤ b - a := greedyStep_le
+              have hle : greedyStep a b ≤ b - a := greedyStep_le a b
               omega
             · have hpos := greedyStep_pos hlt
-              have hle : greedyStep a b ≤ b - a := greedyStep_le
+              have hle : greedyStep a b ≤ b - a := greedyStep_le a b
               omega
           · simp [greedyJumpsAux, hlt]
 
 /-- Greedy decomposition of the gap from `a` to `b` into powers of two. -/
-def greedyJumps (a b : ℕ) : List ℕ :=
+private def greedyJumps (a b : ℕ) : List ℕ :=
   greedyJumpsAux (b - a) a b
 
 /-- There are no greedy jumps when the endpoint is at most the start. -/
-lemma greedyJumps_of_le {a b : ℕ} (h : b ≤ a) : greedyJumps a b = [] := by
+private lemma greedyJumps_of_le {a b : ℕ} (h : b ≤ a) : greedyJumps a b = [] := by
   simp [greedyJumps, Nat.sub_eq_zero_of_le h, greedyJumpsAux]
 
 /-- A positive gap starts with one greedy step and continues on the remainder. -/
-lemma greedyJumps_cons {a b : ℕ} (h : a < b) :
+private lemma greedyJumps_cons {a b : ℕ} (h : a < b) :
     greedyJumps a b =
       greedyStep a b :: greedyJumps (a + greedyStep a b) b := by
   have hpos := greedyStep_pos h
-  have hle : greedyStep a b ≤ b - a := greedyStep_le
+  have hle : greedyStep a b ≤ b - a := greedyStep_le a b
   have hfuel : b - a = (b - a - 1) + 1 := by omega
   unfold greedyJumps
   rw [hfuel]
@@ -222,13 +223,13 @@ lemma greedyJumps_cons {a b : ℕ} (h : a < b) :
   · omega
 
 /-- The greedy jumps of a fixed gap sum to that gap. -/
-lemma sum_greedyJumps_of_dist (d : ℕ) :
+private lemma sum_greedyJumps_of_dist (d : ℕ) :
     ∀ a b, b - a = d → (greedyJumps a b).sum = d := by
   refine Nat.strongRecOn d fun d ih a b hd => ?_
   by_cases hlt : a < b
   · rw [greedyJumps_cons hlt, List.sum_cons]
     have hpos := greedyStep_pos hlt
-    have hle : greedyStep a b ≤ b - a := greedyStep_le
+    have hle : greedyStep a b ≤ b - a := greedyStep_le a b
     have hdlt : b - (a + greedyStep a b) < d := by omega
     have hsum := ih (b - (a + greedyStep a b)) hdlt (a + greedyStep a b) b rfl
     omega
@@ -236,19 +237,15 @@ lemma sum_greedyJumps_of_dist (d : ℕ) :
     rw [greedyJumps_of_le hba, List.sum_nil]
     omega
 
-/-- The greedy jumps sum to the gap. -/
-lemma sum_greedyJumps (a b : ℕ) : (greedyJumps a b).sum = b - a :=
-  sum_greedyJumps_of_dist (b - a) a b rfl
-
 /-- Every greedy jump of a fixed gap is a positive power of two no larger than the gap. -/
-lemma mem_greedyJumps_of_dist (d : ℕ) :
+private lemma mem_greedyJumps_of_dist (d : ℕ) :
     ∀ a b s, b - a = d → s ∈ greedyJumps a b →
       0 < s ∧ s ≤ d ∧ ∃ k, s = 2 ^ k := by
   refine Nat.strongRecOn d fun d ih a b s hd hs => ?_
   by_cases hlt : a < b
   · rw [greedyJumps_cons hlt] at hs
     have hpos := greedyStep_pos hlt
-    have hle : greedyStep a b ≤ b - a := greedyStep_le
+    have hle : greedyStep a b ≤ b - a := greedyStep_le a b
     rcases List.mem_cons.mp hs with rfl | hrest
     · exact ⟨hpos, by omega, greedyStep_eq_pow hlt⟩
     · have hdlt : b - (a + greedyStep a b) < d := by omega
@@ -262,12 +259,12 @@ lemma mem_greedyJumps_of_dist (d : ℕ) :
     simp [greedyJumps_of_le hba] at hs
 
 /-- Every greedy jump is a positive power of two no larger than the gap. -/
-lemma mem_greedyJumps {a b s : ℕ} (hs : s ∈ greedyJumps a b) :
+private lemma mem_greedyJumps {a b s : ℕ} (hs : s ∈ greedyJumps a b) :
     0 < s ∧ s ≤ b - a ∧ ∃ k, s = 2 ^ k :=
   mem_greedyJumps_of_dist (b - a) a b s rfl hs
 
 /-- A list of integers strictly below `2 ^ q` does not contain `2 ^ q`. -/
-lemma count_eq_zero_of_lt {l : List ℕ} {q : ℕ} (h : ∀ s ∈ l, s < 2 ^ q) :
+private lemma count_eq_zero_of_lt {l : List ℕ} {q : ℕ} (h : ∀ s ∈ l, s < 2 ^ q) :
     l.count (2 ^ q) = 0 := by
   induction l with
   | nil => simp
@@ -279,7 +276,7 @@ lemma count_eq_zero_of_lt {l : List ℕ} {q : ℕ} (h : ∀ s ∈ l, s < 2 ^ q) 
       exact ih fun t ht => h t (by simp [ht])
 
 /-- A short aligned step is the largest power of two that fits in the gap. -/
-lemma greedyStep_eq_largest_of_le_exp {a b r q : ℕ} (h : a < b)
+private lemma greedyStep_eq_largest_of_le_exp {a b r q : ℕ} (h : a < b)
     (hdiv : 2 ^ (q + 1) ∣ a) (hr : r ≤ q) (hs : greedyStep a b = 2 ^ r) :
     greedyStep a b = largestPowerOfTwoLe (b - a) := by
   by_cases ha : a = 0
@@ -304,7 +301,7 @@ lemma greedyStep_eq_largest_of_le_exp {a b r q : ℕ} (h : a < b)
     exact hs0
 
 /-- Each power of two occurs at most twice, and at most once after a stronger alignment. -/
-lemma count_greedyJumps_bounds (d : ℕ) :
+private lemma count_greedyJumps_bounds (d : ℕ) :
     (∀ a b q, b - a = d → (greedyJumps a b).count (2 ^ q) ≤ 2) ∧
     (∀ a b q, b - a = d → 2 ^ (q + 1) ∣ a →
       (greedyJumps a b).count (2 ^ q) ≤ 1) := by
@@ -312,7 +309,7 @@ lemma count_greedyJumps_bounds (d : ℕ) :
   refine ⟨fun a b q hd => ?_, fun a b q hd hdiv => ?_⟩
   · by_cases hlt : a < b
     · have hpos := greedyStep_pos hlt
-      have hle : greedyStep a b ≤ b - a := greedyStep_le
+      have hle : greedyStep a b ≤ b - a := greedyStep_le a b
       obtain ⟨r, hr⟩ := greedyStep_eq_pow hlt
       have hdlt : b - (a + greedyStep a b) < d := by omega
       have hrest2 := (ih (b - (a + greedyStep a b)) hdlt).1
@@ -358,7 +355,7 @@ lemma count_greedyJumps_bounds (d : ℕ) :
       simp [greedyJumps_of_le hba]
   · by_cases hlt : a < b
     · have hpos := greedyStep_pos hlt
-      have hle : greedyStep a b ≤ b - a := greedyStep_le
+      have hle : greedyStep a b ≤ b - a := greedyStep_le a b
       obtain ⟨r, hr⟩ := greedyStep_eq_pow hlt
       have hdlt : b - (a + greedyStep a b) < d := by omega
       rw [greedyJumps_cons hlt]
@@ -397,7 +394,7 @@ lemma count_greedyJumps_bounds (d : ℕ) :
       simp [greedyJumps_of_le hba]
 
 /-- Each power of two occurs at most twice in a greedy decomposition. -/
-lemma count_greedyJumps_le_two (a b q : ℕ) : (greedyJumps a b).count (2 ^ q) ≤ 2 :=
+private lemma count_greedyJumps_le_two (a b q : ℕ) : (greedyJumps a b).count (2 ^ q) ≤ 2 :=
   (count_greedyJumps_bounds (b - a)).1 a b q rfl
 
 /-- Constant in the unit-interval dyadic Hölder estimate. -/
@@ -414,20 +411,20 @@ lemma dyadicHolderFactor_pos {α : ℝ} (hα : 0 < α) : 0 < dyadicHolderFactor 
   exact div_pos (by norm_num) hden
 
 /-- Rewrite the denominator of the Hölder factor through `2 ^ α`. -/
-lemma one_sub_two_rpow_neg {α : ℝ} :
+private lemma one_sub_two_rpow_neg (α : ℝ) :
     1 - (2 : ℝ) ^ (-α) = ((2 : ℝ) ^ α - 1) / (2 : ℝ) ^ α := by
   rw [Real.rpow_neg (by positivity)]
   field_simp
 
 /-- The Hölder factor equals `2 * 2 ^ α / (2 ^ α - 1)`. -/
-lemma dyadicHolderFactor_eq {α : ℝ} :
+private lemma dyadicHolderFactor_eq (α : ℝ) :
     dyadicHolderFactor α = 2 * (2 : ℝ) ^ α / ((2 : ℝ) ^ α - 1) := by
   unfold dyadicHolderFactor
-  rw [one_sub_two_rpow_neg]
+  rw [one_sub_two_rpow_neg α]
   field_simp
 
 /-- Twice the geometric sum of `2 ^ (q α)` is at most the Hölder factor times `(2 ^ m) ^ α`. -/
-lemma two_mul_geom_le {α : ℝ} {m : ℕ} (hα : 0 < α) :
+private lemma two_mul_geom_le {α : ℝ} {m : ℕ} (hα : 0 < α) :
     2 * ∑ q ∈ Finset.range (m + 1), ((2 : ℝ) ^ q) ^ α ≤
       dyadicHolderFactor α * ((2 : ℝ) ^ m) ^ α := by
   set x : ℝ := (2 : ℝ) ^ α
@@ -447,14 +444,14 @@ lemma two_mul_geom_le {α : ℝ} {m : ℕ} (hα : 0 < α) :
   rw [hmul]
   have hxm : x ^ m = ((2 : ℝ) ^ m) ^ α := by
     simpa [x] using Real.rpow_pow_comm (by norm_num : (0 : ℝ) ≤ 2) α m
-  rw [hxm, dyadicHolderFactor_eq]
+  rw [hxm, dyadicHolderFactor_eq α]
   have hxdef : x = (2 : ℝ) ^ α := rfl
   rw [hxdef]
   field_simp
   rfl
 
 /-- Absolute powers of a list of pure powers of two expand through their counts. -/
-lemma sum_map_rpow_eq_count (l : List ℕ) (m : ℕ) (α : ℝ)
+private lemma sum_map_rpow_eq_count (l : List ℕ) (m : ℕ) (α : ℝ)
     (hmem : ∀ s ∈ l, ∃ k ≤ m, s = 2 ^ k) :
     (l.map (fun s : ℕ => (s : ℝ) ^ α)).sum =
       ∑ q ∈ Finset.range (m + 1), (l.count (2 ^ q) : ℝ) * ((2 : ℝ) ^ q) ^ α := by
@@ -493,7 +490,7 @@ lemma sum_map_rpow_eq_count (l : List ℕ) (m : ℕ) (α : ℝ)
       ring
 
 /-- A list of powers of two, each appearing at most twice, has `α`-sum at most the Hölder bound. -/
-lemma sum_rpow_le {l : List ℕ} {δ : ℕ} {α : ℝ} (hα : 0 < α) (hδ : 0 < δ)
+private lemma sum_rpow_le {l : List ℕ} {δ : ℕ} {α : ℝ} (hα : 0 < α) (hδ : 0 < δ)
     (hmem : ∀ s ∈ l, ∃ k, s = 2 ^ k ∧ k ≤ Nat.log2 δ)
     (hcount : ∀ q, l.count (2 ^ q) ≤ 2) :
     (l.map (fun s : ℕ => (s : ℝ) ^ α)).sum ≤
@@ -523,7 +520,7 @@ lemma sum_rpow_le {l : List ℕ} {δ : ℕ} {α : ℝ} (hα : 0 < α) (hδ : 0 <
   exact mul_le_mul_of_nonneg_left hpow (le_of_lt (dyadicHolderFactor_pos hα))
 
 /-- Greedy jumps satisfy the summed power bound. -/
-lemma sum_rpow_greedyJumps {a b : ℕ} {α : ℝ} (hα : 0 < α) (hδ : 0 < b - a) :
+private lemma sum_rpow_greedyJumps {a b : ℕ} {α : ℝ} (hα : 0 < α) (hδ : 0 < b - a) :
     ((greedyJumps a b).map (fun s : ℕ => (s : ℝ) ^ α)).sum ≤
       dyadicHolderFactor α * ((b - a : ℕ) : ℝ) ^ α := by
   refine sum_rpow_le hα hδ ?_ (fun q => count_greedyJumps_le_two a b q)
@@ -539,7 +536,7 @@ lemma sum_rpow_greedyJumps {a b : ℕ} {α : ℝ} (hα : 0 < α) (hδ : 0 < b - 
   omega
 
 /-- Divide a constant out of a list of real powers. -/
-lemma sum_map_div_rpow (l : List ℕ) {c α : ℝ} (hc : 0 < c) :
+private lemma sum_map_div_rpow (l : List ℕ) {c α : ℝ} (hc : 0 < c) :
     (l.map (fun s : ℕ => ((s : ℝ) / c) ^ α)).sum =
       (l.map (fun s : ℕ => (s : ℝ) ^ α)).sum / c ^ α := by
   induction l with
@@ -550,7 +547,7 @@ lemma sum_map_div_rpow (l : List ℕ) {c α : ℝ} (hc : 0 < c) :
       field_simp
 
 /-- One aligned dyadic jump is controlled by the level-increment hypothesis. -/
-lemma abs_one_jump {f : ℝ → ℝ} {L p r : ℕ} {α K : ℝ}
+private lemma abs_one_jump {f : ℝ → ℝ} {L p r : ℕ} {α K : ℝ}
     (hr : r ≤ L) (hp : p + 2 ^ r ≤ 2 ^ L) (hdvd : 2 ^ r ∣ p)
     (hinc : ∀ n, n ≤ L → ∀ i : ℕ, i < 2 ^ n →
       |f ((i + 1 : ℝ) / (2 : ℝ) ^ n) - f ((i : ℝ) / (2 : ℝ) ^ n)| ≤
@@ -602,7 +599,7 @@ lemma abs_one_jump {f : ℝ → ℝ} {L p r : ℕ} {α K : ℝ}
   simpa [Nat.cast_add, Nat.cast_one] using hinc n hn i hi_lt
 
 /-- Chaining the greedy jumps bounds a grid increment by the sum of the jump powers. -/
-lemma abs_sub_le_jumps {f : ℝ → ℝ} {α K : ℝ} {L : ℕ}
+private lemma abs_sub_le_jumps {f : ℝ → ℝ} {α K : ℝ} {L : ℕ}
     (hinc : ∀ n, n ≤ L → ∀ i : ℕ, i < 2 ^ n →
       |f ((i + 1 : ℝ) / (2 : ℝ) ^ n) - f ((i : ℝ) / (2 : ℝ) ^ n)| ≤
         K * ((1 : ℝ) / (2 : ℝ) ^ n) ^ α) (d : ℕ) :
@@ -612,7 +609,7 @@ lemma abs_sub_le_jumps {f : ℝ → ℝ} {α K : ℝ} {L : ℕ}
           (fun s : ℕ => ((s : ℝ) / (2 : ℝ) ^ L) ^ α)).sum := by
   refine Nat.strongRecOn d fun d ih a b hd hab hb => ?_
   by_cases hlt : a < b
-  · have hle : greedyStep a b ≤ b - a := greedyStep_le
+  · have hle : greedyStep a b ≤ b - a := greedyStep_le a b
     obtain ⟨r, hr⟩ := greedyStep_eq_pow hlt
     have hrL : r ≤ L := by
       have hsle : 2 ^ r ≤ 2 ^ L := by
@@ -623,7 +620,7 @@ lemma abs_sub_le_jumps {f : ℝ → ℝ} {α K : ℝ} {L : ℕ}
           _ ≤ 2 ^ L := hb
       exact (Nat.pow_le_pow_iff_right (by decide)).mp hsle
     have hsum : a + greedyStep a b ≤ b :=
-      (Nat.add_le_add_left greedyStep_le a).trans_eq (Nat.add_sub_of_le hab)
+      (Nat.add_le_add_left (greedyStep_le a b) a).trans_eq (Nat.add_sub_of_le hab)
     have hp : a + 2 ^ r ≤ 2 ^ L := by
       have hrew : a + 2 ^ r ≤ b := by simpa [hr] using hsum
       exact hrew.trans hb
@@ -631,7 +628,7 @@ lemma abs_sub_le_jumps {f : ℝ → ℝ} {α K : ℝ} {L : ℕ}
       (by simpa [hr] using greedyStep_dvd hlt) hinc
     have hdlt : b - (a + greedyStep a b) < d := by
       have hlt' : (b - a) - greedyStep a b < b - a :=
-        Nat.sub_lt_self (greedyStep_pos hlt) greedyStep_le
+        Nat.sub_lt_self (greedyStep_pos hlt) (greedyStep_le a b)
       rw [← hd, ← Nat.sub_sub]
       exact hlt'
     have hrest := ih (b - (a + greedyStep a b)) hdlt (a + greedyStep a b) b rfl
@@ -693,5 +690,7 @@ theorem abs_sub_le_of_dyadic_grid {f : ℝ → ℝ} {α K : ℝ} {L a b : ℕ}
   · have heq : a = b := by omega
     subst heq
     simp [Real.zero_rpow hα.ne', abs_zero, mul_zero]
+
+end Brownian
 
 end CKMA

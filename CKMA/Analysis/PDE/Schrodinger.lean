@@ -22,7 +22,6 @@ Sources: GAPS 34.24 and 34.32.
 
 ## Main definitions
 
-* `CKMA.nonnegativeEssentialSup`: Mathlib's essential supremum in measure-first form.
 * `CKMA.mixedLebesgueGauge`: mixed `L_t^q L_x^r` spacetime norm gauge.
 * `CKMA.IsSchrodingerAdmissible`: Schrödinger-admissible exponent pairs `(q, r)`.
 * `CKMA.freeSchrodinger`: free Schrödinger evolution via the Fourier transform.
@@ -45,7 +44,8 @@ namespace CKMA
 open MeasureTheory FourierTransform
 open scoped ENNReal FourierTransform ComplexConjugate
 
-/-- Mathlib essential supremum in the measure-first convention used for the spacetime gauges. -/
+/-- Mathlib essential supremum with the measure argument first. -/
+@[deprecated "use `essSup f μ`" (since := "2026-11-15")]
 abbrev nonnegativeEssentialSup {X : Type*} [MeasurableSpace X] (μ : Measure X)
     (f : X → ℝ≥0∞) : ℝ≥0∞ :=
   essSup f μ
@@ -54,7 +54,7 @@ abbrev nonnegativeEssentialSup {X : Type*} [MeasurableSpace X] (μ : Measure X)
 Infinite spatial norms remain infinite; exponent zero retains the totalized power convention. -/
 def mixedLebesgueGauge {d : ℕ} (q r : ℝ≥0∞) (I : Set ℝ)
     (u : ℝ → EuclideanRealSpace d → ℂ) : ℝ≥0∞ :=
-  if q = ∞ then nonnegativeEssentialSup (volume.restrict I) (fun t ↦ eLpNorm (u t) r volume)
+  if q = ∞ then essSup (fun t ↦ eLpNorm (u t) r volume) (volume.restrict I)
   else (∫⁻ t in I, (eLpNorm (u t) r volume) ^ q.toReal) ^ (1 / q.toReal)
 
 /-- Schrödinger admissibility, including infinite exponents and excluding the forbidden endpoint. -/

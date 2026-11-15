@@ -79,9 +79,10 @@ variable {E : Type u} [NormedAddCommGroup E] [NormedSpace ℝ E]
 def IsAMSpace (E : Type*) [NormedAddCommGroup E] [Lattice E] : Prop :=
   ∀ x y : E, 0 ≤ x → 0 ≤ y → ‖x ⊔ y‖ = max ‖x‖ ‖y‖
 
-/-- An AM unit identifies its order interval with the closed norm unit ball. -/
+/-- An AM unit identifies its order interval with the closed norm unit ball. The space is then
+an AM space (`IsAMSpace E`), since the norm is the order-unit norm of `e`. -/
 def IsAMSpaceUnit (e : E) : Prop :=
-  IsAMSpace E ∧ 0 ≤ e ∧ Metric.closedBall (0 : E) 1 = Set.Icc (-e) e
+  0 ≤ e ∧ Metric.closedBall (0 : E) 1 = Set.Icc (-e) e
 
 /-- Norm additivity on the positive cone defining an AL space. -/
 def IsALSpace (E : Type*) [NormedAddCommGroup E] [Lattice E] : Prop :=
@@ -97,7 +98,7 @@ Hausdorff continuous-function space, with that unit represented by the constant 
 theorem exists_amSpace_representation [CompleteSpace E] {e : E} (he : IsAMSpaceUnit e) :
     ∃ K : CompactHausdorffModel.{u}, ∃ U : E ≃ₗᵢ[ℝ] C(K.carrier, ℝ),
       U e = 1 ∧ ∀ x y, U (x ⊔ y) = U x ⊔ U y := by
-  rcases he with ⟨-, he0, hball⟩
+  rcases he with ⟨he0, hball⟩
   obtain ⟨K, U, hU, hsup⟩ := exists_am_representation (E := E) he0 hball
   exact ⟨K, U, hU, hsup⟩
 
@@ -111,29 +112,7 @@ theorem exists_alSpace_representation [CompleteSpace E] (hE : IsALSpace E) :
 omit [NormedSpace ℝ E] [IsOrderedModule ℝ E] [HasSolidNorm E] in
 /-- The monotone-completeness consequence of the AL identity.
 The full net-based order-continuity statement is not part of this interface yet. -/
-theorem IsALSpace.isKBSpace [CompleteSpace E] (hE : IsALSpace E) : IsKBSpace E := by
-  intro x hx hpos hbound
-  have hsub : ∀ n m, n ≤ m → ‖x m - x n‖ = ‖x m‖ - ‖x n‖ := by
-    intro n m hnm
-    have h := hE (x n) (x m - x n) (hpos n) (sub_nonneg.mpr (hx hnm))
-    rw [add_sub_cancel] at h
-    linarith
-  have hn : Monotone (fun n => ‖x n‖) := by
-    intro n m hnm
-    have h := hsub n m hnm
-    linarith [norm_nonneg (x m - x n)]
-  have hb : BddAbove (Set.range fun n => ‖x n‖) := by
-    rcases hbound with ⟨M, hM⟩
-    exact ⟨M, by rintro _ ⟨n, rfl⟩; exact hM n⟩
-  have hcnorm := (tendsto_atTop_ciSup hn hb).cauchySeq
-  apply cauchySeq_tendsto_of_complete
-  refine Metric.cauchySeq_iff'.2 fun ε hε => ?_
-  rcases Metric.cauchySeq_iff'.1 hcnorm ε hε with ⟨N, hN⟩
-  refine ⟨N, fun n hNn => ?_⟩
-  have heq : dist (x n) (x N) = dist ‖x n‖ ‖x N‖ := by
-    rw [dist_eq_norm, hsub N n hNn, Real.dist_eq,
-      abs_of_nonneg (sub_nonneg.mpr (hn hNn))]
-  rw [heq]
-  exact hN n hNn
+theorem IsALSpace.isKBSpace [CompleteSpace E] (hE : IsALSpace E) : IsKBSpace E :=
+  fun _ hx hpos hbound => exists_tendsto_of_monotone_of_norm_add_eq hE hx hpos hbound
 
 end CKMA

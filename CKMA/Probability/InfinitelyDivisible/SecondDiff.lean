@@ -23,14 +23,16 @@ difference, up to sign, as its characteristic function.
 
 ## Main definitions
 
-* `CKMA.secondDiff`: second symmetric difference of a function `ℝ → ℂ` at step `h`.
-* `CKMA.sineWeight`: weight `4 * sin(h * x / 2)²` appearing in the second difference.
-* `CKMA.sineMeasure`: finite measure with density `sineWeight h` with respect to the jump measure.
+All declarations are in the namespace `CKMA.InfinitelyDivisible`.
+
+* `secondDiff`: second symmetric difference of a function `ℝ → ℂ` at step `h`.
+* `sineWeight`: weight `4 * sin(h * x / 2)²` appearing in the second difference.
+* `sineMeasure`: finite measure with density `sineWeight h` with respect to the jump measure.
 
 ## Main results
 
-* `CKMA.secondDiff_exponent`: formula for the second symmetric difference of `L.exponent`.
-* `CKMA.charFun_sineMeasure`: the characteristic function of `sineMeasure L h` is determined by
+* `secondDiff_exponent`: formula for the second symmetric difference of `L.exponent`.
+* `charFun_sineMeasure`: the characteristic function of `sineMeasure L h` is determined by
   `secondDiff L.exponent h`.
 -/
 
@@ -38,7 +40,7 @@ difference, up to sign, as its characteristic function.
 
 noncomputable section
 
-namespace CKMA
+namespace CKMA.InfinitelyDivisible
 
 open MeasureTheory Complex Filter Topology Set ENNReal
 open scoped NNReal ENNReal
@@ -48,24 +50,24 @@ def secondDiff (f : ℝ → ℂ) (h t : ℝ) : ℂ :=
   f (t + h) + f (t - h) - 2 * f t
 
 /-- Second differences are additive. -/
-lemma secondDiff_add (f g : ℝ → ℂ) (h t : ℝ) :
+private lemma secondDiff_add (f g : ℝ → ℂ) (h t : ℝ) :
     secondDiff (fun s => f s + g s) h t = secondDiff f h t + secondDiff g h t := by
   simp only [secondDiff]
   ring
 
 /-- Second differences respect subtraction. -/
-lemma secondDiff_sub (f g : ℝ → ℂ) (h t : ℝ) :
+private lemma secondDiff_sub (f g : ℝ → ℂ) (h t : ℝ) :
     secondDiff (fun s => f s - g s) h t = secondDiff f h t - secondDiff g h t := by
   simp only [secondDiff]
   ring
 
 /-- A constant function has vanishing second difference. -/
-lemma secondDiff_const (c : ℂ) (h t : ℝ) : secondDiff (fun _ => c) h t = 0 := by
+private lemma secondDiff_const (c : ℂ) (h t : ℝ) : secondDiff (fun _ => c) h t = 0 := by
   simp only [secondDiff]
   ring
 
 /-- The second difference of `exp(I s x)` factors through the step `h`. -/
-lemma secondDiff_exp (h t x : ℝ) :
+private lemma secondDiff_exp (h t x : ℝ) :
     secondDiff (fun s => exp (I * s * x)) h t =
       exp (I * t * x) * (exp (I * h * x) + exp (-(I * h * x)) - 2) := by
   simp only [secondDiff]
@@ -79,7 +81,7 @@ lemma secondDiff_exp (h t x : ℝ) :
   ring
 
 /-- `exp(I θ) + exp(-I θ) - 2 = -4 sin(θ / 2)²`. -/
-lemma exp_I_add_exp_neg_sub_two (θ : ℝ) :
+private lemma exp_I_add_exp_neg_sub_two (θ : ℝ) :
     exp (I * θ) + exp (-I * θ) - 2 = -4 * (Real.sin (θ / 2) : ℂ) ^ 2 := by
   have hcos : (Real.cos θ : ℂ) =
       (exp ((θ : ℂ) * I) + exp ((-θ : ℂ) * I)) / 2 := by
@@ -107,7 +109,7 @@ lemma exp_I_add_exp_neg_sub_two (θ : ℝ) :
     _ = -4 * (Real.sin (θ / 2) : ℂ) ^ 2 := by ring
 
 /-- The second difference of the Lévy integrand is the sine weight times the oscillation. -/
-lemma secondDiff_levyIntegrand (h t x : ℝ) :
+private lemma secondDiff_levyIntegrand (h t x : ℝ) :
     secondDiff (fun s => levyIntegrand s x) h t =
       exp (I * t * x) * (-4 * (Real.sin (h * x / 2) : ℂ) ^ 2) := by
   have hsplit : (fun s => levyIntegrand s x) =
@@ -131,7 +133,7 @@ lemma secondDiff_levyIntegrand (h t x : ℝ) :
   rw [hθ]
 
 /-- Second differences pass inside the Lévy integral. -/
-lemma secondDiff_integral_levyIntegrand {ν : Measure ℝ} (hν : IsLevyMeasure ν) (h t : ℝ) :
+private lemma secondDiff_integral_levyIntegrand {ν : Measure ℝ} (hν : IsLevyMeasure ν) (h t : ℝ) :
     secondDiff (fun s => ∫ x, levyIntegrand s x ∂ν) h t =
       ∫ x, secondDiff (fun s => levyIntegrand s x) h t ∂ν := by
   have hi (s : ℝ) : Integrable (levyIntegrand s) ν := integrable_levyIntegrand hν s
@@ -143,7 +145,7 @@ lemma secondDiff_integral_levyIntegrand {ν : Measure ℝ} (hν : IsLevyMeasure 
     ← integral_add (hi (t + h)) (hi (t - h)), ← integral_sub hsum htwo]
 
 /-- Drift and Gaussian parts of the second difference. -/
-lemma secondDiff_drift_gaussian (b : ℝ) (a : ℂ) (h t : ℝ) :
+private lemma secondDiff_drift_gaussian (b : ℝ) (a : ℂ) (h t : ℝ) :
     secondDiff (fun s => I * b * s - a * (s : ℂ) ^ 2 / 2) h t = -(a * (h : ℂ) ^ 2) := by
   simp only [secondDiff]
   push_cast
@@ -168,17 +170,17 @@ def sineWeight (h x : ℝ) : ℝ :=
   4 * Real.sin (h * x / 2) ^ 2
 
 /-- The sine weight is nonnegative. -/
-lemma sineWeight_nonneg (h x : ℝ) : 0 ≤ sineWeight h x := by
+private lemma sineWeight_nonneg (h x : ℝ) : 0 ≤ sineWeight h x := by
   unfold sineWeight
   positivity
 
 /-- The sine weight is continuous. -/
-lemma continuous_sineWeight (h : ℝ) : Continuous (sineWeight h) := by
+private lemma continuous_sineWeight (h : ℝ) : Continuous (sineWeight h) := by
   unfold sineWeight
   fun_prop
 
 /-- `4 sin(h x / 2)²` is dominated by a multiple of `1 ∧ x²`. -/
-lemma sineWeight_le (h x : ℝ) :
+private lemma sineWeight_le (h x : ℝ) :
     sineWeight h x ≤ (h ^ 2 + 4) * min 1 (x ^ 2) := by
   have hsq : 4 * Real.sin (h * x / 2) ^ 2 ≤ h ^ 2 * x ^ 2 := by
     calc
@@ -198,10 +200,10 @@ lemma sineWeight_le (h x : ℝ) :
     exact (min_le_right _ _).trans (by nlinarith [sq_nonneg h])
 
 /-- The sine weight is integrable against a Lévy measure. -/
-lemma integrable_sineWeight {ν : Measure ℝ} (hν : IsLevyMeasure ν) (h : ℝ) :
+private lemma integrable_sineWeight {ν : Measure ℝ} (hν : IsLevyMeasure ν) (h : ℝ) :
     Integrable (sineWeight h) ν := by
   have hdom : Integrable (fun x : ℝ => (h ^ 2 + 4) * min 1 (x ^ 2)) ν :=
-    (integrable_min_one_sq hν).const_mul (h ^ 2 + 4)
+    hν.integrable_min_one_sq.const_mul (h ^ 2 + 4)
   refine hdom.mono' (continuous_sineWeight h).aestronglyMeasurable ?_
   refine ae_of_all _ fun x => ?_
   rw [Real.norm_eq_abs, abs_of_nonneg (sineWeight_nonneg h x)]
@@ -212,7 +214,7 @@ def sineDensity (h : ℝ) : ℝ → ℝ≥0∞ :=
   fun x => ENNReal.ofReal (sineWeight h x)
 
 /-- The sine density is measurable. -/
-lemma measurable_sineDensity (h : ℝ) : Measurable (sineDensity h) :=
+private lemma measurable_sineDensity (h : ℝ) : Measurable (sineDensity h) :=
   ENNReal.measurable_ofReal.comp (continuous_sineWeight h).measurable
 
 /-- The set where `sin(h x / 2)` does not vanish. -/
@@ -235,7 +237,7 @@ lemma zero_notMem_sineSet (h : ℝ) : (0 : ℝ) ∉ sineSet h := by
   simp [sineSet, Real.sin_zero]
 
 /-- On the sine set the density is strictly positive. -/
-lemma sineDensity_ne_zero {h x : ℝ} (hx : x ∈ sineSet h) : sineDensity h x ≠ 0 := by
+private lemma sineDensity_ne_zero {h x : ℝ} (hx : x ∈ sineSet h) : sineDensity h x ≠ 0 := by
   simp only [sineSet] at hx
   rw [sineDensity, ne_eq, ENNReal.ofReal_eq_zero, not_le]
   have hsin : 0 < Real.sin (h * x / 2) ^ 2 := sq_pos_of_ne_zero hx
@@ -247,7 +249,7 @@ def sineMeasure (L : LevyTriplet) (h : ℝ) : Measure ℝ :=
     L.jumpMeasure.withDensity (sineDensity h)
 
 /-- A Lévy measure weighted by the sine density is finite. -/
-lemma isFiniteMeasure_withDensity_sine (L : LevyTriplet) (h : ℝ) :
+private lemma isFiniteMeasure_withDensity_sine (L : LevyTriplet) (h : ℝ) :
     IsFiniteMeasure (L.jumpMeasure.withDensity (sineDensity h)) := by
   refine ⟨?_⟩
   rw [withDensity_apply _ MeasurableSet.univ, setLIntegral_univ]
@@ -256,7 +258,7 @@ lemma isFiniteMeasure_withDensity_sine (L : LevyTriplet) (h : ℝ) :
       (ae_of_all _ (sineWeight_nonneg h))).2 (integrable_sineWeight L.isLevyMeasure h)
 
 /-- The Gaussian atom in the sine measure is a finite measure. -/
-lemma isFiniteMeasure_gaussianAtom (L : LevyTriplet) (h : ℝ) :
+private lemma isFiniteMeasure_gaussianAtom (L : LevyTriplet) (h : ℝ) :
     IsFiniteMeasure
       (ENNReal.ofReal ((L.gaussianVariance : ℝ) * h ^ 2) • Measure.dirac (0 : ℝ)) := by
   refine ⟨?_⟩
@@ -278,7 +280,7 @@ lemma isFiniteMeasure_sineMeasure (L : LevyTriplet) (h : ℝ) :
   exact isFiniteMeasureAdd
 
 /-- The integrand of a real characteristic function is integrable on a finite measure. -/
-lemma integrable_charIntegrand {μ : Measure ℝ} [IsFiniteMeasure μ] (t : ℝ) :
+private lemma integrable_charIntegrand {μ : Measure ℝ} [IsFiniteMeasure μ] (t : ℝ) :
     Integrable (fun x : ℝ => exp (t * x * I)) μ := by
   have hc : Continuous fun x : ℝ => exp (t * x * I) := by fun_prop
   refine (integrable_const (1 : ℝ)).mono' hc.aestronglyMeasurable ?_
@@ -289,13 +291,13 @@ lemma integrable_charIntegrand {μ : Measure ℝ} [IsFiniteMeasure μ] (t : ℝ)
   rw [harg, norm_exp_ofReal_mul_I]
 
 /-- Characteristic functions add over a sum of finite measures. -/
-lemma charFun_add {μ ν : Measure ℝ} [IsFiniteMeasure μ] [IsFiniteMeasure ν] (t : ℝ) :
+private lemma charFun_add {μ ν : Measure ℝ} [IsFiniteMeasure μ] [IsFiniteMeasure ν] (t : ℝ) :
     charFun (μ + ν) t = charFun μ t + charFun ν t := by
   simp_rw [charFun_apply_real]
   exact integral_add_measure (integrable_charIntegrand t) (integrable_charIntegrand t)
 
 /-- The atom of the sine measure has characteristic function `a h²`. -/
-lemma charFun_gaussianAtom (L : LevyTriplet) (h t : ℝ) :
+private lemma charFun_gaussianAtom (L : LevyTriplet) (h t : ℝ) :
     charFun (ENNReal.ofReal ((L.gaussianVariance : ℝ) * h ^ 2) • Measure.dirac (0 : ℝ)) t =
       ((L.gaussianVariance : ℝ) * h ^ 2 : ℂ) := by
   have hnn : 0 ≤ (L.gaussianVariance : ℝ) * h ^ 2 :=
@@ -305,7 +307,7 @@ lemma charFun_gaussianAtom (L : LevyTriplet) (h t : ℝ) :
   simp
 
 /-- The sine-weighted jump measure has characteristic function `∫ 4 sin² exp`. -/
-lemma charFun_jumpSine (L : LevyTriplet) (h t : ℝ) :
+private lemma charFun_jumpSine (L : LevyTriplet) (h t : ℝ) :
     charFun (L.jumpMeasure.withDensity (sineDensity h)) t =
       ∫ x, (sineWeight h x : ℂ) * exp (I * t * x) ∂L.jumpMeasure := by
   rw [charFun_apply_real,
@@ -379,4 +381,4 @@ lemma jumpMeasure_restrict_eq_inv_sine (L : LevyTriplet) (h : ℝ) :
     (ae_restrict_of_forall_mem hs fun x hx => sineDensity_ne_zero hx)
     (ae_of_all _ fun _ => ENNReal.ofReal_ne_top)
 
-end CKMA
+end CKMA.InfinitelyDivisible

@@ -23,13 +23,13 @@ to the same statement. Source: GAPS 05.10.
 
 ## Main definitions
 
-* `CKMA.Dini.leftSteep`: points with upper right derivative `⊤` and short left slopes above `q`.
+* `leftSteep`: points with upper right derivative `⊤` and short left slopes above `q`.
 * `CKMA.Dini.infiniteUp`: points with upper right derivative `⊤` and lower left derivative `≠ ⊥`.
 * `CKMA.Dini.infiniteDown`: points with lower left derivative `⊥` and upper right derivative `≠ ⊤`.
 
 ## Main results
 
-* `CKMA.Dini.volume_leftSteep_eq_zero`: each uniformly left-steep set is null.
+* `volume_leftSteep_eq_zero`: each uniformly left-steep set is null.
 * `CKMA.Dini.volume_infiniteUp`: `infiniteUp f` has Lebesgue measure zero.
 * `CKMA.Dini.volume_infiniteDown`: `infiniteDown f` has Lebesgue measure zero.
 -/
@@ -44,7 +44,7 @@ open Set Filter Topology MeasureTheory
 open scoped ENNReal
 
 /-- Negation sends right punctured neighbourhoods of `0` to left ones. -/
-lemma map_neg_nhdsGT_zero :
+private lemma map_neg_nhdsGT_zero :
     map (fun x : ℝ => -x) (𝓝[>] (0 : ℝ)) = 𝓝[<] (0 : ℝ) := by
   refine le_antisymm ?_ ?_
   · rw [map_le_iff_le_comap]
@@ -77,7 +77,7 @@ lemma map_neg_nhdsGT_zero :
       _ ≤ map (fun x : ℝ => -x) (𝓝[>] 0) := map_mono hle
 
 /-- Negation sends left punctured neighbourhoods of `0` to right ones. -/
-lemma map_neg_nhdsLT_zero :
+private lemma map_neg_nhdsLT_zero :
     map (fun x : ℝ => -x) (𝓝[<] (0 : ℝ)) = 𝓝[>] (0 : ℝ) := by
   have h := congrArg (map (fun x : ℝ => -x)) map_neg_nhdsGT_zero
   have hid : (fun x : ℝ => -x) ∘ (fun x : ℝ => -x) = id := by
@@ -87,7 +87,7 @@ lemma map_neg_nhdsLT_zero :
   exact h.symm
 
 /-- Difference quotients of `f (-·)` are signed reflected quotients of `f`. -/
-lemma extendedDifferenceQuotient_comp_neg (f : ℝ → ℝ) (x h : ℝ) :
+private lemma extendedDifferenceQuotient_comp_neg (f : ℝ → ℝ) (x h : ℝ) :
     extendedDifferenceQuotient (fun t => f (-t)) x h =
       -extendedDifferenceQuotient f (-x) (-h) := by
   unfold extendedDifferenceQuotient
@@ -97,7 +97,7 @@ lemma extendedDifferenceQuotient_comp_neg (f : ℝ → ℝ) (x h : ℝ) :
   rw [div_neg, neg_neg]
 
 /-- Reflection swaps the upper right derivative with the signed lower left derivative. -/
-lemma upperRightDiniDerivative_comp_neg (f : ℝ → ℝ) (x : ℝ) :
+private lemma upperRightDiniDerivative_comp_neg (f : ℝ → ℝ) (x : ℝ) :
     upperRightDiniDerivative (fun t => f (-t)) x =
       -lowerLeftDiniDerivative f (-x) := by
   unfold upperRightDiniDerivative lowerLeftDiniDerivative
@@ -114,7 +114,7 @@ lemma upperRightDiniDerivative_comp_neg (f : ℝ → ℝ) (x : ℝ) :
   exact EReal.limsup_neg
 
 /-- Reflection swaps the lower left derivative with the signed upper right derivative. -/
-lemma lowerLeftDiniDerivative_comp_neg (f : ℝ → ℝ) (x : ℝ) :
+private lemma lowerLeftDiniDerivative_comp_neg (f : ℝ → ℝ) (x : ℝ) :
     lowerLeftDiniDerivative (fun t => f (-t)) x =
       -upperRightDiniDerivative f (-x) := by
   unfold lowerLeftDiniDerivative upperRightDiniDerivative
@@ -147,12 +147,12 @@ lemma exists_right_slope_gt (f : ℝ → ℝ) (x k ε : ℝ)
   exact (EReal.coe_lt_coe_iff).1 hhE
 
 /-- Upper right derivative `⊤`, with left slopes of length `1/(n + 1)` above `q`. -/
-def leftSteep (f : ℝ → ℝ) (q : ℚ) (n : ℕ) : Set ℝ :=
+private def leftSteep (f : ℝ → ℝ) (q : ℚ) (n : ℕ) : Set ℝ :=
   {x | upperRightDiniDerivative f x = ⊤ ∧
     ∀ h, -(1 : ℝ) / (n + 1) ≤ h → h < 0 → (q : ℝ) < (f (x + h) - f x) / h}
 
 /-- On a short interval ending in `leftSteep`, the outer measure of that set vanishes. -/
-lemma volume_leftSteep_Ioo (f : ℝ → ℝ) (q : ℚ) (n : ℕ) {a b : ℝ}
+private lemma volume_leftSteep_Ioo (f : ℝ → ℝ) (q : ℚ) (n : ℕ) {a b : ℝ}
     (hab : a < b) (hlen : b - a < (1 : ℝ) / (n + 1)) (hb : b ∈ leftSteep f q n) :
     volume (leftSteep f q n ∩ Ioo a b) = 0 := by
   refine volume_eq_zero_of_arbitrarily_steep (c := (q : ℝ)) (δ := (1 : ℝ) / (n + 1))
@@ -189,7 +189,7 @@ lemma volume_leftSteep_Ioo (f : ℝ → ℝ) (q : ℚ) (n : ℕ) {a b : ℝ}
       exact hhs
 
 /-- If every subinterval ending in `E` is null, then `E` is null on `(α, β)`. -/
-lemma volume_eq_zero_on_short_window {E : Set ℝ} {α β : ℝ} (hαβ : α < β)
+private lemma volume_eq_zero_on_short_window {E : Set ℝ} {α β : ℝ}
     (hpiece : ∀ b ∈ E ∩ Ioo α β, volume (E ∩ Ioo α b) = 0) :
     volume (E ∩ Ioo α β) = 0 := by
   set S := E ∩ Ioo α β
@@ -226,7 +226,7 @@ lemma volume_eq_zero_on_short_window {E : Set ℝ} {α β : ℝ} (hαβ : α < �
   · rw [not_nonempty_iff_eq_empty.mp hS, measure_empty]
 
 /-- Each uniformly left-steep set is Lebesgue null. -/
-lemma volume_leftSteep_eq_zero (f : ℝ → ℝ) (q : ℚ) (n : ℕ) :
+private lemma volume_leftSteep_eq_zero (f : ℝ → ℝ) (q : ℚ) (n : ℕ) :
     volume (leftSteep f q n) = 0 := by
   set δ : ℝ := (1 : ℝ) / (n + 1)
   have hδ : 0 < δ := by positivity
@@ -241,11 +241,7 @@ lemma volume_leftSteep_eq_zero (f : ℝ → ℝ) (q : ℚ) (n : ℕ) :
     fun m => leftSteep f q n ∩ Ioo ((m : ℝ) * ℓ) (((m + 1 : ℤ) : ℝ) * ℓ)
   have hwindow : ∀ m, volume (window m) = 0 := by
     intro m
-    have hαβ : (m : ℝ) * ℓ < ((m + 1 : ℤ) : ℝ) * ℓ := by
-      have hm : ((m + 1 : ℤ) : ℝ) = (m : ℝ) + 1 := by simp
-      rw [hm]
-      nlinarith
-    refine volume_eq_zero_on_short_window hαβ ?_
+    refine volume_eq_zero_on_short_window ?_
     intro b hb
     have hlen : b - (m : ℝ) * ℓ < δ := by
       have hbβ : b < ((m + 1 : ℤ) : ℝ) * ℓ := hb.2.2
@@ -284,7 +280,7 @@ def infiniteUp (f : ℝ → ℝ) : Set ℝ :=
   {x | upperRightDiniDerivative f x = ⊤ ∧ lowerLeftDiniDerivative f x ≠ ⊥}
 
 /-- A point of `infiniteUp` lies in some uniformly left-steep set. -/
-lemma mem_leftSteep_of_infiniteUp {f : ℝ → ℝ} {x : ℝ} (hx : x ∈ infiniteUp f) :
+private lemma mem_leftSteep_of_infiniteUp {f : ℝ → ℝ} {x : ℝ} (hx : x ∈ infiniteUp f) :
     ∃ q : ℚ, ∃ n : ℕ, x ∈ leftSteep f q n := by
   have hbot : (⊥ : EReal) < lowerLeftDiniDerivative f x := (bot_lt_iff_ne_bot).2 hx.2
   obtain ⟨q, -, hq⟩ := EReal.exists_rat_btwn_of_lt hbot
@@ -330,7 +326,7 @@ def infiniteDown (f : ℝ → ℝ) : Set ℝ :=
   {x | lowerLeftDiniDerivative f x = ⊥ ∧ upperRightDiniDerivative f x ≠ ⊤}
 
 /-- Reflection identifies the lower-left mismatch with the upper-right mismatch. -/
-lemma infiniteDown_eq_preimage (f : ℝ → ℝ) :
+private lemma infiniteDown_eq_preimage (f : ℝ → ℝ) :
     infiniteDown f = Neg.neg ⁻¹' infiniteUp (fun t => f (-t)) := by
   ext x
   constructor
@@ -356,3 +352,18 @@ theorem volume_infiniteDown (f : ℝ → ℝ) : volume (infiniteDown f) = 0 := b
   exact volume_infiniteUp fun t => f (-t)
 
 end CKMA.Dini
+
+namespace CKMA
+
+@[deprecated (since := "2026-11-15")]
+alias exists_right_slope_gt := Dini.exists_right_slope_gt
+@[deprecated (since := "2026-11-15")]
+alias infiniteUp := Dini.infiniteUp
+@[deprecated (since := "2026-11-15")]
+alias volume_infiniteUp := Dini.volume_infiniteUp
+@[deprecated (since := "2026-11-15")]
+alias infiniteDown := Dini.infiniteDown
+@[deprecated (since := "2026-11-15")]
+alias volume_infiniteDown := Dini.volume_infiniteDown
+
+end CKMA

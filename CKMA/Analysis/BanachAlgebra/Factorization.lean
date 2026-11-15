@@ -52,7 +52,7 @@ Sources: GAPS 20.19, 20.23, 20.41, and 20.47.
 
 ## Main results
 
-* `CKMA.eq_zero_of_norm_le_div_nat`: a vector bounded in norm by `C / n` for all `n ≥ 2` is zero.
+* `eq_zero_of_norm_le_div_nat`: a vector bounded in norm by `C / n` for all `n ≥ 2` is zero.
 * `CKMA.gleason_kahane_zelazko`: Gleason–Kahane–Żelazko theorem.
 * `CKMA.exists_shilov_boundary`: existence of the Shilov boundary.
 * `CKMA.wiener_tauberian_real`: Wiener's Tauberian theorem on `L¹(ℝ)`.
@@ -69,7 +69,7 @@ open Filter Topology MeasureTheory FourierTransform Polynomial
 open scoped FourierTransform
 
 /-- A vector bounded in norm by `C / n` for every integer `n ≥ 2` is zero. -/
-theorem eq_zero_of_norm_le_div_nat {E : Type*} [NormedAddCommGroup E] {z : E} {C : ℝ}
+private theorem eq_zero_of_norm_le_div_nat {E : Type*} [NormedAddCommGroup E] {z : E} {C : ℝ}
     (h : ∀ n : ℕ, 2 ≤ n → ‖z‖ ≤ C / (n : ℝ)) : z = 0 :=
   norm_eq_zero.mp <| le_antisymm (ge_of_tendsto (tendsto_const_div_atTop_nhds_zero_nat C)
     (eventually_atTop.2 ⟨2, h⟩)) (norm_nonneg _)

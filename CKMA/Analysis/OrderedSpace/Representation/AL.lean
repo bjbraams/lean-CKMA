@@ -60,7 +60,7 @@ variable {E : Type u} [NormedAddCommGroup E] [NormedSpace ℝ E] [Lattice E]
   [IsOrderedAddMonoid E] [IsOrderedModule ℝ E] [HasSolidNorm E]
 
 /-- A normed Riesz space satisfies the Archimedean axiom. -/
-theorem archimedean_of_norm {x y : E} (h : ∀ n : ℕ, (n : ℝ) • x ≤ y) : x ≤ 0 := by
+private theorem archimedean_of_norm {x y : E} (h : ∀ n : ℕ, (n : ℝ) • x ≤ y) : x ≤ 0 := by
   have hpos : ∀ n : ℕ, (n : ℝ) • x⁺ ≤ y⁺ := by
     intro n
     rw [← posPart_smul_of_nonneg (Nat.cast_nonneg n)]
@@ -83,8 +83,11 @@ theorem archimedean_of_norm {x y : E} (h : ∀ n : ℕ, (n : ℝ) • x ≤ y) :
   rw [norm_eq_zero] at hz
   exact posPart_eq_zero.mp hz
 
-/-- Sequential monotone completeness of an AL-space. -/
-theorem al_isKB (hE : ∀ x y : E, 0 ≤ x → 0 ≤ y → ‖x + y‖ = ‖x‖ + ‖y‖)
+omit [NormedSpace ℝ E] [IsOrderedModule ℝ E] [HasSolidNorm E] in
+/-- Sequential monotone completeness of an AL-space: in a complete normed lattice whose norm
+is additive on the positive cone, a monotone, nonnegative, norm-bounded sequence converges. -/
+theorem exists_tendsto_of_monotone_of_norm_add_eq
+    (hE : ∀ x y : E, 0 ≤ x → 0 ≤ y → ‖x + y‖ = ‖x‖ + ‖y‖)
     [CompleteSpace E] {x : ℕ → E} (hx : Monotone x) (hpos : ∀ n, 0 ≤ x n)
     (hbound : ∃ M : ℝ, ∀ n, ‖x n‖ ≤ M) : ∃ y : E, Tendsto x atTop (𝓝 y) := by
   have hsub : ∀ n m, n ≤ m → ‖x m - x n‖ = ‖x m‖ - ‖x n‖ := by
@@ -110,6 +113,10 @@ theorem al_isKB (hE : ∀ x y : E, 0 ≤ x → 0 ≤ y → ‖x + y‖ = ‖x‖
   rw [heq]
   exact hN n hNn
 
+
+@[deprecated (since := "2026-11-15")]
+alias al_isKB := exists_tendsto_of_monotone_of_norm_add_eq
+
 /-- The additive norm of an AL-space, extended from the positive cone. -/
 def alNormFunctional (hE : ∀ x y : E, 0 ≤ x → 0 ≤ y → ‖x + y‖ = ‖x‖ + ‖y‖) :
     E →ₗ[ℝ] ℝ :=
@@ -119,19 +126,19 @@ def alNormFunctional (hE : ∀ x y : E, 0 ≤ x → 0 ≤ y → ‖x + y‖ = �
       rw [norm_smul, Real.norm_eq_abs, abs_of_nonneg hc, smul_eq_mul])
 
 /-- On the positive cone the AL-norm functional is the ambient norm. -/
-theorem alNormFunctional_apply_nonneg
+private theorem alNormFunctional_apply_nonneg
     (hE : ∀ x y : E, 0 ≤ x → 0 ≤ y → ‖x + y‖ = ‖x‖ + ‖y‖)
     {x : E} (hx : 0 ≤ x) : alNormFunctional hE x = ‖x‖ :=
   coneAdditiveLinearMap_apply_of_nonneg _ _ _ hx
 
 /-- The AL-norm functional reproduces the norm on absolute values. -/
-theorem alNormFunctional_abs
+private theorem alNormFunctional_abs
     (hE : ∀ x y : E, 0 ≤ x → 0 ≤ y → ‖x + y‖ = ‖x‖ + ‖y‖) (x : E) :
     alNormFunctional hE |x| = ‖x‖ := by
   rw [alNormFunctional_apply_nonneg hE (abs_nonneg x), norm_abs_eq_norm]
 
 /-- The AL-norm functional is monotone. -/
-theorem alNormFunctional_mono
+private theorem alNormFunctional_mono
     (hE : ∀ x y : E, 0 ≤ x → 0 ≤ y → ‖x + y‖ = ‖x‖ + ‖y‖) :
     Monotone (alNormFunctional hE) := by
   intro a b hab
@@ -143,7 +150,7 @@ theorem alNormFunctional_mono
   exact norm_nonneg _
 
 /-- Positive parts of disjoint vectors remain disjoint. -/
-theorem posPart_inf_posPart_eq_zero_of_disjoint {x y : E} (h : LatticeDisjoint x y) :
+private theorem posPart_inf_posPart_eq_zero_of_disjoint {x y : E} (h : LatticeDisjoint x y) :
     x⁺ ⊓ y⁺ = 0 := by
   apply le_antisymm
   · calc x⁺ ⊓ y⁺ ≤ |x| ⊓ |y| :=
@@ -153,7 +160,7 @@ theorem posPart_inf_posPart_eq_zero_of_disjoint {x y : E} (h : LatticeDisjoint x
   · exact le_inf (posPart_nonneg x) (posPart_nonneg y)
 
 /-- Absolute values add when the vectors are lattice disjoint. -/
-theorem abs_add_of_latticeDisjoint {x y : E} (h : LatticeDisjoint x y) :
+private theorem abs_add_of_latticeDisjoint {x y : E} (h : LatticeDisjoint x y) :
     |x + y| = |x| + |y| := by
   have hparts : x⁺ ⊓ y⁺ = 0 ∧ x⁺ ⊓ y⁻ = 0 ∧ x⁻ ⊓ y⁺ = 0 ∧ x⁻ ⊓ y⁻ = 0 := by
     refine ⟨posPart_inf_posPart_eq_zero_of_disjoint h, ?_, ?_, ?_⟩
@@ -246,7 +253,7 @@ theorem norm_sum_of_pairwise_latticeDisjoint
     rw [ih hdisj']
 
 /-- Scalar truncation of the remainder meets the unit in a vector dominated by `x`. -/
-theorem trunc_smul_le {u x : E} (hu : 0 ≤ u) (hx : 0 ≤ x) (n : ℕ) :
+private theorem trunc_smul_le {u x : E} (hu : 0 ≤ u) (hx : 0 ≤ x) (n : ℕ) :
     (n : ℝ) • ((x - x ⊓ ((n : ℝ) • u)) ⊓ u) ≤ x := by
   induction n with
   | zero => simp [hx]
@@ -296,16 +303,16 @@ theorem norm_trunc_remainder_le {u x : E} (hu : 0 ≤ u) (hx : 0 ≤ x) {n : ℕ
   rwa [le_div_iff₀ hn0, mul_comm]
 
 /-- The set of admissible gauge scalars. -/
-def gaugeSet (u x : E) : Set ℝ := {c : ℝ | 0 ≤ c ∧ |x| ≤ c • u}
+private def gaugeSet (u x : E) : Set ℝ := {c : ℝ | 0 ≤ c ∧ |x| ≤ c • u}
 
 /-- The gauge set of an ideal element is nonempty and bounded below by zero. -/
-theorem gaugeSet_nonempty {u x : E} (hx : x ∈ principalOrderIdeal u) :
+private theorem gaugeSet_nonempty {u x : E} (hx : x ∈ principalOrderIdeal u) :
     (gaugeSet u x).Nonempty := by
   obtain ⟨c, hc, hx⟩ := hx
   exact ⟨c, hc, hx⟩
 
 /-- Every gauge scalar is nonnegative. -/
-theorem bddBelow_gaugeSet (u x : E) : BddBelow (gaugeSet u x) :=
+private theorem bddBelow_gaugeSet (u x : E) : BddBelow (gaugeSet u x) :=
   ⟨0, fun _ hc => hc.1⟩
 
 /-- The order-unit gauge of an ideal element is nonnegative. -/
@@ -315,7 +322,7 @@ theorem gauge_nonneg {u x : E} (hx : x ∈ principalOrderIdeal u) :
   exact le_csInf (gaugeSet_nonempty hx) fun _ hc => hc.1
 
 /-- An admissible scalar dominates the gauge. -/
-theorem gauge_le_of_mem {u x : E} {c : ℝ} (hc : c ∈ gaugeSet u x) :
+private theorem gauge_le_of_mem {u x : E} {c : ℝ} (hc : c ∈ gaugeSet u x) :
     orderUnitGauge u x ≤ c := by
   unfold orderUnitGauge
   exact csInf_le (bddBelow_gaugeSet u x) hc
@@ -375,7 +382,7 @@ theorem gauge_le_iff {u x : E} (hu : 0 ≤ u) (hx : x ∈ principalOrderIdeal u)
     exact gauge_le_of_mem ⟨hc, habs⟩
 
 /-- The gauge is absolutely homogeneous on the principal ideal. -/
-theorem gauge_smul {u x : E} (hu : 0 ≤ u) (hx : x ∈ principalOrderIdeal u) (c : ℝ) :
+private theorem gauge_smul {u x : E} (hu : 0 ≤ u) (hx : x ∈ principalOrderIdeal u) (c : ℝ) :
     orderUnitGauge u (c • x) = |c| * orderUnitGauge u x := by
   have hx' : c • x ∈ principalOrderIdeal u := by
     obtain ⟨d, hd, hxd⟩ := hx
@@ -408,7 +415,7 @@ theorem gauge_smul {u x : E} (hu : 0 ≤ u) (hx : x ∈ principalOrderIdeal u) (
       rwa [← mul_assoc, mul_inv_cancel₀ (abs_ne_zero.mpr hc), one_mul] at hmul
 
 /-- The gauge is subadditive on the principal ideal. -/
-theorem gauge_add {u x y : E} (hu : 0 ≤ u) (hx : x ∈ principalOrderIdeal u)
+private theorem gauge_add {u x y : E} (hu : 0 ≤ u) (hx : x ∈ principalOrderIdeal u)
     (hy : y ∈ principalOrderIdeal u) :
     orderUnitGauge u (x + y) ≤ orderUnitGauge u x + orderUnitGauge u y := by
   have hxy : x + y ∈ principalOrderIdeal u := by
@@ -426,14 +433,14 @@ theorem gauge_add {u x y : E} (hu : 0 ≤ u) (hx : x ∈ principalOrderIdeal u)
   exact (gauge_le_iff hu hxy (add_nonneg (gauge_nonneg hx) (gauge_nonneg hy))).2 habs
 
 /-- The absolute value of a supremum is dominated by the supremum of the absolute values. -/
-theorem abs_sup_le_sup_abs (x y : E) : |x ⊔ y| ≤ |x| ⊔ |y| := by
+private theorem abs_sup_le_sup_abs (x y : E) : |x ⊔ y| ≤ |x| ⊔ |y| := by
   refine sup_le ?_ ?_
   · exact sup_le_sup (le_abs_self x) (le_abs_self y)
   · rw [neg_sup]
     exact inf_le_left.trans ((neg_le_abs x).trans le_sup_left)
 
 /-- The absolute value of an infimum is dominated by the supremum of the absolute values. -/
-theorem abs_inf_le_sup_abs (x y : E) : |x ⊓ y| ≤ |x| ⊔ |y| := by
+private theorem abs_inf_le_sup_abs (x y : E) : |x ⊓ y| ≤ |x| ⊔ |y| := by
   rw [show x ⊓ y = -(-x ⊔ -y) by rw [← neg_inf, neg_neg], abs_neg]
   exact (abs_sup_le_sup_abs (-x) (-y)).trans (by simp [abs_neg])
 
@@ -518,7 +525,7 @@ theorem tendsto_trunc_of_weakUnit
     apply norm_le_norm_of_abs_le_abs
     rw [abs_of_nonneg (hpos n), abs_of_nonneg hx]
     exact inf_le_left
-  obtain ⟨y, hy⟩ := al_isKB hE hmono hpos hbound
+  obtain ⟨y, hy⟩ := exists_tendsto_of_monotone_of_norm_add_eq hE hmono hpos hbound
   have hyx : y ≤ x :=
     (isClosed_Icc.mem_of_tendsto hy (Eventually.of_forall fun n => ⟨hpos n, inf_le_left⟩)).2
   have hzero : Tendsto (fun n : ℕ => (x - x ⊓ ((n : ℝ) • u)) ⊓ u) atTop (𝓝 0) := by
@@ -792,7 +799,7 @@ instance [CompleteSpace E] : CompleteSpace (OrderUnitSpace u) := by
   exact hgauge.trans_lt (half_lt_self hε)
 
 /-- The closed gauge ball is the order interval of the unit. -/
-theorem ball_eq_Icc : closedBall (0 : OrderUnitSpace u) 1 = Icc (-unit) unit := by
+private theorem ball_eq_Icc : closedBall (0 : OrderUnitSpace u) 1 = Icc (-unit) unit := by
   ext x
   rw [mem_closedBall_iff_norm, sub_zero]
   change orderUnitGauge u x.toVec ≤ 1 ↔ -unit ≤ x ∧ x ≤ unit

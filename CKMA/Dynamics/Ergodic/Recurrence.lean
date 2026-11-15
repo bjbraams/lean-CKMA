@@ -28,7 +28,7 @@ probability-preserving system. The Rokhlin statement controls disjointness and t
 of the tower complement under the standard probability-space hypotheses.
 
 The multiple-recurrence definitions record simultaneous return sets and their Cesàro
-averages. Furstenberg's target supplies a positive limiting upper average for a positive
+averages. Furstenberg's target supplies a positive lower limit of these averages for a positive
 measure set, with the number of returns and averaging convention explicit.
 
 ## Main definitions
@@ -89,7 +89,8 @@ private lemma symm_iterate_apply (i : ℕ) (x : Ω) : (T.symm^[i]) ((T^[i]) x) =
   induction i generalizing x with
   | zero => rfl
   | succ i ih =>
-    rw [Function.iterate_succ, Function.iterate_succ_apply', Function.comp_apply, T.symm_apply_apply, ih]
+    rw [Function.iterate_succ, Function.iterate_succ_apply', Function.comp_apply,
+      T.symm_apply_apply, ih]
 
 omit [StandardBorelSpace Ω] [IsProbabilityMeasure μ] in
 /-- Forward iterates undo inverse iterates. -/
@@ -97,7 +98,8 @@ private lemma iterate_symm_apply (i : ℕ) (x : Ω) : (T^[i]) ((T.symm^[i]) x) =
   induction i generalizing x with
   | zero => rfl
   | succ i ih =>
-    rw [Function.iterate_succ, Function.iterate_succ_apply', Function.comp_apply, T.apply_symm_apply, ih]
+    rw [Function.iterate_succ, Function.iterate_succ_apply', Function.comp_apply,
+      T.apply_symm_apply, ih]
 
 /-- `(T^[a])` after `(T^[b])` is the iterate of length `b + a`. -/
 private lemma iterate_apply_add (a b : ℕ) (x : Ω) :
@@ -265,7 +267,7 @@ private noncomputable def cum (M : ℕ) : ℕ → Set Ω
 
 /-- Each partial union is contained in the next one. -/
 private lemma cum_succ_subset (M n : ℕ) : cum (μ := μ) T M n ⊆ cum (μ := μ) T M (n + 1) := by
-  simp [cum, subset_union_left]
+  simp [cum]
 
 /-- The partial unions increase with the stage. -/
 private lemma cum_mono (M) {a b : ℕ} (h : a ≤ b) : cum (μ := μ) T M a ⊆ cum (μ := μ) T M b := by
@@ -827,6 +829,10 @@ theorem furstenberg_multiple_recurrence [IsProbabilityMeasure μ] {T : Ω → Ω
     {k : ℕ} (hk : 2 ≤ k) :
     0 < liminf (multipleRecurrenceAverage T A μ k) atTop := by
   unfold multipleRecurrenceAverage multipleRecurrenceSet
-  exact multiple_recurrence_liminf hT hA hpos hk
+  exact liminf_pos_of_progressionCount_ge hT hA hpos (by omega) fun _ hδ =>
+    exists_pos_mul_sq_le_progressionCount (by omega) hδ
+
+@[deprecated (since := "2026-11-15")]
+alias multiple_recurrence_liminf := furstenberg_multiple_recurrence
 
 end CKMA

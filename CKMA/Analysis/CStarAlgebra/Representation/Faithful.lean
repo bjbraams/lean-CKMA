@@ -33,9 +33,10 @@ element. The state at `b` is normalized and sends `star b * b` to `‖b‖ ^ 2`,
 representation is isometric. Its range is norm-closed because the domain is complete.
 
 The sum is indexed by a universe lift of the algebra, so the carrier lies in the next universe.
-A non-unital C*-algebra is handled by the same construction on its unitization: the inclusion
-into the unitization is an isometric non-unital star homomorphism, and the restriction of an
-isometry along it remains an isometry with closed range.
+A non-unital C*-algebra is handled in `CKMA.Analysis.CStarAlgebra.Representation` by the same
+construction on its unitization: the inclusion into the unitization is an isometric non-unital
+star homomorphism, and the restriction of an isometry along it remains an isometry with closed
+range.
 
 ## Main definitions
 
@@ -49,8 +50,8 @@ isometry along it remains an isometry with closed range.
 * `CKMA.exists_state_normSq`: existence of a state sending `star b * b` to `‖b‖ ^ 2`.
 * `CKMA.lpDiagonal_isometry`: sufficient condition for a diagonal representation to be isometric.
 * `CKMA.exists_isometric_representation_unital`: isometric representation of a unital C*-algebra.
-* `CKMA.exists_isometric_representation_gns`: isometric Gelfand–Naimark representation of a
-  possibly non-unital C*-algebra.
+  The non-unital case, via the unitization, is `CKMA.exists_isometric_representation` in
+  `CKMA.Analysis.CStarAlgebra.Representation`.
 -/
 
 @[expose] public section
@@ -191,16 +192,20 @@ theorem norm_gns_apply_cyclic [CStarAlgebra A] [PartialOrder A] [StarOrderedRing
   have hreal : ‖f.toPreGNS a‖ ^ 2 = ‖a‖ ^ 2 := by exact_mod_cast hsq
   exact (sq_eq_sq₀ (norm_nonneg _) (norm_nonneg _)).1 hreal
 
+/-- Coordinates of the image of `x` under the diagonal `lp` operator `lp.mapCLM p T`. -/
+theorem lp.mapCLM_apply_apply {α 𝕜 : Type*} {E F : α → Type*} [NontriviallyNormedField 𝕜]
+    [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
+    [∀ i, NormedAddCommGroup (F i)] [∀ i, NormedSpace 𝕜 (F i)] {p : ENNReal} [Fact (1 ≤ p)]
+    (T : ∀ i, E i →L[𝕜] F i) {K : ℝ} (hK : 0 ≤ K) (hT : ∀ i, ‖T i‖ ≤ K) (x : lp E p)
+    (i : α) : lp.mapCLM p T hK hT x i = T i (x i) := by
+  simp [lp.mapCLM, LinearMap.mkContinuous_apply, LinearMap.coe_mk, AddHom.coe_mk]
+
+@[deprecated (since := "2026-11-15")] alias lp_mapCLM_apply_apply := lp.mapCLM_apply_apply
+
 section
 
 variable {ι : Type*} {E : ι → Type*} [∀ i, NormedAddCommGroup (E i)]
   [∀ i, InnerProductSpace ℂ (E i)]
-
-/-- Evaluation of a diagonal `lp` operator on a coordinate. -/
-theorem lp_mapCLM_apply_apply (T : ∀ i, E i →L[ℂ] E i) {K : ℝ} (hK : 0 ≤ K)
-    (hT : ∀ i, ‖T i‖ ≤ K) (x : lp E 2) (i : ι) :
-    lp.mapCLM 2 T hK hT x i = T i (x i) := by
-  simp [lp.mapCLM, LinearMap.mkContinuous_apply, LinearMap.coe_mk, AddHom.coe_mk]
 
 variable [∀ i, CompleteSpace (E i)]
 
@@ -239,7 +244,7 @@ def lpDiagonal [NonUnitalCStarAlgebra A] (pi : ∀ i, A →⋆ₙₐ[ℂ] (E i �
     refine (ContinuousLinearMap.eq_adjoint_iff _ _).2 fun x y => ?_
     rw [lp.inner_eq_tsum, lp.inner_eq_tsum]
     refine tsum_congr fun i => ?_
-    rw [lp_mapCLM_apply_apply, lp_mapCLM_apply_apply, map_star (pi i) a,
+    rw [lp.mapCLM_apply_apply, lp.mapCLM_apply_apply, map_star (pi i) a,
       ContinuousLinearMap.star_eq_adjoint]
     exact ContinuousLinearMap.adjoint_inner_left (pi i a) (y i) (x i)
 
@@ -308,29 +313,5 @@ theorem exists_isometric_representation_unital [CStarAlgebra A] [Nontrivial A] [
     · exact norm_gns_apply_cyclic (phi a) a
         (stateNormSq_star_mul_self (A := A) a)
   exact ⟨{ carrier := lp G 2 }, lpDiagonal rep, hdiag, hdiag.isClosedEmbedding.isClosed_range⟩
-
-/-- **Gelfand–Naimark.** A C*-algebra has an isometric non-unital star representation on a
-Hilbert space, with norm-closed range. -/
-theorem exists_isometric_representation_gns [NonUnitalCStarAlgebra A] :
-    ∃ H : HilbertSpaceModel.{u + 1} ℂ,
-      ∃ pi : A →⋆ₙₐ[ℂ] (H.carrier →L[ℂ] H.carrier),
-        Isometry pi ∧ IsClosed (Set.range pi) := by
-  let B := Unitization ℂ A
-  let : PartialOrder B := CStarAlgebra.spectralOrder B
-  have : StarOrderedRing B := CStarAlgebra.spectralOrderedRing B
-  have : Nontrivial B := NormOneClass.nontrivial
-  obtain ⟨H, pi, hIso, _⟩ := exists_isometric_representation_unital (A := B)
-  let rho : A →⋆ₙₐ[ℂ] (H.carrier →L[ℂ] H.carrier) :=
-    pi.comp (inrNonUnitalStarAlgHom ℂ A)
-  have hnorm : ∀ a : A, ‖rho a‖ = ‖a‖ := by
-    intro a
-    have hpi : ‖pi (a : B)‖ = ‖(a : B)‖ := by
-      simpa [dist_eq_norm, map_zero pi, sub_zero] using hIso.dist_eq (a : B) 0
-    have hr : rho a = pi (a : B) := by
-      simp only [rho, NonUnitalStarAlgHom.comp_apply]
-      rw [inrNonUnitalStarAlgHom_apply]
-    rw [hr, hpi, Unitization.norm_inr]
-  have hrho : Isometry rho := AddMonoidHomClass.isometry_of_norm rho hnorm
-  exact ⟨H, rho, hrho, hrho.isClosedEmbedding.isClosed_range⟩
 
 end CKMA

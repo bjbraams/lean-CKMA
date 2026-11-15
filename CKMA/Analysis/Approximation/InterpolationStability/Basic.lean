@@ -37,7 +37,7 @@ and its supremum is the Lebesgue constant. Chebyshev extrema are the nodes
 * `CKMA.chebyshevExtremalNodes`: Chebyshev extremal nodes `cos (π i / n)`.
 * `CKMA.polynomialInterpolation`: Lagrange polynomial interpolant on `[-1, 1]`.
 * `CKMA.chebyshevExtremalWeight`: endpoint weight `2` and interior weight `1`.
-* `CKMA.nodeAngle`: angular coordinate `π i / n` of an extremal node.
+* `CKMA.chebyshevNodeAngle`: angular coordinate `π i / n` of an extremal node.
 * `CKMA.chebyshevLebesgueSlack`: slack constant in the Chebyshev–Lebesgue asymptotic.
 
 ## Main results
@@ -97,39 +97,44 @@ lemma chebyshevExtremalWeight_pos (n : ℕ) (i : Fin (n + 1)) :
   lt_of_lt_of_le zero_lt_one (one_le_chebyshevExtremalWeight n i)
 
 /-- Angular coordinate of an extremal node. Division by zero is unused for `n = 0`. -/
-def nodeAngle (n : ℕ) (i : Fin (n + 1)) : ℝ :=
+def chebyshevNodeAngle (n : ℕ) (i : Fin (n + 1)) : ℝ :=
   π * (i.val : ℝ) / n
+
+@[deprecated (since := "2026-11-15")] alias nodeAngle := chebyshevNodeAngle
 
 /-- Extremal nodes are the cosines of equally spaced angles. -/
 lemma chebyshevExtremalNodes_eq_cos (n : ℕ) (i : Fin (n + 1)) :
-    chebyshevExtremalNodes n i = cos (nodeAngle n i) := rfl
+    chebyshevExtremalNodes n i = cos (chebyshevNodeAngle n i) := rfl
 
 /-- Node angles of a positive degree lie in `[0, π]`. -/
-lemma nodeAngle_mem_Icc {n : ℕ} (hn : n ≠ 0) (i : Fin (n + 1)) :
-    nodeAngle n i ∈ Set.Icc 0 π := by
-  unfold nodeAngle
+lemma chebyshevNodeAngle_mem_Icc {n : ℕ} (hn : n ≠ 0) (i : Fin (n + 1)) :
+    chebyshevNodeAngle n i ∈ Set.Icc 0 π := by
+  unfold chebyshevNodeAngle
   refine ⟨div_nonneg (mul_nonneg pi_pos.le (Nat.cast_nonneg _)) (Nat.cast_nonneg _), ?_⟩
   have hi : (i.val : ℝ) ≤ n := by exact_mod_cast Nat.le_of_lt_succ i.isLt
   have hn0 : (0 : ℝ) < n := by exact_mod_cast Nat.pos_of_ne_zero hn
   rw [div_le_iff₀ hn0]
   simpa [mul_comm, mul_assoc] using mul_le_mul_of_nonneg_left hi pi_pos.le
 
+@[deprecated (since := "2026-11-15")] alias nodeAngle_mem_Icc := chebyshevNodeAngle_mem_Icc
+
 /-- Distinct indices give distinct extremal nodes. -/
 lemma chebyshevExtremalNodes_injective {n : ℕ} (hn : n ≠ 0) :
     Function.Injective (chebyshevExtremalNodes n) := by
   intro i j hij
   have hang :=
-    (strictAntiOn_cos.injOn.eq_iff (nodeAngle_mem_Icc hn i) (nodeAngle_mem_Icc hn j)).mp
+    (strictAntiOn_cos.injOn.eq_iff (chebyshevNodeAngle_mem_Icc hn i)
+      (chebyshevNodeAngle_mem_Icc hn j)).mp
       (by simpa [chebyshevExtremalNodes_eq_cos] using hij)
   have hn0 : (n : ℝ) ≠ 0 := by exact_mod_cast hn
   have hval : (i.val : ℝ) = j.val := by
-    unfold nodeAngle at hang
+    unfold chebyshevNodeAngle at hang
     field_simp at hang
     linarith
   exact Fin.ext (by exact_mod_cast hval)
 
 /-- The integer `n - 1`, shifted by one, recovers `n`. -/
-lemma chebyshevIndex_add_one {n : ℕ} (hn : 1 ≤ n) :
+private lemma chebyshevIndex_add_one {n : ℕ} (hn : 1 ≤ n) :
     ((n - 1 : ℕ) : ℤ) + 1 = (n : ℤ) := by
   exact_mod_cast (Nat.sub_add_cancel hn : (n - 1) + 1 = n)
 
@@ -179,7 +184,7 @@ lemma natDegree_chebyshevExtremalNodal {n : ℕ} (hn : 1 ≤ n) :
   omega
 
 /-- Derivative of `1 - X ^ 2`. -/
-lemma derivative_one_sub_X_sq : derivative (1 - X ^ 2 : ℝ[X]) = C (-2) * X := by
+private lemma derivative_one_sub_X_sq : derivative (1 - X ^ 2 : ℝ[X]) = C (-2) * X := by
   rw [derivative_sub, derivative_one, derivative_X_pow]
   simp
 
@@ -233,13 +238,13 @@ lemma abs_derivative_chebyshevExtremalNodal {n : ℕ} (hn : 1 ≤ n)
       ring
     · have hi0 : 0 < i.val := Nat.pos_of_ne_zero h0
       have hin : i.val < n := lt_of_le_of_ne (Nat.le_of_lt_succ i.isLt) hnI
-      let θi : ℝ := nodeAngle n i
+      let θi : ℝ := chebyshevNodeAngle n i
       have hθ0 : 0 < θi := by
-        unfold θi nodeAngle
+        unfold θi chebyshevNodeAngle
         exact div_pos (mul_pos pi_pos (by exact_mod_cast hi0))
           (by exact_mod_cast Nat.pos_of_ne_zero hn0)
       have hθπ : θi < π := by
-        unfold θi nodeAngle
+        unfold θi chebyshevNodeAngle
         have hnpos : (0 : ℝ) < n := by exact_mod_cast Nat.pos_of_ne_zero hn0
         rw [div_lt_iff₀ hnpos]
         have : (i.val : ℝ) < n := by exact_mod_cast hin
@@ -268,7 +273,7 @@ lemma abs_derivative_chebyshevExtremalNodal {n : ℕ} (hn : 1 ≤ n)
         (hasDerivAt_sin θi).mul hinner
       have hderEq := hchain'.unique hprod
       have hangle : (n : ℝ) * θi = (i.val : ℝ) * π := by
-        unfold θi nodeAngle
+        unfold θi chebyshevNodeAngle
         field_simp
       have hsinN : sin ((n : ℝ) * θi) = 0 := by
         rw [hangle, sin_nat_mul_pi]
@@ -327,11 +332,11 @@ lemma chebyshevMidpointDeficit_le_slack :
   linarith
 
 /-- Extremal nodes are symmetric about zero. -/
-lemma chebyshevExtremalNodes_reflect {n : ℕ} (hn : n ≠ 0) (i : Fin (n + 1)) :
+lemma chebyshevExtremalNodes_rev {n : ℕ} (hn : n ≠ 0) (i : Fin (n + 1)) :
     chebyshevExtremalNodes n i.rev = -chebyshevExtremalNodes n i := by
   rw [chebyshevExtremalNodes_eq_cos, chebyshevExtremalNodes_eq_cos]
-  have hangle : nodeAngle n i.rev = π - nodeAngle n i := by
-    unfold nodeAngle
+  have hangle : chebyshevNodeAngle n i.rev = π - chebyshevNodeAngle n i := by
+    unfold chebyshevNodeAngle
     have hn0 : (n : ℝ) ≠ 0 := by exact_mod_cast hn
     have hi : i.val ≤ n := Nat.le_of_lt_succ i.isLt
     have hrev : (i.rev.val : ℝ) = (n : ℝ) - i.val := by

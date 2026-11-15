@@ -87,7 +87,7 @@ def IsPositiveLinearMap (T : E₁ →ₗ[ℝ] E₂) : Prop := ∀ x, 0 ≤ x →
 
 omit [IsOrderedAddMonoid E₁] in
 /-- The identity is positive. -/
-theorem isPositiveLinearMap_id : IsPositiveLinearMap (LinearMap.id : E₁ →ₗ[ℝ] E₁) :=
+private theorem isPositiveLinearMap_id : IsPositiveLinearMap (LinearMap.id : E₁ →ₗ[ℝ] E₁) :=
   fun _ hx ↦ hx
 
 omit [IsOrderedAddMonoid E₁] [IsOrderedAddMonoid E₂] in
@@ -114,13 +114,13 @@ def IsOrderBoundedLinearMap (T : E₁ →ₗ[ℝ] E₂) : Prop :=
   ∀ a b : E₁, ∃ c d : E₂, ∀ x : E₁, a ≤ x → x ≤ b → c ≤ T x ∧ T x ≤ d
 
 /-- Every positive operator maps an order interval into the interval of its endpoint images. -/
-theorem IsPositiveLinearMap.isOrderBounded {T : E₁ →ₗ[ℝ] E₂} (hT : IsPositiveLinearMap T) :
+private theorem IsPositiveLinearMap.isOrderBounded {T : E₁ →ₗ[ℝ] E₂} (hT : IsPositiveLinearMap T) :
     IsOrderBoundedLinearMap T := by
   intro a b
   exact ⟨T a, T b, fun _ ha hb ↦ ⟨hT.monotone ha, hT.monotone hb⟩⟩
 
 /-- Every regular operator is order bounded, without a Dedekind-completeness hypothesis. -/
-theorem IsRegularLinearMap.isOrderBounded {T : E₁ →ₗ[ℝ] E₂} (hT : IsRegularLinearMap T) :
+private theorem IsRegularLinearMap.isOrderBounded {T : E₁ →ₗ[ℝ] E₂} (hT : IsRegularLinearMap T) :
     IsOrderBoundedLinearMap T := by
   obtain ⟨S, U, hS, hU, rfl⟩ := hT
   intro a b

@@ -32,19 +32,25 @@ frequency-space cutoffs `φₙ`, used in the proof of Heisenberg coordinate unce
 
 Source: GAPS 27.13.
 
+All declarations live in the auxiliary namespace `CKMA.Heisenberg`.
+
 ## Main definitions
 
-* `CKMA.coordVec`: coordinate unit vector `eⱼ` in `EuclideanSpace ℝ (Fin d)`.
-* `CKMA.coordFun`: complex coordinate function `x ↦ (xⱼ : ℂ)`.
-* `CKMA.freqCutoff`: pointwise product of an `L²` class with the frequency bump at scale `n + 1`.
-* `CKMA.freqBumpScaled`: complex-valued frequency bump function `φₙ` at scale `n + 1`.
-* `CKMA.freqBumpDeriv`: complexified directional derivative `∂ⱼ φₙ` of the frequency bump.
+* `CKMA.Heisenberg.coordVec`: coordinate unit vector `eⱼ` in `EuclideanSpace ℝ (Fin d)`.
+* `CKMA.Heisenberg.coordFun`: complex coordinate function `x ↦ (xⱼ : ℂ)`.
+* `CKMA.Heisenberg.freqBump`: real frequency bump `φₙ` at scale `n + 1`, equal to one on the
+  ball of radius `n + 1` and supported in the ball of radius `2 (n + 1)`.
+* `CKMA.Heisenberg.freqCutoff`: pointwise product of an `L²` class with the frequency bump.
+* `CKMA.Heisenberg.freqBumpScaled`: complex-valued frequency bump function `φₙ`.
+* `CKMA.Heisenberg.freqBumpDeriv`: complexified directional derivative `∂ⱼ φₙ` of the frequency
+  bump.
 
 ## Main results
 
-* `CKMA.integral_norm_sq_le_two_mul_coord`: coordinate integration by parts bounding `‖g‖²`
-  by `2 ‖xⱼ g‖ ‖∂ⱼ g‖`.
-* `CKMA.tendsto_freqBump_mul`: `L²` convergence of frequency cutoff truncations `φₙ u → u`.
+* `CKMA.Heisenberg.integral_norm_sq_le_two_mul_coord`: coordinate integration by parts bounding
+  `‖g‖²` by `2 ‖xⱼ g‖ ‖∂ⱼ g‖`.
+* `CKMA.Heisenberg.tendsto_freqBump_mul`: `L²` convergence of frequency cutoff truncations
+  `φₙ u → u`.
 
 ## Notation
 
@@ -55,7 +61,7 @@ Source: GAPS 27.13.
 
 noncomputable section
 
-namespace CKMA
+namespace CKMA.Heisenberg
 
 open Filter MeasureTheory FourierTransform Real Complex VectorFourier Topology
 open scoped ENNReal FourierTransform RealInnerProductSpace ComplexInnerProductSpace LineDeriv
@@ -66,10 +72,6 @@ section HeisenbergAux
 variable {d : ℕ}
 
 local notation "V" => EuclideanSpace ℝ (Fin d)
-
-/-- Positivity of `4π`. -/
-lemma pi_pos_four : 0 < 4 * (Real.pi : ℝ) := by
-  positivity
 
 /-- Squared `L²` norm as the integral of the squared pointwise norm. -/
 private lemma norm_sq_eq_integral_norm_sq
@@ -110,7 +112,7 @@ lemma coordFun_eq_inner (j : Fin d) (x : V) :
   simp [coordFun, coordVec, EuclideanSpace.inner_single_right]
 
 /-- Coordinate multiplication has temperate growth. -/
-lemma coordFun_hasTemperateGrowth (j : Fin d) :
+lemma hasTemperateGrowth_coordFun (j : Fin d) :
     (coordFun j).HasTemperateGrowth := by
   have h := (Complex.ofRealCLM.comp (EuclideanSpace.proj j)).hasTemperateGrowth
   convert h using 1
@@ -284,7 +286,7 @@ private lemma toTemperedDistribution_coord_mul (j : Fin d)
     Lp.toTemperedDistribution_apply]
   refine integral_congr_ae ?_
   filter_upwards [hu.coeFn_toLp] with x hx
-  rw [hx, SchwartzMap.smulLeftCLM_apply_apply (coordFun_hasTemperateGrowth j)]
+  rw [hx, SchwartzMap.smulLeftCLM_apply_apply (hasTemperateGrowth_coordFun j)]
   simp [smul_eq_mul, mul_assoc, mul_left_comm, mul_comm]
 
 /-- Distributional derivative of `𝓕 f` along `eⱼ`, represented by an `L²` function. -/
@@ -319,28 +321,29 @@ lemma norm_fourier_coord_eq (j : Fin d) (f : Lp ℂ 2 (volume : Measure V))
   rw [FourierTransform.fourier_smul, norm_smul, norm_neg, Lp.norm_fourier_eq, norm_two_pi_I]
 
 /-- Smooth bump equal to one on the unit ball and supported in the ball of radius two. -/
-def heisenbergBaseBump : ContDiffBump (0 : V) :=
+def baseBump : ContDiffBump (0 : V) :=
   ⟨1, 2, zero_lt_one, one_lt_two⟩
 
-/-- Frequency cutoff at scale `n + 1`. -/
-def heisenbergFreqBump (n : ℕ) (x : V) : ℝ :=
-  (heisenbergBaseBump : ContDiffBump (0 : V)) (((n : ℝ) + 1)⁻¹ • x)
+/-- Frequency cutoff `φₙ` at scale `n + 1`: the base bump rescaled by `n + 1`, equal to one
+on the ball of radius `n + 1` and supported in the ball of radius `2 (n + 1)`. -/
+def freqBump (n : ℕ) (x : V) : ℝ :=
+  (baseBump : ContDiffBump (0 : V)) (((n : ℝ) + 1)⁻¹ • x)
 
 /-- The frequency cutoff is smooth. -/
-lemma heisenbergFreqBump_contDiff (n : ℕ) :
-    ContDiff ℝ (⊤ : ℕ∞) (heisenbergFreqBump n : V → ℝ) := by
-  refine ((heisenbergBaseBump : ContDiffBump (0 : V)).contDiff (n := (⊤ : ℕ∞))).comp ?_
+private lemma contDiff_freqBump (n : ℕ) :
+    ContDiff ℝ (⊤ : ℕ∞) (freqBump n : V → ℝ) := by
+  refine ((baseBump : ContDiffBump (0 : V)).contDiff (n := (⊤ : ℕ∞))).comp ?_
   exact (((n : ℝ) + 1)⁻¹ • ContinuousLinearMap.id ℝ V).contDiff
 
 /-- The frequency cutoff has compact support. -/
-lemma heisenbergFreqBump_hasCompactSupport (n : ℕ) :
-    HasCompactSupport (heisenbergFreqBump n : V → ℝ) := by
+private lemma hasCompactSupport_freqBump (n : ℕ) :
+    HasCompactSupport (freqBump n : V → ℝ) := by
   refine HasCompactSupport.intro
     (K := Metric.closedBall (0 : V) (2 * ((n : ℝ) + 1))) (isCompact_closedBall _ _) ?_
   intro x hx
   rw [Metric.mem_closedBall, dist_zero_right, not_le] at hx
-  rw [heisenbergFreqBump]
-  apply (heisenbergBaseBump : ContDiffBump (0 : V)).zero_of_le_dist
+  rw [freqBump]
+  apply (baseBump : ContDiffBump (0 : V)).zero_of_le_dist
   rw [dist_zero_right, norm_smul, Real.norm_eq_abs,
     abs_of_pos (by positivity : 0 < ((n : ℝ) + 1)⁻¹)]
   calc (2 : ℝ)
@@ -349,68 +352,68 @@ lemma heisenbergFreqBump_hasCompactSupport (n : ℕ) :
     _ = ((n : ℝ) + 1)⁻¹ * ‖x‖ := by ring
 
 /-- The frequency cutoff takes values in the unit interval. -/
-lemma heisenbergFreqBump_mem_Icc (n : ℕ) (x : V) :
-    heisenbergFreqBump n x ∈ Set.Icc 0 1 := by
-  rw [heisenbergFreqBump]
-  exact ⟨(heisenbergBaseBump : ContDiffBump (0 : V)).nonneg,
-    (heisenbergBaseBump : ContDiffBump (0 : V)).le_one⟩
+private lemma freqBump_mem_Icc (n : ℕ) (x : V) :
+    freqBump n x ∈ Set.Icc 0 1 := by
+  rw [freqBump]
+  exact ⟨(baseBump : ContDiffBump (0 : V)).nonneg,
+    (baseBump : ContDiffBump (0 : V)).le_one⟩
 
 /-- On each point the cutoff is eventually equal to one. -/
-lemma heisenbergFreqBump_eventually_one (x : V) :
-    ∀ᶠ n in Filter.atTop, heisenbergFreqBump n x = 1 := by
+private lemma eventually_freqBump_eq_one (x : V) :
+    ∀ᶠ n in Filter.atTop, freqBump n x = 1 := by
   refine Filter.eventually_atTop.2 ⟨Nat.ceil ‖x‖, fun n hn ↦ ?_⟩
-  rw [heisenbergFreqBump]
-  apply (heisenbergBaseBump : ContDiffBump (0 : V)).one_of_mem_closedBall
+  rw [freqBump]
+  apply (baseBump : ContDiffBump (0 : V)).one_of_mem_closedBall
   rw [Metric.mem_closedBall, dist_zero_right, norm_smul, Real.norm_eq_abs,
     abs_of_pos (by positivity : 0 < ((n : ℝ) + 1)⁻¹)]
   rw [inv_mul_le_iff₀ (by positivity)]
-  have hr : (heisenbergBaseBump : ContDiffBump (0 : V)).rIn = 1 := rfl
+  have hr : (baseBump : ContDiffBump (0 : V)).rIn = 1 := rfl
   rw [hr, mul_one]
   exact (Nat.ceil_le.mp hn).trans (le_add_of_nonneg_right zero_le_one)
 
 /-- Derivative of the cutoff along `eⱼ` is `O(1 / n)`. -/
-lemma heisenbergFreqBump_fderiv_le (j : Fin d) :
+private lemma exists_norm_fderiv_freqBump_le (j : Fin d) :
     ∃ C : ℝ, 0 ≤ C ∧ ∀ n x,
-      ‖fderiv ℝ (heisenbergFreqBump n) x (coordVec j)‖ ≤ C / ((n : ℝ) + 1) := by
-  have hcont : Continuous fun x ↦ ‖fderiv ℝ (⇑(heisenbergBaseBump : ContDiffBump (0 : V))) x‖ :=
+      ‖fderiv ℝ (freqBump n) x (coordVec j)‖ ≤ C / ((n : ℝ) + 1) := by
+  have hcont : Continuous fun x ↦ ‖fderiv ℝ (⇑(baseBump : ContDiffBump (0 : V))) x‖ :=
     continuous_norm.comp
-      (((heisenbergBaseBump : ContDiffBump (0 : V)).contDiff
+      (((baseBump : ContDiffBump (0 : V)).contDiff
         (n := (⊤ : ℕ∞))).continuous_fderiv (by simp))
   have hsup : HasCompactSupport fun x ↦
-      ‖fderiv ℝ (⇑(heisenbergBaseBump : ContDiffBump (0 : V))) x‖ :=
-    (heisenbergBaseBump : ContDiffBump (0 : V)).hasCompactSupport.fderiv ℝ |>.norm
+      ‖fderiv ℝ (⇑(baseBump : ContDiffBump (0 : V))) x‖ :=
+    (baseBump : ContDiffBump (0 : V)).hasCompactSupport.fderiv ℝ |>.norm
   obtain ⟨x0, hx0⟩ := hcont.exists_forall_ge_of_hasCompactSupport hsup
-  refine ⟨‖fderiv ℝ (⇑(heisenbergBaseBump : ContDiffBump (0 : V))) x0‖, norm_nonneg _,
+  refine ⟨‖fderiv ℝ (⇑(baseBump : ContDiffBump (0 : V))) x0‖, norm_nonneg _,
     fun n x ↦ ?_⟩
   have hf := fderiv_comp_smul (𝕜 := ℝ)
-    (f := (⇑(heisenbergBaseBump : ContDiffBump (0 : V))))
+    (f := (⇑(baseBump : ContDiffBump (0 : V))))
     (c := ((n : ℝ) + 1)⁻¹) (x := x)
-  have hfun : (heisenbergFreqBump n : V → ℝ) = fun y ↦
-      (heisenbergBaseBump : ContDiffBump (0 : V)) (((n : ℝ) + 1)⁻¹ • y) := by
+  have hfun : (freqBump n : V → ℝ) = fun y ↦
+      (baseBump : ContDiffBump (0 : V)) (((n : ℝ) + 1)⁻¹ • y) := by
     ext y
     rfl
   rw [hfun, hf, smul_apply]
   calc ‖((n : ℝ) + 1)⁻¹ •
-        (fderiv ℝ (⇑(heisenbergBaseBump : ContDiffBump (0 : V))) (((n : ℝ) + 1)⁻¹ • x))
+        (fderiv ℝ (⇑(baseBump : ContDiffBump (0 : V))) (((n : ℝ) + 1)⁻¹ • x))
           (coordVec j)‖
-      = ((n : ℝ) + 1)⁻¹ * ‖(fderiv ℝ (⇑(heisenbergBaseBump : ContDiffBump (0 : V)))
+      = ((n : ℝ) + 1)⁻¹ * ‖(fderiv ℝ (⇑(baseBump : ContDiffBump (0 : V)))
           (((n : ℝ) + 1)⁻¹ • x)) (coordVec j)‖ := by
         rw [norm_smul, Real.norm_eq_abs, abs_of_pos (by positivity : 0 < ((n : ℝ) + 1)⁻¹)]
-    _ ≤ ((n : ℝ) + 1)⁻¹ * (‖fderiv ℝ (⇑(heisenbergBaseBump : ContDiffBump (0 : V)))
+    _ ≤ ((n : ℝ) + 1)⁻¹ * (‖fderiv ℝ (⇑(baseBump : ContDiffBump (0 : V)))
           (((n : ℝ) + 1)⁻¹ • x)‖ * ‖coordVec j‖) := by
         gcongr
         exact ContinuousLinearMap.le_opNorm _ _
-    _ = ((n : ℝ) + 1)⁻¹ * ‖fderiv ℝ (⇑(heisenbergBaseBump : ContDiffBump (0 : V)))
+    _ = ((n : ℝ) + 1)⁻¹ * ‖fderiv ℝ (⇑(baseBump : ContDiffBump (0 : V)))
           (((n : ℝ) + 1)⁻¹ • x)‖ := by
         rw [norm_coordVec, mul_one]
-    _ ≤ ((n : ℝ) + 1)⁻¹ * ‖fderiv ℝ (⇑(heisenbergBaseBump : ContDiffBump (0 : V))) x0‖ := by
+    _ ≤ ((n : ℝ) + 1)⁻¹ * ‖fderiv ℝ (⇑(baseBump : ContDiffBump (0 : V))) x0‖ := by
         gcongr
         exact hx0 _
-    _ = ‖fderiv ℝ (⇑(heisenbergBaseBump : ContDiffBump (0 : V))) x0‖ / ((n : ℝ) + 1) := by
+    _ = ‖fderiv ℝ (⇑(baseBump : ContDiffBump (0 : V))) x0‖ / ((n : ℝ) + 1) := by
         rw [div_eq_mul_inv, mul_comm]
 
 /-- A pointwise bound of one preserves membership in `L²`. -/
-lemma mul_memLp_of_norm_le_one {b : V → ℂ} (hb : AEStronglyMeasurable b volume)
+private lemma mul_memLp_of_norm_le_one {b : V → ℂ} (hb : AEStronglyMeasurable b volume)
     (hbound : ∀ x, ‖b x‖ ≤ 1) (u : Lp ℂ 2 (volume : Measure V)) :
     MemLp (fun x ↦ b x * u x) 2 volume := by
   refine (Lp.memLp u).of_le (hb.mul (Lp.aestronglyMeasurable u)) ?_
@@ -420,57 +423,57 @@ lemma mul_memLp_of_norm_le_one {b : V → ℂ} (hb : AEStronglyMeasurable b volu
     _ = ‖u x‖ := one_mul _
 
 /-- Multiplication by the frequency cutoff preserves `L²`. -/
-lemma freqBump_mul_memLp (n : ℕ) (u : Lp ℂ 2 (volume : Measure V)) :
-    MemLp (fun x ↦ (heisenbergFreqBump n x : ℂ) * u x) 2 volume := by
+lemma memLp_freqBump_mul (n : ℕ) (u : Lp ℂ 2 (volume : Measure V)) :
+    MemLp (fun x ↦ (freqBump n x : ℂ) * u x) 2 volume := by
   refine mul_memLp_of_norm_le_one ?_ ?_ u
   · exact (Complex.ofRealCLM.continuous.comp
-      (heisenbergFreqBump_contDiff n).continuous).aestronglyMeasurable
+      (contDiff_freqBump n).continuous).aestronglyMeasurable
   · intro x
-    have hφ := heisenbergFreqBump_mem_Icc n x
+    have hφ := freqBump_mem_Icc n x
     rw [Complex.norm_real, Real.norm_eq_abs, abs_of_nonneg hφ.1]
     exact hφ.2
 
 /-- The complex scalar `φₙ(x) - 1` has absolute value at most one. -/
 private lemma sub_one_freqBump_norm_le (n : ℕ) (x : V) :
-    ‖(heisenbergFreqBump n x : ℂ) - 1‖ ≤ 1 := by
-  have hφ := heisenbergFreqBump_mem_Icc n x
+    ‖(freqBump n x : ℂ) - 1‖ ≤ 1 := by
+  have hφ := freqBump_mem_Icc n x
   rw [← Complex.ofReal_one, ← Complex.ofReal_sub, Complex.norm_real, Real.norm_eq_abs,
     abs_of_nonpos (sub_nonpos.mpr hφ.2)]
   linarith [hφ.1]
 
 /-- Multiplication by `φₙ - 1` preserves `L²`. -/
 private lemma sub_one_freqBump_mul_memLp (n : ℕ) (u : Lp ℂ 2 (volume : Measure V)) :
-    MemLp (fun x ↦ ((heisenbergFreqBump n x : ℂ) - 1) * u x) 2 volume := by
+    MemLp (fun x ↦ ((freqBump n x : ℂ) - 1) * u x) 2 volume := by
   refine mul_memLp_of_norm_le_one ?_ (sub_one_freqBump_norm_le n) u
   exact (((Complex.ofRealCLM.continuous.comp
-    (heisenbergFreqBump_contDiff n).continuous).sub continuous_const).aestronglyMeasurable)
+    (contDiff_freqBump n).continuous).sub continuous_const).aestronglyMeasurable)
 
 /-- Cutoff multiplication converges to the original class in `L²`. -/
 lemma tendsto_freqBump_mul (u : Lp ℂ 2 (volume : Measure V)) :
-    Tendsto (fun n ↦ (freqBump_mul_memLp n u).toLp
-      (fun x ↦ (heisenbergFreqBump n x : ℂ) * u x)) atTop (𝓝 u) := by
+    Tendsto (fun n ↦ (memLp_freqBump_mul n u).toLp
+      (fun x ↦ (freqBump n x : ℂ) * u x)) atTop (𝓝 u) := by
   rw [tendsto_iff_norm_sub_tendsto_zero]
   let dlt : ℕ → Lp ℂ 2 (volume : Measure V) := fun n ↦
     (sub_one_freqBump_mul_memLp n u).toLp
-      (fun x ↦ ((heisenbergFreqBump n x : ℂ) - 1) * u x)
-  have hdlt (n : ℕ) : (freqBump_mul_memLp n u).toLp
-      (fun x ↦ (heisenbergFreqBump n x : ℂ) * u x) - u = dlt n := by
+      (fun x ↦ ((freqBump n x : ℂ) - 1) * u x)
+  have hdlt (n : ℕ) : (memLp_freqBump_mul n u).toLp
+      (fun x ↦ (freqBump n x : ℂ) * u x) - u = dlt n := by
     apply Lp.ext
-    filter_upwards [(freqBump_mul_memLp n u).coeFn_toLp,
+    filter_upwards [(memLp_freqBump_mul n u).coeFn_toLp,
       (sub_one_freqBump_mul_memLp n u).coeFn_toLp,
-      Lp.coeFn_sub ((freqBump_mul_memLp n u).toLp
-        (fun x ↦ (heisenbergFreqBump n x : ℂ) * u x)) u] with x hφu hsub hdiff
+      Lp.coeFn_sub ((memLp_freqBump_mul n u).toLp
+        (fun x ↦ (freqBump n x : ℂ) * u x)) u] with x hφu hsub hdiff
     rw [hdiff, Pi.sub_apply, hφu, hsub]
     ring
   have hnorm (n : ℕ) : ‖dlt n‖ ^ 2 =
-      ∫ x, ‖((heisenbergFreqBump n x : ℂ) - 1) * u x‖ ^ 2 ∂volume := by
+      ∫ x, ‖((freqBump n x : ℂ) - 1) * u x‖ ^ 2 ∂volume := by
     rw [norm_sq_eq_integral_norm_sq]
     refine integral_congr_ae ?_
     filter_upwards [(sub_one_freqBump_mul_memLp n u).coeFn_toLp] with x hx
     simp [dlt, hx]
   have hbound_int : Integrable (fun x ↦ ‖u x‖ ^ 2) volume :=
     (memLp_two_iff_integrable_sq_norm (Lp.aestronglyMeasurable u)).1 (Lp.memLp u)
-  have hlim : Tendsto (fun n ↦ ∫ x, ‖((heisenbergFreqBump n x : ℂ) - 1) * u x‖ ^ 2 ∂volume)
+  have hlim : Tendsto (fun n ↦ ∫ x, ‖((freqBump n x : ℂ) - 1) * u x‖ ^ 2 ∂volume)
       atTop (𝓝 (0 : ℝ)) := by
     have hzero : (∫ x, (0 : ℝ) ∂volume) = 0 := integral_zero V ℝ
     rw [← hzero]
@@ -482,14 +485,14 @@ lemma tendsto_freqBump_mul (u : Lp ℂ 2 (volume : Measure V)) :
     · filter_upwards with x
       rw [Real.norm_eq_abs, abs_of_nonneg (by positivity)]
       gcongr
-      calc ‖((heisenbergFreqBump n x : ℂ) - 1) * u x‖
-          = ‖(heisenbergFreqBump n x : ℂ) - 1‖ * ‖u x‖ := norm_mul _ _
+      calc ‖((freqBump n x : ℂ) - 1) * u x‖
+          = ‖(freqBump n x : ℂ) - 1‖ * ‖u x‖ := norm_mul _ _
         _ ≤ 1 * ‖u x‖ := by gcongr; exact sub_one_freqBump_norm_le n x
         _ = ‖u x‖ := one_mul _
     · filter_upwards with x
       refine Tendsto.congr' ?_ tendsto_const_nhds
-      filter_upwards [heisenbergFreqBump_eventually_one x] with n hn
-      have hzero : ((heisenbergFreqBump n x : ℂ) - 1) * u x = 0 := by
+      filter_upwards [eventually_freqBump_eq_one x] with n hn
+      have hzero : ((freqBump n x : ℂ) - 1) * u x = 0 := by
         rw [hn, Complex.ofReal_one, sub_self, zero_mul]
       rw [hzero, norm_zero, pow_two, mul_zero]
   refine (tendsto_congr fun n ↦ congrArg norm (hdlt n)).2 ?_
@@ -502,12 +505,12 @@ lemma tendsto_freqBump_mul (u : Lp ℂ 2 (volume : Measure V)) :
 
 /-- Polynomial moments of a compactly supported `L²` function are integrable. -/
 private lemma integrable_pow_mul_freqBump (n k : ℕ) (u : Lp ℂ 2 (volume : Measure V)) :
-    Integrable (fun x ↦ ‖x‖ ^ k * ‖(heisenbergFreqBump n x : ℂ) * u x‖) volume := by
-  let b : V → ℝ := fun x ↦ ‖x‖ ^ k * heisenbergFreqBump n x
+    Integrable (fun x ↦ ‖x‖ ^ k * ‖(freqBump n x : ℂ) * u x‖) volume := by
+  let b : V → ℝ := fun x ↦ ‖x‖ ^ k * freqBump n x
   have hb_cont : Continuous b :=
-    (continuous_norm.pow k).mul (heisenbergFreqBump_contDiff n).continuous
+    (continuous_norm.pow k).mul (contDiff_freqBump n).continuous
   have hb_sup : HasCompactSupport b :=
-    (heisenbergFreqBump_hasCompactSupport n).mul_left (f := fun x ↦ ‖x‖ ^ k)
+    (hasCompactSupport_freqBump n).mul_left (f := fun x ↦ ‖x‖ ^ k)
   have hb_c_cont : Continuous fun x ↦ (b x : ℂ) :=
     Complex.ofRealCLM.continuous.comp hb_cont
   have hb_c_sup : HasCompactSupport fun x ↦ (b x : ℂ) :=
@@ -521,13 +524,13 @@ private lemma integrable_pow_mul_freqBump (n k : ℕ) (u : Lp ℂ 2 (volume : Me
     (integrable_norm_iff hint.aestronglyMeasurable).2 hint
   refine hnorm.congr ?_
   filter_upwards with x
-  have hφ := heisenbergFreqBump_mem_Icc n x
+  have hφ := freqBump_mem_Icc n x
   simp only [b, norm_mul, Complex.norm_real, Real.norm_eq_abs,
     abs_of_nonneg hφ.1, abs_of_nonneg (pow_nonneg (norm_nonneg _) _), mul_assoc]
 
 /-- Pointwise product of an `L²` class by the frequency cutoff. -/
 abbrev freqCutoff (n : ℕ) (u : Lp ℂ 2 (volume : Measure V)) : V → ℂ :=
-  fun x ↦ (heisenbergFreqBump n x : ℂ) * u x
+  fun x ↦ (freqBump n x : ℂ) * u x
 
 /-- The frequency cutoff of an `L²` function is integrable. -/
 lemma integrable_freqCutoff (n : ℕ) (u : Lp ℂ 2 (volume : Measure V)) :
@@ -536,7 +539,7 @@ lemma integrable_freqCutoff (n : ℕ) (u : Lp ℂ 2 (volume : Measure V)) :
     refine (integrable_pow_mul_freqBump n 0 u).congr ?_
     filter_upwards with x
     simp [freqCutoff, pow_zero]
-  exact (integrable_norm_iff (freqBump_mul_memLp n u).aestronglyMeasurable).1 hnorm
+  exact (integrable_norm_iff (memLp_freqBump_mul n u).aestronglyMeasurable).1 hnorm
 
 /-- Every polynomial moment of a frequency cutoff is integrable. -/
 private lemma integrable_pow_freqCutoff (n k : ℕ) (u : Lp ℂ 2 (volume : Measure V)) :
@@ -581,7 +584,7 @@ lemma fderiv_fourierInv_freqCutoff_coord (n : ℕ) (j : Fin d)
   rw [fderiv_fourier hint hmom]
   have hmeas : AEStronglyMeasurable
       (fun v ↦ fourierSMulRight (innerSL ℝ) (freqCutoff n u) v) volume :=
-    (freqBump_mul_memLp n u).aestronglyMeasurable.fourierSMulRight
+    (memLp_freqBump_mul n u).aestronglyMeasurable.fourierSMulRight
   have hintL : Integrable
       (fun v ↦ fourierSMulRight (innerSL ℝ) (freqCutoff n u) v) volume := by
     rw [← integrable_norm_iff hmeas]
@@ -604,39 +607,42 @@ lemma fderiv_fourierInv_freqCutoff_coord (n : ℕ) (j : Fin d)
 
 /-- Complex coordinate cutoff `φₙ`. -/
 def freqBumpScaled (n : ℕ) : V → ℂ :=
-  fun x ↦ (heisenbergFreqBump n x : ℂ)
+  fun x ↦ (freqBump n x : ℂ)
 
 /-- The complex cutoff has temperate growth. -/
 private lemma freqBumpScaled_hasTemperateGrowth (n : ℕ) :
     Function.HasTemperateGrowth (freqBumpScaled n : V → ℂ) := by
-  have hEq : (freqBumpScaled n : V → ℂ) = Complex.ofReal ∘ (heisenbergFreqBump n : V → ℝ) := by funext x; rfl
+  have hEq : (freqBumpScaled n : V → ℂ) = Complex.ofReal ∘ (freqBump n : V → ℝ) :=
+      rfl
   rw [hEq]
   exact Complex.hasTemperateGrowth_ofReal.comp
-    ((heisenbergFreqBump_hasCompactSupport n).hasTemperateGrowth
-      (heisenbergFreqBump_contDiff n))
+    ((hasCompactSupport_freqBump n).hasTemperateGrowth
+      (contDiff_freqBump n))
 
 /-- The complex cutoff lies in `L^∞`. -/
-lemma freqBumpScaled_memLp_top (n : ℕ) :
+lemma memLp_top_freqBumpScaled (n : ℕ) :
     MemLp (freqBumpScaled n : V → ℂ) ∞ volume := by
   have hsup : HasCompactSupport (freqBumpScaled n : V → ℂ) := by
-    have hEq : (freqBumpScaled n : V → ℂ) = Complex.ofReal ∘ (heisenbergFreqBump n : V → ℝ) := by funext x; rfl
+    have hEq : (freqBumpScaled n : V → ℂ) = Complex.ofReal ∘ (freqBump n : V → ℝ) :=
+      rfl
     rw [hEq]
-    exact (heisenbergFreqBump_hasCompactSupport n).comp_left (g := Complex.ofReal) (by simp)
+    exact (hasCompactSupport_freqBump n).comp_left (g := Complex.ofReal) (by simp)
   exact (Complex.ofRealCLM.continuous.comp
-    (heisenbergFreqBump_contDiff n).continuous).memLp_top_of_hasCompactSupport hsup volume
+    (contDiff_freqBump n).continuous).memLp_top_of_hasCompactSupport hsup volume
 
 /-- Complexified derivative of the cutoff along `eⱼ`. -/
 def freqBumpDeriv (n : ℕ) (j : Fin d) : V → ℂ :=
-  fun x ↦ (fderiv ℝ (heisenbergFreqBump n) x (coordVec j) : ℂ)
+  fun x ↦ (fderiv ℝ (freqBump n) x (coordVec j) : ℂ)
 
 /-- The complexified cutoff derivative is the chain-rule derivative of `φₙ`. -/
 private lemma freqBumpDeriv_eq_fderiv (n : ℕ) (j : Fin d) (x : V) :
     fderiv ℝ (freqBumpScaled n) x (coordVec j) = freqBumpDeriv n j x := by
-  have hEq : (freqBumpScaled n : V → ℂ) = (Complex.ofRealCLM : ℝ → ℂ) ∘ (heisenbergFreqBump n : V → ℝ) := by funext x; rfl
-  have hf : DifferentiableAt ℝ (heisenbergFreqBump n) x :=
-    ((heisenbergFreqBump_contDiff n).differentiable (by simp)) x
+  have hEq : (freqBumpScaled n : V → ℂ) = (Complex.ofRealCLM : ℝ → ℂ) ∘ (freqBump n : V → ℝ) :=
+      rfl
+  have hf : DifferentiableAt ℝ (freqBump n) x :=
+    ((contDiff_freqBump n).differentiable (by simp)) x
   rw [hEq, freqBumpDeriv]
-  rw [fderiv_comp (f := (heisenbergFreqBump n : V → ℝ)) x
+  rw [fderiv_comp (f := (freqBump n : V → ℝ)) x
     Complex.ofRealCLM.differentiableAt hf]
   rw [ContinuousLinearMap.comp_apply, ContinuousLinearMap.fderiv]
   rfl
@@ -644,15 +650,15 @@ private lemma freqBumpDeriv_eq_fderiv (n : ℕ) (j : Fin d) (x : V) :
 /-- The cutoff derivative is smooth. -/
 private lemma freqBumpDeriv_contDiff (n : ℕ) (j : Fin d) :
     ContDiff ℝ (⊤ : ℕ∞) (freqBumpDeriv n j) := by
-  have hφ : ContDiff ℝ (⊤ : ℕ∞) (heisenbergFreqBump n : V → ℝ) :=
-    heisenbergFreqBump_contDiff n
-  have hfd : ContDiff ℝ (⊤ : ℕ∞) (fderiv ℝ (heisenbergFreqBump n)) :=
+  have hφ : ContDiff ℝ (⊤ : ℕ∞) (freqBump n : V → ℝ) :=
+    contDiff_freqBump n
+  have hfd : ContDiff ℝ (⊤ : ℕ∞) (fderiv ℝ (freqBump n)) :=
     (contDiff_infty_iff_fderiv.mp hφ).2
   have happly : ContDiff ℝ (⊤ : ℕ∞)
-      (fun x ↦ fderiv ℝ (heisenbergFreqBump n) x (coordVec j)) :=
+      (fun x ↦ fderiv ℝ (freqBump n) x (coordVec j)) :=
     (ContinuousLinearMap.apply ℝ ℝ (coordVec j)).contDiff.comp hfd
   have hEq : freqBumpDeriv n j =
-      Complex.ofReal ∘ fun x ↦ fderiv ℝ (heisenbergFreqBump n) x (coordVec j) := by
+      Complex.ofReal ∘ fun x ↦ fderiv ℝ (freqBump n) x (coordVec j) := by
     rfl
   rw [hEq]
   exact Complex.ofRealCLM.contDiff.comp happly
@@ -661,10 +667,10 @@ private lemma freqBumpDeriv_contDiff (n : ℕ) (j : Fin d) :
 private lemma freqBumpDeriv_hasCompactSupport (n : ℕ) (j : Fin d) :
     HasCompactSupport (freqBumpDeriv n j) := by
   have hreal : HasCompactSupport
-      (fun x ↦ fderiv ℝ (heisenbergFreqBump n) x (coordVec j)) :=
-    (heisenbergFreqBump_hasCompactSupport n).fderiv_apply ℝ (coordVec j)
+      (fun x ↦ fderiv ℝ (freqBump n) x (coordVec j)) :=
+    (hasCompactSupport_freqBump n).fderiv_apply ℝ (coordVec j)
   have hEq : freqBumpDeriv n j =
-      Complex.ofReal ∘ fun x ↦ fderiv ℝ (heisenbergFreqBump n) x (coordVec j) := by
+      Complex.ofReal ∘ fun x ↦ fderiv ℝ (freqBump n) x (coordVec j) := by
     rfl
   rw [hEq]
   exact hreal.comp_left (g := Complex.ofReal) (by simp)
@@ -675,7 +681,7 @@ private lemma freqBumpDeriv_hasTemperateGrowth (n : ℕ) (j : Fin d) :
   (freqBumpDeriv_hasCompactSupport n j).hasTemperateGrowth (freqBumpDeriv_contDiff n j)
 
 /-- The cutoff derivative lies in `L^∞`. -/
-lemma freqBumpDeriv_memLp_top (n : ℕ) (j : Fin d) :
+lemma memLp_top_freqBumpDeriv (n : ℕ) (j : Fin d) :
     MemLp (freqBumpDeriv n j) ∞ volume :=
   (freqBumpDeriv_contDiff n j).continuous.memLp_top_of_hasCompactSupport
     (freqBumpDeriv_hasCompactSupport n j) volume
@@ -683,55 +689,55 @@ lemma freqBumpDeriv_memLp_top (n : ℕ) (j : Fin d) :
 /-- Pointwise size of the cutoff derivative. -/
 private lemma freqBumpDeriv_norm_le (j : Fin d) :
     ∃ C : ℝ, 0 ≤ C ∧ ∀ n x, ‖freqBumpDeriv n j x‖ ≤ C / ((n : ℝ) + 1) := by
-  obtain ⟨C, hC, h⟩ := heisenbergFreqBump_fderiv_le j
+  obtain ⟨C, hC, h⟩ := exists_norm_fderiv_freqBump_le j
   refine ⟨C, hC, fun n x ↦ ?_⟩
   rw [freqBumpDeriv, Complex.norm_real]
   exact h n x
 
 /-- `L^∞` norm of the cutoff derivative is `O(1 / n)`. -/
-lemma freqBumpDeriv_lpNorm_le (j : Fin d) :
+lemma exists_norm_toLp_freqBumpDeriv_le (j : Fin d) :
     ∃ C : ℝ, 0 ≤ C ∧ ∀ n,
-      ‖(freqBumpDeriv_memLp_top n j).toLp (freqBumpDeriv n j)‖ ≤
+      ‖(memLp_top_freqBumpDeriv n j).toLp (freqBumpDeriv n j)‖ ≤
         C / ((n : ℝ) + 1) := by
   obtain ⟨C, hC, h⟩ := freqBumpDeriv_norm_le j
   refine ⟨C, hC, fun n ↦ ?_⟩
   rw [Lp.norm_toLp,
-    eLpNorm_exponent_top (freqBumpDeriv_memLp_top n j).aestronglyMeasurable]
+    eLpNorm_exponent_top (memLp_top_freqBumpDeriv n j).aestronglyMeasurable]
   exact ENNReal.toReal_le_of_le_ofReal (div_nonneg hC (by positivity))
     (eLpNormEssSup_le_of_ae_bound (Eventually.of_forall (h n)))
 
 /-- Heterogeneous product by `φₙ` agrees with the pointwise cutoff. -/
-lemma freqBump_smul_eq_toLp (n : ℕ) (u : Lp ℂ 2 (volume : Measure V)) :
-    (freqBump_mul_memLp n u).toLp (freqCutoff n u) =
+lemma toLp_freqCutoff_eq_smul (n : ℕ) (u : Lp ℂ 2 (volume : Measure V)) :
+    (memLp_freqBump_mul n u).toLp (freqCutoff n u) =
       HSMul.hSMul (γ := Lp ℂ 2 (volume : Measure V))
-        ((freqBumpScaled_memLp_top n).toLp (freqBumpScaled n) :
+        ((memLp_top_freqBumpScaled n).toLp (freqBumpScaled n) :
           Lp ℂ (⊤ : ℝ≥0∞) (volume : Measure V)) u := by
   symm
   rw [Lp.smul_def]
   refine MemLp.toLp_congr _ _ ?_
-  filter_upwards [(freqBumpScaled_memLp_top n).coeFn_toLp] with x hb
+  filter_upwards [(memLp_top_freqBumpScaled n).coeFn_toLp] with x hb
   simp only [Pi.smul_apply']
   rw [hb]
   simp [freqBumpScaled, freqCutoff, smul_eq_mul]
 
 /-- Distributional multiplication by `φₙ` agrees with the `L²` product. -/
-lemma freqBump_smul_eq_smulLeft (n : ℕ) (u : Lp ℂ 2 (volume : Measure V)) :
-    ((freqBump_mul_memLp n u).toLp (freqCutoff n u) : TemperedDistribution V ℂ) =
+lemma toLp_freqCutoff_eq_smulLeftCLM (n : ℕ) (u : Lp ℂ 2 (volume : Measure V)) :
+    ((memLp_freqBump_mul n u).toLp (freqCutoff n u) : TemperedDistribution V ℂ) =
       TemperedDistribution.smulLeftCLM ℂ (freqBumpScaled n)
         (u : TemperedDistribution V ℂ) := by
-  rw [freqBump_smul_eq_toLp]
+  rw [toLp_freqCutoff_eq_smul]
   exact Lp.toTemperedDistribution_smul_eq (freqBumpScaled_hasTemperateGrowth n)
-    (freqBumpScaled_memLp_top n) u
+    (memLp_top_freqBumpScaled n) u
 
 /-- Distributional multiplication by `∂ⱼφₙ` agrees with the `L²` product. -/
-lemma freqBumpDeriv_smul_eq_smulLeft (n : ℕ) (j : Fin d)
+lemma toLp_freqBumpDeriv_smul_eq_smulLeftCLM (n : ℕ) (j : Fin d)
     (u : Lp ℂ 2 (volume : Measure V)) :
-    (((freqBumpDeriv_memLp_top n j).toLp (freqBumpDeriv n j) • u :
+    (((memLp_top_freqBumpDeriv n j).toLp (freqBumpDeriv n j) • u :
         Lp ℂ 2 (volume : Measure V)) : TemperedDistribution V ℂ) =
       TemperedDistribution.smulLeftCLM ℂ (freqBumpDeriv n j)
         (u : TemperedDistribution V ℂ) :=
   Lp.toTemperedDistribution_smul_eq (freqBumpDeriv_hasTemperateGrowth n j)
-    (freqBumpDeriv_memLp_top n j) u
+    (memLp_top_freqBumpDeriv n j) u
 
 /-- Product rule for the cutoff on Schwartz functions. -/
 private lemma lineDeriv_freqBump_mul (n : ℕ) (j : Fin d) (ζ : SchwartzMap V ℂ) :
@@ -756,7 +762,7 @@ private lemma lineDeriv_freqBump_mul (n : ℕ) (j : Fin d) (ζ : SchwartzMap V �
   exact mul_comm _ _
 
 /-- Distributional product rule for cutoff multiplication on `L²`. -/
-lemma lineDeriv_freqBump_lp (n : ℕ) (j : Fin d)
+lemma lineDeriv_smulLeftCLM_freqBumpScaled (n : ℕ) (j : Fin d)
     (u : Lp ℂ 2 (volume : Measure V)) :
     ∂_{coordVec j} (TemperedDistribution.smulLeftCLM ℂ (freqBumpScaled n)
         (u : TemperedDistribution V ℂ)) =
@@ -780,10 +786,6 @@ lemma lineDeriv_freqBump_lp (n : ℕ) (j : Fin d)
   rw [hsch]
   simp [map_add, map_neg]
 
-/-- The inverse Fourier transform preserves the `L²` norm. -/
-lemma norm_fourierInv_eq (u : Lp ℂ 2 (volume : Measure V)) : ‖𝓕⁻ u‖ = ‖u‖ :=
-  (Lp.fourierTransformₗᵢ V ℂ).symm.norm_map u
-
 end HeisenbergAux
 
-end CKMA
+end CKMA.Heisenberg

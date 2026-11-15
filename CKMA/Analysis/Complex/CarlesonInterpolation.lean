@@ -95,7 +95,7 @@ theorem nevanlinna_pick {n : ℕ} (z w : Fin n → ℂ)
   sorry
 
 /-- **42.27**: the finite corona theorem, with a bound depending only on `n`, `δ` and `M`. -/
-theorem disk_corona (n : ℕ) (hn : 0 < n) {δ M : ℝ} (hδ : 0 < δ) (hM : 0 < M) :
+theorem disk_corona (n : ℕ) {δ M : ℝ} (hδ : 0 < δ) (hM : 0 < M) :
     ∃ C : ℝ, 0 < C ∧ ∀ f : Fin n → ℂ → ℂ,
       (∀ j, DifferentiableOn ℂ (f j) complexUnitDisk) →
       (∀ j, diskSupGauge (f j) ≤ ENNReal.ofReal M) →

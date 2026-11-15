@@ -42,15 +42,15 @@ It also develops the Cesàro-averaged phase kernel `cesaroPhase` used in Wiener'
 * `CKMA.purePointOperatorSubspace`: Closed subspace spanned by the real eigenvectors of `A`.
 * `CKMA.eigenLorentzFun`: Lorentz symbol `z ↦ ε² / (‖z - λ‖² + ε²)`.
 * `CKMA.eigenLorentz`: Lorentz CFC approximant `cfc (eigenLorentzFun lam eps) A`.
-* `CKMA.evolutionPhase`: Unitary evolution phase `exp(-i t z)`.
-* `CKMA.cesaroPhase`: Cesàro average `T⁻¹ * ∫ t in 0..T, evolutionPhase t w`.
+* `CKMA.RAGE.evolutionPhase`: Unitary evolution phase `exp(-i t z)`.
+* `CKMA.RAGE.cesaroPhase`: Cesàro average `T⁻¹ * ∫ t in 0..T, evolutionPhase t w`.
 
 ## Main results
 
 * `CKMA.tendsto_eigenLorentz_apply`: Strong convergence of Lorentz approximants to the eigenspace
   orthogonal projection as `ε → 0`.
-* `CKMA.tendsto_cesaroPhase_of_ne_zero`: The Cesàro phase kernel vanishes as `T → ∞` at nonzero
-  real frequencies.
+* `CKMA.RAGE.tendsto_cesaroPhase_of_ne_zero`: The Cesàro phase kernel vanishes as `T → ∞` at
+  nonzero real frequencies.
 * `CKMA.diagMeasure_real_singleton_eq_zero`: Diagonal spectral measures of vectors orthogonal to
   `purePointOperatorSubspace A` have no point masses.
 -/
@@ -71,13 +71,13 @@ def purePointOperatorSubspace (A : H →L[ℂ] H) : Submodule ℂ H :=
   (Submodule.span ℂ {x : H | ∃ a : ℝ, A x = (a : ℂ) • x}).topologicalClosure
 
 /-- The real translate `A - λ` of a self-adjoint operator is self-adjoint. -/
-lemma eigenShift_isSelfAdjoint (A : H →L[ℂ] H) (hA : IsSelfAdjoint A) {lam : ℂ}
+private lemma isSelfAdjoint_sub_smul_one (A : H →L[ℂ] H) (hA : IsSelfAdjoint A) {lam : ℂ}
     (hlam : lam.im = 0) : IsSelfAdjoint (A - lam • (1 : H →L[ℂ] H)) :=
   hA.sub (((Complex.im_eq_zero_iff_isSelfAdjoint lam).mp hlam).smul
     (IsSelfAdjoint.one (H →L[ℂ] H)))
 
 /-- `A - λ` is the continuous functional calculus of `z ↦ z - λ`. -/
-lemma eigenShift_eq_cfc (A : H →L[ℂ] H) (hA : IsSelfAdjoint A) (lam : ℂ) :
+private lemma sub_smul_one_eq_cfc (A : H →L[ℂ] H) (hA : IsSelfAdjoint A) (lam : ℂ) :
     A - lam • (1 : H →L[ℂ] H) = cfc (fun z : ℂ => z - lam) A := by
   have : IsStarNormal A := hA.isStarNormal
   rw [cfc_sub (fun z : ℂ => z) (fun _ : ℂ => lam) A, cfc_id' ℂ A, cfc_const lam A]
@@ -96,7 +96,7 @@ def eigenLorentzFun (lam : ℂ) (eps : ℝ) : ℂ → ℂ :=
   fun z => ↑(eps ^ 2 / (‖z - lam‖ ^ 2 + eps ^ 2))
 
 /-- The Lorentz symbol is continuous for positive width. -/
-lemma continuous_eigenLorentzFun {lam : ℂ} {eps : ℝ} (heps : 0 < eps) :
+private lemma continuous_eigenLorentzFun {lam : ℂ} {eps : ℝ} (heps : 0 < eps) :
     Continuous (eigenLorentzFun lam eps) := by
   unfold eigenLorentzFun
   refine Complex.continuous_ofReal.comp ?_
@@ -108,7 +108,8 @@ lemma continuous_eigenLorentzFun {lam : ℂ} {eps : ℝ} (heps : 0 < eps) :
     (le_add_of_nonneg_left (sq_nonneg _))
 
 /-- On real points the Lorentz symbol is the rational function of `(z - λ)²`. -/
-lemma eigenLorentzFun_eq_div {lam z : ℂ} (hlam : lam.im = 0) (hz : z.im = 0) (eps : ℝ) :
+private lemma eigenLorentzFun_eq_div {lam z : ℂ} (hlam : lam.im = 0) (hz : z.im = 0)
+    (eps : ℝ) :
     eigenLorentzFun lam eps z = (eps : ℂ) ^ 2 / ((z - lam) ^ 2 + (eps : ℂ) ^ 2) := by
   rw [sq_sub_eq_ofReal_norm_sq hz hlam, eigenLorentzFun, Complex.ofReal_div,
     Complex.ofReal_pow, Complex.ofReal_add, ← Complex.ofReal_pow]
@@ -131,7 +132,7 @@ def eigenLorentz (A : H →L[ℂ] H) (lam : ℂ) (eps : ℝ) : H →L[ℂ] H :=
   cfc (eigenLorentzFun lam eps) A
 
 /-- The Lorentz approximant is self-adjoint. -/
-lemma eigenLorentz_isSelfAdjoint (A : H →L[ℂ] H) (hA : IsSelfAdjoint A) (lam : ℂ)
+private lemma eigenLorentz_isSelfAdjoint (A : H →L[ℂ] H) (hA : IsSelfAdjoint A) (lam : ℂ)
     (eps : ℝ) : IsSelfAdjoint (eigenLorentz A lam eps) := by
   have : IsStarNormal A := hA.isStarNormal
   rw [eigenLorentz, IsSelfAdjoint, ← cfc_star]
@@ -150,7 +151,7 @@ private lemma eigenLorentz_mul_shift_sq (A : H →L[ℂ] H) (hA : IsSelfAdjoint 
     (continuous_eigenLorentzFun heps).continuousOn
   have hsq : ContinuousOn (fun z : ℂ => shift z ^ 2) (spectrum ℂ A) := hshift.pow 2
   have hone : ContinuousOn (fun _ : ℂ => (1 : ℂ)) (spectrum ℂ A) := continuousOn_const
-  rw [eigenShift_eq_cfc A hA lam, eigenLorentz, pow_two,
+  rw [sub_smul_one_eq_cfc A hA lam, eigenLorentz, pow_two,
     ← cfc_mul shift shift A hshift hshift]
   have hpow : cfc (fun z : ℂ => shift z * shift z) A = cfc (fun z : ℂ => shift z ^ 2) A :=
     cfc_congr fun z _ => by simp [shift, pow_two]
@@ -165,10 +166,11 @@ private lemma eigenLorentz_mul_shift_sq (A : H →L[ℂ] H) (hA : IsSelfAdjoint 
   simpa [shift] using eigenLorentz_symbol_id hlam (hA.im_eq_zero_of_mem_spectrum hz) heps
 
 /-- The Lorentz approximant commutes with `A - λ`. -/
-lemma eigenLorentz_commute_shift (A : H →L[ℂ] H) (hA : IsSelfAdjoint A) (lam : ℂ) (eps : ℝ) :
+private lemma eigenLorentz_commute_shift (A : H →L[ℂ] H) (hA : IsSelfAdjoint A) (lam : ℂ)
+    (eps : ℝ) :
     Commute (A - lam • (1 : H →L[ℂ] H)) (eigenLorentz A lam eps) := by
   have : IsStarNormal A := hA.isStarNormal
-  rw [eigenShift_eq_cfc A hA lam, eigenLorentz]
+  rw [sub_smul_one_eq_cfc A hA lam, eigenLorentz]
   exact cfc_commute_cfc (fun z : ℂ => z - lam) (eigenLorentzFun lam eps) A
 
 /-- Squared norm of the shifted Lorentz approximant. -/
@@ -178,7 +180,7 @@ private lemma eigenLorentz_shift_norm_sq (A : H →L[ℂ] H) (hA : IsSelfAdjoint
     let φ := eigenLorentz A lam eps
     ‖B (φ x)‖ ^ 2 = eps ^ 2 * ((⟪x, φ x⟫_ℂ).re - ‖φ x‖ ^ 2) := by
   intro B φ
-  have hBsa : IsSelfAdjoint B := eigenShift_isSelfAdjoint A hA hlam
+  have hBsa : IsSelfAdjoint B := isSelfAdjoint_sub_smul_one A hA hlam
   have hmul := eigenLorentz_mul_shift_sq A hA hlam heps
   have happ : B (B (φ x)) = (eps : ℂ) ^ 2 • (x - φ x) := by
     have hmulx : (B ^ 2 * φ) x = ((eps : ℂ) ^ 2 • (1 - φ)) x := congr_arg (· x) hmul
@@ -293,7 +295,7 @@ theorem tendsto_eigenLorentz_apply (A : H →L[ℂ] H) (hA : IsSelfAdjoint A) {l
       (𝓝 ((A - lam • (1 : H →L[ℂ] H)).ker.starProjection x)) := by
   let B := A - lam • (1 : H →L[ℂ] H)
   let P := B.ker.starProjection
-  have hBsa := eigenShift_isSelfAdjoint A hA hlam
+  have hBsa := isSelfAdjoint_sub_smul_one A hA hlam
   have hnorm : IsStarNormal B := hBsa.isStarNormal
   rw [tendsto_iff_norm_sub_tendsto_zero]
   have hfix (n : ℕ) : eigenLorentz A lam (1 / (n + 1 : ℝ)) (P x) = P x :=
@@ -349,6 +351,8 @@ theorem tendsto_eigenLorentz_apply (A : H →L[ℂ] H) (hA : IsSelfAdjoint A) {l
     _ < eps / 2 + eps / 2 :=
       add_lt_add (by simpa [dist_eq_norm] using hdist) htail_lt
     _ = eps := add_halves eps
+
+namespace RAGE
 
 /-- The phase `exp(-i t z)` in the bounded evolution. -/
 def evolutionPhase (t : ℝ) (z : ℂ) : ℂ :=
@@ -480,6 +484,8 @@ lemma continuous_cesaroPhase (T : ℝ) : Continuous (cesaroPhase T) := by
     (f := fun w t => evolutionPhase t w) (by
       unfold evolutionPhase
       fun_prop) 0 T
+
+end RAGE
 
 /-- The Lorentz symbol takes values in the unit disk. -/
 private lemma eigenLorentzFun_norm_le {lam z : ℂ} {eps : ℝ} (heps : 0 < eps) :

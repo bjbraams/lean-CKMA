@@ -58,7 +58,7 @@ theorem LatticeDisjoint.symm {x y : E} (h : LatticeDisjoint x y) :
   simpa only [LatticeDisjoint, inf_comm] using h
 
 /-- A smaller pair of absolute values remains disjoint. -/
-theorem LatticeDisjoint.of_abs_le {x y x' y' : E} (h : LatticeDisjoint x y)
+private theorem LatticeDisjoint.of_abs_le {x y x' y' : E} (h : LatticeDisjoint x y)
     (hx : |x'| ≤ |x|) (hy : |y'| ≤ |y|) : LatticeDisjoint x' y' := by
   refine le_antisymm ?_ (le_inf (abs_nonneg x') (abs_nonneg y'))
   exact (inf_le_inf hx hy).trans (le_of_eq h)
@@ -74,7 +74,7 @@ theorem mem_doubleLatticeDisjointComplement (x : E) :
   exact (hy x (Set.mem_singleton x)).symm
 
 /-- The disjoint complement of zero is the whole space. -/
-theorem latticeDisjointComplement_singleton_zero :
+private theorem latticeDisjointComplement_singleton_zero :
     latticeDisjointComplement {(0 : E)} = Set.univ := by
   ext x
   constructor
@@ -85,7 +85,7 @@ theorem latticeDisjointComplement_singleton_zero :
     rw [LatticeDisjoint, hy0, abs_zero, inf_eq_right.2 (abs_nonneg x)]
 
 /-- Only zero is disjoint from every vector. -/
-theorem latticeDisjointComplement_univ :
+private theorem latticeDisjointComplement_univ :
     latticeDisjointComplement (Set.univ : Set E) = {0} := by
   ext x
   constructor
@@ -135,17 +135,13 @@ theorem doubleLatticeDisjointComplement_mono {w v : E} (hw : 0 ≤ w) (hwv : w �
   exact hx y hyw
 
 /-- Subtracting the infimum leaves the positive part of the difference. -/
-theorem sub_inf_eq_posPart_sub (x y : E) : x - (x ⊓ y) = (x - y)⁺ := by
+private theorem sub_inf_eq_posPart_sub (x y : E) : x - (x ⊓ y) = (x - y)⁺ := by
   rw [sub_eq_add_neg, neg_inf, add_sup, add_neg_cancel, ← sub_eq_add_neg, sup_comm]
   rfl
 
-/-- Positive part of a nonpositive element vanishes. -/
-theorem posPart_eq_zero_of_nonpos {x : E} (hx : x ≤ 0) : x⁺ = 0 :=
-  sup_eq_right.2 hx
+@[deprecated (since := "2026-11-15")] alias posPart_eq_zero_of_nonpos := posPart_of_nonpos
 
-/-- Negative part of a nonnegative element vanishes. -/
-theorem negPart_eq_zero_of_nonneg {x : E} (hx : 0 ≤ x) : x⁻ = 0 := by
-  rw [negPart_def, sup_eq_right.2 (neg_nonpos.2 hx)]
+@[deprecated (since := "2026-11-15")] alias negPart_eq_zero_of_nonneg := negPart_of_nonneg
 
 /-- Canonical decomposition of a difference of elements with infimum zero. -/
 theorem eq_posPart_negPart_of_inf_eq_zero {x y z : E}
@@ -172,7 +168,7 @@ theorem eq_posPart_negPart_of_inf_eq_zero {x y z : E}
   exact ⟨hpos, hneg⟩
 
 /-- Positive scalar multiplication preserves finite suprema. -/
-theorem smul_sup_of_nonneg {c : ℝ} (hc : 0 ≤ c) (x y : E) :
+private theorem smul_sup_of_nonneg {c : ℝ} (hc : 0 ≤ c) (x y : E) :
     c • (x ⊔ y) = c • x ⊔ c • y := by
   rcases hc.eq_or_lt with rfl | hc
   · simp
@@ -207,7 +203,7 @@ theorem posPart_smul_of_nonneg {c : ℝ} (hc : 0 ≤ c) (x : E) : (c • x)⁺ =
     (by rw [← smul_sub, posPart_sub_negPart])).1
 
 /-- Negative parts scale by a nonnegative real. -/
-theorem negPart_smul_of_nonneg {c : ℝ} (hc : 0 ≤ c) (x : E) : (c • x)⁻ = c • x⁻ :=
+private theorem negPart_smul_of_nonneg {c : ℝ} (hc : 0 ≤ c) (x : E) : (c • x)⁻ = c • x⁻ :=
   (eq_posPart_negPart_of_inf_eq_zero
     (by rw [← smul_inf_of_nonneg hc, posPart_inf_negPart_eq_zero, smul_zero])
     (by rw [← smul_sub, posPart_sub_negPart])).2
@@ -249,7 +245,7 @@ theorem inf_add_le_add_inf {x y z : E} (hx : 0 ≤ x) (hy : 0 ≤ y) (hz : 0 ≤
   simpa [add_comm] using hfinal
 
 /-- A nonnegative element disjoint from `y` remains disjoint after multiplication by a natural. -/
-theorem inf_nsmul_eq_zero {x y : E} (hx : 0 ≤ x) (hy : 0 ≤ y) (hxy : x ⊓ y = 0) (n : ℕ) :
+private theorem inf_nsmul_eq_zero {x y : E} (hx : 0 ≤ x) (hy : 0 ≤ y) (hxy : x ⊓ y = 0) (n : ℕ) :
     (n • x) ⊓ y = 0 := by
   induction n with
   | zero => simp [hy]
@@ -283,7 +279,8 @@ theorem add_eq_sup_of_inf_eq_zero {x y : E} (hxy : x ⊓ y = 0) :
   simpa [hxy, zero_add] using hsum.symm
 
 /-- Finite infimum-sum estimate for nonnegative families. -/
-theorem inf_sum_le_sum_inf {n : ℕ} {x : E} {y : Fin n → E} (hx : 0 ≤ x) (hy : ∀ i, 0 ≤ y i) :
+private theorem inf_sum_le_sum_inf {n : ℕ} {x : E} {y : Fin n → E} (hx : 0 ≤ x)
+    (hy : ∀ i, 0 ≤ y i) :
     x ⊓ ∑ i, y i ≤ ∑ i, x ⊓ y i := by
   induction n with
   | zero =>
@@ -302,14 +299,7 @@ theorem inf_sum_le_sum_inf {n : ℕ} {x : E} {y : Fin n → E} (hx : 0 ≤ x) (h
             add_le_add_left hih _
       _ = ∑ i, x ⊓ y i := (Fin.sum_univ_castSucc (fun i ↦ x ⊓ y i)).symm
 
-/-- Telescoping difference of a sequence in an additive group. -/
-theorem sum_range_sub {G : Type*} [AddCommGroup G] (f : ℕ → G) (n : ℕ) :
-    ∑ i ∈ range n, (f i - f (i + 1)) = f 0 - f n := by
-  induction n with
-  | zero => simp
-  | succ n ih =>
-    rw [sum_range_succ, ih]
-    abel
+@[deprecated (since := "2026-11-15")] alias sum_range_sub := Finset.sum_range_sub'
 
 /-- Positive scaling preserves least upper bounds of nonempty sets. -/
 theorem isLUB_smul_of_pos {c : ℝ} (hc : 0 < c) {s : Set E} {a : E} (ha : IsLUB s a) :
@@ -353,7 +343,7 @@ theorem isLUB_add {s t : Set E} {a b : E} (hs : IsLUB s a) (ht : IsLUB t b) :
     exact (le_sub_iff_add_le).1 ha
 
 /-- Existing suprema distribute over infima. -/
-theorem isLUB_inf {s : Set E} {a x : E} (ha : IsLUB s a) :
+private theorem isLUB_inf {s : Set E} {a x : E} (ha : IsLUB s a) :
     IsLUB ((fun y ↦ x ⊓ y) '' s) (x ⊓ a) := by
   refine ⟨?_, ?_⟩
   · intro z hz
@@ -436,7 +426,7 @@ theorem coneAdditive_isLinearMap (f : E → F)
     intro x
     have h0 : g (x + -x) = g x + g (-x) := hadd_g x (-x)
     rw [add_neg_cancel, show g 0 = f 0⁺ - f 0⁻ from rfl] at h0
-    rw [posPart_eq_zero_of_nonpos le_rfl, negPart_eq_zero_of_nonneg le_rfl, hf0, sub_zero] at h0
+    rw [posPart_of_nonpos le_rfl, negPart_of_nonneg le_rfl, hf0, sub_zero] at h0
     exact eq_neg_of_add_eq_zero_right h0.symm
   have hsmul_nonneg : ∀ {c : ℝ} {x : E}, 0 ≤ c → g (c • x) = c • g x := by
     intro c x hc
@@ -471,7 +461,7 @@ theorem coneAdditiveLinearMap_apply_of_nonneg (f : E → F)
     have h' : f 0 + 0 = f 0 + f 0 := by simpa [add_zero] using h
     exact (add_left_cancel h').symm
   rw [coneAdditiveLinearMap, IsLinearMap.mk'_apply, posPart_eq_self.2 hx,
-    negPart_eq_zero_of_nonneg hx, hf0, sub_zero]
+    negPart_of_nonneg hx, hf0, sub_zero]
 
 end ConeExtension
 

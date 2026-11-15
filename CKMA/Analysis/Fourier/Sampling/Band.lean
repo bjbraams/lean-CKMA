@@ -20,21 +20,25 @@ summands, and periodic Fourier series expansions of frequency-domain `L²` data 
 
 Source: GAPS 29.58.
 
+The band-level auxiliary definitions and lemmas used in the proof of Shannon sampling live in
+the namespace `CKMA.Shannon`.
+
 ## Main definitions
 
 * `CKMA.bandlimitedRepresentative`: continuous representative defined by inverse Fourier
   integration over `[-B, B]`.
 * `CKMA.normalizedSinc`: normalized sinc function `Real.sinc (π * t)`.
 * `CKMA.shannonTerm`: `k`-th Shannon sampling summand at bandwidth `B`.
-* `CKMA.bandCutoff`: indicator cutoff to the frequency band `[-B, B]`.
-* `CKMA.freqPartial`: trigonometric partial sum with sample coefficients on `[-B, B]`.
-* `CKMA.freqBand`: trigonometric partial sum cut off to `[-B, B]`.
+* `CKMA.Shannon.bandCutoff`: indicator cutoff to the frequency band `[-B, B]`.
+* `CKMA.Shannon.samplingCharacter`: the character `exp(-2πi (k/(2B)) ξ)`.
+* `CKMA.Shannon.freqPartial`: trigonometric partial sum with sample coefficients on `[-B, B]`.
+* `CKMA.Shannon.freqBand`: trigonometric partial sum cut off to `[-B, B]`.
 
 ## Main results
 
-* `CKMA.fourierCoeffOn_neg_eq_sample`: Fourier coefficient at `-k` on `[-B, B]` equals
+* `CKMA.Shannon.fourierCoeffOn_neg_eq_sample`: Fourier coefficient at `-k` on `[-B, B]` equals
   `(2 * B)⁻¹` times the sample at `k / (2 * B)`.
-* `CKMA.integral_norm_sq_remainder`: squared `L²` norm of the frequency remainder as the
+* `CKMA.Shannon.integral_norm_sq_remainder`: squared `L²` norm of the frequency remainder as the
   tail of Parseval's series on `AddCircle (2 * B)`.
 -/
 
@@ -59,6 +63,8 @@ def normalizedSinc (t : ℝ) : ℝ := Real.sinc (Real.pi * t)
 def shannonTerm (B : ℝ) (f : ℝ → ℂ) (k : ℤ) (t : ℝ) : ℂ :=
   f (k / (2 * B)) * normalizedSinc (2 * B * t - k)
 
+namespace Shannon
+
 variable {B : ℝ}
 
 /-- Frequency datum cut off to the sampling band `[-B,B]`. -/
@@ -76,16 +82,6 @@ def freqPartial (B : ℝ) (f : ℝ → ℂ) (s : Finset ℤ) (x : ℝ) : ℂ :=
 /-- The partial sum, viewed as an `L²(ℝ)` function supported on `[-B,B]`. -/
 def freqBand (B : ℝ) (f : ℝ → ℂ) (s : Finset ℤ) : ℝ → ℂ :=
   bandCutoff B (freqPartial B f s)
-
-/-- A linear phase has complex modulus one. -/
-lemma norm_phase (t ξ : ℝ) :
-    ‖Complex.exp (2 * Real.pi * Complex.I * t * ξ)‖ = 1 := by
-  have harg : 2 * Real.pi * Complex.I * t * ξ =
-      (↑(2 * Real.pi * t * ξ) : ℂ) * Complex.I := by
-    simp only [Complex.ofReal_mul, Complex.ofReal_ofNat]
-    ring
-  rw [harg]
-  exact Complex.norm_exp_ofReal_mul_I _
 
 /-- Each sampling character has modulus one. -/
 lemma norm_samplingCharacter (k : ℤ) (x : ℝ) :
@@ -123,17 +119,11 @@ variable (hB : 0 < B)
 
 include hB
 
-/-- The sampling band, written so that its length is definitionally a period `2B`. -/
-lemma band_lt : -B < -B + 2 * B :=
+/-- The period interval `[-B, -B + 2B]` of the sampling band is nondegenerate. Its right
+endpoint is written as `-B + 2 * B` so that its length is definitionally the period `2 * B` used
+by `fourierCoeffOn` on `AddCircle (2 * B)`. -/
+lemma neg_lt_neg_add_two_mul : -B < -B + 2 * B :=
   lt_add_of_pos_right (-B) (mul_pos two_pos hB)
-
-omit hB in
-/-- Right endpoint of the period interval based at `-B`. -/
-lemma band_right : -B + 2 * B = B := by ring
-
-omit hB in
-/-- Length of that period interval. -/
-lemma band_period : (-B + 2 * B) - (-B) = 2 * B := by ring
 
 omit hB in
 /-- The cutoff of an `L²` function remains square-integrable. -/
@@ -215,7 +205,7 @@ lemma bandlimitedRepresentative_eq_fourierInv
     · simp only [hξ, Set.indicator_of_mem]
       congr 1
       simp only [Complex.ofReal_mul, Complex.ofReal_ofNat]
-      ring
+      ring_nf
     · simp [hξ]
   simp_rw [Real.inner_apply, smul_eq_mul, hmul, integral_indicator measurableSet_Icc]
 
@@ -253,10 +243,10 @@ private lemma phase_product (k m : ℤ) (x : ℝ) :
 
 /-- Circle coefficient of frequency `-k` is `(2B)⁻¹` times the sample at `k/(2B)`. -/
 lemma fourierCoeffOn_neg_eq_sample (u : Lp ℂ 2 (volume : Measure ℝ)) (k : ℤ) :
-    fourierCoeffOn (band_lt hB) (⇑u) (-k) =
+    fourierCoeffOn (neg_lt_neg_add_two_mul hB) (⇑u) (-k) =
       ((2 * B)⁻¹ : ℝ) • bandlimitedRepresentative B u (k / (2 * B)) := by
   rw [fourierCoeffOn_eq_integral, bandlimitedRepresentative]
-  simp_rw [band_period, band_right, neg_neg]
+  simp_rw [show -B + 2 * B - -B = 2 * B by ring, show -B + 2 * B = B by ring, neg_neg]
   rw [intervalIntegral.integral_of_le (by linarith : -B ≤ B),
     setIntegral_congr_set (MeasureTheory.Ioc_ae_eq_Icc' (by simp : volume {(-B)} = 0)),
     one_div]
@@ -266,32 +256,22 @@ lemma fourierCoeffOn_neg_eq_sample (u : Lp ℂ 2 (volume : Measure ℝ)) (k : �
   congr 1
   apply congrArg Complex.exp
   have hden : ((-B + 2 * B - -B : ℝ) : ℂ) = (2 * (B : ℂ)) := by
-    exact_mod_cast (band_period)
+    exact_mod_cast (show -B + 2 * B - -B = 2 * B by ring)
   rw [hden]
   convert phase_sample hB k x using 1
   · push_cast
     ring
 
 omit hB in
-/-- The band-limited cutoff is square-integrable on the period interval. -/
-lemma memLp_u_Ioc (u : Lp ℂ 2 (volume : Measure ℝ)) :
-    MemLp (⇑u) 2 (volume.restrict (Set.Ioc (-B) (-B + 2 * B))) :=
-  (Lp.memLp u).restrict _
-
-/-- `L²` data on the sampling band are interval-integrable. -/
-lemma intervalIntegrable_u (u : Lp ℂ 2 (volume : Measure ℝ)) :
-    IntervalIntegrable (⇑u) volume (-B) B := by
-  rw [intervalIntegrable_iff_integrableOn_Icc_of_le (by linarith : -B ≤ B)]
-  rw [← integrable_indicator_iff measurableSet_Icc]
-  simpa [bandCutoff] using integrable_bandCutoff u
-
-/-- A continuous phase times band-limited `L²` data stays interval-integrable. -/
+/-- A continuous phase times `L²` data is interval-integrable on the band. -/
 private lemma intervalIntegrable_phase_u (u : Lp ℂ 2 (volume : Measure ℝ)) (n : ℤ) :
     IntervalIntegrable (fun x : ℝ => fourier n (x : AddCircle (2 * B)) * u x)
       volume (-B) B := by
   have hcont : Continuous fun x : ℝ => fourier n (x : AddCircle (2 * B)) :=
     (fourier n).continuous.comp (AddCircle.continuous_mk' (p := 2 * B))
-  exact IntervalIntegrable.continuousOn_mul (intervalIntegrable_u hB u) hcont.continuousOn
+  exact IntervalIntegrable.continuousOn_mul
+    (((Lp.memLp u).locallyIntegrable one_le_two).integrableOn_isCompact
+      isCompact_uIcc).intervalIntegrable hcont.continuousOn
 
 /-- Integral of one sampling character against a circle monomial. -/
 private lemma integral_fourier_sampling (k m : ℤ) :
@@ -338,28 +318,30 @@ private lemma integral_fourier_sampling (k m : ℤ) :
 
 /-- Circle coefficient of a sampling character is a Kronecker symbol. -/
 private lemma fourierCoeffOn_samplingCharacter (k m : ℤ) :
-    fourierCoeffOn (band_lt hB) (samplingCharacter B k) m = if m = -k then 1 else 0 := by
-  rw [fourierCoeffOn_eq_integral, band_period, band_right, one_div]
+    fourierCoeffOn (neg_lt_neg_add_two_mul hB) (samplingCharacter B k) m =
+      if m = -k then 1 else 0 := by
+  rw [fourierCoeffOn_eq_integral, show -B + 2 * B - -B = 2 * B by ring,
+    show -B + 2 * B = B by ring, one_div]
   simp_rw [smul_eq_mul]
   rw [integral_fourier_sampling hB k m]
   exact inv_bandwidth_smul hB (if m = -k then (1 : ℂ) else 0)
 
 /-- A complex constant factors out of `fourierCoeffOn`. -/
 private lemma fourierCoeffOn_const_mul (f : ℝ → ℂ) (c : ℂ) (m : ℤ) :
-    fourierCoeffOn (band_lt hB) (fun x => c * f x) m =
-      c * fourierCoeffOn (band_lt hB) f m :=
-  fourierCoeffOn.const_mul f c m (band_lt hB)
+    fourierCoeffOn (neg_lt_neg_add_two_mul hB) (fun x => c * f x) m =
+      c * fourierCoeffOn (neg_lt_neg_add_two_mul hB) f m :=
+  fourierCoeffOn.const_mul f c m (neg_lt_neg_add_two_mul hB)
 
 /-- Coefficients of a finite sum are the sums of the coefficients. -/
 private lemma fourierCoeffOn_finset_sum (s : Finset ℤ) (f : ℤ → ℝ → ℂ) (m : ℤ)
     (hf : ∀ k ∈ s, IntervalIntegrable (f k) volume (-B) B) :
-    fourierCoeffOn (band_lt hB) (fun x => ∑ k ∈ s, f k x) m =
-      ∑ k ∈ s, fourierCoeffOn (band_lt hB) (f k) m := by
+    fourierCoeffOn (neg_lt_neg_add_two_mul hB) (fun x => ∑ k ∈ s, f k x) m =
+      ∑ k ∈ s, fourierCoeffOn (neg_lt_neg_add_two_mul hB) (f k) m := by
   have hbound : ∀ g : ℝ → ℂ,
       (∫ x in -B..(-B + 2 * B), g x) = ∫ x in -B..B, g x := by
     intro _
-    rw [band_right]
-  rw [fourierCoeffOn_eq_integral, band_period, hbound]
+    rw [show -B + 2 * B = B by ring]
+  rw [fourierCoeffOn_eq_integral, show -B + 2 * B - -B = 2 * B by ring, hbound]
   have hsum : ∀ x : ℝ,
       fourier (-m) (x : AddCircle (2 * B)) • ∑ k ∈ s, f k x =
         ∑ k ∈ s, fourier (-m) (x : AddCircle (2 * B)) • f k x :=
@@ -378,13 +360,13 @@ private lemma fourierCoeffOn_finset_sum (s : Finset ℤ) (f : ℤ → ℝ → �
     exact IntervalIntegrable.continuousOn_mul (hf k hk) hcont.continuousOn
   rw [intervalIntegral.integral_finsetSum hint, Finset.smul_sum]
   refine Finset.sum_congr rfl fun k _ => ?_
-  rw [fourierCoeffOn_eq_integral, band_period, hbound]
+  rw [fourierCoeffOn_eq_integral, show -B + 2 * B - -B = 2 * B by ring, hbound]
 
 /-- Coefficients of the trigonometric partial sum are the selected circle coefficients. -/
 private lemma fourierCoeffOn_freqPartial (u : Lp ℂ 2 (volume : Measure ℝ))
     (s : Finset ℤ) (m : ℤ) :
-    fourierCoeffOn (band_lt hB) (freqPartial B (bandlimitedRepresentative B u) s) m =
-      if m ∈ s.image Neg.neg then fourierCoeffOn (band_lt hB) (⇑u) m else 0 := by
+    fourierCoeffOn (neg_lt_neg_add_two_mul hB) (freqPartial B (bandlimitedRepresentative B u) s) m =
+      if m ∈ s.image Neg.neg then fourierCoeffOn (neg_lt_neg_add_two_mul hB) (⇑u) m else 0 := by
   unfold freqPartial
   have hint : ∀ k ∈ s, IntervalIntegrable
       (fun x => ((2 * B)⁻¹ : ℝ) • bandlimitedRepresentative B u (k / (2 * B)) *
@@ -393,10 +375,10 @@ private lemma fourierCoeffOn_freqPartial (u : Lp ℂ 2 (volume : Measure ℝ))
     exact (continuous_const.mul (continuous_samplingCharacter k)).intervalIntegrable _ _
   rw [fourierCoeffOn_finset_sum hB s _ m hint]
   have hterm : ∀ k : ℤ,
-      fourierCoeffOn (band_lt hB)
+      fourierCoeffOn (neg_lt_neg_add_two_mul hB)
           (fun x => ((2 * B)⁻¹ : ℝ) • bandlimitedRepresentative B u (k / (2 * B)) *
             samplingCharacter B k x) m =
-        if m = -k then fourierCoeffOn (band_lt hB) (⇑u) m else 0 := by
+        if m = -k then fourierCoeffOn (neg_lt_neg_add_two_mul hB) (⇑u) m else 0 := by
     intro k
     rw [fourierCoeffOn_const_mul hB (samplingCharacter B k)
         (((2 * B)⁻¹ : ℝ) • bandlimitedRepresentative B u (k / (2 * B))) m,
@@ -413,7 +395,7 @@ private lemma fourierCoeffOn_freqPartial (u : Lp ℂ 2 (volume : Measure ℝ))
       simpa [← hma] using ha
     rw [ite_eq_left hm]
     have hsum := Finset.sum_eq_single (s := s) (f := fun k : ℤ =>
-        if m = -k then fourierCoeffOn (band_lt hB) (⇑u) m else 0) (-m)
+        if m = -k then fourierCoeffOn (neg_lt_neg_add_two_mul hB) (⇑u) m else 0) (-m)
       (by
         intro k _ hne
         have hmk : m ≠ -k := by
@@ -440,10 +422,11 @@ private lemma fourierCoeffOn_sub (f g : ℝ → ℂ) (m : ℤ)
       volume (-B) B)
     (hg : IntervalIntegrable (fun x => fourier (-m) (x : AddCircle (2 * B)) * g x)
       volume (-B) B) :
-    fourierCoeffOn (band_lt hB) (f - g) m =
-      fourierCoeffOn (band_lt hB) f m - fourierCoeffOn (band_lt hB) g m := by
+    fourierCoeffOn (neg_lt_neg_add_two_mul hB) (f - g) m =
+      fourierCoeffOn (neg_lt_neg_add_two_mul hB) f m -
+        fourierCoeffOn (neg_lt_neg_add_two_mul hB) g m := by
   rw [fourierCoeffOn_eq_integral, fourierCoeffOn_eq_integral, fourierCoeffOn_eq_integral,
-    band_period, band_right]
+    show -B + 2 * B - -B = 2 * B by ring, show -B + 2 * B = B by ring]
   simp_rw [smul_eq_mul, Pi.sub_apply]
   have hsub : ∀ x : ℝ,
       fourier (-m) (x : AddCircle (2 * B)) * (f x - g x) =
@@ -456,9 +439,10 @@ private lemma fourierCoeffOn_sub (f g : ℝ → ℂ) (m : ℤ)
 /-- Circle coefficients of the frequency remainder vanish on the selected modes. -/
 private lemma fourierCoeffOn_remainder (u : Lp ℂ 2 (volume : Measure ℝ))
     (s : Finset ℤ) (m : ℤ) :
-    fourierCoeffOn (band_lt hB) (⇑u - freqPartial B (bandlimitedRepresentative B u) s) m =
-      if m ∈ s.image Neg.neg then 0 else fourierCoeffOn (band_lt hB) (⇑u) m := by
-  have hu := intervalIntegrable_phase_u hB u (-m)
+    fourierCoeffOn (neg_lt_neg_add_two_mul hB)
+        (⇑u - freqPartial B (bandlimitedRepresentative B u) s) m =
+      if m ∈ s.image Neg.neg then 0 else fourierCoeffOn (neg_lt_neg_add_two_mul hB) (⇑u) m := by
+  have hu := intervalIntegrable_phase_u (B := B) u (-m)
   have hp : IntervalIntegrable
       (fun x => fourier (-m) (x : AddCircle (2 * B)) *
         freqPartial B (bandlimitedRepresentative B u) s x) volume (-B) B :=
@@ -470,12 +454,6 @@ private lemma fourierCoeffOn_remainder (u : Lp ℂ 2 (volume : Measure ℝ))
   by_cases hm : m ∈ s.image Neg.neg
   · simp [hm]
   · simp [hm]
-
-omit hB in
-/-- Squared modulus of an indicator is the indicator of the squared modulus. -/
-lemma norm_sq_indicator (s : Set ℝ) (f : ℝ → ℂ) (x : ℝ) :
-    ‖s.indicator f x‖ ^ 2 = s.indicator (fun y => ‖f y‖ ^ 2) x := by
-  by_cases hx : x ∈ s <;> simp [hx]
 
 omit hB in
 /-- The tail of a summable series of squares, after deleting a finite set of modes. -/
@@ -516,12 +494,12 @@ private lemma tsum_sq_compl {c : ℤ → ℂ} (hc : Summable fun i => ‖c i‖ 
 /-- Squared `L²` norm of a frequency remainder, as a tail of Parseval's series. -/
 lemma integral_norm_sq_remainder (u : Lp ℂ 2 (volume : Measure ℝ)) (s : Finset ℤ) :
     ∫ x, ‖(bandCutoff B (⇑u) - freqBand B (bandlimitedRepresentative B u) s) x‖ ^ 2 =
-      (2 * B) * (∑' i, ‖fourierCoeffOn (band_lt hB) (⇑u) i‖ ^ 2 -
-        ∑ i ∈ s.image Neg.neg, ‖fourierCoeffOn (band_lt hB) (⇑u) i‖ ^ 2) := by
-  let c : ℤ → ℂ := fourierCoeffOn (band_lt hB) (⇑u)
+      (2 * B) * (∑' i, ‖fourierCoeffOn (neg_lt_neg_add_two_mul hB) (⇑u) i‖ ^ 2 -
+        ∑ i ∈ s.image Neg.neg, ‖fourierCoeffOn (neg_lt_neg_add_two_mul hB) (⇑u) i‖ ^ 2) := by
+  let c : ℤ → ℂ := fourierCoeffOn (neg_lt_neg_add_two_mul hB) (⇑u)
   let r : ℝ → ℂ := ⇑u - freqPartial B (bandlimitedRepresentative B u) s
   have hmem : MemLp r 2 (volume.restrict (Set.Ioc (-B) (-B + 2 * B))) := by
-    refine (memLp_u_Ioc u).sub ?_
+    refine ((Lp.memLp u).restrict _).sub ?_
     refine MemLp.of_bound
       ((continuous_freqPartial (bandlimitedRepresentative B u) s).aestronglyMeasurable.mono_ac
         (Measure.absolutelyContinuous_of_le Measure.restrict_le_self))
@@ -533,9 +511,10 @@ lemma integral_norm_sq_remainder (u : Lp ℂ 2 (volume : Measure ℝ)) (s : Fins
     refine Finset.sum_le_sum fun k _ => ?_
     rw [norm_mul, norm_samplingCharacter k x, mul_one]
   have htail := tsum_sq_compl
-    (hasSum_sq_fourierCoeffOn (band_lt hB) (memLp_u_Ioc u)).summable (s.image Neg.neg)
-  have hparse := tsum_sq_fourierCoeffOn (band_lt hB) hmem
-  have hcoeff : ∀ i, fourierCoeffOn (band_lt hB) r i =
+    (hasSum_sq_fourierCoeffOn (neg_lt_neg_add_two_mul hB)
+      ((Lp.memLp u).restrict _)).summable (s.image Neg.neg)
+  have hparse := tsum_sq_fourierCoeffOn (neg_lt_neg_add_two_mul hB) hmem
+  have hcoeff : ∀ i, fourierCoeffOn (neg_lt_neg_add_two_mul hB) r i =
       if i ∈ s.image Neg.neg then 0 else c i := by
     intro i
     simpa [r, c] using fourierCoeffOn_remainder hB u s i
@@ -544,7 +523,7 @@ lemma integral_norm_sq_remainder (u : Lp ℂ 2 (volume : Measure ℝ)) (s : Fins
   have hint : ∫ x in -B..(-B + 2 * B), ‖r x‖ ^ 2 =
       ∫ x, ‖(bandCutoff B (⇑u) -
         freqBand B (bandlimitedRepresentative B u) s) x‖ ^ 2 := by
-    rw [band_right]
+    rw [show -B + 2 * B = B by ring]
     rw [intervalIntegral.integral_of_le (by linarith : -B ≤ B)]
     rw [setIntegral_congr_set
       (MeasureTheory.Ioc_ae_eq_Icc' (by simp : volume {(-B)} = 0))]
@@ -559,10 +538,10 @@ lemma integral_norm_sq_remainder (u : Lp ℂ 2 (volume : Measure ℝ)) (s : Fins
       simp only [r]
       by_cases hx : x ∈ Set.Icc (-B) B <;> simp [hx]
     rw [Pi.sub_apply, hind]
-    exact (norm_sq_indicator (Set.Icc (-B) B) r x).symm
+    by_cases hx : x ∈ Set.Icc (-B) B <;> simp [hx]
   rw [hint] at htail
   have hscalar : (((-B + 2 * B) - (-B))⁻¹ : ℝ) = (2 * B)⁻¹ := by
-    rw [band_period]
+    rw [show -B + 2 * B - -B = 2 * B by ring]
   rw [hscalar, smul_eq_mul] at htail
   have hB0 : (2 * B : ℝ) ≠ 0 := mul_ne_zero two_ne_zero (ne_of_gt hB)
   have htail' := congrArg (fun t : ℝ => (2 * B) * t) htail
@@ -570,5 +549,7 @@ lemma integral_norm_sq_remainder (u : Lp ℂ 2 (volume : Measure ℝ)) (s : Fins
   exact htail'
 
 end Positive
+
+end Shannon
 
 end CKMA

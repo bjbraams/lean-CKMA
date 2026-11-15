@@ -47,7 +47,7 @@ section Averages
 variable {T : Ω → Ω} {f : Ω → ℝ}
 
 /-- A positive-length Birkhoff average of a constant function is that constant. -/
-lemma birkhoffAverage_const (n : ℕ) (hn : n ≠ 0) (c : ℝ) (ω : Ω) :
+private lemma birkhoffAverage_const (n : ℕ) (hn : n ≠ 0) (c : ℝ) (ω : Ω) :
     birkhoffAverage ℝ T (fun _ : Ω => c) n ω = c := by
   unfold birkhoffAverage birkhoffSum
   simp only [smul_eq_mul, Finset.sum_const, Finset.card_range]
@@ -55,7 +55,7 @@ lemma birkhoffAverage_const (n : ℕ) (hn : n ≠ 0) (c : ℝ) (ω : Ω) :
   rw [nsmul_eq_mul, ← mul_assoc, inv_mul_cancel₀ hn0, one_mul]
 
 /-- Subtracting a constant subtracts that constant from a positive-length average. -/
-lemma birkhoffAverage_sub_const {f : Ω → ℝ} (n : ℕ) (hn : n ≠ 0) (c : ℝ) (ω : Ω) :
+private lemma birkhoffAverage_sub_const {f : Ω → ℝ} (n : ℕ) (hn : n ≠ 0) (c : ℝ) (ω : Ω) :
     birkhoffAverage ℝ T (fun ω => f ω - c) n ω = birkhoffAverage ℝ T f n ω - c := by
   have hfun : (fun ω => f ω - c) = f - fun _ => c := by
     funext ω
@@ -93,7 +93,7 @@ lemma abs_birkhoffAverage_le_of_abs_le {M : ℝ} (hM : 0 ≤ M) (hf : ∀ ω, |f
     rwa [birkhoffAverage_const (n + 1) (by positivity) M ω] at hle
 
 /-- A strict limsup forces some positive-length sum of `f - α` to be positive. -/
-lemma subset_positive_of_birkhoffLimsup_gt {α : ℝ} {E : Set Ω}
+private lemma subset_positive_of_birkhoffLimsup_gt {α : ℝ} {E : Set Ω}
     (hsub : E ⊆ {ω | (α : EReal) < birkhoffLimsup T f ω}) :
     E ⊆ {ω | ∃ n, 0 < n ∧ 0 < birkhoffSum T (fun ω => f ω - α) n ω} := by
   intro ω hω
@@ -115,7 +115,7 @@ lemma subset_positive_of_birkhoffLimsup_gt {α : ℝ} {E : Set Ω}
   exact (mul_pos_iff_of_pos_left (by positivity)).mp havg
 
 /-- A strict inequality for the liminf is a strict limsup inequality for `-f`. -/
-lemma birkhoffLiminf_lt_coe_iff (ω : Ω) (α : ℝ) :
+private lemma birkhoffLiminf_lt_coe_iff (ω : Ω) (α : ℝ) :
     birkhoffLiminf T f ω < α ↔ (-α : EReal) < birkhoffLimsup T (-f) ω := by
   rw [birkhoffLiminf_neg]
   cases hL : birkhoffLimsup T (-f) ω with
@@ -143,14 +143,14 @@ lemma measurable_birkhoffAverage (hT : Measurable T) (hf : Measurable f) (n : �
     (measurable_birkhoffSum hT hf n))
 
 /-- The extended limsup of the averages is measurable. -/
-lemma measurable_birkhoffLimsup (hT : Measurable T) (hf : Measurable f) :
+private lemma measurable_birkhoffLimsup (hT : Measurable T) (hf : Measurable f) :
     Measurable (birkhoffLimsup T f) := by
   unfold birkhoffLimsup
   refine Measurable.limsup fun n => ?_
   exact continuous_coe_real_ereal.measurable.comp (measurable_birkhoffAverage hT hf n)
 
 /-- The extended liminf of the averages is measurable. -/
-lemma measurable_birkhoffLiminf (hT : Measurable T) (hf : Measurable f) :
+private lemma measurable_birkhoffLiminf (hT : Measurable T) (hf : Measurable f) :
     Measurable (birkhoffLiminf T f) := by
   unfold birkhoffLiminf
   refine Measurable.liminf fun n => ?_
@@ -170,14 +170,14 @@ section InvariantLimit
 omit [MeasurableSpace Ω]
 
 /-- The finite part of the limsup is strictly invariant. -/
-lemma birkhoffLimit_comp (ω : Ω) : birkhoffLimit T f (T ω) = birkhoffLimit T f ω := by
+private lemma birkhoffLimit_comp (ω : Ω) : birkhoffLimit T f (T ω) = birkhoffLimit T f ω := by
   unfold birkhoffLimit
   rw [birkhoffLimsup_comp]
 
 end InvariantLimit
 
 /-- A measurable strictly invariant real function is measurable on the invariant σ-algebra. -/
-lemma measurable_invariants_of_comp_eq {g : Ω → ℝ} (hg : Measurable g) (hcomp : g ∘ T = g) :
+private lemma measurable_invariants_of_comp_eq {g : Ω → ℝ} (hg : Measurable g) (hcomp : g ∘ T = g) :
     Measurable[MeasurableSpace.invariants T] g := by
   rw [MeasurableSpace.measurable_invariants_dom]
   exact ⟨hg, fun s _ => by rw [hcomp]⟩
@@ -193,7 +193,7 @@ def birkhoffSeparated (T : Ω → Ω) (f : Ω → ℝ) (p q : ℝ) : Set Ω :=
   {ω | birkhoffLiminf T f ω < p ∧ (q : EReal) < birkhoffLimsup T f ω}
 
 /-- An upcrossing set is measurable. -/
-lemma measurableSet_birkhoffSeparated (hT : Measurable T) (hf : Measurable f) (p q : ℝ) :
+private lemma measurableSet_birkhoffSeparated (hT : Measurable T) (hf : Measurable f) (p q : ℝ) :
     MeasurableSet (birkhoffSeparated T f p q) := by
   unfold birkhoffSeparated
   rw [Set.ofPred_and]
@@ -204,30 +204,18 @@ lemma measurableSet_birkhoffSeparated (hT : Measurable T) (hf : Measurable f) (p
       (measurable_const : Measurable fun (_ : Ω) => (q : EReal))
       (measurable_birkhoffLimsup hT hf)
 
-/-- The set where the limsup is infinite is measurable. -/
-lemma measurableSet_birkhoffLimsup_top (hT : Measurable T) (hf : Measurable f) :
-    MeasurableSet {ω | birkhoffLimsup T f ω = ⊤} :=
-  measurableSet_eq_fun (measurable_birkhoffLimsup hT hf) measurable_const
-
 section InvariantSets
 
 omit [MeasurableSpace Ω]
 
 /-- An upcrossing set is strictly invariant. -/
-lemma preimage_birkhoffSeparated (p q : ℝ) :
+private lemma preimage_birkhoffSeparated (p q : ℝ) :
     T ⁻¹' birkhoffSeparated T f p q = birkhoffSeparated T f p q := by
   ext ω
   change birkhoffLiminf T f (T ω) < (p : EReal) ∧
       (q : EReal) < birkhoffLimsup T f (T ω) ↔
       birkhoffLiminf T f ω < (p : EReal) ∧ (q : EReal) < birkhoffLimsup T f ω
   rw [birkhoffLiminf_comp, birkhoffLimsup_comp]
-
-/-- The infinite limsup set is strictly invariant. -/
-lemma preimage_birkhoffLimsup_top :
-    T ⁻¹' {ω | birkhoffLimsup T f ω = ⊤} = {ω | birkhoffLimsup T f ω = ⊤} := by
-  ext ω
-  change birkhoffLimsup T f (T ω) = ⊤ ↔ birkhoffLimsup T f ω = ⊤
-  rw [birkhoffLimsup_comp]
 
 end InvariantSets
 
@@ -265,7 +253,7 @@ lemma measure_birkhoffSeparated_eq_zero [IsProbabilityMeasure μ] {T : Ω → Ω
   exact (measureReal_eq_zero_iff).mp hzero
 
 /-- The set where the limsup is infinite is null. -/
-lemma measure_birkhoffLimsup_top_eq_zero [IsProbabilityMeasure μ] {T : Ω → Ω}
+private lemma measure_birkhoffLimsup_top_eq_zero [IsProbabilityMeasure μ] {T : Ω → Ω}
     (hT : MeasurePreserving T μ μ) {f : Ω → ℝ} (hf : Integrable f μ) (hf_meas : Measurable f) :
     μ {ω | birkhoffLimsup T f ω = ⊤} = 0 := by
   set S := {ω | birkhoffLimsup T f ω = ⊤}
@@ -311,7 +299,7 @@ lemma measure_birkhoffLimsup_top_eq_zero [IsProbabilityMeasure μ] {T : Ω → �
   exact (measureReal_eq_zero_iff).mp (le_antisymm hnonpos measureReal_nonneg)
 
 /-- The set where the liminf is infinite is null. -/
-lemma measure_birkhoffLiminf_bot_eq_zero [IsProbabilityMeasure μ] {T : Ω → Ω}
+private lemma measure_birkhoffLiminf_bot_eq_zero [IsProbabilityMeasure μ] {T : Ω → Ω}
     (hT : MeasurePreserving T μ μ) {f : Ω → ℝ} (hf : Integrable f μ) (hf_meas : Measurable f) :
     μ {ω | birkhoffLiminf T f ω = ⊥} = 0 := by
   have hset : {ω | birkhoffLiminf T f ω = ⊥} = {ω | birkhoffLimsup T (-f) ω = ⊤} := by

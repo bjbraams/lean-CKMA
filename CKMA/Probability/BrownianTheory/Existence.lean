@@ -19,14 +19,17 @@ whose coordinate process is Brownian.
 
 ## Main definitions
 
-* `CKMA.coordinatePreBrownian`: coordinate projections of a process indexed by nonnegative time.
-* `CKMA.wienerOfPreBrownian`: law of the continuous modification pushed forward to path space.
+* `CKMA.Brownian.coordinatePreBrownian`: coordinate projections of a process indexed by
+  nonnegative time.
+* `CKMA.Brownian.wienerOfPreBrownian`: law of the continuous modification pushed forward to path
+  space.
 
 ## Main results
 
-* `CKMA.coordinatePreBrownian_isPreBrownian`: the coordinate process of a projective limit of
-  Brownian finite-dimensional laws is pre-Brownian.
-* `CKMA.wienerOfPreBrownian_isBrownian`: the coordinate process on path space is Brownian under
+* `CKMA.Brownian.coordinatePreBrownian_isPreBrownian`: the coordinate process of a projective
+  limit of Brownian finite-dimensional laws is pre-Brownian.
+* `CKMA.Brownian.wienerOfPreBrownian_isBrownian`: the coordinate process on path space is Brownian
+  under
   the pushed-forward law. `CKMA.exists_brownianMeasure` (**08.1**) combines these.
 -/
 
@@ -38,6 +41,8 @@ namespace CKMA
 
 open MeasureTheory ProbabilityTheory Set
 open scoped NNReal
+
+namespace Brownian
 
 /-- Coordinate projections of a process indexed by nonnegative time. -/
 def coordinatePreBrownian (t : ℝ≥0) (ω : ℝ≥0 → ℝ) : ℝ := ω t
@@ -57,7 +62,7 @@ def holderToPath {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsProbabil
   ⟨fun t => holderPath hB t ω, continuous_holderPath hB ω⟩
 
 /-- The path map is measurable for the compact-open Borel structure. -/
-lemma measurable_holderToPath {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω}
+private lemma measurable_holderToPath {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω}
     [IsProbabilityMeasure μ] {B : ℝ≥0 → Ω → ℝ} (hB : IsPreBrownianReal B μ) :
     Measurable (holderToPath hB) := by
   rw [ContinuousMap.measurable_iff_eval]
@@ -78,7 +83,7 @@ lemma isProbabilityMeasure_wienerOfPreBrownian {Ω : Type*} [MeasurableSpace Ω]
   infer_instance
 
 /-- Finite coordinate projections of a continuous path are measurable. -/
-lemma measurable_restrict_continuous (I : Finset ℝ≥0) :
+private lemma measurable_restrict_continuous (I : Finset ℝ≥0) :
     Measurable (fun f : C(ℝ≥0, ℝ) => I.restrict (fun x => f x)) :=
   Measurable.of_eval fun i =>
     ContinuousMap.measurable_iff_eval.mp measurable_id (i : ℝ≥0)
@@ -95,5 +100,7 @@ lemma wienerOfPreBrownian_isBrownian {Ω : Type*} [MeasurableSpace Ω] {μ : Mea
       exact ((holderPath_isBrownian hB).hasLaw I).map_eq
   }
   cont := Filter.Eventually.of_forall fun ω => ω.continuous
+
+end Brownian
 
 end CKMA

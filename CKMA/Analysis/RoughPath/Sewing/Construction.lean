@@ -29,7 +29,8 @@ the triangle, and approximated by every ordered partition at rate `mesh ^ (γ - 
 ## Main results
 
 * `CKMA.Sewing.sewnIncrement_add`: `sewnIncrement` is additive on every subinterval of `[a, b]`.
-* `CKMA.Sewing.norm_partition_sub`: partition sums approach `sewnIncrement` at rate `mesh ^ (γ - 1)`.
+* `CKMA.Sewing.norm_partition_sub`: partition sums approach `sewnIncrement` at rate
+  `mesh ^ (γ - 1)`.
 * `CKMA.Sewing.partitionLimit_unique`: uniqueness of partition-sum limits.
 -/
 
@@ -90,7 +91,7 @@ lemma equalNode_sub (s t : ℝ) (k i : ℕ) :
   rw [mul_one_div]
 
 /-- Even nodes of the doubled grid repeat the coarse grid. -/
-lemma equalNode_even (s t : ℝ) (k i : ℕ) :
+private lemma equalNode_even (s t : ℝ) (k i : ℕ) :
     equalNode s t k i = equalNode s t (2 * k) (2 * i) := by
   unfold equalNode
   rw [Nat.cast_mul, Nat.cast_mul]
@@ -98,7 +99,7 @@ lemma equalNode_even (s t : ℝ) (k i : ℕ) :
   exact (mul_div_mul_left (i : ℝ) (k : ℝ) (by norm_num : (2 : ℝ) ≠ 0)).symm
 
 /-- The midpoint of a coarse piece is the odd doubled node. -/
-lemma equalNode_piece_mid (s t : ℝ) {k : ℕ} (hk : 0 < k) (i : ℕ) :
+private lemma equalNode_piece_mid (s t : ℝ) {k : ℕ} (hk : 0 < k) (i : ℕ) :
     (equalNode s t k i + equalNode s t k (i + 1)) / 2 =
       equalNode s t (2 * k) (2 * i + 1) := by
   unfold equalNode
@@ -109,7 +110,7 @@ lemma equalNode_piece_mid (s t : ℝ) {k : ℕ} (hk : 0 < k) (i : ℕ) :
   ring
 
 /-- Left half-grid of a doubled partition. -/
-lemma equalNode_left (s t : ℝ) {k : ℕ} (hk : 0 < k) (i : ℕ) :
+private lemma equalNode_left (s t : ℝ) {k : ℕ} (hk : 0 < k) (i : ℕ) :
     equalNode s ((s + t) / 2) k i = equalNode s t (2 * k) i := by
   unfold equalNode
   have hm : (s + t) / 2 - s = (t - s) / 2 := by ring
@@ -120,7 +121,7 @@ lemma equalNode_left (s t : ℝ) {k : ℕ} (hk : 0 < k) (i : ℕ) :
   ring
 
 /-- Right half-grid of a doubled partition. -/
-lemma equalNode_right (s t : ℝ) {k : ℕ} (hk : 0 < k) (i : ℕ) :
+private lemma equalNode_right (s t : ℝ) {k : ℕ} (hk : 0 < k) (i : ℕ) :
     equalNode ((s + t) / 2) t k i = equalNode s t (2 * k) (k + i) := by
   unfold equalNode
   have hm : t - (s + t) / 2 = (t - s) / 2 := by ring
@@ -130,8 +131,9 @@ lemma equalNode_right (s t : ℝ) {k : ℕ} (hk : 0 < k) (i : ℕ) :
   field_simp
   ring
 
+omit [CompleteSpace E] in
 /-- Doubling a midpoint-additive grid does not change its sewn sum. -/
-lemma equalSewn_two_mul (Z : ℝ → ℝ → E)
+private lemma equalSewn_two_mul (Z : ℝ → ℝ → E)
     (hadd : ∀ s t : ℝ, a ≤ s → s ≤ t → t ≤ b →
       Z s t = Z s ((s + t) / 2) + Z ((s + t) / 2) t)
     {s t : ℝ} (hs : a ≤ s) (hst : s ≤ t) (ht : t ≤ b) {k : ℕ} (hk : 0 < k) :
@@ -156,7 +158,7 @@ lemma equalSewn_two_mul (Z : ℝ → ℝ → E)
   rw [haddI, equalNode_piece_mid s t hk i, equalNode_even s t k i, hR, hidx]
 
 /-- A doubled uniform sum splits into the two half intervals. -/
-lemma equalSewn_halves {F : Type*} [AddCommMonoid F] (Z : ℝ → ℝ → F) (s t : ℝ) {k : ℕ}
+private lemma equalSewn_halves {F : Type*} [AddCommMonoid F] (Z : ℝ → ℝ → F) (s t : ℝ) {k : ℕ}
     (hk : 0 < k) :
     equalSewn Z s ((s + t) / 2) k + equalSewn Z ((s + t) / 2) t k =
       equalSewn Z s t (2 * k) := by
@@ -173,8 +175,9 @@ lemma equalSewn_halves {F : Type*} [AddCommMonoid F] (Z : ℝ → ℝ → F) (s 
     rw [equalNode_right s t hk i, equalNode_right s t hk (i + 1)]
     simp [Nat.add_assoc]
 
+omit [CompleteSpace E] in
 /-- Midpoint additivity passes from `Z` to its uniform sums. -/
-lemma equalSewn_midpoint (Z : ℝ → ℝ → E)
+private lemma equalSewn_midpoint (Z : ℝ → ℝ → E)
     (hadd : ∀ s t : ℝ, a ≤ s → s ≤ t → t ≤ b →
       Z s t = Z s ((s + t) / 2) + Z ((s + t) / 2) t)
     {s t : ℝ} (hs : a ≤ s) (hst : s ≤ t) (ht : t ≤ b) {k : ℕ} (hk : 0 < k) :
@@ -183,14 +186,15 @@ lemma equalSewn_midpoint (Z : ℝ → ℝ → E)
   rw [equalSewn_two_mul Z hadd hs hst ht hk]
   exact (equalSewn_halves Z s t hk).symm
 
+omit [CompleteSpace E] in
 /-- Partial uniform sums of `A` differ from `A` by at most one defect per step. -/
-lemma norm_uniformPrefix_sub (hγ : 1 < γ) (hC : 0 ≤ C)
-    (hdiag : ∀ s ∈ Set.Icc a b, A s s = 0)
+private lemma norm_uniformPrefix_sub (hγ : 1 < γ) (hC : 0 ≤ C)
     (hdefect : ∀ s u t : ℝ, a ≤ s → s ≤ u → u ≤ t → t ≤ b →
       ‖A s t - A s u - A u t‖ ≤ C * |t - s| ^ γ)
     {s t : ℝ} (hs : a ≤ s) (hst : s ≤ t) (ht : t ≤ b) {k : ℕ} (hk : 0 < k) :
     ∀ j ≤ k, ‖(∑ i ∈ range j, A (equalNode s t k i) (equalNode s t k (i + 1))) -
       A s (equalNode s t k j)‖ ≤ (j : ℝ) * C * |t - s| ^ γ := by
+  have hdiag := apply_self_eq_zero_of_defect (zero_lt_one.trans hγ) hdefect
   intro j
   induction j with
   | zero =>
@@ -237,9 +241,9 @@ lemma norm_uniformPrefix_sub (hγ : 1 < γ) (hC : 0 ≤ C)
         rw [Nat.cast_add, Nat.cast_one]
         ring
 
+omit [CompleteSpace E] in
 /-- On each subinterval the sewn increment matches its uniform sums up to order `γ`. -/
-lemma norm_sewn_sub_equalSewn (hγ : 1 < γ) (hC : 0 ≤ C)
-    (hdiag : ∀ s ∈ Set.Icc a b, A s s = 0)
+private lemma norm_sewn_sub_equalSewn (hγ : 1 < γ) (hC : 0 ≤ C)
     (hdefect : ∀ s u t : ℝ, a ≤ s → s ≤ u → u ≤ t → t ≤ b →
       ‖A s t - A s u - A u t‖ ≤ C * |t - s| ^ γ)
     {s t : ℝ} (hs : a ≤ s) (hst : s ≤ t) (ht : t ≤ b) {k : ℕ} (hk : 0 < k) :
@@ -247,7 +251,7 @@ lemma norm_sewn_sub_equalSewn (hγ : 1 < γ) (hC : 0 ≤ C)
       (sewingConstant γ * C * (1 + (k : ℝ) ^ (1 - γ)) + C * (k : ℝ)) * |t - s| ^ γ := by
   let Z : ℝ → ℝ → E := sewnIncrement A
   let K : ℝ := sewingConstant γ * C
-  have hZA := norm_sewnIncrement_sub hγ hC hdefect hs hst ht
+  have hZA := norm_sewnIncrement_sub hγ hdefect hs hst ht
   have hpiece : ∀ i ∈ range k,
       ‖Z (equalNode s t k i) (equalNode s t k (i + 1)) -
         A (equalNode s t k i) (equalNode s t k (i + 1))‖ ≤
@@ -259,7 +263,7 @@ lemma norm_sewn_sub_equalSewn (hγ : 1 < γ) (hC : 0 ≤ C)
     have hL := equalNode_mem hst hk hi'
     have hR := equalNode_mem hst hk hi1
     have horder := equalNode_mono hst k (Nat.le_succ i)
-    have hsub := norm_sewnIncrement_sub hγ hC hdefect (le_trans hs hL.1) horder
+    have hsub := norm_sewnIncrement_sub hγ hdefect (le_trans hs hL.1) horder
       (le_trans hR.2 ht)
     have hlen : |equalNode s t k (i + 1) - equalNode s t k i| = |t - s| / k := by
       rw [equalNode_sub, abs_div, abs_of_nonneg (sub_nonneg.mpr hst),
@@ -289,7 +293,7 @@ lemma norm_sewn_sub_equalSewn (hγ : 1 < γ) (hC : 0 ≤ C)
       _ = K * |t - s| ^ γ * (k : ℝ) ^ (1 - γ) := by ring
   have hA : ‖equalSewn A s t k - A s t‖ ≤ (k : ℝ) * C * |t - s| ^ γ := by
     simpa [equalSewn, equalNode_last s t hk] using
-      norm_uniformPrefix_sub hγ hC hdiag hdefect hs hst ht hk k le_rfl
+      norm_uniformPrefix_sub hγ hC hdefect hs hst ht hk k le_rfl
   have htri : Z s t - equalSewn Z s t k =
       (Z s t - A s t) - (equalSewn Z s t k - equalSewn A s t k) -
         (equalSewn A s t k - A s t) := by
@@ -306,8 +310,7 @@ lemma norm_sewn_sub_equalSewn (hγ : 1 < γ) (hC : 0 ≤ C)
     _ = (K * (1 + (k : ℝ) ^ (1 - γ)) + C * (k : ℝ)) * |t - s| ^ γ := by ring
 
 /-- The sewn increment equals every positive uniform sum. -/
-lemma sewnIncrement_eq_equalSewn (hγ : 1 < γ) (hC : 0 ≤ C)
-    (hdiag : ∀ s ∈ Set.Icc a b, A s s = 0)
+private lemma sewnIncrement_eq_equalSewn (hγ : 1 < γ) (hC : 0 ≤ C)
     (hdefect : ∀ s u t : ℝ, a ≤ s → s ≤ u → u ≤ t → t ≤ b →
       ‖A s t - A s u - A u t‖ ≤ C * |t - s| ^ γ)
     {k : ℕ} (hk : 0 < k) {s t : ℝ} (hs : a ≤ s) (hst : s ≤ t) (ht : t ≤ b) :
@@ -318,17 +321,17 @@ lemma sewnIncrement_eq_equalSewn (hγ : 1 < γ) (hC : 0 ≤ C)
   have hD := vanishes_of_midpoint (a := a) (b := b) hγ D M ?_ ?_ hs hst ht
   simpa [D, Z] using sub_eq_zero.mp hD
   · intro s t hs hst ht
-    have hZ := sewnIncrement_midpoint hγ hC hdefect hs hst ht
+    have hZ := sewnIncrement_midpoint hγ hdefect hs hst ht
     have hW := equalSewn_midpoint Z
-      (fun s t hs hst ht => sewnIncrement_midpoint hγ hC hdefect hs hst ht) hs hst ht hk
+      (fun s t hs hst ht => sewnIncrement_midpoint hγ hdefect hs hst ht) hs hst ht hk
     dsimp [D, Z]
     rw [hZ, hW]
     abel
   · intro s t hs hst ht
-    simpa [D, Z, M] using norm_sewn_sub_equalSewn hγ hC hdiag hdefect hs hst ht hk
+    simpa [D, Z, M] using norm_sewn_sub_equalSewn hγ hC hdefect hs hst ht hk
 
 /-- A uniform subgrid reproduces the parent nodes. -/
-lemma equalNode_prefix (s t : ℝ) {k j : ℕ} (hk : 0 < k) (hj : 0 < j) (i : ℕ) :
+private lemma equalNode_prefix (s t : ℝ) {k j : ℕ} (hk : 0 < k) (hj : 0 < j) (i : ℕ) :
     equalNode s (equalNode s t k j) j i = equalNode s t k i := by
   unfold equalNode
   have hk0 : (k : ℝ) ≠ 0 := by exact_mod_cast Nat.ne_of_gt hk
@@ -339,7 +342,7 @@ lemma equalNode_prefix (s t : ℝ) {k j : ℕ} (hk : 0 < k) (hj : 0 < j) (i : �
   field_simp
 
 /-- The grid to the right of a uniform node repeats the parent nodes. -/
-lemma equalNode_suffix (s t : ℝ) {k j : ℕ} (hk : 0 < k) (hj : j < k) (i : ℕ) :
+private lemma equalNode_suffix (s t : ℝ) {k j : ℕ} (hk : 0 < k) (hj : j < k) (i : ℕ) :
     equalNode (equalNode s t k j) t (k - j) i = equalNode s t k (j + i) := by
   unfold equalNode
   have hk0 : (k : ℝ) ≠ 0 := by exact_mod_cast Nat.ne_of_gt hk
@@ -382,8 +385,7 @@ lemma equalSewn_cut {F : Type*} [AddCommMonoid F] (Z : ℝ → ℝ → F) (s t :
     simp [Nat.add_assoc]
 
 /-- The sewn increment is additive at every positive uniform node. -/
-lemma sewnIncrement_grid_add (hγ : 1 < γ) (hC : 0 ≤ C)
-    (hdiag : ∀ s ∈ Set.Icc a b, A s s = 0)
+private lemma sewnIncrement_grid_add (hγ : 1 < γ) (hC : 0 ≤ C)
     (hdefect : ∀ s u t : ℝ, a ≤ s → s ≤ u → u ≤ t → t ≤ b →
       ‖A s t - A s u - A u t‖ ≤ C * |t - s| ^ γ)
     {s t : ℝ} (hs : a ≤ s) (hst : s ≤ t) (ht : t ≤ b) {k j : ℕ}
@@ -393,20 +395,20 @@ lemma sewnIncrement_grid_add (hγ : 1 < γ) (hC : 0 ≤ C)
         sewnIncrement A (equalNode s t k j) t := by
   have hu := equalNode_mem hst hk (Nat.le_of_lt hj)
   have hksub : 0 < k - j := Nat.sub_pos_of_lt hj
-  have hZ := sewnIncrement_eq_equalSewn hγ hC hdiag hdefect hk hs hst ht
-  have hL := sewnIncrement_eq_equalSewn hγ hC hdiag hdefect hj0 hs hu.1 (le_trans hu.2 ht)
-  have hR := sewnIncrement_eq_equalSewn hγ hC hdiag hdefect hksub (le_trans hs hu.1) hu.2 ht
+  have hZ := sewnIncrement_eq_equalSewn hγ hC hdefect hk hs hst ht
+  have hL := sewnIncrement_eq_equalSewn hγ hC hdefect hj0 hs hu.1 (le_trans hu.2 ht)
+  have hR := sewnIncrement_eq_equalSewn hγ hC hdefect hksub (le_trans hs hu.1) hu.2 ht
   rw [hZ, hL, hR]
   exact equalSewn_cut (sewnIncrement A) s t hk hj0 hj
 
 /-- The sewn increment is additive on every subinterval of `[a, b]`. -/
 lemma sewnIncrement_add (hab : a ≤ b) (hγ : 1 < γ) (hC : 0 ≤ C)
     (hcont : ContinuousOn (fun p : ℝ × ℝ => A p.1 p.2) (sewingTriangle a b))
-    (hdiag : ∀ s ∈ Set.Icc a b, A s s = 0)
     (hdefect : ∀ s u t : ℝ, a ≤ s → s ≤ u → u ≤ t → t ≤ b →
       ‖A s t - A s u - A u t‖ ≤ C * |t - s| ^ γ)
     {s u t : ℝ} (hs : a ≤ s) (hsu : s ≤ u) (hut : u ≤ t) (ht : t ≤ b) :
     sewnIncrement A s t = sewnIncrement A s u + sewnIncrement A u t := by
+  have hdiag := apply_self_eq_zero_of_defect (zero_lt_one.trans hγ) hdefect
   have hst := hsu.trans hut
   rcases hst.eq_or_lt with hEq | hlt
   · have hu_eq : u = s := le_antisymm (hEq ▸ hut) hsu
@@ -494,7 +496,7 @@ lemma sewnIncrement_add (hab : a ≤ b) (hγ : 1 < γ) (hC : 0 ≤ C)
         · have hjpos : 0 < jn n := Nat.pos_of_ne_zero hj0
           have hjlt : jn n < N n := lt_of_le_of_ne hjle hjN
           simpa [nodeN] using
-            sewnIncrement_grid_add hγ hC hdiag hdefect hs hst ht hN hjpos hjlt
+            sewnIncrement_grid_add hγ hC hdefect hs hst ht hN hjpos hjlt
     have hpairL : Tendsto (fun n => (s, nodeN n)) atTop (𝓝[sewingTriangle a b] (s, u)) := by
       refine tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ ?_ ?_
       · rw [nhds_prod_eq]
@@ -521,25 +523,25 @@ lemma sewnIncrement_add (hab : a ≤ b) (hγ : 1 < γ) (hC : 0 ≤ C)
       tendsto_const_nhds).symm
 
 /-- Sewn increments add along a monotone sequence in `[a, b]`. -/
-lemma sewnIncrement_sum_nat (hab : a ≤ b) (hγ : 1 < γ) (hC : 0 ≤ C)
+private lemma sewnIncrement_sum_nat (hab : a ≤ b) (hγ : 1 < γ) (hC : 0 ≤ C)
     (hcont : ContinuousOn (fun p : ℝ × ℝ => A p.1 p.2) (sewingTriangle a b))
-    (hdiag : ∀ s ∈ Set.Icc a b, A s s = 0)
     (hdefect : ∀ s u t : ℝ, a ≤ s → s ≤ u → u ≤ t → t ≤ b →
       ‖A s t - A s u - A u t‖ ≤ C * |t - s| ^ γ)
     (node : ℕ → ℝ) (hmono : Monotone node) (h0 : a ≤ node 0) (hb : ∀ i, node i ≤ b)
     (n : ℕ) :
     sewnIncrement A (node 0) (node n) =
       ∑ i ∈ range n, sewnIncrement A (node i) (node (i + 1)) := by
+  have hdiag := apply_self_eq_zero_of_defect (zero_lt_one.trans hγ) hdefect
   induction n with
   | zero =>
     simp [sewnIncrement_same hdiag h0 (hb 0)]
   | succ n ih =>
     rw [sum_range_succ, ← ih]
-    exact sewnIncrement_add hab hγ hC hcont hdiag hdefect h0 (hmono (Nat.zero_le n))
+    exact sewnIncrement_add hab hγ hC hcont hdefect h0 (hmono (Nat.zero_le n))
       (hmono (Nat.le_succ n)) (hb (n + 1))
 
 /-- A short increment of order above one is controlled by the ambient length. -/
-lemma step_rpow_le (hγ : 1 < γ) {d m : ℝ} (hd : 0 ≤ d) (hm : d ≤ m) :
+private lemma step_rpow_le (hγ : 1 < γ) {d m : ℝ} (hd : 0 ≤ d) (hm : d ≤ m) :
     d ^ γ ≤ m ^ (γ - 1) * d := by
   rcases hd.eq_or_lt with rfl | hd0
   · simp [Real.zero_rpow (ne_of_gt (lt_trans zero_lt_one hγ)), mul_zero]
@@ -555,7 +557,6 @@ lemma step_rpow_le (hγ : 1 < γ) {d m : ℝ} (hd : 0 ≤ d) (hm : d ≤ m) :
 /-- Partition sums approach the sewn increment at rate `mesh ^ (γ - 1)`. -/
 lemma norm_partition_sub (hab : a ≤ b) (hγ : 1 < γ) (hC : 0 ≤ C)
     (hcont : ContinuousOn (fun p : ℝ × ℝ => A p.1 p.2) (sewingTriangle a b))
-    (hdiag : ∀ s ∈ Set.Icc a b, A s s = 0)
     (hdefect : ∀ s u t : ℝ, a ≤ s → s ≤ u → u ≤ t → t ≤ b →
       ‖A s t - A s u - A u t‖ ≤ C * |t - s| ^ γ)
     {s t : ℝ} (hs : a ≤ s) (ht : t ≤ b) (π : OrderedIntervalPartition s t) :
@@ -593,7 +594,7 @@ lemma norm_partition_sub (hab : a ≤ b) (hγ : 1 < γ) (hC : 0 ≤ C)
       ext; simp [Fin.val_last]
     rw [show g π.size = π.node ⟨π.size, hlt⟩ by simp [g]]
     simp [hlast, π.node_last]
-  have hchain := sewnIncrement_sum_nat hab hγ hC hcont hdiag hdefect g hgmono
+  have hchain := sewnIncrement_sum_nat hab hγ hC hcont hdefect g hgmono
     (by simpa [hg0] using hs) hgb π.size
   have hpieces : ∑ i : Fin π.size,
       sewnIncrement A (π.node i.castSucc) (π.node i.succ) = sewnIncrement A s t := by
@@ -649,7 +650,7 @@ lemma norm_partition_sub (hab : a ≤ b) (hγ : 1 < γ) (hC : 0 ≤ C)
         exact NNReal.coe_le_coe.mpr hsup
       rwa [show (fmesh i : ℝ) = π.node i.succ - π.node i.castSucc by
         simp [fmesh, Real.coe_toNNReal', max_eq_left hΔ]] at hcoe
-    have hnorm := norm_sewnIncrement_sub hγ hC hdefect hx hxy hy
+    have hnorm := norm_sewnIncrement_sub hγ hdefect hx hxy hy
     have habs : |π.node i.succ - π.node i.castSucc| =
         π.node i.succ - π.node i.castSucc := abs_of_nonneg hΔ
     calc
@@ -708,7 +709,7 @@ def uniformPartition {s t : ℝ} (hst : s ≤ t) (n : ℕ) (hn : 0 < n) :
   node_last := by simpa [Fin.val_last] using equalNode_last s t hn
 
 /-- The mesh of a uniform partition is the common step length. -/
-lemma uniformPartition_mesh {s t : ℝ} (hst : s ≤ t) {n : ℕ} (hn : 0 < n) :
+private lemma uniformPartition_mesh {s t : ℝ} (hst : s ≤ t) {n : ℕ} (hn : 0 < n) :
     ((uniformPartition hst n hn).mesh : ℝ) = (t - s) / n := by
   have hΔ : ∀ i : Fin n,
       (uniformPartition hst n hn).node i.succ -
@@ -735,7 +736,7 @@ lemma uniformPartition_mesh {s t : ℝ} (hst : s ≤ t) {n : ℕ} (hn : 0 < n) :
       max_eq_left (div_nonneg (sub_nonneg.mpr hst) (Nat.cast_nonneg _))])
 
 /-- Every positive width is realized by some ordered partition. -/
-lemma exists_mesh_lt {s t : ℝ} (hst : s ≤ t) {δ : ℝ} (hδ : 0 < δ) :
+private lemma exists_mesh_lt {s t : ℝ} (hst : s ≤ t) {δ : ℝ} (hδ : 0 < δ) :
     ∃ π : OrderedIntervalPartition s t, (π.mesh : ℝ) < δ := by
   let n := Nat.floor ((t - s) / δ) + 1
   have hn : 0 < n := Nat.succ_pos _

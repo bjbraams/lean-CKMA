@@ -53,7 +53,7 @@ lemma LevyTriplet.exponent_eq_levyIntegrand (L : LevyTriplet) (t : ℝ) :
   rfl
 
 /-- The imaginary exponential along the segment from `0` to `s` stays within `|y| * s` of `1`. -/
-lemma norm_exp_segment_sub_one_le (y s : ℝ) (hs : 0 ≤ s) :
+private lemma norm_exp_segment_sub_one_le (y s : ℝ) (hs : 0 ≤ s) :
     ‖exp (I * y * s) - 1‖ ≤ |y| * s := by
   set c : ℂ := I * y
   set f : ℝ → ℂ := fun u => exp (c * u)
@@ -90,7 +90,7 @@ lemma norm_exp_segment_sub_one_le (y s : ℝ) (hs : 0 ≤ s) :
   simpa [f, c, mul_assoc] using hgoal
 
 /-- The second-order remainder of `exp (I y)` is at most `y² / 2`. -/
-lemma norm_exp_I_sub_one_sub_I_le (y : ℝ) :
+private lemma norm_exp_I_sub_one_sub_I_le (y : ℝ) :
     ‖exp (I * y) - 1 - I * y‖ ≤ y ^ 2 / 2 := by
   set c : ℂ := I * y
   set f : ℝ → ℂ := fun s => exp (c * s)
@@ -193,7 +193,7 @@ lemma norm_levyIntegrand_le (t x : ℝ) :
         linarith
 
 /-- The truncated quadratic weight is integrable for a Lévy measure. -/
-lemma integrable_min_one_sq {ν : Measure ℝ} (hν : IsLevyMeasure ν) :
+lemma IsLevyMeasure.integrable_min_one_sq {ν : Measure ℝ} (hν : IsLevyMeasure ν) :
     Integrable (fun x : ℝ => min 1 (x ^ 2)) ν := by
   have hcont : Continuous (fun x : ℝ => min 1 (x ^ 2)) := by fun_prop
   refine (lintegral_ofReal_ne_top_iff_integrable hcont.aestronglyMeasurable ?_).1 hν.2.ne
@@ -203,16 +203,22 @@ lemma integrable_min_one_sq {ν : Measure ℝ} (hν : IsLevyMeasure ν) :
 lemma integrable_levyIntegrand {ν : Measure ℝ} (hν : IsLevyMeasure ν) (t : ℝ) :
     Integrable (levyIntegrand t) ν := by
   have hdom : Integrable (fun x : ℝ => (t ^ 2 / 2 + 2) * min 1 (x ^ 2)) ν :=
-    (integrable_min_one_sq hν).const_mul (t ^ 2 / 2 + 2)
+    hν.integrable_min_one_sq.const_mul (t ^ 2 / 2 + 2)
   refine hdom.mono (measurable_levyIntegrand t).aestronglyMeasurable ?_
   refine ae_of_all _ fun x => ?_
   rw [Real.norm_eq_abs, abs_of_nonneg (mul_nonneg (by positivity) (le_min (by norm_num)
     (sq_nonneg x)))]
   exact norm_levyIntegrand_le t x
 
+namespace InfinitelyDivisible
+
 /-- The set `{|x| ≥ ε}` is Borel. -/
 lemma measurableSet_abs_ge (ε : ℝ) : MeasurableSet {x : ℝ | ε ≤ |x|} :=
   (isClosed_le continuous_const continuous_norm).measurableSet
+
+end InfinitelyDivisible
+
+open InfinitelyDivisible
 
 /-- A Lévy measure gives finite mass to `{|x| ≥ ε}`. -/
 lemma IsLevyMeasure.measure_abs_ge_lt_top {ν : Measure ℝ} (hν : IsLevyMeasure ν) {ε : ℝ}
@@ -256,14 +262,14 @@ lemma IsLevyMeasure.restrict_abs_ge {ν : Measure ℝ} (hν : IsLevyMeasure ν) 
   · exact (setLIntegral_le_lintegral _ _).trans_lt hν.2
 
 /-- Restriction of a Lévy measure to `{|x| ≥ ε}` is a finite measure. -/
-lemma isFiniteMeasure_restrict_abs_ge {ν : Measure ℝ} (hν : IsLevyMeasure ν) {ε : ℝ}
+lemma IsLevyMeasure.isFiniteMeasure_restrict_abs_ge {ν : Measure ℝ} (hν : IsLevyMeasure ν) {ε : ℝ}
     (hε : 0 < ε) : IsFiniteMeasure (ν.restrict {x | ε ≤ |x|}) := by
   refine ⟨?_⟩
   rw [Measure.restrict_apply MeasurableSet.univ, Set.univ_inter]
   exact hν.measure_abs_ge_lt_top hε
 
 /-- The Lévy integrand vanishes at frequency zero. -/
-lemma levyIntegrand_zero (x : ℝ) : levyIntegrand 0 x = 0 := by
+private lemma levyIntegrand_zero (x : ℝ) : levyIntegrand 0 x = 0 := by
   simp [levyIntegrand, exp_zero]
 
 /-- A Lévy exponent vanishes at frequency zero. -/
@@ -273,7 +279,7 @@ lemma LevyTriplet.exponent_zero (L : LevyTriplet) : L.exponent 0 = 0 := by
   simp
 
 /-- The map `t ↦ levyIntegrand t x` is continuous for each fixed jump. -/
-lemma continuous_levyIntegrand (x : ℝ) : Continuous fun t : ℝ => levyIntegrand t x := by
+private lemma continuous_levyIntegrand (x : ℝ) : Continuous fun t : ℝ => levyIntegrand t x := by
   by_cases hx : |x| ≤ 1
   · simpa [levyIntegrand, hx] using
       (by fun_prop : Continuous fun t : ℝ => exp (I * t * x) - 1 - I * t * x)
@@ -281,13 +287,13 @@ lemma continuous_levyIntegrand (x : ℝ) : Continuous fun t : ℝ => levyIntegra
       (by fun_prop : Continuous fun t : ℝ => exp (I * t * x) - 1 - (0 : ℂ))
 
 /-- The integral of the Lévy integrand depends continuously on the frequency. -/
-lemma continuous_integral_levyIntegrand {ν : Measure ℝ} (hν : IsLevyMeasure ν) :
+private lemma continuous_integral_levyIntegrand {ν : Measure ℝ} (hν : IsLevyMeasure ν) :
     Continuous fun t : ℝ => ∫ x, levyIntegrand t x ∂ν := by
   rw [continuous_iff_continuousAt]
   intro t0
   let C : ℝ := (|t0| + 1) ^ 2 / 2 + 2
   let bound : ℝ → ℝ := fun x => C * min 1 (x ^ 2)
-  have hbound_int : Integrable bound ν := (integrable_min_one_sq hν).const_mul C
+  have hbound_int : Integrable bound ν := hν.integrable_min_one_sq.const_mul C
   refine continuousAt_of_dominated (bound := bound) ?meas ?hb hbound_int ?hcont
   · filter_upwards [Metric.ball_mem_nhds t0 (by norm_num : (0 : ℝ) < 1)] with t _
     exact (measurable_levyIntegrand t).aestronglyMeasurable
@@ -321,7 +327,7 @@ lemma LevyTriplet.continuous_exponent (L : LevyTriplet) : Continuous L.exponent 
   exact hgauss.add (continuous_integral_levyIntegrand L.isLevyMeasure)
 
 /-- Conjugation sends the Lévy integrand at frequency `t` to the integrand at `-t`. -/
-lemma conj_levyIntegrand (t x : ℝ) :
+private lemma conj_levyIntegrand (t x : ℝ) :
     starRingEnd ℂ (levyIntegrand t x) = levyIntegrand (-t) x := by
   have hexp : starRingEnd ℂ (exp (I * t * x)) = exp (I * (-t) * x) := by
     rw [← exp_conj]

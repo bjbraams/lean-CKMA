@@ -55,7 +55,7 @@ def coextensionCompress (X : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K) : K →L[�
   X.comp J.toContinuousLinearMap.adjoint
 
 /-- Co-invariance and commutation give `T X₀ = X₀ V`. -/
-theorem coextensionCompress_intertwine (T X : H →L[ℂ] H) (hXT : Commute X T)
+private theorem coextensionCompress_intertwine (T X : H →L[ℂ] H) (hXT : Commute X T)
     (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K)
     (hcoin : ∀ y : K, J.toContinuousLinearMap.adjoint (V y) =
       T (J.toContinuousLinearMap.adjoint y)) :
@@ -90,7 +90,7 @@ theorem norm_embed_adjoint_le (J : H →ₗᵢ[ℂ] K) :
   exact hJ
 
 /-- Compressing by `J*` does not increase the operator norm. -/
-theorem norm_coextensionCompress_le (X : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K) :
+private theorem norm_coextensionCompress_le (X : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K) :
     ‖coextensionCompress X J‖ ≤ ‖X‖ := by
   rw [coextensionCompress]
   calc
@@ -114,7 +114,7 @@ theorem coextensionCompress_apply_norm_sq_le (X : H →L[ℂ] H) (J : H →ₗ�
 
 omit [CompleteSpace H] [CompleteSpace K] in
 /-- Real quadratic form of a real multiple of the identity. -/
-theorem re_inner_smul_one (c : ℝ) (y : K) :
+private theorem re_inner_smul_one (c : ℝ) (y : K) :
     RCLike.re ⟪(Complex.ofReal c • (1 : K →L[ℂ] K)) y, y⟫_ℂ = c * ‖y‖ ^ 2 := by
   have hsmul : (Complex.ofReal c • (1 : K →L[ℂ] K)) y = Complex.ofReal c • y := by
     rw [smul_apply, one_apply_eq_self]
@@ -131,20 +131,20 @@ theorem re_inner_smul_one (c : ℝ) (y : K) :
     _ = c * ‖y‖ ^ 2 := RCLike.ofReal_re _
 
 /-- Real quadratic form of `A* A`. -/
-theorem re_inner_adjoint_comp_self {E : Type u} [NormedAddCommGroup E] [InnerProductSpace ℂ E]
-    [CompleteSpace E] (A : K →L[ℂ] E) (y : K) :
+private theorem re_inner_adjoint_comp_self {E : Type u} [NormedAddCommGroup E]
+    [InnerProductSpace ℂ E] [CompleteSpace E] (A : K →L[ℂ] E) (y : K) :
     RCLike.re ⟪(A.adjoint.comp A) y, y⟫_ℂ = ‖A y‖ ^ 2 :=
   (apply_norm_sq_eq_inner_adjoint_left A y).symm
 
 /-- `A* A` is self-adjoint. -/
-theorem isSelfAdjoint_adjoint_comp_self {E : Type u} [NormedAddCommGroup E]
+private theorem isSelfAdjoint_adjoint_comp_self {E : Type u} [NormedAddCommGroup E]
     [InnerProductSpace ℂ E] [CompleteSpace E] (A : K →L[ℂ] E) :
     IsSelfAdjoint (A.adjoint.comp A) := by
   rw [isSelfAdjoint_iff', adjoint_comp, adjoint_adjoint]
 
 omit [CompleteSpace H] in
 /-- A real multiple of the identity is self-adjoint. -/
-theorem isSelfAdjoint_smul_one_real (c : ℝ) :
+private theorem isSelfAdjoint_smul_one_real (c : ℝ) :
     IsSelfAdjoint (Complex.ofReal c • (1 : K →L[ℂ] K)) := by
   rw [isSelfAdjoint_iff, star_smul, star_one, Complex.star_def, Complex.conj_ofReal]
 
@@ -167,7 +167,7 @@ theorem re_inner_commutantRemainder (X : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K)
     map_sub (RCLike.re (K := ℂ)), re_inner_smul_one, re_inner_adjoint_comp_self]
 
 /-- The remainder is self-adjoint when the accumulated Gram operator is. -/
-theorem isSelfAdjoint_commutantRemainder (X : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K)
+private theorem isSelfAdjoint_commutantRemainder (X : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K)
     {gram : K →L[ℂ] K} (hgram : IsSelfAdjoint gram) :
     IsSelfAdjoint (commutantRemainder X J gram) := by
   have h1 : IsSelfAdjoint (Complex.ofReal (‖X‖ ^ 2) • (1 : K →L[ℂ] K)) :=
@@ -289,7 +289,7 @@ theorem norm_commutantBlock_le_sqrt (T X : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] 
     _ = ‖remainderSqrt X J s.gram y‖ := one_mul _
 
 /-- Inclusion of a block into `K` has the same pointwise norm. -/
-theorem norm_subtype_commutantBlock (T X : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K)
+private theorem norm_subtype_commutantBlock (T X : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K)
     (s : CommutantLiftState T X J V) (y : K) :
     ‖((dilationDefectSpace T J V).subtypeL.comp (commutantBlock T X J V s)) y‖ =
       ‖commutantBlock T X J V s y‖ := by

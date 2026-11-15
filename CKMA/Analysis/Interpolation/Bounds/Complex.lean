@@ -58,12 +58,12 @@ def stripWeight (M₀ M₁ θ : ℝ) (z : ℂ) : ℂ :=
   Complex.exp ((z - ↑θ) * ↑(Real.log M₀ - Real.log M₁))
 
 /-- The weight equals `1` at the interpolation parameter. -/
-lemma stripWeight_self (M₀ M₁ θ : ℝ) : stripWeight M₀ M₁ θ θ = 1 := by
+private lemma stripWeight_self (M₀ M₁ θ : ℝ) : stripWeight M₀ M₁ θ θ = 1 := by
   unfold stripWeight
   rw [sub_self, zero_mul, Complex.exp_zero]
 
 /-- Modulus of the weight, for positive bases. -/
-lemma stripWeight_norm {M₀ M₁ θ : ℝ} (hM₀ : 0 < M₀) (hM₁ : 0 < M₁) (z : ℂ) :
+private lemma stripWeight_norm {M₀ M₁ θ : ℝ} (hM₀ : 0 < M₀) (hM₁ : 0 < M₁) (z : ℂ) :
     ‖stripWeight M₀ M₁ θ z‖ = M₀ ^ (z.re - θ) * M₁ ^ (θ - z.re) := by
   have hre : ((z - ↑θ) * ↑(Real.log M₀ - Real.log M₁)).re =
       (z.re - θ) * (Real.log M₀ - Real.log M₁) := by
@@ -75,18 +75,23 @@ lemma stripWeight_norm {M₀ M₁ θ : ℝ} (hM₀ : 0 < M₀) (hM₁ : 0 < M₁
     ← Real.rpow_def_of_pos hM₁]
 
 /-- The weight is entire. -/
-lemma stripWeight_differentiable (M₀ M₁ θ : ℝ) : Differentiable ℂ (stripWeight M₀ M₁ θ) := by
+lemma differentiable_stripWeight (M₀ M₁ θ : ℝ) :
+    Differentiable ℂ (stripWeight M₀ M₁ θ) := by
   unfold stripWeight
   refine (Complex.differentiable_exp (𝕜 := ℂ)).fun_comp ?_
   exact ((differentiable_id : Differentiable ℂ (id : ℂ → ℂ)).sub_const (θ : ℂ)).mul_const
     (↑(Real.log M₀ - Real.log M₁) : ℂ)
 
+@[deprecated (since := "2026-11-15")] alias stripWeight_differentiable := differentiable_stripWeight
+
 /-- The weight is continuous. -/
-lemma stripWeight_continuous (M₀ M₁ θ : ℝ) : Continuous (stripWeight M₀ M₁ θ) :=
-  (stripWeight_differentiable M₀ M₁ θ).continuous
+lemma continuous_stripWeight (M₀ M₁ θ : ℝ) : Continuous (stripWeight M₀ M₁ θ) :=
+  (differentiable_stripWeight M₀ M₁ θ).continuous
+
+@[deprecated (since := "2026-11-15")] alias stripWeight_continuous := continuous_stripWeight
 
 /-- On the closed strip the weight is bounded by `exp |log M₀ - log M₁|` when `θ ∈ [0, 1]`. -/
-lemma stripWeight_norm_le {M₀ M₁ θ : ℝ} (hθ : 0 ≤ θ) (hθ1 : θ ≤ 1) {z : ℂ} (hz0 : 0 ≤ z.re)
+private lemma stripWeight_norm_le {M₀ M₁ θ : ℝ} (hθ : 0 ≤ θ) (hθ1 : θ ≤ 1) {z : ℂ} (hz0 : 0 ≤ z.re)
     (hz1 : z.re ≤ 1) :
     ‖stripWeight M₀ M₁ θ z‖ ≤ Real.exp |Real.log M₀ - Real.log M₁| := by
   have hre : (z - ↑θ).re = z.re - θ := by rw [Complex.sub_re, Complex.ofReal_re]
@@ -107,12 +112,12 @@ lemma stripWeight_norm_le {M₀ M₁ θ : ℝ} (hθ : 0 ≤ θ) (hθ1 : θ ≤ 1
   exact Real.exp_le_exp.mpr hmul
 
 /-- Real part of a point on the right-hand edge of the strip. -/
-lemma re_one_add_ofReal_mul_I (t : ℝ) : (1 + (t : ℂ) * Complex.I).re = 1 := by
+private lemma re_one_add_ofReal_mul_I (t : ℝ) : (1 + (t : ℂ) * Complex.I).re = 1 := by
   rw [Complex.add_re, Complex.one_re, Complex.mul_I_re, Complex.ofReal_im, neg_zero]
   ring
 
 /-- On the left edge, the weight modulus times `M₀` is the interpolation factor. -/
-lemma stripWeight_norm_left_mul {M₀ M₁ θ : ℝ} (hM₀ : 0 < M₀) (hM₁ : 0 < M₁) (t : ℝ) :
+private lemma stripWeight_norm_left_mul {M₀ M₁ θ : ℝ} (hM₀ : 0 < M₀) (hM₁ : 0 < M₁) (t : ℝ) :
     ‖stripWeight M₀ M₁ θ ((t : ℂ) * Complex.I)‖ * M₀ = M₀ ^ (1 - θ) * M₁ ^ θ := by
   rw [stripWeight_norm hM₀ hM₁, Complex.mul_I_re, Complex.ofReal_im, neg_zero, zero_sub, sub_zero]
   have hpow : M₀ ^ (-θ) * M₀ = M₀ ^ (1 - θ) := by
@@ -125,7 +130,7 @@ lemma stripWeight_norm_left_mul {M₀ M₁ θ : ℝ} (hM₀ : 0 < M₀) (hM₁ :
     _ = M₀ ^ (1 - θ) * M₁ ^ θ := by rw [hpow]
 
 /-- On the right edge, the weight modulus times `M₁` is the interpolation factor. -/
-lemma stripWeight_norm_right_mul {M₀ M₁ θ : ℝ} (hM₀ : 0 < M₀) (hM₁ : 0 < M₁) (t : ℝ) :
+private lemma stripWeight_norm_right_mul {M₀ M₁ θ : ℝ} (hM₀ : 0 < M₀) (hM₁ : 0 < M₁) (t : ℝ) :
     ‖stripWeight M₀ M₁ θ (1 + (t : ℂ) * Complex.I)‖ * M₁ = M₀ ^ (1 - θ) * M₁ ^ θ := by
   rw [stripWeight_norm hM₀ hM₁, re_one_add_ofReal_mul_I]
   have hpow : M₁ ^ (θ - 1) * M₁ = M₁ ^ θ := by
@@ -138,7 +143,7 @@ lemma stripWeight_norm_right_mul {M₀ M₁ θ : ℝ} (hM₀ : 0 < M₀) (hM₁ 
     _ = M₀ ^ (1 - θ) * M₁ ^ θ := by rw [hpow]
 
 /-- Equal real parts give the same weight modulus. -/
-lemma stripWeight_norm_eq_of_re_eq {M₀ M₁ θ : ℝ} {z w : ℂ} (h : z.re = w.re) :
+private lemma stripWeight_norm_eq_of_re_eq {M₀ M₁ θ : ℝ} {z w : ℂ} (h : z.re = w.re) :
     ‖stripWeight M₀ M₁ θ z‖ = ‖stripWeight M₀ M₁ θ w‖ := by
   rw [stripWeight, stripWeight, Complex.norm_exp, Complex.norm_exp]
   congr 1
@@ -163,21 +168,21 @@ private lemma bddAbove_norm_cocompact {E : Type*} [NormedAddCommGroup E] {f : C(
     exact hle.trans (le_max_right _ _)
 
 /-- Norms of the left boundary are at most the boundary norm. -/
-lemma norm_leftBoundary_le_boundaryNorm (F : InterpolationStripFunction C) (t : ℝ) :
+private lemma norm_leftBoundary_le_boundaryNorm (F : InterpolationStripFunction C) (t : ℝ) :
     ‖F.leftBoundary t‖ ≤ F.boundaryNorm := by
   refine (le_csSup (bddAbove_norm_cocompact F.left_zero) (mem_range_self t)).trans ?_
   rw [InterpolationStripFunction.boundaryNorm]
   exact le_max_left _ _
 
 /-- Norms of the right boundary are at most the boundary norm. -/
-lemma norm_rightBoundary_le_boundaryNorm (F : InterpolationStripFunction C) (t : ℝ) :
+private lemma norm_rightBoundary_le_boundaryNorm (F : InterpolationStripFunction C) (t : ℝ) :
     ‖F.rightBoundary t‖ ≤ F.boundaryNorm := by
   refine (le_csSup (bddAbove_norm_cocompact F.right_zero) (mem_range_self t)).trans ?_
   rw [InterpolationStripFunction.boundaryNorm]
   exact le_max_right _ _
 
 /-- The boundary norm is nonnegative. -/
-lemma boundaryNorm_nonneg (F : InterpolationStripFunction C) : 0 ≤ F.boundaryNorm :=
+private lemma boundaryNorm_nonneg (F : InterpolationStripFunction C) : 0 ≤ F.boundaryNorm :=
   (norm_nonneg (F.leftBoundary 0)).trans (norm_leftBoundary_le_boundaryNorm F 0)
 
 /-- Left boundary of the weighted target strip function. -/
@@ -186,7 +191,7 @@ def weightedLeftBoundary (T : CoupleMap C D) (M₀ M₁ θ : ℝ) (F : Interpola
   toFun t := stripWeight M₀ M₁ θ ((t : ℂ) * Complex.I) • T.leftMap (F.leftBoundary t)
   continuous_toFun := by
     have hw : Continuous fun t : ℝ => stripWeight M₀ M₁ θ ((t : ℂ) * Complex.I) :=
-      (stripWeight_continuous M₀ M₁ θ).comp (Complex.continuous_ofReal.mul continuous_const)
+      (continuous_stripWeight M₀ M₁ θ).comp (Complex.continuous_ofReal.mul continuous_const)
     exact hw.smul (T.leftMap.continuous.comp F.leftBoundary.continuous)
 
 /-- Right boundary of the weighted target strip function. -/
@@ -196,7 +201,7 @@ def weightedRightBoundary (T : CoupleMap C D) (M₀ M₁ θ : ℝ) (F : Interpol
     stripWeight M₀ M₁ θ (1 + (t : ℂ) * Complex.I) • T.rightMap (F.rightBoundary t)
   continuous_toFun := by
     have hw : Continuous fun t : ℝ => stripWeight M₀ M₁ θ (1 + (t : ℂ) * Complex.I) :=
-      (stripWeight_continuous M₀ M₁ θ).comp
+      (continuous_stripWeight M₀ M₁ θ).comp
         ((continuous_const.add (Complex.continuous_ofReal.mul continuous_const)))
     exact hw.smul (T.rightMap.continuous.comp F.rightBoundary.continuous)
 
@@ -262,8 +267,8 @@ lemma weightedRightBoundary_zero (T : CoupleMap C D) (M₀ M₁ θ : ℝ)
   exact squeeze_zero_norm hineq hlim
 
 /-- The weighted composition is bounded on the closed strip. -/
-lemma weightedStrip_bounded (T : CoupleMap C D) {θ : ℝ} (hθ : 0 < θ) (hθ1 : θ < 1) (M₀ M₁ : ℝ)
-    (F : InterpolationStripFunction C) :
+lemma weightedStrip_bounded (T : CoupleMap C D) {θ : ℝ} (hθ : 0 < θ) (hθ1 : θ < 1)
+    (M₀ M₁ : ℝ) (F : InterpolationStripFunction C) :
     ∃ M : ℝ, ∀ z : ℂ, 0 ≤ z.re → z.re ≤ 1 →
       ‖stripWeight M₀ M₁ θ z • T.ambientMap (F.toFun z)‖ ≤ M := by
   obtain ⟨M, hM⟩ := F.bounded
@@ -281,8 +286,8 @@ lemma weightedStrip_bounded (T : CoupleMap C D) {θ : ℝ} (hθ : 0 < θ) (hθ1 
     _ = Real.exp |Real.log M₀ - Real.log M₁| * ‖T.ambientMap‖ * M := by rw [← mul_assoc]
 
 /-- Left boundary agreement for the weighted composition. -/
-lemma weightedStrip_left_eq (T : CoupleMap C D) (M₀ M₁ θ : ℝ) (F : InterpolationStripFunction C)
-    (t : ℝ) :
+lemma weightedStrip_left_eq (T : CoupleMap C D) (M₀ M₁ θ : ℝ)
+    (F : InterpolationStripFunction C) (t : ℝ) :
     stripWeight M₀ M₁ θ ((t : ℂ) * Complex.I) • T.ambientMap (F.toFun ((t : ℂ) * Complex.I)) =
       D.inLeft (weightedLeftBoundary T M₀ M₁ θ F t) := by
   have hfun : weightedLeftBoundary T M₀ M₁ θ F t =
@@ -291,8 +296,8 @@ lemma weightedStrip_left_eq (T : CoupleMap C D) (M₀ M₁ θ : ℝ) (F : Interp
   exact (D.inLeft.map_smul _ _).symm
 
 /-- Right boundary agreement for the weighted composition. -/
-lemma weightedStrip_right_eq (T : CoupleMap C D) (M₀ M₁ θ : ℝ) (F : InterpolationStripFunction C)
-    (t : ℝ) :
+lemma weightedStrip_right_eq (T : CoupleMap C D) (M₀ M₁ θ : ℝ)
+    (F : InterpolationStripFunction C) (t : ℝ) :
     stripWeight M₀ M₁ θ (1 + (t : ℂ) * Complex.I) •
         T.ambientMap (F.toFun (1 + (t : ℂ) * Complex.I)) =
       D.inRight (weightedRightBoundary T M₀ M₁ θ F t) := by
@@ -306,10 +311,10 @@ def weightedStrip (T : CoupleMap C D) {θ : ℝ} (hθ : 0 < θ) (hθ1 : θ < 1) 
     (F : InterpolationStripFunction C) : InterpolationStripFunction D where
   toFun z := stripWeight M₀ M₁ θ z • T.ambientMap (F.toFun z)
   continuousOn := by
-    refine ContinuousOn.smul (stripWeight_continuous M₀ M₁ θ).continuousOn ?_
+    refine ContinuousOn.smul (continuous_stripWeight M₀ M₁ θ).continuousOn ?_
     exact T.ambientMap.continuous.comp_continuousOn F.continuousOn
   differentiableOn := by
-    refine DifferentiableOn.smul (stripWeight_differentiable M₀ M₁ θ).differentiableOn ?_
+    refine DifferentiableOn.smul (differentiable_stripWeight M₀ M₁ θ).differentiableOn ?_
     exact T.ambientMap.differentiable.comp_differentiableOn F.differentiableOn
   bounded := weightedStrip_bounded T hθ hθ1 M₀ M₁ F
   leftBoundary := weightedLeftBoundary T M₀ M₁ θ F

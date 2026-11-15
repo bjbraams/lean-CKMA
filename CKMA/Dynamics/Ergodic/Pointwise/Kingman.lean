@@ -50,17 +50,17 @@ def kingmanIntegral (f : ℕ → Ω → ℝ) (μ : Measure Ω) (n : ℕ) : ℝ :
   if n = 0 then 0 else ∫ ω, f n ω ∂μ
 
 /-- Positive-length integrals ignore the artificial zero value. -/
-lemma kingmanIntegral_pos {f : ℕ → Ω → ℝ} {n : ℕ} (hn : n ≠ 0) :
+private lemma kingmanIntegral_pos {f : ℕ → Ω → ℝ} {n : ℕ} (hn : n ≠ 0) :
     kingmanIntegral f μ n = ∫ ω, f n ω ∂μ := by
   simp [kingmanIntegral, hn]
 
 /-- Normalized positive-length integrals are the ratios in the mean-rate infimum. -/
-lemma kingmanIntegral_div {f : ℕ → Ω → ℝ} {n : ℕ} (hn : 0 < n) :
+private lemma kingmanIntegral_div {f : ℕ → Ω → ℝ} {n : ℕ} (hn : 0 < n) :
     kingmanIntegral f μ n / n = (n : ℝ)⁻¹ * ∫ ω, f n ω ∂μ := by
   rw [kingmanIntegral_pos hn.ne', div_eq_mul_inv, mul_comm]
 
 /-- Subadditivity passes to integrals along a measure-preserving map. -/
-lemma kingmanIntegral_add_le (hT : MeasurePreserving T μ μ) {f : ℕ → Ω → ℝ}
+private lemma kingmanIntegral_add_le (hT : MeasurePreserving T μ μ) {f : ℕ → Ω → ℝ}
     (hf : ∀ n : ℕ, 0 < n → Integrable (f n) μ)
     (hsub : ∀ n m : ℕ, 0 < n → 0 < m → ∀ᵐ ω ∂μ,
       f (n + m) ω ≤ f n ω + f m ((T^[n]) ω))
@@ -101,7 +101,7 @@ lemma kingmanIntegral_subadditive (hT : MeasurePreserving T μ μ) {f : ℕ → 
       exact kingmanIntegral_add_le hT hf hsub (Nat.succ_pos m) (Nat.succ_pos n)
 
 /-- A uniform lower bound on normalized integrals bounds every ratio, including the zero term. -/
-lemma kingmanIntegral_bddBelow {f : ℕ → Ω → ℝ}
+private lemma kingmanIntegral_bddBelow {f : ℕ → Ω → ℝ}
     (hlower : ∃ c : ℝ, ∀ n : ℕ, 0 < n → c ≤ (n : ℝ)⁻¹ * ∫ ω, f n ω ∂μ) :
     BddBelow (range fun n => kingmanIntegral f μ n / n) := by
   obtain ⟨c, hc⟩ := hlower
@@ -115,7 +115,7 @@ lemma kingmanIntegral_bddBelow {f : ℕ → Ω → ℝ}
       (kingmanIntegral_div (Nat.succ_pos n)).symm)
 
 /-- The Fekete infimum is exactly the infimum of the positive normalized integrals. -/
-lemma kingmanIntegral_lim_eq (hT : MeasurePreserving T μ μ) {f : ℕ → Ω → ℝ}
+private lemma kingmanIntegral_lim_eq (hT : MeasurePreserving T μ μ) {f : ℕ → Ω → ℝ}
     (hf : ∀ n : ℕ, 0 < n → Integrable (f n) μ)
     (hsub : ∀ n m : ℕ, 0 < n → 0 < m → ∀ᵐ ω ∂μ,
       f (n + m) ω ≤ f n ω + f m ((T^[n]) ω)) :
@@ -150,7 +150,7 @@ lemma tendsto_kingmanIntegral_div (hT : MeasurePreserving T μ μ) {f : ℕ → 
   rw [kingmanIntegral_div (Nat.succ_pos n), Nat.cast_succ]
 
 /-- A coefficient tending to `1` preserves liminf for a nonnegative sequence. -/
-lemma liminf_mul_tendsto_one_nonneg {w c : ℕ → ℝ} (hw : ∀ n, 0 ≤ w n)
+private lemma liminf_mul_tendsto_one_nonneg {w c : ℕ → ℝ} (hw : ∀ n, 0 ≤ w n)
     (hc : Tendsto c atTop (𝓝 (1 : ℝ))) (hc_pos : ∀ᶠ n in atTop, 0 < c n) :
     liminf (fun n => ((c n * w n : ℝ) : EReal)) atTop =
       liminf (fun n => (w n : EReal)) atTop := by

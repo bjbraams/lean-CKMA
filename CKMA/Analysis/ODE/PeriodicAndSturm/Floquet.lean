@@ -48,11 +48,12 @@ operators at all times.
 
 ## Main results
 
-* `CKMA.fundamental_monodromy`: Shifting a normalized fundamental operator by one period `T`
-  multiplies on the right by `U T`.
-* `CKMA.fundamental_det_ne_zero`: Liouville's formula implies that the determinant of a complex
-  fundamental operator never vanishes.
-* `CKMA.fundamental_isInvertible`: A complex fundamental operator is invertible at every time.
+* `CKMA.IsFundamentalOperator.add_period_eq_mul`: Shifting a normalized fundamental operator
+  by one period `T` multiplies on the right by `U T`.
+* `CKMA.IsFundamentalOperator.det_ne_zero`: Liouville's formula implies that the determinant of
+  a complex fundamental operator never vanishes.
+* `CKMA.IsFundamentalOperator.isInvertible`: A complex fundamental operator is invertible at
+  every time.
 -/
 
 @[expose] public section
@@ -98,7 +99,7 @@ private lemma hasDerivAt_mul_right {𝕜 E : Type*} [RCLike 𝕜] [NormedAddComm
   exact isLittleO_mul_right c hU.isLittleO
 
 /-- Shifting a normalized fundamental operator by one period multiplies on the right by `U T`. -/
-lemma fundamental_monodromy {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E]
+lemma IsFundamentalOperator.add_period_eq_mul {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E]
     [NormedSpace 𝕜 E] [NormedSpace ℝ E] {A U : ℝ → E →L[𝕜] E} {T : ℝ} (hA : Continuous A)
     (hperiod : Function.Periodic A T) (hU : IsFundamentalOperator A U) (t : ℝ) :
     U (t + T) = U t * U T := by
@@ -275,7 +276,7 @@ private lemma continuous_toMatrix_entry {E : Type*} [NormedAddCommGroup E] [Norm
   rw [LinearMap.toMatrix_apply, ContinuousLinearMap.coe_coe, ← basis_coord_apply]
 
 /-- The determinant of a complex fundamental operator never vanishes. -/
-lemma fundamental_det_ne_zero {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
+lemma IsFundamentalOperator.det_ne_zero {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
     [NormedSpace ℝ E] [FiniteDimensional ℂ E] {A U : ℝ → E →L[ℂ] E} (hA : Continuous A)
     (hU : IsFundamentalOperator A U) (t : ℝ) : (U t).det ≠ 0 := by
   let b := Module.finBasis ℂ E
@@ -324,10 +325,10 @@ lemma fundamental_det_ne_zero {E : Type*} [NormedAddCommGroup E] [NormedSpace �
   exact hdetU ▸ hdetM
 
 /-- A complex fundamental operator is invertible at every time. -/
-lemma fundamental_isInvertible {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
+lemma IsFundamentalOperator.isInvertible {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
     [NormedSpace ℝ E] [FiniteDimensional ℂ E] {A U : ℝ → E →L[ℂ] E} (hA : Continuous A)
     (hU : IsFundamentalOperator A U) (t : ℝ) : (U t).IsInvertible := by
-  have hdet := fundamental_det_ne_zero hA hU t
+  have hdet := hU.det_ne_zero hA t
   have hequiv := ContinuousLinearMap.isInvertible_equiv
     (f := (U t).toContinuousLinearEquivOfDetNeZero hdet)
   simpa [ContinuousLinearMap.coe_toContinuousLinearEquivOfDetNeZero] using hequiv

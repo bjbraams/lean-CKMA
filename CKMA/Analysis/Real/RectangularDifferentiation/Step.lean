@@ -25,7 +25,7 @@ logarithmic kernel turns that distribution into the endpoint growth of order `n 
 
 ## Main results
 
-* `CKMA.strongMaximal_step`: inductive step raising the dimension and logarithmic exponent in the
+* `strongMaximal_step`: inductive step raising the dimension and logarithmic exponent in the
   Jessen–Marcinkiewicz–Zygmund inequality.
 * `CKMA.strongMaximal_orlicz`: the global Orlicz weak-type bound for `strongMaximalFunction` in all
   dimensions `d ≥ 1`.
@@ -41,7 +41,7 @@ open MeasureTheory Set
 open scoped ENNReal intervalIntegral
 
 /-- A nonnegative extended number bounded by every positive real is zero. -/
-theorem eq_zero_of_forall_le_ofReal {c : ℝ≥0∞}
+private theorem eq_zero_of_forall_le_ofReal {c : ℝ≥0∞}
     (h : ∀ ε : ℝ, 0 < ε → c ≤ ENNReal.ofReal ε) : c = 0 := by
   by_cases htop : c = ∞
   · have hle := h 1 one_pos
@@ -64,7 +64,7 @@ theorem strongMaximalGrowth_nonneg {d : ℕ} {u : ℝ} (hu : 0 ≤ u) :
   le_trans hu (strongMaximalGrowth_ge_self hu)
 
 /-- Passing from height `k` back to height `a` costs a single logarithm. -/
-theorem strongMaximalGrowth_height_le {n k : ℕ} (hk : 1 ≤ k) {a v : ℝ} (ha : 0 < a)
+private theorem strongMaximalGrowth_height_le {n k : ℕ} (hk : 1 ≤ k) {a v : ℝ} (ha : 0 < a)
     (hv : 0 ≤ v) :
     strongMaximalGrowth n (v / k) ≤
       (a / (k : ℝ)) * (1 + |Real.log a|) ^ (n - 1) *
@@ -83,7 +83,8 @@ theorem strongMaximalGrowth_height_le {n k : ℕ} (hk : 1 ≤ k) {a v : ℝ} (ha
 
 /-- The ratio `2v / t` stays positive and continuous on a compact interval bounded away from zero,
 so the endpoint growth in that ratio is continuous. -/
-theorem continuousOn_strongMaximalGrowth_ratio {n : ℕ} {v c d : ℝ} (hc : 0 < c) (hv : 0 < v) :
+private theorem continuousOn_strongMaximalGrowth_ratio {n : ℕ} {v c d : ℝ} (hc : 0 < c)
+    (hv : 0 < v) :
     ContinuousOn (fun t ↦ strongMaximalGrowth n (2 * v / t)) (Icc c d) := by
   have hratio : ContinuousOn (fun t : ℝ ↦ 2 * v / t) (Icc c d) :=
     (continuous_const.continuousOn).div continuous_id.continuousOn fun t ht ↦
@@ -101,14 +102,14 @@ theorem continuousOn_strongMaximalGrowth_ratio {n : ℕ} {v c d : ℝ} (hc : 0 <
   exact hratio.mul ((continuousOn_const.add hmax).pow _)
 
 /-- The partial maximal function, replaced by zero at infinity and on the half-height set. -/
-def truncatedPartialReal {n : ℕ} (f : (Fin (n + 1) → ℝ) → ℝ) (a : ℝ)
+private def truncatedPartialReal {n : ℕ} (f : (Fin (n + 1) → ℝ) → ℝ) (a : ℝ)
     (p : ℝ × (Fin n → ℝ)) : ℝ :=
   if partialStrongMax f p.1 p.2 = ∞ then 0
   else if ENNReal.ofReal (a / 2) < partialStrongMax f p.1 p.2 then
     (partialStrongMax f p.1 p.2).toReal else 0
 
 /-- The real truncation of the partial maximal function is measurable. -/
-theorem measurable_truncatedPartialReal {n : ℕ} (hn : 0 < n)
+private theorem measurable_truncatedPartialReal {n : ℕ} (hn : 0 < n)
     {f : (Fin (n + 1) → ℝ) → ℝ} (hf : Measurable f) (a : ℝ) :
     Measurable (truncatedPartialReal f a) := by
   have hT : Measurable fun p : ℝ × (Fin n → ℝ) ↦ partialStrongMax f p.1 p.2 :=
@@ -120,7 +121,7 @@ theorem measurable_truncatedPartialReal {n : ℕ} (hn : 0 < n)
 
 /-- A finite Orlicz integral of order `n + 1` forces the partial maximal function to be finite
 almost everywhere. -/
-theorem partialStrongMax_top_null {n : ℕ} (hn : 1 ≤ n) {C : ℝ} (hC : 0 < C)
+private theorem partialStrongMax_top_null {n : ℕ} (hn : 1 ≤ n) {C : ℝ} (hC : 0 < C)
     (hIH : ∀ (g : (Fin n → ℝ) → ℝ), Measurable g → ∀ b : ℝ, 0 < b →
       volume {z | ENNReal.ofReal b < strongMaximalFunction g z} ≤
         ENNReal.ofReal C *
@@ -150,7 +151,7 @@ theorem partialStrongMax_top_null {n : ℕ} (hn : 1 ≤ n) {C : ℝ} (hC : 0 < C
     have hinf : partialStrongMax f p.1 p.2 = ∞ := by simpa [N, mem_ofPred_eq] using hp
     rw [hinf]
     exact ENNReal.ofReal_lt_top
-  have hdist := partial_distribution hn hIH hf
+  have hdist := volume_partialStrongMax_gt_le hn hIH hf
     (show 0 < (k : ℝ) by exact_mod_cast (lt_trans zero_lt_one hk1))
   have hgrow : ∫⁻ x, ENNReal.ofReal (strongMaximalGrowth n (|f x| / k)) ≤
       ENNReal.ofReal ((a / (k : ℝ)) * (1 + |Real.log a|) ^ (n - 1)) * I := by
@@ -211,7 +212,7 @@ theorem partialStrongMax_top_null {n : ℕ} (hn : 1 ≤ n) {C : ℝ} (hC : 0 < C
 
 /-- Off the null set where a slice maximal function is infinite, truncation does not change the
 integral. -/
-theorem lintegral_truncatedPartial_eq {n : ℕ} (hn : 0 < n)
+private theorem lintegral_truncatedPartial_eq {n : ℕ} (hn : 0 < n)
     {f : (Fin (n + 1) → ℝ) → ℝ} (hf : Measurable f) {a : ℝ}
     (hnull : volume {p : ℝ × (Fin n → ℝ) | partialStrongMax f p.1 p.2 = ∞} = 0) :
     ∫⁻ p : ℝ × (Fin n → ℝ), truncatedPartial f a p.1 p.2 =
@@ -267,7 +268,7 @@ theorem lintegral_truncatedPartial_eq {n : ℕ} (hn : 0 < n)
       lintegral_add_compl _ hN
 
 /-- The tail integral in the last coordinate is at most the logarithmic kernel. -/
-theorem slice_tail_integral_le {n : ℕ} {a v : ℝ} (ha : 0 < a) (hv : 0 ≤ v) :
+private theorem slice_tail_integral_le {n : ℕ} {a v : ℝ} (ha : 0 < a) (hv : 0 ≤ v) :
     ∫⁻ t : ℝ, (if a / 2 < t ∧ t / 2 < v then
         ENNReal.ofReal (strongMaximalGrowth n (2 * v / t)) else 0) ≤
       ENNReal.ofReal (if v ≤ a / 4 then 0 else
@@ -367,7 +368,7 @@ theorem slice_tail_integral_le {n : ℕ} {a v : ℝ} (ha : 0 < a) (hv : 0 ≤ v)
     simp [hv4]
 
 /-- The scaled kernel, written with extended nonnegative values. -/
-theorem iteration_ofReal_le {n : ℕ} (hn : 1 ≤ n) {a v : ℝ} (ha : 0 < a) (hv : 0 ≤ v) :
+private theorem iteration_ofReal_le {n : ℕ} (hn : 1 ≤ n) {a v : ℝ} (ha : 0 < a) (hv : 0 ≤ v) :
     ENNReal.ofReal ((a / 2) * strongMaximalGrowth n (2 * v / a)) +
       ENNReal.ofReal (if v ≤ a / 4 then 0 else
         ∫ t in (a / 2)..(2 * v), strongMaximalGrowth n (2 * v / t)) ≤
@@ -390,7 +391,7 @@ theorem iteration_ofReal_le {n : ℕ} (hn : 1 ≤ n) {a v : ℝ} (ha : 0 < a) (h
 
 /-- The distribution inequality in dimension `n + 1`, obtained from dimension `n` by one
 application of the kernel. -/
-theorem strongMaximal_step {n : ℕ} (hn : 1 ≤ n) {C : ℝ} (hC : 0 < C)
+private theorem strongMaximal_step {n : ℕ} (hn : 1 ≤ n) {C : ℝ} (hC : 0 < C)
     (hIH : ∀ (g : (Fin n → ℝ) → ℝ), Measurable g → ∀ b : ℝ, 0 < b →
       volume {z | ENNReal.ofReal b < strongMaximalFunction g z} ≤
         ENNReal.ofReal C *
@@ -454,7 +455,7 @@ theorem strongMaximal_step {n : ℕ} (hn : 1 ≤ n) {C : ℝ} (hC : 0 < C)
           rw [Real.volume_Ioc]
           congr 1
           ring_nf
-    have hdist := partial_distribution hn hIH hf hhalf
+    have hdist := volume_partialStrongMax_gt_le hn hIH hf hhalf
     have hquot : ∀ x, |f x| / (a / 2) = 2 * |f x| / a := by
       intro x
       field_simp [ha.ne']
@@ -500,7 +501,7 @@ theorem strongMaximal_step {n : ℕ} (hn : 1 ≤ n) {C : ℝ} (hC : 0 < C)
         volume {p | t < truncatedPartialReal f a p} ≤
           ENNReal.ofReal C * ∫⁻ x, tailφ t x := by
       intro t ht
-      refine le_trans (measure_mono ?_) ((partial_distribution_trunc hn hIH hf
+      refine le_trans (measure_mono ?_) ((volume_partialStrongMax_gt_le_trunc hn hIH hf
         (lt_trans hhalf ht)).trans ?_)
       · intro p hp
         simp only [mem_ofPred_eq] at hp ⊢
@@ -516,10 +517,10 @@ theorem strongMaximal_step {n : ℕ} (hn : 1 ≤ n) {C : ℝ} (hC : 0 < C)
       · refine mul_le_mul' le_rfl ?_
         refine lintegral_mono fun x ↦ ?_
         by_cases hx : t / 2 < |f x|
-        · have habs : |truncAt t f x| = |f x| := by
-            unfold truncAt
+        · have habs : |halfLevelTrunc t f x| = |f x| := by
+            unfold halfLevelTrunc
             rw [ite_eq_left hx]
-          have hdiv : |truncAt t f x| / (t / 2) = 2 * |f x| / t := by
+          have hdiv : |halfLevelTrunc t f x| / (t / 2) = 2 * |f x| / t := by
             rw [habs]
             field_simp [show t ≠ 0 by linarith]
           have htailx : tailφ t x =
@@ -527,8 +528,8 @@ theorem strongMaximal_step {n : ℕ} (hn : 1 ≤ n) {C : ℝ} (hC : 0 < C)
             unfold tailφ
             rw [ite_eq_left ⟨ht, hx⟩]
           rw [hdiv, htailx]
-        · have hzero : truncAt t f x = 0 := by
-            unfold truncAt
+        · have hzero : halfLevelTrunc t f x = 0 := by
+            unfold halfLevelTrunc
             rw [ite_eq_right hx]
           have hnot : ¬ (a / 2 < t ∧ t / 2 < |f x|) := fun h ↦ hx h.2
           have htailx : tailφ t x = 0 := by

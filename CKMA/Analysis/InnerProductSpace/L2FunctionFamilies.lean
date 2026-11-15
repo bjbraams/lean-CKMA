@@ -43,7 +43,7 @@ a.e. equivalence classes, and frame energies are extended nonnegative sums over 
 
 * `CKMA.inner_l2FamilyVectors`: integral formula for inner products with `l2FamilyVectors`.
 * `CKMA.isL2FrameFamily_iff_isFrame`: equivalence between `IsL2FrameFamily` and `IsFrame`.
-* `CKMA.IsL2RieszBasis.isFrameFamily`: every `L²` Riesz basis is an `L²` frame family.
+* `CKMA.IsL2RieszBasis.isL2FrameFamily`: every `L²` Riesz basis is an `L²` frame family.
 -/
 
 @[expose] public section
@@ -100,8 +100,11 @@ def IsL2RieszBasis {X ι : Type*} [MeasurableSpace X]
   IsL2RieszSequence μ f ∧ IsL2CompleteFamily μ f
 
 /-- A Riesz basis has the finite-coefficient bounds of a Riesz sequence. -/
-theorem IsL2RieszBasis.isRieszSequence {X ι : Type*} [MeasurableSpace X]
+theorem IsL2RieszBasis.isL2RieszSequence {X ι : Type*} [MeasurableSpace X]
     {μ : Measure X} {f : ι → X → 𝕜} (hf : IsL2RieszBasis μ f) : IsL2RieszSequence μ f := hf.1
+
+@[deprecated (since := "2026-11-15")]
+alias IsL2RieszBasis.isRieszSequence := IsL2RieszBasis.isL2RieszSequence
 
 /-- Frame inequalities for a family of actual measurable L2 representatives. -/
 def IsL2FrameFamily {X ι : Type*} [MeasurableSpace X]
@@ -290,7 +293,7 @@ private theorem l2FiniteSynthesis_norm_bounds (f : ι → X → 𝕜) (hf : ∀ 
 end L2RieszFrame
 
 /-- Every Riesz basis is a frame in its whole Hilbert space. -/
-theorem IsL2RieszBasis.isFrameFamily {X ι : Type*} [MeasurableSpace X]
+theorem IsL2RieszBasis.isL2FrameFamily {X ι : Type*} [MeasurableSpace X]
     {μ : Measure X} {f : ι → X → 𝕜} (hf : IsL2RieszBasis μ f) : IsL2FrameFamily μ f := by
   let : DecidableEq ι := Classical.decEq ι
   rcases hf with ⟨⟨hmem, A, B, hA, hAB, hbounds⟩, hcomp⟩
@@ -369,5 +372,8 @@ theorem IsL2RieszBasis.isFrameFamily {X ι : Type*} [MeasurableSpace X]
     rw [ContinuousLinearMap.adjoint_adjoint]
     exact hsurj
   exact (isL2FrameFamily_iff_isFrame f hmem).2 (hC.isFrame_of_surjective_adjoint hsurjAdj)
+
+@[deprecated (since := "2026-11-15")]
+alias IsL2RieszBasis.isFrameFamily := IsL2RieszBasis.isL2FrameFamily
 
 end CKMA

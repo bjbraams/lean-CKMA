@@ -67,7 +67,7 @@ lemma charFun_convolutionPower (μ : Measure ℝ) [IsProbabilityMeasure μ] (n :
       rw [convolutionPower, charFun_conv, ih, pow_succ, mul_comm]
 
 /-- A finite measure of real total mass zero is the zero measure. -/
-lemma eq_zero_of_measure_real_univ_eq_zero {α : Type*} [MeasurableSpace α] {μ : Measure α}
+private lemma eq_zero_of_measure_real_univ_eq_zero {α : Type*} [MeasurableSpace α] {μ : Measure α}
     [IsFiniteMeasure μ] (h : μ.real Set.univ = 0) : μ = 0 := by
   refine Measure.ext fun s hs => ?_
   have htop : μ Set.univ ≠ ∞ := measure_ne_top μ _
@@ -75,12 +75,14 @@ lemma eq_zero_of_measure_real_univ_eq_zero {α : Type*} [MeasurableSpace α] {μ
     rw [← ENNReal.ofReal_toReal htop, ← Measure.real, h, ENNReal.ofReal_zero]
   exact le_antisymm ((measure_mono (Set.subset_univ s)).trans_eq huniv) bot_le
 
+namespace InfinitelyDivisible
+
 /-- Poisson weight `exp(-c) cⁿ / n!`, as an extended nonnegative real. -/
 def poissonWeight (c : ℝ) (n : ℕ) : ℝ≥0∞ :=
   ENNReal.ofReal (Real.exp (-c) * c ^ n / (n)!)
 
 /-- The Poisson weights of a nonnegative intensity sum to one. -/
-lemma poissonWeight_tsum {c : ℝ} (hc : 0 ≤ c) : ∑' n, poissonWeight c n = 1 := by
+private lemma poissonWeight_tsum {c : ℝ} (hc : 0 ≤ c) : ∑' n, poissonWeight c n = 1 := by
   have hnn : ∀ n, 0 ≤ Real.exp (-c) * c ^ n / (n)! := fun _ => by positivity
   have hsum : Summable fun n : ℕ => Real.exp (-c) * c ^ n / (n)! :=
     ((Real.summable_pow_div_factorial c).mul_left (Real.exp (-c))).congr fun n =>
@@ -106,7 +108,7 @@ def normalizedJump (lam : Measure ℝ) : Measure ℝ :=
   if c = 0 then Measure.dirac 0 else (ENNReal.ofReal c)⁻¹ • lam
 
 /-- The normalized jump of a finite measure is a probability measure. -/
-lemma isProbabilityMeasure_normalizedJump {lam : Measure ℝ} [IsFiniteMeasure lam] :
+private lemma isProbabilityMeasure_normalizedJump {lam : Measure ℝ} [IsFiniteMeasure lam] :
     IsProbabilityMeasure (normalizedJump lam) := by
   by_cases hc : lam.real Set.univ = 0
   · rw [normalizedJump, ite_eq_left hc]
@@ -122,6 +124,10 @@ lemma isProbabilityMeasure_normalizedJump {lam : Measure ℝ} [IsFiniteMeasure l
     rw [hcoe, smul_eq_mul, ENNReal.inv_mul_cancel]
     · exact ne_of_gt ((ENNReal.ofReal_pos).2 hcpos)
     · exact ENNReal.ofReal_ne_top
+
+end InfinitelyDivisible
+
+open InfinitelyDivisible
 
 /-- The compound Poisson law of a finite intensity on `ℝ`. -/
 def compoundPoisson (lam : Measure ℝ) [IsFiniteMeasure lam] : Measure ℝ :=
@@ -142,7 +148,7 @@ lemma isProbabilityMeasure_compoundPoisson {lam : Measure ℝ} [IsFiniteMeasure 
   exact poissonWeight_tsum ENNReal.toReal_nonneg
 
 /-- The exponential series weighted by Poisson probabilities sums to `exp(c(z - 1))`. -/
-lemma tsum_poisson_mul_pow (c : ℝ) (z : ℂ) :
+private lemma tsum_poisson_mul_pow (c : ℝ) (z : ℂ) :
     ∑' n : ℕ, (Real.exp (-c) * c ^ n / (n)! : ℂ) * z ^ n = exp (c * (z - 1)) := by
   have hsum : HasSum (fun n : ℕ => ((c : ℂ) * z) ^ n / (n)!) (exp ((c : ℂ) * z)) := by
     simpa [← Complex.exp_eq_exp_ℂ] using
@@ -158,7 +164,7 @@ lemma tsum_poisson_mul_pow (c : ℝ) (z : ℂ) :
   ring
 
 /-- `c` times one less than the normalized characteristic function is the compensated integral. -/
-lemma mul_charFun_normalizedJump_sub_one {lam : Measure ℝ} [IsFiniteMeasure lam] (t : ℝ) :
+private lemma mul_charFun_normalizedJump_sub_one {lam : Measure ℝ} [IsFiniteMeasure lam] (t : ℝ) :
     (lam.real Set.univ : ℂ) * (charFun (normalizedJump lam) t - 1) =
       ∫ x, exp (I * t * x) - 1 ∂lam := by
   set c : ℝ := lam.real Set.univ

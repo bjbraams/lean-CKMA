@@ -27,7 +27,7 @@ for the complements of preimages of rational intervals, followed by countable in
 
 * `CKMA.hasDensityZeroAt_iff_of_isLocallyFiniteMeasure`: for a locally finite measure, density
   zero is the vanishing limit of relative ball masses.
-* `CKMA.ae_hasDensityZeroAt_of_not_mem`: almost every point outside a measurable set is a
+* `CKMA.ae_hasDensityZeroAt_of_notMem`: almost every point outside a measurable set is a
   density-zero point of that set.
 * `CKMA.ae_approximatelyContinuousAt` (**05.30**): Lusin–Denjoy theorem that every finite
   measurable real function is approximately continuous almost everywhere.
@@ -75,7 +75,7 @@ theorem HasDensityZeroAt.mono {μ : Measure E} {s t : Set E} {x : E}
   exact ENNReal.div_le_div_right (measure_mono (Set.inter_subset_inter_left _ hst)) _
 
 /-- Almost every point outside a measurable set is a density-zero point of that set. -/
-theorem ae_hasDensityZeroAt_of_not_mem [BorelSpace E] [SecondCountableTopology E]
+theorem ae_hasDensityZeroAt_of_notMem [BorelSpace E] [SecondCountableTopology E]
     (μ : Measure E) [IsLocallyFiniteMeasure μ] [IsUnifLocDoublingMeasure μ]
     {s : Set E} (hs : MeasurableSet s) : ∀ᵐ x ∂μ, x ∉ s → HasDensityZeroAt μ s x := by
   filter_upwards [VitaliFamily.ae_tendsto_measure_inter_div_of_measurableSet
@@ -87,6 +87,9 @@ theorem ae_hasDensityZeroAt_of_not_mem [BorelSpace E] [SecondCountableTopology E
       filter_upwards [self_mem_nhdsWithin] with r hr
       simpa only [one_mul, id_eq] using Metric.mem_closedBall_self (le_of_lt hr))
   simpa only [Set.indicator_of_notMem hxs, Function.comp_def, id_eq] using hx.comp hballs
+
+@[deprecated (since := "2026-11-15")]
+alias ae_hasDensityZeroAt_of_not_mem := ae_hasDensityZeroAt_of_notMem
 
 /-- Approximate continuity with respect to `μ`, using closed-ball density. -/
 def ApproximatelyContinuousAt (μ : Measure E) (f : E → F) (x : E) : Prop :=
@@ -101,7 +104,7 @@ theorem ae_approximatelyContinuousAt [BorelSpace E] [SecondCountableTopology E]
   have hzero (p q : ℚ) : ∀ᵐ x ∂μ,
       x ∉ f ⁻¹' (Set.Ioo (p : ℝ) q)ᶜ →
         HasDensityZeroAt μ (f ⁻¹' (Set.Ioo (p : ℝ) q)ᶜ) x :=
-    ae_hasDensityZeroAt_of_not_mem μ ((measurableSet_Ioo.compl).preimage hf)
+    ae_hasDensityZeroAt_of_notMem μ ((measurableSet_Ioo.compl).preimage hf)
   have hall : ∀ᵐ x ∂μ, ∀ p q : ℚ,
       x ∉ f ⁻¹' (Set.Ioo (p : ℝ) q)ᶜ →
         HasDensityZeroAt μ (f ⁻¹' (Set.Ioo (p : ℝ) q)ᶜ) x :=

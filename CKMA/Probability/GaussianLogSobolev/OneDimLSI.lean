@@ -45,6 +45,7 @@ noncomputable section
 
 namespace CKMA
 
+open GaussianLogSobolev
 open MeasureTheory ProbabilityTheory Set Filter InformationTheory
 open scoped NNReal ENNReal Real Topology
 
@@ -57,7 +58,7 @@ def nonnegativeFunctionEntropy {E : Type*} [MeasurableSpace E]
     ∫⁻ x, ENNReal.ofReal (klFun (h x / (∫ y, h y ∂μ))) ∂μ
 
 /-- A nonnegative number at most `M` satisfies `|t log t| ≤ (max M 1) ^ 2`. -/
-lemma abs_mul_log_le {t M : ℝ} (ht : 0 ≤ t) (hM : t ≤ M) :
+private lemma abs_mul_log_le {t M : ℝ} (ht : 0 ≤ t) (hM : t ≤ M) :
     |t * Real.log t| ≤ max M 1 * max M 1 := by
   have hmax1 : (1 : ℝ) ≤ max M 1 := le_max_right _ _
   rcases ht.eq_or_lt with rfl | ht0
@@ -77,9 +78,9 @@ lemma abs_mul_log_le {t M : ℝ} (ht : 0 ≤ t) (hM : t ≤ M) :
       have hmax0 : (0 : ℝ) ≤ max M 1 := le_trans (by norm_num) hmax1
       nlinarith [hsq, htmax, hmax0]
 
-/-- The derivative vanishes where a smooth function is identically zero outside an interval. -/
-lemma deriv_eq_zero_of_zero_outside {φ : ℝ → ℝ} {R : ℝ}
-    (hφ : ContDiff ℝ (↑(⊤ : ℕ∞)) φ) (h0 : ∀ x, R ≤ |x| → φ x = 0) {x : ℝ}
+/-- The derivative vanishes where a `C¹` function is identically zero outside an interval. -/
+private lemma deriv_eq_zero_of_zero_outside {φ : ℝ → ℝ} {R : ℝ}
+    (hφ : ContDiff ℝ 1 φ) (h0 : ∀ x, R ≤ |x| → φ x = 0) {x : ℝ}
     (hx : R ≤ |x|) : deriv φ x = 0 := by
   by_cases hR : R ≤ 0
   · have hzero : φ = fun _ => 0 := by
@@ -87,7 +88,7 @@ lemma deriv_eq_zero_of_zero_outside {φ : ℝ → ℝ} {R : ℝ}
       exact h0 y (le_trans hR (abs_nonneg y))
     simp [hzero, deriv_const']
   · have hR0 : 0 < R := lt_of_not_ge hR
-    have hcont : Continuous (deriv φ) := (contDiff_infty_iff_deriv.mp hφ).2.continuous
+    have hcont : Continuous (deriv φ) := hφ.continuous_deriv le_rfl
     have hstrict : ∀ {y : ℝ}, R < |y| → deriv φ y = 0 := by
       intro y hy
       have hEq : φ =ᶠ[nhds y] fun _ => (0 : ℝ) := by
@@ -161,7 +162,7 @@ lemma deriv_eq_zero_of_zero_outside {φ : ℝ → ℝ} {R : ℝ}
         exact tendsto_nhds_unique htd htd0
 
 /-- A continuous function vanishing outside a compact interval is bounded. -/
-lemma exists_abs_bound_of_zero_outside {f : ℝ → ℝ} {R : ℝ} (hf : Continuous f)
+private lemma exists_abs_bound_of_zero_outside {f : ℝ → ℝ} {R : ℝ} (hf : Continuous f)
     (h0 : ∀ x, R ≤ |x| → f x = 0) : ∃ B, ∀ x, |f x| ≤ B := by
   by_cases hR : R ≤ 0
   · exact ⟨0, fun x => by simp [h0 x (le_trans hR (abs_nonneg x))]⟩
@@ -174,14 +175,14 @@ lemma exists_abs_bound_of_zero_outside {f : ℝ → ℝ} {R : ℝ} (hf : Continu
     · simp [h0 x (le_of_not_ge hx)]
 
 /-- Derivative of a square shifted by a constant. -/
-lemma deriv_sq_add {φ : ℝ → ℝ} (hφ : Differentiable ℝ φ) (δ x : ℝ) :
+private lemma deriv_sq_add {φ : ℝ → ℝ} (hφ : Differentiable ℝ φ) (δ x : ℝ) :
     deriv (fun y => φ y ^ 2 + δ) x = 2 * φ x * deriv φ x := by
   have hsq := deriv_fun_pow (hφ x) 2
   rw [deriv_add_const (f := fun y => φ y ^ 2) δ, hsq]
   simp [pow_one]
 
 /-- Algebraic form of `m * klFun (t / m)`, valid at `t = 0`. -/
-lemma mul_klFun_div {t m : ℝ} (hm : 0 < m) (ht : 0 ≤ t) :
+private lemma mul_klFun_div {t m : ℝ} (hm : 0 < m) (ht : 0 ≤ t) :
     m * klFun (t / m) = t * Real.log t - t * Real.log m + m - t := by
   rcases ht.eq_or_lt with rfl | ht0
   · simp [klFun, Real.log_zero, zero_div]
@@ -197,7 +198,7 @@ lemma mul_klFun_div {t m : ℝ} (hm : 0 < m) (ht : 0 ≤ t) :
       _ = t * Real.log t - t * Real.log m + m - t := by ring
 
 /-- Integral form of the entropy identity for a bounded nonnegative continuous function. -/
-lemma integral_mul_klFun_eq {h : ℝ → ℝ} (hcont : Continuous h) (hnn : ∀ x, 0 ≤ h x)
+private lemma integral_mul_klFun_eq {h : ℝ → ℝ} (hcont : Continuous h) (hnn : ∀ x, 0 ≤ h x)
     (hbd : ∃ M, ∀ x, h x ≤ M) (hm : 0 < ∫ x, h x ∂gaussianReal 0 1) :
     (∫ x, h x ∂gaussianReal 0 1) *
         ∫ x, klFun (h x / ∫ y, h y ∂gaussianReal 0 1) ∂gaussianReal 0 1 =
@@ -313,7 +314,7 @@ lemma gaussian_realEntropy_sq_add_le {φ : ℝ → ℝ} {R δ : ℝ}
   have hderiv : ∀ x, deriv f x = 2 * φ x * deriv φ x := fun x => by
     simpa [f] using deriv_sq_add hdiff δ x
   have hφ0 : ∀ x, R ≤ |x| → deriv φ x = 0 := fun x hx =>
-    deriv_eq_zero_of_zero_outside hφ h0 hx
+    deriv_eq_zero_of_zero_outside (hφ.of_le (WithTop.coe_le_coe.mpr le_top)) h0 hx
   have hφ'C : ContDiff ℝ (↑(⊤ : ℕ∞)) (deriv φ) := (contDiff_infty_iff_deriv.mp hφ).2
   obtain ⟨Bφ, hBφ⟩ := exists_abs_bound_of_zero_outside hφ.continuous h0
   obtain ⟨Bφ', hBφ'⟩ := exists_abs_bound_of_zero_outside hφ'C.continuous hφ0
@@ -325,7 +326,7 @@ lemma gaussian_realEntropy_sq_add_le {φ : ℝ → ℝ} {R δ : ℝ}
     ring
   have hf'C : ContDiff ℝ (↑(⊤ : ℕ∞)) (deriv f) := (contDiff_infty_iff_deriv.mp hfC).2
   have hf''0 : ∀ x, R ≤ |x| → deriv (deriv f) x = 0 := fun x hx =>
-    deriv_eq_zero_of_zero_outside hf'C hf'0 hx
+    deriv_eq_zero_of_zero_outside (hf'C.of_le (WithTop.coe_le_coe.mpr le_top)) hf'0 hx
   obtain ⟨Bf', hBf'⟩ := exists_abs_bound_of_zero_outside hf'C.continuous hf'0
   obtain ⟨Bf'', hBf''⟩ := exists_abs_bound_of_zero_outside
     ((contDiff_infty_iff_deriv.mp hf'C).2.continuous) hf''0
@@ -383,7 +384,7 @@ lemma gaussian_realEntropy_sq_add_le {φ : ℝ → ℝ} {R δ : ℝ}
     _ = 2 * ∫ x, (deriv φ x) ^ 2 ∂γ := hmul
 
 /-- Entropy of `φ ^ 2 + δ` for smooth compactly supported `φ`. -/
-lemma nonnegativeFunctionEntropy_sq_add_support_le {φ : ℝ → ℝ} {R δ : ℝ}
+private lemma nonnegativeFunctionEntropy_sq_add_support_le {φ : ℝ → ℝ} {R δ : ℝ}
     (hφ : ContDiff ℝ (↑(⊤ : ℕ∞)) φ) (h0 : ∀ x, R ≤ |x| → φ x = 0) (hδ : 0 < δ) :
     nonnegativeFunctionEntropy (gaussianReal 0 1) (fun x => φ x ^ 2 + δ) ≤
       ENNReal.ofReal (2 * ∫ x, (deriv φ x) ^ 2 ∂gaussianReal 0 1) := by
@@ -452,7 +453,7 @@ lemma oneDimCutoff_eq_zero_of_le {R x : ℝ} (hx : R + 1 ≤ |x|) : oneDimCutoff
     simp [oneDimCutoff, Real.smoothTransition.zero_of_nonpos (by linarith : R + 1 + x ≤ 0)]
 
 /-- The derivative of `Real.smoothTransition` is bounded. -/
-lemma exists_smoothTransition_deriv_bound :
+private lemma exists_smoothTransition_deriv_bound :
     ∃ C, 0 ≤ C ∧ ∀ x, |deriv Real.smoothTransition x| ≤ C := by
   have hcont : Continuous (deriv Real.smoothTransition) :=
     (contDiff_infty_iff_deriv.mp (Real.smoothTransition.contDiff (n := ⊤))).2.continuous
@@ -546,7 +547,7 @@ lemma abs_deriv_oneDimCutoff_le {C R x : ℝ}
   linarith
 
 /-- Inside the flat region the cutoff does not change the derivative. -/
-lemma deriv_mul_cutoff_of_abs_lt {φ : ℝ → ℝ} {R x : ℝ} (hφ : DifferentiableAt ℝ φ x)
+private lemma deriv_mul_cutoff_of_abs_lt {φ : ℝ → ℝ} {R x : ℝ} (hφ : DifferentiableAt ℝ φ x)
     (hx : |x| < R) : deriv (fun y => φ y * oneDimCutoff R y) x = deriv φ x := by
   have hηdiff : DifferentiableAt ℝ (oneDimCutoff R) x :=
     (contDiff_infty_iff_deriv.mp (contDiff_oneDimCutoff R)).1 x
@@ -562,10 +563,11 @@ lemma deriv_mul_cutoff_of_abs_lt {φ : ℝ → ℝ} {R x : ℝ} (hφ : Different
   ring
 
 /-- Energy of a cutoff is dominated by the original energy and the square. -/
-lemma sq_deriv_mul_cutoff_le {φ : ℝ → ℝ} {C R x : ℝ} (hφ : DifferentiableAt ℝ φ x)
-    (hC0 : 0 ≤ C) (hC : ∀ y, |deriv Real.smoothTransition y| ≤ C) :
+private lemma sq_deriv_mul_cutoff_le {φ : ℝ → ℝ} {C R x : ℝ} (hφ : DifferentiableAt ℝ φ x)
+    (hC : ∀ y, |deriv Real.smoothTransition y| ≤ C) :
     (deriv (fun y => φ y * oneDimCutoff R y) x) ^ 2 ≤
       2 * (deriv φ x) ^ 2 + 8 * C ^ 2 * φ x ^ 2 := by
+  have hC0 : 0 ≤ C := (abs_nonneg _).trans (hC 0)
   have hηdiff : DifferentiableAt ℝ (oneDimCutoff R) x :=
     (contDiff_infty_iff_deriv.mp (contDiff_oneDimCutoff R)).1 x
   have hprod := deriv_fun_mul hφ hηdiff
@@ -593,7 +595,7 @@ lemma sq_deriv_mul_cutoff_le {φ : ℝ → ℝ} {C R x : ℝ} (hφ : Differentia
 
 /-- Fatou lower semicontinuity of `nonnegativeFunctionEntropy` along a sequence of bounded
 approximants. -/
-lemma nonnegativeFunctionEntropy_le_of_nat_approx {hApprox : ℕ → ℝ → ℝ} {hLim : ℝ → ℝ}
+private lemma nonnegativeFunctionEntropy_le_of_nat_approx {hApprox : ℕ → ℝ → ℝ} {hLim : ℝ → ℝ}
     {c : ℕ → ℝ} {c0 : ℝ}
     (hcont : ∀ n, Continuous (hApprox n)) (hnnLim : ∀ x, 0 ≤ hLim x)
     (hpt : ∀ x, Tendsto (fun n => hApprox n x) atTop (𝓝 (hLim x)))
@@ -685,7 +687,7 @@ lemma nonnegativeFunctionEntropy_le_of_nat_approx {hApprox : ℕ → ℝ → ℝ
           field_simp
 
 /-- Entropy of `φ ^ 2 + δ` for smooth square-integrable `φ` with integrable derivative. -/
-lemma gaussian_nonnegativeFunctionEntropy_sq_add_le {φ : ℝ → ℝ} {δ : ℝ}
+private lemma gaussian_nonnegativeFunctionEntropy_sq_add_le {φ : ℝ → ℝ} {δ : ℝ}
     (hφ : ContDiff ℝ (↑(⊤ : ℕ∞)) φ)
     (hφ2 : Integrable (fun x => φ x ^ 2) (gaussianReal 0 1))
     (hφ' : Integrable (fun x => (deriv φ x) ^ 2) (gaussianReal 0 1)) (hδ : 0 < δ) :
@@ -712,7 +714,7 @@ lemma gaussian_nonnegativeFunctionEntropy_sq_add_le {φ : ℝ → ℝ} {δ : ℝ
   have hdom : ∀ n x, (deriv (φn n) x) ^ 2 ≤
       2 * (deriv φ x) ^ 2 + 8 * C ^ 2 * φ x ^ 2 := by
     intro n x
-    simpa [φn, η] using sq_deriv_mul_cutoff_le (hdiff x) hC0 hC
+    simpa [φn, η] using sq_deriv_mul_cutoff_le (hdiff x) hC
   have hbound_int : Integrable (fun x => 2 * (deriv φ x) ^ 2 + 8 * C ^ 2 * φ x ^ 2) γ :=
     (hφ'.const_mul _).add ((hφ2.const_mul _))
   have hpt_deriv : ∀ x, Tendsto (fun n => deriv (φn n) x) atTop (𝓝 (deriv φ x)) := by

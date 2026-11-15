@@ -16,7 +16,7 @@ additive group, a compatible inner product, and completeness.
 ## Main definitions
 
 * `CKMA.HilbertSpaceModel`: bundled Hilbert space over a scalar field `𝕜` satisfying `[RCLike 𝕜]`.
-* `CKMA.RealHilbertModel`: abbreviation for `HilbertSpaceModel ℝ`.
+* `CKMA.RealHilbertSpace`: abbreviation for `HilbertSpaceModel ℝ`.
 * `CKMA.ComplexHilbertSpace`: abbreviation for `HilbertSpaceModel ℂ`.
 
 ## Main results
@@ -47,7 +47,9 @@ attribute [instance] HilbertSpaceModel.normedAddCommGroup HilbertSpaceModel.inne
   HilbertSpaceModel.completeSpace
 
 /-- A real Hilbert-space model with an explicitly chosen carrier universe. -/
-abbrev RealHilbertModel := HilbertSpaceModel.{u} ℝ
+abbrev RealHilbertSpace := HilbertSpaceModel.{u} ℝ
+
+@[deprecated (since := "2026-11-15")] alias RealHilbertModel := RealHilbertSpace
 
 /-- A complex Hilbert-space model with an explicitly chosen carrier universe. -/
 abbrev ComplexHilbertSpace := HilbertSpaceModel.{u} ℂ

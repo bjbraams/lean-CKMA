@@ -16,16 +16,19 @@ times themselves, so the same bound passes to every uniform limit of the floors.
 
 ## Main definitions
 
-* `CKMA.HasDyadicIncrements`: dyadic increment bound on one integer interval.
-* `CKMA.holderConstFrom`: Hölder constant dominating `1` and all increment ratios below level `N`.
-* `CKMA.dyadicFloorReal`: left dyadic floor of a nonnegative real at mesh `2 ^ (-n)`.
+* `CKMA.Brownian.HasDyadicIncrements`: dyadic increment bound on one integer interval.
+* `CKMA.Brownian.holderConstFrom`: Hölder constant dominating `1` and all increment ratios below
+  level `N`.
+* `CKMA.Brownian.dyadicFloorReal`: left dyadic floor of a nonnegative real at mesh `2 ^ (-n)`.
 
 ## Main results
 
-* `CKMA.hasDyadicIncrements_of_eventually`: eventual unit increment bounds yield a finite dyadic
-  Hölder constant.
-* `CKMA.abs_sub_dyadicFloor_le`: values at dyadic floors obey the Hölder bound of the increments.
-* `CKMA.abs_sub_dyadicFloor_levels`: values at dyadic floors of two meshes obey the Hölder bound.
+* `CKMA.Brownian.hasDyadicIncrements_of_eventually`: eventual unit increment bounds yield a finite
+  dyadic Hölder constant.
+* `CKMA.Brownian.abs_sub_dyadicFloor_le`: values at dyadic floors obey the Hölder bound of the
+  increments.
+* `CKMA.Brownian.abs_sub_dyadicFloor_levels`: values at dyadic floors of two meshes obey the
+  Hölder bound.
 -/
 
 @[expose] public section
@@ -35,6 +38,8 @@ noncomputable section
 namespace CKMA
 
 open Finset
+
+namespace Brownian
 
 /-- Consecutive increments of `f` on the integer interval starting at `j` obey a dyadic bound. -/
 def HasDyadicIncrements (f : ℝ → ℝ) (α K : ℝ) (j : ℕ) : Prop :=
@@ -56,7 +61,7 @@ def holderConstFrom (f : ℝ → ℝ) (α : ℝ) (j N : ℕ) : ℝ :=
   (ratioList f α j N).foldr max 1
 
 /-- Every entry of a list is at most the maximum against a fixed seed. -/
-lemma le_foldr_max {l : List ℝ} {a x : ℝ} (hx : x ∈ l) : x ≤ l.foldr max a := by
+private lemma le_foldr_max {l : List ℝ} {a x : ℝ} (hx : x ∈ l) : x ≤ l.foldr max a := by
   induction l with
   | nil => simp at hx
   | cons y ys ih =>
@@ -67,7 +72,7 @@ lemma le_foldr_max {l : List ℝ} {a x : ℝ} (hx : x ∈ l) : x ≤ l.foldr max
     · exact (ih hx).trans (le_max_right _ _)
 
 /-- The seed of a maximum is at most the maximum. -/
-lemma le_foldr_max_self {l : List ℝ} {a : ℝ} : a ≤ l.foldr max a := by
+private lemma le_foldr_max_self {l : List ℝ} {a : ℝ} : a ≤ l.foldr max a := by
   induction l with
   | nil => simp
   | cons _ ys ih =>
@@ -75,7 +80,7 @@ lemma le_foldr_max_self {l : List ℝ} {a : ℝ} : a ≤ l.foldr max a := by
     exact ih.trans (le_max_right _ _)
 
 /-- The constant built from increment ratios is at least `1`. -/
-lemma one_le_holderConstFrom (f : ℝ → ℝ) (α : ℝ) (j N : ℕ) : 1 ≤ holderConstFrom f α j N :=
+private lemma one_le_holderConstFrom (f : ℝ → ℝ) (α : ℝ) (j N : ℕ) : 1 ≤ holderConstFrom f α j N :=
   le_foldr_max_self
 
 /-- The constant built from increment ratios is nonnegative. -/
@@ -83,7 +88,7 @@ lemma holderConstFrom_nonneg (f : ℝ → ℝ) (α : ℝ) (j N : ℕ) : 0 ≤ ho
   le_trans (by norm_num) (one_le_holderConstFrom f α j N)
 
 /-- An early increment ratio appears in the list used to build the constant. -/
-lemma mem_ratioList {f : ℝ → ℝ} {α : ℝ} {j N n i : ℕ} (hn : n < N) (hi : i < 2 ^ n) :
+private lemma mem_ratioList {f : ℝ → ℝ} {α : ℝ} {j N n i : ℕ} (hn : n < N) (hi : i < 2 ^ n) :
     incrementRatio f α j n i ∈ ratioList f α j N := by
   refine List.mem_flatMap.2 ⟨n, List.mem_range.2 hn, ?_⟩
   exact List.mem_map.2 ⟨i, List.mem_range.2 hi, rfl⟩
@@ -120,7 +125,7 @@ lemma hasDyadicIncrements_of_eventually {f : ℝ → ℝ} {α : ℝ} {j N : ℕ}
       exact mul_le_mul_of_nonneg_right hK (Real.rpow_nonneg (by positivity) _)
 
 /-- Dividing an integer decomposition `m * 2 ^ L + k` recovers the integer and the remainder. -/
-lemma nat_cast_div_mul_add (m k L : ℕ) :
+private lemma natCast_div_mul_add (m k L : ℕ) :
     ((m * 2 ^ L + k : ℕ) : ℝ) / 2 ^ L = (m : ℝ) + (k : ℝ) / 2 ^ L := by
   have hpow : (2 : ℝ) ^ L ≠ 0 := by positivity
   rw [Nat.cast_add, Nat.cast_mul]
@@ -128,7 +133,7 @@ lemma nat_cast_div_mul_add (m k L : ℕ) :
   rw [add_div, mul_div_cancel_right₀ _ hpow]
 
 /-- Increments on one integer interval control every dyadic pair inside that interval. -/
-lemma abs_sub_on_unit {f : ℝ → ℝ} {α K : ℝ} {j L a b : ℕ}
+private lemma abs_sub_on_unit {f : ℝ → ℝ} {α K : ℝ} {j L a b : ℕ}
     (hα : 0 < α) (hK : 0 ≤ K) (hinc : HasDyadicIncrements f α K j)
     (hab : a ≤ b) (hb : b ≤ 2 ^ L) :
     |f (↑j + (b : ℝ) / 2 ^ L) - f (↑j + (a : ℝ) / 2 ^ L)| ≤
@@ -137,7 +142,7 @@ lemma abs_sub_on_unit {f : ℝ → ℝ} {α K : ℝ} {j L a b : ℕ}
     (fun n _ i hi => hinc n i hi) hab hb
 
 /-- Dyadic increments on `[0, N]` control every pair of dyadic points in that interval. -/
-lemma abs_sub_on_units {f : ℝ → ℝ} {α : ℝ} {K : ℕ → ℝ} {N : ℕ} (hα : 0 < α)
+private lemma abs_sub_on_units {f : ℝ → ℝ} {α : ℝ} {K : ℕ → ℝ} {N : ℕ} (hα : 0 < α)
     (hK : ∀ j, j < N → 0 ≤ K j)
     (hinc : ∀ j, j < N → HasDyadicIncrements f α (K j) j) :
     ∀ L a b, a ≤ b → b ≤ N * 2 ^ L →
@@ -181,11 +186,11 @@ lemma abs_sub_on_units {f : ℝ → ℝ} {α : ℝ} {K : ℕ → ℝ} {N : ℕ} 
         have hpa : (a : ℝ) / 2 ^ L = (N : ℝ) + (a0 : ℝ) / 2 ^ L := by
           have haeq : a = N * 2 ^ L + a0 := by omega
           rw [haeq]
-          simpa [Nat.cast_pow] using nat_cast_div_mul_add N a0 L
+          simpa [Nat.cast_pow] using natCast_div_mul_add N a0 L
         have hpb : (b : ℝ) / 2 ^ L = (N : ℝ) + (b0 : ℝ) / 2 ^ L := by
           have hbeq : b = N * 2 ^ L + b0 := by omega
           rw [hbeq]
-          simpa [Nat.cast_pow] using nat_cast_div_mul_add N b0 L
+          simpa [Nat.cast_pow] using natCast_div_mul_add N b0 L
         have hgap : b0 - a0 = b - a := by omega
         rw [hpa, hpb]
         have hsum_le : K N ≤ ∑ j ∈ range (N + 1), K j := by
@@ -212,7 +217,7 @@ lemma abs_sub_on_units {f : ℝ → ℝ} {α : ℝ} {K : ℕ → ℝ} {N : ℕ} 
         have hpb' : (b : ℝ) / 2 ^ L = (N : ℝ) + (b0 : ℝ) / 2 ^ L := by
           have hbeq : b = N * 2 ^ L + b0 := by omega
           nth_rw 1 [hbeq]
-          exact nat_cast_div_mul_add N b0 L
+          exact natCast_div_mul_add N b0 L
         have hgapL : pivot - a ≤ b - a := by omega
         have hgapR : b0 ≤ b - a := by omega
         have hdistL : (((pivot - a : ℕ) : ℝ) / 2 ^ L) ^ α ≤
@@ -249,8 +254,8 @@ lemma abs_sub_on_units {f : ℝ → ℝ} {α : ℝ} {K : ℕ → ℝ} {N : ℕ} 
 def dyadicFloorReal (n : ℕ) (t : ℝ) : ℝ :=
   (Nat.floor (t * 2 ^ n) : ℝ) / 2 ^ n
 
-/-- The dyadic floor of a nonnegative real is nonnegative. -/
-lemma dyadicFloorReal_nonneg {n : ℕ} {t : ℝ} : 0 ≤ dyadicFloorReal n t := by
+/-- The dyadic floor is nonnegative. -/
+lemma dyadicFloorReal_nonneg (n : ℕ) (t : ℝ) : 0 ≤ dyadicFloorReal n t := by
   dsimp [dyadicFloorReal]
   positivity
 
@@ -260,8 +265,8 @@ lemma dyadicFloorReal_le {n : ℕ} {t : ℝ} (ht : 0 ≤ t) : dyadicFloorReal n 
   rw [div_le_iff₀ (by positivity : (0 : ℝ) < 2 ^ n)]
   exact_mod_cast Nat.floor_le (mul_nonneg ht (pow_nonneg (by norm_num : (0 : ℝ) ≤ 2) n))
 
-/-- A nonnegative real lies strictly below its dyadic floor plus one mesh. -/
-lemma lt_dyadicFloorReal_add {n : ℕ} {t : ℝ} :
+/-- A real lies strictly below its dyadic floor plus one mesh. -/
+lemma lt_dyadicFloorReal_add (n : ℕ) (t : ℝ) :
     t < dyadicFloorReal n t + 1 / 2 ^ n := by
   dsimp [dyadicFloorReal]
   have hlt : t * 2 ^ n < (Nat.floor (t * 2 ^ n) : ℝ) + 1 := Nat.lt_floor_add_one _
@@ -270,14 +275,14 @@ lemma lt_dyadicFloorReal_add {n : ℕ} {t : ℝ} :
   exact (lt_div_iff₀ hpow).2 hlt
 
 /-- Dyadic floors of two nonnegative reals differ by at most the times plus one mesh. -/
-lemma abs_dyadicFloorReal_sub {n : ℕ} {s t : ℝ} (hs : 0 ≤ s) (ht : 0 ≤ t) :
+private lemma abs_dyadicFloorReal_sub {n : ℕ} {s t : ℝ} (hs : 0 ≤ s) (ht : 0 ≤ t) :
     |dyadicFloorReal n s - dyadicFloorReal n t| ≤ |s - t| + 1 / 2 ^ n := by
   have hsle : dyadicFloorReal n s ≤ s := dyadicFloorReal_le (n := n) hs
   have htle : dyadicFloorReal n t ≤ t := dyadicFloorReal_le (n := n) ht
   have hsge : s - 1 / 2 ^ n ≤ dyadicFloorReal n s :=
-    le_of_lt (by linarith [lt_dyadicFloorReal_add (n := n) (t := s)])
+    le_of_lt (by linarith [lt_dyadicFloorReal_add n s])
   have htge : t - 1 / 2 ^ n ≤ dyadicFloorReal n t :=
-    le_of_lt (by linarith [lt_dyadicFloorReal_add (n := n) (t := t)])
+    le_of_lt (by linarith [lt_dyadicFloorReal_add n t])
   refine abs_le.2 ⟨?_, ?_⟩
   · calc
       -( |s - t| + 1 / 2 ^ n) ≤ (s - 1 / 2 ^ n) - t := by
@@ -291,7 +296,7 @@ lemma abs_dyadicFloorReal_sub {n : ℕ} {s t : ℝ} (hs : 0 ≤ s) (ht : 0 ≤ t
         linarith
 
 /-- The numerator of a dyadic floor on `[0, N]` is at most `N * 2 ^ n`. -/
-lemma dyadicFloorReal_num_le {n N : ℕ} {t : ℝ} (ht0 : 0 ≤ t) (htN : t ≤ N) :
+private lemma dyadicFloorReal_num_le {n N : ℕ} {t : ℝ} (ht0 : 0 ≤ t) (htN : t ≤ N) :
     Nat.floor (t * 2 ^ n) ≤ N * 2 ^ n := by
   have hx : t * 2 ^ n ≤ ((N * 2 ^ n : ℕ) : ℝ) := by
     simpa [Nat.cast_mul, Nat.cast_pow] using
@@ -356,7 +361,7 @@ lemma abs_sub_dyadicFloor_le {f : ℝ → ℝ} {α : ℝ} {K : ℕ → ℝ} {N n
       (Finset.sum_nonneg fun j hj => hK j (mem_range.mp hj))
 
 /-- The distance between two dyadic rationals equals the normalized numerator gap. -/
-lemma abs_natCast_div_sub (L a b : ℕ) :
+private lemma abs_natCast_div_sub (L a b : ℕ) :
     ((max a b - min a b : ℕ) : ℝ) / 2 ^ L =
       |(a : ℝ) / 2 ^ L - (b : ℝ) / 2 ^ L| := by
   rcases le_total a b with hab | hba
@@ -380,7 +385,7 @@ lemma abs_natCast_div_sub (L a b : ℕ) :
       _ = |(a : ℝ) / 2 ^ L - (b : ℝ) / 2 ^ L| := (abs_of_nonneg hnonneg).symm
 
 /-- Values at two points of one dyadic grid obey the summed Hölder bound. -/
-lemma abs_sub_dyadic_num {f : ℝ → ℝ} {α : ℝ} {K : ℕ → ℝ} {N L a b : ℕ}
+private lemma abs_sub_dyadic_num {f : ℝ → ℝ} {α : ℝ} {K : ℕ → ℝ} {N L a b : ℕ}
     (hα : 0 < α) (hK : ∀ j, j < N → 0 ≤ K j)
     (hinc : ∀ j, j < N → HasDyadicIncrements f α (K j) j)
     (ha : a ≤ N * 2 ^ L) (hb : b ≤ N * 2 ^ L) :
@@ -403,7 +408,7 @@ lemma abs_sub_dyadic_num {f : ℝ → ℝ} {α : ℝ} {K : ℕ → ℝ} {N L a b
       (Finset.sum_nonneg fun j hj => hK j (mem_range.mp hj))
 
 /-- A coarser dyadic floor, written on a finer dyadic grid. -/
-lemma dyadicFloorReal_refine {n m : ℕ} {t : ℝ} (hnm : n ≤ m) :
+private lemma dyadicFloorReal_refine {n m : ℕ} {t : ℝ} (hnm : n ≤ m) :
     dyadicFloorReal n t =
       ((Nat.floor (t * 2 ^ n) * 2 ^ (m - n) : ℕ) : ℝ) / 2 ^ m := by
   have hpos : (2 : ℝ) ^ (m - n) ≠ 0 := by positivity
@@ -420,7 +425,7 @@ lemma dyadicFloorReal_refine {n m : ℕ} {t : ℝ} (hnm : n ≤ m) :
       rfl
 
 /-- The refined numerator of a dyadic floor on `[0, N]` stays inside that grid. -/
-lemma dyadicFloorReal_refine_num_le {n m N : ℕ} {t : ℝ}
+private lemma dyadicFloorReal_refine_num_le {n m N : ℕ} {t : ℝ}
     (ht0 : 0 ≤ t) (htN : t ≤ N) (hnm : n ≤ m) :
     Nat.floor (t * 2 ^ n) * 2 ^ (m - n) ≤ N * 2 ^ m := by
   have hnum := dyadicFloorReal_num_le (n := n) (N := N) ht0 htN
@@ -431,11 +436,11 @@ lemma dyadicFloorReal_refine_num_le {n m N : ℕ} {t : ℝ}
     _ = N * 2 ^ m := by rw [← pow_add, Nat.add_sub_of_le hnm]
 
 /-- Dyadic floors of one nonnegative real, at two meshes, differ by at most those meshes. -/
-lemma abs_dyadicFloorReal_levels {n m : ℕ} {t : ℝ} (ht : 0 ≤ t) :
+private lemma abs_dyadicFloorReal_levels {n m : ℕ} {t : ℝ} (ht : 0 ≤ t) :
     |dyadicFloorReal n t - dyadicFloorReal m t| ≤ 1 / 2 ^ n + 1 / 2 ^ m := by
   have hdist (k : ℕ) : |t - dyadicFloorReal k t| ≤ 1 / 2 ^ k := by
     have hle : dyadicFloorReal k t ≤ t := dyadicFloorReal_le ht
-    have hlt : t < dyadicFloorReal k t + 1 / 2 ^ k := lt_dyadicFloorReal_add
+    have hlt : t < dyadicFloorReal k t + 1 / 2 ^ k := lt_dyadicFloorReal_add k t
     rw [abs_of_nonneg (sub_nonneg.2 hle)]
     exact le_of_lt (by linarith)
   have hn : |dyadicFloorReal n t - t| ≤ 1 / 2 ^ n := by
@@ -467,5 +472,7 @@ lemma abs_sub_dyadicFloor_levels {f : ℝ → ℝ} {α : ℝ} {K : ℕ → ℝ} 
     (Real.rpow_le_rpow (by positivity) hmesh hα.le) <|
     mul_nonneg (le_of_lt (dyadicHolderFactor_pos hα))
       (Finset.sum_nonneg fun j hj => hK j (mem_range.mp hj))
+
+end Brownian
 
 end CKMA

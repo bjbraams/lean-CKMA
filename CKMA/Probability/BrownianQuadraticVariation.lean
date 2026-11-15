@@ -69,7 +69,7 @@ namespace CKMA
 
 open scoped NNReal ENNReal ProbabilityTheory BigOperators
 open Classical
-open MeasureTheory ProbabilityTheory Filter Topology
+open MeasureTheory ProbabilityTheory Filter Topology Kolmogorov
 
 /-- Energy of the centered squared increments is at most twice mesh times `T`
 (TauCeti's `IsPreBrownianReal.integral_sq_quadraticSum_sub_le`). -/
@@ -135,7 +135,7 @@ private lemma quadraticVariation_measure_le {Ω : Type*} [MeasurableSpace Ω] {�
     have hcomp := hYindep.comp (fun i x ↦ x ^ 2 - π.increment i)
       (fun _ ↦ (measurable_id.pow_const 2).sub measurable_const)
     simpa [X, Function.comp_def] using hcomp
-  have hkol := kolmogorov_maximal hXmeas hXmean hXLp hXindep (half_pos hε)
+  have hkol := measure_exists_le_abs_partialSum_le hXmeas hXmean hXLp hXindep (half_pos hε)
   have henergy := centeredIncrement_energy_le hB π Y hYae
   have hlast : ∀ ω, partialSum X (Fin.last π.size) ω =
       ∑ i : Fin π.size, X i ω := partialSum_last X
@@ -205,7 +205,7 @@ private lemma quadraticVariation_measure_le {Ω : Type*} [MeasurableSpace Ω] {�
         rw [hEq]
         exact abs_add_le _ _
       have hgap : |(π.covered t : ℝ) - (t : ℝ)| < ε / 2 :=
-        lt_of_le_of_lt (by simpa [abs_sub_comm] using π.abs_t_sub_covered_le_mesh ht) hmesh
+        lt_of_le_of_lt (by simpa [abs_sub_comm] using π.abs_sub_covered_le_mesh ht) hmesh
       have hgt : ε / 2 < |partialSum X k ω| := by linarith [htri, hdev, hgap, hε]
       exact hgt.le
   calc

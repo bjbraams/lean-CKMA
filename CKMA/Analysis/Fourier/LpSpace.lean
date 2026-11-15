@@ -23,6 +23,7 @@ inverse Fourier integral on `L¹ ∩ L²`.
   the inverse Fourier integral.
 * `CKMA.Integrable.eLpNorm_fourierInv_two_eq`: Plancherel's theorem for the inverse Fourier
   integral on `L¹ ∩ L²`.
+* `CKMA.Lp.norm_fourierInv_eq`: the `L²` inverse Fourier transform preserves the norm.
 -/
 
 public section
@@ -56,3 +57,16 @@ theorem eLpNorm_fourierInv_two_eq (hf : Integrable f) (hf₂ : MemLp f 2) :
   exact (Lp.fourierTransformₗᵢ E F).symm.norm_map _
 
 end CKMA.Integrable
+
+namespace CKMA.Lp
+
+variable {E F : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
+  [MeasurableSpace E] [BorelSpace E] [NormedAddCommGroup F] [InnerProductSpace ℂ F]
+  [CompleteSpace F]
+
+/-- The inverse Fourier transform on `L²` preserves the norm; the inverse counterpart of
+Mathlib's `MeasureTheory.Lp.norm_fourier_eq`. -/
+theorem norm_fourierInv_eq (f : Lp F 2 (volume : Measure E)) : ‖𝓕⁻ f‖ = ‖f‖ :=
+  (Lp.fourierTransformₗᵢ E F).symm.norm_map f
+
+end CKMA.Lp

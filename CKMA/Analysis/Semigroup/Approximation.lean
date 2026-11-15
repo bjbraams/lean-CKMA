@@ -49,8 +49,8 @@ theorem variation_of_constants (S : StronglyContinuousSemigroup X) {T : ℝ} (hT
     IsIntegratedSemigroupSolution S x f (forcedSemigroupTrajectory S x f) T ∧
       ∀ u : ℝ → X, IsIntegratedSemigroupSolution S x f u T →
         Set.EqOn u (forcedSemigroupTrajectory S x f) (Set.Icc 0 T) := by
-  refine ⟨integrated_of_integrable S hT x hf, fun u hu => ?_⟩
-  exact eqOn_integrated S hu (integrated_of_integrable S hT x hf)
+  have h := isIntegratedSemigroupSolution_forcedSemigroupTrajectory S hT x hf
+  exact ⟨h, fun _ hu => hu.eqOn h⟩
 
 /-- With domain initial data and C1 forcing, the trajectory is a classical solution in the
 interior time interval, and all nonnegative-time values belong to the generator domain. -/

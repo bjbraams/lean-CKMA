@@ -75,7 +75,7 @@ theorem bestTrigonometricError_le (f : ℝ → ℂ) (n : ℕ) (p : ℝ≥0∞) (
 /-- **47.20**: Jackson's direct theorem, with constants uniform over `1 ≤ p ≤ ∞`.
 Continuity is imposed for all exponents in this first interface; extension to general `Lᵖ`
 classes for finite `p` remains. -/
-theorem jackson_trigonometric (r : ℕ) (hr : 0 < r) :
+theorem jackson_trigonometric (r : ℕ) :
     ∃ C : ℝ≥0∞, C ≠ ∞ ∧ ∀ (p : ℝ≥0∞), 1 ≤ p →
       ∀ (f : ℝ → ℂ), Continuous f → Function.Periodic f (2 * Real.pi) →
       ∀ n : ℕ, 0 < n → bestTrigonometricError f n p ≤

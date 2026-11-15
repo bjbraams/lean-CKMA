@@ -77,7 +77,7 @@ lemma finiteDimensional_strongDual [FiniteDimensional ℝ E] :
   (LinearMap.toContinuousLinearMap (𝕜 := ℝ) (E := E) (F' := ℝ)).finiteDimensional
 
 /-- In finite dimensions the strong dual has the same dimension as the original space. -/
-lemma finrank_strongDual [FiniteDimensional ℝ E] :
+private lemma finrank_strongDual [FiniteDimensional ℝ E] :
     finrank ℝ (StrongDual ℝ E) = finrank ℝ E := by
   rw [← (LinearMap.toContinuousLinearMap (𝕜 := ℝ) (E := E) (F' := ℝ)).finrank_eq]
   exact Subspace.dual_finrank_eq (K := ℝ) (V := E)

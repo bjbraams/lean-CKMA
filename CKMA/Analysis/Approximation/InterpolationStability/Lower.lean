@@ -248,10 +248,10 @@ private lemma midpoint_sum_main_ge {n : ℕ} (hn : 1 ≤ n) :
       simp
     unfold ν
     linarith
-  have hnode : ∀ i, θ ≠ nodeAngle n i := by
+  have hnode : ∀ i, θ ≠ chebyshevNodeAngle n i := by
     intro i hi
     have hval : (i.val : ℝ) = ν := by
-      unfold nodeAngle at hi
+      unfold chebyshevNodeAngle at hi
       have hθv : θ = π * ν / n := by unfold θ; ring
       rw [hθv] at hi
       field_simp at hi
@@ -275,16 +275,16 @@ private lemma midpoint_sum_main_ge {n : ℕ} (hn : 1 ≤ n) :
       intro hz
       have hiν : (i.val : ℝ) = ν := sub_eq_zero.mp hz
       exact hnode i (by
-        unfold nodeAngle
+        unfold chebyshevNodeAngle
         rw [hiν, show θ = π * ν / n by unfold θ; ring])
     have hαpos : 0 < wt i := chebyshevExtremalWeight_pos n i
-    let u : ℝ := |θ - nodeAngle n i| / 2
+    let u : ℝ := |θ - chebyshevNodeAngle n i| / 2
     have hu_eq : u = π * d i / (2 * n) := by
       have hθv : θ = π * ν / n := by unfold θ; ring
       have hsub : π * ν / n - π * (i.val : ℝ) / n = π * (ν - (i.val : ℝ)) / n := by
         field_simp
       unfold u d
-      rw [hθv, nodeAngle, hsub, abs_div, abs_mul, abs_of_pos pi_pos, abs_of_pos hn0,
+      rw [hθv, chebyshevNodeAngle, hsub, abs_div, abs_mul, abs_of_pos pi_pos, abs_of_pos hn0,
         abs_sub_comm]
       ring
     have hu : u ∈ Set.Ioo 0 (π / 2) := by
@@ -302,7 +302,7 @@ private lemma midpoint_sum_main_ge {n : ℕ} (hn : 1 ≤ n) :
           linarith
       rw [div_lt_div_iff₀ (by positivity) (by positivity)]
       nlinarith [hdlt, pi_pos]
-    have hcot := cot_ge_inv_sub hu
+    have hcot := one_div_sub_div_two_le_cot hu
     have hcoef : 0 ≤ 1 / (2 * (n : ℝ) * wt i) := by positivity
     have hineq := mul_le_mul_of_nonneg_left hcot hcoef
     have hmaineq : chebyshevLebesgueMain n θ i =
@@ -330,7 +330,7 @@ private lemma midpoint_sum_main_ge {n : ℕ} (hn : 1 ≤ n) :
           intro hz
           have hiν : (i.val : ℝ) = ν := sub_eq_zero.mp hz
           exact hnode i (by
-            unfold nodeAngle
+            unfold chebyshevNodeAngle
             rw [hiν, show θ = π * ν / n by unfold θ; ring])
         have hαne := (chebyshevExtremalWeight_pos n i).ne'
         field_simp [hdne, hαne, pi_ne_zero]
@@ -400,19 +400,19 @@ private lemma midpoint_sum_corr_ge {n : ℕ} (hn : 1 ≤ n) :
         (mul_pos (mul_pos (by norm_num : (0 : ℝ) < 2) hn0)
           (chebyshevExtremalWeight_pos n i)).le
     rcases hp with hleftI | hrightI
-    · have hφ : nodeAngle n i < θ := by
+    · have hφ : chebyshevNodeAngle n i < θ := by
         have hiν : (i.val : ℝ) < ν := by
           have : (i.val : ℝ) ≤ q := by exact_mod_cast hleftI
           unfold ν; linarith
-        unfold nodeAngle
+        unfold chebyshevNodeAngle
         rw [show θ = π * ν / n by unfold θ; ring, div_lt_div_iff₀ hn0 hn0]
         have hmul := mul_lt_mul_of_pos_left hiν pi_pos
         nlinarith [hmul, hn0]
       have hsign := chebyshevAngleSign_of_lt hφ
-      have havg : (θ + nodeAngle n i) / 2 < π / 2 := by linarith [hθmem.2]
-      have havg0 : 0 < (θ + nodeAngle n i) / 2 := by
-        linarith [hθmem.1, (nodeAngle_mem_Icc (by omega) i).1]
-      have hcot : 0 < cot ((θ + nodeAngle n i) / 2) := by
+      have havg : (θ + chebyshevNodeAngle n i) / 2 < π / 2 := by linarith [hθmem.2]
+      have havg0 : 0 < (θ + chebyshevNodeAngle n i) / 2 := by
+        linarith [hθmem.1, (chebyshevNodeAngle_mem_Icc (by omega) i).1]
+      have hcot : 0 < cot ((θ + chebyshevNodeAngle n i) / 2) := by
         rw [cot_eq_cos_div_sin]
         exact div_pos
           (cos_pos_of_mem_Ioo ⟨by linarith [pi_pos], havg⟩)
@@ -420,38 +420,38 @@ private lemma midpoint_sum_corr_ge {n : ℕ} (hn : 1 ≤ n) :
       unfold chebyshevLebesgueCorr
       rw [hsign, mul_one]
       exact mul_nonneg hpref hcot.le
-    · have hφ : π - θ < nodeAngle n i := by
+    · have hφ : π - θ < chebyshevNodeAngle n i := by
         have hiν : (n : ℝ) - ν < (i.val : ℝ) := by
           have hi : ((n - q : ℕ) : ℝ) ≤ i.val := by exact_mod_cast hrightI
           have hcast : ((n - q : ℕ) : ℝ) = (n : ℝ) - q := Nat.cast_sub (by omega)
           have hν : (n : ℝ) - ν = (n : ℝ) - q - 1 / 2 := by unfold ν; ring
           linarith
-        unfold nodeAngle
+        unfold chebyshevNodeAngle
         rw [lt_div_iff₀ hn0]
         have hright : (π - θ) * n = π * ((n : ℝ) - ν) := by unfold θ; field_simp
         rw [hright]
         exact mul_lt_mul_of_pos_left hiν pi_pos
       have hθle : θ ≤ π - θ := by linarith [hθmem.2]
       have hsign := chebyshevAngleSign_of_not_lt (not_lt_of_gt (hθle.trans_lt hφ))
-      have havg : π / 2 < (θ + nodeAngle n i) / 2 := by linarith
-      have havgπ : (θ + nodeAngle n i) / 2 < π := by
-        have hφπ : nodeAngle n i ≤ π := (nodeAngle_mem_Icc (by omega) i).2
+      have havg : π / 2 < (θ + chebyshevNodeAngle n i) / 2 := by linarith
+      have havgπ : (θ + chebyshevNodeAngle n i) / 2 < π := by
+        have hφπ : chebyshevNodeAngle n i ≤ π := (chebyshevNodeAngle_mem_Icc (by omega) i).2
         linarith [hθmem.2]
-      have hcot : cot ((θ + nodeAngle n i) / 2) < 0 := by
+      have hcot : cot ((θ + chebyshevNodeAngle n i) / 2) < 0 := by
         rw [cot_eq_cos_div_sin]
-        have hsin' : 0 < sin ((θ + nodeAngle n i) / 2) :=
+        have hsin' : 0 < sin ((θ + chebyshevNodeAngle n i) / 2) :=
           sin_pos_of_pos_of_lt_pi (by linarith) havgπ
-        have hcos : cos ((θ + nodeAngle n i) / 2) < 0 :=
+        have hcos : cos ((θ + chebyshevNodeAngle n i) / 2) < 0 :=
           cos_neg_of_pi_div_two_lt_of_lt havg
             (havgπ.trans (lt_add_of_pos_right π (div_pos pi_pos (by norm_num))))
         exact div_neg_of_neg_of_pos hcos hsin'
       unfold chebyshevLebesgueCorr
       rw [hsign]
-      have hnonnegCot : 0 ≤ -cot ((θ + nodeAngle n i) / 2) := neg_nonneg.mpr hcot.le
+      have hnonnegCot : 0 ≤ -cot ((θ + chebyshevNodeAngle n i) / 2) := neg_nonneg.mpr hcot.le
       have hrew : |sin ((n : ℝ) * θ)| / (2 * (n : ℝ) * chebyshevExtremalWeight n i) *
-          -1 * cot ((θ + nodeAngle n i) / 2) =
+          -1 * cot ((θ + chebyshevNodeAngle n i) / 2) =
           |sin ((n : ℝ) * θ)| / (2 * (n : ℝ) * chebyshevExtremalWeight n i) *
-            (-cot ((θ + nodeAngle n i) / 2)) := by ring
+            (-cot ((θ + chebyshevNodeAngle n i) / 2)) := by ring
       rw [hrew]
       exact mul_nonneg hpref hnonnegCot
   have hgood : 0 ≤ ∑ i ∈ univ.filter p, chebyshevLebesgueCorr n θ i :=
@@ -495,8 +495,8 @@ private lemma midpoint_sum_corr_ge {n : ℕ} (hn : 1 ≤ n) :
       rw [honly, Finset.sum_singleton]
       let j : Fin (n + 1) := ⟨q + 1, by omega⟩
       have hnEven : n = 2 * (q + 1) := by omega
-      have hφ : nodeAngle n j = π / 2 := by
-        unfold nodeAngle
+      have hφ : chebyshevNodeAngle n j = π / 2 := by
+        unfold chebyshevNodeAngle
         have hcast : ((q + 1 : ℕ) : ℝ) = (n : ℝ) / 2 := by
           have hnR : (n : ℝ) = 2 * ((q + 1 : ℕ) : ℝ) := by exact_mod_cast hnEven
           rw [eq_div_iff (by norm_num : (2 : ℝ) ≠ 0)]
@@ -508,9 +508,9 @@ private lemma midpoint_sum_corr_ge {n : ℕ} (hn : 1 ≤ n) :
           have : (n : ℝ) = 2 * ((q : ℝ) + 1) := by exact_mod_cast hnEven
           linarith
         rw [hνeq]; field_simp
-      have havg : (θ + nodeAngle n j) / 2 = π / 2 - π / (4 * n) := by
+      have havg : (θ + chebyshevNodeAngle n j) / 2 = π / 2 - π / (4 * n) := by
         rw [hφ, hθeq]; ring
-      have hcot : cot ((θ + nodeAngle n j) / 2) = tan (π / (4 * n)) := by
+      have hcot : cot ((θ + chebyshevNodeAngle n j) / 2) = tan (π / (4 * n)) := by
         rw [havg, cot_eq_cos_div_sin, cos_pi_div_two_sub, sin_pi_div_two_sub,
           tan_eq_sin_div_cos]
       have hw : chebyshevExtremalWeight n j = 1 :=
@@ -586,10 +586,10 @@ lemma lebesgueFunction_chebyshev_midpoint_ge {n : ℕ} (hn : 1 ≤ n) :
     unfold θ
     rw [div_le_iff₀ hn0]
     nlinarith [hνle, pi_pos]
-  have hnode : ∀ i, θ ≠ nodeAngle n i := by
+  have hnode : ∀ i, θ ≠ chebyshevNodeAngle n i := by
     intro i hi
     have hval : (i.val : ℝ) = ν := by
-      unfold nodeAngle at hi
+      unfold chebyshevNodeAngle at hi
       have hθv : θ = π * ν / n := by unfold θ; ring
       rw [hθv] at hi
       field_simp at hi

@@ -75,7 +75,7 @@ theorem isCoordinateSparse_zero {ι α : Type*} [Fintype ι] [Zero α] {s : ℕ}
 
 /-- **29.68**: stable basis-pursuit recovery below the classical sqrt(2)-1 RIP threshold.
 The constants depend on delta only, uniformly in dimensions, sample data and sparsity. -/
-theorem restricted_isometry_stable_recovery {𝕜 : Type*} [RCLike 𝕜] {δ : ℝ} (hδ : 0 ≤ δ)
+theorem restricted_isometry_stable_recovery {𝕜 : Type*} [RCLike 𝕜] {δ : ℝ}
     (hδsmall : δ < Real.sqrt 2 - 1) :
     ∃ C D : ℝ, 0 < C ∧ 0 < D ∧ ∀ (m N s : ℕ), 0 < s →
       ∀ (A : EuclideanSpace 𝕜 (Fin N) →ₗ[𝕜] EuclideanSpace 𝕜 (Fin m)),

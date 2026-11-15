@@ -24,15 +24,17 @@ increment on that mesh.
 
 ## Main definitions
 
-* `CKMA.grid`: uniform dyadic grid `t * k / 2 ^ n` on `[0, t]`.
-* `CKMA.gridOsc`: largest consecutive increment on the dyadic grid of `[0, t]`.
-* `CKMA.firstGridHitSet`: event that the first grid visit to level `b` occurs at index `k`.
+* `CKMA.Brownian.grid`: uniform dyadic grid `t * k / 2 ^ n` on `[0, t]`.
+* `CKMA.Brownian.gridOsc`: largest consecutive increment on the dyadic grid of `[0, t]`.
+* `CKMA.Brownian.firstGridHitSet`: event that the first grid visit to level `b` occurs at index
+  `k`.
 
 ## Main results
 
-* `CKMA.ae_eq_of_continuous_of_nnrat`: continuous modifications that agree on nonnegative
-  rationals agree everywhere almost surely.
-* `CKMA.tendsto_gridOsc`: grid oscillation of a continuous path tends to zero as `n → ∞`.
+* `CKMA.Brownian.ae_eq_of_continuous_of_nnrat`: continuous modifications that agree on
+  nonnegative rationals agree everywhere almost surely.
+* `CKMA.Brownian.tendsto_gridOsc`: grid oscillation of a continuous path tends to zero as
+  `n → ∞`.
 -/
 
 @[expose] public section
@@ -48,8 +50,10 @@ set_option linter.unusedSectionVars false
 
 variable {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsProbabilityMeasure μ]
 
+namespace Brownian
+
 /-- Nonnegative rationals are dense in nonnegative time. -/
-lemma denseRange_coe_nnrat : DenseRange (fun q : ℚ≥0 => (q : ℝ≥0)) := by
+private lemma denseRange_coe_nnrat : DenseRange (fun q : ℚ≥0 => (q : ℝ≥0)) := by
   intro x
   rw [mem_closure_range_iff]
   intro ε hε
@@ -93,20 +97,20 @@ def grid (t : ℝ≥0) (n k : ℕ) : ℝ≥0 :=
   ⟨(k : ℝ) * (t : ℝ) / 2 ^ n, by positivity⟩
 
 /-- Real value of a grid time. -/
-lemma coe_grid (t : ℝ≥0) (n k : ℕ) : (grid t n k : ℝ) = (k : ℝ) * (t : ℝ) / 2 ^ n := rfl
+private lemma coe_grid (t : ℝ≥0) (n k : ℕ) : (grid t n k : ℝ) = (k : ℝ) * (t : ℝ) / 2 ^ n := rfl
 
 /-- The first grid time is zero. -/
-lemma grid_zero (t : ℝ≥0) (n : ℕ) : grid t n 0 = 0 := by
+private lemma grid_zero (t : ℝ≥0) (n : ℕ) : grid t n 0 = 0 := by
   apply NNReal.eq
   simp [coe_grid]
 
 /-- Every grid time is zero when the horizon is zero. -/
-lemma grid_of_time_zero (n k : ℕ) : grid 0 n k = 0 := by
+private lemma grid_of_time_zero (n k : ℕ) : grid 0 n k = 0 := by
   apply NNReal.eq
   simp [coe_grid]
 
 /-- The last grid time is the horizon. -/
-lemma grid_last (t : ℝ≥0) (n : ℕ) : grid t n (2 ^ n) = t := by
+private lemma grid_last (t : ℝ≥0) (n : ℕ) : grid t n (2 ^ n) = t := by
   apply NNReal.eq
   rw [coe_grid, Nat.cast_pow, Nat.cast_ofNat]
   exact mul_div_cancel_left₀ (t : ℝ) (by positivity : (2 : ℝ) ^ n ≠ 0)
@@ -125,7 +129,7 @@ lemma grid_le {t : ℝ≥0} {n k : ℕ} (hk : k ≤ 2 ^ n) : grid t n k ≤ t :=
     _ = t := grid_last t n
 
 /-- Consecutive grid times differ by one mesh. -/
-lemma grid_sub (t : ℝ≥0) (n k : ℕ) :
+private lemma grid_sub (t : ℝ≥0) (n k : ℕ) :
     (grid t n (k + 1) : ℝ) - grid t n k = (t : ℝ) / 2 ^ n := by
   rw [coe_grid, coe_grid, Nat.cast_add, Nat.cast_one]
   ring
@@ -134,7 +138,7 @@ lemma grid_sub (t : ℝ≥0) (n k : ℕ) :
 def gridMesh (t : ℝ≥0) (n : ℕ) : ℝ := (t : ℝ) / 2 ^ n
 
 /-- The mesh is nonnegative. -/
-lemma gridMesh_nonneg (t : ℝ≥0) (n : ℕ) : 0 ≤ gridMesh t n := by
+private lemma gridMesh_nonneg (t : ℝ≥0) (n : ℕ) : 0 ≤ gridMesh t n := by
   unfold gridMesh
   positivity
 
@@ -212,7 +216,7 @@ lemma gridOsc_nonneg (C : ℝ≥0 → Ω → ℝ) (t : ℝ≥0) (n : ℕ) (ω : 
     ⟨0, Finset.mem_range.mpr (pow_pos (by decide : 0 < 2) n), abs_nonneg _⟩
 
 /-- At time zero every grid increment vanishes. -/
-lemma gridOsc_eq_zero_of_time (C : ℝ≥0 → Ω → ℝ) (t : ℝ≥0) (ht : t = 0) (n : ℕ) (ω : Ω) :
+private lemma gridOsc_eq_zero_of_time (C : ℝ≥0 → Ω → ℝ) (t : ℝ≥0) (ht : t = 0) (n : ℕ) (ω : Ω) :
     gridOsc C t n ω = 0 := by
   rw [gridOsc]
   exact Finset.sup'_eq_of_forall (gridRange_nonempty n)
@@ -382,6 +386,10 @@ lemma overshoot_lt {C : ℝ≥0 → Ω → ℝ} {t : ℝ≥0} {b ε : ℝ} {n k 
       add_lt_add_of_lt_of_le hprev hosc
     linarith
   linarith
+
+end Brownian
+
+open Brownian
 
 @[deprecated (since := "2026-11-15")] alias isTauSet := firstGridHitSet
 @[deprecated (since := "2026-11-15")] alias measurableSet_isTauSet := measurableSet_firstGridHitSet

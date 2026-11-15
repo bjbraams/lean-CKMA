@@ -22,7 +22,7 @@ import TauCeti.Probability.Process.StoppingApproximation
 The canonical law is a probability measure on `C(ℝ≥0, ℝ)` with its compact-open Borel
 sigma-algebra. Its coordinate process has continuous paths by construction. A separate
 modification theorem starts from an arbitrary pre-Brownian process and gives every
-positive local Hölder exponent below one half.
+local Hölder exponent below one half.
 
 `brownianShift` describes increments after a finite-valued stopping time. The strong
 Markov interface uses the raw natural filtration and finite-dimensional independence;
@@ -56,7 +56,7 @@ noncomputable section
 
 namespace CKMA
 
-open MeasureTheory ProbabilityTheory Filter
+open MeasureTheory ProbabilityTheory Filter Brownian
 open scoped NNReal ENNReal Topology
 
 /-- **08.1**: a canonical Brownian law on the Borel space of continuous real paths.
@@ -75,13 +75,13 @@ theorem exists_brownianMeasure : ∃ μ : Measure C(ℝ≥0, ℝ),
 
 @[deprecated (since := "2026-11-15")] alias exists_wienerMeasure := exists_brownianMeasure
 
-/-- A pre-Brownian process has a continuous modification with every subcritical local Hölder
-  exponent. -/
+/-- A pre-Brownian process has a continuous modification that is almost surely locally Hölder
+  of every exponent `α < 1 / 2`. -/
 theorem exists_holder_brownianModification {Ω : Type*} [MeasurableSpace Ω]
     (μ : Measure Ω) [IsProbabilityMeasure μ] {B : ℝ≥0 → Ω → ℝ}
     (hB : IsPreBrownianReal B μ) :
     ∃ C : ℝ≥0 → Ω → ℝ, IsBrownianReal C μ ∧
-      (∀ t, C t =ᵐ[μ] B t) ∧ ∀ᵐ ω ∂μ, ∀ α : ℝ≥0, 0 < α → α < 1 / 2 →
+      (∀ t, C t =ᵐ[μ] B t) ∧ ∀ᵐ ω ∂μ, ∀ α : ℝ≥0, α < 1 / 2 →
         ∀ T : ℝ≥0, ∃ K : ℝ≥0, HolderOnWith K α (fun t ↦ C t ω) (Set.Icc 0 T) := by
   obtain ⟨C, _, _, hBr, hmod, hH⟩ := exists_continuous_holder_modification hB
   exact ⟨C, hBr, hmod, hH⟩

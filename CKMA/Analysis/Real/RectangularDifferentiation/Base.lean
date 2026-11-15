@@ -32,12 +32,12 @@ half-scaled growth of order `n` with the growth of order `n + 1`.
 * `CKMA.strongMaximalGrowth`: the Orlicz growth function `u (1 + log⁺ u)^{d-1}`.
 * `CKMA.IsLocallyLLog`, `CKMA.RectanglesDifferentiateAt`: local `L(log⁺ L)^{d-1}` integrability and
   pointwise rectangular differentiation.
-* `CKMA.oneDimMaximalENN`, `CKMA.oneDimMaximal`: the uncentered maximal function on `ℝ`.
+* `CKMA.oneDimMaximalENN`, `oneDimMaximal`: the uncentered maximal function on `ℝ`.
 * `CKMA.strongMaximalIterationFactor`: the constant `2 (1 + log 4)^n` of the iteration kernel.
 
 ## Main results
 
-* `CKMA.oneDimMaximalENN_weakType`, `CKMA.oneDimMaximal_weakType`: weak-type `(1, 1)` inequality
+* `CKMA.oneDimMaximalENN_weakType`, `oneDimMaximal_weakType`: weak-type `(1, 1)` inequality
   with constant `5` for the one-dimensional uncentered maximal function.
 * `CKMA.strongMaximal_weakType_one`: the strong maximal operator on `ℝ¹` is of weak type `(1, 1)`.
 * `CKMA.strongMaximalGrowth_scaled_kernel`: kernel inequality bounding half the growth of order
@@ -114,7 +114,7 @@ def length (I : OpenInterval) : ℝ := I.right - I.left
 theorem length_pos (I : OpenInterval) : 0 < I.length := sub_pos.2 I.left_lt_right
 
 /-- The carrier is nonempty. -/
-theorem carrier_nonempty (I : OpenInterval) : I.carrier.Nonempty :=
+private theorem carrier_nonempty (I : OpenInterval) : I.carrier.Nonempty :=
   nonempty_Ioo.2 I.left_lt_right
 
 end OpenInterval
@@ -128,7 +128,7 @@ def oneDimMaximalENN (φ : ℝ → ℝ≥0∞) (x : ℝ) : ℝ≥0∞ :=
   ⨆ I : OpenInterval, ⨆ (_ : x ∈ I.carrier), intervalAverage φ I
 
 /-- The uncentered one-dimensional Hardy–Littlewood maximal function. -/
-def oneDimMaximal (g : ℝ → ℝ) (x : ℝ) : ℝ≥0∞ :=
+private def oneDimMaximal (g : ℝ → ℝ) (x : ℝ) : ℝ≥0∞ :=
   oneDimMaximalENN (fun t ↦ ENNReal.ofReal |g t|) x
 
 /-- An open interval with rational endpoints. -/
@@ -153,7 +153,7 @@ theorem length_pos (I : RatInterval) : 0 < I.length := by
   simpa [length] using (Rat.cast_lt (K := ℝ)).2 I.left_lt_right
 
 /-- The carrier is a nonempty open interval. -/
-theorem carrier_nonempty (I : RatInterval) : I.carrier.Nonempty :=
+private theorem carrier_nonempty (I : RatInterval) : I.carrier.Nonempty :=
   nonempty_Ioo.2 (by exact_mod_cast I.left_lt_right)
 
 /-- The rational-endpoint intervals are a countable family. -/
@@ -180,11 +180,11 @@ def ratIntervalAverage (g : ℝ → ℝ≥0∞) (I : RatInterval) : ℝ≥0∞ :
   intervalAverage g I.toOpen
 
 /-- The real enlargement of a rational interval by the factor `τ` on each side. -/
-def ratEnlargement (τ : ℝ) (J : RatInterval) : Set ℝ :=
+private def ratEnlargement (τ : ℝ) (J : RatInterval) : Set ℝ :=
   Ioo ((J.left : ℝ) - τ * J.length) ((J.right : ℝ) + τ * J.length)
 
 /-- Enlargement multiplies the length by `1 + 2τ`, as an identity of endpoints. -/
-theorem volume_ratEnlargement (τ : ℝ) (J : RatInterval) :
+private theorem volume_ratEnlargement (τ : ℝ) (J : RatInterval) :
     volume (ratEnlargement τ J) = ENNReal.ofReal ((1 + 2 * τ) * J.length) := by
   have hdiff :
       ((J.right : ℝ) + τ * J.length) - ((J.left : ℝ) - τ * J.length) =
@@ -194,7 +194,7 @@ theorem volume_ratEnlargement (τ : ℝ) (J : RatInterval) :
   rw [ratEnlargement, Real.volume_Ioo, hdiff]
 
 /-- An interval that meets a comparable selected interval sits inside its enlargement. -/
-theorem carrier_subset_ratEnlargement {τ : ℝ} {I J : RatInterval}
+private theorem carrier_subset_ratEnlargement {τ : ℝ} {I J : RatInterval}
     (hcap : (I.carrier ∩ J.carrier).Nonempty) (hlen : I.length ≤ τ * J.length) :
     I.carrier ⊆ ratEnlargement τ J := by
   intro x hx
@@ -404,7 +404,7 @@ theorem oneDimMaximalENN_weakType (φ : ℝ → ℝ≥0∞) {α : ℝ} (hα : 0 
         simp only [div_eq_mul_inv, mul_assoc]
 
 /-- The real uncentered maximal function is weak type `(1, 1)` with constant `5`. -/
-theorem oneDimMaximal_weakType (g : ℝ → ℝ) {α : ℝ} (hα : 0 < α) :
+private theorem oneDimMaximal_weakType (g : ℝ → ℝ) {α : ℝ} (hα : 0 < α) :
     volume {x | ENNReal.ofReal α < oneDimMaximal g x} ≤
       ENNReal.ofReal oneDimWeakConstant * ∫⁻ x, ENNReal.ofReal (|g x| / α) := by
   have hmul := lintegral_const_mul' (μ := (volume : Measure ℝ)) (ENNReal.ofReal α)⁻¹
@@ -436,7 +436,7 @@ theorem oneDimMaximal_weakType (g : ℝ → ℝ) {α : ℝ} (hα : 0 < α) :
   simpa [oneDimMaximal, hRHS] using hEN
 
 /-- In dimension one the endpoint growth is the identity. -/
-theorem strongMaximalGrowth_one (u : ℝ) : strongMaximalGrowth 1 u = u := by
+private theorem strongMaximalGrowth_one (u : ℝ) : strongMaximalGrowth 1 u = u := by
   simp [strongMaximalGrowth]
 
 /-- The endpoint growth dominates the identity on the nonnegative reals. -/
@@ -458,7 +458,7 @@ theorem OpenRectangle.volume_carrier {d : ℕ} (R : OpenRectangle d) :
   rw [R.carrier_eq_pi, Real.volume_pi_Ioo]
 
 /-- On `Fin 1` the strong maximal function is the uncentered maximal function of the line. -/
-theorem strongMaximalFunction_finOne (f : (Fin 1 → ℝ) → ℝ) (x : Fin 1 → ℝ) :
+private theorem strongMaximalFunction_finOne (f : (Fin 1 → ℝ) → ℝ) (x : Fin 1 → ℝ) :
     strongMaximalFunction f x = oneDimMaximal (fun t ↦ f fun _ : Fin 1 ↦ t) (x 0) := by
   let g : ℝ → ℝ := fun t ↦ f fun _ : Fin 1 ↦ t
   let e := MeasurableEquiv.funUnique (Fin 1) ℝ
@@ -573,7 +573,7 @@ theorem strongMaximalIterationFactor_pos (n : ℕ) : 0 < strongMaximalIterationF
   positivity
 
 /-- A layer-cake bracket of order `k` is bounded by the next power of `1 + log⁺`. -/
-theorem strongMaximalGrowth_bracket {k : ℕ} {u : ℝ} (hu : 0 ≤ u) :
+private theorem strongMaximalGrowth_bracket {k : ℕ} {u : ℝ} (hu : 0 ≤ u) :
     (1 + max 0 (Real.log (2 * u))) ^ k +
       (if 2 * u ≤ (1 / 2 : ℝ) then (0 : ℝ) else
         ∫ s in (1 / 2 : ℝ)..(2 * u), (2 / s) *

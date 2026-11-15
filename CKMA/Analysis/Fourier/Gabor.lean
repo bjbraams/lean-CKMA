@@ -57,8 +57,8 @@ theorem gabor_rieszSequence_density {a b : ℝ} (ha : 0 < a) (hb : 0 < b)
 /-- A Gabor Riesz basis has critical density. This corollary depends on the density targets. -/
 theorem gabor_rieszBasis_density {a b : ℝ} (ha : 0 < a) (hb : 0 < b)
     {g : ℝ → ℂ} (h : IsL2RieszBasis volume (gaborAtom g a b)) : a * b = 1 :=
-  le_antisymm (gabor_frame_density ha hb h.isFrameFamily)
-    (gabor_rieszSequence_density ha hb h.isRieszSequence)
+  le_antisymm (gabor_frame_density ha hb h.isL2FrameFamily)
+    (gabor_rieszSequence_density ha hb h.isL2RieszSequence)
 
 /-- **29.51**: a Gabor Riesz basis cannot have finite second moments in both time and frequency. -/
 theorem balian_low {a b : ℝ} (ha : 0 < a) (hb : 0 < b)

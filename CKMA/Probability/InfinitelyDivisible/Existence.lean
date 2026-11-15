@@ -19,11 +19,6 @@ converge, and the compensating drifts converge with them. The atom at the origin
 variance. Inverting the quadratic weight off the origin produces the Lévy measure. A bounded
 correction on `{1 / 2 ≤ |x| ≤ 1}` replaces the continuous cutoff by the truncation `|x| ≤ 1`.
 
-## Main definitions
-
-* `CKMA.levyJump`: Lévy measure obtained from a finite measure by inverting the quadratic weight
-  `min(1, x²)`.
-
 ## Main results
 
 * `CKMA.exists_levyTriplet_of_isInfinitelyDivisible`: every infinitely divisible probability law
@@ -36,41 +31,41 @@ noncomputable section
 
 namespace CKMA
 
-open MeasureTheory Complex Filter Topology Set BoundedContinuousFunction
+open InfinitelyDivisible MeasureTheory Complex Filter Topology Set BoundedContinuousFunction
 open scoped NNReal ENNReal
 
 /-- The Lévy kernel vanishes to the Gaussian symbol at the origin. -/
-lemma levyKernel_zero (t : ℝ) : levyKernel t 0 = -((t : ℂ) ^ 2) / 2 := by
+private lemma levyKernel_zero (t : ℝ) : levyKernel t 0 = -((t : ℂ) ^ 2) / 2 := by
   simp [levyKernel]
 
 /-- Real numbers are recovered from multiplication by `I` and then by `-I`. -/
-lemma re_neg_I_mul_I (b : ℝ) : (-I * (I * (b : ℂ))).re = b := by
+private lemma re_neg_I_mul_I (b : ℝ) : (-I * (I * (b : ℂ))).re = b := by
   have hmul : -I * (I * (b : ℂ)) = (b : ℂ) := by
     ring_nf
     simp [I_sq]
   rw [hmul, Complex.ofReal_re]
 
 /-- `n + 1` times one minus a root characteristic function tends to the exponent. -/
-lemma tendsto_nat_mul_charFun_sub_one {μ : Measure ℝ} [IsProbabilityMeasure μ]
+private lemma tendsto_natCast_mul_charFun_sub_one {μ : Measure ℝ} [IsProbabilityMeasure μ]
     (h : IsInfinitelyDivisible μ) (t : ℝ) :
     Tendsto (fun n : ℕ => ((n + 1 : ℕ) : ℂ) * (charFun (positiveRoot h n) t - 1))
       atTop (𝓝 (charExponent h t)) := by
-  have hcomp := (tendsto_nat_mul_exp_div_sub_one (charExponent h t)).comp
+  have hcomp := (tendsto_natCast_mul_exp_div_sub_one (charExponent h t)).comp
     (tendsto_add_atTop_nat 1)
   refine hcomp.congr fun n => ?_
   rw [Function.comp_apply, charFun_positiveRoot]
 
 /-- The root increment splits into a kernel integral and a continuous drift. -/
-lemma charFun_sub_one_eq_kernel {μ : Measure ℝ} [IsProbabilityMeasure μ]
+private lemma charFun_sub_one_eq_kernel {μ : Measure ℝ} [IsProbabilityMeasure μ]
     (h : IsInfinitelyDivisible μ) (n : ℕ) (t : ℝ) :
     ((n + 1 : ℕ) : ℂ) * (charFun (positiveRoot h n) t - 1) =
       ∫ x, levyKernel t x ∂(idRootMeasure h n : Measure ℝ) +
         I * ↑t * ↑(contDrift (n + 1) (positiveRoot h n)) := by
   simpa [idRootMeasure, FiniteMeasure.toMeasure_mk] using
-    nat_mul_charFun_sub_one_eq (ν := positiveRoot h n) (n + 1) t
+    natCast_mul_charFun_sub_one_eq (ν := positiveRoot h n) (n + 1) t
 
 /-- Kernel integrals pass to the weak limit of the weighted roots. -/
-lemma tendsto_integral_levyKernel {μ : Measure ℝ} [IsProbabilityMeasure μ]
+private lemma tendsto_integral_levyKernel {μ : Measure ℝ} [IsProbabilityMeasure μ]
     (h : IsInfinitelyDivisible μ) {u : Ultrafilter ℕ} {ρ : FiniteMeasure ℝ}
     (htend : Tendsto (idRootMeasure h) (u : Filter ℕ) (𝓝 ρ)) (t : ℝ) :
     Tendsto (fun n => ∫ x, levyKernel t x ∂(idRootMeasure h n : Measure ℝ))
@@ -84,7 +79,7 @@ lemma tendsto_integral_levyKernel {μ : Measure ℝ} [IsProbabilityMeasure μ]
   exact hint
 
 /-- The continuous drifts converge along any ultrafilter on which the weighted roots converge. -/
-lemma tendsto_contDrift_ultra {μ : Measure ℝ} [IsProbabilityMeasure μ]
+private lemma tendsto_contDrift_ultra {μ : Measure ℝ} [IsProbabilityMeasure μ]
     (h : IsInfinitelyDivisible μ) {u : Ultrafilter ℕ} {ρ : FiniteMeasure ℝ}
     (hu : (u : Filter ℕ) ≤ atTop)
     (htend : Tendsto (idRootMeasure h) (u : Filter ℕ) (𝓝 ρ)) :
@@ -92,7 +87,7 @@ lemma tendsto_contDrift_ultra {μ : Measure ℝ} [IsProbabilityMeasure μ]
       (𝓝 ((-I * (charExponent h 1 -
         ∫ x, levyKernel 1 x ∂(ρ : Measure ℝ))).re)) := by
   set z : ℂ := charExponent h 1 - ∫ x, levyKernel 1 x ∂(ρ : Measure ℝ)
-  have hseq := ((tendsto_nat_mul_charFun_sub_one h 1).mono_left hu).sub
+  have hseq := ((tendsto_natCast_mul_charFun_sub_one h 1).mono_left hu).sub
     (tendsto_integral_levyKernel h htend 1)
   have hid : ∀ n, contDrift (n + 1) (positiveRoot h n) =
       (-I * (((n + 1 : ℕ) : ℂ) * (charFun (positiveRoot h n) 1 - 1) -
@@ -114,7 +109,7 @@ lemma tendsto_contDrift_ultra {μ : Measure ℝ} [IsProbabilityMeasure μ]
   exact (hid n).symm
 
 /-- Every frequency has the kernel-and-drift representation along that ultrafilter. -/
-lemma charExponent_eq_kernel_drift {μ : Measure ℝ} [IsProbabilityMeasure μ]
+private lemma charExponent_eq_kernel_drift {μ : Measure ℝ} [IsProbabilityMeasure μ]
     (h : IsInfinitelyDivisible μ) {u : Ultrafilter ℕ} {ρ : FiniteMeasure ℝ}
     (hu : (u : Filter ℕ) ≤ atTop)
     (htend : Tendsto (idRootMeasure h) (u : Filter ℕ) (𝓝 ρ)) (t : ℝ) :
@@ -124,7 +119,7 @@ lemma charExponent_eq_kernel_drift {μ : Measure ℝ} [IsProbabilityMeasure μ]
   set b : ℝ := (-I * (charExponent h 1 -
     ∫ x, levyKernel 1 x ∂(ρ : Measure ℝ))).re
   have hb := tendsto_contDrift_ultra h hu htend
-  have hL := (tendsto_nat_mul_charFun_sub_one h t).mono_left hu
+  have hL := (tendsto_natCast_mul_charFun_sub_one h t).mono_left hu
   have hK := tendsto_integral_levyKernel h htend t
   have hD : Tendsto (fun n => I * ↑t * ↑(contDrift (n + 1) (positiveRoot h n)))
       (u : Filter ℕ) (𝓝 (I * ↑t * ↑b)) := by
@@ -138,16 +133,16 @@ lemma charExponent_eq_kernel_drift {μ : Measure ℝ} [IsProbabilityMeasure μ]
   exact tendsto_nhds_unique (hL.congr hpoint) hsum
 
 /-- The Lévy measure obtained by inverting the quadratic weight. -/
-def levyJump (ρ : Measure ℝ) : Measure ℝ :=
+private def levyJump (ρ : Measure ℝ) : Measure ℝ :=
   ρ.withDensity fun x => ENNReal.ofReal (quadTrunc x)⁻¹
 
 /-- The inverted quadratic weight is measurable. -/
-lemma measurable_quadTrunc_inv :
+private lemma measurable_quadTrunc_inv :
     Measurable fun x : ℝ => ENNReal.ofReal (quadTrunc x)⁻¹ := by
   fun_prop
 
 /-- Inverting the quadratic weight of a finite measure yields a Lévy measure. -/
-lemma isLevyMeasure_levyJump {ρ : Measure ℝ} [IsFiniteMeasure ρ] :
+private lemma isLevyMeasure_levyJump {ρ : Measure ℝ} [IsFiniteMeasure ρ] :
     IsLevyMeasure (levyJump ρ) := by
   refine ⟨?_, ?_⟩
   · rw [levyJump, withDensity_apply _ (measurableSet_singleton _), lintegral_singleton]
@@ -176,13 +171,13 @@ lemma isLevyMeasure_levyJump {ρ : Measure ℝ} [IsFiniteMeasure ρ] :
     exact measure_lt_top ρ {(0 : ℝ)}ᶜ
 
 /-- The continuous compensator is integrable against a Lévy measure. -/
-lemma integrable_contIntegrand_levy {ν : Measure ℝ} (hν : IsLevyMeasure ν) (t : ℝ) :
+private lemma integrable_contIntegrand_levy {ν : Measure ℝ} (hν : IsLevyMeasure ν) (t : ℝ) :
     Integrable (contIntegrand t) ν := by
   have hbnd : 0 ≤ levyKernelBound t := by
     unfold levyKernelBound
     positivity
   have hdom : Integrable (fun x => levyKernelBound t * quadTrunc x) ν :=
-    (integrable_min_one_sq hν).const_mul _
+    hν.integrable_min_one_sq.const_mul _
   refine hdom.mono' (by
     unfold contIntegrand
     fun_prop) ?_
@@ -192,7 +187,7 @@ lemma integrable_contIntegrand_levy {ν : Measure ℝ} (hν : IsLevyMeasure ν) 
   exact mul_le_mul_of_nonneg_right (norm_levyKernel_le t x) (quadTrunc_nonneg x)
 
 /-- The cutoff correction vanishes for `|x| < 1 / 2`. -/
-lemma contTrunc_sub_trunc_eq_zero_of_abs_lt {x : ℝ} (hx : |x| < 1 / 2) :
+private lemma contTrunc_sub_trunc_eq_zero_of_abs_lt {x : ℝ} (hx : |x| < 1 / 2) :
     contTrunc x - truncCompensator x = 0 := by
   have hle : |x| ≤ 1 / 2 := hx.le
   have htrunc : truncCompensator x = x := by
@@ -201,12 +196,12 @@ lemma contTrunc_sub_trunc_eq_zero_of_abs_lt {x : ℝ} (hx : |x| < 1 / 2) :
   rw [contTrunc_eq_id_of_abs_le_half hle, htrunc, sub_self]
 
 /-- The cutoff correction is integrable against a Lévy measure. -/
-lemma integrable_contTrunc_sub_trunc {ν : Measure ℝ} (hν : IsLevyMeasure ν) :
+private lemma integrable_contTrunc_sub_trunc {ν : Measure ℝ} (hν : IsLevyMeasure ν) :
     Integrable (fun x : ℝ => contTrunc x - truncCompensator x) ν := by
   set s : Set ℝ := {x | (1 / 2 : ℝ) ≤ |x|}
   have hs : MeasurableSet s := measurableSet_abs_ge (1 / 2)
   have : IsFiniteMeasure (ν.restrict s) :=
-    isFiniteMeasure_restrict_abs_ge hν (by norm_num)
+    hν.isFiniteMeasure_restrict_abs_ge (by norm_num)
   have hint : IntegrableOn (fun x : ℝ => contTrunc x - truncCompensator x) s ν := by
     refine (integrable_const (2 : ℝ)).mono'
       ((continuous_contTrunc.measurable.sub measurable_truncCompensator).aestronglyMeasurable) ?_
@@ -239,7 +234,7 @@ lemma integrable_contTrunc_sub_trunc {ν : Measure ℝ} (hν : IsLevyMeasure ν)
   exact hint.integrable_indicator hs
 
 /-- The frozen truncation and the continuous cutoff differ by a pure drift integrand. -/
-lemma levyIntegrand_eq_contIntegrand_add (t x : ℝ) :
+private lemma levyIntegrand_eq_contIntegrand_add (t x : ℝ) :
     levyIntegrand t x = contIntegrand t x +
       I * ↑t * ↑(contTrunc x - truncCompensator x) := by
   by_cases hx : |x| ≤ 1
@@ -252,7 +247,7 @@ lemma levyIntegrand_eq_contIntegrand_add (t x : ℝ) :
     ring_nf
 
 /-- Integrating the cutoff correction produces the drift adjustment. -/
-lemma integral_levyIntegrand_eq_cont {ν : Measure ℝ} (hν : IsLevyMeasure ν) (t : ℝ) :
+private lemma integral_levyIntegrand_eq_cont {ν : Measure ℝ} (hν : IsLevyMeasure ν) (t : ℝ) :
     ∫ x, levyIntegrand t x ∂ν = ∫ x, contIntegrand t x ∂ν +
       I * ↑t * ↑(∫ x, contTrunc x - truncCompensator x ∂ν) := by
   have hfun : (fun x => levyIntegrand t x) = fun x => contIntegrand t x +
@@ -265,7 +260,7 @@ lemma integral_levyIntegrand_eq_cont {ν : Measure ℝ} (hν : IsLevyMeasure ν)
     integral_complex_ofReal]
 
 /-- On the complement of the origin the kernel integral is the continuous compensator. -/
-lemma integral_contIntegrand_levyJump {ρ : FiniteMeasure ℝ} (t : ℝ) :
+private lemma integral_contIntegrand_levyJump {ρ : FiniteMeasure ℝ} (t : ℝ) :
     ∫ x, contIntegrand t x ∂levyJump (ρ : Measure ℝ) =
       ∫ x in {(0 : ℝ)}ᶜ, levyKernel t x ∂(ρ : Measure ℝ) := by
   have hfin : ∀ᵐ x ∂(ρ : Measure ℝ), ENNReal.ofReal (quadTrunc x)⁻¹ < ∞ :=
@@ -291,7 +286,7 @@ lemma integral_contIntegrand_levyJump {ρ : FiniteMeasure ℝ} (t : ℝ) :
   rw [funext hpt, integral_indicator (measurableSet_singleton _).compl]
 
 /-- The kernel integral splits into the Gaussian atom and the continuous compensator. -/
-lemma integral_levyKernel_eq_atom {ρ : FiniteMeasure ℝ} (t : ℝ) :
+private lemma integral_levyKernel_eq_atom {ρ : FiniteMeasure ℝ} (t : ℝ) :
     ∫ x, levyKernel t x ∂(ρ : Measure ℝ) =
       (ρ : Measure ℝ).real {0} • levyKernel t 0 +
         ∫ x, contIntegrand t x ∂levyJump (ρ : Measure ℝ) := by
@@ -306,7 +301,7 @@ lemma integral_levyKernel_eq_atom {ρ : FiniteMeasure ℝ} (t : ℝ) :
   exact hsplit.symm
 
 /-- A kernel-and-drift representation is the exponent of an explicit Lévy triplet. -/
-lemma exists_levyTriplet_of_kernel_drift {μ : Measure ℝ} [IsProbabilityMeasure μ]
+private lemma exists_levyTriplet_of_kernel_drift {μ : Measure ℝ} [IsProbabilityMeasure μ]
     (h : IsInfinitelyDivisible μ) {ρ : FiniteMeasure ℝ} {b : ℝ}
     (hψ : ∀ t, charExponent h t =
       ∫ x, levyKernel t x ∂(ρ : Measure ℝ) + I * ↑t * ↑b) :

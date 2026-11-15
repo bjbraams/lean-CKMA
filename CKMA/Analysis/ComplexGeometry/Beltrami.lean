@@ -30,7 +30,7 @@ Sources: GAPS 44.38 and 44.49. Weak differentials reuse TauCeti's Sobolev API.
 
 ## Main results
 
-* `CKMA.measurable_riemann_mapping`: Ahlfors–Bers measurable Riemann mapping theorem.
+* `CKMA.existsUnique_beltrami_homeomorph`: Ahlfors–Bers measurable Riemann mapping theorem.
 * `CKMA.astala_disk_area`: Astala's area distortion theorem for quasiconformal disk maps.
 -/
 
@@ -72,11 +72,14 @@ def IsQuasiconformalOn (K : ℝ) (f : ℂ ≃ₜ ℂ) (Ω : TopologicalSpace.Ope
 /-- **44.38**: the normalized plane form of the measurable Riemann mapping theorem.
 A plane homeomorphism fixes infinity on its one-point compactification; fixing zero and one
 therefore gives the three-point sphere normalization without arbitrary values at infinity. -/
-theorem measurable_riemann_mapping (μ : ℂ → ℂ) (hμ : Measurable μ)
+theorem existsUnique_beltrami_homeomorph (μ : ℂ → ℂ) (hμ : Measurable μ)
     {k : ℝ} (hk : 0 ≤ k) (hk1 : k < 1) (hbound : ∀ᵐ z ∂volume, ‖μ z‖ ≤ k) :
     ∃! f : ℂ ≃ₜ ℂ, f 0 = 0 ∧ f 1 = 1 ∧ IsBeltramiSolutionOn μ f ⊤ ∧
       IsQuasiconformalOn ((1 + k) / (1 - k)) f ⊤ := by
   sorry
+
+@[deprecated (since := "2026-11-15")]
+alias measurable_riemann_mapping := existsUnique_beltrami_homeomorph
 
 /-- **44.49**: Astala's area exponent on disk self-maps that are restrictions of plane
 homeomorphisms. The optimality interface and standalone disk-homeomorphism API remain. -/

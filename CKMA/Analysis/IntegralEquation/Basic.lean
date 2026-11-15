@@ -55,7 +55,7 @@ def volterraIntegral (k : ℝ → ℝ → ℂ) (u : ℝ → ℂ) (t : ℝ) : ℂ
 
 /-- **25.18**: a continuous triangular kernel gives a unique continuous solution at every
 complex coupling. The series and data-dependence clauses are separate targets. -/
-theorem existsUnique_volterra {T : ℝ} (hT : 0 ≤ T) (k : ℝ → ℝ → ℂ)
+theorem existsUnique_volterra {T : ℝ} (k : ℝ → ℝ → ℂ)
     (hk : ContinuousOn (fun p : ℝ × ℝ ↦ k p.1 p.2)
       {p | 0 ≤ p.2 ∧ p.2 ≤ p.1 ∧ p.1 ≤ T}) (c : ℂ) (f : C(Set.Icc 0 T, ℂ)) :
     ∃! u : C(Set.Icc 0 T, ℂ), ∀ t : Set.Icc 0 T,
@@ -89,16 +89,6 @@ private lemma kernelPow_nonneg (c x : ℝ) : 0 ≤ kernelPow c x := by
   split_ifs with hx
   · exact (exp_pos _).le
   · exact le_rfl
-
-/-- The integral of a pure power of the remaining distance. -/
-private lemma integral_sub_rpow {a b γ : ℝ} (hab : a ≤ b) (hγ : 0 < γ) :
-    ∫ s in a..b, (b - s) ^ (γ - 1) = (b - a) ^ γ / γ := by
-  have hshift : ∫ s in a..b, (b - s) ^ (γ - 1) =
-      ∫ s in (0 : ℝ)..(b - a), s ^ (γ - 1) := by
-    simpa using integral_comp_sub_left (fun s => s ^ (γ - 1)) b (a := a) (b := b)
-  rw [hshift, integral_rpow (Or.inl (by linarith : -1 < γ - 1))]
-  have hz : (0 : ℝ) ^ γ = 0 := zero_rpow hγ.ne'
-  simp [hz, sub_zero, add_sub_cancel]
 
 /-- The same power is integrable, so its Lebesgue integral equals the interval integral. -/
 private lemma lintegral_Ioo_sub_rpow {a b γ : ℝ} (hab : a < b) (hγ : 0 < γ) :
@@ -173,7 +163,7 @@ private lemma integral_of_gt_indicator {t r : ℝ} (hr : 0 ≤ r) (hrt : r ≤ t
     inter_eq_right.mpr (Ioo_subset_Ioo hr le_rfl)]
 
 /-- Scaling the beta kernel on an interval of length `t - r`. -/
-private lemma integral_betaKernel {t r α β : ℝ} (hrt : r < t) (hα : 0 < α) (hβ : 0 < β) :
+private lemma integral_betaKernel {t r α β : ℝ} (hrt : r < t) :
     ∫ s in r..t, (t - s) ^ (α - 1) * (s - r) ^ (β - 1) =
       (t - r) ^ (α + β - 1) *
         ∫ v in (0 : ℝ)..1, v ^ (β - 1) * (1 - v) ^ (α - 1) := by
@@ -214,7 +204,7 @@ private lemma integral_betaKernel {t r α β : ℝ} (hrt : r < t) (hα : 0 < α)
 private lemma integral_betaKernel_beta {t r α β : ℝ} (hrt : r < t) (hα : 0 < α) (hβ : 0 < β) :
     ∫ s in r..t, (t - s) ^ (α - 1) * (s - r) ^ (β - 1) =
       (t - r) ^ (α + β - 1) * ProbabilityTheory.beta β α := by
-  rw [integral_betaKernel hrt hα hβ, TauCeti.integral_rpow_mul_one_sub_rpow hβ hα]
+  rw [integral_betaKernel hrt, TauCeti.integral_rpow_mul_one_sub_rpow hβ hα]
 
 /-- The Gamma quotient carried by the beta function cancels the two normalizing constants. -/
 private lemma gamma_beta_factor {α β : ℝ} (hα : 0 < α) (hβ : 0 < β) :
@@ -256,7 +246,7 @@ private lemma kernelProd_nonneg (T γ : ℝ) (u : ℝ → ℝ) (p : ℝ × ℝ) 
     exact le_rfl
 
 /-- The joint kernel against a cutoff density is integrable on the half-square `0 < s < t < T`. -/
-private lemma integrable_kernel_prod {T γ : ℝ} (hT : 0 < T) (hγ : 0 < γ) {u : ℝ → ℝ}
+private lemma integrable_kernel_prod {T γ : ℝ} (hγ : 0 < γ) {u : ℝ → ℝ}
     (hu : IntegrableOn u (Ioo 0 T)) : Integrable (kernelProd T γ u) (volume.prod volume) := by
   let v := absCut T u
   have hv : Integrable v := integrable_absCut hu
@@ -400,9 +390,9 @@ private def kernelSlice (T γ : ℝ) (u : ℝ → ℝ) : ℝ → ℝ :=
   fun t => ∫ s, kernelProd T γ u (t, s)
 
 /-- The slice integral is integrable on the line. -/
-private lemma kernelSlice_integrable {T γ : ℝ} (hT : 0 < T) (hγ : 0 < γ) {u : ℝ → ℝ}
+private lemma kernelSlice_integrable {T γ : ℝ} (hγ : 0 < γ) {u : ℝ → ℝ}
     (hu : IntegrableOn u (Ioo 0 T)) : Integrable (kernelSlice T γ u) :=
-  (integrable_kernel_prod hT hγ hu).integral_prod_left
+  (integrable_kernel_prod hγ hu).integral_prod_left
 
 /-- The slice integral is nonnegative. -/
 private lemma kernelSlice_nonneg (T γ : ℝ) (u : ℝ → ℝ) (t : ℝ) : 0 ≤ kernelSlice T γ u t :=
@@ -435,11 +425,11 @@ private lemma kernelSlice_eq_rawAbs {T γ : ℝ} {u : ℝ → ℝ} {t : ℝ} (ht
 
 /-- For almost every upper limit in `(0, T)`, the fractional kernel of an integrable density is
 interval integrable. -/
-private lemma ae_intervalIntegrable_pow {T γ : ℝ} (hT : 0 < T) (hγ : 0 < γ) {u : ℝ → ℝ}
+private lemma ae_intervalIntegrable_pow {T γ : ℝ} (hγ : 0 < γ) {u : ℝ → ℝ}
     (hu : IntegrableOn u (Ioo 0 T)) :
     ∀ᵐ t ∂volume.restrict (Ioo 0 T),
       IntervalIntegrable (fun s => (t - s) ^ (γ - 1) * u s) volume 0 t := by
-  have hae := (integrable_kernel_prod hT hγ hu).prod_right_ae
+  have hae := (integrable_kernel_prod hγ hu).prod_right_ae
   refine (ae_restrict_iff' measurableSet_Ioo).2 ?_
   filter_upwards [hae] with t ht htI
   have ht0 : 0 < t := htI.1
@@ -483,7 +473,7 @@ private def kernelSigned (T γ : ℝ) (u : ℝ → ℝ) : ℝ × ℝ → ℝ :=
     kernelPow (γ - 1) (p.1 - p.2) * u p.2 else 0
 
 /-- The signed kernel is integrable when the density is integrable on `(0, T)`. -/
-private lemma integrable_kernelSigned {T γ : ℝ} (hT : 0 < T) (hγ : 0 < γ) {u : ℝ → ℝ}
+private lemma integrable_kernelSigned {T γ : ℝ} (hγ : 0 < γ) {u : ℝ → ℝ}
     (hu : IntegrableOn u (Ioo 0 T)) :
     Integrable (kernelSigned T γ u) (volume.prod volume) := by
   let u0 := indicator (Ioo 0 T) u
@@ -513,7 +503,7 @@ private lemma integrable_kernelSigned {T γ : ℝ} (hT : 0 < T) (hγ : 0 < γ) {
         abs_of_nonneg (kernelPow_nonneg _ _), abs_abs]
     · simp only [S, hp, true_and, and_true, ↓reduceIte, zero_mul, norm_zero]
       exact norm_nonneg _
-  have hS : Integrable S := (integrable_kernel_prod hT hγ hu).mono hSmeas (ae_of_all _ hdom)
+  have hS : Integrable S := (integrable_kernel_prod hγ hu).mono hSmeas (ae_of_all _ hdom)
   refine hS.congr (ae_of_all _ fun p => ?_)
   by_cases hp : p.2 < p.1 ∧ 0 < p.2 ∧ p.1 < T
   · have hmem : p.2 ∈ Ioo 0 T := ⟨hp.2.1, hp.1.trans hp.2.2⟩
@@ -525,9 +515,9 @@ private def kernelSliceSigned (T γ : ℝ) (u : ℝ → ℝ) : ℝ → ℝ :=
   fun t => ∫ s, kernelSigned T γ u (t, s)
 
 /-- The signed slice is integrable on the line. -/
-private lemma kernelSliceSigned_integrable {T γ : ℝ} (hT : 0 < T) (hγ : 0 < γ) {u : ℝ → ℝ}
+private lemma kernelSliceSigned_integrable {T γ : ℝ} (hγ : 0 < γ) {u : ℝ → ℝ}
     (hu : IntegrableOn u (Ioo 0 T)) : Integrable (kernelSliceSigned T γ u) :=
-  (integrable_kernelSigned hT hγ hu).integral_prod_left
+  (integrable_kernelSigned hγ hu).integral_prod_left
 
 /-- Inside `(0, T)`, the signed slice is the un-normalized fractional integral. -/
 private lemma kernelSliceSigned_eq {T γ : ℝ} {u : ℝ → ℝ} {t : ℝ} (ht0 : 0 < t) (htT : t < T) :
@@ -551,9 +541,9 @@ private lemma kernelSliceSigned_eq {T γ : ℝ} {u : ℝ → ℝ} {t : ℝ} (ht0
     integral_kernelPow_eq ht0.le]
 
 /-- A fractional integral of an `L¹` density stays in `L¹(0, T)`. -/
-private lemma integrableOn_fractionalIntegral {T α : ℝ} (hT : 0 < T) (hα : 0 < α) {u : ℝ → ℝ}
+private lemma integrableOn_fractionalIntegral {T α : ℝ} (hα : 0 < α) {u : ℝ → ℝ}
     (hu : IntegrableOn u (Ioo 0 T)) : IntegrableOn (fractionalIntegral α u) (Ioo 0 T) := by
-  have hint := kernelSliceSigned_integrable hT hα hu
+  have hint := kernelSliceSigned_integrable hα hu
   have hEq : EqOn (fun t => (Gamma α)⁻¹ * kernelSliceSigned T α u t) (fractionalIntegral α u)
       (Ioo 0 T) := by
     intro t ht
@@ -565,7 +555,7 @@ private lemma integrableOn_fractionalIntegral {T α : ℝ} (hT : 0 < T) (hα : 0
   exact hEq ht
 
 /-- Order `1` is ordinary integration from `0`. -/
-private lemma fractionalIntegral_one {u : ℝ → ℝ} {t : ℝ} (ht : 0 ≤ t) :
+private lemma fractionalIntegral_one {u : ℝ → ℝ} {t : ℝ} :
     fractionalIntegral 1 u t = ∫ s in (0 : ℝ)..t, u s := by
   rw [fractionalIntegral, Gamma_one, inv_one, one_mul]
   refine integral_congr fun s _ => ?_
@@ -589,12 +579,12 @@ private lemma fractionalIntegral_congr {T α : ℝ} {u v : ℝ → ℝ}
     fun s hs => by rw [hs]
 
 /-- Subtraction passes inside a fractional integral, almost everywhere on `(0, T)`. -/
-private lemma fractionalIntegral_sub_ae {T α : ℝ} (hT : 0 < T) (hα : 0 < α) {u v : ℝ → ℝ}
+private lemma fractionalIntegral_sub_ae {T α : ℝ} (hα : 0 < α) {u v : ℝ → ℝ}
     (hu : IntegrableOn u (Ioo 0 T)) (hv : IntegrableOn v (Ioo 0 T)) :
     fractionalIntegral α (fun x => u x - v x) =ᵐ[volume.restrict (Ioo 0 T)]
       fun t => fractionalIntegral α u t - fractionalIntegral α v t := by
-  have huI := ae_intervalIntegrable_pow hT hα hu
-  have hvI := ae_intervalIntegrable_pow hT hα hv
+  have huI := ae_intervalIntegrable_pow hα hu
+  have hvI := ae_intervalIntegrable_pow hα hv
   refine (ae_restrict_iff' measurableSet_Ioo).2 ?_
   filter_upwards [(ae_restrict_iff' measurableSet_Ioo).1 huI,
     (ae_restrict_iff' measurableSet_Ioo).1 hvI] with t htu htv htI
@@ -809,16 +799,16 @@ private lemma iteratedKernelSwap_right_eq {α β t : ℝ} (ht0 : 0 < t) (hα : 0
   ring
 
 /-- The iterated kernels multiply by the beta constant, almost everywhere on `(0, T)`. -/
-private lemma rawFractional_comm {T α β : ℝ} (hT : 0 < T) (hα : 0 < α) (hβ : 0 < β)
+private lemma rawFractional_comm {T α β : ℝ} (hα : 0 < α) (hβ : 0 < β)
     {u : ℝ → ℝ} (hu : IntegrableOn u (Ioo 0 T)) :
     (fun t => ∫ r in (0 : ℝ)..t, (t - r) ^ (α - 1) *
         ∫ s in (0 : ℝ)..r, (r - s) ^ (β - 1) * u s) =ᵐ[volume.restrict (Ioo 0 T)]
       fun t => ProbabilityTheory.beta β α *
         ∫ s in (0 : ℝ)..t, (t - s) ^ (α + β - 1) * u s := by
   let w := kernelSlice T β u
-  have hw : IntegrableOn w (Ioo 0 T) := (kernelSlice_integrable hT hβ hu).integrableOn
-  have houter := (integrable_kernel_prod hT hα hw).prod_right_ae
-  have hinner := ae_intervalIntegrable_pow hT hβ hu
+  have hw : IntegrableOn w (Ioo 0 T) := (kernelSlice_integrable hβ hu).integrableOn
+  have houter := (integrable_kernel_prod hα hw).prod_right_ae
+  have hinner := ae_intervalIntegrable_pow hβ hu
   refine (ae_restrict_iff' measurableSet_Ioo).2 ?_
   filter_upwards [houter] with t htOut htI
   have ht0 : 0 < t := htI.1
@@ -867,7 +857,7 @@ private lemma ae_eq_zero_of_fractionalIntegral_one {T : ℝ} (hT : 0 < T) {u : �
   have hGac : AbsolutelyContinuousOnInterval G 0 T :=
     huI.absolutelyContinuousOnInterval_intervalIntegral (c := 0) left_mem_uIcc
   have hGI : fractionalIntegral 1 u =ᵐ[volume.restrict (Ioo 0 T)] G :=
-    (ae_restrict_mem measurableSet_Ioo).mono fun t ht => fractionalIntegral_one ht.1.le
+    ae_of_all _ fun _ => fractionalIntegral_one
   have hG0 : EqOn G (fun _ => 0) (Ioo 0 T) :=
     Measure.eqOn_open_of_ae_eq (hGI.symm.trans hz) isOpen_Ioo
       (hGac.continuousOn.mono (by rw [uIcc_of_le hT.le]; exact Ioo_subset_Icc_self))
@@ -887,11 +877,11 @@ private lemma ae_eq_zero_of_fractionalIntegral_one {T : ℝ} (hT : 0 < T) {u : �
   exact (hx hxI).unique hzero
 
 /-- The positive-order fractional integral semigroup, as an a.e. identity. -/
-theorem fractionalIntegral_add {T α β : ℝ} (hT : 0 < T) (hα : 0 < α) (hβ : 0 < β)
+theorem fractionalIntegral_add {T α β : ℝ} (hα : 0 < α) (hβ : 0 < β)
     {u : ℝ → ℝ} (hu : IntegrableOn u (Set.Ioo 0 T)) :
     fractionalIntegral α (fractionalIntegral β u) =ᵐ[volume.restrict (Set.Ioo 0 T)]
       fractionalIntegral (α + β) u := by
-  have hraw := rawFractional_comm hT hα hβ hu
+  have hraw := rawFractional_comm hα hβ hu
   have hfac := gamma_beta_factor hα hβ
   filter_upwards [hraw] with t hteq
   rw [fractionalIntegral, fractionalIntegral]
@@ -909,7 +899,7 @@ private lemma fractionalIntegral_ae_eq_zero {T β : ℝ} (hT : 0 < T) (hβ : 0 <
     (hz : fractionalIntegral β u =ᵐ[volume.restrict (Ioo 0 T)] fun _ => 0) :
     u =ᵐ[volume.restrict (Ioo 0 T)] fun _ => 0 := by
   have h1β : 0 < 1 - β := sub_pos.mpr hβ1
-  have hadd := fractionalIntegral_add hT h1β hβ hu
+  have hadd := fractionalIntegral_add h1β hβ hu
   simp only [sub_add_cancel] at hadd
   have hzero : fractionalIntegral (1 - β) (fractionalIntegral β u) =ᵐ[volume.restrict (Ioo 0 T)]
       fun _ => 0 :=
@@ -936,18 +926,18 @@ theorem fractionalIntegral_deriv_inverse {T α : ℝ} (hT : 0 < T)
     have hsub : uIcc 0 t ⊆ uIcc 0 T := by
       rw [uIcc_of_le ht.1, uIcc_of_le hT.le]
       exact Icc_subset_Icc le_rfl ht.2
-    rw [fractionalIntegral_one ht.1, (hg.mono hsub).integral_deriv_eq_sub, hg0, sub_zero]
+    rw [fractionalIntegral_one, (hg.mono hsub).integral_deriv_eq_sub, hg0, sub_zero]
   have hFae : fractionalIntegral 1 u =ᵐ[volume.restrict (Ioo 0 T)] g :=
     (ae_restrict_mem measurableSet_Ioo).mono fun t ht => hFt t ⟨ht.1.le, ht.2.le⟩
-  have hadd := fractionalIntegral_add hT h1α hα hu
+  have hadd := fractionalIntegral_add h1α hα hu
   simp only [sub_add_cancel] at hadd
   have hcomp : fractionalIntegral (1 - α) (fractionalIntegral α u) =ᵐ[volume.restrict (Ioo 0 T)]
       fractionalIntegral (1 - α) f := hadd.trans (hFae.trans heq)
   have hHu : IntegrableOn (fractionalIntegral α u) (Ioo 0 T) :=
-    integrableOn_fractionalIntegral hT hα hu
+    integrableOn_fractionalIntegral hα hu
   have hdiff : fractionalIntegral (1 - α) (fun x => fractionalIntegral α u x - f x) =ᵐ[
       volume.restrict (Ioo 0 T)] fun _ => 0 := by
-    refine (fractionalIntegral_sub_ae hT h1α hHu hf).trans ?_
+    refine (fractionalIntegral_sub_ae h1α hHu hf).trans ?_
     filter_upwards [hcomp] with t ht
     rw [ht, sub_self]
   have hzero := fractionalIntegral_ae_eq_zero hT h1α h1α1 (hHu.sub hf) hdiff
@@ -972,8 +962,8 @@ theorem mem_range_fractionalIntegral_iff {T α : ℝ} (hT : 0 < T)
     · exact integral_same
     · have hg1 : (fun t => ∫ s in (0 : ℝ)..t, u s) =ᵐ[volume.restrict (Ioo 0 T)]
           fractionalIntegral 1 u :=
-        (ae_restrict_mem measurableSet_Ioo).mono fun t ht => (fractionalIntegral_one ht.1.le).symm
-      have hadd := fractionalIntegral_add hT h1α hα hu
+        ae_of_all _ fun _ => fractionalIntegral_one.symm
+      have hadd := fractionalIntegral_add h1α hα hu
       simp only [sub_add_cancel] at hadd
       have hcong : fractionalIntegral (1 - α) (fractionalIntegral α u) =ᵐ[
           volume.restrict (Ioo 0 T)] fractionalIntegral (1 - α) f :=

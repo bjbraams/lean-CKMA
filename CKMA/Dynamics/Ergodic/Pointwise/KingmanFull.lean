@@ -60,7 +60,7 @@ def subadditiveMeanRate (f : ℕ → Ω → ℝ) (μ : Measure Ω) : ℝ :=
 
 omit [MeasurableSpace Ω] in
 /-- A nonpositive floor does not increase the absolute value of a maximum. -/
-lemma abs_max_le_abs_of_nonpos {a c : ℝ} (hc : c ≤ 0) : |max a c| ≤ |a| := by
+private lemma abs_max_le_abs_of_nonpos {a c : ℝ} (hc : c ≤ 0) : |max a c| ≤ |a| := by
   rcases le_total a c with hac | hca
   · rw [max_eq_right hac, abs_of_nonpos hc, abs_of_nonpos (hac.trans hc)]
     linarith
@@ -191,7 +191,7 @@ lemma kingmanTrunc_antitone {K K' n : ℕ} {f : ℕ → Ω → ℝ} {ω : Ω} (h
 
 omit [MeasurableSpace Ω] in
 /-- At a nonnegative height the truncation is bounded by the original absolute value. -/
-lemma abs_kingmanTrunc_le {K n : ℕ} {f : ℕ → Ω → ℝ} {ω : Ω} :
+private lemma abs_kingmanTrunc_le {K n : ℕ} {f : ℕ → Ω → ℝ} {ω : Ω} :
     |kingmanTrunc K f n ω| ≤ |f n ω| := by
   unfold kingmanTrunc
   have hc : -(K : ℝ) * (n : ℝ) ≤ 0 := by
@@ -223,7 +223,7 @@ lemma kingmanTrunc_lower {K n : ℕ} {f : ℕ → Ω → ℝ} {ω : Ω} :
 
 omit [MeasurableSpace Ω] in
 /-- Maxima add when the floors themselves add. -/
-lemma max_add_max_le {a b p q : ℝ} : max (a + b) (p + q) ≤ max a p + max b q := by
+private lemma max_add_max_le {a b p q : ℝ} : max (a + b) (p + q) ≤ max a p + max b q := by
   refine max_le ?_ ?_
   · exact add_le_add (le_max_left a p) (le_max_left b q)
   · exact add_le_add (le_max_right a p) (le_max_right b q)
@@ -251,7 +251,7 @@ lemma kingmanTrunc_subadditive {K : ℕ} {f : ℕ → Ω → ℝ}
 
 omit [MeasurableSpace Ω] in
 /-- Normalized truncations are the original ratios cut at `-K`. -/
-lemma kingmanRatio_trunc (K n : ℕ) (f : ℕ → Ω → ℝ) (ω : Ω) :
+private lemma kingmanRatio_trunc (K n : ℕ) (f : ℕ → Ω → ℝ) (ω : Ω) :
     kingmanRatio (kingmanTrunc K f) n ω = max (kingmanRatio f n ω) (-(K : ℝ)) := by
   unfold kingmanRatio kingmanTrunc
   rw [← Nat.cast_succ]

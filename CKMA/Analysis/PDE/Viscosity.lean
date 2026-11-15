@@ -79,7 +79,7 @@ def IsViscositySolution {d : ℕ}
   ContinuousOn u Ω ∧ IsViscositySubsolution G Ω u ∧ IsViscositySupersolution G Ω u
 
 /-- **33.23**: comparison for positive zeroth order and an autonomous degenerate elliptic part. -/
-theorem viscosity_comparison {d : ℕ} (hd : 0 < d) {Ω : Set (EuclideanRealSpace d)}
+theorem viscosity_comparison {d : ℕ} {Ω : Set (EuclideanRealSpace d)}
     (hΩ : IsOpen Ω) (hΩb : Bornology.IsBounded Ω) {γ : ℝ} (hγ : 0 < γ)
     (G₀ : (EuclideanRealSpace d →L[ℝ] ℝ) → HessianJet d → ℝ)
     (hGc : Continuous (fun z : (EuclideanRealSpace d →L[ℝ] ℝ) × HessianJet d ↦ G₀ z.1 z.2))

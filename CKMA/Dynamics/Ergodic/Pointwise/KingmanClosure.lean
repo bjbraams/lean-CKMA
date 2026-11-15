@@ -25,9 +25,9 @@ Monotone convergence identifies the mean, and the truncated L¹ convergence pass
 
 ## Main results
 
-* `CKMA.kingman_of_measurable`: Kingman's theorem for a measurable subadditive process.
-* `CKMA.kingman_of_integrable`: Kingman's theorem for an integrable subadditive process.
-* `CKMA.kingman_ae_tendsto_of_ergodic`: Kingman's theorem for ergodic transformations.
+* `CKMA.kingman_of_measurable`: Kingman's theorem for a measurable subadditive process. The
+  integrable and ergodic cases, `CKMA.kingman_subadditive` and
+  `CKMA.kingman_subadditive_of_ergodic`, are in `Dynamics.Ergodic.Pointwise`.
 -/
 
 @[expose] public section
@@ -45,7 +45,7 @@ attribute [local instance] Classical.propDecidable
 
 omit [MeasurableSpace Ω] in
 /-- An extended real lying under every negative integer is `⊥`. -/
-lemma ereal_eq_bot_of_forall_le_neg {x : EReal}
+private lemma ereal_eq_bot_of_forall_le_neg {x : EReal}
     (h : ∀ n : ℕ, x ≤ -((n : ℝ) : EReal)) : x = ⊥ := by
   cases x with
   | bot => rfl
@@ -62,7 +62,7 @@ lemma ereal_eq_bot_of_forall_le_neg {x : EReal}
       linarith
 
 /-- The L¹ seminorm is the `ofReal` of the integral of the absolute value. -/
-lemma eLpNorm_one_eq_ofReal_abs {w : Ω → ℝ} (hw : AEStronglyMeasurable w μ)
+private lemma eLpNorm_one_eq_ofReal_abs {w : Ω → ℝ} (hw : AEStronglyMeasurable w μ)
     (hi : Integrable w μ) :
     eLpNorm w 1 μ = ENNReal.ofReal (∫ ω, |w ω| ∂μ) := by
   have habs : Integrable (fun ω => |w ω|) μ := hi.abs
@@ -107,8 +107,11 @@ lemma tendsto_subadditiveMeanRate_trunc [IsProbabilityMeasure μ] {f : ℕ → �
     simpa [LK, subadditiveMeanRate] using csInf_le hbdd ⟨n, hn, rfl⟩
   linarith [hLK_le.trans_lt hK]
 
+@[deprecated (since := "2026-11-15")]
+alias tendsto_kingmanFekete_trunc := tendsto_subadditiveMeanRate_trunc
+
 /-- A measurable subadditive process has an invariant Kingman limit with the Fekete mean. -/
-lemma kingman_limit_of_measurable [IsProbabilityMeasure μ] (hT : MeasurePreserving T μ μ)
+private lemma kingman_limit_of_measurable [IsProbabilityMeasure μ] (hT : MeasurePreserving T μ μ)
     {f : ℕ → Ω → ℝ} (hf : ∀ n : ℕ, 0 < n → Integrable (f n) μ)
     (hf_meas : ∀ n : ℕ, 0 < n → Measurable (f n))
     (hsub : ∀ n m : ℕ, 0 < n → 0 < m → ∀ᵐ ω ∂μ,
@@ -413,7 +416,7 @@ lemma kingman_limit_of_measurable [IsProbabilityMeasure μ] (hT : MeasurePreserv
   · simpa [g, gK] using hcut
 
 /-- Normalized lengths of a measurable subadditive process converge in L¹. -/
-lemma kingman_eLpNorm_of_measurable [IsProbabilityMeasure μ] (hT : MeasurePreserving T μ μ)
+private lemma kingman_eLpNorm_of_measurable [IsProbabilityMeasure μ] (hT : MeasurePreserving T μ μ)
     {f : ℕ → Ω → ℝ} (hf : ∀ n : ℕ, 0 < n → Integrable (f n) μ)
     (hf_meas : ∀ n : ℕ, 0 < n → Measurable (f n))
     (hsub : ∀ n m : ℕ, 0 < n → 0 < m → ∀ᵐ ω ∂μ,
@@ -585,62 +588,6 @@ lemma kingman_of_measurable [IsProbabilityMeasure μ] (hT : MeasurePreserving T 
     kingman_limit_of_measurable hT hf hf_meas hsub hlower
   exact ⟨kingmanLiminfReal f, hg, hinv, hconv,
     kingman_eLpNorm_of_measurable hT hf hf_meas hsub hlower, hint⟩
-
-/-- Kingman's theorem for an integrable subadditive process. -/
-lemma kingman_of_integrable [IsProbabilityMeasure μ] (hT : MeasurePreserving T μ μ)
-    {f : ℕ → Ω → ℝ} (hf : ∀ n : ℕ, 0 < n → Integrable (f n) μ)
-    (hsub : ∀ n m : ℕ, 0 < n → 0 < m → ∀ᵐ ω ∂μ,
-      f (n + m) ω ≤ f n ω + f m ((T^[n]) ω))
-    (hlower : ∃ c : ℝ, ∀ n : ℕ, 0 < n → c ≤ (n : ℝ)⁻¹ * ∫ ω, f n ω ∂μ) :
-    ∃ g : Ω → ℝ, Integrable g μ ∧ (g ∘ T =ᵐ[μ] g) ∧
-      (∀ᵐ ω ∂μ, Tendsto (fun n : ℕ ↦ (n + 1 : ℝ)⁻¹ * f (n + 1) ω) atTop (𝓝 (g ω))) ∧
-      Tendsto (fun n : ℕ ↦ eLpNorm (fun ω ↦ (n + 1 : ℝ)⁻¹ * f (n + 1) ω - g ω) 1 μ)
-        atTop (𝓝 0) ∧
-      (∫ ω, g ω ∂μ) = subadditiveMeanRate f μ := by
-  have hf_int : ∀ n : ℕ, 0 < n → Integrable (kingmanMk hf n) μ :=
-    fun n hn => integrable_kingmanMk hf hn
-  have hf_meas : ∀ n : ℕ, 0 < n → Measurable (kingmanMk hf n) :=
-    fun n hn => measurable_kingmanMk hf hn
-  have hlower' : ∃ c : ℝ, ∀ n : ℕ, 0 < n →
-      c ≤ (n : ℝ)⁻¹ * ∫ ω, kingmanMk hf n ω ∂μ := by
-    obtain ⟨c, hc⟩ := hlower
-    refine ⟨c, fun n hn => ?_⟩
-    rw [kingmanMk_integral hf hn]
-    exact hc n hn
-  obtain ⟨g, hg_int, hinv, hconv, hL1, hint⟩ := kingman_of_measurable hT hf_int hf_meas
-    (kingmanMk_subadditive hT hf hsub) hlower'
-  refine ⟨g, hg_int, hinv, ?_, ?_, ?_⟩
-  · have hae : ∀ᵐ ω ∂μ, ∀ n : ℕ, f (n + 1) ω = kingmanMk hf (n + 1) ω :=
-      (ae_all_iff).2 fun n => kingmanMk_ae hf (Nat.succ_pos n)
-    filter_upwards [hconv, hae] with ω hω hpt
-    exact hω.congr fun n => by rw [hpt n]
-  · refine hL1.congr fun n => ?_
-    refine eLpNorm_congr_ae ?_
-    filter_upwards [kingmanMk_ae hf (Nat.succ_pos n)] with ω hω
-    rw [hω]
-  · rw [← kingmanMk_fekete hf]
-    exact hint
-
-/-- In an ergodic system the subadditive limit equals the constant mean rate. -/
-lemma kingman_ae_tendsto_of_ergodic [IsProbabilityMeasure μ] (hT : Ergodic T μ)
-    {f : ℕ → Ω → ℝ} (hf : ∀ n : ℕ, 0 < n → Integrable (f n) μ)
-    (hsub : ∀ n m : ℕ, 0 < n → 0 < m → ∀ᵐ ω ∂μ,
-      f (n + m) ω ≤ f n ω + f m ((T^[n]) ω))
-    (hlower : ∃ c : ℝ, ∀ n : ℕ, 0 < n → c ≤ (n : ℝ)⁻¹ * ∫ ω, f n ω ∂μ) :
-    ∀ᵐ ω ∂μ, Tendsto (fun n : ℕ ↦ (n + 1 : ℝ)⁻¹ * f (n + 1) ω) atTop
-      (𝓝 (subadditiveMeanRate f μ)) := by
-  obtain ⟨g, hg_int, hinv, hconv, -, hint⟩ :=
-    kingman_of_integrable hT.toMeasurePreserving hf hsub hlower
-  obtain ⟨c, hc⟩ := hT.ae_eq_const_of_ae_eq_comp_ae hg_int.aestronglyMeasurable hinv
-  have hcL : c = subadditiveMeanRate f μ := by
-    have heq : ∫ ω, g ω ∂μ = c := by
-      rw [integral_congr_ae hc]
-      simp only [Function.const]
-      rw [integral_const]
-      simp [measureReal_def, IsProbabilityMeasure.measure_univ, smul_eq_mul, one_mul]
-    exact heq.symm.trans hint
-  filter_upwards [hconv, hc] with ω hω hωc
-  simpa [hωc, hcL] using hω
 
 end CKMA
 

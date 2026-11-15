@@ -58,16 +58,16 @@ private lemma chebyshevLebesgueCorr_nonpos_of_between {n : ℕ} (hn : 1 ≤ n) {
     have hmν : (m : ℝ) ≤ n := (Nat.floor_le hν0.le).trans (hνle.trans (by linarith))
     exact_mod_cast hmν
   have hnot : m < i.val ∧ i.val < n - m := hbetween
-  have hφgt : θ < nodeAngle n i := by
-    unfold nodeAngle
+  have hφgt : θ < chebyshevNodeAngle n i := by
+    unfold chebyshevNodeAngle
     rw [lt_div_iff₀ hn0]
     have hiν : ν < (i.val : ℝ) := by
       have hsucc : (m : ℝ) + 1 ≤ i.val := by exact_mod_cast (Nat.succ_le_of_lt hnot.1)
       exact ((by simpa using Nat.lt_floor_add_one ν : ν < (m : ℝ) + 1)).trans_le hsucc
     have hθν : θ * n = π * ν := by unfold ν; field_simp
     nlinarith [pi_pos]
-  have hφlt : nodeAngle n i < π - θ := by
-    unfold nodeAngle
+  have hφlt : chebyshevNodeAngle n i < π - θ := by
+    unfold chebyshevNodeAngle
     rw [div_lt_iff₀ hn0]
     have hi_lt : (i.val : ℝ) < n - ν := by
       have hi_le : i.val ≤ n - m - 1 := by omega
@@ -81,10 +81,10 @@ private lemma chebyshevLebesgueCorr_nonpos_of_between {n : ℕ} (hn : 1 ≤ n) {
     have hright : (π - θ) * n = π * (n - ν) := by unfold ν; field_simp
     nlinarith [pi_pos]
   have hsign := chebyshevAngleSign_of_not_lt (n := n) (θ := θ) (i := i) (not_lt_of_gt hφgt)
-  have havg : (θ + nodeAngle n i) / 2 ∈ Set.Ioo 0 (π / 2) := by
-    refine ⟨by linarith [hθ.1, (nodeAngle_mem_Icc (by omega) i).1], ?_⟩
+  have havg : (θ + chebyshevNodeAngle n i) / 2 ∈ Set.Ioo 0 (π / 2) := by
+    refine ⟨by linarith [hθ.1, (chebyshevNodeAngle_mem_Icc (by omega) i).1], ?_⟩
     linarith [hφlt]
-  have hcot : 0 < cot ((θ + nodeAngle n i) / 2) := by
+  have hcot : 0 < cot ((θ + chebyshevNodeAngle n i) / 2) := by
     rw [cot_eq_cos_div_sin]
     exact div_pos
       (cos_pos_of_mem_Ioo ⟨by linarith [pi_pos, havg.1], havg.2⟩)
@@ -164,7 +164,7 @@ private lemma sum_chebyshevLebesgueCorr_left_le {n m : ℕ} (hn : 1 ≤ n) (hm_l
       have hc0 : 0 ≤ c := ha0.trans hc.1.le
       have hb0 : 0 ≤ b := by unfold b; positivity
       have hcotb : cot ((θ + b) / 2) ≤ cot ((θ + c) / 2) :=
-        cot_antitone_Ioo (havg c hc0 (by linarith [hc.2, hbθ]))
+        antitoneOn_cot (havg c hc0 (by linarith [hc.2, hbθ]))
           (havg b hb0 hbθ.le) (by
             rw [div_le_div_iff₀ (by norm_num : (0 : ℝ) < 2) (by norm_num)]
             linarith [hc.2])
@@ -180,9 +180,9 @@ private lemma sum_chebyshevLebesgueCorr_left_le {n m : ℕ} (hn : 1 ≤ n) (hm_l
         chebyshevExtremalWeight_of_interior (Nat.succ_ne_zero k)
           (Nat.ne_of_lt (Nat.lt_of_le_of_lt (Nat.succ_le_of_lt hk') hm_lt))
       have hsign := chebyshevAngleSign_of_lt (n := n) (θ := θ)
-        (i := ⟨k + 1, hi1'⟩) (by simpa [nodeAngle, b] using hbθ)
+        (i := ⟨k + 1, hi1'⟩) (by simpa [chebyshevNodeAngle, b] using hbθ)
       unfold chebyshevLebesgueCorr
-      rw [hw, hsign, show nodeAngle n ⟨k + 1, hi1'⟩ = b by simp [nodeAngle, b],
+      rw [hw, hsign, show chebyshevNodeAngle n ⟨k + 1, hi1'⟩ = b by simp [chebyshevNodeAngle, b],
         show (2 : ℝ) * n * 1 = 2 * n by ring, mul_one]
       have hfac : 0 ≤ |sin ((n : ℝ) * θ)| / (2 * (n : ℝ)) := by positivity
       have hineq := mul_le_mul_of_nonneg_left hcotle hfac
@@ -238,7 +238,7 @@ private lemma sum_chebyshevLebesgueCorr_left_le {n m : ℕ} (hn : 1 ≤ n) (hm_l
                 2 * log (sin ((θ + π * (m : ℝ) / n) / 2) / sin (θ / 2)) := by
               unfold F
               rw [log_div hsin2.ne' hsin_half.ne']
-              ring
+              ring_nf
             rw [hF]
             exact mul_le_mul_of_nonneg_left
               ((log_le_log (div_pos hsin2 hsin_half) hratio).trans_eq (by ring)) (by norm_num)
@@ -292,8 +292,8 @@ private lemma sum_chebyshevLebesgueCorr_right_le {n m : ℕ} (hn : 1 ≤ n) (hm_
     have hcastφ : ((n - m + k : ℕ) : ℝ) = (n : ℝ) - m + k := by
       rw [Nat.cast_add, Nat.cast_sub hm_le_n]
     let φj : ℝ := π * (n - m + k : ℝ) / n
-    have hφj : nodeAngle n ⟨n - m + k, hi'⟩ = φj := by
-      simp only [nodeAngle, φj, hcastφ]
+    have hφj : chebyshevNodeAngle n ⟨n - m + k, hi'⟩ = φj := by
+      simp only [chebyshevNodeAngle, φj, hcastφ]
     have hgt : π - θ < φj := by
       unfold φj
       rw [lt_div_iff₀ hn0]
@@ -364,7 +364,7 @@ private lemma sum_chebyshevLebesgueCorr_right_le {n m : ℕ} (hn : 1 ≤ n) (hm_
 
 /-- Positive cotangent corrections on `(0, π/2]` sum to an absolute constant. -/
 private lemma sum_chebyshevLebesgueCorr_le {n : ℕ} (hn : 1 ≤ n) {θ : ℝ}
-    (hθ : θ ∈ Set.Ioc 0 (π / 2)) (hnode : ∀ i, θ ≠ nodeAngle n i) :
+    (hθ : θ ∈ Set.Ioc 0 (π / 2)) (hnode : ∀ i, θ ≠ chebyshevNodeAngle n i) :
     ∑ i, chebyshevLebesgueCorr n θ i ≤ 3 / 4 + π / 8 + log 2 / π := by
   have hn0 : (0 : ℝ) < n := by exact_mod_cast (by omega : 0 < n)
   let ν : ℝ := (n : ℝ) * θ / π
@@ -381,8 +381,8 @@ private lemma sum_chebyshevLebesgueCorr_le {n : ℕ} (hn : 1 ≤ n) {θ : ℝ}
   have hm_lt_ν : (m : ℝ) < ν := by
     refine lt_of_le_of_ne (Nat.floor_le hν0.le) ?_
     intro hνeq
-    have hθeq : θ = nodeAngle n ⟨m, hm_fin⟩ := by
-      simp only [nodeAngle]
+    have hθeq : θ = chebyshevNodeAngle n ⟨m, hm_fin⟩ := by
+      simp only [chebyshevNodeAngle]
       rw [hνeq]
       unfold ν
       field_simp
@@ -408,7 +408,8 @@ private lemma sum_chebyshevLebesgueCorr_le {n : ℕ} (hn : 1 ≤ n) {θ : ℝ}
         ¬ (i.val ≤ m ∨ n - m ≤ i.val)), chebyshevLebesgueCorr n θ i ≤ 0 := by
       refine Finset.sum_nonpos fun i hi => ?_
       have h := (Finset.mem_filter.mp hi).2
-      exact chebyshevLebesgueCorr_nonpos_of_between hn hθ ⟨by change m < i.val; omega, by change i.val < n - m; omega⟩
+      exact chebyshevLebesgueCorr_nonpos_of_between hn hθ
+        ⟨by change m < i.val; omega, by change i.val < n - m; omega⟩
     rw [← hadd]
     exact add_le_of_nonpos_right hneg
   have hdisj : Disjoint (univ.filter (fun i : Fin (n + 1) => i.val ≤ m))
@@ -489,14 +490,14 @@ private lemma lebesgueFunction_Ioc_le {n : ℕ} (hn : 1 ≤ n) {θ : ℝ}
   have hone : (1 : ℝ) ≤ (2 / π) * log ((n : ℝ) + 1) + chebyshevLebesgueSlack := by
     have hcoef : 0 ≤ 2 / π := by positivity
     linarith [one_le_chebyshevLebesgueSlack, mul_nonneg hcoef hlog0]
-  by_cases hnode : ∀ i, θ ≠ nodeAngle n i
+  by_cases hnode : ∀ i, θ ≠ chebyshevNodeAngle n i
   · have hopen : θ ∈ Set.Ioo 0 π := ⟨hθ.1, hθ.2.trans_lt (by linarith [pi_pos])⟩
     rw [lebesgueFunction_cos_eq hn hopen hnode]
     have hmain := sum_chebyshevLebesgueMain_le hn hopen hnode
     have hcorr := sum_chebyshevLebesgueCorr_le hn hθ hnode
     unfold chebyshevLebesgueSlack
     linarith
-  · have hex : ∃ i, θ = nodeAngle n i := by simpa using hnode
+  · have hex : ∃ i, θ = chebyshevNodeAngle n i := by simpa using hnode
     obtain ⟨i, hi⟩ := hex
     rw [show cos θ = chebyshevExtremalNodes n i by rw [hi, chebyshevExtremalNodes_eq_cos],
       lebesgueFunction_chebyshev_node (by omega) i]

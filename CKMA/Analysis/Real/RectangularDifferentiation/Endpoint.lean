@@ -25,16 +25,16 @@ of the logarithmic iteration kernel raise the Orlicz exponent by one.
 
 ## Main definitions
 
-* `CKMA.truncAt`: truncation discarding values of absolute value at most `t / 2`.
+* `CKMA.halfLevelTrunc`: truncation discarding values of absolute value at most `t / 2`.
 * `CKMA.truncatedPartial`: the partial strong maximal function `CKMA.partialStrongMax`, set to
   zero on and below the half-height threshold.
 
 ## Main results
 
 * `CKMA.measurable_partialStrongMax`: measurability of the slice strong maximal function.
-* `CKMA.partial_distribution_trunc`: the distribution of a high superlevel is controlled by the
-  truncated slices.
-* `CKMA.strongMaximal_subset_truncRat`: the strong maximal superlevel lies, up to the coordinate
+* `CKMA.volume_partialStrongMax_gt_le_trunc`: the distribution of a high superlevel is
+  controlled by the truncated slices.
+* `strongMaximal_subset_truncRat`: the strong maximal superlevel lies, up to the coordinate
   equivalence, inside a one-dimensional superlevel of the truncated partial maximal function.
 * `CKMA.strongMaximal_volume_le_truncIntegral`: the distribution of the strong maximal function is
   at most a constant multiple of the integral of the truncated partial maximal function.
@@ -50,7 +50,7 @@ open MeasureTheory Set
 open scoped ENNReal
 
 /-- A strict partial-maximal inequality is a countable union of rational slice averages. -/
-theorem partialStrongMax_gt_eq {n : ℕ} (hn : 0 < n) (f : (Fin (n + 1) → ℝ) → ℝ)
+private theorem partialStrongMax_gt_eq {n : ℕ} (hn : 0 < n) (f : (Fin (n + 1) → ℝ) → ℝ)
     (c : ℝ≥0∞) :
     {p : ℝ × (Fin n → ℝ) | c < partialStrongMax f p.1 p.2} =
       ⋃ J : RatRectangle n,
@@ -67,7 +67,7 @@ theorem partialStrongMax_gt_eq {n : ℕ} (hn : 0 < n) (f : (Fin (n + 1) → ℝ)
     exact ⟨J, lt_iSup_iff.2 ⟨hz, havg⟩⟩
 
 /-- Superlevel sets of the partial maximal function are measurable. -/
-theorem measurableSet_partialStrongMax_gt {n : ℕ} (hn : 0 < n)
+private theorem measurableSet_partialStrongMax_gt {n : ℕ} (hn : 0 < n)
     {f : (Fin (n + 1) → ℝ) → ℝ} (hf : Measurable f) (c : ℝ≥0∞) :
     MeasurableSet {p : ℝ × (Fin n → ℝ) | c < partialStrongMax f p.1 p.2} := by
   rw [partialStrongMax_gt_eq hn f c]
@@ -84,7 +84,7 @@ theorem measurable_partialStrongMax {n : ℕ} (hn : 0 < n)
   measurable_of_Ioi fun c ↦ measurableSet_partialStrongMax_gt hn hf c
 
 /-- Integrating the inductive distribution bound of the slices recovers the full integral. -/
-theorem partial_distribution {n : ℕ} (hn : 1 ≤ n) {C : ℝ}
+theorem volume_partialStrongMax_gt_le {n : ℕ} (hn : 1 ≤ n) {C : ℝ}
     (hIH : ∀ (g : (Fin n → ℝ) → ℝ), Measurable g → ∀ b : ℝ, 0 < b →
       volume {z | ENNReal.ofReal b < strongMaximalFunction g z} ≤
         ENNReal.ofReal C *
@@ -98,51 +98,51 @@ theorem partial_distribution {n : ℕ} (hn : 1 ≤ n) {C : ℝ}
   have hS : MeasurableSet S := measurableSet_partialStrongMax_gt hn0 hf _
   rw [Measure.volume_eq_prod, Measure.prod_apply hS]
   have hgrow : Measurable fun p : ℝ × (Fin n → ℝ) ↦
-      ENNReal.ofReal (strongMaximalGrowth n (|f ((coordEquiv n).symm p)| / b)) := by
+      ENNReal.ofReal (strongMaximalGrowth n (|f ((lastCoordEquiv n).symm p)| / b)) := by
     refine ENNReal.measurable_ofReal.comp ((measurable_strongMaximalGrowth n).comp ?_)
     exact (continuous_abs.measurable.comp
-      (hf.comp (coordEquiv n).symm.measurable)).div_const b
+      (hf.comp (lastCoordEquiv n).symm.measurable)).div_const b
   have hpoint : ∀ y, volume (Prod.mk y ⁻¹' S) ≤
       ENNReal.ofReal C *
-        ∫⁻ z, ENNReal.ofReal (strongMaximalGrowth n (|sliceFunction f y z| / b)) := by
+        ∫⁻ z, ENNReal.ofReal (strongMaximalGrowth n (|lastCoordSlice f y z| / b)) := by
     intro y
     have hset : Prod.mk y ⁻¹' S =
-        {z | ENNReal.ofReal b < strongMaximalFunction (sliceFunction f y) z} := by
+        {z | ENNReal.ofReal b < strongMaximalFunction (lastCoordSlice f y) z} := by
       ext z
       simp only [mem_preimage, S, mem_ofPred_eq, partialStrongMax]
     rw [hset]
-    exact hIH (sliceFunction f y) (sliceFunction_measurable hf y) b hb
+    exact hIH (lastCoordSlice f y) (measurable_lastCoordSlice hf y) b hb
   calc
     ∫⁻ y, volume (Prod.mk y ⁻¹' S) ≤
         ∫⁻ y, ENNReal.ofReal C *
-          ∫⁻ z, ENNReal.ofReal (strongMaximalGrowth n (|sliceFunction f y z| / b)) :=
+          ∫⁻ z, ENNReal.ofReal (strongMaximalGrowth n (|lastCoordSlice f y z| / b)) :=
       lintegral_mono hpoint
     _ = ENNReal.ofReal C * ∫⁻ y, ∫⁻ z,
-          ENNReal.ofReal (strongMaximalGrowth n (|sliceFunction f y z| / b)) :=
+          ENNReal.ofReal (strongMaximalGrowth n (|lastCoordSlice f y z| / b)) :=
       lintegral_const_mul' _ _ ENNReal.ofReal_ne_top
     _ = ENNReal.ofReal C *
           ∫⁻ x, ENNReal.ofReal (strongMaximalGrowth n (|f x| / b)) := by
       congr 1
-      have hev : MeasurePreserving (⇑(coordEquiv n).symm) volume volume :=
+      have hev : MeasurePreserving (⇑(lastCoordEquiv n).symm) volume volume :=
         (volume_preserving_piFinSuccAbove (fun _ : Fin (n + 1) ↦ ℝ) (Fin.last n)).symm
-      rw [← hev.lintegral_comp_emb (coordEquiv n).symm.measurableEmbedding
+      rw [← hev.lintegral_comp_emb (lastCoordEquiv n).symm.measurableEmbedding
         (fun x ↦ ENNReal.ofReal (strongMaximalGrowth n (|f x| / b)))]
       exact (lintegral_prod _ hgrow.aemeasurable).symm
 
 /-- The truncation that discards values at most half the height. -/
-def truncAt {α : Type*} (t : ℝ) (f : α → ℝ) (x : α) : ℝ :=
+def halfLevelTrunc {α : Type*} (t : ℝ) (f : α → ℝ) (x : α) : ℝ :=
   if t / 2 < |f x| then f x else 0
 
 /-- Truncation preserves measurability. -/
-theorem measurable_truncAt {α : Type*} [MeasurableSpace α] {t : ℝ} {f : α → ℝ}
-    (hf : Measurable f) : Measurable (truncAt t f) := by
+private theorem measurable_halfLevelTrunc {α : Type*} [MeasurableSpace α] {t : ℝ} {f : α → ℝ}
+    (hf : Measurable f) : Measurable (halfLevelTrunc t f) := by
   have hs : MeasurableSet {x | t / 2 < |f x|} := by
     simpa [Real.norm_eq_abs] using measurableSet_lt measurable_const hf.norm
-  unfold truncAt
+  unfold halfLevelTrunc
   exact hf.ite hs measurable_const
 
 /-- The distribution of a high superlevel is controlled by the truncated slices. -/
-theorem partial_distribution_trunc {n : ℕ} (hn : 1 ≤ n) {C : ℝ}
+theorem volume_partialStrongMax_gt_le_trunc {n : ℕ} (hn : 1 ≤ n) {C : ℝ}
     (hIH : ∀ (g : (Fin n → ℝ) → ℝ), Measurable g → ∀ b : ℝ, 0 < b →
       volume {z | ENNReal.ofReal b < strongMaximalFunction g z} ≤
         ENNReal.ofReal C *
@@ -150,25 +150,26 @@ theorem partial_distribution_trunc {n : ℕ} (hn : 1 ≤ n) {C : ℝ}
     {f : (Fin (n + 1) → ℝ) → ℝ} (hf : Measurable f) {t : ℝ} (ht : 0 < t) :
     volume {p : ℝ × (Fin n → ℝ) | ENNReal.ofReal t < partialStrongMax f p.1 p.2} ≤
       ENNReal.ofReal C * ∫⁻ x, ENNReal.ofReal (strongMaximalGrowth n
-        (|(truncAt t f) x| / (t / 2))) := by
+        (|(halfLevelTrunc t f) x| / (t / 2))) := by
   have hsub : {p : ℝ × (Fin n → ℝ) | ENNReal.ofReal t < partialStrongMax f p.1 p.2} ⊆
       {p : ℝ × (Fin n → ℝ) | ENNReal.ofReal (t / 2) <
-        partialStrongMax (truncAt t f) p.1 p.2} := by
+        partialStrongMax (halfLevelTrunc t f) p.1 p.2} := by
     intro p hp
     simp only [mem_ofPred_eq] at hp ⊢
-    have htrunc := strongMaximal_lt_trunc ht (sliceFunction_measurable hf p.1) hp
-    have hfun : sliceFunction (truncAt t f) p.1 =
-        fun y ↦ if t / 2 < |sliceFunction f p.1 y| then sliceFunction f p.1 y else 0 := by
+    have htrunc := strongMaximal_lt_trunc ht (measurable_lastCoordSlice hf p.1) hp
+    have hfun : lastCoordSlice (halfLevelTrunc t f) p.1 =
+        fun y ↦ if t / 2 < |lastCoordSlice f p.1 y| then lastCoordSlice f p.1 y else 0 := by
       funext y
       rfl
     rw [partialStrongMax, hfun]
     exact htrunc
   refine le_trans (measure_mono hsub) ?_
-  exact partial_distribution hn hIH (measurable_truncAt hf) (div_pos ht (by norm_num))
+  exact volume_partialStrongMax_gt_le hn hIH (measurable_halfLevelTrunc hf)
+    (div_pos ht (by norm_num))
 
 /-- Discarding the half-height part of an integrand preserves a strict one-dimensional
 maximal inequality. -/
-theorem oneDimMaximalENN_trunc_gt {φ : ℝ → ℝ≥0∞} (hφ : Measurable φ) {a : ℝ} (ha : 0 < a)
+private theorem oneDimMaximalENN_trunc_gt {φ : ℝ → ℝ≥0∞} (hφ : Measurable φ) {a : ℝ} (ha : 0 < a)
     {x : ℝ} (hx : ENNReal.ofReal a < oneDimMaximalENN φ x) :
     ENNReal.ofReal (a / 2) <
       oneDimMaximalENN (fun y ↦ if ENNReal.ofReal (a / 2) < φ y then φ y else 0) x := by
@@ -255,7 +256,7 @@ theorem oneDimMaximalENN_trunc_gt {φ : ℝ → ℝ≥0∞} (hφ : Measurable φ
 
 /-- A strict interval average is witnessed by a rational interval, whether or not the integrand
 is globally integrable. -/
-theorem exists_ratInterval_of_average_gt_local (g : ℝ → ℝ≥0∞) (I : OpenInterval) {α : ℝ}
+private theorem exists_ratInterval_of_average_gt_local (g : ℝ → ℝ≥0∞) (I : OpenInterval) {α : ℝ}
     (hα : 0 < α) (havg : ENNReal.ofReal α < intervalAverage g I) :
     ∃ J : RatInterval, I.carrier ⊆ J.carrier ∧
       ENNReal.ofReal α < ratIntervalAverage g J := by
@@ -305,7 +306,7 @@ def truncatedPartial {n : ℕ} (f : (Fin (n + 1) → ℝ) → ℝ) (a : ℝ) (y 
   if ENNReal.ofReal (a / 2) < partialStrongMax f y z then partialStrongMax f y z else 0
 
 /-- The truncated partial maximal function is measurable. -/
-theorem measurable_truncatedPartial {n : ℕ} (hn : 0 < n)
+private theorem measurable_truncatedPartial {n : ℕ} (hn : 0 < n)
     {f : (Fin (n + 1) → ℝ) → ℝ} (hf : Measurable f) (a : ℝ) :
     Measurable (fun p : ℝ × (Fin n → ℝ) ↦ truncatedPartial f a p.1 p.2) := by
   have hT : Measurable fun p : ℝ × (Fin n → ℝ) ↦ partialStrongMax f p.1 p.2 :=
@@ -318,7 +319,7 @@ theorem measurable_truncatedPartial {n : ℕ} (hn : 0 < n)
 
 /-- Rational one-dimensional averages of the truncated partial maximal function are measurable
 in the slice coordinate. -/
-theorem measurable_truncRatAverage {n : ℕ} (hn : 0 < n)
+private theorem measurable_truncRatAverage {n : ℕ} (hn : 0 < n)
     {f : (Fin (n + 1) → ℝ) → ℝ} (hf : Measurable f) (a : ℝ) (J : RatInterval) :
     Measurable fun z : Fin n → ℝ ↦
       ratIntervalAverage (fun y ↦ truncatedPartial f a y z) J := by
@@ -343,10 +344,10 @@ theorem measurable_truncRatAverage {n : ℕ} (hn : 0 < n)
 
 /-- The strong maximal superlevel sits inside the one-dimensional superlevel of the truncated
 partial maximal function, up to the coordinate equivalence. -/
-theorem strongMaximal_subset_truncRat {n : ℕ} (hn : 1 ≤ n)
+private theorem strongMaximal_subset_truncRat {n : ℕ} (hn : 1 ≤ n)
     {f : (Fin (n + 1) → ℝ) → ℝ} (hf : Measurable f) {a : ℝ} (ha : 0 < a) :
     {x | ENNReal.ofReal a < strongMaximalFunction f x} ⊆
-      coordEquiv n ⁻¹'
+      lastCoordEquiv n ⁻¹'
         (⋃ J : RatInterval, J.carrier ×ˢ
           {z | ENNReal.ofReal (a / 2) <
             ratIntervalAverage (fun y ↦ truncatedPartial f a y z) J}) := by
@@ -372,8 +373,8 @@ theorem strongMaximal_subset_truncRat {n : ℕ} (hn : 1 ≤ n)
   obtain ⟨J, hsub, hJ⟩ := exists_ratInterval_of_average_gt_local
     (fun t ↦ truncatedPartial f a t z) I (div_pos ha (by norm_num)) havg
   have hyJ : y ∈ J.carrier := hsub hyI
-  have hcoord : coordEquiv n x = (y, z) := by
-    simpa [y, z] using coordEquiv_apply n x
+  have hcoord : lastCoordEquiv n x = (y, z) := by
+    simpa [y, z] using lastCoordEquiv_apply n x
   rw [mem_preimage, hcoord]
   refine mem_iUnion.2 ⟨J, ?_⟩
   exact mem_prod.2 ⟨hyJ, hJ⟩
@@ -393,7 +394,7 @@ theorem strongMaximal_volume_le_truncIntegral {n : ℕ} (hn : 1 ≤ n)
     refine MeasurableSet.iUnion fun J ↦ MeasurableSet.prod measurableSet_Ioo ?_
     exact measurableSet_lt measurable_const (measurable_truncRatAverage hn0 hf a J)
   have hsub := strongMaximal_subset_truncRat hn hf ha
-  have hev : MeasurePreserving (coordEquiv n) volume volume :=
+  have hev : MeasurePreserving (lastCoordEquiv n) volume volume :=
     volume_preserving_piFinSuccAbove (fun _ : Fin (n + 1) ↦ ℝ) (Fin.last n)
   have hpre : volume {x | ENNReal.ofReal a < strongMaximalFunction f x} ≤ volume S := by
     rw [← hev.measure_preimage_equiv S]
@@ -453,5 +454,12 @@ theorem strongMaximal_volume_le_truncIntegral {n : ℕ} (hn : 1 ≤ n)
       measurable_truncatedPartial hn0 hf a
     rw [lintegral_prod_symm _ hpsi.aemeasurable]
   exact hpre.trans hvolS
+
+@[deprecated (since := "2026-11-15")]
+alias truncAt := halfLevelTrunc
+@[deprecated (since := "2026-11-15")]
+alias partial_distribution := volume_partialStrongMax_gt_le
+@[deprecated (since := "2026-11-15")]
+alias partial_distribution_trunc := volume_partialStrongMax_gt_le_trunc
 
 end CKMA

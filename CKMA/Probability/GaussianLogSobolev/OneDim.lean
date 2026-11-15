@@ -42,6 +42,7 @@ noncomputable section
 
 namespace CKMA
 
+open GaussianLogSobolev
 open MeasureTheory ProbabilityTheory Set
 open scoped NNReal ENNReal Real RealInnerProductSpace
 
@@ -168,7 +169,7 @@ lemma integral_ouSemigroup {f : ℝ → ℝ} {t : ℝ} (ht : 0 ≤ t) (hf : Cont
     _ = ∫ x, f x ∂γ := hint
 
 /-- The identity is integrable for the standard Gaussian. -/
-lemma integrable_id_gaussianReal : Integrable id (gaussianReal 0 1) :=
+private lemma integrable_id_gaussianReal : Integrable id (gaussianReal 0 1) :=
   memLp_one_iff_integrable.mp (memLp_id_gaussianReal (μ := 0) (v := 1) 1)
 
 /-- Absolute value is integrable for the standard Gaussian. -/
@@ -176,12 +177,12 @@ lemma integrable_abs_gaussianReal : Integrable (fun x : ℝ => |x|) (gaussianRea
   simpa [Real.norm_eq_abs] using integrable_id_gaussianReal.norm
 
 /-- Spatial derivative of the Mehler argument. -/
-lemma hasDerivAt_mehler_space (t y z : ℝ) :
+private lemma hasDerivAt_mehler_space (t y z : ℝ) :
     HasDerivAt (fun x => ouScale t * x + ouStdev t * y) (ouScale t) z := by
   simpa using ((hasDerivAt_id z).const_mul (ouScale t)).add_const (ouStdev t * y)
 
 /-- Time derivative of the Mehler argument. -/
-lemma hasDerivAt_mehler_time {t x y : ℝ} (ht : 0 < t) :
+private lemma hasDerivAt_mehler_time {t x y : ℝ} (ht : 0 < t) :
     HasDerivAt (fun s => ouScale s * x + ouStdev s * y)
       (-ouScale t * x + (ouScale t ^ 2 / ouStdev t) * y) t := by
   refine (((hasDerivAt_ouScale t).mul_const x).add
@@ -379,7 +380,7 @@ lemma ouSemigroup_lower {f : ℝ → ℝ} {t x δ : ℝ} (hf : Continuous f)
   simpa [ouSemigroup, γ] using hmono
 
 /-- Derivative of a differentiable function along the Mehler noise coordinate. -/
-lemma deriv_mehler_comp {g : ℝ → ℝ} {t x y : ℝ} (hg : Differentiable ℝ g) :
+private lemma deriv_mehler_comp {g : ℝ → ℝ} {t x y : ℝ} (hg : Differentiable ℝ g) :
     deriv (fun z => g (ouScale t * x + ouStdev t * z)) y =
       deriv g (ouScale t * x + ouStdev t * y) * ouStdev t := by
   have hinner : HasDerivAt (fun z => ouScale t * x + ouStdev t * z) (ouStdev t) y := by
@@ -389,6 +390,8 @@ lemma deriv_mehler_comp {g : ℝ → ℝ} {t x y : ℝ} (hg : Differentiable ℝ
   exact ((houter.comp y hinner).congr_of_eventuallyEq
     (Filter.EventuallyEq.of_eq (by funext w; rfl))).deriv
 
+namespace GaussianLogSobolev
+
 /-- A `C²` function is `C¹`, with a `C¹` derivative. -/
 lemma contDiff_one_deriv_of_two {f : ℝ → ℝ} (hf : ContDiff ℝ 2 f) :
     ContDiff ℝ 1 f ∧ ContDiff ℝ 1 (deriv f) := by
@@ -397,6 +400,8 @@ lemma contDiff_one_deriv_of_two {f : ℝ → ℝ} (hf : ContDiff ℝ 2 f) :
     convert hf using 2
     norm_num
   exact h.deriv'
+
+end GaussianLogSobolev
 
 /-- Second space derivative of the Ornstein–Uhlenbeck semigroup. -/
 lemma deriv_ouSemigroup_space₂ {f : ℝ → ℝ} {t x : ℝ} (hf : ContDiff ℝ 2 f)
@@ -494,9 +499,11 @@ lemma deriv_ouSemigroup_eq_generator {f : ℝ → ℝ} {t x : ℝ} (ht : 0 < t)
   rw [htime', hcoeff, hfirst, hsecond]
   ring
 
+namespace GaussianLogSobolev
+
 /-- Cauchy–Schwarz for bounded continuous functions against the standard Gaussian. -/
-lemma gaussian_cauchy_schwarz {a b : ℝ → ℝ} {A B : ℝ} (ha : Continuous a) (hb : Continuous b)
-    (hA : ∀ x, |a x| ≤ A) (hB : ∀ x, |b x| ≤ B) :
+lemma sq_integral_mul_le_integral_sq_mul_integral_sq {a b : ℝ → ℝ} {A B : ℝ}
+    (ha : Continuous a) (hb : Continuous b) (hA : ∀ x, |a x| ≤ A) (hB : ∀ x, |b x| ≤ B) :
     (∫ x, a x * b x ∂gaussianReal 0 1) ^ 2 ≤
       (∫ x, a x ^ 2 ∂gaussianReal 0 1) * (∫ x, b x ^ 2 ∂gaussianReal 0 1) := by
   let γ : Measure ℝ := gaussianReal 0 1
@@ -533,6 +540,8 @@ lemma gaussian_cauchy_schwarz {a b : ℝ → ℝ} {A B : ℝ} (ha : Continuous a
     hb2] at hineq
   simpa [γ] using hineq
 
+end GaussianLogSobolev
+
 /-- Constant upper bounds pass to the Ornstein–Uhlenbeck semigroup. -/
 lemma ouSemigroup_upper {f : ℝ → ℝ} {t x M : ℝ} (hf : Continuous f)
     (hbd : ∃ C, ∀ y, |f y| ≤ C) (hM : ∀ y, f y ≤ M) : ouSemigroup t f x ≤ M := by
@@ -563,7 +572,7 @@ lemma hasDerivAt_ouSemigroup_mul_log {f : ℝ → ℝ} {t x δ : ℝ} (ht : 0 < 
   field_simp [hpos.ne']
 
 /-- The Mehler time velocity is linearly bounded for times at least `t0`. -/
-lemma abs_mehler_velocity_le {s t0 x y : ℝ} (ht0 : 0 < t0) (hs : t0 ≤ s) :
+private lemma abs_mehler_velocity_le {s t0 x y : ℝ} (ht0 : 0 < t0) (hs : t0 ≤ s) :
     |-ouScale s * x + (ouScale s ^ 2 / ouStdev s) * y| ≤
       |x| + (1 / ouStdev t0) * |y| := by
   have hs0 : 0 < s := lt_of_lt_of_le ht0 hs

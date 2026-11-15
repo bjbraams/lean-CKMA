@@ -82,20 +82,16 @@ private theorem lyapunov_nonneg_on_ball {V : E → ℝ} {x₀ : E} {r : ℝ} (hV
   · simp [hV₀]
   · exact (hpos x hx hx0).le
 
-/-- The Lyapunov derivative vanishes at an equilibrium interior to the ball of differentiability. -/
-private theorem lyapunovDerivative_eq_zero_of_fixed {ϕ : Flow ℝ E} {F : E → E} {V : E → ℝ}
-    {x₀ : E} {r : ℝ} (hflow : FlowHasGenerator ϕ F) (heq : ∀ t, ϕ t x₀ = x₀)
-    (hV : ContDiffOn ℝ 1 V (ball x₀ r)) (hr : 0 < r) : lyapunovDerivative F V x₀ = 0 := by
-  have hx₀ : x₀ ∈ ball x₀ r := mem_ball_self hr
-  have hder := hasDerivAt_comp_lyapunov_ball (x := x₀) (t := 0) hflow hV
-    (by simpa [heq 0] using hx₀)
-  have hconst : HasDerivAt (fun t ↦ V (ϕ t x₀)) 0 0 := by
-    have hfun : (fun t ↦ V (ϕ t x₀)) = fun _ ↦ V x₀ := by
-      funext t
-      rw [heq t]
-    rw [hfun]
-    exact hasDerivAt_const 0 (V x₀)
-  simpa [heq 0] using hder.unique hconst
+/-- The Lyapunov derivative vanishes at the centre of a ball on which `V` is positive definite,
+since the centre is a local minimum of `V`. -/
+private theorem lyapunovDerivative_eq_zero_of_pos {F : E → E} {V : E → ℝ} {x₀ : E} {r : ℝ}
+    (hr : 0 < r) (hV₀ : V x₀ = 0) (hpos : ∀ x ∈ ball x₀ r, x ≠ x₀ → 0 < V x) :
+    lyapunovDerivative F V x₀ = 0 := by
+  have hmin : IsLocalMin V x₀ := by
+    refine (isMinOn_iff.mpr fun x hx => ?_).isLocalMin (ball_mem_nhds x₀ hr)
+    rw [hV₀]
+    exact lyapunov_nonneg_on_ball hV₀ hpos hx
+  simp [lyapunovDerivative, hmin.fderiv_eq_zero]
 
 /-- On times whose orbit segment stays in the ball, nonpositive derivative makes `V` antitone. -/
 private theorem antitoneOn_comp_lyapunov_ball {ϕ : Flow ℝ E} {F : E → E} {V : E → ℝ} {x₀ x : E}
@@ -282,15 +278,14 @@ theorem isLyapunovStable_of_lyapunov [ProperSpace E]
 /-- The strict Lyapunov criterion implies local asymptotic stability. -/
 theorem isLocallyAttracting_of_strict_lyapunov [ProperSpace E]
     (ϕ : Flow ℝ E) (F : E → E) (V : E → ℝ) (x₀ : E)
-    (hflow : FlowHasGenerator ϕ F)
-    (heq : ∀ t, ϕ t x₀ = x₀) {r : ℝ} (hr : 0 < r)
+    (hflow : FlowHasGenerator ϕ F) {r : ℝ} (hr : 0 < r)
     (hF : ContinuousOn F (Metric.ball x₀ r))
     (hV : ContDiffOn ℝ 1 V (Metric.ball x₀ r)) (hV₀ : V x₀ = 0)
     (hpos : ∀ x ∈ Metric.ball x₀ r, x ≠ x₀ → 0 < V x)
     (hdec : ∀ x ∈ Metric.ball x₀ r, x ≠ x₀ → lyapunovDerivative F V x < 0) :
     IsLyapunovStable ϕ x₀ ∧ IsLocallyAttracting ϕ x₀ := by
   have hzero : lyapunovDerivative F V x₀ = 0 :=
-    lyapunovDerivative_eq_zero_of_fixed hflow heq hV hr
+    lyapunovDerivative_eq_zero_of_pos hr hV₀ hpos
   have hdec_le : ∀ y ∈ ball x₀ r, lyapunovDerivative F V y ≤ 0 := by
     intro y hy
     rcases eq_or_ne y x₀ with rfl | hy0

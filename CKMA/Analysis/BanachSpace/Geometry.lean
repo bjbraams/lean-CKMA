@@ -82,7 +82,7 @@ def HasRademacherCotype (E : Type u) [NormedAddCommGroup E] [NormedSpace ℝ E] 
 
 /-- A concrete Hilbert-space isomorphism criterion for the original Banach norm. -/
 def IsHilbertizable (E : Type u) [NormedAddCommGroup E] [NormedSpace ℝ E] : Prop :=
-  ∃ H : RealHilbertModel.{u}, Nonempty (E ≃L[ℝ] H.carrier)
+  ∃ H : RealHilbertSpace.{u}, Nonempty (E ≃L[ℝ] H.carrier)
 
 /-- **17.38**, Kwapień: type two and cotype two characterize Hilbert-isomorphic Banach spaces. -/
 theorem kwapien [CompleteSpace E] :
@@ -90,9 +90,10 @@ theorem kwapien [CompleteSpace E] :
   sorry
 
 /-- **17.39**, Dvoretzky in a scaled embedding form equivalent to Banach–Mazur distortion
-at most `1+ε`. This also makes the dimension-zero case unambiguous. -/
+at most `1+ε`. The lower bound `‖x‖ ≤ ‖T x‖` makes `T` injective. This also makes the
+dimension-zero case unambiguous. -/
 theorem dvoretzky [CompleteSpace E] (hE : ¬ FiniteDimensional ℝ E) (n : ℕ) {ε : ℝ} (hε : 0 < ε) :
-    ∃ T : EuclideanSpace ℝ (Fin n) →L[ℝ] E, Function.Injective T ∧
+    ∃ T : EuclideanSpace ℝ (Fin n) →L[ℝ] E,
       ∀ x, ‖x‖ ≤ ‖T x‖ ∧ ‖T x‖ ≤ (1 + ε) * ‖x‖ := by
   sorry
 

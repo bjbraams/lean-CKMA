@@ -34,7 +34,7 @@ Sources: GAPS 45.1, 45.5, 45.7, 45.8 and 45.20.
 
 ## Main results
 
-* `CKMA.differentiableOn_of_separatelyHolomorphic`: Hartogs's theorem on separate analyticity.
+* `CKMA.differentiableOn_of_isSeparatelyHolomorphicOn`: Hartogs's theorem on separate analyticity.
 * `CKMA.hartogs_extension`: Hartogs's extension theorem across compact holes for `n ≥ 2`.
 * `CKMA.weierstrass_preparation`: Weierstrass preparation theorem.
 * `CKMA.weierstrass_division`: Weierstrass division theorem.
@@ -55,16 +55,19 @@ def IsSeparatelyHolomorphicOn {n : ℕ} (f : (Fin n → ℂ) → ℂ) (Ω : Set 
   ∀ z ∈ Ω, ∀ j : Fin n, DifferentiableAt ℂ (fun w ↦ f (Function.update z j w)) (z j)
 
 /-- **45.1**: Hartogs separate analyticity, including the vacuous zero-dimensional case. -/
-theorem differentiableOn_of_separatelyHolomorphic {n : ℕ} {Ω : Set (Fin n → ℂ)}
+theorem differentiableOn_of_isSeparatelyHolomorphicOn {n : ℕ} {Ω : Set (Fin n → ℂ)}
     (hΩ : IsOpen Ω) {f : (Fin n → ℂ) → ℂ} (hf : IsSeparatelyHolomorphicOn f Ω) :
     DifferentiableOn ℂ f Ω := by
   sorry
 
+@[deprecated (since := "2026-11-15")]
+alias differentiableOn_of_separatelyHolomorphic := differentiableOn_of_isSeparatelyHolomorphicOn
+
 /-- **45.5**: extension across a compact hole in dimension at least two.
-Uniqueness is equality on the domain, not equality of arbitrary functions outside it. -/
+Uniqueness is equality on the domain, not equality of arbitrary functions outside it.
+Connectedness of `Ω` follows from that of `Ω \ K`, since no component of `Ω` lies in `K`. -/
 theorem hartogs_extension {n : ℕ} (hn : 2 ≤ n) {Ω K : Set (Fin n → ℂ)}
-    (hΩ : IsOpen Ω) (hΩconn : IsPreconnected Ω)
-    (hK : IsCompact K) (hKΩ : K ⊆ Ω) (hcomp : IsConnected (Ω \ K))
+    (hΩ : IsOpen Ω) (hK : IsCompact K) (hKΩ : K ⊆ Ω) (hcomp : IsConnected (Ω \ K))
     {f : (Fin n → ℂ) → ℂ} (hf : DifferentiableOn ℂ f (Ω \ K)) :
     ∃ F : (Fin n → ℂ) → ℂ, DifferentiableOn ℂ F Ω ∧ Set.EqOn F f (Ω \ K) ∧
       ∀ G : (Fin n → ℂ) → ℂ, DifferentiableOn ℂ G Ω → Set.EqOn G f (Ω \ K) → Set.EqOn G F Ω := by

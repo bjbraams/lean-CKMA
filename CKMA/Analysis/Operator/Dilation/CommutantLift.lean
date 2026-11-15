@@ -28,8 +28,9 @@ lift that commutes with the dilation and coextends `X`.
 * `CKMA.cauchySeq_commutantPartial`: partial sums of the commutant lifting series are Cauchy.
 * `CKMA.commutantPartial_apply_isometry`: applying the isometry shifts the partial sum by one block.
 * `CKMA.commutantLiftAt_apply_isometry`: the limit intertwines the isometry.
-* `CKMA.commutant_lifting_of`: existence of a norm-preserving commuting lift on a co-invariant
-  isometric dilation.
+
+The norm-preserving commuting lift built from `CKMA.commutantLiftCLM` is
+`CKMA.commutant_lifting`, in `CKMA.Analysis.Operator.Dilation`.
 -/
 
 @[expose] public section
@@ -59,7 +60,7 @@ def commutantPartial (T X : H →L[ℂ] H) (hXT : Commute X T)
           (commutantLiftBlock T X hXT J V hcoin k))
 
 /-- Evaluation of a partial sum. -/
-theorem commutantPartial_apply (T X : H →L[ℂ] H) (hXT : Commute X T)
+private theorem commutantPartial_apply (T X : H →L[ℂ] H) (hXT : Commute X T)
     (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K)
     (hcoin : ∀ y : K, J.toContinuousLinearMap.adjoint (V y) =
       T (J.toContinuousLinearMap.adjoint y)) (n : ℕ) (y : K) :
@@ -73,7 +74,7 @@ theorem commutantPartial_apply (T X : H →L[ℂ] H) (hXT : Commute X T)
     LinearIsometry.coe_toContinuousLinearMap]
 
 /-- A powered block has the same norm as the block. -/
-theorem norm_pow_liftBlock (T X : H →L[ℂ] H) (hXT : Commute X T)
+private theorem norm_pow_liftBlock (T X : H →L[ℂ] H) (hXT : Commute X T)
     (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K)
     (hcoin : ∀ y : K, J.toContinuousLinearMap.adjoint (V y) =
       T (J.toContinuousLinearMap.adjoint y)) (k : ℕ) (y : K) :
@@ -84,7 +85,7 @@ theorem norm_pow_liftBlock (T X : H →L[ℂ] H) (hXT : Commute X T)
   rw [← isometry_pow_apply, (V ^ k).norm_map, Submodule.subtypeL_apply, Submodule.norm_coe]
 
 /-- Squared norm of a partial sum, by orthogonality of the defect orbit. -/
-theorem norm_sq_commutantPartial (T X : H →L[ℂ] H) (hXT : Commute X T)
+private theorem norm_sq_commutantPartial (T X : H →L[ℂ] H) (hXT : Commute X T)
     (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K)
     (hcoin : ∀ y : K, J.toContinuousLinearMap.adjoint (V y) =
       T (J.toContinuousLinearMap.adjoint y)) (n : ℕ) (y : K) :
@@ -119,7 +120,7 @@ theorem norm_sq_commutantPartial (T X : H →L[ℂ] H) (hXT : Commute X T)
     (norm_pow_liftBlock T X hXT J V hcoin k y)
 
 /-- Partial sums are bounded by `‖X‖`. -/
-theorem norm_commutantPartial_le (T X : H →L[ℂ] H) (hXT : Commute X T)
+private theorem norm_commutantPartial_le (T X : H →L[ℂ] H) (hXT : Commute X T)
     (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K)
     (hcoin : ∀ y : K, J.toContinuousLinearMap.adjoint (V y) =
       T (J.toContinuousLinearMap.adjoint y)) (n : ℕ) (y : K) :
@@ -137,7 +138,7 @@ theorem norm_commutantPartial_le (T X : H →L[ℂ] H) (hXT : Commute X T)
     abs_of_nonneg (mul_nonneg (norm_nonneg X) (norm_nonneg y))] using habs
 
 /-- Squared norms of the blocks form a summable series. -/
-theorem summable_norm_sq_liftBlock (T X : H →L[ℂ] H) (hXT : Commute X T)
+private theorem summable_norm_sq_liftBlock (T X : H →L[ℂ] H) (hXT : Commute X T)
     (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K)
     (hcoin : ∀ y : K, J.toContinuousLinearMap.adjoint (V y) =
       T (J.toContinuousLinearMap.adjoint y)) (y : K) :
@@ -229,7 +230,7 @@ def commutantLiftAt (T X : H →L[ℂ] H) (hXT : Commute X T)
   limUnder atTop fun n => commutantPartial T X hXT J V hcoin n y
 
 /-- The partial sums converge to the lifting series. -/
-theorem tendsto_commutantPartial (T X : H →L[ℂ] H) (hXT : Commute X T)
+private theorem tendsto_commutantPartial (T X : H →L[ℂ] H) (hXT : Commute X T)
     (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K)
     (hcoin : ∀ y : K, J.toContinuousLinearMap.adjoint (V y) =
       T (J.toContinuousLinearMap.adjoint y)) (y : K) :
@@ -317,7 +318,7 @@ theorem norm_commutantLiftCLM_le (T X : H →L[ℂ] H) (hXT : Commute X T)
   LinearMap.mkContinuous_norm_le _ (norm_nonneg X) _
 
 /-- `J*` kills every powered block. -/
-theorem adjoint_pow_liftBlock (T X : H →L[ℂ] H) (hXT : Commute X T)
+private theorem adjoint_pow_liftBlock (T X : H →L[ℂ] H) (hXT : Commute X T)
     (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K)
     (hcoin : ∀ y : K, J.toContinuousLinearMap.adjoint (V y) =
       T (J.toContinuousLinearMap.adjoint y)) (k : ℕ) (y : K) :
@@ -332,7 +333,7 @@ theorem adjoint_pow_liftBlock (T X : H →L[ℂ] H) (hXT : Commute X T)
       (commutantLiftBlock T X hXT J V hcoin k y).property
 
 /-- Each partial sum coextends `X`. -/
-theorem adjoint_commutantPartial (T X : H →L[ℂ] H) (hXT : Commute X T)
+private theorem adjoint_commutantPartial (T X : H →L[ℂ] H) (hXT : Commute X T)
     (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K)
     (hcoin : ∀ y : K, J.toContinuousLinearMap.adjoint (V y) =
       T (J.toContinuousLinearMap.adjoint y)) (n : ℕ) (y : K) :
@@ -404,7 +405,7 @@ theorem commutantPartial_apply_isometry (T X : H →L[ℂ] H) (hXT : Commute X T
     have hcoe : V.toContinuousLinearMap ((V.toContinuousLinearMap ^ k) z) =
         V ((V.toContinuousLinearMap ^ k) z) := by
       rw [LinearIsometry.coe_toContinuousLinearMap]
-    rw [← hcoe, ← clm_pow_succ'_apply]
+    rw [← hcoe, ← continuousLinearMap_pow_succ'_apply]
   rw [commutantPartial_apply, commutantPartial_apply, map_add]
   have hmap : V (∑ k ∈ Finset.range n,
       (V.toContinuousLinearMap ^ k) (L.subtypeL (block k y))) =
@@ -436,42 +437,5 @@ theorem commutantLiftAt_apply_isometry (T X : H →L[ℂ] H) (hXT : Commute X T)
     simp_rw [commutantPartial_apply_isometry T X hXT J V hcoin]
     exact hshift
   exact tendsto_nhds_unique hV happly
-
-/-- Norm-preserving commutant lift on a co-invariant isometric dilation. -/
-theorem commutant_lifting_of (T X : H →L[ℂ] H) (hXT : Commute X T)
-    (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K)
-    (hcoin : ∀ y : K, J.toContinuousLinearMap.adjoint (V y) =
-      T (J.toContinuousLinearMap.adjoint y)) :
-    ∃ Y : K →L[ℂ] K, Commute Y V.toContinuousLinearMap ∧ ‖Y‖ = ‖X‖ ∧
-      ∀ y : K, J.toContinuousLinearMap.adjoint (Y y) =
-        X (J.toContinuousLinearMap.adjoint y) := by
-  let Y : K →L[ℂ] K := commutantLiftCLM T X hXT J V hcoin
-  refine ⟨Y, ?_, ?_, ?_⟩
-  · rw [Commute, SemiconjBy, mul_def, mul_def]
-    ext y
-    simp [Y, commutantLiftCLM_apply, commutantLiftAt_apply_isometry T X hXT J V hcoin,
-      LinearIsometry.coe_toContinuousLinearMap]
-  · apply le_antisymm
-    · exact norm_commutantLiftCLM_le T X hXT J V hcoin
-    · have hbound : ∀ x : H, ‖X x‖ ≤ ‖Y‖ * ‖x‖ := by
-        intro x
-        have hcoe : J.toContinuousLinearMap.adjoint (Y (J x)) = X x := by
-          rw [show Y (J x) = commutantLiftAt T X hXT J V hcoin (J x) from
-            commutantLiftCLM_apply T X hXT J V hcoin (J x)]
-          rw [adjoint_commutantLiftAt T X hXT J V hcoin, coextensionCompress,
-            comp_apply, embed_adjoint_leftInverse]
-        calc
-          ‖X x‖ = ‖J.toContinuousLinearMap.adjoint (Y (J x))‖ := by rw [hcoe]
-          _ ≤ ‖J.toContinuousLinearMap.adjoint‖ * ‖Y (J x)‖ := le_opNorm _ _
-          _ ≤ 1 * (‖Y‖ * ‖J x‖) := by
-            gcongr
-            · exact norm_embed_adjoint_le J
-            · exact le_opNorm Y (J x)
-          _ = ‖Y‖ * ‖x‖ := by rw [one_mul, J.norm_map]
-      exact opNorm_le_bound X (norm_nonneg Y) hbound
-  · intro y
-    rw [show Y y = commutantLiftAt T X hXT J V hcoin y from
-      commutantLiftCLM_apply T X hXT J V hcoin y,
-      adjoint_commutantLiftAt T X hXT J V hcoin, coextensionCompress, comp_apply]
 
 end CKMA

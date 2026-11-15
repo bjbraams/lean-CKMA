@@ -43,7 +43,8 @@ finite variation are in `VariationEstimate`.
 
 * `CKMA.YoungLoeve.pathVariationPower_superadd`: superadditivity of `p`-variation power.
 * `CKMA.YoungLoeve.youngCtrl_superadd`: superadditivity of the weighted Young control.
-* `CKMA.YoungLoeve.ctrl_chain`: superadditivity along every second node of a monotone sequence.
+* `CKMA.YoungLoeve.sum_youngCtrl_two_mul_le`: superadditivity along every second node of a
+  monotone sequence.
 -/
 
 @[expose] public section
@@ -55,12 +56,6 @@ namespace CKMA
 open scoped BigOperators NNReal ENNReal
 open Finset Filter Topology Metric
 
-/-- The `p`th power variation, retaining infinite variation. -/
-def pathVariationPower {E : Type*} [SeminormedAddCommGroup E]
-    (p : ℝ) (X : ℝ → E) (a b : ℝ) : ℝ≥0∞ :=
-  ⨆ π : OrderedIntervalPartition a b, ∑ i : Fin π.size,
-    ENNReal.ofReal (‖X (π.node i.succ) - X (π.node i.castSucc)‖ ^ p)
-
 namespace YoungLoeve
 
 variable {E : Type*} [SeminormedAddCommGroup E]
@@ -69,6 +64,18 @@ variable {E : Type*} [SeminormedAddCommGroup E]
 def variationSum (p : ℝ) (X : ℝ → E) {a b : ℝ}
     (π : OrderedIntervalPartition a b) : ℝ≥0∞ :=
   ∑ i : Fin π.size, ENNReal.ofReal (‖X (π.node i.succ) - X (π.node i.castSucc)‖ ^ p)
+
+end YoungLoeve
+
+/-- The `p`th power variation, retaining infinite variation: the supremum of
+`YoungLoeve.variationSum` over ordered partitions. -/
+def pathVariationPower {E : Type*} [SeminormedAddCommGroup E]
+    (p : ℝ) (X : ℝ → E) (a b : ℝ) : ℝ≥0∞ :=
+  ⨆ π : OrderedIntervalPartition a b, YoungLoeve.variationSum p X π
+
+namespace YoungLoeve
+
+variable {E : Type*} [SeminormedAddCommGroup E]
 
 /-- The `p`th power variation is the supremum of `variationSum` over ordered partitions. -/
 lemma pathVariationPower_eq_iSup (p : ℝ) (X : ℝ → E) (a b : ℝ) :
@@ -79,7 +86,7 @@ def variationReal (p : ℝ) (X : ℝ → E) (s t : ℝ) : ℝ :=
   (pathVariationPower p X s t).toReal
 
 /-- The one-point partition of a degenerate interval. -/
-def pointPartition (s : ℝ) : OrderedIntervalPartition s s where
+private def pointPartition (s : ℝ) : OrderedIntervalPartition s s where
   size := 0
   node := fun _ => s
   monotone_node := fun _ _ _ => le_rfl
@@ -87,7 +94,7 @@ def pointPartition (s : ℝ) : OrderedIntervalPartition s s where
   node_last := rfl
 
 /-- Two endpoints, in order. -/
-def segmentPartition {s t : ℝ} (hst : s ≤ t) : OrderedIntervalPartition s t where
+private def segmentPartition {s t : ℝ} (hst : s ≤ t) : OrderedIntervalPartition s t where
   size := 1
   node := fun i => if i.val = 0 then s else t
   monotone_node := by
@@ -110,13 +117,13 @@ def segmentPartition {s t : ℝ} (hst : s ≤ t) : OrderedIntervalPartition s t 
     simp
 
 /-- The variation sum along a one-point partition is zero. -/
-lemma variationSum_point (p : ℝ) (X : ℝ → E) (s : ℝ) :
+private lemma variationSum_point (p : ℝ) (X : ℝ → E) (s : ℝ) :
     variationSum p X (pointPartition s) = 0 := by
   unfold variationSum pointPartition
   simp [Finset.univ_eq_empty]
 
 /-- For `p > 0`, the `p`-variation power on a degenerate interval `[s, s]` is zero. -/
-lemma pathVariationPower_point {p : ℝ} (hp : 0 < p) (X : ℝ → E) (s : ℝ) :
+private lemma pathVariationPower_point {p : ℝ} (hp : 0 < p) (X : ℝ → E) (s : ℝ) :
     pathVariationPower p X s s = 0 := by
   rw [pathVariationPower_eq_iSup]
   apply le_antisymm
@@ -223,7 +230,7 @@ lemma exists_least_index_gt (n : ℕ) (c : ℕ → ℝ) (t : ℝ) (h : ∃ i ≤
         exact hmin j (by omega)
 
 /-- Join two ordered partitions at a common endpoint. -/
-def concatPart {s u t : ℝ} (π₁ : OrderedIntervalPartition s u)
+private def concatPart {s u t : ℝ} (π₁ : OrderedIntervalPartition s u)
     (π₂ : OrderedIntervalPartition u t) : OrderedIntervalPartition s t where
   size := π₁.size + π₂.size
   node := fun i =>
@@ -259,7 +266,7 @@ def concatPart {s u t : ℝ} (π₁ : OrderedIntervalPartition s u)
       simp [h, hidx, nodeSeq_size]
 
 /-- Concatenating two partitions adds their variation sums. -/
-lemma variationSum_concat {s u t : ℝ} (p : ℝ) (X : ℝ → E)
+private lemma variationSum_concat {s u t : ℝ} (p : ℝ) (X : ℝ → E)
     (π₁ : OrderedIntervalPartition s u) (π₂ : OrderedIntervalPartition u t) :
     variationSum p X (concatPart π₁ π₂) = variationSum p X π₁ + variationSum p X π₂ := by
   rw [variationSum_eq_stepSum, variationSum_eq_stepSum, variationSum_eq_stepSum]
@@ -341,7 +348,7 @@ lemma pathVariationPower_superadd {s u t : ℝ} (hsu : s ≤ u) (hut : u ≤ t) 
   exact le_iSup (variationSum p X) (concatPart π₁ π₂)
 
 /-- A single increment power is bounded by the `p`-variation power on the interval. -/
-lemma oneStep_le {s t : ℝ} (hst : s ≤ t) (p : ℝ) (X : ℝ → E) :
+private lemma oneStep_le {s t : ℝ} (hst : s ≤ t) (p : ℝ) (X : ℝ → E) :
     ENNReal.ofReal (‖X t - X s‖ ^ p) ≤ pathVariationPower p X s t := by
   rw [pathVariationPower_eq_iSup]
   refine le_iSup_of_le (segmentPartition hst) ?_
@@ -396,7 +403,7 @@ lemma norm_le_variationReal {s t : ℝ} (hst : s ≤ t) {p : ℝ} {X : ℝ → E
   simpa [Real.rpow_rpow_inv (norm_nonneg _) (ne_of_gt hp)] using h
 
 /-- Weighted splitting of a product of powers, the superadditivity step for controls. -/
-lemma young_split_le {α β x₁ x₂ y₁ y₂ : ℝ} (hα : 0 < α) (hβ : 0 < β) (hαβ : α + β = 1)
+private lemma young_split_le {α β x₁ x₂ y₁ y₂ : ℝ} (hα : 0 < α) (hβ : 0 < β) (hαβ : α + β = 1)
     (hx₁ : 0 ≤ x₁) (hx₂ : 0 ≤ x₂) (hy₁ : 0 ≤ y₁) (hy₂ : 0 ≤ y₂) :
     x₁ ^ α * y₁ ^ β + x₂ ^ α * y₂ ^ β ≤ (x₁ + x₂) ^ α * (y₁ + y₂) ^ β := by
   have hx : 0 ≤ x₁ + x₂ := add_nonneg hx₁ hx₂
@@ -515,7 +522,7 @@ def youngLoose (θ : ℝ) : ℝ :=
   ∑' k : ℕ, (2 / ((k + 1) : ℝ)) ^ θ
 
 /-- One-step recurrence for `youngPartial`. -/
-lemma youngPartial_succ (θ : ℝ) (n : ℕ) :
+private lemma youngPartial_succ (θ : ℝ) (n : ℕ) :
     youngPartial θ (n + 1) = youngPartial θ n + (2 / ((n + 1) : ℝ)) ^ θ := by
   unfold youngPartial
   rw [sum_range_succ]
@@ -526,7 +533,7 @@ lemma youngPartial_pos_term (θ : ℝ) (k : ℕ) : 0 ≤ (2 / ((k : ℝ) + 1)) ^
   exact Real.rpow_nonneg (div_nonneg (by norm_num : (0 : ℝ) ≤ 2) hk) θ
 
 /-- For `θ > 1`, the point-removal series `(2 / (k + 1)) ^ θ` is summable. -/
-lemma summable_youngLoose {θ : ℝ} (hθ : 1 < θ) :
+private lemma summable_youngLoose {θ : ℝ} (hθ : 1 < θ) :
     Summable (fun k : ℕ => (2 / ((k : ℝ) + 1)) ^ θ) := by
   have hs : Summable (fun n : ℕ => 1 / (n : ℝ) ^ θ) :=
     (Real.summable_one_div_nat_rpow).mpr hθ
@@ -685,7 +692,7 @@ lemma youngCtrl_mono {c a b d : ℝ} (hca : c ≤ a) (hab : a ≤ b) (hbd : b �
     (Real.rpow_nonneg (variationReal_nonneg p X c d) _)
 
 /-- Superadditivity along every second node of a monotone sequence. -/
-lemma ctrl_chain {p q : ℝ} (hp : 1 ≤ p) (hq : 1 ≤ q) (hpq : 1 < p⁻¹ + q⁻¹)
+lemma sum_youngCtrl_two_mul_le {p q : ℝ} (hp : 1 ≤ p) (hq : 1 ≤ q) (hpq : 1 < p⁻¹ + q⁻¹)
     (X : ℝ → E) {G : Type*} [SeminormedAddCommGroup G] (Y : ℝ → G) :
     ∀ (n : ℕ) (c : ℕ → ℝ), Monotone c →
       pathVariationPower p X (c 0) (c (2 * n)) ≠ ∞ →
@@ -711,6 +718,8 @@ lemma ctrl_chain {p q : ℝ} (hp : 1 ≤ p) (hq : 1 ≤ q) (hpq : 1 < p⁻¹ + q
     have hidx : 2 * n + 2 = 2 * (n + 1) := by omega
     rw [← hidx] at hsuper
     exact (add_le_add (ih c hc hX' hY') le_rfl).trans hsuper
+
+@[deprecated (since := "2026-11-15")] alias ctrl_chain := sum_youngCtrl_two_mul_le
 
 end YoungLoeve
 

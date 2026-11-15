@@ -24,7 +24,7 @@ and one application of the logarithmic iteration kernel.
 
 ## Main definitions
 
-* `CKMA.coordEquiv`, `CKMA.sliceFunction`, `CKMA.partialStrongMax`: coordinate splitting,
+* `CKMA.lastCoordEquiv`, `CKMA.lastCoordSlice`, `CKMA.partialStrongMax`: coordinate splitting,
   slice function, and strong maximal function on slices.
 * `CKMA.RatRectangle`: open axis-parallel rectangle with rational endpoints.
 
@@ -46,53 +46,53 @@ open MeasureTheory Set
 open scoped BigOperators ENNReal intervalIntegral
 
 /-- Measurable splitting of a tuple into its last coordinate and its initial segment. -/
-def coordEquiv (n : ℕ) : (Fin (n + 1) → ℝ) ≃ᵐ ℝ × (Fin n → ℝ) :=
+def lastCoordEquiv (n : ℕ) : (Fin (n + 1) → ℝ) ≃ᵐ ℝ × (Fin n → ℝ) :=
   MeasurableEquiv.piFinSuccAbove (fun _ : Fin (n + 1) ↦ ℝ) (Fin.last n)
 
 /-- The equivalence reads the last coordinate and the initial segment. -/
-theorem coordEquiv_apply (n : ℕ) (x : Fin (n + 1) → ℝ) :
-    coordEquiv n x = (x (Fin.last n), Fin.init x) := by
-  simp [coordEquiv, MeasurableEquiv.piFinSuccAbove, Fin.insertNthEquiv_last,
+theorem lastCoordEquiv_apply (n : ℕ) (x : Fin (n + 1) → ℝ) :
+    lastCoordEquiv n x = (x (Fin.last n), Fin.init x) := by
+  simp [lastCoordEquiv, MeasurableEquiv.piFinSuccAbove, Fin.insertNthEquiv_last,
     Fin.snocEquiv_symm_apply]
 
 /-- The inverse equivalence appends the last coordinate. -/
-theorem coordEquiv_symm_apply (n : ℕ) (y : ℝ) (z : Fin n → ℝ) :
-    (coordEquiv n).symm (y, z) = Fin.snoc z y := by
-  simp [coordEquiv, MeasurableEquiv.piFinSuccAbove, Fin.insertNthEquiv_last,
+private theorem lastCoordEquiv_symm_apply (n : ℕ) (y : ℝ) (z : Fin n → ℝ) :
+    (lastCoordEquiv n).symm (y, z) = Fin.snoc z y := by
+  simp [lastCoordEquiv, MeasurableEquiv.piFinSuccAbove, Fin.insertNthEquiv_last,
     Fin.snocEquiv_apply]
 
 /-- The slice of a function at a fixed last coordinate. -/
-def sliceFunction {n : ℕ} (f : (Fin (n + 1) → ℝ) → ℝ) (y : ℝ) (z : Fin n → ℝ) : ℝ :=
-  f ((coordEquiv n).symm (y, z))
+def lastCoordSlice {n : ℕ} (f : (Fin (n + 1) → ℝ) → ℝ) (y : ℝ) (z : Fin n → ℝ) : ℝ :=
+  f ((lastCoordEquiv n).symm (y, z))
 
 /-- The strong maximal function of one slice. -/
 def partialStrongMax {n : ℕ} (f : (Fin (n + 1) → ℝ) → ℝ) (y : ℝ) (z : Fin n → ℝ) : ℝ≥0∞ :=
-  strongMaximalFunction (sliceFunction f y) z
+  strongMaximalFunction (lastCoordSlice f y) z
 
 /-- Slices of a measurable function are measurable. -/
-theorem sliceFunction_measurable {n : ℕ} {f : (Fin (n + 1) → ℝ) → ℝ} (hf : Measurable f)
-    (y : ℝ) : Measurable (sliceFunction f y) :=
-  hf.comp ((coordEquiv n).symm.measurable.comp measurable_prodMk_left)
+theorem measurable_lastCoordSlice {n : ℕ} {f : (Fin (n + 1) → ℝ) → ℝ} (hf : Measurable f)
+    (y : ℝ) : Measurable (lastCoordSlice f y) :=
+  hf.comp ((lastCoordEquiv n).symm.measurable.comp measurable_prodMk_left)
 
 namespace OpenRectangle
 
 /-- The rectangle obtained by dropping the last side. -/
-def initial {n : ℕ} (R : OpenRectangle (n + 1)) : OpenRectangle n where
+private def initial {n : ℕ} (R : OpenRectangle (n + 1)) : OpenRectangle n where
   lower := Fin.init R.lower
   upper := Fin.init R.upper
   lower_lt_upper := fun j ↦ R.lower_lt_upper j.castSucc
 
 /-- The last side of a rectangle. -/
-def lastSide {n : ℕ} (R : OpenRectangle (n + 1)) : OpenInterval where
+private def lastSide {n : ℕ} (R : OpenRectangle (n + 1)) : OpenInterval where
   left := R.lower (Fin.last n)
   right := R.upper (Fin.last n)
   left_lt_right := R.lower_lt_upper (Fin.last n)
 
 /-- A point lies in the rectangle exactly when its factors lie in the sides. -/
-theorem carrier_eq_preimage {n : ℕ} (R : OpenRectangle (n + 1)) :
-    R.carrier = coordEquiv n ⁻¹' (R.lastSide.carrier ×ˢ R.initial.carrier) := by
+private theorem carrier_eq_preimage {n : ℕ} (R : OpenRectangle (n + 1)) :
+    R.carrier = lastCoordEquiv n ⁻¹' (R.lastSide.carrier ×ˢ R.initial.carrier) := by
   ext x
-  simp only [mem_preimage, coordEquiv_apply, mem_prod]
+  simp only [mem_preimage, lastCoordEquiv_apply, mem_prod]
   constructor
   · intro hx
     refine ⟨?_, ?_⟩
@@ -105,15 +105,15 @@ theorem carrier_eq_preimage {n : ℕ} (R : OpenRectangle (n + 1)) :
     · simpa [lastSide, OpenInterval.carrier, mem_Ioo] using hx.1
 
 /-- The volume of a rectangle is the product of the volumes of its factors. -/
-theorem volume_carrier_prod {n : ℕ} (R : OpenRectangle (n + 1)) :
+private theorem volume_carrier_prod {n : ℕ} (R : OpenRectangle (n + 1)) :
     volume R.carrier = volume R.lastSide.carrier * volume R.initial.carrier := by
-  have hev : MeasurePreserving (coordEquiv n) :=
+  have hev : MeasurePreserving (lastCoordEquiv n) :=
     volume_preserving_piFinSuccAbove (fun _ : Fin (n + 1) ↦ ℝ) (Fin.last n)
   rw [R.carrier_eq_preimage, hev.measure_preimage_equiv, Measure.volume_eq_prod,
     Measure.prod_prod]
 
 /-- The last side has volume equal to its length. -/
-theorem volume_lastSide {n : ℕ} (R : OpenRectangle (n + 1)) :
+private theorem volume_lastSide {n : ℕ} (R : OpenRectangle (n + 1)) :
     volume R.lastSide.carrier = ENNReal.ofReal R.lastSide.length := by
   simp [lastSide, OpenInterval.carrier, OpenInterval.length, Real.volume_Ioo]
 
@@ -137,22 +137,22 @@ theorem OpenRectangle.volume_carrier_lt_top {d : ℕ} (R : OpenRectangle d) :
   exact ENNReal.prod_lt_top fun j _ ↦ ENNReal.ofReal_lt_top
 
 /-- A nonnegative integrand splits as an iterated integral over the sides. -/
-theorem lintegral_rectangle_slice {n : ℕ} {g : (Fin (n + 1) → ℝ) → ℝ≥0∞} (hg : Measurable g)
+private theorem lintegral_rectangle_slice {n : ℕ} {g : (Fin (n + 1) → ℝ) → ℝ≥0∞} (hg : Measurable g)
     (R : OpenRectangle (n + 1)) :
     ∫⁻ x in R.carrier, g x =
       ∫⁻ y in R.lastSide.carrier,
-        ∫⁻ z in R.initial.carrier, g ((coordEquiv n).symm (y, z)) := by
-  have hev : MeasurePreserving (⇑(coordEquiv n).symm) volume volume :=
+        ∫⁻ z in R.initial.carrier, g ((lastCoordEquiv n).symm (y, z)) := by
+  have hev : MeasurePreserving (⇑(lastCoordEquiv n).symm) volume volume :=
     (volume_preserving_piFinSuccAbove (fun _ : Fin (n + 1) ↦ ℝ) (Fin.last n)).symm
-  have hpre : (coordEquiv n).symm ⁻¹' R.carrier =
+  have hpre : (lastCoordEquiv n).symm ⁻¹' R.carrier =
       R.lastSide.carrier ×ˢ R.initial.carrier := by
     rw [R.carrier_eq_preimage]
     ext p
     simp
-  rw [← hev.setLIntegral_comp_preimage_emb (coordEquiv n).symm.measurableEmbedding g R.carrier,
+  rw [← hev.setLIntegral_comp_preimage_emb (lastCoordEquiv n).symm.measurableEmbedding g R.carrier,
     hpre]
-  refine setLIntegral_prod (fun p ↦ g ((coordEquiv n).symm p)) ?_
-  exact (hg.comp (coordEquiv n).symm.measurable).aemeasurable.restrict
+  refine setLIntegral_prod (fun p ↦ g ((lastCoordEquiv n).symm p)) ?_
+  exact (hg.comp (lastCoordEquiv n).symm.measurable).aemeasurable.restrict
 
 /-- The strong maximal function is at most the one-dimensional maximal function of its slices. -/
 theorem strongMaximal_le_partial {n : ℕ} {f : (Fin (n + 1) → ℝ) → ℝ} (hf : Measurable f)
@@ -176,19 +176,19 @@ theorem strongMaximal_le_partial {n : ℕ} {f : (Fin (n + 1) → ℝ) → ℝ} (
   have hy : x (Fin.last n) ∈ R.lastSide.carrier := by
     simpa [OpenRectangle.lastSide, OpenInterval.carrier, mem_Ioo] using hxR (Fin.last n)
   let φ : ℝ → ℝ≥0∞ := fun y ↦
-    ∫⁻ z in R.initial.carrier, g ((coordEquiv n).symm (y, z))
+    ∫⁻ z in R.initial.carrier, g ((lastCoordEquiv n).symm (y, z))
   have hslice : ∀ y, φ y / V ≤ partialStrongMax f y (Fin.init x) := by
     intro y
     have havg : φ y / V =
-        (∫⁻ w in R.initial.carrier, ENNReal.ofReal |sliceFunction f y w|) / V := by
-      simp [φ, g, sliceFunction]
+        (∫⁻ w in R.initial.carrier, ENNReal.ofReal |lastCoordSlice f y w|) / V := by
+      simp [φ, g, lastCoordSlice]
     rw [havg]
     unfold partialStrongMax strongMaximalFunction
     exact (le_iSup (fun h : Fin.init x ∈ R.initial.carrier ↦
-        (∫⁻ w in R.initial.carrier, ENNReal.ofReal |sliceFunction f y w|) /
+        (∫⁻ w in R.initial.carrier, ENNReal.ofReal |lastCoordSlice f y w|) /
           volume R.initial.carrier) hz).trans
       (le_iSup (fun S : OpenRectangle n ↦ ⨆ h : Fin.init x ∈ S.carrier,
-        (∫⁻ w in S.carrier, ENNReal.ofReal |sliceFunction f y w|) / volume S.carrier)
+        (∫⁻ w in S.carrier, ENNReal.ofReal |lastCoordSlice f y w|) / volume S.carrier)
         R.initial)
   have hφle : ∀ y, φ y ≤ partialStrongMax f y (Fin.init x) * V :=
     fun y ↦ (ENNReal.div_le_iff_le_mul (Or.inl hV0) (Or.inl hVtop)).1 (hslice y)
@@ -226,7 +226,7 @@ theorem OpenRectangle.measurableSet_carrier {d : ℕ} (R : OpenRectangle d) :
   exact MeasurableSet.univ_pi fun _ ↦ measurableSet_Ioo
 
 /-- The strong maximal function increases when absolute values increase. -/
-theorem strongMaximalFunction_mono {d : ℕ} {f g : (Fin d → ℝ) → ℝ}
+private theorem strongMaximalFunction_mono {d : ℕ} {f g : (Fin d → ℝ) → ℝ}
     (hfg : ∀ x, |f x| ≤ |g x|) (x : Fin d → ℝ) :
     strongMaximalFunction f x ≤ strongMaximalFunction g x := by
   refine iSup_le fun R ↦ iSup_le fun hx ↦ ?_
@@ -241,7 +241,7 @@ theorem strongMaximalFunction_mono {d : ℕ} {f g : (Fin d → ℝ) → ℝ}
         (∫⁻ y in S.carrier, ENNReal.ofReal |g y|) / volume S.carrier) R))
 
 /-- A pointwise bound by a constant bounds the strong maximal function. -/
-theorem strongMaximalFunction_le_ofReal {d : ℕ} {f : (Fin d → ℝ) → ℝ} {c : ℝ}
+private theorem strongMaximalFunction_le_ofReal {d : ℕ} {f : (Fin d → ℝ) → ℝ} {c : ℝ}
     (hf : ∀ x, |f x| ≤ c) (x : Fin d → ℝ) :
     strongMaximalFunction f x ≤ ENNReal.ofReal c := by
   refine iSup_le fun R ↦ iSup_le fun _ ↦ ?_
@@ -256,7 +256,7 @@ theorem strongMaximalFunction_le_ofReal {d : ℕ} {f : (Fin d → ℝ) → ℝ} 
   exact ENNReal.div_le_of_le_mul hnum
 
 /-- The maximal function of a sum is at most the sum of the maximal functions. -/
-theorem strongMaximalFunction_le_add {d : ℕ} {f g h : (Fin d → ℝ) → ℝ}
+private theorem strongMaximalFunction_le_add {d : ℕ} {f g h : (Fin d → ℝ) → ℝ}
     (hg : Measurable g) (hle : ∀ y, |f y| ≤ |g y| + |h y|)
     (x : Fin d → ℝ) :
     strongMaximalFunction f x ≤ strongMaximalFunction g x + strongMaximalFunction h x := by
@@ -491,7 +491,7 @@ def average {d : ℕ} (g : (Fin d → ℝ) → ℝ≥0∞) (J : RatRectangle d) 
 end RatRectangle
 
 /-- An infinite rectangular integral stays infinite on a rational enlargement. -/
-theorem exists_ratRectangle_enlargement_top {d : ℕ}
+private theorem exists_ratRectangle_enlargement_top {d : ℕ}
     (g : (Fin d → ℝ) → ℝ≥0∞) (R : OpenRectangle d)
     (hinf : ∫⁻ x in R.carrier, g x = ∞) :
     ∃ J : RatRectangle d, R.carrier ⊆ J.carrier ∧ ∫⁻ x in J.carrier, g x = ∞ := by
@@ -512,7 +512,7 @@ theorem exists_ratRectangle_enlargement_top {d : ℕ}
   exact eq_top_iff.2 <| hinf ▸ lintegral_mono_set hsub
 
 /-- A finite strict rectangular average survives a small outward rational perturbation. -/
-theorem exists_ratRectangle_of_average_gt_finite {d : ℕ} (hd : 0 < d)
+private theorem exists_ratRectangle_of_average_gt_finite {d : ℕ} (hd : 0 < d)
     (g : (Fin d → ℝ) → ℝ≥0∞) (R : OpenRectangle d) {α : ℝ} (hα : 0 < α)
     (havg : ENNReal.ofReal α < (∫⁻ x in R.carrier, g x) / volume R.carrier)
     (hfin : ∫⁻ x in R.carrier, g x ≠ ∞) :
@@ -641,7 +641,7 @@ theorem exists_ratRectangle_of_average_gt_finite {d : ℕ} (hd : 0 < d)
   exact ⟨J, hsub, hdiv⟩
 
 /-- A strict rectangular average survives an outward rational perturbation. -/
-theorem exists_ratRectangle_of_average_gt {d : ℕ} (hd : 0 < d)
+private theorem exists_ratRectangle_of_average_gt {d : ℕ} (hd : 0 < d)
     (g : (Fin d → ℝ) → ℝ≥0∞) (R : OpenRectangle d) {α : ℝ} (hα : 0 < α)
     (havg : ENNReal.ofReal α < (∫⁻ x in R.carrier, g x) / volume R.carrier) :
     ∃ J : RatRectangle d, R.carrier ⊆ J.carrier ∧
@@ -657,7 +657,7 @@ theorem exists_ratRectangle_of_average_gt {d : ℕ} (hd : 0 < d)
   · exact exists_ratRectangle_of_average_gt_finite hd g R hα havg hfin
 
 /-- A strict strong-maximal inequality is witnessed by a rational rectangle. -/
-theorem exists_ratRectangle_of_strongMaximal_gt {d : ℕ} (hd : 0 < d)
+private theorem exists_ratRectangle_of_strongMaximal_gt {d : ℕ} (hd : 0 < d)
     (f : (Fin d → ℝ) → ℝ) {x : Fin d → ℝ} {α : ℝ} (hα : 0 < α)
     (hx : ENNReal.ofReal α < strongMaximalFunction f x) :
     ∃ J : RatRectangle d, x ∈ J.carrier ∧ ENNReal.ofReal α <
@@ -697,23 +697,23 @@ theorem strongMaximalGrowth_div_le {n k : ℕ} (hk : 1 ≤ k) {v : ℝ} (hv : 0 
 
 /-- Extended average of one slice over a rational rectangle. -/
 def sliceRatAverage {n : ℕ} (f : (Fin (n + 1) → ℝ) → ℝ) (y : ℝ) (J : RatRectangle n) : ℝ≥0∞ :=
-  RatRectangle.average (fun z ↦ ENNReal.ofReal |f ((coordEquiv n).symm (y, z))|) J
+  RatRectangle.average (fun z ↦ ENNReal.ofReal |f ((lastCoordEquiv n).symm (y, z))|) J
 
 /-- Slice averages over a fixed rational rectangle are measurable in the last coordinate. -/
 theorem measurable_sliceRatAverage {n : ℕ} {f : (Fin (n + 1) → ℝ) → ℝ} (hf : Measurable f)
     (J : RatRectangle n) : Measurable (sliceRatAverage f · J) := by
   set phi : ℝ × (Fin n → ℝ) → ℝ≥0∞ :=
-    fun p ↦ ENNReal.ofReal |f ((coordEquiv n).symm p)|
+    fun p ↦ ENNReal.ofReal |f ((lastCoordEquiv n).symm p)|
   have hphi : Measurable phi :=
     ENNReal.measurable_ofReal.comp
-      (continuous_abs.measurable.comp (hf.comp (coordEquiv n).symm.measurable))
+      (continuous_abs.measurable.comp (hf.comp (lastCoordEquiv n).symm.measurable))
   have hs : MeasurableSet J.carrier := by
     rw [← J.carrier_toOpen]
     exact J.toOpen.measurableSet_carrier
   unfold sliceRatAverage RatRectangle.average
   simp_rw [div_eq_mul_inv]
   have hfun : (fun y ↦
-      (∫⁻ z in J.carrier, ENNReal.ofReal |f ((coordEquiv n).symm (y, z))|) *
+      (∫⁻ z in J.carrier, ENNReal.ofReal |f ((lastCoordEquiv n).symm (y, z))|) *
         (volume J.carrier)⁻¹) =
       fun y ↦ (∫⁻ z, (Prod.snd ⁻¹' J.carrier).indicator phi (y, z)) *
         (volume J.carrier)⁻¹ := by
@@ -741,10 +741,10 @@ theorem partialStrongMax_eq_ratSup {n : ℕ} (hn : 0 < n) (f : (Fin (n + 1) → 
       have hc' : ENNReal.ofReal c.toReal < partialStrongMax f y z := by
         simpa [ENNReal.ofReal_toReal hct] using hc
       obtain ⟨J, hz, hJ⟩ :=
-        exists_ratRectangle_of_strongMaximal_gt hn (sliceFunction f y) hto hc'
-      have hzJ : z ∈ J.carrier := by simpa [sliceFunction] using hz
+        exists_ratRectangle_of_strongMaximal_gt hn (lastCoordSlice f y) hto hc'
+      have hzJ : z ∈ J.carrier := by simpa [lastCoordSlice] using hz
       have hJ' : ENNReal.ofReal c.toReal < sliceRatAverage f y J := by
-        simpa [sliceRatAverage, sliceFunction] using hJ
+        simpa [sliceRatAverage, lastCoordSlice] using hJ
       have hle : sliceRatAverage f y J ≤
           ⨆ K : RatRectangle n, ⨆ (_ : z ∈ K.carrier), sliceRatAverage f y K :=
         (le_iSup (fun _ : z ∈ J.carrier ↦ sliceRatAverage f y J) hzJ).trans
@@ -753,15 +753,24 @@ theorem partialStrongMax_eq_ratSup {n : ℕ} (hn : 0 < n) (f : (Fin (n + 1) → 
       simpa [ENNReal.ofReal_toReal hct] using (hJ'.trans_le hle).le
   · refine iSup_le fun J ↦ iSup_le fun hz ↦ ?_
     have havg : sliceRatAverage f y J =
-        (∫⁻ w in J.toOpen.carrier, ENNReal.ofReal |sliceFunction f y w|) /
+        (∫⁻ w in J.toOpen.carrier, ENNReal.ofReal |lastCoordSlice f y w|) /
           volume J.toOpen.carrier := by
-      simp [sliceRatAverage, RatRectangle.average, sliceFunction, ← J.carrier_toOpen]
+      simp [sliceRatAverage, RatRectangle.average, lastCoordSlice, ← J.carrier_toOpen]
     rw [havg]
     exact (le_iSup (fun h : z ∈ J.toOpen.carrier ↦
-        (∫⁻ w in J.toOpen.carrier, ENNReal.ofReal |sliceFunction f y w|) /
+        (∫⁻ w in J.toOpen.carrier, ENNReal.ofReal |lastCoordSlice f y w|) /
           volume J.toOpen.carrier) (by simpa [RatRectangle.carrier_toOpen] using hz)).trans
       (le_iSup (fun S : OpenRectangle n ↦ ⨆ h : z ∈ S.carrier,
-        (∫⁻ w in S.carrier, ENNReal.ofReal |sliceFunction f y w|) / volume S.carrier) J.toOpen)
+        (∫⁻ w in S.carrier, ENNReal.ofReal |lastCoordSlice f y w|) / volume S.carrier) J.toOpen)
+
+@[deprecated (since := "2026-11-15")]
+alias coordEquiv := lastCoordEquiv
+@[deprecated (since := "2026-11-15")]
+alias coordEquiv_apply := lastCoordEquiv_apply
+@[deprecated (since := "2026-11-15")]
+alias sliceFunction := lastCoordSlice
+@[deprecated (since := "2026-11-15")]
+alias sliceFunction_measurable := measurable_lastCoordSlice
 
 end CKMA
 

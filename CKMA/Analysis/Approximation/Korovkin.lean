@@ -258,7 +258,7 @@ private lemma norm_sub_le_korovkin (L : UnitIntervalContinuousMap →L[ℝ] Unit
 
 /-- **47.17**: the three Korovkin test functions characterize strong convergence. -/
 theorem korovkin_iff (L : ℕ → UnitIntervalContinuousMap →L[ℝ]
-    UnitIntervalContinuousMap) (hL : ∀ n, Monotone (L n)) :
+    UnitIntervalContinuousMap) (hL : ∀ n, IsPositiveContinuousMapOperator (L n)) :
     (∀ f, Tendsto (fun n ↦ L n f) atTop (𝓝 f)) ↔
       Tendsto (fun n ↦ L n 1) atTop (𝓝 1) ∧
       Tendsto (fun n ↦ L n unitIntervalId) atTop (𝓝 unitIntervalId) ∧

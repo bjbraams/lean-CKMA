@@ -24,15 +24,16 @@ exponent is locally Hölder, and the dyadic floors converge to a continuous modi
 
 ## Main definitions
 
-* `CKMA.subHalf`: exponent `(k + 1) / (2 (k + 2))` strictly between `0` and `1 / 2`.
-* `CKMA.version`: measurable version of one time marginal of a pre-Brownian process.
-* `CKMA.good`: full-measure event on which all dyadic increments eventually satisfy the Hölder
-  bound.
+* `CKMA.Brownian.subHalf`: exponent `(k + 1) / (2 (k + 2))` strictly between `0` and `1 / 2`.
+* `CKMA.Brownian.version`: measurable version of one time marginal of a pre-Brownian process.
+* `CKMA.Brownian.good`: full-measure event on which all dyadic increments eventually satisfy the
+  Hölder bound.
 
 ## Main results
 
-* `CKMA.exists_subHalf_ge`: every exponent strictly below `1 / 2` is bounded by some `subHalf k`.
-* `CKMA.ae_mem_good`: almost every sample path belongs to `good`.
+* `CKMA.Brownian.exists_subHalf_ge`: every exponent strictly below `1 / 2` is bounded by some
+  `subHalf k`.
+* `CKMA.Brownian.ae_mem_good`: almost every sample path belongs to `good`.
 -/
 
 @[expose] public section
@@ -49,11 +50,13 @@ set_option linter.unusedSectionVars false
 variable {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsProbabilityMeasure μ]
   {B : ℝ≥0 → Ω → ℝ}
 
+namespace Brownian
+
 /-- Exponent `(k + 1) / (2 (k + 2))`, strictly between `0` and `1 / 2`. -/
 def subHalf (k : ℕ) : ℝ := ((k + 1 : ℕ) : ℝ) / (2 * ((k + 2 : ℕ) : ℝ))
 
 /-- Moment order `2 (k + 3)`, paired with `subHalf k`. -/
-def momentOrder (k : ℕ) : ℝ := 2 * ((k + 3 : ℕ) : ℝ)
+private def momentOrder (k : ℕ) : ℝ := 2 * ((k + 3 : ℕ) : ℝ)
 
 /-- `subHalf k` is positive. -/
 lemma subHalf_pos (k : ℕ) : 0 < subHalf k := by
@@ -73,12 +76,12 @@ lemma subHalf_lt_half (k : ℕ) : subHalf k < 1 / 2 := by
   linarith
 
 /-- `momentOrder k` is positive. -/
-lemma momentOrder_pos (k : ℕ) : 0 < momentOrder k := by
+private lemma momentOrder_pos (k : ℕ) : 0 < momentOrder k := by
   unfold momentOrder
   positivity
 
 /-- The Kolmogorov gap `p (1 / 2 - α)` equals `(k + 3) / (k + 2)`. -/
-lemma moment_gap (k : ℕ) :
+private lemma moment_gap (k : ℕ) :
     momentOrder k * (1 / 2 - subHalf k) = ((k + 3 : ℕ) : ℝ) / ((k + 2 : ℕ) : ℝ) := by
   unfold momentOrder subHalf
   push_cast
@@ -135,7 +138,7 @@ lemma coe_dyadicNN (j n i : ℕ) :
     (dyadicNN j n i : ℝ) = (j : ℝ) + (i : ℝ) / 2 ^ n := rfl
 
 /-- Consecutive dyadic times differ by one mesh. -/
-lemma dyadicNN_sub (j n i : ℕ) :
+private lemma dyadicNN_sub (j n i : ℕ) :
     (dyadicNN j n (i + 1) : ℝ) - (dyadicNN j n i : ℝ) = 1 / 2 ^ n := by
   rw [coe_dyadicNN, coe_dyadicNN, Nat.cast_add, Nat.cast_one]
   ring
@@ -154,7 +157,7 @@ def good (hB : IsPreBrownianReal B μ) : Set Ω :=
   {ω | ∀ k j : ℕ, ∀ᶠ n in atTop, ω ∉ levelBad hB k j n}
 
 /-- Each bad increment is measurable. -/
-lemma measurableSet_badInc (hB : IsPreBrownianReal B μ) (k j n i : ℕ) :
+private lemma measurableSet_badInc (hB : IsPreBrownianReal B μ) (k j n i : ℕ) :
     MeasurableSet (badInc hB k j n i) := by
   have hmeas : Measurable fun ω =>
       |version hB (dyadicNN j n (i + 1)) ω - version hB (dyadicNN j n i) ω| :=
@@ -162,7 +165,7 @@ lemma measurableSet_badInc (hB : IsPreBrownianReal B μ) (k j n i : ℕ) :
   exact measurableSet_Ici.preimage hmeas
 
 /-- A bad level is a finite union of measurable sets. -/
-lemma measurableSet_levelBad (hB : IsPreBrownianReal B μ) (k j n : ℕ) :
+private lemma measurableSet_levelBad (hB : IsPreBrownianReal B μ) (k j n : ℕ) :
     MeasurableSet (levelBad hB k j n) := by
   refine Finset.measurableSet_biUnion _ fun i _ => measurableSet_badInc hB k j n i
 
@@ -184,7 +187,7 @@ lemma measurableSet_good (hB : IsPreBrownianReal B μ) : MeasurableSet (good hB)
   exact MeasurableSet.iInter fun k => MeasurableSet.iInter fun j => hnot k j
 
 /-- One bad increment has Markov bound `M` times a negative power of the mesh. -/
-lemma measureReal_badInc_le (hB : IsPreBrownianReal B μ) (k j n i : ℕ) :
+private lemma measureReal_badInc_le (hB : IsPreBrownianReal B μ) (k j n i : ℕ) :
     μ.real (badInc hB k j n i) ≤
       gaussianAbsMoment (momentOrder k) *
         (2 : ℝ) ^ (-(n : ℝ) * momentOrder k * (1 / 2 - subHalf k)) := by
@@ -213,7 +216,7 @@ lemma measureReal_badInc_le (hB : IsPreBrownianReal B μ) (k j n i : ℕ) :
       ∫ ω, |version hB s ω - version hB t ω| ^ p ∂μ := by
     simpa [hset] using hmark
   have hintle :=
-    IsPreBrownianReal.integral_abs_sub_rpow_le (version_isPreBrownian hB) hp s t
+    integral_abs_sub_rpow_le_of_isPreBrownianReal (version_isPreBrownian hB) hp s t
   have hdist : |(s : ℝ) - t| = 1 / 2 ^ n := by
     have hsub : (s : ℝ) - t = 1 / 2 ^ n := dyadicNN_sub j n i
     rw [abs_of_pos (hsub.symm ▸ hbase), hsub]
@@ -238,7 +241,7 @@ lemma measureReal_badInc_le (hB : IsPreBrownianReal B μ) (k j n i : ℕ) :
       ring
 
 /-- Cancelling the grid cardinality against the Gaussian tail leaves one negative power. -/
-lemma two_pow_level_mul (k n : ℕ) :
+private lemma two_pow_level_mul (k n : ℕ) :
     (2 : ℝ) ^ n *
         (2 : ℝ) ^ (-(n : ℝ) * (momentOrder k * (1 / 2 - subHalf k))) =
       (2 : ℝ) ^ (-(n : ℝ) / ((k + 2 : ℕ) : ℝ)) := by
@@ -251,7 +254,7 @@ lemma two_pow_level_mul (k n : ℕ) :
   ring
 
 /-- A whole dyadic level has measure at most a summable geometric term. -/
-lemma measure_levelBad_le (hB : IsPreBrownianReal B μ) (k j n : ℕ) :
+private lemma measure_levelBad_le (hB : IsPreBrownianReal B μ) (k j n : ℕ) :
     μ (levelBad hB k j n) ≤
       ENNReal.ofReal (gaussianAbsMoment (momentOrder k) *
         (2 : ℝ) ^ (-(n : ℝ) / ((k + 2 : ℕ) : ℝ))) := by
@@ -303,7 +306,7 @@ lemma measure_levelBad_le (hB : IsPreBrownianReal B μ) (k j n : ℕ) :
         (2 : ℝ) ^ (-(n : ℝ) / ((k + 2 : ℕ) : ℝ))) := by rw [hpow]
 
 /-- The geometric level bound is a convergent real series. -/
-lemma summable_levelBound (k : ℕ) :
+private lemma summable_levelBound (k : ℕ) :
     Summable (fun n : ℕ => gaussianAbsMoment (momentOrder k) *
       (2 : ℝ) ^ (-(n : ℝ) / ((k + 2 : ℕ) : ℝ))) := by
   set r : ℝ := (2 : ℝ) ^ (-(1 : ℝ) / ((k + 2 : ℕ) : ℝ))
@@ -326,11 +329,11 @@ lemma summable_levelBound (k : ℕ) :
   exact (summable_geometric_of_lt_one hr0 hr1).mul_left _
 
 /-- The measures of the bad levels form a finite series. -/
-lemma tsum_levelBad_ne_top (hB : IsPreBrownianReal B μ) (k j : ℕ) :
+private lemma tsum_levelBad_ne_top (hB : IsPreBrownianReal B μ) (k j : ℕ) :
     ∑' n, μ (levelBad hB k j n) ≠ ⊤ := by
   have hle := ENNReal.tsum_le_tsum (fun n => measure_levelBad_le hB k j n)
   rw [← ENNReal.ofReal_tsum_of_nonneg (fun n =>
-      mul_nonneg (gaussianAbsMoment_nonneg (momentOrder_pos k))
+      mul_nonneg (gaussianAbsMoment_nonneg (momentOrder k))
         (Real.rpow_nonneg (by norm_num) _)) (summable_levelBound k)] at hle
   exact ne_top_of_le_ne_top ENNReal.ofReal_ne_top hle
 
@@ -344,5 +347,7 @@ lemma ae_mem_good (hB : IsPreBrownianReal B μ) : ∀ᵐ ω ∂μ, ω ∈ good h
     rw [ae_all_iff]
     exact hkj k
   simpa [good] using hall
+
+end Brownian
 
 end CKMA

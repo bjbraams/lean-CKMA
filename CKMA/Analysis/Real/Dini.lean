@@ -37,7 +37,11 @@ open MeasureTheory
 /-- **05.10**: any finite real function has exactly one Dini type at almost every point.
 No measurability or continuity assumption on the function is imposed. -/
 theorem ae_existsUnique_diniType (f : ℝ → ℝ) :
-    ∀ᵐ x ∂volume, ∃! i : Fin 4, HasDiniType f x i :=
-  Dini.ae_diniType f
+    ∀ᵐ x ∂volume, ∃! i : Fin 4, HasDiniType f x i := by
+  filter_upwards [Dini.ae_oppositePair f, Dini.ae_oppositePair (-f)] with x hx hx'
+  exact Dini.existsUnique_diniType_of_patterns f x hx (Dini.opposite_of_neg f hx')
+
+@[deprecated (since := "2026-11-15")]
+alias ae_diniType := ae_existsUnique_diniType
 
 end CKMA

@@ -62,7 +62,7 @@ lemma birkhoffSumMax_succ (T : Ω → Ω) (f : Ω → ℝ) (n : ℕ) :
       fun ω => max (birkhoffSumMax T f n ω) (birkhoffSum T f (n + 1) ω) := rfl
 
 /-- Partial maxima are nonnegative. -/
-lemma birkhoffSumMax_nonneg (T : Ω → Ω) (f : Ω → ℝ) (n : ℕ) (ω : Ω) :
+private lemma birkhoffSumMax_nonneg (T : Ω → Ω) (f : Ω → ℝ) (n : ℕ) (ω : Ω) :
     0 ≤ birkhoffSumMax T f n ω := by
   induction n with
   | zero => simp [birkhoffSumMax]
@@ -71,7 +71,7 @@ lemma birkhoffSumMax_nonneg (T : Ω → Ω) (f : Ω → ℝ) (n : ℕ) (ω : Ω)
     exact le_trans ih (le_max_left _ _)
 
 /-- Birkhoff sums up to the current length lie under the partial maximum. -/
-lemma birkhoffSum_le_birkhoffSumMax (T : Ω → Ω) (f : Ω → ℝ) (k n : ℕ) (hk : k ≤ n)
+private lemma birkhoffSum_le_birkhoffSumMax (T : Ω → Ω) (f : Ω → ℝ) (k n : ℕ) (hk : k ≤ n)
     (ω : Ω) : birkhoffSum T f k ω ≤ birkhoffSumMax T f n ω := by
   induction n with
   | zero =>
@@ -84,7 +84,7 @@ lemma birkhoffSum_le_birkhoffSumMax (T : Ω → Ω) (f : Ω → ℝ) (k n : ℕ)
     · exact (ih (Nat.le_of_lt_succ hklt)).trans (le_max_left _ _)
 
 /-- A positive partial maximum is witnessed by a positive Birkhoff sum. -/
-lemma exists_birkhoffSum_pos_of_birkhoffSumMax_pos (T : Ω → Ω) (f : Ω → ℝ) (N : ℕ)
+private lemma exists_birkhoffSum_pos_of_birkhoffSumMax_pos (T : Ω → Ω) (f : Ω → ℝ) (N : ℕ)
     {ω : Ω} (h : 0 < birkhoffSumMax T f N ω) :
     ∃ n, 0 < n ∧ n ≤ N ∧ 0 < birkhoffSum T f n ω := by
   induction N with
@@ -97,7 +97,7 @@ lemma exists_birkhoffSum_pos_of_birkhoffSumMax_pos (T : Ω → Ω) (f : Ω → �
     · exact ⟨N + 1, Nat.succ_pos N, le_rfl, hS⟩
 
 /-- The finite maximal-positive set is the positivity set of the partial maximum. -/
-lemma maximalPositiveSet_eq_birkhoffSumMax_pos (T : Ω → Ω) (f : Ω → ℝ) (N : ℕ) :
+private lemma maximalPositiveSet_eq_birkhoffSumMax_pos (T : Ω → Ω) (f : Ω → ℝ) (N : ℕ) :
     {ω | ∃ n, 0 < n ∧ n ≤ N ∧ 0 < birkhoffSum T f n ω} =
       {ω | 0 < birkhoffSumMax T f N ω} := by
   ext ω
@@ -107,7 +107,7 @@ lemma maximalPositiveSet_eq_birkhoffSumMax_pos (T : Ω → Ω) (f : Ω → ℝ) 
   · exact exists_birkhoffSum_pos_of_birkhoffSumMax_pos T f N
 
 /-- The one-step recurrence `Mₙ₊₁(ω) = max(0, f(ω) + Mₙ(Tω))`. -/
-lemma birkhoffSumMax_succ_eq_max_add (T : Ω → Ω) (f : Ω → ℝ) (n : ℕ) (ω : Ω) :
+private lemma birkhoffSumMax_succ_eq_max_add (T : Ω → Ω) (f : Ω → ℝ) (n : ℕ) (ω : Ω) :
     birkhoffSumMax T f (n + 1) ω =
       max 0 (f ω + birkhoffSumMax T f n (T ω)) := by
   induction n generalizing ω with
@@ -130,7 +130,7 @@ lemma birkhoffSumMax_succ_eq_max_add (T : Ω → Ω) (f : Ω → ℝ) (n : ℕ) 
         rw [hmax, birkhoffSumMax]
 
 /-- Iterates preserve a strictly invariant set. -/
-lemma preimage_iterate_eq_of_invariant {T : Ω → Ω} {E : Set Ω} (hinv : T ⁻¹' E = E)
+private lemma preimage_iterate_eq_of_invariant {T : Ω → Ω} {E : Set Ω} (hinv : T ⁻¹' E = E)
     (k : ℕ) : (T^[k]) ⁻¹' E = E :=
   IsFixedPt.preimage_iterate hinv k
 
@@ -156,7 +156,7 @@ lemma birkhoffSum_indicator_invariant {T : Ω → Ω} {E : Set Ω} (hinv : T ⁻
     simp [indicator_of_notMem hk]
 
 /-- Finite maximal-positive sets increase to the set where some positive-length sum is positive. -/
-lemma iUnion_maximalPositiveSet (T : Ω → Ω) (f : Ω → ℝ) :
+private lemma iUnion_maximalPositiveSet (T : Ω → Ω) (f : Ω → ℝ) :
     ⋃ N, {ω | ∃ n, 0 < n ∧ n ≤ N ∧ 0 < birkhoffSum T f n ω} =
       {ω | ∃ n, 0 < n ∧ 0 < birkhoffSum T f n ω} := by
   ext ω
@@ -180,7 +180,7 @@ lemma measurable_birkhoffSum {T : Ω → Ω} (hT : Measurable T) {f : Ω → ℝ
     exact hf.add ((measurable_birkhoffSum hT hf n).comp hT)
 
 /-- Partial maxima of a measurable observable are measurable. -/
-lemma measurable_birkhoffSumMax {T : Ω → Ω} (hT : Measurable T) {f : Ω → ℝ}
+private lemma measurable_birkhoffSumMax {T : Ω → Ω} (hT : Measurable T) {f : Ω → ℝ}
     (hf : Measurable f) : ∀ n, Measurable (birkhoffSumMax T f n)
   | 0 => by
     simp [birkhoffSumMax]
@@ -197,7 +197,7 @@ lemma integrable_birkhoffSum {T : Ω → Ω} (hT : MeasurePreserving T μ μ) {f
     exact hf.add (hT.integrable_comp_of_integrable ih)
 
 /-- Partial maxima of an integrable observable are integrable. -/
-lemma integrable_birkhoffSumMax {T : Ω → Ω} (hT : MeasurePreserving T μ μ) {f : Ω → ℝ}
+private lemma integrable_birkhoffSumMax {T : Ω → Ω} (hT : MeasurePreserving T μ μ) {f : Ω → ℝ}
     (hf : Integrable f μ) (n : ℕ) : Integrable (birkhoffSumMax T f n) μ := by
   induction n with
   | zero => simp [birkhoffSumMax]
@@ -215,14 +215,14 @@ lemma integral_comp_measurePreserving {T : Ω → Ω} (hT : MeasurePreserving T 
   simpa [hT.map_eq] using hmap.symm
 
 /-- Positivity set of a measurable partial maximum. -/
-lemma measurableSet_birkhoffSumMax_pos {T : Ω → Ω} (hT : Measurable T) {f : Ω → ℝ}
+private lemma measurableSet_birkhoffSumMax_pos {T : Ω → Ω} (hT : Measurable T) {f : Ω → ℝ}
     (hf : Measurable f) (n : ℕ) : MeasurableSet {ω | 0 < birkhoffSumMax T f n ω} :=
   measurableSet_lt (measurable_const : Measurable fun (_ : Ω) => (0 : ℝ))
     (measurable_birkhoffSumMax hT hf n)
 
 /-- On a probability space the finite maximal integral is nonnegative for a measurable
 integrable observable. The argument is Garsia's comparison of consecutive partial maxima. -/
-lemma integral_nonneg_maximal_of_measurable {T : Ω → Ω} (hT : MeasurePreserving T μ μ)
+private lemma integral_nonneg_maximal_of_measurable {T : Ω → Ω} (hT : MeasurePreserving T μ μ)
     {f : Ω → ℝ} (hf : Integrable f μ) (hf_meas : Measurable f) (N : ℕ) :
     0 ≤ ∫ ω in {ω | ∃ n, 0 < n ∧ n ≤ N ∧ 0 < birkhoffSum T f n ω}, f ω ∂μ := by
   rw [maximalPositiveSet_eq_birkhoffSumMax_pos]
@@ -330,7 +330,7 @@ lemma integral_nonneg_maximalErgodicSet {T : Ω → Ω} (hT : MeasurePreserving 
   exact integral_nonneg_maximal_of_measurable hT hg_int hg_meas N
 
 /-- Integral over the strict supremum set of a measurable integrable observable. -/
-lemma integral_nonneg_strictPositive_of_measurable {T : Ω → Ω}
+private lemma integral_nonneg_strictPositive_of_measurable {T : Ω → Ω}
     (hT : MeasurePreserving T μ μ) {f : Ω → ℝ} (hf : Integrable f μ)
     (hf_meas : Measurable f) :
     0 ≤ ∫ ω in {ω | ∃ n, 0 < n ∧ 0 < birkhoffSum T f n ω}, f ω ∂μ := by
@@ -356,7 +356,7 @@ lemma integral_nonneg_strictPositive_of_measurable {T : Ω → Ω}
 
 /-- If a measurable strictly invariant set sits inside the strict supremum set, its integral
 is nonnegative. -/
-lemma setIntegral_nonneg_of_invariant_subset_positive {T : Ω → Ω}
+private lemma setIntegral_nonneg_of_invariant_subset_positive {T : Ω → Ω}
     (hT : MeasurePreserving T μ μ) {f : Ω → ℝ} (hf : Integrable f μ)
     (hf_meas : Measurable f) {E : Set Ω} (hE : MeasurableSet E) (hinv : T ⁻¹' E = E)
     (hsub : E ⊆ {ω | ∃ n, 0 < n ∧ 0 < birkhoffSum T f n ω}) :

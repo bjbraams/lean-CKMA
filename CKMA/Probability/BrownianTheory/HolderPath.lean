@@ -17,13 +17,13 @@ time, and is locally Hölder for every exponent strictly below one half.
 
 ## Main definitions
 
-* `CKMA.HasIncrementTail`: eventual dyadic increment bound on one integer cell.
-* `CKMA.holderPath`: continuous modification constructed as the limit along dyadic floors.
+* `CKMA.Brownian.holderPath`: continuous modification constructed as the limit along dyadic
+  floors.
 
 ## Main results
 
-* `CKMA.continuous_holderPath`: every modified path is continuous.
-* `CKMA.holderPath_isBrownian`: the dyadic-floor limit is a Brownian motion.
+* `CKMA.Brownian.continuous_holderPath`: every modified path is continuous.
+* `CKMA.Brownian.holderPath_isBrownian`: the dyadic-floor limit is a Brownian motion.
 * `CKMA.exists_continuous_holder_modification`: a pre-Brownian process has an everywhere
   continuous Hölder modification.
 -/
@@ -42,84 +42,87 @@ set_option linter.unusedSectionVars false
 variable {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsProbabilityMeasure μ]
   {B : ℝ≥0 → Ω → ℝ}
 
+namespace Brownian
+
 /-- Nonnegative form of the exponent `subHalf k`. -/
-def subHalfNN (k : ℕ) : ℝ≥0 := ⟨subHalf k, (subHalf_pos k).le⟩
+private def subHalfNN (k : ℕ) : ℝ≥0 := ⟨subHalf k, (subHalf_pos k).le⟩
 
 /-- Real value of `subHalfNN`. -/
-lemma coe_subHalfNN (k : ℕ) : (subHalfNN k : ℝ) = subHalf k := rfl
+private lemma coe_subHalfNN (k : ℕ) : (subHalfNN k : ℝ) = subHalf k := rfl
 
 /-- `subHalfNN k` is strictly positive. -/
-lemma subHalfNN_pos (k : ℕ) : 0 < subHalfNN k := by
+private lemma subHalfNN_pos (k : ℕ) : 0 < subHalfNN k := by
   rw [← NNReal.coe_pos, coe_subHalfNN]
   exact subHalf_pos k
 
 /-- Extension of the measurable version, equal to zero at negative times. -/
-def snap (hB : IsPreBrownianReal B μ) (ω : Ω) (x : ℝ) : ℝ :=
+private def snap (hB : IsPreBrownianReal B μ) (ω : Ω) (x : ℝ) : ℝ :=
   if hx : 0 ≤ x then version hB ⟨x, hx⟩ ω else 0
 
 /-- On the nonnegative reals, `snap` is the measurable version. -/
-lemma snap_of_nonneg (hB : IsPreBrownianReal B μ) (ω : Ω) {x : ℝ} (hx : 0 ≤ x) :
+private lemma snap_of_nonneg (hB : IsPreBrownianReal B μ) (ω : Ω) {x : ℝ} (hx : 0 ≤ x) :
     snap hB ω x = version hB ⟨x, hx⟩ ω := by
   simp [snap, hx]
 
 /-- Dyadic floor of a nonnegative time, as a nonnegative time. -/
 def floorTime (n : ℕ) (t : ℝ≥0) : ℝ≥0 :=
-  ⟨dyadicFloorReal n (t : ℝ), dyadicFloorReal_nonneg⟩
+  ⟨dyadicFloorReal n (t : ℝ), dyadicFloorReal_nonneg n t⟩
 
 /-- Real value of a dyadic floor. -/
-lemma coe_floorTime (n : ℕ) (t : ℝ≥0) : (floorTime n t : ℝ) = dyadicFloorReal n (t : ℝ) := rfl
+private lemma coe_floorTime (n : ℕ) (t : ℝ≥0) :
+    (floorTime n t : ℝ) = dyadicFloorReal n (t : ℝ) := rfl
 
 /-- Measurable version evaluated at the dyadic floor. -/
 def approx (hB : IsPreBrownianReal B μ) (n : ℕ) (t : ℝ≥0) (ω : Ω) : ℝ :=
   version hB (floorTime n t) ω
 
 /-- Evaluation at a dyadic floor is measurable. -/
-lemma measurable_approx (hB : IsPreBrownianReal B μ) (n : ℕ) (t : ℝ≥0) :
+private lemma measurable_approx (hB : IsPreBrownianReal B μ) (n : ℕ) (t : ℝ≥0) :
     Measurable (approx hB n t) :=
   measurable_version hB _
 
 /-- `snap` at a dyadic floor is the dyadic approximation. -/
-lemma snap_floor (hB : IsPreBrownianReal B μ) (ω : Ω) (n : ℕ) (t : ℝ≥0) :
+private lemma snap_floor (hB : IsPreBrownianReal B μ) (ω : Ω) (n : ℕ) (t : ℝ≥0) :
     snap hB ω (dyadicFloorReal n (t : ℝ)) = approx hB n t ω := by
-  have hx : 0 ≤ dyadicFloorReal n (t : ℝ) := dyadicFloorReal_nonneg
+  have hx : 0 ≤ dyadicFloorReal n (t : ℝ) := dyadicFloorReal_nonneg n t
   unfold snap approx floorTime
   split_ifs
   exact congrArg (fun u => version hB u ω) (Subtype.ext rfl)
 
 /-- A nonnegative real is at most one more than its integer floor. -/
-lemma le_natFloor_add_one (t : ℝ≥0) :
+private lemma le_natFloor_add_one (t : ℝ≥0) :
     (t : ℝ) ≤ (Nat.floor (t : ℝ) + 1 : ℕ) := by
   have hlt : (t : ℝ) < (Nat.floor (t : ℝ) : ℝ) + 1 := Nat.lt_floor_add_one _
   exact le_of_lt <| by simpa [Nat.cast_add, Nat.cast_one] using hlt
 
 /-- The distance from a time to its dyadic floor is at most one mesh. -/
-lemma abs_floorTime_sub (n : ℕ) (t : ℝ≥0) :
+private lemma abs_floorTime_sub (n : ℕ) (t : ℝ≥0) :
     |(floorTime n t : ℝ) - (t : ℝ)| ≤ 1 / 2 ^ n := by
   have hle : dyadicFloorReal n (t : ℝ) ≤ (t : ℝ) := dyadicFloorReal_le t.2
-  have hlt : (t : ℝ) < dyadicFloorReal n (t : ℝ) + 1 / 2 ^ n := lt_dyadicFloorReal_add
+  have hlt : (t : ℝ) < dyadicFloorReal n (t : ℝ) + 1 / 2 ^ n := lt_dyadicFloorReal_add n t
   rw [coe_floorTime, abs_sub_comm, abs_of_nonneg (sub_nonneg.2 hle)]
   exact le_of_lt (by linarith)
 
 /-- Threshold `2 ^ (-n / 4)` used for second-moment Borel--Cantelli. -/
-def meshRoot (n : ℕ) : ℝ := (2 : ℝ) ^ (-(n : ℝ) / 4)
+private def meshRoot (n : ℕ) : ℝ := (2 : ℝ) ^ (-(n : ℝ) / 4)
 
 /-- The second-moment threshold is positive. -/
-lemma meshRoot_pos (n : ℕ) : 0 < meshRoot n :=
+private lemma meshRoot_pos (n : ℕ) : 0 < meshRoot n :=
   Real.rpow_pos_of_pos (by norm_num) _
 
 /-- Squaring the threshold doubles the negative exponent. -/
-lemma meshRoot_sq (n : ℕ) : meshRoot n ^ (2 : ℝ) = (2 : ℝ) ^ (-(n : ℝ) / 2) := by
+private lemma meshRoot_sq (n : ℕ) : meshRoot n ^ (2 : ℝ) = (2 : ℝ) ^ (-(n : ℝ) / 2) := by
   unfold meshRoot
   rw [← Real.rpow_mul (by positivity : (0 : ℝ) ≤ 2)]
   congr 1
   ring
 
 /-- Paths whose dyadic-floor increment exceeds the second-moment threshold. -/
-def floorDeviation (hB : IsPreBrownianReal B μ) (t : ℝ≥0) (n : ℕ) : Set Ω :=
+private def floorDeviation (hB : IsPreBrownianReal B μ) (t : ℝ≥0) (n : ℕ) : Set Ω :=
   {ω | meshRoot n ≤ |version hB (floorTime n t) ω - version hB t ω|}
 
 /-- One floor increment obeys a summable second-moment bound. -/
-lemma measure_floorDeviation_le (hB : IsPreBrownianReal B μ) (t : ℝ≥0) (n : ℕ) :
+private lemma measure_floorDeviation_le (hB : IsPreBrownianReal B μ) (t : ℝ≥0) (n : ℕ) :
     μ (floorDeviation hB t n) ≤
       ENNReal.ofReal (gaussianAbsMoment 2 * (2 : ℝ) ^ (-(n : ℝ) / 2)) := by
   have hp : (0 : ℝ) < 2 := by norm_num
@@ -142,7 +145,7 @@ lemma measure_floorDeviation_le (hB : IsPreBrownianReal B μ) (t : ℝ≥0) (n :
   have hmark' : meshRoot n ^ (2 : ℝ) * μ.real (floorDeviation hB t n) ≤
       ∫ ω, |version hB (floorTime n t) ω - version hB t ω| ^ (2 : ℝ) ∂μ := by
     simpa only [hset] using hmark
-  have hintle := IsPreBrownianReal.integral_abs_sub_rpow_le (version_isPreBrownian hB) hp
+  have hintle := integral_abs_sub_rpow_le_of_isPreBrownianReal (version_isPreBrownian hB) hp
     (floorTime n t) t
   have hdist : |(floorTime n t : ℝ) - (t : ℝ)| ^ ((2 : ℝ) / 2) =
       |(floorTime n t : ℝ) - (t : ℝ)| := by
@@ -154,7 +157,7 @@ lemma measure_floorDeviation_le (hB : IsPreBrownianReal B μ) (t : ℝ≥0) (n :
         (meshRoot n ^ (2 : ℝ)) := by
     rw [le_div_iff₀ hδ2, mul_comm]
     exact hmark'.trans hintle
-  have hM : 0 ≤ gaussianAbsMoment 2 := gaussianAbsMoment_nonneg hp
+  have hM : 0 ≤ gaussianAbsMoment 2 := gaussianAbsMoment_nonneg 2
   have hmesh : |(floorTime n t : ℝ) - (t : ℝ)| ≤ (2 : ℝ) ^ (-(n : ℝ)) := by
     rw [← one_div_two_pow_eq_rpow]
     exact abs_floorTime_sub n t
@@ -186,7 +189,7 @@ lemma measure_floorDeviation_le (hB : IsPreBrownianReal B μ) (t : ℝ≥0) (n :
   rwa [measureReal_def, ENNReal.ofReal_toReal hfin] at hle
 
 /-- The second-moment floor bounds form a convergent series. -/
-lemma summable_floorBound :
+private lemma summable_floorBound :
     Summable (fun n : ℕ => gaussianAbsMoment 2 * (2 : ℝ) ^ (-(n : ℝ) / 2)) := by
   set r : ℝ := (2 : ℝ) ^ (-(1 : ℝ) / 2)
   have hr0 : 0 ≤ r := Real.rpow_nonneg (by norm_num) _
@@ -207,12 +210,12 @@ lemma summable_floorBound :
   exact (summable_geometric_of_lt_one hr0 hr1).mul_left _
 
 /-- Dyadic floors of the measurable version converge almost surely. -/
-lemma ae_tendsto_version_floor (hB : IsPreBrownianReal B μ) (t : ℝ≥0) :
+private lemma ae_tendsto_version_floor (hB : IsPreBrownianReal B μ) (t : ℝ≥0) :
     ∀ᵐ ω ∂μ, Tendsto (fun n => version hB (floorTime n t) ω) atTop
       (𝓝 (version hB t ω)) := by
   have hle := ENNReal.tsum_le_tsum (fun n => measure_floorDeviation_le hB t n)
   rw [← ENNReal.ofReal_tsum_of_nonneg (fun n =>
-      mul_nonneg (gaussianAbsMoment_nonneg (by norm_num : (0 : ℝ) < 2))
+      mul_nonneg (gaussianAbsMoment_nonneg 2)
         (Real.rpow_nonneg (by norm_num) _)) summable_floorBound] at hle
   have hsum : ∑' n, μ (floorDeviation hB t n) ≠ ⊤ :=
     ne_top_of_le_ne_top ENNReal.ofReal_ne_top hle
@@ -248,13 +251,13 @@ lemma ae_tendsto_version_floor (hB : IsPreBrownianReal B μ) (t : ℝ≥0) :
   exact hlt.trans hrootε
 
 /-- Eventual dyadic increment bound on one integer cell. -/
-def HasIncrementTail (hB : IsPreBrownianReal B μ) (ω : Ω) (k j N : ℕ) : Prop :=
+private def HasIncrementTail (hB : IsPreBrownianReal B μ) (ω : Ω) (k j N : ℕ) : Prop :=
   ∀ n, N ≤ n → ∀ i : ℕ, i < 2 ^ n →
     |snap hB ω (↑j + (↑i + 1) / 2 ^ n) - snap hB ω (↑j + (↑i : ℝ) / 2 ^ n)| ≤
       ((1 : ℝ) / 2 ^ n) ^ subHalf k
 
 /-- A good path has some finite increment threshold on each cell. -/
-lemma exists_incrementTail (hB : IsPreBrownianReal B μ) {ω : Ω} (hω : ω ∈ good hB)
+private lemma exists_incrementTail (hB : IsPreBrownianReal B μ) {ω : Ω} (hω : ω ∈ good hB)
     (k j : ℕ) : ∃ N, HasIncrementTail hB ω k j N := by
   rcases eventually_atTop.1 (hω k j) with ⟨N, hN⟩
   refine ⟨N, ?_⟩
@@ -285,11 +288,11 @@ lemma exists_incrementTail (hB : IsPreBrownianReal B μ) {ω : Ω} (hω : ω ∈
   exact hlt.le
 
 /-- First level after which the dyadic increments of a cell are Hölder. -/
-def goodLevel (hB : IsPreBrownianReal B μ) (ω : Ω) (k j : ℕ) : ℕ :=
+private def goodLevel (hB : IsPreBrownianReal B μ) (ω : Ω) (k j : ℕ) : ℕ :=
   if hω : ω ∈ good hB then Nat.find (exists_incrementTail hB hω k j) else 0
 
 /-- The selected level really starts the Hölder tail. -/
-lemma incrementTail_goodLevel (hB : IsPreBrownianReal B μ) {ω : Ω} (hω : ω ∈ good hB)
+private lemma incrementTail_goodLevel (hB : IsPreBrownianReal B μ) {ω : Ω} (hω : ω ∈ good hB)
     (k j : ℕ) : HasIncrementTail hB ω k j (goodLevel hB ω k j) := by
   have hlevel : goodLevel hB ω k j = Nat.find (exists_incrementTail hB hω k j) := by
     simp [goodLevel, hω]
@@ -297,16 +300,16 @@ lemma incrementTail_goodLevel (hB : IsPreBrownianReal B μ) {ω : Ω} (hω : ω 
   exact Nat.find_spec (exists_incrementTail hB hω k j)
 
 /-- Hölder constant built from the increments before `goodLevel`. -/
-def cellConst (hB : IsPreBrownianReal B μ) (ω : Ω) (k j : ℕ) : ℝ :=
+private def cellConst (hB : IsPreBrownianReal B μ) (ω : Ω) (k j : ℕ) : ℝ :=
   holderConstFrom (snap hB ω) (subHalf k) j (goodLevel hB ω k j)
 
 /-- The cell constant is nonnegative. -/
-lemma cellConst_nonneg (hB : IsPreBrownianReal B μ) (ω : Ω) (k j : ℕ) :
+private lemma cellConst_nonneg (hB : IsPreBrownianReal B μ) (ω : Ω) (k j : ℕ) :
     0 ≤ cellConst hB ω k j :=
   holderConstFrom_nonneg _ _ _ _
 
 /-- A good path has dyadic Hölder increments on every integer cell. -/
-lemma hasDyadic_snap (hB : IsPreBrownianReal B μ) {ω : Ω} (hω : ω ∈ good hB)
+private lemma hasDyadic_snap (hB : IsPreBrownianReal B μ) {ω : Ω} (hω : ω ∈ good hB)
     (k j : ℕ) : HasDyadicIncrements (snap hB ω) (subHalf k) (cellConst hB ω k j) j := by
   simpa [cellConst, HasIncrementTail] using
     hasDyadicIncrements_of_eventually (incrementTail_goodLevel hB hω k j)
@@ -316,7 +319,7 @@ def holderPath (hB : IsPreBrownianReal B μ) (t : ℝ≥0) (ω : Ω) : ℝ :=
   if ω ∈ good hB then limUnder atTop (fun n => approx hB n t ω) else 0
 
 /-- On a good path the dyadic floors converge to `holderPath`. -/
-lemma tendsto_approx_of_good (hB : IsPreBrownianReal B μ) {ω : Ω} (hω : ω ∈ good hB)
+private lemma tendsto_approx_of_good (hB : IsPreBrownianReal B μ) {ω : Ω} (hω : ω ∈ good hB)
     (t : ℝ≥0) : Tendsto (fun n => approx hB n t ω) atTop
       (𝓝 (holderPath hB t ω)) := by
   let N : ℕ := Nat.floor (t : ℝ) + 1
@@ -335,12 +338,12 @@ lemma tendsto_approx_of_good (hB : IsPreBrownianReal B μ) {ω : Ω} (hω : ω �
   exact htend
 
 /-- The piecewise dyadic approximation is measurable. -/
-lemma measurable_holderPiece (hB : IsPreBrownianReal B μ) (n : ℕ) (t : ℝ≥0) :
+private lemma measurable_holderPiece (hB : IsPreBrownianReal B μ) (n : ℕ) (t : ℝ≥0) :
     Measurable (fun ω => if ω ∈ good hB then approx hB n t ω else (0 : ℝ)) :=
   Measurable.ite (measurableSet_good hB) (measurable_approx hB n t) measurable_const
 
 /-- Each time marginal of `holderPath` is a pointwise limit of measurable functions. -/
-lemma tendsto_holderPiece (hB : IsPreBrownianReal B μ) (t : ℝ≥0) (ω : Ω) :
+private lemma tendsto_holderPiece (hB : IsPreBrownianReal B μ) (t : ℝ≥0) (ω : Ω) :
     Tendsto (fun n => if ω ∈ good hB then approx hB n t ω else (0 : ℝ)) atTop
       (𝓝 (holderPath hB t ω)) := by
   by_cases hω : ω ∈ good hB
@@ -355,7 +358,7 @@ lemma measurable_holderPath (hB : IsPreBrownianReal B μ) (t : ℝ≥0) :
     (tendsto_pi_nhds.mpr fun ω => tendsto_holderPiece hB t ω)
 
 /-- On a good path, `holderPath` is the limit of `snap` along dyadic floors. -/
-lemma holderPath_eq_lim (hB : IsPreBrownianReal B μ) {ω : Ω} (hω : ω ∈ good hB)
+private lemma holderPath_eq_lim (hB : IsPreBrownianReal B μ) {ω : Ω} (hω : ω ∈ good hB)
     (t : ℝ≥0) : holderPath hB t ω =
       limUnder atTop (fun n => snap hB ω (dyadicFloorReal n (t : ℝ))) := by
   simp only [holderPath, hω, ite_true]
@@ -364,7 +367,7 @@ lemma holderPath_eq_lim (hB : IsPreBrownianReal B μ) {ω : Ω} (hω : ω ∈ go
   exact (snap_floor hB ω n t).symm
 
 /-- Values of a good path on `[0, N]` obey the dyadic Hölder bound. -/
-lemma abs_sub_holderPath (hB : IsPreBrownianReal B μ) {ω : Ω} (hω : ω ∈ good hB)
+private lemma abs_sub_holderPath (hB : IsPreBrownianReal B μ) {ω : Ω} (hω : ω ∈ good hB)
     (k N : ℕ) {s t : ℝ≥0} (hs : (s : ℝ) ≤ N) (ht : (t : ℝ) ≤ N) :
     |holderPath hB t ω - holderPath hB s ω| ≤
       dyadicHolderFactor (subHalf k) *
@@ -377,7 +380,7 @@ lemma abs_sub_holderPath (hB : IsPreBrownianReal B μ) {ω : Ω} (hω : ω ∈ g
   exact abs_sub_dyadicFloor_lim (subHalf_pos k) hK hinc s.2 hs t.2 ht
 
 /-- A good path is Hölder of exponent `subHalf k` on each compact interval. -/
-lemma holderOnWith_subHalf (hB : IsPreBrownianReal B μ) {ω : Ω} (hω : ω ∈ good hB)
+private lemma holderOnWith_subHalf (hB : IsPreBrownianReal B μ) {ω : Ω} (hω : ω ∈ good hB)
     (k : ℕ) (T : ℝ≥0) : ∃ C : ℝ≥0,
       HolderOnWith C (subHalfNN k) (fun t => holderPath hB t ω) (Icc 0 T) := by
   let N : ℕ := Nat.floor (T : ℝ) + 1
@@ -411,7 +414,7 @@ lemma holderOnWith_subHalf (hB : IsPreBrownianReal B μ) {ω : Ω} (hω : ω ∈
       rw [ENNReal.coe_nnreal_eq, Real.coe_toNNReal Creal hC, coe_subHalfNN]
 
 /-- Every positive exponent below one half is attained on each compact interval. -/
-lemma holderOnWith_of_le_subHalf (hB : IsPreBrownianReal B μ) {ω : Ω}
+private lemma holderOnWith_of_le_subHalf (hB : IsPreBrownianReal B μ) {ω : Ω}
     (hω : ω ∈ good hB) {α : ℝ≥0} (hα : (α : ℝ) < 1 / 2) (T : ℝ≥0) :
     ∃ K : ℝ≥0, HolderOnWith K α (fun t => holderPath hB t ω) (Icc 0 T) := by
   obtain ⟨k, hk⟩ := exists_subHalf_ge hα
@@ -458,7 +461,7 @@ lemma continuous_holderPath (hB : IsPreBrownianReal B μ) (ω : Ω) :
     exact continuous_const
 
 /-- The modification agrees with the measurable version at each fixed time. -/
-lemma holderPath_ae_eq_version (hB : IsPreBrownianReal B μ) (t : ℝ≥0) :
+private lemma holderPath_ae_eq_version (hB : IsPreBrownianReal B μ) (t : ℝ≥0) :
     holderPath hB t =ᵐ[μ] version hB t := by
   filter_upwards [ae_mem_good hB, ae_tendsto_version_floor hB t] with ω hω hlim
   have hpath := tendsto_approx_of_good hB hω t
@@ -468,7 +471,7 @@ lemma holderPath_ae_eq_version (hB : IsPreBrownianReal B μ) (t : ℝ≥0) :
   simpa [holderPath, hω] using hval
 
 /-- The modification agrees with the original process at each fixed time. -/
-lemma holderPath_ae_eq (hB : IsPreBrownianReal B μ) (t : ℝ≥0) :
+private lemma holderPath_ae_eq (hB : IsPreBrownianReal B μ) (t : ℝ≥0) :
     holderPath hB t =ᵐ[μ] B t :=
   (holderPath_ae_eq_version hB t).trans (version_ae_eq hB t).symm
 
@@ -479,17 +482,21 @@ lemma holderPath_isBrownian (hB : IsPreBrownianReal B μ) :
     fun t => (holderPath_ae_eq_version hB t).symm
   cont := Filter.Eventually.of_forall (continuous_holderPath hB)
 
+end Brownian
+
+open Brownian
+
 /-- A pre-Brownian process has an everywhere continuous Hölder modification. -/
 theorem exists_continuous_holder_modification (hB : IsPreBrownianReal B μ) :
     ∃ C : ℝ≥0 → Ω → ℝ,
       (∀ t, Measurable (C t)) ∧ (∀ ω, Continuous (fun t => C t ω)) ∧
         IsBrownianReal C μ ∧ (∀ t, C t =ᵐ[μ] B t) ∧
-          ∀ᵐ ω ∂μ, ∀ α : ℝ≥0, 0 < α → α < 1 / 2 →
+          ∀ᵐ ω ∂μ, ∀ α : ℝ≥0, α < 1 / 2 →
             ∀ T : ℝ≥0, ∃ K : ℝ≥0,
               HolderOnWith K α (fun t => C t ω) (Icc 0 T) := by
   refine ⟨holderPath hB, measurable_holderPath hB, continuous_holderPath hB,
     holderPath_isBrownian hB, holderPath_ae_eq hB, ?_⟩
-  filter_upwards [ae_mem_good hB] with ω hω α _hα0 hα T
+  filter_upwards [ae_mem_good hB] with ω hω α hα T
   have hα' : (α : ℝ) < 1 / 2 := by exact_mod_cast hα
   exact holderOnWith_of_le_subHalf hB hω hα' T
 

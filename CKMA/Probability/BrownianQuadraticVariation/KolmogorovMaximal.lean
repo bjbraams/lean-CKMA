@@ -18,20 +18,20 @@ independent mean-zero square-integrable family.
 
 ## Main definitions
 
-* `CKMA.pastFinset`: indices strictly before a partial-sum time `k`.
-* `CKMA.partialSum`: sum of a finite family over indices strictly before `k`.
+* `CKMA.Kolmogorov.pastFinset`: indices strictly before a partial-sum time `k`.
+* `CKMA.Kolmogorov.partialSum`: sum of a finite family over indices strictly before `k`.
 
 ## Main results
 
-* `CKMA.kolmogorov_maximal`: Kolmogorov's maximal inequality for partial sums of a finite
-  independent mean-zero `L²` family.
+* `CKMA.Kolmogorov.measure_exists_le_abs_partialSum_le`: Kolmogorov's maximal inequality for
+  partial sums of a finite independent mean-zero `L²` family.
 -/
 
 @[expose] public section
 
 noncomputable section
 
-namespace CKMA
+namespace CKMA.Kolmogorov
 
 open scoped NNReal ENNReal ProbabilityTheory BigOperators
 open Classical
@@ -378,8 +378,9 @@ private lemma firstHit_integral_lower {Ω : Type*} [MeasurableSpace Ω] {μ : Me
       · simp [Set.indicator_of_notMem hω]
   linarith [hcross, hexpand, hsqLower, htailNonneg]
 
-/-- Kolmogorov's maximal inequality for a finite independent mean-zero family. -/
-lemma kolmogorov_maximal {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω}
+/-- **Kolmogorov's maximal inequality** for a finite independent mean-zero square-integrable
+family: `μ {∃ k, ε ≤ |S_k|} ≤ E[S_n²] / ε²`. -/
+lemma measure_exists_le_abs_partialSum_le {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω}
     [IsProbabilityMeasure μ] {n : ℕ} {X : Fin n → Ω → ℝ}
     (hX : ∀ i, Measurable (X i)) (hmean : ∀ i, ∫ ω, X i ω ∂μ = 0)
     (hLp : ∀ i, MemLp (X i) 2 μ) (hind : iIndepFun X μ) {ε : ℝ} (hε : 0 < ε) :
@@ -436,4 +437,4 @@ lemma kolmogorov_maximal {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω}
   rw [← ENNReal.ofReal_toReal (measure_ne_top μ _)]
   exact ENNReal.ofReal_le_ofReal hreal
 
-end CKMA
+end CKMA.Kolmogorov

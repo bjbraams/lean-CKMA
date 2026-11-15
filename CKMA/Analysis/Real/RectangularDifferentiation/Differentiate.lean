@@ -31,8 +31,8 @@ those of the cutoff product.
 
 * `CKMA.exists_compactCutoff`: existence of a continuous compactly supported cutoff preserving the
   local `L(log⁺ L)^{d-1}` class.
-* `CKMA.ae_rectanglesDifferentiateAt_of_strongMaximal`: almost-everywhere rectangular
-  differentiation for functions in `L(log⁺ L)^{d-1}_{loc}`.
+* `CKMA.rectanglesDifferentiateAt_of_cutoff`: a cutoff equal to one near a point transfers
+  rectangular differentiation; with the above it gives `CKMA.ae_rectanglesDifferentiateAt`.
 -/
 
 @[expose] public section
@@ -123,36 +123,5 @@ theorem rectanglesDifferentiateAt_of_cutoff {d : ℕ} (hd : 0 < d) {f φ : (Fin 
     rw [hφ hxball, Pi.one_apply, mul_one]
   rw [havg, hval]
   exact hδR S hxS (hwidth.trans_le (min_le_left _ _))
-
-/-- The strong maximal inequality differentiates the local endpoint class. -/
-theorem ae_rectanglesDifferentiateAt_of_strongMaximal {d : ℕ} (hd : 2 ≤ d)
-    {f : (Fin d → ℝ) → ℝ} (hm : Measurable f) (hf : IsLocallyLLog d f) :
-    ∀ᵐ x ∂volume, RectanglesDifferentiateAt f x := by
-  have hd0 : 0 < d := by omega
-  have hd1 : 1 ≤ d := by omega
-  choose φ hφc hφs hφ1 hφi using fun m : ℕ ↦
-    exists_compactCutoff hm hf (m + 1 : ℝ)
-  have hnull : ∀ m : ℕ,
-      volume {x | ¬ RectanglesDifferentiateAt (fun y ↦ f y * φ m y) x} = 0 := by
-    intro m
-    have hmφ : Measurable (fun y ↦ f y * φ m y) := hm.mul (hφc m).measurable
-    have hae := ae_rectanglesDifferentiateAt_of_integrable_growth hd1 hmφ (hφi m)
-    rwa [ae_iff] at hae
-  rw [ae_iff]
-  have hsub : {x | ¬ RectanglesDifferentiateAt f x} ⊆ ⋃ n : ℕ,
-      {x | ¬ RectanglesDifferentiateAt (fun y ↦ f y * φ n y) x} := by
-    intro x hx
-    obtain ⟨n, hn⟩ := exists_nat_gt ‖x‖
-    have hrad : ‖x‖ < (n + 1 : ℝ) := hn.trans_le (by exact_mod_cast Nat.le_succ n)
-    refine mem_iUnion.2 ⟨n, ?_⟩
-    intro hdiff
-    exact hx (rectanglesDifferentiateAt_of_cutoff hd0 hrad (hφ1 n) hdiff)
-  refine measure_mono_null hsub ?_
-  suffices hzero : ∑' n : ℕ,
-      volume {x | ¬ RectanglesDifferentiateAt (fun y ↦ f y * φ n y) x} = 0 by
-    exact le_antisymm ((measure_iUnion_le _).trans hzero.le) bot_le
-  rw [ENNReal.tsum_eq_zero]
-  intro m
-  exact hnull m
 
 end CKMA

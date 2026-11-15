@@ -50,7 +50,7 @@ theorem poincare_bendixson (φ : Flow ℝ (EuclideanSpace ℝ (Fin 2)))
   let ψ : Flow ℝ ℂ := conjFlow e φ
   let G : ℂ → ℂ := fun z ↦ e (F (e.symm z))
   have hG : ContDiff ℝ 1 G := contDiff_conjGenerator hF
-  have hgenψ : FlowHasGenerator ψ G := conjFlow_hasGenerator hgen
+  have hgenψ : FlowHasGenerator ψ G := flowHasGenerator_conjFlow hgen
   have hKimg : IsCompact (e '' K) := hK.image e.continuous_toFun
   have hstay' : ∀ t : ℝ, 0 ≤ t → ψ t (e x) ∈ e '' K := by
     intro t ht

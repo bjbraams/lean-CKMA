@@ -60,7 +60,7 @@ lemma ereal_isBoundedUnder_ge {ι : Type*} (l : Filter ι) (u : ι → EReal) :
 @[deprecated (since := "2026-11-15")] alias liminf_add_one := liminf_nat_add
 
 /-- Adding a real null sequence does not change the extended limsup of a real sequence. -/
-lemma limsup_add_tendsto_zero {u z : ℕ → ℝ} (hz : Tendsto z atTop (𝓝 0)) :
+private lemma limsup_add_tendsto_zero {u z : ℕ → ℝ} (hz : Tendsto z atTop (𝓝 0)) :
     limsup (fun n => ((u n + z n : ℝ) : EReal)) atTop =
       limsup (fun n => (u n : EReal)) atTop := by
   have hzE : Tendsto (fun n => (z n : EReal)) atTop (𝓝 (0 : EReal)) :=
@@ -82,7 +82,7 @@ lemma limsup_add_tendsto_zero {u z : ℕ → ℝ} (hz : Tendsto z atTop (𝓝 0)
     simpa [hinf] using hge
 
 /-- If `1 ≤ cₙ → 1`, multiplication by `c` preserves the extended limsup of a real sequence. -/
-lemma limsup_mul_tendsto_one {c u : ℕ → ℝ} (hc_ge : ∀ n, 1 ≤ c n)
+private lemma limsup_mul_tendsto_one {c u : ℕ → ℝ} (hc_ge : ∀ n, 1 ≤ c n)
     (hc : Tendsto c atTop (𝓝 1)) :
     limsup (fun n => ((c n * u n : ℝ) : EReal)) atTop =
       limsup (fun n => (u n : EReal)) atTop := by
@@ -194,7 +194,7 @@ section Pointwise
 variable {T : Ω → Ω} {f : Ω → ℝ}
 
 /-- The one-step relation between a Birkhoff average and its image. -/
-lemma birkhoffAverage_succ_comp (n : ℕ) (ω : Ω) :
+private lemma birkhoffAverage_succ_comp (n : ℕ) (ω : Ω) :
     birkhoffAverage ℝ T f (n + 1) (T ω) =
       ((n + 2 : ℝ) / (n + 1)) * birkhoffAverage ℝ T f (n + 2) ω - f ω / (n + 1) := by
   have hS : birkhoffSum T f (n + 2) ω = f ω + birkhoffSum T f (n + 1) (T ω) :=
@@ -234,13 +234,13 @@ lemma birkhoffAverage_succ_comp (n : ℕ) (ω : Ω) :
 def birkhoffCoeff (n : ℕ) : ℝ := (n + 2 : ℝ) / (n + 1)
 
 /-- The coefficient `(n+2)/(n+1)` stays at least `1`. -/
-lemma one_le_birkhoffCoeff (n : ℕ) : 1 ≤ birkhoffCoeff n := by
+private lemma one_le_birkhoffCoeff (n : ℕ) : 1 ≤ birkhoffCoeff n := by
   have hn : (0 : ℝ) < n + 1 := by positivity
   rw [birkhoffCoeff, le_div_iff₀ hn]
   linarith
 
 /-- The coefficient `(n+2)/(n+1)` tends to `1`. -/
-lemma tendsto_birkhoffCoeff : Tendsto birkhoffCoeff atTop (𝓝 1) := by
+private lemma tendsto_birkhoffCoeff : Tendsto birkhoffCoeff atTop (𝓝 1) := by
   have hnat : Tendsto (fun n : ℕ => ((n + 1 : ℕ) : ℝ)) atTop atTop :=
     tendsto_natCast_atTop_atTop.comp (tendsto_add_atTop_nat 1)
   have hreal : Tendsto (fun n : ℕ => (n + 1 : ℝ)) atTop atTop := by

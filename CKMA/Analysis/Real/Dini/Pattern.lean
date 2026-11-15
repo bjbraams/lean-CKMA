@@ -17,8 +17,8 @@ Source: GAPS 05.10.
 
 ## Main results
 
-* `CKMA.Dini.hasDiniType_zero`, `CKMA.Dini.hasDiniType_one`, `CKMA.Dini.hasDiniType_two`,
-  `CKMA.Dini.hasDiniType_three`: constructors for the four Dini patterns.
+* `hasDiniType_zero`, `hasDiniType_one`, `hasDiniType_two`,
+  `hasDiniType_three`: constructors for the four Dini patterns.
 * `CKMA.Dini.existsUnique_diniType_of_patterns`: the two opposite-pair patterns determine a
   unique Dini type.
 -/
@@ -44,7 +44,7 @@ private lemma left_le (f : ℝ → ℝ) (x : ℝ) :
     (h' := isBoundedUnder_ge_extendedDifferenceQuotient f x _)
 
 /-- Finite equal right and left derivatives give the first alternative. -/
-lemma hasDiniType_zero {f : ℝ → ℝ} {x a : ℝ}
+private lemma hasDiniType_zero {f : ℝ → ℝ} {x a : ℝ}
     (hUR : upperRightDiniDerivative f x = a) (hLR : lowerRightDiniDerivative f x = a)
     (hUL : upperLeftDiniDerivative f x = a) (hLL : lowerLeftDiniDerivative f x = a) :
     HasDiniType f x 0 := by
@@ -53,7 +53,7 @@ lemma hasDiniType_zero {f : ℝ → ℝ} {x a : ℝ}
   exact ⟨a, hUR, hLR, hUL, hLL⟩
 
 /-- Both upper derivatives `⊤` and both lower derivatives `⊥` give the second alternative. -/
-lemma hasDiniType_one {f : ℝ → ℝ} {x : ℝ}
+private lemma hasDiniType_one {f : ℝ → ℝ} {x : ℝ}
     (hUR : upperRightDiniDerivative f x = ⊤) (hUL : upperLeftDiniDerivative f x = ⊤)
     (hLR : lowerRightDiniDerivative f x = ⊥) (hLL : lowerLeftDiniDerivative f x = ⊥) :
     HasDiniType f x 1 := by
@@ -62,7 +62,7 @@ lemma hasDiniType_one {f : ℝ → ℝ} {x : ℝ}
   exact ⟨hUR, hUL, hLR, hLL⟩
 
 /-- The mixed pattern with upper right `⊤` and lower left `⊥` is the third alternative. -/
-lemma hasDiniType_two {f : ℝ → ℝ} {x a : ℝ}
+private lemma hasDiniType_two {f : ℝ → ℝ} {x a : ℝ}
     (hUR : upperRightDiniDerivative f x = ⊤) (hLL : lowerLeftDiniDerivative f x = ⊥)
     (hLR : lowerRightDiniDerivative f x = a) (hUL : upperLeftDiniDerivative f x = a) :
     HasDiniType f x 2 := by
@@ -71,7 +71,7 @@ lemma hasDiniType_two {f : ℝ → ℝ} {x a : ℝ}
   exact ⟨hUR, hLL, a, hLR, hUL⟩
 
 /-- The mixed pattern with upper left `⊤` and lower right `⊥` is the fourth alternative. -/
-lemma hasDiniType_three {f : ℝ → ℝ} {x a : ℝ}
+private lemma hasDiniType_three {f : ℝ → ℝ} {x a : ℝ}
     (hUL : upperLeftDiniDerivative f x = ⊤) (hLR : lowerRightDiniDerivative f x = ⊥)
     (hLL : lowerLeftDiniDerivative f x = a) (hUR : upperRightDiniDerivative f x = a) :
     HasDiniType f x 3 := by
@@ -164,3 +164,10 @@ theorem existsUnique_diniType_of_patterns (f : ℝ → ℝ) (x : ℝ)
         exact False.elim (ne_zero_of_top hc haU)
 
 end CKMA.Dini
+
+namespace CKMA
+
+@[deprecated (since := "2026-11-15")]
+alias existsUnique_diniType_of_patterns := Dini.existsUnique_diniType_of_patterns
+
+end CKMA

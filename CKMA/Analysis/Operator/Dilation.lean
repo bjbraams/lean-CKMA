@@ -36,7 +36,8 @@ coextension identity. Sources: GAPS 21.26, 21.30, and 21.37.
 * `CKMA.minimalUnitaryPowerDilation_unique`: uniqueness of a minimal unitary power dilation up to
   unitary equivalence.
 * `CKMA.exists_minimalIsometricDilation`: existence of a minimal isometric dilation.
-* `CKMA.commutant_lifting`: Sz.-Nagy–Foiaş commutant lifting theorem.
+* `CKMA.commutant_lifting`: Sz.-Nagy–Foiaş commutant lifting theorem, on any co-invariant
+  isometric dilation.
 -/
 
 @[expose] public section
@@ -46,6 +47,7 @@ noncomputable section
 namespace CKMA
 
 open scoped InnerProductSpace
+open ContinuousLinearMap
 
 universe u
 
@@ -89,7 +91,14 @@ theorem minimalUnitaryPowerDilation_unique (T : H →L[ℂ] H)
     ∃! W : K ≃ₗᵢ[ℂ] L, (∀ x, W (J x) = J' x) ∧ ∀ y, W (U y) = U' (W y) := by
   rcases hU with ⟨hpow, hmin⟩
   rcases hU' with ⟨hpow', hmin'⟩
-  exact minimalUnitaryPowerDilation_unique_of T J U hpow hmin J' U' hpow' hmin'
+  let W := unitaryDilationEquiv T J U hpow hmin J' U' hpow' hmin'
+  refine ⟨W, ⟨?_, ?_⟩, ?_⟩
+  · intro x
+    exact unitaryDilationEquiv_embed T J U hpow hmin J' U' hpow' hmin' x
+  · intro y
+    exact unitaryDilationEquiv_intertwining T J U hpow hmin J' U' hpow' hmin' y
+  · intro W' hW'
+    exact unitaryDilationEquiv_unique T J U hpow hmin J' U' hpow' hmin' W' hW'.1 hW'.2
 
 /-- Minimal isometric dilation with the original space co-invariant. -/
 def IsMinimalIsometricDilation (T : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K)
@@ -106,12 +115,45 @@ theorem exists_minimalIsometricDilation (T : H →L[ℂ] H) (hT : ‖T‖ ≤ 1)
   exact ⟨M, J, V, ⟨hcoin, hmin⟩⟩
 
 /-- **21.37**: an operator commuting with a contraction has a norm-preserving commuting lift
-on its minimal isometric dilation, with the full coextension identity. -/
+on any isometric dilation with the original space co-invariant, with the full coextension
+identity. Minimality of the dilation is not needed; in particular the lift exists on the
+minimal isometric dilation of `IsMinimalIsometricDilation`. -/
 theorem commutant_lifting (T X : H →L[ℂ] H) (hXT : Commute X T)
-    (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K) (hd : IsMinimalIsometricDilation T J V) :
+    (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K)
+    (hcoin : ∀ y : K, J.toContinuousLinearMap.adjoint (V y) =
+      T (J.toContinuousLinearMap.adjoint y)) :
     ∃ Y : K →L[ℂ] K, Commute Y V.toContinuousLinearMap ∧ ‖Y‖ = ‖X‖ ∧
       ∀ y : K, J.toContinuousLinearMap.adjoint (Y y) = X (J.toContinuousLinearMap.adjoint y) := by
-  rcases hd with ⟨hcoin, _⟩
-  exact commutant_lifting_of T X hXT J V hcoin
+  let Y : K →L[ℂ] K := commutantLiftCLM T X hXT J V hcoin
+  refine ⟨Y, ?_, ?_, ?_⟩
+  · rw [Commute, SemiconjBy, mul_def, mul_def]
+    ext y
+    simp [Y, commutantLiftCLM_apply, commutantLiftAt_apply_isometry T X hXT J V hcoin,
+      LinearIsometry.coe_toContinuousLinearMap]
+  · apply le_antisymm
+    · exact norm_commutantLiftCLM_le T X hXT J V hcoin
+    · have hbound : ∀ x : H, ‖X x‖ ≤ ‖Y‖ * ‖x‖ := by
+        intro x
+        have hcoe : J.toContinuousLinearMap.adjoint (Y (J x)) = X x := by
+          rw [show Y (J x) = commutantLiftAt T X hXT J V hcoin (J x) from
+            commutantLiftCLM_apply T X hXT J V hcoin (J x)]
+          rw [adjoint_commutantLiftAt T X hXT J V hcoin, coextensionCompress,
+            comp_apply, embed_adjoint_leftInverse]
+        calc
+          ‖X x‖ = ‖J.toContinuousLinearMap.adjoint (Y (J x))‖ := by rw [hcoe]
+          _ ≤ ‖J.toContinuousLinearMap.adjoint‖ * ‖Y (J x)‖ := le_opNorm _ _
+          _ ≤ 1 * (‖Y‖ * ‖J x‖) := by
+            gcongr
+            · exact norm_embed_adjoint_le J
+            · exact le_opNorm Y (J x)
+          _ = ‖Y‖ * ‖x‖ := by rw [one_mul, J.norm_map]
+      exact opNorm_le_bound X (norm_nonneg Y) hbound
+  · intro y
+    rw [show Y y = commutantLiftAt T X hXT J V hcoin y from
+      commutantLiftCLM_apply T X hXT J V hcoin y,
+      adjoint_commutantLiftAt T X hXT J V hcoin, coextensionCompress, comp_apply]
+
+
+@[deprecated (since := "2026-11-15")] alias commutant_lifting_of := commutant_lifting
 
 end CKMA

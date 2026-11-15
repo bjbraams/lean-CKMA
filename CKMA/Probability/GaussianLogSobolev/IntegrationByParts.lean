@@ -22,14 +22,10 @@ derivative, the boundary terms vanish and `∫ x ψ ∂γ = ∫ ψ' ∂γ`.
 
 ## Main results
 
-* `CKMA.gaussianPDFReal_zero_one_apply`: Explicit formula for the standard normal density.
-* `CKMA.hasDerivAt_gaussianPDFReal_zero_one`: Derivative of the standard normal density.
 * `CKMA.integral_id_mul_eq_integral_deriv_gaussianReal`: Gaussian integration by parts
   `∫ x ψ ∂γ = ∫ ψ' ∂γ`.
-* `CKMA.integrable_of_abs_le`: Integrability of bounded a.e. strongly measurable functions on
-  finite measure spaces.
-* `CKMA.exists_bound_of_deriv_eq_zero`: Boundedness of differentiable functions with compactly
-  supported derivative.
+* `CKMA.GaussianLogSobolev.integrable_of_abs_le`: Integrability of bounded a.e. strongly
+  measurable functions on finite measure spaces.
 -/
 
 @[expose] public section
@@ -42,7 +38,7 @@ open MeasureTheory ProbabilityTheory Set
 open scoped NNReal ENNReal Real
 
 /-- Explicit formula for the standard normal density. -/
-lemma gaussianPDFReal_zero_one_apply (t : ℝ) :
+private lemma gaussianPDFReal_zero_one_apply (t : ℝ) :
     gaussianPDFReal 0 1 t = (√(2 * π))⁻¹ * Real.exp (-(t ^ 2) / 2) := by
   unfold gaussianPDFReal
   rw [sub_zero]
@@ -50,7 +46,7 @@ lemma gaussianPDFReal_zero_one_apply (t : ℝ) :
   simp only [hcoe, mul_one]
 
 /-- The standard normal density has logarithmic derivative `-x`. -/
-lemma hasDerivAt_gaussianPDFReal_zero_one (x : ℝ) :
+private lemma hasDerivAt_gaussianPDFReal_zero_one (x : ℝ) :
     HasDerivAt (gaussianPDFReal 0 1) (-x * gaussianPDFReal 0 1 x) x := by
   set c : ℝ := (√(2 * π))⁻¹
   have hinner : HasDerivAt (fun t : ℝ => -(t ^ 2) / 2) (-x) x := by
@@ -167,6 +163,8 @@ lemma integral_id_mul_eq_integral_deriv_gaussianReal {ψ : ℝ → ℝ}
     _ = ∫ x, ρ x * deriv ψ x := by simp [mul_comm]
     _ = ∫ x, deriv ψ x ∂gaussianReal 0 1 := hγ_deriv.symm
 
+namespace GaussianLogSobolev
+
 /-- An a.e. strongly measurable function bounded by a constant is integrable on a finite measure
 space. -/
 lemma integrable_of_abs_le {E : Type*} [MeasurableSpace E] {μ : Measure E}
@@ -174,45 +172,6 @@ lemma integrable_of_abs_le {E : Type*} [MeasurableSpace E] {μ : Measure E}
     (hM : ∀ x, |f x| ≤ M) : Integrable f μ :=
   .of_bound hf M (ae_of_all _ fun x => (Real.norm_eq_abs _).trans_le (hM x))
 
-/-- A function with vanishing derivative outside a compact interval equals its endpoint value. -/
-lemma eq_endpoint_of_deriv_eq_zero {f : ℝ → ℝ} {R : ℝ} (hR : 0 ≤ R)
-    (hf : Differentiable ℝ f) (hderiv : ∀ x, R ≤ |x| → deriv f x = 0)
-    {x : ℝ} (hx : R ≤ |x|) :
-    f x = f (if 0 ≤ x then R else -R) := by
-  have hd : ∀ y, R ≤ |y| → HasDerivWithinAt f 0 (Ici y) y := fun y hy => by
-    have h := (hf y).hasDerivAt
-    rw [hderiv y hy] at h
-    exact h.hasDerivWithinAt
-  split_ifs with hx0
-  · exact constant_of_has_deriv_right_zero hf.continuous.continuousOn
-      (fun y hy => hd y (hy.1.trans (le_abs_self y))) x
-      ⟨by rwa [abs_of_nonneg hx0] at hx, le_rfl⟩
-  · have hxR : x ≤ -R := by
-      rw [abs_of_neg (not_le.1 hx0)] at hx
-      linarith
-    refine (constant_of_has_deriv_right_zero hf.continuous.continuousOn
-      (fun y hy => hd y ?_) (-R) ⟨hxR, le_rfl⟩).symm
-    rw [abs_of_neg (by linarith [hy.2] : y < 0)]
-    linarith [hy.2]
-
-/-- A differentiable function whose derivative vanishes for `R ≤ |x|` is bounded. -/
-lemma exists_bound_of_deriv_eq_zero {f : ℝ → ℝ} {R : ℝ} (hR : 0 ≤ R)
-    (hf : Differentiable ℝ f) (hderiv : ∀ x, R ≤ |x| → deriv f x = 0) :
-    ∃ M, ∀ x, |f x| ≤ M := by
-  have hne : (Icc (-R) R).Nonempty := ⟨0, by simp [hR]⟩
-  obtain ⟨x0, hx0, hmax⟩ :=
-    isCompact_Icc.exists_isMaxOn hne (hf.continuous.continuousOn.abs)
-  refine ⟨|f x0|, fun x => ?_⟩
-  by_cases hx : |x| ≤ R
-  · exact hmax (mem_Icc.2 ⟨by linarith [abs_le.1 hx], by linarith [abs_le.1 hx]⟩)
-  · have hx' : R ≤ |x| := le_of_not_ge hx
-    have heq := eq_endpoint_of_deriv_eq_zero hR hf hderiv hx'
-    by_cases hxs : 0 ≤ x
-    · rw [heq]
-      simp only [hxs, ite_true]
-      exact hmax ⟨by linarith, le_rfl⟩
-    · rw [heq]
-      simp only [hxs, ite_false]
-      exact hmax ⟨le_rfl, by linarith⟩
+end GaussianLogSobolev
 
 end CKMA

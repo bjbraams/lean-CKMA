@@ -44,7 +44,6 @@ from TauCeti's exponential bounds on noncrossing Möbius coefficients. Sources: 
   functional.
 * `CKMA.noncommutativeMoments`: scalar moments `φ (a ^ n)` of a noncommutative variable.
 * `CKMA.semicircleMoment`: Catalan moments of the centered variance-one semicircle law.
-* `CKMA.IsPositiveNoncommutativeState`: normalized positive linear functional on a star algebra.
 * `CKMA.momentCompositionCoefficient`: composition coefficients of a scalar moment series.
 * `CKMA.freeCumulants`: free cumulants defined by the triangular moment-cumulant recursion.
 * `CKMA.freeRTransform`: formal power series of the R-transform near zero.
@@ -86,6 +85,7 @@ def semicircleMoment (n : ℕ) : ℂ :=
   if Even n then ((Nat.choose n (n / 2) / (n / 2 + 1) : ℕ) : ℂ) else 0
 
 /-- A normalized positive functional in the star-algebra setting. -/
+@[deprecated "no statement uses this predicate" (since := "2026-11-15")]
 def IsPositiveNoncommutativeState {B : Type*} [Ring B] [StarRing B] [Algebra ℂ B]
     (φ : B →ₗ[ℂ] ℂ) : Prop :=
   φ 1 = 1 ∧ ∀ a : B, ∃ r : ℝ, 0 ≤ r ∧ φ (star a * a) = (r : ℂ)
@@ -205,7 +205,8 @@ private theorem sum_ite_prod_eq_coeff_pow (m : ℕ → ℂ) :
       · have key (s : ℕ) (P : ℂ) : (if (x : ℕ) + s = n then m x * P else 0) =
             m x * (if s = n - x then P else 0) := by
           split_ifs <;> first | rfl | (exfalso; omega) | simp
-        rw [ite_eq_left hxn, ← sum_ite_prod_eq_coeff_pow m k (N := N) (n := n - x) (by omega), Finset.mul_sum]
+        rw [ite_eq_left hxn, ← sum_ite_prod_eq_coeff_pow m k (N := N) (n := n - x) (by omega),
+          Finset.mul_sum]
         exact Finset.sum_congr rfl fun t _ => key _ _
       · have key (s : ℕ) (P : ℂ) : (if (x : ℕ) + s = n then m x * P else 0) = 0 :=
           ite_eq_right (by omega)
@@ -280,14 +281,16 @@ theorem freeCumulants_noncommutativeMoments (φ : A →ₗ[ℂ] ℂ) (hφ : φ 1
       momentCompositionCoefficient (noncommutativeMoments φ a) (j + 1) (n + 1 - (j + 1))), hmid]
   linear_combination -h
 
-/-- **23.68**: for free variables `a` and `b`, every positive-order free cumulant of `a + b`
-is the sum of the corresponding free cumulants of `a` and of `b`. -/
+/-- **23.68**: for free variables `a` and `b`, every free cumulant of `a + b` is the sum of the
+corresponding free cumulants of `a` and of `b`. At order zero all three cumulants vanish. -/
 theorem freeCumulants_add (φ : A →ₗ[ℂ] ℂ) (hφ : φ 1 = 1)
     (S : Fin 2 → Subalgebra ℂ A) (hfree : AreFreeSubalgebras φ S)
-    {a b : A} (ha : a ∈ S 0) (hb : b ∈ S 1) {n : ℕ} (hn : 0 < n) :
+    {a b : A} (ha : a ∈ S 0) (hb : b ∈ S 1) {n : ℕ} :
     freeCumulants (noncommutativeMoments φ (a + b)) n =
       freeCumulants (noncommutativeMoments φ a) n +
         freeCumulants (noncommutativeMoments φ b) n := by
+  rcases Nat.eq_zero_or_pos n with rfl | hn
+  · simp
   rw [freeCumulants_noncommutativeMoments φ hφ _ hn.ne',
     freeCumulants_noncommutativeMoments φ hφ _ hn.ne',
     freeCumulants_noncommutativeMoments φ hφ _ hn.ne']
@@ -374,6 +377,6 @@ theorem freeRTransform_add {B : Type*} [NormedRing B] [NormedAlgebra ℂ B]
   refine ⟨ha', hb', hsum (a + b) ((norm_add_le a b).trans (by linarith)), ?_⟩
   rw [freeRTransform, freeRTransform, freeRTransform, ← ha'.tsum_add hb']
   refine tsum_congr fun n => ?_
-  rw [freeCumulants_add φ.toLinearMap hφ' S hfree ha hb (by omega : 0 < n + 1), add_mul]
+  rw [freeCumulants_add φ.toLinearMap hφ' S hfree ha hb, add_mul]
 
 end CKMA

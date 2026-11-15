@@ -533,14 +533,16 @@ lemma fejerKernelReal_le_inv_sq {N : ℕ} {t : ℝ} (ht0 : t ≠ 0) (ht : |t| �
       field_simp
       ring
 
-/-- A continuous scalar function on the circle is integrable for probability Haar measure. -/
+/-- A continuous function on the circle is integrable for probability Haar measure. -/
+@[deprecated "use `Continuous.integrable_of_hasCompactSupport` with \
+`HasCompactSupport.of_compactSpace`" (since := "2026-11-15")]
 lemma integrable_of_continuous {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     {g : 𝕋 → E} (hg : Continuous g) : Integrable g haar :=
   hg.integrable_of_hasCompactSupport (HasCompactSupport.of_compactSpace g)
 
 /-- Each character is integrable. -/
 private lemma integrable_fourier (k : ℤ) : Integrable (fun x : 𝕋 => fourier k x) haar :=
-  integrable_of_continuous (map_continuous (fourier k))
+  (map_continuous (fourier k)).integrable_of_hasCompactSupport (.of_compactSpace _)
 
 /-- Character integrals vanish except for the constant character, which has mass one. -/
 private lemma integral_fourier (k : ℤ) :
@@ -703,8 +705,8 @@ lemma fejerMean_sub_eq_conv {f : 𝕋 → ℂ} (hf : Integrable f haar) (N : ℕ
   have hint1 : Integrable (fun t => (fejerKernel N t : ℂ) * f (x - t)) haar :=
     hshift.bdd_mul hker hbound
   have hint2 : Integrable (fun t => (fejerKernel N t : ℂ) * f x) haar :=
-    (integrable_of_continuous
-      (Complex.continuous_ofReal.comp (continuous_fejerKernel N))).mul_const (f x)
+    ((Complex.continuous_ofReal.comp (continuous_fejerKernel N)).integrable_of_hasCompactSupport
+      (.of_compactSpace _)).mul_const (f x)
   rw [fejerMean_eq_conv hf N x]
   conv_lhs =>
     arg 2

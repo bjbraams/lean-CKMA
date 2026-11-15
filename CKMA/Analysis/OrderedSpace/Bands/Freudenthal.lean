@@ -72,7 +72,7 @@ theorem projection_eq_posPart {P : E →ₗ[ℝ] E} {z : E}
     _ = z⁺ := by rw [hfix, hzero, sub_zero]
 
 /-- The difference of nested contractive projections is a component of a positive vector. -/
-theorem nestedProjection_isLatticeComponent {P Q : E →ₗ[ℝ] E} {u : E} (hu : 0 ≤ u)
+private theorem nestedProjection_isLatticeComponent {P Q : E →ₗ[ℝ] E} {u : E} (hu : 0 ≤ u)
     (hPidem : ∀ x, P (P x) = P x) (hPcon : ∀ x, 0 ≤ x → 0 ≤ P x ∧ P x ≤ x)
     (hQidem : ∀ x, Q (Q x) = Q x) (hQcon : ∀ x, 0 ≤ x → 0 ≤ Q x ∧ Q x ≤ x)
     (hsubset : (LinearMap.range Q : Set E) ⊆ (LinearMap.range P : Set E)) :
@@ -112,7 +112,7 @@ theorem freudenthal_increment_bounds {P Q : E →ₗ[ℝ] E} {w1 u : E} {α β :
     exact (sub_nonneg).1 hsub
   have hhigh : (P - Q) w1 ≤ β • (P - Q) u := by
     set z := w1 - β • u
-    have hmono : Monotone P := positiveLinearMap_monotone (fun y hy => (hPcon y hy).1)
+    have hmono : Monotone P := (monotone_iff_map_nonneg P).2 fun y hy => (hPcon y hy).1
     have hfix : P z⁺ = z⁺ := by
       refine contractiveProjection_eq_of_mem_range hPidem ?_
       exact hsubset ⟨z, hQ⟩
@@ -131,7 +131,7 @@ theorem freudenthal_increment_bounds {P Q : E →ₗ[ℝ] E} {w1 u : E} {α β :
   exact ⟨hlow, hhigh⟩
 
 /-- Rescaling a vector in the principal order ideal of `u` into the order interval `[0, u]`. -/
-theorem freudenthal_rescale_bounds {u x : E} (hu : 0 ≤ u) {c : ℝ} (hc0 : 0 ≤ c)
+private theorem freudenthal_rescale_bounds {u x : E} (hu : 0 ≤ u) {c : ℝ} (hc0 : 0 ≤ c)
     (hxc : |x| ≤ c • u) :
     let c1 : ℝ := c + 1
     let lam : ℝ := 2 * c1
@@ -180,7 +180,7 @@ theorem freudenthal_rescale_bounds {u x : E} (hu : 0 ≤ u) {c : ℝ} (hc0 : 0 �
   exact ⟨hlam, hw10, hw1u, hw1w⟩
 
 /-- Telescoping error bounds for the Freudenthal partition sum on `[0, u]`. -/
-theorem freudenthal_partition_sum_approx {f g : ℕ → E} {w1 u : E} {N : ℕ}
+private theorem freudenthal_partition_sum_approx {f g : ℕ → E} {w1 u : E} {N : ℕ}
     (hNpos : (0 : ℝ) < N) (hf0 : f 0 = w1) (hfN : f N = 0) (hgN : g N = 0) (hg0_le : g 0 ≤ u)
     (hpoint : ∀ i ∈ range N,
       ((i : ℝ) / (N : ℝ)) • (g i - g (i + 1)) ≤ f i - f (i + 1) ∧
@@ -189,9 +189,9 @@ theorem freudenthal_partition_sum_approx {f g : ℕ → E} {w1 u : E} {N : ℕ}
     0 ≤ w1 - s ∧ w1 - s ≤ ((1 : ℝ) / (N : ℝ)) • u := by
   intro s
   have htele_f : ∑ i ∈ range N, (f i - f (i + 1)) = w1 := by
-    rw [sum_range_sub, hf0, hfN, sub_zero]
+    rw [Finset.sum_range_sub', hf0, hfN, sub_zero]
   have htele_g : ∑ i ∈ range N, (g i - g (i + 1)) = g 0 := by
-    rw [sum_range_sub, hgN, sub_zero]
+    rw [Finset.sum_range_sub', hgN, sub_zero]
   have hs_le : s ≤ w1 := by
     have hle : s ≤ ∑ i ∈ range N, (f i - f (i + 1)) := by
       refine Finset.sum_le_sum ?_
@@ -227,7 +227,7 @@ theorem freudenthal_partition_sum_approx {f g : ℕ → E} {w1 u : E} {N : ℕ}
   exact ⟨herr1, herr2⟩
 
 /-- Increments of an antitone sequence of contractive projections are pairwise disjoint. -/
-theorem freudenthal_step_disjoint {Q : ℕ → E →ₗ[ℝ] E} {u : E} (hu : 0 ≤ u)
+private theorem freudenthal_step_disjoint {Q : ℕ → E →ₗ[ℝ] E} {u : E} (hu : 0 ≤ u)
     (hidem : ∀ k x, Q k (Q k x) = Q k x)
     (hcon : ∀ k x, 0 ≤ x → 0 ≤ Q k x ∧ Q k x ≤ x)
     (hanti : ∀ {p q : ℕ}, p ≤ q → Q q u ≤ Q p u)
@@ -252,7 +252,7 @@ theorem freudenthal_step_disjoint {Q : ℕ → E →ₗ[ℝ] E} {u : E} (hu : 0 
 
 /-- Every increment of an antitone sequence of contractive projections is disjoint from the
 complement of the initial projection. -/
-theorem freudenthal_rest_disjoint {Q : ℕ → E →ₗ[ℝ] E} {u : E} (hu : 0 ≤ u)
+private theorem freudenthal_rest_disjoint {Q : ℕ → E →ₗ[ℝ] E} {u : E} (hu : 0 ≤ u)
     (hidem : ∀ k x, Q k (Q k x) = Q k x)
     (hcon : ∀ k x, 0 ≤ x → 0 ≤ Q k x ∧ Q k x ≤ x)
     (hanti : ∀ {p q : ℕ}, p ≤ q → Q q u ≤ Q p u) (p : ℕ) :
@@ -322,7 +322,7 @@ theorem freudenthal_components
     have hle : w1 - (1 : ℝ) • u ≤ 0 := by
       rw [one_smul]
       exact sub_nonpos.2 hw1u
-    simpa [carrier] using posPart_eq_zero_of_nonpos hle
+    simpa [carrier] using posPart_of_nonpos hle
   have hproj1 : ∀ y, proj 1 y = 0 := by
     intro y
     have hy : proj 1 y ∈ (LinearMap.range (proj 1) : Set E) :=
@@ -360,7 +360,7 @@ theorem freudenthal_components
     simpa [f, g, Q, Nat.cast_add, Nat.cast_one] using hbounds
   set s : E := ∑ i ∈ range N, ((i : ℝ) / (N : ℝ)) • (g i - g (i + 1))
   have htele_g : ∑ i ∈ range N, (g i - g (i + 1)) = g 0 := by
-    rw [sum_range_sub, hgN, sub_zero]
+    rw [Finset.sum_range_sub', hgN, sub_zero]
   have hg0_le : g 0 ≤ u := (hcon (((0 : ℕ) : ℝ) / (N : ℝ)) u hu).2
   obtain ⟨herr1, herr2⟩ := freudenthal_partition_sum_approx hNpos hf0 hfN hgN hg0_le hpoint
   let v : Fin (N + 1) → E := fun i =>

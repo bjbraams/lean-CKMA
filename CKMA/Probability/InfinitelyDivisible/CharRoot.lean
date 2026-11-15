@@ -47,7 +47,7 @@ open MeasureTheory Complex Filter Topology Set Polynomial
 open scoped NNReal ENNReal
 
 /-- Reflection through the origin sends a characteristic function to its value at `-t`. -/
-lemma charFun_reflect (μ : Measure ℝ) (t : ℝ) :
+private lemma charFun_reflect (μ : Measure ℝ) (t : ℝ) :
     charFun (μ.map Neg.neg) t = charFun μ (-t) := by
   rw [charFun_apply_real, charFun_apply_real, integral_map (by fun_prop) (by fun_prop)]
   refine integral_congr_ae (ae_of_all _ fun x => ?_)
@@ -56,7 +56,7 @@ lemma charFun_reflect (μ : Measure ℝ) (t : ℝ) :
   ring_nf
 
 /-- Convolution against the reflected law squares the modulus of the characteristic function. -/
-lemma charFun_symmetrize (μ : Measure ℝ) [IsProbabilityMeasure μ] (t : ℝ) :
+private lemma charFun_symmetrize (μ : Measure ℝ) [IsProbabilityMeasure μ] (t : ℝ) :
     charFun (μ ∗ μ.map Neg.neg) t = (‖charFun μ t‖ ^ 2 : ℝ) := by
   have : IsProbabilityMeasure (μ.map Neg.neg) := inferInstance
   rw [charFun_conv, charFun_reflect, charFun_neg]
@@ -78,14 +78,14 @@ lemma convolutionPower_convolutionRoot {μ : Measure ℝ} (h : IsInfinitelyDivis
   (Classical.choose_spec (h.2 n hn)).2
 
 /-- The law of a root symmetrized by an independent copy of its reflection. -/
-def symmetrizedRoot {μ : Measure ℝ} (h : IsInfinitelyDivisible μ) (n : ℕ) : Measure ℝ :=
+private def symmetrizedRoot {μ : Measure ℝ} (h : IsInfinitelyDivisible μ) (n : ℕ) : Measure ℝ :=
   if hn : 0 < n then
     convolutionRoot h n hn ∗ (convolutionRoot h n hn).map Neg.neg
   else
     Measure.dirac 0
 
 /-- Every symmetrized root is a probability measure. -/
-lemma isProbabilityMeasure_symmetrizedRoot {μ : Measure ℝ} (h : IsInfinitelyDivisible μ)
+private lemma isProbabilityMeasure_symmetrizedRoot {μ : Measure ℝ} (h : IsInfinitelyDivisible μ)
     (n : ℕ) : IsProbabilityMeasure (symmetrizedRoot h n) := by
   by_cases hn : 0 < n
   · have := isProbabilityMeasure_convolutionRoot h hn
@@ -95,7 +95,7 @@ lemma isProbabilityMeasure_symmetrizedRoot {μ : Measure ℝ} (h : IsInfinitelyD
     infer_instance
 
 /-- The characteristic function of a symmetrized root is the squared modulus of the root. -/
-lemma charFun_symmetrizedRoot {μ : Measure ℝ} [IsProbabilityMeasure μ]
+private lemma charFun_symmetrizedRoot {μ : Measure ℝ} [IsProbabilityMeasure μ]
     (h : IsInfinitelyDivisible μ) {n : ℕ} (hn : 0 < n) (t : ℝ) :
     charFun (symmetrizedRoot h n) t =
       (‖charFun μ t‖ ^ (2 / (n : ℝ)) : ℝ) := by
@@ -124,7 +124,7 @@ lemma charFun_symmetrizedRoot {μ : Measure ℝ} [IsProbabilityMeasure μ]
   exact congrArg Complex.ofReal hsq
 
 /-- Positive powers `r ^ (2 / n)` tend to `1`. -/
-lemma tendsto_rpow_two_div (r : ℝ) (hr : 0 < r) :
+private lemma tendsto_rpow_two_div (r : ℝ) (hr : 0 < r) :
     Tendsto (fun n : ℕ => r ^ (2 / (n : ℝ))) atTop (𝓝 1) := by
   have hlog : Tendsto (fun n : ℕ => Real.log r * (2 / (n : ℝ))) atTop (𝓝 0) := by
     simpa [mul_div_assoc] using tendsto_const_div_atTop_nhds_zero_nat (Real.log r * 2)
@@ -135,7 +135,7 @@ lemma tendsto_rpow_two_div (r : ℝ) (hr : 0 < r) :
   exact hexp.congr fun _ => rfl
 
 /-- Symmetrized roots converge pointwise to the indicator of the non-vanishing set. -/
-lemma tendsto_charFun_symmetrizedRoot {μ : Measure ℝ} [IsProbabilityMeasure μ]
+private lemma tendsto_charFun_symmetrizedRoot {μ : Measure ℝ} [IsProbabilityMeasure μ]
     (h : IsInfinitelyDivisible μ) (t : ℝ) :
     Tendsto (fun n => charFun (symmetrizedRoot h n) t) atTop
       (𝓝 (if charFun μ t = 0 then 0 else 1)) := by
@@ -155,12 +155,12 @@ lemma tendsto_charFun_symmetrizedRoot {μ : Measure ℝ} [IsProbabilityMeasure �
     exact (charFun_symmetrizedRoot h hn t).symm
 
 /-- The real line is simply connected. -/
-lemma isSimplyConnected_univ_real : IsSimplyConnected (univ : Set ℝ) :=
+private lemma isSimplyConnected_univ_real : IsSimplyConnected (univ : Set ℝ) :=
   @SimplyConnectedSpace.ofContractible (univ : Set ℝ) _
     (convex_univ.contractibleSpace univ_nonempty)
 
 /-- A continuous function on `ℝ` taking values in the `n`th roots of unity is constant. -/
-lemma eq_one_of_continuous_pow_eq_one {n : ℕ} (hn : 0 < n) {f : ℝ → ℂ} (hf : Continuous f)
+private lemma eq_one_of_continuous_pow_eq_one {n : ℕ} (hn : 0 < n) {f : ℝ → ℂ} (hf : Continuous f)
     (hf0 : f 0 = 1) (hp : ∀ t, f t ^ n = 1) : ∀ t, f t = 1 := by
   let S : Set ℂ := {z | z ^ n = 1}
   have hp0 : (X ^ n - C (1 : ℂ)) ≠ 0 := X_pow_sub_C_ne_zero hn 1

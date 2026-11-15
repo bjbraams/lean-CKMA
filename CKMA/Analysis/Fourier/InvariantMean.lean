@@ -42,6 +42,8 @@ namespace CKMA
 open MeasureTheory
 open scoped ENNReal
 
+section Group
+
 variable {G : Type*} [Group G] [TopologicalSpace G] [IsTopologicalGroup G]
     [MeasurableSpace G] [BorelSpace G]
 
@@ -61,17 +63,25 @@ theorem isHaarAmenable_of_compact [CompactSpace G] [T2Space G]
     (μ : Measure G) [Measure.IsHaarMeasure μ] : IsHaarAmenable μ := by
   sorry
 
-/-- Locally compact abelian groups admit invariant means, including noncompact groups. -/
-theorem isHaarAmenable_of_commutative {G : Type*} [CommGroup G] [TopologicalSpace G]
-    [IsTopologicalGroup G] [MeasurableSpace G] [BorelSpace G] [LocallyCompactSpace G] [T2Space G]
-    (μ : Measure G) [Measure.IsHaarMeasure μ] : IsHaarAmenable μ := by
-  sorry
-
 /-- Closed subgroups inherit amenability, with their own Haar measure. -/
 theorem isHaarAmenable_closed_subgroup [LocallyCompactSpace G] [T2Space G]
     (μ : Measure G) [Measure.IsHaarMeasure μ] (hG : IsHaarAmenable μ)
     (H : Subgroup G) (hH : IsClosed (H : Set G))
     (ν : Measure H) [Measure.IsHaarMeasure ν] : IsHaarAmenable ν := by
   sorry
+
+end Group
+
+section CommGroup
+
+variable {G : Type*} [CommGroup G] [TopologicalSpace G] [IsTopologicalGroup G]
+    [MeasurableSpace G] [BorelSpace G]
+
+/-- Locally compact abelian groups admit invariant means, including noncompact groups. -/
+theorem isHaarAmenable_of_commutative [LocallyCompactSpace G] [T2Space G]
+    (μ : Measure G) [Measure.IsHaarMeasure μ] : IsHaarAmenable μ := by
+  sorry
+
+end CommGroup
 
 end CKMA

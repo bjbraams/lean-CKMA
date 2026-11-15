@@ -497,7 +497,7 @@ Differentiability is at all points of an open neighbourhood of the majorant ball
 theorem newton_kantorovich [CompleteSpace E] {F : E → E} (x₀ : E) (S : E ≃L[𝕜] E)
     (hS : fderiv 𝕜 F x₀ = S.toContinuousLinearMap)
     {L η r : ℝ} (hL : 0 ≤ L) (hsmall : L * η < 1 / 2)
-    (hr : kantorovichRadius L η ≤ r) (hrpos : 0 < r)
+    (hr : kantorovichRadius L η ≤ r)
     (hfirst : ‖S.symm (F x₀)‖ ≤ η)
     {U : Set E} (hU : IsOpen U) (hsub : Metric.closedBall x₀ r ⊆ U)
     (hF : DifferentiableOn 𝕜 F U)
@@ -508,6 +508,7 @@ theorem newton_kantorovich [CompleteSpace E] {F : E → E} (x₀ : E) (S : E ≃
       ∀ n, (fderiv 𝕜 F (newtonIterate (𝕜 := 𝕜) F x₀ n)).IsInvertible := by
   let _ : NormedSpace ℝ E := NormedSpace.restrictScalars ℝ 𝕜 E
   have hη : 0 ≤ η := (norm_nonneg _).trans hfirst
+  have hr0 : 0 ≤ r := (kantorovichRadius_nonneg hL hη).trans hr
   let t := kantorovichMajorant L η
   let ρ := kantorovichRadius L η
   let x : ℕ → E := newtonIterate (𝕜 := 𝕜) F x₀
@@ -601,7 +602,7 @@ theorem newton_kantorovich [CompleteSpace E] {F : E → E} (x₀ : E) (S : E ≃
       have hG0 : ‖G (x 0)‖ ≤ (t 1 - t 0) * (1 - L * t 0) := by
         simpa [x, newtonIterate_zero, G, t, kantorovichMajorant_one] using hfirst
       obtain ⟨hFinv0, hstep0⟩ := hstep_le 0 hA0 hG0
-      exact ⟨Metric.mem_closedBall_self hrpos.le, hFinv0, hA0, hG0,
+      exact ⟨Metric.mem_closedBall_self hr0, hFinv0, hA0, hG0,
         by simp [x, newtonIterate_zero, t], hstep0⟩
     | succ n ih =>
       rcases ih with ⟨hmem, hinv, _, _, hdist, hstep_norm⟩
@@ -627,7 +628,7 @@ theorem newton_kantorovich [CompleteSpace E] {F : E → E} (x₀ : E) (S : E ≃
         calc
           ‖S.symm.toContinuousLinearMap.comp
               (fderiv 𝕜 F (x (n + 1)) - fderiv 𝕜 F x₀)‖ ≤ L * ‖x (n + 1) - x₀‖ :=
-            hLip _ hmem' _ (Metric.mem_closedBall_self hrpos.le)
+            hLip _ hmem' _ (Metric.mem_closedBall_self hr0)
           _ ≤ L * t (n + 1) := mul_le_mul_of_nonneg_left hdist' hL
       have hnewton : F (x n) + (fderiv 𝕜 F (x n)) (x (n + 1) - x n) = 0 := by
         have happly := hinv.self_apply_inverse (F (x n))

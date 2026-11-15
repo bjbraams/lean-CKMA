@@ -63,7 +63,7 @@ lemma kingmanPsi_of_window {u : ℕ → ℕ → ℝ} {slope : ℝ} {k i : ℕ}
   simp [kingmanPsi, h]
 
 /-- Every site is at least the target slope when `k` is positive. -/
-lemma le_kingmanPsi {u : ℕ → ℕ → ℝ} {slope : ℝ} {k : ℕ} (hk : 0 < k) (i : ℕ) :
+private lemma le_kingmanPsi {u : ℕ → ℕ → ℝ} {slope : ℝ} {k : ℕ} (hk : 0 < k) (i : ℕ) :
     slope ≤ kingmanPsi u slope k i := by
   by_cases h : IsKingmanWindow u slope k i
   · rw [kingmanPsi_of_window h]
@@ -75,17 +75,17 @@ lemma le_kingmanPsi {u : ℕ → ℕ → ℝ} {slope : ℝ} {k : ℕ} (hk : 0 < 
     simpa using this
 
 /-- The comparison function is at most the tail majorant. -/
-lemma kingmanPsi_le_kingmanMx (u : ℕ → ℕ → ℝ) (slope : ℝ) (k i : ℕ) :
+private lemma kingmanPsi_le_kingmanMx (u : ℕ → ℕ → ℝ) (slope : ℝ) (k i : ℕ) :
     kingmanPsi u slope k i ≤ kingmanMx u slope k i :=
   le_max_left _ _
 
 /-- One-step increments are at most the tail majorant. -/
-lemma le_kingmanMx (u : ℕ → ℕ → ℝ) (slope : ℝ) (k i : ℕ) :
+private lemma le_kingmanMx (u : ℕ → ℕ → ℝ) (slope : ℝ) (k i : ℕ) :
     u i 1 ≤ kingmanMx u slope k i :=
   le_max_right _ _
 
 /-- Iterating subadditivity bounds a block by the sum of its one-step increments. -/
-lemma kingmanCocycle_le_sum_one {u : ℕ → ℕ → ℝ}
+private lemma kingmanCocycle_le_sum_one {u : ℕ → ℕ → ℝ}
     (hsub : ∀ i n m, 0 < n → 0 < m → u i (n + m) ≤ u i n + u (i + n) m) :
     ∀ r s, 0 < r → u s r ≤ ∑ t ∈ range r, u (s + t) 1 := by
   intro r
@@ -107,7 +107,7 @@ lemma kingmanCocycle_le_sum_one {u : ℕ → ℕ → ℝ}
       linarith
 
 /-- A partial comparison sum is absorbed by the slope prefix and the majorant tail. -/
-lemma kingmanPsi_prefix_le {u : ℕ → ℕ → ℝ} {slope : ℝ} {k n j s : ℕ}
+private lemma kingmanPsi_prefix_le {u : ℕ → ℕ → ℝ} {slope : ℝ} {k n j s : ℕ}
     (haj : n - k ≤ j) (hjn : j ≤ n) :
     ∑ i ∈ range j, kingmanPsi u slope k (s + i) +
         ∑ t ∈ range (n - j), kingmanMx u slope k (s + j + t) ≤
@@ -153,7 +153,7 @@ lemma kingmanPsi_prefix_le {u : ℕ → ℕ → ℝ} {slope : ℝ} {k n j s : �
   linarith
 
 /-- A positive-length block that meets the window is at most the sum of comparison values. -/
-lemma kingman_block_le_sum_psi {u : ℕ → ℕ → ℝ} {slope : ℝ} {k s : ℕ} (hk : 0 < k) :
+private lemma kingman_block_le_sum_psi {u : ℕ → ℕ → ℝ} {slope : ℝ} {k s : ℕ} (hk : 0 < k) :
     ∃ j, 0 < j ∧ j ≤ k ∧
       u s j ≤ ∑ i ∈ range j, kingmanPsi u slope k (s + i) := by
   by_cases hwin : IsKingmanWindow u slope k s

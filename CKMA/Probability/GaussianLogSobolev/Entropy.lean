@@ -31,11 +31,12 @@ noncomputable section
 
 namespace CKMA
 
+open GaussianLogSobolev
 open MeasureTheory ProbabilityTheory Set Filter
 open scoped NNReal ENNReal Real Topology
 
 /-- Logarithms of the semigroup stay bounded when the integrand takes values in `[δ, M]`. -/
-lemma abs_log_ouSemigroup_le {f : ℝ → ℝ} {s x δ M : ℝ} (hf : Continuous f) (hδ : 0 < δ)
+private lemma abs_log_ouSemigroup_le {f : ℝ → ℝ} {s x δ M : ℝ} (hf : Continuous f) (hδ : 0 < δ)
     (hδf : ∀ y, δ ≤ f y) (hM : ∀ y, |f y| ≤ M) :
     |Real.log (ouSemigroup s f x)| ≤ max |Real.log δ| |Real.log M| := by
   have hpos : 0 < ouSemigroup s f x :=
@@ -49,7 +50,7 @@ lemma abs_log_ouSemigroup_le {f : ℝ → ℝ} {s x δ M : ℝ} (hf : Continuous
   · exact (hle2.trans (le_abs_self _)).trans (le_max_right _ _)
 
 /-- The spatial integral of the semigroup time derivative vanishes. -/
-lemma integral_timeDeriv_ouSemigroup {f : ℝ → ℝ} {t : ℝ} (ht : 0 < t) (hf : ContDiff ℝ 2 f)
+private lemma integral_timeDeriv_ouSemigroup {f : ℝ → ℝ} {t : ℝ} (ht : 0 < t) (hf : ContDiff ℝ 2 f)
     (hB : ∃ B, ∀ y, |deriv f y| ≤ B) (hB2 : ∃ B2, ∀ y, |deriv (deriv f) y| ≤ B2)
     (hM : ∃ M, ∀ y, |f y| ≤ M) :
     ∫ x, deriv (fun s => ouSemigroup s f x) t ∂gaussianReal 0 1 = 0 := by
@@ -287,7 +288,7 @@ lemma deriv_entropy_ouSemigroup {f : ℝ → ℝ} {t δ : ℝ} (ht : 0 < t) (hf 
   (hasDerivAt_entropy_ouSemigroup ht hf hδ hδf hB hB2 hM).deriv
 
 /-- The Mehler gradient satisfies a pointwise Cauchy–Schwarz bound. -/
-lemma fisher_ouSemigroup_le {f : ℝ → ℝ} {t x δ : ℝ} (hf : ContDiff ℝ 1 f) (hδ : 0 < δ)
+private lemma fisher_ouSemigroup_le {f : ℝ → ℝ} {t x δ : ℝ} (hf : ContDiff ℝ 1 f) (hδ : 0 < δ)
     (hδf : ∀ y, δ ≤ f y) (hB : ∃ B, ∀ y, |deriv f y| ≤ B) (hM : ∃ M, ∀ y, |f y| ≤ M) :
     (deriv (ouSemigroup t f) x) ^ 2 / ouSemigroup t f x ≤
       ouScale t ^ 2 * ouSemigroup t (fun y => (deriv f y) ^ 2 / f y) x := by
@@ -325,7 +326,7 @@ lemma fisher_ouSemigroup_le {f : ℝ → ℝ} {t x δ : ℝ} (hf : ContDiff ℝ 
     intro y
     rw [abs_of_nonneg (Real.sqrt_nonneg _)]
     exact Real.sqrt_le_sqrt ((le_abs_self (f _)).trans (hM _))
-  have hcs := gaussian_cauchy_schwarz ha hb hA hBb
+  have hcs := sq_integral_mul_le_integral_sq_mul_integral_sq ha hb hA hBb
   have hab : ∀ y, a y * b y = deriv f (α * x + σ * y) := by
     intro y
     exact div_mul_cancel₀ _ (Real.sqrt_pos.mpr (hposf y)).ne'
@@ -364,8 +365,8 @@ lemma fisher_ouSemigroup_le {f : ℝ → ℝ} {t x δ : ℝ} (hf : ContDiff ℝ 
         ring
 
 /-- Integrated Fisher information contracts by the Mehler factor `e^{-2t}`. -/
-lemma integral_sq_deriv_ouSemigroup_le {f : ℝ → ℝ} {t δ : ℝ} (ht : 0 ≤ t) (hf : ContDiff ℝ 1 f)
-    (hδ : 0 < δ) (hδf : ∀ y, δ ≤ f y) (hB : ∃ B, ∀ y, |deriv f y| ≤ B)
+private lemma integral_sq_deriv_ouSemigroup_le {f : ℝ → ℝ} {t δ : ℝ} (ht : 0 ≤ t)
+    (hf : ContDiff ℝ 1 f) (hδ : 0 < δ) (hδf : ∀ y, δ ≤ f y) (hB : ∃ B, ∀ y, |deriv f y| ≤ B)
     (hM : ∃ M, ∀ y, |f y| ≤ M) :
     ∫ x, (deriv (ouSemigroup t f) x) ^ 2 / ouSemigroup t f x ∂gaussianReal 0 1 ≤
       ouScale t ^ 2 * ∫ x, (deriv f x) ^ 2 / f x ∂gaussianReal 0 1 := by
@@ -555,7 +556,7 @@ def ouEntropy (f : ℝ → ℝ) (t : ℝ) : ℝ :=
   ∫ x, ouSemigroup t f x * Real.log (ouSemigroup t f x) ∂gaussianReal 0 1
 
 /-- The entropy integrand converges to `f log f` as time tends to zero from the right. -/
-lemma tendsto_ouEntropy_zero {f : ℝ → ℝ} {δ M : ℝ} (hf : Continuous f) (hδ : 0 < δ)
+private lemma tendsto_ouEntropy_zero {f : ℝ → ℝ} {δ M : ℝ} (hf : Continuous f) (hδ : 0 < δ)
     (hδf : ∀ y, δ ≤ f y) (hM : ∀ y, |f y| ≤ M) :
     Filter.Tendsto (ouEntropy f) (nhdsWithin 0 (Ioi 0))
       (𝓝 (∫ x, f x * Real.log (f x) ∂gaussianReal 0 1)) := by
@@ -586,7 +587,7 @@ lemma tendsto_ouEntropy_zero {f : ℝ → ℝ} {δ M : ℝ} (hf : Continuous f) 
   exact hcont.tendsto.comp hu
 
 /-- The entropy integrand converges to the entropy of the constant mean at infinite time. -/
-lemma tendsto_ouEntropy_atTop {f : ℝ → ℝ} {δ M : ℝ} (hf : Continuous f) (hδ : 0 < δ)
+private lemma tendsto_ouEntropy_atTop {f : ℝ → ℝ} {δ M : ℝ} (hf : Continuous f) (hδ : 0 < δ)
     (hδf : ∀ y, δ ≤ f y) (hM : ∀ y, |f y| ≤ M) :
     Filter.Tendsto (ouEntropy f) atTop
       (𝓝 ((∫ x, f x ∂gaussianReal 0 1) * Real.log (∫ x, f x ∂gaussianReal 0 1))) := by

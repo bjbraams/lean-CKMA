@@ -36,7 +36,7 @@ noncomputable section
 
 namespace CKMA
 
-open Filter MeasureTheory FourierTransform Real Complex VectorFourier Topology
+open Heisenberg Filter MeasureTheory FourierTransform Real Complex VectorFourier Topology
 open scoped ENNReal FourierTransform RealInnerProductSpace ComplexInnerProductSpace LineDeriv
   Topology
 
@@ -50,38 +50,38 @@ local notation "V" => EuclideanSpace ℝ (Fin d)
 private def cutoffDerivLp (n : ℕ) (j : Fin d) (f : Lp ℂ 2 (volume : Measure V))
     (hx : MemLp (fun x ↦ coordFun j x * f x) 2 volume) : Lp ℂ 2 (volume : Measure V) :=
   HSMul.hSMul (γ := Lp ℂ 2 (volume : Measure V))
-      ((freqBumpScaled_memLp_top (d := d) n).toLp (freqBumpScaled n) :
+      ((memLp_top_freqBumpScaled (d := d) n).toLp (freqBumpScaled n) :
         Lp ℂ (⊤ : ℝ≥0∞) (volume : Measure V))
       (𝓕 (-(2 * π * I : ℂ) • hx.toLp (fun x ↦ coordFun j x * f x))) +
     HSMul.hSMul (γ := Lp ℂ 2 (volume : Measure V))
-      ((freqBumpDeriv_memLp_top n j).toLp (freqBumpDeriv n j) :
+      ((memLp_top_freqBumpDeriv n j).toLp (freqBumpDeriv n j) :
         Lp ℂ (⊤ : ℝ≥0∞) (volume : Measure V)) (𝓕 f)
 
 /-- The distributional derivative of the cutoff of `𝓕 f` is `cutoffDerivLp`. -/
 private lemma lineDeriv_freqCutoff_eq (n : ℕ) (j : Fin d) (f : Lp ℂ 2 (volume : Measure V))
     (hx : MemLp (fun x ↦ coordFun j x * f x) 2 volume) :
     ∂_{coordVec j}
-        ((freqBump_mul_memLp n (𝓕 f)).toLp (freqCutoff n (𝓕 f)) :
+        ((memLp_freqBump_mul n (𝓕 f)).toLp (freqCutoff n (𝓕 f)) :
           TemperedDistribution V ℂ) =
       (cutoffDerivLp n j f hx : TemperedDistribution V ℂ) := by
   let Dû : Lp ℂ 2 (volume : Measure V) :=
     𝓕 (-(2 * π * I : ℂ) • hx.toLp (fun x ↦ coordFun j x * f x))
-  rw [freqBump_smul_eq_smulLeft]
-  rw [lineDeriv_freqBump_lp]
+  rw [toLp_freqCutoff_eq_smulLeftCLM]
+  rw [lineDeriv_smulLeftCLM_freqBumpScaled]
   nth_rw 1 [← Lp.fourier_toTemperedDistribution_eq f]
   rw [lineDeriv_fourier_lp_eq j f hx]
-  rw [← freqBump_smul_eq_smulLeft n Dû]
-  rw [← freqBumpDeriv_smul_eq_smulLeft n j (𝓕 f)]
-  rw [freqBump_smul_eq_toLp, cutoffDerivLp]
+  rw [← toLp_freqCutoff_eq_smulLeftCLM n Dû]
+  rw [← toLp_freqBumpDeriv_smul_eq_smulLeftCLM n j (𝓕 f)]
+  rw [toLp_freqCutoff_eq_smul, cutoffDerivLp]
   exact ((Lp.toTemperedDistributionCLM ℂ (volume : Measure V) 2).map_add _ _).symm
 
 /-- Multiplication by the cutoff derivative tends to zero in `L²`. -/
 private lemma tendsto_freqBumpDeriv_smul (j : Fin d) (u : Lp ℂ 2 (volume : Measure V)) :
     Tendsto (fun n ↦ HSMul.hSMul (γ := Lp ℂ 2 (volume : Measure V))
-      ((freqBumpDeriv_memLp_top n j).toLp (freqBumpDeriv n j) :
+      ((memLp_top_freqBumpDeriv n j).toLp (freqBumpDeriv n j) :
         Lp ℂ (⊤ : ℝ≥0∞) (volume : Measure V)) u) atTop (𝓝 0) := by
   rw [tendsto_zero_iff_norm_tendsto_zero]
-  obtain ⟨C, _, hCle⟩ := freqBumpDeriv_lpNorm_le j
+  obtain ⟨C, _, hCle⟩ := exists_norm_toLp_freqBumpDeriv_le j
   have hupper : Tendsto (fun n : ℕ ↦ C / ((n : ℝ) + 1) * ‖u‖) atTop (𝓝 (0 : ℝ)) := by
     have hinv : Tendsto (fun n : ℕ ↦ ((n : ℝ) + 1)⁻¹) atTop (𝓝 0) :=
       (tendsto_atTop_add_const_right atTop (1 : ℝ)
@@ -96,7 +96,7 @@ private abbrev freqMomentCut (n : ℕ) (j : Fin d) (f : Lp ℂ 2 (volume : Measu
     (hξ : MemLp (fun ξ ↦ coordFun j ξ * (𝓕 f) ξ) 2 volume) :
     Lp ℂ 2 (volume : Measure V) :=
   let ξLp := hξ.toLp (fun ξ ↦ coordFun j ξ * (𝓕 f) ξ)
-  (freqBump_mul_memLp n ξLp).toLp (freqCutoff n ξLp)
+  (memLp_freqBump_mul n ξLp).toLp (freqCutoff n ξLp)
 
 /-- The coordinate derivative of the cutoff inverse transform is the weighted moment. -/
 private lemma fderiv_cutoff_ae (n : ℕ) (j : Fin d) (f : Lp ℂ 2 (volume : Measure V))
@@ -116,7 +116,7 @@ private lemma fderiv_cutoff_ae (n : ℕ) (j : Fin d) (f : Lp ℂ 2 (volume : Mea
     simp only [coordFun]
     ring
   have hcoe : (fun v ↦ (c • ξCut) v) =ᵐ[volume] fun v ↦ c * freqCutoff n ξLp v := by
-    filter_upwards [Lp.coeFn_smul c ξCut, (freqBump_mul_memLp n ξLp).coeFn_toLp] with v hc hcut
+    filter_upwards [Lp.coeFn_smul c ξCut, (memLp_freqBump_mul n ξLp).coeFn_toLp] with v hc hcut
     simp only [ξCut, freqMomentCut]
     rw [hc, Pi.smul_apply, smul_eq_mul, hcut]
   have hint : Integrable (fun v ↦ (c • ξCut) v) volume :=
@@ -132,7 +132,7 @@ private lemma coord_mul_cutoff_ae (n : ℕ) (j : Fin d) (f : Lp ℂ 2 (volume : 
     (fun x ↦ coordFun j x * 𝓕⁻ (freqCutoff n (𝓕 f)) x) =ᵐ[volume]
       fun x ↦ ((-(2 * π * I : ℂ))⁻¹ • 𝓕⁻ (cutoffDerivLp n j f hx)) x := by
   let uLp : Lp ℂ 2 (volume : Measure V) :=
-    (freqBump_mul_memLp n (𝓕 f)).toLp (freqCutoff n (𝓕 f))
+    (memLp_freqBump_mul n (𝓕 f)).toLp (freqCutoff n (𝓕 f))
   let w : Lp ℂ 2 (volume : Measure V) := cutoffDerivLp n j f hx
   let g : V → ℂ := 𝓕⁻ (freqCutoff n (𝓕 f))
   let gLp : Lp ℂ 2 (volume : Measure V) := 𝓕⁻ uLp
@@ -154,9 +154,9 @@ private lemma coord_mul_cutoff_ae (n : ℕ) (j : Fin d) (f : Lp ℂ 2 (volume : 
     rw [← hsmul]
   have hg_ae : g =ᵐ[volume] fun x ↦ gLp x :=
     (Integrable.coeFn_fourierInv_toLp (integrable_freqCutoff n (𝓕 f))
-      (freqBump_mul_memLp n (𝓕 f))).symm
+      (memLp_freqBump_mul n (𝓕 f))).symm
   apply ae_eq_of_integral_contDiff_smul_eq
-    ((coordFun_hasTemperateGrowth j).1.continuous.mul
+    ((hasTemperateGrowth_coordFun j).1.continuous.mul
       (integrable_freqCutoff n (𝓕 f)).continuous_fourierInv).locallyIntegrable
     ((Lp.memLp (c⁻¹ • 𝓕⁻ w)).locallyIntegrable one_le_two)
   intro ψ hψ hsup
@@ -181,7 +181,7 @@ private lemma coord_mul_cutoff_ae (n : ℕ) (j : Fin d) (f : Lp ℂ 2 (volume : 
   have hζg : (fun x ↦ ((SchwartzMap.smulLeftCLM ℂ (coordFun j)) ζ) x * gLp x) =
       fun x ↦ ζ x * (coordFun j x * gLp x) := by
     ext x
-    rw [SchwartzMap.smulLeftCLM_apply_apply (coordFun_hasTemperateGrowth j)]
+    rw [SchwartzMap.smulLeftCLM_apply_apply (hasTemperateGrowth_coordFun j)]
     simp only [smul_eq_mul]
     ring
   have hpair : ∫ (x : V), ζ x * (𝓕⁻ w) x =
@@ -228,16 +228,16 @@ private lemma coord_mul_cutoff_ae (n : ℕ) (j : Fin d) (f : Lp ℂ 2 (volume : 
 private lemma cutoff_sq_le (n : ℕ) (j : Fin d) (f : Lp ℂ 2 (volume : Measure V))
     (hx : MemLp (fun x ↦ coordFun j x * f x) 2 volume)
     (hξ : MemLp (fun ξ ↦ coordFun j ξ * (𝓕 f) ξ) 2 volume) :
-    ‖(freqBump_mul_memLp n (𝓕 f)).toLp (freqCutoff n (𝓕 f))‖ ^ 2 ≤
+    ‖(memLp_freqBump_mul n (𝓕 f)).toLp (freqCutoff n (𝓕 f))‖ ^ 2 ≤
       2 * ‖cutoffDerivLp n j f hx‖ * ‖freqMomentCut n j f hξ‖ := by
   let uLp : Lp ℂ 2 (volume : Measure V) :=
-    (freqBump_mul_memLp n (𝓕 f)).toLp (freqCutoff n (𝓕 f))
+    (memLp_freqBump_mul n (𝓕 f)).toLp (freqCutoff n (𝓕 f))
   let g : V → ℂ := 𝓕⁻ (freqCutoff n (𝓕 f))
   let c : ℂ := -(2 * π * I)
   have hgcont : ContDiff ℝ (⊤ : ℕ∞) g := contDiff_fourierInv_freqCutoff n (𝓕 f)
   have hgae : g =ᵐ[volume] fun x ↦ (𝓕⁻ uLp) x :=
     (Integrable.coeFn_fourierInv_toLp (integrable_freqCutoff n (𝓕 f))
-      (freqBump_mul_memLp n (𝓕 f))).symm
+      (memLp_freqBump_mul n (𝓕 f))).symm
   have hgmem : MemLp g 2 volume := (Lp.memLp (𝓕⁻ uLp)).ae_eq hgae.symm
   have hxae := coord_mul_cutoff_ae n j f hx
   have hxmem : MemLp (fun x ↦ coordFun j x * g x) 2 volume :=
@@ -249,14 +249,14 @@ private lemma cutoff_sq_le (n : ℕ) (j : Fin d) (f : Lp ℂ 2 (volume : Measure
     rw [show hgmem.toLp g = 𝓕⁻ uLp from
       (MemLp.toLp_congr hgmem (Lp.memLp (𝓕⁻ uLp)) hgae).trans
         (Lp.toLp_coeFn (𝓕⁻ uLp) (Lp.memLp (𝓕⁻ uLp)))]
-    exact norm_fourierInv_eq uLp
+    exact Lp.norm_fourierInv_eq uLp
   have hNx : ‖hxmem.toLp (fun x ↦ coordFun j x * g x)‖ =
       ‖c⁻¹‖ * ‖cutoffDerivLp n j f hx‖ := by
     rw [show hxmem.toLp (fun x ↦ coordFun j x * g x) =
         c⁻¹ • 𝓕⁻ (cutoffDerivLp n j f hx) from
       (MemLp.toLp_congr hxmem (Lp.memLp (c⁻¹ • 𝓕⁻ (cutoffDerivLp n j f hx))) hxae).trans
         (Lp.toLp_coeFn _ (Lp.memLp _))]
-    rw [norm_smul, norm_fourierInv_eq]
+    rw [norm_smul, Lp.norm_fourierInv_eq]
   have hNd : ‖hdmem.toLp (fun x ↦ fderiv ℝ g x (coordVec j))‖ =
       (2 * π) * ‖freqMomentCut n j f hξ‖ := by
     rw [show hdmem.toLp (fun x ↦ fderiv ℝ g x (coordVec j)) =
@@ -264,7 +264,7 @@ private lemma cutoff_sq_le (n : ℕ) (j : Fin d) (f : Lp ℂ 2 (volume : Measure
       (MemLp.toLp_congr hdmem
         (Lp.memLp (𝓕⁻ ((2 * π * I : ℂ) • freqMomentCut n j f hξ))) hdae).trans
         (Lp.toLp_coeFn _ (Lp.memLp _))]
-    rw [norm_fourierInv_eq, norm_smul, norm_two_pi_I]
+    rw [Lp.norm_fourierInv_eq, norm_smul, norm_two_pi_I]
   have hinv : ‖c⁻¹‖ = (2 * π)⁻¹ := by rw [norm_inv, norm_neg, norm_two_pi_I]
   have hbase := integral_norm_sq_le_two_mul_coord j hgcont hgmem hxmem hdmem
   calc ‖uLp‖ ^ 2 = ‖hgmem.toLp g‖ ^ 2 := by rw [hNg]
@@ -285,29 +285,29 @@ private lemma heisenberg_aux (j : Fin d) (f : Lp ℂ 2 (volume : Measure V)) (hf
   let ξf := hξ.toLp (fun ξ ↦ coordFun j ξ * (𝓕 f) ξ)
   let Dû : Lp ℂ 2 (volume : Measure V) := 𝓕 (-(2 * π * I : ℂ) • xf)
   have hD : ‖Dû‖ = 2 * π * ‖xf‖ := norm_fourier_coord_eq j f hx
-  have hun : Tendsto (fun n ↦ ‖(freqBump_mul_memLp n (𝓕 f)).toLp (freqCutoff n (𝓕 f))‖)
+  have hun : Tendsto (fun n ↦ ‖(memLp_freqBump_mul n (𝓕 f)).toLp (freqCutoff n (𝓕 f))‖)
       atTop (𝓝 ‖f‖) := by
     have h := (continuous_norm.tendsto (𝓕 f)).comp (tendsto_freqBump_mul (𝓕 f))
     rwa [Lp.norm_fourier_eq] at h
   have hξn : Tendsto (fun n ↦ ‖freqMomentCut n j f hξ‖) atTop (𝓝 ‖ξf‖) :=
     (continuous_norm.tendsto ξf).comp (tendsto_freqBump_mul ξf)
   have hφ : Tendsto (fun n ↦ HSMul.hSMul (γ := Lp ℂ 2 (volume : Measure V))
-      ((freqBumpScaled_memLp_top (d := d) n).toLp (freqBumpScaled n) :
+      ((memLp_top_freqBumpScaled (d := d) n).toLp (freqBumpScaled n) :
         Lp ℂ (⊤ : ℝ≥0∞) (volume : Measure V)) Dû) atTop (𝓝 Dû) :=
-    (tendsto_congr fun n ↦ freqBump_smul_eq_toLp n Dû).mp (tendsto_freqBump_mul Dû)
+    (tendsto_congr fun n ↦ toLp_freqCutoff_eq_smul n Dû).mp (tendsto_freqBump_mul Dû)
   have hw : Tendsto (fun n ↦ ‖cutoffDerivLp n j f hx‖) atTop (𝓝 ‖Dû‖) := by
     have hsum := hφ.add (tendsto_freqBumpDeriv_smul j (𝓕 f))
     have hEq : ∀ n, cutoffDerivLp n j f hx =
         HSMul.hSMul (γ := Lp ℂ 2 (volume : Measure V))
-          ((freqBumpScaled_memLp_top (d := d) n).toLp (freqBumpScaled n) :
+          ((memLp_top_freqBumpScaled (d := d) n).toLp (freqBumpScaled n) :
             Lp ℂ (⊤ : ℝ≥0∞) (volume : Measure V)) Dû +
         HSMul.hSMul (γ := Lp ℂ 2 (volume : Measure V))
-          ((freqBumpDeriv_memLp_top n j).toLp (freqBumpDeriv n j) :
+          ((memLp_top_freqBumpDeriv n j).toLp (freqBumpDeriv n j) :
             Lp ℂ (⊤ : ℝ≥0∞) (volume : Measure V)) (𝓕 f) := fun _ ↦ rfl
     have hsum0 : Tendsto (fun n ↦ cutoffDerivLp n j f hx) atTop (𝓝 Dû) :=
       (tendsto_congr fun n ↦ (hEq n).symm).mp (by simpa [add_zero] using hsum)
     exact (continuous_norm.tendsto Dû).comp hsum0
-  have hineq : ∀ n, ‖(freqBump_mul_memLp n (𝓕 f)).toLp (freqCutoff n (𝓕 f))‖ ^ 2 ≤
+  have hineq : ∀ n, ‖(memLp_freqBump_mul n (𝓕 f)).toLp (freqCutoff n (𝓕 f))‖ ^ 2 ≤
       2 * ‖cutoffDerivLp n j f hx‖ * ‖freqMomentCut n j f hξ‖ :=
     fun n ↦ cutoff_sq_le n j f hx hξ
   have hlim : ‖f‖ ^ 2 ≤ 2 * ‖Dû‖ * ‖ξf‖ :=
@@ -320,7 +320,7 @@ private lemma heisenberg_aux (j : Fin d) (f : Lp ℂ 2 (volume : Measure V)) (hf
   have hunit : (1 : ℝ) ≤ 4 * π * ‖xf‖ * ‖ξf‖ := by simpa [hf] using hfour
   suffices (1 / (4 * π) : ℝ) ≤ ‖xf‖ * ‖ξf‖ by
     simpa only [xf, ξf, Lp.norm_toLp] using this
-  rw [div_le_iff₀ pi_pos_four]
+  rw [div_le_iff₀ (by positivity)]
   calc (1 : ℝ) ≤ 4 * π * ‖xf‖ * ‖ξf‖ := hunit
     _ = ‖xf‖ * ‖ξf‖ * (4 * π) := by ring
 

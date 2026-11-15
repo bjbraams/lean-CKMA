@@ -22,8 +22,8 @@ and `c ^ (k - 1) = g 0`.
 
 ## Main results
 
-* `CKMA.exists_boettcher_data`: existence of a local analytic Böttcher coordinate with prescribed
-  compatible leading coefficient.
+* `CKMA.exists_boettcherCoordinate_of_analyticAt`: existence of a local analytic Böttcher
+  coordinate with prescribed compatible leading coefficient.
 * `CKMA.boettcherCoordinate_eq_mul_unity`: uniqueness of Böttcher coordinates up to a `(k - 1)`st
   root of unity.
 -/
@@ -37,22 +37,22 @@ namespace CKMA
 open Filter Finset Function Metric Set Topology
 
 /-- Binomial expansion of `(ζ + w) ^ k - ζ` when `ζ ^ k = ζ`. -/
-theorem exists_pow_sub_factor {zeta : ℂ} {k : ℕ} (hk : 1 ≤ k) (hpow : zeta ^ k = zeta) :
-    ∃ Q : ℂ → ℂ, AnalyticAt ℂ Q 0 ∧ Q 0 = (k : ℂ) * zeta ^ (k - 1) ∧
-      ∀ w : ℂ, (zeta + w) ^ k - zeta = w * Q w := by
+private theorem exists_pow_sub_factor {ζ : ℂ} {k : ℕ} (hk : 1 ≤ k) (hpow : ζ ^ k = ζ) :
+    ∃ Q : ℂ → ℂ, AnalyticAt ℂ Q 0 ∧ Q 0 = (k : ℂ) * ζ ^ (k - 1) ∧
+      ∀ w : ℂ, (ζ + w) ^ k - ζ = w * Q w := by
   let term : ℕ → ℂ → ℂ := fun m w ↦
-    (k.choose m : ℂ) * zeta ^ m * w ^ (k - 1 - m)
+    (k.choose m : ℂ) * ζ ^ m * w ^ (k - 1 - m)
   let Q : ℂ → ℂ := fun w ↦ ∑ m ∈ range k, term m w
   have hterm : ∀ m, AnalyticAt ℂ (term m) 0 := by
     intro m
-    have hconst : AnalyticAt ℂ (fun _ : ℂ ↦ (k.choose m : ℂ) * zeta ^ m) 0 :=
+    have hconst : AnalyticAt ℂ (fun _ : ℂ ↦ (k.choose m : ℂ) * ζ ^ m) 0 :=
       analyticAt_const
     exact hconst.mul ((analyticAt_id : AnalyticAt ℂ (id : ℂ → ℂ) 0).pow _)
   have hQa : AnalyticAt ℂ Q 0 :=
     Finset.analyticAt_fun_sum (range k) fun m _ ↦ hterm m
   have hchoose : k.choose (k - 1) = k := by
     rw [Nat.choose_symm (by omega : 1 ≤ k), Nat.choose_one_right]
-  have hQ0 : Q 0 = (k : ℂ) * zeta ^ (k - 1) := by
+  have hQ0 : Q 0 = (k : ℂ) * ζ ^ (k - 1) := by
     have hone : (0 : ℂ) ^ (0 : ℕ) = 1 := pow_zero _
     rw [show Q 0 = ∑ m ∈ range k, term m 0 by rfl]
     rw [Finset.sum_eq_single (k - 1)]
@@ -65,34 +65,35 @@ theorem exists_pow_sub_factor {zeta : ℂ} {k : ℕ} (hk : 1 ≤ k) (hpow : zeta
     · intro hmiss
       exact absurd (mem_range.mpr (by omega : k - 1 < k)) hmiss
   refine ⟨Q, hQa, hQ0, fun w ↦ ?_⟩
-  have hbin := add_pow zeta w k
+  have hbin := add_pow ζ w k
   rw [sum_range_succ] at hbin
-  have hlast : zeta ^ k * w ^ (k - k) * (k.choose k : ℂ) = zeta ^ k := by
+  have hlast : ζ ^ k * w ^ (k - k) * (k.choose k : ℂ) = ζ ^ k := by
     simp [Nat.choose_self, pow_zero]
-  have hfactor : ∑ m ∈ range k, zeta ^ m * w ^ (k - m) * (k.choose m : ℂ) = w * Q w := by
+  have hfactor : ∑ m ∈ range k, ζ ^ m * w ^ (k - m) * (k.choose m : ℂ) = w * Q w := by
     rw [show Q w = ∑ m ∈ range k, term m w by rfl, Finset.mul_sum]
     refine Finset.sum_congr rfl fun m hm ↦ ?_
     have hmlt : m < k := mem_range.mp hm
     have hexp : k - m = (k - 1 - m) + 1 := by omega
     calc
-      zeta ^ m * w ^ (k - m) * (k.choose m : ℂ)
-          = zeta ^ m * (w ^ (k - 1 - m) * w) * (k.choose m : ℂ) := by
+      ζ ^ m * w ^ (k - m) * (k.choose m : ℂ)
+          = ζ ^ m * (w ^ (k - 1 - m) * w) * (k.choose m : ℂ) := by
             rw [hexp, pow_succ]
-      _ = w * ((k.choose m : ℂ) * zeta ^ m * w ^ (k - 1 - m)) := by ring
+      _ = w * ((k.choose m : ℂ) * ζ ^ m * w ^ (k - 1 - m)) := by ring
       _ = w * term m w := by rfl
   calc
-    (zeta + w) ^ k - zeta
-        = (∑ m ∈ range k, zeta ^ m * w ^ (k - m) * (k.choose m : ℂ)) + zeta ^ k - zeta := by
+    (ζ + w) ^ k - ζ
+        = (∑ m ∈ range k, ζ ^ m * w ^ (k - m) * (k.choose m : ℂ)) + ζ ^ k - ζ := by
           rw [hbin, hlast]
-    _ = w * Q w + zeta ^ k - zeta := by rw [hfactor]
+    _ = w * Q w + ζ ^ k - ζ := by rw [hfactor]
     _ = w * Q w := by rw [hpow, add_sub_cancel_right]
 
 /-- A normalized Böttcher germ built from the logarithm of the leading coefficient. -/
-theorem exists_boettcher_data {f g : ℂ → ℂ} {k : ℕ} (hk : 2 ≤ k) (hg : AnalyticAt ℂ g 0)
+theorem exists_boettcherCoordinate_of_analyticAt {f g : ℂ → ℂ} {k : ℕ} (hk : 2 ≤ k)
+    (hg : AnalyticAt ℂ g 0)
     (hg₀ : g 0 ≠ 0) (hf : ∀ᶠ z in 𝓝 (0 : ℂ), f z = z ^ k * g z) {c : ℂ}
     (hc : c ^ (k - 1) = g 0) :
-    ∃ phi : ℂ → ℂ, AnalyticAt ℂ f 0 ∧ f 0 = 0 ∧ AnalyticAt ℂ phi 0 ∧ phi 0 = 0 ∧
-      deriv phi 0 = c ∧ ∀ᶠ z in 𝓝 (0 : ℂ), phi (f z) = phi z ^ k := by
+    ∃ φ : ℂ → ℂ, AnalyticAt ℂ f 0 ∧ f 0 = 0 ∧ AnalyticAt ℂ φ 0 ∧ φ 0 = 0 ∧
+      deriv φ 0 = c ∧ ∀ᶠ z in 𝓝 (0 : ℂ), φ (f z) = φ z ^ k := by
   have hk0 : k ≠ 0 := by omega
   have hk1 : 1 ≤ k := by omega
   have hc0 : c ≠ 0 := by
@@ -330,14 +331,14 @@ theorem exists_boettcher_data {f g : ℂ → ℂ} {k : ℕ} (hk : 2 ≤ k) (hg :
         rw [hsplit, add_sub_cancel_left]
       _ = (k : ℂ) * S z - hlog z := by
         rw [htermZero, mul_sub, ← mul_assoc, hkinv, one_mul]
-  let phi : ℂ → ℂ := fun z ↦ c * (z * Complex.exp (S z))
-  have hphiOn : DifferentiableOn ℂ phi (ball 0 r) := by
+  let φ : ℂ → ℂ := fun z ↦ c * (z * Complex.exp (S z))
+  have hphiOn : DifferentiableOn ℂ φ (ball 0 r) := by
     have hexp : DifferentiableOn ℂ (fun z ↦ Complex.exp (S z)) (ball 0 r) := hSdiff.cexp
     exact ((differentiableOn_id.mul hexp).const_mul c)
-  have hphia : AnalyticAt ℂ phi 0 :=
+  have hphia : AnalyticAt ℂ φ 0 :=
     hphiOn.analyticAt (isOpen_ball.mem_nhds (mem_ball_self hr))
-  have hphi0 : phi 0 = 0 := by simp [phi, mul_zero]
-  have hderiv : deriv phi 0 = c := by
+  have hphi0 : φ 0 = 0 := by simp [φ, mul_zero]
+  have hderiv : deriv φ 0 = c := by
     have hSAt : DifferentiableAt ℂ S 0 :=
       (hSdiff 0 (mem_ball_self hr)).differentiableAt
         (isOpen_ball.mem_nhds (mem_ball_self hr))
@@ -347,9 +348,9 @@ theorem exists_boettcher_data {f g : ℂ → ℂ} {k : ℕ} (hk : 2 ≤ k) (hg :
     have hprod : deriv (fun z ↦ z * Complex.exp (S z)) 0 = 1 := by
       rw [deriv_fun_mul hid hexp, deriv_id'', deriv_cexp hSAt, hS0, Complex.exp_zero]
       simp
-    rw [show phi = fun z ↦ c * (z * Complex.exp (S z)) by rfl,
+    rw [show φ = fun z ↦ c * (z * Complex.exp (S z)) by rfl,
       deriv_const_mul c hu, hprod, mul_one]
-  have heqBall : ∀ z ∈ ball (0 : ℂ) r, phi (f z) = phi z ^ k := by
+  have heqBall : ∀ z ∈ ball (0 : ℂ) r, φ (f z) = φ z ^ k := by
     intro z hz
     have hfz := hFeq z hz
     have hSz := hstepS z hz
@@ -367,7 +368,7 @@ theorem exists_boettcher_data {f g : ℂ → ℂ} {k : ℕ} (hk : 2 ≤ k) (hg :
     have hcg : c * g 0 = c ^ k := by
       rw [← hc, mul_comm, ← pow_succ, Nat.sub_add_cancel hk1]
     calc
-      phi (f z) = c * (f z * Complex.exp (S (f z))) := rfl
+      φ (f z) = c * (f z * Complex.exp (S (f z))) := rfl
       _ = c * (f z * Complex.exp ((k : ℂ) * S z - hlog z)) := by rw [hSz]
       _ = c * ((z ^ k * g z) * Complex.exp ((k : ℂ) * S z - hlog z)) := by rw [hfz]
       _ = c * ((z ^ k * g z) *
@@ -382,23 +383,26 @@ theorem exists_boettcher_data {f g : ℂ → ℂ} {k : ℕ} (hk : 2 ≤ k) (hg :
         ring
       _ = c ^ k * (z * Complex.exp (S z)) ^ k := by rw [hcg]
       _ = (c * (z * Complex.exp (S z))) ^ k := by rw [← mul_pow]
-      _ = phi z ^ k := rfl
-  refine ⟨phi, hfa, hf0, hphia, hphi0, hderiv, ?_⟩
+      _ = φ z ^ k := rfl
+  refine ⟨φ, hfa, hf0, hphia, hphi0, hderiv, ?_⟩
   filter_upwards [isOpen_ball.mem_nhds (mem_ball_self hr)] with z hz
   exact heqBall z hz
 
+@[deprecated (since := "2026-11-15")]
+alias exists_boettcher_data := exists_boettcherCoordinate_of_analyticAt
+
 /-- Two Böttcher coordinates differ by a `(k - 1)`st root of unity. -/
-theorem boettcherCoordinate_eq_mul_unity {f phi psi : ℂ → ℂ} {k : ℕ} (hk : 2 ≤ k)
-    (hf : AnalyticAt ℂ f 0) (hf0 : f 0 = 0) (hφa : AnalyticAt ℂ phi 0) (hφ0 : phi 0 = 0)
-    (hφd : deriv phi 0 ≠ 0) (hφe : ∀ᶠ z in 𝓝 (0 : ℂ), phi (f z) = phi z ^ k)
-    (hψa : AnalyticAt ℂ psi 0) (hψ0 : psi 0 = 0) (hψd : deriv psi 0 ≠ 0)
-    (hψe : ∀ᶠ z in 𝓝 (0 : ℂ), psi (f z) = psi z ^ k) :
-    ∃ zeta : ℂ, zeta ^ (k - 1) = 1 ∧ ∀ᶠ z in 𝓝 (0 : ℂ), psi z = zeta * phi z := by
+theorem boettcherCoordinate_eq_mul_unity {f φ ψ : ℂ → ℂ} {k : ℕ} (hk : 2 ≤ k)
+    (hf : AnalyticAt ℂ f 0) (hf0 : f 0 = 0) (hφa : AnalyticAt ℂ φ 0) (hφ0 : φ 0 = 0)
+    (hφd : deriv φ 0 ≠ 0) (hφe : ∀ᶠ z in 𝓝 (0 : ℂ), φ (f z) = φ z ^ k)
+    (hψa : AnalyticAt ℂ ψ 0) (hψ0 : ψ 0 = 0) (hψd : deriv ψ 0 ≠ 0)
+    (hψe : ∀ᶠ z in 𝓝 (0 : ℂ), ψ (f z) = ψ z ^ k) :
+    ∃ ζ : ℂ, ζ ^ (k - 1) = 1 ∧ ∀ᶠ z in 𝓝 (0 : ℂ), ψ z = ζ * φ z := by
   have htend : Tendsto f (𝓝 (0 : ℂ)) (𝓝 0) := by
     have hcont : Tendsto f (𝓝 0) (𝓝 (f 0)) := hf.continuousAt.tendsto
     rwa [hf0] at hcont
-  obtain ⟨u, hua, hu0, hufac⟩ := exists_linear_factor hφa hφ0 hφd
-  obtain ⟨v, hva, hv0, hvfac⟩ := exists_linear_factor hψa hψ0 hψd
+  obtain ⟨u, hua, hu0, hufac⟩ := exists_analyticAt_eventually_eq_mul hφa hφ0 hφd
+  obtain ⟨v, hva, hv0, hvfac⟩ := exists_analyticAt_eventually_eq_mul hψa hψ0 hψd
   have hu0' : u 0 ≠ 0 := by simpa [hu0] using hφd
   have hv0' : v 0 ≠ 0 := by simpa [hv0] using hψd
   let ratio : ℂ → ℂ := fun z ↦ v z / u z
@@ -415,9 +419,9 @@ theorem boettcherCoordinate_eq_mul_unity {f phi psi : ℂ → ℂ} {k : ℕ} (hk
     exact hva.continuousAt.tendsto.eventually hset
   have huf : ∀ᶠ z in 𝓝 (0 : ℂ), u (f z) ≠ 0 := htend.eventually hu_ne
   have hvf : ∀ᶠ z in 𝓝 (0 : ℂ), v (f z) ≠ 0 := htend.eventually hv_ne
-  have hufEq : ∀ᶠ z in 𝓝 (0 : ℂ), phi (f z) = f z * u (f z) :=
+  have hufEq : ∀ᶠ z in 𝓝 (0 : ℂ), φ (f z) = f z * u (f z) :=
     Filter.EventuallyEq.comp_tendsto hufac htend
-  have hvfEq : ∀ᶠ z in 𝓝 (0 : ℂ), psi (f z) = f z * v (f z) :=
+  have hvfEq : ∀ᶠ z in 𝓝 (0 : ℂ), ψ (f z) = f z * v (f z) :=
     Filter.EventuallyEq.comp_tendsto hvfac htend
   have hfz_imp : ∀ᶠ z in 𝓝 (0 : ℂ), f z = 0 → z = 0 := by
     filter_upwards [hφe, hufac, hufEq, hu_ne] with z hφ hu hufz huN hfz
@@ -463,31 +467,31 @@ theorem boettcherCoordinate_eq_mul_unity {f phi psi : ℂ → ℂ} {k : ℕ} (hk
       rw [div_pow]
       exact hdiv
     exact (hcontL.eventuallyEq_nhds_iff_eventuallyEq_nhdsNE hcontR).mp hpunct
-  let zeta : ℂ := ratio 0
-  have hzeta_ne : zeta ≠ 0 := by
-    simp [zeta, ratio, div_ne_zero hv0' hu0']
-  have hzeta_pow : zeta ^ k = zeta := by
+  let ζ : ℂ := ratio 0
+  have hzeta_ne : ζ ≠ 0 := by
+    simp [ζ, ratio, div_ne_zero hv0' hu0']
+  have hzeta_pow : ζ ^ k = ζ := by
     have h0 := Filter.Eventually.self_of_nhds hratio_eq
     have h0' : ratio (f 0) = ratio 0 ^ k := by
       simpa [Function.comp_def, Pi.pow_apply] using h0
     rw [hf0] at h0'
-    simpa [zeta] using h0'.symm
-  have hroot : zeta ^ (k - 1) = 1 := by
+    simpa [ζ] using h0'.symm
+  have hroot : ζ ^ (k - 1) = 1 := by
     apply mul_right_cancel₀ hzeta_ne
     calc
-      zeta ^ (k - 1) * zeta = zeta ^ k := by
+      ζ ^ (k - 1) * ζ = ζ ^ k := by
         rw [← pow_succ, Nat.sub_add_cancel (by omega : 1 ≤ k)]
-      _ = zeta := hzeta_pow
-      _ = 1 * zeta := (one_mul zeta).symm
+      _ = ζ := hzeta_pow
+      _ = 1 * ζ := (one_mul ζ).symm
   obtain ⟨Q, hQa, hQ0, hQeq⟩ :=
     exists_pow_sub_factor (by omega : 1 ≤ k) hzeta_pow
   have hQne : Q 0 ≠ 0 := by
     rw [hQ0, hroot, mul_one]
     exact Nat.cast_ne_zero.mpr (by omega : k ≠ 0)
-  let gap : ℂ → ℂ := fun z ↦ ratio z - zeta
+  let gap : ℂ → ℂ := fun z ↦ ratio z - ζ
   have hgapA : AnalyticAt ℂ gap 0 := hratioA.sub analyticAt_const
-  have hgap0 : gap 0 = 0 := by simp [gap, zeta]
-  have hshift : ∀ᶠ z in 𝓝 (0 : ℂ), gap (f z) = (zeta + gap z) ^ k - zeta := by
+  have hgap0 : gap 0 = 0 := by simp [gap, ζ]
+  have hshift : ∀ᶠ z in 𝓝 (0 : ℂ), gap (f z) = (ζ + gap z) ^ k - ζ := by
     filter_upwards [hratio_eq] with z hz
     have hz' : ratio (f z) = ratio z ^ k := by
       simpa [Function.comp_def, Pi.pow_apply] using hz
@@ -498,40 +502,40 @@ theorem boettcherCoordinate_eq_mul_unity {f phi psi : ℂ → ℂ} {k : ℕ} (hk
     filter_upwards [hshift] with z hz
     simp only [Function.comp_def, Pi.mul_apply]
     exact hz.trans (hQeq (gap z))
-  have hordφ : analyticOrderAt phi 0 = 1 :=
+  have hordφ : analyticOrderAt φ 0 = 1 :=
     hφa.analyticOrderAt_eq_one_of_zero_deriv_ne_zero hφ0 hφd
-  have hordRight : analyticOrderAt (phi ^ k) 0 = k := by
+  have hordRight : analyticOrderAt (φ ^ k) 0 = k := by
     rw [analyticOrderAt_pow hφa k, hordφ, nsmul_one]
   have hsubf : analyticOrderAt (fun z ↦ f z - f 0) 0 = analyticOrderAt f 0 := by
     refine analyticOrderAt_congr ?_
     filter_upwards with z
     simp [hf0]
-  have hordComp : analyticOrderAt (phi ∘ f) 0 = analyticOrderAt f 0 := by
-    have hφf : AnalyticAt ℂ phi (f 0) := by
+  have hordComp : analyticOrderAt (φ ∘ f) 0 = analyticOrderAt f 0 := by
+    have hφf : AnalyticAt ℂ φ (f 0) := by
       rw [hf0]
       exact hφa
     rw [hφf.analyticOrderAt_comp hf, hsubf, hf0, hordφ, one_mul]
   have hordf : analyticOrderAt f 0 = k := by
-    have hcong : analyticOrderAt (phi ∘ f) 0 = analyticOrderAt (phi ^ k) 0 := by
+    have hcong : analyticOrderAt (φ ∘ f) 0 = analyticOrderAt (φ ^ k) 0 := by
       refine analyticOrderAt_congr ?_
       filter_upwards [hφe] with z hz
       simp [Pi.pow_apply, hz]
     rw [← hordComp, hcong, hordRight]
   by_cases htop : analyticOrderAt gap 0 = ⊤
-  · refine ⟨zeta, hroot, ?_⟩
+  · refine ⟨ζ, hroot, ?_⟩
     have hgap_zero : ∀ᶠ z in 𝓝 (0 : ℂ), gap z = 0 := analyticOrderAt_eq_top.mp htop
     filter_upwards [hgap_zero, hufac, hvfac, hu_ne] with z hgz hφz hψz huN
-    have hrat : ratio z = zeta := by
+    have hrat : ratio z = ζ := by
       unfold gap at hgz
       exact sub_eq_zero.mp hgz
-    have hvz : v z = zeta * u z := by
+    have hvz : v z = ζ * u z := by
       unfold ratio at hrat
       exact (div_eq_iff huN).mp hrat
     calc
-      psi z = z * v z := hψz
-      _ = z * (zeta * u z) := by rw [hvz]
-      _ = zeta * (z * u z) := by ring
-      _ = zeta * phi z := by rw [hφz]
+      ψ z = z * v z := hψz
+      _ = z * (ζ * u z) := by rw [hvz]
+      _ = ζ * (z * u z) := by ring
+      _ = ζ * φ z := by rw [hφz]
   · obtain ⟨m, hm⟩ := ENat.ne_top_iff_exists.mp htop
     have hm1 : 1 ≤ m := by
       have hne : analyticOrderAt gap 0 ≠ 0 := by

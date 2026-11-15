@@ -23,13 +23,13 @@ import Mathlib.Topology.Instances.ENNReal.Lemmas
 Peetre's `K`-functional scales by the endpoint bounds of a compatible couple map. The measure
 `dt/t` is invariant under positive dilations, so the real interpolation gauge obeys the bound
 `M₀ ^ (1 - θ) * M₁ ^ θ` whenever those endpoint bounds are positive. Nonnegative endpoint bounds
-follow by replacing `Mᵢ` with `Mᵢ + ε` and passing to the limit.
+follow by replacing `Mᵢ` with `Mᵢ + ε` and passing to the limit, in
+`CKMA.Analysis.Interpolation.Bounds`.
 
 ## Main results
 
 * `CKMA.realInterpolationGauge_map_le_of_pos`: the real interpolation gauge bound for positive
   endpoint bounds `M₀, M₁ > 0`.
-* `CKMA.le_of_endpointFactor_eps`: passage to the limit as `ε → 0⁺` in endpoint bounds `Mᵢ + ε`.
 -/
 
 @[expose] public section
@@ -297,27 +297,5 @@ theorem realInterpolationGauge_map_le_of_pos (T : CoupleMap C D) {θ : ℝ}
     rw [ENNReal.mul_rpow_of_nonneg _ _ hexp, ← ENNReal.rpow_mul,
       show q.toReal * (1 / q.toReal) = 1 by field_simp [hp.ne'], ENNReal.rpow_one] at hpow
     simpa [φD, φC, factor] using hpow
-
-/-- If a bound holds for every `Mᵢ + ε`, it holds for nonnegative `Mᵢ`. -/
-theorem le_of_endpointFactor_eps {θ : ℝ} (hθ : 0 < θ) (hθ1 : θ < 1) {M₀ M₁ : ℝ}
-    {a G : ℝ≥0∞} (hG : G ≠ ∞)
-    (h : ∀ ε : ℝ, 0 < ε →
-      a ≤ ENNReal.ofReal ((M₀ + ε) ^ (1 - θ) * (M₁ + ε) ^ θ) * G) :
-    a ≤ ENNReal.ofReal (M₀ ^ (1 - θ) * M₁ ^ θ) * G := by
-  let εn : ℕ → ℝ := fun n => (↑(n + 1) : ℝ)⁻¹
-  have hεpos : ∀ n, 0 < εn n := fun n => inv_pos.mpr (Nat.cast_pos.mpr n.succ_pos)
-  have hεlim : Tendsto εn atTop (𝓝 0) :=
-    tendsto_inv_atTop_zero.comp (tendsto_natCast_atTop_atTop.comp (tendsto_add_atTop_nat 1))
-  have hpow0 : Tendsto (fun n => (M₀ + εn n) ^ (1 - θ)) atTop (𝓝 (M₀ ^ (1 - θ))) := by
-    simpa [add_zero] using
-      (tendsto_const_nhds.add hεlim).rpow_const (Or.inr (sub_nonneg.mpr hθ1.le))
-  have hpow1 : Tendsto (fun n => (M₁ + εn n) ^ θ) atTop (𝓝 (M₁ ^ θ)) := by
-    simpa [add_zero] using (tendsto_const_nhds.add hεlim).rpow_const (Or.inr hθ.le)
-  have hprod : Tendsto (fun n => (M₀ + εn n) ^ (1 - θ) * (M₁ + εn n) ^ θ) atTop
-      (𝓝 (M₀ ^ (1 - θ) * M₁ ^ θ)) := hpow0.mul hpow1
-  have hmul : Tendsto (fun n => ENNReal.ofReal ((M₀ + εn n) ^ (1 - θ) * (M₁ + εn n) ^ θ) * G)
-      atTop (𝓝 (ENNReal.ofReal (M₀ ^ (1 - θ) * M₁ ^ θ) * G)) :=
-    ENNReal.Tendsto.mul_const (ENNReal.tendsto_ofReal hprod) (Or.inr hG)
-  exact le_of_tendsto_of_tendsto' tendsto_const_nhds hmul fun n => h (εn n) (hεpos n)
 
 end CKMA

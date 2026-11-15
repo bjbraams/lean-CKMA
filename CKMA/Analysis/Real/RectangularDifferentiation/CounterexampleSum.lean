@@ -30,7 +30,7 @@ zero, so rectangular differentiation fails on a set of positive measure.
 
 ## Main definitions
 
-* `CKMA.Bohr.witnessRect`, `CKMA.Bohr.interRect`: witnessing rectangle through one strip and its
+* `witnessRect`, `interRect`: witnessing rectangle through one strip and its
   intersection with the corner spike.
 
 ## Main results
@@ -38,9 +38,8 @@ zero, so rectangular differentiation fails on a set of positive measure.
 * `CKMA.Bohr.integrable_saks`: the Saks spike sum is integrable.
 * `CKMA.Bohr.not_rectanglesDifferentiateAt_on_limsup`: rectangular differentiation of the Saks
   function fails at every point of `limsupSet d hd`.
-* `CKMA.Bohr.exists_integrable_not_rectangularlyDifferentiable` (**05.31**, negative part): in
-  dimension `d ≥ 2`, there exists an integrable function whose rectangular averages do
-  not converge to its values on a set of positive measure.
+* `CKMA.Bohr.volume_limsupSet_ge` and the above give
+  `CKMA.exists_integrable_not_rectangularlyDifferentiable` (**05.31**, negative part).
 -/
 
 @[expose] public section
@@ -53,15 +52,15 @@ open scoped ENNReal NNReal BigOperators
 namespace CKMA.Bohr
 
 /-- One stage of chosen spikes has integral `copyCount` times one spike mass. -/
-lemma lintegral_stage (d : ℕ) (hd : 2 ≤ d) (k : ℕ) :
-    ∑' i : Fin (copyCount k), ∫⁻ x, bumpENN d hd k (chosenShifts k i) x =
+private lemma lintegral_stage (d : ℕ) (hd : 2 ≤ d) (k : ℕ) :
+    ∑' i : Fin (copyCount k), ∫⁻ x, spikeENN d hd k (chosenShifts k i) x =
       (copyCount k : ℝ≥0∞) *
         ENNReal.ofReal (spikeHeight k * stageScale k ^ 2) := by
-  simp_rw [lintegral_bump d hd k]
+  simp_rw [lintegral_spikeENN d hd k]
   simp
 
 /-- The geometric tail of ratio one half is summable. -/
-lemma summable_half_pow_shift :
+private lemma summable_half_pow_shift :
     Summable (fun k : ℕ => (1 / 2 : ℝ) ^ (k + 2)) := by
   have hpow : ∀ k : ℕ, (1 / 2 : ℝ) ^ (k + 2) = (1 / 4) * (1 / 2) ^ k := by
     intro k
@@ -72,7 +71,7 @@ lemma summable_half_pow_shift :
   exact summable_geometric_two.mul_left (1 / 4)
 
 /-- One stage mass is at most the corresponding geometric term. -/
-lemma stageMass_ennreal_le (k : ℕ) :
+private lemma stageMass_ennreal_le (k : ℕ) :
     (copyCount k : ℝ≥0∞) * ENNReal.ofReal (spikeHeight k * stageScale k ^ 2) ≤
       ENNReal.ofReal ((1 / 2 : ℝ) ^ (k + 2)) := by
   have hnn : 0 ≤ (copyCount k : ℝ) := Nat.cast_nonneg _
@@ -82,53 +81,53 @@ lemma stageMass_ennreal_le (k : ℕ) :
   exact stageMass_le k
 
 /-- The integral of the spike sum is the sum of the stage masses. -/
-lemma lintegral_raw_eq (d : ℕ) (hd : 2 ≤ d) :
-    ∫⁻ x, raw d hd x =
+private lemma lintegral_spikeSum_eq (d : ℕ) (hd : 2 ≤ d) :
+    ∫⁻ x, spikeSum d hd x =
       ∑' k, (copyCount k : ℝ≥0∞) *
         ENNReal.ofReal (spikeHeight k * stageScale k ^ 2) := by
-  unfold raw
+  unfold spikeSum
   rw [lintegral_tsum]
   · rw [ENNReal.tsum_sigma']
     exact tsum_congr (lintegral_stage d hd)
   · intro p
-    exact (measurable_bump d hd p.1
+    exact (measurable_spike d hd p.1
       (chosenShifts p.1 p.2)).ennreal_ofReal.aemeasurable
 
 /-- The spike sum has finite integral. -/
-lemma lintegral_raw_ne_top (d : ℕ) (hd : 2 ≤ d) : ∫⁻ x, raw d hd x ≠ ∞ := by
-  rw [lintegral_raw_eq d hd]
+private lemma lintegral_spikeSum_ne_top (d : ℕ) (hd : 2 ≤ d) : ∫⁻ x, spikeSum d hd x ≠ ∞ := by
+  rw [lintegral_spikeSum_eq d hd]
   exact ne_top_of_le_ne_top summable_half_pow_shift.tsum_ofReal_ne_top
     (ENNReal.tsum_le_tsum stageMass_ennreal_le)
 
 /-- The Saks function is integrable. -/
 lemma integrable_saks (d : ℕ) (hd : 2 ≤ d) : Integrable (saks d hd) volume :=
-  integrable_toReal_of_lintegral_ne_top (measurable_raw d hd).aemeasurable
-    (lintegral_raw_ne_top d hd)
+  integrable_toReal_of_lintegral_ne_top (measurable_spikeSum d hd).aemeasurable
+    (lintegral_spikeSum_ne_top d hd)
 
 /-- One rectangular spike is integrable. -/
-lemma integrable_bump (d : ℕ) (hd : 2 ≤ d) (k : ℕ) (v : Fin 2 → ℝ) :
-    Integrable (bump d hd k v) volume := by
-  unfold bump
+private lemma integrable_spike (d : ℕ) (hd : 2 ≤ d) (k : ℕ) (v : Fin 2 → ℝ) :
+    Integrable (spike d hd k v) volume := by
+  unfold spike
   rw [integrable_indicator_iff (spikeRect d hd k v).measurableSet_carrier]
   exact integrableOn_const (spikeRect d hd k v).volume_carrier_lt_top.ne
 
 /-- Each chosen spike is at most the Saks function wherever the sum is finite. -/
-lemma bump_le_saks (d : ℕ) (hd : 2 ≤ d) (k : ℕ) (i : Fin (copyCount k)) (x : Fin d → ℝ)
-    (hfin : raw d hd x ≠ ∞) :
-    bump d hd k (chosenShifts k i) x ≤ saks d hd x := by
-  have hnn : 0 ≤ bump d hd k (chosenShifts k i) x := by
-    unfold bump
+private lemma spike_le_saks (d : ℕ) (hd : 2 ≤ d) (k : ℕ) (i : Fin (copyCount k)) (x : Fin d → ℝ)
+    (hfin : spikeSum d hd x ≠ ∞) :
+    spike d hd k (chosenShifts k i) x ≤ saks d hd x := by
+  have hnn : 0 ≤ spike d hd k (chosenShifts k i) x := by
+    unfold spike
     exact indicator_nonneg (fun _ _ => by unfold spikeHeight stageHeight; positivity) x
-  have hle : bumpENN d hd k (chosenShifts k i) x ≤ raw d hd x := by
-    unfold raw
+  have hle : spikeENN d hd k (chosenShifts k i) x ≤ spikeSum d hd x := by
+    unfold spikeSum
     exact ENNReal.le_tsum (f := fun p : Σ n, Fin (copyCount n) =>
-      bumpENN d hd p.1 (chosenShifts p.1 p.2) x) ⟨k, i⟩
+      spikeENN d hd p.1 (chosenShifts p.1 p.2) x) ⟨k, i⟩
   have hto := ENNReal.toReal_mono hfin hle
-  rw [bumpENN, ENNReal.toReal_ofReal hnn] at hto
+  rw [spikeENN, ENNReal.toReal_ofReal hnn] at hto
   simpa [saks] using hto
 
 /-- Real volume is the product of the side lengths. -/
-lemma volume_real_sides {d : ℕ} (R : OpenRectangle d) :
+private lemma volume_real_sides {d : ℕ} (R : OpenRectangle d) :
     volume.real R.carrier = ∏ i, (R.upper i - R.lower i) := by
   have hnn : ∀ i, 0 ≤ R.upper i - R.lower i := fun i => sub_nonneg.mpr (R.lower_lt_upper i).le
   rw [measureReal_def, R.volume_carrier,
@@ -136,7 +135,7 @@ lemma volume_real_sides {d : ℕ} (R : OpenRectangle d) :
     ENNReal.toReal_ofReal (Finset.prod_nonneg (fun i _ => hnn i))]
 
 /-- `j + N / j` is at most `N + 1` on the harmonic range. -/
-lemma ratio_le_succ (k j : ℕ) (hj : j ∈ Finset.Icc 2 (stageCount k)) :
+private lemma ratio_le_succ (k j : ℕ) (hj : j ∈ Finset.Icc 2 (stageCount k)) :
     (j : ℝ) + (stageCount k : ℝ) / j ≤ (stageCount k : ℝ) + 1 := by
   have hjI := Finset.mem_Icc.mp hj
   have hj0 : (0 : ℝ) < j := by exact_mod_cast (show 0 < j by omega)
@@ -153,7 +152,7 @@ lemma ratio_le_succ (k j : ℕ) (hj : j ∈ Finset.Icc 2 (stageCount k)) :
   nlinarith
 
 /-- The two plane sides of a witness are at most `2 ^ (-(k + 2))`. -/
-lemma planeWidth_le (k j : ℕ) (hj : j ∈ Finset.Icc 2 (stageCount k)) :
+private lemma planeWidth_le (k j : ℕ) (hj : j ∈ Finset.Icc 2 (stageCount k)) :
     stageScale k * (j : ℝ) + stageScale k * (stageCount k : ℝ) / j ≤
       (2 ^ (k + 2) : ℝ)⁻¹ := by
   calc
@@ -165,7 +164,7 @@ lemma planeWidth_le (k j : ℕ) (hj : j ∈ Finset.Icc 2 (stageCount k)) :
     _ = (2 ^ (k + 2) : ℝ)⁻¹ := stageScale_mul_succ k
 
 /-- Twice `2 ^ (-(k + 2))` is `2 ^ (-(k + 1))`. -/
-lemma two_mul_inv_pow (k : ℕ) :
+private lemma two_mul_inv_pow (k : ℕ) :
     (2 : ℝ) * (2 ^ (k + 2))⁻¹ = (1 / 2 : ℝ) ^ (k + 1) := by
   have hinv : (2 ^ (k + 2) : ℝ)⁻¹ = (1 / 2) ^ (k + 2) := by
     rw [← inv_pow, ← one_div]
@@ -173,37 +172,37 @@ lemma two_mul_inv_pow (k : ℕ) :
   norm_num
 
 /-- Extra side length is positive in dimension greater than two. -/
-lemma margin_pos (d k : ℕ) (hd : 2 < d) : 0 < margin d k := by
+private lemma extraSide_pos (d k : ℕ) (hd : 2 < d) : 0 < extraSide d k := by
   have hnot : ¬ d ≤ 2 := by omega
-  simp only [margin, hnot, ite_false, one_div]
+  simp only [extraSide, hnot, ite_false, one_div]
   have hden : (0 : ℕ) < 2 ^ (k + 2) * (d - 2) :=
     Nat.mul_pos (Nat.two_pow_pos _) (by omega)
   have hdenR : (0 : ℝ) < (2 ^ (k + 2) * (d - 2) : ℕ) := by exact_mod_cast hden
   exact inv_pos.mpr hdenR
 
 /-- The extra sides contribute at most `2 ^ (-(k + 2))` to the total width. -/
-lemma extraWidth_le (d k : ℕ) (hd : 2 ≤ d) :
-    ((d - 2 : ℕ) : ℝ) * margin d k ≤ (2 ^ (k + 2) : ℝ)⁻¹ := by
+private lemma extraWidth_le (d k : ℕ) (hd : 2 ≤ d) :
+    ((d - 2 : ℕ) : ℝ) * extraSide d k ≤ (2 ^ (k + 2) : ℝ)⁻¹ := by
   by_cases hd2 : d = 2
   · simp only [hd2, Nat.sub_self, Nat.cast_zero, zero_mul]
     positivity
-  · exact (extraWidth d k (by omega)).le
+  · exact (natCast_sub_two_mul_extraSide d k (by omega)).le
 
 /-- Witness rectangle through one strip, with a centered extra window. -/
-def witnessRect (d : ℕ) (_hd : 2 ≤ d) (k : ℕ) (v : Fin 2 → ℝ) (j : ℕ) (hj : 2 ≤ j)
+private def witnessRect (d : ℕ) (_hd : 2 ≤ d) (k : ℕ) (v : Fin 2 → ℝ) (j : ℕ) (hj : 2 ≤ j)
     (z : Fin (d - 2) → ℝ) : OpenRectangle d where
   lower i :=
     if h0 : i.val = 0 then v 0
     else if h1 : i.val = 1 then v 1
     else z ⟨i.val - 2, by
       have hlt : i.val < d := i.isLt
-      omega⟩ - margin d k / 2
+      omega⟩ - extraSide d k / 2
   upper i :=
     if h0 : i.val = 0 then v 0 + stageScale k * (j : ℝ)
     else if h1 : i.val = 1 then v 1 + stageScale k * (stageCount k : ℝ) / (j : ℝ)
     else z ⟨i.val - 2, by
       have hlt : i.val < d := i.isLt
-      omega⟩ + margin d k / 2
+      omega⟩ + extraSide d k / 2
   lower_lt_upper i := by
     by_cases h0 : i.val = 0
     · have hj0 : (0 : ℝ) < (j : ℝ) := by exact_mod_cast (show 0 < j by omega)
@@ -215,19 +214,19 @@ def witnessRect (d : ℕ) (_hd : 2 ≤ d) (k : ℕ) (v : Fin 2 → ℝ) (j : ℕ
         have hj0 : (0 : ℝ) < (j : ℝ) := by exact_mod_cast (show 0 < j by omega)
         rw [dif_neg h0, dif_pos h1, dif_neg h0, dif_pos h1]
         exact lt_add_of_pos_right _ (div_pos (mul_pos (stageScale_pos k) hN) hj0)
-      · have hm : 0 < margin d k := margin_pos d k (by have := i.isLt; omega)
+      · have hm : 0 < extraSide d k := extraSide_pos d k (by have := i.isLt; omega)
         rw [dif_neg h0, dif_neg h1, dif_neg h0, dif_neg h1]
         linarith
 
 /-- Plane side of the witness parallel to the first axis. -/
-lemma witness_side_zero (d : ℕ) (hd : 2 ≤ d) (k : ℕ) (v : Fin 2 → ℝ) (j : ℕ) (hj : 2 ≤ j)
+private lemma witness_side_zero (d : ℕ) (hd : 2 ≤ d) (k : ℕ) (v : Fin 2 → ℝ) (j : ℕ) (hj : 2 ≤ j)
     (z : Fin (d - 2) → ℝ) (i : Fin d) (hi : i.val = 0) :
     (witnessRect d hd k v j hj z).upper i - (witnessRect d hd k v j hj z).lower i =
       stageScale k * (j : ℝ) := by
   simp only [witnessRect, hi, dite_true, add_sub_cancel_left]
 
 /-- Plane side of the witness parallel to the second axis. -/
-lemma witness_side_one (d : ℕ) (hd : 2 ≤ d) (k : ℕ) (v : Fin 2 → ℝ) (j : ℕ) (hj : 2 ≤ j)
+private lemma witness_side_one (d : ℕ) (hd : 2 ≤ d) (k : ℕ) (v : Fin 2 → ℝ) (j : ℕ) (hj : 2 ≤ j)
     (z : Fin (d - 2) → ℝ) (i : Fin d) (hi : i.val = 1) :
     (witnessRect d hd k v j hj z).upper i - (witnessRect d hd k v j hj z).lower i =
       stageScale k * (stageCount k : ℝ) / (j : ℝ) := by
@@ -236,18 +235,18 @@ lemma witness_side_one (d : ℕ) (hd : 2 ≤ d) (k : ℕ) (v : Fin 2 → ℝ) (j
   rw [dif_neg h0, dif_pos hi, dif_neg h0, dif_pos hi]
   exact add_sub_cancel_left _ _
 
-/-- Each extra side of the witness has length `margin`. -/
-lemma witness_side_extra (d : ℕ) (hd : 2 ≤ d) (k : ℕ) (v : Fin 2 → ℝ) (j : ℕ) (hj : 2 ≤ j)
+/-- Each extra side of the witness has length `extraSide`. -/
+private lemma witness_side_extra (d : ℕ) (hd : 2 ≤ d) (k : ℕ) (v : Fin 2 → ℝ) (j : ℕ) (hj : 2 ≤ j)
     (z : Fin (d - 2) → ℝ) (i : Fin d) (hi : ¬ i.val ≤ 1) :
     (witnessRect d hd k v j hj z).upper i - (witnessRect d hd k v j hj z).lower i =
-      margin d k := by
+      extraSide d k := by
   have h0 : i.val ≠ 0 := by omega
   have h1 : i.val ≠ 1 := by omega
   simp only [witnessRect, h0, h1, dite_false]
   ring
 
 /-- The witness is narrower than `2 ^ (-(k + 1))`. -/
-lemma witness_totalWidth_le (d : ℕ) (hd : 2 ≤ d) (k : ℕ) (v : Fin 2 → ℝ) (j : ℕ)
+private lemma witness_totalWidth_le (d : ℕ) (hd : 2 ≤ d) (k : ℕ) (v : Fin 2 → ℝ) (j : ℕ)
     (hj : j ∈ Finset.Icc 2 (stageCount k)) (z : Fin (d - 2) → ℝ) :
     (witnessRect d hd k v j (Finset.mem_Icc.mp hj).1 z).totalWidth ≤
       (1 / 2 : ℝ) ^ (k + 1) := by
@@ -270,33 +269,33 @@ lemma witness_totalWidth_le (d : ℕ) (hd : 2 ≤ d) (k : ℕ) (v : Fin 2 → �
     rw [witness_side_zero d hd k v j (Finset.mem_Icc.mp hj).1 z z0 (by simp [z0]),
       witness_side_one d hd k v j (Finset.mem_Icc.mp hj).1 z z1 (by simp [z1])]
   have hextra : ∑ i ∈ Finset.univ.filter (fun i => ¬ p i), (R.upper i - R.lower i) =
-      ((d - 2 : ℕ) : ℝ) * margin d k := by
+      ((d - 2 : ℕ) : ℝ) * extraSide d k := by
     rw [Finset.sum_congr rfl (fun i hi =>
       witness_side_extra d hd k v j (Finset.mem_Icc.mp hj).1 z i (Finset.mem_filter.mp hi).2)]
     rw [Finset.sum_const, card_extra d hd, nsmul_eq_mul]
   rw [hplane, hextra]
   calc
     stageScale k * (j : ℝ) + stageScale k * (stageCount k : ℝ) / j +
-          ((d - 2 : ℕ) : ℝ) * margin d k
+          ((d - 2 : ℕ) : ℝ) * extraSide d k
         ≤ (2 ^ (k + 2) : ℝ)⁻¹ + (2 ^ (k + 2) : ℝ)⁻¹ :=
           add_le_add (planeWidth_le k j hj) (extraWidth_le d k hd)
     _ = (1 / 2 : ℝ) ^ (k + 1) := by rw [← two_mul, two_mul_inv_pow k]
 
 /-- Intersection of the witness with the corner spike. -/
-def interRect (d : ℕ) (_hd : 2 ≤ d) (k : ℕ) (v : Fin 2 → ℝ) (z : Fin (d - 2) → ℝ) :
+private def interRect (d : ℕ) (_hd : 2 ≤ d) (k : ℕ) (v : Fin 2 → ℝ) (z : Fin (d - 2) → ℝ) :
     OpenRectangle d where
   lower i :=
     if h0 : i.val = 0 then v 0
     else if h1 : i.val = 1 then v 1
     else z ⟨i.val - 2, by
       have hlt : i.val < d := i.isLt
-      omega⟩ - margin d k / 2
+      omega⟩ - extraSide d k / 2
   upper i :=
     if h0 : i.val = 0 then v 0 + stageScale k
     else if h1 : i.val = 1 then v 1 + stageScale k
     else z ⟨i.val - 2, by
       have hlt : i.val < d := i.isLt
-      omega⟩ + margin d k / 2
+      omega⟩ + extraSide d k / 2
   lower_lt_upper i := by
     by_cases h0 : i.val = 0
     · rw [dif_pos h0, dif_pos h0]
@@ -304,18 +303,18 @@ def interRect (d : ℕ) (_hd : 2 ≤ d) (k : ℕ) (v : Fin 2 → ℝ) (z : Fin (
     · by_cases h1 : i.val = 1
       · rw [dif_neg h0, dif_pos h1, dif_neg h0, dif_pos h1]
         exact lt_add_of_pos_right _ (stageScale_pos k)
-      · have hm : 0 < margin d k := margin_pos d k (by have := i.isLt; omega)
+      · have hm : 0 < extraSide d k := extraSide_pos d k (by have := i.isLt; omega)
         rw [dif_neg h0, dif_neg h1, dif_neg h0, dif_neg h1]
         linarith
 
 /-- First plane side of the intersection. -/
-lemma inter_side_zero (d : ℕ) (hd : 2 ≤ d) (k : ℕ) (v : Fin 2 → ℝ) (z : Fin (d - 2) → ℝ)
+private lemma inter_side_zero (d : ℕ) (hd : 2 ≤ d) (k : ℕ) (v : Fin 2 → ℝ) (z : Fin (d - 2) → ℝ)
     (i : Fin d) (hi : i.val = 0) :
     (interRect d hd k v z).upper i - (interRect d hd k v z).lower i = stageScale k := by
   simp only [interRect, hi, dite_true, add_sub_cancel_left]
 
 /-- Second plane side of the intersection. -/
-lemma inter_side_one (d : ℕ) (hd : 2 ≤ d) (k : ℕ) (v : Fin 2 → ℝ) (z : Fin (d - 2) → ℝ)
+private lemma inter_side_one (d : ℕ) (hd : 2 ≤ d) (k : ℕ) (v : Fin 2 → ℝ) (z : Fin (d - 2) → ℝ)
     (i : Fin d) (hi : i.val = 1) :
     (interRect d hd k v z).upper i - (interRect d hd k v z).lower i = stageScale k := by
   have h0 : i.val ≠ 0 := by omega
@@ -323,23 +322,23 @@ lemma inter_side_one (d : ℕ) (hd : 2 ≤ d) (k : ℕ) (v : Fin 2 → ℝ) (z :
   rw [dif_neg h0, dif_pos hi, dif_neg h0, dif_pos hi]
   exact add_sub_cancel_left _ _
 
-/-- Each extra side of the intersection has length `margin`. -/
-lemma inter_side_extra (d : ℕ) (hd : 2 ≤ d) (k : ℕ) (v : Fin 2 → ℝ) (z : Fin (d - 2) → ℝ)
+/-- Each extra side of the intersection has length `extraSide`. -/
+private lemma inter_side_extra (d : ℕ) (hd : 2 ≤ d) (k : ℕ) (v : Fin 2 → ℝ) (z : Fin (d - 2) → ℝ)
     (i : Fin d) (hi : ¬ i.val ≤ 1) :
-    (interRect d hd k v z).upper i - (interRect d hd k v z).lower i = margin d k := by
+    (interRect d hd k v z).upper i - (interRect d hd k v z).lower i = extraSide d k := by
   have h0 : i.val ≠ 0 := by omega
   have h1 : i.val ≠ 1 := by omega
   simp only [interRect, h0, h1, dite_false]
   ring
 
-/-- The extra factor `margin ^ (d - 2)` is positive, and equals one when `d = 2`. -/
-lemma margin_pow_pos (d k : ℕ) (hd : 2 ≤ d) : 0 < margin d k ^ (d - 2) := by
+/-- The extra factor `extraSide ^ (d - 2)` is positive, and equals one when `d = 2`. -/
+private lemma extraSide_pow_pos (d k : ℕ) (hd : 2 ≤ d) : 0 < extraSide d k ^ (d - 2) := by
   by_cases hd2 : d = 2
   · simp [hd2, pow_zero]
-  · exact pow_pos (margin_pos d k (by omega)) _
+  · exact pow_pos (extraSide_pos d k (by omega)) _
 
 /-- Cancelling the strip index leaves `N` times the squared scale. -/
-lemma scale_strip_mul (k j : ℕ) (hj : 0 < j) :
+private lemma scale_strip_mul (k j : ℕ) (hj : 0 < j) :
     (stageScale k * (j : ℝ)) * (stageScale k * (stageCount k : ℝ) / (j : ℝ)) =
       stageScale k ^ 2 * (stageCount k : ℝ) := by
   have hj0 : (j : ℝ) ≠ 0 := by exact_mod_cast hj.ne'
@@ -352,10 +351,10 @@ lemma scale_strip_mul (k j : ℕ) (hj : 0 < j) :
           rw [mul_inv_cancel₀ hj0, mul_one, ← pow_two]
 
 /-- Real volume of a witness. -/
-lemma volume_real_witness (d : ℕ) (hd : 2 ≤ d) (k : ℕ) (v : Fin 2 → ℝ) (j : ℕ)
+private lemma volume_real_witness (d : ℕ) (hd : 2 ≤ d) (k : ℕ) (v : Fin 2 → ℝ) (j : ℕ)
     (hj : j ∈ Finset.Icc 2 (stageCount k)) (z : Fin (d - 2) → ℝ) :
     volume.real (witnessRect d hd k v j (Finset.mem_Icc.mp hj).1 z).carrier =
-      stageScale k ^ 2 * (stageCount k : ℝ) * margin d k ^ (d - 2) := by
+      stageScale k ^ 2 * (stageCount k : ℝ) * extraSide d k ^ (d - 2) := by
   let R := witnessRect d hd k v j (Finset.mem_Icc.mp hj).1 z
   let p : Fin d → Prop := fun i => i.val ≤ 1
   rw [volume_real_sides R]
@@ -375,7 +374,7 @@ lemma volume_real_witness (d : ℕ) (hd : 2 ≤ d) (k : ℕ) (v : Fin 2 → ℝ)
     rw [witness_side_zero d hd k v j (Finset.mem_Icc.mp hj).1 z z0 (by simp [z0]),
       witness_side_one d hd k v j (Finset.mem_Icc.mp hj).1 z z1 (by simp [z1])]
   have hextra : ∏ i ∈ Finset.univ.filter (fun i => ¬ p i), (R.upper i - R.lower i) =
-      margin d k ^ (d - 2) := by
+      extraSide d k ^ (d - 2) := by
     rw [Finset.prod_congr rfl (fun i hi =>
       witness_side_extra d hd k v j (Finset.mem_Icc.mp hj).1 z i (Finset.mem_filter.mp hi).2)]
     rw [Finset.prod_const, card_extra d hd]
@@ -383,9 +382,9 @@ lemma volume_real_witness (d : ℕ) (hd : 2 ≤ d) (k : ℕ) (v : Fin 2 → ℝ)
     exact_mod_cast (show 0 < j by have := (Finset.mem_Icc.mp hj).1; omega))]
 
 /-- Real volume of the spike inside a witness. -/
-lemma volume_real_inter (d : ℕ) (hd : 2 ≤ d) (k : ℕ) (v : Fin 2 → ℝ) (z : Fin (d - 2) → ℝ) :
+private lemma volume_real_inter (d : ℕ) (hd : 2 ≤ d) (k : ℕ) (v : Fin 2 → ℝ) (z : Fin (d - 2) → ℝ) :
     volume.real (interRect d hd k v z).carrier =
-      stageScale k ^ 2 * margin d k ^ (d - 2) := by
+      stageScale k ^ 2 * extraSide d k ^ (d - 2) := by
   let R := interRect d hd k v z
   let p : Fin d → Prop := fun i => i.val ≤ 1
   rw [volume_real_sides R]
@@ -405,14 +404,14 @@ lemma volume_real_inter (d : ℕ) (hd : 2 ≤ d) (k : ℕ) (v : Fin 2 → ℝ) (
     rw [inter_side_zero d hd k v z z0 (by simp [z0]),
       inter_side_one d hd k v z z1 (by simp [z1])]
   have hextra : ∏ i ∈ Finset.univ.filter (fun i => ¬ p i), (R.upper i - R.lower i) =
-      margin d k ^ (d - 2) := by
+      extraSide d k ^ (d - 2) := by
     rw [Finset.prod_congr rfl (fun i hi =>
       inter_side_extra d hd k v z i (Finset.mem_filter.mp hi).2)]
     rw [Finset.prod_const, card_extra d hd]
   rw [hplane, hextra, ← pow_two]
 
 /-- The witness meets the spike in the corner rectangle. -/
-lemma carrier_inter_eq (d : ℕ) (hd : 2 ≤ d) (k : ℕ) (v : Fin 2 → ℝ) (j : ℕ)
+private lemma carrier_inter_eq (d : ℕ) (hd : 2 ≤ d) (k : ℕ) (v : Fin 2 → ℝ) (j : ℕ)
     (hj : j ∈ Finset.Icc 2 (stageCount k)) (z : Fin (d - 2) → ℝ) (hz : z ∈ extraSet d k) :
     (witnessRect d hd k v j (Finset.mem_Icc.mp hj).1 z).carrier ∩
         (spikeRect d hd k v).carrier =
@@ -434,7 +433,7 @@ lemma carrier_inter_eq (d : ℕ) (hd : 2 ≤ d) (k : ℕ) (v : Fin 2 → ℝ) (j
           mul_le_mul_of_nonneg_left hle hτ.le
       _ = stageScale k * (stageCount k : ℝ) / j := by rw [mul_div_assoc]
   have hzpi : ∀ t : Fin (d - 2),
-      margin d k / 2 < z t ∧ z t < 1 - margin d k / 2 := by
+      extraSide d k / 2 < z t ∧ z t < 1 - extraSide d k / 2 := by
     intro t
     rw [extraSet, Set.mem_univ_pi] at hz
     exact Set.mem_Ioo.mp (hz t)
@@ -522,18 +521,18 @@ lemma carrier_inter_eq (d : ℕ) (hd : 2 ≤ d) (k : ℕ) (v : Fin 2 → ℝ) (j
           constructor <;> linarith
 
 /-- Integral of one spike over its witness. -/
-lemma integral_bump_witness (d : ℕ) (hd : 2 ≤ d) (k : ℕ) (v : Fin 2 → ℝ) (j : ℕ)
+private lemma integral_spike_witness (d : ℕ) (hd : 2 ≤ d) (k : ℕ) (v : Fin 2 → ℝ) (j : ℕ)
     (hj : j ∈ Finset.Icc 2 (stageCount k)) (z : Fin (d - 2) → ℝ) (hz : z ∈ extraSet d k) :
-    ∫ y in (witnessRect d hd k v j (Finset.mem_Icc.mp hj).1 z).carrier, bump d hd k v y =
+    ∫ y in (witnessRect d hd k v j (Finset.mem_Icc.mp hj).1 z).carrier, spike d hd k v y =
       spikeHeight k * volume.real (interRect d hd k v z).carrier := by
-  unfold bump
+  unfold spike
   rw [setIntegral_indicator (spikeRect d hd k v).measurableSet_carrier,
     carrier_inter_eq d hd k v j hj z hz, setIntegral_const, smul_eq_mul, mul_comm]
 
 /-- The spike average on a witness equals the stage height. -/
-lemma average_bump_witness (d : ℕ) (hd : 2 ≤ d) (k : ℕ) (v : Fin 2 → ℝ) (j : ℕ)
+private lemma average_spike_witness (d : ℕ) (hd : 2 ≤ d) (k : ℕ) (v : Fin 2 → ℝ) (j : ℕ)
     (hj : j ∈ Finset.Icc 2 (stageCount k)) (z : Fin (d - 2) → ℝ) (hz : z ∈ extraSet d k) :
-    (witnessRect d hd k v j (Finset.mem_Icc.mp hj).1 z).average (bump d hd k v) =
+    (witnessRect d hd k v j (Finset.mem_Icc.mp hj).1 z).average (spike d hd k v) =
       stageHeight k := by
   let W := witnessRect d hd k v j (Finset.mem_Icc.mp hj).1 z
   let I := interRect d hd k v z
@@ -542,11 +541,11 @@ lemma average_bump_witness (d : ℕ) (hd : 2 ≤ d) (k : ℕ) (v : Fin 2 → ℝ
     ac_rfl
   have hIpos : 0 < volume.real I.carrier := by
     rw [volume_real_inter d hd k v z]
-    exact mul_pos (pow_pos (stageScale_pos k) 2) (margin_pow_pos d k hd)
+    exact mul_pos (pow_pos (stageScale_pos k) 2) (extraSide_pow_pos d k hd)
   have hN : (stageCount k : ℝ) ≠ 0 := by
     exact_mod_cast (Nat.two_pow_pos (stageLog k) : 0 < stageCount k).ne'
   unfold OpenRectangle.average
-  rw [← measureReal_def, integral_bump_witness d hd k v j hj z hz, hrel]
+  rw [← measureReal_def, integral_spike_witness d hd k v j hj z hz, hrel]
   calc
     ((stageCount k : ℝ) * volume.real I.carrier)⁻¹ *
           (spikeHeight k * volume.real I.carrier)
@@ -561,7 +560,7 @@ lemma average_bump_witness (d : ℕ) (hd : 2 ≤ d) (k : ℕ) (v : Fin 2 → ℝ
           rw [spikeHeight, mul_div_cancel_right₀ _ hN]
 
 /-- On a stage set the Saks average over some narrow witness is at least the stage height. -/
-lemma exists_stage_rectangle (d : ℕ) (hd : 2 ≤ d) (k : ℕ) (x : Fin d → ℝ)
+private lemma exists_stage_rectangle (d : ℕ) (hd : 2 ≤ d) (k : ℕ) (x : Fin d → ℝ)
     (hx : x ∈ stageSet d k hd) :
     ∃ R : OpenRectangle d, x ∈ R.carrier ∧ R.totalWidth ≤ (1 / 2 : ℝ) ^ (k + 1) ∧
       stageHeight k ≤ R.average (saks d hd) := by
@@ -633,17 +632,18 @@ lemma exists_stage_rectangle (d : ℕ) (hd : 2 ≤ d) (k : ℕ) (x : Fin d → �
           omega
         rw [dite_eq_right h0, dite_eq_right h1, dite_eq_right h0, dite_eq_right h1]
         rw [← htE]
-        have hm : 0 < margin d k := margin_pos d k (by have := t.isLt; omega)
+        have hm : 0 < extraSide d k := extraSide_pos d k (by have := t.isLt; omega)
         constructor <;> linarith
-  · have hae : bump d hd k v ≤ᵐ[volume] saks d hd := by
-      filter_upwards [ae_lt_top (measurable_raw d hd) (lintegral_raw_ne_top d hd)] with w hw
-      exact bump_le_saks d hd k i w (lt_top_iff_ne_top.mp hw)
-    have hmono : ∫ w in R.carrier, bump d hd k v w ≤ ∫ w in R.carrier, saks d hd w :=
-      setIntegral_mono_ae (integrable_bump d hd k v).integrableOn
+  · have hae : spike d hd k v ≤ᵐ[volume] saks d hd := by
+      filter_upwards [ae_lt_top (measurable_spikeSum d hd) (lintegral_spikeSum_ne_top d hd)]
+        with w hw
+      exact spike_le_saks d hd k i w (lt_top_iff_ne_top.mp hw)
+    have hmono : ∫ w in R.carrier, spike d hd k v w ≤ ∫ w in R.carrier, saks d hd w :=
+      setIntegral_mono_ae (integrable_spike d hd k v).integrableOn
         (integrable_saks d hd).integrableOn hae
-    have havgB : R.average (bump d hd k v) = stageHeight k :=
-      average_bump_witness d hd k v j hj z hz
-    have hge : R.average (bump d hd k v) ≤ R.average (saks d hd) := by
+    have havgB : R.average (spike d hd k v) = stageHeight k :=
+      average_spike_witness d hd k v j hj z hz
+    have hge : R.average (spike d hd k v) ≤ R.average (saks d hd) := by
       unfold OpenRectangle.average
       exact mul_le_mul_of_nonneg_left hmono
         (inv_nonneg.mpr ENNReal.toReal_nonneg)
@@ -680,15 +680,5 @@ lemma not_rectanglesDifferentiateAt_on_limsup (d : ℕ) (hd : 2 ≤ d) {x : Fin 
     rw [abs_of_pos hpos]
     linarith
   linarith [habs, hδ R hxR hδR]
-
-/-- In dimension at least two the strong basis does not differentiate `L¹`. -/
-theorem exists_integrable_not_rectangularlyDifferentiable {d : ℕ} (hd : 2 ≤ d) :
-    ∃ f : (Fin d → ℝ) → ℝ, Measurable f ∧ Integrable f volume ∧
-      0 < volume {x | ¬ RectanglesDifferentiateAt f x} := by
-  refine ⟨saks d hd, measurable_saks d hd, integrable_saks d hd, ?_⟩
-  have hsub : limsupSet d hd ⊆ {x | ¬ RectanglesDifferentiateAt (saks d hd) x} :=
-    fun _ hx => not_rectanglesDifferentiateAt_on_limsup d hd hx
-  exact (ENNReal.ofReal_pos.mpr (by norm_num : (0 : ℝ) < 3 / 32)).trans_le
-    ((volume_limsupSet_ge d hd).trans (measure_mono hsub))
 
 end CKMA.Bohr

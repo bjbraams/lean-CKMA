@@ -60,7 +60,7 @@ def schafferPair (T : H →L[ℂ] H) :
     · simp [map_smul, smul_add]
 
 /-- Evaluation of the Schäffer pair. -/
-theorem schafferPair_apply (T : H →L[ℂ] H) (h : H) (f : lp (fun _ : ℕ => H) 2) :
+private theorem schafferPair_apply (T : H →L[ℂ] H) (h : H) (f : lp (fun _ : ℕ => H) 2) :
     schafferPair T (h, f) =
       (T h, l2InsertZero (defectOperator T h) + l2ShiftRight f) :=
   rfl
@@ -72,7 +72,7 @@ def schafferLinear (T : H →L[ℂ] H) : SchafferSpace H →ₗ[ℂ] SchafferSpa
     (WithLp.linearEquiv 2 ℂ (H × lp (fun _ : ℕ => H) 2)).toLinearMap
 
 /-- Evaluation of Schäffer's operator. -/
-theorem schafferLinear_apply (T : H →L[ℂ] H) (z : SchafferSpace H) :
+private theorem schafferLinear_apply (T : H →L[ℂ] H) (z : SchafferSpace H) :
     schafferLinear T z = WithLp.toLp 2
       (T z.fst, l2InsertZero (defectOperator T z.fst) + l2ShiftRight z.snd) := by
   simp [schafferLinear, schafferPair, WithLp.linearEquiv_apply,
@@ -99,7 +99,7 @@ def schafferIsometry (T : H →L[ℂ] H) (hT : ‖T‖ ≤ 1) :
   norm_map' := norm_schafferLinear T hT
 
 /-- Evaluation of the isometric coextension. -/
-theorem schafferIsometry_apply (T : H →L[ℂ] H) (hT : ‖T‖ ≤ 1) (z : SchafferSpace H) :
+private theorem schafferIsometry_apply (T : H →L[ℂ] H) (hT : ‖T‖ ≤ 1) (z : SchafferSpace H) :
     schafferIsometry T hT z = schafferLinear T z :=
   rfl
 
@@ -110,7 +110,7 @@ def schafferEmbedLinear : H →ₗ[ℂ] SchafferSpace H :=
 
 omit [CompleteSpace H] in
 /-- The embedding sends `x` to `(x, 0)`. -/
-theorem schafferEmbedLinear_apply (x : H) :
+private theorem schafferEmbedLinear_apply (x : H) :
     schafferEmbedLinear x = WithLp.toLp 2 (x, 0) := by
   simp [schafferEmbedLinear, WithLp.linearEquiv_symm_apply]
 
@@ -127,11 +127,11 @@ def schafferEmbed : H →ₗᵢ[ℂ] SchafferSpace H where
 
 omit [CompleteSpace H] in
 /-- Evaluation of the isometric embedding. -/
-theorem schafferEmbed_apply (x : H) : schafferEmbed x = schafferEmbedLinear x :=
+private theorem schafferEmbed_apply (x : H) : schafferEmbed x = schafferEmbedLinear x :=
   rfl
 
 /-- The adjoint of the embedding is projection onto the first summand. -/
-theorem schafferEmbed_adjoint_apply (z : SchafferSpace H) :
+private theorem schafferEmbed_adjoint_apply (z : SchafferSpace H) :
     schafferEmbed.toContinuousLinearMap.adjoint z = z.fst := by
   refine ext_inner_right ℂ fun x => ?_
   rw [ContinuousLinearMap.adjoint_inner_left, LinearIsometry.coe_toContinuousLinearMap]

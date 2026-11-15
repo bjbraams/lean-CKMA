@@ -21,13 +21,13 @@ map `ℝ → ℝ`. Source: GAPS 05.10.
 
 ## Main definitions
 
-* `CKMA.Dini.uniformCross`: points where short right slopes lie below `p` and short left slopes
+* `uniformCross`: points where short right slopes lie below `p` and short left slopes
   lie above `p`.
 
 ## Main results
 
-* `CKMA.Dini.countable_lt_upperRight_lowerLeft`,
-  `CKMA.Dini.countable_lt_upperLeft_lowerRight`: countability of strict opposite-side Dini
+* `countable_lt_upperRight_lowerLeft`,
+  `countable_lt_upperLeft_lowerRight`: countability of strict opposite-side Dini
   inequalities.
 * `CKMA.Dini.volume_lt_upperRight_lowerLeft`,
   `CKMA.Dini.volume_lt_upperLeft_lowerRight`: Lebesgue nullity of strict opposite-side Dini
@@ -44,18 +44,18 @@ open Set Filter Topology MeasureTheory
 
 /-- Points at which every right increment of length at most `1/(n + 1)` has slope `< p` and every
 left increment of that length has slope `> p`. -/
-def uniformCross (f : ℝ → ℝ) (p : ℚ) (n : ℕ) : Set ℝ :=
+private def uniformCross (f : ℝ → ℝ) (p : ℚ) (n : ℕ) : Set ℝ :=
   {x | (∀ h, 0 < h → h ≤ (1 : ℝ) / (n + 1) → (f (x + h) - f x) / h < p) ∧
     (∀ h, -(1 : ℝ) / (n + 1) ≤ h → h < 0 → p < (f (x + h) - f x) / h)}
 
 /-- A short negative increment is at least `-1 / (n + 1)` when the distance is at most that. -/
-lemma neg_div_le_of_sub_le {n : ℕ} {d : ℝ} (hd : d ≤ (1 : ℝ) / (n + 1)) :
+private lemma neg_div_le_of_sub_le {n : ℕ} {d : ℝ} (hd : d ≤ (1 : ℝ) / (n + 1)) :
     -(1 : ℝ) / (n + 1) ≤ -d := by
   rw [neg_div ((n : ℝ) + 1) (1 : ℝ)]
   exact neg_le_neg hd
 
 /-- A uniformly crossed set is separated by `1/(n + 1)`. -/
-lemma uniformCross_separated (f : ℝ → ℝ) (p : ℚ) (n : ℕ) :
+private lemma uniformCross_separated (f : ℝ → ℝ) (p : ℚ) (n : ℕ) :
     (uniformCross f p n).Pairwise (fun x y => (1 : ℝ) / (n + 1) < |x - y|) := by
   intro x hx y hy hxy
   set δ : ℝ := (1 : ℝ) / (n + 1)
@@ -108,7 +108,7 @@ lemma uniformCross_separated (f : ℝ → ℝ) (p : ℚ) (n : ℕ) :
     linarith [differenceQuotient_rev f y x]
 
 /-- A separated subset of `ℝ` is countable. -/
-lemma countable_of_separated {s : Set ℝ} {δ : ℝ} (hδ : 0 < δ)
+private lemma countable_of_separated {s : Set ℝ} {δ : ℝ} (hδ : 0 < δ)
     (hsep : s.Pairwise fun x y => δ < |x - y|) : s.Countable := by
   refine Set.PairwiseDisjoint.countable_of_Ioo (y := fun x => x + δ / 2)
     (fun x hx y hy hxy => ?_) (fun x _ => by linarith)
@@ -133,13 +133,13 @@ lemma countable_of_separated {s : Set ℝ} {δ : ℝ} (hδ : 0 < δ)
     exact (not_lt_of_gt (hsep hx hy hxy)) hlt
 
 /-- Each uniformly crossed set is countable. -/
-lemma uniformCross_countable (f : ℝ → ℝ) (p : ℚ) (n : ℕ) :
+private lemma uniformCross_countable (f : ℝ → ℝ) (p : ℚ) (n : ℕ) :
     (uniformCross f p n).Countable :=
   countable_of_separated (by positivity : (0 : ℝ) < 1 / (n + 1))
     (uniformCross_separated f p n)
 
 /-- The extended difference quotient changes sign with `f`. -/
-lemma extendedDifferenceQuotient_neg (f : ℝ → ℝ) (x h : ℝ) :
+private lemma extendedDifferenceQuotient_neg (f : ℝ → ℝ) (x h : ℝ) :
     extendedDifferenceQuotient (-f) x h = -extendedDifferenceQuotient f x h := by
   unfold extendedDifferenceQuotient
   rw [← EReal.coe_neg]
@@ -157,7 +157,7 @@ lemma upperRightDiniDerivative_neg (f : ℝ → ℝ) (x : ℝ) :
   rw [hfun, EReal.limsup_neg]
 
 /-- Negation swaps the lower right and upper right Dini derivatives, up to sign. -/
-lemma lowerRightDiniDerivative_neg (f : ℝ → ℝ) (x : ℝ) :
+private lemma lowerRightDiniDerivative_neg (f : ℝ → ℝ) (x : ℝ) :
     lowerRightDiniDerivative (-f) x = -upperRightDiniDerivative f x := by
   unfold lowerRightDiniDerivative upperRightDiniDerivative
   have hfun : extendedDifferenceQuotient (-f) x = -extendedDifferenceQuotient f x := by
@@ -166,7 +166,7 @@ lemma lowerRightDiniDerivative_neg (f : ℝ → ℝ) (x : ℝ) :
   rw [hfun, EReal.liminf_neg]
 
 /-- Negation swaps the upper left and lower left Dini derivatives, up to sign. -/
-lemma upperLeftDiniDerivative_neg (f : ℝ → ℝ) (x : ℝ) :
+private lemma upperLeftDiniDerivative_neg (f : ℝ → ℝ) (x : ℝ) :
     upperLeftDiniDerivative (-f) x = -lowerLeftDiniDerivative f x := by
   unfold upperLeftDiniDerivative lowerLeftDiniDerivative
   have hfun : extendedDifferenceQuotient (-f) x = -extendedDifferenceQuotient f x := by
@@ -185,7 +185,7 @@ lemma lowerLeftDiniDerivative_neg (f : ℝ → ℝ) (x : ℝ) :
 
 /-- Where the upper right derivative is strictly below the lower left derivative, the set is
 countable. -/
-theorem countable_lt_upperRight_lowerLeft (f : ℝ → ℝ) :
+private theorem countable_lt_upperRight_lowerLeft (f : ℝ → ℝ) :
     {x | upperRightDiniDerivative f x < lowerLeftDiniDerivative f x}.Countable := by
   refine Countable.mono ?_ (countable_iUnion fun p : ℚ =>
     countable_iUnion fun n : ℕ => uniformCross_countable f p n)
@@ -235,7 +235,7 @@ theorem countable_lt_upperRight_lowerLeft (f : ℝ → ℝ) :
     exact hquot
 
 /-- Exchanging the two sides is negation of the function. -/
-theorem countable_lt_upperLeft_lowerRight (f : ℝ → ℝ) :
+private theorem countable_lt_upperLeft_lowerRight (f : ℝ → ℝ) :
     {x | upperLeftDiniDerivative f x < lowerRightDiniDerivative f x}.Countable :=
   (countable_lt_upperRight_lowerLeft (-f)).mono fun x hx => by
     change upperRightDiniDerivative (-f) x < lowerLeftDiniDerivative (-f) x
@@ -253,3 +253,16 @@ theorem volume_lt_upperLeft_lowerRight (f : ℝ → ℝ) :
   (countable_lt_upperLeft_lowerRight f).measure_zero volume
 
 end CKMA.Dini
+
+namespace CKMA
+
+@[deprecated (since := "2026-11-15")]
+alias upperRightDiniDerivative_neg := Dini.upperRightDiniDerivative_neg
+@[deprecated (since := "2026-11-15")]
+alias lowerLeftDiniDerivative_neg := Dini.lowerLeftDiniDerivative_neg
+@[deprecated (since := "2026-11-15")]
+alias volume_lt_upperRight_lowerLeft := Dini.volume_lt_upperRight_lowerLeft
+@[deprecated (since := "2026-11-15")]
+alias volume_lt_upperLeft_lowerRight := Dini.volume_lt_upperLeft_lowerRight
+
+end CKMA

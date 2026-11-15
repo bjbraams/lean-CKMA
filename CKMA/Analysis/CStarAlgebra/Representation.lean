@@ -249,7 +249,26 @@ theorem existsUnique_cyclicRepresentation_equiv
 with closed image. The larger universe permits the Hilbert sum over all states. -/
 theorem exists_isometric_representation (A : Type u) [NonUnitalCStarAlgebra A] :
     ∃ H : ComplexHilbertSpace.{u + 1},
-      ∃ π : A →⋆ₙₐ[ℂ] (H.carrier →L[ℂ] H.carrier), Isometry π ∧ IsClosed (Set.range π) :=
-  exists_isometric_representation_gns (A := A)
+      ∃ π : A →⋆ₙₐ[ℂ] (H.carrier →L[ℂ] H.carrier), Isometry π ∧ IsClosed (Set.range π) := by
+  let B := Unitization ℂ A
+  let : PartialOrder B := CStarAlgebra.spectralOrder B
+  have : StarOrderedRing B := CStarAlgebra.spectralOrderedRing B
+  have : Nontrivial B := NormOneClass.nontrivial
+  obtain ⟨H, pi, hIso, _⟩ := exists_isometric_representation_unital (A := B)
+  let rho : A →⋆ₙₐ[ℂ] (H.carrier →L[ℂ] H.carrier) :=
+    pi.comp (Unitization.inrNonUnitalStarAlgHom ℂ A)
+  have hnorm : ∀ a : A, ‖rho a‖ = ‖a‖ := by
+    intro a
+    have hpi : ‖pi (a : B)‖ = ‖(a : B)‖ := by
+      simpa [dist_eq_norm, map_zero pi, sub_zero] using hIso.dist_eq (a : B) 0
+    have hr : rho a = pi (a : B) := by
+      simp only [rho, NonUnitalStarAlgHom.comp_apply]
+      rw [Unitization.inrNonUnitalStarAlgHom_apply]
+    rw [hr, hpi, Unitization.norm_inr]
+  have hrho : Isometry rho := AddMonoidHomClass.isometry_of_norm rho hnorm
+  exact ⟨H, rho, hrho, hrho.isClosedEmbedding.isClosed_range⟩
+
+@[deprecated (since := "2026-11-15")]
+alias exists_isometric_representation_gns := exists_isometric_representation
 
 end CKMA

@@ -69,7 +69,7 @@ instance amWeakDualLocallyConvex (E : Type u) [NormedAddCommGroup E] [NormedSpac
 
 include he0 hball in
 /-- A closed ball equal to `[-e, e]` forces every vector under the unit. -/
-theorem abs_le_smul_amUnit (x : E) : |x| ≤ ‖x‖ • e := by
+private theorem abs_le_smul_amUnit (x : E) : |x| ≤ ‖x‖ • e := by
   rcases eq_or_ne x 0 with rfl | hx
   · simp
   · have hn : ‖x‖ ≠ 0 := norm_ne_zero_iff.mpr hx
@@ -87,14 +87,14 @@ theorem abs_le_smul_amUnit (x : E) : |x| ≤ ‖x‖ • e := by
 
 include he0 hball in
 /-- The AM unit has norm at most one. -/
-theorem amUnit_norm_le_one : ‖e‖ ≤ 1 := by
+private theorem amUnit_norm_le_one : ‖e‖ ≤ 1 := by
   have hmem : e ∈ Icc (-e) e := ⟨le_trans (neg_nonpos.mpr he0) he0, le_rfl⟩
   rw [← hball, mem_closedBall_iff_norm] at hmem
   simpa using hmem
 
 include he0 hball in
 /-- A nonzero AM unit is a norm-one vector. -/
-theorem amUnit_norm_eq_one (he : e ≠ 0) : ‖e‖ = 1 := by
+private theorem amUnit_norm_eq_one (he : e ≠ 0) : ‖e‖ = 1 := by
   apply le_antisymm (amUnit_norm_le_one he0 hball)
   have habs : e ≤ ‖e‖ • e := by
     simpa [abs_of_nonneg he0] using abs_le_smul_amUnit he0 hball e
@@ -112,7 +112,7 @@ theorem amUnit_norm_eq_one (he : e ≠ 0) : ‖e‖ = 1 := by
 
 include he0 hball in
 /-- The zero AM unit occurs only for the zero space. -/
-theorem subsingleton_of_amUnit_eq_zero (he : e = 0) : Subsingleton E := by
+private theorem subsingleton_of_amUnit_eq_zero (he : e = 0) : Subsingleton E := by
   refine subsingleton_of_forall_eq 0 fun x => ?_
   by_contra hx
   have hn : ‖x‖ ≠ 0 := norm_ne_zero_iff.mpr hx
@@ -127,7 +127,7 @@ theorem subsingleton_of_amUnit_eq_zero (he : e = 0) : Subsingleton E := by
 
 include he0 hball in
 /-- A positive continuous linear functional attains its norm on the AM unit. -/
-theorem amPositive_opNorm_eq (he : e ≠ 0) (φ : E →L[ℝ] ℝ)
+private theorem amPositive_opNorm_eq (he : e ≠ 0) (φ : E →L[ℝ] ℝ)
     (hpos : ∀ x, 0 ≤ x → 0 ≤ φ x) : ‖φ‖ = φ e := by
   have hmono : Monotone φ := by
     intro a b hab
@@ -158,7 +158,7 @@ theorem amPositive_opNorm_eq (he : e ≠ 0) (φ : E →L[ℝ] ℝ)
   exact le_antisymm hle hge
 
 /-- Norm of the positive part. -/
-theorem posNorm_le_norm (y : E) : ‖y⁺‖ ≤ ‖y‖ := by
+private theorem posNorm_le_norm (y : E) : ‖y⁺‖ ≤ ‖y‖ := by
   apply norm_le_norm_of_abs_le_abs
   rw [abs_of_nonneg (posPart_nonneg y)]
   calc
@@ -166,7 +166,7 @@ theorem posNorm_le_norm (y : E) : ‖y⁺‖ ≤ ‖y‖ := by
     _ = |y| := posPart_add_negPart y
 
 /-- The positive-part norm is sublinear. -/
-theorem posNorm_add_le (y₁ y₂ : E) : ‖(y₁ + y₂)⁺‖ ≤ ‖y₁⁺‖ + ‖y₂⁺‖ := by
+private theorem posNorm_add_le (y₁ y₂ : E) : ‖(y₁ + y₂)⁺‖ ≤ ‖y₁⁺‖ + ‖y₂⁺‖ := by
   have hle : (y₁ + y₂)⁺ ≤ y₁⁺ + y₂⁺ :=
     sup_le (add_le_add (le_posPart y₁) (le_posPart y₂))
       (add_nonneg (posPart_nonneg y₁) (posPart_nonneg y₂))
@@ -178,13 +178,13 @@ theorem posNorm_add_le (y₁ y₂ : E) : ‖(y₁ + y₂)⁺‖ ≤ ‖y₁⁺�
   exact hnorm.trans (norm_add_le _ _)
 
 /-- Positive-part norm is positively homogeneous. -/
-theorem posNorm_smul {c : ℝ} (hc : 0 < c) (y : E) : ‖(c • y)⁺‖ = c * ‖y⁺‖ := by
+private theorem posNorm_smul {c : ℝ} (hc : 0 < c) (y : E) : ‖(c • y)⁺‖ = c * ‖y⁺‖ := by
   rw [posPart_smul_of_nonneg hc.le, norm_smul, Real.norm_eq_abs, abs_of_pos hc]
 
 include he0 hball in
 set_option backward.isDefEq.respectTransparency false in
 /-- A positive norm-one state normalizing a given positive vector. -/
-theorem exists_amState_norming (he : e ≠ 0) {x : E} (hx0 : 0 ≤ x) (hx : x ≠ 0) :
+private theorem exists_amState_norming (he : e ≠ 0) {x : E} (hx0 : 0 ≤ x) (hx : x ≠ 0) :
     ∃ φ : WeakDual ℝ E, (∀ y, 0 ≤ y → 0 ≤ φ y) ∧ φ e = 1 ∧ φ x = ‖x‖ := by
   let N : E → ℝ := fun y => ‖y⁺‖
   have hNadd : ∀ y₁ y₂, N (y₁ + y₂) ≤ N y₁ + N y₂ := posNorm_add_le
@@ -197,7 +197,7 @@ theorem exists_amState_norming (he : e ≠ 0) {x : E} (hx0 : 0 ≤ x) (hx : x �
     rw [LinearPMap.mkSpanSingleton'_apply, RingHom.id_apply, smul_eq_mul]
     rcases le_or_gt c 0 with hc | hc
     · have hnonpos : c • x ≤ 0 := smul_nonpos_of_nonpos_of_nonneg hc hx0
-      simp [N, posPart_eq_zero_of_nonpos hnonpos,
+      simp [N, posPart_of_nonpos hnonpos,
         mul_nonpos_of_nonpos_of_nonneg hc (norm_nonneg x)]
     · simp [N, posPart_smul_of_nonneg hc.le, hx0, norm_smul, Real.norm_eq_abs, abs_of_pos hc])
   obtain ⟨φ, hφdom, hφle⟩ := hExt
@@ -208,7 +208,7 @@ theorem exists_amState_norming (he : e ≠ 0) {x : E} (hx0 : 0 ≤ x) (hx : x �
     intro y hy
     have hneg : φ (-y) ≤ N (-y) := hφle (-y)
     have hNy : N (-y) = 0 := by
-      simp [N, posPart_neg, negPart_eq_zero_of_nonneg hy]
+      simp [N, posPart_neg, negPart_of_nonneg hy]
     rw [map_neg] at hneg
     linarith
   have hbound : ∀ y, ‖φ y‖ ≤ 1 * ‖y‖ := by
@@ -249,7 +249,7 @@ theorem exists_amState_norming (he : e ≠ 0) {x : E} (hx0 : 0 ≤ x) (hx : x �
     by simpa using hψx⟩
 
 /-- Pointwise formula for a real convex combination in the weak-star dual. -/
-theorem amWeakDual_combine (φ ψ : WeakDual ℝ E) (a b : ℝ) (x : E) :
+private theorem amWeakDual_combine (φ ψ : WeakDual ℝ E) (a b : ℝ) (x : E) :
     (a • φ + b • ψ) x = a * φ x + b * ψ x := by
   rw [← toStrongDual_apply (a • φ + b • ψ), LinearEquiv.map_add, LinearEquiv.map_smul,
     LinearEquiv.map_smul, IsAddApply.add_apply, IsSMulApply.smul_apply, IsSMulApply.smul_apply,
@@ -260,7 +260,7 @@ def amStateSet (e : E) : Set (WeakDual ℝ E) :=
   {φ | (∀ x, 0 ≤ x → 0 ≤ φ x) ∧ φ e = 1}
 
 /-- The state space is weak-star closed. -/
-theorem isClosed_amStateSet : IsClosed (amStateSet e) := by
+private theorem isClosed_amStateSet : IsClosed (amStateSet e) := by
   have hEq : IsClosed {φ : WeakDual ℝ E | φ e = 1} :=
     isClosed_eq (eval_continuous e) continuous_const
   have hPos : IsClosed {φ : WeakDual ℝ E | ∀ x, 0 ≤ x → 0 ≤ φ x} := by
@@ -273,7 +273,7 @@ theorem isClosed_amStateSet : IsClosed (amStateSet e) := by
   simpa [amStateSet, ofPred_and] using hPos.inter hEq
 
 /-- The state space is convex. -/
-theorem convex_amStateSet : Convex ℝ (amStateSet e) := by
+private theorem convex_amStateSet : Convex ℝ (amStateSet e) := by
   intro φ hφ ψ hψ a b ha hb hab
   refine ⟨fun x hx => ?_, ?_⟩
   · have hsum : 0 ≤ a * φ x + b * ψ x :=
@@ -284,13 +284,13 @@ theorem convex_amStateSet : Convex ℝ (amStateSet e) := by
 
 include he0 hball in
 /-- A nonzero AM unit admits a state. -/
-theorem amStateSet_nonempty (he : e ≠ 0) : (amStateSet e).Nonempty := by
+private theorem amStateSet_nonempty (he : e ≠ 0) : (amStateSet e).Nonempty := by
   obtain ⟨φ, hpos, heφ, -⟩ := exists_amState_norming he0 hball he he0 he
   exact ⟨φ, hpos, heφ⟩
 
 include he0 hball in
 /-- Every state has dual norm one. -/
-theorem amState_opNorm_eq (he : e ≠ 0) {φ : WeakDual ℝ E} (hφ : φ ∈ amStateSet e) :
+private theorem amState_opNorm_eq (he : e ≠ 0) {φ : WeakDual ℝ E} (hφ : φ ∈ amStateSet e) :
     ‖φ.toStrongDual‖ = 1 := by
   have hpos : ∀ x, 0 ≤ x → 0 ≤ φ.toStrongDual x := fun x hx => by simpa using hφ.1 x hx
   simpa [hφ.2] using amPositive_opNorm_eq he0 hball he φ.toStrongDual hpos
@@ -306,19 +306,19 @@ theorem isCompact_amStateSet (he : e ≠ 0) : IsCompact (amStateSet e) := by
     isClosed_amStateSet hsub
 
 /-- Vectors dominated by the test vector and by the argument. -/
-def truncAdmissible (v y : E) : Set E :=
+private def truncAdmissible (v y : E) : Set E :=
   {z | 0 ≤ z ∧ z ≤ y ∧ ∃ c : ℝ, 0 ≤ c ∧ z ≤ c • v}
 
 /-- The truncated supremum of a scalar functional. -/
-def truncSup (φ : E →ₗ[ℝ] ℝ) (v y : E) : ℝ :=
+private def truncSup (φ : E →ₗ[ℝ] ℝ) (v y : E) : ℝ :=
   sSup (φ '' truncAdmissible v y)
 
 /-- Zero is an admissible truncation. -/
-theorem zero_mem_truncAdmissible {v y : E} (hy : 0 ≤ y) : (0 : E) ∈ truncAdmissible v y :=
+private theorem zero_mem_truncAdmissible {v y : E} (hy : 0 ≤ y) : (0 : E) ∈ truncAdmissible v y :=
   ⟨le_rfl, hy, 0, le_rfl, by simp⟩
 
 /-- Only zero is admissible under the zero vector. -/
-theorem truncAdmissible_zero (v : E) : truncAdmissible v (0 : E) = {0} := by
+private theorem truncAdmissible_zero (v : E) : truncAdmissible v (0 : E) = {0} := by
   ext z
   constructor
   · rintro ⟨hz0, hzle, _⟩
@@ -327,17 +327,17 @@ theorem truncAdmissible_zero (v : E) : truncAdmissible v (0 : E) = {0} := by
     exact ⟨le_rfl, le_rfl, 0, le_rfl, by simp⟩
 
 /-- The truncated image is nonempty for a nonnegative argument. -/
-theorem truncImage_nonempty (φ : E →ₗ[ℝ] ℝ) (v : E) {y : E} (hy : 0 ≤ y) :
+private theorem truncImage_nonempty (φ : E →ₗ[ℝ] ℝ) (v : E) {y : E} (hy : 0 ≤ y) :
     (φ '' truncAdmissible v y).Nonempty :=
   ⟨φ 0, 0, zero_mem_truncAdmissible hy, rfl⟩
 
 /-- A monotone functional bounds the truncated image. -/
-theorem truncImage_bddAbove {φ : E →ₗ[ℝ] ℝ} (hmono : Monotone φ) (v y : E) :
+private theorem truncImage_bddAbove {φ : E →ₗ[ℝ] ℝ} (hmono : Monotone φ) (v y : E) :
     BddAbove (φ '' truncAdmissible v y) :=
   ⟨φ y, by rintro _ ⟨z, ⟨_, hzle, _⟩, rfl⟩; exact hmono hzle⟩
 
 /-- Truncated suprema are nonnegative. -/
-theorem truncSup_nonneg {φ : E →ₗ[ℝ] ℝ} (hmono : Monotone φ) (v : E) {y : E} (hy : 0 ≤ y) :
+private theorem truncSup_nonneg {φ : E →ₗ[ℝ] ℝ} (hmono : Monotone φ) (v : E) {y : E} (hy : 0 ≤ y) :
     0 ≤ truncSup φ v y := by
   have h0 : (0 : ℝ) ∈ φ '' truncAdmissible v y := by
     rw [show (0 : ℝ) = φ 0 by simp]
@@ -345,21 +345,21 @@ theorem truncSup_nonneg {φ : E →ₗ[ℝ] ℝ} (hmono : Monotone φ) (v : E) {
   exact le_csSup (truncImage_bddAbove hmono v y) h0
 
 /-- A monotone functional dominates its truncated supremum. -/
-theorem truncSup_le {φ : E →ₗ[ℝ] ℝ} (hmono : Monotone φ) (v : E) {y : E} (hy : 0 ≤ y) :
+private theorem truncSup_le {φ : E →ₗ[ℝ] ℝ} (hmono : Monotone φ) (v : E) {y : E} (hy : 0 ≤ y) :
     truncSup φ v y ≤ φ y :=
   csSup_le (truncImage_nonempty φ v hy) (by
     rintro _ ⟨z, ⟨_, hzle, _⟩, rfl⟩
     exact hmono hzle)
 
 /-- The test vector saturates its own truncated supremum. -/
-theorem truncSup_self {φ : E →ₗ[ℝ] ℝ} (hmono : Monotone φ) {v : E} (hv : 0 ≤ v) :
+private theorem truncSup_self {φ : E →ₗ[ℝ] ℝ} (hmono : Monotone φ) {v : E} (hv : 0 ≤ v) :
     truncSup φ v v = φ v := by
   have hvmem : v ∈ truncAdmissible v v := ⟨hv, le_rfl, 1, by positivity, by simp⟩
   apply le_antisymm (truncSup_le hmono v hv)
   exact le_csSup (truncImage_bddAbove hmono v v) ⟨v, hvmem, rfl⟩
 
 /-- Admissible truncations add. -/
-theorem add_mem_truncAdmissible {v y₁ y₂ z₁ z₂ : E}
+private theorem add_mem_truncAdmissible {v y₁ y₂ z₁ z₂ : E}
     (hz₁ : z₁ ∈ truncAdmissible v y₁) (hz₂ : z₂ ∈ truncAdmissible v y₂) :
     z₁ + z₂ ∈ truncAdmissible v (y₁ + y₂) := by
   obtain ⟨h10, h1y, c₁, hc₁, h1c⟩ := hz₁
@@ -370,7 +370,7 @@ theorem add_mem_truncAdmissible {v y₁ y₂ z₁ z₂ : E}
     _ = (c₁ + c₂) • v := by rw [add_smul]
 
 /-- Truncated suprema are additive on the positive cone. -/
-theorem truncSup_add {φ : E →ₗ[ℝ] ℝ} (hmono : Monotone φ) (v y₁ y₂ : E)
+private theorem truncSup_add {φ : E →ₗ[ℝ] ℝ} (hmono : Monotone φ) (v y₁ y₂ : E)
     (hy₁ : 0 ≤ y₁) (hy₂ : 0 ≤ y₂) :
     truncSup φ v (y₁ + y₂) = truncSup φ v y₁ + truncSup φ v y₂ := by
   have hb₁ := truncImage_bddAbove hmono v y₁
@@ -411,7 +411,7 @@ theorem truncSup_add {φ : E →ₗ[ℝ] ℝ} (hmono : Monotone φ) (v y₁ y₂
     linarith
 
 /-- Truncated suprema are positively homogeneous. -/
-theorem truncSup_smul {φ : E →ₗ[ℝ] ℝ} (hmono : Monotone φ) (v : E) {c : ℝ} (hc : 0 ≤ c)
+private theorem truncSup_smul {φ : E →ₗ[ℝ] ℝ} (hmono : Monotone φ) (v : E) {c : ℝ} (hc : 0 ≤ c)
     {y : E} (hy : 0 ≤ y) : truncSup φ v (c • y) = c * truncSup φ v y := by
   rcases eq_or_lt_of_le hc with rfl | hc
   · have himage : φ '' truncAdmissible v (0 : E) = {0} := by
@@ -458,7 +458,7 @@ theorem truncSup_smul {φ : E →ₗ[ℝ] ℝ} (hmono : Monotone φ) (v : E) {c 
       exact hmul
 
 /-- A positive vector disjoint from every multiple of `v` has truncated supremum zero. -/
-theorem truncSup_eq_zero_of_disjoint {φ : E →ₗ[ℝ] ℝ} (v y : E) (hy : 0 ≤ y)
+private theorem truncSup_eq_zero_of_disjoint {φ : E →ₗ[ℝ] ℝ} (v y : E) (hy : 0 ≤ y)
     (hdis : ∀ c : ℝ, 0 ≤ c → (c • v) ⊓ y = 0) : truncSup φ v y = 0 := by
   have himage : φ '' truncAdmissible v y = {0} := by
     ext t
@@ -475,7 +475,7 @@ theorem truncSup_eq_zero_of_disjoint {φ : E →ₗ[ℝ] ℝ} (v y : E) (hy : 0 
 
 include he0 hball in
 /-- Extreme states preserve lattice absolute values. -/
-theorem amState_extreme_abs (he : e ≠ 0) {φ : WeakDual ℝ E}
+private theorem amState_extreme_abs (he : e ≠ 0) {φ : WeakDual ℝ E}
     (hφ : φ ∈ (amStateSet e).extremePoints ℝ) (x : E) : φ |x| = |φ x| := by
   have hmem : φ ∈ amStateSet e := extremePoints_subset hφ
   let ψ := φ.toStrongDual
@@ -682,14 +682,14 @@ theorem isCompact_amLatticeHomSet (he : e ≠ 0) : IsCompact (amLatticeHomSet e)
 
 include he0 hball in
 /-- A nonzero AM unit has a normalized lattice homomorphism. -/
-theorem amLatticeHomSet_nonempty (he : e ≠ 0) : (amLatticeHomSet e).Nonempty := by
+private theorem amLatticeHomSet_nonempty (he : e ≠ 0) : (amLatticeHomSet e).Nonempty := by
   obtain ⟨φ, hφ⟩ :=
     (isCompact_amStateSet he0 hball he).extremePoints_nonempty (amStateSet_nonempty he0 hball he)
   exact ⟨φ, extremePoints_subset_amLatticeHomSet he0 hball he hφ⟩
 
 include he0 hball in
 /-- Supremum of a continuous linear image is unchanged by passing to extreme points. -/
-theorem csSup_extreme_eval (he : e ≠ 0) {y : E} :
+private theorem csSup_extreme_eval (he : e ≠ 0) {y : E} :
     sSup ((fun φ : WeakDual ℝ E => φ y) '' (amStateSet e).extremePoints ℝ) =
       sSup ((fun φ : WeakDual ℝ E => φ y) '' amStateSet e) := by
   let s := amStateSet e
@@ -751,7 +751,7 @@ theorem csSup_extreme_eval (he : e ≠ 0) {y : E} :
 
 include he0 hball in
 /-- Positive states recover the norm of a positive vector. -/
-theorem csSup_amState_eval (he : e ≠ 0) {y : E} (hy : 0 ≤ y) :
+private theorem csSup_amState_eval (he : e ≠ 0) {y : E} (hy : 0 ≤ y) :
     sSup ((fun φ : WeakDual ℝ E => φ y) '' amStateSet e) = ‖y‖ := by
   have hsne : (amStateSet e).Nonempty := amStateSet_nonempty he0 hball he
   have hb : BddAbove ((fun φ : WeakDual ℝ E => φ y) '' amStateSet e) := by
@@ -790,7 +790,7 @@ theorem csSup_amState_eval (he : e ≠ 0) {y : E} (hy : 0 ≤ y) :
 
 include he0 hball in
 /-- Lattice homomorphisms recover the norm. -/
-theorem csSup_amLatticeHom_abs (he : e ≠ 0) (x : E) :
+private theorem csSup_amLatticeHom_abs (he : e ≠ 0) (x : E) :
     sSup ((fun φ : WeakDual ℝ E => |φ x|) '' amLatticeHomSet e) = ‖x‖ := by
   have hext : sSup ((fun φ : WeakDual ℝ E => φ |x|) '' (amStateSet e).extremePoints ℝ) = ‖x‖ := by
     rw [csSup_extreme_eval he0 hball he, csSup_amState_eval he0 hball he (abs_nonneg x),

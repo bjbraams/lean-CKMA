@@ -51,11 +51,11 @@ theorem isClosed_woldUnitarySubspace (V : H →ₗᵢ[ℂ] H) :
     · intro hx
       obtain ⟨y, hy⟩ := LinearMap.mem_range.mp hx
       refine ⟨y, ?_⟩
-      rw [isometry_pow_apply, ← toLinearMap_pow_apply]
+      rw [isometry_pow_apply, ← continuousLinearMap_toLinearMap_pow_apply]
       exact hy
     · rintro ⟨y, rfl⟩
       refine LinearMap.mem_range.mpr ⟨y, ?_⟩
-      rw [toLinearMap_pow_apply, ← isometry_pow_apply]
+      rw [continuousLinearMap_toLinearMap_pow_apply, ← isometry_pow_apply]
   rw [hrange]
   exact (V ^ n).antilipschitzWith.isClosed_range (V ^ n).isometry.uniformContinuous
 
@@ -88,12 +88,12 @@ def woldUnitaryIsometry (V : H →ₗᵢ[ℂ] H) :
 
 omit [CompleteSpace H] in
 /-- Evaluation of the restricted isometry. -/
-theorem woldUnitaryIsometry_apply (V : H →ₗᵢ[ℂ] H) (u : woldUnitarySubspace V) :
+private theorem woldUnitaryIsometry_apply (V : H →ₗᵢ[ℂ] H) (u : woldUnitarySubspace V) :
     woldUnitaryIsometry V u = woldUnitaryRestrictCLM V u :=
   rfl
 
 /-- The restricted isometry agrees in `H` with the original isometry. -/
-theorem coe_woldUnitaryIsometry (V : H →ₗᵢ[ℂ] H) (u : woldUnitarySubspace V) :
+private theorem coe_woldUnitaryIsometry (V : H →ₗᵢ[ℂ] H) (u : woldUnitarySubspace V) :
     (woldUnitaryIsometry V u : H) = V (u : H) := by
   rw [woldUnitaryIsometry_apply, coe_woldUnitaryRestrictCLM]
 
@@ -113,7 +113,7 @@ def woldUnitaryEquiv (V : H →ₗᵢ[ℂ] H) :
   LinearIsometryEquiv.ofSurjective (woldUnitaryIsometry V) (woldUnitaryIsometry_surjective V)
 
 /-- Evaluation of the unitary on the unitary part. -/
-theorem woldUnitaryEquiv_apply (V : H →ₗᵢ[ℂ] H) (u : woldUnitarySubspace V) :
+private theorem woldUnitaryEquiv_apply (V : H →ₗᵢ[ℂ] H) (u : woldUnitarySubspace V) :
     woldUnitaryEquiv V u = woldUnitaryIsometry V u :=
   rfl
 

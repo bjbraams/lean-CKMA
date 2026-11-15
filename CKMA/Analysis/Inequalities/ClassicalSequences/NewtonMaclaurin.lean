@@ -33,13 +33,13 @@ in `CKMA.Analysis.Inequalities.ClassicalSequences`. Source: GAPS 11.9.
 
 * `CKMA.normalizedElementaryMean`: normalized elementary symmetric mean `e_k / choose(n, k)` of a
   finite tuple.
-* `CKMA.elemMean`: normalized elementary symmetric mean of a multiset.
+* `CKMA.esymmMean`: normalized elementary symmetric mean of a multiset.
 
 ## Main results
 
-* `CKMA.newton_elemMean`: Newton log-concavity for the normalized elementary means of a
+* `CKMA.newton_esymmMean`: Newton log-concavity for the normalized elementary means of a
   nonnegative multiset.
-* `CKMA.maclaurin_elemMean`: Maclaurin's comparison of normalized elementary means of a
+* `CKMA.maclaurin_esymmMean`: Maclaurin's comparison of normalized elementary means of a
   nonnegative multiset.
 -/
 
@@ -117,21 +117,21 @@ private theorem esymm_eq_zero_of_le {s : Multiset ℝ} (hs : ∀ x ∈ s, 0 ≤ 
         · simp [ih hs' hk0 hm']
 
 /-- Normalized elementary symmetric mean of a multiset, `e_k / choose(card, k)`. -/
-def elemMean (s : Multiset ℝ) (k : ℕ) : ℝ :=
+def esymmMean (s : Multiset ℝ) (k : ℕ) : ℝ :=
   s.esymm k / (s.card.choose k : ℝ)
 
 /-- Normalized elementary means of a nonnegative multiset are nonnegative. -/
-private theorem elemMean_nonneg {s : Multiset ℝ} (hs : ∀ x ∈ s, 0 ≤ x) (k : ℕ) :
-    0 ≤ elemMean s k :=
+private theorem esymmMean_nonneg {s : Multiset ℝ} (hs : ∀ x ∈ s, 0 ≤ x) (k : ℕ) :
+    0 ≤ esymmMean s k :=
   div_nonneg (esymm_nonneg hs k) (Nat.cast_nonneg _)
 
 /-- Vanishing of one normalized mean propagates to every higher mean up to the cardinality. -/
-private theorem elemMean_eq_zero_of_le {s : Multiset ℝ} (hs : ∀ x ∈ s, 0 ≤ x) {k m : ℕ}
-    (hk : elemMean s k = 0) (hm : k ≤ m) (hmn : m ≤ s.card) : elemMean s m = 0 := by
+private theorem esymmMean_eq_zero_of_le {s : Multiset ℝ} (hs : ∀ x ∈ s, 0 ≤ x) {k m : ℕ}
+    (hk : esymmMean s k = 0) (hm : k ≤ m) (hmn : m ≤ s.card) : esymmMean s m = 0 := by
   have hC : (s.card.choose k : ℝ) ≠ 0 := by
     exact_mod_cast (Nat.choose_pos (hm.trans hmn)).ne'
   have he : s.esymm k = 0 := (div_eq_zero_iff.mp hk).resolve_right hC
-  rw [elemMean, esymm_eq_zero_of_le hs he hm, zero_div]
+  rw [esymmMean, esymm_eq_zero_of_le hs he hm, zero_div]
 
 section SymmetricPolynomial
 
@@ -205,9 +205,9 @@ private theorem reverse_prod_X_add_C {s : Multiset ℝ} (hs : ∀ x ∈ s, x ≠
 /-- For nonnegative data of cardinality at least two, negating the roots of the derivative
 produces a nonnegative multiset of cardinality one less with the same normalized means in
 every degree below the original cardinality. -/
-private theorem exists_derivative_elemMean {s : Multiset ℝ} (hs : ∀ x ∈ s, 0 ≤ x)
+private theorem exists_derivative_esymmMean {s : Multiset ℝ} (hs : ∀ x ∈ s, 0 ≤ x)
     (hn : 2 ≤ s.card) : ∃ s' : Multiset ℝ, (∀ x ∈ s', 0 ≤ x) ∧ s'.card = s.card - 1 ∧
-      ∀ j, j < s.card → elemMean s' j = elemMean s j := by
+      ∀ j, j < s.card → esymmMean s' j = esymmMean s j := by
   set p : ℝ[X] := (s.map fun r => X + C r).prod
   have hp_deg : p.natDegree = s.card := prod_X_add_C_natDegree s
   have hp_monic : p.Monic := prod_X_add_C_monic s
@@ -294,7 +294,7 @@ private theorem exists_derivative_elemMean {s : Multiset ℝ} (hs : ∀ x ∈ s,
   have hC : (s.card.choose j : ℝ) ≠ 0 := by
     exact_mod_cast (Nat.choose_pos hj.le).ne'
   have hn0 : (s.card : ℝ) ≠ 0 := by exact_mod_cast (by omega : s.card ≠ 0)
-  rw [elemMean, elemMean, hs'card]
+  rw [esymmMean, esymmMean, hs'card]
   apply (div_eq_div_iff hC' hC).mpr
   apply mul_right_cancel₀ hn0
   calc
@@ -324,34 +324,32 @@ private theorem esymm_inv {s : Multiset ℝ} (hs : ∀ x ∈ s, 0 < x) (j : ℕ)
   exact hcoe.symm
 
 /-- Normalized means of the inverted multiset are the reversed means divided by the product. -/
-private theorem elemMean_inv {s : Multiset ℝ} (hs : ∀ x ∈ s, 0 < x) {m : ℕ} (hm : m ≤ s.card) :
-    elemMean (s.map Inv.inv) m = elemMean s (s.card - m) / s.prod := by
+private theorem esymmMean_inv {s : Multiset ℝ} (hs : ∀ x ∈ s, 0 < x) {m : ℕ} (hm : m ≤ s.card) :
+    esymmMean (s.map Inv.inv) m = esymmMean s (s.card - m) / s.prod := by
   have hprod : s.prod ≠ 0 := (Multiset.prod_pos hs).ne'
   have hc : (s.map Inv.inv).card = s.card := Multiset.card_map _ _
   have hsym := esymm_inv hs (s.card - m) (Nat.sub_le _ _)
   have hsub : s.card - (s.card - m) = m := Nat.sub_sub_self hm
   rw [hsub] at hsym
-  rw [elemMean, elemMean, hc, Nat.choose_symm hm, hsym]
+  rw [esymmMean, esymmMean, hc, Nat.choose_symm hm, hsym]
   field_simp [hprod]
 
 end SymmetricPolynomial
 
 /-- Newton log-concavity for the normalized elementary means of a nonnegative multiset. -/
-theorem newton_elemMean {n : ℕ} :
-    ∀ s : Multiset ℝ, (∀ x ∈ s, 0 ≤ x) → s.card = n →
-      ∀ k, 1 ≤ k → k < n →
-        elemMean s (k - 1) * elemMean s (k + 1) ≤ (elemMean s k) ^ 2 := by
-  induction n using Nat.strong_induction_on with
+theorem newton_esymmMean {n : ℕ} {s : Multiset ℝ} (hs : ∀ x ∈ s, 0 ≤ x) (hcard : s.card = n)
+    {k : ℕ} (hk : 1 ≤ k) (hkn : k < n) :
+    esymmMean s (k - 1) * esymmMean s (k + 1) ≤ (esymmMean s k) ^ 2 := by
+  induction n using Nat.strong_induction_on generalizing s k with
   | _ n ih =>
-    intro s hs hcard k hk hkn
     have hlow : ∀ t : Multiset ℝ, (∀ x ∈ t, 0 ≤ x) → t.card = n →
         ∀ j, 1 ≤ j → j + 1 < n →
-          elemMean t (j - 1) * elemMean t (j + 1) ≤ (elemMean t j) ^ 2 := by
+          esymmMean t (j - 1) * esymmMean t (j + 1) ≤ (esymmMean t j) ^ 2 := by
       intro t ht hct j hj hjlt
       have hn2 : 2 ≤ t.card := by rw [hct]; omega
-      obtain ⟨t', ht', hcard', hmean⟩ := exists_derivative_elemMean ht hn2
+      obtain ⟨t', ht', hcard', hmean⟩ := exists_derivative_esymmMean ht hn2
       have hcard'' : t'.card = n - 1 := by rw [hcard', hct]
-      have hrec := ih (n - 1) (by omega) t' ht' hcard'' j hj (by omega)
+      have hrec := @ih (n - 1) (by omega) t' ht' hcard'' j hj (by omega)
       have hm1 := hmean (j - 1) (by omega)
       have hm2 := hmean j (by omega)
       have hm3 := hmean (j + 1) (by omega)
@@ -363,12 +361,12 @@ theorem newton_elemMean {n : ℕ} :
       rw [hkEq]
       by_cases hnEq : n = 2
       · obtain ⟨a, b, rfl⟩ := Multiset.card_eq_two.mp (hcard.trans hnEq)
-        simp only [hnEq, elemMean]
+        simp only [hnEq, esymmMean]
         norm_num
         nlinarith [sq_nonneg (a - b)]
       · by_cases hprod : s.prod = 0
-        · have htop : elemMean s n = 0 := by
-            rw [elemMean, ← hcard, esymm_card, hcard, Nat.choose_self, Nat.cast_one, div_one,
+        · have htop : esymmMean s n = 0 := by
+            rw [esymmMean, ← hcard, esymm_card, hcard, Nat.choose_self, Nat.cast_one, div_one,
               hprod]
           rw [show (n - 1) + 1 = n by omega, htop, mul_zero]
           exact sq_nonneg _
@@ -383,22 +381,22 @@ theorem newton_elemMean {n : ℕ} :
             exact inv_nonneg.mpr (hs a ha)
           have hzcard : z.card = n := by rw [Multiset.card_map, hcard]
           have hlowz := hlow z hz hzcard 1 (by omega) (by omega)
-          rw [elemMean_inv hpos (Nat.zero_le _),
-            elemMean_inv hpos (by rw [hcard]; omega),
-            elemMean_inv hpos (by rw [hcard]; omega), hcard] at hlowz
+          rw [esymmMean_inv hpos (Nat.zero_le _),
+            esymmMean_inv hpos (by rw [hcard]; omega),
+            esymmMean_inv hpos (by rw [hcard]; omega), hcard] at hlowz
           have hP : 0 < s.prod := Multiset.prod_pos hpos
-          have hEn : elemMean s n = s.prod := by
-            rw [elemMean, ← hcard, esymm_card, hcard, Nat.choose_self, Nat.cast_one, div_one]
+          have hEn : esymmMean s n = s.prod := by
+            rw [esymmMean, ← hcard, esymm_card, hcard, Nat.choose_self, Nat.cast_one, div_one]
           simp only [Nat.sub_zero] at hlowz
           have htwo : (1 + 1 : ℕ) = 2 := rfl
           simp only [htwo] at hlowz
           rw [hEn, div_self hP.ne', one_mul] at hlowz
           have hmul := mul_le_mul_of_nonneg_right hlowz (sq_nonneg s.prod)
-          have hclear : elemMean s (n - 2) * s.prod ≤ (elemMean s (n - 1)) ^ 2 := by
-            have hleft : (elemMean s (n - 2) / s.prod) * s.prod ^ 2 =
-                elemMean s (n - 2) * s.prod := by field_simp [hP.ne']
-            have hright : ((elemMean s (n - 1) / s.prod) ^ 2) * s.prod ^ 2 =
-                (elemMean s (n - 1)) ^ 2 := by field_simp [hP.ne']
+          have hclear : esymmMean s (n - 2) * s.prod ≤ (esymmMean s (n - 1)) ^ 2 := by
+            have hleft : (esymmMean s (n - 2) / s.prod) * s.prod ^ 2 =
+                esymmMean s (n - 2) * s.prod := by field_simp [hP.ne']
+            have hright : ((esymmMean s (n - 1) / s.prod) ^ 2) * s.prod ^ 2 =
+                (esymmMean s (n - 1)) ^ 2 := by field_simp [hP.ne']
             rw [← hleft, ← hright]
             simpa using hmul
           have hsub : (n - 1) - 1 = n - 2 := by omega
@@ -406,12 +404,12 @@ theorem newton_elemMean {n : ℕ} :
           exact hclear
 
 /-- Maclaurin's comparison of normalized elementary means of a nonnegative multiset. -/
-theorem maclaurin_elemMean {n j k : ℕ} {s : Multiset ℝ} (hs : ∀ x ∈ s, 0 ≤ x)
+theorem maclaurin_esymmMean {n j k : ℕ} {s : Multiset ℝ} (hs : ∀ x ∈ s, 0 ≤ x)
     (hcard : s.card = n) (hj : 1 ≤ j) (hjk : j ≤ k) (hkn : k ≤ n) :
-    elemMean s k ^ (1 / (k : ℝ)) ≤ elemMean s j ^ (1 / (j : ℝ)) := by
-  set E : ℕ → ℝ := fun r => elemMean s r
+    esymmMean s k ^ (1 / (k : ℝ)) ≤ esymmMean s j ^ (1 / (j : ℝ)) := by
+  set E : ℕ → ℝ := fun r => esymmMean s r
   change E k ^ (1 / (k : ℝ)) ≤ E j ^ (1 / (j : ℝ))
-  have hE0 : ∀ r, 0 ≤ E r := fun r => elemMean_nonneg hs r
+  have hE0 : ∀ r, 0 ≤ E r := fun r => esymmMean_nonneg hs r
   by_cases hEk : E k = 0
   · rw [hEk, Real.zero_rpow (one_div_ne_zero (Nat.cast_ne_zero.mpr (by omega : k ≠ 0)))]
     exact Real.rpow_nonneg (hE0 j) _
@@ -421,7 +419,7 @@ theorem maclaurin_elemMean {n j k : ℕ} {s : Multiset ℝ} (hs : ∀ x ∈ s, 0
       refine lt_of_le_of_ne (hE0 r) ?_
       intro hr0
       exact hEk <| by
-        simpa [E] using elemMean_eq_zero_of_le hs (by simpa [E] using hr0.symm) hr hkns
+        simpa [E] using esymmMean_eq_zero_of_le hs (by simpa [E] using hr0.symm) hr hkns
     let ρ : ℕ → ℝ := fun i => E (i + 1) / E i
     have hρ0 : ∀ i, i < k → 0 ≤ ρ i := by
       intro i hi
@@ -429,7 +427,7 @@ theorem maclaurin_elemMean {n j k : ℕ} {s : Multiset ℝ} (hs : ∀ x ∈ s, 0
     have hρ_anti : ∀ i, i + 1 < k → ρ (i + 1) ≤ ρ i := by
       intro i hi
       have hNew : E (i + 2) * E i ≤ E (i + 1) * E (i + 1) := by
-        have hN := newton_elemMean s hs hcard (i + 1) (by omega) (by omega)
+        have hN := newton_esymmMean hs hcard (k := i + 1) (by omega) (by omega)
         simpa [E, pow_two, mul_comm] using hN
       have hi0 : 0 < E i := hpos i (by omega)
       have hi1 : 0 < E (i + 1) := hpos (i + 1) (by omega)
@@ -456,7 +454,7 @@ theorem maclaurin_elemMean {n j k : ℕ} {s : Multiset ℝ} (hs : ∀ x ∈ s, 0
     have hfac : ∀ m, m ≤ k → E m = ∏ i ∈ Finset.range m, ρ i := by
       intro m hm
       induction m with
-      | zero => simp [E, elemMean, Multiset.esymm_zero]
+      | zero => simp [E, esymmMean, Multiset.esymm_zero]
       | succ m ih =>
         have hm' : m ≤ k := Nat.le_of_succ_le hm
         rw [Finset.prod_range_succ, ← ih hm']

@@ -43,7 +43,7 @@ attribute [local instance] Classical.propDecidable
 
 omit [MeasurableSpace Ω] in
 /-- A value below every positive translate is below the translate's base. -/
-lemma ereal_le_of_forall_pos_le_add {a b : EReal}
+private lemma ereal_le_of_forall_pos_le_add {a b : EReal}
     (h : ∀ ε : ℝ, 0 < ε → a ≤ b + ε) : a ≤ b := by
   cases a with
   | bot => exact bot_le
@@ -80,7 +80,7 @@ lemma ereal_le_of_forall_pos_le_add {a b : EReal}
 
 omit [MeasurableSpace Ω] in
 /-- A convex weight does not increase a value beyond the slack in a lower bound. -/
-lemma kingman_convex_mul_le {a c C : ℝ} (ha : -C ≤ a) (hc1 : c ≤ 1) :
+private lemma kingman_convex_mul_le {a c C : ℝ} (ha : -C ≤ a) (hc1 : c ≤ 1) :
     c * a ≤ a + (1 - c) * C := by
   have hgap : 0 ≤ 1 - c := by linarith
   have hneg : -a ≤ C := by linarith
@@ -89,7 +89,7 @@ lemma kingman_convex_mul_le {a c C : ℝ} (ha : -C ≤ a) (hc1 : c ≤ 1) :
 
 omit [MeasurableSpace Ω] in
 /-- Dividing a block sum by the block count and the block length recovers the average. -/
-lemma birkhoffSum_div_mul_eq_average (S : Ω → Ω) (g : Ω → ℝ) (q m : ℕ) (ω : Ω) :
+private lemma birkhoffSum_div_mul_eq_average (S : Ω → Ω) (g : Ω → ℝ) (q m : ℕ) (ω : Ω) :
     birkhoffSum S g q ω / ((q * m : ℕ) : ℝ) =
       birkhoffAverage ℝ S g q ω / (m : ℝ) := by
   calc
@@ -106,14 +106,14 @@ lemma birkhoffSum_div_mul_eq_average (S : Ω → Ω) (g : Ω → ℝ) (q m : ℕ
 
 omit [MeasurableSpace Ω] in
 /-- The indexed ratio is division by the shifted length. -/
-lemma kingmanRatio_eq_div (f : ℕ → Ω → ℝ) (n : ℕ) (ω : Ω) :
+private lemma kingmanRatio_eq_div (f : ℕ → Ω → ℝ) (n : ℕ) (ω : Ω) :
     kingmanRatio f n ω = f (n + 1) ω / (n + 1 : ℝ) := by
   unfold kingmanRatio
   rw [div_eq_mul_inv, mul_comm]
 
 omit [MeasurableSpace Ω] in
 /-- The absolute difference expands through the minimum. -/
-lemma abs_sub_eq_add_sub_two_min (a b : ℝ) :
+private lemma abs_sub_eq_add_sub_two_min (a b : ℝ) :
     |a - b| = a + b - 2 * min a b := by
   rcases le_total a b with hab | hba
   · rw [abs_of_nonpos (sub_nonpos.mpr hab), min_eq_left hab]
@@ -123,7 +123,7 @@ lemma abs_sub_eq_add_sub_two_min (a b : ℝ) :
 
 omit [MeasurableSpace Ω] in
 /-- Equal blocks are dominated by the Birkhoff sum of the block increment. -/
-lemma kingman_birkhoffSum_blocks_le {f : ℕ → Ω → ℝ} {m : ℕ} (hm : 0 < m) {q : ℕ}
+private lemma kingman_birkhoffSum_blocks_le {f : ℕ → Ω → ℝ} {m : ℕ} (hm : 0 < m) {q : ℕ}
     (hq : 0 < q) {ω : Ω}
     (hsub : ∀ i n m' : ℕ, 0 < n → 0 < m' →
       f (n + m') ((T^[i]) ω) ≤ f n ((T^[i]) ω) + f m' ((T^[i + n]) ω)) :
@@ -146,7 +146,7 @@ lemma kingman_birkhoffSum_blocks_le {f : ℕ → Ω → ℝ} {m : ℕ} (hm : 0 <
 
 omit [MeasurableSpace Ω] in
 /-- One long normalized length lies under the block average, up to a fixed margin. -/
-lemma kingman_one_ratio_lt {f : ℕ → Ω → ℝ} {C φ δ : ℝ} {m n : ℕ} {ω : Ω}
+private lemma kingman_one_ratio_lt {f : ℕ → Ω → ℝ} {C φ δ : ℝ} {m n : ℕ} {ω : Ω}
     (hm : 0 < m) (hn : 0 < n) (hδ : 0 < δ)
     (hC : ∀ k : ℕ, 0 < k → -C * (k : ℝ) ≤ f k ω)
     (hsub : ∀ i a b : ℕ, 0 < a → 0 < b →
@@ -256,7 +256,7 @@ lemma kingman_one_ratio_lt {f : ℕ → Ω → ℝ} {C φ δ : ℝ} {m n : ℕ} 
 
 omit [MeasurableSpace Ω] in
 /-- Normalized lengths eventually lie under the block mean plus an arbitrary margin. -/
-lemma kingman_ratio_eventually_le {f : ℕ → Ω → ℝ} {C φ : ℝ} {m : ℕ} {ω : Ω}
+private lemma kingman_ratio_eventually_le {f : ℕ → Ω → ℝ} {C φ : ℝ} {m : ℕ} {ω : Ω}
     (hm : 0 < m)
     (hC : ∀ k : ℕ, 0 < k → -C * (k : ℝ) ≤ f k ω)
     (hsub : ∀ i a b : ℕ, 0 < a → 0 < b →
@@ -325,13 +325,13 @@ lemma kingman_ratio_eventually_le {f : ℕ → Ω → ℝ} {C φ : ℝ} {m : ℕ
   simpa [Nat.cast_succ] using hn
 
 /-- The extended limsup stays above the linear lower bound. -/
-lemma kingmanLimsup_ge {f : ℕ → Ω → ℝ} {C : ℝ}
+private lemma kingmanLimsup_ge {f : ℕ → Ω → ℝ} {C : ℝ}
     (hC : ∀ n : ℕ, 0 < n → ∀ ω, -C * (n : ℝ) ≤ f n ω) (ω : Ω) :
     (-C : EReal) ≤ kingmanLimsup f ω :=
   (kingmanLiminf_ge hC ω).trans liminf_le_limsup
 
 /-- The extended limsup is never `⊥` under a real linear lower bound. -/
-lemma kingmanLimsup_ne_bot {f : ℕ → Ω → ℝ} {C : ℝ}
+private lemma kingmanLimsup_ne_bot {f : ℕ → Ω → ℝ} {C : ℝ}
     (hC : ∀ n : ℕ, 0 < n → ∀ ω, -C * (n : ℝ) ≤ f n ω) (ω : Ω) :
     kingmanLimsup f ω ≠ ⊥ := by
   intro hbot
@@ -340,7 +340,7 @@ lemma kingmanLimsup_ne_bot {f : ℕ → Ω → ℝ} {C : ℝ}
   exact not_le_of_gt (EReal.bot_lt_coe (-C)) hle
 
 /-- The limsup is at most the normalized invariant conditional expectation of each block. -/
-lemma kingmanLimsup_le_condExp [IsProbabilityMeasure μ] (hT : MeasurePreserving T μ μ)
+private lemma kingmanLimsup_le_condExp [IsProbabilityMeasure μ] (hT : MeasurePreserving T μ μ)
     {f : ℕ → Ω → ℝ} {C : ℝ} (hf : ∀ n : ℕ, 0 < n → Integrable (f n) μ)
     (hf_meas : ∀ n : ℕ, 0 < n → Measurable (f n))
     (hsub : ∀ n m : ℕ, 0 < n → 0 < m → ∀ᵐ ω ∂μ,
@@ -405,7 +405,7 @@ lemma kingmanLimsup_ae_ne_top [IsProbabilityMeasure μ] (hT : MeasurePreserving 
   exact EReal.coe_lt_top _
 
 /-- Under a pointwise linear bound, the real limsup is integrable. -/
-lemma kingmanLimsupReal_integrable [IsProbabilityMeasure μ] (hT : MeasurePreserving T μ μ)
+private lemma kingmanLimsupReal_integrable [IsProbabilityMeasure μ] (hT : MeasurePreserving T μ μ)
     {f : ℕ → Ω → ℝ} {C : ℝ} (hf : ∀ n : ℕ, 0 < n → Integrable (f n) μ)
     (hf_meas : ∀ n : ℕ, 0 < n → Measurable (f n))
     (hsub : ∀ n m : ℕ, 0 < n → 0 < m → ∀ᵐ ω ∂μ,
@@ -451,7 +451,7 @@ lemma kingmanLimsupReal_integrable [IsProbabilityMeasure μ] (hT : MeasurePreser
   exact hω
 
 /-- The real limsup has mean at most every normalized positive-length integral. -/
-lemma kingmanLimsupReal_integral_le [IsProbabilityMeasure μ] (hT : MeasurePreserving T μ μ)
+private lemma kingmanLimsupReal_integral_le [IsProbabilityMeasure μ] (hT : MeasurePreserving T μ μ)
     {f : ℕ → Ω → ℝ} {C : ℝ} (hf : ∀ n : ℕ, 0 < n → Integrable (f n) μ)
     (hf_meas : ∀ n : ℕ, 0 < n → Measurable (f n))
     (hsub : ∀ n m : ℕ, 0 < n → 0 < m → ∀ᵐ ω ∂μ,
@@ -477,7 +477,7 @@ lemma kingmanLimsupReal_integral_le [IsProbabilityMeasure μ] (hT : MeasurePrese
   exact hineq
 
 /-- The real limsup has mean at most the Fekete infimum. -/
-lemma kingmanLimsupReal_integral_le_mean [IsProbabilityMeasure μ]
+private lemma kingmanLimsupReal_integral_le_mean [IsProbabilityMeasure μ]
     (hT : MeasurePreserving T μ μ) {f : ℕ → Ω → ℝ} {C : ℝ}
     (hf : ∀ n : ℕ, 0 < n → Integrable (f n) μ)
     (hf_meas : ∀ n : ℕ, 0 < n → Measurable (f n))
@@ -491,7 +491,7 @@ lemma kingmanLimsupReal_integral_le_mean [IsProbabilityMeasure μ]
   exact kingmanLimsupReal_integral_le hT hf hf_meas hsub hC hn
 
 /-- The real liminf and limsup agree almost everywhere. -/
-lemma kingmanLiminfReal_ae_eq_limsupReal [IsProbabilityMeasure μ]
+private lemma kingmanLiminfReal_ae_eq_limsupReal [IsProbabilityMeasure μ]
     (hT : MeasurePreserving T μ μ) {f : ℕ → Ω → ℝ} {C : ℝ}
     (hf : ∀ n : ℕ, 0 < n → Integrable (f n) μ)
     (hf_meas : ∀ n : ℕ, 0 < n → Measurable (f n))

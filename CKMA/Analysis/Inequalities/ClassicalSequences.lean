@@ -62,8 +62,8 @@ theorem newton_normalizedElementaryMean {n k : ℕ} (x : Fin n → ℝ)
     exact hx i
   have hcard : s.card = n := by
     rw [Multiset.card_map, Finset.card_val, Finset.card_univ, Fintype.card_fin]
-  simpa [normalizedElementaryMean, elemMean, s, hcard] using
-    newton_elemMean s hs hcard k hk hkn
+  simpa [normalizedElementaryMean, esymmMean, s, hcard] using
+    newton_esymmMean hs hcard hk hkn
 
 /-- Maclaurin's monotone chain of positive-root normalized means, allowing zero entries. -/
 theorem maclaurin_normalizedElementaryMean {n j k : ℕ} (x : Fin n → ℝ)
@@ -77,8 +77,8 @@ theorem maclaurin_normalizedElementaryMean {n j k : ℕ} (x : Fin n → ℝ)
     exact hx i
   have hcard : s.card = n := by
     rw [Multiset.card_map, Finset.card_val, Finset.card_univ, Fintype.card_fin]
-  simpa [normalizedElementaryMean, elemMean, s, hcard] using
-    maclaurin_elemMean hs hcard hj hjk hkn
+  simpa [normalizedElementaryMean, esymmMean, s, hcard] using
+    maclaurin_esymmMean hs hcard hj hjk hkn
 
 /-- Cesaro average of the first `n+1` entries, indexed from zero. -/
 def hardyAverage (a : ℕ → ℝ) (n : ℕ) : ℝ :=

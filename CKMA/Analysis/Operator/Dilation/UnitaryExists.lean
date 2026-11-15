@@ -38,7 +38,7 @@ universe u
 variable {E : Type u} [NormedAddCommGroup E] [InnerProductSpace ℂ E]
 
 /-- A continuous linear functional that vanishes on a densely spanning set vanishes everywhere. -/
-theorem clm_vanish_of_dense_span (f : E →L[ℂ] ℂ) {s : Set E}
+private theorem apply_eq_zero_of_closure_span_eq_top (f : E →L[ℂ] ℂ) {s : Set E}
     (hspan : (span ℂ s).topologicalClosure = ⊤) (hf : ∀ w ∈ s, f w = 0) (z : E) : f z = 0 := by
   have hz : z ∈ closure (span ℂ s : Set E) := by
     rw [← topologicalClosure_coe, hspan]
@@ -46,7 +46,8 @@ theorem clm_vanish_of_dense_span (f : E →L[ℂ] ℂ) {s : Set E}
   exact eqOn_closure_span (g := 0) (fun w hw ↦ hf w hw) hz
 
 /-- Iterates of a linear isometric equivalence agree with its monoid powers. -/
-theorem equiv_iterate_pow_apply (e : E ≃ₗᵢ[ℂ] E) (n : ℕ) (x : E) : (e^[n]) x = (e ^ n) x := by
+private theorem linearIsometryEquiv_iterate_apply_eq_pow_apply (e : E ≃ₗᵢ[ℂ] E) (n : ℕ) (x : E) :
+    (e^[n]) x = (e ^ n) x := by
   induction n with
   | zero => simp [Function.iterate_zero, pow_zero, LinearIsometryEquiv.coe_one]
   | succ n ih =>
@@ -58,7 +59,7 @@ variable {H K : Type u}
     [NormedAddCommGroup K] [InnerProductSpace ℂ K] [CompleteSpace K]
 
 /-- Co-invariance passes to every nonnegative power of the isometry. -/
-theorem adjoint_isometry_pow (T : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K)
+private theorem adjoint_isometry_pow (T : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K)
     (hcoin : ∀ y : K, J.toContinuousLinearMap.adjoint (V y) =
       T (J.toContinuousLinearMap.adjoint y))
     (n : ℕ) (y : K) :
@@ -71,7 +72,7 @@ theorem adjoint_isometry_pow (T : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K) (V : K
       ih, pow_succ', mul_apply_eq_comp]
 
 /-- The adjoint of an isometric embedding is a left inverse. -/
-theorem adjoint_isometry_leftInverse (J : H →ₗᵢ[ℂ] K) (x : H) :
+private theorem adjoint_isometry_leftInverse (J : H →ₗᵢ[ℂ] K) (x : H) :
     J.toContinuousLinearMap.adjoint (J x) = x := by
   have hs := congrArg (fun A : H →L[ℂ] H => A x) J.adjoint_comp_self
   rw [ContinuousLinearMap.comp_apply, one_apply_eq_self] at hs
@@ -79,7 +80,8 @@ theorem adjoint_isometry_leftInverse (J : H →ₗᵢ[ℂ] K) (x : H) :
 
 omit [CompleteSpace H] in
 /-- Shifting a forward orbit by the bilateral unitary stays on the embedded two-sided orbit. -/
-theorem woldExtension_shift_orbit (J0 : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K) (k : ℤ) (n : ℕ) (x : H) :
+private theorem woldExtension_shift_orbit (J0 : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K) (k : ℤ) (n : ℕ)
+    (x : H) :
     (woldBilateralEquiv V ^ k) (woldExtensionIncl V
         ((V.toContinuousLinearMap ^ n) (J0 x))) =
       (woldBilateralEquiv V ^ (k + (n : ℤ))) ((woldExtensionIncl V).comp J0 x) := by
@@ -140,8 +142,8 @@ theorem minimalUnitary_of_minimalIsometric (J0 : H →ₗᵢ[ℂ] K) (V : K →�
         rw [hφ]
         exact inner_left_of_mem_orthogonal hmem hy
       rw [← hφ]
-      exact clm_vanish_of_dense_span φ hmin hO z
-    have hall := clm_vanish_of_dense_span (innerSL ℂ (y : L)) (woldExtension_minimal V)
+      exact apply_eq_zero_of_closure_span_eq_top φ hmin hO z
+    have hall := apply_eq_zero_of_closure_span_eq_top (innerSL ℂ (y : L)) (woldExtension_minimal V)
       (by
         intro w hw
         rcases hw with ⟨k, z, rfl⟩
@@ -167,7 +169,8 @@ theorem exists_minimalUnitaryPowerDilation_data (T : H →L[ℂ] H) (hT : ‖T�
   let J : H →ₗᵢ[ℂ] L := ι.comp J0
   refine ⟨{ carrier := L }, J, U, ?_, ?_⟩
   · intro n x
-    have hiter : (U^[n]) (J x) = (U ^ n) (J x) := equiv_iterate_pow_apply U n (J x)
+    have hiter : (U^[n]) (J x) = (U ^ n) (J x) :=
+      linearIsometryEquiv_iterate_apply_eq_pow_apply U n (J x)
     have horbit : (U ^ n) (J x) = ι ((V ^ n) (J0 x)) := by
       have hJ : J x = ι (J0 x) := by
         simp [J, ι, LinearIsometry.coe_comp]

@@ -39,6 +39,7 @@ variable {E : Type*} [AddCommGroup E] [Lattice E] [Module ℝ E]
     [IsOrderedAddMonoid E] [IsOrderedModule ℝ E]
 
 /-- A positive linear map on a Riesz space is monotone. -/
+@[deprecated "use `(monotone_iff_map_nonneg P).2`" (since := "2026-11-15")]
 theorem positiveLinearMap_monotone {P : E →ₗ[ℝ] E}
     (hpos : ∀ x, 0 ≤ x → 0 ≤ P x) : Monotone P :=
   (monotone_iff_map_nonneg P).2 hpos
@@ -49,7 +50,7 @@ theorem contractiveProjection_complement_nonneg {P : E →ₗ[ℝ] E}
   sub_nonneg.2 (hcon x hx)
 
 /-- The complement of a contractive positive projection is monotone. -/
-theorem contractiveProjection_complement_monotone {P : E →ₗ[ℝ] E}
+private theorem contractiveProjection_complement_monotone {P : E →ₗ[ℝ] E}
     (hcon : ∀ x, 0 ≤ x → P x ≤ x) : Monotone fun x => x - P x := by
   intro a b hab
   have hba : 0 ≤ b - a := sub_nonneg.2 hab
@@ -66,7 +67,7 @@ theorem contractiveProjection_disjoint_nonneg {P : E →ₗ[ℝ] E}
     {x y : E} (hx : 0 ≤ x) (hy : 0 ≤ y) : P x ⊓ (y - P y) = 0 := by
   have hpos : ∀ z, 0 ≤ z → 0 ≤ P z := fun z hz => (hcon z hz).1
   have hle : ∀ z, 0 ≤ z → P z ≤ z := fun z hz => (hcon z hz).2
-  have hmono : Monotone P := positiveLinearMap_monotone hpos
+  have hmono : Monotone P := (monotone_iff_map_nonneg P).2 hpos
   have hImono : Monotone (fun z => z - P z) :=
     contractiveProjection_complement_monotone hle
   set z := P x ⊓ (y - P y)
@@ -106,7 +107,7 @@ theorem contractiveProjection_abs {P : E →ₗ[ℝ] E}
     _ = P |x| := by rw [posPart_add_negPart]
 
 /-- Absolute value passes inside the complementary projection. -/
-theorem contractiveProjection_complement_abs {P : E →ₗ[ℝ] E}
+private theorem contractiveProjection_complement_abs {P : E →ₗ[ℝ] E}
     (hcon : ∀ x, 0 ≤ x → 0 ≤ P x ∧ P x ≤ x)
     (x : E) : |x - P x| = |x| - P |x| := by
   have hpos : ∀ z, 0 ≤ z → 0 ≤ P z := fun z hz => (hcon z hz).1
@@ -154,12 +155,12 @@ theorem contractiveProjection_disjoint {P : E →ₗ[ℝ] E}
 
 /-- On the positive cone, a contractive projection is the maximum of its range
 in the order interval. -/
-theorem contractiveProjection_isLUB {P : E →ₗ[ℝ] E}
+private theorem contractiveProjection_isLUB {P : E →ₗ[ℝ] E}
     (hidem : ∀ x, P (P x) = P x) (hcon : ∀ x, 0 ≤ x → 0 ≤ P x ∧ P x ≤ x)
     {x : E} (hx : 0 ≤ x) :
     IsLUB {y | y ∈ LinearMap.range P ∧ 0 ≤ y ∧ y ≤ x} (P x) := by
   have hmono : Monotone P :=
-    positiveLinearMap_monotone (fun z hz => (hcon z hz).1)
+    (monotone_iff_map_nonneg P).2 fun z hz => (hcon z hz).1
   refine ⟨?_, ?_⟩
   · intro y hy
     have hyfix : P y = y := by
@@ -189,7 +190,7 @@ theorem contractiveProjection_le_of_range_subset {P Q : E →ₗ[ℝ] E}
   exact (contractiveProjection_isLUB hPidem hPcon hx).1 hmem
 
 /-- A contractive projection fixes a map whose range it contains. -/
-theorem contractiveProjection_comp_eq_of_range_subset {P Q : E →ₗ[ℝ] E}
+private theorem contractiveProjection_comp_eq_of_range_subset {P Q : E →ₗ[ℝ] E}
     (hPidem : ∀ x, P (P x) = P x)
     (hsubset : (LinearMap.range Q : Set E) ⊆ (LinearMap.range P : Set E)) :
     P.comp Q = Q := by
@@ -209,7 +210,7 @@ theorem contractiveProjection_comp_left_eq_of_range_subset {P Q : E →ₗ[ℝ] 
     have hQPx := contractiveProjection_isLUB hQidem hQcon hPx
     have hQx := contractiveProjection_isLUB hQidem hQcon hx
     have hmono : Monotone P :=
-      positiveLinearMap_monotone (fun z hz => (hPcon z hz).1)
+      (monotone_iff_map_nonneg P).2 fun z hz => (hPcon z hz).1
     have hset :
         {y | y ∈ LinearMap.range Q ∧ 0 ≤ y ∧ y ≤ P x} =
           {y | y ∈ LinearMap.range Q ∧ 0 ≤ y ∧ y ≤ x} := by

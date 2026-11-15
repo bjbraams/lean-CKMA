@@ -112,7 +112,7 @@ def marginalValue (f : E → EReal) (g : F → EReal) (A : E →L[ℝ] F) (y : F
   ⨅ x, f x + g (A x + y)
 
 /-- The marginal of two convex extended-real functions has convex real epigraph. -/
-theorem convex_epigraph_marginalValue {f : E → EReal} {g : F → EReal}
+private theorem convex_epigraph_marginalValue {f : E → EReal} {g : F → EReal}
     (A : E →L[ℝ] F) (hfbot : ∀ x, f x ≠ ⊥) (hgbot : ∀ z, g z ≠ ⊥)
     (hcf : Convex ℝ {p : E × ℝ | f p.1 ≤ p.2})
     (hcg : Convex ℝ {p : F × ℝ | g p.1 ≤ p.2}) :
@@ -208,7 +208,7 @@ theorem convex_epigraph_marginalValue {f : E → EReal} {g : F → EReal}
     _ ≤ ((a * r1 + b * r2 + ε : ℝ) : EReal) := EReal.coe_le_coe_iff.mpr hcomb
 
 /-- Continuity of `g` at `A x₀`, with both values finite, bounds the marginal near `0`. -/
-theorem exists_boundedAbove_marginalValue {f : E → EReal} {g : F → EReal}
+private theorem exists_boundedAbove_marginalValue {f : E → EReal} {g : F → EReal}
     (A : E →L[ℝ] F) {x₀ : E} (hf0 : f x₀ ≠ ⊤) (hg0 : g (A x₀) ≠ ⊤)
     (hfbot : ∀ x, f x ≠ ⊥) (hgbot : ∀ z, g z ≠ ⊥) (hcont : ContinuousAt g (A x₀)) :
     ∃ U ∈ 𝓝 (0 : F), ∃ M : ℝ, ∀ y ∈ U, marginalValue f g A y ≤ (M : EReal) := by
@@ -226,7 +226,7 @@ theorem exists_boundedAbove_marginalValue {f : E → EReal} {g : F → EReal}
     _ = ↑((f x₀).toReal + N) := by rw [EReal.coe_add]
 
 /-- A marginal that is not `-∞` at `0` and is bounded above nearby is nowhere `-∞`. -/
-theorem marginalValue_ne_bot {f : E → EReal} {g : F → EReal} (A : E →L[ℝ] F)
+private theorem marginalValue_ne_bot {f : E → EReal} {g : F → EReal} (A : E →L[ℝ] F)
     (hconv : Convex ℝ {p : F × ℝ | marginalValue f g A p.1 ≤ p.2})
     (hfin : marginalValue f g A 0 ≠ ⊥)
     (hbd : ∃ U ∈ 𝓝 (0 : F), ∃ M : ℝ, ∀ y ∈ U,

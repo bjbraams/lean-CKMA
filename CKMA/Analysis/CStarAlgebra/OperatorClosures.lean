@@ -32,8 +32,6 @@ Sources: GAPS 23.21 and 23.22.
 ## Main results
 
 * `CKMA.mem_boundedOperatorCommutant_iff`: characterization of membership in the commutant.
-* `CKMA.tendsto_weakOperator_iff`: characterization of weak-operator convergence via matrix
-  coefficients.
 * `CKMA.IsWeakOperatorApproximable.of_mem_closure`: WOT closure implies finite-coefficient
   weak-operator approximability.
 * `CKMA.bicommutant_closures`: von Neumann bicommutant theorem (**23.21**).
@@ -74,6 +72,8 @@ def IsWeakOperatorApproximable (S : Set (H →L[ℂ] H)) (T : H →L[ℂ] H) : P
     ∃ A ∈ S, ∀ i, ‖⟪y i, (A - T) (x i)⟫_ℂ‖ < ε
 
 /-- Mathlib's weak-operator convergence is convergence of all Hilbert matrix coefficients. -/
+@[deprecated "use `ContinuousLinearMapWOT.tendsto_iff_forall_inner_apply_tendsto`"
+  (since := "2026-11-15")]
 theorem tendsto_weakOperator_iff {α : Type*} (u : α → H →L[ℂ] H)
     (l : Filter α) (T : H →L[ℂ] H) :
     Tendsto (fun a ↦ ContinuousLinearMapWOT.ofCLM (u a)) l
@@ -117,9 +117,9 @@ theorem bicommutant_closures (A : StarSubalgebra ℂ (H →L[ℂ] H)) (T : H →
   sorry
 
 /-- **23.22**, Kaplansky density for a possibly nonunital, nondegenerately represented
-C*-algebra. Nondegeneracy is stated by density of the linear action span. -/
+star algebra of operators; norm closedness is not needed. Nondegeneracy is stated by density
+of the linear action span. -/
 theorem kaplansky_density (A : NonUnitalStarSubalgebra ℂ (H →L[ℂ] H))
-    (hc : IsClosed (A : Set (H →L[ℂ] H)))
     (hd : Dense (Submodule.span ℂ {x : H | ∃ a ∈ A, ∃ y : H, a y = x} : Set H))
     (T : H →L[ℂ] H) (hT : T ∈ boundedOperatorCommutant
       (boundedOperatorCommutant (A : Set (H →L[ℂ] H)))) (hbound : ‖T‖ ≤ 1) :
@@ -128,7 +128,6 @@ theorem kaplansky_density (A : NonUnitalStarSubalgebra ℂ (H →L[ℂ] H))
 
 /-- The self-adjoint unit-ball version of Kaplansky density. -/
 theorem kaplansky_density_selfAdjoint (A : NonUnitalStarSubalgebra ℂ (H →L[ℂ] H))
-    (hc : IsClosed (A : Set (H →L[ℂ] H)))
     (hd : Dense (Submodule.span ℂ {x : H | ∃ a ∈ A, ∃ y : H, a y = x} : Set H))
     (T : H →L[ℂ] H) (hT : T ∈ boundedOperatorCommutant
       (boundedOperatorCommutant (A : Set (H →L[ℂ] H)))) (hbound : ‖T‖ ≤ 1)

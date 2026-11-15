@@ -46,7 +46,7 @@ universe u
 variable {E : Type u} [NormedAddCommGroup E]
 
 /-- A constant term at `none` plus a series on `ℕ` is a series on `Option ℕ`. -/
-theorem hasSum_option (a : E) (g : ℕ → E) (s : E) (hg : HasSum g s) :
+private theorem hasSum_option (a : E) (g : ℕ → E) (s : E) (hg : HasSum g s) :
     HasSum (fun i : Option ℕ => match i with
       | none => a
       | some n => g n) (a + s) := by
@@ -141,7 +141,7 @@ theorem woldSummand_orthogonal (V : H →ₗᵢ[ℂ] H) :
       exact woldShift_inner_eq_zero V m n hmn v w
 
 /-- Every vector is the Hilbert sum of its unitary part and its wandering shifts. -/
-theorem wold_hasSum_summand (V : H →ₗᵢ[ℂ] H) (x : H) :
+private theorem wold_hasSum_summand (V : H →ₗᵢ[ℂ] H) (x : H) :
     ∃ f : ∀ i, woldSummandNat V i, HasSum (fun i => woldSummandIncl V i (f i)) x := by
   obtain ⟨u, hu, w, hs⟩ := wold_hasSum_decomposition V x
   let f : ∀ i, woldSummandNat V i
@@ -181,7 +181,7 @@ theorem wold_isHilbertSum (V : H →ₗᵢ[ℂ] H) :
   exact mem_iSup_of_mem i (LinearMap.mem_range_self _ (f i))
 
 /-- A summand coefficient is the inner product against that summand. -/
-theorem inner_woldSummandIncl (V : H →ₗᵢ[ℂ] H) (x : H) (i : Option ℕ)
+private theorem inner_woldSummandIncl (V : H →ₗᵢ[ℂ] H) (x : H) (i : Option ℕ)
     (v : woldSummandNat V i) :
     ⟪woldSummandIncl V i v, x⟫_ℂ =
       ⟪v, (wold_isHilbertSum V).linearIsometryEquiv x i⟫_ℂ := by

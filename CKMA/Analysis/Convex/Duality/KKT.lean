@@ -33,6 +33,8 @@ Sources: Boyd–Vandenberghe, *Convex Optimization*, §§5.5 and 5.9; GAPS 12.40
 
 * `CKMA.exists_convexKKTMultipliers_of_slater`: existence of subgradient KKT multipliers under
   Slater's strict feasibility condition (GAPS 12.40).
+* `CKMA.ConvexOn.finset_sum_mul`: a nonnegative linear combination of convex functions is
+  convex.
 -/
 
 @[expose] public section
@@ -108,7 +110,7 @@ private lemma subdifferential_add_coe [FiniteDimensional ℝ E] {f g : E → ℝ
     rw [EReal.coe_add]
   rw [hfun]
   exact subdifferential_add_eq (proper_coe f) (proper_coe g)
-    (convex_epigraph_coe hf) (convex_epigraph_coe hg)
+    (ConvexOn.convex_epigraph_coe hf) (ConvexOn.convex_epigraph_coe hg)
     ⟨EReal.coe_ne_top _, EReal.coe_ne_top _⟩ (continuousAt_coe hg x) x
 
 /-- Positive scaling preserves convex subdifferentials, and the zero multiple is `{0}`. -/
@@ -161,10 +163,10 @@ private lemma subdifferential_const_mul [FiniteDimensional ℝ E] {c : ℝ} (hc 
         ring
       linarith
 
-/-- A nonnegative combination of convex functions over a finset is convex. -/
-private lemma convexOn_weighted_sum_finset {ι : Type*} (s : Finset ι) (c : ι → ℝ)
-    (hc : ∀ i ∈ s, 0 ≤ c i) (g : ι → E → ℝ) (hg : ∀ i ∈ s, ConvexOn ℝ Set.univ (g i)) :
-    ConvexOn ℝ Set.univ (fun z => ∑ i ∈ s, c i * g i z) := by
+/-- A nonnegative linear combination, over a finset, of functions convex on `t` is convex on `t`. -/
+theorem ConvexOn.finset_sum_mul {ι : Type*} {t : Set E} (ht : Convex ℝ t) (s : Finset ι)
+    (c : ι → ℝ) (hc : ∀ i ∈ s, 0 ≤ c i) (g : ι → E → ℝ) (hg : ∀ i ∈ s, ConvexOn ℝ t (g i)) :
+    ConvexOn ℝ t (fun z => ∑ i ∈ s, c i * g i z) := by
   classical
   induction s using Finset.induction_on with
   | empty =>
@@ -172,14 +174,14 @@ private lemma convexOn_weighted_sum_finset {ι : Type*} (s : Finset ι) (c : ι 
       ext z
       simp
     rw [hfun]
-    exact convexOn_const 0 convex_univ
+    exact convexOn_const 0 ht
   | @insert a s ha ih =>
     let f1 : E → ℝ := fun z => c a * g a z
     let f2 : E → ℝ := fun z => ∑ i ∈ s, c i * g i z
-    have hf1 : ConvexOn ℝ Set.univ f1 := by
+    have hf1 : ConvexOn ℝ t f1 := by
       simpa [f1, smul_eq_mul] using (hg a (Finset.mem_insert_self a s)).smul
         (hc a (Finset.mem_insert_self a s))
-    have hf2 : ConvexOn ℝ Set.univ f2 :=
+    have hf2 : ConvexOn ℝ t f2 :=
       ih (fun i hi => hc i (Finset.mem_insert_of_mem hi))
         (fun i hi => hg i (Finset.mem_insert_of_mem hi))
     have hfun : (fun z => ∑ i ∈ insert a s, c i * g i z) = f1 + f2 := by
@@ -192,7 +194,7 @@ private lemma convexOn_weighted_sum_finset {ι : Type*} (s : Finset ι) (c : ι 
 private lemma convexOn_weighted_sum {ι : Type*} [Fintype ι] (c : ι → ℝ) (hc : ∀ i, 0 ≤ c i)
     (g : ι → E → ℝ) (hg : ∀ i, ConvexOn ℝ Set.univ (g i)) :
     ConvexOn ℝ Set.univ (fun z => ∑ i, c i * g i z) :=
-  convexOn_weighted_sum_finset Finset.univ c (fun i _ => hc i) g (fun i _ => hg i)
+  ConvexOn.finset_sum_mul convex_univ Finset.univ c (fun i _ => hc i) g (fun i _ => hg i)
 
 /-- A subgradient of a weighted sum over a finset splits into scaled subgradients. -/
 private lemma exists_subdifferential_weighted_sum_finset [FiniteDimensional ℝ E] {ι : Type*}
@@ -229,7 +231,7 @@ private lemma exists_subdifferential_weighted_sum_finset [FiniteDimensional ℝ 
       fun i hi => hg i (Finset.mem_insert_of_mem hi)
     have hf1 : ConvexOn ℝ Set.univ f1 := by
       simpa [f1, smul_eq_mul] using hga.smul hca
-    have hf2 : ConvexOn ℝ Set.univ f2 := convexOn_weighted_sum_finset s c hcs g hgs
+    have hf2 : ConvexOn ℝ Set.univ f2 := ConvexOn.finset_sum_mul convex_univ s c hcs g hgs
     rw [subdifferential_add_coe hf1 hf2 x] at hw
     obtain ⟨w1, hw1, w2, hw2, hwadd⟩ := Set.mem_add.mp hw
     rw [subdifferential_const_mul hca hga x] at hw1
@@ -695,7 +697,7 @@ private lemma exists_kkt_from_lagrange [FiniteDimensional ℝ E] {m : ℕ}
     rw [hset]
     exact convex_epigraph_indicator (convex_eq_fiber A b)
   have hconv_ell : Convex ℝ {p : E × ℝ | ell p.1 ≤ p.2} := by
-    simpa [ell] using convex_epigraph_coe hlag_conv
+    simpa [ell] using ConvexOn.convex_epigraph_coe hlag_conv
   have hfin : delta x₀ ≠ ⊤ ∧ ell x₀ ≠ ⊤ := by
     constructor
     · simp [delta, hx₀C]

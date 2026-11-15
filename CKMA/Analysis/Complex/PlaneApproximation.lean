@@ -14,7 +14,7 @@ public import Mathlib.Topology.MetricSpace.ProperSpace
 /-!
 # Plane approximation and prescribed analytic data
 
-Plane domains and relatively locally finite sets support isolated-singularity and
+Open plane sets and relatively locally finite sets support isolated-singularity and
 prescribed-divisor interfaces. Great Picard describes essential singularities.
 Runge approximation permits specified poles in bounded complementary components;
 Mergelyan approximation permits compact sets with empty interior. Mittag–Leffler
@@ -25,7 +25,6 @@ Sources: GAPS 40.29 and 40.60–40.64.
 
 ## Main definitions
 
-* `CKMA.IsPlaneDomain`: nonempty connected open subset of `ℂ`.
 * `CKMA.IsLocallyFiniteIn`: relative local finiteness on compact subsets.
 * `CKMA.HasEssentialSingularityAt`: isolated essential singularity.
 * `CKMA.MeetsBoundedComplementaryComponents`: pole set condition for Runge's theorem.
@@ -51,6 +50,7 @@ namespace CKMA
 open Filter Topology Polynomial
 
 /-- A nonempty connected open subset of the complex plane. -/
+@[deprecated "use `IsOpen Ω ∧ IsConnected Ω`" (since := "2026-11-15")]
 def IsPlaneDomain (Ω : Set ℂ) : Prop := Ω.Nonempty ∧ IsOpen Ω ∧ IsPreconnected Ω
 
 /-- Local finiteness relative to an open set, formulated on all compact subsets. -/
@@ -107,18 +107,20 @@ theorem mergelyan_approximation {K : Set ℂ} (hK : IsCompact K)
 The constant term is required to vanish by the Mittag–Leffler theorem's hypotheses. -/
 def finitePrincipalPart (a : ℂ) (p : ℂ[X]) (z : ℂ) : ℂ := p.eval ((z - a)⁻¹)
 
-/-- **40.63**: arbitrary locally finite principal parts on a plane domain are realized by
-one meromorphic function. Equality to the principal part is modulo an analytic germ. -/
-theorem exists_mittagLeffler {Ω A : Set ℂ} (hΩ : IsPlaneDomain Ω) (hAΩ : A ⊆ Ω)
+/-- **40.63**: arbitrary locally finite principal parts on an open subset of the plane are
+realized by one meromorphic function; connectedness is not needed. Equality to the principal
+part is modulo an analytic germ. -/
+theorem exists_mittagLeffler {Ω A : Set ℂ} (hΩ : IsOpen Ω) (hAΩ : A ⊆ Ω)
     (hA : IsLocallyFiniteIn A Ω) (p : A → ℂ[X]) (hp : ∀ a, (p a).coeff 0 = 0) :
     ∃ f : ℂ → ℂ, MeromorphicOn f Ω ∧ DifferentiableOn ℂ f (Ω \ A) ∧
       ∀ a : A, ∃ g : ℂ → ℂ, AnalyticAt ℂ g a.1 ∧
         ∀ᶠ z in 𝓝[≠] a.1, f z - finitePrincipalPart a.1 (p a) z = g z := by
   sorry
 
-/-- **40.64**: every locally finite positive zero divisor on a plane domain is realized.
+/-- **40.64**: every locally finite positive zero divisor on an open subset of the plane is
+realized; connectedness is not needed.
 Orders use Mathlib's analytic order, not a separate multiplicity convention. -/
-theorem exists_holomorphic_prescribed_zeros {Ω A : Set ℂ} (hΩ : IsPlaneDomain Ω)
+theorem exists_holomorphic_prescribed_zeros {Ω A : Set ℂ} (hΩ : IsOpen Ω)
     (hAΩ : A ⊆ Ω) (hA : IsLocallyFiniteIn A Ω) (m : A → ℕ) (hm : ∀ a, 0 < m a) :
     ∃ f : ℂ → ℂ, DifferentiableOn ℂ f Ω ∧
       (∀ z ∈ Ω, f z = 0 ↔ z ∈ A) ∧

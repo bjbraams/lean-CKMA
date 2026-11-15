@@ -50,8 +50,8 @@ import TauCeti.Analysis.InnerProductSpace.BorelCalculus.DiagonalMeasure
 
 The Birman–Schwinger kernel equivalence is algebraic once the shifted free operator is
 invertible; compactness and self-adjointness of the factor are not needed for this equivalence.
-A self-adjoint free operator with nonnegative quadratic form and a positive real shift provide
-the spectral setting.
+A free operator with nonnegative quadratic form and a positive real shift provide the
+spectral setting; self-adjointness of the free operator is not needed either.
 The proof combines Mathlib's Hilbert coercivity criterion with the Tau Ceti contributors'
 `Module.End.eigenspaceCompEquiv` for the algebraic kernel transport.
 
@@ -72,7 +72,7 @@ Sources: GAPS 22.38 and 22.63.
 ## Main results
 
 * `CKMA.birman_schwinger_kernel_equiv`: Birman–Schwinger eigenvalue/multiplicity equivalence for
-  self-adjoint `H₀` with nonnegative quadratic form and energy shift `E > 0` (**22.38**).
+  `H₀` with nonnegative quadratic form and energy shift `E > 0` (**22.38**).
 * `CKMA.rage_continuous`: RAGE theorem characterizing `purePointOperatorSubspace A` orthogonal
   complement by vanishing compactly observed Cesàro means (**22.63**).
 * `CKMA.rage_purePoint`: RAGE theorem characterizing `purePointOperatorSubspace A` by precompact
@@ -85,7 +85,7 @@ noncomputable section
 
 namespace CKMA
 
-open Filter Topology MeasureTheory
+open Filter Topology MeasureTheory RAGE
 open scoped InnerProductSpace ComplexConjugate Pointwise
 
 /-- The Birman–Schwinger kernel transport for a supplied invertible bounded operator.
@@ -132,7 +132,7 @@ def birmanSchwingerKernelEquiv {𝕜 X : Type*} [NontriviallyNormedField 𝕜]
 variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
 
 /-- Birman–Schwinger operator `W (H₀ + E)⁻¹ W` for an arbitrary bounded operator `W`; in
-`birman_schwinger_kernel_equiv`, `W` is a square root of the potential, `W * W = V`.
+`birman_schwinger_kernel_equiv`, `W` is a square root of the potential `W * W`.
 Totalized ring inversion is used in the definition; the theorem's hypotheses force invertibility. -/
 def birmanSchwingerOperator (H₀ W : H →L[ℂ] H) (E : ℝ) : H →L[ℂ] H :=
   W * Ring.inverse (H₀ + (E : ℂ) • (1 : H →L[ℂ] H)) * W
@@ -140,10 +140,9 @@ def birmanSchwingerOperator (H₀ W : H →L[ℂ] H) (E : ℝ) : H →L[ℂ] H :
 /-- **22.38**, the bounded-operator eigenvalue/multiplicity clause. The conclusion is an
 actual linear equivalence of eigenspaces, stronger than equality of finite dimensions.
 Compactness and self-adjointness of the factor `W` are unnecessary for this algebraic clause. -/
-theorem birman_schwinger_kernel_equiv (H₀ V W : H →L[ℂ] H)
-    (hH : IsSelfAdjoint H₀) (hpos : ∀ x : H, 0 ≤ (⟪x, H₀ x⟫_ℂ).re)
-    (hV : W * W = V) {E : ℝ} (hE : 0 < E) :
-    Nonempty (LinearMap.ker ((H₀ - V + (E : ℂ) • (1 : H →L[ℂ] H)).toLinearMap) ≃ₗ[ℂ]
+theorem birman_schwinger_kernel_equiv (H₀ W : H →L[ℂ] H)
+    (hpos : ∀ x : H, 0 ≤ (⟪x, H₀ x⟫_ℂ).re) {E : ℝ} (hE : 0 < E) :
+    Nonempty (LinearMap.ker ((H₀ - W * W + (E : ℂ) • (1 : H →L[ℂ] H)).toLinearMap) ≃ₗ[ℂ]
       LinearMap.ker ((1 - birmanSchwingerOperator H₀ W E).toLinearMap)) := by
   have hunit : IsUnit (H₀ + (E : ℂ) • (1 : H →L[ℂ] H)) := by
     apply ContinuousLinearMap.isUnit_of_forall_le_norm_inner_map _
@@ -151,19 +150,17 @@ theorem birman_schwinger_kernel_equiv (H₀ V W : H →L[ℂ] H)
     intro x
     calc
       ‖x‖ ^ 2 * E ≤ (⟪(H₀ + (E : ℂ) • (1 : H →L[ℂ] H)) x, x⟫_ℂ).re := by
-        have hadj : H₀.adjoint = H₀ := hH
-        have hs : ⟪H₀ x, x⟫_ℂ = ⟪x, H₀ x⟫_ℂ := by
-          simpa only [hadj] using H₀.adjoint_inner_left x x
+        have hs : (⟪H₀ x, x⟫_ℂ).re = (⟪x, H₀ x⟫_ℂ).re := by
+          rw [← inner_conj_symm, Complex.conj_re]
         simp only [add_apply, smul_apply, one_apply_eq_self, inner_add_left, inner_smul_left,
-          Complex.conj_ofReal, hs, Complex.add_re, Complex.mul_re, Complex.ofReal_re,
+          Complex.conj_ofReal, Complex.add_re, hs, Complex.mul_re, Complex.ofReal_re,
           Complex.ofReal_im, zero_mul, sub_zero]
         have hn : (⟪x, x⟫_ℂ).re = ‖x‖ ^ 2 := (norm_sq_eq_re_inner (𝕜 := ℂ) x).symm
         rw [hn]
         nlinarith [hpos x]
       _ ≤ ‖⟪(H₀ + (E : ℂ) • (1 : H →L[ℂ] H)) x, x⟫_ℂ‖ := Complex.re_le_norm _
-  have heq : H₀ - V + (E : ℂ) • (1 : H →L[ℂ] H) =
+  have heq : H₀ - W * W + (E : ℂ) • (1 : H →L[ℂ] H) =
       H₀ + (E : ℂ) • (1 : H →L[ℂ] H) - W * W := by
-    rw [hV]
     abel
   rw [heq]
   exact ⟨birmanSchwingerKernelEquiv (H₀ + (E : ℂ) • (1 : H →L[ℂ] H)) W hunit⟩

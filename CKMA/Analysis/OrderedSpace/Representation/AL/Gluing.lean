@@ -111,7 +111,7 @@ structure BandIndex where
   mem_family : vec ∈ maximalPositiveDisjointFamily
 
 /-- Each index vector is strictly positive. -/
-theorem bandIndex_pos (i : BandIndex) : (0 : E) < i.vec :=
+private theorem bandIndex_pos (i : BandIndex) : (0 : E) < i.vec :=
   (maximalPositiveDisjointFamily_spec (E := E)).1.1 i.vec i.mem_family
 
 /-- Each index vector is nonnegative. -/
@@ -119,7 +119,7 @@ theorem bandIndex_nonneg (i : BandIndex) : (0 : E) ≤ i.vec :=
   le_of_lt (bandIndex_pos i)
 
 /-- Distinct index vectors are lattice disjoint. -/
-theorem bandIndex_disjoint {i j : BandIndex} (hij : i ≠ j) :
+private theorem bandIndex_disjoint {i j : BandIndex} (hij : i ≠ j) :
     LatticeDisjoint (E := E) i.vec j.vec := by
   have hne : i.vec ≠ j.vec := by
     intro h
@@ -167,12 +167,12 @@ noncomputable def indexProjection {u : E} (hu : u ∈ maximalPositiveDisjointFam
   bandProjection hE (le_of_lt ((maximalPositiveDisjointFamily_spec (E := E)).1.1 u hu))
 
 /-- On the positive cone the index projection is the truncation limit. -/
-theorem indexProjection_apply_nonneg (i : BandIndex) {x : E} (hx : 0 ≤ x) :
+private theorem indexProjection_apply_nonneg (i : BandIndex) {x : E} (hx : 0 ≤ x) :
     indexProjection hE i.mem_family x = posBandPart i.vec x :=
   bandProjection_apply_nonneg hE (bandIndex_nonneg i) hx
 
 /-- Absolute value passes inside an index projection. -/
-theorem indexProjection_abs (i : BandIndex) (x : E) :
+private theorem indexProjection_abs (i : BandIndex) (x : E) :
     |indexProjection hE i.mem_family x| = indexProjection hE i.mem_family |x| :=
   bandProjection_abs hE (bandIndex_nonneg i) x
 
@@ -182,13 +182,14 @@ theorem indexProjection_eq_clm (i : BandIndex) (x : E) :
   rfl
 
 /-- Distinct index vectors meet in zero. -/
-theorem bandIndex_inf_eq_zero {i j : BandIndex} (hij : i ≠ j) : i.vec ⊓ j.vec = (0 : E) := by
+private theorem bandIndex_inf_eq_zero {i j : BandIndex} (hij : i ≠ j) : i.vec ⊓ j.vec =
+    (0 : E) := by
   have h : LatticeDisjoint (E := E) i.vec j.vec := bandIndex_disjoint (i := i) (j := j) hij
   simpa [LatticeDisjoint, abs_of_nonneg (bandIndex_nonneg i),
     abs_of_nonneg (bandIndex_nonneg j)] using h
 
 /-- Projections of one vector onto distinct bands are lattice disjoint. -/
-theorem indexProjection_latticeDisjoint {i j : BandIndex} (hij : i ≠ j) (x : E) :
+private theorem indexProjection_latticeDisjoint {i j : BandIndex} (hij : i ≠ j) (x : E) :
     LatticeDisjoint (E := E) (indexProjection hE i.mem_family x)
       (indexProjection hE j.mem_family x) := by
   rw [LatticeDisjoint, indexProjection_abs hE i x, indexProjection_abs hE j x,
@@ -198,20 +199,21 @@ theorem indexProjection_latticeDisjoint {i j : BandIndex} (hij : i ≠ j) (x : E
     (abs_nonneg x) (bandIndex_inf_eq_zero hij)
 
 /-- A positive band part is disjoint from every other index vector. -/
-theorem indexProjection_inf_vec_eq_zero {i j : BandIndex} (hij : i ≠ j) {x : E} (hx : 0 ≤ x) :
+private theorem indexProjection_inf_vec_eq_zero {i j : BandIndex} (hij : i ≠ j) {x : E}
+    (hx : 0 ≤ x) :
     indexProjection hE i.mem_family x ⊓ j.vec = 0 := by
   rw [indexProjection_apply_nonneg hE i hx]
-  have htrunc : ∀ n, trunc i.vec x n ⊓ j.vec = 0 := by
+  have htrunc : ∀ n, bandTrunc i.vec x n ⊓ j.vec = 0 := by
     intro n
-    refine le_antisymm ?_ (le_inf (trunc_nonneg (bandIndex_nonneg i) hx n) (bandIndex_nonneg j))
+    refine le_antisymm ?_ (le_inf (bandTrunc_nonneg (bandIndex_nonneg i) hx n) (bandIndex_nonneg j))
     calc
-      trunc i.vec x n ⊓ j.vec ≤ ((n : ℝ) • i.vec) ⊓ j.vec :=
+      bandTrunc i.vec x n ⊓ j.vec ≤ ((n : ℝ) • i.vec) ⊓ j.vec :=
         inf_le_inf_right _ inf_le_right
       _ = 0 := inf_smul_eq_zero (Nat.cast_nonneg n) (bandIndex_nonneg i) (bandIndex_nonneg j)
         (bandIndex_inf_eq_zero hij)
-  have hlim : Tendsto (fun n => trunc i.vec x n ⊓ j.vec) atTop
+  have hlim : Tendsto (fun n => bandTrunc i.vec x n ⊓ j.vec) atTop
       (𝓝 (posBandPart i.vec x ⊓ j.vec)) := by
-    have hpair : Tendsto (fun n => (trunc i.vec x n, j.vec)) atTop
+    have hpair : Tendsto (fun n => (bandTrunc i.vec x n, j.vec)) atTop
         (𝓝 (posBandPart i.vec x, j.vec)) := by
       rw [nhds_prod_eq]
       exact (posBandPart_tendsto hE (bandIndex_nonneg i) hx).prodMk tendsto_const_nhds
@@ -229,14 +231,14 @@ theorem indexProjection_cross_eq_zero {i j : BandIndex} (hij : i ≠ j) {x : E} 
 
 include hE in
 /-- Each truncation lies below the band part. -/
-theorem trunc_le_posBandPart {u x : E} (hu : 0 ≤ u) (hx : 0 ≤ x) (n : ℕ) :
-    trunc u x n ≤ posBandPart u x := by
-  apply (isClosed_Ici (a := trunc u x n)).mem_of_tendsto (posBandPart_tendsto hE hu hx)
+private theorem bandTrunc_le_posBandPart {u x : E} (hu : 0 ≤ u) (hx : 0 ≤ x) (n : ℕ) :
+    bandTrunc u x n ≤ posBandPart u x := by
+  apply (isClosed_Ici (a := bandTrunc u x n)).mem_of_tendsto (posBandPart_tendsto hE hu hx)
   rw [eventually_atTop]
-  exact ⟨n, fun m hm => trunc_mono hu hm⟩
+  exact ⟨n, fun m hm => bandTrunc_mono hu hm⟩
 
 /-- A finite sum of positive band parts is at most the vector. -/
-theorem sum_indexProjection_le {x : E} (hx : 0 ≤ x) (s : Finset BandIndex) :
+private theorem sum_indexProjection_le {x : E} (hx : 0 ≤ x) (s : Finset BandIndex) :
     ∑ i ∈ s, indexProjection hE i.mem_family x ≤ x := by
   classical
   induction s using Finset.induction with
@@ -262,7 +264,7 @@ theorem sum_indexProjection_le {x : E} (hx : 0 ≤ x) (s : Finset BandIndex) :
     exact sup_le (bandProjection_contractive hE (bandIndex_nonneg a) hx).2 ih
 
 /-- Norms add on finite sums of the band projections. -/
-theorem norm_sum_indexProjection (x : E) (s : Finset BandIndex) :
+private theorem norm_sum_indexProjection (x : E) (s : Finset BandIndex) :
     ‖∑ i ∈ s, indexProjection hE i.mem_family x‖ =
       ∑ i ∈ s, ‖indexProjection hE i.mem_family x‖ := by
   refine norm_sum_of_pairwise_latticeDisjoint hE ?_
@@ -288,12 +290,12 @@ theorem summable_norm_indexProjection (x : E) :
   exact sum_indexProjection_le hE (abs_nonneg x) s
 
 /-- The band projections of one vector form a summable family. -/
-theorem summable_indexProjection (x : E) :
+private theorem summable_indexProjection (x : E) :
     Summable fun i : BandIndex => indexProjection hE i.mem_family x :=
   Summable.of_norm (summable_norm_indexProjection hE x)
 
 /-- A nonnegative vector is the sum of its band projections. -/
-theorem indexProjection_tsum_nonneg {x : E} (hx : 0 ≤ x) :
+private theorem indexProjection_tsum_nonneg {x : E} (hx : 0 ≤ x) :
     ∑' (i : BandIndex), indexProjection hE i.mem_family x = x := by
   have hsumm := summable_indexProjection hE x
   set s := ∑' (i : BandIndex), indexProjection hE i.mem_family x with hs
@@ -327,12 +329,12 @@ theorem indexProjection_tsum_nonneg {x : E} (hx : 0 ≤ x) :
   have hdisj : ∀ u ∈ maximalPositiveDisjointFamily, r ⊓ u = 0 := by
     intro u hu
     let k : BandIndex := ⟨u, hu⟩
-    have hle : trunc u r 1 ≤ posBandPart u r :=
-      trunc_le_posBandPart hE (bandIndex_nonneg k) hr0 1
+    have hle : bandTrunc u r 1 ≤ posBandPart u r :=
+      bandTrunc_le_posBandPart hE (bandIndex_nonneg k) hr0 1
     have hP : posBandPart u r = 0 := by
       rw [← indexProjection_apply_nonneg hE k hr0]
       exact hPr k
-    have htrunc : trunc u r 1 = r ⊓ u := by simp [trunc, one_smul]
+    have htrunc : bandTrunc u r 1 = r ⊓ u := by simp [bandTrunc, one_smul]
     exact le_antisymm (by simpa [htrunc, hP] using hle) (le_inf hr0 (bandIndex_nonneg k))
   by_cases hmem : r ∈ maximalPositiveDisjointFamily
   · let k : BandIndex := ⟨r, hmem⟩
@@ -390,7 +392,7 @@ theorem indexProjection_tsum (x : E) :
     _ = x := (posPart_sub_negPart x)
 
 /-- The series of projection norms recovers the norm. -/
-theorem tsum_norm_indexProjection {x : E} (hx : 0 ≤ x) :
+private theorem tsum_norm_indexProjection {x : E} (hx : 0 ≤ x) :
     ∑' (i : BandIndex), ‖indexProjection hE i.mem_family x‖ = ‖x‖ := by
   have hv : Tendsto (fun t : Finset BandIndex => ∑ i ∈ t, indexProjection hE i.mem_family x) atTop
       (𝓝 x) := by

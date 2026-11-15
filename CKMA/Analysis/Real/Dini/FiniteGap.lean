@@ -30,8 +30,8 @@ right derivative, and the upper right derivative is finite. Source: GAPS 05.10.
 
 ## Main results
 
-* `CKMA.Dini.finiteGap_volume_le`: outer-measure bound by the gap ratio on short intervals.
-* `CKMA.Dini.volume_finiteGap_eq_zero`: each `finiteGap` set has Lebesgue measure zero.
+* `finiteGap_volume_le`: outer-measure bound by the gap ratio on short intervals.
+* `volume_finiteGap_eq_zero`: each `finiteGap` set has Lebesgue measure zero.
 * `CKMA.Dini.volume_finiteStrict`: `finiteStrict f` has Lebesgue measure zero.
 * `CKMA.Dini.mem_finiteStrict_of_lt`: any finite strict inequality between lower left and upper
   right Dini derivatives lies in `finiteStrict f`.
@@ -47,7 +47,7 @@ open Set Filter Topology MeasureTheory IsUnifLocDoublingMeasure
 open scoped ENNReal
 
 /-- A left increment flatter than `s` exists at every negative scale below the liminf. -/
-lemma exists_left_slope_lt (f : ℝ → ℝ) (x s ε : ℝ)
+private lemma exists_left_slope_lt (f : ℝ → ℝ) (x s ε : ℝ)
     (hs : lowerLeftDiniDerivative f x < (s : EReal)) (hε : ε < 0) :
     ∃ h, ε < h ∧ h < 0 ∧ (f (x + h) - f x) / h < s := by
   have hfreq : ∃ᶠ h in 𝓝[<] (0 : ℝ), extendedDifferenceQuotient f x h < (s : EReal) :=
@@ -63,7 +63,7 @@ lemma exists_left_slope_lt (f : ℝ → ℝ) (x s ε : ℝ)
   exact (EReal.coe_lt_coe_iff).1 hhE
 
 /-- Reflection through a point preserves Lebesgue outer measure. -/
-lemma volume_preimage_reflect (c : ℝ) (s : Set ℝ) :
+private lemma volume_preimage_reflect (c : ℝ) (s : Set ℝ) :
     volume ((fun x => c - x) ⁻¹' s) = volume s := by
   have hcomp : (fun x : ℝ => c - x) = (fun x => c + x) ∘ Neg.neg := by
     ext x
@@ -71,14 +71,14 @@ lemma volume_preimage_reflect (c : ℝ) (s : Set ℝ) :
   rw [hcomp, preimage_comp, Measure.measure_preimage_neg, measure_preimage_add]
 
 /-- An open interval is invariant under reflection through its centre. -/
-lemma preimage_reflect_Ioo (a b : ℝ) :
+private lemma preimage_reflect_Ioo (a b : ℝ) :
     (fun x => a + b - x) ⁻¹' Ioo a b = Ioo a b := by
   ext x
   simp only [mem_preimage, mem_Ioo]
   constructor <;> intro hx <;> constructor <;> linarith
 
 /-- Reflection through the centre preserves the outer measure of a set inside `(a, b)`. -/
-lemma volume_reflect_inter {E : Set ℝ} {a b : ℝ} :
+private lemma volume_reflect_inter {E : Set ℝ} {a b : ℝ} :
     volume ({x | a + b - x ∈ E} ∩ Ioo a b) = volume (E ∩ Ioo a b) := by
   have hpre : (fun x => a + b - x) ⁻¹' (E ∩ Ioo a b) =
       {x | a + b - x ∈ E} ∩ Ioo a b := by
@@ -102,7 +102,7 @@ def finiteGap (f : ℝ → ℝ) (p r s q : ℚ) (n : ℕ) : Set ℝ :=
     lowerLeftDiniDerivative f x < ((s : ℝ) : EReal)}
 
 /-- Both endpoints in `finiteGap` give an outer-measure bound by the gap ratio. -/
-lemma finiteGap_volume_le (f : ℝ → ℝ) {p r s q : ℚ} {n : ℕ} {a b : ℝ}
+private lemma finiteGap_volume_le (f : ℝ → ℝ) {p r s q : ℚ} {n : ℕ} {a b : ℝ}
     (hqr : (q : ℝ) < r) (hsp : (s : ℝ) < p)
     (hab : a < b) (hlen : b - a < (1 : ℝ) / (n + 1))
     (ha : a ∈ finiteGap f p r s q n) (hb : b ∈ finiteGap f p r s q n) :
@@ -214,7 +214,7 @@ lemma finiteGap_volume_le (f : ℝ → ℝ) {p r s q : ℚ} {n : ℕ} {a b : ℝ
   exact hdiv
 
 /-- Short intervals with an endpoint ratio bound have small outer measure up to the right end. -/
-lemma volume_Icc_le_of_endpoint_ratio {E : Set ℝ} {δ ρ y x : ℝ}
+private lemma volume_Icc_le_of_endpoint_ratio {E : Set ℝ} {δ ρ y x : ℝ}
     (hρ : 0 ≤ ρ) (hyx : y < x) (hlen : x - y < δ) (hx : x ∈ E)
     (hbound : ∀ a b, a ∈ E → b ∈ E → a < b → b - a < δ →
       (volume (E ∩ Ioo a b)).toReal ≤ ρ * (b - a)) :
@@ -344,7 +344,7 @@ lemma volume_Icc_le_of_endpoint_ratio {E : Set ℝ} {δ ρ y x : ℝ}
     exact hzero.trans_le bot_le
 
 /-- A uniform positive-density failure on the left forces the outer measure to vanish. -/
-lemma volume_eq_zero_of_short_ratio {E : Set ℝ} {δ ρ : ℝ}
+private lemma volume_eq_zero_of_short_ratio {E : Set ℝ} {δ ρ : ℝ}
     (hδ : 0 < δ) (hρ : 0 ≤ ρ) (hρ1 : ρ < 1)
     (hbound : ∀ a b, a ∈ E → b ∈ E → a < b → b - a < δ →
       (volume (E ∩ Ioo a b)).toReal ≤ ρ * (b - a)) :
@@ -400,7 +400,7 @@ lemma volume_eq_zero_of_short_ratio {E : Set ℝ} {δ ρ : ℝ}
   exact le_antisymm hle bot_le
 
 /-- Each uniformly gapped set with `q < s < r < p` is null. -/
-theorem volume_finiteGap_eq_zero (f : ℝ → ℝ) {p r s q : ℚ} {n : ℕ}
+private theorem volume_finiteGap_eq_zero (f : ℝ → ℝ) {p r s q : ℚ} {n : ℕ}
     (hqs : (q : ℝ) < s) (hsr : (s : ℝ) < r) (hrp : (r : ℝ) < p) :
     volume (finiteGap f p r s q n) = 0 := by
   set ρ : ℝ := (p - q) / ((p - q) + (r - s))
@@ -508,3 +508,14 @@ lemma mem_finiteStrict_of_lt {f : ℝ → ℝ} {x : ℝ}
     mem_iUnion.2 ⟨n, ⟨hqs, hsr, hrp, hxGap⟩⟩⟩⟩⟩⟩
 
 end CKMA.Dini
+
+namespace CKMA
+
+@[deprecated (since := "2026-11-15")]
+alias finiteStrict := Dini.finiteStrict
+@[deprecated (since := "2026-11-15")]
+alias volume_finiteStrict := Dini.volume_finiteStrict
+@[deprecated (since := "2026-11-15")]
+alias mem_finiteStrict_of_lt := Dini.mem_finiteStrict_of_lt
+
+end CKMA

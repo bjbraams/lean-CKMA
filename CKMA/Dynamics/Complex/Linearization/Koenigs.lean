@@ -48,7 +48,8 @@ attracting case and transferred along a local inverse in the repelling case.
   attracting case `0 < ‖deriv f 0‖ < 1`.
 * `CKMA.exists_koenigsCoordinate_of_norm_gt_one`: existence of a Koenigs coordinate in the
   repelling case `1 < ‖deriv f 0‖`.
-* `CKMA.koenigsCoordinate_eventuallyEq_of`: germ uniqueness of normalized Koenigs coordinates.
+* `CKMA.koenigsCoordinate_eventuallyEq_of_analyticAt`: germ uniqueness of normalized Koenigs
+  coordinates.
 -/
 
 @[expose] public section
@@ -60,7 +61,7 @@ namespace CKMA
 open Filter Finset Function Metric Set Topology
 
 /-- The rescaled quadratic weight in the Koenigs Cauchy estimate. -/
-theorem koenigs_remainder_ratio (a q z : ℝ) (n : ℕ) :
+private theorem koenigs_remainder_ratio (a q z : ℝ) (n : ℕ) :
     a⁻¹ ^ (n + 1) * (q ^ n * z) ^ 2 = a⁻¹ * (q ^ 2 * a⁻¹) ^ n * z ^ 2 := by
   rw [pow_succ', mul_pow]
   have hq : (q ^ n) ^ 2 = (q ^ 2) ^ n := by
@@ -73,7 +74,7 @@ theorem koenigs_remainder_ratio (a q z : ℝ) (n : ℕ) :
     _ = a⁻¹ * (q ^ 2 * a⁻¹) ^ n * z ^ 2 := by rw [mul_comm a⁻¹ (q ^ 2)]
 
 /-- A holomorphic factor of an eventually vanishing monomial is eventually zero. -/
-theorem eventually_eq_zero_of_pow_mul_eq_zero {n : ℕ} {F : ℂ → ℂ} (hF : AnalyticAt ℂ F 0)
+private theorem eventually_eq_zero_of_pow_mul_eq_zero {n : ℕ} {F : ℂ → ℂ} (hF : AnalyticAt ℂ F 0)
     (h : ∀ᶠ z in 𝓝 (0 : ℂ), z ^ n * F z = 0) : ∀ᶠ z in 𝓝 (0 : ℂ), F z = 0 := by
   let powz : ℂ → ℂ := fun z ↦ z ^ n
   have hpow : AnalyticAt ℂ powz 0 := (analyticAt_id : AnalyticAt ℂ (id : ℂ → ℂ) 0).pow n
@@ -87,7 +88,7 @@ theorem eventually_eq_zero_of_pow_mul_eq_zero {n : ℕ} {F : ℂ → ℂ} (hF : 
     (ENat.add_eq_top.mp htop).resolve_left (ENat.natCast_ne_top n)
 
 /-- A simple zero factors as the identity times a holomorphic function with the same derivative. -/
-theorem exists_linear_factor {f : ℂ → ℂ} (hf : AnalyticAt ℂ f 0) (hf0 : f 0 = 0)
+theorem exists_analyticAt_eventually_eq_mul {f : ℂ → ℂ} (hf : AnalyticAt ℂ f 0) (hf0 : f 0 = 0)
     (hf' : deriv f 0 ≠ 0) :
     ∃ p : ℂ → ℂ, AnalyticAt ℂ p 0 ∧ p 0 = deriv f 0 ∧ ∀ᶠ z in 𝓝 (0 : ℂ), f z = z * p z := by
   have hord : analyticOrderAt f 0 = 1 :=
@@ -104,8 +105,11 @@ theorem exists_linear_factor {f : ℂ → ℂ} (hf : AnalyticAt ℂ f 0) (hf0 : 
     exact hmul.symm.trans (Filter.EventuallyEq.deriv_eq hfeq).symm
   exact ⟨p, hp, hp0, hfeq⟩
 
+@[deprecated (since := "2026-11-15")]
+alias exists_linear_factor := exists_analyticAt_eventually_eq_mul
+
 /-- Contraction, invariance, and quadratic remainder on a small disk about an attracting point. -/
-theorem exists_attracting_disk {f : ℂ → ℂ} (hf : AnalyticAt ℂ f 0) (hf0 : f 0 = 0)
+private theorem exists_attracting_disk {f : ℂ → ℂ} (hf : AnalyticAt ℂ f 0) (hf0 : f 0 = 0)
     (hc : deriv f 0 ≠ 0) (hlt : ‖deriv f 0‖ < 1) :
     ∃ q r C : ℝ, 0 < r ∧ 0 < C ∧ 0 < q ∧ q < 1 ∧ ‖deriv f 0‖ < q ∧ q ^ 2 < ‖deriv f 0‖ ∧
       DifferentiableOn ℂ f (ball 0 r) ∧ MapsTo f (ball 0 r) (ball 0 r) ∧
@@ -232,8 +236,8 @@ theorem exists_attracting_disk {f : ℂ → ℂ} (hf : AnalyticAt ℂ f 0) (hf0 
 /-- Rescaled iterates converge to a normalized Koenigs coordinate when `‖f'(0)‖ < 1`. -/
 theorem exists_koenigsCoordinate_of_norm_lt_one {f : ℂ → ℂ} (hf : AnalyticAt ℂ f 0)
     (hf0 : f 0 = 0) (hc : deriv f 0 ≠ 0) (hlt : ‖deriv f 0‖ < 1) :
-    ∃ phi : ℂ → ℂ, AnalyticAt ℂ phi 0 ∧ phi 0 = 0 ∧ deriv phi 0 = 1 ∧
-      ∀ᶠ z in 𝓝 (0 : ℂ), phi (f z) = deriv f 0 * phi z := by
+    ∃ φ : ℂ → ℂ, AnalyticAt ℂ φ 0 ∧ φ 0 = 0 ∧ deriv φ 0 = 1 ∧
+      ∀ᶠ z in 𝓝 (0 : ℂ), φ (f z) = deriv f 0 * φ z := by
   obtain ⟨q, r, C, hr, hC, hq_pos, hq_lt_one, hq_gt, hq2, hdiff, hmaps, hball⟩ :=
     exists_attracting_disk hf hf0 hc hlt
   let lam : ℂ := deriv f 0
@@ -332,11 +336,11 @@ theorem exists_koenigsCoordinate_of_norm_lt_one {f : ℂ → ℂ} (hf : Analytic
   have hSdiff : DifferentiableOn ℂ (fun w ↦ ∑' n, D n w) (ball 0 r) :=
     Complex.differentiableOn_tsum_of_summable_norm hu hDon isOpen_ball
       fun n w hw ↦ hDbound n w hw
-  let phi : ℂ → ℂ := fun z ↦ z + ∑' n, D n z
-  have hphi_an : AnalyticAt ℂ phi 0 := by
+  let φ : ℂ → ℂ := fun z ↦ z + ∑' n, D n z
+  have hphi_an : AnalyticAt ℂ φ 0 := by
     have hsum : DifferentiableOn ℂ (fun z ↦ z + ∑' n, D n z) (ball 0 r) :=
       differentiableOn_id.add hSdiff
-    simpa [phi] using hsum.analyticAt (isOpen_ball.mem_nhds (mem_ball_self hr))
+    simpa [φ] using hsum.analyticAt (isOpen_ball.mem_nhds (mem_ball_self hr))
   have hD0 : ∀ n, D n 0 = 0 := by
     intro n
     have hfix : (f^[n]) 0 = 0 := iterate_fixed hf0 n
@@ -350,7 +354,7 @@ theorem exists_koenigsCoordinate_of_norm_lt_one {f : ℂ → ℂ} (hf : Analytic
       exact hD0 n
     rw [hfun]
     exact hasSum_zero.tsum_eq
-  have hphi0 : phi 0 = 0 := by simp [phi, hS0]
+  have hphi0 : φ 0 = 0 := by simp [φ, hS0]
   have hIter : ∀ n, HasDerivAt (f^[n]) (lam ^ n) 0 :=
     fun n ↦ HasDerivAt.iterate (x := 0) hf.differentiableAt.hasDerivAt hf0 n
   have hphiN : ∀ n, HasDerivAt (phiN n) 1 0 := by
@@ -376,7 +380,7 @@ theorem exists_koenigsCoordinate_of_norm_lt_one {f : ℂ → ℂ} (hf : Analytic
     have hzero : HasSum (fun n : ℕ ↦ deriv (D n) 0) 0 := by
       simp [hDderiv]
     exact hHas.tsum_eq.symm.trans hzero.tsum_eq
-  have hderiv_phi : deriv phi 0 = 1 := by
+  have hderiv_phi : deriv φ 0 = 1 := by
     have hSdiff0 : DifferentiableAt ℂ (fun w ↦ ∑' n, D n w) 0 :=
       (hSdiff 0 (mem_ball_self hr)).differentiableAt
         (isOpen_ball.mem_nhds (mem_ball_self hr))
@@ -384,7 +388,7 @@ theorem exists_koenigsCoordinate_of_norm_lt_one {f : ℂ → ℂ} (hf : Analytic
     have hadd : HasDerivAt (fun z ↦ z + ∑' n, D n z)
         (1 + deriv (fun w ↦ ∑' n, D n w) 0) 0 :=
       hid.add hSdiff0.hasDerivAt
-    rw [show phi = fun z ↦ z + ∑' n, D n z by rfl, hadd.deriv, hderivS, add_zero]
+    rw [show φ = fun z ↦ z + ∑' n, D n z by rfl, hadd.deriv, hderivS, add_zero]
   have hpartial : ∀ n z, ∑ i ∈ range n, D i z = phiN n z - z := by
     intro n z
     refine sum_range_induction (fun i ↦ D i z) (fun k ↦ phiN k z - z) ?_ n ?_
@@ -392,7 +396,7 @@ theorem exists_koenigsCoordinate_of_norm_lt_one {f : ℂ → ℂ} (hf : Analytic
     · intro k hk
       simp only [D]
       ring
-  have hlim : ∀ z ∈ ball (0 : ℂ) r, Tendsto (fun n ↦ phiN n z) atTop (𝓝 (phi z)) := by
+  have hlim : ∀ z ∈ ball (0 : ℂ) r, Tendsto (fun n ↦ phiN n z) atTop (𝓝 (φ z)) := by
     intro z hz
     have hsumz : Summable fun n ↦ D n z :=
       hu.of_norm_bounded fun n ↦ hDbound n z hz
@@ -402,38 +406,38 @@ theorem exists_koenigsCoordinate_of_norm_lt_one {f : ℂ → ℂ} (hf : Analytic
     have hfun : (fun n ↦ phiN n z) = fun n ↦ (∑ i ∈ range n, D i z) + z := by
       ext n
       rw [hpartial, sub_add_cancel]
-    have hlimval : (∑' n, D n z) + z = phi z := by simp [phi, add_comm]
+    have hlimval : (∑' n, D n z) + z = φ z := by simp [φ, add_comm]
     simpa [hfun, hlimval] using ht
   have hstep : ∀ n z, phiN (n + 1) z = lam⁻¹ * phiN n (f z) := by
     intro n z
     simp only [phiN]
     rw [iterate_succ_apply, pow_succ', mul_assoc]
-  have heq_ball : ∀ z ∈ ball (0 : ℂ) r, phi (f z) = lam * phi z := by
+  have heq_ball : ∀ z ∈ ball (0 : ℂ) r, φ (f z) = lam * φ z := by
     intro z hz
     have hzf : f z ∈ ball 0 r := hmaps hz
-    have hshift : Tendsto (fun n ↦ phiN (n + 1) z) atTop (𝓝 (phi z)) :=
+    have hshift : Tendsto (fun n ↦ phiN (n + 1) z) atTop (𝓝 (φ z)) :=
       (hlim z hz).comp (tendsto_add_atTop_nat 1)
     have hright : Tendsto (fun n ↦ lam⁻¹ * phiN n (f z)) atTop
-        (𝓝 (lam⁻¹ * phi (f z))) :=
+        (𝓝 (lam⁻¹ * φ (f z))) :=
       tendsto_const_nhds.mul (hlim (f z) hzf)
-    have hright' : Tendsto (fun n ↦ phiN (n + 1) z) atTop (𝓝 (lam⁻¹ * phi (f z))) := by
+    have hright' : Tendsto (fun n ↦ phiN (n + 1) z) atTop (𝓝 (lam⁻¹ * φ (f z))) := by
       have hseq : (fun n ↦ phiN (n + 1) z) = fun n ↦ lam⁻¹ * phiN n (f z) := by
         ext n
         exact hstep n z
       simpa [hseq] using hright
-    have hval : phi z = lam⁻¹ * phi (f z) := tendsto_nhds_unique hshift hright'
+    have hval : φ z = lam⁻¹ * φ (f z) := tendsto_nhds_unique hshift hright'
     calc
-      phi (f z) = lam * (lam⁻¹ * phi (f z)) := by rw [mul_inv_cancel_left₀ hlam_ne]
-      _ = lam * phi z := by rw [← hval]
-  refine ⟨phi, hphi_an, hphi0, hderiv_phi, ?_⟩
+      φ (f z) = lam * (lam⁻¹ * φ (f z)) := by rw [mul_inv_cancel_left₀ hlam_ne]
+      _ = lam * φ z := by rw [← hval]
+  refine ⟨φ, hphi_an, hphi0, hderiv_phi, ?_⟩
   filter_upwards [isOpen_ball.mem_nhds (mem_ball_self hr)] with z hz
   simpa [hlam] using heq_ball z hz
 
 /-- A repelling fixed point is linearized by the attracting coordinate of a local inverse. -/
 theorem exists_koenigsCoordinate_of_norm_gt_one {f : ℂ → ℂ} (hf : AnalyticAt ℂ f 0)
     (hf0 : f 0 = 0) (hc : deriv f 0 ≠ 0) (hgt : 1 < ‖deriv f 0‖) :
-    ∃ phi : ℂ → ℂ, AnalyticAt ℂ phi 0 ∧ phi 0 = 0 ∧ deriv phi 0 = 1 ∧
-      ∀ᶠ z in 𝓝 (0 : ℂ), phi (f z) = deriv f 0 * phi z := by
+    ∃ φ : ℂ → ℂ, AnalyticAt ℂ φ 0 ∧ φ 0 = 0 ∧ deriv φ 0 = 1 ∧
+      ∀ᶠ z in 𝓝 (0 : ℂ), φ (f z) = deriv f 0 * φ z := by
   let lam : ℂ := deriv f 0
   have hlam : lam = deriv f 0 := rfl
   have hlam_ne : lam ≠ 0 := hlam ▸ hc
@@ -454,9 +458,9 @@ theorem exists_koenigsCoordinate_of_norm_gt_one {f : ℂ → ℂ} (hf : Analytic
   have hdg_lt : ‖deriv g 0‖ < 1 := by
     rw [hdg, norm_inv]
     exact inv_lt_one_of_one_lt₀ (hlam ▸ hgt)
-  obtain ⟨psi, hpsi_an, hpsi0, hpsid, hpsie⟩ :=
+  obtain ⟨ψ, hpsi_an, hpsi0, hpsid, hpsie⟩ :=
     exists_koenigsCoordinate_of_norm_lt_one hg_an hg0 hdg_ne hdg_lt
-  have hpsie' : ∀ᶠ w in 𝓝 (0 : ℂ), psi (g w) = lam⁻¹ * psi w := by
+  have hpsie' : ∀ᶠ w in 𝓝 (0 : ℂ), ψ (g w) = lam⁻¹ * ψ w := by
     filter_upwards [hpsie] with w hw
     rw [hw, hdg]
   have hleft : ∀ᶠ z in 𝓝 (0 : ℂ), g (f z) = z := by
@@ -464,25 +468,25 @@ theorem exists_koenigsCoordinate_of_norm_gt_one {f : ℂ → ℂ} (hf : Analytic
   have htend : Tendsto f (𝓝 (0 : ℂ)) (𝓝 0) := by
     have hcont : Tendsto f (𝓝 0) (𝓝 (f 0)) := hf.continuousAt.tendsto
     rwa [hf0] at hcont
-  have hcomp : ∀ᶠ z in 𝓝 (0 : ℂ), psi (g (f z)) = lam⁻¹ * psi (f z) :=
+  have hcomp : ∀ᶠ z in 𝓝 (0 : ℂ), ψ (g (f z)) = lam⁻¹ * ψ (f z) :=
     Filter.EventuallyEq.comp_tendsto hpsie' htend
-  refine ⟨psi, hpsi_an, hpsi0, hpsid, ?_⟩
+  refine ⟨ψ, hpsi_an, hpsi0, hpsid, ?_⟩
   filter_upwards [hleft, hcomp] with z hzleft hzcomp
-  have hval : psi z = lam⁻¹ * psi (f z) := by simpa [hzleft] using hzcomp
+  have hval : ψ z = lam⁻¹ * ψ (f z) := by simpa [hzleft] using hzcomp
   calc
-    psi (f z) = lam * (lam⁻¹ * psi (f z)) := by rw [mul_inv_cancel_left₀ hlam_ne]
-    _ = lam * psi z := by rw [← hval]
-    _ = deriv f 0 * psi z := by rw [hlam]
+    ψ (f z) = lam * (lam⁻¹ * ψ (f z)) := by rw [mul_inv_cancel_left₀ hlam_ne]
+    _ = lam * ψ z := by rw [← hval]
+    _ = deriv f 0 * ψ z := by rw [hlam]
 
 /-- Two normalized Koenigs coordinates for the same multiplier agree as germs. -/
-theorem koenigsCoordinate_eventuallyEq_of {f phi psi : ℂ → ℂ} {c : ℂ} (hc : c ≠ 0)
-    (hunit : ‖c‖ ≠ 1) (hf : AnalyticAt ℂ f 0) (hf0 : f 0 = 0) (hφa : AnalyticAt ℂ phi 0)
-    (hφ0 : phi 0 = 0) (hφd : deriv phi 0 = 1)
-    (hφe : ∀ᶠ z in 𝓝 (0 : ℂ), phi (f z) = c * phi z) (hψa : AnalyticAt ℂ psi 0)
-    (hψ0 : psi 0 = 0) (hψd : deriv psi 0 = 1)
-    (hψe : ∀ᶠ z in 𝓝 (0 : ℂ), psi (f z) = c * psi z) :
-    phi =ᶠ[𝓝 (0 : ℂ)] psi := by
-  let delta : ℂ → ℂ := phi - psi
+theorem koenigsCoordinate_eventuallyEq_of_analyticAt {f φ ψ : ℂ → ℂ} {c : ℂ} (hc : c ≠ 0)
+    (hunit : ‖c‖ ≠ 1) (hf : AnalyticAt ℂ f 0) (hf0 : f 0 = 0) (hφa : AnalyticAt ℂ φ 0)
+    (hφ0 : φ 0 = 0) (hφd : deriv φ 0 = 1)
+    (hφe : ∀ᶠ z in 𝓝 (0 : ℂ), φ (f z) = c * φ z) (hψa : AnalyticAt ℂ ψ 0)
+    (hψ0 : ψ 0 = 0) (hψd : deriv ψ 0 = 1)
+    (hψe : ∀ᶠ z in 𝓝 (0 : ℂ), ψ (f z) = c * ψ z) :
+    φ =ᶠ[𝓝 (0 : ℂ)] ψ := by
+  let delta : ℂ → ℂ := φ - ψ
   have hδa : AnalyticAt ℂ delta 0 := hφa.sub hψa
   have hδ0 : delta 0 = 0 := by simp [delta, hφ0, hψ0]
   have hδd : deriv delta 0 = 0 := by
@@ -491,13 +495,13 @@ theorem koenigsCoordinate_eventuallyEq_of {f phi psi : ℂ → ℂ} {c : ℂ} (h
     filter_upwards [hφe, hψe] with z hzφ hzψ
     simp [delta, hzφ, hzψ, mul_sub]
   have hfc : deriv f 0 = c := by
-    have hφdf : DifferentiableAt ℂ phi (f 0) := by
+    have hφdf : DifferentiableAt ℂ φ (f 0) := by
       simpa [hf0] using hφa.differentiableAt
-    have hleft : deriv (phi ∘ f) 0 = deriv f 0 := by
+    have hleft : deriv (φ ∘ f) 0 = deriv f 0 := by
       rw [deriv_comp (x := 0) hφdf hf.differentiableAt, hf0, hφd, one_mul]
-    have hright : deriv (fun z ↦ c * phi z) 0 = c := by
+    have hright : deriv (fun z ↦ c * φ z) 0 = c := by
       rw [deriv_const_mul c hφa.differentiableAt, hφd, mul_one]
-    have heq : phi ∘ f =ᶠ[𝓝 (0 : ℂ)] fun z ↦ c * phi z := by
+    have heq : φ ∘ f =ᶠ[𝓝 (0 : ℂ)] fun z ↦ c * φ z := by
       filter_upwards [hφe] with z hz
       exact hz
     exact hleft.symm.trans ((Filter.EventuallyEq.deriv_eq heq).trans hright)
@@ -520,7 +524,7 @@ theorem koenigsCoordinate_eventuallyEq_of {f phi psi : ℂ → ℂ} {c : ℂ} (h
     have hfac : ∀ᶠ z in 𝓝 (0 : ℂ), delta z = z ^ m * rem z := by
       filter_upwards [hδfac] with z hz
       simpa [sub_zero, smul_eq_mul] using hz
-    obtain ⟨p, hp, hp0, hpf⟩ := exists_linear_factor hf hf0 (hfc ▸ hc)
+    obtain ⟨p, hp, hp0, hpf⟩ := exists_analyticAt_eventually_eq_mul hf hf0 (hfc ▸ hc)
     have hp0' : p 0 = c := by rw [hp0, hfc]
     have htend : Tendsto f (𝓝 (0 : ℂ)) (𝓝 0) := by
       have hcont : Tendsto f (𝓝 0) (𝓝 (f 0)) := hf.continuousAt.tendsto
@@ -560,5 +564,8 @@ theorem koenigsCoordinate_eventuallyEq_of {f phi psi : ℂ → ℂ} {c : ℂ} (h
     have hnorm : ‖c‖ ^ (m - 1) = 1 := by
       rw [← norm_pow, hpow, norm_one]
     exact absurd ((pow_eq_one_iff_of_nonneg (norm_nonneg _) (by omega : m - 1 ≠ 0)).1 hnorm) hunit
+
+@[deprecated (since := "2026-11-15")]
+alias koenigsCoordinate_eventuallyEq_of := koenigsCoordinate_eventuallyEq_of_analyticAt
 
 end CKMA

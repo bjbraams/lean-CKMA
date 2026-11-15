@@ -16,16 +16,17 @@ public import Mathlib.Topology.Order.OrderClosed
 An up-crossing of a positive level is compared with the endpoint by reflecting the first grid
 passage. Sending the mesh and the gap above the level to zero removes the overshoot.
 
+The hitting, endpoint, band and oscillation events and the two one-sided estimates
+(hitting measure at most twice the endpoint measure, and conversely) are internal to this file.
+
 ## Main definitions
 
-* `CKMA.gridHit`: event that the process reaches level `b` on the dyadic grid of `[0, t]`.
-* `CKMA.hitSet`: event that the process reaches level `a` on `[0, t]`.
-* `CKMA.endpointSet`: event that the process is at least `a` at time `t`.
+* `CKMA.Brownian.endpointSet`: event that the process is at least `a` at time `t`.
 
 ## Main results
 
-* `CKMA.measure_hit_le`: the closed hitting measure is at most twice the endpoint measure.
-* `CKMA.two_mul_endpoint_le_hit`: twice the endpoint measure is at most the hitting measure.
+* `CKMA.Brownian.measure_firstGridHitSet_le_two`: each first grid passage has measure at most
+  twice that of its intersection with the endpoint event.
 * `CKMA.brownian_reflection`: the reflection principle for a real Brownian motion (**08.4**).
 -/
 
@@ -42,8 +43,10 @@ set_option linter.unusedSectionVars false
 
 variable {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsProbabilityMeasure μ]
 
+namespace Brownian
+
 /-- A finite constant lying under `a + o n` for a null sequence stays under `a`. -/
-lemma le_of_forall_le_add_tendsto_zero {c a : ℝ≥0∞} {o : ℕ → ℝ≥0∞} (hc : c ≠ ∞) (ha : a ≠ ∞)
+private lemma le_of_forall_le_add_tendsto_zero {c a : ℝ≥0∞} {o : ℕ → ℝ≥0∞} (hc : c ≠ ∞) (ha : a ≠ ∞)
     (ho : ∀ n, o n ≠ ∞) (hle : ∀ n, c ≤ a + o n) (htend : Tendsto o atTop (𝓝 0)) : c ≤ a := by
   have hleR : ∀ n, c.toReal ≤ a.toReal + (o n).toReal := by
     intro n
@@ -58,27 +61,20 @@ lemma le_of_forall_le_add_tendsto_zero {c a : ℝ≥0∞} {o : ℕ → ℝ≥0�
   exact (ENNReal.toReal_le_toReal hc ha).1 hreal
 
 /-- Paths that meet level `b` on the level-`n` grid. -/
-def gridHit (C : ℝ≥0 → Ω → ℝ) (t : ℝ≥0) (b : ℝ) (n : ℕ) : Set Ω :=
+private def gridHit (C : ℝ≥0 → Ω → ℝ) (t : ℝ≥0) (b : ℝ) (n : ℕ) : Set Ω :=
   {ω | ∃ k, k ≤ 2 ^ n ∧ b ≤ C (grid t n k) ω}
 
 /-- The grid hitting set is the disjoint union of the first-passage events. -/
-lemma gridHit_eq_iUnion (C : ℝ≥0 → Ω → ℝ) (t : ℝ≥0) (b : ℝ) (n : ℕ) :
+private lemma gridHit_eq_iUnion (C : ℝ≥0 → Ω → ℝ) (t : ℝ≥0) (b : ℝ) (n : ℕ) :
     gridHit C t b n = ⋃ k ∈ Finset.range (2 ^ n + 1), firstGridHitSet C t b n k := by
   simpa [gridHit] using (iUnion_firstGridHitSet (C := C) t b n).symm
 
-/-- Grid hitting sets are measurable. -/
-lemma measurableSet_gridHit {C : ℝ≥0 → Ω → ℝ} (hm : ∀ u, Measurable (C u)) (t : ℝ≥0) (b : ℝ)
-    (n : ℕ) : MeasurableSet (gridHit C t b n) := by
-  rw [gridHit_eq_iUnion]
-  exact MeasurableSet.biUnion (Set.to_countable _) fun k _ =>
-    measurableSet_firstGridHitSet hm t b n k
-
 /-- Paths that meet level `b` at some time up to the horizon. -/
-def hitSet (C : ℝ≥0 → Ω → ℝ) (t : ℝ≥0) (b : ℝ) : Set Ω :=
+private def hitSet (C : ℝ≥0 → Ω → ℝ) (t : ℝ≥0) (b : ℝ) : Set Ω :=
   {ω | ∃ s : ℝ≥0, s ≤ t ∧ b ≤ C s ω}
 
 /-- Paths that strictly exceed level `b` by the horizon. -/
-def strictHit (C : ℝ≥0 → Ω → ℝ) (t : ℝ≥0) (b : ℝ) : Set Ω :=
+private def strictHit (C : ℝ≥0 → Ω → ℝ) (t : ℝ≥0) (b : ℝ) : Set Ω :=
   {ω | ∃ s : ℝ≥0, s ≤ t ∧ b < C s ω}
 
 /-- The endpoint lies at or above the level. -/
@@ -86,31 +82,27 @@ def endpointSet (C : ℝ≥0 → Ω → ℝ) (t : ℝ≥0) (b : ℝ) : Set Ω :=
   {ω | b ≤ C t ω}
 
 /-- The endpoint lies strictly below the level. -/
-def belowSet (C : ℝ≥0 → Ω → ℝ) (t : ℝ≥0) (b : ℝ) : Set Ω :=
+private def belowSet (C : ℝ≥0 → Ω → ℝ) (t : ℝ≥0) (b : ℝ) : Set Ω :=
   {ω | C t ω < b}
 
 /-- The endpoint lies in the half-open band `[b, b + 2ε)`. -/
-def bandSet (C : ℝ≥0 → Ω → ℝ) (t : ℝ≥0) (b ε : ℝ) : Set Ω :=
+private def bandSet (C : ℝ≥0 → Ω → ℝ) (t : ℝ≥0) (b ε : ℝ) : Set Ω :=
   {ω | b ≤ C t ω ∧ C t ω < b + 2 * ε}
 
 /-- Grid oscillation exceeds `ε`. -/
-def oscSet (C : ℝ≥0 → Ω → ℝ) (t : ℝ≥0) (ε : ℝ) (n : ℕ) : Set Ω :=
+private def oscSet (C : ℝ≥0 → Ω → ℝ) (t : ℝ≥0) (ε : ℝ) (n : ℕ) : Set Ω :=
   {ω | ε < gridOsc C t n ω}
 
 /-- The endpoint superlevel is measurable. -/
-lemma measurableSet_endpoint {C : ℝ≥0 → Ω → ℝ} (hm : ∀ u, Measurable (C u)) (t : ℝ≥0) (b : ℝ) :
+private lemma measurableSet_endpoint {C : ℝ≥0 → Ω → ℝ} (hm : ∀ u, Measurable (C u)) (t : ℝ≥0)
+    (b : ℝ) :
     MeasurableSet (endpointSet C t b) := by
   rw [endpointSet]
   exact measurableSet_Ici.preimage (hm t)
 
-/-- The strict endpoint sublevel is measurable. -/
-lemma measurableSet_below {C : ℝ≥0 → Ω → ℝ} (hm : ∀ u, Measurable (C u)) (t : ℝ≥0) (b : ℝ) :
-    MeasurableSet (belowSet C t b) := by
-  rw [belowSet]
-  exact measurableSet_Iio.preimage (hm t)
-
 /-- The endpoint band is measurable. -/
-lemma measurableSet_band {C : ℝ≥0 → Ω → ℝ} (hm : ∀ u, Measurable (C u)) (t : ℝ≥0) (b ε : ℝ) :
+private lemma measurableSet_band {C : ℝ≥0 → Ω → ℝ} (hm : ∀ u, Measurable (C u)) (t : ℝ≥0)
+    (b ε : ℝ) :
     MeasurableSet (bandSet C t b ε) := by
   have h1 : MeasurableSet {ω | b ≤ C t ω} := measurableSet_Ici.preimage (hm t)
   have h2 : MeasurableSet {ω | C t ω < b + 2 * ε} := measurableSet_Iio.preimage (hm t)
@@ -121,18 +113,18 @@ lemma measurableSet_band {C : ℝ≥0 → Ω → ℝ} (hm : ∀ u, Measurable (C
   exact h1.inter h2
 
 /-- Large grid oscillation is measurable. -/
-lemma measurableSet_osc {C : ℝ≥0 → Ω → ℝ} (hm : ∀ u, Measurable (C u)) (t : ℝ≥0) (ε : ℝ)
+private lemma measurableSet_osc {C : ℝ≥0 → Ω → ℝ} (hm : ∀ u, Measurable (C u)) (t : ℝ≥0) (ε : ℝ)
     (n : ℕ) : MeasurableSet (oscSet C t ε n) := by
   rw [oscSet]
   exact measurableSet_Ioi.preimage (measurable_gridOsc hm t n)
 
 /-- Reaching the level at the horizon is a grid hit. -/
-lemma endpoint_subset_gridHit' (C : ℝ≥0 → Ω → ℝ) (t : ℝ≥0) (b : ℝ) (n : ℕ) :
+private lemma endpoint_subset_gridHit' (C : ℝ≥0 → Ω → ℝ) (t : ℝ≥0) (b : ℝ) (n : ℕ) :
     endpointSet C t b ⊆ gridHit C t b n := by
   simpa [endpointSet, gridHit] using endpoint_subset_gridHit (C := C) t b n
 
 /-- A grid hit is a hit of the path. -/
-lemma gridHit_subset_hitSet (C : ℝ≥0 → Ω → ℝ) (t : ℝ≥0) (b : ℝ) (n : ℕ) :
+private lemma gridHit_subset_hitSet (C : ℝ≥0 → Ω → ℝ) (t : ℝ≥0) (b : ℝ) (n : ℕ) :
     gridHit C t b n ⊆ hitSet C t b := by
   simpa [gridHit, hitSet] using gridHit_subset_hit (C := C) t b n
 
@@ -165,7 +157,7 @@ lemma measure_firstGridHitSet_le_two {C : ℝ≥0 → Ω → ℝ} (hC : IsBrowni
     _ = 2 * μ high := by rw [two_mul]
 
 /-- The grid hitting measure is at most twice the endpoint. -/
-lemma measure_gridHit_le {C : ℝ≥0 → Ω → ℝ} (hC : IsBrownianReal C μ)
+private lemma measure_gridHit_le {C : ℝ≥0 → Ω → ℝ} (hC : IsBrownianReal C μ)
     (hm : ∀ u, Measurable (C u)) {t : ℝ≥0} {b : ℝ} (n : ℕ) :
     μ (gridHit C t b n) ≤ 2 * μ (endpointSet C t b) := by
   let idx := Finset.range (2 ^ n + 1)
@@ -195,18 +187,19 @@ lemma measure_gridHit_le {C : ℝ≥0 → Ω → ℝ} (hC : IsBrownianReal C μ)
     _ = 2 * μ (endpointSet C t b) := by rw [hsumHigh]
 
 /-- Paths whose grid hits persist from stage `N` onward. -/
-def gridTail (C : ℝ≥0 → Ω → ℝ) (t : ℝ≥0) (b : ℝ) (N : ℕ) : Set Ω :=
+private def gridTail (C : ℝ≥0 → Ω → ℝ) (t : ℝ≥0) (b : ℝ) (N : ℕ) : Set Ω :=
   ⋂ n ∈ Set.Ici N, gridHit C t b n
 
 /-- Later tails contain the earlier ones. -/
-lemma monotone_gridTail (C : ℝ≥0 → Ω → ℝ) (t : ℝ≥0) (b : ℝ) : Monotone (gridTail C t b) := by
+private lemma monotone_gridTail (C : ℝ≥0 → Ω → ℝ) (t : ℝ≥0) (b : ℝ) :
+    Monotone (gridTail C t b) := by
   intro N M hNM ω hω
   simp only [gridTail, mem_iInter, Set.mem_Ici] at hω ⊢
   intro n hn
   exact hω n (le_trans hNM hn)
 
 /-- A strict hit eventually lies on every fine grid. -/
-lemma strictHit_subset_iUnion_tail {C : ℝ≥0 → Ω → ℝ}
+private lemma strictHit_subset_iUnion_tail {C : ℝ≥0 → Ω → ℝ}
     (hcont : ∀ ω, Continuous (fun u => C u ω)) {t : ℝ≥0} (ht : 0 < t) (b : ℝ) :
     strictHit C t b ⊆ ⋃ N, gridTail C t b N := by
   intro ω ⟨s, hs, hlt⟩
@@ -236,7 +229,7 @@ lemma strictHit_subset_iUnion_tail {C : ℝ≥0 → Ω → ℝ}
   exact ⟨k, hk, hgt.le⟩
 
 /-- Strict crossing is at most twice the closed endpoint. -/
-lemma measure_strictHit_le {C : ℝ≥0 → Ω → ℝ} (hC : IsBrownianReal C μ)
+private lemma measure_strictHit_le {C : ℝ≥0 → Ω → ℝ} (hC : IsBrownianReal C μ)
     (hm : ∀ u, Measurable (C u)) (hcont : ∀ ω, Continuous (fun u => C u ω)) {t : ℝ≥0}
     (ht : 0 < t) {b : ℝ} :
     μ (strictHit C t b) ≤ 2 * μ (endpointSet C t b) := by
@@ -255,13 +248,14 @@ lemma measure_strictHit_le {C : ℝ≥0 → Ω → ℝ} (hC : IsBrownianReal C �
     _ ≤ 2 * μ (endpointSet C t b) := hsup
 
 /-- A higher closed level sits inside a lower strict level. -/
-lemma hit_subset_strict (C : ℝ≥0 → Ω → ℝ) (t : ℝ≥0) {b a : ℝ} (hba : b < a) :
+private lemma hit_subset_strict (C : ℝ≥0 → Ω → ℝ) (t : ℝ≥0) {b a : ℝ} (hba : b < a) :
     hitSet C t a ⊆ strictHit C t b := by
   intro ω ⟨s, hs, hle⟩
   exact ⟨s, hs, lt_of_lt_of_le hba hle⟩
 
 /-- The closed hitting measure is at most twice the endpoint. -/
-lemma measure_hit_le {C : ℝ≥0 → Ω → ℝ} (hC : IsBrownianReal C μ) (hm : ∀ u, Measurable (C u))
+private lemma measure_hit_le {C : ℝ≥0 → Ω → ℝ} (hC : IsBrownianReal C μ)
+    (hm : ∀ u, Measurable (C u))
     (hcont : ∀ ω, Continuous (fun u => C u ω)) {t : ℝ≥0} (ht : 0 < t) {a : ℝ} :
     μ (hitSet C t a) ≤ 2 * μ (endpointSet C t a) := by
   let εm : ℕ → ℝ := fun m => 1 / ((m : ℝ) + 1)
@@ -302,7 +296,7 @@ lemma measure_hit_le {C : ℝ≥0 → Ω → ℝ} (hC : IsBrownianReal C μ) (hm
   exact ge_of_tendsto hmul hle
 
 /-- One grid still controls the endpoint up to a band and an oscillation event. -/
-lemma two_mul_endpoint_le_aux {C : ℝ≥0 → Ω → ℝ} (hC : IsBrownianReal C μ)
+private lemma two_mul_endpoint_le_aux {C : ℝ≥0 → Ω → ℝ} (hC : IsBrownianReal C μ)
     (hm : ∀ u, Measurable (C u)) {t : ℝ≥0} {a : ℝ} (ha : 0 < a) {ε : ℝ}
     (n : ℕ) :
     2 * μ (endpointSet C t a) ≤
@@ -430,7 +424,7 @@ lemma two_mul_endpoint_le_aux {C : ℝ≥0 → Ω → ℝ} (hC : IsBrownianReal 
       add_le_add (add_le_add (measure_mono (gridHit_subset_hitSet C t a n)) le_rfl) le_rfl
 
 /-- Grid oscillation of a continuous modification has measures tending to zero. -/
-lemma tendsto_measure_oscSet {C : ℝ≥0 → Ω → ℝ} (hm : ∀ u, Measurable (C u))
+private lemma tendsto_measure_oscSet {C : ℝ≥0 → Ω → ℝ} (hm : ∀ u, Measurable (C u))
     (hcont : ∀ ω, Continuous (fun u => C u ω)) (t : ℝ≥0) {ε : ℝ} (hε : 0 < ε) :
     Tendsto (fun n => μ (oscSet C t ε n)) atTop (𝓝 0) := by
   let tail : ℕ → Set Ω := fun N => ⋃ n ∈ Set.Ici N, oscSet C t ε n
@@ -466,7 +460,7 @@ lemma tendsto_measure_oscSet {C : ℝ≥0 → Ω → ℝ} (hm : ∀ u, Measurabl
     (fun _ => bot_le) hmono
 
 /-- The endpoint is at most half the hitting measure. -/
-lemma two_mul_endpoint_le_hit {C : ℝ≥0 → Ω → ℝ} (hC : IsBrownianReal C μ)
+private lemma two_mul_endpoint_le_hit {C : ℝ≥0 → Ω → ℝ} (hC : IsBrownianReal C μ)
     (hm : ∀ u, Measurable (C u)) (hcont : ∀ ω, Continuous (fun u => C u ω)) {t : ℝ≥0}
     (ht : 0 < t) {a : ℝ} (ha : 0 < a) :
     2 * μ (endpointSet C t a) ≤ μ (hitSet C t a) := by
@@ -519,7 +513,7 @@ lemma two_mul_endpoint_le_hit {C : ℝ≥0 → Ω → ℝ} (hC : IsBrownianReal 
     (fun m => hstep (εm m) (hpos m)) hlim
 
 /-- At time zero both sides of the reflection identity vanish. -/
-lemma reflection_zero {C : ℝ≥0 → Ω → ℝ} (hC : IsBrownianReal C μ) {a : ℝ} (ha : 0 < a)
+private lemma reflection_zero {C : ℝ≥0 → Ω → ℝ} (hC : IsBrownianReal C μ) {a : ℝ} (ha : 0 < a)
     {t : ℝ≥0} (ht : t = 0) : μ (hitSet C t a) = 2 * μ (endpointSet C t a) := by
   have hnull : μ {ω | C 0 ω ≠ 0} = 0 := ae_iff.mp hC.eval_zero_ae_eq_zero
   have hleft : μ (hitSet C t a) = 0 := by
@@ -537,13 +531,17 @@ lemma reflection_zero {C : ℝ≥0 → Ω → ℝ} (hC : IsBrownianReal C μ) {a
   simp [hleft, hright]
 
 /-- Reflection for an everywhere continuous measurable Brownian motion. -/
-lemma reflection_continuous {C : ℝ≥0 → Ω → ℝ} (hC : IsBrownianReal C μ)
+private lemma reflection_continuous {C : ℝ≥0 → Ω → ℝ} (hC : IsBrownianReal C μ)
     (hm : ∀ u, Measurable (C u)) (hcont : ∀ ω, Continuous (fun u => C u ω)) {a : ℝ}
     (ha : 0 < a) (t : ℝ≥0) : μ (hitSet C t a) = 2 * μ (endpointSet C t a) := by
   by_cases ht : t = 0
   · exact reflection_zero hC ha ht
   · exact le_antisymm (measure_hit_le hC hm hcont (pos_iff_ne_zero.mpr ht))
       (two_mul_endpoint_le_hit hC hm hcont (pos_iff_ne_zero.mpr ht) ha)
+
+end Brownian
+
+open Brownian
 
 /-- **08.4**: the Brownian reflection principle for a strictly positive level, including time
 zero. -/

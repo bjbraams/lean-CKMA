@@ -53,7 +53,7 @@ def compactSobolevCapacity {d : ℕ} (p : ℝ) (K : Set (EuclideanRealSpace d)) 
   ⨅ (φ : EuclideanRealSpace d → ℝ) (_h : IsCapacityAdmissible K φ), sobolevTestEnergy p φ
 
 /-- Compact Sobolev capacity in the unbundled smooth-cutoff formulation. -/
-theorem compactSobolevCapacity_eq_iInf {d : ℕ} (p : ℝ) (K : Set (EuclideanRealSpace d)) :
+private theorem compactSobolevCapacity_eq_iInf {d : ℕ} (p : ℝ) (K : Set (EuclideanRealSpace d)) :
     compactSobolevCapacity p K = ⨅ (φ : EuclideanRealSpace d → ℝ)
       (_hs : ContDiff ℝ (↑(⊤ : ℕ∞)) φ) (_hc : HasCompactSupport φ)
       (_hK : ∃ U, IsOpen U ∧ K ⊆ U ∧ ∀ x ∈ U, 1 ≤ φ x), sobolevTestEnergy p φ := by
@@ -71,7 +71,7 @@ def IsSobolevQuasicontinuous {d : ℕ} (p : ℝ) (f : EuclideanRealSpace d → �
     ContinuousOn f Uᶜ
 
 /-- **26.31**: every weak first-order Sobolev function has a quasicontinuous representative. -/
-theorem exists_sobolevQuasicontinuous_representative {d : ℕ} (hd : 0 < d)
+theorem exists_sobolevQuasicontinuous_representative {d : ℕ}
     {p : ℝ} (hp : 1 < p) {u : EuclideanRealSpace d → ℝ}
     (hu : MemLp u (ENNReal.ofReal p) volume)
     {U : EuclideanRealSpace d → EuclideanRealSpace d →L[ℝ] ℝ}

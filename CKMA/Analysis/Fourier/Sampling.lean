@@ -34,7 +34,7 @@ noncomputable section
 
 namespace CKMA
 
-open MeasureTheory FourierTransform Filter Topology Metric
+open Shannon MeasureTheory FourierTransform Filter Topology Metric
 open scoped BigOperators ENNReal FourierTransform Real Interval
 
 variable {B : ℝ}
@@ -44,6 +44,17 @@ section Positive
 variable (hB : 0 < B)
 
 include hB
+
+omit hB in
+/-- A linear phase has complex modulus one. -/
+private lemma norm_phase (t ξ : ℝ) :
+    ‖Complex.exp (2 * Real.pi * Complex.I * t * ξ)‖ = 1 := by
+  have harg : 2 * Real.pi * Complex.I * t * ξ =
+      (↑(2 * Real.pi * t * ξ) : ℂ) * Complex.I := by
+    simp only [Complex.ofReal_mul, Complex.ofReal_ofNat]
+    ring
+  rw [harg]
+  exact Complex.norm_exp_ofReal_mul_I _
 
 omit hB in
 /-- Negation preserves the `atTop` filter of finite sets. -/
@@ -82,9 +93,9 @@ private lemma tendsto_lpNorm_remainder (u : Lp ℂ 2 (volume : Measure ℝ)) :
     Tendsto (fun s : Finset ℤ =>
       lpNorm (bandCutoff B (⇑u) - freqBand B (bandlimitedRepresentative B u) s) 2 volume)
       atTop (𝓝 0) := by
-  let c : ℤ → ℂ := fourierCoeffOn (band_lt hB) (⇑u)
+  let c : ℤ → ℂ := fourierCoeffOn (neg_lt_neg_add_two_mul hB) (⇑u)
   have hc : Summable fun i => ‖c i‖ ^ 2 :=
-    (hasSum_sq_fourierCoeffOn (band_lt hB) (memLp_u_Ioc u)).summable
+    (hasSum_sq_fourierCoeffOn (neg_lt_neg_add_two_mul hB) ((Lp.memLp u).restrict _)).summable
   have hsum : Tendsto (fun s : Finset ℤ => ∑ i ∈ s, ‖c i‖ ^ 2) atTop
       (𝓝 (∑' i, ‖c i‖ ^ 2)) := by
     simpa [HasSum, SummationFilter.unconditional_filter] using hc.hasSum
@@ -261,7 +272,8 @@ private lemma norm_shannon_remainder_le (u : Lp ℂ 2 (volume : Measure ℝ))
   have hL1 : IntegrableOn r (Set.Icc (-B) B) := by
     have hu : IntegrableOn (⇑u) (Set.Icc (-B) B) := by
       rw [← intervalIntegrable_iff_integrableOn_Icc_of_le (by linarith : -B ≤ B)]
-      exact intervalIntegrable_u hB u
+      exact (((Lp.memLp u).locallyIntegrable one_le_two).integrableOn_isCompact
+        isCompact_uIcc).intervalIntegrable
     exact ((continuous_freqPartial _ s).integrableOn_Icc).sub hu
   have hphase : IntegrableOn
       (fun ξ : ℝ => Complex.exp (2 * Real.pi * Complex.I * t * ξ) * r ξ)
@@ -449,18 +461,18 @@ theorem shannon_norm_identity {B : ℝ} (hB : 0 < B)
     (∫⁻ t, ENNReal.ofReal (‖bandlimitedRepresentative B u t‖ ^ 2)) =
       ENNReal.ofReal ((2 * B)⁻¹) * ∑' k : ℤ,
         ENNReal.ofReal (‖bandlimitedRepresentative B u (k / (2 * B))‖ ^ 2) := by
-  let c : ℤ → ℂ := fourierCoeffOn (band_lt hB) (⇑u)
+  let c : ℤ → ℂ := fourierCoeffOn (neg_lt_neg_add_two_mul hB) (⇑u)
   have hc : Summable fun i => ‖c i‖ ^ 2 :=
-    (hasSum_sq_fourierCoeffOn (band_lt hB) (memLp_u_Ioc u)).summable
+    (hasSum_sq_fourierCoeffOn (neg_lt_neg_add_two_mul hB) ((Lp.memLp u).restrict _)).summable
   have hparse : ∑' i, ‖c i‖ ^ 2 =
       (2 * B)⁻¹ * ∫ x, ‖bandCutoff B (⇑u) x‖ ^ 2 := by
-    have hts := tsum_sq_fourierCoeffOn (band_lt hB) (memLp_u_Ioc u)
+    have hts := tsum_sq_fourierCoeffOn (neg_lt_neg_add_two_mul hB) ((Lp.memLp u).restrict _)
     have hscalar : (((-B + 2 * B) - (-B))⁻¹ : ℝ) = (2 * B)⁻¹ := by
-      rw [band_period]
+      rw [show -B + 2 * B - -B = 2 * B by ring]
     rw [hscalar, smul_eq_mul] at hts
     have hint : ∫ x in -B..(-B + 2 * B), ‖u x‖ ^ 2 =
         ∫ x, ‖bandCutoff B (⇑u) x‖ ^ 2 := by
-      rw [band_right]
+      rw [show -B + 2 * B = B by ring]
       rw [intervalIntegral.integral_of_le (by linarith : -B ≤ B)]
       rw [setIntegral_congr_set
         (MeasureTheory.Ioc_ae_eq_Icc' (by simp : volume {(-B)} = 0))]
@@ -468,7 +480,7 @@ theorem shannon_norm_identity {B : ℝ} (hB : 0 < B)
       refine integral_congr_ae ?_
       filter_upwards with x
       rw [bandCutoff]
-      exact (norm_sq_indicator _ _ _).symm
+      by_cases hx : x ∈ Set.Icc (-B) B <;> simp [hx]
     rw [hint] at hts
     exact hts
   have hcoeff : ∀ k : ℤ, ‖bandlimitedRepresentative B u (k / (2 * B))‖ ^ 2 =

@@ -25,7 +25,6 @@ Sources: GAPS 47.6, 47.13, 47.24 and 47.40.
 
 ## Main definitions
 
-* `CKMA.coeffToApproximationMap`: coefficient parametrization of polynomials on `[-1, 1]`.
 * `CKMA.muntzMonomial`: a nonnegative real power on `[0, 1]`.
 * `CKMA.muntzSpan`: the span of `1` and prescribed powers on `[0, 1]`.
 * `CKMA.rationalOnApproximationInterval`: rational function without poles on `[-1, 1]`.
@@ -53,7 +52,7 @@ open Filter Metric Topology Polynomial
 open scoped BigOperators
 
 /-- The coefficient parametrization of polynomial functions on `[-1,1]`. -/
-def coeffToApproximationMap (n : ℕ) :
+private def coeffToApproximationMap (n : ℕ) :
     (Fin (n + 1) → ℝ) →ₗ[ℝ] ApproximationIntervalMap where
   toFun c := polynomialOnApproximationInterval (polynomialOfCoeffs n c)
   map_add' c d := by
@@ -71,7 +70,7 @@ def coeffToApproximationMap (n : ℕ) :
     simp [polynomialOnApproximationInterval, hpoly, eval_smul, smul_eq_mul]
 
 /-- Distinct coefficient vectors give distinct continuous functions. -/
-lemma coeffToApproximationMap_injective (n : ℕ) :
+private lemma coeffToApproximationMap_injective (n : ℕ) :
     Function.Injective (coeffToApproximationMap n) := by
   intro c d hcd
   rw [← sub_eq_zero, ← LinearMap.map_sub] at hcd
@@ -81,7 +80,7 @@ lemma coeffToApproximationMap_injective (n : ℕ) :
   exact sub_eq_zero.mp ((polynomialOfCoeffs_eq_zero_iff n (c - d)).mp hp)
 
 /-- The coefficient embedding is anti-Lipschitz for the supremum norm. -/
-lemma exists_antilipschitz_coeffToApproximationMap (n : ℕ) :
+private lemma exists_antilipschitz_coeffToApproximationMap (n : ℕ) :
     ∃ K : NNReal, 0 < K ∧ AntilipschitzWith K (coeffToApproximationMap n) := by
   simpa using (coeffToApproximationMap n).exists_antilipschitzWith
     (LinearMap.ker_eq_bot.mpr (coeffToApproximationMap_injective n))

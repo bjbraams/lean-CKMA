@@ -42,18 +42,18 @@ integrable function is the sum of the corresponding rectangular spikes.
 * `CKMA.Bohr.planeCover`: the part of the inner square covered by the chosen translates.
 * `CKMA.Bohr.stageSet`, `CKMA.Bohr.tailSet`, `CKMA.Bohr.limsupSet`: the stage-`k` sets in the
   unit cube of `ℝ^d`, their tails, and their limsup.
-* `CKMA.Bohr.spikeRect`, `CKMA.Bohr.bump`: the corner spike rectangle of one translated
+* `CKMA.Bohr.spikeRect`, `CKMA.Bohr.spike`: the corner spike rectangle of one translated
   picture and the indicator spike of height `spikeHeight k` on it.
-* `CKMA.Bohr.raw`, `CKMA.Bohr.saks`: the extended sum of all spikes and its real part.
+* `CKMA.Bohr.spikeSum`, `CKMA.Bohr.saks`: the extended sum of all spikes and its real part.
 
 ## Main results
 
-* `CKMA.Bohr.exists_almost_cover`, `CKMA.Bohr.volume_planeCover_gt`: finitely many translates
+* `CKMA.Bohr.exists_almost_cover`, `volume_planeCover_gt`: finitely many translates
   cover the inner square up to the factor `exp (-1)`, so the covered part has area `> 1 / 8`.
-* `CKMA.Bohr.volume_stageSet_gt`, `CKMA.Bohr.volume_limsupSet_ge`: each stage set has measure
+* `volume_stageSet_gt`, `CKMA.Bohr.volume_limsupSet_ge`: each stage set has measure
   greater than `3 / 32`, and the limsup set has measure at least `3 / 32`.
-* `CKMA.Bohr.measurable_saks`, `CKMA.Bohr.lintegral_bump`: measurability of the Saks function and
-  the integral of one spike.
+* `CKMA.Bohr.measurable_saks`, `CKMA.Bohr.lintegral_spikeENN`: measurability of the Saks
+  function and the integral of one spike.
 -/
 
 @[expose] public section
@@ -70,14 +70,14 @@ def shiftHit (k : ℕ) (v : Fin 2 → ℝ) : Set (Fin 2 → ℝ) :=
   {x | x - v ∈ badPlane k}
 
 /-- A reflected strip is measurable. -/
-lemma measurableSet_shiftHit (k : ℕ) (v : Fin 2 → ℝ) : MeasurableSet (shiftHit k v) := by
+private lemma measurableSet_shiftHit (k : ℕ) (v : Fin 2 → ℝ) : MeasurableSet (shiftHit k v) := by
   have hsub : Measurable (fun x : Fin 2 → ℝ => x - v) := by fun_prop
   have heq : shiftHit k v = (fun x => x - v) ⁻¹' badPlane k := rfl
   rw [heq]
   exact hsub (measurableSet_badPlane k)
 
 /-- Subtracting one removal ratio scales the finite measure by `1 - removalRatio`. -/
-lemma volume_sub_removal (k : ℕ) {R : Set (Fin 2 → ℝ)} (hR : volume R < ∞) :
+private lemma volume_sub_removal (k : ℕ) {R : Set (Fin 2 → ℝ)} (hR : volume R < ∞) :
     volume R - ENNReal.ofReal (removalRatio k) * volume R =
       ENNReal.ofReal (1 - removalRatio k) * volume R := by
   have hr := removalRatio_mem_Ioo k
@@ -92,9 +92,9 @@ lemma volume_sub_removal (k : ℕ) {R : Set (Fin 2 → ℝ)} (hR : volume R < �
   ring
 
 /-- `n` translates leave at most the factor `(1 - removalRatio) ^ n` of `U` uncovered. -/
-lemma exists_shiftPack (k : ℕ) {U : Set (Fin 2 → ℝ)} (hU : MeasurableSet U)
+private lemma exists_shiftPack (k : ℕ) {U : Set (Fin 2 → ℝ)} (hU : MeasurableSet U)
     (hUs : U ⊆ innerPlane k) (n : ℕ) :
-    ∃ v : Fin n → Fin 2 → ℝ, (∀ i, v i ∈ domain k) ∧
+    ∃ v : Fin n → Fin 2 → ℝ, (∀ i, v i ∈ translateDomain k) ∧
       volume (U \ ⋃ i, shiftHit k (v i)) ≤
         ENNReal.ofReal ((1 - removalRatio k) ^ n) * volume U := by
   induction n with
@@ -160,7 +160,7 @@ lemma exists_shiftPack (k : ℕ) {U : Set (Fin 2 → ℝ)} (hU : MeasurableSet U
           exact (pow_succ' (1 - removalRatio k) n).symm
 
 /-- Powers of the contraction are at most the exponential. -/
-lemma removal_pow_le_exp (k n : ℕ) :
+private lemma removal_pow_le_exp (k n : ℕ) :
     (1 - removalRatio k) ^ n ≤ Real.exp (-((n : ℝ) * removalRatio k)) := by
   have hbase : 0 ≤ 1 - removalRatio k := sub_nonneg.mpr (removalRatio_mem_Ioo k).2.le
   calc
@@ -172,7 +172,7 @@ lemma removal_pow_le_exp (k n : ℕ) :
       ring
 
 /-- `exp (-1)` is strictly smaller than one half. -/
-lemma exp_neg_one_lt_half : Real.exp (-1) < (1 / 2 : ℝ) := by
+private lemma exp_neg_one_lt_half : Real.exp (-1) < (1 / 2 : ℝ) := by
   have h2 : (2 : ℝ) < Real.exp 1 := by
     linarith [Real.add_one_lt_exp (x := (1 : ℝ)) one_ne_zero]
   have hinv : (Real.exp 1)⁻¹ < (2 : ℝ)⁻¹ :=
@@ -183,13 +183,13 @@ lemma exp_neg_one_lt_half : Real.exp (-1) < (1 / 2 : ℝ) := by
   exact hinv
 
 /-- `copyCount` steps leave an uncovered factor at most `exp (-1)`. -/
-lemma removal_copy_le_exp (k : ℕ) :
+private lemma removal_copy_le_exp (k : ℕ) :
     (1 - removalRatio k) ^ copyCount k ≤ Real.exp (-1) :=
   (removal_pow_le_exp k (copyCount k)).trans <|
     Real.exp_le_exp.mpr (neg_le_neg (copyCount_ratio_ge_one k))
 
 /-- Subtracting a factor in `[0, 1]` multiplies a finite area by the complement. -/
-lemma volume_sub_scaled {c : ℝ} (hc0 : 0 ≤ c) (hc1 : c ≤ 1) {R : Set (Fin 2 → ℝ)}
+private lemma volume_sub_scaled {c : ℝ} (hc0 : 0 ≤ c) (hc1 : c ≤ 1) {R : Set (Fin 2 → ℝ)}
     (hR : volume R < ∞) :
     volume R - ENNReal.ofReal c * volume R = ENNReal.ofReal (1 - c) * volume R := by
   have hreal : volume R = ENNReal.ofReal (volume.real R) := by
@@ -203,11 +203,11 @@ lemma volume_sub_scaled {c : ℝ} (hc0 : 0 ≤ c) (hc1 : c ≤ 1) {R : Set (Fin 
 
 /-- Translates whose uncovered inner area is at most `exp (-1)` times the inner area. -/
 lemma exists_almost_cover (k : ℕ) :
-    ∃ v : Fin (copyCount k) → Fin 2 → ℝ, (∀ i, v i ∈ domain k) ∧
+    ∃ v : Fin (copyCount k) → Fin 2 → ℝ, (∀ i, v i ∈ translateDomain k) ∧
       volume (innerPlane k \ ⋃ i, shiftHit k (v i)) ≤
         ENNReal.ofReal (Real.exp (-1)) * volume (innerPlane k) := by
   have hmeas : MeasurableSet (innerPlane k) := by
-    rw [innerPlane, inner]
+    rw [innerPlane, innerSet]
     exact (innerRect 2 k le_rfl).measurableSet_carrier
   obtain ⟨v, hv, hvol⟩ := exists_shiftPack k hmeas subset_rfl (copyCount k)
   refine ⟨v, hv, hvol.trans ?_⟩
@@ -215,7 +215,7 @@ lemma exists_almost_cover (k : ℕ) :
   exact removal_copy_le_exp k
 
 /-- The covered part of the inner square has area greater than `1 / 8`. -/
-lemma volume_planeCover_gt (k : ℕ) (v : Fin (copyCount k) → Fin 2 → ℝ)
+private lemma volume_planeCover_gt (k : ℕ) (v : Fin (copyCount k) → Fin 2 → ℝ)
     (hvol : volume (innerPlane k \ ⋃ i, shiftHit k (v i)) ≤
       ENNReal.ofReal (Real.exp (-1)) * volume (innerPlane k)) :
     ENNReal.ofReal (1 / 8) < volume (innerPlane k ∩ ⋃ i, shiftHit k (v i)) := by
@@ -301,7 +301,7 @@ def splitEquiv (d : ℕ) (hd : 2 ≤ d) :
         (MeasurableEquiv.piCongrLeft (fun _ => ℝ) (extraEquiv d hd))).symm
 
 /-- The coordinate split preserves Lebesgue measure. -/
-lemma measurePreserving_splitEquiv (d : ℕ) (hd : 2 ≤ d) :
+private lemma measurePreserving_splitEquiv (d : ℕ) (hd : 2 ≤ d) :
     MeasurePreserving (splitEquiv d hd) volume volume := by
   unfold splitEquiv
   refine MeasurePreserving.trans
@@ -312,11 +312,11 @@ lemma measurePreserving_splitEquiv (d : ℕ) (hd : 2 ≤ d) :
     (volume_measurePreserving_piCongrLeft (fun _ => ℝ) (extraEquiv d hd))
 
 /-- The open unit cube. -/
-def unitCube (d : ℕ) : Set (Fin d → ℝ) :=
+private def unitCube (d : ℕ) : Set (Fin d → ℝ) :=
   univ.pi fun _ => Ioo 0 1
 
 /-- The unit cube has volume one. -/
-lemma volume_unitCube (d : ℕ) : volume (unitCube d) = 1 := by
+private lemma volume_unitCube (d : ℕ) : volume (unitCube d) = 1 := by
   unfold unitCube
   rw [Real.volume_pi_Ioo]
   simp
@@ -326,8 +326,8 @@ def chosenShifts (k : ℕ) : Fin (copyCount k) → Fin 2 → ℝ :=
   Classical.choose (exists_almost_cover k)
 
 /-- The chosen translates lie in the domain and leave at most an `exp (-1)` gap. -/
-lemma chosenShifts_spec (k : ℕ) :
-    (∀ i, chosenShifts k i ∈ domain k) ∧
+private lemma chosenShifts_spec (k : ℕ) :
+    (∀ i, chosenShifts k i ∈ translateDomain k) ∧
       volume (innerPlane k \ ⋃ i, shiftHit k (chosenShifts k i)) ≤
         ENNReal.ofReal (Real.exp (-1)) * volume (innerPlane k) :=
   Classical.choose_spec (exists_almost_cover k)
@@ -337,49 +337,49 @@ def planeCover (k : ℕ) : Set (Fin 2 → ℝ) :=
   innerPlane k ∩ ⋃ i, shiftHit k (chosenShifts k i)
 
 /-- The covered part of the inner square has area greater than `1 / 8`. -/
-lemma volume_planeCover_pos (k : ℕ) :
+private lemma volume_planeCover_pos (k : ℕ) :
     ENNReal.ofReal (1 / 8) < volume (planeCover k) := by
   simpa [planeCover] using
     volume_planeCover_gt k (chosenShifts k) (chosenShifts_spec k).2
 
 /-- The covered part of the inner square is measurable. -/
-lemma measurableSet_planeCover (k : ℕ) : MeasurableSet (planeCover k) := by
+private lemma measurableSet_planeCover (k : ℕ) : MeasurableSet (planeCover k) := by
   have hI : MeasurableSet (innerPlane k) := by
-    rw [innerPlane, inner]
+    rw [innerPlane, innerSet]
     exact (innerRect 2 k le_rfl).measurableSet_carrier
   exact hI.inter (MeasurableSet.iUnion fun i => measurableSet_shiftHit k (chosenShifts k i))
 
-/-- Extra window in which a witnessing side of length `margin` stays inside `(0, 1)`. -/
+/-- Extra window in which a witnessing side of length `extraSide` stays inside `(0, 1)`. -/
 def extraSet (d k : ℕ) : Set (Fin (d - 2) → ℝ) :=
-  univ.pi fun _ => Ioo (margin d k / 2) (1 - margin d k / 2)
+  univ.pi fun _ => Ioo (extraSide d k / 2) (1 - extraSide d k / 2)
 
 /-- The extra window is measurable. -/
-lemma measurableSet_extraSet (d k : ℕ) : MeasurableSet (extraSet d k) :=
+private lemma measurableSet_extraSet (d k : ℕ) : MeasurableSet (extraSet d k) :=
   MeasurableSet.univ_pi fun _ => measurableSet_Ioo
 
 /-- Volume of the extra window. -/
-lemma volume_extraSet (d k : ℕ) :
-    volume (extraSet d k) = ENNReal.ofReal ((1 - margin d k) ^ (d - 2)) := by
+private lemma volume_extraSet (d k : ℕ) :
+    volume (extraSet d k) = ENNReal.ofReal ((1 - extraSide d k) ^ (d - 2)) := by
   unfold extraSet
   rw [Real.volume_pi_Ioo]
-  have hnn : ∀ i : Fin (d - 2), 0 ≤ (1 - margin d k / 2) - margin d k / 2 := by
+  have hnn : ∀ i : Fin (d - 2), 0 ≤ (1 - extraSide d k / 2) - extraSide d k / 2 := by
     intro _
-    linarith [margin_le_inv_four d k]
+    linarith [extraSide_le_inv_four d k]
   rw [← ENNReal.ofReal_prod_of_nonneg (fun i _ => hnn i)]
   congr 1
   have hside : ∀ i : Fin (d - 2),
-      (1 - margin d k / 2) - margin d k / 2 = 1 - margin d k := by
+      (1 - extraSide d k / 2) - extraSide d k / 2 = 1 - extraSide d k := by
     intro _
     ring
   rw [Finset.prod_congr rfl fun i _ => hside i, Finset.prod_const, Finset.card_univ,
     Fintype.card_fin]
 
 /-- The inner square sits in the unit square. -/
-lemma innerPlane_subset_unitCube (k : ℕ) : innerPlane k ⊆ unitCube 2 := by
+private lemma innerPlane_subset_unitCube (k : ℕ) : innerPlane k ⊆ unitCube 2 := by
   intro x hx
   rw [unitCube, Set.mem_univ_pi]
   intro i
-  rw [innerPlane, inner, OpenRectangle.carrier] at hx
+  rw [innerPlane, innerSet, OpenRectangle.carrier] at hx
   have h := hx i
   have hi : i.val ≤ 1 := by have := i.isLt; omega
   simp only [innerRect, innerLower, innerUpper, hi, ite_true] at h
@@ -387,15 +387,15 @@ lemma innerPlane_subset_unitCube (k : ℕ) : innerPlane k ⊆ unitCube 2 := by
   exact ⟨by linarith, by linarith⟩
 
 /-- The extra window sits in the unit cube of the remaining axes. -/
-lemma extraSet_subset_unitCube (d k : ℕ) : extraSet d k ⊆ unitCube (d - 2) := by
+private lemma extraSet_subset_unitCube (d k : ℕ) : extraSet d k ⊆ unitCube (d - 2) := by
   intro x hx
   rw [unitCube, Set.mem_univ_pi]
   intro i
   rw [extraSet, Set.mem_univ_pi] at hx
   have h := hx i
   rw [Set.mem_Ioo] at h
-  have hm0 : 0 ≤ margin d k := by
-    unfold margin
+  have hm0 : 0 ≤ extraSide d k := by
+    unfold extraSide
     split_ifs <;> positivity
   exact ⟨by linarith, by linarith⟩
 
@@ -404,14 +404,14 @@ def stageSet (d k : ℕ) (hd : 2 ≤ d) : Set (Fin d → ℝ) :=
   (splitEquiv d hd) ⁻¹' (planeCover k ×ˢ extraSet d k)
 
 /-- Each stage set is measurable. -/
-lemma measurableSet_stageSet (d k : ℕ) (hd : 2 ≤ d) : MeasurableSet (stageSet d k hd) := by
+private lemma measurableSet_stageSet (d k : ℕ) (hd : 2 ≤ d) : MeasurableSet (stageSet d k hd) := by
   unfold stageSet
   exact MeasurableSet.preimage
     ((measurableSet_planeCover k).prod (measurableSet_extraSet d k))
     (splitEquiv d hd).measurable
 
 /-- Each stage occupies more than `3 / 32` of the unit cube. -/
-lemma volume_stageSet_gt (d k : ℕ) (hd : 2 ≤ d) :
+private lemma volume_stageSet_gt (d k : ℕ) (hd : 2 ≤ d) :
     ENNReal.ofReal (3 / 32) < volume (stageSet d k hd) := by
   rw [stageSet, (measurePreserving_splitEquiv d hd).measure_preimage_equiv,
     Measure.volume_eq_prod, Measure.prod_prod]
@@ -441,36 +441,36 @@ def tailSet (d n : ℕ) (hd : 2 ≤ d) : Set (Fin d → ℝ) :=
   ⋃ k ∈ Set.Ici n, stageSet d k hd
 
 /-- The tail is measurable. -/
-lemma measurableSet_tailSet (d n : ℕ) (hd : 2 ≤ d) : MeasurableSet (tailSet d n hd) := by
+private lemma measurableSet_tailSet (d n : ℕ) (hd : 2 ≤ d) : MeasurableSet (tailSet d n hd) := by
   unfold tailSet
   exact MeasurableSet.biUnion ((Set.countable_univ).mono (Set.subset_univ _))
     fun k _ => measurableSet_stageSet d k hd
 
 /-- Later tails are smaller. -/
-lemma antitone_tailSet (d : ℕ) (hd : 2 ≤ d) : Antitone (fun n => tailSet d n hd) := by
+private lemma antitone_tailSet (d : ℕ) (hd : 2 ≤ d) : Antitone (fun n => tailSet d n hd) := by
   intro a b hab x hx
   simp only [tailSet, Set.mem_iUnion, Set.mem_Ici] at hx ⊢
   obtain ⟨k, hk, hxk⟩ := hx
   exact ⟨k, hab.trans hk, hxk⟩
 
 /-- Stage `n` is contained in the tail from `n`. -/
-lemma stageSet_subset_tailSet (d n : ℕ) (hd : 2 ≤ d) :
+private lemma stageSet_subset_tailSet (d n : ℕ) (hd : 2 ≤ d) :
     stageSet d n hd ⊆ tailSet d n hd := by
   intro x hx
   simp only [tailSet, Set.mem_iUnion, Set.mem_Ici]
   exact ⟨n, le_rfl, hx⟩
 
 /-- Every tail has measure greater than `3 / 32`. -/
-lemma volume_tailSet_gt (d n : ℕ) (hd : 2 ≤ d) :
+private lemma volume_tailSet_gt (d n : ℕ) (hd : 2 ≤ d) :
     ENNReal.ofReal (3 / 32) < volume (tailSet d n hd) :=
   (volume_stageSet_gt d n hd).trans_le (measure_mono (stageSet_subset_tailSet d n hd))
 
 /-- The covered plane sits in the unit square. -/
-lemma planeCover_subset_unitCube (k : ℕ) : planeCover k ⊆ unitCube 2 :=
+private lemma planeCover_subset_unitCube (k : ℕ) : planeCover k ⊆ unitCube 2 :=
   fun _ hx => innerPlane_subset_unitCube k hx.1
 
 /-- Each stage sits in the preimage of the unit cubes. -/
-lemma stageSet_subset_unitPreimage (d k : ℕ) (hd : 2 ≤ d) :
+private lemma stageSet_subset_unitPreimage (d k : ℕ) (hd : 2 ≤ d) :
     stageSet d k hd ⊆ (splitEquiv d hd) ⁻¹' (unitCube 2 ×ˢ unitCube (d - 2)) := by
   intro x hx
   rw [stageSet, Set.mem_preimage] at hx
@@ -478,7 +478,7 @@ lemma stageSet_subset_unitPreimage (d k : ℕ) (hd : 2 ≤ d) :
   exact ⟨planeCover_subset_unitCube k hx.1, extraSet_subset_unitCube d k hx.2⟩
 
 /-- Every tail sits in the preimage of the unit cubes. -/
-lemma tailSet_subset_unitPreimage (d n : ℕ) (hd : 2 ≤ d) :
+private lemma tailSet_subset_unitPreimage (d n : ℕ) (hd : 2 ≤ d) :
     tailSet d n hd ⊆ (splitEquiv d hd) ⁻¹' (unitCube 2 ×ˢ unitCube (d - 2)) := by
   intro x hx
   simp only [tailSet, Set.mem_iUnion, Set.mem_Ici] at hx
@@ -486,13 +486,13 @@ lemma tailSet_subset_unitPreimage (d n : ℕ) (hd : 2 ≤ d) :
   exact stageSet_subset_unitPreimage d k hd hxk
 
 /-- The split preimage of the unit cubes has measure one. -/
-lemma volume_split_unit (d : ℕ) (hd : 2 ≤ d) :
+private lemma volume_split_unit (d : ℕ) (hd : 2 ≤ d) :
     volume ((splitEquiv d hd) ⁻¹' (unitCube 2 ×ˢ unitCube (d - 2))) = 1 := by
   rw [(measurePreserving_splitEquiv d hd).measure_preimage_equiv, Measure.volume_eq_prod,
     Measure.prod_prod, volume_unitCube, volume_unitCube, mul_one]
 
 /-- Every tail has finite measure. -/
-lemma volume_tailSet_lt_top (d n : ℕ) (hd : 2 ≤ d) : volume (tailSet d n hd) < ∞ := by
+private lemma volume_tailSet_lt_top (d n : ℕ) (hd : 2 ≤ d) : volume (tailSet d n hd) < ∞ := by
   refine lt_of_le_of_lt (measure_mono (tailSet_subset_unitPreimage d n hd)) ?_
   rw [volume_split_unit d hd]
   exact ENNReal.one_lt_top
@@ -542,7 +542,7 @@ lemma stageScale_mul_succ (k : ℕ) :
   simp [Nat.cast_pow, Nat.cast_ofNat]
 
 /-- Twice the reciprocal of the strip area equals the normalized spike mass. -/
-lemma stageTerm_eq (k : ℕ) :
+private lemma stageTerm_eq (k : ℕ) :
     (2 : ℝ) / areaLower k * stageHeight k * (stageCount k : ℝ) * stageScale k ^ 2 =
       (1 / 2 : ℝ) ^ (k + 2) := by
   have hτ : stageScale k ^ 2 ≠ 0 := (pow_pos (stageScale_pos k) 2).ne'
@@ -587,8 +587,8 @@ lemma stageMass_le (k : ℕ) :
       1 / removalRatio k + 1 ≤ 1 / removalRatio k + 1 / removalRatio k :=
         add_le_add le_rfl h1
       _ = 2 / removalRatio k := by rw [← add_div]; norm_num
-  have hdom : volume.real (domain k) ≤ 1 := by
-    rw [volume_real_domain]
+  have hdom : volume.real (translateDomain k) ≤ 1 := by
+    rw [volume_real_translateDomain]
     have hL := boxSide_mem_Ioo k
     nlinarith
   have hτ : 0 < stageScale k := stageScale_pos k
@@ -602,13 +602,13 @@ lemma stageMass_le (k : ℕ) :
     refine mul_le_mul_of_nonneg_right ?_ (sq_nonneg _)
     refine mul_le_mul_of_nonneg_right ?_ hN.le
     exact mul_le_mul_of_nonneg_right hcount hA.le
-  rw [show (2 : ℝ) / removalRatio k = 2 * volume.real (domain k) / areaLower k by
+  rw [show (2 : ℝ) / removalRatio k = 2 * volume.real (translateDomain k) / areaLower k by
     rw [removalRatio, div_div_eq_mul_div]] at hstep
-  have hfrac : 2 * volume.real (domain k) / areaLower k ≤ (2 : ℝ) / areaLower k := by
+  have hfrac : 2 * volume.real (translateDomain k) / areaLower k ≤ (2 : ℝ) / areaLower k := by
     rw [div_le_div_iff_of_pos_right harea]
     nlinarith
   have hstep2 :
-      2 * volume.real (domain k) / areaLower k * stageHeight k * ↑(stageCount k) *
+      2 * volume.real (translateDomain k) / areaLower k * stageHeight k * ↑(stageCount k) *
           stageScale k ^ 2 ≤
         (2 : ℝ) / areaLower k * stageHeight k * ↑(stageCount k) * stageScale k ^ 2 := by
     refine mul_le_mul_of_nonneg_right ?_ (sq_nonneg _)
@@ -628,7 +628,7 @@ def spikeRect (d : ℕ) (_hd : 2 ≤ d) (k : ℕ) (v : Fin 2 → ℝ) : OpenRect
       norm_num
 
 /-- Real volume of one corner spike. -/
-lemma volume_real_spike (d : ℕ) (hd : 2 ≤ d) (k : ℕ) (v : Fin 2 → ℝ) :
+private lemma volume_real_spike (d : ℕ) (hd : 2 ≤ d) (k : ℕ) (v : Fin 2 → ℝ) :
     volume.real (spikeRect d hd k v).carrier = stageScale k ^ 2 := by
   have hle i := (spikeRect d hd k v).lower_lt_upper i |>.le
   rw [measureReal_def, (spikeRect d hd k v).carrier_eq_pi, Real.volume_pi_Ioo_toReal hle]
@@ -661,40 +661,40 @@ lemma volume_real_spike (d : ℕ) (hd : 2 ≤ d) (k : ℕ) (v : Fin 2 → ℝ) :
 def spikeHeight (k : ℕ) : ℝ := stageHeight k * stageCount k
 
 /-- Indicator of one corner spike. -/
-def bump (d : ℕ) (hd : 2 ≤ d) (k : ℕ) (v : Fin 2 → ℝ) (x : Fin d → ℝ) : ℝ :=
+def spike (d : ℕ) (hd : 2 ≤ d) (k : ℕ) (v : Fin 2 → ℝ) (x : Fin d → ℝ) : ℝ :=
   (spikeRect d hd k v).carrier.indicator (fun _ => spikeHeight k) x
 
 /-- Nonnegative extended spike. -/
-def bumpENN (d : ℕ) (hd : 2 ≤ d) (k : ℕ) (v : Fin 2 → ℝ) (x : Fin d → ℝ) : ℝ≥0∞ :=
-  ENNReal.ofReal (bump d hd k v x)
+def spikeENN (d : ℕ) (hd : 2 ≤ d) (k : ℕ) (v : Fin 2 → ℝ) (x : Fin d → ℝ) : ℝ≥0∞ :=
+  ENNReal.ofReal (spike d hd k v x)
 
 /-- Sum of every corner spike. -/
-def raw (d : ℕ) (hd : 2 ≤ d) (x : Fin d → ℝ) : ℝ≥0∞ :=
-  ∑' p : Σ k, Fin (copyCount k), bumpENN d hd p.1 (chosenShifts p.1 p.2) x
+def spikeSum (d : ℕ) (hd : 2 ≤ d) (x : Fin d → ℝ) : ℝ≥0∞ :=
+  ∑' p : Σ k, Fin (copyCount k), spikeENN d hd p.1 (chosenShifts p.1 p.2) x
 
 /-- The Saks function, finite part of the spike sum. -/
-def saks (d : ℕ) (hd : 2 ≤ d) : (Fin d → ℝ) → ℝ := fun x => (raw d hd x).toReal
+def saks (d : ℕ) (hd : 2 ≤ d) : (Fin d → ℝ) → ℝ := fun x => (spikeSum d hd x).toReal
 
 /-- Each spike indicator is measurable. -/
-lemma measurable_bump (d : ℕ) (hd : 2 ≤ d) (k : ℕ) (v : Fin 2 → ℝ) :
-    Measurable (bump d hd k v) :=
+lemma measurable_spike (d : ℕ) (hd : 2 ≤ d) (k : ℕ) (v : Fin 2 → ℝ) :
+    Measurable (spike d hd k v) :=
   measurable_const.indicator (spikeRect d hd k v).measurableSet_carrier
 
 /-- The spike sum is measurable. -/
-lemma measurable_raw (d : ℕ) (hd : 2 ≤ d) : Measurable (raw d hd) := by
-  unfold raw bumpENN
+lemma measurable_spikeSum (d : ℕ) (hd : 2 ≤ d) : Measurable (spikeSum d hd) := by
+  unfold spikeSum spikeENN
   simp_rw [ENNReal.tsum_eq_iSup_sum]
   refine Measurable.iSup fun s => Finset.measurable_fun_sum s fun p _ => ?_
-  exact (measurable_bump d hd p.1 (chosenShifts p.1 p.2)).ennreal_ofReal
+  exact (measurable_spike d hd p.1 (chosenShifts p.1 p.2)).ennreal_ofReal
 
 /-- The Saks function is measurable. -/
 lemma measurable_saks (d : ℕ) (hd : 2 ≤ d) : Measurable (saks d hd) :=
-  (measurable_raw d hd).ennreal_toReal
+  (measurable_spikeSum d hd).ennreal_toReal
 
 /-- Integral of one spike. -/
-lemma lintegral_bump (d : ℕ) (hd : 2 ≤ d) (k : ℕ) (v : Fin 2 → ℝ) :
-    ∫⁻ x, bumpENN d hd k v x = ENNReal.ofReal (spikeHeight k * stageScale k ^ 2) := by
-  unfold bumpENN bump
+lemma lintegral_spikeENN (d : ℕ) (hd : 2 ≤ d) (k : ℕ) (v : Fin 2 → ℝ) :
+    ∫⁻ x, spikeENN d hd k v x = ENNReal.ofReal (spikeHeight k * stageScale k ^ 2) := by
+  unfold spikeENN spike
   have hnn : 0 ≤ spikeHeight k := by unfold spikeHeight stageHeight; positivity
   set R := spikeRect d hd k v with hR
   have hind : (fun x => ENNReal.ofReal (R.carrier.indicator (fun _ => spikeHeight k) x)) =
@@ -708,5 +708,18 @@ lemma lintegral_bump (d : ℕ) (hd : 2 ≤ d) (k : ℕ) (v : Fin 2 → ℝ) :
     rw [hR, ← ENNReal.ofReal_toReal (spikeRect d hd k v).volume_carrier_lt_top.ne,
       ← measureReal_def, volume_real_spike d hd k v]
   rw [hvol, ← ENNReal.ofReal_mul hnn]
+
+@[deprecated (since := "2026-11-15")]
+alias bump := spike
+@[deprecated (since := "2026-11-15")]
+alias bumpENN := spikeENN
+@[deprecated (since := "2026-11-15")]
+alias raw := spikeSum
+@[deprecated (since := "2026-11-15")]
+alias measurable_bump := measurable_spike
+@[deprecated (since := "2026-11-15")]
+alias measurable_raw := measurable_spikeSum
+@[deprecated (since := "2026-11-15")]
+alias lintegral_bump := lintegral_spikeENN
 
 end CKMA.Bohr

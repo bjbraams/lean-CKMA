@@ -36,10 +36,10 @@ clauses of Eremenko's theorem. Derivatives and iteration use Mathlib's conventio
 
 ## Main results
 
-* `CKMA.closure_repellingPeriodicPoints`: density of repelling periodic points in the Julia set
-  (**46.6**).
+* `CKMA.closure_repellingComplexPeriodicPoints`: density of repelling periodic points in the
+  Julia set (**46.6**).
 * `CKMA.polynomial_escapeRate_properties`: existence and properties of the Green escape-rate limit.
-* `CKMA.polynomial_julia_connected_iff`: critical-orbit characterization of connectedness
+* `CKMA.isConnected_polynomialFilledJuliaSet_iff`: critical-orbit characterization of connectedness
   (**46.29**).
 * `CKMA.mandelbrot_properties`: compactness, connectedness, escape bound, and Julia-set criterion
   for the Mandelbrot set (**46.40**).
@@ -75,15 +75,21 @@ def repellingComplexPeriodicPoints (f : ℂ → ℂ) : Set ℂ :=
   {z | ∃ n : ℕ, 0 < n ∧ (f^[n]) z = z ∧ 1 < ‖deriv (f^[n]) z‖}
 
 /-- **46.6**, polynomial scope: repelling periodic points are dense in the polynomial Julia set. -/
-theorem closure_repellingPeriodicPoints {p : ℂ[X]} (hp : 2 ≤ p.natDegree) :
+theorem closure_repellingComplexPeriodicPoints {p : ℂ[X]} (hp : 2 ≤ p.natDegree) :
     closure (repellingComplexPeriodicPoints (fun z ↦ p.eval z)) = polynomialJuliaSet p := by
   sorry
 
+@[deprecated (since := "2026-11-15")]
+alias closure_repellingPeriodicPoints := closure_repellingComplexPeriodicPoints
+
 /-- Attracting polynomial periodic points lie outside the Julia set. -/
-theorem attractingPeriodicPoint_not_mem_julia {p : ℂ[X]} (hp : 2 ≤ p.natDegree)
+theorem attractingPeriodicPoint_notMem_polynomialJuliaSet {p : ℂ[X]} (hp : 2 ≤ p.natDegree)
     {z : ℂ} {n : ℕ} (hn : 0 < n) (hperiod : ((fun w ↦ p.eval w)^[n]) z = z)
     (hattr : ‖deriv ((fun w ↦ p.eval w)^[n]) z‖ < 1) : z ∉ polynomialJuliaSet p := by
   sorry
+
+@[deprecated (since := "2026-11-15")]
+alias attractingPeriodicPoint_not_mem_julia := attractingPeriodicPoint_notMem_polynomialJuliaSet
 
 /-- Polynomial escape-rate approximants with the standard `log⁺` normalization. -/
 def polynomialEscapeRateApproximation (p : ℂ[X]) (z : ℂ) (n : ℕ) : ℝ :=
@@ -110,11 +116,14 @@ theorem polynomialFilledJuliaSet_nonempty_isCompact {p : ℂ[X]} (hp : 2 ≤ p.n
 
 /-- **46.29**: polynomial connectedness is equivalent to boundedness of every finite critical orbit.
   -/
-theorem polynomial_julia_connected_iff {p : ℂ[X]} (hp : 2 ≤ p.natDegree) :
+theorem isConnected_polynomialFilledJuliaSet_iff {p : ℂ[X]} (hp : 2 ≤ p.natDegree) :
     (IsConnected (polynomialFilledJuliaSet p) ↔
       ∀ z : ℂ, p.derivative.eval z = 0 → z ∈ polynomialFilledJuliaSet p) ∧
     (IsConnected (polynomialJuliaSet p) ↔ IsConnected (polynomialFilledJuliaSet p)) := by
   sorry
+
+@[deprecated (since := "2026-11-15")]
+alias polynomial_julia_connected_iff := isConnected_polynomialFilledJuliaSet_iff
 
 /-- The standard quadratic family. -/
 def quadraticFamily (c : ℂ) : ℂ[X] := X ^ 2 + C c

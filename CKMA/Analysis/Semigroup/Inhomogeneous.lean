@@ -33,10 +33,10 @@ semigroup modules; integration uses Mathlib.
 
 ## Main results
 
-* `CKMA.integrated_of_integrable`: for `L¹` forcing on `[0, T]`, `forcedSemigroupTrajectory`
-  is an integrated solution.
-* `CKMA.eqOn_integrated`: integrated solutions with the same initial datum and forcing agree
-  on `[0, T]`.
+* `CKMA.isIntegratedSemigroupSolution_forcedSemigroupTrajectory`: for `L¹` forcing on
+  `[0, T]`, `forcedSemigroupTrajectory` is an integrated solution.
+* `CKMA.IsIntegratedSemigroupSolution.eqOn`: integrated solutions with the same initial datum
+  and forcing agree on `[0, T]`.
 -/
 
 @[expose] public section
@@ -165,8 +165,7 @@ private theorem continuous_duhamel (S : StronglyContinuousSemigroup X) {f : ℝ 
 
 /-- The Duhamel integrand of an integrable forcing is integrable on each subinterval. -/
 private theorem integrableOn_duhamelIntegrand (S : StronglyContinuousSemigroup X) {T : ℝ}
-    (_hT : 0 ≤ T) {f : ℝ → X} (hf : IntegrableOn f (Set.Icc 0 T)) {t : ℝ} (_ht0 : 0 ≤ t)
-    (htT : t ≤ T) :
+    {f : ℝ → X} (hf : IntegrableOn f (Set.Icc 0 T)) {t : ℝ} (htT : t ≤ T) :
     IntegrableOn (fun s => S.realOperator (t - s) (f s)) (Set.Icc 0 t) := by
   obtain ⟨C, -, hC⟩ := norm_realOperator_le_on_Icc S T
   have hf' : IntegrableOn f (Set.Icc 0 t) := hf.mono_set (Set.Icc_subset_Icc_right htT)
@@ -586,8 +585,8 @@ private theorem integrated_of_continuous (S : StronglyContinuousSemigroup X) (T 
   simpa using integrated_at_of_continuous S x hf ht.1
 
 /-- An operator-norm bound controls the difference of two Duhamel integrals. -/
-private theorem norm_duhamel_sub_le (S : StronglyContinuousSemigroup X) {T C : ℝ} (hT : 0 ≤ T)
-    (hC0 : 0 ≤ C) (hC : ∀ s : ℝ, 0 ≤ s → s ≤ T → ‖S.realOperator s‖ ≤ C)
+private theorem norm_duhamel_sub_le (S : StronglyContinuousSemigroup X) {T C : ℝ} (hC0 : 0 ≤ C)
+    (hC : ∀ s : ℝ, 0 ≤ s → s ≤ T → ‖S.realOperator s‖ ≤ C)
     {f g : ℝ → X} (hf : IntegrableOn f (Set.Icc 0 T)) (hg : IntegrableOn g (Set.Icc 0 T))
     {t : ℝ} (ht0 : 0 ≤ t) (htT : t ≤ T) :
     ‖(∫ s in (0 : ℝ)..t, S.realOperator (t - s) (g s)) -
@@ -599,15 +598,15 @@ private theorem norm_duhamel_sub_le (S : StronglyContinuousSemigroup X) {T C : �
   have hintDiff : IntervalIntegrable (fun s => g s - f s) volume 0 t :=
     ((Set.uIcc_of_le ht0).symm ▸ hpiece).intervalIntegrable
   have hSg : IntegrableOn (fun s => S.realOperator (t - s) (g s)) (Set.Icc 0 t) :=
-    integrableOn_duhamelIntegrand S hT hg ht0 htT
+    integrableOn_duhamelIntegrand S hg htT
   have hSf : IntegrableOn (fun s => S.realOperator (t - s) (f s)) (Set.Icc 0 t) :=
-    integrableOn_duhamelIntegrand S hT hf ht0 htT
+    integrableOn_duhamelIntegrand S hf htT
   have hintG : IntervalIntegrable (fun s => S.realOperator (t - s) (g s)) volume 0 t :=
     ((Set.uIcc_of_le ht0).symm ▸ hSg).intervalIntegrable
   have hintF : IntervalIntegrable (fun s => S.realOperator (t - s) (f s)) volume 0 t :=
     ((Set.uIcc_of_le ht0).symm ▸ hSf).intervalIntegrable
   have hvec : IntegrableOn (fun s => S.realOperator (t - s) (g s - f s)) (Set.Icc 0 t) :=
-    integrableOn_duhamelIntegrand S hT hfg ht0 htT
+    integrableOn_duhamelIntegrand S hfg htT
   have hpoint : (∫ s in (0 : ℝ)..t, S.realOperator (t - s) (g s - f s)) =
       (∫ s in (0 : ℝ)..t, S.realOperator (t - s) (g s)) -
         ∫ s in (0 : ℝ)..t, S.realOperator (t - s) (f s) := by
@@ -665,7 +664,8 @@ private theorem norm_intervalIntegral_sub_le {T : ℝ}
 
 /-- Integrable forcing still produces an integrated solution, by L¹ approximation and closedness
 of the generator. -/
-theorem integrated_of_integrable (S : StronglyContinuousSemigroup X) {T : ℝ} (hT : 0 ≤ T)
+theorem isIntegratedSemigroupSolution_forcedSemigroupTrajectory
+    (S : StronglyContinuousSemigroup X) {T : ℝ} (hT : 0 ≤ T)
     (x : X) {f : ℝ → X} (hf : IntegrableOn f (Set.Icc 0 T)) :
     IsIntegratedSemigroupSolution S x f (forcedSemigroupTrajectory S x f) T := by
   by_cases hT0 : T = 0
@@ -717,7 +717,7 @@ theorem integrated_of_integrable (S : StronglyContinuousSemigroup X) {T : ℝ} (
           C / ((n : ℝ) + 1) := by
       intro n t ht0 htT
       have hg : IntegrableOn (approx n : ℝ → X) (Set.Icc 0 T) := (hspec n).2
-      have hdiff := norm_duhamel_sub_le S hT hC0 hC hf hg ht0 htT
+      have hdiff := norm_duhamel_sub_le S hC0 hC hf hg ht0 htT
       have hcancel : forcedSemigroupTrajectory S x (approx n) t -
           forcedSemigroupTrajectory S x f t =
           (∫ s in (0 : ℝ)..t, S.realOperator (t - s) ((approx n : ℝ → X) s)) -
@@ -907,7 +907,7 @@ private theorem hasDerivWithinAt_integratedInterpolate (S : StronglyContinuousSe
   abel
 
 /-- Integrated solutions with the same initial value and forcing agree on `[0, T]`. -/
-theorem eqOn_integrated (S : StronglyContinuousSemigroup X) {T : ℝ} {x : X}
+theorem IsIntegratedSemigroupSolution.eqOn {S : StronglyContinuousSemigroup X} {T : ℝ} {x : X}
     {f u v : ℝ → X} (hu : IsIntegratedSemigroupSolution S x f u T)
     (hv : IsIntegratedSemigroupSolution S x f v T) :
     Set.EqOn u v (Set.Icc 0 T) := by

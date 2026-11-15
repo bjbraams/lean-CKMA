@@ -47,25 +47,28 @@ universe u
 variable {H : Type u} [NormedAddCommGroup H] [InnerProductSpace ℂ H]
 
 /-- A power of a continuous endomorphism, evaluated on a vector. -/
-theorem clm_pow_succ_apply (A : H →L[ℂ] H) (n : ℕ) (x : H) :
+private theorem continuousLinearMap_pow_succ_apply (A : H →L[ℂ] H) (n : ℕ) (x : H) :
     (A ^ (n + 1)) x = (A ^ n) (A x) := by
   rw [pow_succ]
   exact mul_apply_eq_comp _ _ _
 
 /-- A power of a continuous endomorphism, with the outermost factor on the left. -/
-theorem clm_pow_succ'_apply (A : H →L[ℂ] H) (n : ℕ) (x : H) :
+theorem continuousLinearMap_pow_succ'_apply (A : H →L[ℂ] H) (n : ℕ) (x : H) :
     (A ^ (n + 1)) x = A ((A ^ n) x) := by
   rw [pow_succ']
   exact mul_apply_eq_comp _ _ _
 
+@[deprecated (since := "2026-11-15")]
+alias clm_pow_succ'_apply := continuousLinearMap_pow_succ'_apply
+
 /-- Adding exponents corresponds to composing the two powers. -/
-theorem clm_pow_add_apply (A : H →L[ℂ] H) (m n : ℕ) (x : H) :
+private theorem continuousLinearMap_pow_add_apply (A : H →L[ℂ] H) (m n : ℕ) (x : H) :
     (A ^ (m + n)) x = (A ^ m) ((A ^ n) x) := by
   rw [pow_add]
   exact mul_apply_eq_comp _ _ _
 
 /-- Applying a continuous-linear power agrees with applying its underlying linear map. -/
-theorem toLinearMap_pow_apply (A : H →L[ℂ] H) (n : ℕ) (x : H) :
+theorem continuousLinearMap_toLinearMap_pow_apply (A : H →L[ℂ] H) (n : ℕ) (x : H) :
     (A ^ n).toLinearMap x = (A ^ n) x := by
   induction n generalizing x with
   | zero =>
@@ -74,6 +77,9 @@ theorem toLinearMap_pow_apply (A : H →L[ℂ] H) (n : ℕ) (x : H) :
   | succ n ih =>
     rw [pow_succ', toLinearMap_mul, Module.End.mul_apply, ih, mul_apply_eq_comp,
       ContinuousLinearMap.coe_coe]
+
+@[deprecated (since := "2026-11-15")]
+alias toLinearMap_pow_apply := continuousLinearMap_toLinearMap_pow_apply
 
 /-- The monoid power of a linear isometry agrees with the continuous-linear power. -/
 theorem isometry_pow_apply (V : H →ₗᵢ[ℂ] H) (n : ℕ) (x : H) :
@@ -88,27 +94,31 @@ theorem isometry_pow_apply (V : H →ₗᵢ[ℂ] H) (n : ℕ) (x : H) :
     exact (mul_apply_eq_comp _ _ _).symm
 
 /-- Powers of an isometry preserve inner products. -/
-theorem inner_clm_pow (V : H →ₗᵢ[ℂ] H) (n : ℕ) (x y : H) :
+private theorem inner_pow_apply_pow_apply (V : H →ₗᵢ[ℂ] H) (n : ℕ) (x y : H) :
     ⟪(V.toContinuousLinearMap ^ n) x, (V.toContinuousLinearMap ^ n) y⟫_ℂ = ⟪x, y⟫_ℂ := by
   rw [← isometry_pow_apply, ← isometry_pow_apply]
   exact (V ^ n).inner_map_map x y
 
 /-- An inner product against a residual power reduces by the common initial power. -/
-theorem inner_clm_pow_add_left (V : H →ₗᵢ[ℂ] H) (m k : ℕ) (x y : H) :
+theorem linearIsometry_inner_pow_add_apply_pow_apply (V : H →ₗᵢ[ℂ] H) (m k : ℕ)
+    (x y : H) :
     ⟪(V.toContinuousLinearMap ^ (m + k)) x, (V.toContinuousLinearMap ^ m) y⟫_ℂ =
       ⟪(V.toContinuousLinearMap ^ k) x, y⟫_ℂ := by
-  rw [clm_pow_add_apply]
+  rw [continuousLinearMap_pow_add_apply]
   rw [← isometry_pow_apply V m ((V.toContinuousLinearMap ^ k) x)]
   rw [← isometry_pow_apply V m y]
   exact (V ^ m).inner_map_map _ _
 
+@[deprecated (since := "2026-11-15")]
+alias inner_clm_pow_add_left := linearIsometry_inner_pow_add_apply_pow_apply
+
 /-- A positive power of an isometry lands in the range of the isometry. -/
-theorem mem_range_of_pos_pow (V : H →ₗᵢ[ℂ] H) {k : ℕ} (hk : 0 < k) (x : H) :
+private theorem mem_range_of_pos_pow (V : H →ₗᵢ[ℂ] H) {k : ℕ} (hk : 0 < k) (x : H) :
     (V.toContinuousLinearMap ^ k) x ∈ LinearMap.range V.toLinearMap := by
   obtain ⟨j, hj⟩ := Nat.exists_eq_succ_of_ne_zero (Nat.ne_of_gt hk)
   rw [hj]
   exact ⟨(V.toContinuousLinearMap ^ j) x,
-    (clm_pow_succ'_apply V.toContinuousLinearMap j x).symm⟩
+    (continuousLinearMap_pow_succ'_apply V.toContinuousLinearMap j x).symm⟩
 
 variable [CompleteSpace H]
 
@@ -141,13 +151,13 @@ instance completeSpace_woldWanderingSubspace (V : H →ₗᵢ[ℂ] H) :
   (isClosed_woldWanderingSubspace V).completeSpace_coe
 
 /-- The wandering subspace is the orthogonal of the range of `V`. -/
-theorem woldWanderingSubspace_eq_orthogonal_range (V : H →ₗᵢ[ℂ] H) :
+private theorem woldWanderingSubspace_eq_orthogonal_range (V : H →ₗᵢ[ℂ] H) :
     woldWanderingSubspace V = (LinearMap.range V.toLinearMap)ᗮ := by
   rw [woldWanderingSubspace]
   simpa using (orthogonal_range V.toContinuousLinearMap).symm
 
 /-- The orthogonal of the wandering subspace is the range of `V`. -/
-theorem orthogonal_woldWanderingSubspace (V : H →ₗᵢ[ℂ] H) :
+private theorem orthogonal_woldWanderingSubspace (V : H →ₗᵢ[ℂ] H) :
     (woldWanderingSubspace V)ᗮ = LinearMap.range V.toLinearMap := by
   rw [woldWanderingSubspace_eq_orthogonal_range, orthogonal_orthogonal]
 
@@ -157,7 +167,7 @@ def woldUnitarySubspace (V : H →ₗᵢ[ℂ] H) : Submodule ℂ H :=
 
 omit [CompleteSpace H] in
 /-- Membership in the unitary part is membership in every forward range. -/
-theorem mem_woldUnitarySubspace_iff (V : H →ₗᵢ[ℂ] H) {x : H} :
+private theorem mem_woldUnitarySubspace_iff (V : H →ₗᵢ[ℂ] H) {x : H} :
     x ∈ woldUnitarySubspace V ↔
       ∀ n : ℕ, x ∈ LinearMap.range ((V.toContinuousLinearMap ^ n).toLinearMap) := by
   simp [woldUnitarySubspace, mem_iInf]
@@ -185,7 +195,7 @@ theorem woldShift_inner_eq_zero (V : H →ₗᵢ[ℂ] H) :
             (V.toContinuousLinearMap ^ m) (u : H)⟫_ℂ =
           ⟪(V.toContinuousLinearMap ^ (n - m)) (v : H), (u : H)⟫_ℂ := by
       simpa [hadd] using
-        inner_clm_pow_add_left V m (n - m) (v : H) (u : H)
+        linearIsometry_inner_pow_add_apply_pow_apply V m (n - m) (v : H) (u : H)
     have hy := mem_range_of_pos_pow V hpos (v : H)
     have hu : (u : H) ∈ (LinearMap.range V.toLinearMap)ᗮ := by
       rw [← woldWanderingSubspace_eq_orthogonal_range]
@@ -203,7 +213,7 @@ theorem woldShift_inner_eq_zero (V : H →ₗᵢ[ℂ] H) :
             (V.toContinuousLinearMap ^ n) (v : H)⟫_ℂ =
           ⟪(V.toContinuousLinearMap ^ (m - n)) (u : H), (v : H)⟫_ℂ := by
       simpa [hadd] using
-        inner_clm_pow_add_left V n (m - n) (u : H) (v : H)
+        linearIsometry_inner_pow_add_apply_pow_apply V n (m - n) (u : H) (v : H)
     rw [hreduced]
     have hy := mem_range_of_pos_pow V hpos (u : H)
     have hv : (v : H) ∈ (LinearMap.range V.toLinearMap)ᗮ := by
@@ -218,7 +228,7 @@ theorem woldShift_orthogonalFamily (V : H →ₗᵢ[ℂ] H) :
   simpa [woldShift_apply] using woldShift_inner_eq_zero V m n hmn a b
 
 /-- A vector orthogonal to every wandering shift lies in every forward range. -/
-theorem mem_range_pow_of_orthogonal_woldShift (V : H →ₗᵢ[ℂ] H) {x : H}
+private theorem mem_range_pow_of_orthogonal_woldShift (V : H →ₗᵢ[ℂ] H) {x : H}
     (h : ∀ n : ℕ, ∀ w : woldWanderingSubspace V,
       ⟪(V.toContinuousLinearMap ^ n) (w : H), x⟫_ℂ = 0) :
     ∀ n : ℕ, x ∈ LinearMap.range ((V.toContinuousLinearMap ^ n).toLinearMap) := by
@@ -229,11 +239,11 @@ theorem mem_range_pow_of_orthogonal_woldShift (V : H →ₗᵢ[ℂ] H) {x : H}
     exact ⟨x, by simp⟩
   | succ n ih =>
     obtain ⟨y, hy⟩ := ih
-    rw [toLinearMap_pow_apply] at hy
+    rw [continuousLinearMap_toLinearMap_pow_apply] at hy
     have hy_orth : y ∈ (woldWanderingSubspace V)ᗮ := by
       intro w hw
       have h0 := h n ⟨w, hw⟩
-      have hpreserve := inner_clm_pow V n (w : H) y
+      have hpreserve := inner_pow_apply_pow_apply V n (w : H) y
       rw [hy] at hpreserve
       rw [← hpreserve]
       exact h0
@@ -241,15 +251,15 @@ theorem mem_range_pow_of_orthogonal_woldShift (V : H →ₗᵢ[ℂ] H) {x : H}
     obtain ⟨z, hz⟩ := hy_orth
     rw [LinearIsometry.coe_toLinearMap V] at hz
     refine ⟨z, ?_⟩
-    rw [toLinearMap_pow_apply]
+    rw [continuousLinearMap_toLinearMap_pow_apply]
     calc
       (V.toContinuousLinearMap ^ (n + 1)) z
-          = (V.toContinuousLinearMap ^ n) (V z) := clm_pow_succ_apply _ n z
+          = (V.toContinuousLinearMap ^ n) (V z) := continuousLinearMap_pow_succ_apply _ n z
       _ = (V.toContinuousLinearMap ^ n) y := by rw [hz]
       _ = x := hy
 
 /-- Orthogonality to every wandering shift characterizes the unitary part. -/
-theorem mem_woldUnitarySubspace_of_orthogonal_woldShift (V : H →ₗᵢ[ℂ] H) {x : H}
+private theorem mem_woldUnitarySubspace_of_orthogonal_woldShift (V : H →ₗᵢ[ℂ] H) {x : H}
     (h : ∀ n : ℕ, ∀ w : woldWanderingSubspace V,
       ⟪(V.toContinuousLinearMap ^ n) (w : H), x⟫_ℂ = 0) :
     x ∈ woldUnitarySubspace V := by
@@ -264,15 +274,15 @@ theorem woldUnitarySubspace_invariant (V : H →ₗᵢ[ℂ] H) :
   rw [mem_woldUnitarySubspace_iff] at hu ⊢
   intro n
   obtain ⟨y, hy⟩ := hu (n + 1)
-  rw [toLinearMap_pow_apply] at hy
+  rw [continuousLinearMap_toLinearMap_pow_apply] at hy
   refine ⟨(V.toContinuousLinearMap ^ 2) y, ?_⟩
-  rw [toLinearMap_pow_apply]
+  rw [continuousLinearMap_toLinearMap_pow_apply]
   calc
     (V.toContinuousLinearMap ^ n) ((V.toContinuousLinearMap ^ 2) y)
         = (V.toContinuousLinearMap ^ (n + 2)) y :=
-          (clm_pow_add_apply _ n 2 y).symm
+          (continuousLinearMap_pow_add_apply _ n 2 y).symm
     _ = V.toContinuousLinearMap ((V.toContinuousLinearMap ^ (n + 1)) y) :=
-          clm_pow_succ'_apply _ (n + 1) y
+          continuousLinearMap_pow_succ'_apply _ (n + 1) y
     _ = V u := by
           rw [hy, LinearIsometry.coe_toContinuousLinearMap]
 
@@ -287,10 +297,10 @@ theorem woldUnitarySubspace_preimage (V : H →ₗᵢ[ℂ] H) :
   rw [mem_woldUnitarySubspace_iff]
   intro n
   obtain ⟨y, hy⟩ := (mem_woldUnitarySubspace_iff V).1 hu (n + 1)
-  rw [toLinearMap_pow_apply] at hy
+  rw [continuousLinearMap_toLinearMap_pow_apply] at hy
   rw [LinearIsometry.coe_toLinearMap V] at hv
   refine ⟨y, ?_⟩
-  rw [toLinearMap_pow_apply]
+  rw [continuousLinearMap_toLinearMap_pow_apply]
   have hleft := adjoint_isometry_apply V ((V.toContinuousLinearMap ^ n) y)
   rw [← LinearIsometry.coe_toContinuousLinearMap V] at hleft
   calc
@@ -299,7 +309,7 @@ theorem woldUnitarySubspace_preimage (V : H →ₗᵢ[ℂ] H) :
             (V.toContinuousLinearMap ((V.toContinuousLinearMap ^ n) y)) := hleft.symm
     _ = V.toContinuousLinearMap.adjoint
           ((V.toContinuousLinearMap ^ (n + 1)) y) := by
-        rw [← clm_pow_succ'_apply]
+        rw [← continuousLinearMap_pow_succ'_apply]
     _ = V.toContinuousLinearMap.adjoint u := by rw [hy]
     _ = V.toContinuousLinearMap.adjoint (V v) := by rw [← hv]
     _ = v := adjoint_isometry_apply V v
@@ -310,11 +320,11 @@ theorem woldUnitary_inner_shift_eq_zero (V : H →ₗᵢ[ℂ] H) :
       ⟪u, (V.toContinuousLinearMap ^ n) w⟫_ℂ = 0 := by
   intro u hu n w
   obtain ⟨y, hy⟩ := (mem_woldUnitarySubspace_iff V).1 hu (n + 1)
-  rw [toLinearMap_pow_apply] at hy
+  rw [continuousLinearMap_toLinearMap_pow_apply] at hy
   have hshift :
       ⟪(V.toContinuousLinearMap ^ (n + 1)) y,
           (V.toContinuousLinearMap ^ n) (w : H)⟫_ℂ = ⟪V y, (w : H)⟫_ℂ := by
-    rw [clm_pow_succ_apply V.toContinuousLinearMap n y]
+    rw [continuousLinearMap_pow_succ_apply V.toContinuousLinearMap n y]
     rw [← isometry_pow_apply V n (V.toContinuousLinearMap y)]
     rw [← isometry_pow_apply V n (w : H)]
     rw [(V ^ n).inner_map_map (V.toContinuousLinearMap y) (w : H)]
@@ -331,14 +341,14 @@ def woldCoefficient (V : H →ₗᵢ[ℂ] H) (x : H) (n : ℕ) : woldWanderingSu
 
 /-- Inner product against a shifted wandering vector equals the inner product in the wandering
 subspace against `woldCoefficient`. -/
-theorem inner_woldShift_woldCoefficient (V : H →ₗᵢ[ℂ] H) (x : H) (n : ℕ)
+private theorem inner_woldShift_woldCoefficient (V : H →ₗᵢ[ℂ] H) (x : H) (n : ℕ)
     (w : woldWanderingSubspace V) :
     ⟪woldShift V n w, x⟫_ℂ = ⟪w, woldCoefficient V x n⟫_ℂ := by
   simpa [woldCoefficient] using
     ((woldShift V n).toContinuousLinearMap.adjoint_inner_right w x).symm
 
 /-- Partial sums of squared wandering coefficients are bounded by `‖x‖²`. -/
-theorem sum_norm_sq_woldCoefficient_le (V : H →ₗᵢ[ℂ] H) (x : H) (s : Finset ℕ) :
+private theorem sum_norm_sq_woldCoefficient_le (V : H →ₗᵢ[ℂ] H) (x : H) (s : Finset ℕ) :
     ∑ n ∈ s, ‖woldCoefficient V x n‖ ^ 2 ≤ ‖x‖ ^ 2 := by
   let c : ℕ → woldWanderingSubspace V := woldCoefficient V x
   set vec : H := ∑ n ∈ s, woldShift V n (c n) with hvec
@@ -372,7 +382,7 @@ theorem sum_norm_sq_woldCoefficient_le (V : H →ₗᵢ[ℂ] H) (x : H) (s : Fin
   simpa [c, hnorm] using hsq_le
 
 /-- The squared wandering coefficients of a vector form a summable series. -/
-theorem summable_norm_sq_woldCoefficient (V : H →ₗᵢ[ℂ] H) (x : H) :
+private theorem summable_norm_sq_woldCoefficient (V : H →ₗᵢ[ℂ] H) (x : H) :
     Summable fun n : ℕ => ‖woldCoefficient V x n‖ ^ 2 :=
   summable_of_sum_le (fun _ => sq_nonneg _) fun s => sum_norm_sq_woldCoefficient_le V x s
 

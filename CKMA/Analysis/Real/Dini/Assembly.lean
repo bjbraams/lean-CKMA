@@ -14,19 +14,21 @@ public import CKMA.Analysis.Real.Dini.Pattern
 Young's strict comparisons, the two infinite mismatches, and the finite gap are null. Outside
 that null set each opposite pair of Dini derivatives is either a common finite value or the pair
 `⊤` with `⊥`. The four combinations are exactly the four `HasDiniType` alternatives, and the
-comparisons `lower ≤ upper` make the choice unique. Source: GAPS 05.10.
+comparisons `lower ≤ upper` make the choice unique; the resulting theorem is
+`CKMA.ae_existsUnique_diniType`. Source: GAPS 05.10.
 
 ## Main definitions
 
-* `CKMA.Dini.exceptional`: the union of the five exceptional sets where opposite-pair Dini
+* `exceptional`: the union of the five exceptional sets where opposite-pair Dini
   patterns fail.
 
 ## Main results
 
-* `CKMA.Dini.volume_exceptional`: `exceptional f` has Lebesgue measure zero.
+* `volume_exceptional`: `exceptional f` has Lebesgue measure zero.
 * `CKMA.Dini.ae_oppositePair`: almost every point has matching or opposite-infinite upper-right
   and lower-left Dini derivatives.
-* `CKMA.Dini.ae_diniType`: almost every point realizes a unique `HasDiniType` alternative.
+* `CKMA.Dini.opposite_of_neg`: the opposite-pair pattern of `-f` gives the lower-right and
+  upper-left pattern of `f`.
 -/
 
 @[expose] public section
@@ -38,13 +40,13 @@ namespace CKMA.Dini
 open Set Filter Topology MeasureTheory
 
 /-- The null set of points that fail an opposite-pair Dini pattern. -/
-def exceptional (f : ℝ → ℝ) : Set ℝ :=
+private def exceptional (f : ℝ → ℝ) : Set ℝ :=
   {x | upperRightDiniDerivative f x < lowerLeftDiniDerivative f x} ∪
     ({x | upperLeftDiniDerivative f x < lowerRightDiniDerivative f x} ∪
       (infiniteUp f ∪ (infiniteDown f ∪ finiteStrict f)))
 
 /-- The exceptional set is a union of five null sets. -/
-theorem volume_exceptional (f : ℝ → ℝ) : volume (exceptional f) = 0 := by
+private theorem volume_exceptional (f : ℝ → ℝ) : volume (exceptional f) = 0 := by
   have h1 := volume_lt_upperRight_lowerLeft f
   have h2 := volume_lt_upperLeft_lowerRight f
   have h3 := volume_infiniteUp f
@@ -147,10 +149,13 @@ lemma opposite_of_neg (f : ℝ → ℝ) {x : ℝ}
       exact hneg
   · exact Or.inr ⟨EReal.neg_eq_bot_iff.mp haL, EReal.neg_eq_top_iff.mp haR⟩
 
-/-- Almost every point realises exactly one Denjoy–Young–Saks alternative. -/
-theorem ae_diniType (f : ℝ → ℝ) :
-    ∀ᵐ x ∂volume, ∃! i : Fin 4, HasDiniType f x i := by
-  filter_upwards [ae_oppositePair f, ae_oppositePair (-f)] with x hx hx'
-  exact existsUnique_diniType_of_patterns f x hx (opposite_of_neg f hx')
-
 end CKMA.Dini
+
+namespace CKMA
+
+@[deprecated (since := "2026-11-15")]
+alias ae_oppositePair := Dini.ae_oppositePair
+@[deprecated (since := "2026-11-15")]
+alias opposite_of_neg := Dini.opposite_of_neg
+
+end CKMA

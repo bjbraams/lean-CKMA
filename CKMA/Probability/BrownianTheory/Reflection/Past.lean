@@ -17,13 +17,13 @@ of a level or by its reflected down-crossing.
 
 ## Main definitions
 
-* `CKMA.past`: the path stopped at time `s`.
-* `CKMA.firstPassage`: paths whose first grid visit to level `b` is at index `k`.
+* `CKMA.Brownian.past`: the path stopped at time `s`.
+* `CKMA.Brownian.firstPassage`: paths whose first grid visit to level `b` is at index `k`.
 
 ## Main results
 
-* `CKMA.measure_firstGridHitSet_reflect`: symmetry of the post-passage increment conditioned on
-  the first grid visit at index `k`.
+* `CKMA.Brownian.measure_firstGridHitSet_reflect`: symmetry of the post-passage increment
+  conditioned on the first grid visit at index `k`.
 -/
 
 @[expose] public section
@@ -39,12 +39,14 @@ set_option linter.unusedSectionVars false
 
 variable {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsProbabilityMeasure μ]
 
+namespace Brownian
+
 /-- The path stopped at time `s`. -/
 def past (C : ℝ≥0 → Ω → ℝ) (s : ℝ≥0) (ω : Ω) : Iic s → ℝ :=
   fun u => C u ω
 
 /-- The stopped path is measurable when every marginal is measurable. -/
-lemma measurable_past {C : ℝ≥0 → Ω → ℝ} (hm : ∀ u, Measurable (C u)) (s : ℝ≥0) :
+private lemma measurable_past {C : ℝ≥0 → Ω → ℝ} (hm : ∀ u, Measurable (C u)) (s : ℝ≥0) :
     Measurable (past C s) :=
   Measurable.of_eval fun u => hm u
 
@@ -53,7 +55,7 @@ def gridCast {t : ℝ≥0} {n : ℕ} {j k : ℕ} (hjk : j ≤ k) : Iic (grid t n
   ⟨grid t n j, grid_mono hjk⟩
 
 /-- Casting a grid time does not change its value. -/
-lemma coe_gridCast {t : ℝ≥0} {n j k : ℕ} (hjk : j ≤ k) :
+private lemma coe_gridCast {t : ℝ≥0} {n j k : ℕ} (hjk : j ≤ k) :
     (gridCast (t := t) (n := n) hjk : ℝ≥0) = grid t n j := rfl
 
 /-- Paths whose first grid visit to level `b` is at index `k`. -/
@@ -61,7 +63,7 @@ def firstPassage (t : ℝ≥0) (b : ℝ) (n k : ℕ) : Set (Iic (grid t n k) →
   {y | b ≤ y ⟨grid t n k, le_rfl⟩ ∧ ∀ j (hj : j < k), y (gridCast (le_of_lt hj)) < b}
 
 /-- The first grid visit is a measurable condition on the stopped path. -/
-lemma measurableSet_firstPassage (t : ℝ≥0) (b : ℝ) (n k : ℕ) :
+private lemma measurableSet_firstPassage (t : ℝ≥0) (b : ℝ) (n k : ℕ) :
     MeasurableSet (firstPassage t b n k) := by
   let hit : Set (Iic (grid t n k) → ℝ) := {y | b ≤ y ⟨grid t n k, le_rfl⟩}
   have hhit : MeasurableSet hit := measurableSet_Ici.preimage (measurable_pi_apply _)
@@ -112,11 +114,12 @@ lemma firstGridHitSet_eq_preimage (C : ℝ≥0 → Ω → ℝ) (t : ℝ≥0) (b 
     · simpa [past, coe_gridCast] using h.2 j hj
 
 /-- Pairs that meet `A` and whose sum reaches level `b`. -/
-def reflectSet (s : ℝ≥0) (b : ℝ) (A : Set (Iic s → ℝ)) : Set (ℝ × (Iic s → ℝ)) :=
+private def reflectSet (s : ℝ≥0) (b : ℝ) (A : Set (Iic s → ℝ)) : Set (ℝ × (Iic s → ℝ)) :=
   {p | p.2 ∈ A ∧ b ≤ p.2 ⟨s, le_rfl⟩ + p.1}
 
 /-- The reflected crossing set is measurable. -/
-lemma measurableSet_reflectSet {s : ℝ≥0} {b : ℝ} {A : Set (Iic s → ℝ)} (hA : MeasurableSet A) :
+private lemma measurableSet_reflectSet {s : ℝ≥0} {b : ℝ} {A : Set (Iic s → ℝ)}
+    (hA : MeasurableSet A) :
     MeasurableSet (reflectSet s b A) := by
   have hsnd : MeasurableSet {p : ℝ × (Iic s → ℝ) | p.2 ∈ A} := hA.preimage measurable_snd
   have hsum : Measurable (fun p : ℝ × (Iic s → ℝ) => p.2 ⟨s, le_rfl⟩ + p.1) :=
@@ -131,7 +134,7 @@ lemma measurableSet_reflectSet {s : ℝ≥0} {b : ℝ} {A : Set (Iic s → ℝ)}
   exact hsnd.inter hcross
 
 /-- A measurable past event is equally likely before an up-crossing and its reflection. -/
-lemma measure_reflect_past {C : ℝ≥0 → Ω → ℝ} (hC : IsBrownianReal C μ)
+private lemma measure_reflect_past {C : ℝ≥0 → Ω → ℝ} (hC : IsBrownianReal C μ)
     (hm : ∀ u, Measurable (C u)) {s t₀ : ℝ≥0} (hs : s ≤ t₀) {b : ℝ}
     {A : Set (Iic s → ℝ)} (hA : MeasurableSet A) :
     μ {ω | past C s ω ∈ A ∧ b ≤ C t₀ ω} =
@@ -221,6 +224,10 @@ lemma measure_firstGridHitSet_reflect {C : ℝ≥0 → Ω → ℝ} (hC : IsBrown
     simp [hpre, mem_inter_iff, mem_preimage, mem_ofPred_eq]
   rw [hL, hR]
   exact h
+
+end Brownian
+
+open Brownian
 
 @[deprecated (since := "2026-11-15")] alias isTauSet_eq_preimage := firstGridHitSet_eq_preimage
 @[deprecated (since := "2026-11-15")] alias measure_isTau_reflect := measure_firstGridHitSet_reflect

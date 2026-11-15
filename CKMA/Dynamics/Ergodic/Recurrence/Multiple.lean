@@ -37,8 +37,8 @@ averaging applies to every longer progression.
 
 ## Main results
 
-* `CKMA.multiple_recurrence_liminf`: Positive measure yields a positive liminf of multiple-return
-  averages.
+* `CKMA.liminf_pos_of_progressionCount_ge`: a quadratic lower bound on progression counts in
+  dense sets yields a positive liminf of the `L`-fold return averages of a positive-measure set.
 -/
 
 @[expose] public section
@@ -439,8 +439,10 @@ private lemma progressionReturnAverage_ge [IsProbabilityMeasure μ] (hT : Measur
     exact hcancel
   exact hdiv
 
-/-- A uniform positive lower bound on the return averages forces a positive liminf. -/
-private lemma liminf_of_numerous [IsProbabilityMeasure μ] (hT : MeasurePreserving T μ μ)
+/-- If, for every density `δ > 0`, every `δ`-dense subset of a long interval `{0, …, N - 1}`
+contains at least `c N²` nontrivial `L`-term progressions for some `c > 0`, then a set of
+positive measure has a positive liminf of its `L`-fold return averages along progressions. -/
+theorem liminf_pos_of_progressionCount_ge [IsProbabilityMeasure μ] (hT : MeasurePreserving T μ μ)
     (hA : MeasurableSet A) (hpos : 0 < μ A) {L : ℕ} (hL : 3 ≤ L)
     (hnum : ∀ δ : ℝ, 0 < δ → ∃ c : ℝ, 0 < c ∧ ∃ N0 : ℕ, ∀ N, N0 ≤ N → ∀ S : Finset ℕ,
       S ⊆ range N → δ * (N : ℝ) ≤ (S.card : ℝ) →
@@ -472,16 +474,5 @@ private lemma liminf_of_numerous [IsProbabilityMeasure μ] (hT : MeasurePreservi
     le_liminf_of_le hcob hev
   unfold progressionReturnAverage at hlim
   exact lt_of_lt_of_le hκ hlim
-
-/-- Positive measure yields a positive liminf of multiple-return averages. -/
-theorem multiple_recurrence_liminf [IsProbabilityMeasure μ] {T : Ω → Ω}
-    (hT : MeasurePreserving T μ μ) {A : Set Ω} (hA : MeasurableSet A) (hpos : 0 < μ A)
-    {k : ℕ} (hk : 2 ≤ k) :
-    0 < liminf (fun N : ℕ => (N : ℝ)⁻¹ * ∑ n ∈ Finset.range N,
-      (μ (⋂ j ∈ Finset.range (k + 1), (T^[j * (n + 1)]) ⁻¹' A)).toReal) atTop := by
-  rcases eq_or_lt_of_le hk with rfl | hgt
-  · exact liminf_of_numerous hT hA hpos le_rfl fun δ hδ => numerous_progression_three hδ
-  · exact liminf_of_numerous hT hA hpos (by omega) fun δ hδ =>
-      numerous_progression_long (by omega) hδ
 
 end CKMA

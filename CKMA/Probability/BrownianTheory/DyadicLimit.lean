@@ -18,10 +18,10 @@ Hölder on each compact interval, with constant equal to the summed dyadic facto
 
 ## Main results
 
-* `CKMA.cauchySeq_dyadicFloor`: dyadic floors of a dyadically Hölder function form a Cauchy
-  sequence.
-* `CKMA.abs_sub_dyadicFloor_lim`: limits of dyadic floors are Hölder with the summed dyadic
-  constant.
+* `CKMA.Brownian.tendsto_dyadicFloor_limUnder`: values of a dyadically Hölder function at
+  the dyadic floors of `t` converge to their `limUnder`.
+* `CKMA.Brownian.abs_sub_dyadicFloor_lim`: limits of dyadic floors are Hölder with the summed
+  dyadic constant.
 -/
 
 @[expose] public section
@@ -33,8 +33,10 @@ namespace CKMA
 open Finset Filter
 open scoped Topology
 
+namespace Brownian
+
 /-- Two consecutive meshes add to one and a half times the coarser mesh. -/
-lemma two_mesh_sum (n : ℕ) :
+private lemma two_mesh_sum (n : ℕ) :
     (1 : ℝ) / 2 ^ n + 1 / 2 ^ (n + 1) = (3 / 2) * (2 : ℝ) ^ (-(n : ℝ)) := by
   have h2 : (2 : ℝ) ≠ 0 := by norm_num
   rw [one_div_two_pow_eq_rpow, one_div_two_pow_eq_rpow]
@@ -44,7 +46,7 @@ lemma two_mesh_sum (n : ℕ) :
   ring
 
 /-- The summed mesh, raised to `α`, is a geometric term of ratio `2 ^ (-α)`. -/
-lemma two_mesh_sum_rpow {α : ℝ} (n : ℕ) :
+private lemma two_mesh_sum_rpow {α : ℝ} (n : ℕ) :
     (1 / 2 ^ n + 1 / 2 ^ (n + 1)) ^ α =
       ((3 : ℝ) / 2) ^ α * ((2 : ℝ) ^ (-α)) ^ n := by
   have hbase : (0 : ℝ) ≤ (3 : ℝ) / 2 := by positivity
@@ -63,7 +65,7 @@ lemma two_mesh_sum_rpow {α : ℝ} (n : ℕ) :
       rw [Real.rpow_natCast]
 
 /-- Dyadic floors of a dyadically Hölder function form a Cauchy sequence. -/
-lemma cauchySeq_dyadicFloor {f : ℝ → ℝ} {α : ℝ} {K : ℕ → ℝ} {N : ℕ}
+private lemma cauchySeq_dyadicFloor {f : ℝ → ℝ} {α : ℝ} {K : ℕ → ℝ} {N : ℕ}
     (hα : 0 < α) (hK : ∀ j, j < N → 0 ≤ K j)
     (hinc : ∀ j, j < N → HasDyadicIncrements f α (K j) j)
     {t : ℝ} (ht0 : 0 ≤ t) (htN : t ≤ ↑N) :
@@ -121,5 +123,7 @@ lemma abs_sub_dyadicFloor_lim {f : ℝ → ℝ} {α : ℝ} {K : ℕ → ℝ} {N 
       (dyadicHolderFactor α * ∑ j ∈ range N, K j)
     refine le_of_tendsto_of_tendsto' habs hrhs fun n => ?_
     exact abs_sub_dyadicFloor_le hα hK hinc hs0 hsN ht0 htN
+
+end Brownian
 
 end CKMA

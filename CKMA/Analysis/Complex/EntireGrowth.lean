@@ -126,7 +126,7 @@ theorem cartwright_zero_distribution {f : ℂ → ℂ} (hf : IsCartwrightFunctio
 /-- **41.38**, entire-function logarithmic derivative estimate with a finite-linear-measure
 exceptional set. The general meromorphic version and finite-order sharpening remain. -/
 theorem logarithmic_derivative_estimate {f : ℂ → ℂ} (hf : Differentiable ℂ f)
-    (hnonconstant : ∃ z w, f z ≠ f w) {k : ℕ} (hk : 0 < k) :
+    (hnonconstant : ∃ z w, f z ≠ f w) {k : ℕ} :
     ∃ E : Set ℝ, MeasurableSet E ∧ volume E < ∞ ∧ ∃ C R : ℝ, 0 < C ∧ 1 < R ∧
       ∀ r : ℝ, R ≤ r → r ∉ E →
         ValueDistribution.proximity (fun z ↦ iteratedDeriv k f z / f z) ⊤ r ≤

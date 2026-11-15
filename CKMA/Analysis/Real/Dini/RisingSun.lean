@@ -140,3 +140,14 @@ theorem risingSun_rightmost {f : ℝ → ℝ} {a b x : ℝ} (hf : ContinuousOn f
     exact (R.isMax hwI).trans_eq hdmem.2.symm
 
 end CKMA.Dini
+
+namespace CKMA
+
+@[deprecated (since := "2026-11-15")]
+alias RightmostMaximum := Dini.RightmostMaximum
+@[deprecated (since := "2026-11-15")]
+alias exists_rightmostMaximum := Dini.exists_rightmostMaximum
+@[deprecated (since := "2026-11-15")]
+alias risingSun_rightmost := Dini.risingSun_rightmost
+
+end CKMA

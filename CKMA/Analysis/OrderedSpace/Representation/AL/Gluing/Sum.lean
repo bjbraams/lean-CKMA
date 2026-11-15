@@ -70,12 +70,12 @@ def bandIncl (i : BandIndex (E := E)) : BandFiber hE i → ALCarrier hE :=
   Sigma.mk i
 
 /-- A set in the disjoint union is measurable exactly on every fiber. -/
-theorem measurableSet_alCarrier {s : Set (ALCarrier hE)} :
+private theorem measurableSet_alCarrier {s : Set (ALCarrier hE)} :
     MeasurableSet s ↔ ∀ i, MeasurableSet (bandIncl hE i ⁻¹' s) := by
   simp only [MeasurableSpace.measurableSet_iInf, MeasurableSpace.map_def, bandIncl]
 
 /-- Each fiber inclusion is a measurable embedding. -/
-theorem bandIncl_measurableEmbedding (i : BandIndex (E := E)) :
+private theorem bandIncl_measurableEmbedding (i : BandIndex (E := E)) :
     MeasurableEmbedding (bandIncl hE i) where
   injective := fun a b h => by
     injection h
@@ -131,11 +131,11 @@ def toBandₗ (i : BandIndex (E := E)) : E →ₗ[ℝ] ClosedPrincipalBand i.vec
 
 /-- Underlying vector of `toBandₗ` is the index projection. -/
 @[simp]
-theorem toBand_toVec (i : BandIndex (E := E)) (x : E) :
+private theorem toBand_toVec (i : BandIndex (E := E)) (x : E) :
     (toBandₗ hE i x).toVec = indexProjection hE i.mem_family x := rfl
 
 /-- The band projection preserves binary suprema. -/
-theorem toBand_sup (i : BandIndex (E := E)) (x y : E) :
+private theorem toBand_sup (i : BandIndex (E := E)) (x y : E) :
     toBandₗ hE i (x ⊔ y) = toBandₗ hE i x ⊔ toBandₗ hE i y := by
   ext
   exact bandProjection_sup hE (bandIndex_nonneg i) x y
@@ -163,7 +163,7 @@ theorem measurable_glueFn (x : E) : Measurable (glueFn hE x) := by
   exact (Lp.stronglyMeasurable _).measurable hs
 
 /-- Norm of one band representative, as an extended real. -/
-theorem eLpNorm_component (i : BandIndex (E := E)) (x : E) :
+private theorem eLpNorm_component (i : BandIndex (E := E)) (x : E) :
     eLpNorm (componentRep hE i (toBandₗ hE i x) : BandFiber hE i → ℝ) 1 (bandMeasure hE i) =
       ENNReal.ofReal ‖indexProjection hE i.mem_family x‖ := by
   rw [← Lp.enorm_def, ← ofReal_norm, (componentRep hE i).norm_map]
@@ -171,7 +171,7 @@ theorem eLpNorm_component (i : BandIndex (E := E)) (x : E) :
   exact congrArg (fun z : E => ENNReal.ofReal ‖z‖) (toBand_toVec hE i x)
 
 /-- The glued representative lies in L¹ and its norm is the ambient norm. -/
-theorem eLpNorm_glueFn (x : E) :
+private theorem eLpNorm_glueFn (x : E) :
     eLpNorm (glueFn hE x) 1 (alMeasure hE) =
       ENNReal.ofReal ‖x‖ := by
   have hmeas : AEStronglyMeasurable (glueFn hE x) (alMeasure hE) :=
@@ -251,7 +251,7 @@ def alRepₗᵢ : E →ₗᵢ[ℝ] Lp ℝ 1 (alMeasure hE) where
   norm_map' := norm_alRepₗ hE
 
 /-- The representation preserves binary suprema. -/
-theorem alRepₗ_sup (x y : E) :
+private theorem alRepₗ_sup (x y : E) :
     alRepₗ hE (x ⊔ y) = alRepₗ hE x ⊔ alRepₗ hE y := by
   have hglue : Measurable (glueFn hE x ⊔ glueFn hE y) := by
     have hmax := Measurable.max (measurable_glueFn hE x) (measurable_glueFn hE y)
@@ -308,12 +308,13 @@ def alSlice (ψ : Lp ℝ 1 (alMeasure hE)) (i : BandIndex (E := E)) : ClosedPrin
     ((ψ : ALCarrier hE → ℝ) ∘ bandIncl hE i))
 
 /-- A vector of a closed band is fixed by its own index projection. -/
-theorem indexProjection_eq_self_of_band (i : BandIndex (E := E)) (y : ClosedPrincipalBand i.vec) :
+private theorem indexProjection_eq_self_of_band (i : BandIndex (E := E))
+    (y : ClosedPrincipalBand i.vec) :
     indexProjection hE i.mem_family y.toVec = y.toVec :=
   bandProjection_eq_of_mem_closure hE (bandIndex_nonneg i) y.mem_band
 
 /-- A vector fixed by one band is killed by every other band. -/
-theorem indexProjection_fixed_cross {i j : BandIndex (E := E)} (hij : i ≠ j) {x : E}
+private theorem indexProjection_fixed_cross {i j : BandIndex (E := E)} (hij : i ≠ j) {x : E}
     (hx : indexProjection hE i.mem_family x = x) :
     indexProjection hE j.mem_family x = 0 := by
   have hsplit : indexProjection hE i.mem_family x =
@@ -327,7 +328,7 @@ theorem indexProjection_fixed_cross {i j : BandIndex (E := E)} (hij : i ≠ j) {
     indexProjection_cross_eq_zero hE hij (negPart_nonneg x), sub_self]
 
 /-- Projection passes inside a sum of vectors supported on distinct bands. -/
-theorem indexProjection_tsum_fixed {z : BandIndex (E := E) → E} (hsum : Summable z)
+private theorem indexProjection_tsum_fixed {z : BandIndex (E := E) → E} (hsum : Summable z)
     (hself : ∀ i, indexProjection hE i.mem_family (z i) = z i)
     (hcross : ∀ i j, i ≠ j → indexProjection hE j.mem_family (z i) = 0)
     (j : BandIndex (E := E)) :
@@ -341,7 +342,7 @@ theorem indexProjection_tsum_fixed {z : BandIndex (E := E) → E} (hsum : Summab
   rw [(hasSum_single j hzero).tsum_eq, ← indexProjection_eq_clm hE j, hself j]
 
 /-- Norm of a sliced component. -/
-theorem norm_alSlice (ψ : Lp ℝ 1 (alMeasure hE)) (i : BandIndex (E := E)) :
+private theorem norm_alSlice (ψ : Lp ℝ 1 (alMeasure hE)) (i : BandIndex (E := E)) :
     ‖(alSlice hE ψ i).toVec‖ =
       ENNReal.toReal (eLpNorm ((ψ : ALCarrier hE → ℝ) ∘ bandIncl hE i) 1
         (bandMeasure hE i)) := by
@@ -350,7 +351,7 @@ theorem norm_alSlice (ψ : Lp ℝ 1 (alMeasure hE)) (i : BandIndex (E := E)) :
   rw [(componentRep hE i).symm.norm_map, Lp.norm_toLp]
 
 /-- The sliced components form a norm-summable family. -/
-theorem summable_alSlice (ψ : Lp ℝ 1 (alMeasure hE)) :
+private theorem summable_alSlice (ψ : Lp ℝ 1 (alMeasure hE)) :
     Summable fun i : BandIndex (E := E) => (alSlice hE ψ i).toVec := by
   refine Summable.of_norm (summable_of_sum_le (c := ‖ψ‖) (fun i => norm_nonneg _) ?_)
   intro s
@@ -388,11 +389,11 @@ theorem summable_alSlice (ψ : Lp ℝ 1 (alMeasure hE)) :
     ← eLpNorm_one_eq_lintegral_enorm (Lp.aestronglyMeasurable ψ)]
 
 /-- Sum of the sliced band components. -/
-def alPreimage (ψ : Lp ℝ 1 (alMeasure hE)) : E :=
+private def alPreimage (ψ : Lp ℝ 1 (alMeasure hE)) : E :=
   ∑' (i : BandIndex (E := E)), (alSlice hE ψ i).toVec
 
 /-- Each slice is the corresponding band projection of the preimage. -/
-theorem indexProjection_alPreimage (ψ : Lp ℝ 1 (alMeasure hE)) (j : BandIndex (E := E)) :
+private theorem indexProjection_alPreimage (ψ : Lp ℝ 1 (alMeasure hE)) (j : BandIndex (E := E)) :
     indexProjection hE j.mem_family (alPreimage hE ψ) = (alSlice hE ψ j).toVec := by
   simpa [alPreimage] using indexProjection_tsum_fixed hE (summable_alSlice hE ψ)
     (fun i => indexProjection_eq_self_of_band hE i (alSlice hE ψ i))

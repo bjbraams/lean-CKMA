@@ -27,11 +27,11 @@ The sets need not be measurable. Source: GAPS 05.10.
 
 ## Main definitions
 
-* `CKMA.Dini.steepRight`: pairs in `(a, b]` based at `E` with right slope steeper than `k`.
+* `steepRight`: pairs in `(a, b]` based at `E` with right slope steeper than `k`.
 
 ## Main results
 
-* `CKMA.Dini.finset_packing_lower`: telescoping lower bound for finite disjoint steep intervals.
+* `finset_packing_lower`: telescoping lower bound for finite disjoint steep intervals.
 * `CKMA.Dini.slopePacking_volume_le`: outer-measure bound from a left slope and steep right cover.
 * `CKMA.Dini.volume_eq_zero_of_arbitrarily_steep`: vanishing outer measure when arbitrarily steep
   right increments are available.
@@ -47,12 +47,12 @@ open Set Filter Topology MeasureTheory Metric
 open scoped BigOperators ENNReal NNReal
 
 /-- A strict slope bound is a strict bound on the increment. -/
-lemma mul_lt_of_lt_slope {x y c : ℝ} {f : ℝ → ℝ} (hxy : x < y)
+private lemma mul_lt_of_lt_slope {x y c : ℝ} {f : ℝ → ℝ} (hxy : x < y)
     (h : c < (f y - f x) / (y - x)) : c * (y - x) < f y - f x :=
   (lt_div_iff₀ (sub_pos.2 hxy)).1 h
 
 /-- Disjoint nonempty closed intervals, ordered from the left, have a gap between them. -/
-lemma disjoint_Icc_right_lt {p q : ℝ × ℝ} (hp : p.1 < p.2) (hq : q.1 < q.2)
+private lemma disjoint_Icc_right_lt {p q : ℝ × ℝ} (hp : p.1 < p.2) (hq : q.1 < q.2)
     (hle : p.1 ≤ q.1) (hdis : Disjoint (Icc p.1 p.2) (Icc q.1 q.2)) : p.2 < q.1 := by
   have hlt : p.1 < q.1 := by
     refine lt_of_le_of_ne hle ?_
@@ -67,7 +67,7 @@ lemma disjoint_Icc_right_lt {p q : ℝ × ℝ} (hp : p.1 < p.2) (hq : q.1 < q.2)
   exact (not_disjoint_iff_nonempty_inter.2 ⟨q.1, hinter⟩) hdis
 
 /-- Summing a nonnegative real function past a real threshold below its extended sum. -/
-lemma exists_finset_sum_gt {ι : Type*} (φ : ι → ℝ) (hφ : ∀ i, 0 ≤ φ i)
+private lemma exists_finset_sum_gt {ι : Type*} (φ : ι → ℝ) (hφ : ∀ i, 0 ≤ φ i)
     (hσ : ∑' i, ENNReal.ofReal (φ i) ≠ ⊤) {s : ℝ} (hs0 : 0 ≤ s)
     (hs : s < (∑' i, ENNReal.ofReal (φ i)).toReal) :
     ∃ t : Finset ι, s < ∑ i ∈ t, φ i := by
@@ -139,7 +139,7 @@ private lemma finset_packing_lower_aux (f : ℝ → ℝ) (E : Set ℝ) (c k δ f
       nlinarith [hgap, hrise, hIH]
 
 /-- Finite disjoint steep intervals and left-sloping gaps telescope on `(a, fin]`. -/
-theorem finset_packing_lower (f : ℝ → ℝ) (E : Set ℝ) {c k δ a fin : ℝ}
+private theorem finset_packing_lower (f : ℝ → ℝ) (E : Set ℝ) {c k δ a fin : ℝ}
     (hleft : ∀ x ∈ E, ∀ u, x - δ < u → u < x → c < (f x - f u) / (x - u))
     (ha : a < fin) (hlen : fin - a < δ) (hfin : fin ∈ E) (t : Finset (ℝ × ℝ))
     (hdisj : PairwiseDisjoint (t : Set (ℝ × ℝ)) fun p => Icc p.1 p.2)
@@ -149,7 +149,7 @@ theorem finset_packing_lower (f : ℝ → ℝ) (E : Set ℝ) {c k δ a fin : ℝ
   finset_packing_lower_aux f E c k δ fin hleft hfin t a ha hlen hdisj hmem hsteep
 
 /-- Pairs in `(a, b]` based at `E` whose right increment is steeper than `k`. -/
-def steepRight (f : ℝ → ℝ) (E : Set ℝ) (k a b : ℝ) : Set (ℝ × ℝ) :=
+private def steepRight (f : ℝ → ℝ) (E : Set ℝ) (k a b : ℝ) : Set (ℝ × ℝ) :=
   {p | p.1 ∈ E ∧ a < p.1 ∧ p.1 < p.2 ∧ p.2 ≤ b ∧ k < (f p.2 - f p.1) / (p.2 - p.1)}
 
 /-- Outer measure of `E` on a short interval, from a left slope and a steep right cover. -/
@@ -309,3 +309,12 @@ theorem volume_eq_zero_of_arbitrarily_steep (f : ℝ → ℝ) (E : Set ℝ) {c �
   · exact absurd htop hvolfin
 
 end CKMA.Dini
+
+namespace CKMA
+
+@[deprecated (since := "2026-11-15")]
+alias slopePacking_volume_le := Dini.slopePacking_volume_le
+@[deprecated (since := "2026-11-15")]
+alias volume_eq_zero_of_arbitrarily_steep := Dini.volume_eq_zero_of_arbitrarily_steep
+
+end CKMA

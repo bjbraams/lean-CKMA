@@ -69,7 +69,7 @@ theorem koenigsCoordinate_eventuallyEq {f φ ψ : ℂ → ℂ} {c : ℂ}
     φ =ᶠ[𝓝 (0 : ℂ)] ψ := by
   obtain ⟨hf, hf0, hφa, hφ0, hφd, hφe⟩ := hφ
   obtain ⟨_, _, hψa, hψ0, hψd, hψe⟩ := hψ
-  exact koenigsCoordinate_eventuallyEq_of hc hunit hf hf0 hφa hφ0 hφd hφe
+  exact koenigsCoordinate_eventuallyEq_of_analyticAt hc hunit hf hf0 hφa hφ0 hφd hφe
     hψa hψ0 hψd hψe
 
 /-- A local analytic Böttcher coordinate, without a derivative normalization. -/
@@ -85,7 +85,7 @@ theorem exists_boettcherCoordinate {f g : ℂ → ℂ} {k : ℕ} (hk : 2 ≤ k)
     {c : ℂ} (hc : c ^ (k - 1) = g 0) :
     ∃ φ, IsBoettcherCoordinate f k φ ∧ deriv φ 0 = c := by
   obtain ⟨phi, hfa, hf0, hphia, hphi0, hd, he⟩ :=
-    exists_boettcher_data hk hg hg₀ hf hc
+    exists_boettcherCoordinate_of_analyticAt hk hg hg₀ hf hc
   have hc0 : c ≠ 0 := by
     intro hzero
     apply hg₀

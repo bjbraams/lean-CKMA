@@ -39,8 +39,8 @@ Sources: GAPS 48.4, 48.32, 48.33 and 48.36.
 
 * `CKMA.hamburger_moment_iff`: Hamburger moment existence theorem.
 * `CKMA.stieltjes_moment_iff`: Stieltjes moment existence theorem.
-* `CKMA.positiveHankelMatrices_iff_squares`: equivalence of Hankel positivity and nonnegativity of
-  `momentFunctional` on polynomial squares.
+* `CKMA.hasPositiveHankelMatrices_iff_momentFunctional_mul_self_nonneg`: equivalence of Hankel
+  positivity and nonnegativity of `momentFunctional` on polynomial squares.
 * `CKMA.exists_favard_measure`: Favard's theorem for monic Jacobi recurrences.
 * `CKMA.measure_eq_of_hamburgerCarleman`: Carleman uniqueness for the Hamburger moment problem.
 * `CKMA.measure_eq_of_stieltjesCarleman`: Carleman uniqueness for the Stieltjes moment problem.
@@ -109,7 +109,8 @@ theorem momentFunctional_sum_monomial_mul_self (s : ℕ → ℝ) {n : ℕ} (x : 
   ring
 
 /-- Hankel positivity is equivalently positivity of the moment functional on polynomial squares. -/
-theorem positiveHankelMatrices_iff_squares (s : ℕ → ℝ) :
+theorem hasPositiveHankelMatrices_iff_momentFunctional_mul_self_nonneg
+    (s : ℕ → ℝ) :
     HasPositiveHankelMatrices s ↔ ∀ p : ℝ[X], 0 ≤ momentFunctional s (p * p) := by
   constructor
   · intro hs p
@@ -132,6 +133,10 @@ theorem positiveHankelMatrices_iff_squares (s : ℕ → ℝ) :
     · intro x
       simpa only [star_trivial, momentFunctional_sum_monomial_mul_self s x] using
         h (∑ i, Polynomial.monomial i.val (x i))
+
+@[deprecated (since := "2026-11-15")]
+alias positiveHankelMatrices_iff_squares :=
+  hasPositiveHankelMatrices_iff_momentFunctional_mul_self_nonneg
 
 /-- The monic Jacobi recurrence with edge coefficients `a n` between sites `n` and `n+1`. -/
 def jacobiMonicPolynomial (a b : ℕ → ℝ) : ℕ → ℝ[X]
