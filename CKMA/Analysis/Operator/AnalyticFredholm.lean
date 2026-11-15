@@ -37,10 +37,6 @@ clause.
 
 * `CKMA.analytic_fredholm`: analytic Fredholm theorem.
 * `CKMA.analytic_simple_eigenpair`: analytic continuation of a simple eigenpair.
-
-## Notation
-
-* `𝓝[≠] a`: punctured neighborhood filter at `a`.
 -/
 
 @[expose] public section

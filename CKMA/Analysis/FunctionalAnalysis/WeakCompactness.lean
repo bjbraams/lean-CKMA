@@ -25,11 +25,6 @@ Scalar Lp uniform convexity includes every exponent strictly between one and inf
 two. On finite measure spaces, Dunford–Pettis uses Mathlib's uniform-integrability predicate,
 which includes a uniform L1 bound. Sources: GAPS 15.28, 15.29, 15.33, and 17.23.
 
-## Main definitions
-
-* Re-exports `CKMA.WeaklyTendsto`, `CKMA.WeaklyConverges`, `CKMA.IsRelativelyWeaklyCompact`, and
-  `CKMA.IsWeaklyCauchy` from `CKMA.Analysis.FunctionalAnalysis.Basic`.
-
 ## Main results
 
 * `CKMA.eberlein_smulian`: weak relative compactness is equivalent to weak sequential relative

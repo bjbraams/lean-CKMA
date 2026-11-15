@@ -26,10 +26,6 @@ The liminf and limsup therefore agree, and Scheffé's identity gives L¹ converg
 * `CKMA.kingmanRatio_ae_tendsto_linear`: almost-everywhere convergence under a linear lower bound.
 * `CKMA.kingman_eLpNorm_tendsto_of_linear`: L¹ convergence under a linear lower bound.
 * `CKMA.kingman_pointwise_of_linear`: Kingman's theorem under a linear lower bound.
-
-## Notation
-
-* `μ[f | m]`: conditional expectation of `f` with respect to a sub-σ-algebra `m`.
 -/
 
 @[expose] public section

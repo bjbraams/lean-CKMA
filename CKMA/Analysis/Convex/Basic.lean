@@ -16,10 +16,6 @@ The predicate does not use a norm, an inner product, or convexity.
 ## Main definitions
 
 * `CKMA.IsProperERealFunction`: properness predicate for extended-real functions.
-
-## Main results
-
-* (No standalone theorems; provides the foundational properness predicate.)
 -/
 
 @[expose] public section

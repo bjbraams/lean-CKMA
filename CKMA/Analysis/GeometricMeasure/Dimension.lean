@@ -30,10 +30,6 @@ Sources: GAPS 37.4, 37.8 and 37.21.
 * `CKMA.frostman_compact` (**37.4**): Frostman's lemma on compact Euclidean sets.
 * `CKMA.planar_projection_dimension` (**37.8**): Marstrand's planar projection theorem.
 * `CKMA.planar_besicovitch_federer` (**37.21**): the planar Besicovitch–Federer projection theorem.
-
-## Notation
-
-* `dimH`: Hausdorff dimension from Mathlib.
 -/
 
 @[expose] public section

@@ -25,14 +25,11 @@ of a real inner-product space into a complete real Hilbert space. The subset may
 empty and the source need not be complete. Norms, distances and Lipschitz predicates
 are Mathlib's. Source: GAPS 05.33.
 
-## Main definitions
-
-No new public definitions are introduced in this file.
-
 ## Main results
 
-* `CKMA.exists_lipschitzWith_extension` (**05.33**): Kirszbraun's Lipschitz extension theorem
-  for maps into a complete real inner-product space.
+* `CKMA.exists_lipschitz_extension_hilbert` (**05.33**): Kirszbraun's Lipschitz extension
+  theorem for maps from a subset of a real inner-product space into a complete real
+  inner-product space.
 -/
 
 @[expose] public section

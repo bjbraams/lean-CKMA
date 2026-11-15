@@ -51,10 +51,6 @@ isometry along it remains an isometry with closed range.
 * `CKMA.exists_isometric_representation_unital`: isometric representation of a unital C*-algebra.
 * `CKMA.exists_isometric_representation_gns`: isometric Gelfand–Naimark representation of a
   possibly non-unital C*-algebra.
-
-## Notation
-
-Uses `→ₚ[ℂ]` for positive linear maps and `→⋆ₙₐ[ℂ]` for non-unital star algebra homomorphisms.
 -/
 
 @[expose] public section

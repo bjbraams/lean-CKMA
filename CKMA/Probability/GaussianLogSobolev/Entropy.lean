@@ -15,7 +15,7 @@ Ornstein–Uhlenbeck semigroup decreases at the rate of the Fisher information.
 
 ## Main definitions
 
-No new definitions are introduced in this file.
+* `CKMA.ouEntropy`: the integral `∫ P_t f log P_t f dγ` along the Ornstein–Uhlenbeck semigroup.
 
 ## Main results
 
@@ -550,7 +550,7 @@ lemma tendsto_ouSemigroup_zero {f : ℝ → ℝ} {x : ℝ} (hf : Continuous f)
     simpa using (hscale.mul_const x).add (hstdev.mul_const y)
   exact (hf.tendsto x).comp harg
 
-/-- Entropy integrand of a uniformly positive bounded function along the semigroup. -/
+/-- The integral `∫ P_t f log P_t f dγ` of `f` along the Ornstein–Uhlenbeck semigroup. -/
 def ouEntropy (f : ℝ → ℝ) (t : ℝ) : ℝ :=
   ∫ x, ouSemigroup t f x * Real.log (ouSemigroup t f x) ∂gaussianReal 0 1
 

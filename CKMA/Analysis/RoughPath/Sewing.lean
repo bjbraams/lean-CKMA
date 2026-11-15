@@ -138,7 +138,7 @@ def youngIncrement {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [NormedAddCommGroup F] [NormedSpace ℝ F]
     (X : ℝ → E) (Y : ℝ → E →L[ℝ] F) (s t : ℝ) : F := Y s (X t - X s)
 
-/-- **09.21**: Holder Young integration with the Young–Loeve remainder estimate. -/
+/-- **09.21**: Hölder Young integration with the Young–Loeve remainder estimate. -/
 theorem young_holder {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F]
     {a b : ℝ} (hab : a ≤ b) {α β Hx Hy : ℝ≥0}

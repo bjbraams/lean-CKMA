@@ -37,10 +37,6 @@ coextension identity. Sources: GAPS 21.26, 21.30, and 21.37.
   unitary equivalence.
 * `CKMA.exists_minimalIsometricDilation`: existence of a minimal isometric dilation.
 * `CKMA.commutant_lifting`: Sz.-Nagy–Foiaş commutant lifting theorem.
-
-## Notation
-
-* `⟪x, y⟫_ℂ`: complex inner product.
 -/
 
 @[expose] public section

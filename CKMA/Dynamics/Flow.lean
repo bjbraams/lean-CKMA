@@ -24,10 +24,6 @@ omega-limit arguments without introducing a dependency on a PDE module.
 * `CKMA.IsLyapunovStable`: forward Lyapunov stability of a point for a flow.
 * `CKMA.IsLocallyAttracting`: local forward attraction to a point for a flow.
 * `CKMA.largestInvariantSubset`: points whose full real-time orbit stays in a given set.
-
-## Main results
-
-* None.
 -/
 
 @[expose] public section

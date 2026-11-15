@@ -18,10 +18,6 @@ interval from zero to its argument. Such maps are the order projections of a Rie
 space: they are disjoint from the complementary projection, absolute values pass
 inside, and a smaller range yields a smaller projection.
 
-## Main definitions
-
-No new definitions are introduced in this file.
-
 ## Main results
 
 * `CKMA.contractiveProjection_abs`: absolute value commutes with a contractive positive map.

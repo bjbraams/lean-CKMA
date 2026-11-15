@@ -30,10 +30,6 @@ integrable case follows by truncation.
   invariant conditional expectation.
 * `CKMA.birkhoffAverage_ae_tendsto_integral_of_ergodic`: in an ergodic system the limit is the
   scalar mean.
-
-## Notation
-
-* `μ[f | m]`: conditional expectation of `f` with respect to a sub-σ-algebra `m`.
 -/
 
 @[expose] public section

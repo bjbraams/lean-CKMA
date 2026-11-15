@@ -32,17 +32,23 @@ criterion; regular maps are differences of positive maps. Sources: GAPS 19.5, 19
 * `CKMA.IsRegularLinearMap`: difference of two positive linear operators.
 * `CKMA.IsOrderBoundedLinearMap`: linear operator preserving order boundedness on intervals.
 * `CKMA.IsDedekindCompleteRieszSpace`: Dedekind completeness of a Riesz space.
+* `CKMA.IsArchimedeanRieszSpace`: the Archimedean axiom of a vector lattice.
+* `CKMA.IsLatticeComponent`: component of a positive vector, disjoint from its remainder.
 * `CKMA.HasPrincipalBandProjections`: principal band projection property.
+* `CKMA.principalOrderIdeal`, `CKMA.orderUnitGauge`: principal order ideal of a vector and its
+  order-unit gauge.
 
 ## Main results
 
+* `CKMA.isPositiveLinearMap_iff_monotone`: positive linear maps are the monotone linear maps.
 * `CKMA.exists_bandProjection`: existence of the band projection onto a band in a Dedekind-complete
   Riesz space.
 * `CKMA.freudenthal_approximation`: Freudenthal spectral theorem from principal band projections.
 * `CKMA.orderBounded_iff_regular`: Riesz–Kantorovich theorem characterizing order-bounded operators
   as regular operators.
-* `CKMA.riesz_kantorovich`: explicit supremum, infimum, and modulus formulas for order-bounded
-  operators into a Dedekind-complete Riesz space.
+* `CKMA.exists_rieszKantorovich_sup`: the supremum of two order-bounded operators into a
+  Dedekind-complete Riesz space, given on the positive cone by the Riesz–Kantorovich formula
+  `(S ⊔ T) x = sup {S y + T (x - y) | 0 ≤ y ≤ x}`.
 -/
 
 @[expose] public section

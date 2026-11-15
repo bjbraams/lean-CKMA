@@ -32,10 +32,6 @@ Sources: GAPS 28.24 and 28.29.
   groups (**28.24**).
 * `CKMA.exists_groupPlancherel`: Plancherel theorem and Hausdorff–Young inequality on
   second-countable locally compact abelian groups (**28.29**).
-
-## Notation
-
-Uses `PontryaginDual` for the character group and `conj` for complex conjugation.
 -/
 
 @[expose] public section

@@ -19,12 +19,11 @@ of a level or by its reflected down-crossing.
 
 * `CKMA.past`: the path stopped at time `s`.
 * `CKMA.firstPassage`: paths whose first grid visit to level `b` is at index `k`.
-* `CKMA.isTauSet`: event that the first grid visit to level `b` occurs at index `k`.
 
 ## Main results
 
-* `CKMA.measure_isTau_reflect`: symmetry of the post-passage increment conditioned on the first
-  grid visit at index `k`.
+* `CKMA.measure_firstGridHitSet_reflect`: symmetry of the post-passage increment conditioned on
+  the first grid visit at index `k`.
 -/
 
 @[expose] public section
@@ -99,8 +98,8 @@ lemma measurableSet_firstPassage (t : ℝ≥0) (b : ℝ) (n k : ℕ) :
   exact hhit.inter hprev
 
 /-- On indices inside the grid, the first-visit event is the stopped-path condition. -/
-lemma isTauSet_eq_preimage (C : ℝ≥0 → Ω → ℝ) (t : ℝ≥0) (b : ℝ) {n k : ℕ} (hk : k ≤ 2 ^ n) :
-    isTauSet C t b n k = past C (grid t n k) ⁻¹' firstPassage t b n k := by
+lemma firstGridHitSet_eq_preimage (C : ℝ≥0 → Ω → ℝ) (t : ℝ≥0) (b : ℝ) {n k : ℕ} (hk : k ≤ 2 ^ n) :
+    firstGridHitSet C t b n k = past C (grid t n k) ⁻¹' firstPassage t b n k := by
   ext ω
   constructor
   · intro h
@@ -204,23 +203,26 @@ lemma measure_reflect_past {C : ℝ≥0 → Ω → ℝ} (hC : IsBrownianReal C �
   simpa [Y, hEF, hEG] using hpre
 
 /-- First grid passage reflects across the level. -/
-lemma measure_isTau_reflect {C : ℝ≥0 → Ω → ℝ} (hC : IsBrownianReal C μ)
+lemma measure_firstGridHitSet_reflect {C : ℝ≥0 → Ω → ℝ} (hC : IsBrownianReal C μ)
     (hm : ∀ u, Measurable (C u)) (t : ℝ≥0) (b : ℝ) {n k : ℕ} (hk : k ≤ 2 ^ n) :
-    μ (isTauSet C t b n k ∩ {ω | b ≤ C t ω}) =
-      μ (isTauSet C t b n k ∩ {ω | C t ω ≤ 2 * C (grid t n k) ω - b}) := by
+    μ (firstGridHitSet C t b n k ∩ {ω | b ≤ C t ω}) =
+      μ (firstGridHitSet C t b n k ∩ {ω | C t ω ≤ 2 * C (grid t n k) ω - b}) := by
   have hs : grid t n k ≤ t := grid_le hk
   have h := measure_reflect_past hC hm hs (b := b) (measurableSet_firstPassage t b n k)
-  have hpre := isTauSet_eq_preimage C t b hk
-  have hL : isTauSet C t b n k ∩ {ω | b ≤ C t ω} =
+  have hpre := firstGridHitSet_eq_preimage C t b hk
+  have hL : firstGridHitSet C t b n k ∩ {ω | b ≤ C t ω} =
       {ω | past C (grid t n k) ω ∈ firstPassage t b n k ∧ b ≤ C t ω} := by
     ext ω
     simp [hpre, mem_inter_iff, mem_preimage, mem_ofPred_eq]
-  have hR : isTauSet C t b n k ∩ {ω | C t ω ≤ 2 * C (grid t n k) ω - b} =
+  have hR : firstGridHitSet C t b n k ∩ {ω | C t ω ≤ 2 * C (grid t n k) ω - b} =
       {ω | past C (grid t n k) ω ∈ firstPassage t b n k ∧
         C t ω ≤ 2 * C (grid t n k) ω - b} := by
     ext ω
     simp [hpre, mem_inter_iff, mem_preimage, mem_ofPred_eq]
   rw [hL, hR]
   exact h
+
+@[deprecated (since := "2026-11-15")] alias isTauSet_eq_preimage := firstGridHitSet_eq_preimage
+@[deprecated (since := "2026-11-15")] alias measure_isTau_reflect := measure_firstGridHitSet_reflect
 
 end CKMA

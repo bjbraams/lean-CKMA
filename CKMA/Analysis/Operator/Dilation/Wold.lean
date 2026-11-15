@@ -31,10 +31,6 @@ theorem. The argument follows Sz.-Nagy–Foiaş–Bercovici–Kérchy, Chapter I
   orthogonal.
 * `CKMA.wold_hasSum_decomposition`: orthogonal decomposition into unitary part and wandering shift
   series.
-
-## Notation
-
-* `⟪x, y⟫_ℂ`: complex inner product.
 -/
 
 @[expose] public section

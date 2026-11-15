@@ -25,10 +25,6 @@ This interface is independent of the complex-analytic polynomial applications.
 * `CKMA.HasBoundedOrbit.map`, `CKMA.HasBoundedOrbit.of_map`: invariance of orbit boundedness under
   one forward step.
 * `CKMA.hasBoundedOrbit_iff_exists_norm_le`: norm characterization in a normed additive group.
-
-## Notation
-
-* `f^[n]`: `n`-fold iterate of `f`.
 -/
 
 @[expose] public section

@@ -25,10 +25,6 @@ used for the blocks in the commutant lifting iteration.
 * `CKMA.exists_contraction_factor`: Douglas factorization through the closure of the range.
 * `CKMA.contractionFactor_norm_le`: operator norm of `contractionFactor` is at most `1`.
 * `CKMA.contractionFactor_comp`: factorization identity ` (contractionFactor ...).comp A = B`.
-
-## Notation
-
-* `Rᗮ`: orthogonal complement of a submodule `R`.
 -/
 
 @[expose] public section

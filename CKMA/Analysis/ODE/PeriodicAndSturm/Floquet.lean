@@ -53,10 +53,6 @@ operators at all times.
 * `CKMA.fundamental_det_ne_zero`: Liouville's formula implies that the determinant of a complex
   fundamental operator never vanishes.
 * `CKMA.fundamental_isInvertible`: A complex fundamental operator is invertible at every time.
-
-## Notation
-
-* Standard continuous linear map and matrix notation from Mathlib.
 -/
 
 @[expose] public section

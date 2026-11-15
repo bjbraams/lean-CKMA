@@ -25,14 +25,19 @@ of the logarithmic iteration kernel raise the Orlicz exponent by one.
 
 ## Main definitions
 
-* `CKMA.partialStrongMax`: strong maximal operator in the last `n` coordinates.
-* `CKMA.sliceStrongMax`: one-dimensional maximal function applied to `partialStrongMax`.
+* `CKMA.truncAt`: truncation discarding values of absolute value at most `t / 2`.
+* `CKMA.truncatedPartial`: the partial strong maximal function `CKMA.partialStrongMax`, set to
+  zero on and below the half-height threshold.
 
 ## Main results
 
 * `CKMA.measurable_partialStrongMax`: measurability of the slice strong maximal function.
-* `CKMA.strongMaximalFunction_le_slice`: pointwise domination of the `(n + 1)`-dimensional strong
-  maximal function by the iterated maximal operator.
+* `CKMA.partial_distribution_trunc`: the distribution of a high superlevel is controlled by the
+  truncated slices.
+* `CKMA.strongMaximal_subset_truncRat`: the strong maximal superlevel lies, up to the coordinate
+  equivalence, inside a one-dimensional superlevel of the truncated partial maximal function.
+* `CKMA.strongMaximal_volume_le_truncIntegral`: the distribution of the strong maximal function is
+  at most a constant multiple of the integral of the truncated partial maximal function.
 -/
 
 @[expose] public section

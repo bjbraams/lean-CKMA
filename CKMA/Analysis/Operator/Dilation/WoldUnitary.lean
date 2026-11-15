@@ -24,10 +24,6 @@ Chapter I, Section 1.
 
 * `CKMA.isClosed_woldUnitarySubspace`: the unitary subspace `woldUnitarySubspace V` is closed.
 * `CKMA.coe_woldUnitaryEquiv`: action of `woldUnitaryEquiv` agrees with `V`.
-
-## Notation
-
-* `⟪x, y⟫_ℂ`: complex inner product.
 -/
 
 @[expose] public section

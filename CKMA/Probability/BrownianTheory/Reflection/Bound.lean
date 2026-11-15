@@ -26,7 +26,7 @@ passage. Sending the mesh and the gap above the level to zero removes the oversh
 
 * `CKMA.measure_hit_le`: the closed hitting measure is at most twice the endpoint measure.
 * `CKMA.two_mul_endpoint_le_hit`: twice the endpoint measure is at most the hitting measure.
-* `CKMA.reflection_principle`: the reflection principle for a real Brownian motion.
+* `CKMA.reflection_principle`: the reflection principle for a real Brownian motion (**08.4**).
 -/
 
 @[expose] public section
@@ -63,15 +63,15 @@ def gridHit (C : ℝ≥0 → Ω → ℝ) (t : ℝ≥0) (b : ℝ) (n : ℕ) : Set
 
 /-- The grid hitting set is the disjoint union of the first-passage events. -/
 lemma gridHit_eq_iUnion (C : ℝ≥0 → Ω → ℝ) (t : ℝ≥0) (b : ℝ) (n : ℕ) :
-    gridHit C t b n = ⋃ k ∈ Finset.range (2 ^ n + 1), isTauSet C t b n k := by
-  simpa [gridHit] using (iUnion_isTauSet (C := C) t b n).symm
+    gridHit C t b n = ⋃ k ∈ Finset.range (2 ^ n + 1), firstGridHitSet C t b n k := by
+  simpa [gridHit] using (iUnion_firstGridHitSet (C := C) t b n).symm
 
 /-- Grid hitting sets are measurable. -/
 lemma measurableSet_gridHit {C : ℝ≥0 → Ω → ℝ} (hm : ∀ u, Measurable (C u)) (t : ℝ≥0) (b : ℝ)
     (n : ℕ) : MeasurableSet (gridHit C t b n) := by
   rw [gridHit_eq_iUnion]
   exact MeasurableSet.biUnion (Set.to_countable _) fun k _ =>
-    measurableSet_isTauSet hm t b n k
+    measurableSet_firstGridHitSet hm t b n k
 
 /-- Paths that meet level `b` at some time up to the horizon. -/
 def hitSet (C : ℝ≥0 → Ω → ℝ) (t : ℝ≥0) (b : ℝ) : Set Ω :=
@@ -137,10 +137,10 @@ lemma gridHit_subset_hitSet (C : ℝ≥0 → Ω → ℝ) (t : ℝ≥0) (b : ℝ)
   simpa [gridHit, hitSet] using gridHit_subset_hit (C := C) t b n
 
 /-- Each positive-index passage is at most twice its endpoint piece. -/
-lemma measure_isTau_le_two {C : ℝ≥0 → Ω → ℝ} (hC : IsBrownianReal C μ)
+lemma measure_firstGridHitSet_le_two {C : ℝ≥0 → Ω → ℝ} (hC : IsBrownianReal C μ)
     (hm : ∀ u, Measurable (C u)) {t : ℝ≥0} (b : ℝ) {n k : ℕ} (hk : k ≤ 2 ^ n) :
-    μ (isTauSet C t b n k) ≤ 2 * μ (isTauSet C t b n k ∩ endpointSet C t b) := by
-  let tau := isTauSet C t b n k
+    μ (firstGridHitSet C t b n k) ≤ 2 * μ (firstGridHitSet C t b n k ∩ endpointSet C t b) := by
+  let tau := firstGridHitSet C t b n k
   let high := tau ∩ endpointSet C t b
   let low := tau ∩ belowSet C t b
   have hsplit : μ high + μ low = μ tau := by
@@ -154,7 +154,7 @@ lemma measure_isTau_le_two {C : ℝ≥0 → Ω → ℝ} (hC : IsBrownianReal C �
     have hlevel : b ≤ C (grid t n k) ω := hω.1.2.1
     have hge : b ≤ 2 * C (grid t n k) ω - b := by linarith
     exact ⟨hω.1, le_trans (le_of_lt hω.2) hge⟩
-  have hreflect := measure_isTau_reflect hC hm t b hk
+  have hreflect := measure_firstGridHitSet_reflect hC hm t b hk
   have hlow : μ low ≤ μ high := by
     calc
       μ low ≤ μ (tau ∩ {ω | C t ω ≤ 2 * C (grid t n k) ω - b}) := measure_mono hsub
@@ -169,14 +169,15 @@ lemma measure_gridHit_le {C : ℝ≥0 → Ω → ℝ} (hC : IsBrownianReal C μ)
     (hm : ∀ u, Measurable (C u)) {t : ℝ≥0} {b : ℝ} (n : ℕ) :
     μ (gridHit C t b n) ≤ 2 * μ (endpointSet C t b) := by
   let idx := Finset.range (2 ^ n + 1)
-  let tau : ℕ → Set Ω := isTauSet C t b n
+  let tau : ℕ → Set Ω := firstGridHitSet C t b n
   let high : ℕ → Set Ω := fun k => tau k ∩ endpointSet C t b
-  have hdisj : PairwiseDisjoint (↑idx) tau := fun k _ m _ hkm => disjoint_isTauSet t b n hkm
-  have hmeas : ∀ k ∈ idx, MeasurableSet (tau k) := fun k _ => measurableSet_isTauSet hm t b n k
+  have hdisj : PairwiseDisjoint (↑idx) tau := fun k _ m _ hkm => disjoint_firstGridHitSet t b n hkm
+  have hmeas : ∀ k ∈ idx, MeasurableSet (tau k) := fun k _ =>
+    measurableSet_firstGridHitSet hm t b n k
   have hle : ∀ k ∈ idx, μ (tau k) ≤ 2 * μ (high k) := by
     intro k hk
     have hk' : k ≤ 2 ^ n := Nat.lt_succ_iff.mp (Finset.mem_range.mp hk)
-    simpa [tau, high] using measure_isTau_le_two hC hm b hk'
+    simpa [tau, high] using measure_firstGridHitSet_le_two hC hm b hk'
   have hsumTau : ∑ k ∈ idx, μ (tau k) = μ (gridHit C t b n) := by
     rw [← measure_biUnion_finset hdisj hmeas, ← gridHit_eq_iUnion]
   have hdisjH : PairwiseDisjoint (↑idx) high := hdisj.mono fun _ => inter_subset_left
@@ -307,12 +308,12 @@ lemma two_mul_endpoint_le_aux {C : ℝ≥0 → Ω → ℝ} (hC : IsBrownianReal 
     2 * μ (endpointSet C t a) ≤
       μ (hitSet C t a) + μ (bandSet C t a ε) + μ (oscSet C t ε n) := by
   let idx := Finset.range (2 ^ n + 1)
-  let tau : ℕ → Set Ω := isTauSet C t a n
+  let tau : ℕ → Set Ω := firstGridHitSet C t a n
   let high : ℕ → Set Ω := fun k => tau k ∩ endpointSet C t a
   let low : ℕ → Set Ω := fun k => tau k ∩ belowSet C t a
   let refl : ℕ → Set Ω := fun k => tau k ∩ {ω | C t ω ≤ 2 * C (grid t n k) ω - a}
   let good : Set Ω := {ω | gridOsc C t n ω ≤ ε}
-  have hmeasTau : ∀ k, MeasurableSet (tau k) := fun k => measurableSet_isTauSet hm t a n k
+  have hmeasTau : ∀ k, MeasurableSet (tau k) := fun k => measurableSet_firstGridHitSet hm t a n k
   have hmeasEnd : MeasurableSet (endpointSet C t a) := measurableSet_endpoint hm t a
   have hmeasGood : MeasurableSet good :=
     measurableSet_Iic.preimage (by simpa [good] using measurable_gridOsc hm t n)
@@ -327,7 +328,7 @@ lemma two_mul_endpoint_le_aux {C : ℝ≥0 → Ω → ℝ} (hC : IsBrownianReal 
     simpa [high] using measure_inter_add_sdiff (tau k) hmeasEnd
   have hreflect : ∀ k, k ≤ 2 ^ n → μ (high k) = μ (refl k) := by
     intro k hk
-    simpa [high, refl, endpointSet, tau] using measure_isTau_reflect hC hm t a hk
+    simpa [high, refl, endpointSet, tau] using measure_firstGridHitSet_reflect hC hm t a hk
   have hpiece : ∀ k, 1 ≤ k → k ≤ 2 ^ n → refl k ∩ good ⊆
       low k ∪ (bandSet C t a ε ∩ tau k) := by
     intro k hk0 hk ω hω
@@ -365,7 +366,7 @@ lemma two_mul_endpoint_le_aux {C : ℝ≥0 → Ω → ℝ} (hC : IsBrownianReal 
     by_cases hk0 : 1 ≤ k
     · exact hineq k hk0 hk'
     · have hkzero : k = 0 := Nat.lt_one_iff.mp (lt_of_not_ge hk0)
-      have hzero : μ (tau 0) = 0 := measure_isTauSet_zero hC t ha n
+      have hzero : μ (tau 0) = 0 := measure_firstGridHitSet_zero hC t ha n
       have hhigh0 : μ (high k) = 0 := by
         rw [hkzero]
         exact measure_mono_null inter_subset_left hzero
@@ -379,7 +380,7 @@ lemma two_mul_endpoint_le_aux {C : ℝ≥0 → Ω → ℝ} (hC : IsBrownianReal 
       _ = ∑ k ∈ idx, μ (low k) + ∑ k ∈ idx, μ (bandSet C t a ε ∩ tau k) +
           ∑ k ∈ idx, μ (oscSet C t ε n ∩ tau k) := by
         rw [Finset.sum_add_distrib, Finset.sum_add_distrib]
-  have hdisj : PairwiseDisjoint (↑idx) tau := fun _ _ _ _ hkm => disjoint_isTauSet t a n hkm
+  have hdisj : PairwiseDisjoint (↑idx) tau := fun _ _ _ _ hkm => disjoint_firstGridHitSet t a n hkm
   have hsumTau : ∑ k ∈ idx, μ (tau k) = μ (gridHit C t a n) := by
     rw [← measure_biUnion_finset hdisj fun k _ => hmeasTau k, ← gridHit_eq_iUnion]
   have hsumHL : ∑ k ∈ idx, μ (high k) + ∑ k ∈ idx, μ (low k) = μ (gridHit C t a n) := by
@@ -571,5 +572,7 @@ theorem reflection_principle {Ω : Type*} [MeasurableSpace Ω] (μ : Measure Ω)
       _ = 2 * μ (endpointSet C t a) := hident
       _ = 2 * μ (endpointSet B t a) := by rw [measure_congr hend.symm]
   simpa [hitSet, endpointSet] using hgoal
+
+@[deprecated (since := "2026-11-15")] alias measure_isTau_le_two := measure_firstGridHitSet_le_two
 
 end CKMA

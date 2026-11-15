@@ -16,15 +16,11 @@ Chebyshev extrema have Lebesgue constants `(2/π) log(n+1) + O(1)`, and the Lebe
 constant controls interpolation error by the best uniform polynomial approximation error.
 The estimate uses Mathlib's polynomial reproduction theorem `Lagrange.eq_interpolate`
 and compact supremum bounds, without assuming that a best approximant is attained.
-Nodal estimates are in `InterpolationStability.Estimates` and the comparison bounds in
-`InterpolationStability.Upper` and `InterpolationStability.Lower`.
+The definitions are in `InterpolationStability.Basic`, the nodal estimates in
+`InterpolationStability.Estimates`, and the comparison bounds in `InterpolationStability.Upper`
+and `InterpolationStability.Lower`.
 
 Source: GAPS 47.35.
-
-## Main definitions
-
-No new public definitions are introduced in this file; see
-`CKMA.Analysis.Approximation.InterpolationStability.Basic`.
 
 ## Main results
 

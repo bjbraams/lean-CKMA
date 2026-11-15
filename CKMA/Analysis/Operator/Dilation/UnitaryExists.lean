@@ -17,19 +17,11 @@ Nonnegative powers reproduce the isometry, and the two-sided orbit stays dense b
 forward isometric orbit was already dense. This is Sz.-Nagy’s unitary dilation, Chapter I of
 Sz.-Nagy–Foiaş–Bercovici–Kérchy.
 
-## Main definitions
-
-* None (uses `HilbertSpaceModel` and `woldBilateralEquiv`).
-
 ## Main results
 
 * `CKMA.minimalUnitary_of_minimalIsometric`: density of the bilateral orbit from density of the
   forward isometric orbit.
 * `CKMA.exists_minimalUnitaryPowerDilation_data`: existence of a minimal unitary power dilation.
-
-## Notation
-
-* `⟪x, y⟫_ℂ`: complex inner product.
 -/
 
 @[expose] public section

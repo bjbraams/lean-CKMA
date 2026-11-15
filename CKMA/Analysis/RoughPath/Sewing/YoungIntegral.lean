@@ -18,12 +18,9 @@ import Mathlib.Algebra.Order.Archimedean.Basic
 Uniform partition sums of a Young increment are Cauchy when the paths are
 continuous and have complementary finite `p`- and `q`-variation. The limit is
 additive and continuous, and the Young–Loeve remainder is
-`sewingConstant (p⁻¹ + q⁻¹)` times the product of the variation moduli.
-
-## Main definitions
-
-No new definitions are introduced in this file; see `CKMA.Analysis.RoughPath.Sewing.YoungGrid`
-for `YoungData`, `youngGrid`, and `youngLimit`.
+`sewingConstant (p⁻¹ + q⁻¹)` times the product of the variation moduli. The data
+`YoungData`, `youngGrid`, and `youngLimit` are defined in
+`CKMA.Analysis.RoughPath.Sewing.YoungGrid`.
 
 ## Main results
 
@@ -50,11 +47,11 @@ variable [D : YoungData E F]
 
 /-- The Young control vanishes on a degenerate interval `[s, s]`. -/
 lemma youngCtrl_same (s : ℝ) : youngCtrl p q youngLeftPath youngRightPath s s = 0 := by
-  rw [youngCtrl, variationReal_point (lt_of_lt_of_le zero_lt_one one_lt_leftExponent)
+  rw [youngCtrl, variationReal_point (lt_of_lt_of_le zero_lt_one one_le_leftExponent)
       youngLeftPath s,
-    variationReal_point (lt_of_lt_of_le zero_lt_one one_lt_rightExponent) youngRightPath s,
-    Real.zero_rpow (youngAlpha_pos one_lt_leftExponent one_lt_inv_add_inv).ne',
-    Real.zero_rpow (youngBeta_pos one_lt_rightExponent one_lt_inv_add_inv).ne', zero_mul]
+    variationReal_point (lt_of_lt_of_le zero_lt_one one_le_rightExponent) youngRightPath s,
+    Real.zero_rpow (youngAlpha_pos one_le_leftExponent one_lt_inv_add_inv).ne',
+    Real.zero_rpow (youngBeta_pos one_le_rightExponent one_lt_inv_add_inv).ne', zero_mul]
 
 /-- The Young control is continuous in its right endpoint on `[s, b]`. -/
 lemma continuousOn_ctrl_right {s : ℝ} (hs : a ≤ s) (_hsb : s ≤ b) :
@@ -68,10 +65,10 @@ lemma continuousOn_ctrl_right {s : ℝ} (hs : a ≤ s) (_hsb : s ≤ b) :
   have hfinY : pathVariationPower q youngRightPath s b ≠ ∞ :=
     ne_top_of_le_ne_top rightPathVariation_ne_top
       (pathVariationPower_mono hs le_rfl q youngRightPath)
-  have hvX := (continuousOn_variationReal one_lt_leftExponent youngLeftPath hXs hfinX).rpow_const
-    (fun _ _ => Or.inr (youngAlpha_pos one_lt_leftExponent one_lt_inv_add_inv).le)
-  have hvY := (continuousOn_variationReal one_lt_rightExponent youngRightPath hYs hfinY).rpow_const
-    (fun _ _ => Or.inr (youngBeta_pos one_lt_rightExponent one_lt_inv_add_inv).le)
+  have hvX := (continuousOn_variationReal one_le_leftExponent youngLeftPath hXs hfinX).rpow_const
+    (fun _ _ => Or.inr (youngAlpha_pos one_le_leftExponent one_lt_inv_add_inv).le)
+  have hvY := (continuousOn_variationReal one_le_rightExponent youngRightPath hYs hfinY).rpow_const
+    (fun _ _ => Or.inr (youngBeta_pos one_le_rightExponent one_lt_inv_add_inv).le)
   refine (hvX.mul hvY).congr fun r _ => ?_
   simp [youngCtrl, Pi.mul_apply]
 
@@ -112,7 +109,7 @@ lemma norm_defect_iterate {s t : ℝ} (hs : a ≤ s) (hst : s ≤ t) (ht : t ≤
   | succ n ih =>
     rcases eq_or_lt_of_le (youngCtrl_nonneg youngLeftPath youngRightPath s t) with hzero | hpos
     · have hmod0 : youngModulus p q youngLeftPath youngRightPath s t = 0 := by
-        rw [youngModulus_eq_ctrl_pow one_lt_leftExponent one_lt_rightExponent one_lt_inv_add_inv
+        rw [youngModulus_eq_ctrl_pow one_le_leftExponent one_le_rightExponent one_lt_inv_add_inv
             youngLeftPath youngRightPath s t, hzero.symm,
           Real.zero_rpow (youngTheta_pos one_lt_inv_add_inv).ne']
       have hloose := norm_youngLimit_sub hs hst ht
@@ -135,7 +132,7 @@ lemma norm_defect_iterate {s t : ℝ} (hs : a ≤ s) (hst : s ≤ t) (ht : t ≤
       have hfinY : pathVariationPower q youngRightPath s t ≠ ∞ :=
         ne_top_of_le_ne_top rightPathVariation_ne_top
           (pathVariationPower_mono hs ht q youngRightPath)
-      have hsuper := youngCtrl_superadd hm.1 hm.2 one_lt_leftExponent one_lt_rightExponent
+      have hsuper := youngCtrl_superadd hm.1 hm.2 one_le_leftExponent one_le_rightExponent
         one_lt_inv_add_inv youngLeftPath youngRightPath hfinX hfinY
       have hright : youngCtrl p q youngLeftPath youngRightPath m t ≤
           youngCtrl p q youngLeftPath youngRightPath s t / 2 := by
@@ -143,9 +140,9 @@ lemma norm_defect_iterate {s t : ℝ} (hs : a ≤ s) (hst : s ≤ t) (ht : t ≤
         linarith
       have hρL : youngModulus p q youngLeftPath youngRightPath s m =
           (2 : ℝ) ^ (-youngTheta p q) * youngModulus p q youngLeftPath youngRightPath s t := by
-        rw [youngModulus_eq_ctrl_pow one_lt_leftExponent one_lt_rightExponent one_lt_inv_add_inv
+        rw [youngModulus_eq_ctrl_pow one_le_leftExponent one_le_rightExponent one_lt_inv_add_inv
             youngLeftPath youngRightPath s m, hsm,
-          youngModulus_eq_ctrl_pow one_lt_leftExponent one_lt_rightExponent one_lt_inv_add_inv
+          youngModulus_eq_ctrl_pow one_le_leftExponent one_le_rightExponent one_lt_inv_add_inv
             youngLeftPath youngRightPath s t,
           Real.div_rpow (youngCtrl_nonneg youngLeftPath youngRightPath s t)
             (by norm_num : (0 : ℝ) ≤ 2),
@@ -153,9 +150,9 @@ lemma norm_defect_iterate {s t : ℝ} (hs : a ≤ s) (hst : s ≤ t) (ht : t ≤
         exact mul_comm _ _
       have hρR : youngModulus p q youngLeftPath youngRightPath m t ≤
           (2 : ℝ) ^ (-youngTheta p q) * youngModulus p q youngLeftPath youngRightPath s t := by
-        rw [youngModulus_eq_ctrl_pow one_lt_leftExponent one_lt_rightExponent one_lt_inv_add_inv
+        rw [youngModulus_eq_ctrl_pow one_le_leftExponent one_le_rightExponent one_lt_inv_add_inv
             youngLeftPath youngRightPath m t,
-          youngModulus_eq_ctrl_pow one_lt_leftExponent one_lt_rightExponent one_lt_inv_add_inv
+          youngModulus_eq_ctrl_pow one_le_leftExponent one_le_rightExponent one_lt_inv_add_inv
             youngLeftPath youngRightPath s t]
         have hle := Real.rpow_le_rpow (youngCtrl_nonneg youngLeftPath youngRightPath m t) hright
           (youngTheta_pos one_lt_inv_add_inv).le
@@ -177,7 +174,7 @@ lemma norm_defect_iterate {s t : ℝ} (hs : a ≤ s) (hst : s ≤ t) (ht : t ≤
               youngStep youngLeftPath youngRightPath s t) := by
         rw [hadd]
         abel
-      have hδ := norm_young_defect hm.1 hm.2 one_lt_leftExponent one_lt_rightExponent
+      have hδ := norm_young_defect hm.1 hm.2 one_le_leftExponent one_le_rightExponent
         youngLeftPath youngRightPath hfinX hfinY
       have ihL := ih hs hm.1 (hm.2.trans ht)
       have ihR := ih (hs.trans hm.1) hm.2 ht
@@ -336,7 +333,7 @@ lemma exists_partition_close {s t : ℝ} (hs : a ≤ s) (_hst : s ≤ t) (ht : t
     have hclear : ε / 2 * (2 * (C + 1)) = ε * (C + 1) := by ring
     rw [hclear]
     linarith [hε]
-  obtain ⟨δ, hδ, hδc⟩ := exists_ctrl_short one_lt_leftExponent one_lt_rightExponent
+  obtain ⟨δ, hδ, hδc⟩ := exists_ctrl_short one_le_leftExponent one_le_rightExponent
     one_lt_inv_add_inv youngLeftPath youngRightPath continuousOn_youngLeftPath
     continuousOn_youngRightPath leftPathVariation_ne_top rightPathVariation_ne_top η hη
   refine ⟨δ, hδ, fun π hmesh => ?_⟩

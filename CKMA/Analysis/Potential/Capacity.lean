@@ -27,21 +27,29 @@ Sources: GAPS 38.17, 38.20, 38.28 and 38.30.
 * `CKMA.dirichletEnergy`: squared Dirichlet energy of a scalar function on `ℝ^d`.
 * `CKMA.compactNewtonianCapacity`, `CKMA.openNewtonianCapacity`, `CKMA.newtonianCapacity`:
   variational, inner, and outer Newtonian capacities.
-* `CKMA.newtonianPotential`, `CKMA.newtonianMutualEnergy`: Newtonian potential and mutual energy of
-  Borel measures.
-* `CKMA.IsDirichletRegularBoundaryPoint`, `CKMA.SatisfiesWienerCriterion`: Dirichlet boundary
-  regularity and the Wiener series criterion.
+* `CKMA.newtonianKernelENN`, `CKMA.newtonianPotential`, `CKMA.newtonianMeasureEnergy`: the
+  extended Newtonian kernel, potential, and energy of a measure.
+* `CKMA.IsNewtonianEquilibriumCharge`: the equilibrium-charge conditions on a compact set.
+* `CKMA.IsNewtonianRegularBoundaryPoint`, `CKMA.wienerAnnularPiece`: Perron boundary regularity
+  and the dyadic annular pieces of the complement in Wiener's series.
+* `CKMA.upperPerronSolution`, `CKMA.RepresentsHarmonicMeasure`: the upper Perron envelope and
+  representation of the Perron solution by a harmonic measure.
 
 ## Main results
 
-* `CKMA.newtonianCapacity_choquet`: Choquet capacitability and continuity properties of Newtonian
-  capacity (**38.17**).
-* `CKMA.equilibrium_measure_exists`: existence of the capacitary equilibrium measure on compact
-  sets (**38.20**).
-* `CKMA.wiener_criterion_iff_regular`: Wiener's necessary and sufficient criterion for boundary
-  regularity (**38.28**).
-* `CKMA.perron_brelot_harmonic_measure`: Perron–Brelot resolutivity and harmonic measure
-  representation (**38.30**).
+* `CKMA.existsUnique_newtonianEquilibriumCharge` (**38.17**): existence and uniqueness of the
+  equilibrium charge of a compact set.
+* `CKMA.newtonianCapacity_eq_compact`: the outer and variational capacities agree on compact
+  sets.
+* `CKMA.newtonianCapacity_iUnion` (**38.20**), `CKMA.newtonianCapacity_iInter_compact`,
+  `CKMA.newtonianCapacity_iUnion_le`, `CKMA.newtonianCapacity_eq_iSup_compact`: continuity from
+  below and from above on compact sets, countable subadditivity, and capacitability of Borel sets.
+* `CKMA.perron_resolutive` (**38.28**): continuous boundary data are resolutive on bounded open
+  sets.
+* `CKMA.existsUnique_harmonicMeasure`: existence and uniqueness of the harmonic probability
+  measure at each point of a bounded open set.
+* `CKMA.isNewtonianRegularBoundaryPoint_iff_wiener` (**38.30**): Wiener's criterion for boundary
+  regularity.
 -/
 
 @[expose] public section

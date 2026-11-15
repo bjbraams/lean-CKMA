@@ -37,21 +37,14 @@ The converse follows Whitley's finite-dimensional norming lemma in the form reco
 weak-star cluster point of the canonical image in the bidual already lies in that image, so
 Mathlib's `NormedSpace.isCompact_closure_of_isBounded` supplies weak compactness.
 
-A weak limit lies in the closed real convex hull. That is the statement of TauCeti's Mazur lemma;
-the short argument below is taken from that development and proved from Mathlib's
-`Convex.toWeakSpace_closure`, because the TauCeti file is not on the import path.
-
-## Main definitions
-
-* No new public definitions are introduced in this file; the results use `toWeakSpace`.
+A weak limit of a sequence lies in the closed real convex hull of its range (Mazur's lemma); the
+short argument below derives this from Mathlib's `Convex.toWeakSpace_closure`.
 
 ## Main results
 
-* `CKMA.EberleinSmulian.isSeqCompact_closure_toWeakSpace_of_isCompact`: a relatively weakly compact
-  subset of a normed space is relatively weakly sequentially compact.
-* `CKMA.EberleinSmulian.isCompact_closure_toWeakSpace_of_seq`: in a Banach space, relative weak
-  sequential compactness implies relative weak compactness.
-* `CKMA.EberleinSmulian.isCompact_closure_toWeakSpace_iff_seq`: the Eberlein–Šmulian equivalence.
+* `CKMA.EberleinSmulian.exists_subseq_of_isCompact_closure`: a relatively weakly compact subset
+  of a normed space is relatively weakly sequentially compact, with limits in the ambient space.
+* `CKMA.EberleinSmulian.eberlein_smulian`: the Eberlein–Šmulian equivalence in a Banach space.
 -/
 
 @[expose] public section

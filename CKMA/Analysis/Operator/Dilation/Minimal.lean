@@ -30,10 +30,6 @@ minimal part.
 * `CKMA.isometricDilation_coinvariant`: co-invariance on the closed forward orbit.
 * `CKMA.isometricDilation_minimal`: minimality of the closed forward orbit.
 * `CKMA.exists_minimalIsometricDilation_data`: existence of a minimal isometric dilation.
-
-## Notation
-
-* `⟪x, y⟫_ℂ`: complex inner product.
 -/
 
 @[expose] public section

@@ -32,13 +32,19 @@ without changing the limiting assertions.
 
 * `CKMA.IsOrderedSummable`: convergence of partial sums in their given order.
 * `CKMA.symmetricTruncation`: symmetric truncation of a real random variable at threshold `A`.
-* `CKMA.SatisfiesLindebergCondition`: Lindeberg condition for a triangular array.
+* `CKMA.HasThreeSeries`: the three series conditions of Kolmogorov's criterion.
+* `CKMA.iteratedLogScale`: the iterated-logarithm normalization `√(2 σ² n log log n)`.
+* `CKMA.HasLindebergCondition`, `CKMA.HasFellerCondition`: Lindeberg's and Feller's conditions
+  for a triangular array.
+* `CKMA.kolmogorovDistance`: supremum distance between real distribution functions.
 
 ## Main results
 
-* `CKMA.kolmogorov_three_series`: Kolmogorov's three-series theorem (**06.23**).
-* `CKMA.law_of_the_iterated_logarithm`: Hartman–Wintner law of the iterated logarithm (**06.27**).
-* `CKMA.lindeberg_feller`: Lindeberg–Feller central limit theorem and converse (**06.34**).
+* `CKMA.kolmogorov_threeSeries`: Kolmogorov's three-series theorem (**06.23**).
+* `CKMA.hartman_wintner`: Hartman–Wintner law of the iterated logarithm (**06.27**).
+* `CKMA.lindeberg_feller`: Lindeberg–Feller central limit theorem (**06.34**).
+* `CKMA.lindeberg_feller_iff`: under Feller's condition, Lindeberg's condition is equivalent to
+  the central limit theorem.
 * `CKMA.berry_esseen`: Berry–Esseen theorem (**06.36**).
 -/
 

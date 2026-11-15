@@ -26,21 +26,18 @@ Sources: GAPS 24.20, 24.23 and 24.35.
 * `CKMA.IsSectorialOperator`: sectoriality of a closed densely defined complex partial linear
   operator.
 * `CKMA.HasBoundedAnalyticSemigroupExtension`: bounded holomorphic semigroup extension on a sector.
-* `CKMA.balakrishnanCore`, `CKMA.IsBalakrishnanPower`: Balakrishnan integral and graph-closed
-  fractional powers.
+* `CKMA.balakrishnanIntegrand`, `CKMA.balakrishnanIntegral`: the Balakrishnan integrand and its
+  normalized integral on the operator domain.
+* `CKMA.IsEventuallyNormContinuousSemigroup`: operator-norm continuity after some time.
 
 ## Main results
 
-* `CKMA.analyticSemigroup_iff_neg_sectorial`: equivalence between bounded holomorphic semigroup
+* `CKMA.sectorial_iff_analytic_generation`: equivalence between bounded holomorphic semigroup
   generation and sectoriality of the negative generator (**24.20**).
-* `CKMA.balakrishnan_fractional_powers`: closure and additivity of Balakrishnan fractional powers
-  (**24.23**).
-* `CKMA.spectral_mapping_eventually_norm_continuous`: spectral mapping theorem away from zero for
+* `CKMA.balakrishnan_fractionalPower`: integrability of the Balakrishnan integrand and
+  closability of the Balakrishnan fractional power (**24.23**).
+* `CKMA.spectralMapping_eventuallyNormContinuous`: spectral mapping theorem away from zero for
   eventually norm-continuous semigroups (**24.35**).
-
-## Notation
-
-* `X →ₗ.[ℂ] X`: complex partial linear operators from TauCeti.
 -/
 
 @[expose] public section

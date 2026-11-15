@@ -21,17 +21,18 @@ Sources: GAPS 33.23 and 33.30.
 
 ## Main definitions
 
+* `CKMA.HessianJet`, `CKMA.IsNonnegativeHessian`: Hessian jets and their positivity.
 * `CKMA.IsDegenerateElliptic`: degenerate ellipticity of a second-order operator.
 * `CKMA.IsViscositySubsolution`, `CKMA.IsViscositySupersolution`, `CKMA.IsViscositySolution`:
   viscosity subsolutions, supersolutions, and solutions.
-* `CKMA.IsUniformlyEllipticHessianOperator`: uniform ellipticity of a pure Hessian operator.
+* `CKMA.IsUniformlyEllipticHessian`: uniform ellipticity of a pure Hessian operator.
 
 ## Main results
 
-* `CKMA.viscosity_comparison`: comparison principle for viscosity sub- and supersolutions on
-  bounded open domains (**33.30**).
-* `CKMA.evans_krylov_interior_c2alpha`: interior `C^{2,α}` regularity for convex or concave fully
-  nonlinear uniformly elliptic equations (**33.23**).
+* `CKMA.viscosity_comparison` (**33.23**): comparison principle for viscosity sub- and
+  supersolutions on bounded open domains.
+* `CKMA.evans_krylov` (**33.30**): interior `C^{2,α}` regularity and estimate for convex or
+  concave fully nonlinear uniformly elliptic equations.
 -/
 
 @[expose] public section

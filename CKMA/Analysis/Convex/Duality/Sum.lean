@@ -17,10 +17,6 @@ the splitting off the Fenchel–Rockafellar dual maximizer at the identity. Lowe
 and completeness are not used. Source: Borwein–Lewis, *Convex Analysis and Nonlinear
 Optimization*, Theorem 4.1.6; GAPS 12.21.
 
-## Main definitions
-
-* (No new public definitions; uses `TauCeti.subdifferential`.)
-
 ## Main results
 
 * `CKMA.subdifferential_add_eq`: Moreau–Rockafellar subdifferential sum rule under a continuity

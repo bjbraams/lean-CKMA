@@ -43,10 +43,6 @@ Sources: GAPS 21.11 and 21.16.
 * `CKMA.essentialSpectrum_add_compact`: stability of the Fredholm essential spectrum under
   compact perturbations.
 * `CKMA.mem_spectrum_sdiff_essentialSpectrum_iff`: discrete spectrum of a self-adjoint operator.
-
-## Notation
-
-* `Kᗮ`: orthogonal complement of a submodule `K`.
 -/
 
 @[expose] public section

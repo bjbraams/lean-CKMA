@@ -31,10 +31,6 @@ The subspace is realized as the image of a Lipschitz linear combination on a fin
 scalars, and the estimate is made on the quotient by the kernel, whose norm agrees with the metric
 used by the sphere.
 
-## Main definitions
-
-* No new public definitions are introduced in this file.
-
 ## Main results
 
 * `CKMA.EberleinSmulian.exists_list_norming`: Whitley's finite-dimensional norming lemma in the

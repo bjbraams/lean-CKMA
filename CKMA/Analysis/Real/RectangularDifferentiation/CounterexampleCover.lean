@@ -38,16 +38,22 @@ integrable function is the sum of the corresponding rectangular spikes.
 
 ## Main definitions
 
-* `CKMA.Bohr.shiftHit`: points of the inner square whose translated picture meets the strip union.
-* `CKMA.Bohr.badCover`: finite union of translated Bohr strip sets covering a positive fraction of
-  the unit square.
-* `CKMA.Bohr.spike`: the `L¹`-normalized indicator spike at generation `k`.
+* `CKMA.Bohr.shiftHit`: the translate of the strip union `badPlane k` by a vector `v`.
+* `CKMA.Bohr.planeCover`: the part of the inner square covered by the chosen translates.
+* `CKMA.Bohr.stageSet`, `CKMA.Bohr.tailSet`, `CKMA.Bohr.limsupSet`: the stage-`k` sets in the
+  unit cube of `ℝ^d`, their tails, and their limsup.
+* `CKMA.Bohr.spikeRect`, `CKMA.Bohr.bump`: the corner spike rectangle of one translated
+  picture and the indicator spike of height `spikeHeight k` on it.
+* `CKMA.Bohr.raw`, `CKMA.Bohr.saks`: the extended sum of all spikes and its real part.
 
 ## Main results
 
-* `CKMA.Bohr.measure_badCover_ge`: lower bound on the two-dimensional measure of `badCover k`.
-* `CKMA.Bohr.integrable_spike`, `CKMA.Bohr.lintegral_spike_le`: `L¹` norm bounds for the
-  generation-`k` spike.
+* `CKMA.Bohr.exists_almost_cover`, `CKMA.Bohr.volume_planeCover_gt`: finitely many translates
+  cover the inner square up to the factor `exp (-1)`, so the covered part has area `> 1 / 8`.
+* `CKMA.Bohr.volume_stageSet_gt`, `CKMA.Bohr.volume_limsupSet_ge`: each stage set has measure
+  greater than `3 / 32`, and the limsup set has measure at least `3 / 32`.
+* `CKMA.Bohr.measurable_saks`, `CKMA.Bohr.lintegral_bump`: measurability of the Saks function and
+  the integral of one spike.
 -/
 
 @[expose] public section
@@ -59,7 +65,7 @@ open scoped ENNReal NNReal BigOperators
 
 namespace CKMA.Bohr
 
-/-- Points of the inner square whose reflected picture meets the strip union. -/
+/-- The translate of the strip union `badPlane k` by `v`. -/
 def shiftHit (k : ℕ) (v : Fin 2 → ℝ) : Set (Fin 2 → ℝ) :=
   {x | x - v ∈ badPlane k}
 

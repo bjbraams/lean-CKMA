@@ -59,10 +59,6 @@ regular zero. The initial step length is controlled by a norm bound. Source: GAP
 * `CKMA.newtonIterate_succ`: Each subsequent iterate applies `newtonStep`.
 * `CKMA.newton_kantorovich`: Semilocal Kantorovich convergence theorem (**35.9**).
 * `CKMA.newton_quadratic`: Local quadratic convergence near a regular zero.
-
-## Notation
-
-* Standard norm and continuous linear map notation from Mathlib.
 -/
 
 @[expose] public section

@@ -16,10 +16,6 @@ Crossings of a transverse segment are ordered toward the forward endpoint of the
 from that ordering, the omega-limit set meets the segment once, a point of the limit set
 is periodic, and connectedness identifies the whole limit set with the orbit.
 
-## Main definitions
-
-* None (uses `CKMA.IsTransverseSegment` from `CKMA.Dynamics.ODE.Planar.Transversal`).
-
 ## Main results
 
 * `CKMA.transverse_monotone`: monotonicity of successive crossings of a transverse segment.

@@ -50,7 +50,8 @@ import TauCeti.Analysis.InnerProductSpace.BorelCalculus.DiagonalMeasure
 
 The Birman–Schwinger kernel equivalence is algebraic once the shifted free operator is
 invertible; compactness and self-adjointness of the factor are not needed for this equivalence.
-A positive self-adjoint free operator and a positive real shift provide the spectral setting.
+A self-adjoint free operator with nonnegative quadratic form and a positive real shift provide
+the spectral setting.
 The proof combines Mathlib's Hilbert coercivity criterion with the Tau Ceti contributors'
 `Module.End.eigenspaceCompEquiv` for the algebraic kernel transport.
 
@@ -71,15 +72,11 @@ Sources: GAPS 22.38 and 22.63.
 ## Main results
 
 * `CKMA.birman_schwinger_kernel_equiv`: Birman–Schwinger eigenvalue/multiplicity equivalence for
-  positive self-adjoint `H₀` and energy shift `E > 0` (**22.38**).
+  self-adjoint `H₀` with nonnegative quadratic form and energy shift `E > 0` (**22.38**).
 * `CKMA.rage_continuous`: RAGE theorem characterizing `purePointOperatorSubspace A` orthogonal
   complement by vanishing compactly observed Cesàro means (**22.63**).
 * `CKMA.rage_purePoint`: RAGE theorem characterizing `purePointOperatorSubspace A` by precompact
   unitary orbits.
-
-## Notation
-
-* `⟪x, y⟫_ℂ`: Complex inner product on `H`.
 -/
 
 @[expose] public section
@@ -134,7 +131,8 @@ def birmanSchwingerKernelEquiv {𝕜 X : Type*} [NontriviallyNormedField 𝕜]
 
 variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
 
-/-- Birman–Schwinger operator for a supplied positive square root `W²=V`.
+/-- Birman–Schwinger operator `W (H₀ + E)⁻¹ W` for an arbitrary bounded operator `W`; in
+`birman_schwinger_kernel_equiv`, `W` is a square root of the potential, `W * W = V`.
 Totalized ring inversion is used in the definition; the theorem's hypotheses force invertibility. -/
 def birmanSchwingerOperator (H₀ W : H →L[ℂ] H) (E : ℝ) : H →L[ℂ] H :=
   W * Ring.inverse (H₀ + (E : ℂ) • (1 : H →L[ℂ] H)) * W

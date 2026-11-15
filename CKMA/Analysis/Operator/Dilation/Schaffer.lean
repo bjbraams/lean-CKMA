@@ -27,10 +27,6 @@ restricting to the closed forward orbit of that copy.
 
 * `CKMA.schaffer_coinvariant`: co-invariance identity `J* (V y) = T (J* y)` for Schäffer's
   isometry.
-
-## Notation
-
-* `⟪x, y⟫_ℂ`: complex inner product.
 -/
 
 @[expose] public section

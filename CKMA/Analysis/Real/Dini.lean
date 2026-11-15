@@ -17,9 +17,7 @@ Denjoy–Young–Saks assigns one of four mutually exclusive derivative patterns
 everywhere to an arbitrary finite real function, without measurability assumptions.
 Limits and extended-real operations use Mathlib. Source: GAPS 05.10.
 
-## Main definitions
-
-This file re-exports the Dini derivative definitions and `CKMA.HasDiniType` from
+The Dini derivative definitions and `CKMA.HasDiniType` are re-exported from
 `CKMA.Analysis.Real.Dini.Basic`.
 
 ## Main results

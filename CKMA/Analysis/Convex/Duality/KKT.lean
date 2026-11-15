@@ -29,10 +29,6 @@ the positive objective weight, and reads stationarity from the sum rule: the ind
 the affine fiber is the unqualified summand, and the Lagrangian carries the continuity.
 Sources: Boyd–Vandenberghe, *Convex Optimization*, §§5.5 and 5.9; GAPS 12.40.
 
-## Main definitions
-
-* (No new public definitions; provides the subgradient KKT multiplier existence theorem.)
-
 ## Main results
 
 * `CKMA.exists_convexKKTMultipliers_of_slater`: existence of subgradient KKT multipliers under

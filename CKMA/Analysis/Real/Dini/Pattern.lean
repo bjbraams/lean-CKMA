@@ -15,10 +15,6 @@ If each opposite pair of Dini derivatives is either a common finite value or the
 of a lower derivative with the corresponding upper derivative is `liminf_le_limsup`.
 Source: GAPS 05.10.
 
-## Main definitions
-
-No new definitions are introduced; this file works with `CKMA.HasDiniType`.
-
 ## Main results
 
 * `CKMA.Dini.hasDiniType_zero`, `CKMA.Dini.hasDiniType_one`, `CKMA.Dini.hasDiniType_two`,
@@ -38,12 +34,14 @@ open Filter Topology
 /-- The lower right Dini derivative is at most the upper right Dini derivative. -/
 private lemma right_le (f : ℝ → ℝ) (x : ℝ) :
     lowerRightDiniDerivative f x ≤ upperRightDiniDerivative f x :=
-  liminf_le_limsup (h := diniQuotient_bddAbove f x _) (h' := diniQuotient_bddBelow f x _)
+  liminf_le_limsup (h := isBoundedUnder_le_extendedDifferenceQuotient f x _)
+    (h' := isBoundedUnder_ge_extendedDifferenceQuotient f x _)
 
 /-- The lower left Dini derivative is at most the upper left Dini derivative. -/
 private lemma left_le (f : ℝ → ℝ) (x : ℝ) :
     lowerLeftDiniDerivative f x ≤ upperLeftDiniDerivative f x :=
-  liminf_le_limsup (h := diniQuotient_bddAbove f x _) (h' := diniQuotient_bddBelow f x _)
+  liminf_le_limsup (h := isBoundedUnder_le_extendedDifferenceQuotient f x _)
+    (h' := isBoundedUnder_ge_extendedDifferenceQuotient f x _)
 
 /-- Finite equal right and left derivatives give the first alternative. -/
 lemma hasDiniType_zero {f : ℝ → ℝ} {x a : ℝ}

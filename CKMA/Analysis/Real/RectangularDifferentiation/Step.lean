@@ -23,10 +23,6 @@ Fubini and the one-dimensional weak-type bound control the distribution of the s
 function in dimension `n + 1` by the truncated strong maximal function of the slices. The
 logarithmic kernel turns that distribution into the endpoint growth of order `n + 1`.
 
-## Main definitions
-
-* None (uses `CKMA.strongMaximalFunction` and `CKMA.strongMaximalGrowth` from `Base.lean`).
-
 ## Main results
 
 * `CKMA.strongMaximal_step`: inductive step raising the dimension and logarithmic exponent in the

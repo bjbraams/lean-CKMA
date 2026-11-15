@@ -27,10 +27,6 @@ global class already differentiated by the strong maximal inequality. The cutoff
 ball about almost every point, so the rectangular averages of the original function agree with
 those of the cutoff product.
 
-## Main definitions
-
-* None (uses `CKMA.IsLocallyLLog` and `CKMA.RectanglesDifferentiateAt` from `Base.lean`).
-
 ## Main results
 
 * `CKMA.exists_compactCutoff`: existence of a continuous compactly supported cutoff preserving the

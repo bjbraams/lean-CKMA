@@ -36,10 +36,6 @@ with relative form bound below one on the same domain. Sources: GAPS 22.19, 22.2
 * `CKMA.existsUnique_formOperator`: first representation theorem for closed semibounded forms.
 * `CKMA.exists_semibounded_selfAdjoint_extension`: Friedrichs extension of a semibounded operator.
 * `CKMA.klmn`: KLMN theorem for symmetric relative-form perturbations.
-
-## Notation
-
-* `⟪x, y⟫_𝕜`: inner product on a Hilbert space over `𝕜`.
 -/
 
 @[expose] public section

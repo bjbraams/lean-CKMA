@@ -40,10 +40,6 @@ difference quotients.
 In finite dimensions the canonical embedding into the double dual is surjective, and the
 support function of a set is unchanged by passing to the closed convex hull.
 
-## Main definitions
-
-* (No new public definitions; provides finite-dimensional Rademacher and dual lemmas.)
-
 ## Main results
 
 * `CKMA.sSup_image_closure_convexHull_eq`: invariance of the support function under closed

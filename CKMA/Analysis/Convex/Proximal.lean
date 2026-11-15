@@ -34,7 +34,11 @@ sequence Cauchy. Source: GAPS 12.32.
 ## Main results
 
 * `CKMA.isProximalPoint_iff_mem_subdifferential`: subgradient characterization of proximal points.
-* `CKMA.IsProximalPoint.inner_sub_ge_norm_sq`: firm nonexpansiveness of proximal points.
+* `CKMA.isProximalPoint_proximalMap`: the totalized proximal map selects a proximal point
+  whenever one exists.
+* `CKMA.IsProximalPoint.norm_sub_sq_le_inner`: firm nonexpansiveness of proximal points,
+  `‖p - q‖² ≤ ⟪x - y, p - q⟫`.
+* `CKMA.IsProximalPoint.eq`: uniqueness of proximal points of convex functions.
 * `CKMA.existsUnique_isProximalPoint`: existence and uniqueness of proximal points for proper
   lower semicontinuous convex functions on a real Hilbert space (GAPS 12.32).
 -/

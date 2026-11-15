@@ -30,18 +30,22 @@ Sources: GAPS 42.1 and 42.7.
 
 * `CKMA.unitCirclePoint`, `CKMA.normalizedAngularMeasure`: angular parametrization and normalized
   measure on the unit circle.
-* `CKMA.hardyRadialMean`, `CKMA.hardyGauge`, `CKMA.MemHardySpace`: finite-exponent analytic Hardy
+* `CKMA.hardyRadialMean`, `CKMA.hardyGauge`, `CKMA.MemHardyClass`: finite-exponent analytic Hardy
   gauge and membership predicate.
-* `CKMA.hardyInfinityGauge`, `CKMA.MemHardyInfinitySpace`: bounded analytic Hardy gauge and
-  membership predicate.
-* `CKMA.HasRadialBoundaryLimit`, `CKMA.IsBlaschkeSequence`, `CKMA.IsInnerFunction`,
-  `CKMA.IsOuterFunction`: boundary-value and canonical-factor predicates.
+* `CKMA.diskSupGauge`, `CKMA.MemHardyInfinity`: disk supremum gauge and bounded holomorphic
+  functions on the disk.
+* `CKMA.HasNontangentialLimit`: nontangential boundary limit in every Stolz region.
+* `CKMA.IsDiskInner`: inner functions on the disk.
+* `CKMA.blaschkeFactor`, `CKMA.IsBlaschkeZeroList`, `CKMA.blaschkeProduct`: Blaschke factors,
+  zero lists and products.
+* `CKMA.diskHerglotzKernel`, `CKMA.singularInnerFactor`, `CKMA.outerFactor`: Herglotz kernel,
+  singular inner factor and outer factor.
 
 ## Main results
 
-* `CKMA.hardy_boundary_realization`, `CKMA.hardyInfinity_boundary_realization`: radial boundary
-  limits and norm representation (**42.1**).
-* `CKMA.exists_hardy_factorization`: canonical Blaschke–inner–outer factorization (**42.7**).
+* `CKMA.hardy_boundary_realization`, `CKMA.hardyInfinity_boundary_realization`: nontangential
+  boundary values and norm identities, with radial `Lᵖ` convergence for finite `p` (**42.1**).
+* `CKMA.exists_hardy_factorization`: canonical Blaschke–singular–outer factorization (**42.7**).
 -/
 
 @[expose] public section

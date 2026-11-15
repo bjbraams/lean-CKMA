@@ -34,10 +34,6 @@ The Browder–Göhde–Kirk statement uses uniform convexity and a nonexpansive 
 bounded convex set; compactness of the map is not required. Sources: GAPS 35.12, 35.13, 35.15, and
 35.21.
 
-## Main definitions
-
-* None (all statements use Mathlib's `Continuous`, `UpperHemicontinuousOn`, and `LipschitzWith`).
-
 ## Main results
 
 * `CKMA.exists_fixedPoint_brouwer`: Brouwer's fixed-point theorem on a compact convex subset of a
@@ -48,10 +44,6 @@ bounded convex set; compactness of the map is not required. Sources: GAPS 35.12,
   subsets of locally convex spaces (**35.15**).
 * `CKMA.exists_fixedPoint_nonexpansive`: Browder–Göhde–Kirk fixed-point theorem for nonexpansive
   maps on uniformly convex Banach spaces (**35.21**).
-
-## Notation
-
-* Standard real inner-product and norm notation from Mathlib.
 -/
 
 @[expose] public section

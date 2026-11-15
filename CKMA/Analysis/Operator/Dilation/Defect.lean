@@ -25,11 +25,8 @@ norm computation behind Schäffer's isometric dilation.
 ## Main results
 
 * `CKMA.contraction_one_sub_star_mul_self_nonneg`: positivity of `1 - T* T` for a contraction.
-* `CKMA.norm_sq_apply_add_defectOperator_sq`: Pythagorean identity `‖T x‖² + ‖D_T x‖² = ‖x‖²`.
-
-## Notation
-
-* `⟪x, y⟫_ℂ`: complex inner product.
+* `CKMA.defectOperator_mul_self`: the defect operator of a contraction squares to `1 - T* T`.
+* `CKMA.norm_sq_add_norm_sq_defectOperator`: Pythagorean identity `‖T x‖² + ‖D_T x‖² = ‖x‖²`.
 -/
 
 @[expose] public section

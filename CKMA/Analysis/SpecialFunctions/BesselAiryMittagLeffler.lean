@@ -27,17 +27,23 @@ The exponential specialization uses Mathlib's Gamma factorial values and exponen
 
 * `CKMA.besselYConnection`, `CKMA.besselY`: Weber's Bessel function of the second kind `Y_ν(z)`.
 * `CKMA.hankelOne`, `CKMA.hankelTwo`: Hankel functions `H_ν^{(1)}` and `H_ν^{(2)}`.
-* `CKMA.airyAi`, `CKMA.airyBi`: the Airy functions `Ai` and `Bi`.
+* `CKMA.airySeriesCoefficient`, `CKMA.airySeries`: power-series solution of Airy's equation
+  with prescribed initial data.
+* `CKMA.airyAi`: the Airy function `Ai`.
 * `CKMA.mittagLeffler`: the two-parameter Mittag–Leffler function `E_{α,β}(z)`.
 
 ## Main results
 
-* `CKMA.besselY_ode`, `CKMA.bessel_wronskian`: Bessel's differential equation and Wronskian for
-  `J_ν` and `Y_ν` on the slit plane (**49.26**).
-* `CKMA.airy_ode`, `CKMA.airy_wronskian`, `CKMA.airyAi_oscillatory_integral`: Airy differential
-  equation, Wronskian, and oscillatory integral representation (**49.36**).
-* `CKMA.differentiable_mittagLeffler`, `CKMA.mittagLeffler_one_one`: entireness of `E_{α,β}` for
-  `α > 0` and specialization `E_{1,1}(z) = exp z` (**49.76**).
+* `CKMA.besselY_of_noninteger`, `CKMA.tendsto_besselYConnection_int`: the connection formula at
+  nonintegral orders and its limit at integer orders.
+* `CKMA.besselY_ode`, `CKMA.besselJ_besselY_wronskian`: Bessel's differential equation and
+  Wronskian for `J_ν` and `Y_ν` on the slit plane (**49.26**).
+* `CKMA.airySeries_ode`, `CKMA.airySeries_initial_and_hasSum`: Airy's differential equation,
+  initial values and convergence of the power series.
+* `CKMA.airyAi_eq_oscillatory_integral`: oscillatory integral representation of `Ai` on the real
+  line (**49.36**).
+* `CKMA.mittagLeffler_hasSum_and_entire`, `CKMA.mittagLeffler_one_one`: convergence and
+  entireness of `E_{α,β}` for `α > 0`, and `E_{1,1}(z) = exp z` (**49.76**).
 -/
 
 @[expose] public section

@@ -10,17 +10,8 @@ public import CKMA.Analysis.PDE.Euclidean
 /-!
 # Basic Euclidean PDE definitions
 
-This module re-exports the foundational Euclidean coordinate-space abbreviations, weak
-derivative predicates, and differential operator conventions used across PDE, Sobolev, and
-microlocal analysis.
-
-## Main definitions
-
-* `CKMA.EuclideanRealSpace`: abbreviation for `EuclideanSpace ℝ (Fin d)`.
-* `CKMA.HasWeakFirstOrderPartials`, `CKMA.HasWeakGradient`: weak derivative predicates.
-* `CKMA.IsUniformlyEllipticOn`, `CKMA.IsWeakSolutionElliptic`: elliptic PDE predicates.
-
-## Main results
-
-* Re-exports the foundational Euclidean PDE definitions from `CKMA.Analysis.PDE.Euclidean`.
+This module re-exports `CKMA.Analysis.PDE.Euclidean`: Euclidean coordinate spaces, compactly
+supported smooth tests, Euclidean differential expressions, uniform ellipticity and
+nondivergence operators, used across PDE, Sobolev, and microlocal analysis.
+It introduces no declarations of its own.
 -/

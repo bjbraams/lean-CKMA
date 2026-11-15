@@ -53,7 +53,7 @@ theorem exists_brownianMeasure : ∃ μ : Measure C(ℝ≥0, ℝ),
     IsProbabilityMeasure μ ∧ IsBrownianReal (fun t ω ↦ ω t) μ := by
   exact exists_wienerMeasure
 
-/-- A pre-Brownian process has a continuous modification with every subcritical local Holder
+/-- A pre-Brownian process has a continuous modification with every subcritical local Hölder
   exponent. -/
 theorem exists_holder_brownianModification {Ω : Type*} [MeasurableSpace Ω]
     (μ : Measure Ω) [IsProbabilityMeasure μ] {B : ℝ≥0 → Ω → ℝ}

@@ -22,10 +22,6 @@ and is related to the existing global flow through `FlowHasGenerator`.
 The plane is the real Euclidean space on `Fin 2`; all differential and omega-limit
 conventions come from Mathlib and the common `CKMA.Dynamics.Flow` interface.
 
-## Main definitions
-
-* None (uses `CKMA.FlowHasGenerator` and `omegaLimit`).
-
 ## Main results
 
 * `CKMA.poincare_bendixson`: the Poincaré–Bendixson theorem on `EuclideanSpace ℝ (Fin 2)`.

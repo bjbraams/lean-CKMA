@@ -22,15 +22,14 @@ Sources: GAPS 32.50 and 32.52. Compact curves and Bochner integrals use Mathlib.
 
 * `CKMA.WavePositionSpace`, `CKMA.WaveVelocitySpace`: `H¹(ℝ^d)` position and `L²(ℝ^d)` velocity
   spaces for finite-energy waves.
+* `CKMA.intervalCurveExtend`: extension by zero of a curve on a compact time interval.
 * `CKMA.IsWaveEnergySolution`: weak finite-energy solutions of the forced linear wave equation.
-* `CKMA.waveEnergy`: total kinetic and potential wave energy at a given time.
 
 ## Main results
 
-* `CKMA.wave_energy_wellPosed`: existence, uniqueness, and energy identity for finite-energy wave
-  solutions (**32.50**).
-* `CKMA.wave_finite_speed_of_propagation`: finite speed of propagation on backward light cones
-  (**32.52**).
+* `CKMA.existsUnique_waveEnergySolution` (**32.50**): existence and uniqueness of finite-energy
+  wave solutions on a compact time interval.
+* `CKMA.wave_finitePropagation` (**32.52**): finite speed of propagation on backward light cones.
 -/
 
 @[expose] public section

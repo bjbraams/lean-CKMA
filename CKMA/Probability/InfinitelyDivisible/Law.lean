@@ -30,8 +30,8 @@ such law is infinitely divisible.
 
 ## Main results
 
-* `CKMA.exists_probabilityMeasure_charFun_eq_exp`: every Lévy triplet is the characteristic
-  exponent of a probability measure.
+* `CKMA.exists_charFun_eq_exp_exponent`: every Lévy triplet is the characteristic exponent of a
+  probability measure.
 * `CKMA.isInfinitelyDivisible_of_forall_charFun_eq_exp`: any probability measure whose
   characteristic function is `exp (L.exponent t)` is infinitely divisible.
 -/

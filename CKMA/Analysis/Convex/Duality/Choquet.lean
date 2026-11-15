@@ -45,10 +45,6 @@ produces a continuous strictly convex series, the barycentric functional on the 
 that series and the ambient affine restrictions is dominated by the concave envelope, and
 the Riesz measure of a positive extension is the representing measure.
 
-## Main definitions
-
-* (No new public definitions; uses `MeasureTheory.IsProbabilityMeasure` and `Set.extremePoints`.)
-
 ## Main results
 
 * `CKMA.exists_choquetMeasure_of_compact`: Choquet representation theorem on compact metrizable

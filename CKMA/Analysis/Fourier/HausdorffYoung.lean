@@ -33,10 +33,6 @@ ratio of the two norms is unbounded.
 
 Source: GAPS 27.4.
 
-## Main definitions
-
-No new public definitions are introduced in this module.
-
 ## Main results
 
 * `CKMA.hausdorff_young`: Hausdorff–Young inequality on `L¹ ∩ Lᵖ` for `1 ≤ p ≤ 2` (**27.4**).

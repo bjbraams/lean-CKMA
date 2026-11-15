@@ -26,10 +26,6 @@ This is the unitary extension in Sz.-Nagy–Foiaş–Bercovici–Kérchy, Chapte
 
 * `CKMA.woldExtension_pow`: nonnegative powers of the bilateral unitary agree with the isometry.
 * `CKMA.woldExtension_minimal`: density of the two-sided orbit of `H` in the bilateral extension.
-
-## Notation
-
-* `⟪x, y⟫_ℂ`: complex inner product.
 -/
 
 @[expose] public section

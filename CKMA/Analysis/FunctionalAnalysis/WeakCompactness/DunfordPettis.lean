@@ -38,7 +38,12 @@ theorem, arranged so that the bidual inclusion is linear rather than conjugate-l
 
 ## Main definitions
 
-* `CKMA.WeakCompactness.truncFun`: scalar truncation at height `M`.
+* `CKMA.WeakCompactness.lpInclL2L1`: continuous inclusion of `L²` into `L¹` on a finite measure
+  space.
+* `CKMA.WeakCompactness.truncAt`, `CKMA.WeakCompactness.tailAt`: truncation of a function to the
+  set where its norm is below a height `C`, and the complementary tail.
+* `CKMA.WeakCompactness.truncLp`, `CKMA.WeakCompactness.truncLpTwo`: the truncation of an `L¹`
+  class, as an `L¹` class and as an `L²` class.
 
 ## Main results
 

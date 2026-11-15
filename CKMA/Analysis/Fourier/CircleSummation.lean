@@ -51,14 +51,15 @@ Sources: GAPS 27.17 and 27.22.
 ## Main definitions
 
 * `CKMA.fourierPartialSum`: symmetric `N`-th Fourier partial sum on `AddCircle 1`.
-* `CKMA.fejerSum`: `N`-th Fejér (Cesàro) mean of the symmetric Fourier partial sums.
+* `CKMA.fejerMean`: `N`-th Fejér (Cesàro) mean of the symmetric Fourier partial sums.
 * `CKMA.fejerKernel` and `CKMA.fejerKernelReal`: the Fejér kernel on `AddCircle 1` and its lifted
   real periodic form.
-* `CKMA.carlesonMaximal`: the Carleson maximal operator of symmetric Fourier partial sums.
+* `CKMA.carlesonMaximalFunction`: the Carleson maximal function of symmetric Fourier partial sums.
+* `CKMA.IsCircleLebesguePoint`: Lebesgue points on the circle, through lifted local averages.
 
 ## Main results
 
-* `CKMA.fejerSum_eq_convolution`: convolution representation of the Fejér mean against
+* `CKMA.fejerMean_eq_conv`: convolution representation of the Fejér mean against
   `fejerKernel`.
 * `CKMA.fejerKernel_nonneg` and `CKMA.integral_fejerKernel`: nonnegativity and unit mass of the
   Fejér kernel.

@@ -35,10 +35,14 @@ feed the Crandall–Liggett semigroup constructed in
 
 ## Main results
 
-* `CKMA.accretiveResolvent_nonexpansive`: nonexpansiveness of the nonlinear resolvent.
-* `CKMA.norm_accretiveEulerProduct_sub_le`: quantitative Crandall–Liggett binomial comparison
-  estimate between Euler products of different step sizes.
-* `CKMA.accretiveEulerProduct_cauchy_closure`: Cauchy convergence of Euler products on the closure
+* `CKMA.accretiveResolvent_lipschitz`: the nonlinear resolvent is a contraction at positive
+  scales.
+* `CKMA.accretiveEulerProduct_lipschitz`: every Euler product is a contraction.
+* `CKMA.norm_accretiveEulerProduct_sub`, `CKMA.norm_accretiveEulerProduct_time`: Euler products
+  move by at most time times a graph slope, and are Lipschitz in time.
+* `CKMA.norm_accretiveEulerProduct_cross`: Crandall–Liggett square-root comparison estimate
+  between equal-time Euler products of different step numbers.
+* `CKMA.accretiveEulerProduct_cauchy_domain`: Cauchy convergence of Euler products from points
   of the graph domain.
 -/
 
@@ -642,7 +646,7 @@ lemma accretiveEulerProduct_mem_domain {G : Set (X × X)} (hG : IsMAccretiveGrap
   exact accretiveResolvent_mem_domain hG hpos _
 
 omit [CompleteSpace X] in
-/-- Euler products from a graph point are Cauchy, at a square-root rate uniform on bounded time. -/
+/-- Euler products from a graph point form a Cauchy sequence. -/
 lemma accretiveEulerProduct_cauchy_domain {G : Set (X × X)} (hG : IsMAccretiveGraph G)
     {x u : X} (hx : (x, u) ∈ G) (t : ℝ≥0) :
     CauchySeq (fun n => accretiveEulerProduct G t n x) := by

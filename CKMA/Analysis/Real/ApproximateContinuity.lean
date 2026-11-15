@@ -21,14 +21,16 @@ for the complements of preimages of rational intervals, followed by countable in
 ## Main definitions
 
 * `CKMA.HasDensityZeroAt`: density zero of a set at a point in shrinking closed balls.
-* `CKMA.IsApproximatelyContinuousAt`: approximate continuity of a function at a point.
+* `CKMA.ApproximatelyContinuousAt`: approximate continuity of a function at a point.
 
 ## Main results
 
-* `CKMA.ContinuousAt.isApproximatelyContinuousAt`: ordinary continuity implies approximate
-  continuity under locally finite measures.
-* `CKMA.Measurable.ae_isApproximatelyContinuousAt`: Lusin–Denjoy theorem that every measurable real
-  function is approximately continuous almost everywhere (**05.30**).
+* `CKMA.hasDensityZeroAt_iff_of_isLocallyFiniteMeasure`: for a locally finite measure, density
+  zero is the vanishing limit of relative ball masses.
+* `CKMA.ae_hasDensityZeroAt_of_not_mem`: almost every point outside a measurable set is a
+  density-zero point of that set.
+* `CKMA.ae_approximatelyContinuousAt` (**05.30**): Lusin–Denjoy theorem that every finite
+  measurable real function is approximately continuous almost everywhere.
 -/
 
 @[expose] public section

@@ -14,10 +14,6 @@ This file proves the matching lower bound `(2 / π) log (n + 1) - O(1)` for the 
 function of the Chebyshev extrema at the central angular midpoint, and deduces the
 corresponding lower bound for the Lebesgue constant.
 
-## Main definitions
-
-No new public definitions are introduced in this file.
-
 ## Main results
 
 * `CKMA.lebesgueFunction_chebyshev_midpoint_ge`: lower bound for the Chebyshev-extrema

@@ -22,10 +22,6 @@ public import Mathlib.MeasureTheory.Group.Integral
 Counting averages of Rademacher sign matrices, Laplace transform bounds for squared Rademacher
 projections, and the Johnson–Lindenstrauss finite-set dimension reduction theorem.
 
-## Main definitions
-
-No new public definitions are introduced in this file.
-
 ## Main results
 
 * `CKMA.johnson_lindenstrauss_explicit`: explicit dimension reduction bound via scaled Rademacher

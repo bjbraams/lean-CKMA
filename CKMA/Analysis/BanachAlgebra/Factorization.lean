@@ -766,7 +766,7 @@ def IsBoundedLeftApproximateIdentity {ι A : Type*} [Preorder ι] [NonUnitalNorm
 acting strongly as the identity on a real or complex Banach module. The action is a continuous
 bilinear map, which supports genuinely nonunital algebras without requiring a unital Module
 instance. -/
-theorem cohen_hewitt_factorization {𝕜 ι A X : Type*} [RCLike 𝕜] [Preorder ι]
+theorem cohen_hewitt_factorization {𝕜 ι A X : Type*} [RCLike 𝕜] [Preorder ι] [Nonempty ι]
     [IsDirected ι (· ≤ ·)] [NonUnitalNormedRing A]
     [NormedSpace 𝕜 A] [CompleteSpace A] [IsScalarTower 𝕜 A A] [SMulCommClass 𝕜 A A]
     [NormedAddCommGroup X] [NormedSpace 𝕜 X] [CompleteSpace X]

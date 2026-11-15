@@ -26,6 +26,7 @@ increment on that mesh.
 
 * `CKMA.grid`: uniform dyadic grid `t * k / 2 ^ n` on `[0, t]`.
 * `CKMA.gridOsc`: largest consecutive increment on the dyadic grid of `[0, t]`.
+* `CKMA.firstGridHitSet`: event that the first grid visit to level `b` occurs at index `k`.
 
 ## Main results
 
@@ -265,13 +266,13 @@ lemma tendsto_gridOsc {C : ℝ≥0 → Ω → ℝ} (hcont : ∀ ω, Continuous (
   rw [Real.dist_eq, abs_sub_comm] at hval
   exact hval
 
-/-- First grid index at which the path meets level `b`. -/
-def isTauSet (C : ℝ≥0 → Ω → ℝ) (t : ℝ≥0) (b : ℝ) (n k : ℕ) : Set Ω :=
+/-- Paths whose first visit to level `b` on the dyadic grid of `[0, t]` occurs at index `k`. -/
+def firstGridHitSet (C : ℝ≥0 → Ω → ℝ) (t : ℝ≥0) (b : ℝ) (n k : ℕ) : Set Ω :=
   {ω | k ≤ 2 ^ n ∧ b ≤ C (grid t n k) ω ∧ ∀ j, j < k → C (grid t n j) ω < b}
 
 /-- Each first-passage grid event is measurable. -/
-lemma measurableSet_isTauSet {C : ℝ≥0 → Ω → ℝ} (hm : ∀ u, Measurable (C u))
-    (t : ℝ≥0) (b : ℝ) (n k : ℕ) : MeasurableSet (isTauSet C t b n k) := by
+lemma measurableSet_firstGridHitSet {C : ℝ≥0 → Ω → ℝ} (hm : ∀ u, Measurable (C u))
+    (t : ℝ≥0) (b : ℝ) (n k : ℕ) : MeasurableSet (firstGridHitSet C t b n k) := by
   by_cases hk : k ≤ 2 ^ n
   · have hhit : MeasurableSet {ω | b ≤ C (grid t n k) ω} :=
       measurableSet_Ici.preimage (hm _)
@@ -282,21 +283,21 @@ lemma measurableSet_isTauSet {C : ℝ≥0 → Ω → ℝ} (hm : ∀ u, Measurabl
       convert hfin using 1
       ext ω
       simp only [mem_ofPred_eq, mem_iInter, Finset.mem_range]
-    have hset : isTauSet C t b n k =
+    have hset : firstGridHitSet C t b n k =
         {ω | b ≤ C (grid t n k) ω} ∩ {ω | ∀ j, j < k → C (grid t n j) ω < b} := by
       ext ω
-      simp [isTauSet, hk]
+      simp [firstGridHitSet, hk]
     rw [hset]
     exact hhit.inter hprev
-  · have hempty : isTauSet C t b n k = ∅ := by
+  · have hempty : firstGridHitSet C t b n k = ∅ := by
       ext ω
-      simp [isTauSet, hk]
+      simp [firstGridHitSet, hk]
     rw [hempty]
     exact MeasurableSet.empty
 
 /-- Distinct first-passage indices are disjoint. -/
-lemma disjoint_isTauSet {C : ℝ≥0 → Ω → ℝ} (t : ℝ≥0) (b : ℝ) (n : ℕ) {k m : ℕ} (hkm : k ≠ m) :
-    Disjoint (isTauSet C t b n k) (isTauSet C t b n m) := by
+lemma disjoint_firstGridHitSet {C : ℝ≥0 → Ω → ℝ} (t : ℝ≥0) (b : ℝ) (n : ℕ) {k m : ℕ} (hkm : k ≠ m) :
+    Disjoint (firstGridHitSet C t b n k) (firstGridHitSet C t b n m) := by
   rw [Set.disjoint_left]
   intro ω hk hm
   rcases lt_or_gt_of_ne hkm with hlt | hlt
@@ -304,8 +305,8 @@ lemma disjoint_isTauSet {C : ℝ≥0 → Ω → ℝ} (t : ℝ≥0) (b : ℝ) (n 
   · exact absurd hm.2.1 (not_le_of_gt (hk.2.2 m hlt))
 
 /-- The first-passage events partition the grid hitting set. -/
-lemma iUnion_isTauSet {C : ℝ≥0 → Ω → ℝ} (t : ℝ≥0) (b : ℝ) (n : ℕ) :
-    ⋃ k ∈ Finset.range (2 ^ n + 1), isTauSet C t b n k =
+lemma iUnion_firstGridHitSet {C : ℝ≥0 → Ω → ℝ} (t : ℝ≥0) (b : ℝ) (n : ℕ) :
+    ⋃ k ∈ Finset.range (2 ^ n + 1), firstGridHitSet C t b n k =
       {ω | ∃ k, k ≤ 2 ^ n ∧ b ≤ C (grid t n k) ω} := by
   ext ω
   constructor
@@ -323,9 +324,9 @@ lemma iUnion_isTauSet {C : ℝ≥0 → Ω → ℝ} (t : ℝ≥0) (b : ℝ) (n : 
     exact lt_of_not_ge fun hle => Nat.find_min hex hi ⟨le_trans hi.le hj.1, hle⟩
 
 /-- The grid value at time zero misses a positive level almost surely. -/
-lemma measure_isTauSet_zero {C : ℝ≥0 → Ω → ℝ} (hC : IsBrownianReal C μ)
-    (t : ℝ≥0) {b : ℝ} (hb : 0 < b) (n : ℕ) : μ (isTauSet C t b n 0) = 0 := by
-  have hsub : isTauSet C t b n 0 ⊆ {ω | b ≤ C 0 ω} := by
+lemma measure_firstGridHitSet_zero {C : ℝ≥0 → Ω → ℝ} (hC : IsBrownianReal C μ)
+    (t : ℝ≥0) {b : ℝ} (hb : 0 < b) (n : ℕ) : μ (firstGridHitSet C t b n 0) = 0 := by
+  have hsub : firstGridHitSet C t b n 0 ⊆ {ω | b ≤ C 0 ω} := by
     intro ω hω
     simpa [grid_zero] using hω.2.1
   refine measure_mono_null hsub ?_
@@ -360,7 +361,7 @@ lemma measure_eq_endpoint {C : ℝ≥0 → Ω → ℝ} (hC : IsBrownianReal C μ
 
 /-- On the first grid hit, a small oscillation keeps the overshoot below `2ε`. -/
 lemma overshoot_lt {C : ℝ≥0 → Ω → ℝ} {t : ℝ≥0} {b ε : ℝ} {n k : ℕ} {ω : Ω}
-    (hk0 : 1 ≤ k) (hk : k ≤ 2 ^ n) (htau : ω ∈ isTauSet C t b n k)
+    (hk0 : 1 ≤ k) (hk : k ≤ 2 ^ n) (htau : ω ∈ firstGridHitSet C t b n k)
     (hosc : gridOsc C t n ω ≤ ε) (hend : C t ω ≤ 2 * C (grid t n k) ω - b) :
     C t ω < b + 2 * ε := by
   have hkpos : 0 < k := Nat.succ_le_iff.mp hk0
@@ -381,5 +382,11 @@ lemma overshoot_lt {C : ℝ≥0 → Ω → ℝ} {t : ℝ≥0} {b ε : ℝ} {n k 
       add_lt_add_of_lt_of_le hprev hosc
     linarith
   linarith
+
+@[deprecated (since := "2026-11-15")] alias isTauSet := firstGridHitSet
+@[deprecated (since := "2026-11-15")] alias measurableSet_isTauSet := measurableSet_firstGridHitSet
+@[deprecated (since := "2026-11-15")] alias disjoint_isTauSet := disjoint_firstGridHitSet
+@[deprecated (since := "2026-11-15")] alias iUnion_isTauSet := iUnion_firstGridHitSet
+@[deprecated (since := "2026-11-15")] alias measure_isTauSet_zero := measure_firstGridHitSet_zero
 
 end CKMA

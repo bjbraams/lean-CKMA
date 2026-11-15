@@ -26,10 +26,6 @@ and open neighbourhoods use Mathlib.
 
 * `CKMA.IsCapacityAdmissible.mono`: monotonicity of capacity admissibility with respect to set
   inclusion.
-
-## Notation
-
-* No new notation is introduced in this module.
 -/
 
 @[expose] public section

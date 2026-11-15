@@ -31,12 +31,8 @@ Sources: GAPS 24.39 and 24.40.
 
 * `CKMA.gearhart_pruss`: the Gearhart–Prüss theorem characterizing exponential stability on Hilbert
   spaces via uniform resolvent bounds on the imaginary axis (**24.39**).
-* `CKMA.arendt_batty_lyubich_vu`: the Arendt–Batty–Lyubich–Vũ strong stability theorem on reflexive
-  Banach spaces (**24.40**).
-
-## Notation
-
-* Standard TauCeti notation for `StronglyContinuousSemigroup` and complex generators.
+* `CKMA.arendt_batty_lyubich_vu_reflexive`: the Arendt–Batty–Lyubich–Vũ strong stability
+  theorem on reflexive Banach spaces (**24.40**).
 -/
 
 @[expose] public section

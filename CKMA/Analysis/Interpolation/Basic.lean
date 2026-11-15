@@ -30,14 +30,10 @@ The operator bounds are in `CKMA.Analysis.Interpolation.Bounds`.
 * `CKMA.BanachCouple.kFunctional`: Peetre's `K`-functional.
 * `CKMA.BanachCouple.realInterpolationGauge` and `CKMA.BanachCouple.realInterpolationSet`: the real
   interpolation gauge and its finite-gauge carrier.
-* `CKMA.BanachCouple.AdmissibleStrip`, `CKMA.BanachCouple.complexInterpolationGauge`, and
-  `CKMA.BanachCouple.complexInterpolationSet`: Calderón's admissible strip functions, the complex
-  interpolation gauge, and its finite-gauge carrier.
-
-## Main results
-
-* This file provides the core definitions for real and complex interpolation; the operator bounds
-  are proved in `CKMA.Analysis.Interpolation.Bounds`.
+* `CKMA.InterpolationStripFunction`, `CKMA.InterpolationStripFunction.boundaryNorm`: Calderón's
+  admissible strip functions and the supremum of their endpoint norms.
+* `CKMA.BanachCouple.complexInterpolationGauge`, `CKMA.BanachCouple.complexInterpolationSet`: the
+  complex interpolation gauge and its finite-gauge carrier.
 -/
 
 @[expose] public section

@@ -100,7 +100,8 @@ convergence is a theorem for bounded variables; totalized sums outside that regi
 def freeRTransform (φ : A →ₗ[ℂ] ℂ) (a : A) (z : ℂ) : ℂ :=
   ∑' n, freeCumulants (noncommutativeMoments φ a) (n + 1) * z ^ n
 
-/-- **23.68**, coefficientwise R-transform additivity for free variables. -/
+/-- **23.68**: for free variables `a` and `b`, every positive-order free cumulant of `a + b`
+is the sum of the corresponding free cumulants of `a` and of `b`. -/
 theorem freeCumulants_add (φ : A →ₗ[ℂ] ℂ) (hφ : φ 1 = 1)
     (S : Fin 2 → Subalgebra ℂ A) (hfree : AreFreeSubalgebras φ S)
     {a b : A} (ha : a ∈ S 0) (hb : b ∈ S 1) {n : ℕ} (hn : 0 < n) :

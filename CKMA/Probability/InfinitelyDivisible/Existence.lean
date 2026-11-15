@@ -21,8 +21,8 @@ correction on `{1 / 2 ≤ |x| ≤ 1}` replaces the continuous cutoff by the trun
 
 ## Main definitions
 
-* `CKMA.levyMeasureOfLimit`: Lévy measure extracted from a weak limit of quadratically weighted
-  convolution roots.
+* `CKMA.levyJump`: Lévy measure obtained from a finite measure by inverting the quadratic weight
+  `min(1, x²)`.
 
 ## Main results
 

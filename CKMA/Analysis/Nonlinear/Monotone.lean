@@ -61,10 +61,6 @@ coercive unbounded-domain existence statements. Sources: GAPS 35.32, 35.40, and 
   (**35.45**).
 * `CKMA.exists_solution_variationalInequality_of_coercive`: Unbounded-domain coercive variational
   inequality existence.
-
-## Notation
-
-* `⟪x, y⟫_ℝ`: Real inner product on a Hilbert space.
 -/
 
 @[expose] public section
@@ -73,7 +69,7 @@ noncomputable section
 
 namespace CKMA
 
-/-- A finite sum of continuous complex functions of a real variable is continuous. -/
+/-- A finite sum of continuous functions into a topological additive monoid is continuous. -/
 private lemma continuous_finset_sum' {α β ι : Type*} [TopologicalSpace α] [AddCommMonoid β] [TopologicalSpace β] [ContinuousAdd β] (s : Finset ι) {f : ι → α → β}
     (hf : ∀ i ∈ s, Continuous (f i)) : Continuous (fun t ↦ ∑ i ∈ s, f i t) := by
   classical

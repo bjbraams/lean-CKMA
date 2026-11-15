@@ -42,7 +42,8 @@ Source: GAPS 11.37.
 
 ## Main results
 
-* `CKMA.hilbert_lintegral` (**11.37**): Hilbert's integral inequality on `(0, ∞)`.
+* `CKMA.hilbert_integral` (**11.37**): Hilbert's integral inequality on `(0, ∞)` for nonnegative
+  functions, with nonnegative extended integrals.
 * `CKMA.hilbert_tsum` (**11.37**): the discrete Hilbert inequality for sequences in `ℓ^p` and
   `ℓ^q`.
 -/

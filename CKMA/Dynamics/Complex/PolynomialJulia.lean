@@ -36,15 +36,15 @@ clauses of Eremenko's theorem. Derivatives and iteration use Mathlib's conventio
 
 ## Main results
 
-* `CKMA.closure_repellingPeriodicPoints`: density of repelling periodic points in the Julia set.
+* `CKMA.closure_repellingPeriodicPoints`: density of repelling periodic points in the Julia set
+  (**46.6**).
 * `CKMA.polynomial_escapeRate_properties`: existence and properties of the Green escape-rate limit.
-* `CKMA.polynomial_julia_connected_iff`: critical-orbit characterization of connectedness.
-* `CKMA.mandelbrot_properties`: compactness, connectedness, and escape bound of the Mandelbrot set.
-* `CKMA.eremenko_escaping`: Eremenko's theorem on the escaping set of a transcendental entire map.
-
-## Notation
-
-* `ℂ[X]`: polynomial ring over `ℂ`.
+* `CKMA.polynomial_julia_connected_iff`: critical-orbit characterization of connectedness
+  (**46.29**).
+* `CKMA.mandelbrot_properties`: compactness, connectedness, escape bound, and Julia-set criterion
+  for the Mandelbrot set (**46.40**).
+* `CKMA.eremenko_escaping`: Eremenko's theorem on the escaping set of a transcendental entire map
+  (**46.58**).
 -/
 
 @[expose] public section

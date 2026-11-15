@@ -38,15 +38,16 @@ Sources: GAPS 48.6 and 48.14.
 
 * `CKMA.HasFiniteMoments`: integrability of all monomial powers `x ^ n` with respect to `μ`.
 * `CKMA.IsOrthogonalPolynomial`: nonzero polynomial orthogonal to all polynomials of lower degree.
-* `CKMA.IsOrthonormalPolynomialSequence`: orthonormal sequence of polynomials with `natDegree = n`.
-* `CKMA.christoffelDiagonal`: diagonal Christoffel kernel `∑ k ∈ range n, (P k).eval x ^ 2`.
+* `CKMA.IsQuadratureRule`: exactness of a quadrature rule through a given polynomial degree.
+* `CKMA.christoffelKernel`: finite Christoffel kernel `∑ j ∈ range n, (p j).eval x * (p j).eval y`.
 
 ## Main results
 
-* `CKMA.orthogonalPolynomial_roots_simple_in_interior`: simple real roots in the interior of the
-  convex hull of `μ.support`.
-* `CKMA.exists_unique_gaussian_quadrature`: existence, uniqueness, positivity, and Christoffel
-  weight formula for Gaussian quadrature.
+* `CKMA.roots_orthogonalPolynomial` (**48.6**): the roots are real, distinct, simple, and lie in
+  the interior of the convex hull of `μ.support`.
+* `CKMA.existsUnique_gaussQuadrature` (**48.14**): existence, uniqueness, positivity, and
+  reciprocal diagonal Christoffel weight formula for Gaussian quadrature at the roots of an
+  orthonormal family.
 -/
 
 @[expose] public section

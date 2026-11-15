@@ -26,14 +26,10 @@ Fourier transform with the `L²` transform (`MeasureTheory.Lp.fourier_toTempered
 `TemperedDistribution.fourier_lineDerivOp_eq` together with `EuclideanSpace.volume_ball`.
 Source: GAPS 14.40. The critical unboundedness statement is in `CKMA.Analysis.Sobolev.Critical`.
 
-## Main definitions
-
-* None (uses `TauCeti.HasWeakFDerivOn` and Mathlib's `eLpNorm`).
-
 ## Main results
 
-* `CKMA.nash_inequality`: Nash's interpolation inequality `‖u‖₂^{1+2/d} ≤ C ‖u‖₁^{2/d} ‖∇u‖₂` on
-  `ℝ^d` (**14.40**).
+* `CKMA.nash`: Nash's interpolation inequality, in the squared form
+  `‖u‖₂^{2+4/d} ≤ C ‖∇u‖₂² ‖u‖₁^{4/d}`, on `ℝ^d` for `d > 0` (**14.40**).
 -/
 
 @[expose] public section

@@ -32,14 +32,15 @@ zero, so rectangular differentiation fails on a set of positive measure.
 
 * `CKMA.Bohr.witnessRect`, `CKMA.Bohr.interRect`: witnessing rectangle through one strip and its
   intersection with the corner spike.
-* `CKMA.Bohr.failSet`: limsup of the stage failure sets.
 
 ## Main results
 
 * `CKMA.Bohr.integrable_saks`: the Saks spike sum is integrable.
-* `CKMA.exists_integrable_not_rectangularlyDifferentiable` (**06.27**, negative part): in dimension
-  `d ≥ 2`, there exists an integrable function whose rectangular averages diverge on a set of
-  positive measure.
+* `CKMA.Bohr.not_rectanglesDifferentiateAt_on_limsup`: rectangular differentiation of the Saks
+  function fails at every point of `limsupSet d hd`.
+* `CKMA.Bohr.exists_integrable_not_rectangularlyDifferentiable` (**05.31**, negative part): in
+  dimension `d ≥ 2`, there exists an integrable function whose rectangular averages do
+  not converge to its values on a set of positive measure.
 -/
 
 @[expose] public section

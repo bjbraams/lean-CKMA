@@ -24,9 +24,10 @@ import Mathlib.RingTheory.Polynomial.Vieta
 # Newton–Maclaurin inequalities for multisets and finite tuples
 
 Normalized elementary symmetric means of finite tuples and multisets, together with Newton
-log-concavity and Maclaurin's monotone chain for nonnegative entries. Newton's inequality is
-derived from Mathlib's Rolle bound `Polynomial.card_roots_le_derivative`.
-Sources: GAPS 11.9.
+log-concavity and Maclaurin's monotone chain for nonnegative multisets. Newton's inequality is
+derived from Mathlib's Rolle bound `Polynomial.card_roots_le_derivative`. The finite-tuple forms
+`CKMA.newton_normalizedElementaryMean` and `CKMA.maclaurin_normalizedElementaryMean` are deduced
+in `CKMA.Analysis.Inequalities.ClassicalSequences`. Source: GAPS 11.9.
 
 ## Main definitions
 

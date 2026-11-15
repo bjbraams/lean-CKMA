@@ -12,9 +12,11 @@ public import Mathlib.Analysis.Complex.TaylorSeries
 # Directional Borel–Laplace summation
 
 The Borel transform starts with the coefficient of the first power and divides by
-factorials. Its analytic continuation with exponential growth determines directional
-Laplace integrals, using the complex line element on each ray. These sums extend to a
-holomorphic sectorial function with uniform Gevrey-one remainders on proper subsectors.
+factorials. An analytic continuation of exponential growth to a sector of opening `β` determines
+the directional Laplace integral along its central ray, using the complex line element. Near the
+origin this integral agrees, on each closed proper subsector of the sector of opening `π`, with
+a function holomorphic on the sector of opening `π + β` that has uniform Gevrey-one remainders
+on proper subsectors.
 
 Source: GAPS 50.45.
 
@@ -64,15 +66,18 @@ def HasBorelContinuation (a : ℕ → ℂ) (b : ℂ → ℂ) (θ β : ℝ) : Pro
   ∃ C A : ℝ, 0 < C ∧ 0 < A ∧ ∀ ξ ∈ complexSector θ β, ‖b ξ‖ ≤ C * Real.exp (A * ‖ξ‖)
 
 /-- **50.45**: a Borel continuation of opening `β` sums to a function holomorphic on the sector
-of opening `π + β`, with a uniform Gevrey-one expansion on its proper subsectors. Agreement
-with the directional Laplace integral holds on the convergence sector of opening `π`. -/
+of opening `π + β`, with a uniform Gevrey-one expansion on its proper subsectors. On each closed
+proper subsector of the sector of opening `π`, the sum agrees with the directional Laplace
+integral for small `z`; the radius depends on the subsector, since the integral converges only
+where `Re (exp (θ * I) / z)` exceeds the exponential growth rate of `b`. -/
 theorem exists_borelLaplace_sum (a : ℕ → ℂ) (b : ℂ → ℂ) (θ : ℝ) {β : ℝ}
     (hβ : 0 < β) (hβπ : β < Real.pi) (hb : HasBorelContinuation a b θ β) :
     ∃ (f : ℂ → ℂ) (r : ℝ), 0 < r ∧
       DifferentiableOn ℂ f (complexSector θ (Real.pi + β) ∩ Metric.ball 0 r) ∧
       HasSectorialGevreyOneExpansion f a θ (Real.pi + β) ∧
-      ∀ z ∈ complexSector θ Real.pi, ‖z‖ < r →
-        f z = directionalBorelLaplaceSum (a 0) b θ z := by
+      ∀ η : ℝ, 0 < η → η < Real.pi → ∃ r' : ℝ, 0 < r' ∧
+        ∀ z ∈ closedComplexSector θ η, ‖z‖ < r' →
+          f z = directionalBorelLaplaceSum (a 0) b θ z := by
   sorry
 
 end CKMA

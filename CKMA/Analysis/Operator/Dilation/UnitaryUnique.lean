@@ -23,19 +23,18 @@ Sz.-Nagy–Foiaş–Bercovici–Kérchy, Chapter I.
 
 ## Main definitions
 
-* `CKMA.unitaryDilationOrbit`: two-sided orbit of the embedded space under a unitary operator.
-* `CKMA.unitaryDilationIntertwiner`: unitary equivalence between two minimal unitary power
-  dilations.
+* `CKMA.unitaryOrbitVec`, `CKMA.unitaryOrbit`: two-sided orbit vectors `U ^ k (J x)` and their
+  finite linear combinations.
+* `CKMA.unitaryDilationEquiv`: unitary equivalence between two minimal unitary power dilations.
 
 ## Main results
 
-* `CKMA.inner_unitaryDilation_zpow`: inner products of orbit vectors depend only on `T`.
+* `CKMA.inner_unitaryOrbit_eq`: finite orbit combinations of two unitary power dilations of the
+  same contraction have the same inner products.
+* `CKMA.unitaryDilationEquiv_unique`: a unitary intertwiner fixing the embedded space equals
+  `unitaryDilationEquiv`.
 * `CKMA.minimalUnitaryPowerDilation_unique_of`: uniqueness of a minimal unitary power dilation up
   to a unique intertwining unitary.
-
-## Notation
-
-* `⟪x, y⟫_ℂ`: complex inner product.
 -/
 
 @[expose] public section

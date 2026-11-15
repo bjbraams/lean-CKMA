@@ -25,20 +25,14 @@ public import Mathlib.Topology.Algebra.ConstMulAction
 /-!
 # The fractional translation kernel
 
-The squared modulus `|exp(2πi ⟨h, ξ⟩) - 1|² / |h|^{d + 2s}` is integrable on Euclidean space
-precisely for `0 < s < 1`. Rotation and dilation reduce its integral to a positive finite
-multiple of `‖ξ‖^{2s}`.
-
-## Main definitions
-
-* `CKMA.gagliardoFourierConstant`: the positive normalization constant of the Fourier
-  characterization of the Gagliardo seminorm.
+For `0 < s < 1` and positive dimension `d`, the squared modulus
+`|exp(2πi ⟨h, ξ⟩) - 1|² / |h|^{d + 2s}` is integrable on Euclidean space. Rotation and dilation
+reduce its integral to a positive finite multiple of `‖ξ‖^{2s}`.
 
 ## Main results
 
-* `CKMA.gagliardoFourierConstant_pos`: positivity of `gagliardoFourierConstant d s`.
-* `CKMA.lintegral_fourierPhase_div_norm`: identity relating the integral of the fractional
-  Fourier phase kernel to `gagliardoFourierConstant d s * ‖ξ‖ ^ (2 * s)`.
+* `CKMA.phase_kernel_integral`: there is a constant `C > 0` such that the integral of the
+  fractional Fourier phase kernel equals `C * ‖ξ‖ ^ (2 * s)` for every `ξ`.
 -/
 
 @[expose] public section

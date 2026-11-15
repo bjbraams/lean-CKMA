@@ -30,8 +30,10 @@ Source: GAPS 25.47.
 
 ## Main results
 
-* `CKMA.collectivelyCompact_invertible` (**25.47**): uniform invertibility of `1 - K n` and strong
-  convergence of solutions under collectively compact approximation.
+* `CKMA.collectivelyCompact_eventually_inverse` (**25.47**): eventual invertibility of `1 - K n`
+  with uniformly bounded inverses when `1 - T` is invertible.
+* `CKMA.collectivelyCompact_solution_tendsto`: convergence of solutions for convergent right-hand
+  sides under collectively compact approximation.
 -/
 
 @[expose] public section

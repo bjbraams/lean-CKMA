@@ -385,7 +385,8 @@ lemma setIntegral_nonneg_of_invariant_subset_positive {T : Ω → Ω}
     simp [g, indicator_of_mem hω]
   rwa [heq] at hnonneg
 
-/-- Shift of a constant does not change the shape of the maximal inequality on an invariant set. -/
+/-- If a strictly invariant measurable set `E` lies in the set where some positive-length
+Birkhoff sum of `f - α` is positive, then `α * μ(E) ≤ ∫_E f`. -/
 lemma setIntegral_ge_const_of_invariant_subset_positive [IsFiniteMeasure μ]
     {T : Ω → Ω} (hT : MeasurePreserving T μ μ) {f : Ω → ℝ} (hf : Integrable f μ)
     (hf_meas : Measurable f) {E : Set Ω} (hE : MeasurableSet E) (hinv : T ⁻¹' E = E)

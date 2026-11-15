@@ -16,10 +16,6 @@ public import Mathlib.Topology.UniformSpace.Cauchy
 A function whose dyadic increments are Hölder is Cauchy along dyadic floors. The limit is
 Hölder on each compact interval, with constant equal to the summed dyadic factor.
 
-## Main definitions
-
-No new definitions are introduced in this file.
-
 ## Main results
 
 * `CKMA.cauchySeq_dyadicFloor`: dyadic floors of a dyadically Hölder function form a Cauchy

@@ -42,9 +42,5 @@ formal derivative-series API, then its Gamma-scaling identity gives the ordinary
 * `CKMA.normallySummableOn_bessel_generating`: normal convergence on compact subsets of
   `ℂ × (ℂ \ {0})`.
 
-## Notation
-
-* Standard Mathlib notation for `Complex.Gamma`, `ordinaryHypergeometric`, and `Complex.besselJ`.
-
 Sources: GAPS 49.6, 49.13 and 49.30. Special functions and branches reuse Mathlib.
 -/

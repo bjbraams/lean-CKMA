@@ -41,18 +41,18 @@ sequence in a relatively weakly compact set.
 
 ## Main definitions
 
-* `CKMA.WeakCompactness.indicatorConstLinf`: bounded indicator functional in `L∞`.
 * `CKMA.WeakCompactness.setIntegralCLM`: continuous linear functional integrating an `L¹` function
   over a measurable set.
 
 ## Main results
 
-* `CKMA.WeakCompactness.uniformIntegrable_of_tendsto_weak`: a weakly convergent sequence in `L¹`
-  is uniformly integrable.
-* `CKMA.WeakCompactness.unifIntegrable_of_isCompact_closure_toWeakSpace`: a relatively weakly
+* `CKMA.WeakCompactness.exists_forall_integral_norm_le_of_tendsto_toWeakSpace`: a weakly
+  convergent sequence in `L¹` on a finite measure space has uniformly absolutely continuous
+  integrals of the norm.
+* `CKMA.WeakCompactness.uniformIntegrable_of_isCompact_closure_toWeakSpace`: a relatively weakly
   compact subset of `L¹` on a finite measure space is uniformly integrable.
-* `CKMA.WeakCompactness.isCompact_closure_toWeakSpace_iff_uniformIntegrable`: the Dunford–Pettis
-  characterization of relative weak compactness in `L¹` on a finite measure space.
+* `CKMA.WeakCompactness.dunford_pettis`: the Dunford–Pettis characterization of relative weak
+  compactness in `L¹` on a finite measure space.
 -/
 
 @[expose] public section

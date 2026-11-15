@@ -24,15 +24,17 @@ Sources: GAPS 34.54 and 34.55. Weak derivatives use TauCeti; L² and integration
 
 * `CKMA.VelocityLTwo`: square-integrable velocity fields on `ℝ^d`.
 * `CKMA.IsDivergenceFreeField`: distributional incompressibility of a velocity field.
+* `CKMA.IsWeaklyContinuousVelocity`: weak `L²` continuity of a velocity curve.
 * `CKMA.SatisfiesWeakNavierStokes`: the unforced viscous weak momentum equation.
-* `CKMA.IsLerayHopfSolution`: Leray–Hopf weak solutions satisfying the global energy inequality.
+* `CKMA.viscousDissipation`: viscous dissipation of a candidate spatial weak derivative.
+* `CKMA.IsLerayHopfSolution`: Leray–Hopf weak solutions satisfying the energy inequalities.
 
 ## Main results
 
-* `CKMA.navierStokes_lerayHopf_exists`: existence of global Leray–Hopf weak solutions in dimension
-  three (**34.54**).
-* `CKMA.navierStokes_lerayHopf_unique_twoD`: uniqueness of Leray–Hopf velocity curves in dimension
-  two (**34.55**).
+* `CKMA.exists_lerayHopf_threeDimensional` (**34.54**): existence of global Leray–Hopf weak
+  solutions in dimension three.
+* `CKMA.existsUnique_lerayHopf_twoDimensional` (**34.55**): existence and uniqueness of the
+  Leray–Hopf velocity curve in dimension two.
 -/
 
 @[expose] public section

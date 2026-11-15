@@ -16,19 +16,11 @@ unperturbed self-adjoint operator remains a core after perturbation, and restric
 core is essentially self-adjoint. The closure corollary uses TauCeti's self-adjoint perturbation
 theorem together with the core identity. Source: GAPS 22.32.
 
-## Main definitions
-
-* None (uses `LinearPMap.IsRelativelyBounded` and `LinearPMap.HasCore` from TauCeti).
-
 ## Main results
 
 * `CKMA.hasCore_add_of_isRelativelyBounded`: every core of `A` is a core of `A + B`.
 * `CKMA.isSelfAdjoint_closure_domRestrict_add`: restriction of `A + B` to a core of `A` has
   self-adjoint closure.
-
-## Notation
-
-* `H →ₗ.[𝕜] H`: linear partial map on `H`.
 -/
 
 @[expose] public section

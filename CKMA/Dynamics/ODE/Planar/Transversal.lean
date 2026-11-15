@@ -32,15 +32,11 @@ passes close to an interior point crosses the open segment in a short time.
 
 ## Main results
 
-* `CKMA.exists_isTransverseSegment`: every regular point is the midpoint of a transverse segment.
+* `CKMA.exists_isTransverseSegment`: every regular point lies inside an open transverse segment.
 * `CKMA.exists_crossing_time`: orbits near an interior point of a transverse segment cross it in a
   short time.
 * `CKMA.finite_orbit_segment`: a compact time interval meets a transverse segment in finitely many
   times.
-
-## Notation
-
-* `⟪x, y⟫_ℝ`: real inner product.
 -/
 
 @[expose] public section
@@ -450,7 +446,7 @@ private theorem exists_sign_of_hasDerivAt_pos {f : ℝ → ℝ} {t c : ℝ}
       · exact hsame.1
     linarith
 
-/-- Every regular point is the midpoint of a transverse segment. -/
+/-- Every regular point lies in the open part of a transverse segment. -/
 theorem exists_isTransverseSegment {F : ℂ → ℂ} (hF : Continuous F) {p : ℂ}
     (hp : F p ≠ 0) :
     ∃ a b : ℂ, p ∈ openSegment ℝ a b ∧ IsTransverseSegment F a b := by

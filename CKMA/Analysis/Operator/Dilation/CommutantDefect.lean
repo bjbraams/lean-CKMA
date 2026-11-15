@@ -27,10 +27,6 @@ commutant-lifting series.
 * `CKMA.norm_sq_dilationDefect`: Pythagorean identity for `dilationDefect`.
 * `CKMA.inner_embed_defectSpace_pow_eq_zero`: orthogonality of `J x` and shifted defect vectors.
 * `CKMA.inner_defectSpace_pow_eq_zero`: pairwise orthogonality of shifted defect subspaces.
-
-## Notation
-
-* `⟪x, y⟫_ℂ`: complex inner product.
 -/
 
 @[expose] public section

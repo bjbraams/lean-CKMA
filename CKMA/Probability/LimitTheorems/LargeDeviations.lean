@@ -39,7 +39,8 @@ in `TauCeti.Probability.Process.EmpiricalMeasure`; the rate is Mathlib's relativ
 * `CKMA.extendedLogMGF`: extended logarithmic moment-generating function.
 * `CKMA.cramerRate`: Cramér rate function (Legendre conjugate of `extendedLogMGF`).
 * `CKMA.sampleMeanLaws`: laws of empirical means at sample size `n + 1`.
-* `CKMA.empiricalLawDistribution`: law of the empirical measure of the first `n + 1` observations.
+* `CKMA.empiricalProbability`: empirical measure of the first `n + 1` observations.
+* `CKMA.sanovRate`: Sanov's rate, the relative entropy with respect to the sampling law.
 
 ## Main results
 

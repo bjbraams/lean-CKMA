@@ -19,11 +19,6 @@ only on the datum inside the integration band.
 
 Source: GAPS 29.58.
 
-## Main definitions
-
-No new public definitions are introduced; see `CKMA.Analysis.Fourier.Sampling.Band`
-for `CKMA.bandlimitedRepresentative`, `CKMA.normalizedSinc`, and `CKMA.shannonTerm`.
-
 ## Main results
 
 * `CKMA.shannon_sampling`: **29.58** pointwise and uniform convergence of the Shannon

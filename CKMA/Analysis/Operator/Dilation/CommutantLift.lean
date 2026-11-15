@@ -30,10 +30,6 @@ lift that commutes with the dilation and coextends `X`.
 * `CKMA.commutantLiftAt_apply_isometry`: the limit intertwines the isometry.
 * `CKMA.commutant_lifting_of`: existence of a norm-preserving commuting lift on a co-invariant
   isometric dilation.
-
-## Notation
-
-* `⟪x, y⟫_ℂ`: complex inner product.
 -/
 
 @[expose] public section

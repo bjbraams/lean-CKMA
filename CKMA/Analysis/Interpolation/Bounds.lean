@@ -18,10 +18,6 @@ Both are stated at an interior interpolation parameter. Endpoint operator norms 
 their nonnegativity is the operator-norm axiom and is not a separate hypothesis.
 Sources: GAPS 26.53 and 26.54.
 
-## Main definitions
-
-* No new public definitions are introduced in this file; see `CKMA.Analysis.Interpolation.Basic`.
-
 ## Main results
 
 * `CKMA.realInterpolationGauge_map_le` (**26.53**): the exact real interpolation operator bound at

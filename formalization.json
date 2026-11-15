@@ -5254,7 +5254,7 @@
       "declarations": [
         "CKMA.exists_borelLaplace_sum"
       ],
-      "scope": "Actual formal Borel series, directional Laplace integral, analytic continuation of opening β with exponential growth, uniform Gevrey-one estimates, and a holomorphic sum on the sector of opening π+β. Agreement with the original ray holds on the convergence sector of opening π."
+      "scope": "Actual formal Borel series, directional Laplace integral, analytic continuation of opening β with exponential growth, uniform Gevrey-one estimates, and a holomorphic sum on the sector of opening π+β. Agreement with the directional Laplace integral holds for small z on each closed proper subsector of the sector of opening π."
     },
     {
       "id": "50.51",
@@ -26288,7 +26288,7 @@
       ]
     },
     {
-      "name": "CKMA.diniQuotient_bddAbove",
+      "name": "CKMA.isBoundedUnder_le_extendedDifferenceQuotient",
       "kind": "lemma",
       "module": "CKMA.Analysis.Real.Dini.Basic",
       "line": 72,
@@ -26300,7 +26300,7 @@
       ]
     },
     {
-      "name": "CKMA.diniQuotient_bddBelow",
+      "name": "CKMA.isBoundedUnder_ge_extendedDifferenceQuotient",
       "kind": "lemma",
       "module": "CKMA.Analysis.Real.Dini.Basic",
       "line": 77,
@@ -32518,7 +32518,7 @@
       ]
     },
     {
-      "name": "CKMA.YoungLoeve.leftEndpoint_le_rightEndpoint",
+      "name": "CKMA.YoungLoeve.a_le_b",
       "kind": "theorem",
       "module": "CKMA.Analysis.RoughPath.Sewing.YoungGrid",
       "line": 96,
@@ -32530,7 +32530,7 @@
       ]
     },
     {
-      "name": "CKMA.YoungLoeve.one_lt_leftExponent",
+      "name": "CKMA.YoungLoeve.one_le_leftExponent",
       "kind": "theorem",
       "module": "CKMA.Analysis.RoughPath.Sewing.YoungGrid",
       "line": 98,
@@ -32542,7 +32542,7 @@
       ]
     },
     {
-      "name": "CKMA.YoungLoeve.one_lt_rightExponent",
+      "name": "CKMA.YoungLoeve.one_le_rightExponent",
       "kind": "theorem",
       "module": "CKMA.Analysis.RoughPath.Sewing.YoungGrid",
       "line": 100,
@@ -36539,7 +36539,7 @@
       ]
     },
     {
-      "name": "CKMA.measurableSet_kingmanExcursion",
+      "name": "CKMA.measurableSet_hasKingmanExcursion",
       "kind": "lemma",
       "module": "CKMA.Dynamics.Ergodic.Pointwise.KingmanLimit",
       "line": 59,
@@ -40325,7 +40325,7 @@
       ]
     },
     {
-      "name": "CKMA.measure_isTau_le_two",
+      "name": "CKMA.measure_firstGridHitSet_le_two",
       "kind": "lemma",
       "module": "CKMA.Probability.BrownianTheory.Reflection.Bound",
       "line": 144,
@@ -40733,7 +40733,7 @@
       ]
     },
     {
-      "name": "CKMA.isTauSet",
+      "name": "CKMA.firstGridHitSet",
       "kind": "def",
       "module": "CKMA.Probability.BrownianTheory.Reflection.Grid",
       "line": 273,
@@ -40745,7 +40745,7 @@
       ]
     },
     {
-      "name": "CKMA.measurableSet_isTauSet",
+      "name": "CKMA.measurableSet_firstGridHitSet",
       "kind": "lemma",
       "module": "CKMA.Probability.BrownianTheory.Reflection.Grid",
       "line": 277,
@@ -40757,7 +40757,7 @@
       ]
     },
     {
-      "name": "CKMA.disjoint_isTauSet",
+      "name": "CKMA.disjoint_firstGridHitSet",
       "kind": "lemma",
       "module": "CKMA.Probability.BrownianTheory.Reflection.Grid",
       "line": 302,
@@ -40769,7 +40769,7 @@
       ]
     },
     {
-      "name": "CKMA.iUnion_isTauSet",
+      "name": "CKMA.iUnion_firstGridHitSet",
       "kind": "lemma",
       "module": "CKMA.Probability.BrownianTheory.Reflection.Grid",
       "line": 311,
@@ -40781,7 +40781,7 @@
       ]
     },
     {
-      "name": "CKMA.measure_isTauSet_zero",
+      "name": "CKMA.measure_firstGridHitSet_zero",
       "kind": "lemma",
       "module": "CKMA.Probability.BrownianTheory.Reflection.Grid",
       "line": 330,
@@ -40913,7 +40913,7 @@
       ]
     },
     {
-      "name": "CKMA.isTauSet_eq_preimage",
+      "name": "CKMA.firstGridHitSet_eq_preimage",
       "kind": "lemma",
       "module": "CKMA.Probability.BrownianTheory.Reflection.Past",
       "line": 106,
@@ -40961,7 +40961,7 @@
       ]
     },
     {
-      "name": "CKMA.measure_isTau_reflect",
+      "name": "CKMA.measure_firstGridHitSet_reflect",
       "kind": "lemma",
       "module": "CKMA.Probability.BrownianTheory.Reflection.Past",
       "line": 211,

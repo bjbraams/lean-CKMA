@@ -29,13 +29,18 @@ mass and the tails of the quadratically weighted roots, uniformly in the root or
 
 ## Main definitions
 
+* `CKMA.positiveRoot`: `(n + 1)`-th convolution root of an infinitely divisible law.
 * `CKMA.idRootMeasure`: quadratically weighted finite measure associated to the `(n + 1)`-th
   convolution root.
 
 ## Main results
 
-* `CKMA.isCompact_closure_range_idRootMeasure`: the quadratically weighted convolution roots have
-  relatively compact range in `FiniteMeasure ℝ`.
+* `CKMA.charFun_positiveRoot`: the characteristic function of the `(n + 1)`-th root is
+  `exp (charExponent h t / (n + 1))`.
+* `CKMA.idRootMeasure_mem`: every quadratically weighted root has mass at most `idMass h` and
+  tails bounded by `idTail h`.
+* `CKMA.isCompact_idApproximant`: the set of finite measures with these mass and tail bounds is
+  compact in `FiniteMeasure ℝ`.
 -/
 
 @[expose] public section

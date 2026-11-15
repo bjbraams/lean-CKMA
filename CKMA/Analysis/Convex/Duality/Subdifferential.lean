@@ -26,10 +26,6 @@ The argument is the Hahn–Banach step of the continuity-qualified Fenchel–Roc
 and of the Banach subdifferential sum rule. Sources: Borwein–Lewis, *Convex Analysis and
 Nonlinear Optimization*, Theorem 4.1.6; GAPS 12.21 and 12.39.
 
-## Main definitions
-
-* (No new public definitions; uses `TauCeti.subdifferential`.)
-
 ## Main results
 
 * `CKMA.exists_mem_subdifferential_of_boundedAbove`: subgradient existence from local upper

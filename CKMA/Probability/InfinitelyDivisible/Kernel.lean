@@ -22,9 +22,10 @@ its integral recovers `n` times one minus the root characteristic function, up t
 ## Main definitions
 
 * `CKMA.quadTrunc`: quadratic weight `min(1, x²)`.
-* `CKMA.contCutoff`: continuous cutoff function equal to `x` on `[-1/2, 1/2]` and `0` on `|x| ≥ 1`.
+* `CKMA.contTrunc`: continuous cutoff function equal to `x` on `[-1/2, 1/2]` and `0` on `|x| ≥ 1`.
 * `CKMA.levyKernel`: bounded continuous Lévy kernel at frequency `t`.
-* `CKMA.contDrift`: compensating drift associated to `contCutoff`.
+* `CKMA.quadWeighted`: the measure `n • min(1, x²) ν`.
+* `CKMA.contDrift`: compensating drift associated to `contTrunc`.
 
 ## Main results
 

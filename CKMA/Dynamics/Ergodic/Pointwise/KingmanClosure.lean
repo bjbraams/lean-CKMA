@@ -23,10 +23,6 @@ Height cuts reduce a measurable subadditive process to the linearly bounded case
 where the limsup is `⊥` is null because its truncated means fall below the Fekete lower bound.
 Monotone convergence identifies the mean, and the truncated L¹ convergence passes to the limit.
 
-## Main definitions
-
-* None (uses `CKMA.kingmanTrunc`, `CKMA.kingmanLiminfReal`, and `CKMA.kingmanFekete`).
-
 ## Main results
 
 * `CKMA.kingman_of_measurable`: Kingman's theorem for a measurable subadditive process.

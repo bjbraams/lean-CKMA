@@ -12,24 +12,9 @@ public import CKMA.Analysis.InnerProductSpace.L2FunctionFamilies
 /-!
 # Basic definitions for inner product and Hilbert spaces
 
-This module re-exports the foundational Hilbert-space carrier models, abstract Bessel/frame
-interfaces, and `L²` function family predicates used across analysis sections.
-
-## Main definitions
-
-* `CKMA.HilbertSpaceModel`, `CKMA.RealHilbertModel`, `CKMA.ComplexHilbertSpace`: bundled
-  Hilbert spaces over `RCLike` scalars.
-* `CKMA.IsBesselSequence`, `CKMA.IsFrame`, `CKMA.IsFrameWithBounds`: abstract Hilbert-space
-  frame predicates.
-* `CKMA.IsL2RieszSequence`, `CKMA.IsL2RieszBasis`, `CKMA.IsL2FrameFamily`: `L²` function
-  family predicates.
-
-## Main results
-
-* Re-exports the basic frame and `L²` family equivalence lemmas from `Frame` and
-  `L2FunctionFamilies`.
-
-## Notation
-
-Uses the standard Mathlib inner-product and `Lp` notations.
+This module re-exports `CKMA.Analysis.InnerProductSpace.HilbertModel`,
+`CKMA.Analysis.InnerProductSpace.Frame`, and `CKMA.Analysis.InnerProductSpace.L2FunctionFamilies`:
+bundled Hilbert spaces such as `CKMA.HilbertSpaceModel`, the frame predicates
+`CKMA.IsBesselSequence` and `CKMA.IsFrame`, and `L²` family predicates such as
+`CKMA.IsL2RieszBasis`, used across analysis sections. It introduces no declarations of its own.
 -/

@@ -34,10 +34,6 @@ mixture on the 1-Wasserstein space of the compact attractor. Strictly positive w
 are unnecessary for this conclusion, although they matter when identifying the support
 with the full compact attractor.
 
-## Main definitions
-
-* None (uses `TopologicalSpace.NonemptyCompacts` and `MeasureTheory.Measure`).
-
 ## Main results
 
 * `CKMA.existsUnique_selfSimilar_compact`: Hutchinson's unique nonempty compact attractor.

@@ -11,21 +11,15 @@ public import CKMA.Probability.InfinitelyDivisible.Uniqueness
 /-!
 # Infinite divisibility and Lévy–Khintchine triplets (06.51)
 
-`convolutionPower` and `IsInfinitelyDivisible` use positive convolution roots of a real
-probability law. `IsLevyMeasure` records the zero atom and integrability of the truncated
-quadratic jump size. `LevyTriplet` packages Gaussian variance, drift and jump measure,
-with its characteristic exponent using the stated truncation near zero.
+The definitions are in `CKMA.Probability.InfinitelyDivisible.Basic`: `convolutionPower` and
+`IsInfinitelyDivisible` use positive convolution roots of a real probability law,
+`IsLevyMeasure` records the zero atom and integrability of the truncated quadratic jump size,
+and `LevyTriplet` packages Gaussian variance, drift and jump measure, with its characteristic
+exponent using the truncation `x * 1_{|x| ≤ 1}`.
 
 The main equivalence characterizes infinite divisibility by a unique triplet. Its drift
 and uniqueness are relative to this fixed truncation, rather than independent of that
 convention.
-
-## Main definitions
-
-* `CKMA.convolutionPower`: additive convolution power of a real measure.
-* `CKMA.IsInfinitelyDivisible`: infinite divisibility of a real probability measure.
-* `CKMA.IsLevyMeasure`: Lévy measure condition on `ℝ`.
-* `CKMA.LevyTriplet`: Lévy–Khintchine triplet `(σ², b, ν)`.
 
 ## Main results
 

@@ -17,10 +17,9 @@ The endpoint estimate uses `u(1+log⁺u)^(d-1)`; this local integrability class 
 almost everywhere, whereas L¹ alone is insufficient in dimension at least two.
 Measures, real logarithms and extended integrals use Mathlib. Source: GAPS 05.31.
 
-## Main definitions
-
-* Re-exports `CKMA.OpenRectangle`, `CKMA.strongMaximalFunction`, `CKMA.strongMaximalGrowth`,
-  `CKMA.IsLocallyLLog`, and `CKMA.RectanglesDifferentiateAt`.
+The definitions `CKMA.OpenRectangle`, `CKMA.strongMaximalFunction`, `CKMA.strongMaximalGrowth`,
+`CKMA.IsLocallyLLog`, and `CKMA.RectanglesDifferentiateAt` are re-exported from
+`CKMA.Analysis.Real.RectangularDifferentiation.Base`.
 
 ## Main results
 
@@ -29,7 +28,8 @@ Measures, real logarithms and extended integrals use Mathlib. Source: GAPS 05.31
 * `CKMA.ae_rectanglesDifferentiateAt`: almost-everywhere rectangular differentiation of functions in
   `L(log⁺ L)^{d-1}_{loc}`.
 * `CKMA.exists_integrable_not_rectangularlyDifferentiable`: existence of an integrable function on
-  `ℝ^d` (`d ≥ 2`) whose rectangular averages fail to converge on a set of positive measure.
+  `ℝ^d` (`d ≥ 2`) whose rectangular averages do not converge to its values on a set of positive
+  measure.
 -/
 
 @[expose] public section

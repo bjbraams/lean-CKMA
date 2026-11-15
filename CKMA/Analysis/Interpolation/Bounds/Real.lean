@@ -25,10 +25,6 @@ Peetre's `K`-functional scales by the endpoint bounds of a compatible couple map
 `M₀ ^ (1 - θ) * M₁ ^ θ` whenever those endpoint bounds are positive. Nonnegative endpoint bounds
 follow by replacing `Mᵢ` with `Mᵢ + ε` and passing to the limit.
 
-## Main definitions
-
-* No new public definitions are introduced in this file.
-
 ## Main results
 
 * `CKMA.realInterpolationGauge_map_le_of_pos`: the real interpolation gauge bound for positive

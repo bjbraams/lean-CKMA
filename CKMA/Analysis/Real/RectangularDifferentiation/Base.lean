@@ -32,13 +32,16 @@ half-scaled growth of order `n` with the growth of order `n + 1`.
 * `CKMA.strongMaximalGrowth`: the Orlicz growth function `u (1 + log⁺ u)^{d-1}`.
 * `CKMA.IsLocallyLLog`, `CKMA.RectanglesDifferentiateAt`: local `L(log⁺ L)^{d-1}` integrability and
   pointwise rectangular differentiation.
+* `CKMA.oneDimMaximalENN`, `CKMA.oneDimMaximal`: the uncentered maximal function on `ℝ`.
+* `CKMA.strongMaximalIterationFactor`: the constant `2 (1 + log 4)^n` of the iteration kernel.
 
 ## Main results
 
-* `CKMA.uncenteredMaximal_weakType_one`: weak-type `(1, 1)` inequality for the one-dimensional
-  uncentered maximal function.
-* `CKMA.strongMaximalGrowth_integral_le`: Fubini–layer-cake kernel inequality relating growth of
-  order `n` and order `n + 1`.
+* `CKMA.oneDimMaximalENN_weakType`, `CKMA.oneDimMaximal_weakType`: weak-type `(1, 1)` inequality
+  with constant `5` for the one-dimensional uncentered maximal function.
+* `CKMA.strongMaximal_weakType_one`: the strong maximal operator on `ℝ¹` is of weak type `(1, 1)`.
+* `CKMA.strongMaximalGrowth_scaled_kernel`: kernel inequality bounding half the growth of order
+  `n` at `2u` plus its logarithmic integral by a multiple of the growth of order `n + 1` at `u`.
 -/
 
 @[expose] public section
@@ -720,7 +723,8 @@ theorem strongMaximalGrowth_bracket {k : ℕ} {u : ℝ} (hu : 0 ≤ u) :
       _ = 2 * (1 + Real.log 4) ^ (k + 1) *
           (1 + max 0 (Real.log u)) ^ (k + 1) := by ring
 
-/-- Half a scaled growth plus its logarithmic integral is the next Orlicz growth. -/
+/-- Half a scaled growth plus its logarithmic integral is at most
+`strongMaximalIterationFactor n` times the next Orlicz growth. -/
 theorem strongMaximalGrowth_scaled_kernel {n : ℕ} (hn : 1 ≤ n) {u : ℝ} (hu : 0 ≤ u) :
     (1 / 2) * strongMaximalGrowth n (2 * u) +
       (if u ≤ (1 / 4 : ℝ) then (0 : ℝ) else

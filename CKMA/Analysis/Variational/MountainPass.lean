@@ -51,13 +51,14 @@ of the maximum set. Ekeland's principle selects the path, in the form
 
 * `CKMA.HasPalaisSmaleAt`: the Palais–Smale subsequence condition at an energy level.
 * `CKMA.mountainPassPaths`: continuous paths on `[0, 1]` from `0` to a second well `e`.
-* `CKMA.mountainPassPathMaximum`: maximum of a functional along a path.
+* `CKMA.pathMaxEnergy`: supremum of a functional along a path, its maximum when the functional
+  is continuous.
 * `CKMA.mountainPassLevel`: the mountain-pass minimax energy level.
 
 ## Main results
 
-* `CKMA.le_mountainPassLevel`: positive sphere barrier bounds the mountain-pass level below.
-* `CKMA.exists_mountainPass_criticalPoint`: Ambrosetti–Rabinowitz mountain-pass theorem.
+* `CKMA.exists_mountainPass_criticalPoint`: Ambrosetti–Rabinowitz mountain-pass theorem; the
+  level is at least the sphere barrier and is a critical value (**36.35**).
 -/
 
 @[expose] public section

@@ -41,10 +41,6 @@ bound on the normalized expectations.
 * `CKMA.birkhoff_pointwise_of_ergodic`: Birkhoff's theorem for ergodic transformations.
 * `CKMA.kingman_subadditive`: Kingman's subadditive ergodic theorem.
 * `CKMA.kingman_subadditive_of_ergodic`: Kingman's theorem for ergodic transformations.
-
-## Notation
-
-* `μ[f | m]`: conditional expectation of `f` with respect to a sub-σ-algebra `m`.
 -/
 
 @[expose] public section

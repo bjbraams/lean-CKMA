@@ -14,10 +14,6 @@ An upper bound for the Lebesgue function and the Lebesgue constant of the Chebys
 The matching midpoint lower bound is in
 `CKMA.Analysis.Approximation.InterpolationStability.Lower`.
 
-## Main definitions
-
-No new public definitions are introduced in this file.
-
 ## Main results
 
 * `CKMA.lebesgueFunction_cos_eq`: off the nodes, the Lebesgue function is the sum of main and

@@ -192,9 +192,9 @@ theorem countable_lt_upperRight_lowerLeft (f : ℝ → ℝ) :
   intro x hx
   obtain ⟨ρ, hρU, hρL⟩ := EReal.exists_rat_btwn_of_lt hx
   have hR : ∀ᶠ h in 𝓝[>] (0 : ℝ), extendedDifferenceQuotient f x h < (ρ : ℝ) :=
-    eventually_lt_of_limsup_lt hρU (diniQuotient_bddAbove f x _)
+    eventually_lt_of_limsup_lt hρU (isBoundedUnder_le_extendedDifferenceQuotient f x _)
   have hL : ∀ᶠ h in 𝓝[<] (0 : ℝ), (ρ : ℝ) < extendedDifferenceQuotient f x h :=
-    eventually_lt_of_lt_liminf hρL (diniQuotient_bddBelow f x _)
+    eventually_lt_of_lt_liminf hρL (isBoundedUnder_ge_extendedDifferenceQuotient f x _)
   rw [eventually_iff] at hR hL
   obtain ⟨εR, hεR, hsubR⟩ := (mem_nhdsGT_iff_exists_Ioo_subset (a := (0 : ℝ))).1 hR
   obtain ⟨εL, hεL, hsubL⟩ := (mem_nhdsLT_iff_exists_Ioo_subset (a := (0 : ℝ))).1 hL

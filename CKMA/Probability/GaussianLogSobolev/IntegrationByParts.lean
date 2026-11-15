@@ -20,18 +20,14 @@ public import Mathlib.Probability.Distributions.Gaussian.Real
 The standard normal density satisfies `ρ' = -x ρ`. For a `C¹` integrand with bounded value and
 derivative, the boundary terms vanish and `∫ x ψ ∂γ = ∫ ψ' ∂γ`.
 
-## Main definitions
-
-No new definitions are introduced in this file.
-
 ## Main results
 
 * `CKMA.gaussianPDFReal_zero_one_apply`: Explicit formula for the standard normal density.
 * `CKMA.hasDerivAt_gaussianPDFReal_zero_one`: Derivative of the standard normal density.
 * `CKMA.integral_id_mul_eq_integral_deriv_gaussianReal`: Gaussian integration by parts
   `∫ x ψ ∂γ = ∫ ψ' ∂γ`.
-* `CKMA.integrable_of_abs_le`: Integrability of bounded measurable functions on finite measure
-  spaces.
+* `CKMA.integrable_of_abs_le`: Integrability of bounded a.e. strongly measurable functions on
+  finite measure spaces.
 * `CKMA.exists_bound_of_deriv_eq_zero`: Boundedness of differentiable functions with compactly
   supported derivative.
 -/
@@ -171,7 +167,8 @@ lemma integral_id_mul_eq_integral_deriv_gaussianReal {ψ : ℝ → ℝ}
     _ = ∫ x, ρ x * deriv ψ x := by simp [mul_comm]
     _ = ∫ x, deriv ψ x ∂gaussianReal 0 1 := hγ_deriv.symm
 
-/-- A continuous function bounded by a constant is integrable on a finite measure space. -/
+/-- An a.e. strongly measurable function bounded by a constant is integrable on a finite measure
+space. -/
 lemma integrable_of_abs_le {E : Type*} [MeasurableSpace E] {μ : Measure E}
     [IsFiniteMeasure μ] {f : E → ℝ} (hf : AEStronglyMeasurable f μ) {M : ℝ}
     (hM : ∀ x, |f x| ≤ M) : Integrable f μ := by
@@ -227,7 +224,7 @@ lemma eq_endpoint_of_deriv_eq_zero {f : ℝ → ℝ} {R : ℝ} (hR : 0 ≤ R)
       · linarith
       · linarith
 
-/-- A differentiable function whose derivative vanishes at infinity is bounded. -/
+/-- A differentiable function whose derivative vanishes for `R ≤ |x|` is bounded. -/
 lemma exists_bound_of_deriv_eq_zero {f : ℝ → ℝ} {R : ℝ} (hR : 0 ≤ R)
     (hf : Differentiable ℝ f) (hderiv : ∀ x, R ≤ |x| → deriv f x = 0) :
     ∃ M, ∀ x, |f x| ≤ M := by

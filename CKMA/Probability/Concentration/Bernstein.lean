@@ -17,10 +17,6 @@ public import Mathlib.Algebra.BigOperators.Ring.Finset
 Exponential series remainder bounds and the scalar Bernstein concentration inequality for
 independent centered bounded random variables.
 
-## Main definitions
-
-No new public definitions are introduced in this file.
-
 ## Main results
 
 * `CKMA.bernstein_of_bounded`: two-sided Bernstein tail bound for independent centered

@@ -24,10 +24,6 @@ with its characteristic exponent using the truncation `x * 1_{|x| ≤ 1}`.
 * `CKMA.IsInfinitelyDivisible`: infinite divisibility of a real probability law.
 * `CKMA.IsLevyMeasure`: Lévy measure condition on `ℝ`.
 * `CKMA.LevyTriplet`: Lévy triplet with characteristic exponent `CKMA.LevyTriplet.exponent`.
-
-## Main results
-
-No theorems are proved in this file.
 -/
 
 @[expose] public section

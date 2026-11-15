@@ -21,10 +21,6 @@ public import CKMA.Analysis.Complex.Basic
 The bilateral integer-order Bessel generating series `∑_{n ∈ ℤ} J_n(z) t^n = exp((z/2)(t - t⁻¹))`
 converges pointwise and normally on compact subsets of `ℂ × (ℂ \ {0})`.
 
-## Main definitions
-
-* None (reuses `Complex.besselJ` from Mathlib and `CKMA.NormallySummableOn`).
-
 ## Main results
 
 * `CKMA.hasSum_bessel_generating`: the bilateral Bessel generating series identity (**49.30**).

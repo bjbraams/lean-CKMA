@@ -34,7 +34,7 @@ energy is TauCeti's existing construction.
 ## Main definitions
 
 * `CKMA.HasIntegralKernel`: predicate stating that a bounded operator on `L²(μ)` is given almost
-  everywhere by integration against a measurable kernel on `X × X`.
+  everywhere by integration against a kernel `k : X × X → 𝕜`.
 
 ## Main results
 

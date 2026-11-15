@@ -35,10 +35,6 @@ the integral of the diagonal. Source: GAPS 25.8.
 
 * `CKMA.mercer_expansion`: Mercer's spectral expansion and trace formula for continuous
   positive-semidefinite kernels (**25.8**).
-
-## Notation
-
-Uses `C(D, ℂ)` for continuous maps and `conj` for complex conjugation.
 -/
 
 @[expose] public section

@@ -14,10 +14,6 @@ The centered quadratic form splits into a diagonal and an off-diagonal sum. Bool
 of the off-diagonal sum are linear in one coordinate block, so the sub-Gaussian product
 bound closes the moment generating function.
 
-## Main definitions
-
-No new public definitions are introduced in this file.
-
 ## Main results
 
 * `CKMA.offDiagonalDeviation_tail`: two-scale tail bound for the off-diagonal quadratic form.

@@ -89,11 +89,11 @@ def p : ℝ := D.p
 /-- Variation exponent of the integrator path. -/
 def q : ℝ := D.q
 /-- The datum interval runs from left to right. -/
-theorem leftEndpoint_le_rightEndpoint : a ≤ b := D.hab
+theorem a_le_b : a ≤ b := D.hab
 /-- The integrand exponent is at least one. -/
-theorem one_lt_leftExponent : 1 ≤ p := D.hp
+theorem one_le_leftExponent : 1 ≤ p := D.hp
 /-- The integrator exponent is at least one. -/
-theorem one_lt_rightExponent : 1 ≤ q := D.hq
+theorem one_le_rightExponent : 1 ≤ q := D.hq
 /-- The variation exponents are Young-complementary. -/
 theorem one_lt_inv_add_inv : 1 < p⁻¹ + q⁻¹ := D.hpq
 /-- Integrand path of the active Young datum. -/
@@ -150,7 +150,7 @@ lemma norm_youngGrid_sub {s t : ℝ} (hs : a ≤ s) (hst : s ≤ t) (ht : t ≤ 
     ne_top_of_le_ne_top leftPathVariation_ne_top (pathVariationPower_mono hs ht p youngLeftPath)
   have hYfin : pathVariationPower q youngRightPath s t ≠ ∞ :=
     ne_top_of_le_ne_top rightPathVariation_ne_top (pathVariationPower_mono hs ht q youngRightPath)
-  have hbound := young_step_bound one_lt_leftExponent one_lt_rightExponent one_lt_inv_add_inv
+  have hbound := young_step_bound one_le_leftExponent one_le_rightExponent one_lt_inv_add_inv
     youngLeftPath youngRightPath k (gridNode s t k)
     (monotone_gridNode hst k) (by simpa [h0, hlast] using hXfin)
     (by simpa [h0, hlast] using hYfin)
@@ -214,7 +214,7 @@ lemma youngModulus_le_eta {s t η : ℝ} (_hη : 0 ≤ η)
       η ^ (youngTheta p q - 1) * youngCtrl p q youngLeftPath youngRightPath s t := by
   have hθ1 : 0 ≤ youngTheta p q - 1 :=
     sub_nonneg.mpr (by simpa [youngTheta] using one_lt_inv_add_inv.le)
-  rw [youngModulus_eq_ctrl_pow one_lt_leftExponent one_lt_rightExponent one_lt_inv_add_inv
+  rw [youngModulus_eq_ctrl_pow one_le_leftExponent one_le_rightExponent one_lt_inv_add_inv
     youngLeftPath youngRightPath s t]
   rcases eq_or_lt_of_le (youngCtrl_nonneg youngLeftPath youngRightPath s t) with h0 | hpos
   · rw [← h0, Real.zero_rpow (youngTheta_pos one_lt_inv_add_inv).ne', mul_zero]
@@ -247,7 +247,7 @@ lemma ctrl_sum_seq (n : ℕ) (c : ℕ → ℝ) (hc : Monotone c) (h0 : a ≤ c 0
     have hfinY : pathVariationPower q youngRightPath (c 0) (c (n + 1)) ≠ ∞ :=
       ne_top_of_le_ne_top rightPathVariation_ne_top (pathVariationPower_mono h0 hn q youngRightPath)
     exact (add_le_add (ih hcn) le_rfl).trans
-      (youngCtrl_superadd hmid hstep one_lt_leftExponent one_lt_rightExponent one_lt_inv_add_inv
+      (youngCtrl_superadd hmid hstep one_le_leftExponent one_le_rightExponent one_lt_inv_add_inv
         youngLeftPath youngRightPath hfinX hfinY)
 
 /-- Refining every block of a short grid changes the Young sum by a small amount. -/
@@ -340,12 +340,12 @@ lemma exists_youngGrid_cauchy (ε : ℝ) (hε : 0 < ε) :
     rw [hclear]
     linarith [hε, hC]
   obtain ⟨δ, hδ, hδc⟩ :=
-    exists_ctrl_short one_lt_leftExponent one_lt_rightExponent one_lt_inv_add_inv
+    exists_ctrl_short one_le_leftExponent one_le_rightExponent one_lt_inv_add_inv
       youngLeftPath youngRightPath continuousOn_youngLeftPath continuousOn_youngRightPath
       leftPathVariation_ne_top rightPathVariation_ne_top η hη
   obtain ⟨K, hK⟩ := exists_nat_gt ((b - a) / δ)
   have hK0 : 0 < K := Nat.cast_pos.mp (lt_of_le_of_lt
-    (div_nonneg (sub_nonneg.mpr leftEndpoint_le_rightEndpoint) hδ.le) hK)
+    (div_nonneg (sub_nonneg.mpr a_le_b) hδ.le) hK)
   refine ⟨K, hK0, fun s t hs hst ht k m hk hm => ?_⟩
   have hk0 : 0 < k := lt_of_lt_of_le hK0 hk
   have hm0 : 0 < m := lt_of_lt_of_le hK0 hm
@@ -357,7 +357,7 @@ lemma exists_youngGrid_cauchy (ε : ℝ) (hε : 0 < ε) :
       have hmul : (b - a) / δ * δ < (K : ℝ) * δ :=
         mul_lt_mul_of_pos_right hK hδ
       simpa [div_mul_cancel₀ _ hδ.ne', mul_comm (K : ℝ) δ] using hmul
-    exact lt_of_le_of_lt (div_le_div_of_nonneg_left (sub_nonneg.mpr leftEndpoint_le_rightEndpoint)
+    exact lt_of_le_of_lt (div_le_div_of_nonneg_left (sub_nonneg.mpr a_le_b)
       (Nat.cast_pos.mpr hK0) (Nat.cast_le.mpr hn)) hKcast
   have hpiece : ∀ n : ℕ, K ≤ n → ∀ i < n,
       youngCtrl p q youngLeftPath youngRightPath (equalNode s t n i)
@@ -377,7 +377,7 @@ lemma exists_youngGrid_cauchy (ε : ℝ) (hε : 0 < ε) :
     exact hδc _ _ (le_trans hs hL.1) (equalNode_mono hst n (Nat.le_succ i))
       (le_trans hR.2 ht) hlt
   have hctrl : youngCtrl p q youngLeftPath youngRightPath s t ≤ Ω := by
-    simpa [Ω] using youngCtrl_mono hs hst ht one_lt_leftExponent one_lt_rightExponent
+    simpa [Ω] using youngCtrl_mono hs hst ht one_le_leftExponent one_le_rightExponent
       one_lt_inv_add_inv youngLeftPath youngRightPath
       leftPathVariation_ne_top rightPathVariation_ne_top
   have hsmall : youngLoose (youngTheta p q) * η ^ (youngTheta p q - 1) *

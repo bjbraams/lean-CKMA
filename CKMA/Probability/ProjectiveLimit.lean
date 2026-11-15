@@ -22,13 +22,10 @@ with empty intersection depend on countably many coordinates, where
 `TauCeti.Measure.exists_isProjectiveLimit_of_countable` supplies a measure, and
 `tendsto_measure_iInter_atTop` gives continuity from above.
 
-## Main definitions
-
-No new public definitions are introduced in this file.
-
 ## Main results
 
-* `CKMA.kolmogorov_extension`: Kolmogorov extension theorem for arbitrary index sets (**06.1**).
+* `CKMA.existsUnique_isProjectiveLimit`: Kolmogorov extension theorem for arbitrary index sets
+  (**06.1**).
 -/
 
 @[expose] public section

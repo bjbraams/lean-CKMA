@@ -21,7 +21,7 @@ import Mathlib.Tactic
 import CKMA.Dynamics.Ergodic.Recurrence.Multiple
 
 /-!
-# Rokhlin towers and multiple recurrence (10)
+# Rokhlin towers and multiple recurrence (10.9, 10.48)
 
 `IsAperiodicModMeasure` and `towerLevel` describe finite measurable towers for an invertible
 probability-preserving system. The Rokhlin statement controls disjointness and the measure
@@ -41,9 +41,9 @@ measure set, with the number of returns and averaging convention explicit.
 ## Main results
 
 * `CKMA.rokhlin_tower`: Rokhlin's tower lemma for an aperiodic invertible probability-preserving
-  transformation on a standard Borel space.
+  transformation on a standard Borel space (**10.9**).
 * `CKMA.furstenberg_multiple_recurrence`: Furstenberg's multiple recurrence theorem in
-  positive-liminf form.
+  positive-liminf form (**10.48**).
 -/
 
 @[expose] public section

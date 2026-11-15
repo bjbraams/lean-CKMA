@@ -23,13 +23,14 @@ Source: GAPS 34.70.
 * `CKMA.hardSphereAngularMeasure`: uniform angular probability measure on the unit sphere in `ℝ³`.
 * `CKMA.postCollisionVelocity`: post-collision velocities for elastic hard-sphere collisions.
 * `CKMA.hardSphereCollisionOperator`: the hard-sphere Boltzmann collision operator.
-* `CKMA.hardSphereEntropyProduction`: the nonnegative collision entropy production functional.
+* `CKMA.hardSphereEntropyProduction`: the collision entropy production functional with factor
+  `1/4`.
+* `CKMA.HasIntegrableCollisionEntropy`: integrability of the four logarithmic collision tests.
 
 ## Main results
 
-* `CKMA.hardSphereEntropyProduction_nonneg`: nonnegativity of the hard-sphere entropy production.
-* `CKMA.boltzmann_h_identity`: Boltzmann's H identity relating logarithmic collision tests to
-  entropy production (**34.70**).
+* `CKMA.hardSphere_hTheorem` (**34.70**): Boltzmann's H identity relating the logarithmic
+  collision test to entropy production, together with nonnegativity of the entropy production.
 -/
 
 @[expose] public section

@@ -31,10 +31,6 @@ Source: GAPS 26.37.
   seminorm (**26.37**).
 * `CKMA.fractionalEnergy_ne_top_iff`, `CKMA.fractional_bessel_energy_comparable`: equivalence of
   finite Gagliardo and Bessel-potential energies on `L²(ℝ^d)`.
-
-## Notation
-
-* `𝓕`: the `L²` Fourier transform from Mathlib.
 -/
 
 @[expose] public section

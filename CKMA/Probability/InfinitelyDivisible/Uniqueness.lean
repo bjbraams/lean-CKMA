@@ -21,10 +21,6 @@ difference takes values in `2πiℤ` and the zero set is clopen. Second differen
 `√2` recover the Gaussian variance and the jump measure, and the drift is the remaining linear
 term.
 
-## Main definitions
-
-No new definitions are introduced in this file.
-
 ## Main results
 
 * `CKMA.eq_of_exp_eq_of_continuous`: continuous logarithms of the same nowhere-vanishing function

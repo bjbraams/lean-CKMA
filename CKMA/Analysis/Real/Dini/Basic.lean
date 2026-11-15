@@ -27,8 +27,9 @@ Limits and extended-real operations use Mathlib. Source: GAPS 05.10.
 ## Main results
 
 * `CKMA.differenceQuotient_rev`: symmetry of the difference quotient.
-* `CKMA.diniQuotient_bddAbove`, `CKMA.diniQuotient_bddBelow`: `EReal` boundedness of the
-  extended difference quotient under any filter.
+* `CKMA.isBoundedUnder_le_extendedDifferenceQuotient`,
+  `CKMA.isBoundedUnder_ge_extendedDifferenceQuotient`: `EReal` boundedness of the extended
+  difference quotient under any filter.
 -/
 
 @[expose] public section
@@ -65,14 +66,20 @@ lemma differenceQuotient_rev (f : ℝ → ℝ) (a b : ℝ) :
   rw [(neg_sub b a).symm, div_neg, ← neg_div, neg_sub]
 
 /-- The extended difference quotient is bounded above in `EReal` under any filter. -/
-lemma diniQuotient_bddAbove (f : ℝ → ℝ) (x : ℝ) (l : Filter ℝ) :
+lemma isBoundedUnder_le_extendedDifferenceQuotient (f : ℝ → ℝ) (x : ℝ) (l : Filter ℝ) :
     l.IsBoundedUnder (· ≤ ·) (extendedDifferenceQuotient f x) :=
   ⟨⊤, Eventually.of_forall fun _ => le_top⟩
 
 /-- The extended difference quotient is bounded below in `EReal` under any filter. -/
-lemma diniQuotient_bddBelow (f : ℝ → ℝ) (x : ℝ) (l : Filter ℝ) :
+lemma isBoundedUnder_ge_extendedDifferenceQuotient (f : ℝ → ℝ) (x : ℝ) (l : Filter ℝ) :
     l.IsBoundedUnder (· ≥ ·) (extendedDifferenceQuotient f x) :=
   ⟨⊥, Eventually.of_forall fun _ => bot_le⟩
+
+@[deprecated (since := "2026-11-15")]
+alias diniQuotient_bddAbove := isBoundedUnder_le_extendedDifferenceQuotient
+
+@[deprecated (since := "2026-11-15")]
+alias diniQuotient_bddBelow := isBoundedUnder_ge_extendedDifferenceQuotient
 
 /-- The four alternatives of Denjoy–Young–Saks, numbered from zero.
 The left derivatives use the same quotient `(f(x+h)-f(x))/h` with `h<0`. -/

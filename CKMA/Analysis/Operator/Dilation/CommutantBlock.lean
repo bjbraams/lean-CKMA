@@ -33,10 +33,6 @@ square root of the positive remainder `‖X‖² - X₀* X₀ - Σ Bₖ* Bₖ`.
 * `CKMA.commutantLiftBlock_succ_comp`: recurrence `Bₙ₊₁ V = Bₙ` for successive blocks.
 * `CKMA.commutantLiftBlock_zero_comp`: initial block identity for `B₀ V`.
 * `CKMA.re_inner_liftGram`: quadratic form of the accumulated Gram operator.
-
-## Notation
-
-* `⟪x, y⟫_ℂ`: complex inner product.
 -/
 
 @[expose] public section

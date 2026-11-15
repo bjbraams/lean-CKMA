@@ -289,7 +289,7 @@ lemma mem_leftSteep_of_infiniteUp {f : ℝ → ℝ} {x : ℝ} (hx : x ∈ infini
   have hbot : (⊥ : EReal) < lowerLeftDiniDerivative f x := (bot_lt_iff_ne_bot).2 hx.2
   obtain ⟨q, -, hq⟩ := EReal.exists_rat_btwn_of_lt hbot
   have hev : ∀ᶠ h in 𝓝[<] (0 : ℝ), (q : ℝ) < extendedDifferenceQuotient f x h :=
-    eventually_lt_of_lt_liminf hq (diniQuotient_bddBelow f x _)
+    eventually_lt_of_lt_liminf hq (isBoundedUnder_ge_extendedDifferenceQuotient f x _)
   rw [eventually_iff] at hev
   obtain ⟨εL, hεL, hsubL⟩ := (mem_nhdsLT_iff_exists_Ioo_subset (a := (0 : ℝ))).1 hev
   have hεLneg : εL < 0 := hεL

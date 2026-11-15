@@ -31,11 +31,13 @@ infimum of those boundary norms.
 ## Main definitions
 
 * `CKMA.stripWeight`: entire scalar weight `exp ((z - θ) * (log M₀ - log M₁))`.
-* `CKMA.CoupleMap.pushStrip`: image of an admissible strip function under a compatible couple map
-  twisted by `stripWeight`.
+* `CKMA.weightedStrip`: image of an admissible strip function under a compatible couple map,
+  multiplied by `stripWeight`.
 
 ## Main results
 
+* `CKMA.weightedStrip_boundaryNorm_le`: the boundary norm of `weightedStrip` is at most
+  `M₀ ^ (1 - θ) * M₁ ^ θ` times the source boundary norm.
 * `CKMA.complexInterpolationGauge_map_le_of_pos`: the complex interpolation gauge bound for
   positive endpoint bounds `M₀, M₁ > 0`.
 -/

@@ -39,19 +39,17 @@ multiplication. Inner products are linear in the second slot. Sources: GAPS 21.2
 ## Main definitions
 
 * `CKMA.schattenGauge`: the Schatten `p`-gauge from TauCeti.
-* `CKMA.IsTraceClass`: membership in the trace class `S₁`.
+* `CKMA.IsTraceClassOperator`: membership in the trace class `S₁`.
 * `CKMA.hilbertTrace`: scalar trace of an operator with respect to a Hilbert basis.
 
 ## Main results
 
-* `CKMA.schatten_holder`: Schatten Hölder inequality.
-* `CKMA.summable_norm_hilbertTraceTerm`: absolute convergence of the trace series.
-* `CKMA.hilbertTrace_eq_of_hilbertBasis`: basis independence of the Hilbert-space trace.
-* `CKMA.hilbertTrace_comp_comm`: cyclicity of the trace under composition with a bounded operator.
-
-## Notation
-
-* `⟪x, y⟫_𝕜`: inner product on a Hilbert space over `𝕜`.
+* `CKMA.schatten_holder` (**21.22**): Schatten Hölder inequality with constant one.
+* `CKMA.IsTraceClassOperator.summable_trace` (**21.23**): absolute convergence of the trace series
+  and the trace-norm bound.
+* `CKMA.hilbertTrace_basis_independent`: basis independence of the Hilbert-space trace.
+* `CKMA.IsTraceClassOperator.trace_cyclic`: bounded multiplication preserves trace class, and the
+  trace is cyclic.
 -/
 
 @[expose] public section

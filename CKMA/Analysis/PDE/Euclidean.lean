@@ -24,17 +24,20 @@ these expressions to Mathlib's `TestFunction` and orthonormal-basis Laplacian AP
 ## Main definitions
 
 * `CKMA.EuclideanRealSpace`: real Euclidean space `EuclideanSpace ℝ (Fin d)`.
+* `CKMA.euclideanUnitVector`, `CKMA.euclideanOpenBall`: coordinate unit vectors and centered
+  open balls bundled as open sets.
 * `CKMA.IsCompactSmoothTestOn`: smooth compactly supported test functions on a region.
-* `CKMA.euclideanHessianTrace`, `CKMA.euclideanDivergence`, `CKMA.vectorGradientNormSq`:
+* `CKMA.euclideanHessianTrace`, `CKMA.euclideanDivergence`, `CKMA.vectorGradientEnergy`:
   differential expressions in Euclidean coordinates.
-* `CKMA.IsUniformlyEllipticOn`, `CKMA.nondivergenceOperator`: uniformly elliptic coefficient
-  matrices and nondivergence second-order operators.
+* `CKMA.IsUniformlyEllipticOn`, `CKMA.nondivergencePrincipal`,
+  `CKMA.linearEllipticExpression`: uniformly elliptic coefficient matrices, the nondivergence
+  principal part, and the linear elliptic expression with drift and zeroth-order terms.
 
 ## Main results
 
-* `CKMA.IsCompactSmoothTestOn.toTestFunction`: packages a smooth compactly supported test function
-  on an open set as a Mathlib `TestFunction`.
-* `CKMA.nondivergenceOperator_one_eq_laplacian`: the nondivergence operator with identity
+* `CKMA.isCompactSmoothTestOn_iff_exists_testFunction`: on an open set, smooth compactly
+  supported tests are exactly the underlying functions of Mathlib `TestFunction`s.
+* `CKMA.nondivergencePrincipal_id`: the nondivergence principal part with identity
   coefficients equals the Euclidean Laplacian.
 -/
 

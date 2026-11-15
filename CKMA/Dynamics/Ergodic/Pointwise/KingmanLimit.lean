@@ -24,10 +24,6 @@ infimum, so the integrable liminf has that mean.
 ## Main results
 
 * `CKMA.kingmanLiminfReal_integral_eq`: the liminf has integral equal to the Fekete infimum.
-
-## Notation
-
-* Standard Finset summation and Bochner integral notation.
 -/
 
 @[expose] public section
@@ -47,6 +43,8 @@ attribute [local instance] Classical.propDecidable
 def HasKingmanExcursion (f : ℕ → Ω → ℝ) (slope : Ω → ℝ) (k : ℕ) (ω : Ω) : Prop :=
   ∃ j, 0 < j ∧ j ≤ k ∧ f j ω < (j : ℝ) * slope ω
 
+@[deprecated (since := "2026-11-15")] alias kingmanExcursion := HasKingmanExcursion
+
 /-- Comparison value: the slope on an excursion, and one step otherwise. -/
 def kingmanCompare (f : ℕ → Ω → ℝ) (slope : Ω → ℝ) (k : ℕ) (ω : Ω) : ℝ :=
   if HasKingmanExcursion f slope k ω then slope ω else f 1 ω
@@ -56,7 +54,7 @@ def kingmanMajor (f : ℕ → Ω → ℝ) (slope : Ω → ℝ) (k : ℕ) (ω : �
   max (kingmanCompare f slope k ω) (f 1 ω)
 
 /-- Excursion sets of a measurable cocycle and a measurable slope are measurable. -/
-lemma measurableSet_kingmanExcursion {f : ℕ → Ω → ℝ} {slope : Ω → ℝ} {k : ℕ}
+lemma measurableSet_hasKingmanExcursion {f : ℕ → Ω → ℝ} {slope : Ω → ℝ} {k : ℕ}
     (hf : ∀ j : ℕ, 0 < j → Measurable (f j)) (hs : Measurable slope) :
     MeasurableSet {ω | HasKingmanExcursion f slope k ω} := by
   have hunion : {ω | HasKingmanExcursion f slope k ω} =
@@ -76,12 +74,15 @@ lemma measurableSet_kingmanExcursion {f : ℕ → Ω → ℝ} {slope : Ω → �
     rw [hempty]
     exact MeasurableSet.empty
 
+@[deprecated (since := "2026-11-15")]
+alias measurableSet_kingmanExcursion := measurableSet_hasKingmanExcursion
+
 /-- The comparison function is measurable. -/
 lemma measurable_kingmanCompare {f : ℕ → Ω → ℝ} {slope : Ω → ℝ} {k : ℕ}
     (hf : ∀ j : ℕ, 0 < j → Measurable (f j)) (hs : Measurable slope) :
     Measurable (kingmanCompare f slope k) := by
   unfold kingmanCompare
-  exact Measurable.ite (measurableSet_kingmanExcursion hf hs) hs (hf 1 Nat.one_pos)
+  exact Measurable.ite (measurableSet_hasKingmanExcursion hf hs) hs (hf 1 Nat.one_pos)
 
 /-- The tail majorant is measurable. -/
 lemma measurable_kingmanMajor {f : ℕ → Ω → ℝ} {slope : Ω → ℝ} {k : ℕ}

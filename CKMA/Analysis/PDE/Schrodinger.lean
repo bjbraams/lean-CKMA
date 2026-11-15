@@ -22,20 +22,18 @@ Sources: GAPS 34.24 and 34.32.
 
 ## Main definitions
 
+* `CKMA.nonnegativeEssentialSup`: Mathlib's essential supremum in measure-first form.
 * `CKMA.mixedLebesgueGauge`: mixed `L_t^q L_x^r` spacetime norm gauge.
 * `CKMA.IsSchrodingerAdmissible`: Schrödinger-admissible exponent pairs `(q, r)`.
 * `CKMA.freeSchrodinger`: free Schrödinger evolution via the Fourier transform.
-* `CKMA.focusingNlsEnergy`, `CKMA.spatialVariance`: energy and spatial variance for focusing NLS.
+* `CKMA.focusingNLSEnergy`, `CKMA.nlsVariance`: energy and spatial variance for focusing NLS.
+* `CKMA.IsClassicalFocusingNLS`: classical solutions of the focusing NLS equation.
 
 ## Main results
 
-* `CKMA.homogeneous_strichartz`: global homogeneous Strichartz estimate on Schwartz inputs
-  (**34.24**).
-* `CKMA.focusing_nls_virial`: the classical Glassey virial identity for focusing NLS (**34.32**).
-
-## Notation
-
-* `𝓕`: Fourier transform from Mathlib.
+* `CKMA.homogeneous_strichartz` (**34.24**): global homogeneous Strichartz estimate on Schwartz
+  inputs.
+* `CKMA.focusing_nls_virial` (**34.32**): the classical Glassey virial identity for focusing NLS.
 -/
 
 @[expose] public section
@@ -94,7 +92,7 @@ def IsClassicalFocusingNLS {d : ℕ} (p : ℝ)
   ∀ t ∈ I, ∀ x, Complex.I * deriv (fun s ↦ u s x) t + Laplacian.laplacian (u t) x =
     -(‖u t x‖ ^ (p - 1) : ℝ) • u t x
 
-/-- **34.32**, the virial identity for a twice continuously differentiable Schwartz-valued
+/-- **34.32**, the virial identity for a three times continuously differentiable Schwartz-valued
 solution, with local uniform bounds on its spacetime derivatives.
 This is the smooth rapidly decaying core; finite-variance energy-class approximation
 and the maximal-time blowup conclusion remain separate interfaces. -/

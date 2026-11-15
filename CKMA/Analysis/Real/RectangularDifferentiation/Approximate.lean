@@ -40,15 +40,18 @@ height and approximating in `L¹`.
 
 ## Main definitions
 
-* `CKMA.HasGlobalLLog`: global `L(log⁺ L)^{d-1}` integrability condition.
-* `CKMA.rectOscillation`: oscillation of rectangular averages at a point.
+* `CKMA.heightClamp`: truncation `max (-N) (min t N)` of a real value at height `N`.
+* `CKMA.rectangleOscillation`: points at which, at every scale, some rectangle average misses
+  the value by at least `ε`.
 
 ## Main results
 
-* `CKMA.rectDifferentiateAt_of_continuous`: rectangular differentiation at every point for
-  continuous functions.
-* `CKMA.ae_rectanglesDifferentiateAt_of_hasGlobalLLog`: almost-everywhere rectangular
-  differentiation for functions in the global `L(log⁺ L)^{d-1}` class.
+* `CKMA.rectanglesDifferentiateAt_of_hasCompactSupport`: rectangular differentiation at every
+  point for continuous compactly supported functions.
+* `CKMA.volume_rectangleOscillation_eq_zero`: the rectangular oscillation set of a function with
+  globally integrable endpoint growth is null.
+* `CKMA.ae_rectanglesDifferentiateAt_of_integrable_growth`: almost-everywhere rectangular
+  differentiation for measurable functions with `strongMaximalGrowth d |f|` integrable.
 -/
 
 @[expose] public section

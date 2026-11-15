@@ -26,10 +26,6 @@ Gamma value at the multiplied argument, proved on the positive half-line via the
 Bohr–Mollerup theorem and extended to the complex plane by analytic continuation of the
 reciprocal Gamma product.
 
-## Main definitions
-
-* None (reuses `Real.Gamma` and `Complex.Gamma` from Mathlib).
-
 ## Main results
 
 * `CKMA.gamma_multiplication`: Gauss's multiplication formula at all nonpolar complex parameters

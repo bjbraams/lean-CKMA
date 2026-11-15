@@ -453,7 +453,7 @@ lemma inner_side (d k : ℕ) (hd : 2 ≤ d) (i : Fin d) :
   · simp only [innerRect, innerLower, innerUpper, hi, ite_false]
     ring
 
-/-- In dimension `d ≥ 2`, the first two indices of `Fin d` are `0` and `1`. -/
+/-- In dimension `d ≥ 2`, the indices `i : Fin d` with `i.val ≤ 1` form the set `{0, 1}`. -/
 lemma filter_val_le_one_eq_pair (d : ℕ) (hd : 2 ≤ d) :
     Finset.univ.filter (fun i : Fin d => i.val ≤ 1) =
       ({⟨0, by omega⟩, ⟨1, by omega⟩} : Finset (Fin d)) := by

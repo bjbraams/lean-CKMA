@@ -21,13 +21,15 @@ conjugation, and scales by `1 / n` under division of the triplet by `n`.
 ## Main definitions
 
 * `CKMA.levyIntegrand`: the Lévy–Khintchine integrand at frequency `t` and jump size `x`.
-* `CKMA.LevyTriplet.scale`: scaling of a Lévy triplet by a positive factor.
+* `CKMA.LevyTriplet.divNat`: division of a Lévy triplet by a positive natural number `n`.
 
 ## Main results
 
 * `CKMA.integrable_levyIntegrand`: the Lévy–Khintchine integrand is integrable with respect to any
   Lévy measure.
-* `CKMA.continuous_exponent`: the characteristic exponent of a Lévy triplet is continuous.
+* `CKMA.LevyTriplet.continuous_exponent`: the characteristic exponent of a Lévy triplet is
+  continuous.
+* `CKMA.LevyTriplet.exponent_divNat`: dividing a triplet by `n` divides its exponent by `n`.
 -/
 
 @[expose] public section

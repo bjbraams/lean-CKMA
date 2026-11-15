@@ -72,10 +72,6 @@ Sources: GAPS 31.17 and 31.20.
 * `CKMA.floquet_real`: Real Floquet factorization with period `2 * T`.
 * `CKMA.sturm_separation`: Sturm separation theorem for independent solutions (**31.20**).
 * `CKMA.sturm_comparison`: Sturm comparison theorem for solutions at ordered spectral parameters.
-
-## Notation
-
-* Standard real derivative and interval integral notation from Mathlib.
 -/
 
 @[expose] public section

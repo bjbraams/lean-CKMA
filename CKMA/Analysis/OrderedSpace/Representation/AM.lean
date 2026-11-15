@@ -23,22 +23,25 @@ public import Mathlib.Topology.MetricSpace.Antilipschitz
 
 An AM unit identifies the closed norm ball with an order interval. The corresponding
 weak-star state space is weak-star compact, and its extreme points are lattice
-homomorphisms. Evaluation on the weak-star closure of those homomorphisms is a
-lattice isometry onto `C(K, ℝ)`, by Krein–Milman and Stone–Weierstrass. The zero
-space is represented by the empty compact carrier. The argument follows Schaefer,
-*Banach Lattices and Positive Operators*, Proposition II.4.4 and Theorem II.7.4.
+homomorphisms. The normalized lattice homomorphisms form a weak-star compact set, and
+evaluation on that set is a lattice isometry onto `C(K, ℝ)`, by Krein–Milman and
+Stone–Weierstrass. The zero space is represented by the empty compact carrier. The argument
+follows Schaefer, *Banach Lattices and Positive Operators*, Proposition II.4.4 and
+Theorem II.7.4.
 
 ## Main definitions
 
-* `CKMA.amStateSpace`: weak-star state space of positive unit-normalized functionals on an AM
-  space.
-* `CKMA.amCarrier`: weak-star closure of the lattice-homomorphic states.
-* `CKMA.amEvalIsometry`: isometric lattice embedding into `C(amCarrier e, ℝ)`.
+* `CKMA.amStateSet`: weak-star set of positive functionals normalized at the AM unit.
+* `CKMA.amLatticeHomSet`: weak-star set of lattice-homomorphic functionals normalized at the
+  AM unit.
 
 ## Main results
 
-* `CKMA.extremePoints_amStateSpace_latticeHom`: extreme points of `amStateSpace e` preserve lattice
-  operations.
+* `CKMA.isCompact_amStateSet`: the state set is weak-star compact.
+* `CKMA.extremePoints_subset_amLatticeHomSet`: extreme points of `amStateSet e` are normalized
+  lattice homomorphisms.
+* `CKMA.isCompact_amLatticeHomSet`: the normalized lattice homomorphisms form a weak-star
+  compact set.
 * `CKMA.exists_am_representation`: Kakutani representation of an AM Banach lattice with unit.
 -/
 

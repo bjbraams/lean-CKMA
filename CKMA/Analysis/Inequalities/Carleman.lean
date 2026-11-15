@@ -34,8 +34,9 @@ Source: GAPS 11.38.
 
 ## Main results
 
-* `CKMA.carleman_tsum_le` (**11.38**): Carleman's inequality with constant `Real.exp 1`.
-* `CKMA.carleman_constant_optimal` (**11.38**): optimality of the constant `Real.exp 1` over
+* `CKMA.carleman` (**11.38**): Carleman's inequality with constant `Real.exp 1`, including
+  summability of the geometric means.
+* `CKMA.carleman_constant_le` (**11.38**): optimality of the constant `Real.exp 1` over
   finitely supported nonnegative sequences.
 -/
 

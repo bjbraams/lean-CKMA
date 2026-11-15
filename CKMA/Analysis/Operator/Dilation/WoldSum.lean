@@ -19,19 +19,17 @@ Chapter I, Section 1.
 
 ## Main definitions
 
-* `CKMA.woldSummand`: summands indexed by `Option ℕ` (unitary part at `none`, wandering subspace at
-  `some n`).
-* `CKMA.woldHilbertSum`: isometric equivalence between `H` and the `ℓ²` sum of `woldSummand V`.
+* `CKMA.woldSummandNat`: summands indexed by `Option ℕ` (unitary part at `none`, wandering
+  subspace at `some n`).
+* `CKMA.woldSummandIncl`: inclusion of each summand, as the unitary part or the `n`-th wandering
+  shift.
 
 ## Main results
 
-* `CKMA.woldFamily_isHilbertSum`: the unitary part and shifted wandering subspaces form a Hilbert
-  sum.
-* `CKMA.woldHilbertSum_apply_isometry`: action of `V` in Wold Hilbert-sum coordinates.
-
-## Notation
-
-* `⟪x, y⟫_ℂ`: complex inner product.
+* `CKMA.woldSummand_orthogonal`: the Wold summands form an orthogonal family.
+* `CKMA.wold_isHilbertSum`: the unitary part and shifted wandering subspaces form a Hilbert sum.
+* `CKMA.wold_coord_zero`, `CKMA.wold_coord_succ`, `CKMA.wold_coord_unitary`: action of `V` in
+  Wold Hilbert-sum coordinates.
 -/
 
 @[expose] public section

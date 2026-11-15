@@ -53,10 +53,6 @@ It also develops the Cesàro-averaged phase kernel `cesaroPhase` used in Wiener'
   real frequencies.
 * `CKMA.diagMeasure_real_singleton_eq_zero`: Diagonal spectral measures of vectors orthogonal to
   `purePointOperatorSubspace A` have no point masses.
-
-## Notation
-
-* `⟪x, y⟫_ℂ`: Complex inner product on `H`.
 -/
 
 @[expose] public section

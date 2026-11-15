@@ -18,10 +18,6 @@ without requiring that it separate points. Inserting zero handles the empty-set 
 The proof transports TauCeti's strong-dual bipolar theorem through Mathlib's surjectivity of the
 dual embedding for weak bilinear spaces. Source: GAPS 16.13.
 
-## Main definitions
-
-No new public definitions are introduced in this module.
-
 ## Main results
 
 * `CKMA.bipolar_eq_weakClosure_absConvexHull`: bipolar theorem for a bilinear pairing in the

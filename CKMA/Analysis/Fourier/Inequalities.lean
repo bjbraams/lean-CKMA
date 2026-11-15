@@ -18,11 +18,6 @@ Fourier-side second moments by `1/(4π)`, at Mathlib's `exp(-2πi x·ξ)` normal
 
 Source: GAPS 27.13.
 
-## Main definitions
-
-No new public definitions are introduced; see `CKMA.Analysis.Fourier.Inequalities.Cutoff`
-for the frequency cutoff infrastructure.
-
 ## Main results
 
 * `CKMA.heisenberg_uncertainty`: **27.13** coordinate uncertainty inequality bounding the

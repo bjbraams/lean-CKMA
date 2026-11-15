@@ -12,7 +12,7 @@ public import Mathlib.Topology.Algebra.InfiniteSum.NatInt
 # Unilateral shift on `ℓ²(ℕ, H)`
 
 Schäffer's isometric dilation inserts the defect vector at index zero and shifts the existing
-`ℓ²` sequence one step to the right. Both maps are linear isometries up to the inserted vector,
+`ℓ²` sequence one step to the right. Both maps are linear isometries,
 and the inserted vector is orthogonal to the shifted sequence.
 
 ## Main definitions
@@ -22,14 +22,12 @@ and the inserted vector is orthogonal to the shifted sequence.
 
 ## Main results
 
-* `CKMA.norm_l2ShiftRight`: the right shift on `ℓ²(ℕ, H)` is isometric.
+* `CKMA.norm_l2ShiftRightElem`: the right shift on `ℓ²(ℕ, H)` is isometric.
 * `CKMA.norm_l2InsertZero`: insertion at index `0` is isometric.
 * `CKMA.inner_l2InsertZero_l2ShiftRight`: orthogonality of the inserted vector and the shifted
   sequence.
-
-## Notation
-
-* `⟪x, y⟫_ℂ`: complex inner product.
+* `CKMA.norm_sq_l2Cons`: the squared norm of an inserted vector plus a shifted sequence is the
+  sum of the squared norms.
 -/
 
 @[expose] public section

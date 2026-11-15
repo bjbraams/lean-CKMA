@@ -15,6 +15,13 @@ when the function is continuous, in every finite `Lᵖ` norm, and pointwise at e
 circle Lebesgue point.
 
 Source: GAPS 27.17.
+
+## Main results
+
+* `CKMA.fejerMean_tendstoUniformly`: Fejér means of a continuous function converge uniformly.
+* `CKMA.fejerMean_tendsto_Lp` (**27.17**): Fejér means converge in `Lᵖ` for `1 ≤ p < ∞`.
+* `CKMA.fejerMean_tendsto_at_lebesguePoint`: Fejér means of an integrable function converge at
+  every circle Lebesgue point.
 -/
 
 @[expose] public section
