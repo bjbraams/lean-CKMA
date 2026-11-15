@@ -6,11 +6,7 @@ Authors: CKMA contributors
 module
 
 public import CKMA.Analysis.RoughPath.Sewing.YoungGrid
-import Mathlib.Tactic.FieldSimp
-import Mathlib.Tactic.Linarith
-import Mathlib.Tactic.Ring
-import Mathlib.Tactic.Positivity
-import Mathlib.Algebra.Order.Archimedean.Basic
+import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 
 /-!
 # Young integral from complementary finite variation

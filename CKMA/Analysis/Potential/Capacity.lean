@@ -8,9 +8,6 @@ module
 public import CKMA.Analysis.Potential.Cutoff
 public import TauCeti.Analysis.PDE.FundamentalSolution.Euclidean.Basic
 public import TauCeti.Analysis.PDE.Perron.Basic
-public import Mathlib.Analysis.Calculus.ContDiff.Basic
-public import Mathlib.MeasureTheory.Integral.Lebesgue.Basic
-public import Mathlib.Topology.Algebra.Support
 
 /-!
 # Newtonian capacity, equilibrium and boundary regularity

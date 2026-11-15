@@ -5,9 +5,11 @@ Authors: CKMA contributors
 -/
 module
 
-public import CKMA.Dynamics.Ergodic.Pointwise.KingmanLimit
-public import Mathlib.Topology.Instances.ENNReal.Lemmas
-public import Mathlib.Topology.Order.OrderClosed
+public import CKMA.Dynamics.Ergodic.Pointwise.KingmanAE
+
+import CKMA.Dynamics.Ergodic.Pointwise.KingmanLimit
+import CKMA.Dynamics.Ergodic.Pointwise.Birkhoff
+import Mathlib.MeasureTheory.Integral.DominatedConvergence
 
 import Mathlib.Tactic
 

@@ -8,8 +8,7 @@ module
 public import CKMA.Analysis.Fourier.Inequalities.Cutoff
 
 import CKMA.Analysis.Fourier.LpSpace
-import Mathlib.MeasureTheory.Function.LocallyIntegrable
-import Mathlib.Topology.Algebra.ConstMulAction
+import TauCeti.Analysis.Fourier.Continuous
 
 /-!
 # Coordinate uncertainty

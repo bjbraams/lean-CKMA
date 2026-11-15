@@ -5,12 +5,9 @@ Authors: CKMA contributors
 -/
 module
 
-public import Mathlib.Analysis.Calculus.Deriv.Slope
-public import Mathlib.Topology.Instances.Real.Lemmas
-public import Mathlib.Topology.MetricSpace.HausdorffDistance
-public import Mathlib.Analysis.SpecificLimits.Basic
-import Mathlib.Tactic.Linarith
-import Mathlib.Tactic.Positivity
+public import Mathlib.Analysis.Calculus.Deriv.Basic
+
+import Mathlib.Analysis.Calculus.Deriv.Slope
 
 /-!
 # Baire class one and derivatives

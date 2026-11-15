@@ -5,10 +5,12 @@ Authors: CKMA contributors
 -/
 module
 
-public import CKMA.Analysis.InnerProductSpace.Basic
-public import CKMA.Analysis.Operator.Dilation.Schaffer
-public import CKMA.Analysis.Operator.Dilation.Wold
-public import Mathlib.Analysis.InnerProductSpace.LinearMap
+public import CKMA.Analysis.InnerProductSpace.HilbertModel
+public import Mathlib.Analysis.InnerProductSpace.Adjoint
+public import Mathlib.Analysis.CStarAlgebra.Classes
+
+import CKMA.Analysis.Operator.Dilation.Schaffer
+import CKMA.Analysis.Operator.Dilation.Wold
 
 /-!
 # Minimal isometric dilation
@@ -196,7 +198,6 @@ theorem isometricDilation_coinvariant (T : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] 
   exact hcoin (y : K)
 
 omit [CompleteSpace H] in
-set_option linter.style.haveILetI false in
 /-- The closed forward orbit is minimal: the embedded orbit is dense in it. -/
 theorem isometricDilation_minimal (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K) :
     (span ℂ {y : isometricDilationSpace J V | ∃ n : ℕ, ∃ x : H,
@@ -207,7 +208,7 @@ theorem isometricDilation_minimal (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ]
   set S : Set (isometricDilationSpace J V) :=
     {y | ∃ n : ℕ, ∃ x : H, y = (V1.toContinuousLinearMap ^ n) (J1 x)}
   set N := (span ℂ S).topologicalClosure
-  haveI : CompleteSpace N := topologicalClosure.completeSpace (span ℂ S)
+  have : CompleteSpace N := topologicalClosure.completeSpace (span ℂ S)
   have horth : Nᗮ = ⊥ := by
     rw [eq_bot_iff]
     intro y hy

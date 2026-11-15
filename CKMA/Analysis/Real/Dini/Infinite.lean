@@ -5,13 +5,11 @@ Authors: CKMA contributors
 -/
 module
 
-public import CKMA.Analysis.Real.Dini.Covering
-public import CKMA.Analysis.Real.Dini.Young
-public import Mathlib.MeasureTheory.Group.Measure
-public import Mathlib.MeasureTheory.Measure.Haar.Unique
-import Mathlib.Tactic.Linarith
-import Mathlib.Tactic.Positivity
-import Mathlib.Tactic.Ring
+public import CKMA.Analysis.Real.Dini.Basic
+public import Mathlib.MeasureTheory.Measure.Haar.OfBasis
+
+import CKMA.Analysis.Real.Dini.Covering
+import Mathlib.MeasureTheory.Measure.Haar.Unique
 
 /-!
 # Infinite Dini mismatches are null

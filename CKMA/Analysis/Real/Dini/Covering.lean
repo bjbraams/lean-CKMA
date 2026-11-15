@@ -5,16 +5,10 @@ Authors: CKMA contributors
 -/
 module
 
-public import Mathlib.Basic.Real.Basic
-public import Mathlib.Data.Finset.Max
-public import Mathlib.MeasureTheory.Covering.Vitali
-public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
-public import Mathlib.Topology.Order.DenselyOrdered
-import Mathlib.Tactic.FieldSimp
-import Mathlib.Tactic.Linarith
-import Mathlib.Tactic.NormNum
-import Mathlib.Tactic.Positivity
-import Mathlib.Tactic.Ring
+public import Mathlib.MeasureTheory.Measure.Haar.OfBasis
+
+import Mathlib.MeasureTheory.Covering.Vitali
+import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 
 /-!
 # Slope packing for Dini derivatives

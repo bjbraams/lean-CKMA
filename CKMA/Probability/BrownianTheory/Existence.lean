@@ -6,9 +6,7 @@ Authors: CKMA contributors
 module
 
 public import CKMA.Probability.BrownianTheory.HolderPath
-public import CKMA.Probability.ProjectiveLimit
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.ContinuousMap
-public import Mathlib.MeasureTheory.Constructions.Projective
 
 /-!
 # Wiener measure

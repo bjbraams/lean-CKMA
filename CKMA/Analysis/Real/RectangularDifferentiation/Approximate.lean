@@ -5,32 +5,13 @@ Authors: CKMA contributors
 -/
 module
 
-public import CKMA.Analysis.Real.RectangularDifferentiation.Step
-import Mathlib.Algebra.Order.Archimedean.Basic
-import Mathlib.Analysis.Normed.Group.Basic
+public import CKMA.Analysis.Real.RectangularDifferentiation.Base
+
 import Mathlib.Analysis.SpecialFunctions.Log.PosLog
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Real
-import Mathlib.MeasureTheory.Constructions.Pi
 import Mathlib.MeasureTheory.Function.ContinuousMapDense
-import Mathlib.MeasureTheory.Function.L1Space.Integrable
-import Mathlib.MeasureTheory.Function.LocallyIntegrable
-import Mathlib.MeasureTheory.Integral.Bochner.Set
 import Mathlib.MeasureTheory.Integral.DominatedConvergence
-import Mathlib.MeasureTheory.Integral.IntegrableOn
-import Mathlib.MeasureTheory.Integral.Lebesgue.Add
-import Mathlib.MeasureTheory.Integral.Lebesgue.Markov
-import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
-import Mathlib.MeasureTheory.Measure.Regular
-import Mathlib.Topology.Algebra.Support
-import Mathlib.Topology.Bases
-import Mathlib.Topology.Compactness.LocallyCompact
-import Mathlib.Topology.Compactness.SigmaCompact
-import Mathlib.Topology.MetricSpace.Basic
-import Mathlib.Topology.MetricSpace.Lipschitz
-import Mathlib.Topology.MetricSpace.ProperSpace
-import Mathlib.Topology.MetricSpace.Pseudo.Pi
-import Mathlib.Topology.Metrizable.Uniformity
+import CKMA.Analysis.Real.RectangularDifferentiation.Step
+import CKMA.Analysis.Real.RectangularDifferentiation.Iteration
 
 /-!
 # Rectangular differentiation of the global endpoint class

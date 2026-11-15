@@ -5,16 +5,12 @@ Authors: CKMA contributors
 -/
 module
 
-public import Mathlib.Analysis.Normed.Operator.Banach
-public import Mathlib.Analysis.Normed.Operator.BanachSteinhaus
 public import Mathlib.Analysis.Normed.Operator.Basic
-public import Mathlib.Analysis.Normed.Operator.Compact.FredholmAlternative
 public import Mathlib.Analysis.RCLike.Basic
-public import Mathlib.Analysis.SpecificLimits.Basic
-public import Mathlib.Topology.Algebra.Module.Equiv.Basic
-public import Mathlib.Topology.Compactness.Compact
-public import Mathlib.Topology.MetricSpace.Bounded
-public import Mathlib.Topology.Sequences
+
+import Mathlib.Analysis.Normed.Operator.Banach
+import Mathlib.Analysis.Normed.Operator.BanachSteinhaus
+import Mathlib.Analysis.Normed.Operator.Compact.FredholmAlternative
 
 /-!
 # Collectively compact approximation

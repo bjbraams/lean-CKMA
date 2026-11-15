@@ -5,29 +5,12 @@ Authors: CKMA contributors
 -/
 module
 
-public import Mathlib.MeasureTheory.Measure.Dirac
 public import Mathlib.MeasureTheory.Integral.Bochner.Basic
-public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 public import Mathlib.Algebra.Group.ForwardDiff
-public import Mathlib.Data.Nat.Choose.Basic
-public import Mathlib.Tactic
 
+import Mathlib.Tactic
 import Mathlib.Analysis.SpecialFunctions.Choose
-import Mathlib.Analysis.SpecificLimits.Normed
-import Mathlib.Combinatorics.Enumerative.Stirling
-import Mathlib.Data.Nat.Choose.Sum
-import Mathlib.MeasureTheory.Function.L1Space.Integrable
-import Mathlib.MeasureTheory.Integral.Bochner.Set
-import Mathlib.MeasureTheory.Measure.FiniteMeasure
-import Mathlib.MeasureTheory.Measure.HasOuterApproxClosed
 import Mathlib.MeasureTheory.Measure.Prokhorov
-import Mathlib.Order.Filter.Ultrafilter.Basic
-import Mathlib.Topology.Algebra.Algebra
-import Mathlib.Topology.Algebra.Monoid
-import Mathlib.Topology.Compactness.Compact
-import Mathlib.Topology.ContinuousMap.Bounded.Normed
-import Mathlib.Topology.ContinuousMap.Compact
-import Mathlib.Topology.ContinuousMap.Polynomial
 import Mathlib.Topology.ContinuousMap.StoneWeierstrass
 
 /-!
@@ -53,7 +36,8 @@ the Weierstrass approximation theorem on `[0,1]`.
 
 ## Main results
 
-* `CKMA.isCompletelyMonotoneSequence_iff_existsUnique_measure`: Hausdorff moment theorem (**48.34**).
+* `CKMA.isCompletelyMonotoneSequence_iff_existsUnique_measure`: Hausdorff moment theorem
+  (**48.34**).
 -/
 
 @[expose] public section

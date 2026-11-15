@@ -5,13 +5,6 @@ Authors: CKMA contributors
 -/
 module
 
-public import Mathlib.Analysis.Calculus.ContDiff.Deriv
-public import Mathlib.Analysis.Calculus.Deriv.MeanValue
-public import Mathlib.Analysis.Calculus.Deriv.Mul
-public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
-public import Mathlib.MeasureTheory.Function.L1Space.Integrable
-public import Mathlib.MeasureTheory.Function.LpSpace.Basic
-public import Mathlib.MeasureTheory.Integral.IntegralEqImproper
 public import Mathlib.Probability.Distributions.Gaussian.Real
 
 /-!

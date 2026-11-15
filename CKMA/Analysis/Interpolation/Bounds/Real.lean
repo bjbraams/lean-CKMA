@@ -7,15 +7,8 @@ module
 
 public import CKMA.Analysis.Interpolation.Basic
 
-import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
-import Mathlib.MeasureTheory.Integral.Lebesgue.Add
-import Mathlib.MeasureTheory.Integral.Lebesgue.Basic
-import Mathlib.MeasureTheory.Integral.Lebesgue.Map
-import Mathlib.MeasureTheory.Measure.WithDensity
-import Mathlib.Topology.Algebra.GroupWithZero
-import Mathlib.Topology.Algebra.Order.Field
-import Mathlib.Topology.Instances.ENNReal.Lemmas
+import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
+
 
 /-!
 # Real interpolation operator bound

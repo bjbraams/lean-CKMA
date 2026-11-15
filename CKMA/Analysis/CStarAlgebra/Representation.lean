@@ -5,10 +5,7 @@ Authors: CKMA contributors
 -/
 module
 
-public import Mathlib.Analysis.CStarAlgebra.GelfandNaimarkSegal
-public import CKMA.Analysis.InnerProductSpace.Basic
 public import Mathlib.Analysis.CStarAlgebra.Classes
-public import Mathlib.Analysis.InnerProductSpace.LinearMap
 public import Mathlib.Analysis.Normed.Operator.Extend
 public import CKMA.Analysis.CStarAlgebra.Representation.Faithful
 

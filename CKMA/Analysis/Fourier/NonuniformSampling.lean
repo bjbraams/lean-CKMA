@@ -5,9 +5,8 @@ Authors: CKMA contributors
 -/
 module
 
-public import CKMA.Analysis.Fourier.Sampling
+public import CKMA.Analysis.Fourier.Sampling.Band
 public import CKMA.Analysis.InnerProductSpace.Basic
-public import Mathlib.Data.Set.Card
 
 /-!
 # Nonuniform band sampling

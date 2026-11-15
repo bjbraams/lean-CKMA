@@ -6,7 +6,7 @@ Authors: CKMA contributors
 module
 
 public import Mathlib.Topology.MetricSpace.HausdorffDimension
-public import Mathlib.MeasureTheory.Measure.Lebesgue.VolumeOfBalls
+public import Mathlib.Analysis.Normed.Lp.MeasurableSpace
 
 /-!
 # Frostman measures and planar projections

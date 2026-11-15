@@ -6,13 +6,6 @@ Authors: CKMA contributors
 module
 
 public import CKMA.Analysis.RoughPath.Sewing.Dyadic
-import Mathlib.Tactic.FieldSimp
-import Mathlib.Tactic.Linarith
-import Mathlib.Tactic.Positivity
-import Mathlib.Tactic.Ring
-import Mathlib.Algebra.Order.Floor.Semiring
-import Mathlib.Algebra.Order.Archimedean.Real.Basic
-import Mathlib.Topology.Instances.Real.Lemmas
 
 /-!
 # Dyadic sewing construction

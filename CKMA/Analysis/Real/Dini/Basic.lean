@@ -5,10 +5,9 @@ Authors: CKMA contributors
 -/
 module
 
-public import Mathlib.Analysis.Calculus.Deriv.Slope
-public import Mathlib.Data.EReal.Operations
-public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 public import Mathlib.Order.LiminfLimsup
+public import Mathlib.Data.EReal.Basic
+public import Mathlib.Topology.MetricSpace.Pseudo.Defs
 
 /-!
 # Dini derivatives

@@ -5,19 +5,13 @@ Authors: CKMA contributors
 -/
 module
 
-public import Mathlib.Topology.MetricSpace.Closeds
-public import Mathlib.Topology.MetricSpace.Contracting
 public import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
 
-import Mathlib.Analysis.SpecificLimits.Basic
-import Mathlib.MeasureTheory.Constructions.Polish.Basic
-import Mathlib.Order.Filter.AtTopBot.Field
-import Mathlib.Topology.Algebra.Order.Field
-import Mathlib.Topology.MetricSpace.Polish
-import Mathlib.Topology.Metrizable.Basic
 import TauCeti.MeasureTheory.OptimalTransport.Wasserstein.Complete
 import TauCeti.MeasureTheory.OptimalTransport.Wasserstein.Mixture.Basic
 import TauCeti.MeasureTheory.OptimalTransport.Wasserstein.Pushforward
+import Mathlib.Topology.MetricSpace.Closeds
+import Mathlib.Topology.MetricSpace.Contracting
 
 /-!
 # Self-similar compact sets and invariant laws (39.73)
@@ -207,57 +201,52 @@ private theorem measure_compl_selfSimilar_eq_zero [MeasurableSpace X] [BorelSpac
 
 open TauCeti
 
-/-- Nonnegative weights of total mass one give a unique invariant Borel probability measure.
-Uniqueness is among all invariant probabilities, without a moment assumption. -/
-theorem existsUnique_selfSimilar_measure [MeasurableSpace X] [BorelSpace X]
-    (S : ι → X → X) {c : ℝ≥0} (hc : c < 1) (hS : ∀ i, LipschitzWith c (S i))
-    (p : ι → ℝ≥0) (hsum : ∑ i, p i = 1) :
-    ∃! μ : Measure X, IsProbabilityMeasure μ ∧ μ = ∑ i, p i • μ.map (S i) := by
-  have : Nonempty ι := nonempty_of_sum_eq_one hsum
-  obtain ⟨K, hK, _⟩ := existsUnique_selfSimilar_compact S hc hS
-  let s : Set X := K
-  have hsclosed : IsClosed s := K.isCompact.isClosed
-  have hsmeas : MeasurableSet s := hsclosed.measurableSet
-  have hsne : s.Nonempty := K.nonempty
-  have hmaps : ∀ i, S i '' s ⊆ s := by
-    intro i
-    calc
-      S i '' s ⊆ ⋃ j, S j '' s := Set.subset_iUnion (fun j ↦ S j '' s) i
-      _ = s := hK.symm
-  let Y : Type _ := ↥s
-  obtain ⟨x₀, hx₀⟩ := K.nonempty
-  have : Nonempty Y := ⟨⟨x₀, hx₀⟩⟩
-  have : CompactSpace Y := isCompact_iff_compactSpace.mp K.isCompact
-  have : IsClosed s := hsclosed
-  have : CompleteSpace Y := inferInstance
-  have : SecondCountableTopology Y := inferInstance
-  have : BorelSpace Y := inferInstance
-  have : PolishSpace Y := inferInstance
-  have : StandardBorelSpace Y := inferInstance
+/-- A mixture of pushforwards of a probability measure, with weights of total mass one, is a
+probability measure. -/
+private theorem isProbabilityMeasure_sum_smul_map {Y : Type*} [MeasurableSpace Y]
+    {T : ι → Y → Y} (hT : ∀ i, Measurable (T i)) (p : ι → ℝ≥0)
+    (hsum : ∑ i, (p i : ℝ≥0∞) = 1) (ν : Measure Y) [IsProbabilityMeasure ν] :
+    IsProbabilityMeasure (∑ i, (p i : ℝ≥0∞) • ν.map (T i)) := by
+  constructor
+  rw [Measure.finsetSum_apply]
+  refine (Finset.sum_congr rfl fun i _ ↦ ?_).trans hsum
+  rw [Measure.smul_apply, Measure.map_apply (hT i) MeasurableSet.univ, Set.preimage_univ,
+    measure_univ, smul_eq_mul, mul_one]
+
+/-- Mixing pushforwards along `c`-Lipschitz maps, with weights of total mass one, multiplies
+the 1-Wasserstein distance between two probability measures by at most `c`. -/
+private theorem wassersteinEDist_sum_smul_map_le {Y : Type*} [MetricSpace Y]
+    [SecondCountableTopology Y] [MeasurableSpace Y] [BorelSpace Y] {T : ι → Y → Y} {c : ℝ≥0}
+    (hT : ∀ i, LipschitzWith c (T i)) (p : ι → ℝ≥0) (hsum : ∑ i, (p i : ℝ≥0∞) = 1)
+    (μ ν : Measure Y) [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] :
+    wassersteinEDist 1 (∑ i, (p i : ℝ≥0∞) • μ.map (T i)) (∑ i, (p i : ℝ≥0∞) • ν.map (T i)) ≤
+      c * wassersteinEDist 1 μ ν := by
+  have hmix := wassersteinEDist_finset_sum_smul_rpow_le (p := 1) measurable_edist
+    (by simp : (1 : ℝ≥0∞) ≠ 0) ENNReal.one_ne_top Finset.univ
+    (a := fun i ↦ (p i : ℝ≥0∞)) (fun i _ ↦ ENNReal.coe_ne_top (r := p i))
+    (fun i ↦ μ.map (T i)) (fun i ↦ ν.map (T i))
+  calc
+    wassersteinEDist 1 (∑ i, (p i : ℝ≥0∞) • μ.map (T i)) (∑ i, (p i : ℝ≥0∞) • ν.map (T i))
+        ≤ ∑ i, (p i : ℝ≥0∞) * wassersteinEDist 1 (μ.map (T i)) (ν.map (T i)) := by
+      simpa only [ENNReal.toReal_one, ENNReal.rpow_one] using hmix
+    _ ≤ ∑ i, (p i : ℝ≥0∞) * ((c : ℝ≥0∞) * wassersteinEDist 1 μ ν) :=
+      Finset.sum_le_sum fun i _ ↦ mul_le_mul_of_nonneg_left
+        (wassersteinEDist_map_le_mul (p := 1) measurable_edist (hT i).continuous.measurable
+          (hT i) μ ν) bot_le
+    _ = c * wassersteinEDist 1 μ ν := by rw [← Finset.sum_mul, hsum, one_mul]
+
+/-- On a nonempty compact metric space, `c`-Lipschitz maps with `c < 1` and weights of total
+mass one have a unique invariant probability measure. It is the Banach fixed point of the
+mixture operator, which contracts the 1-Wasserstein space by the factor `c`. -/
+private theorem existsUnique_sum_smul_map_of_compactSpace {Y : Type*} [MetricSpace Y]
+    [CompactSpace Y] [Nonempty Y] [MeasurableSpace Y] [BorelSpace Y] {T : ι → Y → Y}
+    {c : ℝ≥0} (hc : c < 1) (hT : ∀ i, LipschitzWith c (T i)) (p : ι → ℝ≥0)
+    (hsum : ∑ i, (p i : ℝ≥0∞) = 1) :
+    ∃! ν : Measure Y, IsProbabilityMeasure ν ∧ ν = ∑ i, (p i : ℝ≥0∞) • ν.map (T i) := by
   have : Fact (1 ≤ (1 : ℝ≥0∞)) := ⟨le_rfl⟩
-  have : Fact ((1 : ℝ≥0∞) ≠ ∞) := ⟨ENNReal.one_ne_top⟩
-  let T : ι → Y → Y := fun i y ↦ ⟨S i y, hmaps i ⟨y, y.2, rfl⟩⟩
-  have hTlip (i : ι) : LipschitzWith c (T i) := by
-    refine LipschitzWith.of_dist_le_mul fun x y ↦ ?_
-    rw [Subtype.dist_eq, Subtype.dist_eq]
-    simpa [T] using (hS i).dist_le_mul x.1 y.1
-  have hTmeas (i : ι) : Measurable (T i) := (hTlip i).continuous.measurable
-  let inc : Y → X := Subtype.val
-  have hinc : MeasurableEmbedding inc := MeasurableEmbedding.subtype_coe hsmeas
-  have hsumE : ∑ i, (p i : ℝ≥0∞) = 1 := by
-    rw [← ENNReal.ofNNReal_finsetSum]
-    simp [hsum]
   let mixture (ν : Measure Y) : Measure Y := ∑ i, (p i : ℝ≥0∞) • ν.map (T i)
-  have hprob (ν : Measure Y) [IsProbabilityMeasure ν] : IsProbabilityMeasure (mixture ν) := by
-    constructor
-    unfold mixture
-    rw [Measure.finsetSum_apply]
-    refine (Finset.sum_congr rfl fun i _ ↦ ?_).trans hsumE
-    rw [Measure.smul_apply, Measure.map_apply (hTmeas i) MeasurableSet.univ, Set.preimage_univ,
-      measure_univ, smul_eq_mul, mul_one]
-  have hmom (ν : Measure Y) [IsProbabilityMeasure ν] : HasFiniteMoment 1 (mixture ν) := by
-    have := hprob ν
-    exact hasFiniteMoment_of_boundedSpace (mixture ν)
+  have hprob (ν : Measure Y) [IsProbabilityMeasure ν] : IsProbabilityMeasure (mixture ν) :=
+    isProbabilityMeasure_sum_smul_map (fun i ↦ (hT i).continuous.measurable) p hsum ν
   let mixProb (ν : Measure Y) [IsProbabilityMeasure ν] : ProbabilityMeasure Y :=
     have : IsProbabilityMeasure (mixture ν) := hprob ν
     Measure.toProbabilityMeasure (mixture ν)
@@ -267,7 +256,8 @@ theorem existsUnique_selfSimilar_measure [MeasurableSpace X] [BorelSpace X]
   let step (μ : WassersteinSpace 1 Y) : WassersteinSpace 1 Y :=
     WassersteinSpace.mk (mixProb (WassersteinSpace.toProbabilityMeasure μ : Measure Y)) <| by
       rw [hmixCoe]
-      exact hmom _
+      have := hprob (WassersteinSpace.toProbabilityMeasure μ : Measure Y)
+      exact hasFiniteMoment_of_boundedSpace _
   have hcoe (μ : WassersteinSpace 1 Y) :
       (WassersteinSpace.toProbabilityMeasure (step μ) : Measure Y) =
         mixture (WassersteinSpace.toProbabilityMeasure μ : Measure Y) := by
@@ -275,76 +265,15 @@ theorem existsUnique_selfSimilar_measure [MeasurableSpace X] [BorelSpace X]
     rw [WassersteinSpace.coe_mk, hmixCoe]
   have hstep : ContractingWith c step := by
     refine ⟨hc, fun μ ν ↦ ?_⟩
-    rw [WassersteinSpace.edist_def, WassersteinSpace.edist_def]
-    rw [hcoe, hcoe]
-    let μ0 : Measure Y := WassersteinSpace.toProbabilityMeasure μ
-    let ν0 : Measure Y := WassersteinSpace.toProbabilityMeasure ν
-    have hmix := wassersteinEDist_finset_sum_smul_rpow_le (p := 1) measurable_edist
-      (by simp : (1 : ℝ≥0∞) ≠ 0) ENNReal.one_ne_top Finset.univ
-      (a := fun i ↦ (p i : ℝ≥0∞)) (fun i _ ↦ ENNReal.coe_ne_top (r := p i))
-      (fun i ↦ μ0.map (T i)) (fun i ↦ ν0.map (T i))
-    have hmix' : wassersteinEDist 1 (mixture μ0) (mixture ν0) ≤
-        ∑ i, (p i : ℝ≥0∞) * wassersteinEDist 1 (μ0.map (T i)) (ν0.map (T i)) := by
-      simpa [mixture, ENNReal.toReal_one, ENNReal.rpow_one] using hmix
-    have hterm (i : ι) :
-        (p i : ℝ≥0∞) * wassersteinEDist 1 (μ0.map (T i)) (ν0.map (T i)) ≤
-          (p i : ℝ≥0∞) * ((c : ℝ≥0∞) * wassersteinEDist 1 μ0 ν0) :=
-      mul_le_mul_of_nonneg_left
-        (wassersteinEDist_map_le_mul (p := 1) measurable_edist (hTmeas i) (hTlip i) μ0 ν0) bot_le
-    calc
-      wassersteinEDist 1 (mixture μ0) (mixture ν0)
-          ≤ ∑ i, (p i : ℝ≥0∞) * wassersteinEDist 1 (μ0.map (T i)) (ν0.map (T i)) := hmix'
-      _ ≤ ∑ i, (p i : ℝ≥0∞) * ((c : ℝ≥0∞) * wassersteinEDist 1 μ0 ν0) :=
-        Finset.sum_le_sum fun i _ ↦ hterm i
-      _ = (∑ i, (p i : ℝ≥0∞)) * ((c : ℝ≥0∞) * wassersteinEDist 1 μ0 ν0) := by
-        rw [Finset.sum_mul]
-      _ = (c : ℝ≥0∞) * wassersteinEDist 1 μ0 ν0 := by rw [hsumE, one_mul]
+    rw [WassersteinSpace.edist_def, WassersteinSpace.edist_def, hcoe, hcoe]
+    exact wassersteinEDist_sum_smul_map_le hT p hsum _ _
   have : Nonempty (WassersteinSpace 1 Y) :=
-    ⟨WassersteinSpace.mk (diracProba ⟨x₀, hx₀⟩) (hasFiniteMoment_dirac 1 _)⟩
+    ⟨WassersteinSpace.mk (diracProba (Classical.arbitrary Y)) (hasFiniteMoment_dirac 1 _)⟩
   let μW : WassersteinSpace 1 Y := hstep.fixedPoint step
   have hfix : step μW = μW := hstep.fixedPoint_isFixedPt
-  let νY : Measure Y := WassersteinSpace.toProbabilityMeasure μW
-  have hνY : νY = mixture νY := by
-    simpa [νY, hfix] using hcoe μW
-  have hpush (ρ : Measure Y) :
-      (mixture ρ).map inc = ∑ i, p i • (ρ.map inc).map (S i) := by
-    unfold mixture
-    rw [Measure.map_finset_sum' (f := inc) hinc.measurable.aemeasurable]
-    refine Finset.sum_congr rfl fun i _ ↦ ?_
-    rw [Measure.map_smul _ hinc.measurable.aemeasurable,
-      Measure.map_map hinc.measurable (hTmeas i),
-      show inc ∘ T i = S i ∘ inc from funext fun _ ↦ rfl,
-      Measure.map_map (hS i).continuous.measurable hinc.measurable, Measure.coe_nnreal_smul]
-  let μX : Measure X := νY.map inc
-  have hinv : μX = ∑ i, p i • μX.map (S i) := by
-    have hμX : μX = (mixture νY).map inc := congrArg (Measure.map inc) hνY
-    conv_lhs => rw [hμX]
-    rw [hpush]
-  refine ⟨μX, ⟨inferInstance, hinv⟩, ?_⟩
-  intro ν hν
-  have : IsProbabilityMeasure ν := hν.1
-  have hcompl : ν sᶜ = 0 :=
-    measure_compl_selfSimilar_eq_zero S hc hS hsclosed hsne hmaps p hsum hν.2
-  let ρ : Measure Y := Measure.comap inc ν
-  have hρmap : ρ.map inc = ν := by
-    rw [hinc.map_comap]
-    have hrange : range inc = s := by
-      ext x
-      constructor
-      · rintro ⟨y, rfl⟩
-        exact y.2
-      · intro hx
-        exact ⟨⟨x, hx⟩, rfl⟩
-    rw [hrange]
-    refine Measure.restrict_eq_self_of_ae_mem ?_
-    rw [ae_iff]
-    convert hcompl using 1
-  have : IsProbabilityMeasure ρ :=
-    (Measure.isProbabilityMeasure_map_iff hinc.measurable.aemeasurable).1 (hρmap ▸ inferInstance)
-  have hρeq : ρ = mixture ρ := by
-    have hsame : (mixture ρ).map inc = ρ.map inc := by
-      rw [hpush, hρmap, ← hν.2]
-    rw [← hinc.comap_map (mixture ρ), hsame, hinc.comap_map]
+  refine ⟨WassersteinSpace.toProbabilityMeasure μW, ⟨inferInstance, ?_⟩, ?_⟩
+  · simpa [hfix, mixture] using hcoe μW
+  rintro ρ ⟨hρ, hρeq⟩
   let ρW : WassersteinSpace 1 Y :=
     WassersteinSpace.mk ρ.toProbabilityMeasure (hasFiniteMoment_of_boundedSpace ρ)
   have hρWcoe : WassersteinSpace.toProbabilityMeasure ρW = ρ.toProbabilityMeasure :=
@@ -359,12 +288,78 @@ theorem existsUnique_selfSimilar_measure [MeasurableSpace X] [BorelSpace X]
       _ = ρ := hρeq.symm
       _ = (WassersteinSpace.toProbabilityMeasure ρW : Measure Y) := by
         rw [hρWcoe, Measure.coe_toProbabilityMeasure]
-  have hρW : ρW = μW := hstep.fixedPoint_unique hfixρ
-  have hρν : ρ = νY := by
-    have hprobEq : WassersteinSpace.toProbabilityMeasure ρW =
-        WassersteinSpace.toProbabilityMeasure μW :=
-      congrArg WassersteinSpace.toProbabilityMeasure hρW
-    rw [← Measure.coe_toProbabilityMeasure ρ, ← hρWcoe, hprobEq]
-  simpa [μX, hρmap] using congrArg (Measure.map inc) hρν
+  rw [← Measure.coe_toProbabilityMeasure ρ, ← hρWcoe, hstep.fixedPoint_unique hfixρ]
+
+omit [MetricSpace X] [CompleteSpace X] [Nonempty X] in
+/-- Pushing a mixture over an invariant subset forward to the ambient space gives the
+ambient mixture of the pushed measure. -/
+private theorem map_subtypeVal_sum_smul_map [MeasurableSpace X] {s : Set X} {S : ι → X → X}
+    (hS : ∀ i, Measurable (S i)) {T : ι → s → s} (hT : ∀ i, Measurable (T i))
+    (hST : ∀ i y, (T i y : X) = S i y) (p : ι → ℝ≥0) (ρ : Measure s) :
+    (∑ i, (p i : ℝ≥0∞) • ρ.map (T i)).map Subtype.val =
+      ∑ i, p i • (ρ.map Subtype.val).map (S i) := by
+  rw [Measure.map_finset_sum' (f := Subtype.val) measurable_subtype_coe.aemeasurable]
+  refine Finset.sum_congr rfl fun i _ ↦ ?_
+  rw [Measure.map_smul _ measurable_subtype_coe.aemeasurable,
+    Measure.map_map measurable_subtype_coe (hT i),
+    show Subtype.val ∘ T i = S i ∘ Subtype.val from funext (hST i),
+    Measure.map_map (hS i) measurable_subtype_coe, Measure.coe_nnreal_smul]
+
+/-- Nonnegative weights of total mass one give a unique invariant Borel probability measure.
+Uniqueness is among all invariant probabilities, without a moment assumption. -/
+theorem existsUnique_selfSimilar_measure [MeasurableSpace X] [BorelSpace X]
+    (S : ι → X → X) {c : ℝ≥0} (hc : c < 1) (hS : ∀ i, LipschitzWith c (S i))
+    (p : ι → ℝ≥0) (hsum : ∑ i, p i = 1) :
+    ∃! μ : Measure X, IsProbabilityMeasure μ ∧ μ = ∑ i, p i • μ.map (S i) := by
+  have : Nonempty ι := nonempty_of_sum_eq_one hsum
+  obtain ⟨K, hK, _⟩ := existsUnique_selfSimilar_compact S hc hS
+  let s : Set X := K
+  have hsclosed : IsClosed s := K.isCompact.isClosed
+  have hsne : s.Nonempty := K.nonempty
+  have hmaps : ∀ i, S i '' s ⊆ s := by
+    intro i
+    calc
+      S i '' s ⊆ ⋃ j, S j '' s := Set.subset_iUnion (fun j ↦ S j '' s) i
+      _ = s := hK.symm
+  have : Nonempty s := hsne.to_subtype
+  have : CompactSpace s := isCompact_iff_compactSpace.mp K.isCompact
+  let T : ι → s → s := fun i y ↦ ⟨S i y, hmaps i ⟨y, y.2, rfl⟩⟩
+  have hTlip (i : ι) : LipschitzWith c (T i) := by
+    refine LipschitzWith.of_dist_le_mul fun x y ↦ ?_
+    rw [Subtype.dist_eq, Subtype.dist_eq]
+    simpa [T] using (hS i).dist_le_mul x.1 y.1
+  have hinc : MeasurableEmbedding (Subtype.val : s → X) :=
+    MeasurableEmbedding.subtype_coe hsclosed.measurableSet
+  have hsumE : ∑ i, (p i : ℝ≥0∞) = 1 := by
+    rw [← ENNReal.ofNNReal_finsetSum]
+    simp [hsum]
+  have hpush := map_subtypeVal_sum_smul_map (fun i ↦ (hS i).continuous.measurable)
+    (fun i ↦ (hTlip i).continuous.measurable) (fun _ _ ↦ rfl) p
+  obtain ⟨νY, ⟨hνY, hνYeq⟩, huniq⟩ :=
+    existsUnique_sum_smul_map_of_compactSpace hc hTlip p hsumE
+  refine ⟨νY.map Subtype.val, ⟨inferInstance, ?_⟩, ?_⟩
+  · calc
+      νY.map Subtype.val = (∑ i, (p i : ℝ≥0∞) • νY.map (T i)).map Subtype.val :=
+        congrArg (Measure.map Subtype.val) hνYeq
+      _ = _ := hpush νY
+  intro ν hν
+  have : IsProbabilityMeasure ν := hν.1
+  have hcompl : ν sᶜ = 0 :=
+    measure_compl_selfSimilar_eq_zero S hc hS hsclosed hsne hmaps p hsum hν.2
+  let ρ : Measure s := Measure.comap Subtype.val ν
+  have hρmap : ρ.map Subtype.val = ν := by
+    rw [hinc.map_comap, Subtype.range_coe]
+    refine Measure.restrict_eq_self_of_ae_mem ?_
+    rw [ae_iff]
+    convert hcompl using 1
+  have : IsProbabilityMeasure ρ :=
+    (Measure.isProbabilityMeasure_map_iff hinc.measurable.aemeasurable).1 (hρmap ▸ inferInstance)
+  have hρeq : ρ = ∑ i, (p i : ℝ≥0∞) • ρ.map (T i) := by
+    have hsame : (∑ i, (p i : ℝ≥0∞) • ρ.map (T i)).map Subtype.val = ρ.map Subtype.val := by
+      rw [hpush, hρmap, ← hν.2]
+    rw [← hinc.comap_map (∑ i, (p i : ℝ≥0∞) • ρ.map (T i)), hsame, hinc.comap_map]
+  calc
+    ν = ρ.map Subtype.val := hρmap.symm
+    _ = νY.map Subtype.val := by rw [huniq ρ ⟨inferInstance, hρeq⟩]
 
 end CKMA

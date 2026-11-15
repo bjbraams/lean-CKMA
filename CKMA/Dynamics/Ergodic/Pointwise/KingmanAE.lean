@@ -5,12 +5,12 @@ Authors: CKMA contributors
 -/
 module
 
-public import CKMA.Dynamics.Ergodic.Pointwise.Kingman
-public import Mathlib.Analysis.SumIntegralComparisons
-public import Mathlib.MeasureTheory.Integral.DominatedConvergence
-public import Mathlib.MeasureTheory.Integral.Layercake
-public import Mathlib.MeasureTheory.Integral.Lebesgue.Markov
-public import Mathlib.Topology.Order.LiminfLimsup
+public import Mathlib.MeasureTheory.Integral.Bochner.Basic
+
+import CKMA.Dynamics.Ergodic.Pointwise.Kingman
+import CKMA.Dynamics.Ergodic.Pointwise.Maximal
+import Mathlib.Analysis.SumIntegralComparisons
+import Mathlib.MeasureTheory.Integral.Layercake
 
 import Mathlib.Tactic
 

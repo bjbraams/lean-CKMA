@@ -5,11 +5,11 @@ Authors: CKMA contributors
 -/
 module
 
-public import CKMA.Probability.InfinitelyDivisible.Law
 public import CKMA.Probability.InfinitelyDivisible.Tightness
 
-import Mathlib.Order.Filter.Ultrafilter.Basic
-import Mathlib.Topology.Compactness.Compact
+import CKMA.Probability.InfinitelyDivisible.Law
+import CKMA.Probability.InfinitelyDivisible.Exponent
+
 
 /-!
 # Existence of a Lévy–Khintchine triplet

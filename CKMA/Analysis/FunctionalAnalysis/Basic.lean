@@ -5,9 +5,9 @@ Authors: CKMA contributors
 -/
 module
 
-public import Mathlib.Analysis.LocallyConvex.WeakSpace
-public import Mathlib.Analysis.Normed.Module.Dual
 public import Mathlib.Analysis.RCLike.Basic
+public import Mathlib.Topology.Algebra.Module.Spaces.WeakDual
+import Mathlib.Analysis.LocallyConvex.SeparatingDual
 
 /-!
 # Basic weak-topology predicates in normed spaces

@@ -8,9 +8,9 @@ module
 public import CKMA.Dynamics.Flow
 public import CKMA.Dynamics.ODE.Planar.Bendixson
 public import Mathlib.Analysis.InnerProductSpace.PiL2
-public import Mathlib.Analysis.Calculus.ContDiff.Basic
-public import Mathlib.Dynamics.Flow
 public import Mathlib.Dynamics.OmegaLimit
+
+import CKMA.Dynamics.ODE.Planar.Basic
 
 /-!
 # Planar omega-limit sets (31.38)

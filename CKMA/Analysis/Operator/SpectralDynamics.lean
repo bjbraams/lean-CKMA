@@ -7,43 +7,10 @@ module
 
 public import CKMA.Analysis.Operator.SpectralDynamics.Lorentz
 public import TauCeti.LinearAlgebra.Eigenspace.Comp
-public import Mathlib.Analysis.InnerProductSpace.Positive
-public import Mathlib.Analysis.Normed.Algebra.Exponential
-public import Mathlib.Analysis.Normed.Algebra.Spectrum
-public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unital
-import Mathlib.Analysis.Complex.RealDeriv
-import Mathlib.Analysis.Complex.Trigonometric
-import Mathlib.Analysis.InnerProductSpace.LinearMap
-import Mathlib.Analysis.InnerProductSpace.Orthogonal
-import Mathlib.Analysis.InnerProductSpace.PiL2
-import Mathlib.Analysis.InnerProductSpace.Projection.Basic
-import Mathlib.Analysis.InnerProductSpace.Projection.Submodule
-import Mathlib.Analysis.Normed.Operator.Bilinear
-import Mathlib.Analysis.Normed.Operator.Compact.Basic
 import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.ExpLog.Basic
-import Mathlib.LinearAlgebra.FiniteDimensional.Defs
-import Mathlib.MeasureTheory.Function.L1Space.Integrable
-import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
-import Mathlib.MeasureTheory.Integral.Bochner.Set
 import Mathlib.MeasureTheory.Integral.DominatedConvergence
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
 import Mathlib.MeasureTheory.Integral.Prod
-import Mathlib.MeasureTheory.Measure.Prod
-import Mathlib.LinearAlgebra.Finsupp.LinearCombination
-import Mathlib.Order.Filter.AtTopBot.Archimedean
-import Mathlib.Topology.Algebra.InfiniteSum.Module
-import Mathlib.Topology.Algebra.Module.FiniteDimension
-import Mathlib.Topology.Algebra.Monoid
-import Mathlib.Topology.MetricSpace.ProperSpace
-import Mathlib.Topology.MetricSpace.Pseudo.Basic
-import Mathlib.Algebra.Group.Pointwise.Set.Basic
-import Mathlib.Tactic.FinCases
-import Mathlib.Tactic.Linarith
-import Mathlib.Topology.Sequences
-import Mathlib.Topology.UniformSpace.Cauchy
-import TauCeti.Analysis.InnerProductSpace.BorelCalculus.DiagonalMeasure
 
 /-!
 # Birman–Schwinger kernel transport and bounded-generator RAGE
@@ -713,8 +680,8 @@ private lemma tendsto_cesaro_normSq_of_isCompact_closure_range (A : H →L[ℂ] 
     (by
       let +nondep : NormedAlgebra ℚ (H →L[ℂ] H) := .restrictScalars ℚ ℂ _
       unfold boundedSpectralEvolution
-      fun_prop : Continuous fun s : ℝ => ‖L (boundedSpectralEvolution A s x)‖ ^ 2).intervalIntegrable
-        0 T
+      fun_prop : Continuous fun s : ℝ => ‖L (boundedSpectralEvolution A s x)‖ ^ 2)
+        |>.intervalIntegrable 0 T
   have hg : IntervalIntegrable (fun s : ℝ =>
       2 * ‖F.starProjection (L (boundedSpectralEvolution A s x))‖ ^ 2 + 2 * δ ^ 2) volume 0 T := by
     refine IntervalIntegrable.add ?_ (continuous_const.intervalIntegrable 0 T)
@@ -741,7 +708,8 @@ private lemma tendsto_cesaro_normSq_of_isCompact_closure_range (A : H →L[ℂ] 
     have hmul := mul_le_mul_of_nonneg_left hint hTinv
     simpa [mul_add, mul_left_comm, mul_assoc, hTpos.ne'] using hmul
   have hnnLHS : 0 ≤ T⁻¹ * ∫ s in (0 : ℝ)..T, ‖L (boundedSpectralEvolution A s x)‖ ^ 2 :=
-    mul_nonneg (inv_nonneg.mpr hTpos.le) (intervalIntegral.integral_nonneg hTpos.le fun _ _ => sq_nonneg _)
+    mul_nonneg (inv_nonneg.mpr hTpos.le)
+      (intervalIntegral.integral_nonneg hTpos.le fun _ _ => sq_nonneg _)
   rw [dist_zero_right, Real.norm_eq_abs, abs_of_nonneg hnnLHS]
   calc
     T⁻¹ * ∫ s in (0 : ℝ)..T, ‖L (boundedSpectralEvolution A s x)‖ ^ 2

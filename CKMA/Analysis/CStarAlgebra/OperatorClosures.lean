@@ -5,10 +5,10 @@ Authors: CKMA contributors
 -/
 module
 
-public import Mathlib.Algebra.Star.Subalgebra
-public import Mathlib.Algebra.Star.NonUnitalSubalgebra
 public import Mathlib.Analysis.InnerProductSpace.Adjoint
-public import Mathlib.Analysis.InnerProductSpace.WeakOperatorTopology
+public import Mathlib.Analysis.LocallyConvex.WeakOperatorTopology
+
+import Mathlib.Analysis.InnerProductSpace.WeakOperatorTopology
 
 /-!
 # Operator commutants, bicommutants, and Kaplansky density

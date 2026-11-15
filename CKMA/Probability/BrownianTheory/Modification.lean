@@ -5,15 +5,10 @@ Authors: CKMA contributors
 -/
 module
 
-public import CKMA.Probability.BrownianTheory.DyadicLimit
-public import CKMA.Probability.BrownianTheory.GaussianMoment
-public import Mathlib.MeasureTheory.Constructions.BorelSpace.Metrizable
-public import Mathlib.MeasureTheory.Function.ConvergenceInMeasure
-public import Mathlib.MeasureTheory.Integral.Bochner.Basic
-public import Mathlib.MeasureTheory.OuterMeasure.BorelCantelli
-public import Mathlib.MeasureTheory.MeasurableSpace.MeasurablyGenerated
-public import Mathlib.Topology.Algebra.InfiniteSum.ENNReal
-public import Mathlib.Topology.MetricSpace.Holder
+public import Mathlib.Probability.BrownianMotion.Basic
+
+import CKMA.Probability.BrownianTheory.GaussianMoment
+import CKMA.Probability.BrownianTheory.DyadicPath
 
 /-!
 # Continuous Hölder modification of a pre-Brownian process
@@ -42,10 +37,8 @@ noncomputable section
 
 namespace CKMA
 
-open Classical Finset Filter MeasureTheory ProbabilityTheory
+open Finset Filter MeasureTheory ProbabilityTheory
 open scoped NNReal ENNReal Topology
-
-set_option linter.unusedSectionVars false
 
 variable {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsProbabilityMeasure μ]
   {B : ℝ≥0 → Ω → ℝ}
@@ -114,16 +107,19 @@ lemma exists_subHalf_ge {α : ℝ} (hα : α < 1 / 2) :
 def version (hB : IsPreBrownianReal B μ) (t : ℝ≥0) : Ω → ℝ :=
   (hB.aemeasurable t).mk (B t)
 
+omit [IsProbabilityMeasure μ] in
 /-- The measurable version is measurable. -/
 lemma measurable_version (hB : IsPreBrownianReal B μ) (t : ℝ≥0) :
     Measurable (version hB t) :=
   (hB.aemeasurable t).measurable_mk
 
+omit [IsProbabilityMeasure μ] in
 /-- The measurable version agrees almost everywhere with the original process. -/
 lemma version_ae_eq (hB : IsPreBrownianReal B μ) (t : ℝ≥0) :
     B t =ᵐ[μ] version hB t :=
   (hB.aemeasurable t).ae_eq_mk
 
+omit [IsProbabilityMeasure μ] in
 /-- The measurable version is pre-Brownian. -/
 lemma version_isPreBrownian (hB : IsPreBrownianReal B μ) :
     IsPreBrownianReal (version hB) μ :=
@@ -156,6 +152,7 @@ def levelBad (hB : IsPreBrownianReal B μ) (k j n : ℕ) : Set Ω :=
 def good (hB : IsPreBrownianReal B μ) : Set Ω :=
   {ω | ∀ k j : ℕ, ∀ᶠ n in atTop, ω ∉ levelBad hB k j n}
 
+omit [IsProbabilityMeasure μ] in
 /-- Each bad increment is measurable. -/
 private lemma measurableSet_badInc (hB : IsPreBrownianReal B μ) (k j n i : ℕ) :
     MeasurableSet (badInc hB k j n i) := by
@@ -164,11 +161,13 @@ private lemma measurableSet_badInc (hB : IsPreBrownianReal B μ) (k j n i : ℕ)
     ((measurable_version hB _).sub (measurable_version hB _)).norm
   exact measurableSet_Ici.preimage hmeas
 
+omit [IsProbabilityMeasure μ] in
 /-- A bad level is a finite union of measurable sets. -/
 private lemma measurableSet_levelBad (hB : IsPreBrownianReal B μ) (k j n : ℕ) :
     MeasurableSet (levelBad hB k j n) := by
   refine Finset.measurableSet_biUnion _ fun i _ => measurableSet_badInc hB k j n i
 
+omit [IsProbabilityMeasure μ] in
 /-- The good set is measurable. -/
 lemma measurableSet_good (hB : IsPreBrownianReal B μ) : MeasurableSet (good hB) := by
   have hlim (k j : ℕ) : MeasurableSet (limsup (levelBad hB k j) atTop) :=
@@ -186,6 +185,7 @@ lemma measurableSet_good (hB : IsPreBrownianReal B μ) : MeasurableSet (good hB)
   rw [hall]
   exact MeasurableSet.iInter fun k => MeasurableSet.iInter fun j => hnot k j
 
+omit [IsProbabilityMeasure μ] in
 /-- One bad increment has Markov bound `M` times a negative power of the mesh. -/
 private lemma measureReal_badInc_le (hB : IsPreBrownianReal B μ) (k j n i : ℕ) :
     μ.real (badInc hB k j n i) ≤

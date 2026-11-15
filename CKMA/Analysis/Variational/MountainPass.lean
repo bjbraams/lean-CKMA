@@ -5,33 +5,12 @@ Authors: CKMA contributors
 -/
 module
 
-public import Mathlib.Analysis.Calculus.ContDiff.Basic
-public import Mathlib.Topology.ContinuousMap.Compact
-public import Mathlib.Order.Filter.Basic
+public import Mathlib.Analysis.Calculus.ContDiff.Defs
 
 import Mathlib.Algebra.BigOperators.Field
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Analysis.Calculus.Deriv.Add
 import Mathlib.Analysis.Calculus.Deriv.Comp
 import Mathlib.Analysis.Calculus.Deriv.MeanValue
-import Mathlib.Analysis.Convex.Basic
-import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
-import Mathlib.Analysis.Normed.Operator.NNNorm
-import Mathlib.Analysis.SpecificLimits.Basic
-import Mathlib.Topology.Algebra.GroupWithZero
-import Mathlib.Topology.Algebra.Monoid
-import Mathlib.Topology.Compactness.Compact
-import Mathlib.Topology.Compactness.LocallyCompact
-import Mathlib.Topology.Connected.Basic
-import Mathlib.Data.Finset.Lattice.Fold
-import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
-import Mathlib.Topology.Order.Compact
-import Mathlib.Topology.Order.DenselyOrdered
-import Mathlib.Topology.Order.IntermediateValue
-import Mathlib.Topology.Semicontinuity.Basic
-import Mathlib.Topology.UniformSpace.CompactConvergence
-import Mathlib.Topology.UniformSpace.UniformEmbedding
+import Mathlib.Topology.ContinuousMap.Compact
 import TauCeti.Topology.MetricSpace.Ekeland
 
 /-!
@@ -361,46 +340,62 @@ private lemma completeSpace_mountainPassPaths (e : E) [CompleteSpace E] :
   let _ : IsClosed (mountainPassPaths e) := isClosed_mountainPassPaths e
   infer_instance
 
-/-- An admissible path obeying the Ekeland slope bound has a maximum point whose derivative
-is at most that slope. Both endpoints stay fixed: their energy lies strictly below the maximum,
-so the supporting tents never move them. -/
-private lemma exists_small_fderiv_of_slope {I : E → ℝ} (hI : ContDiff ℝ 1 I) {e : E}
-    {γ : C(Set.Icc (0 : ℝ) 1, E)} (hγ : γ ∈ mountainPassPaths e) {κ : ℝ} (hκ : 0 < κ)
-    (hslope : ∀ σ, σ ∈ mountainPassPaths e →
-      pathMaxEnergy I γ ≤ pathMaxEnergy I σ + κ * dist σ γ)
-    (h0 : I (γ ⟨0, by norm_num⟩) < pathMaxEnergy I γ)
-    (h1 : I (γ ⟨1, by norm_num⟩) < pathMaxEnergy I γ) :
-    ∃ t, I (γ t) = pathMaxEnergy I γ ∧ ‖fderiv ℝ I (γ t)‖ ≤ κ := by
-  by_contra! hbad
-  let m : ℝ := pathMaxEnergy I γ
-  have hIc : Continuous I := hI.continuous
-  let M : Set (Set.Icc (0 : ℝ) 1) := {t | I (γ t) = m}
-  have hMcomp : IsCompact M :=
-    (isClosed_eq (hIc.comp γ.continuous) continuous_const).isCompact
-  obtain ⟨tM, htM⟩ := exists_eq_pathMaxEnergy hIc γ
-  have hMne : M.Nonempty := ⟨tM, htM⟩
-  have h0not : (⟨0, by norm_num⟩ : Set.Icc (0 : ℝ) 1) ∉ M := by
-    intro ht
-    exact h0.ne (by simpa [M] using ht)
-  have h1not : (⟨1, by norm_num⟩ : Set.Icc (0 : ℝ) 1) ∉ M := by
-    intro ht
-    exact h1.ne (by simpa [M] using ht)
-  have ht_pos (t : M) : 0 < t.1.1 := by
-    refine lt_of_le_of_ne t.1.2.1 ?_
-    intro h
-    have ht0 : t.1 = ⟨0, by norm_num⟩ :=
-      Subtype.coe_injective (by simpa using h.symm)
-    exact h0not (ht0 ▸ t.2)
-  have ht_lt (t : M) : t.1.1 < 1 := by
-    refine lt_of_le_of_ne t.1.2.2 ?_
-    intro h
-    have ht1 : t.1 = ⟨1, by norm_num⟩ := Subtype.coe_injective (by simpa using h)
-    exact h1not (ht1 ▸ t.2)
+/-- A combination with nonnegative weights summing to `1`, of directions that pair with `f`
+above `κ` wherever their weight is positive, also pairs with `f` above `κ`. -/
+private lemma lt_apply_sum_smul {ι : Type*} {s : Finset ι} {f : E →L[ℝ] ℝ} {κ : ℝ}
+    {a : ι → ℝ} {v : ι → E} (ha : ∀ i ∈ s, 0 ≤ a i) (hsum : ∑ i ∈ s, a i = 1)
+    (hpair : ∀ i ∈ s, 0 < a i → κ < f (v i)) :
+    κ < f (∑ i ∈ s, a i • v i) := by
+  have hterm : ∀ i ∈ s, a i * κ ≤ a i * f (v i) := by
+    intro i hi
+    rcases (ha i hi).eq_or_lt with h | h
+    · simp [← h]
+    · exact mul_le_mul_of_nonneg_left (hpair i hi h).le h.le
+  have hex : ∃ i ∈ s, a i * κ < a i * f (v i) := by
+    obtain ⟨i, hi, hai⟩ : ∃ i ∈ s, 0 < a i := by
+      by_contra! hnone
+      have hzero : ∑ i ∈ s, a i = 0 :=
+        Finset.sum_eq_zero fun i hi ↦ le_antisymm (hnone i hi) (ha i hi)
+      rw [hsum] at hzero
+      exact one_ne_zero hzero
+    exact ⟨i, hi, mul_lt_mul_of_pos_left (hpair i hi hai) hai⟩
+  have hsumlt := Finset.sum_lt_sum hterm hex
+  rw [← Finset.sum_mul, hsum, one_mul] at hsumlt
+  simpa [map_sum, map_smul, smul_eq_mul] using hsumlt
+
+/-- A combination with nonnegative weights of total at most `1`, of vectors of norm at most
+`θ ≥ 0`, has norm at most `θ`. -/
+private lemma norm_sum_smul_le {ι : Type*} {s : Finset ι} {a : ι → ℝ} {v : ι → E} {θ : ℝ}
+    (hθ : 0 ≤ θ) (ha : ∀ i ∈ s, 0 ≤ a i) (hsum : ∑ i ∈ s, a i ≤ 1)
+    (hv : ∀ i ∈ s, ‖v i‖ ≤ θ) :
+    ‖∑ i ∈ s, a i • v i‖ ≤ θ := by
+  calc ‖∑ i ∈ s, a i • v i‖ ≤ ∑ i ∈ s, ‖a i • v i‖ := norm_sum_le _ _
+    _ ≤ ∑ i ∈ s, a i * θ := Finset.sum_le_sum fun i hi ↦ by
+        rw [norm_smul, Real.norm_eq_abs, abs_of_nonneg (ha i hi)]
+        exact mul_le_mul_of_nonneg_left (hv i hi) (ha i hi)
+    _ = (∑ i ∈ s, a i) * θ := by rw [Finset.sum_mul]
+    _ ≤ θ := mul_le_of_le_one_left hθ hsum
+
+/-- **Pathwise pseudogradient.** If the derivative exceeds `κ` in norm at every point of a
+compact set `M` of interior times, there are a continuous field `w` of directions of norm at most
+some `θ < 1`, vanishing at both endpoints, and a continuous cutoff `g` with `g 0 = 0` and
+`g ≥ s₀ > 0` on `M`, such that `w t` pairs with the derivative at `γ t` above `κ` wherever
+`s₀ / 2 ≤ g t`. The field is a tent-function partition of unity over a finite chart cover. -/
+private lemma exists_pathPseudogradient {I : E → ℝ} (hI : ContDiff ℝ 1 I)
+    (γ : C(Set.Icc (0 : ℝ) 1, E)) {κ : ℝ} {M : Set (Set.Icc (0 : ℝ) 1)}
+    (hMcomp : IsCompact M) (hMne : M.Nonempty) (hM0 : ∀ t ∈ M, 0 < t.1)
+    (hM1 : ∀ t ∈ M, t.1 < 1) (hbad : ∀ t ∈ M, κ < ‖fderiv ℝ I (γ t)‖) :
+    ∃ w : Set.Icc (0 : ℝ) 1 → E, Continuous w ∧ w ⟨0, by norm_num⟩ = 0 ∧
+      w ⟨1, by norm_num⟩ = 0 ∧ ∃ θ, 0 ≤ θ ∧ θ < 1 ∧ (∀ t, ‖w t‖ ≤ θ) ∧
+      ∃ g : Set.Icc (0 : ℝ) 1 → ℝ, Continuous g ∧ g ⟨0, by norm_num⟩ = 0 ∧
+      ∃ s₀ > 0, (∀ t ∈ M, s₀ ≤ g t) ∧
+        ∀ t, s₀ / 2 ≤ g t → κ < (fderiv ℝ I (γ t)) (w t) := by
   have hdata (t : M) : ∃ v : E, ‖v‖ < 1 ∧ κ < (fderiv ℝ I (γ t.1)) v ∧
       ∃ ρ > 0, ∃ η > 0, η < min t.1.1 (1 - t.1.1) ∧
         ∀ s, dist s t.1 < η → ∀ u, ‖u - γ s‖ < ρ → κ < (fderiv ℝ I u) v :=
-    exists_chart_along_path hI γ (ht_pos t) (ht_lt t) (hbad t.1 t.2)
+    exists_chart_along_path hI γ (hM0 t t.2) (hM1 t t.2) (hbad t t.2)
   choose v hvnorm hvpair ρ hρ η hη hηlt hnear using hdata
+  -- A finite subcover of `M` by chart intervals.
   have hcover : M ⊆ ⋃ i : M, ball i.1 (η i) := by
     intro t ht
     exact mem_iUnion.2 ⟨⟨t, ht⟩, mem_ball_self (hη ⟨t, ht⟩)⟩
@@ -415,6 +410,7 @@ private lemma exists_small_fderiv_of_slope {I : E → ℝ} (hI : ContDiff ℝ 1 
   have hθ0 : 0 ≤ θ := by
     obtain ⟨i, hi⟩ := hsne
     exact (norm_nonneg _).trans (Finset.le_sup' (fun j ↦ ‖v j‖) hi)
+  -- The cutoff `g` is the sum of the tents; it is bounded below on `M` by `s0 > 0`.
   let g : Set.Icc (0 : ℝ) 1 → ℝ := fun t ↦ ∑ i ∈ s, mountainPassTent i.1.1 (η i) t.1
   have hgcont : Continuous g :=
     continuous_finsetSum s fun i _ ↦ (continuous_mountainPassTent _ _).comp continuous_subtype_val
@@ -441,6 +437,7 @@ private lemma exists_small_fderiv_of_slope {I : E → ℝ} (hI : ContDiff ℝ 1 
     apply mountainPassTent_eq_zero_of_abs_ge
     rw [abs_of_nonneg (sub_nonneg.mpr i.1.2.2)]
     exact (lt_of_lt_of_le (hηlt i) (min_le_right _ _)).le
+  -- Normalized tents give the weights of the partition of unity.
   let weight : M → Set.Icc (0 : ℝ) 1 → ℝ :=
     fun i t ↦ mountainPassTent i.1.1 (η i) t.1 / max (g t) (s0 / 2)
   have hdenpos (t : Set.Icc (0 : ℝ) 1) : 0 < max (g t) (s0 / 2) :=
@@ -450,92 +447,66 @@ private lemma exists_small_fderiv_of_slope {I : E → ℝ} (hI : ContDiff ℝ 1 
   have hweight (i : M) : Continuous (weight i) := by
     refine Continuous.div ((continuous_mountainPassTent _ _).comp continuous_subtype_val)
       (hgcont.max continuous_const) fun t ↦ (hdenpos t).ne'
-  have hsum_le (t : Set.Icc (0 : ℝ) 1) : ∑ i ∈ s, weight i t ≤ 1 := by
-    by_cases ht : s0 / 2 ≤ g t
-    · have hgpos : 0 < g t := lt_of_lt_of_le (half_pos hs0pos) ht
-      have : ∑ i ∈ s, weight i t = 1 := by
-        simp only [weight, max_eq_left ht, ← Finset.sum_div, g]
-        exact div_self hgpos.ne'
-      exact this.le
-    · push Not at ht
-      simp only [weight, max_eq_right ht.le, ← Finset.sum_div, g]
-      rw [div_le_one₀ (half_pos hs0pos)]
-      exact ht.le
   have hsum_one {t : Set.Icc (0 : ℝ) 1} (ht : s0 / 2 ≤ g t) : ∑ i ∈ s, weight i t = 1 := by
     have hgpos : 0 < g t := lt_of_lt_of_le (half_pos hs0pos) ht
     simp only [weight, max_eq_left ht, ← Finset.sum_div, g]
     exact div_self hgpos.ne'
+  have hsum_le (t : Set.Icc (0 : ℝ) 1) : ∑ i ∈ s, weight i t ≤ 1 := by
+    by_cases ht : s0 / 2 ≤ g t
+    · exact (hsum_one ht).le
+    · push Not at ht
+      simp only [weight, max_eq_right ht.le, ← Finset.sum_div, g]
+      rw [div_le_one₀ (half_pos hs0pos)]
+      exact ht.le
   let w : Set.Icc (0 : ℝ) 1 → E := fun t ↦ ∑ i ∈ s, weight i t • v i
   have hw : Continuous w :=
     continuous_finsetSum s fun i _ ↦ (hweight i).smul continuous_const
-  have hw_le (t : Set.Icc (0 : ℝ) 1) : ‖w t‖ ≤ θ := by
-    calc ‖w t‖ ≤ ∑ i ∈ s, ‖weight i t • v i‖ := norm_sum_le _ _
-      _ = ∑ i ∈ s, |weight i t| * ‖v i‖ := by simp_rw [norm_smul, Real.norm_eq_abs]
-      _ ≤ ∑ i ∈ s, weight i t * θ := by
-          refine Finset.sum_le_sum fun i hi ↦ ?_
-          rw [abs_of_nonneg (hwnn i t)]
-          exact mul_le_mul_of_nonneg_left (Finset.le_sup' (fun j ↦ ‖v j‖) hi) (hwnn i t)
-      _ = (∑ i ∈ s, weight i t) * θ := by rw [Finset.sum_mul]
-      _ ≤ 1 * θ := mul_le_mul_of_nonneg_right (hsum_le t) hθ0
-      _ = θ := one_mul θ
-  have hpairG (t : Set.Icc (0 : ℝ) 1) (ht : s0 / 2 ≤ g t) :
-      κ < (fderiv ℝ I (γ t)) (w t) := by
-    have hterm (i : M) (hi : i ∈ s) :
-        weight i t * κ ≤ weight i t * (fderiv ℝ I (γ t)) (v i) := by
-      by_cases hwi : weight i t = 0
-      · simp [hwi]
-      · have hposw : 0 < weight i t := lt_of_le_of_ne (hwnn i t) (Ne.symm hwi)
-        have htent : 0 < mountainPassTent i.1.1 (η i) t.1 := by
-          have hquot : 0 < weight i t := hposw
-          unfold weight at hquot
-          exact (div_pos_iff.mp hquot).elim (fun h ↦ h.1) fun h ↦ absurd h.2 (hdenpos t).not_gt
-        have hdist : dist t i.1 < η i := by
-          rw [Subtype.dist_eq, Real.dist_eq]
-          exact mountainPassTent_pos.mp htent
-        have hpairi : κ < (fderiv ℝ I (γ t)) (v i) :=
-          hnear i t hdist (γ t) (by simpa using hρ i)
-        exact mul_le_mul_of_nonneg_left hpairi.le hposw.le
-    have hex : ∃ i ∈ s, weight i t * κ < weight i t * (fderiv ℝ I (γ t)) (v i) := by
-      have hposw : ∃ i ∈ s, 0 < weight i t := by
-        by_contra hnone
-        push Not at hnone
-        have hzero : ∑ i ∈ s, weight i t = 0 :=
-          Finset.sum_eq_zero fun i hi ↦ le_antisymm (hnone i hi) (hwnn i t)
-        rw [hsum_one ht] at hzero
-        exact one_ne_zero hzero
-      obtain ⟨i, hi, hwi⟩ := hposw
-      have htent : 0 < mountainPassTent i.1.1 (η i) t.1 := by
-        unfold weight at hwi
-        exact (div_pos_iff.mp hwi).elim (fun h ↦ h.1) fun h ↦ absurd h.2 (hdenpos t).not_gt
-      have hdist : dist t i.1 < η i := by
-        rw [Subtype.dist_eq, Real.dist_eq]
-        exact mountainPassTent_pos.mp htent
-      exact ⟨i, hi, mul_lt_mul_of_pos_left (hnear i t hdist (γ t) (by simpa using hρ i)) hwi⟩
-    have hsumlt := Finset.sum_lt_sum hterm hex
-    have hleft : ∑ i ∈ s, weight i t * κ = κ := by rw [← Finset.sum_mul, hsum_one ht, one_mul]
-    have hright : ∑ i ∈ s, weight i t * (fderiv ℝ I (γ t)) (v i) =
-        (fderiv ℝ I (γ t)) (w t) := by
-      simp only [w, map_sum, map_smul, smul_eq_mul, mul_comm]
-    linarith
-  let seg : Set.Icc (0 : ℝ) 1 × Set.Icc (0 : ℝ) 1 → E :=
-    fun p ↦ γ p.1 - (p.2 : ℝ) • w p.1
-  have hseg : Continuous seg :=
-    (γ.continuous.comp continuous_fst).sub
-      ((continuous_subtype_val.comp continuous_snd).smul (hw.comp continuous_fst))
-  let normSet : Set ℝ := (fun z : E ↦ ‖fderiv ℝ I z‖) '' range seg
-  have hnormCont : Continuous fun z : E ↦ ‖fderiv ℝ I z‖ :=
-    continuous_norm.comp (hI.continuous_fderiv one_ne_zero)
-  have hnormComp : IsCompact normSet := (isCompact_range hseg).image hnormCont
-  let B : ℝ := sSup normSet
-  have hB0 : 0 ≤ B := by
-    obtain ⟨z, -, hz⟩ := hnormComp.sSup_mem ((range_nonempty seg).image _)
-    have hz0 : 0 ≤ ‖fderiv ℝ I z‖ := norm_nonneg _
-    exact le_of_le_of_eq hz0 (by simpa [B] using hz)
-  have hBbdd : BddAbove normSet := hnormComp.bddAbove
-  have hBle {z : E} (hz : z ∈ range seg) : ‖fderiv ℝ I z‖ ≤ B :=
-    le_csSup hBbdd (mem_image_of_mem _ hz)
-  let G : Set (Set.Icc (0 : ℝ) 1) := {t | s0 / 2 ≤ g t}
-  have hGcomp : IsCompact G := (isClosed_le continuous_const hgcont).isCompact
+  have hw0 : w ⟨0, by norm_num⟩ = 0 := by
+    simp only [w, weight]
+    refine Finset.sum_eq_zero fun i _ ↦ ?_
+    rw [htent0 i, zero_div, zero_smul]
+  have hw1 : w ⟨1, by norm_num⟩ = 0 := by
+    simp only [w, weight]
+    refine Finset.sum_eq_zero fun i _ ↦ ?_
+    rw [htent1 i, zero_div, zero_smul]
+  have hg0 : g ⟨0, by norm_num⟩ = 0 := by simp [g, htent0]
+  refine ⟨w, hw, hw0, hw1, θ, hθ0, hθ, fun t ↦ norm_sum_smul_le hθ0 (fun i _ ↦ hwnn i t)
+    (hsum_le t) fun i hi ↦ Finset.le_sup' (fun j ↦ ‖v j‖) hi, g, hgcont, hg0, s0, hs0pos,
+    fun t ht ↦ csInf_le (hMcomp.image hgcont).bddBelow (mem_image_of_mem g ht),
+    fun t ht ↦ lt_apply_sum_smul (fun i _ ↦ hwnn i t) (hsum_one ht) fun i _ hwi ↦ ?_⟩
+  -- A positive weight places `t` in the chart interval of `i`.
+  have htent : 0 < mountainPassTent i.1.1 (η i) t.1 := by
+    unfold weight at hwi
+    exact (div_pos_iff.mp hwi).elim (fun h ↦ h.1) fun h ↦ absurd h.2 (hdenpos t).not_gt
+  have hdist : dist t i.1 < η i := by
+    rw [Subtype.dist_eq, Real.dist_eq]
+    exact mountainPassTent_pos.mp htent
+  exact hnear i t hdist (γ t) (by simpa using hρ i)
+
+omit [NormedSpace ℝ E] in
+/-- On a closed set of times containing no maximum point, the energy along the path stays below
+some level strictly less than the maximal energy. -/
+private lemma exists_lt_pathMaxEnergy_of_isClosed {I : E → ℝ} (hI : Continuous I)
+    (γ : C(Set.Icc (0 : ℝ) 1, E)) {F : Set (Set.Icc (0 : ℝ) 1)} (hF : IsClosed F)
+    (hFM : ∀ t ∈ F, I (γ t) ≠ pathMaxEnergy I γ) :
+    ∃ mF < pathMaxEnergy I γ, ∀ t ∈ F, I (γ t) ≤ mF := by
+  rcases F.eq_empty_or_nonempty with rfl | hFne
+  · exact ⟨pathMaxEnergy I γ - 1, by linarith, by simp⟩
+  have himg : IsCompact ((fun t ↦ I (γ t)) '' F) := hF.isCompact.image (hI.comp γ.continuous)
+  obtain ⟨t, htF, ht⟩ := himg.sSup_mem (hFne.image _)
+  refine ⟨sSup ((fun t ↦ I (γ t)) '' F), ?_,
+    fun t' ht' ↦ le_csSup himg.bddAbove (mem_image_of_mem _ ht')⟩
+  rw [← ht]
+  exact lt_of_le_of_ne (le_pathMaxEnergy hI γ t) (hFM t htF)
+
+/-- Uniform persistence of the pairing: if `w t` pairs with the derivative at `γ t` above `κ`
+for every `t` in a closed set `G`, the same holds at `γ t - τ • w t` for all `|τ| < ε`. -/
+private lemma exists_pos_forall_lt_fderiv_sub_smul {I : E → ℝ} (hI : ContDiff ℝ 1 I)
+    (γ : C(Set.Icc (0 : ℝ) 1, E)) {w : Set.Icc (0 : ℝ) 1 → E} (hw : Continuous w) {κ : ℝ}
+    {G : Set (Set.Icc (0 : ℝ) 1)} (hG : IsClosed G)
+    (hpair : ∀ t ∈ G, κ < (fderiv ℝ I (γ t)) (w t)) :
+    ∃ ε > 0, ∀ t ∈ G, ∀ τ : ℝ, dist τ 0 < ε →
+      κ < (fderiv ℝ I (γ t - τ • w t)) (w t) := by
   have hpoint : Continuous (fun p : Set.Icc (0 : ℝ) 1 × ℝ ↦ γ p.1 - p.2 • w p.1) :=
     (γ.continuous.comp continuous_fst).sub (continuous_snd.smul (hw.comp continuous_fst))
   have hΦ : Continuous (fun p : Set.Icc (0 : ℝ) 1 × ℝ ↦
@@ -548,33 +519,72 @@ private lemma exists_small_fderiv_of_slope {I : E → ℝ} (hI : ContDiff ℝ 1 
   have htube : G ×ˢ {(0 : ℝ)} ⊆ u := by
     intro p hp
     have hp0 : p.2 = 0 := by simpa using hp.2
-    have : κ < (fderiv ℝ I (γ p.1)) (w p.1) := hpairG p.1 hp.1
-    simpa [u, hp0] using this
+    simpa [u, hp0] using hpair p.1 hp.1
   obtain ⟨_, u2, -, hu2, hGu, h0set, hprod⟩ :=
-    generalized_tube_lemma hGcomp (isCompact_singleton (x := (0 : ℝ))) hu htube
+    generalized_tube_lemma hG.isCompact (isCompact_singleton (x := (0 : ℝ))) hu htube
   obtain ⟨ε, hε, hεball⟩ := Metric.mem_nhds_iff.mp (hu2.mem_nhds (h0set rfl))
-  let F : Set (Set.Icc (0 : ℝ) 1) := {t | g t ≤ s0 / 2}
-  have hFcomp : IsCompact F := (isClosed_le hgcont continuous_const).isCompact
-  have hg0 : g ⟨0, by norm_num⟩ = 0 := by simp [g, htent0]
-  have hFne : F.Nonempty := by
-    refine ⟨⟨0, by norm_num⟩, ?_⟩
-    show g ⟨0, by norm_num⟩ ≤ s0 / 2
-    rw [hg0]
-    exact (half_pos hs0pos).le
-  let mF : ℝ := sSup ((fun t ↦ I (γ t)) '' F)
-  have hmF : mF < m := by
-    have himg : IsCompact ((fun t ↦ I (γ t)) '' F) :=
-      hFcomp.image (hIc.comp γ.continuous)
-    obtain ⟨t, htF, ht⟩ := himg.sSup_mem (hFne.image _)
-    have hlt : I (γ t) < m := by
-      have hnot : t ∉ M := by
-        intro htM
-        have hgle : s0 ≤ g t :=
-          csInf_le (hMcomp.image hgcont).bddBelow (mem_image_of_mem g htM)
-        have hgt : g t < s0 := (htF : g t ≤ s0 / 2).trans_lt (half_lt_self hs0pos)
-        exact hgt.not_ge hgle
-      exact lt_of_le_of_ne (le_pathMaxEnergy hIc γ t) (by intro h; exact hnot h)
-    simpa [mF, ht] using hlt
+  refine ⟨ε, hε, fun t ht τ hτ ↦ ?_⟩
+  have hmem : (t, τ) ∈ u := hprod ⟨hGu ht, hεball (mem_ball.2 hτ)⟩
+  simpa [u] using hmem
+
+/-- The derivative is bounded along all segments `γ t - τ • w t` with `τ ∈ [0, 1]`. -/
+private lemma exists_norm_fderiv_segment_le {I : E → ℝ} (hI : ContDiff ℝ 1 I)
+    (γ : C(Set.Icc (0 : ℝ) 1, E)) {w : Set.Icc (0 : ℝ) 1 → E} (hw : Continuous w) :
+    ∃ B, 0 ≤ B ∧ ∀ t, ∀ τ ∈ Icc (0 : ℝ) 1, ‖fderiv ℝ I (γ t - τ • w t)‖ ≤ B := by
+  let seg : Set.Icc (0 : ℝ) 1 × Set.Icc (0 : ℝ) 1 → E :=
+    fun p ↦ γ p.1 - (p.2 : ℝ) • w p.1
+  have hseg : Continuous seg :=
+    (γ.continuous.comp continuous_fst).sub
+      ((continuous_subtype_val.comp continuous_snd).smul (hw.comp continuous_fst))
+  let normSet : Set ℝ := (fun z : E ↦ ‖fderiv ℝ I z‖) '' range seg
+  have hnormCont : Continuous fun z : E ↦ ‖fderiv ℝ I z‖ :=
+    continuous_norm.comp (hI.continuous_fderiv one_ne_zero)
+  have hnormComp : IsCompact normSet := (isCompact_range hseg).image hnormCont
+  refine ⟨sSup normSet, ?_, fun t τ hτ ↦
+    le_csSup hnormComp.bddAbove (mem_image_of_mem _ ⟨(t, ⟨τ, hτ⟩), rfl⟩)⟩
+  obtain ⟨z, -, hz⟩ := hnormComp.sSup_mem ((range_nonempty seg).image _)
+  exact (norm_nonneg _).trans_eq hz
+
+/-- An admissible path obeying the Ekeland slope bound has a maximum point whose derivative
+is at most that slope. Both endpoints stay fixed: their energy lies strictly below the maximum,
+so the supporting tents never move them. -/
+private lemma exists_small_fderiv_of_slope {I : E → ℝ} (hI : ContDiff ℝ 1 I) {e : E}
+    {γ : C(Set.Icc (0 : ℝ) 1, E)} (hγ : γ ∈ mountainPassPaths e) {κ : ℝ} (hκ : 0 < κ)
+    (hslope : ∀ σ, σ ∈ mountainPassPaths e →
+      pathMaxEnergy I γ ≤ pathMaxEnergy I σ + κ * dist σ γ)
+    (h0 : I (γ ⟨0, by norm_num⟩) < pathMaxEnergy I γ)
+    (h1 : I (γ ⟨1, by norm_num⟩) < pathMaxEnergy I γ) :
+    ∃ t, I (γ t) = pathMaxEnergy I γ ∧ ‖fderiv ℝ I (γ t)‖ ≤ κ := by
+  by_contra! hbad
+  let m : ℝ := pathMaxEnergy I γ
+  have hIc : Continuous I := hI.continuous
+  -- The set `M` of maximum times is compact and misses both endpoints.
+  let M : Set (Set.Icc (0 : ℝ) 1) := {t | I (γ t) = m}
+  have hMcomp : IsCompact M :=
+    (isClosed_eq (hIc.comp γ.continuous) continuous_const).isCompact
+  obtain ⟨tM, htM⟩ := exists_eq_pathMaxEnergy hIc γ
+  have hM0 : ∀ t ∈ M, 0 < t.1 := by
+    intro t ht
+    refine lt_of_le_of_ne t.2.1 fun h ↦ ?_
+    have ht0 : t = ⟨0, by norm_num⟩ := Subtype.coe_injective (by simpa using h.symm)
+    rw [ht0] at ht
+    exact h0.ne (by simpa [M] using ht)
+  have hM1 : ∀ t ∈ M, t.1 < 1 := by
+    intro t ht
+    refine lt_of_le_of_ne t.2.2 fun h ↦ ?_
+    have ht1 : t = ⟨1, by norm_num⟩ := Subtype.coe_injective (by simpa using h)
+    rw [ht1] at ht
+    exact h1.ne (by simpa [M] using ht)
+  obtain ⟨w, hw, hw0, hw1, θ, hθ0, hθ, hw_le, g, hgcont, hg0, s0, hs0pos, hgM, hpairG⟩ :=
+    exists_pathPseudogradient hI γ hMcomp ⟨tM, htM⟩ hM0 hM1 fun t ht ↦ hbad t ht
+  -- Off the cutoff region the energy stays below some `mF < m`.
+  obtain ⟨mF, hmF, hFle⟩ := exists_lt_pathMaxEnergy_of_isClosed hIc γ
+    (F := {t | g t ≤ s0 / 2}) (isClosed_le hgcont continuous_const) fun t ht hEq ↦
+      (lt_of_le_of_lt ht (half_lt_self hs0pos)).not_ge (hgM t hEq)
+  obtain ⟨ε, hε, hεG⟩ := exists_pos_forall_lt_fderiv_sub_smul hI γ hw
+    (G := {t | s0 / 2 ≤ g t}) (isClosed_le continuous_const hgcont) hpairG
+  obtain ⟨B, hB0, hBle⟩ := exists_norm_fderiv_segment_le hI γ hw
+  -- A step small enough to stay in the tube and to keep the low part below `m`.
   have hEnergy_pos : 0 < (m - mF) / (B + κ) :=
     div_pos (sub_pos.mpr hmF) (by linarith [hB0, hκ])
   let hstep : ℝ := min (ε / 2) (min ((m - mF) / (B + κ)) 1)
@@ -586,14 +596,7 @@ private lemma exists_small_fderiv_of_slope {I : E → ℝ} (hI : ContDiff ℝ 1 
   have hbudget : mF + B * hstep ≤ m - κ * hstep := by
     have hmul : hstep * (B + κ) ≤ m - mF := (le_div_iff₀ (by linarith [hB0, hκ])).mp hhstep_E
     linarith
-  have hw0 : w ⟨0, by norm_num⟩ = 0 := by
-    simp only [w, weight]
-    refine Finset.sum_eq_zero fun i _ ↦ ?_
-    rw [htent0 i, zero_div, zero_smul]
-  have hw1 : w ⟨1, by norm_num⟩ = 0 := by
-    simp only [w, weight]
-    refine Finset.sum_eq_zero fun i _ ↦ ?_
-    rw [htent1 i, zero_div, zero_smul]
+  -- The deformed path `σ = γ - hstep • w` is admissible and lowers the maximal energy.
   let σ : C(Set.Icc (0 : ℝ) 1, E) :=
     ⟨fun t ↦ γ t - hstep • w t, γ.continuous.sub (continuous_const.smul hw)⟩
   have hσmem : σ ∈ mountainPassPaths e := by
@@ -605,10 +608,9 @@ private lemma exists_small_fderiv_of_slope {I : E → ℝ} (hI : ContDiff ℝ 1 
   have hdir (t : Set.Icc (0 : ℝ) 1) {τ : ℝ} (hτ : τ ∈ Ico (0 : ℝ) hstep) :
       ‖(fderiv ℝ I (γ t - τ • w t)) (w t)‖ ≤ B := by
     have hτ1 : τ ∈ Icc (0 : ℝ) 1 := ⟨hτ.1, hτ.2.le.trans hhstep_one⟩
-    have hz : γ t - τ • w t ∈ range seg := ⟨(t, ⟨τ, hτ1⟩), rfl⟩
     calc ‖(fderiv ℝ I (γ t - τ • w t)) (w t)‖
         ≤ ‖fderiv ℝ I (γ t - τ • w t)‖ * ‖w t‖ := le_opNorm _ _
-      _ ≤ B * θ := mul_le_mul (hBle hz) (hw_le t) (norm_nonneg _) hB0
+      _ ≤ B * θ := mul_le_mul (hBle t τ hτ1) (hw_le t) (norm_nonneg _) hB0
       _ ≤ B := mul_le_of_le_one_right hB0 hθ.le
   have hIσ (t : Set.Icc (0 : ℝ) 1) : I (σ t) ≤ m - κ * hstep := by
     by_cases htG : s0 / 2 ≤ g t
@@ -617,15 +619,12 @@ private lemma exists_small_fderiv_of_slope {I : E → ℝ} (hI : ContDiff ℝ 1 
         have hdistτ : dist τ (0 : ℝ) < ε := by
           rw [Real.dist_eq, sub_zero, abs_of_nonneg hτ.1]
           exact lt_of_le_of_lt (hτ.2.trans hhstep_ε) (half_lt_self hε)
-        have hmem : (t, τ) ∈ u := hprod ⟨hGu htG, hεball hdistτ⟩
-        exact le_of_lt (by simpa [u] using hmem)
+        exact (hεG t htG τ hdistτ).le
       have hdrop := energy_along_segment_le hI (γ t) (w t) hhstep.le hdown
       calc I (σ t) ≤ I (γ t) - κ * hstep := by simpa [σ] using hdrop
         _ ≤ m - κ * hstep := by gcongr; exact le_pathMaxEnergy hIc γ t
     · push Not at htG
-      have hγle : I (γ t) ≤ mF :=
-        le_csSup (hFcomp.image (hIc.comp γ.continuous)).bddAbove
-          (mem_image_of_mem _ htG.le)
+      have hγle : I (γ t) ≤ mF := hFle t htG.le
       have habs := abs_energy_segment_le hI (γ t) (w t) hhstep.le (fun τ hτ ↦ hdir t hτ)
       have hup : I (σ t) ≤ I (γ t) + B * hstep := by
         have hσt : I (σ t) = I (γ t - hstep • w t) := by simp [σ]
@@ -634,6 +633,7 @@ private lemma exists_small_fderiv_of_slope {I : E → ℝ} (hI : ContDiff ℝ 1 
       linarith [hbudget, hup, hγle]
   have hσmax : pathMaxEnergy I σ ≤ m - κ * hstep :=
     csSup_le (range_nonempty _) fun _ ⟨t, ht⟩ ↦ ht ▸ hIσ t
+  -- The deformation is short, contradicting the Ekeland slope bound.
   have hdistσ : dist σ γ ≤ hstep * θ := by
     rw [ContinuousMap.dist_le (mul_nonneg hhstep.le hθ0)]
     intro t

@@ -6,7 +6,11 @@ Authors: CKMA contributors
 module
 
 public import CKMA.Probability.BrownianTheory.Modification
-public import Mathlib.MeasureTheory.Constructions.BorelSpace.Metrizable
+public import CKMA.Probability.BrownianTheory.DyadicPath
+public import Mathlib.Topology.MetricSpace.Holder
+
+import CKMA.Probability.BrownianTheory.GaussianMoment
+import CKMA.Probability.BrownianTheory.DyadicLimit
 
 /-!
 # Continuous modification along dyadic floors
@@ -34,10 +38,8 @@ noncomputable section
 
 namespace CKMA
 
-open Classical Finset Filter MeasureTheory Metric ProbabilityTheory Set
+open Finset Filter MeasureTheory Metric ProbabilityTheory Set
 open scoped NNReal ENNReal Topology
-
-set_option linter.unusedSectionVars false
 
 variable {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsProbabilityMeasure μ]
   {B : ℝ≥0 → Ω → ℝ}
@@ -59,6 +61,7 @@ private lemma subHalfNN_pos (k : ℕ) : 0 < subHalfNN k := by
 private def snap (hB : IsPreBrownianReal B μ) (ω : Ω) (x : ℝ) : ℝ :=
   if hx : 0 ≤ x then version hB ⟨x, hx⟩ ω else 0
 
+omit [IsProbabilityMeasure μ] in
 /-- On the nonnegative reals, `snap` is the measurable version. -/
 private lemma snap_of_nonneg (hB : IsPreBrownianReal B μ) (ω : Ω) {x : ℝ} (hx : 0 ≤ x) :
     snap hB ω x = version hB ⟨x, hx⟩ ω := by
@@ -76,11 +79,13 @@ private lemma coe_floorTime (n : ℕ) (t : ℝ≥0) :
 def approx (hB : IsPreBrownianReal B μ) (n : ℕ) (t : ℝ≥0) (ω : Ω) : ℝ :=
   version hB (floorTime n t) ω
 
+omit [IsProbabilityMeasure μ] in
 /-- Evaluation at a dyadic floor is measurable. -/
 private lemma measurable_approx (hB : IsPreBrownianReal B μ) (n : ℕ) (t : ℝ≥0) :
     Measurable (approx hB n t) :=
   measurable_version hB _
 
+omit [IsProbabilityMeasure μ] in
 /-- `snap` at a dyadic floor is the dyadic approximation. -/
 private lemma snap_floor (hB : IsPreBrownianReal B μ) (ω : Ω) (n : ℕ) (t : ℝ≥0) :
     snap hB ω (dyadicFloorReal n (t : ℝ)) = approx hB n t ω := by
@@ -256,6 +261,7 @@ private def HasIncrementTail (hB : IsPreBrownianReal B μ) (ω : Ω) (k j N : �
     |snap hB ω (↑j + (↑i + 1) / 2 ^ n) - snap hB ω (↑j + (↑i : ℝ) / 2 ^ n)| ≤
       ((1 : ℝ) / 2 ^ n) ^ subHalf k
 
+omit [IsProbabilityMeasure μ] in
 /-- A good path has some finite increment threshold on each cell. -/
 private lemma exists_incrementTail (hB : IsPreBrownianReal B μ) {ω : Ω} (hω : ω ∈ good hB)
     (k j : ℕ) : ∃ N, HasIncrementTail hB ω k j N := by
@@ -287,13 +293,16 @@ private lemma exists_incrementTail (hB : IsPreBrownianReal B μ) {ω : Ω} (hω 
   rw [hleft, hright]
   exact hlt.le
 
+open scoped Classical in
 /-- First level after which the dyadic increments of a cell are Hölder. -/
 private def goodLevel (hB : IsPreBrownianReal B μ) (ω : Ω) (k j : ℕ) : ℕ :=
   if hω : ω ∈ good hB then Nat.find (exists_incrementTail hB hω k j) else 0
 
+omit [IsProbabilityMeasure μ] in
 /-- The selected level really starts the Hölder tail. -/
 private lemma incrementTail_goodLevel (hB : IsPreBrownianReal B μ) {ω : Ω} (hω : ω ∈ good hB)
     (k j : ℕ) : HasIncrementTail hB ω k j (goodLevel hB ω k j) := by
+  classical
   have hlevel : goodLevel hB ω k j = Nat.find (exists_incrementTail hB hω k j) := by
     simp [goodLevel, hω]
   rw [hlevel]
@@ -303,21 +312,25 @@ private lemma incrementTail_goodLevel (hB : IsPreBrownianReal B μ) {ω : Ω} (h
 private def cellConst (hB : IsPreBrownianReal B μ) (ω : Ω) (k j : ℕ) : ℝ :=
   holderConstFrom (snap hB ω) (subHalf k) j (goodLevel hB ω k j)
 
+omit [IsProbabilityMeasure μ] in
 /-- The cell constant is nonnegative. -/
 private lemma cellConst_nonneg (hB : IsPreBrownianReal B μ) (ω : Ω) (k j : ℕ) :
     0 ≤ cellConst hB ω k j :=
   holderConstFrom_nonneg _ _ _ _
 
+omit [IsProbabilityMeasure μ] in
 /-- A good path has dyadic Hölder increments on every integer cell. -/
 private lemma hasDyadic_snap (hB : IsPreBrownianReal B μ) {ω : Ω} (hω : ω ∈ good hB)
     (k j : ℕ) : HasDyadicIncrements (snap hB ω) (subHalf k) (cellConst hB ω k j) j := by
   simpa [cellConst, HasIncrementTail] using
     hasDyadicIncrements_of_eventually (incrementTail_goodLevel hB hω k j)
 
+open scoped Classical in
 /-- Limit of the dyadic floors, and zero off the good set. -/
 def holderPath (hB : IsPreBrownianReal B μ) (t : ℝ≥0) (ω : Ω) : ℝ :=
   if ω ∈ good hB then limUnder atTop (fun n => approx hB n t ω) else 0
 
+omit [IsProbabilityMeasure μ] in
 /-- On a good path the dyadic floors converge to `holderPath`. -/
 private lemma tendsto_approx_of_good (hB : IsPreBrownianReal B μ) {ω : Ω} (hω : ω ∈ good hB)
     (t : ℝ≥0) : Tendsto (fun n => approx hB n t ω) atTop
@@ -337,11 +350,15 @@ private lemma tendsto_approx_of_good (hB : IsPreBrownianReal B μ) {ω : Ω} (h�
   rw [heq]
   exact htend
 
+open scoped Classical in
+omit [IsProbabilityMeasure μ] in
 /-- The piecewise dyadic approximation is measurable. -/
 private lemma measurable_holderPiece (hB : IsPreBrownianReal B μ) (n : ℕ) (t : ℝ≥0) :
     Measurable (fun ω => if ω ∈ good hB then approx hB n t ω else (0 : ℝ)) :=
   Measurable.ite (measurableSet_good hB) (measurable_approx hB n t) measurable_const
 
+open scoped Classical in
+omit [IsProbabilityMeasure μ] in
 /-- Each time marginal of `holderPath` is a pointwise limit of measurable functions. -/
 private lemma tendsto_holderPiece (hB : IsPreBrownianReal B μ) (t : ℝ≥0) (ω : Ω) :
     Tendsto (fun n => if ω ∈ good hB then approx hB n t ω else (0 : ℝ)) atTop
@@ -351,12 +368,14 @@ private lemma tendsto_holderPiece (hB : IsPreBrownianReal B μ) (t : ℝ≥0) (�
   · simp only [holderPath, hω, ite_false]
     exact tendsto_const_nhds
 
+omit [IsProbabilityMeasure μ] in
 /-- Each time marginal of the modification is measurable. -/
 lemma measurable_holderPath (hB : IsPreBrownianReal B μ) (t : ℝ≥0) :
     Measurable (holderPath hB t) :=
   measurable_of_tendsto_metrizable (fun n => measurable_holderPiece hB n t)
     (tendsto_pi_nhds.mpr fun ω => tendsto_holderPiece hB t ω)
 
+omit [IsProbabilityMeasure μ] in
 /-- On a good path, `holderPath` is the limit of `snap` along dyadic floors. -/
 private lemma holderPath_eq_lim (hB : IsPreBrownianReal B μ) {ω : Ω} (hω : ω ∈ good hB)
     (t : ℝ≥0) : holderPath hB t ω =
@@ -366,6 +385,7 @@ private lemma holderPath_eq_lim (hB : IsPreBrownianReal B μ) {ω : Ω} (hω : �
   ext n
   exact (snap_floor hB ω n t).symm
 
+omit [IsProbabilityMeasure μ] in
 /-- Values of a good path on `[0, N]` obey the dyadic Hölder bound. -/
 private lemma abs_sub_holderPath (hB : IsPreBrownianReal B μ) {ω : Ω} (hω : ω ∈ good hB)
     (k N : ℕ) {s t : ℝ≥0} (hs : (s : ℝ) ≤ N) (ht : (t : ℝ) ≤ N) :
@@ -379,6 +399,7 @@ private lemma abs_sub_holderPath (hB : IsPreBrownianReal B μ) {ω : Ω} (hω : 
   rw [holderPath_eq_lim hB hω t, holderPath_eq_lim hB hω s, abs_sub_comm (t : ℝ) (s : ℝ)]
   exact abs_sub_dyadicFloor_lim (subHalf_pos k) hK hinc s.2 hs t.2 ht
 
+omit [IsProbabilityMeasure μ] in
 /-- A good path is Hölder of exponent `subHalf k` on each compact interval. -/
 private lemma holderOnWith_subHalf (hB : IsPreBrownianReal B μ) {ω : Ω} (hω : ω ∈ good hB)
     (k : ℕ) (T : ℝ≥0) : ∃ C : ℝ≥0,
@@ -413,6 +434,7 @@ private lemma holderOnWith_subHalf (hB : IsPreBrownianReal B μ) {ω : Ω} (hω 
         ENNReal.ofReal |(s : ℝ) - t| ^ (subHalfNN k : ℝ) := by
       rw [ENNReal.coe_nnreal_eq, Real.coe_toNNReal Creal hC, coe_subHalfNN]
 
+omit [IsProbabilityMeasure μ] in
 /-- Every positive exponent below one half is attained on each compact interval. -/
 private lemma holderOnWith_of_le_subHalf (hB : IsPreBrownianReal B μ) {ω : Ω}
     (hω : ω ∈ good hB) {α : ℝ≥0} (hα : (α : ℝ) < 1 / 2) (T : ℝ≥0) :
@@ -434,6 +456,7 @@ private lemma holderOnWith_of_le_subHalf (hB : IsPreBrownianReal B μ) {ω : Ω}
     rw [abs_le]
     constructor <;> linarith [NNReal.coe_nonneg x, NNReal.coe_nonneg y]
 
+omit [IsProbabilityMeasure μ] in
 /-- Every modified path is continuous. -/
 lemma continuous_holderPath (hB : IsPreBrownianReal B μ) (ω : Ω) :
     Continuous (fun t => holderPath hB t ω) := by

@@ -6,8 +6,9 @@ Authors: CKMA contributors
 module
 
 public import CKMA.Analysis.Complex.Basic
-public import TauCeti.Analysis.Complex.Laurent.Expansion
+public import TauCeti.Analysis.Complex.Laurent.Series
 import TauCeti.Topology.MetricSpace.EBall
+import TauCeti.Analysis.Complex.Laurent.Expansion
 
 /-!
 # Laurent series on annuli

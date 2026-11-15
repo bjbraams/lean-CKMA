@@ -5,29 +5,13 @@ Authors: CKMA contributors
 -/
 module
 
-public import Mathlib.Analysis.Calculus.Deriv.Add
-public import Mathlib.Analysis.Calculus.Deriv.Comp
-public import Mathlib.Analysis.Calculus.Deriv.Mul
-public import Mathlib.Analysis.Calculus.Deriv.Slope
-public import Mathlib.Analysis.Calculus.FDeriv.Basic
-public import Mathlib.Analysis.Calculus.Rademacher
-public import Mathlib.Analysis.Convex.Hull
-public import Mathlib.Analysis.Normed.Module.DoubleDual
-public import Mathlib.Analysis.Normed.Module.FiniteDimension
-public import Mathlib.Analysis.SpecificLimits.Basic
-public import Mathlib.LinearAlgebra.Dimension.Finrank
-public import Mathlib.LinearAlgebra.Dual.Lemmas
-public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
-public import Mathlib.MeasureTheory.Group.Measure
-public import Mathlib.MeasureTheory.Integral.IntervalIntegral.AbsolutelyContinuousFun
-public import Mathlib.MeasureTheory.Measure.Haar.Basic
-public import Mathlib.MeasureTheory.Measure.Haar.OfBasis
-public import Mathlib.Topology.Algebra.Group.Defs
-public import Mathlib.Topology.Algebra.Module.FiniteDimension
-public import Mathlib.Topology.Algebra.Monoid.Defs
-public import Mathlib.Topology.MetricSpace.Lipschitz
-public import Mathlib.Topology.MetricSpace.ProperSpace
-public import Mathlib.Topology.Sequences
+public import Mathlib.Analysis.Calculus.FDeriv.Defs
+public import Mathlib.Analysis.Normed.Operator.Basic
+public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
+import Mathlib.Analysis.Calculus.Deriv.Comp
+import Mathlib.Analysis.Calculus.Rademacher
+import Mathlib.Analysis.Normed.Module.DoubleDual
+import Mathlib.MeasureTheory.Integral.IntervalIntegral.AbsolutelyContinuousFun
 
 /-!
 # Line integrals of Lipschitz derivatives
@@ -186,6 +170,128 @@ theorem exists_tendsto_fderiv_of_lipschitzOn [FiniteDimensional ℝ E]
   rw [mem_closedBall, dist_zero_right] at hu
   exact hu
 
+/-- For a measurable null set `N` of an additive Haar measure, almost every line in direction `v`
+meets `N` in a Lebesgue-null set of parameters. -/
+private lemma ae_ae_add_smul_notMem [MeasurableSpace E] [BorelSpace E] [LocallyCompactSpace E]
+    {μ : Measure E} [μ.IsAddHaarMeasure] {N : Set E} (hNm : MeasurableSet N) (hN0 : μ N = 0)
+    (v : E) : ∀ᵐ y ∂μ, ∀ᵐ t : ℝ ∂volume, y + t • v ∉ N := by
+  have hspan (t : ℝ) : (LinearMap.toSpanSingleton ℝ E v) t = t • v := by
+    rw [LinearMap.toSpanSingleton, LinearMap.smulRight_apply, LinearMap.id_apply]
+  have hcompl : ∀ᵐ y ∂μ, y ∈ Nᶜ := measure_eq_zero_iff_ae_notMem.mp hN0
+  filter_upwards [(ae_ae_add_linearMap_mem_iff (LinearMap.toSpanSingleton ℝ E v)
+    (volume : Measure ℝ) μ hNm.compl).2 hcompl] with y hy
+  filter_upwards [hy] with t ht
+  rw [hspan, mem_compl_iff] at ht
+  exact ht
+
+/-- With `δ = ρ / (2 * (1 + ‖v‖))`, a segment `y + s • v` with `dist y x < δ` and
+`0 ≤ s < δ` stays in the ball of radius `ρ` about `x`. -/
+private lemma add_smul_mem_ball {x y v : E} {ρ s t : ℝ} (hρ : 0 < ρ)
+    (hy : dist y x < ρ / (2 * (1 + ‖v‖))) (hs : 0 ≤ s) (hst : s ≤ t)
+    (ht : t < ρ / (2 * (1 + ‖v‖))) : y + s • v ∈ ball x ρ := by
+  set δ : ℝ := ρ / (2 * (1 + ‖v‖))
+  have h1 : 0 < 1 + ‖v‖ := by linarith [norm_nonneg v]
+  have hδmul : δ * (1 + ‖v‖) = ρ / 2 := by
+    simp only [δ]
+    rw [div_mul_eq_mul_div]
+    exact mul_div_mul_right _ _ h1.ne'
+  rw [mem_ball, dist_eq_norm]
+  have hyx : ‖y - x‖ < δ := by rwa [dist_eq_norm] at hy
+  calc
+    ‖y + s • v - x‖ = ‖(y - x) + s • v‖ := by rw [add_sub_right_comm]
+    _ ≤ ‖y - x‖ + ‖s • v‖ := norm_add_le _ _
+    _ = ‖y - x‖ + s * ‖v‖ := by
+      rw [norm_smul, Real.norm_eq_abs, abs_of_nonneg hs]
+    _ < δ + s * ‖v‖ := by linarith
+    _ ≤ δ + δ * ‖v‖ := by nlinarith [hst, ht.le, norm_nonneg v]
+    _ = δ * (1 + ‖v‖) := by ring
+    _ < ρ := by rw [hδmul]; linarith
+
+omit [NormedSpace ℝ E] in
+/-- The radius `ρ / (2 * (1 + ‖v‖))` is smaller than `ρ`. -/
+private lemma div_two_mul_one_add_norm_lt {v : E} {ρ : ℝ} (hρ : 0 < ρ) :
+    ρ / (2 * (1 + ‖v‖)) < ρ := by
+  have h1 : 1 < 2 * (1 + ‖v‖) := by linarith [norm_nonneg v]
+  exact div_lt_self hρ h1
+
+/-- If `f` is Lipschitz on a set containing the segment from `y` to `y + t • v`, and at almost
+every parameter of the segment `f` is differentiable with directional derivative at most `α`,
+then the difference quotient over the segment is at most `α`. This is the fundamental theorem
+of calculus for the absolutely continuous restriction of `f` to the segment. -/
+private lemma differenceQuotient_le_of_ae_fderiv_le {f : E → ℝ} {S : Set E} {L : ℝ≥0}
+    (hf : LipschitzOnWith L f S) {y v : E} {t α : ℝ} (ht0 : 0 < t)
+    (hmaps : ∀ s ∈ Icc 0 t, y + s • v ∈ S)
+    (hd : ∀ᵐ s : ℝ ∂volume, s ∈ Icc 0 t →
+      DifferentiableAt ℝ f (y + s • v) ∧ (fderiv ℝ f (y + s • v)) v ≤ α) :
+    (f (y + t • v) - f y) / t ≤ α := by
+  let path : ℝ → E := fun s => y + s • v
+  let g : ℝ → ℝ := f ∘ path
+  have hmaps' : MapsTo path (uIcc 0 t) S := by
+    intro s hs
+    rw [uIcc_of_le ht0.le] at hs
+    exact hmaps s hs
+  have hpathL : LipschitzOnWith ‖v‖₊ path (uIcc 0 t) := by
+    refine LipschitzOnWith.of_dist_le_mul fun s _ u _ => ?_
+    dsimp [path]
+    rw [dist_eq_norm, dist_eq_norm]
+    apply le_of_eq
+    calc
+      ‖y + s • v - (y + u • v)‖ = ‖(s - u) • v‖ := by
+        rw [add_sub_add_left_eq_sub, sub_smul]
+      _ = |s - u| * ‖v‖ := by rw [norm_smul, Real.norm_eq_abs]
+      _ = (‖v‖₊ : ℝ) * ‖s - u‖ := by
+        rw [mul_comm, ← Real.norm_eq_abs, coe_nnnorm]
+  have hgac : AbsolutelyContinuousOnInterval g 0 t :=
+    (hf.comp hpathL hmaps').absolutelyContinuousOnInterval
+  have hderiv_le : ∀ᵐ s ∂volume, s ∈ Icc 0 t → deriv g s ≤ α := by
+    filter_upwards [hd] with s hs
+    intro hsI
+    obtain ⟨hdiff, hpair⟩ := hs hsI
+    have hpathd : HasDerivAt path v s := by
+      dsimp [path]
+      simpa [one_smul] using ((hasDerivAt_id s).smul_const v).const_add y
+    have hhas : HasDerivAt g ((fderiv ℝ f (path s)) v) s := by
+      dsimp [g]
+      exact hdiff.hasFDerivAt.comp_hasDerivAt s hpathd
+    rw [hhas.deriv]
+    exact hpair
+  have hint_le : ∫ s in (0 : ℝ)..t, deriv g s ≤ α * t := by
+    have hintα : ∫ s in (0 : ℝ)..t, α = α * t := by
+      rw [intervalIntegral.integral_const, sub_zero, smul_eq_mul, mul_comm]
+    rw [← hintα]
+    apply integral_mono_ae_restrict ht0.le hgac.intervalIntegrable_deriv
+      intervalIntegrable_const
+    exact (ae_restrict_iff' measurableSet_Icc).2 hderiv_le
+  have hinc : g t - g 0 ≤ α * t := by
+    rw [← hgac.integral_deriv_eq_sub]
+    exact hint_le
+  have hquot : (g t - g 0) / t ≤ α := (div_le_iff₀ ht0).2 hinc
+  dsimp [g, path] at hquot
+  rw [zero_smul, add_zero] at hquot
+  exact hquot
+
+omit [NormedSpace ℝ E] in
+/-- A function continuous on an open set and bounded above by `α` almost everywhere on it, for
+a measure charging every nonempty open set, is bounded above by `α` everywhere on it. -/
+private lemma forall_le_of_ae_le_of_continuousOn [MeasurableSpace E] {μ : Measure E}
+    [μ.IsOpenPosMeasure] {g : E → ℝ} {U : Set E} (hU : IsOpen U) (hg : ContinuousOn g U)
+    {α : ℝ} (hae : ∀ᵐ z ∂μ, z ∈ U → g z ≤ α) : ∀ z ∈ U, g z ≤ α := by
+  intro y hy
+  set bad : Set E := U ∩ g ⁻¹' Ioi α
+  have hopen : IsOpen bad := hg.isOpen_inter_preimage hU isOpen_Ioi
+  have hnull : μ bad = 0 := by
+    rw [measure_eq_zero_iff_ae_notMem]
+    filter_upwards [hae] with z hz
+    rintro ⟨hzU, hgt⟩
+    rw [mem_preimage, mem_Ioi] at hgt
+    exact (not_lt_of_ge (hz hzU)) hgt
+  have hempty : bad = ∅ := hopen.eq_empty_of_measure_zero hnull
+  have hnot : ¬ α < g y := by
+    intro hlt
+    have : y ∈ bad := ⟨hy, hlt⟩
+    simp [hempty] at this
+  exact le_of_not_gt hnot
+
 /-- If directional derivatives on a smaller ball are at most `α`, then nearby positive
 difference quotients are at most `α`. Almost every line meets the nondifferentiability set
 in a null set, and continuity removes the remaining null set of base points. -/
@@ -208,136 +314,42 @@ theorem differenceQuotient_eventually_le_of_fderiv_le [FiniteDimensional ℝ E]
     intro y hy himp
     exact hy.2 (himp (ball_subset_ball hρr hy.1))
   obtain ⟨N, hNsub, hNm, hN0⟩ := exists_measurable_superset_of_null hbad
-  have hspan (t : ℝ) : (LinearMap.toSpanSingleton ℝ E v) t = t • v := by
-    rw [LinearMap.toSpanSingleton, LinearMap.smulRight_apply, LinearMap.id_apply]
-  have hlines : ∀ᵐ y ∂μ, ∀ᵐ t : ℝ ∂volume, y + t • v ∉ N := by
-    have hcompl : ∀ᵐ y ∂μ, y ∈ Nᶜ := measure_eq_zero_iff_ae_notMem.mp hN0
-    filter_upwards [(ae_ae_add_linearMap_mem_iff (LinearMap.toSpanSingleton ℝ E v)
-      (volume : Measure ℝ) μ hNm.compl).2 hcompl] with y hy
-    filter_upwards [hy] with t ht
-    rw [hspan, mem_compl_iff] at ht
-    exact ht
   set δ : ℝ := ρ / (2 * (1 + ‖v‖))
-  have h1 : 0 < 1 + ‖v‖ := by linarith [norm_nonneg v]
-  have hδ : 0 < δ := div_pos hρ (mul_pos zero_lt_two h1)
-  have hδmul : δ * (1 + ‖v‖) = ρ / 2 := by
-    have hc : 1 + ‖v‖ ≠ 0 := h1.ne'
-    simp only [δ]
-    rw [div_mul_eq_mul_div]
-    exact mul_div_mul_right _ _ hc
-  have hδρ : δ * (1 + ‖v‖) < ρ := by
-    rw [hδmul]
-    linarith
-  have hseg : ∀ {y : E} {s t : ℝ}, dist y x < δ → 0 ≤ s → s ≤ t → t < δ →
-      y + s • v ∈ ball x ρ := by
-    intro y s t hy hs hst ht
-    rw [mem_ball, dist_eq_norm]
-    have hyx : ‖y - x‖ < δ := by rwa [dist_eq_norm] at hy
-    calc
-      ‖y + s • v - x‖ = ‖(y - x) + s • v‖ := by rw [add_sub_right_comm]
-      _ ≤ ‖y - x‖ + ‖s • v‖ := norm_add_le _ _
-      _ = ‖y - x‖ + s * ‖v‖ := by
-        rw [norm_smul, Real.norm_eq_abs, abs_of_nonneg hs]
-      _ < δ + s * ‖v‖ := by linarith
-      _ ≤ δ + δ * ‖v‖ := by nlinarith [hst, ht.le, norm_nonneg v]
-      _ = δ * (1 + ‖v‖) := by ring
-      _ < ρ := hδρ
+  have hδ : 0 < δ := div_pos hρ (mul_pos zero_lt_two (by linarith [norm_nonneg v]))
+  have hδlt : δ < ρ := div_two_mul_one_add_norm_lt hρ
+  -- Along almost every line the difference quotients are at most `α`.
   have hae_quot : ∀ᵐ y ∂μ, ∀ t, 0 < t → t < δ → dist y x < δ →
       (f (y + t • v) - f y) / t ≤ α := by
-    filter_upwards [hlines] with y hy
+    filter_upwards [ae_ae_add_smul_notMem hNm hN0 v] with y hy
     intro t ht0 htδ hyδ
-    let path : ℝ → E := fun s => y + s • v
-    let g : ℝ → ℝ := f ∘ path
-    have hmaps : MapsTo path (uIcc 0 t) (ball x r) := by
-      intro s hs
-      have hsI : s ∈ Icc 0 t := by rwa [uIcc_of_le ht0.le] at hs
-      exact ball_subset_ball hρr (hseg hyδ hsI.1 hsI.2 htδ)
-    have hpathL : LipschitzOnWith ‖v‖₊ path (uIcc 0 t) := by
-      refine LipschitzOnWith.of_dist_le_mul fun s _ u _ => ?_
-      dsimp [path]
-      rw [dist_eq_norm, dist_eq_norm]
-      apply le_of_eq
-      calc
-        ‖y + s • v - (y + u • v)‖ = ‖(s - u) • v‖ := by
-          rw [add_sub_add_left_eq_sub, sub_smul]
-        _ = |s - u| * ‖v‖ := by rw [norm_smul, Real.norm_eq_abs]
-        _ = (‖v‖₊ : ℝ) * ‖s - u‖ := by
-          rw [mul_comm, ← Real.norm_eq_abs, coe_nnnorm]
-    have hgac : AbsolutelyContinuousOnInterval g 0 t :=
-      (hf.comp hpathL hmaps).absolutelyContinuousOnInterval
-    have hderiv_le : ∀ᵐ s ∂volume, s ∈ Icc 0 t → deriv g s ≤ α := by
-      filter_upwards [hy] with s hs
-      intro hsI
-      have hpoint : path s ∈ ball x ρ := hseg hyδ hsI.1 hsI.2 htδ
-      have hdiff : DifferentiableAt ℝ f (path s) := by
-        by_contra hnd
-        exact hs (hNsub ⟨hpoint, hnd⟩)
-      have hpair : (fderiv ℝ f (path s)) v ≤ α := hgrad _ hpoint hdiff
-      have hpathd : HasDerivAt path v s := by
-        dsimp [path]
-        simpa [one_smul] using ((hasDerivAt_id s).smul_const v).const_add y
-      have hhas : HasDerivAt g ((fderiv ℝ f (path s)) v) s := by
-        dsimp [g]
-        exact hdiff.hasFDerivAt.comp_hasDerivAt s hpathd
-      rw [hhas.deriv]
-      exact hpair
-    have hint_le : ∫ s in (0 : ℝ)..t, deriv g s ≤ α * t := by
-      have hintα : ∫ s in (0 : ℝ)..t, α = α * t := by
-        rw [intervalIntegral.integral_const, sub_zero, smul_eq_mul, mul_comm]
-      rw [← hintα]
-      apply integral_mono_ae_restrict ht0.le hgac.intervalIntegrable_deriv
-        intervalIntegrable_const
-      exact (ae_restrict_iff' measurableSet_Icc).2 hderiv_le
-    have hinc : g t - g 0 ≤ α * t := by
-      rw [← hgac.integral_deriv_eq_sub]
-      exact hint_le
-    have hquot : (g t - g 0) / t ≤ α := (div_le_iff₀ ht0).2 hinc
-    dsimp [g, path] at hquot
-    rw [zero_smul, add_zero] at hquot
-    exact hquot
+    refine differenceQuotient_le_of_ae_fderiv_le hf ht0
+      (fun s hs => ball_subset_ball hρr (add_smul_mem_ball hρ hyδ hs.1 hs.2 htδ)) ?_
+    filter_upwards [hy] with s hs hsI
+    have hpoint : y + s • v ∈ ball x ρ := add_smul_mem_ball hρ hyδ hsI.1 hsI.2 htδ
+    have hdiff : DifferentiableAt ℝ f (y + s • v) := by
+      by_contra hnd
+      exact hs (hNsub ⟨hpoint, hnd⟩)
+    exact ⟨hdiff, hgrad _ hpoint hdiff⟩
+  -- Continuity in the base point removes the exceptional null set.
   have hall : ∀ y, dist y x < δ → ∀ t, 0 < t → t < δ →
       (f (y + t • v) - f y) / t ≤ α := by
     intro y hy t ht0 htδ
-    set hfun : E → ℝ := fun z => (f (z + t • v) - f z) / t
-    have hshift : ∀ z, dist z x < δ → z + t • v ∈ ball x r := by
+    have hcontOn : ContinuousOn (fun z => (f (z + t • v) - f z) / t) (ball x δ) := by
       intro z hz
-      exact ball_subset_ball hρr (hseg hz ht0.le le_rfl htδ)
-    have hδlt : δ < ρ := by
-      have hle : δ ≤ δ * (1 + ‖v‖) := by nlinarith [norm_nonneg v, hδ.le]
-      exact hle.trans_lt hδρ
-    have hbase : ∀ z, dist z x < δ → z ∈ ball x r := by
-      intro z hz
-      exact ball_subset_ball hρr (mem_ball.mpr (hz.trans hδlt))
-    have hcont : ∀ z, dist z x < δ → ContinuousAt hfun z := by
-      intro z hz
+      have hz' : dist z x < δ := mem_ball.mp hz
       have hcf : ContinuousAt f z :=
-        hf.continuousOn.continuousAt (isOpen_ball.mem_nhds (hbase z hz))
+        hf.continuousOn.continuousAt
+          (isOpen_ball.mem_nhds (ball_subset_ball hρr (mem_ball.mpr (hz'.trans hδlt))))
       have hcs : ContinuousAt f (z + t • v) :=
-        hf.continuousOn.continuousAt (isOpen_ball.mem_nhds (hshift z hz))
+        hf.continuousOn.continuousAt (isOpen_ball.mem_nhds
+          (ball_subset_ball hρr (add_smul_mem_ball hρ hz' ht0.le le_rfl htδ)))
       have hadd : ContinuousAt (fun w => w + t • v) z :=
         (continuous_add_const (t • v)).continuousAt
-      exact ((ContinuousAt.comp (f := fun w => w + t • v) hcs hadd).sub hcf).div_const t
-    set bad : Set E := ball x δ ∩ hfun ⁻¹' Ioi α
-    have hcontOn : ContinuousOn hfun (ball x δ) := by
-      intro z hz
-      exact (hcont z (mem_ball.mp hz)).continuousWithinAt
-    have hopen : IsOpen bad :=
-      hcontOn.isOpen_inter_preimage isOpen_ball isOpen_Ioi
-    have hnull : μ bad = 0 := by
-      rw [measure_eq_zero_iff_ae_notMem]
-      filter_upwards [hae_quot] with z hz
-      intro hzmem
-      rcases hzmem with ⟨hzball, hgt⟩
-      rw [mem_preimage, mem_Ioi] at hgt
-      exact (not_lt_of_ge (hz t ht0 htδ (mem_ball.mp hzball))) hgt
-    have hempty : bad = ∅ := hopen.eq_empty_of_measure_zero hnull
-    have hnot : ¬ α < hfun y := by
-      intro hlt
-      have : y ∈ bad := by
-        rw [mem_inter_iff, mem_preimage, mem_Ioi, mem_ball]
-        exact ⟨hy, hlt⟩
-      simp [hempty] at this
-    exact le_of_not_gt hnot
+      exact (((ContinuousAt.comp (f := fun w => w + t • v) hcs hadd).sub hcf).div_const
+        t).continuousWithinAt
+    refine forall_le_of_ae_le_of_continuousOn (μ := μ) isOpen_ball hcontOn ?_ y (mem_ball.mpr hy)
+    filter_upwards [hae_quot] with z hz hzball
+    exact hz t ht0 htδ (mem_ball.mp hzball)
   rw [eventually_nhdsWithin_iff]
   have hU : ball x δ ×ˢ ball (0 : ℝ) δ ∈ 𝓝 (x, (0 : ℝ)) := by
     rw [nhds_prod_eq]

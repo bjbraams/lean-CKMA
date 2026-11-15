@@ -7,8 +7,8 @@ module
 
 public import CKMA.Analysis.PDE.Euclidean
 public import Mathlib.MeasureTheory.Function.L2Space
-public import Mathlib.MeasureTheory.Integral.Prod
-public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
+public import TauCeti.Analysis.Sobolev.WeakDeriv.Basic
+public import Mathlib.Analysis.Normed.Lp.MeasurableSpace
 
 /-!
 # Leray–Hopf existence and two-dimensional uniqueness

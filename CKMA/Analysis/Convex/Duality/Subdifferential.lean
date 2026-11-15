@@ -5,14 +5,10 @@ Authors: CKMA contributors
 -/
 module
 
-public import CKMA.Analysis.Convex.Basic
-public import Mathlib.Analysis.Convex.Continuous
-public import Mathlib.Analysis.Convex.Topology
-public import Mathlib.Order.Filter.Basic
-public import Mathlib.Topology.Constructions.SumProd
-public import Mathlib.Topology.ContinuousOn
-public import Mathlib.Topology.Order.Basic
-public import TauCeti.Analysis.Convex.FenchelMoreau
+public import TauCeti.Analysis.Convex.Subdifferential
+public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
+import Mathlib.Analysis.Convex.Continuous
+import Mathlib.Analysis.LocallyConvex.Separation
 
 /-!
 # Subgradients from a nonempty epigraph interior

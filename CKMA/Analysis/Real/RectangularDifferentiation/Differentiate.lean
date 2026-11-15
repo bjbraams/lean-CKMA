@@ -5,19 +5,12 @@ Authors: CKMA contributors
 -/
 module
 
-public import CKMA.Analysis.Real.RectangularDifferentiation.Approximate
-import Mathlib.Algebra.Order.Archimedean.Basic
-import Mathlib.Analysis.Normed.Group.Basic
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
-import Mathlib.MeasureTheory.Function.L1Space.Integrable
-import Mathlib.MeasureTheory.Group.Arithmetic
-import Mathlib.MeasureTheory.Integral.Bochner.Set
-import Mathlib.MeasureTheory.Integral.IntegrableOn
-import Mathlib.Topology.Algebra.Support
-import Mathlib.Topology.Bases
-import Mathlib.Topology.MetricSpace.Basic
-import Mathlib.Topology.MetricSpace.ProperSpace
+public import CKMA.Analysis.Real.RectangularDifferentiation.Base
+
 import Mathlib.Topology.UrysohnsLemma
+import CKMA.Analysis.Real.RectangularDifferentiation.Approximate
+import CKMA.Analysis.Real.RectangularDifferentiation.Step
+import CKMA.Analysis.Real.RectangularDifferentiation.Iteration
 
 /-!
 # Rectangular differentiation of the local endpoint class

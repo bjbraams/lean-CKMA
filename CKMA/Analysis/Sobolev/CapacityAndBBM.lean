@@ -7,7 +7,8 @@ module
 
 public import CKMA.Analysis.PDE.Basic
 public import CKMA.Analysis.Potential.Basic
-public import Mathlib.Topology.Semicontinuity.Basic
+public import TauCeti.Analysis.Sobolev.WeakDeriv.Basic
+public import Mathlib.Analysis.Normed.Lp.MeasurableSpace
 
 /-!
 # Sobolev capacity, quasicontinuity and the BBM limit

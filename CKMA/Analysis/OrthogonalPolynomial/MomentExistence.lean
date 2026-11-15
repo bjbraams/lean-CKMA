@@ -7,10 +7,6 @@ module
 
 public import CKMA.Analysis.OrthogonalPolynomial.Basic
 public import Mathlib.LinearAlgebra.Matrix.PosDef
-public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
-public import Mathlib.Basic.ENNReal.Inv
-import Mathlib.Algebra.Polynomial.Coeff
-import Mathlib.Algebra.Polynomial.Degree.Support
 
 /-!
 # Moment existence, Jacobi recurrences and Carleman uniqueness

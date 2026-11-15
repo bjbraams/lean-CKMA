@@ -7,25 +7,11 @@ module
 
 public import TauCeti.Analysis.OperatorIdeal.Family.Schatten
 public import TauCeti.Analysis.OperatorIdeal.Nuclear.Basic
-import TauCeti.Analysis.OperatorIdeal.Family.TraceClass
-public import TauCeti.Analysis.OperatorIdeal.ApproximationNumber.Basic
-public import TauCeti.Analysis.OperatorIdeal.ApproximationNumber.KyFan
-public import TauCeti.Analysis.Normed.Operator.Compact.Finite.Rank
-public import TauCeti.Analysis.InnerProductSpace.Parseval
 public import Mathlib.Analysis.InnerProductSpace.l2Space
-public import Mathlib.Analysis.InnerProductSpace.Adjoint
-public import Mathlib.Analysis.InnerProductSpace.LinearMap
-public import Mathlib.Analysis.InnerProductSpace.Spectrum
-public import Mathlib.Analysis.InnerProductSpace.Projection.Basic
-public import Mathlib.LinearAlgebra.Eigenspace.ContinuousLinearMap
-public import Mathlib.Analysis.RCLike.Lemmas
-public import Mathlib.Analysis.Real.Sqrt
-public import Mathlib.Topology.Algebra.InfiniteSum.Real
-public import Mathlib.Topology.Algebra.InfiniteSum.Constructions
-public import Mathlib.Topology.Algebra.InfiniteSum.Ring
-public import Mathlib.Analysis.SpecificLimits.Basic
-public import Mathlib.LinearAlgebra.Dimension.Free
-public import Mathlib.LinearAlgebra.Basis.VectorSpace
+
+import TauCeti.Analysis.OperatorIdeal.Family.TraceClass
+import TauCeti.Analysis.InnerProductSpace.Parseval
+import Mathlib.LinearAlgebra.Eigenspace.ContinuousLinearMap
 
 /-!
 # Schatten products and the Hilbert-space trace
@@ -151,10 +137,10 @@ private theorem enorm_sum_inner_two_families_le (T : H →L[𝕜] H) {ι : Type*
   classical
   let W : Submodule 𝕜 H := Submodule.span 𝕜 (Set.range u)
   let V : Submodule 𝕜 H := Submodule.span 𝕜 (Set.range v)
-  haveI : FiniteDimensional 𝕜 W := FiniteDimensional.span_of_finite 𝕜 (Set.finite_range u)
-  haveI : FiniteDimensional 𝕜 V := FiniteDimensional.span_of_finite 𝕜 (Set.finite_range v)
-  haveI := FiniteDimensional.complete 𝕜 W
-  haveI := FiniteDimensional.complete 𝕜 V
+  have : FiniteDimensional 𝕜 W := FiniteDimensional.span_of_finite 𝕜 (Set.finite_range u)
+  have : FiniteDimensional 𝕜 V := FiniteDimensional.span_of_finite 𝕜 (Set.finite_range v)
+  have := FiniteDimensional.complete 𝕜 W
+  have := FiniteDimensional.complete 𝕜 V
   let uW : ι → W := fun i ↦ ⟨u i, Submodule.subset_span ⟨i, rfl⟩⟩
   let vV : ι → V := fun i ↦ ⟨v i, Submodule.subset_span ⟨i, rfl⟩⟩
   have huW : Orthonormal 𝕜 uW := by

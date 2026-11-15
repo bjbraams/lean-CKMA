@@ -6,20 +6,8 @@ Authors: CKMA contributors
 module
 
 public import TauCeti.Analysis.InnerProductSpace.HilbertSchmidt.Basic
-public import Mathlib.MeasureTheory.Integral.Prod
 public import Mathlib.MeasureTheory.Function.L2Space
 
-import Mathlib.Analysis.InnerProductSpace.LinearMap
-import Mathlib.Analysis.InnerProductSpace.Orthogonal
-import Mathlib.Analysis.InnerProductSpace.Orthonormal
-import Mathlib.Analysis.InnerProductSpace.Projection.Submodule
-import Mathlib.MeasureTheory.Function.LpSpace.Complete
-import Mathlib.Analysis.Normed.Operator.Bilinear
-import Mathlib.MeasureTheory.Function.AEEqOfIntegral
-import Mathlib.MeasureTheory.Function.LpSeminorm.CompareExp
-import Mathlib.MeasureTheory.Function.LpSpace.Indicator
-import Mathlib.MeasureTheory.Integral.Bochner.Set
-import Mathlib.MeasureTheory.Integral.Lebesgue.Markov
 import TauCeti.MeasureTheory.Integral.Prod
 
 /-!

@@ -5,16 +5,11 @@ Authors: CKMA contributors
 -/
 module
 
-public import CKMA.Probability.InfinitelyDivisible.Basic
-public import CKMA.Probability.InfinitelyDivisible.Exponent
 public import CKMA.Probability.InfinitelyDivisible.CompoundPoisson
-public import CKMA.Probability.InfinitelyDivisible.Convergence
-public import Mathlib.Algebra.Order.Archimedean.Defs
-public import Mathlib.Analysis.Complex.Exponential
-public import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
-public import Mathlib.MeasureTheory.Integral.Bochner.Set
-public import Mathlib.MeasureTheory.Integral.DominatedConvergence
 public import Mathlib.Probability.Distributions.Gaussian.Real
+
+import CKMA.Probability.InfinitelyDivisible.Exponent
+import CKMA.Probability.InfinitelyDivisible.Convergence
 
 /-!
 # Laws with a prescribed Lévy exponent

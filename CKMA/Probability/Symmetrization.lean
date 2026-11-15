@@ -5,11 +5,6 @@ Authors: CKMA contributors
 -/
 module
 
-public import Mathlib.Probability.Independence.Basic
-public import Mathlib.MeasureTheory.Integral.Prod
-public import Mathlib.Dynamics.Ergodic.MeasurePreserving
-public import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
-public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 public import TauCeti.Probability.Distributions.Rademacher.Basic
 
 /-!
@@ -129,6 +124,154 @@ private lemma integrable_of_envelope {E : Type*} [MeasurableSpace E] {P : Measur
   rw [Real.norm_eq_abs, Real.norm_eq_abs, abs_of_nonneg (henv0 x)]
   exact hbound x
 
+/-- The sum of the envelopes of an i.i.d. sample is integrable. -/
+private lemma integrable_sum_envelope {E J : Type*} [MeasurableSpace E] [Fintype J]
+    {P : Measure E} [IsProbabilityMeasure P] {envelope : E → ℝ} (he : Integrable envelope P) :
+    Integrable (fun y : J → E => ∑ j, envelope (y j)) (Measure.pi fun _ => P) :=
+  integrable_finsetSum _ fun j _ =>
+    (measurePreserving_eval (fun _ : J => P) j).integrable_comp_of_integrable he
+
+/-- The averaged ghost difference is dominated by the averaged envelopes of both samples. -/
+private lemma abs_avg_sub_le {E ι J : Type*} [Fintype J] {f : ι → E → ℝ} {envelope : E → ℝ}
+    (hbound : ∀ i x, |f i x| ≤ envelope x) (i : ι) (y y' : J → E) :
+    |(Fintype.card J : ℝ)⁻¹ * ∑ j, (f i (y j) - f i (y' j))| ≤
+      (Fintype.card J : ℝ)⁻¹ * ∑ j, (envelope (y j) + envelope (y' j)) := by
+  have hinv0 : 0 ≤ (Fintype.card J : ℝ)⁻¹ := inv_nonneg.mpr (Nat.cast_nonneg _)
+  rw [abs_mul, abs_of_nonneg hinv0]
+  refine mul_le_mul_of_nonneg_left ?_ hinv0
+  refine (Finset.abs_sum_le_sum_abs _ _).trans ?_
+  refine Finset.sum_le_sum fun j _ => ?_
+  exact (abs_sub _ _).trans (add_le_add (hbound i _) (hbound i _))
+
+/-- The supremum over the class of averaged ghost differences is measurable. -/
+private lemma measurable_ghostSup {E ι J : Type*} [MeasurableSpace E] [Countable ι]
+    [Fintype J] {f : ι → E → ℝ} (hf : ∀ i, Measurable (f i)) :
+    Measurable fun p : (J → E) × (J → E) =>
+      ⨆ i, |(Fintype.card J : ℝ)⁻¹ * ∑ j, (f i (p.1 j) - f i (p.2 j))| := by
+  refine Measurable.iSup fun i => continuous_abs.measurable.comp ?_
+  refine (Finset.measurable_fun_sum Finset.univ fun j _ => ?_).const_mul _
+  exact ((hf i).comp ((measurable_pi_apply j).comp measurable_fst)).sub
+    ((hf i).comp ((measurable_pi_apply j).comp measurable_snd))
+
+/-- The supremum of the averaged ghost differences is dominated by the averaged envelopes. -/
+private lemma ghostSup_le {E ι J : Type*} [Nonempty ι] [Fintype J] {f : ι → E → ℝ}
+    {envelope : E → ℝ} (hbound : ∀ i x, |f i x| ≤ envelope x) (y y' : J → E) :
+    ⨆ i, |(Fintype.card J : ℝ)⁻¹ * ∑ j, (f i (y j) - f i (y' j))| ≤
+      (Fintype.card J : ℝ)⁻¹ * ∑ j, (envelope (y j) + envelope (y' j)) :=
+  ciSup_le fun i => abs_avg_sub_le hbound i y y'
+
+/-- The supremum of the averaged ghost differences is integrable for two i.i.d. samples,
+and so is each of its sections in the second sample. -/
+private lemma integrable_ghostSup {E ι J : Type*} [MeasurableSpace E] [Countable ι]
+    [Nonempty ι] [Fintype J] {P : Measure E} [IsProbabilityMeasure P] {f : ι → E → ℝ}
+    (hf : ∀ i, Measurable (f i)) {envelope : E → ℝ} (he : Integrable envelope P)
+    (hbound : ∀ i x, |f i x| ≤ envelope x) :
+    Integrable (fun p : (J → E) × (J → E) =>
+        ⨆ i, |(Fintype.card J : ℝ)⁻¹ * ∑ j, (f i (p.1 j) - f i (p.2 j))|)
+        ((Measure.pi fun _ : J => P).prod (Measure.pi fun _ : J => P)) ∧
+      ∀ y : J → E, Integrable (fun y' : J → E =>
+        ⨆ i, |(Fintype.card J : ℝ)⁻¹ * ∑ j, (f i (y j) - f i (y' j))|)
+        (Measure.pi fun _ : J => P) := by
+  let π : Measure (J → E) := Measure.pi fun _ => P
+  have henvSum : Integrable (fun y : J → E => ∑ j, envelope (y j)) π :=
+    integrable_sum_envelope he
+  have hmeas := measurable_ghostSup (J := J) hf
+  have hnorm (y y' : J → E) :
+      ‖⨆ i, |(Fintype.card J : ℝ)⁻¹ * ∑ j, (f i (y j) - f i (y' j))|‖ ≤
+        (Fintype.card J : ℝ)⁻¹ * ∑ j, (envelope (y j) + envelope (y' j)) := by
+    rw [Real.norm_eq_abs, abs_of_nonneg (Real.iSup_nonneg fun _ => abs_nonneg _)]
+    exact ghostSup_le hbound y y'
+  constructor
+  · have hdom : Integrable (fun p : (J → E) × (J → E) =>
+        (Fintype.card J : ℝ)⁻¹ * ∑ j, (envelope (p.1 j) + envelope (p.2 j))) (π.prod π) := by
+      simp_rw [Finset.sum_add_distrib]
+      exact ((henvSum.comp_fst π).add (henvSum.comp_snd π)).const_mul _
+    refine hdom.mono' hmeas.aemeasurable.aestronglyMeasurable ?_
+    filter_upwards with p
+    exact hnorm p.1 p.2
+  · intro y
+    have hdom : Integrable (fun y' : J → E =>
+        (Fintype.card J : ℝ)⁻¹ * ∑ j, (envelope (y j) + envelope (y' j))) π := by
+      simp_rw [Finset.sum_add_distrib]
+      exact ((integrable_const _).add henvSum).const_mul _
+    refine hdom.mono' (hmeas.comp (measurable_const.prodMk measurable_id)).aestronglyMeasurable ?_
+    filter_upwards with y'
+    exact hnorm y y'
+
+/-- The supremum over the class of centered empirical means is measurable. -/
+private lemma measurable_centeredSup {E ι J : Type*} [MeasurableSpace E] [Countable ι]
+    [Fintype J] {f : ι → E → ℝ} (hf : ∀ i, Measurable (f i)) (c : ι → ℝ) :
+    Measurable fun y : J → E => ⨆ i, |(Fintype.card J : ℝ)⁻¹ * (∑ j, f i (y j)) - c i| := by
+  refine Measurable.iSup fun i => continuous_abs.measurable.comp ?_
+  exact ((Finset.measurable_fun_sum Finset.univ fun j _ =>
+    (hf i).comp (measurable_pi_apply j)).const_mul _).sub measurable_const
+
+/-- Averaging the ghost differences over the ghost sample recovers the centered empirical
+mean. -/
+private lemma integral_avg_sub_ghost {E J : Type*} [MeasurableSpace E] [Fintype J] [Nonempty J]
+    {P : Measure E} [IsProbabilityMeasure P] {g : E → ℝ} (hg : Measurable g)
+    (hgi : Integrable g P) (y : J → E) :
+    ∫ y', (Fintype.card J : ℝ)⁻¹ * ∑ j, (g (y j) - g (y' j)) ∂Measure.pi (fun _ => P) =
+      (Fintype.card J : ℝ)⁻¹ * (∑ j, g (y j)) - ∫ x, g x ∂P := by
+  let π : Measure (J → E) := Measure.pi fun _ => P
+  have hn0 : (Fintype.card J : ℝ) ≠ 0 := (Nat.cast_pos.mpr Fintype.card_pos).ne'
+  have hevalg (j : J) : Integrable (fun y : J → E => g (y j)) π :=
+    (measurePreserving_eval (fun _ : J => P) j).integrable_comp_of_integrable hgi
+  have hmarg (j : J) : ∫ y, g (y j) ∂π = ∫ x, g x ∂P := by
+    have hpres := measurePreserving_eval (fun _ : J => P) j
+    rw [← hpres.map_eq]
+    exact (integral_map hpres.measurable.aemeasurable hg.aemeasurable.aestronglyMeasurable).symm
+  have hterm (j : J) : Integrable (fun y' : J → E => g (y j) - g (y' j)) π :=
+    (integrable_const _).sub (hevalg j)
+  rw [integral_const_mul, integral_finsetSum _ fun j _ => hterm j]
+  have hsub (j : J) : ∫ y', g (y j) - g (y' j) ∂π = g (y j) - ∫ x, g x ∂P := by
+    rw [integral_sub (integrable_const _) (hevalg j), integral_const, hmarg j,
+      probReal_univ, one_smul]
+  simp_rw [hsub, Finset.sum_sub_distrib]
+  have hsummean : ∑ _j : J, (∫ x, g x ∂P) = (Fintype.card J : ℝ) * ∫ x, g x ∂P := by
+    rw [Finset.sum_const, Finset.card_univ, nsmul_eq_mul]
+  rw [hsummean, mul_sub, ← mul_assoc, inv_mul_cancel₀ hn0, one_mul]
+
+/-- The supremum of the centered empirical means is integrable, being dominated by the
+averaged envelope plus the mean envelope. -/
+private lemma integrable_centeredSup {E ι J : Type*} [MeasurableSpace E] [Countable ι]
+    [Nonempty ι] [Fintype J] {P : Measure E} [IsProbabilityMeasure P] {f : ι → E → ℝ}
+    (hf : ∀ i, Measurable (f i)) {envelope : E → ℝ} (he : Integrable envelope P)
+    (hbound : ∀ i x, |f i x| ≤ envelope x) :
+    Integrable (fun y : J → E =>
+      ⨆ i, |(Fintype.card J : ℝ)⁻¹ * (∑ j, f i (y j)) - ∫ x, f i x ∂P|)
+      (Measure.pi fun _ => P) := by
+  have hinv0 : 0 ≤ (Fintype.card J : ℝ)⁻¹ := inv_nonneg.mpr (Nat.cast_nonneg _)
+  have henv0 (x : E) : 0 ≤ envelope x :=
+    Nonempty.elim ‹Nonempty ι› fun i => (abs_nonneg _).trans (hbound i x)
+  let hC : ℝ := ∫ x, envelope x ∂P
+  have hmean_le (i : ι) : |∫ x, f i x ∂P| ≤ hC :=
+    abs_integral_le_integral_abs.trans <|
+      integral_mono (integrable_of_envelope (hf i) he henv0 (hbound i)).abs he
+        fun x => hbound i x
+  have hcent_le (i : ι) (y : J → E) :
+      |(Fintype.card J : ℝ)⁻¹ * (∑ j, f i (y j)) - ∫ x, f i x ∂P| ≤
+        (Fintype.card J : ℝ)⁻¹ * ∑ j, envelope (y j) + hC := by
+    calc
+      |(Fintype.card J : ℝ)⁻¹ * (∑ j, f i (y j)) - ∫ x, f i x ∂P| ≤
+          |(Fintype.card J : ℝ)⁻¹ * ∑ j, f i (y j)| + |∫ x, f i x ∂P| := abs_sub _ _
+      _ ≤ (Fintype.card J : ℝ)⁻¹ * ∑ j, |f i (y j)| + hC := by
+        refine add_le_add ?_ (hmean_le i)
+        rw [abs_mul, abs_of_nonneg hinv0]
+        exact mul_le_mul_of_nonneg_left (Finset.abs_sum_le_sum_abs _ _) hinv0
+      _ ≤ (Fintype.card J : ℝ)⁻¹ * ∑ j, envelope (y j) + hC :=
+        add_le_add
+          (mul_le_mul_of_nonneg_left (Finset.sum_le_sum fun j _ => hbound i (y j)) hinv0)
+          le_rfl
+  have hdomL : Integrable (fun y : J → E =>
+      (Fintype.card J : ℝ)⁻¹ * ∑ j, envelope (y j) + hC) (Measure.pi fun _ => P) :=
+    ((integrable_sum_envelope he).const_mul _).add (integrable_const _)
+  refine hdomL.mono'
+    (measurable_centeredSup hf fun i => ∫ x, f i x ∂P).aemeasurable.aestronglyMeasurable ?_
+  filter_upwards with y
+  rw [Real.norm_eq_abs, abs_of_nonneg (Real.iSup_nonneg fun _ => abs_nonneg _)]
+  exact ciSup_le fun i => hcent_le i y
+
 /-- Centering an empirical mean by an independent ghost sample does not decrease the
 expected supremum. -/
 private lemma expectedSup_centered_le_ghost {E ι J : Type*} [MeasurableSpace E] [Countable ι]
@@ -139,184 +282,34 @@ private lemma expectedSup_centered_le_ghost {E ι J : Type*} [MeasurableSpace E]
         ∂Measure.pi (fun _ : J => P)) ≤
       ∫ p, ⨆ i, |(Fintype.card J : ℝ)⁻¹ * ∑ j, (f i (p.1 j) - f i (p.2 j))|
         ∂(Measure.pi (fun _ : J => P)).prod (Measure.pi (fun _ : J => P)) := by
-  let n : ℕ := Fintype.card J
-  have hn : 0 < n := Fintype.card_pos
   let π : Measure (J → E) := Measure.pi (fun _ => P)
+  let Φ : (J → E) × (J → E) → ℝ := fun p =>
+    ⨆ i, |(Fintype.card J : ℝ)⁻¹ * ∑ j, (f i (p.1 j) - f i (p.2 j))|
   have henv0 (x : E) : 0 ≤ envelope x :=
     Nonempty.elim ‹Nonempty ι› fun i => (abs_nonneg _).trans (hbound i x)
-  have hfi (i : ι) : Integrable (f i) P :=
-    integrable_of_envelope (hf i) he henv0 (hbound i)
-  have hinv0 : 0 ≤ (n : ℝ)⁻¹ := inv_nonneg.mpr (Nat.cast_nonneg _)
-  have hn0 : (n : ℝ) ≠ 0 := (Nat.cast_pos.mpr hn).ne'
-  have heval (j : J) :
-      Integrable (fun y : J → E => envelope (y j)) π :=
-    (measurePreserving_eval (fun _ : J => P) j).integrable_comp_of_integrable he
-  have hevalf (i : ι) (j : J) :
-      Integrable (fun y : J → E => f i (y j)) π :=
-    (measurePreserving_eval (fun _ : J => P) j).integrable_comp_of_integrable (hfi i)
-  have hmarg (i : ι) (j : J) :
-       ∫ y, f i (y j) ∂π = ∫ x, f i x ∂P := by
-    have hpres := measurePreserving_eval (fun _ : J => P) j
-    rw [← hpres.map_eq]
-    exact (integral_map hpres.measurable.aemeasurable
-      ((hf i).aemeasurable.aestronglyMeasurable)).symm
-  have henvSum : Integrable (fun y : J → E => ∑ j, envelope (y j)) π :=
-    integrable_finsetSum _ fun j _ => heval j
-  have hcenter (i : ι) (y : J → E) :
-       ∫ y', (n : ℝ)⁻¹ * ∑ j, (f i (y j) - f i (y' j)) ∂π =
-        (n : ℝ)⁻¹ * (∑ j, f i (y j)) - ∫ x, f i x ∂P := by
-    have hterm (j : J) :
-        Integrable (fun y' : J → E => f i (y j) - f i (y' j)) π :=
-      (integrable_const _).sub (hevalf i j)
-    rw [integral_const_mul, integral_finsetSum _ fun j _ => hterm j]
-    have hsub (j : J) :
-        ∫ y', f i (y j) - f i (y' j) ∂π = f i (y j) - ∫ x, f i x ∂P := by
-      rw [integral_sub (integrable_const _) (hevalf i j), integral_const, hmarg i j,
-        probReal_univ, one_smul]
-    simp_rw [hsub, Finset.sum_sub_distrib]
-    have hsummean : ∑ _j : J, (∫ x, f i x ∂P) = (n : ℝ) * ∫ x, f i x ∂P := by
-      rw [Finset.sum_const, Finset.card_univ, nsmul_eq_mul]
-    rw [hsummean, mul_sub, ← mul_assoc, inv_mul_cancel₀ hn0, one_mul]
-  have hdiff_le (i : ι) (y y' : J → E) :
-      |(n : ℝ)⁻¹ * ∑ j, (f i (y j) - f i (y' j))| ≤
-        (n : ℝ)⁻¹ * ∑ j, (envelope (y j) + envelope (y' j)) := by
-    rw [abs_mul, abs_of_nonneg hinv0]
-    refine mul_le_mul_of_nonneg_left ?_ hinv0
-    refine (Finset.abs_sum_le_sum_abs _ _).trans ?_
-    refine Finset.sum_le_sum fun j _ => ?_
-    exact (abs_sub _ _).trans (add_le_add (hbound i _) (hbound i _))
-  let Φ : (J → E) × (J → E) → ℝ := fun p =>
-    ⨆ i, |(n : ℝ)⁻¹ * ∑ j, (f i (p.1 j) - f i (p.2 j))|
-  have hΦmeas : Measurable Φ := by
-    refine Measurable.iSup fun i => continuous_abs.measurable.comp ?_
-    refine (Finset.measurable_fun_sum Finset.univ fun j _ => ?_).const_mul (n : ℝ)⁻¹
-    exact ((hf i).comp ((measurable_pi_apply j).comp measurable_fst)).sub
-      ((hf i).comp ((measurable_pi_apply j).comp measurable_snd))
-  have hbdd (p : (J → E) × (J → E)) :
-      BddAbove (Set.range fun i => |(n : ℝ)⁻¹ * ∑ j, (f i (p.1 j) - f i (p.2 j))|) := by
-    refine ⟨(n : ℝ)⁻¹ * ∑ j, (envelope (p.1 j) + envelope (p.2 j)), ?_⟩
-    rintro _ ⟨i, rfl⟩
-    exact hdiff_le i p.1 p.2
-  have hΦ0 (p : (J → E) × (J → E)) : 0 ≤ Φ p :=
-    Nonempty.elim ‹Nonempty ι› fun i => (abs_nonneg _).trans (le_ciSup (hbdd p) i)
-  have hΦle (p : (J → E) × (J → E)) :
-      Φ p ≤ (n : ℝ)⁻¹ * ∑ j, (envelope (p.1 j) + envelope (p.2 j)) :=
-    ciSup_le fun i => hdiff_le i p.1 p.2
-  have hdom : Integrable (fun p : (J → E) × (J → E) =>
-      (n : ℝ)⁻¹ * ∑ j, (envelope (p.1 j) + envelope (p.2 j))) (π.prod π) := by
-    have hsum : Integrable (fun p : (J → E) × (J → E) =>
-        ∑ j, envelope (p.1 j) + ∑ j, envelope (p.2 j)) (π.prod π) :=
-      (henvSum.comp_fst π).add (henvSum.comp_snd π)
-    have hfun : (fun p : (J → E) × (J → E) =>
-        (n : ℝ)⁻¹ * ∑ j, (envelope (p.1 j) + envelope (p.2 j))) =
-        fun p => (n : ℝ)⁻¹ * (∑ j, envelope (p.1 j) + ∑ j, envelope (p.2 j)) := by
-      funext p
-      rw [Finset.sum_add_distrib]
-    rw [hfun]
-    exact hsum.const_mul _
-  have hΦint : Integrable Φ (π.prod π) := by
-    refine hdom.mono' hΦmeas.aemeasurable.aestronglyMeasurable ?_
-    filter_upwards with p
-    rw [Real.norm_eq_abs, abs_of_nonneg (hΦ0 p)]
-    exact hΦle p
-  have hslice (y : J → E) : Integrable (fun y2 => Φ (y, y2)) π := by
-    have hdomy : Integrable (fun y2 =>
-        (n : ℝ)⁻¹ * ∑ j, (envelope (y j) + envelope (y2 j))) π := by
-      have hconst : Integrable (fun _ : J → E => ∑ j, envelope (y j)) π :=
-        integrable_const _
-      have hfun : (fun y2 : J → E =>
-            (n : ℝ)⁻¹ * ∑ j, (envelope (y j) + envelope (y2 j))) =
-          fun y2 : J → E =>
-            (n : ℝ)⁻¹ * (∑ j, envelope (y j) + ∑ j, envelope (y2 j)) := by
-        funext y2
-        rw [Finset.sum_add_distrib]
-      rw [hfun]
-      exact (hconst.add henvSum).const_mul _
-    have hmeas_y : Measurable (fun y2 => Φ (y, y2)) :=
-      hΦmeas.comp (measurable_const.prodMk measurable_id)
-    refine hdomy.mono' hmeas_y.aemeasurable.aestronglyMeasurable ?_
-    filter_upwards with y2
-    rw [Real.norm_eq_abs, abs_of_nonneg (hΦ0 (y, y2))]
-    exact hΦle (y, y2)
-  have hpoint (i : ι) (y : J → E) :
-      |(n : ℝ)⁻¹ * (∑ j, f i (y j)) - ∫ x, f i x ∂P| ≤ ∫ y', Φ (y, y') ∂π := by
-    rw [← hcenter i y]
+  obtain ⟨hΦint, hslice⟩ := integrable_ghostSup (J := J) hf he hbound
+  have hsup_le (y : J → E) :
+      ⨆ i, |(Fintype.card J : ℝ)⁻¹ * (∑ j, f i (y j)) - ∫ x, f i x ∂P| ≤
+        ∫ y', Φ (y, y') ∂π := by
+    refine ciSup_le fun i => ?_
+    rw [← integral_avg_sub_ghost (hf i) (integrable_of_envelope (hf i) he henv0 (hbound i)) y]
     refine (abs_integral_le_integral_abs).trans ?_
     refine integral_mono_of_nonneg (ae_of_all _ fun _ => abs_nonneg _) (hslice y) ?_
-    exact ae_of_all _ fun y' => le_ciSup (hbdd (y, y')) i
-  have hsup_le (y : J → E) :
-      ⨆ i, |(n : ℝ)⁻¹ * (∑ j, f i (y j)) - ∫ x, f i x ∂P| ≤ ∫ y', Φ (y, y') ∂π :=
-    ciSup_le fun i => hpoint i y
-  let hC : ℝ := ∫ x, envelope x ∂P
-  have hmean_le (i : ι) : |∫ x, f i x ∂P| ≤ hC := by
-    calc
-      |∫ x, f i x ∂P| ≤ ∫ x, |f i x| ∂P := abs_integral_le_integral_abs
-      _ ≤ hC := integral_mono (hfi i).abs he fun x => hbound i x
-  have hcent_le (i : ι) (y : J → E) :
-      |(n : ℝ)⁻¹ * (∑ j, f i (y j)) - ∫ x, f i x ∂P| ≤
-        (n : ℝ)⁻¹ * ∑ j, envelope (y j) + hC := by
-    calc
-      |(n : ℝ)⁻¹ * (∑ j, f i (y j)) - ∫ x, f i x ∂P| ≤
-          |(n : ℝ)⁻¹ * ∑ j, f i (y j)| + |∫ x, f i x ∂P| := abs_sub _ _
-      _ ≤ (n : ℝ)⁻¹ * ∑ j, |f i (y j)| + hC := by
-        refine add_le_add ?_ (hmean_le i)
-        rw [abs_mul, abs_of_nonneg hinv0]
-        exact mul_le_mul_of_nonneg_left (Finset.abs_sum_le_sum_abs _ _) hinv0
-      _ ≤ (n : ℝ)⁻¹ * ∑ j, envelope (y j) + hC :=
-        add_le_add
-          (mul_le_mul_of_nonneg_left
-            (Finset.sum_le_sum fun j _ => hbound i (y j)) hinv0)
-          le_rfl
-  have hleft_le (y : J → E) :
-      ⨆ i, |(n : ℝ)⁻¹ * (∑ j, f i (y j)) - ∫ x, f i x ∂P| ≤
-        (n : ℝ)⁻¹ * ∑ j, envelope (y j) + hC :=
-    ciSup_le fun i => hcent_le i y
-  have hleft_meas : Measurable (fun y : J → E =>
-      ⨆ i, |(n : ℝ)⁻¹ * (∑ j, f i (y j)) - ∫ x, f i x ∂P|) := by
-    refine Measurable.iSup fun i => continuous_abs.measurable.comp ?_
-    exact ((Finset.measurable_fun_sum Finset.univ fun j _ =>
-      (hf i).comp (measurable_pi_apply j)).const_mul (n : ℝ)⁻¹).sub measurable_const
-  have hleft_int : Integrable (fun y : J → E =>
-      ⨆ i, |(n : ℝ)⁻¹ * (∑ j, f i (y j)) - ∫ x, f i x ∂P|) π := by
-    have hdomL : Integrable (fun y : J → E =>
-        (n : ℝ)⁻¹ * ∑ j, envelope (y j) + hC) π :=
-      (henvSum.const_mul _).add (integrable_const _)
-    refine hdomL.mono' hleft_meas.aemeasurable.aestronglyMeasurable ?_
-    filter_upwards with y
-    have hnn : 0 ≤ ⨆ i, |(n : ℝ)⁻¹ * (∑ j, f i (y j)) - ∫ x, f i x ∂P| :=
-      Nonempty.elim ‹Nonempty ι› fun i =>
-        (abs_nonneg _).trans <| le_ciSup
-          ⟨(n : ℝ)⁻¹ * ∑ j, envelope (y j) + hC, by
-            rintro _ ⟨k, rfl⟩
-            exact hcent_le k y⟩ i
-    rw [Real.norm_eq_abs, abs_of_nonneg hnn]
-    exact hleft_le y
-  have houter : Integrable (fun y => ∫ y', Φ (y, y') ∂π) π :=
-    hΦint.integral_prod_left
+    exact ae_of_all _ fun y' => le_ciSup ⟨_, by
+      rintro _ ⟨k, rfl⟩
+      exact abs_avg_sub_le hbound k y y'⟩ i
   calc
-    (∫ y, ⨆ i, |(n : ℝ)⁻¹ * (∑ j, f i (y j)) - ∫ x, f i x ∂P| ∂π) ≤
+    (∫ y, ⨆ i, |(Fintype.card J : ℝ)⁻¹ * (∑ j, f i (y j)) - ∫ x, f i x ∂P| ∂π) ≤
         ∫ y, ∫ y', Φ (y, y') ∂π ∂π :=
-      integral_mono hleft_int houter hsup_le
+      integral_mono (integrable_centeredSup hf he hbound) hΦint.integral_prod_left hsup_le
     _ = ∫ p, Φ p ∂π.prod π := (integral_prod _ hΦint).symm
 
-/-- Random signs do not change the ghost comparison, and the triangle inequality
-splits it into two equidistributed signed copies. -/
-private lemma expectedSup_ghost_le_twice_signed {E ι J : Type*} [MeasurableSpace E]
-    [Countable ι] [Nonempty ι] [Fintype J] {P : Measure E} [IsProbabilityMeasure P]
-    {f : ι → E → ℝ} (hf : ∀ i, Measurable (f i)) {envelope : E → ℝ}
-    (he : Integrable envelope P) (hbound : ∀ i x, |f i x| ≤ envelope x) :
-    (∫ p, ⨆ i, |(Fintype.card J : ℝ)⁻¹ * ∑ j, (f i (p.1 j) - f i (p.2 j))|
-        ∂(Measure.pi (fun _ : J => P)).prod (Measure.pi (fun _ : J => P))) ≤
-      2 * ∫ q, ⨆ i, |(Fintype.card J : ℝ)⁻¹ * ∑ j, q.2 j * f i (q.1 j)|
-        ∂(Measure.pi (fun _ : J => P)).prod
-          (Measure.pi (fun _ : J => rademacherMeasure)) := by
-  let n : ℕ := Fintype.card J
-  let π : Measure (J → E) := Measure.pi (fun _ => P)
+/-- Almost every Rademacher sign vector takes values in `{-1, 1}`. -/
+private lemma ae_mem_signs {J : Type*} [Fintype J] :
+    ∀ᵐ σ ∂Measure.pi (fun _ : J => rademacherMeasure),
+      σ ∈ Set.univ.pi fun _ => ({-1, 1} : Set ℝ) := by
   let ρ : Measure (J → ℝ) := Measure.pi (fun _ => rademacherMeasure)
   let S : Set (J → ℝ) := Set.univ.pi (fun _ => ({-1, 1} : Set ℝ))
-  have henv0 (x : E) : 0 ≤ envelope x :=
-    Nonempty.elim ‹Nonempty ι› fun i => (abs_nonneg _).trans (hbound i x)
-  have hinv0 : 0 ≤ (n : ℝ)⁻¹ := inv_nonneg.mpr (Nat.cast_nonneg _)
   have hpair_meas : MeasurableSet ({-1, 1} : Set ℝ) :=
     (measurableSet_singleton (1 : ℝ)).insert (-1)
   have hSmeas : MeasurableSet S := MeasurableSet.univ_pi fun _ => hpair_meas
@@ -330,64 +323,37 @@ private lemma expectedSup_ghost_le_twice_signed {E ι J : Type*} [MeasurableSpac
   have hnull : ρ Sᶜ = 0 := by
     rw [measure_compl hSmeas (by simp [hSmeasure] : ρ S ≠ ∞), hSmeasure, measure_univ]
     exact ENNReal.sub_eq_of_eq_add (by simp) (by simp)
-  have haeS : ∀ᵐ σ ∂ρ, σ ∈ S := by
-    rw [ae_iff]
-    exact hnull
-  have habs1 {σ : J → ℝ} (hσ : σ ∈ S) (j : J) : |σ j| = 1 := by
-    have hj : σ j = -1 ∨ σ j = 1 := by
-      have hmem := hσ j
-      simpa [S, Set.mem_univ_pi, Set.mem_insert_iff, Set.mem_singleton_iff] using hmem
-    rcases hj with h | h <;> simp [h]
+  rw [ae_iff]
+  exact hnull
+
+/-- A sign vector with values in `{-1, 1}` has coordinates of absolute value one. -/
+private lemma abs_eq_one_of_mem_signs {J : Type*} {σ : J → ℝ}
+    (hσ : σ ∈ Set.univ.pi fun _ => ({-1, 1} : Set ℝ)) (j : J) : |σ j| = 1 := by
+  have hj : σ j = -1 ∨ σ j = 1 := by
+    simpa [Set.mem_univ_pi, Set.mem_insert_iff, Set.mem_singleton_iff] using hσ j
+  rcases hj with h | h <;> simp [h]
+
+/-- For a fixed sign vector with values in `{-1, 1}`, multiplying the ghost differences by
+the signs does not change the expected ghost supremum, because swapping the two samples on
+the coordinates with sign `-1` preserves their joint law. -/
+private lemma integral_signedGhostSup_eq {E ι J : Type*} [MeasurableSpace E] [Countable ι]
+    [Fintype J] {P : Measure E} [IsProbabilityMeasure P] {f : ι → E → ℝ}
+    (hf : ∀ i, Measurable (f i)) {σ : J → ℝ} (hσ : σ ∈ Set.univ.pi fun _ => ({-1, 1} : Set ℝ)) :
+    ∫ p, ⨆ i, |(Fintype.card J : ℝ)⁻¹ * ∑ j, σ j * (f i (p.1 j) - f i (p.2 j))|
+        ∂(Measure.pi (fun _ : J => P)).prod (Measure.pi (fun _ : J => P)) =
+      ∫ p, ⨆ i, |(Fintype.card J : ℝ)⁻¹ * ∑ j, (f i (p.1 j) - f i (p.2 j))|
+        ∂(Measure.pi (fun _ : J => P)).prod (Measure.pi (fun _ : J => P)) := by
+  let π : Measure (J → E) := Measure.pi (fun _ => P)
+  let Φ : (J → E) × (J → E) → ℝ := fun p =>
+    ⨆ i, |(Fintype.card J : ℝ)⁻¹ * ∑ j, (f i (p.1 j) - f i (p.2 j))|
   have hone : (1 : ℝ) ≠ -1 :=
     (ne_of_lt (lt_trans (neg_lt_zero.mpr zero_lt_one) zero_lt_one)).symm
-  let Φ : (J → E) × (J → E) → ℝ := fun p =>
-    ⨆ i, |(n : ℝ)⁻¹ * ∑ j, (f i (p.1 j) - f i (p.2 j))|
-  have hΦmeas : Measurable Φ := by
-    refine Measurable.iSup fun i => continuous_abs.measurable.comp ?_
-    refine (Finset.measurable_fun_sum Finset.univ fun j _ => ?_).const_mul (n : ℝ)⁻¹
-    exact ((hf i).comp ((measurable_pi_apply j).comp measurable_fst)).sub
-      ((hf i).comp ((measurable_pi_apply j).comp measurable_snd))
-  have henvSum : Integrable (fun y : J → E => ∑ j, envelope (y j)) π :=
-    integrable_finsetSum _ fun j _ =>
-      (measurePreserving_eval (fun _ : J => P) j).integrable_comp_of_integrable he
-  have hdom : Integrable (fun p : (J → E) × (J → E) =>
-      (n : ℝ)⁻¹ * ∑ j, (envelope (p.1 j) + envelope (p.2 j))) (π.prod π) := by
-    have hsum : Integrable (fun p : (J → E) × (J → E) =>
-        ∑ j, envelope (p.1 j) + ∑ j, envelope (p.2 j)) (π.prod π) :=
-      (henvSum.comp_fst π).add (henvSum.comp_snd π)
-    have hfun : (fun p : (J → E) × (J → E) =>
-        (n : ℝ)⁻¹ * ∑ j, (envelope (p.1 j) + envelope (p.2 j))) =
-        fun p => (n : ℝ)⁻¹ * (∑ j, envelope (p.1 j) + ∑ j, envelope (p.2 j)) := by
-      funext p
-      rw [Finset.sum_add_distrib]
-    rw [hfun]
-    exact hsum.const_mul _
-  have hdiff_le (i : ι) (y y' : J → E) :
-      |(n : ℝ)⁻¹ * ∑ j, (f i (y j) - f i (y' j))| ≤
-        (n : ℝ)⁻¹ * ∑ j, (envelope (y j) + envelope (y' j)) := by
-    rw [abs_mul, abs_of_nonneg hinv0]
-    refine mul_le_mul_of_nonneg_left ?_ hinv0
-    refine (Finset.abs_sum_le_sum_abs _ _).trans ?_
-    refine Finset.sum_le_sum fun j _ => ?_
-    exact (abs_sub _ _).trans (add_le_add (hbound i _) (hbound i _))
-  have hbddΦ (p : (J → E) × (J → E)) :
-      BddAbove (Set.range fun i => |(n : ℝ)⁻¹ * ∑ j, (f i (p.1 j) - f i (p.2 j))|) := by
-    refine ⟨(n : ℝ)⁻¹ * ∑ j, (envelope (p.1 j) + envelope (p.2 j)), ?_⟩
-    rintro _ ⟨i, rfl⟩
-    exact hdiff_le i p.1 p.2
-  have hΦ0 (p) : 0 ≤ Φ p :=
-    Nonempty.elim ‹Nonempty ι› fun i => (abs_nonneg _).trans (le_ciSup (hbddΦ p) i)
-  have hΦint : Integrable Φ (π.prod π) := by
-    refine hdom.mono' hΦmeas.aemeasurable.aestronglyMeasurable ?_
-    filter_upwards with p
-    rw [Real.norm_eq_abs, abs_of_nonneg (hΦ0 p)]
-    exact ciSup_le fun i => hdiff_le i p.1 p.2
-  have hterms {σ : J → ℝ} (hσ : σ ∈ S) (p : (J → E) × (J → E)) (i : ι) :
+  have hterms (p : (J → E) × (J → E)) (i : ι) :
       ∑ j, (f i ((ghostFlip σ p).1 j) - f i ((ghostFlip σ p).2 j)) =
         ∑ j, σ j * (f i (p.1 j) - f i (p.2 j)) := by
     refine Finset.sum_congr rfl fun j _ => ?_
     have hj : σ j = -1 ∨ σ j = 1 := by
-      simpa [S, Set.mem_univ_pi, Set.mem_insert_iff, Set.mem_singleton_iff] using hσ j
+      simpa [Set.mem_univ_pi, Set.mem_insert_iff, Set.mem_singleton_iff] using hσ j
     rcases hj with hj | hj
     · have h1 : (ghostFlip σ p).1 j = p.2 j := by simp [ghostFlip, hj]
       have h2 : (ghostFlip σ p).2 j = p.1 j := by simp [ghostFlip, hj]
@@ -396,185 +362,180 @@ private lemma expectedSup_ghost_le_twice_signed {E ι J : Type*} [MeasurableSpac
       have h1 : (ghostFlip σ p).1 j = p.1 j := by simp [ghostFlip, hne]
       have h2 : (ghostFlip σ p).2 j = p.2 j := by simp [ghostFlip, hne]
       rw [h1, h2, hj, one_mul]
-  have hint_eq {σ : J → ℝ} (hσ : σ ∈ S) :
-      ∫ p, ⨆ i, |(n : ℝ)⁻¹ * ∑ j, σ j * (f i (p.1 j) - f i (p.2 j))| ∂π.prod π =
-        ∫ p, Φ p ∂π.prod π := by
-    have hpres := ghostFlip_measurePreserving (P := P) σ
-    have hint : ∫ p, Φ (ghostFlip σ p) ∂π.prod π = ∫ p, Φ p ∂π.prod π := by
-      conv_rhs => rw [← hpres.map_eq]
-      exact (integral_map hpres.measurable.aemeasurable
-        (hΦmeas.aestronglyMeasurable :
-          AEStronglyMeasurable Φ (Measure.map (ghostFlip σ) (π.prod π)))).symm
-    rw [← hint]
-    refine integral_congr_ae (ae_of_all _ fun p => ?_)
-    refine congr_arg iSup (funext fun i => ?_)
-    rw [hterms hσ p i]
-  let m := (π.prod π).prod ρ
-  let Φσ : ((J → E) × (J → E)) × (J → ℝ) → ℝ := fun z =>
-    ⨆ i, |(n : ℝ)⁻¹ * ∑ j, z.2 j * (f i (z.1.1 j) - f i (z.1.2 j))|
-  have hΦσmeas : Measurable Φσ := by
+  have hpres := ghostFlip_measurePreserving (P := P) σ
+  have hint : ∫ p, Φ (ghostFlip σ p) ∂π.prod π = ∫ p, Φ p ∂π.prod π := by
+    conv_rhs => rw [← hpres.map_eq]
+    exact (integral_map hpres.measurable.aemeasurable
+      ((measurable_ghostSup hf).aestronglyMeasurable :
+        AEStronglyMeasurable Φ (Measure.map (ghostFlip σ) (π.prod π)))).symm
+  rw [← hint]
+  refine integral_congr_ae (ae_of_all _ fun p => ?_)
+  refine congr_arg iSup (funext fun i => ?_)
+  rw [hterms p i]
+
+/-- The supremum over the class of signed averages is measurable. -/
+private lemma measurable_signedSup {E ι J : Type*} [MeasurableSpace E] [Countable ι]
+    [Fintype J] {f : ι → E → ℝ} (hf : ∀ i, Measurable (f i)) :
+    Measurable fun q : (J → E) × (J → ℝ) =>
+      ⨆ i, |(Fintype.card J : ℝ)⁻¹ * ∑ j, q.2 j * f i (q.1 j)| := by
+  refine Measurable.iSup fun i => continuous_abs.measurable.comp ?_
+  refine (Finset.measurable_fun_sum Finset.univ fun j _ => ?_).const_mul _
+  exact ((measurable_pi_apply j).comp measurable_snd).mul
+    ((hf i).comp ((measurable_pi_apply j).comp measurable_fst))
+
+/-- A signed average is dominated by the envelope weighted by the absolute signs. -/
+private lemma abs_avg_signed_le {E ι J : Type*} [Fintype J] {f : ι → E → ℝ}
+    {envelope : E → ℝ} (hbound : ∀ i x, |f i x| ≤ envelope x) (σ : J → ℝ) (y : J → E)
+    (i : ι) :
+    |(Fintype.card J : ℝ)⁻¹ * ∑ j, σ j * f i (y j)| ≤
+      (Fintype.card J : ℝ)⁻¹ * ∑ j, |σ j| * envelope (y j) := by
+  have hinv0 : 0 ≤ (Fintype.card J : ℝ)⁻¹ := inv_nonneg.mpr (Nat.cast_nonneg _)
+  rw [abs_mul, abs_of_nonneg hinv0]
+  refine mul_le_mul_of_nonneg_left ?_ hinv0
+  refine (Finset.abs_sum_le_sum_abs _ _).trans ?_
+  refine Finset.sum_le_sum fun j _ => ?_
+  rw [abs_mul]
+  exact mul_le_mul_of_nonneg_left (hbound i (y j)) (abs_nonneg _)
+
+/-- The signed averages are bounded above uniformly over the class. -/
+private lemma bddAbove_abs_avg_signed {E ι J : Type*} [Fintype J] {f : ι → E → ℝ}
+    {envelope : E → ℝ} (hbound : ∀ i x, |f i x| ≤ envelope x) (σ : J → ℝ) (y : J → E) :
+    BddAbove (Set.range fun i => |(Fintype.card J : ℝ)⁻¹ * ∑ j, σ j * f i (y j)|) :=
+  ⟨_, by
+    rintro _ ⟨i, rfl⟩
+    exact abs_avg_signed_le hbound σ y i⟩
+
+/-- For signs in `{-1, 1}`, the signed supremum is dominated by the averaged envelope. -/
+private lemma signedSup_le_of_mem {E ι J : Type*} [Nonempty ι] [Fintype J] {f : ι → E → ℝ}
+    {envelope : E → ℝ} (hbound : ∀ i x, |f i x| ≤ envelope x) {σ : J → ℝ}
+    (hσ : σ ∈ Set.univ.pi fun _ => ({-1, 1} : Set ℝ)) (y : J → E) :
+    ⨆ i, |(Fintype.card J : ℝ)⁻¹ * ∑ j, σ j * f i (y j)| ≤
+      (Fintype.card J : ℝ)⁻¹ * ∑ j, envelope (y j) := by
+  refine ciSup_le fun i => (abs_avg_signed_le hbound σ y i).trans_eq ?_
+  simp only [abs_eq_one_of_mem_signs hσ, one_mul]
+
+/-- The signed supremum is integrable for a sample and independent Rademacher signs. -/
+private lemma integrable_signedSup {E ι J : Type*} [MeasurableSpace E] [Countable ι]
+    [Nonempty ι] [Fintype J] {P : Measure E} [IsProbabilityMeasure P] {f : ι → E → ℝ}
+    (hf : ∀ i, Measurable (f i)) {envelope : E → ℝ} (he : Integrable envelope P)
+    (hbound : ∀ i x, |f i x| ≤ envelope x) :
+    Integrable (fun q : (J → E) × (J → ℝ) =>
+      ⨆ i, |(Fintype.card J : ℝ)⁻¹ * ∑ j, q.2 j * f i (q.1 j)|)
+      ((Measure.pi fun _ : J => P).prod (Measure.pi fun _ : J => rademacherMeasure)) := by
+  have hdom : Integrable (fun q : (J → E) × (J → ℝ) =>
+      (Fintype.card J : ℝ)⁻¹ * ∑ j, envelope (q.1 j))
+      ((Measure.pi fun _ : J => P).prod (Measure.pi fun _ : J => rademacherMeasure)) :=
+    ((integrable_sum_envelope he).const_mul _).comp_fst _
+  refine hdom.mono' (measurable_signedSup hf).aemeasurable.aestronglyMeasurable ?_
+  filter_upwards [(Measure.quasiMeasurePreserving_snd
+    (μ := Measure.pi fun _ : J => P)).ae ae_mem_signs] with q hq
+  rw [Real.norm_eq_abs, abs_of_nonneg (Real.iSup_nonneg fun _ => abs_nonneg _)]
+  exact signedSup_le_of_mem hbound hq q.1
+
+/-- The triangle inequality splits the signed ghost supremum into the signed suprema of the
+two samples. -/
+private lemma signedGhostSup_le {E ι J : Type*} [Nonempty ι] [Fintype J] {f : ι → E → ℝ}
+    {envelope : E → ℝ} (hbound : ∀ i x, |f i x| ≤ envelope x) (σ : J → ℝ) (y y' : J → E) :
+    ⨆ i, |(Fintype.card J : ℝ)⁻¹ * ∑ j, σ j * (f i (y j) - f i (y' j))| ≤
+      (⨆ i, |(Fintype.card J : ℝ)⁻¹ * ∑ j, σ j * f i (y j)|) +
+        ⨆ i, |(Fintype.card J : ℝ)⁻¹ * ∑ j, σ j * f i (y' j)| := by
+  refine ciSup_le fun i => ?_
+  have hsplit : (Fintype.card J : ℝ)⁻¹ * ∑ j, σ j * (f i (y j) - f i (y' j)) =
+      (Fintype.card J : ℝ)⁻¹ * ∑ j, σ j * f i (y j) -
+        (Fintype.card J : ℝ)⁻¹ * ∑ j, σ j * f i (y' j) := by
+    simp_rw [mul_sub]
+    rw [Finset.sum_sub_distrib, mul_sub]
+  rw [hsplit]
+  exact (abs_sub _ _).trans (add_le_add (le_ciSup (bddAbove_abs_avg_signed hbound σ y) i)
+    (le_ciSup (bddAbove_abs_avg_signed hbound σ y') i))
+
+/-- The signed ghost supremum is integrable for two i.i.d. samples and independent
+Rademacher signs. -/
+private lemma integrable_signedGhostSup {E ι J : Type*} [MeasurableSpace E] [Countable ι]
+    [Nonempty ι] [Fintype J] {P : Measure E} [IsProbabilityMeasure P] {f : ι → E → ℝ}
+    (hf : ∀ i, Measurable (f i)) {envelope : E → ℝ} (he : Integrable envelope P)
+    (hbound : ∀ i x, |f i x| ≤ envelope x) :
+    Integrable (fun z : ((J → E) × (J → E)) × (J → ℝ) =>
+      ⨆ i, |(Fintype.card J : ℝ)⁻¹ * ∑ j, z.2 j * (f i (z.1.1 j) - f i (z.1.2 j))|)
+      (((Measure.pi fun _ : J => P).prod (Measure.pi fun _ : J => P)).prod
+        (Measure.pi fun _ : J => rademacherMeasure)) := by
+  let π : Measure (J → E) := Measure.pi (fun _ => P)
+  have hmeas : Measurable fun z : ((J → E) × (J → E)) × (J → ℝ) =>
+      ⨆ i, |(Fintype.card J : ℝ)⁻¹ * ∑ j, z.2 j * (f i (z.1.1 j) - f i (z.1.2 j))| := by
     refine Measurable.iSup fun i => continuous_abs.measurable.comp ?_
-    refine (Finset.measurable_fun_sum Finset.univ fun j _ => ?_).const_mul (n : ℝ)⁻¹
+    refine (Finset.measurable_fun_sum Finset.univ fun j _ => ?_).const_mul _
     exact (((measurable_pi_apply j).comp measurable_snd).mul
       (((hf i).comp ((measurable_pi_apply j).comp (measurable_fst.comp measurable_fst))).sub
         ((hf i).comp ((measurable_pi_apply j).comp (measurable_snd.comp measurable_fst)))))
+  have hdom : Integrable (fun z : ((J → E) × (J → E)) × (J → ℝ) =>
+      (Fintype.card J : ℝ)⁻¹ * ∑ j, envelope (z.1.1 j) +
+        (Fintype.card J : ℝ)⁻¹ * ∑ j, envelope (z.1.2 j))
+        ((π.prod π).prod (Measure.pi fun _ : J => rademacherMeasure)) :=
+    ((((integrable_sum_envelope he).const_mul _).comp_fst π).comp_fst _).add
+      ((((integrable_sum_envelope he).const_mul _).comp_snd π).comp_fst _)
+  refine hdom.mono' hmeas.aemeasurable.aestronglyMeasurable ?_
+  filter_upwards [(Measure.quasiMeasurePreserving_snd (μ := π.prod π)).ae ae_mem_signs]
+    with z hz
+  rw [Real.norm_eq_abs, abs_of_nonneg (Real.iSup_nonneg fun _ => abs_nonneg _)]
+  exact (signedGhostSup_le hbound z.2 z.1.1 z.1.2).trans
+    (add_le_add (signedSup_le_of_mem hbound hz _) (signedSup_le_of_mem hbound hz _))
+
+/-- Composing an integrable function on a product with a measure-preserving map in the first
+factor keeps it integrable and preserves its integral. -/
+private lemma integrable_comp_fst_and_integral_eq {α β γ : Type*} [MeasurableSpace α]
+    [MeasurableSpace β] [MeasurableSpace γ] {μ : Measure α} {μ' : Measure β} {ν : Measure γ}
+    [SFinite μ] [SFinite ν] {g : α → β} (hg : MeasurePreserving g μ μ') {ψ : β × γ → ℝ}
+    (hψm : Measurable ψ) (hψ : Integrable ψ (μ'.prod ν)) :
+    Integrable (fun z : α × γ => ψ (g z.1, z.2)) (μ.prod ν) ∧
+      ∫ z, ψ (g z.1, z.2) ∂μ.prod ν = ∫ q, ψ q ∂μ'.prod ν := by
+  have h := hg.prod (MeasurePreserving.id ν)
+  refine ⟨h.integrable_comp_of_integrable hψ, ?_⟩
+  calc
+    ∫ z, ψ (g z.1, z.2) ∂μ.prod ν = ∫ q, ψ q ∂(μ.prod ν).map (Prod.map g id) :=
+      (integral_map h.measurable.aemeasurable hψm.aestronglyMeasurable).symm
+    _ = ∫ q, ψ q ∂μ'.prod ν := by rw [h.map_eq]
+
+/-- Random signs do not change the ghost comparison, and the triangle inequality
+splits it into two equidistributed signed copies. -/
+private lemma expectedSup_ghost_le_twice_signed {E ι J : Type*} [MeasurableSpace E]
+    [Countable ι] [Nonempty ι] [Fintype J] {P : Measure E} [IsProbabilityMeasure P]
+    {f : ι → E → ℝ} (hf : ∀ i, Measurable (f i)) {envelope : E → ℝ}
+    (he : Integrable envelope P) (hbound : ∀ i x, |f i x| ≤ envelope x) :
+    (∫ p, ⨆ i, |(Fintype.card J : ℝ)⁻¹ * ∑ j, (f i (p.1 j) - f i (p.2 j))|
+        ∂(Measure.pi (fun _ : J => P)).prod (Measure.pi (fun _ : J => P))) ≤
+      2 * ∫ q, ⨆ i, |(Fintype.card J : ℝ)⁻¹ * ∑ j, q.2 j * f i (q.1 j)|
+        ∂(Measure.pi (fun _ : J => P)).prod
+          (Measure.pi (fun _ : J => rademacherMeasure)) := by
+  let π : Measure (J → E) := Measure.pi (fun _ => P)
+  let ρ : Measure (J → ℝ) := Measure.pi (fun _ => rademacherMeasure)
+  let Φσ : ((J → E) × (J → E)) × (J → ℝ) → ℝ := fun z =>
+    ⨆ i, |(Fintype.card J : ℝ)⁻¹ * ∑ j, z.2 j * (f i (z.1.1 j) - f i (z.1.2 j))|
   let ψ : (J → E) × (J → ℝ) → ℝ := fun q =>
-    ⨆ i, |(n : ℝ)⁻¹ * ∑ j, q.2 j * f i (q.1 j)|
-  have hψmeas : Measurable ψ := by
-    refine Measurable.iSup fun i => continuous_abs.measurable.comp ?_
-    refine (Finset.measurable_fun_sum Finset.univ fun j _ => ?_).const_mul (n : ℝ)⁻¹
-    exact ((measurable_pi_apply j).comp measurable_snd).mul
-      ((hf i).comp ((measurable_pi_apply j).comp measurable_fst))
-  have hwild (σ : J → ℝ) (y : J → E) (i : ι) :
-      |(n : ℝ)⁻¹ * ∑ j, σ j * f i (y j)| ≤
-        (n : ℝ)⁻¹ * ∑ j, |σ j| * envelope (y j) := by
-    rw [abs_mul, abs_of_nonneg hinv0]
-    refine mul_le_mul_of_nonneg_left ?_ hinv0
-    refine (Finset.abs_sum_le_sum_abs _ _).trans ?_
-    refine Finset.sum_le_sum fun j _ => ?_
-    rw [abs_mul]
-    exact mul_le_mul_of_nonneg_left (hbound i (y j)) (abs_nonneg _)
-  have hbddψ (σ : J → ℝ) (y : J → E) :
-      BddAbove (Set.range fun i => |(n : ℝ)⁻¹ * ∑ j, σ j * f i (y j)|) := by
-    refine ⟨(n : ℝ)⁻¹ * ∑ j, |σ j| * envelope (y j), ?_⟩
-    rintro _ ⟨i, rfl⟩
-    exact hwild σ y i
-  have hψ0 (q : (J → E) × (J → ℝ)) : 0 ≤ ψ q :=
-    Nonempty.elim ‹Nonempty ι› fun i => (abs_nonneg _).trans (le_ciSup (hbddψ q.2 q.1) i)
-  have hψ_good (σ : J → ℝ) (y : J → E) (hσ : σ ∈ S) :
-      ψ (y, σ) ≤ (n : ℝ)⁻¹ * ∑ j, envelope (y j) := by
-    refine ciSup_le fun i => ?_
-    rw [abs_mul, abs_of_nonneg hinv0]
-    refine mul_le_mul_of_nonneg_left ?_ hinv0
-    refine (Finset.abs_sum_le_sum_abs _ _).trans ?_
-    refine Finset.sum_le_sum fun j _ => ?_
-    rw [abs_mul, habs1 hσ j, one_mul]
-    exact hbound i _
-  have henvAvg : Integrable (fun y : J → E => (n : ℝ)⁻¹ * ∑ j, envelope (y j)) π :=
-    henvSum.const_mul _
-  have hae_prod : ∀ᵐ q ∂π.prod ρ, q.2 ∈ S := by
-    rw [ae_iff]
-    have : {q : (J → E) × (J → ℝ) | q.2 ∉ S} = Set.univ ×ˢ Sᶜ := by
-      ext q
-      simp
-    rw [this, Measure.prod_prod, hnull, measure_univ, one_mul]
-  have hψint : Integrable ψ (π.prod ρ) := by
-    refine (henvAvg.comp_fst ρ).mono' hψmeas.aemeasurable.aestronglyMeasurable ?_
-    filter_upwards [hae_prod] with q hq
-    rw [Real.norm_eq_abs, abs_of_nonneg (hψ0 q)]
-    exact hψ_good q.2 q.1 hq
-  let Ψ1 : ((J → E) × (J → E)) × (J → ℝ) → ℝ := fun z => ψ (z.1.1, z.2)
-  let Ψ2 : ((J → E) × (J → E)) × (J → ℝ) → ℝ := fun z => ψ (z.1.2, z.2)
-  have hΨ1meas : Measurable Ψ1 :=
-    hψmeas.comp ((measurable_fst.comp measurable_fst).prodMk measurable_snd)
-  have hΨ2meas : Measurable Ψ2 :=
-    hψmeas.comp ((measurable_snd.comp measurable_fst).prodMk measurable_snd)
-  have hae_m : ∀ᵐ z ∂m, z.2 ∈ S := by
-    rw [ae_iff]
-    have : {z : ((J → E) × (J → E)) × (J → ℝ) | z.2 ∉ S} =
-        Set.univ ×ˢ Sᶜ := by
-      ext z
-      simp
-    rw [this, Measure.prod_prod, hnull, measure_univ, one_mul]
-  have hdom1 : Integrable (fun z => (n : ℝ)⁻¹ * ∑ j, envelope (z.1.1 j)) m :=
-    (henvAvg.comp_fst π).comp_fst ρ
-  have hdom2 : Integrable (fun z => (n : ℝ)⁻¹ * ∑ j, envelope (z.1.2 j)) m :=
-    (henvAvg.comp_snd π).comp_fst ρ
-  have hΨ10 (z) : 0 ≤ Ψ1 z := hψ0 (z.1.1, z.2)
-  have hΨ20 (z) : 0 ≤ Ψ2 z := hψ0 (z.1.2, z.2)
-  have hΨ1int : Integrable Ψ1 m := by
-    refine hdom1.mono' hΨ1meas.aemeasurable.aestronglyMeasurable ?_
-    filter_upwards [hae_m] with z hz
-    rw [Real.norm_eq_abs, abs_of_nonneg (hΨ10 z)]
-    exact hψ_good z.2 z.1.1 hz
-  have hΨ2int : Integrable Ψ2 m := by
-    refine hdom2.mono' hΨ2meas.aemeasurable.aestronglyMeasurable ?_
-    filter_upwards [hae_m] with z hz
-    rw [Real.norm_eq_abs, abs_of_nonneg (hΨ20 z)]
-    exact hψ_good z.2 z.1.2 hz
-  have hΦσ0 (z) : 0 ≤ Φσ z := by
-    have hbdd : BddAbove (Set.range fun i =>
-        |(n : ℝ)⁻¹ * ∑ j, z.2 j * (f i (z.1.1 j) - f i (z.1.2 j))|) := by
-      refine ⟨(n : ℝ)⁻¹ * ∑ j, |z.2 j| * (envelope (z.1.1 j) + envelope (z.1.2 j)), ?_⟩
-      intro t ht
-      rcases ht with ⟨i, rfl⟩
-      show |(n : ℝ)⁻¹ * ∑ j, z.2 j * (f i (z.1.1 j) - f i (z.1.2 j))| ≤
-        (n : ℝ)⁻¹ * ∑ j, |z.2 j| * (envelope (z.1.1 j) + envelope (z.1.2 j))
-      rw [abs_mul, abs_of_nonneg hinv0]
-      refine mul_le_mul_of_nonneg_left ?_ hinv0
-      refine (Finset.abs_sum_le_sum_abs _ _).trans ?_
-      refine Finset.sum_le_sum fun j _ => ?_
-      rw [abs_mul]
-      exact mul_le_mul_of_nonneg_left
-        ((abs_sub _ _).trans (add_le_add (hbound i _) (hbound i _))) (abs_nonneg _)
-    exact Nonempty.elim ‹Nonempty ι› fun i => (abs_nonneg _).trans (le_ciSup hbdd i)
-  have hΦσdom : Integrable (fun z =>
-      (n : ℝ)⁻¹ * ∑ j, envelope (z.1.1 j) + (n : ℝ)⁻¹ * ∑ j, envelope (z.1.2 j)) m := by
-    refine (hdom1.add hdom2).congr ?_
-    refine ae_of_all _ fun z => ?_
-    exact Pi.add_apply _ _ z
-  have hΦσint : Integrable Φσ m := by
-    refine hΦσdom.mono' hΦσmeas.aemeasurable.aestronglyMeasurable ?_
-    filter_upwards [hae_m] with z hz
-    rw [Real.norm_eq_abs, abs_of_nonneg (hΦσ0 z)]
-    refine ciSup_le fun i => ?_
-    calc
-      |(n : ℝ)⁻¹ * ∑ j, z.2 j * (f i (z.1.1 j) - f i (z.1.2 j))|
-          = (n : ℝ)⁻¹ * |∑ j, z.2 j * (f i (z.1.1 j) - f i (z.1.2 j))| := by
-            rw [abs_mul, abs_of_nonneg hinv0]
-      _ ≤ (n : ℝ)⁻¹ * ∑ j, |z.2 j * (f i (z.1.1 j) - f i (z.1.2 j))| :=
-        mul_le_mul_of_nonneg_left (Finset.abs_sum_le_sum_abs _ _) hinv0
-      _ ≤ (n : ℝ)⁻¹ * ∑ j, (envelope (z.1.1 j) + envelope (z.1.2 j)) := by
-        refine mul_le_mul_of_nonneg_left (Finset.sum_le_sum fun j _ => ?_) hinv0
-        rw [abs_mul, habs1 hz j, one_mul]
-        exact (abs_sub _ _).trans (add_le_add (hbound i _) (hbound i _))
-      _ = (n : ℝ)⁻¹ * ∑ j, envelope (z.1.1 j) +
-          (n : ℝ)⁻¹ * ∑ j, envelope (z.1.2 j) := by
-        rw [Finset.sum_add_distrib, mul_add]
-  have heq_sign : ∫ z, Φσ z ∂m = ∫ p, Φ p ∂π.prod π := by
+    ⨆ i, |(Fintype.card J : ℝ)⁻¹ * ∑ j, q.2 j * f i (q.1 j)|
+  have hψmeas : Measurable ψ := measurable_signedSup hf
+  have hψint : Integrable ψ (π.prod ρ) := integrable_signedSup hf he hbound
+  have hΦσint : Integrable Φσ ((π.prod π).prod ρ) := integrable_signedGhostSup hf he hbound
+  obtain ⟨hΨ1int, hI1⟩ :=
+    integrable_comp_fst_and_integral_eq (measurePreserving_fst (μ := π) (ν := π)) hψmeas hψint
+  obtain ⟨hΨ2int, hI2⟩ :=
+    integrable_comp_fst_and_integral_eq (measurePreserving_snd (μ := π) (ν := π)) hψmeas hψint
+  have heq_sign : ∫ z, Φσ z ∂(π.prod π).prod ρ = ∫ p, ⨆ i,
+      |(Fintype.card J : ℝ)⁻¹ * ∑ j, (f i (p.1 j) - f i (p.2 j))| ∂π.prod π := by
     rw [integral_prod_symm _ hΦσint]
     have hinner : (fun σ => ∫ p, ⨆ i,
-        |(n : ℝ)⁻¹ * ∑ j, σ j * (f i (p.1 j) - f i (p.2 j))| ∂π.prod π) =ᵐ[ρ]
-        fun _ => ∫ p, Φ p ∂π.prod π := by
-      filter_upwards [haeS] with σ hσ
-      simpa [Φσ] using hint_eq hσ
+        |(Fintype.card J : ℝ)⁻¹ * ∑ j, σ j * (f i (p.1 j) - f i (p.2 j))| ∂π.prod π) =ᵐ[ρ]
+        fun _ => ∫ p, ⨆ i,
+          |(Fintype.card J : ℝ)⁻¹ * ∑ j, (f i (p.1 j) - f i (p.2 j))| ∂π.prod π := by
+      filter_upwards [ae_mem_signs] with σ hσ
+      exact integral_signedGhostSup_eq hf hσ
     rw [integral_congr_ae hinner, integral_const, probReal_univ, one_smul]
-  have htri (z) : Φσ z ≤ Ψ1 z + Ψ2 z := by
-    refine ciSup_le fun i => ?_
-    have hsplit : ∑ j, z.2 j * (f i (z.1.1 j) - f i (z.1.2 j)) =
-        ∑ j, z.2 j * f i (z.1.1 j) - ∑ j, z.2 j * f i (z.1.2 j) := by
-      simp_rw [mul_sub]
-      exact Finset.sum_sub_distrib _ _
-    have habs : |(n : ℝ)⁻¹ *
-        (∑ j, z.2 j * f i (z.1.1 j) - ∑ j, z.2 j * f i (z.1.2 j))| ≤
-        |(n : ℝ)⁻¹ * ∑ j, z.2 j * f i (z.1.1 j)| +
-          |(n : ℝ)⁻¹ * ∑ j, z.2 j * f i (z.1.2 j)| := by
-      let a := ∑ j, z.2 j * f i (z.1.1 j)
-      let b := ∑ j, z.2 j * f i (z.1.2 j)
-      calc
-        |(n : ℝ)⁻¹ * (a - b)| = (n : ℝ)⁻¹ * |a - b| := by
-          rw [abs_mul, abs_of_nonneg hinv0]
-        _ ≤ (n : ℝ)⁻¹ * (|a| + |b|) := mul_le_mul_of_nonneg_left (abs_sub a b) hinv0
-        _ = (n : ℝ)⁻¹ * |a| + (n : ℝ)⁻¹ * |b| := by rw [mul_add]
-        _ = |(n : ℝ)⁻¹ * a| + |(n : ℝ)⁻¹ * b| := by
-          apply congrArg₂ (· + ·)
-          · rw [abs_mul, abs_of_nonneg hinv0]
-          · rw [abs_mul, abs_of_nonneg hinv0]
-    rw [hsplit]
-    exact habs.trans (add_le_add (le_ciSup (hbddψ z.2 z.1.1) i) (le_ciSup (hbddψ z.2 z.1.2) i))
-  have hsum_int : Integrable (fun z => Ψ1 z + Ψ2 z) m := hΨ1int.add hΨ2int
-  have hI1 : ∫ z, Ψ1 z ∂m = ∫ q, ψ q ∂π.prod ρ := by
-    rw [integral_prod _ hΨ1int, integral_prod _ hψint]
-    exact (integral_fun_fst (fun y => ∫ σ, ψ (y, σ) ∂ρ)).trans (by rw [probReal_univ, one_smul])
-  have hI2 : ∫ z, Ψ2 z ∂m = ∫ q, ψ q ∂π.prod ρ := by
-    rw [integral_prod _ hΨ2int, integral_prod _ hψint]
-    exact (integral_fun_snd (fun y => ∫ σ, ψ (y, σ) ∂ρ)).trans (by rw [probReal_univ, one_smul])
   calc
-    ∫ p, Φ p ∂π.prod π = ∫ z, Φσ z ∂m := heq_sign.symm
-    _ ≤ ∫ z, Ψ1 z + Ψ2 z ∂m := integral_mono hΦσint hsum_int htri
-    _ = ∫ z, Ψ1 z ∂m + ∫ z, Ψ2 z ∂m := integral_add hΨ1int hΨ2int
-    _ = ∫ q, ψ q ∂π.prod ρ + ∫ q, ψ q ∂π.prod ρ := by rw [hI1, hI2]
-    _ = 2 * ∫ q, ψ q ∂π.prod ρ := by rw [← two_mul]
+    _ = ∫ z, Φσ z ∂(π.prod π).prod ρ := heq_sign.symm
+    _ ≤ ∫ z, ψ (z.1.1, z.2) + ψ (z.1.2, z.2) ∂(π.prod π).prod ρ :=
+      integral_mono hΦσint (hΨ1int.add hΨ2int) fun z => signedGhostSup_le hbound z.2 z.1.1 z.1.2
+    _ = ∫ z, ψ (z.1.1, z.2) ∂(π.prod π).prod ρ + ∫ z, ψ (z.1.2, z.2) ∂(π.prod π).prod ρ :=
+      integral_add hΨ1int hΨ2int
+    _ = 2 * ∫ q, ψ q ∂π.prod ρ := by rw [hI1, hI2, ← two_mul]
 
 /-- **07.33**: symmetrization for a nonempty countable class with an integrable envelope.
 The signs are sampled on a separate probability space, so independence from the data is
@@ -616,17 +577,8 @@ theorem symmetrization {Ω Ω' E ι J : Type*} [MeasurableSpace Ω] [MeasurableS
     exact (hε j).2
   have hpush : (μ.prod ν).map (Prod.map sample signs) = π.prod ρ := by
     rw [← Measure.map_prod_map μ ν hsample_meas hsigns_meas, hsample_law, hsigns_law]
-  have hleft_meas : Measurable (fun y : J → E =>
-      ⨆ i, |(n : ℝ)⁻¹ * (∑ j, f i (y j)) - ∫ x, f i x ∂P|) := by
-    refine Measurable.iSup fun i => continuous_abs.measurable.comp ?_
-    exact ((Finset.measurable_fun_sum Finset.univ fun j _ =>
-      (hf i).comp (measurable_pi_apply j)).const_mul (n : ℝ)⁻¹).sub measurable_const
-  have hright_meas : Measurable (fun q : (J → E) × (J → ℝ) =>
-      ⨆ i, |(n : ℝ)⁻¹ * ∑ j, q.2 j * f i (q.1 j)|) := by
-    refine Measurable.iSup fun i => continuous_abs.measurable.comp ?_
-    refine (Finset.measurable_fun_sum Finset.univ fun j _ => ?_).const_mul (n : ℝ)⁻¹
-    exact ((measurable_pi_apply j).comp measurable_snd).mul
-      ((hf i).comp ((measurable_pi_apply j).comp measurable_fst))
+  have hleft_meas := measurable_centeredSup (J := J) hf fun i => ∫ x, f i x ∂P
+  have hright_meas := measurable_signedSup (J := J) hf
   calc
     (∫ ω, ⨆ i, |(n : ℝ)⁻¹ * (∑ j, f i (X j ω)) - ∫ x, f i x ∂P| ∂μ) =
         ∫ y, ⨆ i, |(n : ℝ)⁻¹ * (∑ j, f i (y j)) - ∫ x, f i x ∂P| ∂π := by

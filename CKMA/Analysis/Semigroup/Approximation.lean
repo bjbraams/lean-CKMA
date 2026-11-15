@@ -6,6 +6,10 @@ Authors: CKMA contributors
 module
 
 public import CKMA.Analysis.Semigroup.Inhomogeneous
+public import TauCeti.Topology.Algebra.Module.LinearPMap.Resolvent.Basic
+public import TauCeti.Analysis.Semigroups.GrowthBound
+public import Mathlib.Topology.Algebra.Module.LinearPMap
+public import Mathlib.Analysis.Calculus.ContDiff.Defs
 
 /-!
 # Inhomogeneous evolution and semigroup approximation
@@ -44,12 +48,12 @@ open scoped NNReal
 variable {X : Type*} [NormedAddCommGroup X] [NormedSpace ℝ X] [CompleteSpace X]
 
 /-- **24.13**: the variation-of-constants formula is the unique continuous integrated solution. -/
-theorem variation_of_constants (S : StronglyContinuousSemigroup X) {T : ℝ} (hT : 0 ≤ T)
+theorem variation_of_constants (S : StronglyContinuousSemigroup X) {T : ℝ}
     (x : X) {f : ℝ → X} (hf : IntegrableOn f (Set.Icc 0 T)) :
     IsIntegratedSemigroupSolution S x f (forcedSemigroupTrajectory S x f) T ∧
       ∀ u : ℝ → X, IsIntegratedSemigroupSolution S x f u T →
         Set.EqOn u (forcedSemigroupTrajectory S x f) (Set.Icc 0 T) := by
-  have h := isIntegratedSemigroupSolution_forcedSemigroupTrajectory S hT x hf
+  have h := isIntegratedSemigroupSolution_forcedSemigroupTrajectory S x hf
   exact ⟨h, fun _ hu => hu.eqOn h⟩
 
 /-- With domain initial data and C1 forcing, the trajectory is a classical solution in the

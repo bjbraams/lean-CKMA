@@ -6,20 +6,10 @@ Authors: CKMA contributors
 module
 
 public import TauCeti.MeasureTheory.Integral.MaximalFunction
-public import Mathlib.MeasureTheory.Measure.WithDensity
-public import Mathlib.MeasureTheory.Measure.Lebesgue.VolumeOfBalls
+public import Mathlib.Analysis.Normed.Lp.MeasurableSpace
 
-import Mathlib.Analysis.Complex.Norm
-import Mathlib.Analysis.Normed.Module.FiniteDimension
-import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
-import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.MeasureTheory.Covering.Vitali
-import Mathlib.MeasureTheory.Function.SpecialFunctions.Basic
-import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
-import Mathlib.MeasureTheory.Integral.Lebesgue.Add
 import Mathlib.MeasureTheory.Measure.RegularityCompacts
-import Mathlib.Topology.Instances.ENNReal.Lemmas
-import Mathlib.Topology.Order.MonotoneConvergence
 
 /-!
 # Muckenhoupt weights and maximal estimates
@@ -85,8 +75,6 @@ variable {d : ℕ}
 local notation "E" => EuclideanSpace ℝ (Fin d)
 
 local notation "ofReal" => ENNReal.ofReal
-
-open Classical
 
 /-- Scaling the radius of a Euclidean ball by `c > 0` multiplies its volume by `c ^ d`. -/
 private lemma ball_volume_mul {c r : ℝ} (hc : 0 < c) (hr : 0 < r) (x y : E) :
@@ -376,6 +364,7 @@ private lemma measurable_dualPower {p : ℝ} {w : E → ℝ} (hw : Measurable w)
   have hs : MeasurableSet {y | 0 < w y} := measurableSet_lt measurable_const hw
   exact Measurable.ite hs ((hw.log.mul_const _).exp) measurable_const
 
+open scoped Classical in
 /-- The dual weight cut off to one ball and one height, as a complex test function. -/
 private def truncatedDual (p : ℝ) (w : E → ℝ) (x : E) (r : ℝ) (n : ℕ) (y : E) : ℂ :=
   if y ∈ ball x r ∧ dualPower p w y ≤ (n : ℝ) then Complex.ofReal (dualPower p w y) else 0
@@ -383,11 +372,13 @@ private def truncatedDual (p : ℝ) (w : E → ℝ) (x : E) (r : ℝ) (n : ℕ) 
 /-- The cutoff dual weight is measurable. -/
 private lemma measurable_truncatedDual {p : ℝ} {w : E → ℝ} (hw : Measurable w)
     (x : E) (r : ℝ) (n : ℕ) : Measurable (truncatedDual p w x r n) := by
+  classical
   have hset : MeasurableSet {y | y ∈ ball x r ∧ dualPower p w y ≤ (n : ℝ)} :=
     measurableSet_ball.inter (measurableSet_le (measurable_dualPower hw) measurable_const)
   exact Measurable.ite hset ((Complex.measurable_ofReal.comp (measurable_dualPower hw)))
     measurable_const
 
+open scoped Classical in
 /-- Extended norm of the cutoff: the real dual weight on its support, and zero elsewhere. -/
 private lemma enorm_truncatedDual (p : ℝ) (w : E → ℝ) (x : E) (r : ℝ) (n : ℕ) (y : E) :
     ‖truncatedDual p w x r n y‖ₑ =

@@ -6,7 +6,7 @@ Authors: CKMA contributors
 module
 
 public import TauCeti.Analysis.Sobolev.WeakDeriv.Basic
-public import Mathlib.MeasureTheory.Measure.Lebesgue.VolumeOfBalls
+public import Mathlib.Analysis.Normed.Lp.MeasurableSpace
 
 /-!
 # Critical Sobolev functions that are essentially unbounded

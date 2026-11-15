@@ -5,9 +5,12 @@ Authors: CKMA contributors
 -/
 module
 
-public import CKMA.Dynamics.Ergodic.Pointwise.Maximal
+public import Mathlib.MeasureTheory.Function.L1Space.Integrable
 public import CKMA.Dynamics.Ergodic.Pointwise.BirkhoffShift
 public import Mathlib.MeasureTheory.MeasurableSpace.Invariants
+
+import CKMA.Dynamics.Ergodic.Pointwise.Maximal
+import Mathlib.MeasureTheory.Integral.Bochner.Set
 
 import Mathlib.Tactic
 

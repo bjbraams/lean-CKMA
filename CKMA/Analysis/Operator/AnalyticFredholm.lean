@@ -5,13 +5,11 @@ Authors: CKMA contributors
 -/
 module
 
-public import CKMA.Analysis.Operator.Fredholm
-public import Mathlib.Analysis.Complex.Basic
-public import Mathlib.Analysis.Calculus.Deriv.Basic
-public import Mathlib.Analysis.Analytic.Basic
 public import Mathlib.Analysis.Calculus.ImplicitContDiff
-public import Mathlib.Analysis.Calculus.FDeriv.Add
-public import Mathlib.Analysis.Calculus.FDeriv.Mul
+public import Mathlib.Analysis.Normed.Operator.Compact.Basic
+public import Mathlib.Analysis.CStarAlgebra.Classes
+
+import Mathlib.Analysis.Normed.Algebra.GelfandRadius
 
 /-!
 # Analytic Fredholm families and simple eigenvalue branches
@@ -181,12 +179,13 @@ private theorem simpleEigenPartial_isInvertible (A0 : X →L[ℂ] X) (z₀ : ℂ
       _ = Q := by rw [sub_self, sub_zero]
   have happL (w : ℂ) (x : X) :
       simpleEigenPartial A0 z₀ u₀ phi (w, x) = (phi x, B x - w • u₀) := by
-    simp [simpleEigenPartial, B, ContinuousLinearMap.prod_apply, comp_apply, smulRight_apply, coe_fst', coe_snd']
+    simp [simpleEigenPartial, B, ContinuousLinearMap.prod_apply, comp_apply, smulRight_apply,
+      coe_fst', coe_snd']
   have happS (alpha : ℂ) (y : X) :
       simpleEigenPartialInv u₀ phi R (alpha, y) =
         (-phi y, (alpha - phi (R (Q y))) • u₀ + R (Q y)) := by
-    simp [simpleEigenPartialInv, Q, P, ContinuousLinearMap.prod_apply, comp_apply, smulRight_apply, coe_fst',
-      coe_snd', map_sub]
+    simp [simpleEigenPartialInv, Q, P, ContinuousLinearMap.prod_apply, comp_apply,
+      smulRight_apply, coe_fst', coe_snd', map_sub]
   have hLS : simpleEigenPartial A0 z₀ u₀ phi ∘L simpleEigenPartialInv u₀ phi R =
       .id ℂ (ℂ × X) := by
     refine ext fun v => ?_

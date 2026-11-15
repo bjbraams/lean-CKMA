@@ -5,19 +5,14 @@ Authors: CKMA contributors
 -/
 module
 
-public import CKMA.Analysis.Convex.Duality.Sum
-public import Mathlib.Algebra.BigOperators.Fin
-public import Mathlib.Algebra.BigOperators.Pi
-public import Mathlib.Algebra.Module.Submodule.LinearMap
-public import Mathlib.Analysis.Convex.Function
-public import Mathlib.Analysis.LocallyConvex.Separation
-public import Mathlib.LinearAlgebra.Dual.Lemmas
-public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
-public import Mathlib.LinearAlgebra.Pi
-public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.PiProd
-public import Mathlib.Topology.Algebra.Module.FiniteDimension
-public import Mathlib.Topology.Instances.EReal.Lemmas
-public import Mathlib.Topology.Order.OrderClosed
+public import TauCeti.Analysis.Convex.Subdifferential
+public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
+import CKMA.Analysis.Convex.Duality.Subdifferential
+import CKMA.Analysis.Convex.Duality.Sum
+import Mathlib.Analysis.Convex.Continuous
+import Mathlib.Analysis.LocallyConvex.Separation
+import Mathlib.Topology.Algebra.Module.FiniteDimension
+import Mathlib.Tactic
 
 /-!
 # Slater's condition and subgradient KKT multipliers
@@ -364,6 +359,157 @@ private lemma snd_combo {ι : Type*} (a d : ℝ) (p q : (ι → ℝ) × ℝ) :
     (a • p + d • q).2 = a * p.2 + d * q.2 := by
   rw [Prod.snd_add, Prod.smul_snd, Prod.smul_snd, smul_eq_mul, smul_eq_mul]
 
+/-- A convex combination of two negative reals is negative. -/
+private lemma convex_combo_neg {a d u v : ℝ} (ha : 0 ≤ a) (hd : 0 ≤ d) (had : a + d = 1)
+    (hu : u < 0) (hv : v < 0) : a * u + d * v < 0 :=
+  calc
+    a * u + d * v ≤ a * max u v + d * max u v := by
+      gcongr
+      exacts [le_max_left _ _, le_max_right _ _]
+    _ = max u v := by rw [← add_mul, had, one_mul]
+    _ < 0 := max_lt hu hv
+
+omit [NormedAddCommGroup E] [NormedSpace ℝ E] in
+/-- The open negative orthant of the slack space is open. -/
+private lemma isOpen_negOrthant {ι : Type*} [Finite ι] :
+    IsOpen {p : (ι → ℝ) × ℝ | (∀ i, p.1 i < 0) ∧ p.2 < 0} := by
+  have hset : {p : (ι → ℝ) × ℝ | (∀ i, p.1 i < 0) ∧ p.2 < 0} =
+      (⋂ i, {p : (ι → ℝ) × ℝ | p.1 i < 0}) ∩ {p | p.2 < 0} := by
+    ext p
+    simp
+  rw [hset]
+  refine (isOpen_iInter_of_finite fun i => ?_).inter (isOpen_lt continuous_snd continuous_const)
+  exact isOpen_lt ((continuous_apply i).comp continuous_fst) continuous_const
+
+omit [NormedAddCommGroup E] [NormedSpace ℝ E] in
+/-- The open negative orthant of the slack space is convex. -/
+private lemma convex_negOrthant {ι : Type*} :
+    Convex ℝ {p : (ι → ℝ) × ℝ | (∀ i, p.1 i < 0) ∧ p.2 < 0} := by
+  intro p hp q hq a d ha hd had
+  rw [Set.mem_ofPred] at hp hq ⊢
+  refine ⟨fun i => ?_, ?_⟩
+  · rw [fst_combo]
+    exact convex_combo_neg ha hd had (hp.1 i) (hq.1 i)
+  · rw [snd_combo]
+    exact convex_combo_neg ha hd had hp.2 hq.2
+
+/-- The set of slack vectors dominating the constraint values and the objective increase of some
+point of the affine fiber is convex. -/
+private lemma convex_kktSlack {m : ℕ} {ι : Type*} (f : E → ℝ) (g : ι → E → ℝ)
+    (A : E →L[ℝ] (Fin m → ℝ)) (b : Fin m → ℝ)
+    (hf : ConvexOn ℝ Set.univ f) (hg : ∀ i, ConvexOn ℝ Set.univ (g i)) (x : E) :
+    Convex ℝ {p : (ι → ℝ) × ℝ | ∃ z : E, A z = b ∧ (∀ i, g i z ≤ p.1 i) ∧ f z - f x ≤ p.2} := by
+  intro p hp q hq a d ha hd had
+  rw [Set.mem_ofPred] at hp hq ⊢
+  obtain ⟨z, hzA, hzg, hzf⟩ := hp
+  obtain ⟨w, hwA, hwg, hwf⟩ := hq
+  refine ⟨a • z + d • w, ?_, ?_, ?_⟩
+  · rw [map_add, map_smul, map_smul, hzA, hwA, ← add_smul, had, one_smul]
+  · intro i
+    have hgv := (hg i).2 (Set.mem_univ z) (Set.mem_univ w) ha hd had
+    have hlin : a * g i z + d * g i w ≤ a * p.1 i + d * q.1 i := by
+      gcongr
+      · exact hzg i
+      · exact hwg i
+    calc
+      g i (a • z + d • w) ≤ a * g i z + d * g i w := by
+        simpa [smul_eq_mul] using hgv
+      _ ≤ a * p.1 i + d * q.1 i := hlin
+      _ = (a • p + d • q).1 i := by rw [fst_combo]
+  · have hfv := hf.2 (Set.mem_univ z) (Set.mem_univ w) ha hd had
+    simp only [smul_eq_mul] at hfv
+    have hfx : a * f x + d * f x = f x := by rw [← add_mul, had, one_mul]
+    rw [snd_combo]
+    linarith [mul_le_mul_of_nonneg_left hzf ha, mul_le_mul_of_nonneg_left hwf hd]
+
+omit [NormedAddCommGroup E] [NormedSpace ℝ E] in
+/-- A continuous linear functional on the slack space `(ι → ℝ) × ℝ` is determined by its values
+on the coordinate vectors. -/
+private lemma strongDual_slack_apply {ι : Type*} [Fintype ι] [DecidableEq ι]
+    (sep : StrongDual ℝ ((ι → ℝ) × ℝ)) (p : (ι → ℝ) × ℝ) :
+    sep p = ∑ i, sep (Pi.single i 1, 0) * p.1 i + p.2 * sep (0, 1) := by
+  have hp : p = ∑ i, p.1 i • ((Pi.single i 1 : ι → ℝ), (0 : ℝ)) +
+      p.2 • ((0 : ι → ℝ), (1 : ℝ)) := by
+    ext j
+    · simp [Prod.fst_sum, Finset.sum_apply, Pi.single_apply]
+    · simp [Prod.snd_sum]
+  conv_lhs => rw [hp, map_add, map_sum, map_smul]
+  simp only [map_smul, smul_eq_mul]
+  congr 1
+  exact Finset.sum_congr rfl fun i _ => mul_comm _ _
+
+/-- For `w < 0` and `level ≤ 0`, some positive multiple of `w` equals `level - 1`. -/
+private lemma exists_pos_mul_eq_sub_one {w level : ℝ} (hw : w < 0) (hlevel : level ≤ 0) :
+    ∃ r : ℝ, 0 < r ∧ r * w = level - 1 := by
+  have hw0 : w ≠ 0 := hw.ne
+  refine ⟨(1 - level) / (-w), div_pos (by linarith) (by linarith), ?_⟩
+  field_simp
+  ring
+
+omit [NormedAddCommGroup E] [NormedSpace ℝ E] in
+/-- A convex set in the slack space that contains the origin, contains the positive coordinate
+half-axes, and misses the open negative orthant is supported at the origin by a functional with
+nonnegative, not all vanishing, coefficients. -/
+private lemma exists_nonneg_separator {ι : Type*} [Fintype ι] [DecidableEq ι]
+    {S : Set ((ι → ℝ) × ℝ)} (hS : Convex ℝ S)
+    (hdisj : Disjoint {p : (ι → ℝ) × ℝ | (∀ i, p.1 i < 0) ∧ p.2 < 0} S)
+    (h0 : ((0 : ι → ℝ), (0 : ℝ)) ∈ S)
+    (hsingle : ∀ i, ∀ r : ℝ, 0 < r → ((Pi.single i r : ι → ℝ), (0 : ℝ)) ∈ S)
+    (hvert : ∀ r : ℝ, 0 < r → ((0 : ι → ℝ), r) ∈ S) :
+    ∃ w : ι → ℝ, ∃ μ : ℝ, (∀ i, 0 ≤ w i) ∧ 0 ≤ μ ∧ 0 < ∑ i, w i + μ ∧
+      ∀ p ∈ S, 0 ≤ ∑ i, w i * p.1 i + p.2 * μ := by
+  obtain ⟨sep, level, hUsep, hSsep⟩ :=
+    geometric_hahn_banach_open convex_negOrthant isOpen_negOrthant hS hdisj
+  set w : ι → ℝ := fun i => sep (Pi.single i 1, 0)
+  set μ : ℝ := sep (0, 1)
+  have hsep (p : (ι → ℝ) × ℝ) : sep p = ∑ i, w i * p.1 i + p.2 * μ :=
+    strongDual_slack_apply sep p
+  have hlevel : level ≤ 0 := by
+    have h0' := hSsep _ h0
+    rw [← Prod.zero_eq_mk, map_zero] at h0'
+    exact h0'
+  have hw : ∀ i, 0 ≤ w i := by
+    intro i
+    by_contra hlt
+    obtain ⟨r, hr, hrw⟩ := exists_pos_mul_eq_sub_one (lt_of_not_ge hlt) hlevel
+    have hle := hSsep _ (hsingle i r hr)
+    have hcalc : sep (Pi.single i r, (0 : ℝ)) = r * w i := by
+      rw [hsep]
+      simp [Pi.single_apply, mul_comm]
+    linarith
+  have hμ : 0 ≤ μ := by
+    by_contra hlt
+    obtain ⟨r, hr, hrw⟩ := exists_pos_mul_eq_sub_one (lt_of_not_ge hlt) hlevel
+    have hle := hSsep _ (hvert r hr)
+    have hcalc : sep ((0 : ι → ℝ), r) = r * μ := by
+      rw [hsep]
+      simp
+    linarith
+  have hsep_neg (ε : ℝ) : sep (fun _ : ι => -ε, -ε) = -ε * (∑ i, w i + μ) := by
+    rw [hsep, mul_add, Finset.mul_sum]
+    simp only [mul_comm]
+  have hUneg (ε : ℝ) (hε : 0 < ε) :
+      (fun _ : ι => -ε, -ε) ∈ {p : (ι → ℝ) × ℝ | (∀ i, p.1 i < 0) ∧ p.2 < 0} :=
+    ⟨fun _ => neg_lt_zero.mpr hε, neg_lt_zero.mpr hε⟩
+  set σ : ℝ := ∑ i, w i + μ
+  have hσ_nonneg : 0 ≤ σ := add_nonneg (Finset.sum_nonneg fun i _ => hw i) hμ
+  have hσ : 0 < σ := by
+    refine lt_of_le_of_ne hσ_nonneg fun hzero => ?_
+    have hlt := hUsep _ (hUneg 1 one_pos)
+    rw [hsep_neg 1, ← hzero, mul_zero] at hlt
+    linarith
+  have hlevel0 : level = 0 := by
+    refine le_antisymm hlevel (le_of_not_gt fun hlt => ?_)
+    have hεpos : 0 < -level / (2 * σ) := div_pos (by linarith) (by positivity)
+    have hltU := hUsep _ (hUneg _ hεpos)
+    rw [hsep_neg] at hltU
+    have hval : -(-level / (2 * σ)) * σ = level / 2 := by
+      field_simp
+    linarith
+  refine ⟨w, μ, hw, hμ, hσ, fun p hp => ?_⟩
+  rw [← hsep, ← hlevel0]
+  exact hSsep p hp
+
 /-- Separation against the negative orthant produces the KKT weights. -/
 private lemma exists_kkt_weights {m : ℕ} {ι : Type*} [Fintype ι] (f : E → ℝ) (g : ι → E → ℝ)
     (A : E →L[ℝ] (Fin m → ℝ)) (b : Fin m → ℝ)
@@ -375,281 +521,65 @@ private lemma exists_kkt_weights {m : ℕ} {ι : Type*} [Fintype ι] (f : E → 
       ∀ z, A z = b →
         f x + ∑ i, c i * g i x ≤ f z + ∑ i, c i * g i z := by
   classical
-  let P := (ι → ℝ) × ℝ
-  let U : Set P := {p | (∀ i, p.1 i < 0) ∧ p.2 < 0}
-  let S : Set P := {p | ∃ z : E, A z = b ∧ (∀ i, g i z ≤ p.1 i) ∧ f z - f x ≤ p.2}
-  have hUopen : IsOpen U := by
-    have h1 : IsOpen {p : P | ∀ i, p.1 i < 0} := by
-      have hset : {p : P | ∀ i, p.1 i < 0} = ⋂ i, {p : P | p.1 i < 0} := by
-        ext p
-        simp
-      rw [hset]
-      refine isOpen_iInter_of_finite fun i => ?_
-      exact isOpen_lt ((continuous_apply i).comp continuous_fst) continuous_const
-    have h2 : IsOpen {p : P | p.2 < 0} :=
-      isOpen_lt continuous_snd continuous_const
-    have hU : U = {p : P | ∀ i, p.1 i < 0} ∩ {p : P | p.2 < 0} := by
-      ext p
-      simp [U]
-    rw [hU]
-    exact h1.inter h2
-  have hUconv : Convex ℝ U := by
-    intro p hp q hq a d ha hd had
-    rw [Set.mem_ofPred] at hp hq ⊢
-    refine ⟨fun i => ?_, ?_⟩
-    · have hpi : p.1 i < 0 := hp.1 i
-      have hqi : q.1 i < 0 := hq.1 i
-      rw [fst_combo]
-      rcases eq_or_lt_of_le ha with ha0 | ha0
-      · have hd1 : d = 1 := by linarith
-        rw [← ha0, hd1, zero_mul, one_mul, zero_add]
-        exact hqi
-      · rcases eq_or_lt_of_le hd with hd0 | hd0
-        · have ha1 : a = 1 := by linarith
-          rw [← hd0, ha1, zero_mul, one_mul, add_zero]
-          exact hpi
-        · have hpa : a * p.1 i < 0 := mul_neg_of_pos_of_neg ha0 hpi
-          have hqd : d * q.1 i < 0 := mul_neg_of_pos_of_neg hd0 hqi
-          linarith
-    · rw [snd_combo]
-      rcases eq_or_lt_of_le ha with ha0 | ha0
-      · have hd1 : d = 1 := by linarith
-        rw [← ha0, hd1, zero_mul, one_mul, zero_add]
-        exact hq.2
-      · rcases eq_or_lt_of_le hd with hd0 | hd0
-        · have ha1 : a = 1 := by linarith
-          rw [← hd0, ha1, zero_mul, one_mul, add_zero]
-          exact hp.2
-        · nlinarith [hp.2, hq.2]
-  have hSconv : Convex ℝ S := by
-    intro p hp q hq a d ha hd had
-    rw [Set.mem_ofPred] at hp hq ⊢
-    obtain ⟨z, hzA, hzg, hzf⟩ := hp
-    obtain ⟨w, hwA, hwg, hwf⟩ := hq
-    refine ⟨a • z + d • w, ?_, ?_, ?_⟩
-    · rw [map_add, map_smul, map_smul, hzA, hwA, ← add_smul, had, one_smul]
-    · intro i
-      have hgv := (hg i).2 (Set.mem_univ z) (Set.mem_univ w) ha hd had
-      have hlin : a * g i z + d * g i w ≤ a * p.1 i + d * q.1 i := by
-        gcongr
-        · exact hzg i
-        · exact hwg i
-      calc
-        g i (a • z + d • w) ≤ a * g i z + d * g i w := by
-          simpa [smul_eq_mul] using hgv
-        _ ≤ a * p.1 i + d * q.1 i := hlin
-        _ = (a • p + d • q).1 i := by rw [fst_combo]
-    · have hfv := hf.2 (Set.mem_univ z) (Set.mem_univ w) ha hd had
-      have hz' : f z ≤ f x + p.2 := by linarith
-      have hw' : f w ≤ f x + q.2 := by linarith
-      have hsum : a * f z + d * f w ≤ f x + (a * p.2 + d * q.2) := by
-        have hcomb : a * f z + d * f w ≤ a * (f x + p.2) + d * (f x + q.2) := by
-          gcongr
-        have hident : a * (f x + p.2) + d * (f x + q.2) =
-            f x + (a * p.2 + d * q.2) := by
-          have hrewrite : a * (f x + p.2) + d * (f x + q.2) =
-              (a + d) * f x + a * p.2 + d * q.2 := by ring
-          rw [hrewrite, had, one_mul, add_assoc]
-        linarith
-      have hgoal : a * f z + d * f w - f x ≤ a * p.2 + d * q.2 := by
-        linarith
-      calc
-        f (a • z + d • w) - f x ≤ a * f z + d * f w - f x := by
-          simpa [smul_eq_mul] using sub_le_sub_right hfv (f x)
-        _ ≤ a * p.2 + d * q.2 := hgoal
-        _ = (a • p + d • q).2 := by rw [snd_combo]
-  have hdisj : Disjoint U S := by
+  set S : Set ((ι → ℝ) × ℝ) :=
+    {p | ∃ z : E, A z = b ∧ (∀ i, g i z ≤ p.1 i) ∧ f z - f x ≤ p.2}
+  have hdisj : Disjoint {p : (ι → ℝ) × ℝ | (∀ i, p.1 i < 0) ∧ p.2 < 0} S := by
     rw [Set.disjoint_left]
     intro p hpU hpS
     rw [Set.mem_ofPred] at hpU hpS
     obtain ⟨z, hzA, hzg, hzf⟩ := hpS
-    have hfeas : ∀ i, g i z ≤ 0 := fun i =>
-      le_of_lt (lt_of_le_of_lt (hzg i) (hpU.1 i))
+    have hfeas : ∀ i, g i z ≤ 0 := fun i => (lt_of_le_of_lt (hzg i) (hpU.1 i)).le
     have hbetter : f z < f x := by linarith [hzf, hpU.2]
     exact (not_le_of_gt hbetter) (hmin z hfeas hzA)
-  obtain ⟨sep, level, hUsep, hSsep⟩ :=
-    geometric_hahn_banach_open hUconv hUopen hSconv hdisj
-  have h0S : ((0 : ι → ℝ), (0 : ℝ)) ∈ S := by
-    refine ⟨x, hx.2, ?_, ?_⟩
-    · intro i
-      simpa using hx.1 i
-    · simp
-  have hlevel : level ≤ 0 := by
-    have h0 := hSsep _ h0S
-    rw [← Prod.zero_eq_mk, map_zero] at h0
-    exact h0
-  let slope := sep.comp (inl ℝ (ι → ℝ) ℝ)
-  let multMap := sep.comp (inr ℝ (ι → ℝ) ℝ)
-  let mult : ℝ := multMap 1
-  have hsep_apply (p : P) : sep p = slope p.1 + p.2 * mult := by
-    have hsplit := comp_inl_add_comp_inr sep p
-    have hmul : multMap p.2 = p.2 * mult := by
-      have hmap : toSpanSingleton ℝ (multMap 1) = multMap :=
-        toSpanSingleton_apply_map_one (c := multMap)
-      rw [← hmap, toSpanSingleton_apply, smul_eq_mul]
-    linarith
-  let weight : ι → ℝ := fun i => slope (Pi.single i 1)
-  have hslope (s : ι → ℝ) : slope s = ∑ i, weight i * s i := by
-    calc
-      slope s = slope (∑ i, s i • Pi.single i 1) := by
-        congr 1
-        exact pi_eq_sum_univ' s
-      _ = ∑ i, slope (s i • Pi.single i 1) := map_sum _ _ _
-      _ = ∑ i, s i * slope (Pi.single i 1) := by
-        refine Finset.sum_congr rfl fun i _ => ?_
-        rw [map_smul, smul_eq_mul]
-      _ = ∑ i, weight i * s i := by
-        refine Finset.sum_congr rfl fun i _ => ?_
-        rw [mul_comm]
-  have hweight (i : ι) (r : ℝ) : slope (Pi.single i r) = weight i * r := by
-    rw [hslope, Finset.sum_eq_single i]
-    · simp [Pi.single_eq_same, mul_comm]
-    · intro j _ hji
-      simp [Pi.single_eq_of_ne hji]
-    · simp
-  have hweight_nonneg : ∀ i, 0 ≤ weight i := by
-    intro i
-    by_contra hlt
-    have hlt' : weight i < 0 := lt_of_not_ge hlt
-    set r : ℝ := (1 - level) / (-weight i) with hrdef
-    have hrpos : 0 < r := div_pos (by linarith) (by linarith)
-    have hmem : (Pi.single i r, (0 : ℝ)) ∈ S := by
-      refine ⟨x, hx.2, ?_, ?_⟩
-      · intro j
-        by_cases hji : j = i
-        · rw [hji]
-          simp [Pi.single_eq_same]
-          linarith [hx.1 i, hrpos]
-        · simp [Pi.single_eq_of_ne hji, hx.1 j]
-      · simp
-    have hle := hSsep _ hmem
-    have hcalc : sep (Pi.single i r, (0 : ℝ)) = r * weight i := by
-      rw [hsep_apply, hweight, zero_mul, add_zero, mul_comm]
-    have hrw : r * weight i = level - 1 := by
-      have hwne : weight i ≠ 0 := hlt'.ne
-      rw [hrdef, div_mul_eq_mul_div, mul_div_assoc, div_neg, div_self hwne]
-      ring
-    linarith
-  have horth (r : ℝ) : sep ((0 : ι → ℝ), r) = r * mult := by
-    rw [hsep_apply, hslope]
-    simp
-  have hmult_nonneg : 0 ≤ mult := by
-    by_contra hlt
-    have hlt' : mult < 0 := lt_of_not_ge hlt
-    set r : ℝ := (1 - level) / (-mult) with hrdef
-    have hrpos : 0 < r := div_pos (by linarith) (by linarith)
-    have hmem : ((0 : ι → ℝ), r) ∈ S := by
-      refine ⟨x, hx.2, ?_, ?_⟩
-      · intro i
-        simpa using hx.1 i
-      · linarith
-    have hle := hSsep _ hmem
-    have hrw : r * mult = level - 1 := by
-      have hmne : mult ≠ 0 := hlt'.ne
-      rw [hrdef, div_mul_eq_mul_div, mul_div_assoc, div_neg, div_self hmne]
-      ring
-    linarith [horth r]
-  have hsep_neg (ε : ℝ) : sep (fun _ : ι => -ε, -ε) =
-      -ε * (∑ i, weight i + mult) := by
-    rw [hsep_apply, hslope]
-    have hsum : ∑ i, weight i * (-ε) = -ε * ∑ i, weight i := by
-      rw [Finset.mul_sum]
-      refine Finset.sum_congr rfl fun i _ => ?_
-      ring
-    rw [hsum]
-    ring
-  have hUneg (ε : ℝ) (hε : 0 < ε) : (fun _ : ι => -ε, -ε) ∈ U := by
-    refine ⟨fun i => ?_, neg_lt_zero.mpr hε⟩
-    simpa using (neg_lt_zero.mpr hε)
-  let sigma : ℝ := ∑ i, weight i + mult
-  have hsigma_nonneg : 0 ≤ sigma := by
-    have hsum : 0 ≤ ∑ i, weight i := Finset.sum_nonneg fun i _ => hweight_nonneg i
-    linarith
-  have hsigma_pos : 0 < sigma := by
-    by_contra hle
-    have hzero : sigma = 0 := le_antisymm (le_of_not_gt hle) hsigma_nonneg
-    have hlt := hUsep _ (hUneg 1 one_pos)
-    rw [hsep_neg 1] at hlt
-    have hsum0 : ∑ i, weight i + mult = 0 := by simpa [sigma] using hzero
-    rw [hsum0, mul_zero] at hlt
-    linarith
-  have hlevel0 : level = 0 := by
-    apply le_antisymm hlevel
-    by_contra hlt
-    have hlt' : level < 0 := lt_of_not_ge hlt
-    set ε : ℝ := -level / (2 * sigma) with hεdef
-    have hεpos : 0 < ε := div_pos (by linarith) (by positivity)
-    have hltU := hUsep _ (hUneg ε hεpos)
-    rw [hsep_neg ε] at hltU
-    have hval : -ε * sigma = level / 2 := by
-      rw [hεdef]
-      field_simp
-    linarith
+  have hsingle : ∀ i, ∀ r : ℝ, 0 < r → ((Pi.single i r : ι → ℝ), (0 : ℝ)) ∈ S := by
+    intro i r hr
+    refine ⟨x, hx.2, fun j => ?_, by simp⟩
+    by_cases hji : j = i
+    · subst hji
+      simp only [Pi.single_eq_same]
+      linarith [hx.1 j]
+    · simp [Pi.single_eq_of_ne hji, hx.1 j]
+  obtain ⟨w, μ, hw, hμ, hσ, hsep⟩ :=
+    exists_nonneg_separator (convex_kktSlack f g A b hf hg x) hdisj
+      ⟨x, hx.2, by simpa using hx.1, by simp⟩ hsingle
+      (fun r hr => ⟨x, hx.2, by simpa using hx.1, by simpa using hr.le⟩)
   obtain ⟨x₀, hx₀A, hx₀g⟩ := hslater
-  have hmult_pos : 0 < mult := by
-    by_contra hle
-    have hzero : mult = 0 := le_antisymm (le_of_not_gt hle) hmult_nonneg
-    have hmem : ((fun i => g i x₀), f x₀ - f x) ∈ S :=
-      ⟨x₀, hx₀A, fun _ => le_rfl, le_rfl⟩
-    have hge := hSsep _ hmem
-    rw [hlevel0, hsep_apply, hslope, hzero, mul_zero, add_zero] at hge
-    have hterm : ∀ i, weight i * g i x₀ ≤ 0 := fun i =>
-      mul_nonpos_of_nonneg_of_nonpos (hweight_nonneg i) (hx₀g i).le
-    have hsumle : ∑ i, weight i * g i x₀ ≤ 0 :=
-      Finset.sum_nonpos fun i _ => hterm i
-    have hsum0 : ∑ i, weight i * g i x₀ = 0 := le_antisymm hsumle hge
-    have hterms : ∀ i ∈ Finset.univ, 0 ≤ -(weight i * g i x₀) := fun i _ =>
-      neg_nonneg.mpr (hterm i)
-    have hsumneg : ∑ i, -(weight i * g i x₀) = 0 := by
-      rw [Finset.sum_neg_distrib, hsum0, neg_zero]
-    have hzero_term := (Finset.sum_eq_zero_iff_of_nonneg hterms).1 hsumneg
-    have hweight0 : ∀ i, weight i = 0 := by
-      intro i
-      have hi : weight i * g i x₀ = 0 := by linarith [hzero_term i (Finset.mem_univ i)]
-      exact (mul_eq_zero.mp hi).resolve_right (hx₀g i).ne
-    have hsig : sigma = 0 := by simp [sigma, hweight0, hzero]
-    exact hsigma_pos.ne' hsig
-  let c : ι → ℝ := fun i => weight i / mult
-  have hc : ∀ i, 0 ≤ c i := fun i => div_nonneg (hweight_nonneg i) hmult_pos.le
-  have hweight_c (i : ι) : weight i = c i * mult := by
-    simp [c]
-    field_simp
+  -- The Slater point forces the objective coefficient to be positive.
+  have hμpos : 0 < μ := by
+    refine lt_of_le_of_ne hμ fun hzero => ?_
+    have hge := hsep _ (⟨x₀, hx₀A, fun _ => le_rfl, le_rfl⟩ :
+      ((fun i => g i x₀), f x₀ - f x) ∈ S)
+    rw [← hzero, mul_zero, add_zero] at hge
+    have hterm : ∀ i ∈ Finset.univ, w i * g i x₀ ≤ 0 := fun i _ =>
+      mul_nonpos_of_nonneg_of_nonpos (hw i) (hx₀g i).le
+    have hzero_term := (Finset.sum_eq_zero_iff_of_nonpos hterm).1
+      (le_antisymm (Finset.sum_nonpos hterm) hge)
+    have hw0 : ∀ i, w i = 0 := fun i =>
+      (mul_eq_zero.mp (hzero_term i (Finset.mem_univ i))).resolve_right (hx₀g i).ne
+    simp [hw0, ← hzero] at hσ
+  let c : ι → ℝ := fun i => w i / μ
+  have hc : ∀ i, 0 ≤ c i := fun i => div_nonneg (hw i) hμpos.le
   have hlag_ge : ∀ z, A z = b → 0 ≤ ∑ i, c i * g i z + (f z - f x) := by
     intro z hz
-    have hmem : ((fun i => g i z), f z - f x) ∈ S :=
-      ⟨z, hz, fun _ => le_rfl, le_rfl⟩
-    have hge := hSsep _ hmem
-    rw [hlevel0, hsep_apply, hslope] at hge
-    have hrew : ∑ i, weight i * g i z = mult * ∑ i, c i * g i z := by
-      rw [Finset.mul_sum]
-      refine Finset.sum_congr rfl fun i _ => ?_
-      rw [hweight_c i]
-      ring
-    have hnonneg : 0 ≤ mult * (∑ i, c i * g i z + (f z - f x)) := by
-      have hident : ∑ i, weight i * g i z + (f z - f x) * mult =
-          mult * (∑ i, c i * g i z + (f z - f x)) := by
-        rw [hrew]
-        ring
-      linarith
-    exact (mul_le_mul_iff_of_pos_left hmult_pos).mp (by simpa using hnonneg)
+    have hge := hsep _ (⟨z, hz, fun _ => le_rfl, le_rfl⟩ : ((fun i => g i z), f z - f x) ∈ S)
+    have hrew : ∑ i, w i * g i z + (f z - f x) * μ =
+        μ * (∑ i, c i * g i z + (f z - f x)) := by
+      rw [mul_add, Finset.mul_sum]
+      congr 1
+      · refine Finset.sum_congr rfl fun i _ => ?_
+        simp only [c]
+        field_simp
+      · ring
+    rw [hrew] at hge
+    exact nonneg_of_mul_nonneg_right (by linarith) hμpos
   have hcomp : ∀ i, c i * g i x = 0 := by
-    have hsumge : 0 ≤ ∑ i, c i * g i x := by
-      have hge := hlag_ge x hx.2
-      simp at hge
-      exact hge
-    have hterm : ∀ i, c i * g i x ≤ 0 := fun i =>
+    have hterm : ∀ i ∈ Finset.univ, c i * g i x ≤ 0 := fun i _ =>
       mul_nonpos_of_nonneg_of_nonpos (hc i) (hx.1 i)
-    have hsumle : ∑ i, c i * g i x ≤ 0 := Finset.sum_nonpos fun i _ => hterm i
-    have hsum0 : ∑ i, c i * g i x = 0 := le_antisymm hsumle hsumge
-    have hterms : ∀ i ∈ Finset.univ, 0 ≤ -(c i * g i x) := fun i _ =>
-      neg_nonneg.mpr (hterm i)
-    have hsumneg : ∑ i, -(c i * g i x) = 0 := by
-      rw [Finset.sum_neg_distrib, hsum0, neg_zero]
-    have hzero_term := (Finset.sum_eq_zero_iff_of_nonneg hterms).1 hsumneg
-    intro i
-    linarith [hzero_term i (Finset.mem_univ i)]
-  refine ⟨c, hc, hcomp, ?_⟩
-  intro z hz
+    have hsumge : 0 ≤ ∑ i, c i * g i x := by simpa using hlag_ge x hx.2
+    have hzero_term := (Finset.sum_eq_zero_iff_of_nonpos hterm).1
+      (le_antisymm (Finset.sum_nonpos hterm) hsumge)
+    exact fun i => hzero_term i (Finset.mem_univ i)
+  refine ⟨c, hc, hcomp, fun z hz => ?_⟩
   have hsum0 : ∑ i, c i * g i x = 0 := Finset.sum_eq_zero fun i _ => hcomp i
   linarith [hlag_ge z hz]
 

@@ -6,10 +6,9 @@ Authors: CKMA contributors
 module
 
 public import CKMA.Analysis.Real.Dini.Basic
-public import Mathlib.MeasureTheory.Measure.Typeclasses.NullSingletonClass
-public import Mathlib.Topology.Instances.EReal.Lemmas
-public import Mathlib.Topology.Order.Basic
-public import Mathlib.Topology.Order.LeftRightNhds
+public import Mathlib.MeasureTheory.Measure.Haar.OfBasis
+
+import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 
 /-!
 # Young's comparison of opposite Dini derivatives

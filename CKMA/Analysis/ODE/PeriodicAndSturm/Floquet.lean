@@ -6,33 +6,10 @@ Authors: CKMA contributors
 module
 
 public import Mathlib.Analysis.Calculus.Deriv.Basic
-public import Mathlib.Analysis.Calculus.Deriv.Add
-public import Mathlib.Analysis.Calculus.Deriv.Inv
-public import Mathlib.Analysis.Calculus.Deriv.MeanValue
-public import Mathlib.Analysis.Calculus.Deriv.Mul
-public import Mathlib.Analysis.Calculus.MeanValue
-public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
-public import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
-public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Invertible
-public import Mathlib.Analysis.ODE.ExistUnique
-public import Mathlib.Analysis.Calculus.Deriv.Comp
-public import Mathlib.Analysis.Calculus.Deriv.Pow
-public import Mathlib.Analysis.Calculus.Deriv.Shift
-public import Mathlib.Analysis.Calculus.FDeriv.Linear
-public import Mathlib.Analysis.Complex.RealDeriv
-public import Mathlib.Analysis.Normed.Operator.Bilinear
-public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
-public import Mathlib.Analysis.SpecialFunctions.Exponential
-public import Mathlib.LinearAlgebra.Determinant
-public import Mathlib.LinearAlgebra.Dimension.Free
-public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
-public import Mathlib.LinearAlgebra.Matrix.RowCol
-public import Mathlib.LinearAlgebra.Basis.Defs
-public import Mathlib.LinearAlgebra.Finsupp.Defs
-public import Mathlib.LinearAlgebra.Matrix.ToLin
-public import Mathlib.LinearAlgebra.Matrix.Trace
-public import Mathlib.Topology.Algebra.Module.Determinant
 public import Mathlib.Topology.Algebra.Module.FiniteDimension
+public import Mathlib.Analysis.Complex.Basic
+
+import Mathlib.Analysis.ODE.ExistUnique
 
 /-!
 # Fundamental operators and Liouville's formula for periodic linear ODEs

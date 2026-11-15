@@ -5,11 +5,10 @@ Authors: CKMA contributors
 -/
 module
 
-public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
-public import Mathlib.Analysis.CStarAlgebra.ContinuousLinearMap
-public import Mathlib.Analysis.InnerProductSpace.Adjoint
 public import Mathlib.Analysis.InnerProductSpace.StarOrder
 public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Basic
+public import Mathlib.Analysis.CStarAlgebra.ContinuousLinearMap
+
 import TauCeti.Analysis.InnerProductSpace.Positive.Basic
 
 /-!

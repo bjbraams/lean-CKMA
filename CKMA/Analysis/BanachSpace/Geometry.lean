@@ -8,7 +8,6 @@ module
 public import CKMA.Analysis.FunctionalAnalysis.Basic
 public import CKMA.Analysis.InnerProductSpace.Basic
 public import Mathlib.Analysis.InnerProductSpace.PiL2
-public import Mathlib.Analysis.Normed.Operator.Basic
 
 /-!
 # Weak sequence structure and local Hilbert geometry

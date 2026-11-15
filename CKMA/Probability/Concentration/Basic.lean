@@ -6,11 +6,10 @@ Authors: CKMA contributors
 module
 
 public import Mathlib.Probability.Moments.SubGaussian
-public import Mathlib.MeasureTheory.Integral.Lebesgue.Markov
-public import Mathlib.MeasureTheory.Integral.Layercake
-public import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
-public import Mathlib.Analysis.SpecialFunctions.Exponential
-public import Mathlib.Analysis.Complex.ExponentialBounds
+
+import Mathlib.MeasureTheory.Integral.Layercake
+import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
+import Mathlib.Analysis.Complex.ExponentialBounds
 
 /-!
 # Sub-Gaussian gauges, tails, and moments

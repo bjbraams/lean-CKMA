@@ -5,9 +5,10 @@ Authors: CKMA contributors
 -/
 module
 
-public import Mathlib.Analysis.Normed.Lp.lpSpace
 public import Mathlib.Analysis.Complex.Circle
-public import Mathlib.Topology.Algebra.InfiniteSum.Ring
+
+import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
+import Mathlib.Algebra.Order.Algebra
 
 /-!
 # Absolutely convergent bilateral Fourier series

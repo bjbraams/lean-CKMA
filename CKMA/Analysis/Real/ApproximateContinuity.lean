@@ -5,7 +5,10 @@ Authors: CKMA contributors
 -/
 module
 
-public import Mathlib.MeasureTheory.Covering.DensityTheorem
+public import Mathlib.MeasureTheory.Measure.Doubling
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
+
+import Mathlib.MeasureTheory.Covering.DensityTheorem
 
 /-!
 # Approximate continuity by shrinking-ball densities

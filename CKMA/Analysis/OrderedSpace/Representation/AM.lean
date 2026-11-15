@@ -6,17 +6,15 @@ Authors: CKMA contributors
 module
 
 public import CKMA.Analysis.OrderedSpace.Bands.Lattice
-public import Mathlib.Analysis.Convex.Cone.Extension
-public import Mathlib.Analysis.Convex.KreinMilman
-public import Mathlib.Analysis.Normed.Module.WeakDual
-public import Mathlib.Analysis.Normed.Operator.LinearIsometry
-public import Mathlib.Analysis.Normed.Order.Lattice
-public import Mathlib.LinearAlgebra.LinearPMap
+public import Mathlib.Analysis.Convex.Extreme
 public import Mathlib.Topology.Category.CompHaus.Basic
 public import Mathlib.Topology.ContinuousMap.Compact
 public import Mathlib.Topology.ContinuousMap.Ordered
-public import Mathlib.Topology.ContinuousMap.StoneWeierstrass
-public import Mathlib.Topology.MetricSpace.Antilipschitz
+public import Mathlib.Topology.Algebra.Module.Spaces.WeakDual
+import Mathlib.Algebra.Order.Module.Basic
+import Mathlib.Analysis.Convex.KreinMilman
+import Mathlib.Analysis.Normed.Module.WeakDual
+import Mathlib.Topology.ContinuousMap.StoneWeierstrass
 
 /-!
 # Kakutani representation of an AM space with unit
@@ -49,7 +47,6 @@ Theorem II.7.4.
 
 noncomputable section
 
-set_option linter.unusedSectionVars false
 
 open Set Metric LinearMap WeakDual ContinuousLinearMap
 
@@ -67,7 +64,8 @@ instance amWeakDualLocallyConvex (E : Type u) [NormedAddCommGroup E] [NormedSpac
     LocallyConvexSpace ℝ (WeakDual ℝ E) :=
   WeakBilin.locallyConvexSpace (B := topDualPairing ℝ E)
 
-include he0 hball in
+include hball in
+omit [HasSolidNorm E] in
 /-- A closed ball equal to `[-e, e]` forces every vector under the unit. -/
 private theorem abs_le_smul_amUnit (x : E) : |x| ≤ ‖x‖ • e := by
   rcases eq_or_ne x 0 with rfl | hx
@@ -86,6 +84,7 @@ private theorem abs_le_smul_amUnit (x : E) : |x| ≤ ‖x‖ • e := by
     simpa [smul_smul, mul_inv_cancel₀ hn] using hmul
 
 include he0 hball in
+omit [NormedSpace ℝ E] [IsOrderedModule ℝ E] [HasSolidNorm E] in
 /-- The AM unit has norm at most one. -/
 private theorem amUnit_norm_le_one : ‖e‖ ≤ 1 := by
   have hmem : e ∈ Icc (-e) e := ⟨le_trans (neg_nonpos.mpr he0) he0, le_rfl⟩
@@ -93,11 +92,12 @@ private theorem amUnit_norm_le_one : ‖e‖ ≤ 1 := by
   simpa using hmem
 
 include he0 hball in
+omit [HasSolidNorm E] in
 /-- A nonzero AM unit is a norm-one vector. -/
 private theorem amUnit_norm_eq_one (he : e ≠ 0) : ‖e‖ = 1 := by
   apply le_antisymm (amUnit_norm_le_one he0 hball)
   have habs : e ≤ ‖e‖ • e := by
-    simpa [abs_of_nonneg he0] using abs_le_smul_amUnit he0 hball e
+    simpa [abs_of_nonneg he0] using abs_le_smul_amUnit hball e
   have hsub : (1 - ‖e‖) • e ≤ 0 := by
     rw [sub_smul, one_smul]
     exact sub_nonpos.mpr habs
@@ -110,7 +110,8 @@ private theorem amUnit_norm_eq_one (he : e ≠ 0) : ‖e‖ = 1 := by
   have hzero : e ≤ 0 := by simpa using hmul
   exact he (le_antisymm hzero he0)
 
-include he0 hball in
+include hball in
+omit [IsOrderedAddMonoid E] [IsOrderedModule ℝ E] [HasSolidNorm E] in
 /-- The zero AM unit occurs only for the zero space. -/
 private theorem subsingleton_of_amUnit_eq_zero (he : e = 0) : Subsingleton E := by
   refine subsingleton_of_forall_eq 0 fun x => ?_
@@ -126,6 +127,7 @@ private theorem subsingleton_of_amUnit_eq_zero (he : e = 0) : Subsingleton E := 
   exact hx ((smul_eq_zero.mp hzero).resolve_left (inv_ne_zero hn))
 
 include he0 hball in
+omit [HasSolidNorm E] in
 /-- A positive continuous linear functional attains its norm on the AM unit. -/
 private theorem amPositive_opNorm_eq (he : e ≠ 0) (φ : E →L[ℝ] ℝ)
     (hpos : ∀ x, 0 ≤ x → 0 ≤ φ x) : ‖φ‖ = φ e := by
@@ -145,7 +147,7 @@ private theorem amPositive_opNorm_eq (he : e ≠ 0) (φ : E →L[ℝ] ℝ)
       have hneg : φ (-|y|) ≤ φ y := hmono horder
       simpa [map_neg] using hneg
     have hdom : φ |y| ≤ ‖y‖ * φ e := by
-      have hy : |y| ≤ ‖y‖ • e := abs_le_smul_amUnit he0 hball y
+      have hy : |y| ≤ ‖y‖ • e := abs_le_smul_amUnit hball y
       simpa [map_smul, smul_eq_mul] using hmono hy
     rw [Real.norm_eq_abs]
     exact habs.trans (by simpa [mul_comm] using hdom)
@@ -157,6 +159,7 @@ private theorem amPositive_opNorm_eq (he : e ≠ 0) (φ : E →L[ℝ] ℝ)
     exact hnorm
   exact le_antisymm hle hge
 
+omit [NormedSpace ℝ E] [IsOrderedModule ℝ E] in
 /-- Norm of the positive part. -/
 private theorem posNorm_le_norm (y : E) : ‖y⁺‖ ≤ ‖y‖ := by
   apply norm_le_norm_of_abs_le_abs
@@ -165,6 +168,7 @@ private theorem posNorm_le_norm (y : E) : ‖y⁺‖ ≤ ‖y‖ := by
     y⁺ ≤ y⁺ + y⁻ := le_add_of_nonneg_right (negPart_nonneg y)
     _ = |y| := posPart_add_negPart y
 
+omit [NormedSpace ℝ E] [IsOrderedModule ℝ E] in
 /-- The positive-part norm is sublinear. -/
 private theorem posNorm_add_le (y₁ y₂ : E) : ‖(y₁ + y₂)⁺‖ ≤ ‖y₁⁺‖ + ‖y₂⁺‖ := by
   have hle : (y₁ + y₂)⁺ ≤ y₁⁺ + y₂⁺ :=
@@ -177,12 +181,12 @@ private theorem posNorm_add_le (y₁ y₂ : E) : ‖(y₁ + y₂)⁺‖ ≤ ‖y
     exact hle
   exact hnorm.trans (norm_add_le _ _)
 
+omit [HasSolidNorm E] in
 /-- Positive-part norm is positively homogeneous. -/
 private theorem posNorm_smul {c : ℝ} (hc : 0 < c) (y : E) : ‖(c • y)⁺‖ = c * ‖y⁺‖ := by
   rw [posPart_smul_of_nonneg hc.le, norm_smul, Real.norm_eq_abs, abs_of_pos hc]
 
 include he0 hball in
-set_option backward.isDefEq.respectTransparency false in
 /-- A positive norm-one state normalizing a given positive vector. -/
 private theorem exists_amState_norming (he : e ≠ 0) {x : E} (hx0 : 0 ≤ x) (hx : x ≠ 0) :
     ∃ φ : WeakDual ℝ E, (∀ y, 0 ≤ y → 0 ≤ φ y) ∧ φ e = 1 ∧ φ x = ‖x‖ := by
@@ -202,8 +206,10 @@ private theorem exists_amState_norming (he : e ≠ 0) {x : E} (hx0 : 0 ≤ x) (h
     · simp [N, posPart_smul_of_nonneg hc.le, hx0, norm_smul, Real.norm_eq_abs, abs_of_pos hc])
   obtain ⟨φ, hφdom, hφle⟩ := hExt
   have hφx : φ x = ‖x‖ := by
-    rw [← f.domain.coe_mk x (Submodule.mem_span_singleton_self _), hφdom,
-      LinearPMap.mkSpanSingleton'_apply_self]
+    have hxmem : x ∈ f.domain := by
+      rw [LinearPMap.domain_mkSpanSingleton]
+      exact Submodule.mem_span_singleton_self x
+    rw [← f.domain.coe_mk x hxmem, hφdom, LinearPMap.mkSpanSingleton'_apply_self]
   have hpos : ∀ y, 0 ≤ y → 0 ≤ φ y := by
     intro y hy
     have hneg : φ (-y) ≤ N (-y) := hφle (-y)
@@ -233,7 +239,7 @@ private theorem exists_amState_norming (he : e ≠ 0) {x : E} (hx0 : 0 ≤ x) (h
   have hψe : ψ e = 1 := by
     have hle : ψ x ≤ ‖x‖ * ψ e := by
       have hxle : x ≤ ‖x‖ • e := by
-        simpa [abs_of_nonneg hx0] using abs_le_smul_amUnit he0 hball x
+        simpa [abs_of_nonneg hx0] using abs_le_smul_amUnit hball x
       simpa [map_smul, smul_eq_mul] using
         ((monotone_iff_map_nonneg ψ.toLinearMap).2 fun y hy => by
           simpa using hψpos y hy) hxle
@@ -248,6 +254,7 @@ private theorem exists_amState_norming (he : e ≠ 0) {x : E} (hx0 : 0 ≤ x) (h
   exact ⟨StrongDual.toWeakDual ψ, fun y hy => by simpa using hψpos y hy, by simpa using hψe,
     by simpa using hψx⟩
 
+omit [Lattice E] [IsOrderedAddMonoid E] [IsOrderedModule ℝ E] in
 /-- Pointwise formula for a real convex combination in the weak-star dual. -/
 private theorem amWeakDual_combine (φ ψ : WeakDual ℝ E) (a b : ℝ) (x : E) :
     (a • φ + b • ψ) x = a * φ x + b * ψ x := by
@@ -259,6 +266,7 @@ private theorem amWeakDual_combine (φ ψ : WeakDual ℝ E) (a b : ℝ) (x : E) 
 def amStateSet (e : E) : Set (WeakDual ℝ E) :=
   {φ | (∀ x, 0 ≤ x → 0 ≤ φ x) ∧ φ e = 1}
 
+omit [IsOrderedAddMonoid E] [IsOrderedModule ℝ E] [HasSolidNorm E] in
 /-- The state space is weak-star closed. -/
 private theorem isClosed_amStateSet : IsClosed (amStateSet e) := by
   have hEq : IsClosed {φ : WeakDual ℝ E | φ e = 1} :=
@@ -272,6 +280,7 @@ private theorem isClosed_amStateSet : IsClosed (amStateSet e) := by
     exact isClosed_iInter fun x => isClosed_le continuous_const (eval_continuous x.1)
   simpa [amStateSet, ofPred_and] using hPos.inter hEq
 
+omit [IsOrderedAddMonoid E] [IsOrderedModule ℝ E] [HasSolidNorm E] in
 /-- The state space is convex. -/
 private theorem convex_amStateSet : Convex ℝ (amStateSet e) := by
   intro φ hφ ψ hψ a b ha hb hab
@@ -289,6 +298,7 @@ private theorem amStateSet_nonempty (he : e ≠ 0) : (amStateSet e).Nonempty := 
   exact ⟨φ, hpos, heφ⟩
 
 include he0 hball in
+omit [HasSolidNorm E] in
 /-- Every state has dual norm one. -/
 private theorem amState_opNorm_eq (he : e ≠ 0) {φ : WeakDual ℝ E} (hφ : φ ∈ amStateSet e) :
     ‖φ.toStrongDual‖ = 1 := by
@@ -296,6 +306,7 @@ private theorem amState_opNorm_eq (he : e ≠ 0) {φ : WeakDual ℝ E} (hφ : φ
   simpa [hφ.2] using amPositive_opNorm_eq he0 hball he φ.toStrongDual hpos
 
 include he0 hball in
+omit [HasSolidNorm E] in
 /-- The state space is weak-star compact. -/
 theorem isCompact_amStateSet (he : e ≠ 0) : IsCompact (amStateSet e) := by
   have hsub : amStateSet e ⊆ toStrongDual ⁻¹' closedBall (0 : StrongDual ℝ E) 1 := by
@@ -313,10 +324,12 @@ private def truncAdmissible (v y : E) : Set E :=
 private def truncSup (φ : E →ₗ[ℝ] ℝ) (v y : E) : ℝ :=
   sSup (φ '' truncAdmissible v y)
 
+omit [IsOrderedAddMonoid E] [IsOrderedModule ℝ E] [HasSolidNorm E] in
 /-- Zero is an admissible truncation. -/
 private theorem zero_mem_truncAdmissible {v y : E} (hy : 0 ≤ y) : (0 : E) ∈ truncAdmissible v y :=
   ⟨le_rfl, hy, 0, le_rfl, by simp⟩
 
+omit [IsOrderedAddMonoid E] [IsOrderedModule ℝ E] [HasSolidNorm E] in
 /-- Only zero is admissible under the zero vector. -/
 private theorem truncAdmissible_zero (v : E) : truncAdmissible v (0 : E) = {0} := by
   ext z
@@ -326,16 +339,19 @@ private theorem truncAdmissible_zero (v : E) : truncAdmissible v (0 : E) = {0} :
   · rintro rfl
     exact ⟨le_rfl, le_rfl, 0, le_rfl, by simp⟩
 
+omit [IsOrderedAddMonoid E] [IsOrderedModule ℝ E] [HasSolidNorm E] in
 /-- The truncated image is nonempty for a nonnegative argument. -/
 private theorem truncImage_nonempty (φ : E →ₗ[ℝ] ℝ) (v : E) {y : E} (hy : 0 ≤ y) :
     (φ '' truncAdmissible v y).Nonempty :=
   ⟨φ 0, 0, zero_mem_truncAdmissible hy, rfl⟩
 
+omit [IsOrderedAddMonoid E] [IsOrderedModule ℝ E] [HasSolidNorm E] in
 /-- A monotone functional bounds the truncated image. -/
 private theorem truncImage_bddAbove {φ : E →ₗ[ℝ] ℝ} (hmono : Monotone φ) (v y : E) :
     BddAbove (φ '' truncAdmissible v y) :=
   ⟨φ y, by rintro _ ⟨z, ⟨_, hzle, _⟩, rfl⟩; exact hmono hzle⟩
 
+omit [IsOrderedAddMonoid E] [IsOrderedModule ℝ E] [HasSolidNorm E] in
 /-- Truncated suprema are nonnegative. -/
 private theorem truncSup_nonneg {φ : E →ₗ[ℝ] ℝ} (hmono : Monotone φ) (v : E) {y : E} (hy : 0 ≤ y) :
     0 ≤ truncSup φ v y := by
@@ -344,6 +360,7 @@ private theorem truncSup_nonneg {φ : E →ₗ[ℝ] ℝ} (hmono : Monotone φ) (
     exact ⟨0, zero_mem_truncAdmissible hy, rfl⟩
   exact le_csSup (truncImage_bddAbove hmono v y) h0
 
+omit [IsOrderedAddMonoid E] [IsOrderedModule ℝ E] [HasSolidNorm E] in
 /-- A monotone functional dominates its truncated supremum. -/
 private theorem truncSup_le {φ : E →ₗ[ℝ] ℝ} (hmono : Monotone φ) (v : E) {y : E} (hy : 0 ≤ y) :
     truncSup φ v y ≤ φ y :=
@@ -351,6 +368,7 @@ private theorem truncSup_le {φ : E →ₗ[ℝ] ℝ} (hmono : Monotone φ) (v : 
     rintro _ ⟨z, ⟨_, hzle, _⟩, rfl⟩
     exact hmono hzle)
 
+omit [IsOrderedAddMonoid E] [IsOrderedModule ℝ E] [HasSolidNorm E] in
 /-- The test vector saturates its own truncated supremum. -/
 private theorem truncSup_self {φ : E →ₗ[ℝ] ℝ} (hmono : Monotone φ) {v : E} (hv : 0 ≤ v) :
     truncSup φ v v = φ v := by
@@ -358,6 +376,7 @@ private theorem truncSup_self {φ : E →ₗ[ℝ] ℝ} (hmono : Monotone φ) {v 
   apply le_antisymm (truncSup_le hmono v hv)
   exact le_csSup (truncImage_bddAbove hmono v v) ⟨v, hvmem, rfl⟩
 
+omit [IsOrderedModule ℝ E] [HasSolidNorm E] in
 /-- Admissible truncations add. -/
 private theorem add_mem_truncAdmissible {v y₁ y₂ z₁ z₂ : E}
     (hz₁ : z₁ ∈ truncAdmissible v y₁) (hz₂ : z₂ ∈ truncAdmissible v y₂) :
@@ -369,6 +388,7 @@ private theorem add_mem_truncAdmissible {v y₁ y₂ z₁ z₂ : E}
     z₁ + z₂ ≤ c₁ • v + c₂ • v := add_le_add h1c h2c
     _ = (c₁ + c₂) • v := by rw [add_smul]
 
+omit [IsOrderedModule ℝ E] [HasSolidNorm E] in
 /-- Truncated suprema are additive on the positive cone. -/
 private theorem truncSup_add {φ : E →ₗ[ℝ] ℝ} (hmono : Monotone φ) (v y₁ y₂ : E)
     (hy₁ : 0 ≤ y₁) (hy₂ : 0 ≤ y₂) :
@@ -410,6 +430,7 @@ private theorem truncSup_add {φ : E →ₗ[ℝ] ℝ} (hmono : Monotone φ) (v y
       exact le_csSup hb ⟨z₁ + z₂, hzmem, rfl⟩
     linarith
 
+omit [IsOrderedAddMonoid E] [HasSolidNorm E] in
 /-- Truncated suprema are positively homogeneous. -/
 private theorem truncSup_smul {φ : E →ₗ[ℝ] ℝ} (hmono : Monotone φ) (v : E) {c : ℝ} (hc : 0 ≤ c)
     {y : E} (hy : 0 ≤ y) : truncSup φ v (c • y) = c * truncSup φ v y := by
@@ -457,6 +478,7 @@ private theorem truncSup_smul {φ : E →ₗ[ℝ] ℝ} (hmono : Monotone φ) (v 
       rw [← mul_assoc, mul_inv_cancel₀ hc.ne', one_mul] at hmul
       exact hmul
 
+omit [IsOrderedAddMonoid E] [IsOrderedModule ℝ E] [HasSolidNorm E] in
 /-- A positive vector disjoint from every multiple of `v` has truncated supremum zero. -/
 private theorem truncSup_eq_zero_of_disjoint {φ : E →ₗ[ℝ] ℝ} (v y : E) (hy : 0 ≤ y)
     (hdis : ∀ c : ℝ, 0 ≤ c → (c • v) ⊓ y = 0) : truncSup φ v y = 0 := by
@@ -473,16 +495,14 @@ private theorem truncSup_eq_zero_of_disjoint {φ : E →ₗ[ℝ] ℝ} (v y : E) 
   rw [truncSup, himage]
   exact csSup_singleton (0 : ℝ)
 
-include he0 hball in
-/-- Extreme states preserve lattice absolute values. -/
-private theorem amState_extreme_abs (he : e ≠ 0) {φ : WeakDual ℝ E}
-    (hφ : φ ∈ (amStateSet e).extremePoints ℝ) (x : E) : φ |x| = |φ x| := by
-  have hmem : φ ∈ amStateSet e := extremePoints_subset hφ
-  let ψ := φ.toStrongDual
-  have hposψ : ∀ y, 0 ≤ y → 0 ≤ ψ y := fun y hy => by simpa [ψ] using hmem.1 y hy
+/-- A positive functional of norm at most one dominates a positive continuous functional that
+agrees with the truncated supremum along `v` on the positive cone. -/
+private theorem exists_truncSup_continuousLinearMap {ψ : E →L[ℝ] ℝ}
+    (hψpos : ∀ y, 0 ≤ y → 0 ≤ ψ y) (hψnorm : ‖ψ‖ ≤ 1) (v : E) :
+    ∃ R : E →L[ℝ] ℝ, (∀ y, 0 ≤ y → 0 ≤ R y) ∧ (∀ y, 0 ≤ y → R y ≤ ψ y) ∧
+      ∀ y, 0 ≤ y → R y = truncSup ψ.toLinearMap v y := by
   have hmono : Monotone ψ.toLinearMap := (monotone_iff_map_nonneg _).2 fun y hy => by
-    simpa using hposψ y hy
-  let v : E := x⁻
+    simpa using hψpos y hy
   have hadd : ∀ a b : E, 0 ≤ a → 0 ≤ b →
       truncSup ψ.toLinearMap v (a + b) =
         truncSup ψ.toLinearMap v a + truncSup ψ.toLinearMap v b :=
@@ -511,121 +531,107 @@ private theorem amState_extreme_abs (he : e ≠ 0) {φ : WeakDual ℝ E}
       calc
         Rlin y⁺ + Rlin y⁻ ≤ ψ y⁺ + ψ y⁻ := add_le_add hup hup'
         _ = ψ |y| := by rw [← map_add, posPart_add_negPart]
-    have habs : |Rlin y| ≤ ψ |y| := by
-      rw [hsplit, abs_le]
-      constructor <;> linarith
-    have hop : ψ |y| ≤ ‖y‖ := by
-      have hnorm : ‖ψ‖ = 1 := amState_opNorm_eq he0 hball he hmem
-      have hle := ψ.le_opNorm |y|
-      rw [hnorm, one_mul, norm_abs_eq_norm, Real.norm_eq_abs,
-        abs_of_nonneg (hposψ _ (abs_nonneg y))] at hle
-      exact hle
-    have hfin : |Rlin y| ≤ ‖y‖ := habs.trans hop
-    rw [← one_mul ‖y‖] at hfin
-    rw [Real.norm_eq_abs]
-    exact hfin
-  let R : E →L[ℝ] ℝ := Rlin.mkContinuous 1 hbound
-  have hRpos' : ∀ y, 0 ≤ y → 0 ≤ R y := by simpa [R] using hRpos
-  have hRle' : ∀ y, 0 ≤ y → R y ≤ ψ y := by simpa [R] using hRle
+    have hop : ψ |y| ≤ 1 * ‖y‖ :=
+      calc
+        ψ |y| ≤ ‖ψ |y|‖ := Real.le_norm_self _
+        _ ≤ ‖ψ‖ * ‖|y|‖ := ψ.le_opNorm _
+        _ ≤ 1 * ‖y‖ := by
+          rw [norm_abs_eq_norm]
+          exact mul_le_mul_of_nonneg_right hψnorm (norm_nonneg y)
+    rw [Real.norm_eq_abs, hsplit, abs_le]
+    constructor <;> linarith
+  refine ⟨Rlin.mkContinuous 1 hbound, by simpa using hRpos, by simpa using hRle, fun y hy => ?_⟩
+  simpa [Rlin] using coneAdditiveLinearMap_apply_of_nonneg _ hadd hsmul hy
+
+include he0 hball in
+omit [HasSolidNorm E] in
+/-- A positive functional dominated by an extreme state is a multiple of that state. -/
+private theorem amState_extreme_dominated (he : e ≠ 0) {φ : WeakDual ℝ E}
+    (hφ : φ ∈ (amStateSet e).extremePoints ℝ) {R : E →L[ℝ] ℝ}
+    (hRpos : ∀ y, 0 ≤ y → 0 ≤ R y) (hRle : ∀ y, 0 ≤ y → R y ≤ φ y) (y : E) :
+    R y = R e * φ y := by
+  have hmem : φ ∈ amStateSet e := extremePoints_subset hφ
+  let ψ := φ.toStrongDual
+  have hψ : ∀ y, ψ y = φ y := fun y => by simp [ψ]
+  set α : ℝ := R e with hαdef
+  have hα0 : 0 ≤ α := hRpos e he0
+  have hα1 : α ≤ 1 := by
+    rw [hαdef, ← hmem.2]
+    exact hRle e he0
+  rcases eq_or_lt_of_le hα0 with hα | hα
+  · have hnorm : ‖R‖ = R e := amPositive_opNorm_eq he0 hball he R hRpos
+    rw [← hαdef, ← hα] at hnorm
+    rw [norm_eq_zero.mp hnorm, ← hα, zero_mul, IsZeroApply.zero_apply]
+  rcases eq_or_lt_of_le hα1 with hαeq | hαlt
+  · have hposdiff : ∀ y, 0 ≤ y → 0 ≤ (ψ - R) y := fun y hy => by
+      simp [sub_nonneg, hψ, hRle y hy]
+    have happ : (ψ - R) e = 0 := by
+      rw [IsSubApply.sub_apply, hψ, hmem.2, ← hαdef, hαeq, sub_self]
+    have hdiff : ‖ψ - R‖ = 0 := by
+      simpa [happ] using amPositive_opNorm_eq he0 hball he (ψ - R) hposdiff
+    rw [← sub_eq_zero.mp (norm_eq_zero.mp hdiff), hαeq, one_mul, hψ]
+  let g₁ : WeakDual ℝ E := StrongDual.toWeakDual (α⁻¹ • R)
+  let g₂ : WeakDual ℝ E := StrongDual.toWeakDual ((1 - α)⁻¹ • (ψ - R))
+  have h1 : ∀ y, g₁ y = α⁻¹ * R y := fun y => by
+    unfold g₁
+    rw [StrongDual.toWeakDual_apply, IsSMulApply.smul_apply, smul_eq_mul]
+  have h2 : ∀ y, g₂ y = (1 - α)⁻¹ * (φ y - R y) := fun y => by
+    unfold g₂
+    rw [StrongDual.toWeakDual_apply, IsSMulApply.smul_apply, IsSubApply.sub_apply,
+      smul_eq_mul, hψ]
+  have hg₁ : g₁ ∈ amStateSet e := by
+    refine ⟨fun y hy => ?_, ?_⟩
+    · rw [h1]
+      exact mul_nonneg (inv_nonneg.mpr hα.le) (hRpos y hy)
+    · rw [h1, ← hαdef, inv_mul_cancel₀ hα.ne']
+  have hg₂ : g₂ ∈ amStateSet e := by
+    refine ⟨fun y hy => ?_, ?_⟩
+    · rw [h2]
+      exact mul_nonneg (inv_nonneg.mpr (sub_nonneg.mpr hαlt.le)) (sub_nonneg.mpr (hRle y hy))
+    · rw [h2, hmem.2, ← hαdef, inv_mul_cancel₀ (sub_ne_zero.mpr hαlt.ne.symm)]
+  have hseg : φ ∈ openSegment ℝ g₁ g₂ := by
+    refine ⟨α, 1 - α, hα, sub_pos.mpr hαlt, by ring, ?_⟩
+    refine DFunLike.ext _ _ fun y => ?_
+    rw [amWeakDual_combine, h1, h2, ← mul_assoc, ← mul_assoc, mul_inv_cancel₀ hα.ne',
+      mul_inv_cancel₀ (sub_ne_zero.mpr hαlt.ne.symm), one_mul, one_mul]
+    ring
+  have hg : g₁ = φ := ((mem_extremePoints.mp hφ).2 g₁ hg₁ g₂ hg₂ hseg).1
+  have hy : g₁ y = φ y := congrArg (fun f => f y) hg
+  rw [h1] at hy
+  have hmul' := congrArg (fun t : ℝ => α * t) hy
+  rw [← mul_assoc, mul_inv_cancel₀ hα.ne', one_mul] at hmul'
+  exact hmul'
+
+include he0 hball in
+/-- Extreme states preserve lattice absolute values. -/
+private theorem amState_extreme_abs (he : e ≠ 0) {φ : WeakDual ℝ E}
+    (hφ : φ ∈ (amStateSet e).extremePoints ℝ) (x : E) : φ |x| = |φ x| := by
+  have hmem : φ ∈ amStateSet e := extremePoints_subset hφ
+  let ψ := φ.toStrongDual
+  have hψ : ∀ y, ψ y = φ y := fun y => by simp [ψ]
+  have hposψ : ∀ y, 0 ≤ y → 0 ≤ ψ y := fun y hy => by simpa [ψ] using hmem.1 y hy
+  have hmono : Monotone ψ.toLinearMap := (monotone_iff_map_nonneg _).2 fun y hy => by
+    simpa using hposψ y hy
+  obtain ⟨R, hRpos, hRle, hRtrunc⟩ := exists_truncSup_continuousLinearMap hposψ
+    (amState_opNorm_eq he0 hball he hmem).le x⁻
   have hRxneg : R x⁻ = ψ x⁻ := by
-    have hself : truncSup ψ.toLinearMap v v = ψ v := truncSup_self hmono (negPart_nonneg x)
-    simpa [R, Rlin, v, coneAdditiveLinearMap_apply_of_nonneg _ _ _ (negPart_nonneg x)] using hself
+    rw [hRtrunc _ (negPart_nonneg x)]
+    exact truncSup_self hmono (negPart_nonneg x)
   have hRxpos : R x⁺ = 0 := by
     have hdis : ∀ c : ℝ, 0 ≤ c → (c • x⁻) ⊓ x⁺ = 0 := fun c hc =>
       inf_smul_eq_zero hc (negPart_nonneg x) (posPart_nonneg x)
         (by simpa [inf_comm] using posPart_inf_negPart_eq_zero x)
-    have hzero := truncSup_eq_zero_of_disjoint (φ := ψ.toLinearMap) x⁻ x⁺ (posPart_nonneg x) hdis
-    simpa [R, Rlin, v, coneAdditiveLinearMap_apply_of_nonneg _ _ _ (posPart_nonneg x)] using hzero
-  set α : ℝ := R e with hαdef
-  have hα0 : 0 ≤ α := hRpos' e he0
-  have hα1 : α ≤ 1 := by
-    rw [hαdef, ← hmem.2]
-    exact hRle' e he0
+    rw [hRtrunc _ (posPart_nonneg x)]
+    exact truncSup_eq_zero_of_disjoint x⁻ x⁺ (posPart_nonneg x) hdis
+  have hRφ : ∀ y, R y = R e * ψ y := fun y => by
+    rw [hψ]
+    exact amState_extreme_dominated he0 hball he hφ hRpos (fun y hy => (hRle y hy).trans_eq
+      (hψ y)) y
   have hprod : ψ x⁺ * ψ x⁻ = 0 := by
-    rcases eq_or_lt_of_le hα0 with hα | hα
-    · have hR0 : R = 0 := by
-        have hnorm : ‖R‖ = R e := amPositive_opNorm_eq he0 hball he R hRpos'
-        rw [← hαdef, ← hα] at hnorm
-        exact norm_eq_zero.mp hnorm
-      have : ψ x⁻ = 0 := by
-        rw [hR0, IsZeroApply.zero_apply] at hRxneg
-        exact hRxneg.symm
-      rw [this, mul_zero]
-    · rcases eq_or_lt_of_le hα1 with hαeq | hαlt
-      · have hdiff : ‖ψ - R‖ = 0 := by
-          have hposdiff : ∀ y, 0 ≤ y → 0 ≤ (ψ - R) y := fun y hy => by
-            simp [sub_nonneg, hRle' y hy]
-          have happ : (ψ - R) e = 0 := by
-            rw [IsSubApply.sub_apply, show ψ e = φ e by simp [ψ], hmem.2, ← hαdef, hαeq,
-              sub_self]
-          simpa [happ] using amPositive_opNorm_eq he0 hball he (ψ - R) hposdiff
-        have hψR : ψ = R := by
-          have : ψ - R = 0 := norm_eq_zero.mp hdiff
-          exact sub_eq_zero.mp this
-        have : ψ x⁺ = 0 := by
-          rw [hψR]
-          exact hRxpos
-        rw [this, zero_mul]
-      · let g₁ : WeakDual ℝ E := StrongDual.toWeakDual (α⁻¹ • R)
-        let g₂ : WeakDual ℝ E := StrongDual.toWeakDual ((1 - α)⁻¹ • (ψ - R))
-        have hg₁ : g₁ ∈ amStateSet e := by
-          refine ⟨fun y hy => ?_, ?_⟩
-          · have : 0 ≤ α⁻¹ * R y := mul_nonneg (inv_nonneg.mpr hα.le) (hRpos' y hy)
-            simpa only [g₁, IsSMulApply.smul_apply, smul_eq_mul,
-              StrongDual.toWeakDual_apply] using this
-          · simp only [g₁, IsSMulApply.smul_apply, smul_eq_mul, α,
-              StrongDual.toWeakDual_apply, inv_mul_cancel₀ hα.ne']
-        have hg₂ : g₂ ∈ amStateSet e := by
-          refine ⟨fun y hy => ?_, ?_⟩
-          · have hdiff : 0 ≤ ψ y - R y := sub_nonneg.mpr (hRle' y hy)
-            have : 0 ≤ (1 - α)⁻¹ * (ψ y - R y) :=
-              mul_nonneg (inv_nonneg.mpr (sub_nonneg.mpr hαlt.le)) hdiff
-            simpa only [g₂, IsSMulApply.smul_apply, IsSubApply.sub_apply, smul_eq_mul,
-              StrongDual.toWeakDual_apply] using this
-          · have hone : (ψ - R) e = 1 - α := by
-              rw [IsSubApply.sub_apply, show ψ e = φ e by simp [ψ], hmem.2, ← hαdef]
-            unfold g₂
-            rw [StrongDual.toWeakDual_apply, IsSMulApply.smul_apply, smul_eq_mul, hone,
-              inv_mul_cancel₀ (sub_ne_zero.mpr hαlt.ne.symm)]
-        have hseg : φ ∈ openSegment ℝ g₁ g₂ := by
-          refine ⟨α, 1 - α, hα, sub_pos.mpr hαlt, by ring, ?_⟩
-          refine DFunLike.ext _ _ fun y => ?_
-          rw [amWeakDual_combine]
-          have h1 : g₁ y = α⁻¹ * R y := by
-            unfold g₁
-            rw [StrongDual.toWeakDual_apply, IsSMulApply.smul_apply, smul_eq_mul]
-          have h2 : g₂ y = (1 - α)⁻¹ * (ψ y - R y) := by
-            unfold g₂
-            rw [StrongDual.toWeakDual_apply, IsSMulApply.smul_apply, IsSubApply.sub_apply,
-              smul_eq_mul]
-          rw [h1, h2, ← mul_assoc, ← mul_assoc, mul_inv_cancel₀ hα.ne',
-            mul_inv_cancel₀ (sub_ne_zero.mpr hαlt.ne.symm), one_mul, one_mul]
-          have hcancel : R y + (ψ y - R y) = ψ y := by ring
-          rw [hcancel]
-          simp [ψ]
-        have hg : g₁ = φ :=
-          ((mem_extremePoints.mp hφ).2 g₁ hg₁ g₂ hg₂ hseg).1
-        have hRφ : R = α • ψ := by
-          apply ContinuousLinearMap.ext
-          intro y
-          have hy : g₁ y = φ y := congrArg (fun f => f y) hg
-          unfold g₁ at hy
-          rw [StrongDual.toWeakDual_apply, IsSMulApply.smul_apply, smul_eq_mul] at hy
-          have hmul : R y = α * φ y := by
-            have hmul' := congrArg (fun t : ℝ => α * t) hy
-            rw [← mul_assoc, mul_inv_cancel₀ hα.ne', one_mul] at hmul'
-            exact hmul'
-          rw [IsSMulApply.smul_apply, smul_eq_mul, hmul]
-          simp [ψ]
-        have hscale : ψ x⁻ = α * ψ x⁻ := by
-          have hRx := congrArg (fun f : E →L[ℝ] ℝ => f x⁻) hRφ
-          rw [hRxneg, IsSMulApply.smul_apply, smul_eq_mul] at hRx
-          exact hRx
-        have : (1 - α) * ψ x⁻ = 0 := by
-          rw [sub_mul, one_mul]
-          exact sub_eq_zero.mpr hscale
-        have : ψ x⁻ = 0 := (mul_eq_zero.mp this).resolve_left (sub_ne_zero.mpr hαlt.ne.symm)
-        rw [this, mul_zero]
+    rcases eq_or_ne (R e) 0 with hα | hα
+    · rw [← hRxneg, hRφ, hα, zero_mul, mul_zero]
+    · have : R e * ψ x⁺ = 0 := by rw [← hRφ, hRxpos]
+      rw [(mul_eq_zero.mp this).resolve_left hα, zero_mul]
   have ha : 0 ≤ ψ x⁺ := hposψ _ (posPart_nonneg x)
   have hb : 0 ≤ ψ x⁻ := hposψ _ (negPart_nonneg x)
   have habs : |ψ x⁺ - ψ x⁻| = ψ x⁺ + ψ x⁻ := by
@@ -633,11 +639,11 @@ private theorem amState_extreme_abs (he : e ≠ 0) {φ : WeakDual ℝ E}
     · rw [h0, zero_sub, abs_neg, abs_of_nonneg hb, zero_add]
     · rw [h0, sub_zero, abs_of_nonneg ha, add_zero]
   calc
-    φ |x| = ψ |x| := by simp [ψ]
+    φ |x| = ψ |x| := (hψ _).symm
     _ = ψ x⁺ + ψ x⁻ := by rw [← map_add, posPart_add_negPart]
     _ = |ψ x⁺ - ψ x⁻| := habs.symm
     _ = |ψ x| := by rw [← map_sub, posPart_sub_negPart]
-    _ = |φ x| := by simp [ψ]
+    _ = |φ x| := by rw [hψ]
 
 /-- Lattice homomorphisms normalized at the AM unit. -/
 def amLatticeHomSet (e : E) : Set (WeakDual ℝ E) :=
@@ -651,6 +657,7 @@ theorem extremePoints_subset_amLatticeHomSet (he : e ≠ 0) :
   exact ⟨(extremePoints_subset hφ).2, amState_extreme_abs he0 hball he hφ⟩
 
 include he0 hball in
+omit [HasSolidNorm E] in
 /-- The normalized lattice homomorphisms form a nonempty weak-star compact set. -/
 theorem isCompact_amLatticeHomSet (he : e ≠ 0) : IsCompact (amLatticeHomSet e) := by
   have hsub : amLatticeHomSet e ⊆ toStrongDual ⁻¹' closedBall (0 : StrongDual ℝ E) 1 := by
@@ -836,161 +843,160 @@ private theorem csSup_amLatticeHom_abs (he : e ≠ 0) (x : E) :
       simpa [Real.norm_eq_abs] using hle')
   exact le_antisymm hge (hext.symm.trans_le hle)
 
+omit [IsOrderedModule ℝ E] [HasSolidNorm E] in
+/-- Normalized lattice homomorphisms preserve binary suprema. -/
+private theorem amLatticeHom_map_sup {φ : WeakDual ℝ E} (hφ : φ ∈ amLatticeHomSet e) (x y : E) :
+    φ (x ⊔ y) = φ x ⊔ φ y := by
+  rw [sup_eq_half_smul_add_add_abs_sub' ℝ x y, map_smul, map_add, map_add, smul_eq_mul,
+    hφ.2 (y - x), map_sub, sup_eq_half_smul_add_add_abs_sub' ℝ (φ x) (φ y), smul_eq_mul]
+
+omit [IsOrderedModule ℝ E] [HasSolidNorm E] in
+/-- Normalized lattice homomorphisms preserve binary infima. -/
+private theorem amLatticeHom_map_inf {φ : WeakDual ℝ E} (hφ : φ ∈ amLatticeHomSet e) (x y : E) :
+    φ (x ⊓ y) = φ x ⊓ φ y := by
+  have h := amLatticeHom_map_sup hφ (-x) (-y)
+  rw [← neg_inf] at h
+  simp only [map_neg] at h
+  rw [← neg_inf] at h
+  exact neg_injective h
+
+omit [IsOrderedAddMonoid E] [IsOrderedModule ℝ E] [HasSolidNorm E] in
+/-- Two normalized lattice homomorphisms take prescribed values at a common vector, provided
+the values agree when the homomorphisms do. -/
+private theorem exists_amLatticeHom_eq_and_eq {φ ψ : WeakDual ℝ E} (hφ : φ ∈ amLatticeHomSet e)
+    (hψ : ψ ∈ amLatticeHomSet e) (a b : ℝ) (hab : φ = ψ → a = b) :
+    ∃ x, φ x = a ∧ ψ x = b := by
+  by_cases hφψ : φ = ψ
+  · subst hφψ
+    refine ⟨a • e, ?_, ?_⟩ <;> simp [map_smul, smul_eq_mul, hφ.1, hab rfl]
+  obtain ⟨c, hc⟩ := DFunLike.exists_ne hφψ
+  let δ : ℝ := φ c - ψ c
+  have hδ : δ ≠ 0 := sub_ne_zero.mpr hc
+  let q : ℝ := (a - b) / δ
+  let p : ℝ := a - q * φ c
+  refine ⟨p • e + q • c, ?_, ?_⟩
+  · simp [map_add, map_smul, smul_eq_mul, hφ.1, p]
+  · have hψpq : ψ (p • e + q • c) = p + q * ψ c := by
+      simp [map_add, map_smul, smul_eq_mul, hψ.1]
+    have hδ' : q * δ = a - b := by
+      simp [q, div_mul_cancel₀ _ hδ]
+    have : p + q * ψ c = a - q * δ := by
+      unfold p δ
+      ring
+    rw [hψpq, this]
+    linarith [hδ']
+
+include hball in
+omit [IsOrderedAddMonoid E] [IsOrderedModule ℝ E] [HasSolidNorm E] in
+/-- The Kakutani representation of the zero AM space, on the empty compact space. -/
+private theorem exists_am_representation_of_eq_zero (he : e = 0) :
+    ∃ K : CompHaus.{u}, ∃ U : E ≃ₗᵢ[ℝ] C(K, ℝ),
+      U e = 1 ∧ ∀ x y, U (x ⊔ y) = U x ⊔ U y := by
+  have _ : Subsingleton E := subsingleton_of_amUnit_eq_zero hball he
+  have hempty : amLatticeHomSet e = ∅ := by
+    ext φ
+    simp only [amLatticeHomSet, mem_ofPred_eq, mem_empty_iff_false, iff_false]
+    intro hφ
+    have hφe := hφ.1
+    rw [he, map_zero] at hφe
+    exact zero_ne_one hφe
+  have hcomp : IsCompact (amLatticeHomSet e) := by simp [hempty]
+  let : CompactSpace (↥(amLatticeHomSet e)) := isCompact_iff_compactSpace.mp hcomp
+  let : T2Space (↥(amLatticeHomSet e)) := inferInstance
+  let K : CompHaus.{u} := CompHaus.of (↥(amLatticeHomSet e))
+  have hEmpty : IsEmpty K := by
+    rw [show (K : Type u) = ↥(amLatticeHomSet e) from CompHausLike.coe_of _ _]
+    rw [hempty]
+    infer_instance
+  have hsubC : Subsingleton C(K, ℝ) := ⟨fun f g => by ext x; exact hEmpty.elim x⟩
+  let L : E →ₗᵢ[ℝ] C(K, ℝ) :=
+    { toLinearMap := (0 : E →ₗ[ℝ] C(K, ℝ))
+      norm_map' := fun x => by
+        have hx : x = (0 : E) := Subsingleton.elim x 0
+        rw [hx, LinearMap.zero_apply, norm_zero, norm_zero] }
+  have hsurj : Function.Surjective L := fun f => ⟨0, hsubC.elim _ _⟩
+  let U := LinearIsometryEquiv.ofSurjective L hsurj
+  refine ⟨K, U, ?_, ?_⟩
+  · exact hsubC.elim _ _
+  · intro x y
+    exact hsubC.elim _ _
+
 include he0 hball in
 /-- **19.27**. An AM space with unit is lattice isometric to `C(K, ℝ)`. -/
 theorem exists_am_representation [CompleteSpace E] :
     ∃ K : CompHaus.{u}, ∃ U : E ≃ₗᵢ[ℝ] C(K, ℝ),
       U e = 1 ∧ ∀ x y, U (x ⊔ y) = U x ⊔ U y := by
   by_cases he : e = 0
-  · have _ : Subsingleton E := subsingleton_of_amUnit_eq_zero he0 hball he
-    have hempty : amLatticeHomSet e = ∅ := by
-      ext φ
-      simp only [amLatticeHomSet, mem_ofPred_eq, mem_empty_iff_false, iff_false]
-      intro hφ
-      have hφe := hφ.1
-      rw [he, map_zero] at hφe
-      exact zero_ne_one hφe
-    have hcomp : IsCompact (amLatticeHomSet e) := by simp [hempty]
-    let : CompactSpace (↥(amLatticeHomSet e)) := isCompact_iff_compactSpace.mp hcomp
-    let : T2Space (↥(amLatticeHomSet e)) := inferInstance
-    let K : CompHaus.{u} := CompHaus.of (↥(amLatticeHomSet e))
-    have hEmpty : IsEmpty K := by
-      rw [show (K : Type u) = ↥(amLatticeHomSet e) from CompHausLike.coe_of _ _]
-      rw [hempty]
-      infer_instance
-    have hsubC : Subsingleton C(K, ℝ) := ⟨fun f g => by ext x; exact hEmpty.elim x⟩
-    let L : E →ₗᵢ[ℝ] C(K, ℝ) :=
-      { toLinearMap := (0 : E →ₗ[ℝ] C(K, ℝ))
-        norm_map' := fun x => by
-          have hx : x = (0 : E) := Subsingleton.elim x 0
-          rw [hx, LinearMap.zero_apply, norm_zero, norm_zero] }
-    have hsurj : Function.Surjective L := fun f => ⟨0, hsubC.elim _ _⟩
-    let U := LinearIsometryEquiv.ofSurjective L hsurj
-    refine ⟨K, U, ?_, ?_⟩
-    · exact hsubC.elim _ _
-    · intro x y
-      exact hsubC.elim _ _
-  · have hcomp : IsCompact (amLatticeHomSet e) := isCompact_amLatticeHomSet he0 hball he
-    let : CompactSpace (↥(amLatticeHomSet e)) := isCompact_iff_compactSpace.mp hcomp
-    let : T2Space (↥(amLatticeHomSet e)) := inferInstance
-    let K : CompHaus.{u} := CompHaus.of (↥(amLatticeHomSet e))
-    let evalC : E → C(K, ℝ) := fun x =>
-      ⟨fun φ => (φ : WeakDual ℝ E) x,
-        (eval_continuous x).comp continuous_subtype_val⟩
-    have heval_sup : ∀ x y, evalC (x ⊔ y) = evalC x ⊔ evalC y := by
-      intro x y
-      ext φ
-      have habs : (φ : WeakDual ℝ E) |y - x| = |(φ : WeakDual ℝ E) (y - x)| :=
-        φ.property.2 (y - x)
-      have hleft : (φ : WeakDual ℝ E) (x ⊔ y) =
-          (2⁻¹ : ℝ) * ((φ : WeakDual ℝ E) x + (φ : WeakDual ℝ E) y +
-            |(φ : WeakDual ℝ E) y - (φ : WeakDual ℝ E) x|) := by
-        rw [sup_eq_half_smul_add_add_abs_sub' ℝ x y, map_smul, map_add, map_add, smul_eq_mul,
-          habs, map_sub]
-      have hright : (φ : WeakDual ℝ E) x ⊔ (φ : WeakDual ℝ E) y =
-          (2⁻¹ : ℝ) * ((φ : WeakDual ℝ E) x + (φ : WeakDual ℝ E) y +
-            |(φ : WeakDual ℝ E) y - (φ : WeakDual ℝ E) x|) := by
-        simpa [smul_eq_mul] using
-          sup_eq_half_smul_add_add_abs_sub' ℝ ((φ : WeakDual ℝ E) x) ((φ : WeakDual ℝ E) y)
-      change evalC (x ⊔ y) φ = (evalC x ⊔ evalC y) φ
-      rw [ContinuousMap.sup_apply]
-      simp [evalC, hleft, hright]
-    have heval_inf : ∀ x y, evalC (x ⊓ y) = evalC x ⊓ evalC y := by
-      intro x y
-      have hneg : ∀ a b : E, evalC (-(a ⊔ b)) = -evalC (a ⊔ b) := by
-        intro a b
+  · exact exists_am_representation_of_eq_zero hball he
+  have hcomp : IsCompact (amLatticeHomSet e) := isCompact_amLatticeHomSet he0 hball he
+  let : CompactSpace (↥(amLatticeHomSet e)) := isCompact_iff_compactSpace.mp hcomp
+  let : T2Space (↥(amLatticeHomSet e)) := inferInstance
+  let K : CompHaus.{u} := CompHaus.of (↥(amLatticeHomSet e))
+  let evalC : E → C(K, ℝ) := fun x =>
+    ⟨fun φ => (φ : WeakDual ℝ E) x,
+      (eval_continuous x).comp continuous_subtype_val⟩
+  have heval_sup : ∀ x y, evalC (x ⊔ y) = evalC x ⊔ evalC y := by
+    intro x y
+    ext φ
+    rw [ContinuousMap.sup_apply]
+    exact amLatticeHom_map_sup φ.property x y
+  have heval_inf : ∀ x y, evalC (x ⊓ y) = evalC x ⊓ evalC y := by
+    intro x y
+    ext φ
+    rw [ContinuousMap.inf_apply]
+    exact amLatticeHom_map_inf φ.property x y
+  let L : E →ₗᵢ[ℝ] C(K, ℝ) :=
+    { toLinearMap :=
+        { toFun := evalC
+          map_add' := fun x y => by ext φ; simp [evalC, map_add]
+          map_smul' := fun c x => by ext φ; simp [evalC, map_smul, smul_eq_mul] }
+      norm_map' := fun x => by
+        rw [ContinuousMap.norm_eq_iSup_norm]
+        have hne : Nonempty K := (amLatticeHomSet_nonempty he0 hball he).to_subtype
+        have hsup : ⨆ φ : K, ‖evalC x φ‖ = ‖x‖ := by
+          have hrange : range (fun φ : K => |((φ : WeakDual ℝ E) x)|) =
+              (fun ψ : WeakDual ℝ E => |ψ x|) '' amLatticeHomSet e := by
+            ext t
+            constructor
+            · rintro ⟨φ, rfl⟩
+              exact ⟨φ, φ.property, rfl⟩
+            · rintro ⟨ψ, hψ, rfl⟩
+              exact ⟨⟨ψ, hψ⟩, rfl⟩
+          rw [show ⨆ φ : K, ‖evalC x φ‖ =
+              sSup (range fun φ : K => |((φ : WeakDual ℝ E) x)|) by
+                simp [evalC, Real.norm_eq_abs, iSup]]
+          rw [hrange, csSup_amLatticeHom_abs he0 hball he x]
+        exact hsup }
+  have hsep : (range L).SeparatesPointsStrongly := by
+    intro v φ ψ
+    obtain ⟨x, hxφ, hxψ⟩ := exists_amLatticeHom_eq_and_eq φ.property ψ.property (v φ) (v ψ)
+      (fun h => by rw [Subtype.ext h])
+    exact ⟨L x, ⟨x, rfl⟩, hxφ, hxψ⟩
+  have hclosed : IsClosed (range L) :=
+    L.antilipschitzWith.isClosed_range L.lipschitzWith.uniformContinuous
+  have htop : range L = univ := by
+    have hcl := ContinuousMap.sublattice_closure_eq_top (range L) ⟨L 0, 0, rfl⟩
+      (fun f hf g hg => by
+        obtain ⟨x, rfl⟩ := hf
+        obtain ⟨y, rfl⟩ := hg
+        refine ⟨x ⊓ y, ?_⟩
         ext φ
-        simp [evalC, map_neg]
-      have hinfE : x ⊓ y = -(-x ⊔ -y) := by
-        rw [← neg_neg (x ⊓ y), neg_inf]
-      have hinfC : evalC x ⊓ evalC y = -(-evalC x ⊔ -evalC y) := by
-        rw [← neg_neg (evalC x ⊓ evalC y), neg_inf]
-      have hnegx : evalC (-x) = -evalC x := by
+        simp [L, evalC, heval_inf])
+      (fun f hf g hg => by
+        obtain ⟨x, rfl⟩ := hf
+        obtain ⟨y, rfl⟩ := hg
+        refine ⟨x ⊔ y, ?_⟩
         ext φ
-        simp [evalC, map_neg]
-      have hnegy : evalC (-y) = -evalC y := by
-        ext φ
-        simp [evalC, map_neg]
-      rw [hinfE, hneg (-x) (-y), heval_sup, hnegx, hnegy, ← hinfC]
-    let L : E →ₗᵢ[ℝ] C(K, ℝ) :=
-      { toLinearMap :=
-          { toFun := evalC
-            map_add' := fun x y => by ext φ; simp [evalC, map_add]
-            map_smul' := fun c x => by ext φ; simp [evalC, map_smul, smul_eq_mul] }
-        norm_map' := fun x => by
-          rw [ContinuousMap.norm_eq_iSup_norm]
-          have hne : Nonempty K := (amLatticeHomSet_nonempty he0 hball he).to_subtype
-          have hsup : ⨆ φ : K, ‖evalC x φ‖ = ‖x‖ := by
-            have hrange : range (fun φ : K => |((φ : WeakDual ℝ E) x)|) =
-                (fun ψ : WeakDual ℝ E => |ψ x|) '' amLatticeHomSet e := by
-              ext t
-              constructor
-              · rintro ⟨φ, rfl⟩
-                exact ⟨φ, φ.property, rfl⟩
-              · rintro ⟨ψ, hψ, rfl⟩
-                exact ⟨⟨ψ, hψ⟩, rfl⟩
-            rw [show ⨆ φ : K, ‖evalC x φ‖ =
-                sSup (range fun φ : K => |((φ : WeakDual ℝ E) x)|) by
-                  simp [evalC, Real.norm_eq_abs, iSup]]
-            rw [hrange, csSup_amLatticeHom_abs he0 hball he x]
-          exact hsup }
-    have hsep : (range L).SeparatesPointsStrongly := by
-      intro v φ ψ
-      by_cases hφψ : φ = ψ
-      · subst hφψ
-        refine ⟨L ((v φ) • e), ⟨(v φ) • e, rfl⟩, ?_, ?_⟩
-        · have : L ((v φ) • e) φ = v φ := by
-            simp [L, evalC, map_smul, smul_eq_mul, φ.property.1]
-          exact this
-        · have : L ((v φ) • e) φ = v φ := by
-            simp [L, evalC, map_smul, smul_eq_mul, φ.property.1]
-          exact this
-      · have hne : (φ : WeakDual ℝ E) ≠ ψ := by
-          intro h
-          exact hφψ (Subtype.ext h)
-        obtain ⟨a, ha⟩ := DFunLike.exists_ne hne
-        let δ : ℝ := (φ : WeakDual ℝ E) a - (ψ : WeakDual ℝ E) a
-        have hδ : δ ≠ 0 := sub_ne_zero.mpr ha
-        let q : ℝ := (v φ - v ψ) / δ
-        let p : ℝ := v φ - q * (φ : WeakDual ℝ E) a
-        refine ⟨L (p • e + q • a), ⟨p • e + q • a, rfl⟩, ?_, ?_⟩
-        · simp [L, evalC, map_add, map_smul, smul_eq_mul, φ.property.1, p, q]
-        · have hψ : L (p • e + q • a) ψ =
-              p + q * (ψ : WeakDual ℝ E) a := by
-            simp [L, evalC, map_add, map_smul, smul_eq_mul, ψ.property.1]
-          rw [hψ]
-          have hδ' : q * δ = v φ - v ψ := by
-            simp [q, δ, div_mul_cancel₀ _ hδ]
-          have : p + q * (ψ : WeakDual ℝ E) a = v φ - q * δ := by
-            unfold p δ
-            ring
-          rw [this]
-          linarith [hδ']
-    have hclosed : IsClosed (range L) :=
-      L.antilipschitzWith.isClosed_range L.lipschitzWith.uniformContinuous
-    have htop : range L = univ := by
-      have hcl := ContinuousMap.sublattice_closure_eq_top (range L) ⟨L 0, 0, rfl⟩
-        (fun f hf g hg => by
-          obtain ⟨x, rfl⟩ := hf
-          obtain ⟨y, rfl⟩ := hg
-          refine ⟨x ⊓ y, ?_⟩
-          ext φ
-          simp [L, evalC, heval_inf])
-        (fun f hf g hg => by
-          obtain ⟨x, rfl⟩ := hf
-          obtain ⟨y, rfl⟩ := hg
-          refine ⟨x ⊔ y, ?_⟩
-          ext φ
-          simp [L, evalC, heval_sup])
-        hsep
-      rw [IsClosed.closure_eq hclosed] at hcl
-      simpa using hcl
-    let U := LinearIsometryEquiv.ofSurjective L (range_eq_univ.mp htop)
-    refine ⟨K, U, ?_, ?_⟩
-    · ext φ
-      simp [U, L, evalC, φ.property.1]
-    · intro x y
-      ext φ
-      simp [U, L, evalC, heval_sup]
+        simp [L, evalC, heval_sup])
+      hsep
+    rw [IsClosed.closure_eq hclosed] at hcl
+    simpa using hcl
+  let U := LinearIsometryEquiv.ofSurjective L (range_eq_univ.mp htop)
+  refine ⟨K, U, ?_, ?_⟩
+  · ext φ
+    simp [U, L, evalC, φ.property.1]
+  · intro x y
+    ext φ
+    simp [U, L, evalC, heval_sup]
 
 end CKMA

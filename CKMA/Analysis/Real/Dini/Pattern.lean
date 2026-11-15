@@ -7,6 +7,9 @@ module
 
 public import CKMA.Analysis.Real.Dini.Basic
 
+import Mathlib.Analysis.Calculus.Deriv.Slope
+import Mathlib.Tactic.FinCases
+
 /-!
 # The four Dini patterns are exclusive
 

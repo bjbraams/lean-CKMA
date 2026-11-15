@@ -6,10 +6,8 @@ Authors: CKMA contributors
 module
 
 public import Mathlib.Analysis.Meromorphic.Basic
-public import Mathlib.Analysis.Analytic.Order
-public import Mathlib.Analysis.Polynomial.Basic
-public import Mathlib.Topology.Connected.Basic
-public import Mathlib.Topology.MetricSpace.ProperSpace
+public import Mathlib.Algebra.Polynomial.Eval.Defs
+public import Mathlib.Analysis.Complex.Basic
 
 /-!
 # Plane approximation and prescribed analytic data

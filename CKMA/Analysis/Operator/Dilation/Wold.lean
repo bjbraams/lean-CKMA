@@ -6,10 +6,6 @@ Authors: CKMA contributors
 module
 
 public import Mathlib.Analysis.InnerProductSpace.Adjoint
-public import Mathlib.Analysis.InnerProductSpace.Projection.Submodule
-public import Mathlib.Analysis.InnerProductSpace.l2Space
-public import Mathlib.Topology.Algebra.InfiniteSum.Module
-public import Mathlib.Topology.Algebra.InfiniteSum.Real
 
 /-!
 # Wold decomposition of a Hilbert-space isometry

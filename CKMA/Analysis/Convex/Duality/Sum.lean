@@ -5,7 +5,10 @@ Authors: CKMA contributors
 -/
 module
 
-public import CKMA.Analysis.Convex.Duality.FenchelRockafellar
+public import CKMA.Analysis.Convex.Basic
+public import TauCeti.Analysis.Convex.Subdifferential
+import CKMA.Analysis.Convex.Duality.FenchelRockafellar
+import Mathlib.Tactic
 
 /-!
 # The subdifferential sum rule

@@ -5,11 +5,9 @@ Authors: CKMA contributors
 -/
 module
 
-public import CKMA.Dynamics.Ergodic.Pointwise.KingmanConv
+public import CKMA.Dynamics.Ergodic.Pointwise.KingmanAE
 
-import Mathlib.Dynamics.Ergodic.Ergodic
-import Mathlib.MeasureTheory.Integral.Bochner.Set
-import Mathlib.MeasureTheory.Integral.Lebesgue.Add
+import Mathlib.MeasureTheory.Integral.DominatedConvergence
 
 /-!
 # Kingman's theorem without a pointwise bound

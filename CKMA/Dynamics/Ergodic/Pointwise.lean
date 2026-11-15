@@ -9,10 +9,9 @@ public import Mathlib.Dynamics.BirkhoffSum.Average
 public import Mathlib.Dynamics.Ergodic.Ergodic
 public import Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic
 public import Mathlib.MeasureTheory.MeasurableSpace.Invariants
-public import Mathlib.MeasureTheory.Function.LpSeminorm.Basic
-public import Mathlib.Probability.Notation
 public import CKMA.Dynamics.Ergodic.Pointwise.KingmanFull
 
+import Mathlib.Dynamics.Ergodic.Function
 import CKMA.Dynamics.Ergodic.Pointwise.Maximal
 import CKMA.Dynamics.Ergodic.Pointwise.Birkhoff
 import CKMA.Dynamics.Ergodic.Pointwise.KingmanClosure

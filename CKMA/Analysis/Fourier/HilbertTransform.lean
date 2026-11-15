@@ -6,8 +6,6 @@ Authors: CKMA contributors
 module
 
 public import Mathlib.Analysis.Fourier.LpSpace
-public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
-public import Mathlib.Topology.Basic
 
 /-!
 # Principal-value Hilbert transforms

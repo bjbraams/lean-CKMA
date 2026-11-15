@@ -6,7 +6,6 @@ Authors: CKMA contributors
 module
 
 public import CKMA.Probability.BrownianTheory.Reflection.Grid
-public import Mathlib.Probability.Independence.Basic
 
 /-!
 # Reflection of one Brownian increment
@@ -34,8 +33,6 @@ namespace CKMA
 
 open Filter MeasureTheory ProbabilityTheory Set
 open scoped ENNReal NNReal
-
-set_option linter.unusedSectionVars false
 
 variable {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsProbabilityMeasure μ]
 
@@ -99,6 +96,7 @@ private lemma measurableSet_firstPassage (t : ℝ≥0) (b : ℝ) (n k : ℕ) :
   rw [heq]
   exact hhit.inter hprev
 
+omit [MeasurableSpace Ω] in
 /-- On indices inside the grid, the first-visit event is the stopped-path condition. -/
 lemma firstGridHitSet_eq_preimage (C : ℝ≥0 → Ω → ℝ) (t : ℝ≥0) (b : ℝ) {n k : ℕ} (hk : k ≤ 2 ^ n) :
     firstGridHitSet C t b n k = past C (grid t n k) ⁻¹' firstPassage t b n k := by

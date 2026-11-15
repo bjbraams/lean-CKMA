@@ -5,12 +5,11 @@ Authors: CKMA contributors
 -/
 module
 
-public import Mathlib.Analysis.Normed.Order.Lattice
-public import Mathlib.Algebra.Order.Module.Defs
-public import Mathlib.LinearAlgebra.Projection
-public import Mathlib.Algebra.Order.Hom.Monoid
 public import CKMA.Analysis.OrderedSpace.Bands.Lattice
 public import CKMA.Analysis.OrderedSpace.Bands.Freudenthal
+public import Mathlib.Algebra.Order.Archimedean.Real.Basic
+import Mathlib.Algebra.Order.Hom.Monoid
+import Mathlib.Tactic.Abel
 
 /-!
 # Riesz ideals, band projections, and order approximation
@@ -135,6 +134,159 @@ end PositiveMaps
 def IsDedekindCompleteRieszSpace (E : Type*) [Lattice E] : Prop :=
   ∀ s : Set E, s.Nonempty → BddAbove s → ∃ x : E, IsLUB s x
 
+/-- Suprema of a family of sets over the positive cone that is additive and positively
+homogeneous for the Minkowski operations, and has `0` as the supremum at `0`, are the values of a
+linear map in a Dedekind-complete target. -/
+private theorem exists_linearMap_isLUB (hcomplete : IsDedekindCompleteRieszSpace F)
+    (A : E → Set F) (hne : ∀ x, 0 ≤ x → (A x).Nonempty) (hbdd : ∀ x, 0 ≤ x → BddAbove (A x))
+    (hzero : IsLUB (A 0) 0)
+    (hadd : ∀ x y, 0 ≤ x → 0 ≤ y → A (x + y) = {z | ∃ a b, a ∈ A x ∧ b ∈ A y ∧ z = a + b})
+    (hsmul : ∀ (c : ℝ) (x : E), 0 < c → 0 ≤ x → A (c • x) = (fun w : F ↦ c • w) '' A x) :
+    ∃ U : E →ₗ[ℝ] F, ∀ x, 0 ≤ x → IsLUB (A x) (U x) := by
+  have hexists : ∀ x : E, ∃ z : F, IsLUB (A x⁺) z := fun x ↦
+    hcomplete _ (hne _ (posPart_nonneg x)) (hbdd _ (posPart_nonneg x))
+  choose g hg using hexists
+  have hg_pos : ∀ {x : E}, 0 ≤ x → IsLUB (A x) (g x) := by
+    intro x hx
+    simpa only [posPart_eq_self.2 hx] using hg x
+  have hgadd : ∀ x y : E, 0 ≤ x → 0 ≤ y → g (x + y) = g x + g y := by
+    intro x y hx hy
+    have hlub := isLUB_add (hg_pos hx) (hg_pos hy)
+    rw [← hadd x y hx hy] at hlub
+    exact (hg_pos (add_nonneg hx hy)).unique hlub
+  have hgsmul : ∀ (c : ℝ) (x : E), 0 ≤ c → 0 ≤ x → g (c • x) = c • g x := by
+    intro c x hc hx
+    rcases hc.eq_or_lt with rfl | hcpos
+    · rw [zero_smul, zero_smul]
+      exact (hg_pos le_rfl).unique hzero
+    · have hlub := isLUB_smul_of_pos hcpos (hg_pos hx)
+      rw [← hsmul c x hcpos hx] at hlub
+      exact (hg_pos (smul_nonneg hcpos.le hx)).unique hlub
+  refine ⟨coneAdditiveLinearMap g hgadd hgsmul, fun x hx ↦ ?_⟩
+  rw [coneAdditiveLinearMap_apply_of_nonneg g hgadd hgsmul hx]
+  exact hg_pos hx
+
+/-- The vectors of a Riesz ideal in the order interval `[0, x]`. -/
+private def bandSlice (B : RieszIdeal E) (x : E) : Set E :=
+  {y | y ∈ B.toSubmodule ∧ 0 ≤ y ∧ y ≤ x}
+
+omit [IsOrderedModule ℝ E] in
+/-- A Riesz ideal contains every positive vector below one of its elements. -/
+private theorem RieszIdeal.mem_of_nonneg_of_le (B : RieszIdeal E) {w z : E} (hw : 0 ≤ w)
+    (hwz : w ≤ z) (hz : z ∈ B.toSubmodule) : w ∈ B.toSubmodule :=
+  B.solid (by rw [abs_of_nonneg hw, abs_of_nonneg (hw.trans hwz)]; exact hwz) hz
+
+omit [IsOrderedModule ℝ E] in
+/-- The slice of a Riesz ideal below a sum of positive vectors is the sum of the slices, by the
+Riesz decomposition property. -/
+private theorem bandSlice_add (B : RieszIdeal E) {x y : E} (hx : 0 ≤ x) (hy : 0 ≤ y) :
+    bandSlice B (x + y) = {z | ∃ a b, a ∈ bandSlice B x ∧ b ∈ bandSlice B y ∧ z = a + b} := by
+  ext w
+  constructor
+  · rintro ⟨hwB, hw0, hwxy⟩
+    obtain ⟨w1, w2, hw, hw10, hw1x, hw20, hw2y⟩ := exists_add_eq_of_le_add hw0 hx hy hwxy
+    have hw1 : w1 ≤ w := hw ▸ le_add_of_nonneg_right hw20
+    have hw2 : w2 ≤ w := hw ▸ le_add_of_nonneg_left hw10
+    exact ⟨w1, w2, ⟨B.mem_of_nonneg_of_le hw10 hw1 hwB, hw10, hw1x⟩,
+      ⟨B.mem_of_nonneg_of_le hw20 hw2 hwB, hw20, hw2y⟩, hw⟩
+  · rintro ⟨a, b, ⟨haB, ha0, hax⟩, ⟨hbB, hb0, hby⟩, rfl⟩
+    exact ⟨B.toSubmodule.add_mem haB hbB, add_nonneg ha0 hb0, add_le_add hax hby⟩
+
+omit [IsOrderedAddMonoid E] in
+/-- The slice of a Riesz ideal below a positive multiple is the rescaled slice. -/
+private theorem bandSlice_smul (B : RieszIdeal E) {c : ℝ} (hc : 0 < c) (x : E) :
+    bandSlice B (c • x) = (fun y ↦ c • y) '' bandSlice B x := by
+  ext z
+  constructor
+  · intro hz
+    have hinv : 0 ≤ c⁻¹ := inv_nonneg.2 hc.le
+    refine ⟨c⁻¹ • z, ⟨B.toSubmodule.smul_mem c⁻¹ hz.1, smul_nonneg hinv hz.2.1, ?_⟩, ?_⟩
+    · calc
+        c⁻¹ • z ≤ c⁻¹ • (c • x) := smul_le_smul_of_nonneg_left hz.2.2 hinv
+        _ = x := by rw [← mul_smul, inv_mul_cancel₀ hc.ne', one_smul]
+    · simp only [← mul_smul, mul_inv_cancel₀ hc.ne', one_smul]
+  · rintro ⟨y, hy, rfl⟩
+    exact ⟨B.toSubmodule.smul_mem c hy.1, smul_nonneg hc.le hy.2.1,
+      smul_le_smul_of_nonneg_left hy.2.2 hc.le⟩
+
+omit [IsOrderedAddMonoid E] [IsOrderedModule ℝ E] in
+/-- A positive element of a Riesz ideal is the greatest element of its own slice. -/
+private theorem isLUB_bandSlice_self (B : RieszIdeal E) {z : E} (hzB : z ∈ B.toSubmodule)
+    (hz : 0 ≤ z) : IsLUB (bandSlice B z) z :=
+  ⟨fun _y hy ↦ hy.2.2, fun _b hb ↦ hb ⟨hzB, hz, le_rfl⟩⟩
+
+omit [IsOrderedAddMonoid E] [IsOrderedModule ℝ E] in
+/-- In a band, the supremum of a slice lies in that slice. -/
+private theorem mem_bandSlice_of_isLUB {B : RieszIdeal E} (hB : B.IsBand) {x z : E} (hx : 0 ≤ x)
+    (hL : IsLUB (bandSlice B x) z) : z ∈ bandSlice B x :=
+  ⟨hB (bandSlice B x) ⟨0, B.toSubmodule.zero_mem, le_rfl, hx⟩ (fun _y hy ↦ ⟨hy.2.1, hy.1⟩) z hL,
+    hL.1 ⟨B.toSubmodule.zero_mem, le_rfl, hx⟩, hL.2 fun _y hy ↦ hy.2.2⟩
+
+omit [IsOrderedModule ℝ E] in
+/-- A positive vector whose slice in a Riesz ideal has supremum `0` is disjoint from every
+element of the ideal. -/
+private theorem inf_abs_eq_zero_of_isLUB_bandSlice {B : RieszIdeal E} {z y : E} (hz : 0 ≤ z)
+    (hL : IsLUB (bandSlice B z) 0) (hy : y ∈ B.toSubmodule) : z ⊓ |y| = 0 := by
+  have hw0 : 0 ≤ z ⊓ |y| := le_inf hz (abs_nonneg y)
+  have habs : |y| ∈ B.toSubmodule := B.solid (le_of_eq (abs_abs y)) hy
+  exact le_antisymm
+    (hL.1 ⟨B.mem_of_nonneg_of_le hw0 inf_le_right habs, hw0, inf_le_left⟩) hw0
+
+omit [IsOrderedModule ℝ E] in
+/-- A linear map whose values on the positive cone are the suprema of the slices of a band is
+the band projection: it is the identity on the band and its kernel is the disjoint
+complement. -/
+private theorem bandProjection_spec {B : RieszIdeal E} (hB : B.IsBand) {P : E →ₗ[ℝ] E}
+    (hP : ∀ x, 0 ≤ x → IsLUB (bandSlice B x) (P x)) :
+    LinearMap.range P = B.toSubmodule ∧ (∀ x, P (P x) = P x) ∧
+      ∀ x, P x = 0 ↔ x ∈ latticeDisjointComplement (B.toSubmodule : Set E) := by
+  have hsplit : ∀ x, P x = P x⁺ - P x⁻ := fun x ↦ by rw [← map_sub, posPart_sub_negPart]
+  have hposle : ∀ z : E, z⁺ ≤ |z| := fun z ↦
+    (le_add_of_nonneg_right (negPart_nonneg z)).trans_eq (posPart_add_negPart z)
+  have hnegle : ∀ z : E, z⁻ ≤ |z| := fun z ↦
+    (le_add_of_nonneg_left (posPart_nonneg z)).trans_eq (posPart_add_negPart z)
+  have hmem : ∀ {x}, 0 ≤ x → P x ∈ bandSlice B x := fun hx ↦ mem_bandSlice_of_isLUB hB hx (hP _ hx)
+  have hmemB : ∀ x, P x ∈ B.toSubmodule := fun x ↦ by
+    rw [hsplit x]
+    exact B.toSubmodule.sub_mem (hmem (posPart_nonneg x)).1 (hmem (negPart_nonneg x)).1
+  have hfixB : ∀ z ∈ B.toSubmodule, P z = z := by
+    intro z hz
+    have habs : |z| ∈ B.toSubmodule := B.solid (le_of_eq (abs_abs z)) hz
+    have hfix : ∀ w, 0 ≤ w → w ≤ |z| → P w = w := fun w hw hwz ↦
+      (hP w hw).unique (isLUB_bandSlice_self B (B.mem_of_nonneg_of_le hw hwz habs) hw)
+    rw [hsplit z, hfix _ (posPart_nonneg z) (hposle z),
+      hfix _ (negPart_nonneg z) (hnegle z), posPart_sub_negPart]
+  refine ⟨Submodule.ext fun z ↦ ⟨?_, fun hz ↦ ⟨z, hfixB z hz⟩⟩, fun x ↦ hfixB _ (hmemB x),
+    fun x ↦ ⟨fun hPx y hy ↦ ?_, fun hx ↦ ?_⟩⟩
+  · rintro ⟨y, rfl⟩
+    exact hmemB y
+  · have heq : P x⁺ = P x⁻ := sub_eq_zero.mp (by rw [← hsplit, hPx])
+    have hpos0 : P x⁺ = 0 := by
+      have hle : P x⁺ ≤ x⁺ ⊓ x⁻ :=
+        le_inf (hmem (posPart_nonneg x)).2.2 (heq ▸ (hmem (negPart_nonneg x)).2.2)
+      rw [posPart_inf_negPart_eq_zero] at hle
+      exact le_antisymm hle (hmem (posPart_nonneg x)).2.1
+    have hzero : ∀ w, 0 ≤ w → P w = 0 → w ⊓ |y| = 0 := fun w hw hPw ↦
+      inf_abs_eq_zero_of_isLUB_bandSlice hw (hPw ▸ hP w hw) hy
+    have h1 : |y| ⊓ x⁺ = 0 := by rw [inf_comm]; exact hzero _ (posPart_nonneg x) hpos0
+    have h2 : |y| ⊓ x⁻ = 0 := by
+      rw [inf_comm]; exact hzero _ (negPart_nonneg x) (heq ▸ hpos0)
+    have hle : |y| ⊓ |x| ≤ 0 := by
+      have hsum := inf_add_le_add_inf (abs_nonneg y) (posPart_nonneg x) (negPart_nonneg x)
+      rwa [posPart_add_negPart, h1, h2, add_zero] at hsum
+    rw [LatticeDisjoint]
+    exact le_antisymm (by rw [inf_comm]; exact hle) (le_inf (abs_nonneg x) (abs_nonneg y))
+  · have hzero : ∀ w, 0 ≤ w → w ≤ |x| → P w = 0 := by
+      intro w hw hwx
+      have hmemw := hmem hw
+      have hdisj : |x| ⊓ P w = 0 := by
+        have hL := hx (P w) hmemw.1
+        rwa [LatticeDisjoint, abs_of_nonneg hmemw.2.1] at hL
+      rw [← inf_eq_right.2 (hmemw.2.2.trans hwx)]
+      exact hdisj
+    rw [hsplit, hzero _ (posPart_nonneg x) (hposle x),
+      hzero _ (negPart_nonneg x) (hnegle x), sub_zero]
+
 /-- **19.5**: every band in a Dedekind-complete vector lattice admits its band projection.
 The positive-vector supremum characterization and the disjoint-complement kernel are included. -/
 theorem exists_bandProjection (hcomplete : IsDedekindCompleteRieszSpace E)
@@ -144,260 +296,14 @@ theorem exists_bandProjection (hcomplete : IsDedekindCompleteRieszSpace E)
       (∀ x, P x = 0 ↔ x ∈ latticeDisjointComplement (B.toSubmodule : Set E)) ∧
       ∀ x : E, 0 ≤ x → 0 ≤ P x ∧ P x ≤ x ∧
         IsLUB {y | y ∈ B.toSubmodule ∧ 0 ≤ y ∧ y ≤ x} (P x) := by
-  let slice : E → Set E := fun x =>
-    {y | y ∈ B.toSubmodule ∧ 0 ≤ y ∧ y ≤ x}
-  have hnonempty : ∀ x : E, 0 ≤ x → (slice x).Nonempty := by
-    intro x hx
-    exact ⟨0, B.toSubmodule.zero_mem, le_rfl, hx⟩
-  have hbdd : ∀ x : E, BddAbove (slice x) := by
-    intro x
-    exact ⟨x, fun _y hy => hy.2.2⟩
-  have hexists : ∀ x : E, ∃ z : E, IsLUB (slice x⁺) z := by
-    intro x
-    exact hcomplete (slice x⁺) (hnonempty x⁺ (posPart_nonneg x)) (hbdd x⁺)
-  let component : E → E := fun x => Classical.choose (hexists x)
-  have hspec : ∀ x : E, IsLUB (slice x⁺) (component x) :=
-    fun x => Classical.choose_spec (hexists x)
-  have hspec_pos : ∀ {x : E}, 0 ≤ x → IsLUB (slice x) (component x) := by
-    intro x hx
-    have h := hspec x
-    rw [posPart_eq_self.2 hx] at h
-    exact h
-  have hmem : ∀ {x : E}, 0 ≤ x → component x ∈ slice x := by
-    intro x hx
-    have hL := hspec_pos hx
-    have h0 : 0 ≤ component x := hL.1 ⟨B.toSubmodule.zero_mem, le_rfl, hx⟩
-    have hxle : component x ≤ x := hL.2 (fun _y hy => hy.2.2)
-    have hBin : component x ∈ B.toSubmodule :=
-      hB (slice x) ⟨0, B.toSubmodule.zero_mem, le_rfl, hx⟩
-        (fun _y hy => ⟨hy.2.1, hy.1⟩) (component x) hL
-    exact ⟨hBin, h0, hxle⟩
-  have hadd : ∀ x y : E, 0 ≤ x → 0 ≤ y →
-      component (x + y) = component x + component y := by
-    intro x y hx hy
-    have hxy : 0 ≤ x + y := add_nonneg hx hy
-    have hxmem := hmem hx
-    have hymem := hmem hy
-    have hxymem := hmem hxy
-    have hsum_le : component x + component y ≤ component (x + y) := by
-      have hin : component x + component y ∈ slice (x + y) :=
-        ⟨B.toSubmodule.add_mem hxmem.1 hymem.1,
-          add_nonneg hxmem.2.1 hymem.2.1, add_le_add hxmem.2.2 hymem.2.2⟩
-      exact (hspec_pos hxy).1 hin
-    have hle_sum : component (x + y) ≤ component x + component y := by
-      obtain ⟨w1, w2, hw, hw10, hw1x, hw20, hw2y⟩ :=
-        exists_add_eq_of_le_add hxymem.2.1 hx hy hxymem.2.2
-      have hw1_le : w1 ≤ component (x + y) := by
-        have hw1eq : w1 = component (x + y) - w2 := by
-          calc
-            w1 = w1 + w2 - w2 := by abel
-            _ = component (x + y) - w2 := by rw [← hw]
-        rw [hw1eq]
-        exact sub_le_self _ hw20
-      have hw1B : w1 ∈ B.toSubmodule :=
-        B.solid (by rw [abs_of_nonneg hw10, abs_of_nonneg hxymem.2.1]; exact hw1_le)
-          hxymem.1
-      have hw2_le : w2 ≤ component (x + y) := by
-        have hw2eq : w2 = component (x + y) - w1 := by
-          calc
-            w2 = w1 + w2 - w1 := by abel
-            _ = component (x + y) - w1 := by rw [← hw]
-        rw [hw2eq]
-        exact sub_le_self _ hw10
-      have hw2B : w2 ∈ B.toSubmodule :=
-        B.solid (by rw [abs_of_nonneg hw20, abs_of_nonneg hxymem.2.1]; exact hw2_le)
-          hxymem.1
-      calc
-        component (x + y) = w1 + w2 := hw
-        _ ≤ component x + component y :=
-          add_le_add ((hspec_pos hx).1 ⟨hw1B, hw10, hw1x⟩)
-            ((hspec_pos hy).1 ⟨hw2B, hw20, hw2y⟩)
-    exact le_antisymm hle_sum hsum_le
-  have hzero : component 0 = 0 := by
-    have hL : IsLUB (slice (0 : E)) 0 := by
-      refine ⟨fun _y hy => hy.2.2, ?_⟩
-      intro b hb
-      exact hb ⟨B.toSubmodule.zero_mem, le_rfl, le_rfl⟩
-    exact IsLUB.unique (hspec_pos le_rfl) hL
-  have hsmul : ∀ (c : ℝ) (x : E), 0 ≤ c → 0 ≤ x →
-      component (c • x) = c • component x := by
-    intro c x hc hx
-    rcases eq_or_lt_of_le hc with hc0 | hcpos
-    · rw [← hc0, zero_smul, zero_smul, hzero]
-    · have hset : slice (c • x) = (fun y => c • y) '' slice x := by
-        ext z
-        constructor
-        · intro hz
-          have hinv : 0 ≤ c⁻¹ := inv_nonneg.2 hcpos.le
-          refine ⟨c⁻¹ • z, ?_, ?_⟩
-          · exact ⟨B.toSubmodule.smul_mem c⁻¹ hz.1,
-              smul_nonneg hinv hz.2.1,
-              calc
-                c⁻¹ • z ≤ c⁻¹ • (c • x) := smul_le_smul_of_nonneg_left hz.2.2 hinv
-                _ = x := by rw [← mul_smul, inv_mul_cancel₀ hcpos.ne', one_smul]⟩
-          · change c • (c⁻¹ • z) = z
-            rw [← mul_smul, mul_inv_cancel₀ hcpos.ne', one_smul]
-        · rintro ⟨y, hy, rfl⟩
-          exact ⟨B.toSubmodule.smul_mem c hy.1, smul_nonneg hcpos.le hy.2.1,
-            smul_le_smul_of_nonneg_left hy.2.2 hcpos.le⟩
-      have hlub := isLUB_smul_of_pos hcpos (hspec_pos hx)
-      rw [← hset] at hlub
-      exact IsLUB.unique (hspec_pos (smul_nonneg hcpos.le hx)) hlub
-  let P := coneAdditiveLinearMap component hadd hsmul
-  have hPpos : ∀ {x : E}, 0 ≤ x → P x = component x :=
-    fun {_x} hx => coneAdditiveLinearMap_apply_of_nonneg component hadd hsmul hx
-  have hidem_pos : ∀ {x : E}, 0 ≤ x → P (P x) = P x := by
-    intro x hx
-    have hc0 : 0 ≤ component x := (hmem hx).2.1
-    rw [hPpos hx, hPpos hc0]
-    have hfx : component x ∈ slice (component x) := ⟨(hmem hx).1, hc0, le_rfl⟩
-    exact IsLUB.unique (hspec_pos hc0)
-      ⟨fun _y hy => hy.2.2, fun _b hb => hb hfx⟩
-  have hidem : ∀ x, P (P x) = P x := by
-    intro x
-    have hsplit : P x = P x⁺ - P x⁻ := by
-      conv_lhs => rw [(posPart_sub_negPart x).symm]
-      rw [map_sub]
-    calc
-      P (P x) = P (P x⁺ - P x⁻) := by rw [hsplit]
-      _ = P (P x⁺) - P (P x⁻) := map_sub P (P x⁺) (P x⁻)
-      _ = P x⁺ - P x⁻ := by
-        rw [hidem_pos (posPart_nonneg x), hidem_pos (negPart_nonneg x)]
-      _ = P x := hsplit.symm
-  have hrange : LinearMap.range P = B.toSubmodule := by
-    refine Submodule.ext fun z => ?_
-    constructor
-    · intro hz
-      rcases LinearMap.mem_range.mp hz with ⟨y, rfl⟩
-      have hpy : P y = P y⁺ - P y⁻ := by
-        conv_lhs => rw [(posPart_sub_negPart y).symm]
-        rw [map_sub]
-      rw [hpy]
-      exact B.toSubmodule.sub_mem
-        (by rw [hPpos (posPart_nonneg y)]; exact (hmem (posPart_nonneg y)).1)
-        (by rw [hPpos (negPart_nonneg y)]; exact (hmem (negPart_nonneg y)).1)
-    · intro hz
-      have hzp : z⁺ ∈ B.toSubmodule :=
-        B.solid (by
-          rw [abs_of_nonneg (posPart_nonneg z)]
-          calc
-            z⁺ ≤ z⁺ + z⁻ := le_add_of_nonneg_right (negPart_nonneg z)
-            _ = |z| := posPart_add_negPart z) hz
-      have hzn : z⁻ ∈ B.toSubmodule :=
-        B.solid (by
-          rw [abs_of_nonneg (negPart_nonneg z)]
-          calc
-            z⁻ ≤ z⁺ + z⁻ := le_add_of_nonneg_left (posPart_nonneg z)
-            _ = |z| := posPart_add_negPart z) hz
-      have hfixp : P z⁺ = z⁺ := by
-        rw [hPpos (posPart_nonneg z)]
-        have hin : z⁺ ∈ slice z⁺ := ⟨hzp, posPart_nonneg z, le_rfl⟩
-        exact IsLUB.unique (hspec_pos (posPart_nonneg z))
-          ⟨fun _y hy => hy.2.2, fun _b hb => hb hin⟩
-      have hfixn : P z⁻ = z⁻ := by
-        rw [hPpos (negPart_nonneg z)]
-        have hin : z⁻ ∈ slice z⁻ := ⟨hzn, negPart_nonneg z, le_rfl⟩
-        exact IsLUB.unique (hspec_pos (negPart_nonneg z))
-          ⟨fun _y hy => hy.2.2, fun _b hb => hb hin⟩
-      have hzP : P z = z := by
-        calc
-          P z = P (z⁺ - z⁻) := by
-            conv_lhs => rw [(posPart_sub_negPart z).symm]
-          _ = P z⁺ - P z⁻ := map_sub P z⁺ z⁻
-          _ = z⁺ - z⁻ := by rw [hfixp, hfixn]
-          _ = z := posPart_sub_negPart z
-      exact LinearMap.mem_range.mpr ⟨z, hzP⟩
-  have hker : ∀ x, P x = 0 ↔
-      x ∈ latticeDisjointComplement (B.toSubmodule : Set E) := by
-    intro x
-    constructor
-    · intro hPx y hy
-      have hsplit : P x⁺ - P x⁻ = 0 := by
-        rw [← map_sub, posPart_sub_negPart x, hPx]
-      have heq : P x⁺ = P x⁻ := sub_eq_zero.mp hsplit
-      have hpos_le : P x⁺ ≤ x⁺ := by
-        rw [hPpos (posPart_nonneg x)]
-        exact (hmem (posPart_nonneg x)).2.2
-      have hneg_le : P x⁻ ≤ x⁻ := by
-        rw [hPpos (negPart_nonneg x)]
-        exact (hmem (negPart_nonneg x)).2.2
-      have hpos0 : P x⁺ = 0 := by
-        have hle_inf : P x⁺ ≤ x⁺ ⊓ x⁻ := le_inf hpos_le (by rw [heq]; exact hneg_le)
-        rw [posPart_inf_negPart_eq_zero] at hle_inf
-        exact le_antisymm hle_inf (by
-          rw [hPpos (posPart_nonneg x)]
-          exact (hmem (posPart_nonneg x)).2.1)
-      have hneg0 : P x⁻ = 0 := by rw [← heq, hpos0]
-      have habs_mem : |y| ∈ B.toSubmodule :=
-        B.solid (le_of_eq (abs_of_nonneg (abs_nonneg y))) hy
-      have hxpos0 : x⁺ ⊓ |y| = 0 := by
-        set w := x⁺ ⊓ |y|
-        have hw0 : 0 ≤ w := le_inf (posPart_nonneg x) (abs_nonneg y)
-        have hwB : w ∈ B.toSubmodule :=
-          B.solid (by rw [abs_of_nonneg hw0, abs_of_nonneg (abs_nonneg y)]; exact inf_le_right)
-            habs_mem
-        have hwle : w ≤ P x⁺ := by
-          rw [hPpos (posPart_nonneg x)]
-          exact (hspec_pos (posPart_nonneg x)).1 ⟨hwB, hw0, inf_le_left⟩
-        rw [hpos0] at hwle
-        exact le_antisymm hwle hw0
-      have hxneg0 : x⁻ ⊓ |y| = 0 := by
-        set w := x⁻ ⊓ |y|
-        have hw0 : 0 ≤ w := le_inf (negPart_nonneg x) (abs_nonneg y)
-        have hwB : w ∈ B.toSubmodule :=
-          B.solid (by rw [abs_of_nonneg hw0, abs_of_nonneg (abs_nonneg y)]; exact inf_le_right)
-            habs_mem
-        have hwle : w ≤ P x⁻ := by
-          rw [hPpos (negPart_nonneg x)]
-          exact (hspec_pos (negPart_nonneg x)).1 ⟨hwB, hw0, inf_le_left⟩
-        rw [hneg0] at hwle
-        exact le_antisymm hwle hw0
-      have h1 : |y| ⊓ x⁺ = 0 := by rw [inf_comm]; exact hxpos0
-      have h2 : |y| ⊓ x⁻ = 0 := by rw [inf_comm]; exact hxneg0
-      have hle : |y| ⊓ |x| ≤ 0 := by
-        have hsum := inf_add_le_add_inf (abs_nonneg y) (posPart_nonneg x) (negPart_nonneg x)
-        rw [posPart_add_negPart, h1, h2, add_zero] at hsum
-        exact hsum
-      rw [LatticeDisjoint]
-      exact le_antisymm (by rw [inf_comm]; exact hle) (le_inf (abs_nonneg x) (abs_nonneg y))
-    · intro hx
-      have hpos : P x⁺ = 0 := by
-        rw [hPpos (posPart_nonneg x)]
-        have hmemx := hmem (posPart_nonneg x)
-        have hdisj : |x| ⊓ component x⁺ = 0 := by
-          have hL := hx (component x⁺) hmemx.1
-          rwa [LatticeDisjoint, abs_of_nonneg hmemx.2.1] at hL
-        have hle : component x⁺ ≤ |x| := by
-          calc
-            component x⁺ ≤ x⁺ := hmemx.2.2
-            _ ≤ x⁺ + x⁻ := le_add_of_nonneg_right (negPart_nonneg x)
-            _ = |x| := posPart_add_negPart x
-        rw [← inf_eq_right.2 hle]
-        exact hdisj
-      have hneg : P x⁻ = 0 := by
-        rw [hPpos (negPart_nonneg x)]
-        have hmemx := hmem (negPart_nonneg x)
-        have hdisj : |x| ⊓ component x⁻ = 0 := by
-          have hL := hx (component x⁻) hmemx.1
-          rwa [LatticeDisjoint, abs_of_nonneg hmemx.2.1] at hL
-        have hle : component x⁻ ≤ |x| := by
-          calc
-            component x⁻ ≤ x⁻ := hmemx.2.2
-            _ ≤ x⁺ + x⁻ := le_add_of_nonneg_left (posPart_nonneg x)
-            _ = |x| := posPart_add_negPart x
-        rw [← inf_eq_right.2 hle]
-        exact hdisj
-      conv_lhs => rw [(posPart_sub_negPart x).symm]
-      rw [map_sub, hpos, hneg, sub_zero]
-  refine ⟨P, hrange, hidem, hker, ?_⟩
-  intro x hx
-  refine ⟨?_, ?_, ?_⟩
-  · rw [hPpos hx]
-    exact (hmem hx).2.1
-  · rw [hPpos hx]
-    exact (hmem hx).2.2
-  · rw [hPpos hx]
-    exact hspec_pos hx
+  have hzero : IsLUB (bandSlice B 0) 0 := isLUB_bandSlice_self B B.toSubmodule.zero_mem le_rfl
+  obtain ⟨P, hP⟩ := exists_linearMap_isLUB hcomplete (bandSlice B)
+    (fun x hx ↦ ⟨0, B.toSubmodule.zero_mem, le_rfl, hx⟩) (fun x _ ↦ ⟨x, fun _y hy ↦ hy.2.2⟩)
+    hzero (fun _x _y hx hy ↦ bandSlice_add B hx hy) (fun _c x hc _ ↦ bandSlice_smul B hc x)
+  obtain ⟨hrange, hidem, hker⟩ := bandProjection_spec hB hP
+  refine ⟨P, hrange, hidem, hker, fun x hx ↦ ?_⟩
+  have hmem := mem_bandSlice_of_isLUB hB hx (hP x hx)
+  exact ⟨hmem.2.1, hmem.2.2, hP x hx⟩
 
 /-- The Archimedean axiom appropriate to a partially ordered vector lattice. -/
 def IsArchimedeanRieszSpace (E : Type*) [AddCommGroup E] [Lattice E] [Module ℝ E] : Prop :=
@@ -430,108 +336,131 @@ theorem freudenthal_approximation
       |x - ∑ i, a i • v i| ≤ ε • u :=
   freudenthal_components hp hu hx hε
 
+/-- The Riesz–Kantorovich set `{S y + T (x - y) | 0 ≤ y ≤ x}`, whose supremum is `(S ⊔ T) x`. -/
+private def rieszKantorovichSet (S T : E →ₗ[ℝ] F) (x : E) : Set F :=
+  {z | ∃ y, 0 ≤ y ∧ y ≤ x ∧ z = S y + T (x - y)}
+
+omit [IsOrderedAddMonoid E] [IsOrderedModule ℝ E] [Lattice F] [IsOrderedAddMonoid F]
+  [IsOrderedModule ℝ F] in
+/-- The Riesz–Kantorovich set of a positive vector is nonempty. -/
+private theorem rieszKantorovichSet_nonempty (S T : E →ₗ[ℝ] F) {x : E} (hx : 0 ≤ x) :
+    (rieszKantorovichSet S T x).Nonempty :=
+  ⟨T x, 0, le_rfl, hx, by rw [map_zero S, sub_zero, zero_add]⟩
+
+omit [IsOrderedModule ℝ E] [IsOrderedModule ℝ F] in
+/-- For order-bounded operators the Riesz–Kantorovich sets are bounded above. -/
+private theorem rieszKantorovichSet_bddAbove {S T : E →ₗ[ℝ] F} (hS : IsOrderBoundedLinearMap S)
+    (hT : IsOrderBoundedLinearMap T) (x : E) : BddAbove (rieszKantorovichSet S T x) := by
+  obtain ⟨_cS, dS, hSb⟩ := hS 0 x
+  obtain ⟨_cT, dT, hTb⟩ := hT 0 x
+  refine ⟨dS + dT, ?_⟩
+  rintro z ⟨y, hy0, hyx, rfl⟩
+  exact add_le_add (hSb y hy0 hyx).2 (hTb (x - y) (sub_nonneg.2 hyx) (sub_le_self _ hy0)).2
+
+omit [IsOrderedAddMonoid E] [IsOrderedModule ℝ E] [IsOrderedAddMonoid F] [IsOrderedModule ℝ F] in
+/-- The Riesz–Kantorovich set at `0` has supremum `0`. -/
+private theorem isLUB_rieszKantorovichSet_zero (S T : E →ₗ[ℝ] F) :
+    IsLUB (rieszKantorovichSet S T 0) 0 := by
+  refine ⟨?_, fun b hb ↦ hb ⟨0, le_rfl, le_rfl, by rw [map_zero S, sub_zero, map_zero T,
+    zero_add]⟩⟩
+  rintro z ⟨y, hy0, hyx, rfl⟩
+  rw [le_antisymm hyx hy0, map_zero S, sub_zero, map_zero T, add_zero]
+
+omit [IsOrderedModule ℝ E] [Lattice F] [IsOrderedAddMonoid F] [IsOrderedModule ℝ F] in
+/-- The Riesz–Kantorovich set of a sum of positive vectors is the sum of the sets, by the
+Riesz decomposition property. -/
+private theorem rieszKantorovichSet_add (S T : E →ₗ[ℝ] F) {x y : E} (hx : 0 ≤ x) (hy : 0 ≤ y) :
+    rieszKantorovichSet S T (x + y) = {z | ∃ a b, a ∈ rieszKantorovichSet S T x ∧
+      b ∈ rieszKantorovichSet S T y ∧ z = a + b} := by
+  ext z
+  constructor
+  · rintro ⟨w, hw0, hwxy, rfl⟩
+    obtain ⟨w1, w2, hw, hw10, hw1x, hw20, hw2y⟩ := exists_add_eq_of_le_add hw0 hx hy hwxy
+    refine ⟨S w1 + T (x - w1), S w2 + T (y - w2),
+      ⟨w1, hw10, hw1x, rfl⟩, ⟨w2, hw20, hw2y, rfl⟩, ?_⟩
+    have hrest : (x + y) - w = (x - w1) + (y - w2) := by
+      rw [hw]
+      abel
+    rw [hrest, hw, map_add, map_add]
+    abel
+  · rintro ⟨a, b, ⟨y1, hy10, hy1x, rfl⟩, ⟨y2, hy20, hy2y, rfl⟩, rfl⟩
+    refine ⟨y1 + y2, add_nonneg hy10 hy20, add_le_add hy1x hy2y, ?_⟩
+    have hrest : (x + y) - (y1 + y2) = (x - y1) + (y - y2) := by abel
+    rw [hrest, map_add, map_add]
+    abel
+
+omit [IsOrderedAddMonoid E] [Lattice F] [IsOrderedAddMonoid F] [IsOrderedModule ℝ F] in
+/-- The Riesz–Kantorovich set of a positive multiple is the rescaled set. -/
+private theorem rieszKantorovichSet_smul (S T : E →ₗ[ℝ] F) {c : ℝ} (hc : 0 < c) (x : E) :
+    rieszKantorovichSet S T (c • x) = (fun w : F ↦ c • w) '' rieszKantorovichSet S T x := by
+  ext z
+  constructor
+  · rintro ⟨y, hy0, hyx, rfl⟩
+    have hinv : 0 ≤ c⁻¹ := inv_nonneg.2 hc.le
+    have hyeq : c • (c⁻¹ • y) = y := by rw [← mul_smul, mul_inv_cancel₀ hc.ne', one_smul]
+    have hle : c⁻¹ • y ≤ x := by
+      calc
+        c⁻¹ • y ≤ c⁻¹ • (c • x) := smul_le_smul_of_nonneg_left hyx hinv
+        _ = x := by rw [← mul_smul, inv_mul_cancel₀ hc.ne', one_smul]
+    refine ⟨S (c⁻¹ • y) + T (x - c⁻¹ • y), ⟨c⁻¹ • y, smul_nonneg hinv hy0, hle, rfl⟩, ?_⟩
+    simp only [smul_add, ← map_smul, smul_sub, hyeq]
+  · rintro ⟨w, ⟨y, hy0, hyx, rfl⟩, rfl⟩
+    refine ⟨c • y, smul_nonneg hc.le hy0, smul_le_smul_of_nonneg_left hyx hc.le, ?_⟩
+    simp only [smul_add, ← map_smul, smul_sub]
+
+/-- For order-bounded `S` and `T` in a Dedekind-complete target there is a linear map whose
+value at every positive vector is the supremum of its Riesz–Kantorovich set. -/
+private theorem exists_isLUB_rieszKantorovichSet (hcomplete : IsDedekindCompleteRieszSpace F)
+    {S T : E →ₗ[ℝ] F} (hS : IsOrderBoundedLinearMap S) (hT : IsOrderBoundedLinearMap T) :
+    ∃ U : E →ₗ[ℝ] F, ∀ x, 0 ≤ x → IsLUB (rieszKantorovichSet S T x) (U x) :=
+  exists_linearMap_isLUB hcomplete (rieszKantorovichSet S T)
+    (fun _x hx ↦ rieszKantorovichSet_nonempty S T hx)
+    (fun x _ ↦ rieszKantorovichSet_bddAbove hS hT x) (isLUB_rieszKantorovichSet_zero S T)
+    (fun _x _y hx hy ↦ rieszKantorovichSet_add S T hx hy)
+    (fun _c x hc _ ↦ rieszKantorovichSet_smul S T hc x)
+
+omit [IsOrderedModule ℝ E] [IsOrderedModule ℝ F] in
+/-- A linear map given on the positive cone by the suprema of the Riesz–Kantorovich sets of two
+order-bounded operators is order bounded. -/
+private theorem isOrderBoundedLinearMap_of_isLUB_rieszKantorovichSet {S T U : E →ₗ[ℝ] F}
+    (hS : IsOrderBoundedLinearMap S) (hT : IsOrderBoundedLinearMap T)
+    (hU : ∀ x, 0 ≤ x → IsLUB (rieszKantorovichSet S T x) (U x)) :
+    IsOrderBoundedLinearMap U := by
+  intro a b
+  obtain ⟨cS, dS, hSb⟩ := hS 0 (b - a)
+  obtain ⟨cT, dT, hTb⟩ := hT 0 (b - a)
+  refine ⟨cS + cT + U a, dS + dT + U a, ?_⟩
+  intro x hax hxb
+  have hab : 0 ≤ b - a := sub_nonneg.2 (hax.trans hxb)
+  have hxa : 0 ≤ x - a := sub_nonneg.2 hax
+  have hxab : x - a ≤ b - a := sub_le_sub_right hxb a
+  have hsplit : U x = U (x - a) + U a := by rw [← map_add, sub_add_cancel]
+  have hupper : U (x - a) ≤ dS + dT := by
+    refine (hU _ hxa).2 ?_
+    rintro z ⟨y, hy0, hyxa, rfl⟩
+    exact add_le_add (hSb y hy0 (hyxa.trans hxab)).2
+      (hTb (x - a - y) (sub_nonneg.2 hyxa) ((sub_le_self _ hy0).trans hxab)).2
+  have hlower : cS + cT ≤ U (x - a) := by
+    have hle : cS + cT ≤ S 0 + T (x - a) :=
+      add_le_add (hSb 0 le_rfl hab).1 (hTb (x - a) hxa hxab).1
+    exact hle.trans ((hU _ hxa).1 ⟨0, le_rfl, hxa, by rw [sub_zero]⟩)
+  rw [hsplit]
+  exact ⟨add_le_add_left hlower _, add_le_add_left hupper _⟩
+
 /-- **19.20**, Riesz–Kantorovich: order-bounded operators into a Dedekind-complete vector
 lattice are precisely differences of positive operators. -/
 theorem orderBounded_iff_regular (hcomplete : IsDedekindCompleteRieszSpace F) (T : E →ₗ[ℝ] F) :
     IsOrderBoundedLinearMap T ↔ IsRegularLinearMap T := by
-  constructor
-  · intro hT
-    let imageSet : E → Set F := fun x => {z | ∃ y : E, 0 ≤ y ∧ y ≤ x ∧ z = T y}
-    have hnonempty : ∀ {x : E}, 0 ≤ x → (imageSet x).Nonempty := by
-      intro x hx
-      exact ⟨0, 0, le_rfl, hx, (map_zero T).symm⟩
-    have hbdd : ∀ {x : E}, 0 ≤ x → BddAbove (imageSet x) := by
-      intro x hx
-      obtain ⟨_c, d, hcd⟩ := hT 0 x
-      refine ⟨d, ?_⟩
-      intro z hz
-      obtain ⟨y, hy0, hyx, rfl⟩ := hz
-      exact (hcd y hy0 hyx).2
-    have hexists : ∀ x : E, ∃ z : F, IsLUB (imageSet x⁺) z := by
-      intro x
-      exact hcomplete _ (hnonempty (posPart_nonneg x)) (hbdd (posPart_nonneg x))
-    let g : E → F := fun x => Classical.choose (hexists x)
-    have hspec : ∀ x : E, IsLUB (imageSet x⁺) (g x) :=
-      fun x => Classical.choose_spec (hexists x)
-    have hspec_pos : ∀ {x : E}, 0 ≤ x → IsLUB (imageSet x) (g x) := by
-      intro x hx
-      have h := hspec x
-      rw [posPart_eq_self.2 hx] at h
-      exact h
-    have hadd : ∀ x y : E, 0 ≤ x → 0 ≤ y → g (x + y) = g x + g y := by
-      intro x y hx hy
-      have hxy : 0 ≤ x + y := add_nonneg hx hy
-      have hset : imageSet (x + y) =
-          {z | ∃ a b, a ∈ imageSet x ∧ b ∈ imageSet y ∧ z = a + b} := by
-        ext z
-        constructor
-        · intro hz
-          obtain ⟨w, hw0, hwxy, rfl⟩ := hz
-          obtain ⟨w1, w2, hw, hw10, hw1x, hw20, hw2y⟩ :=
-            exists_add_eq_of_le_add hw0 hx hy hwxy
-          exact ⟨T w1, T w2, ⟨w1, hw10, hw1x, rfl⟩, ⟨w2, hw20, hw2y, rfl⟩,
-            by rw [← map_add, hw]⟩
-        · intro hz
-          obtain ⟨a, b, ⟨y1, hy10, hy1x, rfl⟩, ⟨y2, hy20, hy2y, rfl⟩, rfl⟩ := hz
-          exact ⟨y1 + y2, add_nonneg hy10 hy20, add_le_add hy1x hy2y,
-            (map_add T y1 y2).symm⟩
-      have hlub := isLUB_add (hspec_pos hx) (hspec_pos hy)
-      rw [← hset] at hlub
-      exact IsLUB.unique (hspec_pos hxy) hlub
-    have hzero : g 0 = 0 := by
-      have hL : IsLUB (imageSet (0 : E)) 0 := by
-        refine ⟨?_, ?_⟩
-        · intro z hz
-          obtain ⟨y, hy0, hyx, rfl⟩ := hz
-          have hy0' : y = 0 := le_antisymm hyx hy0
-          rw [hy0']
-          exact le_of_eq (map_zero T)
-        · intro b hb
-          exact hb ⟨0, le_rfl, le_rfl, (map_zero T).symm⟩
-      exact IsLUB.unique (hspec_pos le_rfl) hL
-    have hsmul : ∀ (c : ℝ) (x : E), 0 ≤ c → 0 ≤ x → g (c • x) = c • g x := by
-      intro c x hc hx
-      rcases eq_or_lt_of_le hc with hc0 | hcpos
-      · rw [← hc0, zero_smul, zero_smul, hzero]
-      · have hset : imageSet (c • x) = (fun w : F => c • w) '' imageSet x := by
-          ext z
-          constructor
-          · intro hz
-            obtain ⟨y, hy0, hyx, rfl⟩ := hz
-            have hinv : 0 ≤ c⁻¹ := inv_nonneg.2 hcpos.le
-            have hle : c⁻¹ • y ≤ x := by
-              calc
-                c⁻¹ • y ≤ c⁻¹ • (c • x) := smul_le_smul_of_nonneg_left hyx hinv
-                _ = x := by rw [← mul_smul, inv_mul_cancel₀ hcpos.ne', one_smul]
-            refine ⟨T (c⁻¹ • y), ⟨c⁻¹ • y, smul_nonneg hinv hy0, hle, rfl⟩, ?_⟩
-            change c • T (c⁻¹ • y) = T y
-            rw [map_smul, ← mul_smul, mul_inv_cancel₀ hcpos.ne', one_smul]
-          · rintro ⟨w, ⟨y, hy0, hyx, rfl⟩, rfl⟩
-            exact ⟨c • y, smul_nonneg hcpos.le hy0,
-              smul_le_smul_of_nonneg_left hyx hcpos.le, (map_smul T c y).symm⟩
-        have hlub := isLUB_smul_of_pos hcpos (hspec_pos hx)
-        rw [← hset] at hlub
-        exact IsLUB.unique (hspec_pos (smul_nonneg hcpos.le hx)) hlub
-    let S := coneAdditiveLinearMap g hadd hsmul
-    have hSon : ∀ {x : E}, 0 ≤ x → S x = g x :=
-      fun {_x} hx => coneAdditiveLinearMap_apply_of_nonneg g hadd hsmul hx
-    have hSpos : IsPositiveLinearMap S := by
-      intro x hx
-      rw [hSon hx]
-      exact (hspec_pos hx).1 ⟨0, le_rfl, hx, (map_zero T).symm⟩
-    have hdom : ∀ {x : E}, 0 ≤ x → T x ≤ S x := by
-      intro x hx
-      rw [hSon hx]
-      exact (hspec_pos hx).1 ⟨x, hx, le_rfl, rfl⟩
-    have hUpos : IsPositiveLinearMap (S - T) := by
-      intro x hx
-      rw [LinearMap.sub_apply]
-      exact sub_nonneg.2 (hdom hx)
-    refine ⟨S, S - T, hSpos, hUpos, ?_⟩
-    ext x
-    simp only [LinearMap.sub_apply]
-    exact (sub_sub_cancel (S x) (T x)).symm
-  · exact IsRegularLinearMap.isOrderBounded
+  refine ⟨fun hT ↦ ?_, IsRegularLinearMap.isOrderBounded⟩
+  have h0 : IsOrderBoundedLinearMap (0 : E →ₗ[ℝ] F) := fun _ _ ↦
+    ⟨0, 0, fun _ _ _ ↦ by simp only [LinearMap.zero_apply, le_refl, and_self]⟩
+  obtain ⟨S, hS⟩ := exists_isLUB_rieszKantorovichSet hcomplete hT h0
+  have hSpos : IsPositiveLinearMap S := fun x hx ↦
+    (hS x hx).1 ⟨0, le_rfl, hx, by simp only [map_zero, LinearMap.zero_apply, add_zero]⟩
+  have hUpos : IsPositiveLinearMap (S - T) := fun x hx ↦ by
+    rw [LinearMap.sub_apply, sub_nonneg]
+    exact (hS x hx).1 ⟨x, hx, le_rfl, by simp only [LinearMap.zero_apply, add_zero]⟩
+  exact ⟨S, S - T, hSpos, hUpos, (sub_sub_cancel S T).symm⟩
 
 /-- Binary Riesz–Kantorovich supremum with its actual positive-cone least-upper-bound property.
 Bundling the full Dedekind-complete operator lattice is separate infrastructure. -/
@@ -542,164 +471,15 @@ theorem exists_rieszKantorovich_sup (hcomplete : IsDedekindCompleteRieszSpace F)
       (∀ V : E →ₗ[ℝ] F, (∀ x, 0 ≤ x → S x ≤ V x ∧ T x ≤ V x) →
         ∀ x, 0 ≤ x → U x ≤ V x) ∧
       ∀ x, 0 ≤ x → IsLUB {z | ∃ y, 0 ≤ y ∧ y ≤ x ∧ z = S y + T (x - y)} (U x) := by
-  let rkSet : E → Set F := fun x =>
-    {z | ∃ y : E, 0 ≤ y ∧ y ≤ x ∧ z = S y + T (x - y)}
-  have hnonempty : ∀ {x : E}, 0 ≤ x → (rkSet x).Nonempty := by
-    intro x hx
-    exact ⟨T x, 0, le_rfl, hx, by rw [map_zero S, sub_zero, zero_add]⟩
-  have hbdd : ∀ {x : E}, 0 ≤ x → BddAbove (rkSet x) := by
-    intro x hx
-    obtain ⟨_cS, dS, hSb⟩ := hS 0 x
-    obtain ⟨_cT, dT, hTb⟩ := hT 0 x
-    refine ⟨dS + dT, ?_⟩
-    intro z hz
-    obtain ⟨y, hy0, hyx, rfl⟩ := hz
-    exact add_le_add (hSb y hy0 hyx).2
-      (hTb (x - y) (sub_nonneg.2 hyx) (sub_le_self _ hy0)).2
-  have hexists : ∀ x : E, ∃ z : F, IsLUB (rkSet x⁺) z := by
-    intro x
-    exact hcomplete _ (hnonempty (posPart_nonneg x)) (hbdd (posPart_nonneg x))
-  let g : E → F := fun x => Classical.choose (hexists x)
-  have hspec : ∀ x : E, IsLUB (rkSet x⁺) (g x) :=
-    fun x => Classical.choose_spec (hexists x)
-  have hspec_pos : ∀ {x : E}, 0 ≤ x → IsLUB (rkSet x) (g x) := by
-    intro x hx
-    have h := hspec x
-    rw [posPart_eq_self.2 hx] at h
-    exact h
-  have hadd : ∀ x y : E, 0 ≤ x → 0 ≤ y → g (x + y) = g x + g y := by
-    intro x y hx hy
-    have hxy : 0 ≤ x + y := add_nonneg hx hy
-    have hset : rkSet (x + y) =
-        {z | ∃ a b, a ∈ rkSet x ∧ b ∈ rkSet y ∧ z = a + b} := by
-      ext z
-      constructor
-      · intro hz
-        obtain ⟨w, hw0, hwxy, rfl⟩ := hz
-        obtain ⟨w1, w2, hw, hw10, hw1x, hw20, hw2y⟩ :=
-          exists_add_eq_of_le_add hw0 hx hy hwxy
-        refine ⟨S w1 + T (x - w1), S w2 + T (y - w2),
-          ⟨w1, hw10, hw1x, rfl⟩, ⟨w2, hw20, hw2y, rfl⟩, ?_⟩
-        have hrest : (x + y) - w = (x - w1) + (y - w2) := by
-          rw [hw]
-          abel
-        have hSw : S w = S w1 + S w2 := by
-          rw [hw, map_add]
-        rw [hSw, hrest, map_add]
-        abel
-      · intro hz
-        obtain ⟨a, b, ⟨y1, hy10, hy1x, rfl⟩, ⟨y2, hy20, hy2y, rfl⟩, rfl⟩ := hz
-        refine ⟨y1 + y2, add_nonneg hy10 hy20, add_le_add hy1x hy2y, ?_⟩
-        have hrest : (x + y) - (y1 + y2) = (x - y1) + (y - y2) := by abel
-        rw [hrest, map_add, map_add]
-        abel
-    have hlub := isLUB_add (hspec_pos hx) (hspec_pos hy)
-    rw [← hset] at hlub
-    exact IsLUB.unique (hspec_pos hxy) hlub
-  have hzero : g 0 = 0 := by
-    have hL : IsLUB (rkSet (0 : E)) 0 := by
-      refine ⟨?_, ?_⟩
-      · intro z hz
-        obtain ⟨y, hy0, hyx, rfl⟩ := hz
-        have hy0' : y = 0 := le_antisymm hyx hy0
-        rw [hy0', map_zero S, sub_zero, map_zero T, add_zero]
-      · intro b hb
-        exact hb ⟨0, le_rfl, le_rfl, by rw [map_zero S, sub_zero, map_zero T, zero_add]⟩
-    exact IsLUB.unique (hspec_pos le_rfl) hL
-  have hsmul : ∀ (c : ℝ) (x : E), 0 ≤ c → 0 ≤ x → g (c • x) = c • g x := by
-    intro c x hc hx
-    rcases eq_or_lt_of_le hc with hc0 | hcpos
-    · rw [← hc0, zero_smul, zero_smul, hzero]
-    · have hset : rkSet (c • x) = (fun w : F => c • w) '' rkSet x := by
-        ext z
-        constructor
-        · intro hz
-          obtain ⟨y, hy0, hyx, rfl⟩ := hz
-          have hinv : 0 ≤ c⁻¹ := inv_nonneg.2 hcpos.le
-          have hle : c⁻¹ • y ≤ x := by
-            calc
-              c⁻¹ • y ≤ c⁻¹ • (c • x) := smul_le_smul_of_nonneg_left hyx hinv
-              _ = x := by rw [← mul_smul, inv_mul_cancel₀ hcpos.ne', one_smul]
-          refine ⟨S (c⁻¹ • y) + T (x - c⁻¹ • y),
-            ⟨c⁻¹ • y, smul_nonneg hinv hy0, hle, rfl⟩, ?_⟩
-          have hyeq : y = c • (c⁻¹ • y) := by
-            rw [← mul_smul, mul_inv_cancel₀ hcpos.ne', one_smul]
-          have hrest : c • x - y = c • (x - c⁻¹ • y) := by
-            conv_lhs => rw [hyeq]
-            exact (smul_sub c x (c⁻¹ • y)).symm
-          change c • (S (c⁻¹ • y) + T (x - c⁻¹ • y)) = S y + T (c • x - y)
-          calc
-            c • (S (c⁻¹ • y) + T (x - c⁻¹ • y))
-                = c • S (c⁻¹ • y) + c • T (x - c⁻¹ • y) := smul_add c _ _
-            _ = S (c • (c⁻¹ • y)) + T (c • (x - c⁻¹ • y)) := by
-              rw [← map_smul, ← map_smul]
-            _ = S y + T (c • x - y) := by rw [← hyeq, ← hrest]
-        · rintro ⟨w, ⟨y, hy0, hyx, rfl⟩, rfl⟩
-          refine ⟨c • y, smul_nonneg hcpos.le hy0,
-            smul_le_smul_of_nonneg_left hyx hcpos.le, ?_⟩
-          change c • (S y + T (x - y)) = S (c • y) + T (c • x - c • y)
-          rw [smul_add, ← map_smul, ← map_smul, ← smul_sub]
-      have hlub := isLUB_smul_of_pos hcpos (hspec_pos hx)
-      rw [← hset] at hlub
-      exact IsLUB.unique (hspec_pos (smul_nonneg hcpos.le hx)) hlub
-  let U := coneAdditiveLinearMap g hadd hsmul
-  have hUon : ∀ {x : E}, 0 ≤ x → U x = g x :=
-    fun {_x} hx => coneAdditiveLinearMap_apply_of_nonneg g hadd hsmul hx
-  have hdom : ∀ x : E, 0 ≤ x → S x ≤ U x ∧ T x ≤ U x := by
-    intro x hx
-    rw [hUon hx]
-    refine ⟨?_, ?_⟩
-    · exact (hspec_pos hx).1 ⟨x, hx, le_rfl, by rw [sub_self, map_zero, add_zero]⟩
-    · exact (hspec_pos hx).1 ⟨0, le_rfl, hx, by rw [map_zero, sub_zero, zero_add]⟩
-  have hleast : ∀ V : E →ₗ[ℝ] F,
-      (∀ x, 0 ≤ x → S x ≤ V x ∧ T x ≤ V x) → ∀ x, 0 ≤ x → U x ≤ V x := by
-    intro V hV x hx
-    rw [hUon hx]
-    refine (hspec_pos hx).2 ?_
-    intro z hz
-    obtain ⟨y, hy0, hyx, rfl⟩ := hz
-    have hsum : y + (x - y) = x := by abel
+  obtain ⟨U, hU⟩ := exists_isLUB_rieszKantorovichSet hcomplete hS hT
+  refine ⟨U, isOrderBoundedLinearMap_of_isLUB_rieszKantorovichSet hS hT hU,
+    fun x hx ↦ ⟨?_, ?_⟩, fun V hV x hx ↦ (hU x hx).2 ?_, hU⟩
+  · exact (hU x hx).1 ⟨x, hx, le_rfl, by rw [sub_self, map_zero, add_zero]⟩
+  · exact (hU x hx).1 ⟨0, le_rfl, hx, by rw [map_zero, sub_zero, zero_add]⟩
+  · rintro z ⟨y, hy0, hyx, rfl⟩
     calc
       S y + T (x - y) ≤ V y + V (x - y) :=
         add_le_add (hV y hy0).1 (hV (x - y) (sub_nonneg.2 hyx)).2
-      _ = V x := by rw [← map_add, hsum]
-  have hord : IsOrderBoundedLinearMap U := by
-    intro a b
-    obtain ⟨cS, dS, hSb⟩ := hS 0 (b - a)
-    obtain ⟨cT, dT, hTb⟩ := hT 0 (b - a)
-    refine ⟨cS + cT + U a, dS + dT + U a, ?_⟩
-    intro x hax hxb
-    have hab : 0 ≤ b - a := sub_nonneg.2 (hax.trans hxb)
-    have hxa : 0 ≤ x - a := sub_nonneg.2 hax
-    have hxab : x - a ≤ b - a := sub_le_sub_right hxb a
-    have hsplit : U x = U a + U (x - a) := by
-      have hsum : a + (x - a) = x := by abel
-      rw [← map_add, hsum]
-    rw [hsplit, hUon hxa]
-    have hupper : g (x - a) ≤ dS + dT := by
-      refine (hspec_pos hxa).2 ?_
-      intro z hz
-      obtain ⟨y, hy0, hyxa, rfl⟩ := hz
-      have hyb : y ≤ b - a := hyxa.trans hxab
-      have hrest0 : 0 ≤ x - a - y := sub_nonneg.2 hyxa
-      have hrestb : x - a - y ≤ b - a := (sub_le_self _ hy0).trans hxab
-      exact add_le_add (hSb y hy0 hyb).2 (hTb (x - a - y) hrest0 hrestb).2
-    have hlower : cS + cT ≤ g (x - a) := by
-      have hzmem : S 0 + T (x - a) ∈ rkSet (x - a) :=
-        ⟨0, le_rfl, hxa, by rw [sub_zero]⟩
-      have hle : cS + cT ≤ S 0 + T (x - a) :=
-        add_le_add (hSb 0 le_rfl hab).1 (hTb (x - a) hxa hxab).1
-      exact hle.trans ((hspec_pos hxa).1 hzmem)
-    refine ⟨?_, ?_⟩
-    · calc
-        cS + cT + U a = U a + (cS + cT) := by abel
-        _ ≤ U a + g (x - a) := add_le_add le_rfl hlower
-    · calc
-        U a + g (x - a) ≤ U a + (dS + dT) := add_le_add le_rfl hupper
-        _ = dS + dT + U a := by abel
-  refine ⟨U, hord, hdom, hleast, ?_⟩
-  intro x hx
-  rw [hUon hx]
-  exact hspec_pos hx
+      _ = V x := by rw [← map_add, add_sub_cancel]
 
 end CKMA

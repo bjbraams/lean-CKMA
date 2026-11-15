@@ -6,20 +6,11 @@ Authors: CKMA contributors
 module
 
 public import CKMA.Dynamics.Flow
-public import Mathlib.Algebra.Order.Floor.Ring
-public import Mathlib.Analysis.Calculus.ContDiff.Basic
-public import Mathlib.Analysis.Calculus.Deriv.Comp
-public import Mathlib.Analysis.Calculus.FDeriv.Linear
-public import Mathlib.Analysis.Complex.Basic
+public import Mathlib.Analysis.Calculus.ContDiff.Defs
 public import Mathlib.Analysis.InnerProductSpace.PiL2
-public import Mathlib.Analysis.ODE.ExistUnique
-public import Mathlib.Dynamics.Flow
 public import Mathlib.Dynamics.OmegaLimit
-public import Mathlib.Topology.Algebra.Module.Equiv.Pi
-public import Mathlib.Topology.Connected.Basic
-public import Mathlib.Topology.Connected.Clopen
-public import Mathlib.Topology.Order.IntermediateValue
-public import Mathlib.Topology.Separation.Hausdorff
+
+import Mathlib.Analysis.ODE.ExistUnique
 
 /-!
 # Orbits of a continuously differentiable flow
@@ -54,8 +45,6 @@ namespace CKMA
 open Filter Set Topology
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-
-set_option linter.unusedSectionVars false
 
 /-- Two integral curves of a `C¹` vector field that meet at one time coincide at every time. -/
 theorem eq_of_hasDerivAt_generator {F : E → E} (hF : ContDiff ℝ 1 F) {α β : ℝ → E}
@@ -102,11 +91,13 @@ theorem generator_eq_zero_of_forall_eq {φ : Flow ℝ E} {F : E → E}
   have hzero := (hasDerivAt_const (0 : ℝ) y).unique hder
   simpa [φ.map_zero_apply] using hzero.symm
 
+omit [NormedSpace ℝ E] in
 /-- Shifting by one period does not move a returning point. -/
 theorem Flow.map_add_period {φ : Flow ℝ E} {y : E} {T : ℝ} (hT : φ T y = y) (t : ℝ) :
     φ (t + T) y = φ t y := by
   rw [φ.map_add, hT]
 
+omit [NormedSpace ℝ E] in
 /-- Shifting by any number of periods does not move a returning point. -/
 theorem Flow.map_add_nat_mul_period {φ : Flow ℝ E} {y : E} {T : ℝ} (hT : φ T y = y) (t : ℝ)
     (n : ℕ) : φ (t + n * T) y = φ t y := by
@@ -119,6 +110,7 @@ theorem Flow.map_add_nat_mul_period {φ : Flow ℝ E} {y : E} {T : ℝ} (hT : φ
 @[deprecated (since := "2026-11-15")] alias flow_add_period := Flow.map_add_period
 @[deprecated (since := "2026-11-15")] alias flow_add_nat_period := Flow.map_add_nat_mul_period
 
+omit [NormedSpace ℝ E] in
 /-- A positive return time makes the real orbit the image of one period. -/
 theorem range_eq_image_Icc_of_periodic {φ : Flow ℝ E} {y : E} {T : ℝ} (hT0 : 0 < T)
     (hT : φ T y = y) :
@@ -156,6 +148,7 @@ theorem range_eq_image_Icc_of_periodic {φ : Flow ℝ E} {y : E} {T : ℝ} (hT0 
     rw [hsum] at hnat
     exact ⟨s, hs_mem, hnat⟩
 
+omit [NormedSpace ℝ E] in
 /-- The omega-limit set of a periodic orbit is the orbit. -/
 theorem omegaLimit_eq_range_of_periodic {φ : Flow ℝ E} {y : E} {T : ℝ} (hT0 : 0 < T)
     (hT : φ T y = y) :
@@ -247,6 +240,7 @@ def planeEquivComplex : EuclideanSpace ℝ (Fin 2) ≃L[ℝ] ℂ :=
   (EuclideanSpace.equiv (Fin 2) ℝ).trans
     ((ContinuousLinearEquiv.finTwoArrow ℝ ℝ).trans Complex.equivRealProdCLM.symm)
 
+omit [NormedSpace ℝ E] in
 /-- A forward orbit trapped in a closed set has its omega-limit set in that set. -/
 theorem omegaLimit_subset_of_forward {φ : Flow ℝ E} {x : E} {K : Set E}
     (hK : IsClosed K) (hstay : ∀ t : ℝ, 0 ≤ t → φ t x ∈ K) :
@@ -260,6 +254,7 @@ theorem omegaLimit_subset_of_forward {φ : Flow ℝ E} {x : E} {K : Set E}
     exact hstay t (mem_Ici.mp ht)
   exact htail (omegaLimit_subset_closure_image2 atTop φ {x} (Ici_mem_atTop 0) hy)
 
+omit [NormedSpace ℝ E] in
 /-- A forward orbit trapped in a compact set has nonempty omega-limit set. -/
 theorem nonempty_omegaLimit_of_forward {φ : Flow ℝ E} {x : E} {K : Set E}
     (hK : IsCompact K) (hstay : ∀ t : ℝ, 0 ≤ t → φ t x ∈ K) :
@@ -273,6 +268,7 @@ theorem nonempty_omegaLimit_of_forward {φ : Flow ℝ E} {x : E} {K : Set E}
   exact nonempty_omegaLimit_of_isCompact_absorbing atTop φ {x} hK
     ⟨Ici 0, Ici_mem_atTop 0, htail⟩ (singleton_nonempty x)
 
+omit [NormedSpace ℝ E] in
 /-- A downward-directed intersection of compact preconnected sets is preconnected.
 The two pieces of a separation of the intersection are disjoint compacts, so a Hausdorff space
 puts them in disjoint open sets, and `exists_subset_nhds_of_isCompact` puts one member of the
@@ -306,6 +302,7 @@ private theorem isPreconnected_iInter_of_directed {ι : Type*} [Nonempty ι] {t 
     htp i U V hU hV hi ⟨a, mem_iInter.mp haC i, hAU haA⟩ ⟨b, mem_iInter.mp hbC i, hBV hbB⟩
   exact disjoint_left.mp hUV hxU hxV
 
+omit [NormedSpace ℝ E] in
 /-- Cluster points at `+∞` are the points in every tail closure. -/
 private theorem setOf_mapClusterPt_atTop_eq_iInter (u : ℝ → E) (a : ℝ) :
     {x | MapClusterPt x atTop u} = ⋂ T : ↥(Ici a), closure (u '' Ici (T : ℝ)) := by
@@ -320,6 +317,7 @@ private theorem setOf_mapClusterPt_atTop_eq_iInter (u : ℝ → E) (a : ℝ) :
     rintro _ ⟨t, ht, rfl⟩
     exact hT t ((le_max_left T a).trans ht)
 
+omit [NormedSpace ℝ E] in
 /-- The omega-limit set of one forward orbit trapped in a compact set is preconnected. -/
 theorem isPreconnected_omegaLimit_of_forward {φ : Flow ℝ E} {x : E} {K : Set E}
     (hK : IsCompact K) (hstay : ∀ t : ℝ, 0 ≤ t → φ t x ∈ K) :
@@ -349,6 +347,7 @@ theorem isPreconnected_omegaLimit_of_forward {φ : Flow ℝ E} {x : E} {K : Set 
     exact ((isPreconnected_Ici (a := (T : ℝ))).image u
       (hcont.mono (Ici_subset_Ici.mpr (mem_Ici.mp T.2)))).closure
 
+omit [NormedSpace ℝ E] in
 /-- The omega-limit set of a real flow is invariant under every time shift. -/
 theorem isInvariant_omegaLimit_atTop {φ : Flow ℝ E} (x : E) :
     IsInvariant φ (omegaLimit atTop φ {x}) :=

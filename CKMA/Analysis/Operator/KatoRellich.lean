@@ -5,7 +5,10 @@ Authors: CKMA contributors
 -/
 module
 
-public import TauCeti.Analysis.InnerProductSpace.LinearPMap.KatoRellich
+public import TauCeti.Analysis.Normed.Operator.LinearPMap.RelativeBound
+public import Mathlib.Analysis.InnerProductSpace.LinearPMap
+
+import TauCeti.Analysis.InnerProductSpace.LinearPMap.KatoRellich
 
 /-!
 # Cores of relatively bounded self-adjoint perturbations

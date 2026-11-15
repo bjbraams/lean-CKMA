@@ -5,19 +5,8 @@ Authors: CKMA contributors
 -/
 module
 
-public import Mathlib.Topology.MetricSpace.Holder
-public import Mathlib.Topology.ContinuousMap.Compact
-public import Mathlib.Analysis.Normed.Operator.Basic
-public import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
-public import Mathlib.Analysis.Normed.Group.InfiniteSum
-public import Mathlib.Analysis.Normed.Group.FunctionSeries
-public import Mathlib.Analysis.SpecificLimits.Basic
-public import Mathlib.Tactic.Continuity
-import Mathlib.Tactic.FieldSimp
-import Mathlib.Tactic.Linarith
-import Mathlib.Tactic.Positivity
-import Mathlib.Tactic.Ring
-import Mathlib.Topology.Instances.Real.Lemmas
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
+import Mathlib.Analysis.Normed.Group.FunctionSeries
 
 /-!
 # Dyadic sewing limit and midpoint additivity

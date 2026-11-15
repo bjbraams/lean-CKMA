@@ -7,9 +7,7 @@ module
 
 public import Mathlib.Analysis.Convex.Uniform
 public import Mathlib.Topology.Algebra.Module.LocallyConvex
-public import Mathlib.LinearAlgebra.FiniteDimensional.Basic
-public import Mathlib.Topology.Semicontinuity.Hemicontinuity
-public import Mathlib.Analysis.Normed.Module.Basic
+public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 import TauCeti.AlgebraicTopology.Singular.BrouwerFixedPoint
 
 /-!

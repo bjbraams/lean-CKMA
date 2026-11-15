@@ -5,8 +5,8 @@ Authors: CKMA contributors
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Intervals
-public import Mathlib.Algebra.Order.Ring.Defs
+public import Mathlib.Order.Interval.Finset.Nat
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 public import Mathlib.Basic.Real.Basic
 
 import Mathlib.Tactic

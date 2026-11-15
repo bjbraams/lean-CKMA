@@ -6,11 +6,7 @@ Authors: CKMA contributors
 module
 
 public import Mathlib.Analysis.InnerProductSpace.LinearPMap
-public import Mathlib.Analysis.InnerProductSpace.LinearMap
-public import Mathlib.Analysis.SpecialFunctions.Pow.Real
-public import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
 
-import Mathlib.Tactic.Ring
 
 /-!
 # Closed semibounded forms and self-adjoint realizations

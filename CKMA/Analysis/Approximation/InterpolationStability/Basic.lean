@@ -5,21 +5,17 @@ Authors: CKMA contributors
 -/
 module
 
-public import CKMA.Analysis.Approximation.Polynomial
+public import CKMA.Analysis.Approximation.Polynomial.Basic
 public import Mathlib.LinearAlgebra.Lagrange
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
-public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Bounds
-public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev.Basic
-public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
-public import Mathlib.Analysis.Calculus.Deriv.MeanValue
-public import Mathlib.Analysis.SpecialFunctions.Log.Deriv
-public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Inverse
-public import Mathlib.Analysis.Real.Pi.Bounds
-public import Mathlib.Algebra.Polynomial.Derivative
-public import Mathlib.Algebra.Polynomial.Div
-public import Mathlib.NumberTheory.Harmonic.Bounds
-public import Mathlib.Algebra.Order.Floor.Semiring
-public import Mathlib.Algebra.Order.Archimedean.Real.Basic
+public import Mathlib.RingTheory.Polynomial.Chebyshev
+public import Mathlib.Analysis.SpecialFunctions.Log.Basic
+
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev.Basic
+import Mathlib.Analysis.Real.Pi.Bounds
+import Mathlib.Analysis.Calculus.Deriv.Polynomial
+import Mathlib.Algebra.Order.Ring.Star
+import Mathlib.Analysis.InnerProductSpace.Basic
 
 /-!
 # Lebesgue constants for polynomial interpolation
@@ -56,7 +52,7 @@ noncomputable section
 
 namespace CKMA
 
-open Polynomial Real Polynomial.Chebyshev Finset Classical Lagrange
+open Polynomial Real Polynomial.Chebyshev Finset Lagrange
 open scoped BigOperators
 
 /-- Mathlib's Lagrange cardinal polynomial for all supplied nodes.

@@ -5,12 +5,7 @@ Authors: CKMA contributors
 -/
 module
 
-public import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
-public import Mathlib.Analysis.Asymptotics.Arith
 public import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
-public import Mathlib.Analysis.Complex.Arg
-public import Mathlib.Analysis.Calculus.ContDiff.Basic
-public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 
 /-!
 # Asymptotic expansions and Laplace–Tauberian limits

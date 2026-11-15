@@ -6,13 +6,10 @@ Authors: CKMA contributors
 module
 
 public import CKMA.Analysis.Real.RectangularDifferentiation.Base
-import Mathlib.MeasureTheory.Constructions.Pi
-import Mathlib.MeasureTheory.Measure.Prod
-import Mathlib.Analysis.SpecialFunctions.Pow.Real
+
 import Mathlib.Analysis.SpecialFunctions.Log.PosLog
-import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
-import Mathlib.MeasureTheory.Function.SpecialFunctions.Basic
-import Mathlib.MeasureTheory.Integral.Layercake
+import Mathlib.MeasureTheory.Covering.Besicovitch
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Arctan
 
 /-!
 # Iteration of the strong maximal operator

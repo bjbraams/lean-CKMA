@@ -7,7 +7,6 @@ module
 
 public import CKMA.Analysis.FunctionalAnalysis.Basic
 public import Mathlib.Analysis.Convex.Uniform
-public import Mathlib.MeasureTheory.Function.LpSpace.Basic
 public import Mathlib.MeasureTheory.Function.UniformIntegrable
 import TauCeti.Analysis.Normed.Module.WeakSpace.EberleinSmulian
 import TauCeti.MeasureTheory.Function.L1Space.WeakCompact

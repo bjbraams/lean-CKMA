@@ -5,7 +5,8 @@ Authors: CKMA contributors
 -/
 module
 
-public import Mathlib.Data.EReal.Operations
+public import Mathlib.Data.EReal.Basic
+import Mathlib.Data.EReal.Operations
 
 /-!
 # Extended-real properness

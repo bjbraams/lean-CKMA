@@ -6,14 +6,6 @@ Authors: CKMA contributors
 module
 
 public import CKMA.Analysis.Real.RectangularDifferentiation.Iteration
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Real
-import Mathlib.MeasureTheory.Constructions.Pi
-import Mathlib.MeasureTheory.Function.SpecialFunctions.Basic
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
-import Mathlib.MeasureTheory.Integral.Layercake
-import Mathlib.MeasureTheory.Integral.Lebesgue.Map
-import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
-import Mathlib.MeasureTheory.Measure.Prod
 
 /-!
 # Endpoint bound for the strong maximal operator

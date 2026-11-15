@@ -7,16 +7,10 @@ module
 
 public import CKMA.Dynamics.Ergodic.Recurrence.Combinatorics
 public import Mathlib.Dynamics.Ergodic.MeasurePreserving
-public import Mathlib.Logic.Function.Iterate
-public import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
-public import Mathlib.MeasureTheory.Group.Arithmetic
-public import Mathlib.MeasureTheory.Integral.Lebesgue.Add
-public import Mathlib.MeasureTheory.Integral.Lebesgue.Basic
 public import Mathlib.MeasureTheory.Measure.Typeclasses.Probability
-public import Mathlib.Order.LiminfLimsup
-public import Mathlib.Topology.Instances.ENNReal.Lemmas
 
 import Mathlib.Tactic
+import Mathlib.MeasureTheory.Integral.Lebesgue.Add
 
 /-!
 # Multiple recurrence from progression counts

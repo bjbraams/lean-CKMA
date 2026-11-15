@@ -6,8 +6,8 @@ Authors: CKMA contributors
 module
 
 public import CKMA.Analysis.Operator.Dilation.WoldSum
+
 import CKMA.Analysis.Operator.Dilation.L2Shift
-public import Mathlib.Analysis.InnerProductSpace.l2Space
 
 /-!
 # Unitary extension of an isometry

@@ -6,10 +6,7 @@ Authors: CKMA contributors
 module
 
 public import Mathlib.Analysis.Complex.ValueDistribution.CharacteristicFunction
-public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 public import Mathlib.Analysis.SpecialFunctions.Log.ENNRealLog
-public import Mathlib.MeasureTheory.Measure.Dirac.Basic
-public import Mathlib.Topology.Algebra.InfiniteSum.Ring
 
 /-!
 # Entire growth, canonical products and value uniqueness

@@ -5,10 +5,10 @@ Authors: CKMA contributors
 -/
 module
 
-public import CKMA.Probability.BrownianTheory.Reflection.Past
-public import Mathlib.MeasureTheory.Measure.Continuity
-public import Mathlib.Topology.Instances.ENNReal.Lemmas
-public import Mathlib.Topology.Order.OrderClosed
+public import CKMA.Probability.BrownianTheory.Reflection.Grid
+
+import CKMA.Probability.BrownianTheory.Reflection.Past
+import CKMA.Probability.BrownianTheory.HolderPath
 
 /-!
 # Reflection estimates on the dyadic grid
@@ -39,8 +39,6 @@ namespace CKMA
 open Filter Finset MeasureTheory Metric ProbabilityTheory Set Topology
 open scoped ENNReal NNReal
 
-set_option linter.unusedSectionVars false
-
 variable {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsProbabilityMeasure μ]
 
 namespace Brownian
@@ -64,6 +62,7 @@ private lemma le_of_forall_le_add_tendsto_zero {c a : ℝ≥0∞} {o : ℕ → �
 private def gridHit (C : ℝ≥0 → Ω → ℝ) (t : ℝ≥0) (b : ℝ) (n : ℕ) : Set Ω :=
   {ω | ∃ k, k ≤ 2 ^ n ∧ b ≤ C (grid t n k) ω}
 
+omit [MeasurableSpace Ω] in
 /-- The grid hitting set is the disjoint union of the first-passage events. -/
 private lemma gridHit_eq_iUnion (C : ℝ≥0 → Ω → ℝ) (t : ℝ≥0) (b : ℝ) (n : ℕ) :
     gridHit C t b n = ⋃ k ∈ Finset.range (2 ^ n + 1), firstGridHitSet C t b n k := by
@@ -118,11 +117,13 @@ private lemma measurableSet_osc {C : ℝ≥0 → Ω → ℝ} (hm : ∀ u, Measur
   rw [oscSet]
   exact measurableSet_Ioi.preimage (measurable_gridOsc hm t n)
 
+omit [MeasurableSpace Ω] in
 /-- Reaching the level at the horizon is a grid hit. -/
 private lemma endpoint_subset_gridHit' (C : ℝ≥0 → Ω → ℝ) (t : ℝ≥0) (b : ℝ) (n : ℕ) :
     endpointSet C t b ⊆ gridHit C t b n := by
   simpa [endpointSet, gridHit] using endpoint_subset_gridHit (C := C) t b n
 
+omit [MeasurableSpace Ω] in
 /-- A grid hit is a hit of the path. -/
 private lemma gridHit_subset_hitSet (C : ℝ≥0 → Ω → ℝ) (t : ℝ≥0) (b : ℝ) (n : ℕ) :
     gridHit C t b n ⊆ hitSet C t b := by
@@ -190,6 +191,7 @@ private lemma measure_gridHit_le {C : ℝ≥0 → Ω → ℝ} (hC : IsBrownianRe
 private def gridTail (C : ℝ≥0 → Ω → ℝ) (t : ℝ≥0) (b : ℝ) (N : ℕ) : Set Ω :=
   ⋂ n ∈ Set.Ici N, gridHit C t b n
 
+omit [MeasurableSpace Ω] in
 /-- Later tails contain the earlier ones. -/
 private lemma monotone_gridTail (C : ℝ≥0 → Ω → ℝ) (t : ℝ≥0) (b : ℝ) :
     Monotone (gridTail C t b) := by
@@ -198,6 +200,7 @@ private lemma monotone_gridTail (C : ℝ≥0 → Ω → ℝ) (t : ℝ≥0) (b : 
   intro n hn
   exact hω n (le_trans hNM hn)
 
+omit [MeasurableSpace Ω] in
 /-- A strict hit eventually lies on every fine grid. -/
 private lemma strictHit_subset_iUnion_tail {C : ℝ≥0 → Ω → ℝ}
     (hcont : ∀ ω, Continuous (fun u => C u ω)) {t : ℝ≥0} (ht : 0 < t) (b : ℝ) :
@@ -247,6 +250,7 @@ private lemma measure_strictHit_le {C : ℝ≥0 → Ω → ℝ} (hC : IsBrownian
     _ = ⨆ N, μ (gridTail C t b N) := hmono.measure_iUnion
     _ ≤ 2 * μ (endpointSet C t b) := hsup
 
+omit [MeasurableSpace Ω] in
 /-- A higher closed level sits inside a lower strict level. -/
 private lemma hit_subset_strict (C : ℝ≥0 → Ω → ℝ) (t : ℝ≥0) {b a : ℝ} (hba : b < a) :
     hitSet C t a ⊆ strictHit C t b := by
@@ -512,6 +516,7 @@ private lemma two_mul_endpoint_le_hit {C : ℝ≥0 → Ω → ℝ} (hC : IsBrown
     (fun _ => measure_ne_top μ _)
     (fun m => hstep (εm m) (hpos m)) hlim
 
+omit [IsProbabilityMeasure μ] in
 /-- At time zero both sides of the reflection identity vanish. -/
 private lemma reflection_zero {C : ℝ≥0 → Ω → ℝ} (hC : IsBrownianReal C μ) {a : ℝ} (ha : 0 < a)
     {t : ℝ≥0} (ht : t = 0) : μ (hitSet C t a) = 2 * μ (endpointSet C t a) := by

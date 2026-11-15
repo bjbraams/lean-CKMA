@@ -5,7 +5,10 @@ Authors: CKMA contributors
 -/
 module
 
-public import TauCeti.MeasureTheory.Measure.ProjectiveLimit.Countable
+public import Mathlib.MeasureTheory.Constructions.Projective
+public import Mathlib.MeasureTheory.Constructions.Polish.Basic
+
+import TauCeti.MeasureTheory.Measure.ProjectiveLimit.Countable
 
 /-!
 # Arbitrary-index Kolmogorov extension (06.1)

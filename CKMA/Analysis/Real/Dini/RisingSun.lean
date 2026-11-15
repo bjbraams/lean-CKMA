@@ -5,10 +5,13 @@ Authors: CKMA contributors
 -/
 module
 
-public import Mathlib.Topology.Algebra.Ring.Real
-public import Mathlib.Topology.Order.Compact
-public import Mathlib.Topology.Order.Monotone
-public import Mathlib.Topology.Sequences
+public import Mathlib.Order.Filter.Extr
+public import Mathlib.Topology.MetricSpace.Pseudo.Defs
+
+import Mathlib.Topology.Sequences
+import Mathlib.Topology.MetricSpace.Bounded
+import Mathlib.Data.EReal.Operations
+import Mathlib.Topology.Order.T5
 
 /-!
 # Riesz rising sun lemma

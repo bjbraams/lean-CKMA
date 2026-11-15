@@ -6,19 +6,12 @@ Authors: CKMA contributors
 module
 
 public import CKMA.Probability.InfinitelyDivisible.Kernel
-public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Sinc
 public import Mathlib.MeasureTheory.Measure.FiniteMeasure
-public import Mathlib.Topology.Order.Compact
+public import CKMA.Probability.InfinitelyDivisible.CharRoot
 
-import Mathlib.Analysis.Normed.Group.Continuity
 import Mathlib.Analysis.Real.Pi.Bounds
-import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Bounds
-import Mathlib.Analysis.SpecificLimits.Basic
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
-import Mathlib.MeasureTheory.Integral.Prod
 import Mathlib.MeasureTheory.Measure.Prokhorov
-import Mathlib.Topology.Instances.NNReal.Lemmas
+import Mathlib.MeasureTheory.Measure.CharacteristicFunction.TaylorExpansion
 
 /-!
 # Tightness of quadratically weighted convolution roots

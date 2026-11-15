@@ -5,11 +5,11 @@ Authors: CKMA contributors
 -/
 module
 
-public import CKMA.Probability.InfinitelyDivisible.Basic
+public import Mathlib.MeasureTheory.Measure.CharacteristicFunction.Basic
+
 import Mathlib.MeasureTheory.Measure.LevyConvergence
 import Mathlib.MeasureTheory.Measure.LevyProkhorovMetric
 import Mathlib.MeasureTheory.Measure.Prokhorov
-import Mathlib.Topology.Sequences
 
 /-!
 # Probability measures from convergent characteristic functions

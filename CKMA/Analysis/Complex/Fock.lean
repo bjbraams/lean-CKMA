@@ -5,10 +5,11 @@ Authors: CKMA contributors
 -/
 module
 
-public import Mathlib.Analysis.Calculus.Deriv.Basic
-public import Mathlib.MeasureTheory.Function.LpSpace.Basic
-public import Mathlib.MeasureTheory.Measure.Lebesgue.Complex
 public import Mathlib.MeasureTheory.Measure.WithDensity
+public import Mathlib.MeasureTheory.Measure.Haar.OfBasis
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Complex
+public import Mathlib.MeasureTheory.Function.LpSeminorm.Defs
+public import Mathlib.Analysis.Calculus.FDeriv.Defs
 
 /-!
 # Fock sampling and uniform planar density

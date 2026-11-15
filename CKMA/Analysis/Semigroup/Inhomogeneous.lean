@@ -5,18 +5,10 @@ Authors: CKMA contributors
 -/
 module
 
-public import TauCeti.Analysis.Semigroups.Resolvent.Basic
-public import TauCeti.Analysis.Semigroups.Generator.Closed
-public import Mathlib.Analysis.Calculus.ContDiff.Basic
-public import Mathlib.Topology.Algebra.Module.LinearPMap
+public import TauCeti.Analysis.Semigroups.Generator.Basic
+import TauCeti.Analysis.Semigroups.Generator.Closed
 import TauCeti.Analysis.Semigroups.Generator.Uniqueness
-import Mathlib.Analysis.Calculus.Deriv.Shift
-import Mathlib.MeasureTheory.Integral.Prod
-import Mathlib.MeasureTheory.Integral.DominatedConvergence
 import Mathlib.MeasureTheory.Function.ContinuousMapDense
-import Mathlib.Topology.Order.OrderClosed
-import Mathlib.Analysis.Calculus.Deriv.Slope
-import Mathlib.Tactic.Abel
 
 /-!
 # Duhamel formula and integrated semigroup solutions
@@ -184,165 +176,162 @@ private theorem integrableOn_duhamelIntegrand (S : StronglyContinuousSemigroup X
       ≤ ‖S.realOperator (t - s)‖ * ‖f s‖ := ContinuousLinearMap.le_opNorm _ _
     _ ≤ C * ‖f s‖ := mul_le_mul_of_nonneg_right (hC _ htime0 htimeT) (norm_nonneg _)
 
-/-- For continuous forcing, the integrated Duhamel term is an iterated orbit integral. -/
+/-- The Duhamel kernel `(s, r) ↦ S(s - r) f(r)` on the half-plane `r ≤ s`, extended by zero. -/
+private def duhamelKernel (S : StronglyContinuousSemigroup X) (f : ℝ → X) (p : ℝ × ℝ) : X :=
+  if p.2 ≤ p.1 then S.realOperator (p.1 - p.2) (f p.2) else 0
+
+omit [CompleteSpace X] in
+/-- The Duhamel kernel on the half-plane `r ≤ s`. -/
+private theorem duhamelKernel_of_le (S : StronglyContinuousSemigroup X) (f : ℝ → X) {s r : ℝ}
+    (hrs : r ≤ s) : duhamelKernel S f (s, r) = S.realOperator (s - r) (f r) :=
+  ite_eq_left hrs
+
+omit [CompleteSpace X] in
+/-- The Duhamel kernel vanishes for `s < r`. -/
+private theorem duhamelKernel_of_lt (S : StronglyContinuousSemigroup X) (f : ℝ → X) {s r : ℝ}
+    (hsr : s < r) : duhamelKernel S f (s, r) = 0 :=
+  ite_eq_right (not_le.mpr hsr)
+
+/-- For continuous forcing the Duhamel kernel is strongly measurable on the plane. -/
+private theorem stronglyMeasurable_duhamelKernel (S : StronglyContinuousSemigroup X)
+    {f : ℝ → X} (hf : Continuous f) : StronglyMeasurable (duhamelKernel S f) := by
+  have hpair : Continuous fun p : ℝ × ℝ => (p.1 - p.2, f p.2) :=
+    (continuous_fst.sub continuous_snd).prodMk (hf.comp continuous_snd)
+  exact StronglyMeasurable.ite (isClosed_le continuous_snd continuous_fst).measurableSet
+    ((continuous_prod_realOperator S).comp_stronglyMeasurable hpair.stronglyMeasurable)
+    stronglyMeasurable_const
+
+omit [CompleteSpace X] in
+/-- A bound `C` for the semigroup on `[0, t]` bounds the Duhamel kernel at `(s, r)` by
+`C * ‖f r‖` whenever `0 ≤ r` and `s ≤ t`. -/
+private theorem norm_duhamelKernel_le (S : StronglyContinuousSemigroup X) (f : ℝ → X)
+    {t C : ℝ} (hC0 : 0 ≤ C) (hC : ∀ s : ℝ, 0 ≤ s → s ≤ t → ‖S.realOperator s‖ ≤ C)
+    {s r : ℝ} (hr0 : 0 ≤ r) (hsT : s ≤ t) :
+    ‖duhamelKernel S f (s, r)‖ ≤ C * ‖f r‖ := by
+  rcases le_or_gt r s with hrs | hsr
+  · rw [duhamelKernel_of_le S f hrs]
+    calc ‖S.realOperator (s - r) (f r)‖
+        ≤ ‖S.realOperator (s - r)‖ * ‖f r‖ := ContinuousLinearMap.le_opNorm _ _
+      _ ≤ C * ‖f r‖ :=
+          mul_le_mul_of_nonneg_right (hC _ (sub_nonneg.mpr hrs) (by linarith)) (norm_nonneg _)
+  · rw [duhamelKernel_of_lt S f hsr, norm_zero]
+    exact mul_nonneg hC0 (norm_nonneg _)
+
+/-- For continuous forcing the Duhamel kernel is integrable on the square `[0, t]²`. -/
+private theorem integrableOn_duhamelKernel (S : StronglyContinuousSemigroup X) {f : ℝ → X}
+    (hf : Continuous f) {t C : ℝ} (hC0 : 0 ≤ C)
+    (hC : ∀ s : ℝ, 0 ≤ s → s ≤ t → ‖S.realOperator s‖ ≤ C) :
+    IntegrableOn (duhamelKernel S f) (Set.Icc 0 t ×ˢ Set.Icc 0 t) := by
+  have hdom : IntegrableOn (fun p : ℝ × ℝ => C * ‖f p.2‖) (Set.Icc 0 t ×ˢ Set.Icc 0 t) :=
+    ContinuousOn.integrableOn_compact (isCompact_Icc.prod isCompact_Icc)
+      (continuous_const.mul ((continuous_norm.comp hf).comp continuous_snd)).continuousOn
+  refine hdom.mono' (stronglyMeasurable_duhamelKernel S hf).aestronglyMeasurable.restrict ?_
+  refine ae_restrict_of_forall_mem (measurableSet_Icc.prod measurableSet_Icc) fun p hp => ?_
+  exact norm_duhamelKernel_le S f hC0 hC hp.2.1 hp.1.2
+
+/-- A horizontal slice of the Duhamel kernel: the inner Duhamel integral up to `s ∈ [0, t]`
+is the integral of the kernel over `[0, t]` in the second variable. -/
+private theorem intervalIntegral_duhamelKernel_left (S : StronglyContinuousSemigroup X)
+    {f : ℝ → X} (hf : Continuous f) {s t : ℝ} (hs0 : 0 ≤ s) (hsT : s ≤ t) :
+    (∫ r in (0 : ℝ)..s, S.realOperator (s - r) (f r)) =
+      ∫ r in (0 : ℝ)..t, duhamelKernel S f (s, r) := by
+  obtain ⟨C, hC0, hC⟩ := norm_realOperator_le_on_Icc S t
+  have hint : IntegrableOn (fun r => duhamelKernel S f (s, r)) (Set.Icc 0 t) := by
+    have hdom : IntegrableOn (fun r => C * ‖f r‖) (Set.Icc 0 t) :=
+      (continuous_const.mul (continuous_norm.comp hf)).integrableOn_Icc
+    refine hdom.mono' ((stronglyMeasurable_duhamelKernel S hf).comp_measurable
+      measurable_prodMk_left).aestronglyMeasurable.restrict ?_
+    exact ae_restrict_of_forall_mem measurableSet_Icc fun r hr =>
+      norm_duhamelKernel_le S f hC0 hC hr.1 hsT
+  have hleft : IntervalIntegrable (fun r => duhamelKernel S f (s, r)) volume 0 s :=
+    ((Set.uIcc_of_le hs0).symm ▸
+      (hint.mono_set (Set.Icc_subset_Icc_right hsT))).intervalIntegrable
+  have hright : IntervalIntegrable (fun r => duhamelKernel S f (s, r)) volume s t :=
+    ((Set.uIcc_of_le hsT).symm ▸
+      (hint.mono_set (Set.Icc_subset_Icc_left hs0))).intervalIntegrable
+  have hadd := integral_add_adjacent_intervals (a := (0 : ℝ)) (b := s) (c := t) hleft hright
+  have htail : ∫ r in s..t, duhamelKernel S f (s, r) = 0 := by
+    refine integral_zero_ae ?_
+    refine Eventually.of_forall fun r hr => ?_
+    exact duhamelKernel_of_lt S f (Set.mem_Ioc.mp (Set.uIoc_of_le hsT ▸ hr)).1
+  have hhead : ∫ r in (0 : ℝ)..s, duhamelKernel S f (s, r) =
+      ∫ r in (0 : ℝ)..s, S.realOperator (s - r) (f r) := by
+    refine integral_congr fun r hr => ?_
+    have hrI : r ∈ Set.Icc 0 s := by simpa [Set.uIcc_of_le hs0] using hr
+    exact duhamelKernel_of_le S f hrI.2
+  rw [htail, add_zero, hhead] at hadd
+  exact hadd
+
+/-- A vertical slice of the Duhamel kernel: for `r ∈ [0, t]` the integral of the kernel over
+`[0, t]` in the first variable is the orbit integral of `f r` up to time `t - r`. -/
+private theorem intervalIntegral_duhamelKernel_right (S : StronglyContinuousSemigroup X)
+    {f : ℝ → X} (hf : Continuous f) {r t : ℝ} (hr0 : 0 ≤ r) (hrT : r ≤ t) :
+    (∫ s in (0 : ℝ)..t, duhamelKernel S f (s, r)) =
+      ∫ u in (0 : ℝ)..(t - r), S.realOperator u (f r) := by
+  obtain ⟨C, hC0, hC⟩ := norm_realOperator_le_on_Icc S t
+  have hint : IntegrableOn (fun s => duhamelKernel S f (s, r)) (Set.Icc 0 t) := by
+    have hdom : IntegrableOn (fun _ : ℝ => C * ‖f r‖) (Set.Icc 0 t) :=
+      integrableOn_const measure_Icc_lt_top.ne
+    refine hdom.mono' ((stronglyMeasurable_duhamelKernel S hf).comp_measurable
+      measurable_prodMk_right).aestronglyMeasurable.restrict ?_
+    exact ae_restrict_of_forall_mem measurableSet_Icc fun s hs =>
+      norm_duhamelKernel_le S f hC0 hC hr0 hs.2
+  have hleft : IntervalIntegrable (fun s => duhamelKernel S f (s, r)) volume 0 r :=
+    ((Set.uIcc_of_le hr0).symm ▸
+      (hint.mono_set (Set.Icc_subset_Icc_right hrT))).intervalIntegrable
+  have hright : IntervalIntegrable (fun s => duhamelKernel S f (s, r)) volume r t :=
+    ((Set.uIcc_of_le hrT).symm ▸
+      (hint.mono_set (Set.Icc_subset_Icc_left hr0))).intervalIntegrable
+  have hadd := integral_add_adjacent_intervals (a := (0 : ℝ)) (b := r) (c := t) hleft hright
+  have hhead : ∫ s in (0 : ℝ)..r, duhamelKernel S f (s, r) = 0 := by
+    refine integral_zero_ae ?_
+    refine ae_iff.mpr ?_
+    refine measure_mono_null ?_ (measure_singleton r)
+    intro s hs
+    obtain ⟨hmem, hne⟩ := not_imp.mp hs
+    have hmem' : s ∈ Set.Ioc 0 r := by simpa [Set.uIoc_of_le hr0] using hmem
+    have hrs : r ≤ s := by
+      by_contra hbad
+      exact hne (duhamelKernel_of_lt S f (not_le.mp hbad))
+    exact le_antisymm hmem'.2 hrs
+  have htail : ∫ s in r..t, duhamelKernel S f (s, r) =
+      ∫ s in r..t, S.realOperator (s - r) (f r) := by
+    refine integral_congr fun s hs => ?_
+    have hsI : s ∈ Set.Icc r t := by simpa [Set.uIcc_of_le hrT] using hs
+    exact duhamelKernel_of_le S f hsI.1
+  rw [hhead, zero_add, htail] at hadd
+  have hcomp := integral_comp_sub_right
+    (f := fun u => S.realOperator u (f r)) (a := r) (b := t) r
+  calc (∫ s in (0 : ℝ)..t, duhamelKernel S f (s, r))
+      = ∫ s in r..t, S.realOperator (s - r) (f r) := hadd.symm
+    _ = ∫ u in (0 : ℝ)..(t - r), S.realOperator u (f r) := by
+        simpa [sub_self] using hcomp
+
+/-- For continuous forcing, the integrated Duhamel term is an iterated orbit integral. The
+proof writes both sides as iterated integrals of `duhamelKernel` over `[0, t]²` and swaps the
+order of integration. -/
 private theorem duhamelIntegral_eq_orbitIntegral (S : StronglyContinuousSemigroup X)
     {f : ℝ → X} (hf : Continuous f) {t : ℝ} (ht : 0 ≤ t) :
     (∫ s in (0 : ℝ)..t, ∫ r in (0 : ℝ)..s, S.realOperator (s - r) (f r)) =
       ∫ r in (0 : ℝ)..t, ∫ u in (0 : ℝ)..(t - r), S.realOperator u (f r) := by
-  classical
   obtain ⟨C, hC0, hC⟩ := norm_realOperator_le_on_Icc S t
-  let seminorm : ℝ × ℝ → X := fun p => S.realOperator (p.1 - p.2) (f p.2)
-  let kernel : ℝ × ℝ → X := fun p => if p.2 ≤ p.1 then seminorm p else 0
-  have hker_pos {s r : ℝ} (hrs : r ≤ s) :
-      kernel (s, r) = S.realOperator (s - r) (f r) := by
-    simp only [kernel, seminorm, ite_eq_left hrs]
-  have hker_neg {s r : ℝ} (hrs : ¬ r ≤ s) : kernel (s, r) = 0 := by
-    simp only [kernel, ite_eq_right hrs]
-  have hpair : Continuous fun p : ℝ × ℝ => (p.1 - p.2, f p.2) :=
-    (continuous_fst.sub continuous_snd).prodMk (hf.comp continuous_snd)
-  have hsemi : StronglyMeasurable seminorm :=
-    (continuous_prod_realOperator S).comp_stronglyMeasurable hpair.stronglyMeasurable
-  have hclosed : MeasurableSet {p : ℝ × ℝ | p.2 ≤ p.1} :=
-    (isClosed_le continuous_snd continuous_fst).measurableSet
-  have hkernel : StronglyMeasurable kernel :=
-    StronglyMeasurable.ite hclosed hsemi stronglyMeasurable_const
-  let F : ℝ → ℝ → X := fun s r => kernel (s, r)
-  have hFun : F.uncurry = kernel := by
-    ext p
-    rw [Function.uncurry]
-  have hFsm : StronglyMeasurable F.uncurry := by
-    rw [hFun]
-    exact hkernel
-  have hdom_r : IntegrableOn (fun r => C * ‖f r‖) (Set.Icc 0 t) :=
-    (continuous_const.mul (continuous_norm.comp hf)).integrableOn_Icc
-  have hhoriz_int : ∀ s, 0 ≤ s → s ≤ t →
-      IntegrableOn (fun r => kernel (s, r)) (Set.Icc 0 t) := by
-    intro s _ hsT
-    refine hdom_r.mono' (hFsm.of_uncurry_left (x := s)).aestronglyMeasurable.restrict ?_
-    refine ae_restrict_of_forall_mem measurableSet_Icc fun r hr => ?_
-    by_cases hrs : r ≤ s
-    · have htime0 : 0 ≤ s - r := sub_nonneg.mpr hrs
-      have htimeT : s - r ≤ t := by linarith [hr.1, hsT]
-      rw [hker_pos hrs]
-      calc ‖S.realOperator (s - r) (f r)‖
-          ≤ ‖S.realOperator (s - r)‖ * ‖f r‖ := ContinuousLinearMap.le_opNorm _ _
-        _ ≤ C * ‖f r‖ :=
-            mul_le_mul_of_nonneg_right (hC _ htime0 htimeT) (norm_nonneg _)
-    · rw [hker_neg hrs, norm_zero]
-      exact mul_nonneg hC0 (norm_nonneg _)
-  have hvert_int : ∀ r, 0 ≤ r → r ≤ t →
-      IntegrableOn (fun s => kernel (s, r)) (Set.Icc 0 t) := by
-    intro r hr0 hrT
-    have hdom : IntegrableOn (fun _ : ℝ => C * ‖f r‖) (Set.Icc 0 t) :=
-      integrableOn_const measure_Icc_lt_top.ne
-    refine hdom.mono' (hFsm.of_uncurry_right (y := r)).aestronglyMeasurable.restrict ?_
-    refine ae_restrict_of_forall_mem measurableSet_Icc fun s hs => ?_
-    by_cases hrs : r ≤ s
-    · have htime0 : 0 ≤ s - r := sub_nonneg.mpr hrs
-      have htimeT : s - r ≤ t := by linarith [hs.2, hr0, hrT]
-      rw [hker_pos hrs]
-      calc ‖S.realOperator (s - r) (f r)‖
-          ≤ ‖S.realOperator (s - r)‖ * ‖f r‖ := ContinuousLinearMap.le_opNorm _ _
-        _ ≤ C * ‖f r‖ :=
-            mul_le_mul_of_nonneg_right (hC _ htime0 htimeT) (norm_nonneg _)
-    · rw [hker_neg hrs, norm_zero]
-      exact mul_nonneg hC0 (norm_nonneg _)
-  have hhoriz_eq : ∀ s, 0 ≤ s → s ≤ t →
-      (∫ r in (0 : ℝ)..s, S.realOperator (s - r) (f r)) =
-        ∫ r in (0 : ℝ)..t, kernel (s, r) := by
-    intro s hs0 hsT
-    have hleft : IntervalIntegrable (fun r => kernel (s, r)) volume 0 s :=
-      ((Set.uIcc_of_le hs0).symm ▸ ((hhoriz_int s hs0 hsT).mono_set
-        (Set.Icc_subset_Icc_right hsT))).intervalIntegrable
-    have hright : IntervalIntegrable (fun r => kernel (s, r)) volume s t :=
-      ((Set.uIcc_of_le hsT).symm ▸ ((hhoriz_int s hs0 hsT).mono_set
-        (Set.Icc_subset_Icc_left hs0))).intervalIntegrable
-    have hadd := integral_add_adjacent_intervals (a := (0 : ℝ)) (b := s) (c := t) hleft hright
-    have htail : ∫ r in s..t, kernel (s, r) = 0 := by
-      refine integral_zero_ae ?_
-      refine Eventually.of_forall fun r hr => ?_
-      have hrgt : s < r := (Set.mem_Ioc.mp (Set.uIoc_of_le hsT ▸ hr)).1
-      exact hker_neg (not_le.mpr hrgt)
-    have hhead : ∫ r in (0 : ℝ)..s, kernel (s, r) =
-        ∫ r in (0 : ℝ)..s, S.realOperator (s - r) (f r) := by
-      refine integral_congr fun r hr => ?_
-      have hrI : r ∈ Set.Icc 0 s := by simpa [Set.uIcc_of_le hs0] using hr
-      exact hker_pos hrI.2
-    rw [htail, add_zero, hhead] at hadd
-    exact hadd
-  have hvert_eq : ∀ r, 0 ≤ r → r ≤ t →
-      (∫ s in (0 : ℝ)..t, kernel (s, r)) =
-        ∫ u in (0 : ℝ)..(t - r), S.realOperator u (f r) := by
-    intro r hr0 hrT
-    have hleft : IntervalIntegrable (fun s => kernel (s, r)) volume 0 r :=
-      ((Set.uIcc_of_le hr0).symm ▸ ((hvert_int r hr0 hrT).mono_set
-        (Set.Icc_subset_Icc_right hrT))).intervalIntegrable
-    have hright : IntervalIntegrable (fun s => kernel (s, r)) volume r t :=
-      ((Set.uIcc_of_le hrT).symm ▸ ((hvert_int r hr0 hrT).mono_set
-        (Set.Icc_subset_Icc_left hr0))).intervalIntegrable
-    have hadd := integral_add_adjacent_intervals (a := (0 : ℝ)) (b := r) (c := t) hleft hright
-    have hhead : ∫ s in (0 : ℝ)..r, kernel (s, r) = 0 := by
-      refine integral_zero_ae ?_
-      refine ae_iff.mpr ?_
-      refine measure_mono_null ?_ (measure_singleton r)
-      intro s hs
-      obtain ⟨hmem, hne⟩ := not_imp.mp hs
-      have hmem' : s ∈ Set.Ioc 0 r := by simpa [Set.uIoc_of_le hr0] using hmem
-      have hrs : r ≤ s := by
-        by_contra hbad
-        exact hne (hker_neg hbad)
-      exact le_antisymm hmem'.2 hrs
-    have htail : ∫ s in r..t, kernel (s, r) =
-        ∫ s in r..t, S.realOperator (s - r) (f r) := by
-      refine integral_congr fun s hs => ?_
-      have hsI : s ∈ Set.Icc r t := by simpa [Set.uIcc_of_le hrT] using hs
-      exact hker_pos hsI.1
-    rw [hhead, zero_add, htail] at hadd
-    have hcomp := integral_comp_sub_right
-      (f := fun u => S.realOperator u (f r)) (a := r) (b := t) r
-    calc (∫ s in (0 : ℝ)..t, kernel (s, r))
-        = ∫ s in r..t, S.realOperator (s - r) (f r) := hadd.symm
-      _ = ∫ u in (0 : ℝ)..(t - r), S.realOperator u (f r) := by
-          simpa [sub_self] using hcomp
-  have hleft : (∫ s in (0 : ℝ)..t, ∫ r in (0 : ℝ)..s, S.realOperator (s - r) (f r)) =
-      ∫ s in (0 : ℝ)..t, ∫ r in (0 : ℝ)..t, F s r := by
-    refine integral_congr fun s hs => ?_
-    have hsI : s ∈ Set.Icc 0 t := by simpa [Set.uIcc_of_le ht] using hs
-    simpa [F] using hhoriz_eq s hsI.1 hsI.2
+  let F : ℝ → ℝ → X := fun s r => duhamelKernel S f (s, r)
   have hprod : IntegrableOn F.uncurry (Set.uIoc 0 t ×ˢ Set.uIoc 0 t) := by
-    have hsquare : IntegrableOn kernel (Set.Icc 0 t ×ˢ Set.Icc 0 t) := by
-      have hdom : IntegrableOn (fun p : ℝ × ℝ => C * ‖f p.2‖)
-          (Set.Icc 0 t ×ˢ Set.Icc 0 t) :=
-        ContinuousOn.integrableOn_compact (isCompact_Icc.prod isCompact_Icc)
-          (continuous_const.mul
-            ((continuous_norm.comp hf).comp continuous_snd)).continuousOn
-      refine hdom.mono' hkernel.aestronglyMeasurable.restrict ?_
-      refine ae_restrict_of_forall_mem (measurableSet_Icc.prod measurableSet_Icc) fun p hp => ?_
-      obtain ⟨hp1, hp2⟩ := Set.mem_prod.mp hp
-      obtain ⟨_, hsT⟩ := Set.mem_Icc.mp hp1
-      obtain ⟨hr0, _⟩ := Set.mem_Icc.mp hp2
-      by_cases hrs : p.2 ≤ p.1
-      · have htime0 : 0 ≤ p.1 - p.2 := sub_nonneg.mpr hrs
-        have htimeT : p.1 - p.2 ≤ t := by linarith
-        rw [show kernel p = seminorm p by simp only [kernel, ite_eq_left hrs]]
-        calc ‖seminorm p‖
-            ≤ ‖S.realOperator (p.1 - p.2)‖ * ‖f p.2‖ := by
-              simpa [seminorm] using ContinuousLinearMap.le_opNorm _ _
-          _ ≤ C * ‖f p.2‖ :=
-              mul_le_mul_of_nonneg_right (hC _ htime0 htimeT) (norm_nonneg _)
-      · rw [show kernel p = 0 by simp only [kernel, ite_eq_right hrs], norm_zero]
-        exact mul_nonneg hC0 (norm_nonneg _)
     have hsub : Set.uIoc 0 t ×ˢ Set.uIoc 0 t ⊆ Set.Icc 0 t ×ˢ Set.Icc 0 t := by
       rw [Set.uIoc_of_le ht]
       exact Set.prod_mono Set.Ioc_subset_Icc_self Set.Ioc_subset_Icc_self
-    exact hFun.symm ▸ hsquare.mono_set hsub
-  have hswap := intervalIntegral_intervalIntegral_swap (F := F) hprod
-  have hright : (∫ r in (0 : ℝ)..t, ∫ s in (0 : ℝ)..t, F s r) =
-      ∫ r in (0 : ℝ)..t, ∫ u in (0 : ℝ)..(t - r), S.realOperator u (f r) := by
-    refine integral_congr fun r hr => ?_
-    have hrI : r ∈ Set.Icc 0 t := by simpa [Set.uIcc_of_le ht] using hr
-    simpa [F] using hvert_eq r hrI.1 hrI.2
-  exact hleft.trans (hswap.trans hright)
+    exact (integrableOn_duhamelKernel S hf hC0 hC).mono_set hsub
+  calc (∫ s in (0 : ℝ)..t, ∫ r in (0 : ℝ)..s, S.realOperator (s - r) (f r))
+      = ∫ s in (0 : ℝ)..t, ∫ r in (0 : ℝ)..t, F s r := by
+        refine integral_congr fun s hs => ?_
+        have hsI : s ∈ Set.Icc 0 t := by simpa [Set.uIcc_of_le ht] using hs
+        exact intervalIntegral_duhamelKernel_left S hf hsI.1 hsI.2
+    _ = ∫ r in (0 : ℝ)..t, ∫ s in (0 : ℝ)..t, F s r :=
+        intervalIntegral_intervalIntegral_swap hprod
+    _ = ∫ r in (0 : ℝ)..t, ∫ u in (0 : ℝ)..(t - r), S.realOperator u (f r) := by
+        refine integral_congr fun r hr => ?_
+        have hrI : r ∈ Set.Icc 0 t := by simpa [Set.uIcc_of_le ht] using hr
+        exact intervalIntegral_duhamelKernel_right S hf hrI.1 hrI.2
 
 /-- A positive time shift of the integrated Duhamel term, for continuous forcing. -/
 private theorem duhamelPrimitive_shift (S : StronglyContinuousSemigroup X) {f : ℝ → X}
@@ -483,6 +472,31 @@ private theorem tendsto_quot_duhamelIntegral (S : StronglyContinuousSemigroup X)
   filter_upwards [self_mem_nhdsWithin] with h hh
   rw [← smul_sub, duhamelPrimitive_shift S hf ht.le hh]
 
+omit [CompleteSpace X] in
+/-- At time zero the variation-of-constants trajectory satisfies the integrated generator
+equation, since both integrals over `[0, 0]` vanish. -/
+private theorem integrated_at_zero (S : StronglyContinuousSemigroup X) (x : X) (f : ℝ → X) :
+    ∃ h : (∫ s in (0 : ℝ)..0, forcedSemigroupTrajectory S x f s) ∈ S.generator.domain,
+      forcedSemigroupTrajectory S x f 0 =
+        x + S.generator ⟨∫ s in (0 : ℝ)..0, forcedSemigroupTrajectory S x f s, h⟩ +
+          ∫ s in (0 : ℝ)..0, f s := by
+  let u : ℝ → X := forcedSemigroupTrajectory S x f
+  have hzero : (∫ s in (0 : ℝ)..0, u s) = 0 := integral_same
+  have hmemU : (∫ s in (0 : ℝ)..0, u s) ∈ S.generator.domain := by
+    rw [hzero]
+    exact S.generator.domain.zero_mem
+  have hpack : (⟨∫ s in (0 : ℝ)..0, u s, hmemU⟩ : S.generator.domain) = 0 :=
+    Subtype.ext hzero
+  have hA : S.generator ⟨∫ s in (0 : ℝ)..0, u s, hmemU⟩ = 0 := by
+    rw [hpack]
+    exact S.generator.map_zero
+  have hu0 : u 0 = x := by
+    simp [u, forcedSemigroupTrajectory, integral_same]
+  have heq : u 0 = x + S.generator ⟨∫ s in (0 : ℝ)..0, u s, hmemU⟩ +
+      ∫ s in (0 : ℝ)..0, f s := by
+    rw [hu0, hA, integral_same, add_zero, add_zero]
+  exact ⟨hmemU, heq⟩
+
 /-- At each nonnegative time, continuous forcing satisfies the integrated generator equation. -/
 private theorem integrated_at_of_continuous (S : StronglyContinuousSemigroup X) (x : X)
     {f : ℝ → X} (hf : Continuous f) {t : ℝ} (ht : 0 ≤ t) :
@@ -492,21 +506,7 @@ private theorem integrated_at_of_continuous (S : StronglyContinuousSemigroup X) 
           ∫ s in (0 : ℝ)..t, f s := by
   let u : ℝ → X := forcedSemigroupTrajectory S x f
   rcases ht.eq_or_lt with rfl | ht
-  · have hzero : (∫ s in (0 : ℝ)..0, u s) = 0 := integral_same
-    have hmemU : (∫ s in (0 : ℝ)..0, u s) ∈ S.generator.domain := by
-      rw [hzero]
-      exact S.generator.domain.zero_mem
-    have hpack : (⟨∫ s in (0 : ℝ)..0, u s, hmemU⟩ : S.generator.domain) = 0 :=
-      Subtype.ext hzero
-    have hA : S.generator ⟨∫ s in (0 : ℝ)..0, u s, hmemU⟩ = 0 := by
-      rw [hpack]
-      exact S.generator.map_zero
-    have hu0 : u 0 = x := by
-      simp [u, forcedSemigroupTrajectory, integral_same]
-    have heq : u 0 = x + S.generator ⟨∫ s in (0 : ℝ)..0, u s, hmemU⟩ +
-        ∫ s in (0 : ℝ)..0, f s := by
-      rw [hu0, hA, integral_same, add_zero, add_zero]
-    exact ⟨hmemU, heq⟩
+  · exact integrated_at_zero S x f
   · let orbit : ℝ → X := fun s => S.realOperator s x
     let duh : ℝ → X := fun s => ∫ r in (0 : ℝ)..s, S.realOperator (s - r) (f r)
     have hintO : IntervalIntegrable orbit volume 0 t :=
@@ -662,193 +662,149 @@ private theorem norm_intervalIntegral_sub_le {T : ℝ}
         · exact ae_restrict_of_forall_mem measurableSet_Icc fun _ _ => norm_nonneg _
         · exact (Set.Ioc_subset_Icc_self.trans (Set.Icc_subset_Icc_right htT)).eventuallyLE
 
+omit [CompleteSpace X] in
+/-- Integrable forcing on `[0, T]` is an `L¹` limit of bounded continuous forcings, at rate
+`1 / (n + 1)`. -/
+private theorem exists_seq_boundedContinuous_integral_sub_le {T : ℝ} {f : ℝ → X}
+    (hf : IntegrableOn f (Set.Icc 0 T)) :
+    ∃ g : ℕ → ℝ →ᵇ X, ∀ n, IntegrableOn (g n : ℝ → X) (Set.Icc 0 T) ∧
+      ∫ s in Set.Icc 0 T, ‖(g n : ℝ → X) s - f s‖ ≤ 1 / ((n : ℝ) + 1) := by
+  have : Measure.WeaklyRegular (volume.restrict (Set.Icc 0 T)) :=
+    Measure.WeaklyRegular.restrict_of_measure_ne_top measure_Icc_lt_top.ne
+  have hpos : ∀ n : ℕ, (0 : ℝ) < 1 / ((n : ℝ) + 1) := fun n =>
+    div_pos one_pos (add_pos_of_nonneg_of_pos (Nat.cast_nonneg n) one_pos)
+  choose g hg using fun n => hf.exists_boundedContinuous_integral_sub_le (hpos n)
+  refine ⟨g, fun n => ⟨(hg n).2, ?_⟩⟩
+  rw [setIntegral_congr_fun measurableSet_Icc fun s _ => norm_sub_rev ((g n : ℝ → X) s) (f s)]
+  simpa using (hg n).1
+
+/-- Forcings that are `δ`-close in `L¹` on `[0, T]` give trajectories that are `C * δ`-close
+on `[0, T]`, where `C` bounds the semigroup on `[0, T]`. -/
+private theorem norm_forcedSemigroupTrajectory_sub_le (S : StronglyContinuousSemigroup X)
+    {T C δ : ℝ} (hC0 : 0 ≤ C) (hC : ∀ s : ℝ, 0 ≤ s → s ≤ T → ‖S.realOperator s‖ ≤ C)
+    {f g : ℝ → X} (hf : IntegrableOn f (Set.Icc 0 T)) (hg : IntegrableOn g (Set.Icc 0 T))
+    (hδ : ∫ s in Set.Icc 0 T, ‖g s - f s‖ ≤ δ) (x : X) {t : ℝ} (ht0 : 0 ≤ t) (htT : t ≤ T) :
+    ‖forcedSemigroupTrajectory S x g t - forcedSemigroupTrajectory S x f t‖ ≤ C * δ := by
+  simp only [forcedSemigroupTrajectory, add_sub_add_left_eq_sub]
+  exact (norm_duhamel_sub_le S hC0 hC hf hg ht0 htT).trans (mul_le_mul_of_nonneg_left hδ hC0)
+
+/-- Closedness of the generator passes the integrated generator equation at time `t` to the
+limit: if the time integrals, the values at `t` and the forcing integrals converge, the limit
+path satisfies the equation at `t`. -/
+private theorem integrated_at_of_tendsto (S : StronglyContinuousSemigroup X) (x : X) {t : ℝ}
+    {u f : ℝ → X} {un fn : ℕ → ℝ → X}
+    (hInt : Tendsto (fun n => ∫ s in (0 : ℝ)..t, un n s) atTop
+      (nhds (∫ s in (0 : ℝ)..t, u s)))
+    (hVal : Tendsto (fun n => un n t) atTop (nhds (u t)))
+    (hForce : Tendsto (fun n => ∫ s in (0 : ℝ)..t, fn n s) atTop
+      (nhds (∫ s in (0 : ℝ)..t, f s)))
+    (happrox : ∀ n, ∃ h : (∫ s in (0 : ℝ)..t, un n s) ∈ S.generator.domain,
+      un n t = x + S.generator ⟨∫ s in (0 : ℝ)..t, un n s, h⟩ + ∫ s in (0 : ℝ)..t, fn n s) :
+    ∃ h : (∫ s in (0 : ℝ)..t, u s) ∈ S.generator.domain,
+      u t = x + S.generator ⟨∫ s in (0 : ℝ)..t, u s, h⟩ + ∫ s in (0 : ℝ)..t, f s := by
+  have hRight : Tendsto (fun n => un n t - x - ∫ s in (0 : ℝ)..t, fn n s)
+      atTop (nhds (u t - x - ∫ s in (0 : ℝ)..t, f s)) :=
+    (hVal.sub tendsto_const_nhds).sub hForce
+  let pair : ℕ → X × X := fun n =>
+    (∫ s in (0 : ℝ)..t, un n s, un n t - x - ∫ s in (0 : ℝ)..t, fn n s)
+  have hpair : Tendsto pair atTop
+      (nhds (∫ s in (0 : ℝ)..t, u s, u t - x - ∫ s in (0 : ℝ)..t, f s)) := by
+    rw [nhds_prod_eq]
+    exact hInt.prodMk hRight
+  have hgraph : ∀ n, pair n ∈ S.generator.graph := by
+    intro n
+    obtain ⟨hmem, heq⟩ := happrox n
+    rw [LinearPMap.mem_graph_iff]
+    refine ⟨⟨∫ s in (0 : ℝ)..t, un n s, hmem⟩, rfl, ?_⟩
+    have hA : un n t - x - ∫ s in (0 : ℝ)..t, fn n s =
+        S.generator ⟨∫ s in (0 : ℝ)..t, un n s, hmem⟩ := by
+      rw [heq, add_assoc, add_sub_cancel_left, add_sub_cancel_right]
+    exact hA.symm
+  have hlimSet := S.isClosed_generator.mem_of_tendsto hpair
+    (Filter.Eventually.of_forall hgraph)
+  have hlim : (∫ s in (0 : ℝ)..t, u s, u t - x - ∫ s in (0 : ℝ)..t, f s) ∈
+      S.generator.graph := by
+    simpa [SetLike.mem_coe] using hlimSet
+  rw [LinearPMap.mem_graph_iff] at hlim
+  obtain ⟨y, hy1, hy2⟩ := hlim
+  have hyInt : (y : X) = ∫ s in (0 : ℝ)..t, u s := by simpa using hy1
+  have hyVal : S.generator y = u t - x - ∫ s in (0 : ℝ)..t, f s := by simpa using hy2
+  have hmem : (∫ s in (0 : ℝ)..t, u s) ∈ S.generator.domain := by
+    rw [← hyInt]
+    exact y.property
+  have hpack : (⟨∫ s in (0 : ℝ)..t, u s, hmem⟩ : S.generator.domain) = y :=
+    Subtype.ext hyInt.symm
+  have hA : S.generator ⟨∫ s in (0 : ℝ)..t, u s, hmem⟩ =
+      u t - x - ∫ s in (0 : ℝ)..t, f s := by
+    rw [hpack]
+    exact hyVal
+  have heq : u t = x + S.generator ⟨∫ s in (0 : ℝ)..t, u s, hmem⟩ +
+      ∫ s in (0 : ℝ)..t, f s := by
+    rw [hA, add_assoc, sub_add_cancel, add_comm x (u t - x), sub_add_cancel]
+  exact ⟨hmem, heq⟩
+
 /-- Integrable forcing still produces an integrated solution, by L¹ approximation and closedness
 of the generator. -/
 theorem isIntegratedSemigroupSolution_forcedSemigroupTrajectory
-    (S : StronglyContinuousSemigroup X) {T : ℝ} (hT : 0 ≤ T)
+    (S : StronglyContinuousSemigroup X) {T : ℝ}
     (x : X) {f : ℝ → X} (hf : IntegrableOn f (Set.Icc 0 T)) :
     IsIntegratedSemigroupSolution S x f (forcedSemigroupTrajectory S x f) T := by
-  by_cases hT0 : T = 0
-  · subst hT0
-    refine ⟨?_, ?_⟩
-    · rw [show Set.Icc (0 : ℝ) 0 = {0} by ext t; simp]
-      exact continuousOn_singleton _ 0
-    · intro t ht
-      have ht0 : t = 0 := le_antisymm ht.2 ht.1
-      subst ht0
-      have hzero : (∫ s in (0 : ℝ)..0, forcedSemigroupTrajectory S x f s) = 0 := integral_same
-      have hmem : (∫ s in (0 : ℝ)..0, forcedSemigroupTrajectory S x f s) ∈ S.generator.domain := by
-        rw [hzero]
-        exact S.generator.domain.zero_mem
-      have hpack : (⟨∫ s in (0 : ℝ)..0, forcedSemigroupTrajectory S x f s, hmem⟩ :
-          S.generator.domain) = 0 := Subtype.ext hzero
-      have hA : S.generator ⟨∫ s in (0 : ℝ)..0, forcedSemigroupTrajectory S x f s, hmem⟩ = 0 := by
-        rw [hpack]
-        exact S.generator.map_zero
-      have hu0 : forcedSemigroupTrajectory S x f 0 = x := by
-        simp [forcedSemigroupTrajectory, integral_same]
-      have heq : forcedSemigroupTrajectory S x f 0 =
-          x + S.generator ⟨∫ s in (0 : ℝ)..0, forcedSemigroupTrajectory S x f s, hmem⟩ +
-            ∫ s in (0 : ℝ)..0, f s := by
-        rw [hu0, hA, integral_same, add_zero, add_zero]
-      exact ⟨hmem, heq⟩
-  · have : Measure.WeaklyRegular (volume.restrict (Set.Icc 0 T)) :=
-      Measure.WeaklyRegular.restrict_of_measure_ne_top measure_Icc_lt_top.ne
-    obtain ⟨C, hC0, hC⟩ := norm_realOperator_le_on_Icc S T
-    have hpos : ∀ n : ℕ, (0 : ℝ) < 1 / ((n : ℝ) + 1) := fun n =>
-      div_pos one_pos (add_pos_of_nonneg_of_pos (Nat.cast_nonneg n) one_pos)
-    have hex : ∀ n : ℕ, ∃ g : ℝ →ᵇ X,
-        (∫ s, ‖f s - g s‖ ∂volume.restrict (Set.Icc 0 T)) ≤ 1 / ((n : ℝ) + 1) ∧
-          Integrable (g : ℝ → X) (volume.restrict (Set.Icc 0 T)) :=
-      fun n => hf.exists_boundedContinuous_integral_sub_le (hpos n)
-    let approx : ℕ → ℝ →ᵇ X := fun n => Classical.choose (hex n)
-    have hspec : ∀ n, (∫ s, ‖f s - (approx n) s‖ ∂volume.restrict (Set.Icc 0 T)) ≤
-        1 / ((n : ℝ) + 1) ∧ Integrable (approx n : ℝ → X) (volume.restrict (Set.Icc 0 T)) :=
-      fun n => Classical.choose_spec (hex n)
-    have hrev : ∀ n, (∫ s in Set.Icc 0 T, ‖(approx n : ℝ → X) s - f s‖) =
-        ∫ s in Set.Icc 0 T, ‖f s - (approx n) s‖ := fun n =>
-      setIntegral_congr_fun measurableSet_Icc fun s _ => norm_sub_rev ((approx n : ℝ → X) s) (f s)
-    have hL1 : ∀ n, ∫ s in Set.Icc 0 T, ‖(approx n : ℝ → X) s - f s‖ ≤ 1 / ((n : ℝ) + 1) := by
-      intro n
-      rw [hrev n]
-      simpa using (hspec n).1
-    have hclose : ∀ n, ∀ t, 0 ≤ t → t ≤ T →
-        ‖forcedSemigroupTrajectory S x (approx n) t - forcedSemigroupTrajectory S x f t‖ ≤
-          C / ((n : ℝ) + 1) := by
-      intro n t ht0 htT
-      have hg : IntegrableOn (approx n : ℝ → X) (Set.Icc 0 T) := (hspec n).2
-      have hdiff := norm_duhamel_sub_le S hC0 hC hf hg ht0 htT
-      have hcancel : forcedSemigroupTrajectory S x (approx n) t -
-          forcedSemigroupTrajectory S x f t =
-          (∫ s in (0 : ℝ)..t, S.realOperator (t - s) ((approx n : ℝ → X) s)) -
-            ∫ s in (0 : ℝ)..t, S.realOperator (t - s) (f s) := by
-        set a : X := S.realOperator t x
-        set b : X := ∫ s in (0 : ℝ)..t, S.realOperator (t - s) ((approx n : ℝ → X) s)
-        set c : X := ∫ s in (0 : ℝ)..t, S.realOperator (t - s) (f s)
-        change (a + b) - (a + c) = b - c
-        abel
-      rw [hcancel]
-      calc ‖(∫ s in (0 : ℝ)..t, S.realOperator (t - s) ((approx n : ℝ → X) s)) -
-            ∫ s in (0 : ℝ)..t, S.realOperator (t - s) (f s)‖
-          ≤ C * ∫ s in Set.Icc 0 T, ‖(approx n : ℝ → X) s - f s‖ := hdiff
-        _ ≤ C * (1 / ((n : ℝ) + 1)) := mul_le_mul_of_nonneg_left (hL1 n) hC0
-        _ = C / ((n : ℝ) + 1) := by rw [mul_one_div]
-    have hCto0 : Tendsto (fun n : ℕ => C / ((n : ℝ) + 1)) atTop (nhds 0) := by
-      have hinv : Tendsto (fun n : ℕ => (((n + 1 : ℕ) : ℝ))⁻¹) atTop (nhds 0) :=
-        (tendsto_natCast_atTop_atTop.comp (tendsto_add_atTop_nat 1)).inv_tendsto_atTop
-      have hmul : Tendsto (fun n : ℕ => C * (((n + 1 : ℕ) : ℝ))⁻¹) atTop (nhds 0) := by
-        simpa [mul_zero] using Filter.Tendsto.const_mul C hinv
-      refine hmul.congr fun n => ?_
-      rw [Nat.cast_add, Nat.cast_one, div_eq_mul_inv]
-    let u : ℝ → X := forcedSemigroupTrajectory S x f
-    have huniform : TendstoUniformlyOn (fun n t => forcedSemigroupTrajectory S x (approx n) t) u
-        atTop (Set.Icc 0 T) := by
-      rw [Metric.tendstoUniformlyOn_iff]
-      intro ε hε
-      refine (hCto0.eventually (Iio_mem_nhds hε)).mono fun n hn t ht => ?_
-      rw [dist_eq_norm, norm_sub_rev]
-      exact lt_of_le_of_lt (hclose n t ht.1 ht.2) hn
-    have hcont : ContinuousOn u (Set.Icc 0 T) :=
-      huniform.continuousOn (Frequently.of_forall fun n =>
-        (continuous_forcedSemigroupTrajectory S x (approx n).continuous).continuousOn)
-    refine ⟨hcont, fun t ht => ?_⟩
-    rcases ht.1.eq_or_lt with rfl | ht0
-    · have hzero : (∫ s in (0 : ℝ)..0, u s) = 0 := integral_same
-      have hmem : (∫ s in (0 : ℝ)..0, u s) ∈ S.generator.domain := by
-        rw [hzero]
-        exact S.generator.domain.zero_mem
-      have hpack : (⟨∫ s in (0 : ℝ)..0, u s, hmem⟩ : S.generator.domain) = 0 :=
-        Subtype.ext hzero
-      have hA : S.generator ⟨∫ s in (0 : ℝ)..0, u s, hmem⟩ = 0 := by
-        rw [hpack]
-        exact S.generator.map_zero
-      have hu0 : u 0 = x := by simp [u, forcedSemigroupTrajectory, integral_same]
-      have heq : u 0 = x + S.generator ⟨∫ s in (0 : ℝ)..0, u s, hmem⟩ +
-          ∫ s in (0 : ℝ)..0, f s := by
-        rw [hu0, hA, integral_same, add_zero, add_zero]
-      exact ⟨hmem, heq⟩
-    · have htT : t ≤ T := ht.2
-      have hto0 : Tendsto (fun n : ℕ => 1 / ((n : ℝ) + 1)) atTop (nhds 0) := by
-        have hinv : Tendsto (fun n : ℕ => (((n + 1 : ℕ) : ℝ))⁻¹) atTop (nhds 0) :=
-          (tendsto_natCast_atTop_atTop.comp (tendsto_add_atTop_nat 1)).inv_tendsto_atTop
-        refine hinv.congr fun n => ?_
-        rw [Nat.cast_add, Nat.cast_one, one_div]
-      let un : ℕ → ℝ → X := fun n => forcedSemigroupTrajectory S x (approx n)
-      have hintU : IntervalIntegrable u volume 0 t :=
-        (hcont.mono (Set.Icc_subset_Icc_right htT)).intervalIntegrable_of_Icc ht0.le
-      have hintUn : ∀ n, IntervalIntegrable (un n) volume 0 t := fun n =>
-        (continuous_forcedSemigroupTrajectory S x (approx n).continuous).intervalIntegrable 0 t
-      have hInt0 : Tendsto (fun n => ‖(∫ s in (0 : ℝ)..t, un n s) - ∫ s in (0 : ℝ)..t, u s‖)
-          atTop (nhds 0) := by
-        refine squeeze_zero (g := fun n : ℕ => (C / ((n : ℝ) + 1)) * t)
-          (fun n : ℕ => norm_nonneg
-            ((∫ s in (0 : ℝ)..t, un n s) - ∫ s in (0 : ℝ)..t, u s))
-          (fun n => ?_) ?_
-        · have hsub : (∫ s in (0 : ℝ)..t, un n s - u s) =
-              (∫ s in (0 : ℝ)..t, un n s) - ∫ s in (0 : ℝ)..t, u s :=
-            integral_sub (hintUn n) hintU
-          rw [← hsub]
-          have hle := norm_integral_le_of_norm_le_const
-            (fun s hs => hclose n s (le_of_lt (Set.mem_Ioc.mp (Set.uIoc_of_le ht0.le ▸ hs)).1)
-              (le_trans (Set.mem_Ioc.mp (Set.uIoc_of_le ht0.le ▸ hs)).2 htT))
-          simpa [sub_zero, abs_of_nonneg ht0.le] using hle
-        · simpa [mul_zero] using hCto0.mul_const t
-      have hInt : Tendsto (fun n => ∫ s in (0 : ℝ)..t, un n s) atTop
-          (nhds (∫ s in (0 : ℝ)..t, u s)) := by
-        rw [tendsto_iff_norm_sub_tendsto_zero]
-        exact hInt0
-      have hForce0 : Tendsto (fun n => ‖(∫ s in (0 : ℝ)..t, (approx n : ℝ → X) s) -
-          ∫ s in (0 : ℝ)..t, f s‖) atTop (nhds 0) := by
-        refine squeeze_zero (fun _ => norm_nonneg _) (fun n => ?_) hto0
-        exact le_trans (norm_intervalIntegral_sub_le hf (hspec n).2 ht0.le htT) (hL1 n)
-      have hForce : Tendsto (fun n => ∫ s in (0 : ℝ)..t, (approx n : ℝ → X) s) atTop
-          (nhds (∫ s in (0 : ℝ)..t, f s)) := by
-        rw [tendsto_iff_norm_sub_tendsto_zero]
-        exact hForce0
-      have hVal : Tendsto (fun n => un n t) atTop (nhds (u t)) := by
-        rw [tendsto_iff_norm_sub_tendsto_zero]
-        refine squeeze_zero (fun _ => norm_nonneg _) (fun n => hclose n t ht0.le htT) hCto0
-      have hRight : Tendsto (fun n => un n t - x - ∫ s in (0 : ℝ)..t, (approx n : ℝ → X) s)
-          atTop (nhds (u t - x - ∫ s in (0 : ℝ)..t, f s)) :=
-        (hVal.sub tendsto_const_nhds).sub hForce
-      let pair : ℕ → X × X := fun n =>
-        (∫ s in (0 : ℝ)..t, un n s, un n t - x - ∫ s in (0 : ℝ)..t, (approx n : ℝ → X) s)
-      have hpair : Tendsto pair atTop
-          (nhds (∫ s in (0 : ℝ)..t, u s, u t - x - ∫ s in (0 : ℝ)..t, f s)) := by
-        rw [nhds_prod_eq]
-        exact hInt.prodMk hRight
-      have hgraph : ∀ n, pair n ∈ S.generator.graph := by
-        intro n
-        obtain ⟨hmem, heq⟩ := integrated_at_of_continuous S x (approx n).continuous ht0.le
-        rw [LinearPMap.mem_graph_iff]
-        refine ⟨⟨∫ s in (0 : ℝ)..t, un n s, hmem⟩, rfl, ?_⟩
-        have hA : un n t - x - ∫ s in (0 : ℝ)..t, (approx n : ℝ → X) s =
-            S.generator ⟨∫ s in (0 : ℝ)..t, un n s, hmem⟩ := by
-          unfold un
-          rw [heq, add_assoc, add_sub_cancel_left, add_sub_cancel_right]
-        exact hA.symm
-      have hlimSet := S.isClosed_generator.mem_of_tendsto hpair
-        (Filter.Eventually.of_forall hgraph)
-      have hlim : (∫ s in (0 : ℝ)..t, u s, u t - x - ∫ s in (0 : ℝ)..t, f s) ∈
-          S.generator.graph := by
-        simpa [SetLike.mem_coe] using hlimSet
-      rw [LinearPMap.mem_graph_iff] at hlim
-      obtain ⟨y, hy1, hy2⟩ := hlim
-      have hyInt : (y : X) = ∫ s in (0 : ℝ)..t, u s := by simpa using hy1
-      have hyVal : S.generator y = u t - x - ∫ s in (0 : ℝ)..t, f s := by simpa using hy2
-      have hmem : (∫ s in (0 : ℝ)..t, u s) ∈ S.generator.domain := by
-        rw [← hyInt]
-        exact y.property
-      have hpack : (⟨∫ s in (0 : ℝ)..t, u s, hmem⟩ : S.generator.domain) = y :=
-        Subtype.ext hyInt.symm
-      have hA : S.generator ⟨∫ s in (0 : ℝ)..t, u s, hmem⟩ =
-          u t - x - ∫ s in (0 : ℝ)..t, f s := by
-        rw [hpack]
-        exact hyVal
-      have heq : u t = x + S.generator ⟨∫ s in (0 : ℝ)..t, u s, hmem⟩ +
-          ∫ s in (0 : ℝ)..t, f s := by
-        rw [hA, add_assoc, sub_add_cancel, add_comm x (u t - x), sub_add_cancel]
-      exact ⟨hmem, heq⟩
+  obtain ⟨C, hC0, hC⟩ := norm_realOperator_le_on_Icc S T
+  obtain ⟨approx, happrox⟩ := exists_seq_boundedContinuous_integral_sub_le hf
+  have hto0 : Tendsto (fun n : ℕ => 1 / ((n : ℝ) + 1)) atTop (nhds 0) := by
+    have hinv : Tendsto (fun n : ℕ => (((n + 1 : ℕ) : ℝ))⁻¹) atTop (nhds 0) :=
+      (tendsto_natCast_atTop_atTop.comp (tendsto_add_atTop_nat 1)).inv_tendsto_atTop
+    refine hinv.congr fun n => ?_
+    rw [Nat.cast_add, Nat.cast_one, one_div]
+  have hCto0 : Tendsto (fun n : ℕ => C * (1 / ((n : ℝ) + 1))) atTop (nhds 0) := by
+    simpa only [mul_zero] using hto0.const_mul C
+  have hclose : ∀ n, ∀ t, 0 ≤ t → t ≤ T →
+      ‖forcedSemigroupTrajectory S x (approx n) t - forcedSemigroupTrajectory S x f t‖ ≤
+        C * (1 / ((n : ℝ) + 1)) := fun n _ ht0 htT =>
+    norm_forcedSemigroupTrajectory_sub_le S hC0 hC hf (happrox n).1 (happrox n).2 x ht0 htT
+  let u : ℝ → X := forcedSemigroupTrajectory S x f
+  have huniform : TendstoUniformlyOn (fun n t => forcedSemigroupTrajectory S x (approx n) t) u
+      atTop (Set.Icc 0 T) := by
+    rw [Metric.tendstoUniformlyOn_iff]
+    intro ε hε
+    refine (hCto0.eventually (Iio_mem_nhds hε)).mono fun n hn t ht => ?_
+    rw [dist_eq_norm, norm_sub_rev]
+    exact lt_of_le_of_lt (hclose n t ht.1 ht.2) hn
+  have hcont : ContinuousOn u (Set.Icc 0 T) :=
+    huniform.continuousOn (Frequently.of_forall fun n =>
+      (continuous_forcedSemigroupTrajectory S x (approx n).continuous).continuousOn)
+  refine ⟨hcont, fun t ht => ?_⟩
+  rcases ht.1.eq_or_lt with rfl | ht0
+  · exact integrated_at_zero S x f
+  have htT : t ≤ T := ht.2
+  let un : ℕ → ℝ → X := fun n => forcedSemigroupTrajectory S x (approx n)
+  have hintU : IntervalIntegrable u volume 0 t :=
+    (hcont.mono (Set.Icc_subset_Icc_right htT)).intervalIntegrable_of_Icc ht0.le
+  have hintUn : ∀ n, IntervalIntegrable (un n) volume 0 t := fun n =>
+    (continuous_forcedSemigroupTrajectory S x (approx n).continuous).intervalIntegrable 0 t
+  have hInt : Tendsto (fun n => ∫ s in (0 : ℝ)..t, un n s) atTop
+      (nhds (∫ s in (0 : ℝ)..t, u s)) := by
+    rw [tendsto_iff_norm_sub_tendsto_zero]
+    refine squeeze_zero (g := fun n : ℕ => C * (1 / ((n : ℝ) + 1)) * t)
+      (fun n : ℕ => norm_nonneg
+        ((∫ s in (0 : ℝ)..t, un n s) - ∫ s in (0 : ℝ)..t, u s))
+      (fun n => ?_) ?_
+    · rw [← integral_sub (hintUn n) hintU]
+      have hle := norm_integral_le_of_norm_le_const
+        (fun s hs => hclose n s (le_of_lt (Set.mem_Ioc.mp (Set.uIoc_of_le ht0.le ▸ hs)).1)
+          (le_trans (Set.mem_Ioc.mp (Set.uIoc_of_le ht0.le ▸ hs)).2 htT))
+      simpa [sub_zero, abs_of_nonneg ht0.le] using hle
+    · simpa only [zero_mul] using hCto0.mul_const t
+  have hForce : Tendsto (fun n => ∫ s in (0 : ℝ)..t, (approx n : ℝ → X) s) atTop
+      (nhds (∫ s in (0 : ℝ)..t, f s)) := by
+    rw [tendsto_iff_norm_sub_tendsto_zero]
+    refine squeeze_zero (fun _ => norm_nonneg _) (fun n => ?_) hto0
+    exact le_trans (norm_intervalIntegral_sub_le hf (happrox n).1 ht0.le htT) (happrox n).2
+  have hVal : Tendsto (fun n => un n t) atTop (nhds (u t)) := by
+    rw [tendsto_iff_norm_sub_tendsto_zero]
+    exact squeeze_zero (fun _ => norm_nonneg _) (fun n => hclose n t ht0.le htT) hCto0
+  exact integrated_at_of_tendsto S x hInt hVal hForce fun n =>
+    integrated_at_of_continuous S x (approx n).continuous ht0.le
 
 /-- The indefinite integral of a function continuous on `[0, T]` has right derivative equal to
 the integrand at each `s ∈ [0, T)`. -/

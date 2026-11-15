@@ -5,9 +5,8 @@ Authors: CKMA contributors
 -/
 module
 
-public import Mathlib.Analysis.Calculus.ContDiff.Basic
 public import Mathlib.Analysis.InnerProductSpace.PiL2
-public import Mathlib.Topology.Algebra.Support
+public import Mathlib.Analysis.Calculus.ContDiff.Defs
 
 /-!
 # Smooth cutoffs for variational capacities
@@ -33,7 +32,7 @@ and open neighbourhoods use Mathlib.
 namespace CKMA
 
 /-- Smooth compactly supported cutoff functions at least one on a neighbourhood of `K`. -/
-@[expose] def IsCapacityAdmissible {d : ℕ} (K : Set (EuclideanSpace ℝ (Fin d)))
+def IsCapacityAdmissible {d : ℕ} (K : Set (EuclideanSpace ℝ (Fin d)))
     (φ : EuclideanSpace ℝ (Fin d) → ℝ) : Prop :=
   ContDiff ℝ (↑(⊤ : ℕ∞)) φ ∧ HasCompactSupport φ ∧
     ∃ U, IsOpen U ∧ K ⊆ U ∧ ∀ x ∈ U, 1 ≤ φ x

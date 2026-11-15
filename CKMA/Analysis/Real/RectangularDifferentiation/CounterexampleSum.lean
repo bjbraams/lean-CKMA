@@ -7,19 +7,7 @@ module
 
 public import CKMA.Analysis.Real.RectangularDifferentiation.CounterexampleCover
 
-import Mathlib.Algebra.BigOperators.Fin
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Algebra.Order.Ring.Pow
-import Mathlib.Analysis.SpecificLimits.Basic
-import Mathlib.MeasureTheory.Function.L1Space.Integrable
-import Mathlib.MeasureTheory.Integral.Bochner.Set
-import Mathlib.MeasureTheory.Integral.IntegrableOn
-import Mathlib.MeasureTheory.Integral.Lebesgue.Add
-import Mathlib.MeasureTheory.Integral.Lebesgue.Markov
-import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
-import Mathlib.Topology.Algebra.InfiniteSum.ENNReal
-import Mathlib.Topology.Algebra.InfiniteSum.Ring
+import CKMA.Analysis.Real.RectangularDifferentiation.Iteration
 
 /-!
 # Integrability of the Saks sum
@@ -46,7 +34,7 @@ zero, so rectangular differentiation fails on a set of positive measure.
 
 noncomputable section
 
-open Classical MeasureTheory Set Filter Finset
+open MeasureTheory Set Filter Finset
 open scoped ENNReal NNReal BigOperators
 
 namespace CKMA.Bohr

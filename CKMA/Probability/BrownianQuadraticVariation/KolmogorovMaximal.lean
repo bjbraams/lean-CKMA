@@ -5,10 +5,10 @@ Authors: CKMA contributors
 -/
 module
 
-public import Mathlib.MeasureTheory.Function.L2Space
-public import Mathlib.MeasureTheory.Function.LpSeminorm.CompareExp
-public import Mathlib.MeasureTheory.Integral.Bochner.Set
-public import Mathlib.Probability.Independence.Integration
+public import Mathlib.Probability.Independence.Basic
+public import Mathlib.MeasureTheory.Integral.Bochner.Basic
+
+import Mathlib.Probability.Independence.Integration
 
 /-!
 # Kolmogorov's maximal inequality for finite independent families
@@ -34,7 +34,6 @@ noncomputable section
 namespace CKMA.Kolmogorov
 
 open scoped NNReal ENNReal ProbabilityTheory BigOperators
-open Classical
 open MeasureTheory ProbabilityTheory
 
 /-- Indices strictly before a partial-sum time. -/

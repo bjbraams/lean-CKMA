@@ -5,7 +5,8 @@ Authors: CKMA contributors
 -/
 module
 
-public import Mathlib.Analysis.InnerProductSpace.Basic
+public import Mathlib.Analysis.InnerProductSpace.Defs
+public import Mathlib.Analysis.Complex.Basic
 
 /-!
 # Bundled Hilbert spaces over real or complex scalars

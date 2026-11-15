@@ -5,30 +5,10 @@ Authors: CKMA contributors
 -/
 module
 
-public import Mathlib.Analysis.Normed.Algebra.Spectrum
-public import Mathlib.Order.Directed
-public import Mathlib.Topology.ContinuousMap.Compact
-public import Mathlib.MeasureTheory.Group.Measure
-public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 public import Mathlib.Analysis.Fourier.FourierTransform
 
-import Mathlib.Algebra.Order.Archimedean.Basic
-import Mathlib.Analysis.SpecificLimits.Basic
-import Mathlib.Algebra.Polynomial.BigOperators
-import Mathlib.Algebra.Polynomial.Degree.Operations
 import Mathlib.Analysis.Complex.Polynomial.Basic
-import Mathlib.Data.Nat.Choose.Cast
-import Mathlib.Data.Nat.Choose.Sum
-import Mathlib.RingTheory.MvPolynomial.Symmetric.Defs
-import Mathlib.RingTheory.Polynomial.Vieta
-import Mathlib.Tactic.FieldSimp
-import Mathlib.Tactic.Linarith
-import Mathlib.Tactic.NoncommRing
-import Mathlib.Tactic.Positivity
-import Mathlib.Tactic.Ring
-import Mathlib.Topology.ContinuousMap.Algebra
-import Mathlib.Topology.Order.Compact
-import Mathlib.Topology.Order.OrderClosed
+import Mathlib.Analysis.Normed.Algebra.Spectrum
 
 /-!
 # Characters, norming boundaries, Tauberian density, and factorization
@@ -495,6 +475,104 @@ private theorem boundary_foldl_sdiff {K α : Type*} [TopologicalSpace K] [Compac
     exact ih (fun j hj F hF => hdel j (List.mem_cons.mpr (Or.inr hj)) F hF)
       (hdel i (List.mem_cons.mpr (Or.inl rfl)) E hE)
 
+/-- On a nonempty carrier every closed boundary is nonempty, since it norms the unit. -/
+private theorem IsUniformAlgebraBoundary.nonempty {K : Type*} [TopologicalSpace K]
+    [CompactSpace K] [Nonempty K] {A : Subalgebra ℂ C(K, ℂ)} {E : Set K}
+    (hE : IsUniformAlgebraBoundary A E) : E.Nonempty := by
+  by_contra hempty
+  rw [Set.not_nonempty_iff_eq_empty] at hempty
+  have hsup := hE.2 (1 : A)
+  rw [hempty, Set.image_empty, Real.sSup_empty, Subalgebra.coe_one] at hsup
+  have hnorm : ‖(1 : C(K, ℂ))‖ = 1 := by
+    rw [ContinuousMap.norm_eq_iSup_norm]
+    have hpt : ∀ x : K, ‖(1 : C(K, ℂ)) x‖ = 1 := fun x => by
+      rw [ContinuousMap.one_apply, norm_one]
+    simp only [hpt]
+    exact ciSup_const
+  exact one_ne_zero (hnorm.symm.trans hsup)
+
+/-- If `0 ≤ ρ < N` and `0 < M`, then `ρ ^ n * M < N ^ n` for some exponent `n`. -/
+private theorem exists_pow_mul_lt_pow {ρ N M : ℝ} (hρ : 0 ≤ ρ) (hρN : ρ < N) (hM : 0 < M) :
+    ∃ n : ℕ, ρ ^ n * M < N ^ n := by
+  have hNpos : 0 < N := hρ.trans_lt hρN
+  obtain ⟨n, hn⟩ := exists_pow_lt_of_lt_one (one_div_pos.mpr hM) ((div_lt_one hNpos).mpr hρN)
+  have hlt1 : (ρ / N) ^ n * M < 1 := by
+    calc
+      (ρ / N) ^ n * M < (1 / M) * M := mul_lt_mul_of_pos_right hn hM
+      _ = 1 := by rw [one_div, inv_mul_cancel₀ hM.ne']
+  refine ⟨n, ?_⟩
+  have hrewrite : ρ ^ n * M = (ρ / N) ^ n * M * N ^ n := by
+    rw [div_pow, div_mul_eq_mul_div, div_mul_cancel₀ _ (pow_ne_zero n hNpos.ne')]
+  rw [hrewrite]
+  calc
+    (ρ / N) ^ n * M * N ^ n < 1 * N ^ n := mul_lt_mul_of_pos_right hlt1 (pow_pos hNpos n)
+    _ = N ^ n := one_mul _
+
+/-- Deleting an open set `U` from a boundary `E` keeps the norm of `g`, provided that `U` misses
+a nonempty boundary `E0` and is the common sublevel set `{‖f y‖ < 1}` of finitely many algebra
+elements `f y` of norm at most `M`. Otherwise `g ^ n * f y` would have norm below `‖g‖ ^ n`
+on `E` for large `n`, forcing the point of `E0` where `g` peaks into `U`. -/
+private theorem norm_le_sSup_norm_image_sdiff {K ι : Type*} [TopologicalSpace K]
+    [CompactSpace K] {A : Subalgebra ℂ C(K, ℂ)} {E0 E U : Set K}
+    (hE0 : IsUniformAlgebraBoundary A E0) (hE0ne : E0.Nonempty)
+    (hE : IsUniformAlgebraBoundary A E) (hcap : E0 ∩ U = ∅) {t : Finset ι} (f : ι → A) {M : ℝ}
+    (hM : 0 < M) (hMy : ∀ y ∈ t, ‖(f y).1‖ ≤ M)
+    (hU : ∀ z, z ∈ U ↔ ∀ y ∈ t, ‖(f y).1 z‖ < 1) (g : A) :
+    ‖g.1‖ ≤ sSup ((fun x => ‖g.1 x‖) '' (E \ U)) := by
+  set N : ℝ := ‖g.1‖
+  set ρ : ℝ := sSup ((fun x => ‖g.1 x‖) '' (E \ U))
+  have hρnn : 0 ≤ ρ := sSup_norm_image_nonneg g (E \ U)
+  by_contra hlt
+  have hρlt : ρ < N := lt_of_not_ge hlt
+  have hNpos : 0 < N := hρnn.trans_lt hρlt
+  obtain ⟨n, hpow⟩ := exists_pow_mul_lt_pow hρnn hρlt hM
+  have hpt (y : ι) (hy : y ∈ t) (z : K) (hz : z ∈ E) :
+      ‖((g ^ n * f y).1 z)‖ < N ^ n := by
+    rw [norm_pow_mul_apply]
+    by_cases hzu : z ∈ U
+    · have hfy : ‖(f y).1 z‖ < 1 := (hU z).1 hzu y hy
+      calc
+        ‖g.1 z‖ ^ n * ‖(f y).1 z‖
+            ≤ N ^ n * ‖(f y).1 z‖ :=
+              mul_le_mul_of_nonneg_right
+                (pow_le_pow_left₀ (norm_nonneg _) (g.1.norm_coe_le_norm z) _)
+                (norm_nonneg _)
+        _ < N ^ n * 1 := mul_lt_mul_of_pos_left hfy (pow_pos hNpos n)
+        _ = N ^ n := mul_one _
+    · have hzE : z ∈ E \ U := ⟨hz, hzu⟩
+      have hgle : ‖g.1 z‖ ≤ ρ := le_csSup
+        ⟨N, fun r hr => by
+          obtain ⟨w, -, rfl⟩ := hr
+          exact g.1.norm_coe_le_norm w⟩ ⟨z, hzE, rfl⟩
+      calc
+        ‖g.1 z‖ ^ n * ‖(f y).1 z‖
+            ≤ ρ ^ n * ‖(f y).1 z‖ :=
+              mul_le_mul_of_nonneg_right
+                (pow_le_pow_left₀ (norm_nonneg _) hgle n) (norm_nonneg _)
+        _ ≤ ρ ^ n * M := mul_le_mul_of_nonneg_left
+              ((f y).1.norm_coe_le_norm z |>.trans (hMy y hy))
+              (pow_nonneg hρnn n)
+        _ < N ^ n := hpow
+  obtain ⟨y0, hy0E, hy0⟩ := exists_norm_eq_on_boundary hE0 hE0ne g
+  have hy0lt : ∀ y ∈ t, ‖(f y).1 y0‖ < 1 := by
+    intro y hy
+    have hnorm : ‖(g ^ n * f y).1‖ < N ^ n := by
+      have hs := sSup_norm_image_lt hE.1.isCompact (pow_pos hNpos n) (hpt y hy)
+      rw [← hE.2 (g ^ n * f y)] at hs
+      exact hs
+    have hval : N ^ n * ‖(f y).1 y0‖ < N ^ n := by
+      calc
+        N ^ n * ‖(f y).1 y0‖ = ‖((g ^ n * f y).1 y0)‖ := by
+          rw [norm_pow_mul_apply, hy0]
+        _ ≤ ‖(g ^ n * f y).1‖ := (g ^ n * f y).1.norm_coe_le_norm y0
+        _ < N ^ n := hnorm
+    exact (mul_lt_iff_lt_one_left (pow_pos hNpos n)).mp (by
+      rw [mul_comm]
+      exact hval)
+  have hy0cap : y0 ∈ E0 ∩ U := ⟨hy0E, (hU y0).2 hy0lt⟩
+  rw [hcap] at hy0cap
+  exact Set.notMem_empty y0 hy0cap
+
 /-- Around a point omitted by one boundary, an open set may be deleted from every boundary. -/
 private theorem exists_open_boundary_sdiff {K : Type*} [TopologicalSpace K] [CompactSpace K]
     (A : Subalgebra ℂ C(K, ℂ))
@@ -502,18 +580,9 @@ private theorem exists_open_boundary_sdiff {K : Type*} [TopologicalSpace K] [Com
     {E0 : Set K} (hE0 : IsUniformAlgebraBoundary A E0) {x0 : K} (hx0 : x0 ∉ E0) :
     ∃ U : Set K, IsOpen U ∧ x0 ∈ U ∧ ∀ E : Set K, IsUniformAlgebraBoundary A E →
       IsUniformAlgebraBoundary A (E \ U) := by
-  have hE0ne : E0.Nonempty := by
-    by_contra hempty
-    rw [Set.not_nonempty_iff_eq_empty] at hempty
-    have hsup := hE0.2 (1 : A)
-    rw [hempty, Set.image_empty, Real.sSup_empty, Subalgebra.coe_one] at hsup
-    have hnorm : ‖(1 : C(K, ℂ))‖ = 1 := by
-      rw [ContinuousMap.norm_eq_iSup_norm]
-      have hpt : ∀ x : K, ‖(1 : C(K, ℂ)) x‖ = 1 := fun x => by
-        rw [ContinuousMap.one_apply, norm_one]
-      simp only [hpt]
-      exact @ciSup_const ℝ K _ ⟨x0⟩ 1
-    exact one_ne_zero (hnorm.symm.trans hsup)
+  have : Nonempty K := ⟨x0⟩
+  have hE0ne : E0.Nonempty := hE0.nonempty
+  -- Functions vanishing at `x0` and of modulus `2` at the points of `E0`.
   have hpts := separatesPoints_of_point_separation hsep
   have hex (y : E0) : ∃ f : A, f.1 x0 = 0 ∧ f.1 (y : K) = 2 := by
     classical
@@ -526,6 +595,7 @@ private theorem exists_open_boundary_sdiff {K : Type*} [TopologicalSpace K] [Com
     · rw [hg2]
       simp
   choose f hf0 hf2 using hex
+  -- Finitely many of the open sets `{1 < ‖f y‖}` cover the compact boundary `E0`.
   let V : E0 → Set K := fun y => {z | 1 < ‖(f y).1 z‖}
   have hVopen : ∀ y, IsOpen (V y) := fun y =>
     isOpen_lt continuous_const (continuous_norm.comp (f y).1.continuous)
@@ -540,13 +610,12 @@ private theorem exists_open_boundary_sdiff {K : Type*} [TopologicalSpace K] [Com
     obtain ⟨z, hz⟩ := hE0ne
     obtain ⟨y, hy, -⟩ := Set.mem_iUnion₂.mp (ht hz)
     exact ⟨y, hy⟩
+  -- The open set `U` where all of these functions are small contains `x0` and misses `E0`.
   let U : Set K := ⋂ y ∈ t, {z | ‖(f y).1 z‖ < 1}
+  have hU : ∀ z, z ∈ U ↔ ∀ y ∈ t, ‖(f y).1 z‖ < 1 := fun z => Set.mem_iInter₂
   have hUopen : IsOpen U := isOpen_biInter_finset fun y _ =>
     isOpen_lt (continuous_norm.comp (f y).1.continuous) continuous_const
-  have hx0U : x0 ∈ U := by
-    rw [Set.mem_iInter₂]
-    intro y _
-    apply Set.mem_ofPred.mpr
+  have hx0U : x0 ∈ U := (hU x0).2 fun y _ => by
     rw [hf0 y, norm_zero]
     exact one_pos
   have hcap : E0 ∩ U = ∅ := by
@@ -554,102 +623,23 @@ private theorem exists_open_boundary_sdiff {K : Type*} [TopologicalSpace K] [Com
     simp only [Set.mem_inter_iff, Set.mem_empty_iff_false, iff_false, not_and]
     intro hzE hzU
     obtain ⟨y, hy, hyz⟩ := Set.mem_iUnion₂.mp (ht hzE)
-    rw [Set.mem_iInter₂] at hzU
-    exact lt_asymm hyz.out (hzU y hy).out
+    exact lt_asymm hyz.out ((hU z).1 hzU y hy)
   have hMbd : BddAbove ((fun y : E0 => ‖(f y).1‖) '' (t : Set E0)) :=
     ((Finset.finite_toSet t).image (fun y => ‖(f y).1‖)).bddAbove
   set M : ℝ := sSup ((fun y : E0 => ‖(f y).1‖) '' (t : Set E0))
   have hMy (y : E0) (hy : y ∈ t) : ‖(f y).1‖ ≤ M :=
     le_csSup hMbd (Set.mem_image_of_mem _ hy)
-  have hMgt : 1 < M := by
+  have hMpos : 0 < M := by
     obtain ⟨y, hy⟩ := htne
-    have h2le : (2 : ℝ) ≤ M := by
-      calc
-        (2 : ℝ) = ‖(f y).1 (y : K)‖ := by rw [hf2 y, Complex.norm_two]
-        _ ≤ ‖(f y).1‖ := (f y).1.norm_coe_le_norm _
-        _ ≤ M := hMy y hy
-    linarith
-  refine ⟨U, hUopen, hx0U, ?_⟩
-  intro E hE
-  refine ⟨hE.1.sdiff hUopen, fun g => ?_⟩
-  set N : ℝ := ‖g.1‖
-  set ρ : ℝ := sSup ((fun x => ‖g.1 x‖) '' (E \ U))
-  have hρle : ρ ≤ N := sSup_norm_image_le g (E \ U)
-  have hρnn : 0 ≤ ρ := sSup_norm_image_nonneg g (E \ U)
-  have hNle : N ≤ ρ := by
-    by_contra hlt
-    have hρlt : ρ < N := lt_of_not_ge hlt
-    have hNpos : 0 < N := hρnn.trans_lt hρlt
-    have hMpos : 0 < M := one_pos.trans hMgt
-    have hratio : ρ / N < 1 := (div_lt_one hNpos).mpr hρlt
-    obtain ⟨n, hn⟩ := exists_pow_lt_of_lt_one (one_div_pos.mpr hMpos) hratio
-    have hlt1 : (ρ / N) ^ n * M < 1 := by
-      calc
-        (ρ / N) ^ n * M < (1 / M) * M := mul_lt_mul_of_pos_right hn hMpos
-        _ = 1 := by rw [one_div, inv_mul_cancel₀ hMpos.ne']
-    have hpow : ρ ^ n * M < N ^ n := by
-      have hNnp : 0 < N ^ n := pow_pos hNpos n
-      have hrewrite : ρ ^ n * M = (ρ / N) ^ n * M * N ^ n := by
-        rw [div_pow, div_mul_eq_mul_div, div_mul_cancel₀ _ (pow_ne_zero n hNpos.ne')]
-      rw [hrewrite]
-      calc
-        (ρ / N) ^ n * M * N ^ n < 1 * N ^ n := mul_lt_mul_of_pos_right hlt1 hNnp
-        _ = N ^ n := one_mul _
-    have hpt (y : E0) (hy : y ∈ t) (z : K) (hz : z ∈ E) :
-        ‖((g ^ n * f y).1 z)‖ < N ^ n := by
-      rw [norm_pow_mul_apply]
-      by_cases hzu : z ∈ U
-      · have hfy : ‖(f y).1 z‖ < 1 := by
-          have hzU := hzu
-          rw [Set.mem_iInter₂] at hzU
-          exact (hzU y hy).out
-        calc
-          ‖g.1 z‖ ^ n * ‖(f y).1 z‖
-              ≤ N ^ n * ‖(f y).1 z‖ :=
-                mul_le_mul_of_nonneg_right
-                  (pow_le_pow_left₀ (norm_nonneg _) (g.1.norm_coe_le_norm z) _)
-                  (norm_nonneg _)
-          _ < N ^ n * 1 := mul_lt_mul_of_pos_left hfy (pow_pos hNpos n)
-          _ = N ^ n := mul_one _
-      · have hzE : z ∈ E \ U := ⟨hz, hzu⟩
-        have hgle : ‖g.1 z‖ ≤ ρ := le_csSup
-          ⟨N, fun r hr => by
-            obtain ⟨w, -, rfl⟩ := hr
-            exact g.1.norm_coe_le_norm w⟩ ⟨z, hzE, rfl⟩
-        calc
-          ‖g.1 z‖ ^ n * ‖(f y).1 z‖
-              ≤ ρ ^ n * ‖(f y).1 z‖ :=
-                mul_le_mul_of_nonneg_right
-                  (pow_le_pow_left₀ (norm_nonneg _) hgle n) (norm_nonneg _)
-          _ ≤ ρ ^ n * M := mul_le_mul_of_nonneg_left
-                ((f y).1.norm_coe_le_norm z |>.trans (hMy y hy))
-                (pow_nonneg hρnn n)
-          _ < N ^ n := hpow
-    obtain ⟨y0, hy0E, hy0⟩ := exists_norm_eq_on_boundary hE0 hE0ne g
-    have hy0lt : ∀ y ∈ t, ‖(f y).1 y0‖ < 1 := by
-      intro y hy
-      have hnorm : ‖(g ^ n * f y).1‖ < N ^ n := by
-        have hs := sSup_norm_image_lt hE.1.isCompact (pow_pos hNpos n)
-          (hpt y hy)
-        rw [← hE.2 (g ^ n * f y)] at hs
-        exact hs
-      have hval : N ^ n * ‖(f y).1 y0‖ < N ^ n := by
-        calc
-          N ^ n * ‖(f y).1 y0‖ = ‖((g ^ n * f y).1 y0)‖ := by
-            rw [norm_pow_mul_apply, hy0]
-          _ ≤ ‖(g ^ n * f y).1‖ := (g ^ n * f y).1.norm_coe_le_norm y0
-          _ < N ^ n := hnorm
-      exact (mul_lt_iff_lt_one_left (pow_pos hNpos n)).mp (by
-        rw [mul_comm]
-        exact hval)
-    have hy0U : y0 ∈ U := by
-      rw [Set.mem_iInter₂]
-      intro y hy
-      exact Set.mem_ofPred.mpr (hy0lt y hy)
-    have hy0cap : y0 ∈ E0 ∩ U := ⟨hy0E, hy0U⟩
-    rw [hcap] at hy0cap
-    exact Set.notMem_empty y0 hy0cap
-  exact le_antisymm hNle hρle
+    calc
+      (0 : ℝ) < 2 := two_pos
+      _ = ‖(f y).1 (y : K)‖ := by rw [hf2 y, Complex.norm_two]
+      _ ≤ ‖(f y).1‖ := (f y).1.norm_coe_le_norm _
+      _ ≤ M := hMy y hy
+  refine ⟨U, hUopen, hx0U, fun E hE => ⟨hE.1.sdiff hUopen, fun g => ?_⟩⟩
+  exact le_antisymm
+    (norm_le_sSup_norm_image_sdiff hE0 hE0ne hE hcap f hMpos hMy hU g)
+    (sSup_norm_image_le g (E \ U))
 
 /-- **20.23**: a point-separating algebra has a smallest closed norming boundary.
 The restriction isometry is expressed by the exact boundary-norm identity in the predicate. -/

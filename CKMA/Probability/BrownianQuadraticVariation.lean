@@ -8,22 +8,10 @@ module
 public import CKMA.Probability.BrownianQuadraticVariation.TimePartition
 public import CKMA.Probability.BrownianQuadraticVariation.KolmogorovMaximal
 public import Mathlib.Probability.BrownianMotion.Basic
-public import Mathlib.MeasureTheory.Function.ConvergenceInMeasure
 
-import Mathlib.Algebra.Order.Archimedean.Basic
-import Mathlib.MeasureTheory.Function.L2Space
-import Mathlib.MeasureTheory.Function.LpSeminorm.CompareExp
-import Mathlib.MeasureTheory.Integral.Bochner.Set
-import Mathlib.MeasureTheory.OuterMeasure.BorelCantelli
-import Mathlib.Order.Interval.Finset.Fin
 import Mathlib.Probability.Distributions.Gaussian.HasGaussianLaw.Basic
 import Mathlib.Probability.Distributions.Gaussian.HasGaussianLaw.Independence
 import Mathlib.Probability.Distributions.Gaussian.IsGaussianProcess.Basic
-import Mathlib.Probability.HasLaw
-import Mathlib.Probability.Independence.Integration
-import Mathlib.Probability.Moments.Covariance
-import Mathlib.Topology.Algebra.InfiniteSum.ENNReal
-import Mathlib.Topology.Algebra.InfiniteSum.NatInt
 import TauCeti.Probability.BrownianMotion.QuadraticVariation
 
 /-!
@@ -68,7 +56,6 @@ noncomputable section
 namespace CKMA
 
 open scoped NNReal ENNReal ProbabilityTheory BigOperators
-open Classical
 open MeasureTheory ProbabilityTheory Filter Topology Kolmogorov
 
 /-- Energy of the centered squared increments is at most twice mesh times `T`

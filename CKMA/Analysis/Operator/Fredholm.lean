@@ -5,17 +5,17 @@ Authors: CKMA contributors
 -/
 module
 
-public import TauCeti.Analysis.Fredholm.Adjoint
-public import TauCeti.Analysis.Fredholm.CompactPerturbation
-public import TauCeti.Analysis.Normed.Operator.Compact.Finite.Rank
-public import Mathlib.Algebra.Module.Submodule.Invariant
-public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Basic
-public import Mathlib.Analysis.CStarAlgebra.ContinuousLinearMap
-public import Mathlib.Analysis.CStarAlgebra.Spectrum
 public import Mathlib.Analysis.InnerProductSpace.Adjoint
-public import Mathlib.Analysis.InnerProductSpace.Projection.Basic
-public import Mathlib.Analysis.Normed.Algebra.Spectrum
 public import Mathlib.Topology.Algebra.Module.Equiv.Submodule
+public import Mathlib.Analysis.Normed.Operator.Fredholm.Basic
+public import Mathlib.Analysis.Normed.Operator.Compact.Basic
+public import Mathlib.Analysis.CStarAlgebra.Classes
+
+import TauCeti.Analysis.Fredholm.Adjoint
+import TauCeti.Analysis.Fredholm.CompactPerturbation
+import TauCeti.Analysis.Normed.Operator.Compact.Finite.Rank
+import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Basic
+import Mathlib.Analysis.CStarAlgebra.ContinuousLinearMap
 
 /-!
 # Atkinson's theorem and the Fredholm essential spectrum
@@ -243,6 +243,208 @@ private lemma isUnit_of_isUnit_restrict_orthogonal
       simpa only [coe_restrict_apply] using congrArg Subtype.val hx2
     rw [hSx1, hSx2, K.starProjection_add_starProjection_orthogonal]
 
+/-- If `w` lies in the spectrum of `a`, then `a - w • 1` is not invertible. -/
+private lemma not_isUnit_sub_smul_one_of_mem_spectrum {A : Type*} [Ring A] [Algebra ℂ A]
+    {a : A} {w : ℂ} (hw : w ∈ spectrum ℂ a) : ¬ IsUnit (a - w • (1 : A)) := by
+  intro hunit
+  apply spectrum.mem_iff.mp hw
+  rw [Algebra.algebraMap_eq_smul_one, ← neg_sub]
+  exact hunit.neg
+
+/-- For a self-adjoint `T` and a point `z` of its spectrum, `T - z • 1` is self-adjoint. -/
+private lemma isSelfAdjoint_sub_smul_one_of_mem_spectrum {H : Type*} [NormedAddCommGroup H]
+    [InnerProductSpace ℂ H] [CompleteSpace H] {T : H →L[ℂ] H} (hT : IsSelfAdjoint T) {z : ℂ}
+    (hz : z ∈ spectrum ℂ T) : IsSelfAdjoint (T - z • (1 : H →L[ℂ] H)) :=
+  hT.sub ((RCLike.im_eq_zero_iff_isSelfAdjoint.mp (hT.im_eq_zero_of_mem_spectrum hz)).smul
+    (IsSelfAdjoint.one (H →L[ℂ] H)))
+
+/-- The range of a self-adjoint Fredholm operator is the orthogonal complement of its kernel. -/
+private lemma range_eq_orthogonal_ker_of_isFredholm {H : Type*} [NormedAddCommGroup H]
+    [InnerProductSpace ℂ H] [CompleteSpace H] {S : H →L[ℂ] H} (hS : IsSelfAdjoint S)
+    (hfred : IsFredholm S) :
+    LinearMap.range (S : H →ₗ[ℂ] H) = (LinearMap.ker (S : H →ₗ[ℂ] H))ᗮ := by
+  have h := S.range_adjoint_eq_orthogonal_ker_of_isClosed_range hfred.isClosed_range
+  rwa [hS.adjoint_eq] at h
+
+/-- If `S` vanishes on `K`, then `S - c • 1` acts on `K` as multiplication by `-c`, which is
+invertible for `c ≠ 0`. -/
+private lemma isUnit_restrict_sub_smul_of_forall_eq_zero {H : Type*} [NormedAddCommGroup H]
+    [InnerProductSpace ℂ H] (S : H →L[ℂ] H) (K : Submodule ℂ H) (hS : ∀ x ∈ K, S x = 0)
+    {c : ℂ} (hc : c ≠ 0) (hRK : ∀ x : H, x ∈ K → (S - c • (1 : H →L[ℂ] H)) x ∈ K) :
+    IsUnit ((S - c • (1 : H →L[ℂ] H)).restrict hRK) := by
+  have heq : (S - c • (1 : H →L[ℂ] H)).restrict hRK = algebraMap ℂ (K →L[ℂ] K) (-c) := by
+    ext x
+    rw [coe_restrict_apply, sub_apply, smul_apply, one_apply_eq_self, hS x x.2,
+      zero_sub, ← neg_smul, Algebra.algebraMap_eq_smul_one, ← Submodule.coe_smul]
+    exact congrArg Subtype.val <| by rw [smul_apply, one_apply_eq_self]
+  rw [heq]
+  exact (isUnit_iff_ne_zero.mpr (neg_ne_zero.mpr hc)).map (algebraMap ℂ (K →L[ℂ] K))
+
+/-- A self-adjoint Fredholm operator `S` has `S - c • 1` invertible for all small nonzero `c`:
+it acts as `-c` on the finite-dimensional kernel, and on the orthogonal complement of the
+kernel it is a small perturbation of the isomorphism onto the range. -/
+private lemma exists_isUnit_sub_smul_of_isFredholm {H : Type*} [NormedAddCommGroup H]
+    [InnerProductSpace ℂ H] [CompleteSpace H] {S : H →L[ℂ] H} (hS : IsSelfAdjoint S)
+    (hfred : IsFredholm S) :
+    ∃ eps > 0, ∀ c : ℂ, c ≠ 0 → ‖c‖ < eps → IsUnit (S - c • (1 : H →L[ℂ] H)) := by
+  let K : Submodule ℂ H := LinearMap.ker (S : H →ₗ[ℂ] H)
+  have : FiniteDimensional ℂ K := hfred.finite_ker
+  have : CompleteSpace K := FiniteDimensional.complete ℂ K
+  have hclosed : IsClosed (LinearMap.range (S : H →ₗ[ℂ] H) : Set H) := hfred.isClosed_range
+  have hrange : LinearMap.range (S : H →ₗ[ℂ] H) = Kᗮ :=
+    range_eq_orthogonal_ker_of_isFredholm hS hfred
+  have hK0 : ∀ x ∈ K, S x = 0 := fun x hx => by
+    simpa only [ContinuousLinearMap.coe_coe] using (LinearMap.mem_ker).mp hx
+  have hKmem : ∀ x : H, x ∈ K → S x ∈ K := fun x hx => by
+    rw [hK0 x hx]
+    exact K.zero_mem
+  have hKo : ∀ x : H, x ∈ Kᗮ → S x ∈ Kᗮ := by
+    have hmem : K ∈ Module.End.invtSubmodule S.adjoint.toLinearMap := by
+      rw [hS.adjoint_eq]
+      exact hKmem
+    exact ContinuousLinearMap.orthogonal_mem_invtSubmodule hmem
+  -- On `Kᗮ`, `S` is an isomorphism `e`; `e - c • 1 = e (1 - c e⁻¹)` is invertible for small `c`.
+  let e : Kᗮ ≃L[ℂ] Kᗮ :=
+    (S.orthogonalKerEquivRange hclosed).trans (ContinuousLinearEquiv.ofEq _ _ hrange)
+  have he_apply (x : Kᗮ) : (e x : H) = S (x : H) := by
+    simp only [e, ContinuousLinearEquiv.trans_apply]
+    exact S.orthogonalKerEquivRange_apply hclosed x
+  have hmul : (e : Kᗮ →L[ℂ] Kᗮ) * (e.symm : Kᗮ →L[ℂ] Kᗮ) = 1 := by
+    rw [mul_def, ContinuousLinearEquiv.coe_comp_coe_symm, one_def]
+  let n : ℝ := ‖(e.symm : Kᗮ →L[ℂ] Kᗮ)‖
+  have hn1 : 0 < n + 1 := by linarith [norm_nonneg (e.symm : Kᗮ →L[ℂ] Kᗮ)]
+  refine ⟨1 / (n + 1), div_pos one_pos hn1, fun c hc hnormc => ?_⟩
+  have hsmall : ‖c • (e.symm : Kᗮ →L[ℂ] Kᗮ)‖ < 1 := by
+    calc
+      ‖c • (e.symm : Kᗮ →L[ℂ] Kᗮ)‖ ≤ ‖c‖ * n := by
+        simpa only [n] using opNorm_smul_le c (e.symm : Kᗮ →L[ℂ] Kᗮ)
+      _ ≤ ‖c‖ * (n + 1) :=
+        mul_le_mul_of_nonneg_left (le_add_of_nonneg_right zero_le_one) (norm_nonneg c)
+      _ < 1 / (n + 1) * (n + 1) := mul_lt_mul_of_pos_right hnormc hn1
+      _ = 1 := div_mul_cancel₀ (1 : ℝ) (ne_of_gt hn1)
+  have hfac : (e : Kᗮ →L[ℂ] Kᗮ) - c • 1 =
+      (e : Kᗮ →L[ℂ] Kᗮ) * (1 - c • (e.symm : Kᗮ →L[ℂ] Kᗮ)) := by
+    rw [mul_sub, mul_one,
+      Algebra.mul_smul_comm c (e : Kᗮ →L[ℂ] Kᗮ) (e.symm : Kᗮ →L[ℂ] Kᗮ), hmul]
+  have hRK : ∀ x : H, x ∈ K → (S - c • (1 : H →L[ℂ] H)) x ∈ K := by
+    intro x hx
+    rw [sub_apply, smul_apply, one_apply_eq_self, hK0 x hx, zero_sub, ← neg_smul]
+    exact K.smul_mem (-c) hx
+  have hRKo : ∀ x : H, x ∈ Kᗮ → (S - c • (1 : H →L[ℂ] H)) x ∈ Kᗮ := by
+    intro x hx
+    rw [sub_apply, smul_apply, one_apply_eq_self]
+    exact Kᗮ.sub_mem (hKo x hx) (Kᗮ.smul_mem c hx)
+  have hunitKo : IsUnit ((S - c • (1 : H →L[ℂ] H)).restrict hRKo) := by
+    have heq : (S - c • (1 : H →L[ℂ] H)).restrict hRKo =
+        (e : Kᗮ →L[ℂ] Kᗮ) - c • 1 := by
+      ext x
+      rw [coe_restrict_apply, sub_apply, smul_apply, one_apply_eq_self, ← he_apply x,
+        ← Submodule.coe_smul, ← Submodule.coe_sub]
+      exact congrArg Subtype.val <| by
+        rw [sub_apply, smul_apply, one_apply_eq_self, ContinuousLinearEquiv.coe_apply]
+    rw [heq, hfac]
+    exact IsUnit.mul (ContinuousLinearEquiv.toUnit e).isUnit
+      (IsUnit.one_sub_of_norm_lt_one (x := c • (e.symm : Kᗮ →L[ℂ] Kᗮ)) hsmall)
+  exact isUnit_of_isUnit_restrict_orthogonal _ K hRK hRKo
+    (isUnit_restrict_sub_smul_of_forall_eq_zero S K hK0 hc hRK) hunitKo
+
+/-- A self-adjoint Fredholm operator that is not invertible has a nontrivial kernel: a trivial
+kernel would make it bijective. -/
+private lemma ker_ne_bot_of_isFredholm_of_not_isUnit {H : Type*} [NormedAddCommGroup H]
+    [InnerProductSpace ℂ H] [CompleteSpace H] {S : H →L[ℂ] H} (hS : IsSelfAdjoint S)
+    (hfred : IsFredholm S) (hunit : ¬ IsUnit S) :
+    LinearMap.ker (S : H →ₗ[ℂ] H) ≠ ⊥ := by
+  intro hbot
+  have htop : LinearMap.range (S : H →ₗ[ℂ] H) = ⊤ := by
+    rw [range_eq_orthogonal_ker_of_isFredholm hS hfred, hbot, Submodule.bot_orthogonal_eq_top]
+  exact hunit ((ContinuousLinearMap.isUnit_iff_bijective (f := S)).mpr
+    ⟨LinearMap.ker_eq_bot.mp hbot, LinearMap.range_eq_top.mp htop⟩)
+
+/-- If `z` is in the spectrum of a self-adjoint `T` and `T - z • 1` is Fredholm, then `z` is an
+isolated point of the spectrum. -/
+private lemma isIsolatedIn_spectrum_of_isFredholm {H : Type*} [NormedAddCommGroup H]
+    [InnerProductSpace ℂ H] [CompleteSpace H] {T : H →L[ℂ] H} (hT : IsSelfAdjoint T) {z : ℂ}
+    (hz : z ∈ spectrum ℂ T) (hfred : IsFredholm (T - z • (1 : H →L[ℂ] H))) :
+    IsIsolatedIn z (spectrum ℂ T) := by
+  obtain ⟨eps, heps, hunit⟩ := exists_isUnit_sub_smul_of_isFredholm
+    (isSelfAdjoint_sub_smul_one_of_mem_spectrum hT hz) hfred
+  refine ⟨hz, Metric.eventually_nhds_iff.mpr ⟨eps, heps, fun w hdist hw => ?_⟩⟩
+  by_contra hwz
+  have hshift : T - z • (1 : H →L[ℂ] H) - (w - z) • (1 : H →L[ℂ] H) =
+      T - w • (1 : H →L[ℂ] H) := by
+    rw [sub_smul]
+    abel
+  refine not_isUnit_sub_smul_one_of_mem_spectrum hw ?_
+  rw [← hshift]
+  rw [dist_eq_norm] at hdist
+  exact hunit (w - z) (sub_ne_zero.mpr hwz) hdist
+
+/-- At an isolated point `z` of the spectrum of a self-adjoint `T` with finite-dimensional
+eigenspace, `T - z • 1` is Fredholm: the continuous functional calculus gives a finite-rank
+spectral projection `P` and an operator `Q` with `(T - z • 1) Q = Q (T - z • 1) = 1 - P`. -/
+private lemma isFredholm_sub_smul_of_isIsolatedIn {H : Type*} [NormedAddCommGroup H]
+    [InnerProductSpace ℂ H] [CompleteSpace H] {T : H →L[ℂ] H} (hT : IsSelfAdjoint T) {z : ℂ}
+    (hiso : IsIsolatedIn z (spectrum ℂ T))
+    (hfin : FiniteDimensional ℂ (LinearMap.ker ((T - z • (1 : H →L[ℂ] H)) : H →ₗ[ℂ] H))) :
+    IsFredholm (T - z • (1 : H →L[ℂ] H)) := by
+  let Sz : H →L[ℂ] H := T - z • (1 : H →L[ℂ] H)
+  have : IsStarNormal T := hT.isStarNormal
+  let f : ℂ → ℂ := fun w => if w = z then 1 else 0
+  let q : ℂ → ℂ := fun w => if w = z then 0 else (w - z)⁻¹
+  have hf : ContinuousOn f (spectrum ℂ T) := continuousOn_indicator_isolated hiso
+  have hq : ContinuousOn q (spectrum ℂ T) := continuousOn_resolvent_isolated hiso
+  have hmul0 : ∀ w : ℂ, (w - z) * f w = 0 := by
+    intro w
+    by_cases hw : w = z <;> simp [f, hw]
+  have hmulq : ∀ w : ℂ, (w - z) * q w = 1 - f w := by
+    intro w
+    by_cases hw : w = z
+    · simp [f, q, hw]
+    · simp [f, q, hw, mul_inv_cancel₀ (sub_ne_zero.mpr hw)]
+  let P : H →L[ℂ] H := cfc f T
+  let Q : H →L[ℂ] H := cfc q T
+  have hcont : ContinuousOn (fun w : ℂ => w - z) (spectrum ℂ T) :=
+    (continuous_id.sub continuous_const).continuousOn
+  have hcontId : ContinuousOn (fun w : ℂ => w) (spectrum ℂ T) := continuous_id.continuousOn
+  have hcontZ : ContinuousOn (fun _ : ℂ => z) (spectrum ℂ T) := continuousOn_const
+  have hSz_cfc : cfc (fun w : ℂ => w - z) T = Sz := by
+    rw [cfc_sub (fun w : ℂ => w) (fun _ : ℂ => z) T hcontId hcontZ, cfc_id' ℂ T,
+      cfc_const z T, Algebra.algebraMap_eq_smul_one]
+  have hSzP : Sz * P = 0 := by
+    rw [← hSz_cfc, ← cfc_mul (fun w : ℂ => w - z) f T hcont hf]
+    have hzero : (spectrum ℂ T).EqOn (fun w => (w - z) * f w) (fun _ => 0) :=
+      fun w _ => hmul0 w
+    rw [cfc_congr hzero, cfc_const_zero]
+  have hkerP : LinearMap.range (P : H →ₗ[ℂ] H) ≤ LinearMap.ker (Sz : H →ₗ[ℂ] H) := by
+    rw [LinearMap.range_le_ker_iff]
+    simpa only [mul_def, toLinearMap_comp, toLinearMap_zero] using
+      congrArg toLinearMap hSzP
+  have : FiniteDimensional ℂ (LinearMap.ker (Sz : H →ₗ[ℂ] H)) := hfin
+  have hfg : (P : H →ₗ[ℂ] H).HasFiniteRange := by
+    rw [LinearMap.hasFiniteRange_iff_range, Submodule.fg_iff_finiteDimensional]
+    exact Submodule.finiteDimensional_of_le hkerP
+  have hcompact : IsCompactOperator P := hfg.isCompactOperator
+  have hneg : IsCompactOperator (-P) := by simpa only [FunLike.coe_neg] using hcompact.neg
+  have hSzQ : Sz * Q = 1 - P := by
+    rw [← hSz_cfc, ← cfc_mul (fun w : ℂ => w - z) q T hcont hq]
+    have hEq : (spectrum ℂ T).EqOn (fun w => (w - z) * q w) (fun w => 1 - f w) :=
+      fun w _ => hmulq w
+    rw [cfc_congr hEq, cfc_sub (fun _ : ℂ => (1 : ℂ)) f T continuousOn_const hf,
+      cfc_const_one ℂ T]
+  have hQSz : Q * Sz = 1 - P := by
+    rw [← hSz_cfc, ← cfc_mul q (fun w : ℂ => w - z) T hq hcont]
+    have hEq : (spectrum ℂ T).EqOn (fun w => q w * (w - z)) (fun w => 1 - f w) :=
+      fun w _ => by
+        show q w * (w - z) = 1 - f w
+        rw [mul_comm, hmulq]
+    rw [cfc_congr hEq, cfc_sub (fun _ : ℂ => (1 : ℂ)) f T continuousOn_const hf,
+      cfc_const_one ℂ T]
+  have hleft : Q.comp Sz - 1 = -P := by rw [← mul_def, hQSz]; abel
+  have hright : Sz.comp Q - 1 = -P := by rw [← mul_def, hSzQ]; abel
+  refine (isFredholm_iff_exists_compact_remainders Sz).2 ⟨Q, ?_, ?_⟩
+  · rw [hleft]; exact hneg
+  · rw [hright]; exact hneg
+
 /-- **21.16**: the discrete spectrum of a bounded self-adjoint operator is exactly its
 isolated eigenvalues of finite multiplicity. -/
 theorem mem_spectrum_sdiff_essentialSpectrum_iff {H : Type*} [NormedAddCommGroup H]
@@ -254,190 +456,16 @@ theorem mem_spectrum_sdiff_essentialSpectrum_iff {H : Type*} [NormedAddCommGroup
       FiniteDimensional ℂ (LinearMap.ker
         ((T - z • (1 : H →L[ℂ] H)) : H →ₗ[ℂ] H)) := by
   constructor
-  · intro hz
-    let Sz : H →L[ℂ] H := T - z • (1 : H →L[ℂ] H)
-    have hzspec : z ∈ spectrum ℂ T := hz.1
-    have hnot : z ∉ essentialSpectrum T := hz.2
-    have hfred : IsFredholm Sz := by
+  · rintro ⟨hzspec, hnot⟩
+    have hfred : IsFredholm (T - z • (1 : H →L[ℂ] H)) := by
       by_contra h
-      exact hnot (by simpa [essentialSpectrum, Sz] using h)
-    have hzsa : IsSelfAdjoint z :=
-      RCLike.im_eq_zero_iff_isSelfAdjoint.mp (hT.im_eq_zero_of_mem_spectrum hzspec)
-    have hSz : IsSelfAdjoint Sz :=
-      hT.sub (hzsa.smul (IsSelfAdjoint.one (H →L[ℂ] H)))
-    let K : Submodule ℂ H := LinearMap.ker (Sz : H →ₗ[ℂ] H)
-    have : FiniteDimensional ℂ K := hfred.finite_ker
-    have : CompleteSpace K := FiniteDimensional.complete ℂ K
-    have hclosed : IsClosed (LinearMap.range (Sz : H →ₗ[ℂ] H) : Set H) :=
-      hfred.isClosed_range
-    have hrange : LinearMap.range (Sz : H →ₗ[ℂ] H) = Kᗮ := by
-      rw [← hSz.adjoint_eq]
-      exact Sz.range_adjoint_eq_orthogonal_ker_of_isClosed_range hclosed
-    have hker_ne : K ≠ ⊥ := by
-      intro hbot
-      have htop : LinearMap.range (Sz : H →ₗ[ℂ] H) = ⊤ := by
-        rw [hrange, hbot, Submodule.bot_orthogonal_eq_top]
-      have hbij : Function.Bijective Sz :=
-        ⟨LinearMap.ker_eq_bot.mp hbot, LinearMap.range_eq_top.mp htop⟩
-      have hunit : IsUnit Sz :=
-        (ContinuousLinearMap.isUnit_iff_bijective (f := Sz)).mpr hbij
-      apply spectrum.mem_iff.mp hzspec
-      rw [Algebra.algebraMap_eq_smul_one]
-      have : z • (1 : H →L[ℂ] H) - T = -Sz := by
-        simp only [Sz]
-        abel
-      rw [this]
-      exact hunit.neg
-    have hKmem : ∀ x : H, x ∈ K → Sz x ∈ K := by
-      intro x hx
-      have hx0 : Sz x = 0 := by
-        simpa only [ContinuousLinearMap.coe_coe] using (LinearMap.mem_ker).mp hx
-      rw [hx0]
-      exact K.zero_mem
-    have hKo : ∀ x : H, x ∈ Kᗮ → Sz x ∈ Kᗮ := by
-      have hmem : K ∈ Module.End.invtSubmodule Sz.adjoint.toLinearMap := by
-        rw [hSz.adjoint_eq]
-        exact hKmem
-      exact ContinuousLinearMap.orthogonal_mem_invtSubmodule hmem
-    let e : Kᗮ ≃L[ℂ] Kᗮ :=
-      (Sz.orthogonalKerEquivRange hclosed).trans (ContinuousLinearEquiv.ofEq _ _ hrange)
-    have he_apply (x : Kᗮ) : (e x : H) = Sz (x : H) := by
-      simp only [e, ContinuousLinearEquiv.trans_apply]
-      exact Sz.orthogonalKerEquivRange_apply hclosed x
-    have hmul : (e : Kᗮ →L[ℂ] Kᗮ) * (e.symm : Kᗮ →L[ℂ] Kᗮ) = 1 := by
-      rw [mul_def, ContinuousLinearEquiv.coe_comp_coe_symm, one_def]
-    let n : ℝ := ‖(e.symm : Kᗮ →L[ℂ] Kᗮ)‖
-    let eps : ℝ := 1 / (n + 1)
-    have hn1 : 0 < n + 1 := by linarith [norm_nonneg (e.symm : Kᗮ →L[ℂ] Kᗮ)]
-    have heps : 0 < eps := div_pos one_pos hn1
-    have hiso : ∀ w ∈ spectrum ℂ T, dist w z < eps → w = z := by
-      intro w hw hdist
-      by_contra hwz
-      let c : ℂ := w - z
-      have hnormc : ‖c‖ < eps := by simpa [c, dist_eq_norm] using hdist
-      have hsmall : ‖c • (e.symm : Kᗮ →L[ℂ] Kᗮ)‖ < 1 := by
-        calc
-          ‖c • (e.symm : Kᗮ →L[ℂ] Kᗮ)‖ ≤ ‖c‖ * n := by
-            simpa only [n] using opNorm_smul_le c (e.symm : Kᗮ →L[ℂ] Kᗮ)
-          _ ≤ ‖c‖ * (n + 1) :=
-            mul_le_mul_of_nonneg_left (le_add_of_nonneg_right zero_le_one) (norm_nonneg c)
-          _ < eps * (n + 1) := mul_lt_mul_of_pos_right hnormc hn1
-          _ = 1 := by
-            simp only [eps]
-            exact div_mul_cancel₀ (1 : ℝ) (ne_of_gt hn1)
-      have hfac : (e : Kᗮ →L[ℂ] Kᗮ) - c • 1 =
-          (e : Kᗮ →L[ℂ] Kᗮ) * (1 - c • (e.symm : Kᗮ →L[ℂ] Kᗮ)) := by
-        rw [mul_sub, mul_one,
-          Algebra.mul_smul_comm c (e : Kᗮ →L[ℂ] Kᗮ) (e.symm : Kᗮ →L[ℂ] Kᗮ), hmul]
-      have hRK : ∀ x : H, x ∈ K → (Sz - c • (1 : H →L[ℂ] H)) x ∈ K := by
-        intro x hx
-        have hx0 : Sz x = 0 := by
-          simpa only [ContinuousLinearMap.coe_coe] using (LinearMap.mem_ker).mp hx
-        rw [sub_apply, smul_apply, one_apply_eq_self, hx0, zero_sub, ← neg_smul]
-        exact K.smul_mem (-c) hx
-      have hRKo : ∀ x : H, x ∈ Kᗮ → (Sz - c • (1 : H →L[ℂ] H)) x ∈ Kᗮ := by
-        intro x hx
-        rw [sub_apply, smul_apply, one_apply_eq_self]
-        exact Kᗮ.sub_mem (hKo x hx) (Kᗮ.smul_mem c hx)
-      have hunitK : IsUnit ((Sz - c • (1 : H →L[ℂ] H)).restrict hRK) := by
-        have heq : (Sz - c • (1 : H →L[ℂ] H)).restrict hRK =
-            algebraMap ℂ (K →L[ℂ] K) (-c) := by
-          ext x
-          have hx0 : Sz (x : H) = 0 := by
-            simpa only [ContinuousLinearMap.coe_coe] using (LinearMap.mem_ker).mp x.2
-          rw [coe_restrict_apply, sub_apply, smul_apply, one_apply_eq_self, hx0,
-            zero_sub, ← neg_smul, Algebra.algebraMap_eq_smul_one, ← Submodule.coe_smul]
-          exact congrArg Subtype.val <| by rw [smul_apply, one_apply_eq_self]
-        rw [heq]
-        exact (isUnit_iff_ne_zero.mpr (neg_ne_zero.mpr (sub_ne_zero.mpr hwz))).map
-          (algebraMap ℂ (K →L[ℂ] K))
-      have hunitKo : IsUnit ((Sz - c • (1 : H →L[ℂ] H)).restrict hRKo) := by
-        have heq : (Sz - c • (1 : H →L[ℂ] H)).restrict hRKo =
-            (e : Kᗮ →L[ℂ] Kᗮ) - c • 1 := by
-          ext x
-          rw [coe_restrict_apply, sub_apply, smul_apply, one_apply_eq_self, ← he_apply x,
-            ← Submodule.coe_smul, ← Submodule.coe_sub]
-          exact congrArg Subtype.val <| by
-            rw [sub_apply, smul_apply, one_apply_eq_self, ContinuousLinearEquiv.coe_apply]
-        rw [heq, hfac]
-        exact IsUnit.mul (ContinuousLinearEquiv.toUnit e).isUnit
-          (IsUnit.one_sub_of_norm_lt_one (x := c • (e.symm : Kᗮ →L[ℂ] Kᗮ)) hsmall)
-      have hunitSc : IsUnit (Sz - c • (1 : H →L[ℂ] H)) :=
-        isUnit_of_isUnit_restrict_orthogonal _ K hRK hRKo hunitK hunitKo
-      apply spectrum.mem_iff.mp hw
-      rw [Algebra.algebraMap_eq_smul_one]
-      have hshift : w • (1 : H →L[ℂ] H) - T = -(Sz - c • (1 : H →L[ℂ] H)) := by
-        have hwc : w = z + c := by
-          simp only [c]
-          abel
-        simp only [hwc, add_smul, Sz]
-        abel
-      rw [hshift]
-      exact hunitSc.neg
-    refine ⟨?_, hker_ne, hfred.finite_ker⟩
-    exact ⟨hzspec, Metric.eventually_nhds_iff.mpr ⟨eps, heps, fun w hdist hw => hiso w hw hdist⟩⟩
+      exact hnot (by simpa [essentialSpectrum] using h)
+    exact ⟨isIsolatedIn_spectrum_of_isFredholm hT hzspec hfred,
+      ker_ne_bot_of_isFredholm_of_not_isUnit
+        (isSelfAdjoint_sub_smul_one_of_mem_spectrum hT hzspec) hfred
+        (not_isUnit_sub_smul_one_of_mem_spectrum hzspec), hfred.finite_ker⟩
   · rintro ⟨hiso, _, hfin⟩
-    let Sz : H →L[ℂ] H := T - z • (1 : H →L[ℂ] H)
-    have hzspec : z ∈ spectrum ℂ T := hiso.1
-    have : IsStarNormal T := hT.isStarNormal
-    let f : ℂ → ℂ := fun w => if w = z then 1 else 0
-    let q : ℂ → ℂ := fun w => if w = z then 0 else (w - z)⁻¹
-    have hf : ContinuousOn f (spectrum ℂ T) := continuousOn_indicator_isolated hiso
-    have hq : ContinuousOn q (spectrum ℂ T) := continuousOn_resolvent_isolated hiso
-    have hmul0 : ∀ w : ℂ, (w - z) * f w = 0 := by
-      intro w
-      by_cases hw : w = z <;> simp [f, hw]
-    have hmulq : ∀ w : ℂ, (w - z) * q w = 1 - f w := by
-      intro w
-      by_cases hw : w = z
-      · simp [f, q, hw]
-      · simp [f, q, hw, mul_inv_cancel₀ (sub_ne_zero.mpr hw)]
-    let P : H →L[ℂ] H := cfc f T
-    let Q : H →L[ℂ] H := cfc q T
-    have hcont : ContinuousOn (fun w : ℂ => w - z) (spectrum ℂ T) :=
-      (continuous_id.sub continuous_const).continuousOn
-    have hcontId : ContinuousOn (fun w : ℂ => w) (spectrum ℂ T) := continuous_id.continuousOn
-    have hcontZ : ContinuousOn (fun _ : ℂ => z) (spectrum ℂ T) := continuousOn_const
-    have hSz_cfc : cfc (fun w : ℂ => w - z) T = Sz := by
-      rw [cfc_sub (fun w : ℂ => w) (fun _ : ℂ => z) T hcontId hcontZ, cfc_id' ℂ T,
-        cfc_const z T, Algebra.algebraMap_eq_smul_one]
-    have hSzP : Sz * P = 0 := by
-      rw [← hSz_cfc, ← cfc_mul (fun w : ℂ => w - z) f T hcont hf]
-      have hzero : (spectrum ℂ T).EqOn (fun w => (w - z) * f w) (fun _ => 0) :=
-        fun w _ => hmul0 w
-      rw [cfc_congr hzero, cfc_const_zero]
-    have hkerP : LinearMap.range (P : H →ₗ[ℂ] H) ≤ LinearMap.ker (Sz : H →ₗ[ℂ] H) := by
-      rw [LinearMap.range_le_ker_iff]
-      simpa only [mul_def, toLinearMap_comp, toLinearMap_zero] using
-        congrArg toLinearMap hSzP
-    have : FiniteDimensional ℂ (LinearMap.ker (Sz : H →ₗ[ℂ] H)) := hfin
-    have hfg : (P : H →ₗ[ℂ] H).HasFiniteRange := by
-      rw [LinearMap.hasFiniteRange_iff_range, Submodule.fg_iff_finiteDimensional]
-      exact Submodule.finiteDimensional_of_le hkerP
-    have hcompact : IsCompactOperator P := hfg.isCompactOperator
-    have hneg : IsCompactOperator (-P) := by simpa only [FunLike.coe_neg] using hcompact.neg
-    have hSzQ : Sz * Q = 1 - P := by
-      rw [← hSz_cfc, ← cfc_mul (fun w : ℂ => w - z) q T hcont hq]
-      have hEq : (spectrum ℂ T).EqOn (fun w => (w - z) * q w) (fun w => 1 - f w) :=
-        fun w _ => hmulq w
-      rw [cfc_congr hEq, cfc_sub (fun _ : ℂ => (1 : ℂ)) f T continuousOn_const hf,
-        cfc_const_one ℂ T]
-    have hQSz : Q * Sz = 1 - P := by
-      rw [← hSz_cfc, ← cfc_mul q (fun w : ℂ => w - z) T hq hcont]
-      have hEq : (spectrum ℂ T).EqOn (fun w => q w * (w - z)) (fun w => 1 - f w) :=
-        fun w _ => by
-          show q w * (w - z) = 1 - f w
-          rw [mul_comm, hmulq]
-      rw [cfc_congr hEq, cfc_sub (fun _ : ℂ => (1 : ℂ)) f T continuousOn_const hf,
-        cfc_const_one ℂ T]
-    have hleft : Q.comp Sz - 1 = -P := by rw [← mul_def, hQSz]; abel
-    have hright : Sz.comp Q - 1 = -P := by rw [← mul_def, hSzQ]; abel
-    have hfred : IsFredholm Sz := by
-      refine (isFredholm_iff_exists_compact_remainders Sz).2 ⟨Q, ?_, ?_⟩
-      · rw [hleft]; exact hneg
-      · rw [hright]; exact hneg
-    refine ⟨hzspec, ?_⟩
-    intro hmem
-    exact hmem (by simpa [essentialSpectrum, Sz] using hfred)
+    refine ⟨hiso.1, fun hmem => hmem ?_⟩
+    simpa [essentialSpectrum] using isFredholm_sub_smul_of_isIsolatedIn hT hiso hfin
 
 end CKMA

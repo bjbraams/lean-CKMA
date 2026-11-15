@@ -7,11 +7,9 @@ module
 
 public import CKMA.Analysis.Operator.Dilation.CommutantDefect
 public import CKMA.Analysis.Operator.Dilation.CommutantFactor
-public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
-public import Mathlib.Analysis.CStarAlgebra.ContinuousLinearMap
 public import Mathlib.Analysis.InnerProductSpace.StarOrder
 public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Basic
-public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Restrict
+public import Mathlib.Analysis.CStarAlgebra.ContinuousLinearMap
 
 /-!
 # Blocks of the commutant lifting iteration

@@ -5,11 +5,15 @@ Authors: CKMA contributors
 -/
 module
 
-public import CKMA.Dynamics.Ergodic.Pointwise.BirkhoffLimit
-public import Mathlib.Dynamics.Ergodic.Function
-public import Mathlib.MeasureTheory.Function.ConditionalExpectation.Real
-public import Mathlib.MeasureTheory.Function.LpSeminorm.Basic
-public import Mathlib.MeasureTheory.Integral.Lebesgue.Add
+public import Mathlib.MeasureTheory.MeasurableSpace.Invariants
+public import Mathlib.Dynamics.BirkhoffSum.Average
+public import Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic
+
+import CKMA.Dynamics.Ergodic.Pointwise.BirkhoffLimit
+import CKMA.Dynamics.Ergodic.Pointwise.Maximal
+import Mathlib.Dynamics.BirkhoffSum.QuasiMeasurePreserving
+import Mathlib.MeasureTheory.Integral.DominatedConvergence
+import Mathlib.MeasureTheory.Function.ConditionalExpectation.Real
 
 import Mathlib.Tactic
 

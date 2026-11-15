@@ -5,12 +5,10 @@ Authors: CKMA contributors
 -/
 module
 
-public import CKMA.Dynamics.Ergodic.Pointwise.Birkhoff
-public import CKMA.Dynamics.Ergodic.Pointwise.KingmanOrbit
+public import Mathlib.MeasureTheory.Integral.Bochner.Basic
 public import Mathlib.Analysis.Subadditive
-public import Mathlib.MeasureTheory.Integral.Bochner.L1
-public import Mathlib.MeasureTheory.OuterMeasure.BorelCantelli
-public import Mathlib.Topology.Instances.EReal.Lemmas
+
+import CKMA.Dynamics.Ergodic.Pointwise.Maximal
 
 import Mathlib.Tactic
 

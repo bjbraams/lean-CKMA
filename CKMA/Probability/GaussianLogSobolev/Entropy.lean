@@ -7,6 +7,9 @@ module
 
 public import CKMA.Probability.GaussianLogSobolev.OneDim
 
+import CKMA.Probability.GaussianLogSobolev.IntegrationByParts
+import Mathlib.Analysis.Calculus.ParametricIntegral
+
 /-!
 # Entropy derivative of the Ornstein–Uhlenbeck semigroup
 
@@ -35,19 +38,10 @@ open GaussianLogSobolev
 open MeasureTheory ProbabilityTheory Set Filter
 open scoped NNReal ENNReal Real Topology
 
-/-- Logarithms of the semigroup stay bounded when the integrand takes values in `[δ, M]`. -/
-private lemma abs_log_ouSemigroup_le {f : ℝ → ℝ} {s x δ M : ℝ} (hf : Continuous f) (hδ : 0 < δ)
-    (hδf : ∀ y, δ ≤ f y) (hM : ∀ y, |f y| ≤ M) :
-    |Real.log (ouSemigroup s f x)| ≤ max |Real.log δ| |Real.log M| := by
-  have hpos : 0 < ouSemigroup s f x :=
-    lt_of_lt_of_le hδ (ouSemigroup_lower hf ⟨M, hM⟩ hδf)
-  have hu_le : ouSemigroup s f x ≤ M :=
-    ouSemigroup_upper hf ⟨M, hM⟩ (fun y => (le_abs_self (f y)).trans (hM y))
-  have hle1 := Real.log_le_log hδ (ouSemigroup_lower (t := s) (x := x) hf ⟨M, hM⟩ hδf)
-  have hle2 := Real.log_le_log hpos hu_le
-  refine abs_le.mpr ⟨?_, ?_⟩
-  · exact ((neg_le_neg (le_max_left _ _)).trans (neg_abs_le _)).trans hle1
-  · exact (hle2.trans (le_abs_self _)).trans (le_max_right _ _)
+/-- A linear function of `|x|` is integrable for the standard Gaussian. -/
+private lemma integrable_mul_abs_add_const (a c : ℝ) :
+    Integrable (fun x : ℝ => a * (|x| + c)) (gaussianReal 0 1) :=
+  (integrable_abs_gaussianReal.add (integrable_const c)).const_mul a
 
 /-- The spatial integral of the semigroup time derivative vanishes. -/
 private lemma integral_timeDeriv_ouSemigroup {f : ℝ → ℝ} {t : ℝ} (ht : 0 < t) (hf : ContDiff ℝ 2 f)
@@ -57,7 +51,7 @@ private lemma integral_timeDeriv_ouSemigroup {f : ℝ → ℝ} {t : ℝ} (ht : 0
   obtain ⟨B, hB⟩ := hB
   obtain ⟨B2, hB2⟩ := hB2
   obtain ⟨M, hM⟩ := hM
-  obtain ⟨hf1, hf'1⟩ := contDiff_one_deriv_of_two hf
+  obtain ⟨hf1, _⟩ := contDiff_one_deriv_of_two hf
   let γ : Measure ℝ := gaussianReal 0 1
   let sset : Set ℝ := Ioo (t / 2) (t + 1)
   have hs : sset ∈ nhds t := Ioo_mem_nhds (by linarith) (by linarith)
@@ -70,25 +64,8 @@ private lemma integral_timeDeriv_ouSemigroup {f : ℝ → ℝ} {t : ℝ} (ht : 0
     (continuous_ouSemigroup hf.continuous ⟨M, hM⟩).aestronglyMeasurable
   have hF_int : Integrable (F t) γ :=
     integrable_of_abs_le (hmeas t) (fun x => abs_ouSemigroup_le hf.continuous hM)
-  have hdt_cont : Continuous (F' t) := by
-    have hfun : F' t = fun x =>
-        deriv (deriv (ouSemigroup t f)) x - x * deriv (ouSemigroup t f) x := by
-      funext x
-      exact deriv_ouSemigroup_eq_generator (x := x) ht hf ⟨B, hB⟩ ⟨B2, hB2⟩ ⟨M, hM⟩
-    rw [hfun]
-    have h1 : Continuous (deriv (ouSemigroup t f)) := by
-      have hrew : deriv (ouSemigroup t f) = fun x =>
-          ouScale t * ouSemigroup t (deriv f) x :=
-        funext fun x => deriv_ouSemigroup_space hf1 ⟨B, hB⟩ ⟨M, hM⟩
-      rw [hrew]
-      exact continuous_const.mul (continuous_ouSemigroup hf1.continuous_deriv_one ⟨B, hB⟩)
-    have h2 : Continuous (deriv (deriv (ouSemigroup t f))) := by
-      have hrew : deriv (deriv (ouSemigroup t f)) = fun x =>
-          ouScale t ^ 2 * ouSemigroup t (deriv (deriv f)) x :=
-        funext fun x => deriv_ouSemigroup_space₂ hf ⟨B, hB⟩ ⟨B2, hB2⟩ ⟨M, hM⟩
-      rw [hrew]
-      exact continuous_const.mul (continuous_ouSemigroup hf'1.continuous_deriv_one ⟨B2, hB2⟩)
-    exact h2.sub (continuous_id.mul h1)
+  have hdt_cont : Continuous (F' t) :=
+    continuous_deriv_ouSemigroup_time ht hf ⟨B, hB⟩ ⟨B2, hB2⟩ ⟨M, hM⟩
   have hF'_meas : AEStronglyMeasurable (F' t) γ := hdt_cont.aestronglyMeasurable
   have h_bound : ∀ᵐ x ∂γ, ∀ s ∈ sset, ‖F' s x‖ ≤ bound x := by
     refine ae_of_all _ fun x s hsx => ?_
@@ -96,12 +73,7 @@ private lemma integral_timeDeriv_ouSemigroup {f : ℝ → ℝ} {t : ℝ} (ht : 0
     have hs1 : t / 2 < s := hsx.1
     exact abs_deriv_ouSemigroup_time_le (s := s) (x := x) (t0 := t / 2)
       (by linarith : 0 < t / 2) (le_of_lt hs1) hf1 hB ⟨M, hM⟩
-  have hbound_int : Integrable bound γ := by
-    have hfun : bound = fun x => |B| * |x| + |B| * C * Iabs := by
-      funext x
-      ring
-    rw [hfun]
-    exact (integrable_abs_gaussianReal.const_mul _).add (integrable_const _)
+  have hbound_int : Integrable bound γ := integrable_mul_abs_add_const |B| (C * Iabs)
   have h_diff : ∀ᵐ x ∂γ, ∀ s ∈ sset, HasDerivAt (F · x) (F' s x) s := by
     refine ae_of_all _ fun x s hsx => ?_
     have hs0 : 0 < s := by
@@ -126,6 +98,49 @@ private lemma integral_timeDeriv_ouSemigroup {f : ℝ → ℝ} {t : ℝ} (ht : 0
     rw [← hderiv_eq, hderiv0]
   simpa [F', γ] using hzero
 
+/-- At positive time, the time derivative of the semigroup is Gaussian integrable in space. -/
+private lemma integrable_deriv_ouSemigroup_time {f : ℝ → ℝ} {t : ℝ} (ht : 0 < t)
+    (hf : ContDiff ℝ 2 f) (hB : ∃ B, ∀ y, |deriv f y| ≤ B)
+    (hB2 : ∃ B2, ∀ y, |deriv (deriv f) y| ≤ B2) (hM : ∃ M, ∀ y, |f y| ≤ M) :
+    Integrable (fun x => deriv (fun r => ouSemigroup r f x) t) (gaussianReal 0 1) := by
+  obtain ⟨B, hB'⟩ := hB
+  refine Integrable.mono'
+    (integrable_mul_abs_add_const |B| ((1 / ouStdev (t / 2)) * ∫ y, |y| ∂gaussianReal 0 1))
+    (continuous_deriv_ouSemigroup_time ht hf ⟨B, hB'⟩ hB2 hM).aestronglyMeasurable ?_
+  filter_upwards with x
+  rw [Real.norm_eq_abs]
+  exact abs_deriv_ouSemigroup_time_le (s := t) (x := x) (t0 := t / 2)
+    (by linarith : 0 < t / 2) (by linarith : t / 2 ≤ t) (contDiff_one_deriv_of_two hf).1 hB' hM
+
+/-- At positive time, the time derivative of the semigroup times the logarithm of the
+semigroup is Gaussian integrable in space. -/
+private lemma integrable_deriv_ouSemigroup_time_mul_log {f : ℝ → ℝ} {t δ : ℝ} (ht : 0 < t)
+    (hf : ContDiff ℝ 2 f) (hδ : 0 < δ) (hδf : ∀ y, δ ≤ f y) (hB : ∃ B, ∀ y, |deriv f y| ≤ B)
+    (hB2 : ∃ B2, ∀ y, |deriv (deriv f) y| ≤ B2) (hM : ∃ M, ∀ y, |f y| ≤ M) :
+    Integrable (fun x => (deriv (fun r => ouSemigroup r f x) t) * Real.log (ouSemigroup t f x))
+      (gaussianReal 0 1) := by
+  obtain ⟨B, hB'⟩ := hB
+  obtain ⟨M, hM'⟩ := hM
+  let C : ℝ := 1 / ouStdev (t / 2)
+  let Iabs : ℝ := ∫ y, |y| ∂gaussianReal 0 1
+  let L0 : ℝ := max |Real.log δ| |Real.log M|
+  have hlog_cont : Continuous (fun x => Real.log (ouSemigroup t f x)) :=
+    (continuous_ouSemigroup hf.continuous ⟨M, hM'⟩).log fun x =>
+      (hδ.trans_le (ouSemigroup_lower hf.continuous ⟨M, hM'⟩ hδf)).ne'
+  refine Integrable.mono' ((integrable_mul_abs_add_const |B| (C * Iabs)).const_mul L0)
+    (((continuous_deriv_ouSemigroup_time ht hf ⟨B, hB'⟩ hB2 ⟨M, hM'⟩).mul
+      hlog_cont).aestronglyMeasurable) ?_
+  filter_upwards with x
+  rw [Real.norm_eq_abs, abs_mul]
+  have hdt := abs_deriv_ouSemigroup_time_le (s := t) (x := x) (t0 := t / 2)
+    (by linarith : 0 < t / 2) (by linarith : t / 2 ≤ t) (contDiff_one_deriv_of_two hf).1 hB'
+    ⟨M, hM'⟩
+  have hlog := abs_log_ouSemigroup_le (s := t) (x := x) hf.continuous hδ hδf hM'
+  calc |deriv (fun r => ouSemigroup r f x) t| * |Real.log (ouSemigroup t f x)|
+      ≤ (|B| * (|x| + C * Iabs)) * L0 :=
+        mul_le_mul hdt hlog (abs_nonneg _) ((abs_nonneg _).trans hdt)
+    _ = L0 * (|B| * (|x| + C * Iabs)) := mul_comm _ _
+
 /-- The entropy integral decreases at the Fisher-information rate. -/
 lemma hasDerivAt_entropy_ouSemigroup {f : ℝ → ℝ} {t δ : ℝ} (ht : 0 < t) (hf : ContDiff ℝ 2 f)
     (hδ : 0 < δ) (hδf : ∀ y, δ ≤ f y) (hB : ∃ B, ∀ y, |deriv f y| ≤ B)
@@ -137,7 +152,6 @@ lemma hasDerivAt_entropy_ouSemigroup {f : ℝ → ℝ} {t δ : ℝ} (ht : 0 < t)
   obtain ⟨B2, hB2⟩ := hB2
   obtain ⟨M, hM⟩ := hM
   obtain ⟨hf1, _⟩ := contDiff_one_deriv_of_two hf
-  have hMpos : 0 < M := lt_of_lt_of_le hδ ((hδf 0).trans ((le_abs_self _).trans (hM 0)))
   let γ : Measure ℝ := gaussianReal 0 1
   let sset : Set ℝ := Ioo (t / 2) (t + 1)
   have hs : sset ∈ nhds t := Ioo_mem_nhds (by linarith) (by linarith)
@@ -164,32 +178,12 @@ lemma hasDerivAt_entropy_ouSemigroup {f : ℝ → ℝ} {t δ : ℝ} (ht : 0 < t)
       have hmul := mul_le_mul habs hlog (abs_nonneg _) (le_trans (abs_nonneg _) (hM 0))
       exact hmul.trans (le_add_of_nonneg_right zero_le_one)
     exact integrable_of_abs_le (hmeas t) hL0
-  have hdt_cont : Continuous (fun x => deriv (fun r => ouSemigroup r f x) t) := by
-    have hfun : (fun x => deriv (fun r => ouSemigroup r f x) t) =
-        fun x => deriv (deriv (ouSemigroup t f)) x - x * deriv (ouSemigroup t f) x := by
-      funext x
-      exact deriv_ouSemigroup_eq_generator (x := x) ht hf ⟨B, hB⟩ ⟨B2, hB2⟩ ⟨M, hM⟩
-    rw [hfun]
-    obtain ⟨hf1', hf'1⟩ := contDiff_one_deriv_of_two hf
-    have h1 : Continuous (deriv (ouSemigroup t f)) := by
-      have hrew : deriv (ouSemigroup t f) = fun x =>
-          ouScale t * ouSemigroup t (deriv f) x :=
-        funext fun x => deriv_ouSemigroup_space (t := t) (x := x) hf1' ⟨B, hB⟩ ⟨M, hM⟩
-      rw [hrew]
-      exact continuous_const.mul (continuous_ouSemigroup hf1'.continuous_deriv_one ⟨B, hB⟩)
-    have h2 : Continuous (deriv (deriv (ouSemigroup t f))) := by
-      have hrew : deriv (deriv (ouSemigroup t f)) = fun x =>
-          ouScale t ^ 2 * ouSemigroup t (deriv (deriv f)) x :=
-        funext fun x =>
-          deriv_ouSemigroup_space₂ (t := t) (x := x) hf ⟨B, hB⟩ ⟨B2, hB2⟩ ⟨M, hM⟩
-      rw [hrew]
-      exact continuous_const.mul (continuous_ouSemigroup hf'1.continuous_deriv_one ⟨B2, hB2⟩)
-    exact h2.sub (continuous_id.mul h1)
   have hlog_cont : Continuous (fun x => Real.log (ouSemigroup t f x)) := by
     exact (continuous_ouSemigroup hf.continuous ⟨M, hM⟩).log
       (fun x => (lt_of_lt_of_le hδ (hpos_s t x)).ne')
   have hF'_meas : AEStronglyMeasurable (F' t) γ :=
-    (hdt_cont.mul (hlog_cont.add continuous_const)).aestronglyMeasurable
+    ((continuous_deriv_ouSemigroup_time ht hf ⟨B, hB⟩ ⟨B2, hB2⟩ ⟨M, hM⟩).mul
+      (hlog_cont.add continuous_const)).aestronglyMeasurable
   have h_bound : ∀ᵐ x ∂γ, ∀ s ∈ sset, ‖F' s x‖ ≤ bound x := by
     refine ae_of_all _ fun x s hsx => ?_
     have hs1 : t / 2 < s := hsx.1
@@ -197,27 +191,15 @@ lemma hasDerivAt_entropy_ouSemigroup {f : ℝ → ℝ} {t δ : ℝ} (ht : 0 < t)
       (by linarith : 0 < t / 2) (le_of_lt hs1) hf1 hB ⟨M, hM⟩
     have hlog := abs_log_ouSemigroup_le (s := s) (x := x) hf.continuous hδ hδf hM
     rw [Real.norm_eq_abs, abs_mul]
-    have hlog1 : |Real.log (ouSemigroup s f x) + 1| ≤ L := by
-      have hsum : |Real.log (ouSemigroup s f x) + 1| ≤
-          |Real.log (ouSemigroup s f x)| + 1 := by
-        simpa using abs_add_le (Real.log (ouSemigroup s f x)) (1 : ℝ)
-      have hmax : |Real.log (ouSemigroup s f x)| + 1 ≤ L := by
-        unfold L
-        linarith [hlog]
-      exact hsum.trans hmax
-    have hlin : 0 ≤ |B| * (|x| + C * Iabs) := mul_nonneg (abs_nonneg _) (by
-      have hC : 0 ≤ C := div_nonneg zero_le_one (le_of_lt (ouStdev_pos (by linarith : 0 < t / 2)))
-      have hI : 0 ≤ Iabs := integral_nonneg fun y => abs_nonneg y
-      nlinarith [abs_nonneg x, hC, hI])
-    exact mul_le_mul hdt hlog1 (abs_nonneg _) hlin
+    have hlog1 : |Real.log (ouSemigroup s f x) + 1| ≤ L :=
+      (abs_add_le _ _).trans (by rw [abs_one]; exact add_le_add_left hlog 1)
+    exact mul_le_mul hdt hlog1 (abs_nonneg _) ((abs_nonneg _).trans hdt)
   have hbound_int : Integrable bound γ := by
-    have hlin : Integrable (fun x => |B| * |x| + |B| * C * Iabs) γ :=
-      (integrable_abs_gaussianReal.const_mul _).add (integrable_const _)
-    have hfun : bound = fun x => L * (|B| * |x| + |B| * C * Iabs) := by
+    have hfun : bound = fun x => L * (|B| * (|x| + C * Iabs)) := by
       funext x
       ring
     rw [hfun]
-    exact hlin.const_mul L
+    exact (integrable_mul_abs_add_const |B| (C * Iabs)).const_mul L
   have h_diff : ∀ᵐ x ∂γ, ∀ s ∈ sset, HasDerivAt (F · x) (F' s x) s := by
     refine ae_of_all _ fun x s hsx => ?_
     have hs0 : 0 < s := by
@@ -227,42 +209,6 @@ lemma hasDerivAt_entropy_ouSemigroup {f : ℝ → ℝ} {t δ : ℝ} (ht : 0 < t)
   have hderiv := hasDerivAt_integral_of_dominated_loc_of_deriv_le
     (μ := γ) (F := F) (F' := F') (bound := bound) (x₀ := t) (s := sset)
     hs (Filter.Eventually.of_forall hmeas) hF_int hF'_meas h_bound hbound_int h_diff
-  have hlin : Integrable (fun x => |B| * (|x| + C * Iabs)) γ := by
-    have hfun : (fun x => |B| * (|x| + C * Iabs)) =
-        fun x => |B| * |x| + |B| * C * Iabs := by
-      funext x
-      ring
-    rw [hfun]
-    exact (integrable_abs_gaussianReal.const_mul _).add (integrable_const _)
-  have hdt_int : Integrable (fun x => deriv (fun r => ouSemigroup r f x) t) γ := by
-    refine Integrable.mono' hlin hdt_cont.aestronglyMeasurable ?_
-    filter_upwards with x
-    rw [Real.norm_eq_abs]
-    exact abs_deriv_ouSemigroup_time_le (s := t) (x := x) (t0 := t / 2)
-      (by linarith : 0 < t / 2) (by linarith : t / 2 ≤ t) hf1 hB ⟨M, hM⟩
-  let L0 : ℝ := max |Real.log δ| |Real.log M|
-  have hprod_int : Integrable (fun x =>
-      (deriv (fun r => ouSemigroup r f x) t) * Real.log (ouSemigroup t f x)) γ := by
-    refine Integrable.mono' (hlin.const_mul |L0|)
-      ((hdt_cont.mul hlog_cont).aestronglyMeasurable) ?_
-    filter_upwards with x
-    rw [Real.norm_eq_abs, abs_mul]
-    have hdt := abs_deriv_ouSemigroup_time_le (s := t) (x := x) (t0 := t / 2)
-      (by linarith : 0 < t / 2) (by linarith : t / 2 ≤ t) hf1 hB ⟨M, hM⟩
-    have hlog := abs_log_ouSemigroup_le (s := t) (x := x) hf.continuous hδ hδf hM
-    have hlin0 : 0 ≤ |B| * (|x| + C * Iabs) := mul_nonneg (abs_nonneg _) (by
-      have hC : 0 ≤ C :=
-        div_nonneg zero_le_one (le_of_lt (ouStdev_pos (by linarith : 0 < t / 2)))
-      have hI : 0 ≤ Iabs := integral_nonneg fun y => abs_nonneg y
-      nlinarith [abs_nonneg x, hC, hI])
-    calc |deriv (fun r => ouSemigroup r f x) t| * |Real.log (ouSemigroup t f x)|
-        ≤ (|B| * (|x| + C * Iabs)) * |Real.log (ouSemigroup t f x)| :=
-          mul_le_mul_of_nonneg_right hdt (abs_nonneg _)
-      _ ≤ (|B| * (|x| + C * Iabs)) * L0 :=
-          mul_le_mul_of_nonneg_left hlog hlin0
-      _ = |L0| * (|B| * (|x| + C * Iabs)) := by
-          rw [abs_of_nonneg (le_trans (abs_nonneg (Real.log δ)) (le_max_left _ _))]
-          ring
   have hsplit : ∫ x, F' t x ∂γ =
       ∫ x, (deriv (fun r => ouSemigroup r f x) t) * Real.log (ouSemigroup t f x) ∂γ +
         ∫ x, deriv (fun r => ouSemigroup r f x) t ∂γ := by
@@ -271,7 +217,9 @@ lemma hasDerivAt_entropy_ouSemigroup {f : ℝ → ℝ} {t δ : ℝ} (ht : 0 < t)
         deriv (fun r => ouSemigroup r f x) t := by
       funext x
       ring
-    rw [hfun, integral_add hprod_int hdt_int]
+    rw [hfun, integral_add
+      (integrable_deriv_ouSemigroup_time_mul_log ht hf hδ hδf ⟨B, hB⟩ ⟨B2, hB2⟩ ⟨M, hM⟩)
+      (integrable_deriv_ouSemigroup_time ht hf ⟨B, hB⟩ ⟨B2, hB2⟩ ⟨M, hM⟩)]
   have hzero : ∫ x, deriv (fun r => ouSemigroup r f x) t ∂γ = 0 := by
     simpa [γ] using integral_timeDeriv_ouSemigroup ht hf ⟨B, hB⟩ ⟨B2, hB2⟩ ⟨M, hM⟩
   have hfish := integral_generator_mul_log ht hf hδ hδf ⟨B, hB⟩ ⟨B2, hB2⟩ ⟨M, hM⟩

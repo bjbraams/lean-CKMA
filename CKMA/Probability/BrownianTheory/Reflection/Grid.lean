@@ -5,15 +5,9 @@ Authors: CKMA contributors
 -/
 module
 
-public import CKMA.Probability.BrownianTheory.HolderPath
-public import Mathlib.Algebra.Order.Archimedean.Basic
-public import Mathlib.Data.NNRat.Encodable
-public import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
-public import Mathlib.Probability.Distributions.Gaussian.Real
-public import Mathlib.Topology.MetricSpace.Pseudo.Defs
-public import Mathlib.Topology.Order.Compact
-public import Mathlib.Topology.Separation.Hausdorff
-public import Mathlib.Topology.UniformSpace.HeineCantor
+public import Mathlib.Probability.BrownianMotion.Basic
+
+import Mathlib.Data.NNRat.Encodable
 
 /-!
 # Dyadic grid for the reflection principle
@@ -43,10 +37,8 @@ noncomputable section
 
 namespace CKMA
 
-open Classical Finset Filter MeasureTheory Metric ProbabilityTheory Set Topology
+open Finset Filter MeasureTheory Metric ProbabilityTheory Set Topology
 open scoped ENNReal NNReal
-
-set_option linter.unusedSectionVars false
 
 variable {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsProbabilityMeasure μ]
 
@@ -76,6 +68,7 @@ private lemma denseRange_coe_nnrat : DenseRange (fun q : ℚ≥0 => (q : ℝ≥0
     lt_of_le_of_lt (le_max_right (0 : ℝ) ((x : ℝ) - ε)) hqlo
   linarith
 
+omit [IsProbabilityMeasure μ] in
 /-- Continuous paths that agree almost surely on the nonnegative rationals agree at every time. -/
 lemma ae_eq_of_continuous_of_nnrat {B C : ℝ≥0 → Ω → ℝ}
     (hB : ∀ᵐ ω ∂μ, Continuous (fun t => B t ω))
@@ -209,12 +202,14 @@ def gridOsc (C : ℝ≥0 → Ω → ℝ) (t : ℝ≥0) (n : ℕ) (ω : Ω) : ℝ
   (Finset.range (2 ^ n)).sup' (gridRange_nonempty n) fun k =>
     |C (grid t n (k + 1)) ω - C (grid t n k) ω|
 
+omit [MeasurableSpace Ω] in
 /-- Grid oscillation is nonnegative. -/
 lemma gridOsc_nonneg (C : ℝ≥0 → Ω → ℝ) (t : ℝ≥0) (n : ℕ) (ω : Ω) : 0 ≤ gridOsc C t n ω := by
   rw [gridOsc]
   exact (Finset.le_sup'_iff (gridRange_nonempty n)).2
     ⟨0, Finset.mem_range.mpr (pow_pos (by decide : 0 < 2) n), abs_nonneg _⟩
 
+omit [MeasurableSpace Ω] in
 /-- At time zero every grid increment vanishes. -/
 private lemma gridOsc_eq_zero_of_time (C : ℝ≥0 → Ω → ℝ) (t : ℝ≥0) (ht : t = 0) (n : ℕ) (ω : Ω) :
     gridOsc C t n ω = 0 := by
@@ -232,6 +227,7 @@ lemma measurable_gridOsc {C : ℝ≥0 → Ω → ℝ} (hm : ∀ u, Measurable (C
   exact Finset.measurable_sup' (gridRange_nonempty n) fun k hk =>
     ((hm (grid t n (k + 1))).sub (hm (grid t n k))).norm
 
+omit [MeasurableSpace Ω] in
 /-- Grid oscillation of a continuous path tends to zero. -/
 lemma tendsto_gridOsc {C : ℝ≥0 → Ω → ℝ} (hcont : ∀ ω, Continuous (fun u => C u ω))
     (t : ℝ≥0) (ω : Ω) : Tendsto (fun n => gridOsc C t n ω) atTop (𝓝 0) := by
@@ -299,6 +295,7 @@ lemma measurableSet_firstGridHitSet {C : ℝ≥0 → Ω → ℝ} (hm : ∀ u, Me
     rw [hempty]
     exact MeasurableSet.empty
 
+omit [MeasurableSpace Ω] in
 /-- Distinct first-passage indices are disjoint. -/
 lemma disjoint_firstGridHitSet {C : ℝ≥0 → Ω → ℝ} (t : ℝ≥0) (b : ℝ) (n : ℕ) {k m : ℕ} (hkm : k ≠ m) :
     Disjoint (firstGridHitSet C t b n k) (firstGridHitSet C t b n m) := by
@@ -308,6 +305,7 @@ lemma disjoint_firstGridHitSet {C : ℝ≥0 → Ω → ℝ} (t : ℝ≥0) (b : �
   · exact absurd hk.2.1 (not_le_of_gt (hm.2.2 k hlt))
   · exact absurd hm.2.1 (not_le_of_gt (hk.2.2 m hlt))
 
+omit [MeasurableSpace Ω] in
 /-- The first-passage events partition the grid hitting set. -/
 lemma iUnion_firstGridHitSet {C : ℝ≥0 → Ω → ℝ} (t : ℝ≥0) (b : ℝ) (n : ℕ) :
     ⋃ k ∈ Finset.range (2 ^ n + 1), firstGridHitSet C t b n k =
@@ -327,6 +325,7 @@ lemma iUnion_firstGridHitSet {C : ℝ≥0 → Ω → ℝ} (t : ℝ≥0) (b : ℝ
     intro i hi
     exact lt_of_not_ge fun hle => Nat.find_min hex hi ⟨le_trans hi.le hj.1, hle⟩
 
+omit [IsProbabilityMeasure μ] in
 /-- The grid value at time zero misses a positive level almost surely. -/
 lemma measure_firstGridHitSet_zero {C : ℝ≥0 → Ω → ℝ} (hC : IsBrownianReal C μ)
     (t : ℝ≥0) {b : ℝ} (hb : 0 < b) (n : ℕ) : μ (firstGridHitSet C t b n 0) = 0 := by
@@ -339,18 +338,21 @@ lemma measure_firstGridHitSet_zero {C : ℝ≥0 → Ω → ℝ} (hC : IsBrownian
     exact (not_le_of_gt hb) (by simpa [hzero] using hω)
   exact measure_mono_null hsub' (ae_iff.mp hC.eval_zero_ae_eq_zero)
 
+omit [MeasurableSpace Ω] in
 /-- The endpoint belongs to the grid hitting set. -/
 lemma endpoint_subset_gridHit {C : ℝ≥0 → Ω → ℝ} (t : ℝ≥0) (b : ℝ) (n : ℕ) :
     {ω | b ≤ C t ω} ⊆ {ω | ∃ k, k ≤ 2 ^ n ∧ b ≤ C (grid t n k) ω} := by
   intro ω hω
   exact ⟨2 ^ n, le_rfl, by simpa [grid_last] using hω⟩
 
+omit [MeasurableSpace Ω] in
 /-- A grid hit is a hit of the continuous path on the horizon. -/
 lemma gridHit_subset_hit {C : ℝ≥0 → Ω → ℝ} (t : ℝ≥0) (b : ℝ) (n : ℕ) :
     {ω | ∃ k, k ≤ 2 ^ n ∧ b ≤ C (grid t n k) ω} ⊆ {ω | ∃ s, s ≤ t ∧ b ≤ C s ω} := by
   intro ω ⟨k, hk, hω⟩
   exact ⟨grid t n k, grid_le hk, hω⟩
 
+omit [IsProbabilityMeasure μ] in
 /-- A centered Gaussian at a positive time has no atom. -/
 lemma measure_eq_endpoint {C : ℝ≥0 → Ω → ℝ} (hC : IsBrownianReal C μ) {t : ℝ≥0} (ht : 0 < t)
     (b : ℝ) : μ {ω | C t ω = b} = 0 := by
@@ -363,6 +365,7 @@ lemma measure_eq_endpoint {C : ℝ≥0 → Ω → ℝ} (hC : IsBrownianReal C μ
   rw [hlaw.measure_eq hp, Set.ofPred_eq_eq_singleton]
   exact hnull.measure_singleton b
 
+omit [MeasurableSpace Ω] in
 /-- On the first grid hit, a small oscillation keeps the overshoot below `2ε`. -/
 lemma overshoot_lt {C : ℝ≥0 → Ω → ℝ} {t : ℝ≥0} {b ε : ℝ} {n k : ℕ} {ω : Ω}
     (hk0 : 1 ≤ k) (hk : k ≤ 2 ^ n) (htau : ω ∈ firstGridHitSet C t b n k)

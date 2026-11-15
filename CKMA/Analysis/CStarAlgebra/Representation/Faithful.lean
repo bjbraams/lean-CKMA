@@ -6,24 +6,13 @@ Authors: CKMA contributors
 module
 
 public import CKMA.Analysis.InnerProductSpace.Basic
-public import Mathlib.Algebra.Algebra.Unitization
-public import Mathlib.Algebra.Order.Star.Basic
-public import Mathlib.Analysis.CStarAlgebra.Classes
 public import Mathlib.Analysis.CStarAlgebra.ContinuousLinearMap
-public import Mathlib.Analysis.CStarAlgebra.GelfandDuality
 public import Mathlib.Analysis.CStarAlgebra.GelfandNaimarkSegal
-public import Mathlib.Analysis.CStarAlgebra.PositiveLinearFunctional
-public import Mathlib.Analysis.CStarAlgebra.Spectrum
-public import Mathlib.Analysis.CStarAlgebra.Unitization
-public import Mathlib.Analysis.Complex.Order
-public import Mathlib.Analysis.InnerProductSpace.Basic
 public import Mathlib.Analysis.InnerProductSpace.l2Space
-public import Mathlib.Analysis.Normed.Algebra.Spectrum
-public import Mathlib.Analysis.Normed.Algebra.Unitization
 public import Mathlib.Analysis.Normed.Lp.lpHolder
-public import Mathlib.Analysis.Normed.Module.HahnBanach
-public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Positive
-public import Mathlib.Topology.MetricSpace.Isometry
+
+import Mathlib.Analysis.CStarAlgebra.PositiveLinearFunctional
+import Mathlib.Analysis.Normed.Module.HahnBanach
 
 /-!
 # Isometric Gelfand–Naimark representations

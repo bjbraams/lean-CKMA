@@ -6,10 +6,10 @@ Authors: CKMA contributors
 module
 
 public import Mathlib.Analysis.Fourier.AddCircle
-public import Mathlib.Analysis.Fourier.LpSpace
-public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Sinc
-public import Mathlib.MeasureTheory.Function.LpSeminorm.LpNorm
+public import Mathlib.Analysis.Fourier.FourierTransform
+
+import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 
 /-!
 # Periodic frequency-domain partial sums on the sampling band

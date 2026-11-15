@@ -5,35 +5,12 @@ Authors: CKMA contributors
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-public import Mathlib.Analysis.Analytic.Constructions
-public import Mathlib.Analysis.Analytic.Linear
-public import Mathlib.Analysis.Analytic.Order
-public import Mathlib.Analysis.Calculus.Deriv.Add
-public import Mathlib.Analysis.Calculus.Deriv.Comp
-public import Mathlib.Analysis.Calculus.Deriv.Mul
-public import Mathlib.Analysis.Calculus.FDeriv.Add
-public import Mathlib.Analysis.Calculus.FDeriv.Analytic
-public import Mathlib.Analysis.Calculus.FDeriv.Comp
-public import Mathlib.Analysis.Calculus.FDeriv.Mul
-public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.Analytic
 public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.Deriv
-public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
-public import Mathlib.Analysis.Complex.CauchyIntegral
-public import Mathlib.Analysis.Complex.LocallyUniformLimit
-public import Mathlib.Analysis.Complex.Norm
-public import Mathlib.Analysis.Normed.Field.Basic
-public import Mathlib.Analysis.Normed.Group.InfiniteSum
-public import Mathlib.Analysis.Real.Sqrt
-public import Mathlib.Analysis.SpecificLimits.Basic
-public import Mathlib.Data.Set.Function
-public import Mathlib.Logic.Function.Iterate
-public import Mathlib.Tactic.Linarith
-public import Mathlib.Tactic.Ring
-public import Mathlib.Topology.Algebra.InfiniteSum.Basic
-public import Mathlib.Topology.Algebra.InfiniteSum.NatInt
-public import Mathlib.Topology.Algebra.InfiniteSum.Ring
-public import Mathlib.Topology.MetricSpace.Pseudo.Defs
+public import Mathlib.Analysis.Analytic.Basic
+public import Mathlib.Analysis.Complex.Basic
+
+import Mathlib.Analysis.Complex.LocallyUniformLimit
+import Mathlib.Analysis.Analytic.Order
 
 /-!
 # Koenigs linearization at an attracting or repelling fixed point
@@ -233,176 +210,136 @@ private theorem exists_attracting_disk {f : ℂ → ℂ} (hf : AnalyticAt ℂ f 
     refine ⟨hcontr z hz, ?_⟩
     simpa [hlam] using hquad z hz
 
+/-- Iterates of a map that contracts the norm by `q` on an invariant set contract by `q ^ n`. -/
+private theorem norm_iterate_le_pow_mul {f : ℂ → ℂ} {s : Set ℂ} {q : ℝ} (hq : 0 ≤ q)
+    (hmaps : MapsTo f s s) (hf : ∀ z ∈ s, ‖f z‖ ≤ q * ‖z‖) (n : ℕ) {z : ℂ} (hz : z ∈ s) :
+    ‖(f^[n]) z‖ ≤ q ^ n * ‖z‖ := by
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    rw [iterate_succ_apply']
+    calc
+      ‖f ((f^[n]) z)‖ ≤ q * ‖(f^[n]) z‖ := hf _ ((hmaps.iterate n) hz)
+      _ ≤ q * (q ^ n * ‖z‖) := mul_le_mul_of_nonneg_left ih hq
+      _ = q ^ (n + 1) * ‖z‖ := by rw [← mul_assoc, ← pow_succ']
+
+/-- Consecutive rescaled iterates `λ⁻ⁿ fⁿ` on the attracting disk differ by a geometric
+quantity with ratio `q ^ 2 / ‖λ‖`. -/
+private theorem norm_inv_pow_mul_iterate_sub_le {f : ℂ → ℂ} {lam : ℂ} {q r C : ℝ}
+    (hlam : lam ≠ 0) (hC : 0 < C) (hq : 0 < q) (hmaps : MapsTo f (ball 0 r) (ball 0 r))
+    (hball : ∀ z ∈ ball (0 : ℂ) r, ‖f z‖ ≤ q * ‖z‖ ∧ ‖f z - lam * z‖ ≤ C * ‖z‖ ^ 2)
+    (n : ℕ) {z : ℂ} (hz : z ∈ ball (0 : ℂ) r) :
+    ‖lam⁻¹ ^ (n + 1) * (f^[n + 1]) z - lam⁻¹ ^ n * (f^[n]) z‖ ≤
+      C * ‖lam‖⁻¹ * r ^ 2 * (q ^ 2 / ‖lam‖) ^ n := by
+  have hw : (f^[n]) z ∈ ball (0 : ℂ) r := (hmaps.iterate n) hz
+  have hiter : ‖(f^[n]) z‖ ^ 2 ≤ (q ^ n * ‖z‖) ^ 2 :=
+    pow_le_pow_left₀ (norm_nonneg _)
+      (norm_iterate_le_pow_mul hq.le hmaps (fun w hw ↦ (hball w hw).1) n hz) 2
+  have hz2 : ‖z‖ ^ 2 ≤ r ^ 2 :=
+    pow_le_pow_left₀ (norm_nonneg _) (mem_ball_zero_iff.mp hz).le 2
+  have hcoef : lam⁻¹ ^ n = lam⁻¹ ^ (n + 1) * lam := by
+    rw [pow_succ, mul_assoc, inv_mul_cancel₀ hlam, mul_one]
+  have halg : lam⁻¹ ^ (n + 1) * (f^[n + 1]) z - lam⁻¹ ^ n * (f^[n]) z =
+      lam⁻¹ ^ (n + 1) * (f ((f^[n]) z) - lam * (f^[n]) z) := by
+    rw [iterate_succ_apply', hcoef]
+    ring
+  have hnonneg : 0 ≤ ‖lam‖⁻¹ ^ (n + 1) := pow_nonneg (inv_nonneg.mpr (norm_nonneg _)) _
+  have hfac : 0 ≤ C * ‖lam‖⁻¹ * (q ^ 2 / ‖lam‖) ^ n :=
+    mul_nonneg (mul_nonneg hC.le (inv_nonneg.mpr (norm_nonneg _)))
+      (pow_nonneg (div_nonneg (sq_nonneg _) (norm_nonneg _)) _)
+  calc
+    ‖lam⁻¹ ^ (n + 1) * (f^[n + 1]) z - lam⁻¹ ^ n * (f^[n]) z‖
+        = ‖lam‖⁻¹ ^ (n + 1) * ‖f ((f^[n]) z) - lam * (f^[n]) z‖ := by
+          rw [halg, norm_mul, norm_pow, norm_inv]
+    _ ≤ ‖lam‖⁻¹ ^ (n + 1) * (C * (q ^ n * ‖z‖) ^ 2) :=
+          mul_le_mul_of_nonneg_left
+            ((hball _ hw).2.trans (mul_le_mul_of_nonneg_left hiter hC.le)) hnonneg
+    _ = C * (‖lam‖⁻¹ ^ (n + 1) * (q ^ n * ‖z‖) ^ 2) := by ring
+    _ = C * ‖lam‖⁻¹ * (q ^ 2 / ‖lam‖) ^ n * ‖z‖ ^ 2 := by
+          rw [koenigs_remainder_ratio, div_eq_mul_inv]
+          ring
+    _ ≤ C * ‖lam‖⁻¹ * (q ^ 2 / ‖lam‖) ^ n * r ^ 2 := mul_le_mul_of_nonneg_left hz2 hfac
+    _ = C * ‖lam‖⁻¹ * r ^ 2 * (q ^ 2 / ‖lam‖) ^ n := by ring
+
+/-- The rescaled iterate `λ⁻ⁿ fⁿ` has derivative one at the fixed point, where `λ = f'(0)`. -/
+private theorem hasDerivAt_inv_pow_mul_iterate {f : ℂ → ℂ} (hf : DifferentiableAt ℂ f 0)
+    (hf0 : f 0 = 0) (hc : deriv f 0 ≠ 0) (n : ℕ) :
+    HasDerivAt (fun z ↦ (deriv f 0)⁻¹ ^ n * (f^[n]) z) 1 0 := by
+  have hmul := (HasDerivAt.iterate (x := 0) hf.hasDerivAt hf0 n).const_mul ((deriv f 0)⁻¹ ^ n)
+  rwa [← mul_pow, inv_mul_cancel₀ hc, one_pow] at hmul
+
+/-- A pointwise limit of maps satisfying `φₙ₊₁ = λ⁻¹ • (φₙ ∘ f)` on an invariant set
+conjugates `f` to multiplication by `λ` there. -/
+private theorem eq_mul_of_tendsto_of_succ_eq {f φ : ℂ → ℂ} {phi : ℕ → ℂ → ℂ} {s : Set ℂ}
+    {lam : ℂ} (hlam : lam ≠ 0) (hmaps : MapsTo f s s)
+    (hstep : ∀ n z, phi (n + 1) z = lam⁻¹ * phi n (f z))
+    (hlim : ∀ z ∈ s, Tendsto (fun n ↦ phi n z) atTop (𝓝 (φ z))) {z : ℂ} (hz : z ∈ s) :
+    φ (f z) = lam * φ z := by
+  have hshift : Tendsto (fun n ↦ phi (n + 1) z) atTop (𝓝 (φ z)) :=
+    (hlim z hz).comp (tendsto_add_atTop_nat 1)
+  have hright : Tendsto (fun n ↦ phi (n + 1) z) atTop (𝓝 (lam⁻¹ * φ (f z))) := by
+    simp only [hstep]
+    exact (tendsto_const_nhds (x := lam⁻¹)).mul (hlim (f z) (hmaps hz))
+  rw [tendsto_nhds_unique hshift hright, mul_inv_cancel_left₀ hlam]
+
 /-- Rescaled iterates converge to a normalized Koenigs coordinate when `‖f'(0)‖ < 1`. -/
 theorem exists_koenigsCoordinate_of_norm_lt_one {f : ℂ → ℂ} (hf : AnalyticAt ℂ f 0)
     (hf0 : f 0 = 0) (hc : deriv f 0 ≠ 0) (hlt : ‖deriv f 0‖ < 1) :
     ∃ φ : ℂ → ℂ, AnalyticAt ℂ φ 0 ∧ φ 0 = 0 ∧ deriv φ 0 = 1 ∧
       ∀ᶠ z in 𝓝 (0 : ℂ), φ (f z) = deriv f 0 * φ z := by
-  obtain ⟨q, r, C, hr, hC, hq_pos, hq_lt_one, hq_gt, hq2, hdiff, hmaps, hball⟩ :=
+  obtain ⟨q, r, C, hr, hC, hq_pos, -, -, hq2, hdiff, hmaps, hball⟩ :=
     exists_attracting_disk hf hf0 hc hlt
-  let lam : ℂ := deriv f 0
-  have hlam : lam = deriv f 0 := rfl
-  have hlam_ne : lam ≠ 0 := hlam ▸ hc
-  have hpos : 0 < ‖lam‖ := norm_pos_iff.mpr hlam_ne
+  have hphiN : ∀ n, HasDerivAt (fun z ↦ (deriv f 0)⁻¹ ^ n * (f^[n]) z) 1 0 :=
+    hasDerivAt_inv_pow_mul_iterate hf.differentiableAt hf0 hc
+  set lam : ℂ := deriv f 0
+  have hpos : 0 < ‖lam‖ := norm_pos_iff.mpr hc
   let rho : ℝ := q ^ 2 / ‖lam‖
   have hrho_nonneg : 0 ≤ rho := div_nonneg (sq_nonneg _) (norm_nonneg _)
-  have hrho_lt : rho < 1 := by
-    rw [div_lt_one hpos]
-    simpa [hlam] using hq2
-  have hrho_mul : rho = q ^ 2 * ‖lam‖⁻¹ := by simp [rho, div_eq_mul_inv]
+  have hrho_lt : rho < 1 := (div_lt_one hpos).mpr hq2
   let phiN : ℕ → ℂ → ℂ := fun n z ↦ lam⁻¹ ^ n * (f^[n]) z
   let D : ℕ → ℂ → ℂ := fun n z ↦ phiN (n + 1) z - phiN n z
-  have hnorm_iter : ∀ n, ∀ z ∈ ball (0 : ℂ) r, ‖(f^[n]) z‖ ≤ q ^ n * ‖z‖ := by
-    intro n
-    induction n with
-    | zero =>
-        intro z hz
-        simp [iterate_zero_apply, pow_zero]
-    | succ n ih =>
-        intro z hz
-        rw [iterate_succ_apply']
-        have hw : (f^[n]) z ∈ ball 0 r := (hmaps.iterate n) hz
-        calc
-          ‖f ((f^[n]) z)‖ ≤ q * ‖(f^[n]) z‖ := (hball _ hw).1
-          _ ≤ q * (q ^ n * ‖z‖) :=
-            mul_le_mul_of_nonneg_left (ih z hz) hq_pos.le
-          _ = q ^ (n + 1) * ‖z‖ := by rw [← mul_assoc, ← pow_succ']
-  have hDalg : ∀ n z,
-      D n z = lam⁻¹ ^ (n + 1) * ((f^[n + 1]) z - lam * (f^[n]) z) := by
-    intro n z
-    have hcoef : lam⁻¹ ^ n = lam⁻¹ ^ (n + 1) * lam := by
-      rw [pow_succ, mul_assoc, inv_mul_cancel₀ hlam_ne, mul_one]
-    simp only [D, phiN]
-    rw [hcoef]
-    ring
-  let K : ℝ := (C * ‖lam‖⁻¹) * r ^ 2
-  have hDbound : ∀ n, ∀ z ∈ ball (0 : ℂ) r, ‖D n z‖ ≤ K * rho ^ n := by
-    intro n z hz
-    let w : ℂ := (f^[n]) z
-    have hw : w ∈ ball 0 r := (hmaps.iterate n) hz
-    have hz_norm : ‖z‖ < r := by simpa [mem_ball, dist_eq_norm, sub_zero] using hz
-    have hw2 : ‖w‖ ^ 2 ≤ (q ^ n * ‖z‖) ^ 2 :=
-      pow_le_pow_left₀ (norm_nonneg _) (hnorm_iter n z hz) 2
-    have hz2 : ‖z‖ ^ 2 ≤ r ^ 2 :=
-      pow_le_pow_left₀ (norm_nonneg _) (le_of_lt hz_norm) 2
-    have hmain : ‖D n z‖ ≤ ‖lam‖⁻¹ ^ (n + 1) * (C * ‖w‖ ^ 2) := by
-      have hnonneg : 0 ≤ ‖lam‖⁻¹ ^ (n + 1) :=
-        pow_nonneg (inv_nonneg.mpr (norm_nonneg _)) _
-      calc
-        ‖D n z‖ = ‖lam⁻¹ ^ (n + 1)‖ * ‖f w - lam * w‖ := by
-          rw [hDalg, iterate_succ_apply', norm_mul]
-        _ = ‖lam‖⁻¹ ^ (n + 1) * ‖f w - lam * w‖ := by rw [norm_pow, norm_inv]
-        _ ≤ ‖lam‖⁻¹ ^ (n + 1) * (C * ‖w‖ ^ 2) :=
-          mul_le_mul_of_nonneg_left (hball w hw).2 hnonneg
-    have hreplace : ‖lam‖⁻¹ ^ (n + 1) * (C * ‖w‖ ^ 2) ≤
-        ‖lam‖⁻¹ ^ (n + 1) * (C * (q ^ n * ‖z‖) ^ 2) := by
-      have hnonneg : 0 ≤ ‖lam‖⁻¹ ^ (n + 1) :=
-        pow_nonneg (inv_nonneg.mpr (norm_nonneg _)) _
-      have hCnonneg : 0 ≤ C := hC.le
-      have : C * ‖w‖ ^ 2 ≤ C * (q ^ n * ‖z‖) ^ 2 :=
-        mul_le_mul_of_nonneg_left hw2 hCnonneg
-      exact mul_le_mul_of_nonneg_left this hnonneg
-    have hid : ‖lam‖⁻¹ ^ (n + 1) * (C * (q ^ n * ‖z‖) ^ 2) =
-        (C * ‖lam‖⁻¹) * (q ^ 2 * ‖lam‖⁻¹) ^ n * ‖z‖ ^ 2 := by
-      have hratio := koenigs_remainder_ratio ‖lam‖ q ‖z‖ n
-      calc
-        ‖lam‖⁻¹ ^ (n + 1) * (C * (q ^ n * ‖z‖) ^ 2)
-            = C * (‖lam‖⁻¹ ^ (n + 1) * (q ^ n * ‖z‖) ^ 2) := by ring
-        _ = C * (‖lam‖⁻¹ * (q ^ 2 * ‖lam‖⁻¹) ^ n * ‖z‖ ^ 2) := by rw [hratio]
-        _ = (C * ‖lam‖⁻¹) * (q ^ 2 * ‖lam‖⁻¹) ^ n * ‖z‖ ^ 2 := by ring
-    have hlast : (C * ‖lam‖⁻¹) * (q ^ 2 * ‖lam‖⁻¹) ^ n * ‖z‖ ^ 2 ≤ K * rho ^ n := by
-      rw [← hrho_mul]
-      have hnonneg : 0 ≤ (C * ‖lam‖⁻¹) * rho ^ n :=
-        mul_nonneg (mul_nonneg hC.le (inv_nonneg.mpr (norm_nonneg _)))
-          (pow_nonneg hrho_nonneg _)
-      calc
-        (C * ‖lam‖⁻¹) * rho ^ n * ‖z‖ ^ 2
-            = ((C * ‖lam‖⁻¹) * rho ^ n) * ‖z‖ ^ 2 := by ring
-        _ ≤ ((C * ‖lam‖⁻¹) * rho ^ n) * r ^ 2 :=
-          mul_le_mul_of_nonneg_left hz2 hnonneg
-        _ = ((C * ‖lam‖⁻¹) * r ^ 2) * rho ^ n := by ring
-        _ = K * rho ^ n := rfl
-    exact le_trans hmain (le_trans hreplace (le_of_eq hid |>.trans hlast))
+  let K : ℝ := C * ‖lam‖⁻¹ * r ^ 2
+  have hDbound : ∀ n, ∀ z ∈ ball (0 : ℂ) r, ‖D n z‖ ≤ K * rho ^ n :=
+    fun n _ hz ↦ norm_inv_pow_mul_iterate_sub_le hc hC hq_pos hmaps hball n hz
   have hu : Summable fun n : ℕ ↦ K * rho ^ n :=
     (summable_geometric_of_lt_one hrho_nonneg hrho_lt).mul_left K
-  have hDon : ∀ n, DifferentiableOn ℂ (D n) (ball 0 r) := by
-    intro n
-    have hnext : DifferentiableOn ℂ (f^[n + 1]) (ball 0 r) := hdiff.iterate hmaps _
-    have hthis : DifferentiableOn ℂ (f^[n]) (ball 0 r) := hdiff.iterate hmaps _
-    have hsub : DifferentiableOn ℂ
-        (fun z ↦ lam⁻¹ ^ (n + 1) * (f^[n + 1]) z - lam⁻¹ ^ n * (f^[n]) z) (ball 0 r) :=
-      (hnext.const_mul (lam⁻¹ ^ (n + 1))).sub (hthis.const_mul (lam⁻¹ ^ n))
-    exact hsub
+  have hDon : ∀ n, DifferentiableOn ℂ (D n) (ball 0 r) := fun n ↦
+    ((hdiff.iterate hmaps _).const_mul (lam⁻¹ ^ (n + 1))).sub
+      ((hdiff.iterate hmaps _).const_mul (lam⁻¹ ^ n))
   have hSdiff : DifferentiableOn ℂ (fun w ↦ ∑' n, D n w) (ball 0 r) :=
     Complex.differentiableOn_tsum_of_summable_norm hu hDon isOpen_ball
       fun n w hw ↦ hDbound n w hw
   let φ : ℂ → ℂ := fun z ↦ z + ∑' n, D n z
-  have hphi_an : AnalyticAt ℂ φ 0 := by
-    have hsum : DifferentiableOn ℂ (fun z ↦ z + ∑' n, D n z) (ball 0 r) :=
-      differentiableOn_id.add hSdiff
-    simpa [φ] using hsum.analyticAt (isOpen_ball.mem_nhds (mem_ball_self hr))
-  have hD0 : ∀ n, D n 0 = 0 := by
-    intro n
-    have hfix : (f^[n]) 0 = 0 := iterate_fixed hf0 n
-    have hfix' : (f^[n + 1]) 0 = 0 := iterate_fixed hf0 (n + 1)
-    unfold D phiN
-    rw [hfix, hfix']
-    simp
-  have hS0 : (∑' n, D n 0) = 0 := by
-    have hfun : (fun n ↦ D n 0) = fun _ : ℕ ↦ (0 : ℂ) := by
-      ext n
-      exact hD0 n
-    rw [hfun]
-    exact hasSum_zero.tsum_eq
-  have hphi0 : φ 0 = 0 := by simp [φ, hS0]
-  have hIter : ∀ n, HasDerivAt (f^[n]) (lam ^ n) 0 :=
-    fun n ↦ HasDerivAt.iterate (x := 0) hf.differentiableAt.hasDerivAt hf0 n
-  have hphiN : ∀ n, HasDerivAt (phiN n) 1 0 := by
-    intro n
-    have hmul : HasDerivAt (fun z ↦ lam⁻¹ ^ n * (f^[n]) z) (lam⁻¹ ^ n * lam ^ n) 0 :=
-      (hIter n).const_mul (lam⁻¹ ^ n)
-    have hcoeff : lam⁻¹ ^ n * lam ^ n = 1 := by
-      rw [← mul_pow, inv_mul_cancel₀ hlam_ne, one_pow]
-    rw [hcoeff] at hmul
-    have hfun : (phiN n) = fun z ↦ lam⁻¹ ^ n * (f^[n]) z := rfl
-    rw [hfun]
-    exact hmul
-  have hDderiv : ∀ n, deriv (D n) 0 = 0 := by
-    intro n
-    rw [show D n = phiN (n + 1) - phiN n by
-      ext z
-      rfl]
-    rw [deriv_sub (hphiN (n + 1)).differentiableAt (hphiN n).differentiableAt]
-    simp [(hphiN _).deriv]
+  have hphi_an : AnalyticAt ℂ φ 0 :=
+    (differentiableOn_id.add hSdiff).analyticAt (isOpen_ball.mem_nhds (mem_ball_self hr))
+  have hD0 : ∀ n, D n 0 = 0 := fun n ↦ by
+    simp only [D, phiN, iterate_fixed hf0, mul_zero, sub_self]
+  have hphi0 : φ 0 = 0 := by simp [φ, hD0]
   have hderivS : deriv (fun w ↦ ∑' n, D n w) 0 = 0 := by
     have hHas := Complex.hasSum_deriv_of_summable_norm hu hDon isOpen_ball
       (fun n w hw ↦ hDbound n w hw) (mem_ball_self hr)
+    have hDderiv : ∀ n, deriv (D n) 0 = 0 := fun n ↦
+      ((hphiN (n + 1)).sub (hphiN n)).deriv.trans (sub_self 1)
     have hzero : HasSum (fun n : ℕ ↦ deriv (D n) 0) 0 := by
       simp [hDderiv]
     exact hHas.tsum_eq.symm.trans hzero.tsum_eq
   have hderiv_phi : deriv φ 0 = 1 := by
-    have hSdiff0 : DifferentiableAt ℂ (fun w ↦ ∑' n, D n w) 0 :=
-      (hSdiff 0 (mem_ball_self hr)).differentiableAt
-        (isOpen_ball.mem_nhds (mem_ball_self hr))
-    have hid : HasDerivAt (fun z : ℂ ↦ z) (1 : ℂ) 0 := hasDerivAt_id' 0
-    have hadd : HasDerivAt (fun z ↦ z + ∑' n, D n z)
-        (1 + deriv (fun w ↦ ∑' n, D n w) 0) 0 :=
-      hid.add hSdiff0.hasDerivAt
-    rw [show φ = fun z ↦ z + ∑' n, D n z by rfl, hadd.deriv, hderivS, add_zero]
+    have hadd : HasDerivAt φ (1 + deriv (fun w ↦ ∑' n, D n w) 0) 0 :=
+      (hasDerivAt_id' 0).add ((hSdiff 0 (mem_ball_self hr)).differentiableAt
+        (isOpen_ball.mem_nhds (mem_ball_self hr))).hasDerivAt
+    rw [hadd.deriv, hderivS, add_zero]
   have hpartial : ∀ n z, ∑ i ∈ range n, D i z = phiN n z - z := by
     intro n z
     refine sum_range_induction (fun i ↦ D i z) (fun k ↦ phiN k z - z) ?_ n ?_
     · simp [phiN, pow_zero, iterate_zero_apply]
-    · intro k hk
+    · intro k _
       simp only [D]
       ring
   have hlim : ∀ z ∈ ball (0 : ℂ) r, Tendsto (fun n ↦ phiN n z) atTop (𝓝 (φ z)) := by
     intro z hz
-    have hsumz : Summable fun n ↦ D n z :=
-      hu.of_norm_bounded fun n ↦ hDbound n z hz
     have ht : Tendsto (fun n ↦ (∑ i ∈ range n, D i z) + z) atTop
         (𝓝 ((∑' n, D n z) + z)) :=
-      hsumz.tendsto_sum_tsum_nat.add tendsto_const_nhds
+      (hu.of_norm_bounded fun n ↦ hDbound n z hz).tendsto_sum_tsum_nat.add tendsto_const_nhds
     have hfun : (fun n ↦ phiN n z) = fun n ↦ (∑ i ∈ range n, D i z) + z := by
       ext n
       rw [hpartial, sub_add_cancel]
@@ -412,26 +349,9 @@ theorem exists_koenigsCoordinate_of_norm_lt_one {f : ℂ → ℂ} (hf : Analytic
     intro n z
     simp only [phiN]
     rw [iterate_succ_apply, pow_succ', mul_assoc]
-  have heq_ball : ∀ z ∈ ball (0 : ℂ) r, φ (f z) = lam * φ z := by
-    intro z hz
-    have hzf : f z ∈ ball 0 r := hmaps hz
-    have hshift : Tendsto (fun n ↦ phiN (n + 1) z) atTop (𝓝 (φ z)) :=
-      (hlim z hz).comp (tendsto_add_atTop_nat 1)
-    have hright : Tendsto (fun n ↦ lam⁻¹ * phiN n (f z)) atTop
-        (𝓝 (lam⁻¹ * φ (f z))) :=
-      tendsto_const_nhds.mul (hlim (f z) hzf)
-    have hright' : Tendsto (fun n ↦ phiN (n + 1) z) atTop (𝓝 (lam⁻¹ * φ (f z))) := by
-      have hseq : (fun n ↦ phiN (n + 1) z) = fun n ↦ lam⁻¹ * phiN n (f z) := by
-        ext n
-        exact hstep n z
-      simpa [hseq] using hright
-    have hval : φ z = lam⁻¹ * φ (f z) := tendsto_nhds_unique hshift hright'
-    calc
-      φ (f z) = lam * (lam⁻¹ * φ (f z)) := by rw [mul_inv_cancel_left₀ hlam_ne]
-      _ = lam * φ z := by rw [← hval]
   refine ⟨φ, hphi_an, hphi0, hderiv_phi, ?_⟩
   filter_upwards [isOpen_ball.mem_nhds (mem_ball_self hr)] with z hz
-  simpa [hlam] using heq_ball z hz
+  exact eq_mul_of_tendsto_of_succ_eq hc hmaps hstep hlim hz
 
 /-- A repelling fixed point is linearized by the attracting coordinate of a local inverse. -/
 theorem exists_koenigsCoordinate_of_norm_gt_one {f : ℂ → ℂ} (hf : AnalyticAt ℂ f 0)

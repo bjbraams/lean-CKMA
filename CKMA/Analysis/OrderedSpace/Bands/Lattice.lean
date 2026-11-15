@@ -5,15 +5,14 @@ Authors: CKMA contributors
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Fin
 public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 public import Mathlib.Algebra.Order.Group.PosPart
-public import Mathlib.Algebra.Order.Module.Basic
 public import Mathlib.Algebra.Module.LinearMap.Defs
-public import Mathlib.Algebra.Order.Archimedean.Real.Basic
-public import Mathlib.Order.Bounds.Basic
-public import Mathlib.Tactic.Abel
+public import Mathlib.Algebra.Order.Module.Defs
+public import Mathlib.Basic.Real.Basic
+import Mathlib.Algebra.BigOperators.Fin
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
+import Mathlib.Algebra.Order.Archimedean.Real.Basic
 
 /-!
 # Lattice calculus for real Riesz spaces
@@ -40,8 +39,6 @@ standard identities in Aliprantis–Burkinshaw, *Positive Operators*, §§1.1 an
 
 noncomputable section
 
-set_option linter.unusedSectionVars false
-
 namespace CKMA
 
 open Finset
@@ -52,11 +49,13 @@ variable {E F : Type*} [AddCommGroup E] [Lattice E] [Module ℝ E]
 /-- Disjoint vectors in a Riesz space, using lattice absolute values. -/
 def LatticeDisjoint (x y : E) : Prop := |x| ⊓ |y| = 0
 
+omit [Module ℝ E] [IsOrderedAddMonoid E] [IsOrderedModule ℝ E] in
 /-- Lattice disjointness is symmetric. -/
 theorem LatticeDisjoint.symm {x y : E} (h : LatticeDisjoint x y) :
     LatticeDisjoint y x := by
   simpa only [LatticeDisjoint, inf_comm] using h
 
+omit [Module ℝ E] [IsOrderedModule ℝ E] in
 /-- A smaller pair of absolute values remains disjoint. -/
 private theorem LatticeDisjoint.of_abs_le {x y x' y' : E} (h : LatticeDisjoint x y)
     (hx : |x'| ≤ |x|) (hy : |y'| ≤ |y|) : LatticeDisjoint x' y' := by
@@ -67,12 +66,14 @@ private theorem LatticeDisjoint.of_abs_le {x y x' y' : E} (h : LatticeDisjoint x
 def latticeDisjointComplement (s : Set E) : Set E :=
   {x | ∀ y ∈ s, LatticeDisjoint x y}
 
+omit [Module ℝ E] [IsOrderedAddMonoid E] [IsOrderedModule ℝ E] in
 /-- Every vector lies in the double disjoint complement of its singleton. -/
 theorem mem_doubleLatticeDisjointComplement (x : E) :
     x ∈ latticeDisjointComplement (latticeDisjointComplement {x}) := by
   intro y hy
   exact (hy x (Set.mem_singleton x)).symm
 
+omit [Module ℝ E] [IsOrderedModule ℝ E] in
 /-- The disjoint complement of zero is the whole space. -/
 private theorem latticeDisjointComplement_singleton_zero :
     latticeDisjointComplement {(0 : E)} = Set.univ := by
@@ -84,6 +85,7 @@ private theorem latticeDisjointComplement_singleton_zero :
     have hy0 : y = 0 := Set.mem_singleton_iff.mp hy
     rw [LatticeDisjoint, hy0, abs_zero, inf_eq_right.2 (abs_nonneg x)]
 
+omit [Module ℝ E] [IsOrderedModule ℝ E] in
 /-- Only zero is disjoint from every vector. -/
 private theorem latticeDisjointComplement_univ :
     latticeDisjointComplement (Set.univ : Set E) = {0} := by
@@ -112,11 +114,13 @@ private theorem latticeDisjointComplement_univ :
     rw [LatticeDisjoint, hx0, abs_zero]
     exact inf_eq_left.2 (abs_nonneg y)
 
+omit [Module ℝ E] [IsOrderedModule ℝ E] in
 /-- The double disjoint complement of zero is zero. -/
 theorem doubleLatticeDisjointComplement_zero :
     latticeDisjointComplement (latticeDisjointComplement {(0 : E)}) = {0} := by
   rw [latticeDisjointComplement_singleton_zero, latticeDisjointComplement_univ]
 
+omit [Module ℝ E] [IsOrderedModule ℝ E] in
 /-- Double disjoint complements grow with the generating positive vector. -/
 theorem doubleLatticeDisjointComplement_mono {w v : E} (hw : 0 ≤ w) (hwv : w ≤ v) :
     latticeDisjointComplement (latticeDisjointComplement {w}) ⊆
@@ -134,6 +138,7 @@ theorem doubleLatticeDisjointComplement_mono {w v : E} (hw : 0 ≤ w) (hwv : w �
       (le_inf (abs_nonneg y) (abs_nonneg z))
   exact hx y hyw
 
+omit [Module ℝ E] [IsOrderedModule ℝ E] in
 /-- Subtracting the infimum leaves the positive part of the difference. -/
 private theorem sub_inf_eq_posPart_sub (x y : E) : x - (x ⊓ y) = (x - y)⁺ := by
   rw [sub_eq_add_neg, neg_inf, add_sup, add_neg_cancel, ← sub_eq_add_neg, sup_comm]
@@ -143,6 +148,7 @@ private theorem sub_inf_eq_posPart_sub (x y : E) : x - (x ⊓ y) = (x - y)⁺ :=
 
 @[deprecated (since := "2026-11-15")] alias negPart_eq_zero_of_nonneg := negPart_of_nonneg
 
+omit [Module ℝ E] [IsOrderedModule ℝ E] in
 /-- Canonical decomposition of a difference of elements with infimum zero. -/
 theorem eq_posPart_negPart_of_inf_eq_zero {x y z : E}
     (hinf : y ⊓ z = 0) (hx : x = y - z) : x⁺ = y ∧ x⁻ = z := by
@@ -167,6 +173,7 @@ theorem eq_posPart_negPart_of_inf_eq_zero {x y z : E}
       _ = z := by abel
   exact ⟨hpos, hneg⟩
 
+omit [IsOrderedAddMonoid E] in
 /-- Positive scalar multiplication preserves finite suprema. -/
 private theorem smul_sup_of_nonneg {c : ℝ} (hc : 0 ≤ c) (x y : E) :
     c • (x ⊔ y) = c • x ⊔ c • y := by
@@ -218,6 +225,7 @@ theorem abs_smul (c : ℝ) (x : E) : |c • x| = |c| • |x| := by
       ← posPart_add_negPart ((-c) • x), posPart_smul_of_nonneg hc',
       negPart_smul_of_nonneg hc', ← smul_add, posPart_add_negPart]
 
+omit [Module ℝ E] [IsOrderedModule ℝ E] in
 /-- Riesz decomposition of a positive element dominated by a sum of two positive elements. -/
 theorem exists_add_eq_of_le_add {x y z : E} (hx : 0 ≤ x) (hy : 0 ≤ y) (hz : 0 ≤ z)
     (h : x ≤ y + z) :
@@ -228,6 +236,7 @@ theorem exists_add_eq_of_le_add {x y z : E} (hx : 0 ≤ x) (hy : 0 ≤ y) (hz : 
   · rw [sub_inf_eq_posPart_sub]
     exact sup_le ((sub_le_iff_le_add).2 (by rwa [add_comm])) hz
 
+omit [Module ℝ E] [IsOrderedModule ℝ E] in
 /-- The infimum of a sum is dominated by the sum of the infima, for nonnegative elements. -/
 theorem inf_add_le_add_inf {x y z : E} (hx : 0 ≤ x) (hy : 0 ≤ y) (hz : 0 ≤ z) :
     x ⊓ (y + z) ≤ x ⊓ y + x ⊓ z := by
@@ -244,6 +253,7 @@ theorem inf_add_le_add_inf {x y z : E} (hx : 0 ≤ x) (hy : 0 ≤ y) (hz : 0 ≤
   have hfinal : w ≤ (x ⊓ z) + (x ⊓ y) := (sub_le_iff_le_add').1 (le_inf hwx hwz)
   simpa [add_comm] using hfinal
 
+omit [Module ℝ E] [IsOrderedModule ℝ E] in
 /-- A nonnegative element disjoint from `y` remains disjoint after multiplication by a natural. -/
 private theorem inf_nsmul_eq_zero {x y : E} (hx : 0 ≤ x) (hy : 0 ≤ y) (hxy : x ⊓ y = 0) (n : ℕ) :
     (n • x) ⊓ y = 0 := by
@@ -272,12 +282,14 @@ theorem inf_smul_eq_zero {c : ℝ} (hc : 0 ≤ c) {x y : E} (hx : 0 ≤ x) (hy :
     exact inf_nsmul_eq_zero hx hy hxy n
   exact le_antisymm (hle.trans (le_of_eq hn0)) (le_inf (smul_nonneg hc hx) hy)
 
+omit [Module ℝ E] [IsOrderedModule ℝ E] in
 /-- Disjoint nonnegative elements add as their supremum. -/
 theorem add_eq_sup_of_inf_eq_zero {x y : E} (hxy : x ⊓ y = 0) :
     x + y = x ⊔ y := by
   have hsum : x ⊓ y + (x ⊔ y) = x + y := inf_add_sup x y
   simpa [hxy, zero_add] using hsum.symm
 
+omit [Module ℝ E] [IsOrderedModule ℝ E] in
 /-- Finite infimum-sum estimate for nonnegative families. -/
 private theorem inf_sum_le_sum_inf {n : ℕ} {x : E} {y : Fin n → E} (hx : 0 ≤ x)
     (hy : ∀ i, 0 ≤ y i) :
@@ -301,6 +313,7 @@ private theorem inf_sum_le_sum_inf {n : ℕ} {x : E} {y : Fin n → E} (hx : 0 �
 
 @[deprecated (since := "2026-11-15")] alias sum_range_sub := Finset.sum_range_sub'
 
+omit [IsOrderedAddMonoid E] in
 /-- Positive scaling preserves least upper bounds of nonempty sets. -/
 theorem isLUB_smul_of_pos {c : ℝ} (hc : 0 < c) {s : Set E} {a : E} (ha : IsLUB s a) :
     IsLUB ((fun y : E ↦ c • y) '' s) (c • a) := by
@@ -323,6 +336,7 @@ theorem isLUB_smul_of_pos {c : ℝ} (hc : 0 < c) {s : Set E} {a : E} (ha : IsLUB
     have hmul := smul_le_smul_of_nonneg_left ha' hc.le
     simpa [smul_smul, mul_inv_cancel₀ hc.ne'] using hmul
 
+omit [Module ℝ E] [IsOrderedModule ℝ E] in
 /-- Addition preserves least upper bounds. -/
 theorem isLUB_add {s t : Set E} {a b : E} (hs : IsLUB s a) (ht : IsLUB t b) :
     IsLUB {z : E | ∃ x y, x ∈ s ∧ y ∈ t ∧ z = x + y} (a + b) := by
@@ -342,6 +356,7 @@ theorem isLUB_add {s t : Set E} {a b : E} (hs : IsLUB s a) (ht : IsLUB t b) :
       exact (le_sub_iff_add_le').2 (by simpa [add_comm, sub_add_cancel] using add_le_add_left hb x)
     exact (le_sub_iff_add_le).1 ha
 
+omit [Module ℝ E] [IsOrderedModule ℝ E] in
 /-- Existing suprema distribute over infima. -/
 private theorem isLUB_inf {s : Set E} {a x : E} (ha : IsLUB s a) :
     IsLUB ((fun y ↦ x ⊓ y) '' s) (x ⊓ a) := by

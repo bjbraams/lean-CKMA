@@ -5,7 +5,6 @@ Authors: CKMA contributors
 -/
 module
 
-public import Mathlib.Analysis.Complex.TaylorSeries
 public import Mathlib.Analysis.Calculus.Deriv.Basic
 public import CKMA.Dynamics.Complex.Linearization.Koenigs
 public import CKMA.Dynamics.Complex.Linearization.Boettcher

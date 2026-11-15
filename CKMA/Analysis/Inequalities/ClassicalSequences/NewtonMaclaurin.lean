@@ -8,17 +8,7 @@ module
 public import Mathlib.RingTheory.MvPolynomial.Symmetric.Defs
 public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
-import Mathlib.Algebra.BigOperators.Ring.Multiset
-import Mathlib.Algebra.Order.BigOperators.Group.Multiset
-import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset
-import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Multiset
-import Mathlib.Algebra.Polynomial.Derivative
-import Mathlib.Algebra.Polynomial.Reverse
-import Mathlib.Algebra.Polynomial.Roots
 import Mathlib.Analysis.Calculus.LocalExtr.Polynomial
-import Mathlib.Data.Nat.Choose.Basic
-import Mathlib.Order.Interval.Finset.Nat
-import Mathlib.RingTheory.Polynomial.Vieta
 
 /-!
 # Newton–Maclaurin inequalities for multisets and finite tuples

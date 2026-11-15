@@ -6,10 +6,6 @@ Authors: CKMA contributors
 module
 
 public import Mathlib.Analysis.SpecialFunctions.RegularizedHypergeometric
-public import Mathlib.Analysis.Calculus.FDeriv.Analytic
-public import Mathlib.Analysis.Analytic.Uniqueness
-public import Mathlib.Analysis.Analytic.Constructions
-public import Mathlib.Topology.Algebra.GroupWithZero
 
 /-!
 # Gauss's Hypergeometric Differential Equation

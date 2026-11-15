@@ -6,8 +6,6 @@ Authors: CKMA contributors
 module
 
 public import CKMA.Analysis.PDE.EllipticEstimates
-public import Mathlib.Analysis.Calculus.LocalExtr.Basic
-public import Mathlib.Topology.Semicontinuity.Basic
 
 /-!
 # Viscosity comparison and Evans–Krylov regularity

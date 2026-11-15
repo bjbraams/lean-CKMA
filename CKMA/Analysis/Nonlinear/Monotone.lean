@@ -5,20 +5,15 @@ Authors: CKMA contributors
 -/
 module
 
-public import CKMA.Analysis.Nonlinear.FixedPoint
 public import Mathlib.Analysis.InnerProductSpace.Basic
-public import Mathlib.Analysis.InnerProductSpace.Convex
-public import Mathlib.Analysis.InnerProductSpace.Dual
-public import Mathlib.Analysis.InnerProductSpace.Projection.Minimal
-public import Mathlib.Analysis.Convex.StdSimplex
-public import Mathlib.Analysis.Normed.Module.Dual
-public import Mathlib.Topology.Algebra.Module.FiniteDimension
-public import Mathlib.Analysis.Normed.Module.FiniteDimension
-public import TauCeti.Analysis.Convex.Uniform.Basic
-public import TauCeti.Analysis.Normed.Module.Dual.Reflexive.WeakCompact
-public import Mathlib.Analysis.LocallyConvex.WeakSpace
-public import Mathlib.Analysis.InnerProductSpace.Continuous
-public import Mathlib.Topology.Order.OrderClosed
+public import Mathlib.Analysis.Normed.Module.DoubleDual
+
+import CKMA.Analysis.Nonlinear.FixedPoint
+import Mathlib.Analysis.InnerProductSpace.Convex
+import Mathlib.Analysis.InnerProductSpace.PiL2
+import Mathlib.Analysis.LocallyConvex.WeakSpace
+import TauCeti.Analysis.Convex.Uniform.Basic
+import TauCeti.Analysis.Normed.Module.Dual.Reflexive.WeakCompact
 
 /-!
 # Monotone graphs, resolvents, and variational inequalities
@@ -229,12 +224,84 @@ private theorem inner_nonneg_iff_mem_closedBall {v c y : H} :
   · intro hle
     nlinarith [hexpand, hinner, hle]
 
+/-- **Brouwer's theorem** in coordinates: every continuous self-map of a nonempty compact convex
+set `K ⊆ Fin n → ℝ` has a fixed point. -/
+private theorem exists_fixedPoint_of_isCompact_of_convex {n : ℕ} {K : Set (Fin n → ℝ)}
+    (hne : K.Nonempty) (hcomp : IsCompact K) (hconv : Convex ℝ K) (T : K → K)
+    (hT : Continuous T) : ∃ s, T s = s := by
+  let Euc := EuclideanSpace ℝ (Fin n)
+  let e : Euc ≃L[ℝ] (Fin n → ℝ) := EuclideanSpace.equiv (Fin n) ℝ
+  let L : Set Euc := e.symm '' K
+  have hneL : L.Nonempty := by
+    obtain ⟨w0, hw0⟩ := hne
+    exact ⟨e.symm w0, w0, hw0, rfl⟩
+  have hcompL : IsCompact L := hcomp.image e.symm.continuous
+  have hconvL : Convex ℝ L := hconv.linear_image e.symm.toLinearMap
+  have hmemL (y : L) : e y.1 ∈ K := by
+    obtain ⟨w0, hw0, hy⟩ := y.2
+    have heq : e y.1 = w0 := by
+      rw [← hy]
+      simp
+    simpa [heq] using hw0
+  have hlift : Continuous fun y : L => (⟨e y.1, hmemL y⟩ : K) :=
+    Continuous.subtype_mk (e.continuous.comp continuous_subtype_val) hmemL
+  have hland (y : L) : e.symm (Subtype.val (T ⟨e y.1, hmemL y⟩)) ∈ L :=
+    ⟨Subtype.val (T ⟨e y.1, hmemL y⟩), (T ⟨e y.1, hmemL y⟩).2, rfl⟩
+  let S : L → L := fun y => ⟨e.symm (Subtype.val (T ⟨e y.1, hmemL y⟩)), hland y⟩
+  have hS : Continuous S :=
+    Continuous.subtype_mk
+      (e.symm.continuous.comp (continuous_subtype_val.comp (hT.comp hlift))) hland
+  obtain ⟨yL, hyL⟩ := exists_fixedPoint_brouwer hneL hcompL hconvL S hS
+  refine ⟨⟨e yL.1, hmemL yL⟩, Subtype.ext ?_⟩
+  have happly := congrArg e (congrArg Subtype.val hyL)
+  unfold S at happly
+  rw [e.apply_symm_apply] at happly
+  simpa using happly
+
+/-- For convex weights `w` and points `p i` of a monotone graph, the weighted gaps at the
+barycenter `b = ∑ k, w k • (p k).1` are nonnegative on average when `0 ≤ a`:
+`0 ≤ ∑ i, w i * ⟪b - (p i).1, x - b - a • (p i).2⟫`. -/
+private theorem sum_mul_inner_barycenter_nonneg {A : Set (H × H)} (hA : IsMonotoneGraph A)
+    {a : ℝ} (ha : 0 ≤ a) {n : ℕ} (p : Fin n → H × H) (hp : ∀ i, p i ∈ A) (x : H)
+    {w : Fin n → ℝ} (hw0 : ∀ i, 0 ≤ w i) (hw : ∑ i, w i = 1) :
+    0 ≤ ∑ i, w i * ⟪∑ k, w k • (p k).1 - (p i).1,
+      x - ∑ k, w k • (p k).1 - a • (p i).2⟫_ℝ := by
+  set b := ∑ k, w k • (p k).1 with hb
+  have hvanish : ∑ i, w i * ⟪b - (p i).1, x - b⟫_ℝ = 0 := by
+    have hsumv : ∑ i, w i • (b - (p i).1) = 0 := by
+      simp_rw [smul_sub, Finset.sum_sub_distrib]
+      rw [← Finset.sum_smul, hw, one_smul, ← hb, sub_self]
+    have hpair : ∑ i, w i * ⟪b - (p i).1, x - b⟫_ℝ =
+        ⟪∑ i, w i • (b - (p i).1), x - b⟫_ℝ := by
+      rw [sum_inner]
+      refine Finset.sum_congr rfl fun i _ => ?_
+      rw [real_inner_smul_left]
+    rw [hpair, hsumv, inner_zero_left]
+  have hsplit : ∑ i, w i * ⟪b - (p i).1, x - b - a • (p i).2⟫_ℝ =
+      a * ∑ i, w i * ⟪(p i).1 - b, (p i).2⟫_ℝ := by
+    have hgap_eq (i : Fin n) : ⟪b - (p i).1, x - b - a • (p i).2⟫_ℝ =
+        ⟪b - (p i).1, x - b⟫_ℝ + a * ⟪(p i).1 - b, (p i).2⟫_ℝ := by
+      rw [inner_sub_right, inner_smul_right, ← neg_sub (p i).1 b]
+      simp only [inner_neg_left]
+      ring
+    simp_rw [hgap_eq, mul_add, Finset.sum_add_distrib, hvanish, zero_add]
+    simp_rw [mul_left_comm (w _) a, ← Finset.mul_sum]
+  have hmono : 0 ≤ ∑ i, w i * ⟪(p i).1 - b, (p i).2⟫_ℝ := by
+    have hpairEq := sum_pair_inner_eq w (fun i => (p i).1) (fun i => (p i).2) hw
+    have hnn : 0 ≤ ∑ i, ∑ j, w i * w j *
+        ⟪(p i).1 - (p j).1, (p i).2 - (p j).2⟫_ℝ :=
+      Finset.sum_nonneg fun i _ => Finset.sum_nonneg fun j _ =>
+        mul_nonneg (mul_nonneg (hw0 i) (hw0 j)) (hA _ (hp i) _ (hp j))
+    rw [hpairEq, ← hb] at hnn
+    linarith
+  rw [hsplit]
+  exact mul_nonneg ha hmono
+
 /-- Finitely many monotone slices meet: a simplex map fixes a convex combination in every slice. -/
 private theorem exists_common_monotoneSlice {A : Set (H × H)} (hA : IsMonotoneGraph A) {a : ℝ}
     (ha : 0 < a) {n : ℕ} (hn : 0 < n) (p : Fin n → H × H) (hp : ∀ i, p i ∈ A) (x : H) :
     ∃ y, ∀ i, 0 ≤ ⟪y - (p i).1, x - y - a • (p i).2⟫_ℝ := by
   let Simplex := stdSimplex ℝ (Fin n)
-  have hne : Simplex.Nonempty := ⟨Pi.single ⟨0, hn⟩ 1, single_mem_stdSimplex _ _⟩
   let bary (weight : Fin n → ℝ) : H := ∑ i, weight i • (p i).1
   let gap (weight : Fin n → ℝ) (i : Fin n) : ℝ :=
     ⟪bary weight - (p i).1, x - bary weight - a • (p i).2⟫_ℝ
@@ -249,6 +316,7 @@ private theorem exists_common_monotoneSlice {A : Set (H × H)} (hA : IsMonotoneG
         gcongr with i
         exact le_add_of_nonneg_right (hslack i)
       _ = total s := rfl
+  -- The self-map of the simplex adding the slack and renormalizing.
   let next (s : Simplex) : Fin n → ℝ :=
     fun i => ((s : Fin n → ℝ) i + slack s i) / total s
   have hnext (s : Simplex) : next s ∈ Simplex := by
@@ -277,37 +345,9 @@ private theorem exists_common_monotoneSlice {A : Set (H × H)} (hA : IsMonotoneG
     refine Continuous.subtype_mk ?_ hnext
     exact continuous_pi fun i =>
       ((hcoord i).add (hslackC i)).div₀ hdenC fun s => by linarith [htotal s]
-  let Euc := EuclideanSpace ℝ (Fin n)
-  let e : Euc ≃L[ℝ] (Fin n → ℝ) := EuclideanSpace.equiv (Fin n) ℝ
-  let K : Set Euc := e.symm '' Simplex
-  have hneK : K.Nonempty := by
-    obtain ⟨w0, hw0⟩ := hne
-    exact ⟨e.symm w0, w0, hw0, rfl⟩
-  have hcompK : IsCompact K := (isCompact_stdSimplex ℝ (Fin n)).image e.symm.continuous
-  have hconvK : Convex ℝ K :=
-    (convex_stdSimplex ℝ (Fin n)).linear_image e.symm.toLinearMap
-  have hmemK (y : K) : e y.1 ∈ Simplex := by
-    obtain ⟨w0, hw0, hy⟩ := y.2
-    have heq : e y.1 = w0 := by
-      rw [← hy]
-      simp
-    simpa [heq] using hw0
-  have hlift : Continuous fun y : K => (⟨e y.1, hmemK y⟩ : Simplex) :=
-    Continuous.subtype_mk (e.continuous.comp continuous_subtype_val) hmemK
-  have hland (y : K) : e.symm (Subtype.val (T ⟨e y.1, hmemK y⟩)) ∈ K :=
-    ⟨Subtype.val (T ⟨e y.1, hmemK y⟩), (T ⟨e y.1, hmemK y⟩).2, rfl⟩
-  let S : K → K := fun y => ⟨e.symm (Subtype.val (T ⟨e y.1, hmemK y⟩)), hland y⟩
-  have hS : Continuous S :=
-    Continuous.subtype_mk
-      (e.symm.continuous.comp (continuous_subtype_val.comp (hT.comp hlift))) hland
-  obtain ⟨yK, hyK⟩ := exists_fixedPoint_brouwer hneK hcompK hconvK S hS
-  let s : Simplex := ⟨e yK.1, hmemK yK⟩
-  have hs : T s = s := by
-    apply Subtype.ext
-    have happly := congrArg e (congrArg Subtype.val hyK)
-    unfold S at happly
-    rw [e.apply_symm_apply] at happly
-    simpa [s] using happly
+  obtain ⟨s, hs⟩ := exists_fixedPoint_of_isCompact_of_convex
+    ⟨Pi.single ⟨0, hn⟩ 1, single_mem_stdSimplex _ _⟩ (isCompact_stdSimplex ℝ (Fin n))
+    (convex_stdSimplex ℝ (Fin n)) T hT
   have hfix : next s = (s : Fin n → ℝ) := congrArg Subtype.val hs
   let w : Fin n → ℝ := s
   have hweight : ∑ i, w i = 1 := s.2.2
@@ -317,84 +357,38 @@ private theorem exists_common_monotoneSlice {A : Set (H × H)} (hA : IsMonotoneG
       simpa [next, w] using congrFun hfix i
     rw [div_eq_iff hden] at hi
     linarith
+  -- At the fixed point no slack is added, since otherwise the averaged gap would be negative.
   have hσ : total s = 1 := by
     by_contra hneσ
     have hgt : 1 < total s := lt_of_le_of_ne (htotal s) (Ne.symm hneσ)
+    have hneg (i : Fin n) (hwi : 0 < w i) : gap s i < 0 := by
+      have hpos : 0 < slack s i := by
+        rw [hslack_eq i]
+        nlinarith
+      by_contra hng
+      have : slack s i = 0 := by
+        unfold slack
+        exact max_eq_left (neg_nonpos.mpr (not_lt.mp hng))
+      linarith
     have hsign (i : Fin n) : w i * gap s i ≤ 0 := by
       by_cases hzi : w i = 0
       · simp [hzi]
       · have hwi : 0 < w i := lt_of_le_of_ne (s.2.1 i) (fun h => hzi h.symm)
-        have hpos : 0 < slack s i := by
-          rw [hslack_eq i]
-          nlinarith
-        have hng : 0 < -gap s i := by
-          by_contra hng
-          have : slack s i = 0 := by
-            unfold slack
-            exact max_eq_left (le_of_not_gt hng)
-          linarith
-        exact le_of_lt (mul_neg_of_pos_of_neg hwi (neg_pos.mp hng))
-    have hsome : ∃ i, 0 < w i := by
+        exact (mul_neg_of_pos_of_neg hwi (hneg i hwi)).le
+    obtain ⟨i0, hi0⟩ : ∃ i, 0 < w i := by
       by_contra hall
       have hzero : ∀ i, w i = 0 := by
         intro i
         exact le_antisymm (le_of_not_gt (fun hpos => hall ⟨i, hpos⟩)) (s.2.1 i)
       have : ∑ i, w i = 0 := Finset.sum_eq_zero fun i _ => hzero i
       linarith [hweight, this]
-    obtain ⟨i0, hi0⟩ := hsome
-    have hstrict : w i0 * gap s i0 < 0 := by
-      have hpos : 0 < slack s i0 := by
-        rw [hslack_eq i0]
-        nlinarith
-      have hng : 0 < -gap s i0 := by
-        by_contra hng
-        have : slack s i0 = 0 := by
-          unfold slack
-          exact max_eq_left (le_of_not_gt hng)
-        linarith
-      exact mul_neg_of_pos_of_neg hi0 (neg_pos.mp hng)
     have hsumθ : ∑ i, w i * gap s i < 0 := by
-      have hlt := Finset.sum_lt_sum (fun i _ => hsign i) ⟨i0, Finset.mem_univ _, hstrict⟩
+      have hlt := Finset.sum_lt_sum (fun i _ => hsign i)
+        ⟨i0, Finset.mem_univ _, mul_neg_of_pos_of_neg hi0 (hneg i0 hi0)⟩
       simpa [Finset.sum_const_zero] using hlt
-    have hvanish : ∑ i, w i * ⟪bary w - (p i).1, x - bary w⟫_ℝ = 0 := by
-      have hsumv : ∑ i, w i • (bary w - (p i).1) = 0 := by
-        simp_rw [smul_sub, Finset.sum_sub_distrib]
-        rw [← Finset.sum_smul, hweight, one_smul]
-        have hbaryw : ∑ i, w i • (p i).1 = bary w := by simp [bary, w]
-        rw [hbaryw, sub_self]
-      have hpair : ∑ i, w i * ⟪bary w - (p i).1, x - bary w⟫_ℝ =
-          ⟪∑ i, w i • (bary w - (p i).1), x - bary w⟫_ℝ := by
-        rw [sum_inner]
-        refine Finset.sum_congr rfl fun i _ => ?_
-        rw [real_inner_smul_left]
-      rw [hpair, hsumv, inner_zero_left]
-    have hsplitSum : ∑ i, w i * gap s i =
-        -a * ∑ i, w i * ⟪bary w - (p i).1, (p i).2⟫_ℝ := by
-      have hgap_eq (i : Fin n) : gap s i = ⟪bary w - (p i).1, x - bary w⟫_ℝ -
-          a * ⟪bary w - (p i).1, (p i).2⟫_ℝ := by
-        unfold gap
-        rw [inner_sub_right, inner_smul_right]
-      simp_rw [hgap_eq, mul_sub, Finset.sum_sub_distrib, hvanish]
-      simp_rw [mul_left_comm (w _) a, ← Finset.mul_sum]
-      ring
-    have hmono : 0 ≤ ∑ i, w i * ⟪(p i).1 - bary w, (p i).2⟫_ℝ := by
-      have hpairEq := sum_pair_inner_eq w (fun i => (p i).1) (fun i => (p i).2) hweight
-      have hnn : 0 ≤ ∑ i, ∑ j, w i * w j *
-          ⟪(p i).1 - (p j).1, (p i).2 - (p j).2⟫_ℝ := by
-        refine Finset.sum_nonneg fun i _ => Finset.sum_nonneg fun j _ => ?_
-        exact mul_nonneg (mul_nonneg (s.2.1 i) (s.2.1 j)) (hA _ (hp i) _ (hp j))
-      have hbaryw : ∑ k, w k • (p k).1 = bary w := by simp [bary, w]
-      rw [hpairEq, hbaryw] at hnn
-      nlinarith
-    have hnegSum : ∑ i, w i * ⟪bary w - (p i).1, (p i).2⟫_ℝ =
-        -∑ i, w i * ⟪(p i).1 - bary w, (p i).2⟫_ℝ := by
-      rw [← Finset.sum_neg_distrib]
-      refine Finset.sum_congr rfl fun i _ => ?_
-      rw [← neg_sub (p i).1 (bary w), inner_neg_left, mul_neg]
-    have hle : ∑ i, w i * ⟪bary w - (p i).1, (p i).2⟫_ℝ ≤ 0 := by
-      rw [hnegSum]
-      linarith
-    nlinarith [hsplitSum, hsumθ, ha, hle]
+    have hnn : 0 ≤ ∑ i, w i * gap s i :=
+      sum_mul_inner_barycenter_nonneg hA ha.le p hp x (w := w) s.2.1 hweight
+    linarith
   refine ⟨bary w, fun i => ?_⟩
   have hzero : slack s i = 0 := by rw [hslack_eq i, hσ, sub_self, mul_zero]
   have hmax : max 0 (-gap s i) = 0 := by simpa [slack] using hzero

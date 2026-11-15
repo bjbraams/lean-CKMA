@@ -5,10 +5,9 @@ Authors: CKMA contributors
 -/
 module
 
-public import Mathlib.MeasureTheory.Function.LpSpace.Basic
-public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
-public import Mathlib.Analysis.SpecialFunctions.Complex.Circle
 public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
+public import Mathlib.MeasureTheory.Measure.Haar.OfBasis
+public import Mathlib.MeasureTheory.Function.LpSeminorm.Defs
 
 /-!
 # Trigonometric approximation and smoothness

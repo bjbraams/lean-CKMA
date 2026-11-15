@@ -6,19 +6,11 @@ Authors: CKMA contributors
 module
 
 public import CKMA.Dynamics.Flow
-public import Mathlib.LinearAlgebra.FiniteDimensional.Basic
-public import Mathlib.Dynamics.OmegaLimit
-public import Mathlib.Analysis.Calculus.ContDiff.Basic
-public import Mathlib.Analysis.Calculus.Deriv.Comp
-public import Mathlib.Analysis.Calculus.Deriv.MeanValue
-public import Mathlib.Analysis.Normed.Module.FiniteDimension
-public import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
-public import Mathlib.Order.Filter.AtTopBot.Group
-public import Mathlib.Topology.MetricSpace.HausdorffDistance
-public import Mathlib.Topology.MetricSpace.Thickening
-public import Mathlib.Topology.Order.Compact
-public import Mathlib.Topology.Order.DenselyOrdered
-public import Mathlib.Topology.Order.MonotoneConvergence
+public import Mathlib.Analysis.Calculus.ContDiff.Defs
+
+import Mathlib.Dynamics.OmegaLimit
+import Mathlib.Analysis.Calculus.Deriv.Comp
+import Mathlib.Analysis.Calculus.Deriv.MeanValue
 
 /-!
 # Lyapunov stability and LaSalle invariance (31.24, 31.26)

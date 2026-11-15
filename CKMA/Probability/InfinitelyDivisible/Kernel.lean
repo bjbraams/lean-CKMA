@@ -5,11 +5,7 @@ Authors: CKMA contributors
 -/
 module
 
-public import CKMA.Probability.InfinitelyDivisible.CharRoot
-public import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
-public import Mathlib.Topology.ContinuousMap.Bounded.Normed
-import Mathlib.Analysis.Calculus.Deriv.Slope
-import Mathlib.Analysis.SpecialFunctions.Exponential
+public import Mathlib.MeasureTheory.Measure.CharacteristicFunction.Basic
 
 /-!
 # Continuous Lévy kernel

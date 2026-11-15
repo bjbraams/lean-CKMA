@@ -6,12 +6,9 @@ Authors: CKMA contributors
 module
 
 public import CKMA.Probability.InfinitelyDivisible.Basic
-public import CKMA.Probability.InfinitelyDivisible.Exponent
-public import Mathlib.Analysis.Complex.Trigonometric
-public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Bounds
-public import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
-public import Mathlib.MeasureTheory.Integral.Lebesgue.Countable
-public import Mathlib.MeasureTheory.Measure.WithDensity
+public import Mathlib.MeasureTheory.Measure.CharacteristicFunction.Basic
+
+import CKMA.Probability.InfinitelyDivisible.Exponent
 
 /-!
 # Second differences of a Lévy exponent

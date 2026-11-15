@@ -5,18 +5,10 @@ Authors: CKMA contributors
 -/
 module
 
-public import Mathlib.MeasureTheory.Integral.Bochner.Basic
-public import Mathlib.MeasureTheory.Integral.Lebesgue.Basic
-public import Mathlib.MeasureTheory.Integral.Pi
-public import Mathlib.MeasureTheory.Function.LpSeminorm.Basic
-public import Mathlib.Analysis.SpecialFunctions.Log.Basic
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
+
 import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 import Mathlib.MeasureTheory.Covering.Vitali
-import Mathlib.MeasureTheory.Constructions.Pi
-import Mathlib.MeasureTheory.Integral.Lebesgue.Map
-import Mathlib.MeasureTheory.Integral.Layercake
-import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
-import Mathlib.Topology.Order.Basic
 
 /-!
 # One-dimensional weak type and the strong maximal kernel

@@ -5,13 +5,11 @@ Authors: CKMA contributors
 -/
 module
 
-public import Mathlib.Analysis.Normed.Operator.Basic
-public import Mathlib.Topology.ContinuousMap.Compact
 public import Mathlib.Topology.ContinuousMap.Ordered
+public import Mathlib.Topology.ContinuousMap.Algebra
+public import Mathlib.Topology.Algebra.Ring.Real
 
-import Mathlib.Tactic.Linarith
-import Mathlib.Tactic.Positivity
-import Mathlib.Tactic.Ring
+import Mathlib.Topology.ContinuousMap.Compact
 
 /-!
 # Positive approximation operators on the unit interval

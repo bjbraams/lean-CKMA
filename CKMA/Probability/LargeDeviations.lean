@@ -7,21 +7,8 @@ module
 
 public import Mathlib.Analysis.SpecialFunctions.Log.ENNRealLog
 public import Mathlib.MeasureTheory.Integral.Bochner.Basic
-public import Mathlib.Topology.Semicontinuity.Basic
 
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.Analysis.SpecialFunctions.Exp
-import Mathlib.Analysis.SpecialFunctions.Log.Basic
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 import Mathlib.MeasureTheory.Integral.Bochner.Set
-import Mathlib.MeasureTheory.Integral.IntegrableOn
-import Mathlib.MeasureTheory.Measure.Real
-import Mathlib.Order.Filter.AtTopBot.Archimedean
-import Mathlib.Order.Filter.AtTopBot.Group
-import Mathlib.Order.Interval.Finset.Basic
-import Mathlib.Topology.Algebra.Order.Field
-import Mathlib.Topology.Instances.EReal.Lemmas
-import Mathlib.Topology.Order.LiminfLimsup
 
 /-!
 # Full large deviation bounds and bounded Varadhan (06.62)
@@ -230,6 +217,247 @@ private lemma sub_le_liminf_laplaceRate [OpensMeasurableSpace X] (P : ℕ → Me
   rw [hIx, ← EReal.coe_sub] at this
   exact this
 
+/-- Adding a sequence that converges to a real number raises the limsup by at most that
+number. -/
+private lemma limsup_add_le_of_tendsto {u v : ℕ → EReal} {r : ℝ}
+    (hu : Tendsto u atTop (𝓝 (r : EReal))) :
+    limsup (fun n ↦ u n + v n) atTop ≤ r + limsup v atTop := by
+  have hsum : limsup (u + v) atTop ≤ limsup u atTop + limsup v atTop :=
+    EReal.limsup_add_le
+      (Or.inl <| by
+        rw [hu.limsup_eq]
+        exact EReal.coe_ne_bot r)
+      (Or.inl <| by
+        rw [hu.limsup_eq]
+        exact EReal.coe_ne_top r)
+  rw [hu.limsup_eq] at hsum
+  exact hsum
+
+omit [TopologicalSpace X] [MeasurableSpace X] in
+/-- A real number minus the infimum of `I` over a set is at most every common upper bound of
+the differences with the values of `I` on that set. -/
+private lemma coe_sub_iInf₂_le {s : Set X} {I : X → ℝ≥0∞} {c : ℝ} {B : EReal}
+    (h : ∀ x ∈ s, (c : EReal) - (I x : EReal) ≤ B) :
+    (c : EReal) - ⨅ x ∈ s, (I x : EReal) ≤ B := by
+  set β : EReal := ⨅ x ∈ s, (I x : EReal) with hβdef
+  by_cases hβ : β = ⊤
+  · simp [hβ, EReal.sub_top, bot_le]
+  have hβbot : β ≠ ⊥ := ne_bot_of_le_ne_bot (EReal.coe_ne_bot 0)
+    (le_iInf₂ fun x _ ↦ EReal.coe_ennreal_nonneg (I x))
+  set r : ℝ := β.toReal
+  have hr : β = ↑r := (EReal.coe_toReal hβ hβbot).symm
+  refine (EReal.ge_of_forall_gt_iff_ge).1 fun z hz ↦ ?_
+  rw [hr, ← EReal.coe_sub] at hz
+  have hzl : z < c - r := EReal.coe_lt_coe_iff.mp hz
+  have hη : 0 < c - r - z := sub_pos.mpr hzl
+  obtain ⟨x, hxs, hxI⟩ : ∃ x ∈ s, (I x : EReal) < ↑(r + (c - r - z)) := by
+    have hlt : β < ↑(r + (c - r - z)) := by
+      rw [hr]
+      exact_mod_cast lt_add_of_pos_right r hη
+    simpa only [hβdef, iInf_lt_iff, exists_prop] using hlt
+  have hne : I x ≠ ∞ := by
+    intro htop
+    rw [htop, EReal.coe_ennreal_top] at hxI
+    exact (lt_irrefl ⊤) (hxI.trans_le le_top)
+  have hto : (I x).toReal < r + (c - r - z) := by
+    rw [← EReal.coe_lt_coe_iff, EReal.coe_ennreal_toReal hne]
+    exact hxI
+  have hzE : (z : EReal) < ↑c - (I x : EReal) := by
+    rw [← EReal.coe_ennreal_toReal hne, ← EReal.coe_sub]
+    exact_mod_cast (by linarith : z < c - (I x).toReal)
+  exact (hzE.trans_le (h x hxs)).le
+
+omit [TopologicalSpace X] [MeasurableSpace X] in
+/-- The bands `{(j - 1) δ ≤ f < j δ}` with distinct indices are disjoint. -/
+private lemma pairwise_disjoint_bands {f : X → ℝ} {δ : ℝ} (hδ : 0 < δ) :
+    Pairwise fun j k : ℤ ↦ Disjoint {x | ((j - 1 : ℤ) : ℝ) * δ ≤ f x ∧ f x < (j : ℝ) * δ}
+      {x | ((k - 1 : ℤ) : ℝ) * δ ≤ f x ∧ f x < (k : ℝ) * δ} := by
+  have key (j k : ℤ) (hlt : j < k) :
+      Disjoint {x | ((j - 1 : ℤ) : ℝ) * δ ≤ f x ∧ f x < (j : ℝ) * δ}
+        {x | ((k - 1 : ℤ) : ℝ) * δ ≤ f x ∧ f x < (k : ℝ) * δ} := by
+    refine disjoint_left.2 fun x hxj hxk ↦ ?_
+    have hjk : (j : ℝ) ≤ ((k - 1 : ℤ) : ℝ) := by exact_mod_cast Int.le_sub_one_iff.mpr hlt
+    exact lt_irrefl _
+      (hxj.2.trans_le ((mul_le_mul_of_nonneg_right hjk hδ.le).trans hxk.1))
+  intro j k hjk
+  rcases lt_or_gt_of_ne hjk with hlt | hlt
+  · exact key j k hlt
+  · exact (key k j hlt).symm
+
+omit [TopologicalSpace X] [MeasurableSpace X] in
+/-- When `|f| ≤ M`, the bands of width `δ` with indices from `⌊-M / δ⌋ + 1` to `⌊M / δ⌋ + 1`
+cover the space. -/
+private lemma iUnion_bands_eq_univ {f : X → ℝ} {M δ : ℝ} (hδ : 0 < δ) (hM : ∀ x, |f x| ≤ M) :
+    ⋃ j ∈ Finset.Icc (⌊-M / δ⌋ + 1) (⌊M / δ⌋ + 1),
+      {x | ((j - 1 : ℤ) : ℝ) * δ ≤ f x ∧ f x < (j : ℝ) * δ} = Set.univ := by
+  ext x
+  refine ⟨fun _ ↦ trivial, fun _ ↦ ?_⟩
+  have hfx := abs_le.mp (hM x)
+  let t : ℝ := f x / δ
+  have hlo : -M / δ ≤ t := (div_le_div_iff_of_pos_right hδ).2 hfx.1
+  have hhi : t ≤ M / δ := (div_le_div_iff_of_pos_right hδ).2 hfx.2
+  have hmul1 : (⌊t⌋ : ℝ) * δ ≤ f x := by
+    have := mul_le_mul_of_nonneg_right (Int.floor_le t) hδ.le
+    simpa [t, div_mul_cancel₀ _ hδ.ne'] using this
+  have hmul2 : f x < ((⌊t⌋ : ℝ) + 1) * δ := by
+    have := mul_lt_mul_of_pos_right (Int.lt_floor_add_one t) hδ
+    simpa [t, div_mul_cancel₀ _ hδ.ne'] using this
+  refine mem_iUnion₂.mpr ⟨⌊t⌋ + 1, Finset.mem_Icc.mpr
+    ⟨add_le_add_left (Int.floor_le_floor hlo) 1, add_le_add_left (Int.floor_le_floor hhi) 1⟩,
+    ?_, ?_⟩
+  · simpa [Int.cast_sub, Int.cast_one] using hmul1
+  · simpa using hmul2
+
+/-- Splitting the Laplace integral over finitely many disjoint bands `A j` covering the space,
+on which `f < j δ`, bounds the Laplace rate by `log (card K) / (n + 1)` plus the largest
+band contribution `j δ + logProbabilityRate P (F j) n`, for any sets `F j ⊇ A j`. -/
+private lemma laplaceRate_le_add_finset_sup [OpensMeasurableSpace X] (P : ℕ → Measure X)
+    [∀ n, IsProbabilityMeasure (P n)] {f : X → ℝ} (hf : Continuous f) {M : ℝ}
+    (hM : ∀ x, |f x| ≤ M) {δ : ℝ} {K : Finset ℤ} (hK : K.Nonempty) {A F : ℤ → Set X}
+    (hAmeas : ∀ j, MeasurableSet (A j)) (hpair : Pairwise fun j k ↦ Disjoint (A j) (A k))
+    (hcover : ⋃ j ∈ K, A j = Set.univ) (hAF : ∀ j, A j ⊆ F j)
+    (hAf : ∀ j, ∀ x ∈ A j, f x < (j : ℝ) * δ) (n : ℕ) :
+    (laplaceRate P f n : EReal) ≤ ↑((n + 1 : ℝ)⁻¹ * Real.log (K.card : ℝ)) +
+      K.sup fun j ↦ ↑((j : ℝ) * δ) + logProbabilityRate P (F j) n := by
+  have hg := laplaceIntegral_pos (P n) hf hM n
+  let g : X → ℝ := fun x ↦ Real.exp ((n + 1 : ℝ) * f x)
+  have hint_sum : ∫ x, g x ∂P n = ∑ j ∈ K, ∫ x in A j, g x ∂P n := by
+    rw [← integral_biUnion_finset K (fun j _ ↦ hAmeas j)
+      (fun j hj k hk hjk ↦ hpair hjk) (fun j _ ↦ hg.1.integrableOn), hcover,
+      setIntegral_univ]
+  have hpiece : ∀ j ∈ K, ∫ x in A j, g x ∂P n ≤
+      Real.exp ((n + 1 : ℝ) * (j : ℝ) * δ) * (P n).real (F j) := by
+    intro j hj
+    have hconst : IntegrableOn (fun _ : X ↦ Real.exp ((n + 1 : ℝ) * (j : ℝ) * δ)) (A j)
+        (P n) := integrableOn_const (measure_ne_top _ _)
+    have hmono : ∫ x in A j, g x ∂P n ≤
+        ∫ _ in A j, Real.exp ((n + 1 : ℝ) * (j : ℝ) * δ) ∂P n := by
+      refine setIntegral_mono_on hg.1.integrableOn hconst (hAmeas j) ?_
+      intro x hx
+      refine Real.exp_le_exp.mpr ?_
+      calc
+        (n + 1 : ℝ) * f x ≤ (n + 1 : ℝ) * ((j : ℝ) * δ) :=
+          mul_le_mul_of_nonneg_left (le_of_lt (hAf j x hx)) (by positivity)
+        _ = (n + 1 : ℝ) * (j : ℝ) * δ := by ring
+    refine hmono.trans ?_
+    rw [setIntegral_const, smul_eq_mul, mul_comm]
+    exact mul_le_mul_of_nonneg_left
+      (measureReal_mono (hAF j) (measure_ne_top _ _)) (Real.exp_pos _).le
+  let term : ℤ → ℝ := fun j ↦ Real.exp ((n + 1 : ℝ) * (j : ℝ) * δ) * (P n).real (F j)
+  have hsumle : ∫ x, g x ∂P n ≤ ∑ j ∈ K, term j := by
+    rw [hint_sum]
+    exact Finset.sum_le_sum hpiece
+  have hintpos : 0 < ∫ x, g x ∂P n := hg.2
+  have hSpos : 0 < ∑ j ∈ K, term j := hintpos.trans_le hsumle
+  let m : ℝ := K.sup' hK term
+  have hmbound : ∀ j ∈ K, term j ≤ m := (sup'_le_iff hK term).1 le_rfl
+  have hSm : ∑ j ∈ K, term j ≤ (K.card : ℝ) * m := by
+    calc
+      ∑ j ∈ K, term j ≤ ∑ _j ∈ K, m := Finset.sum_le_sum hmbound
+      _ = (K.card : ℝ) * m := by simp [sum_const, nsmul_eq_mul]
+  have hmpos : 0 < m := by
+    have hcard : 0 < (K.card : ℝ) := by exact_mod_cast hK.card_pos
+    exact (mul_pos_iff_of_pos_left hcard).1 (hSpos.trans_le hSm)
+  obtain ⟨j, hj, hjm⟩ := exists_mem_eq_sup' hK term
+  have hm_eq : m = term j := by
+    simpa [m] using hjm
+  have hμpos : 0 < (P n).real (F j) := by
+    have : 0 < term j := hm_eq ▸ hmpos
+    exact (mul_pos_iff_of_pos_left (Real.exp_pos _)).1 this
+  have hlogS : Real.log (∫ x, g x ∂P n) ≤ Real.log ((K.card : ℝ) * m) :=
+    Real.log_le_log hintpos (hsumle.trans hSm)
+  have hΛ : laplaceRate P f n ≤ (n + 1 : ℝ)⁻¹ * Real.log ((K.card : ℝ) * m) :=
+    mul_le_mul_of_nonneg_left hlogS (inv_nonneg.mpr (by positivity))
+  have hsplit : (n + 1 : ℝ)⁻¹ * Real.log ((K.card : ℝ) * m) =
+      (n + 1 : ℝ)⁻¹ * Real.log (K.card : ℝ) + (n + 1 : ℝ)⁻¹ * Real.log m := by
+    rw [Real.log_mul (Nat.cast_ne_zero.mpr hK.card_pos.ne') hmpos.ne', mul_add]
+  have hmlog : (n + 1 : ℝ)⁻¹ * Real.log m =
+      (j : ℝ) * δ + (n + 1 : ℝ)⁻¹ * Real.log ((P n).real (F j)) := by
+    rw [hm_eq, Real.log_mul (Real.exp_pos _).ne' hμpos.ne', Real.log_exp, mul_add]
+    congr 1
+    calc
+      (n + 1 : ℝ)⁻¹ * ((n + 1) * (j : ℝ) * δ) =
+          (n + 1 : ℝ)⁻¹ * ((n + 1) * ((j : ℝ) * δ)) := by ring
+      _ = (j : ℝ) * δ := by
+        rw [← mul_assoc, inv_mul_cancel₀ (by positivity), one_mul]
+  have hφ : ↑((n + 1 : ℝ)⁻¹ * Real.log m) =
+      ↑((j : ℝ) * δ) + logProbabilityRate P (F j) n := by
+    rw [hmlog, EReal.coe_add, logProbabilityRate_of_real_ne_zero hμpos.ne']
+  rw [hsplit] at hΛ
+  have : (laplaceRate P f n : EReal) ≤
+      ↑((n + 1 : ℝ)⁻¹ * Real.log (K.card : ℝ)) + ↑((n + 1 : ℝ)⁻¹ * Real.log m) := by
+    rw [← EReal.coe_add]
+    exact_mod_cast hΛ
+  have hsecond : ↑((n + 1 : ℝ)⁻¹ * Real.log m) ≤
+      K.sup fun i ↦ ↑((i : ℝ) * δ) + logProbabilityRate P (F i) n := by
+    rw [hφ]
+    exact Finset.le_sup (f := fun i ↦ ↑((i : ℝ) * δ) + logProbabilityRate P (F i) n) hj
+  exact this.trans (add_le_add_right hsecond _)
+
+/-- On the closed set `{(j - 1) δ ≤ f}`, the contribution of the band with index `j` has
+limsup at most the variational supremum plus `δ`. -/
+private lemma limsup_band_le (P : ℕ → Measure X) {I : X → ℝ≥0∞}
+    (hP : HasLargeDeviationPrinciple P I) {f : X → ℝ} (hf : Continuous f) (δ : ℝ) (j : ℤ) :
+    limsup (fun n ↦ ↑((j : ℝ) * δ) +
+        logProbabilityRate P {x | ((j - 1 : ℤ) : ℝ) * δ ≤ f x} n) atTop ≤
+      (⨆ x, (f x : EReal) - (I x : EReal)) + δ := by
+  refine (limsup_add_le_of_tendsto (u := fun _ ↦ (((j : ℝ) * δ : ℝ) : EReal))
+    tendsto_const_nhds).trans ?_
+  refine (add_le_add_right
+    (hP.2 {x | ((j - 1 : ℤ) : ℝ) * δ ≤ f x} (isClosed_le continuous_const hf)) _).trans ?_
+  rw [← sub_eq_add_neg]
+  refine coe_sub_iInf₂_le fun x hxF ↦ ?_
+  have hfx : (j : ℝ) * δ ≤ f x + δ := by
+    have hge : ((j - 1 : ℤ) : ℝ) * δ ≤ f x := hxF
+    have hsum : ((j - 1 : ℤ) : ℝ) * δ + δ = (j : ℝ) * δ := by push_cast; ring
+    linarith
+  have hsub : ↑((j : ℝ) * δ) - (I x : EReal) ≤ ((f x : EReal) + δ) - (I x : EReal) :=
+    EReal.sub_le_sub (by exact_mod_cast hfx) le_rfl
+  rw [add_real_sub_ennreal] at hsub
+  exact hsub.trans <| add_le_add_left
+    (le_iSup (fun y ↦ (f y : EReal) - (I y : EReal)) x) δ
+
+/-- For every `δ > 0`, the Laplace rate has limsup at most the variational supremum plus `δ`.
+The proof splits the range of `f` into finitely many bands of width `δ`. -/
+private lemma limsup_laplaceRate_le_add [OpensMeasurableSpace X] (P : ℕ → Measure X)
+    [∀ n, IsProbabilityMeasure (P n)] {I : X → ℝ≥0∞}
+    (hP : HasLargeDeviationPrinciple P I) {f : X → ℝ} (hf : Continuous f)
+    {M : ℝ} (hM : ∀ x, |f x| ≤ M) {δ : ℝ} (hδ : 0 < δ) :
+    limsup (fun n ↦ (laplaceRate P f n : EReal)) atTop ≤
+      (⨆ x, (f x : EReal) - (I x : EReal)) + δ := by
+  obtain ⟨x0⟩ := nonempty_of_isProbabilityMeasure (P 0)
+  have hM0 : 0 ≤ M := (abs_nonneg (f x0)).trans (hM x0)
+  let K : Finset ℤ := Finset.Icc (⌊-M / δ⌋ + 1) (⌊M / δ⌋ + 1)
+  have hK : K.Nonempty := by
+    refine Finset.nonempty_Icc.2 (add_le_add_left (Int.floor_le_floor ?_) 1)
+    rw [div_le_div_iff_of_pos_right hδ]
+    linarith
+  let A : ℤ → Set X := fun j ↦ {x | ((j - 1 : ℤ) : ℝ) * δ ≤ f x ∧ f x < (j : ℝ) * δ}
+  let F : ℤ → Set X := fun j ↦ {x | ((j - 1 : ℤ) : ℝ) * δ ≤ f x}
+  have hAmeas (j : ℤ) : MeasurableSet (A j) :=
+    (isClosed_le continuous_const hf).measurableSet.inter
+      (isOpen_lt hf continuous_const).measurableSet
+  have hle (n : ℕ) := laplaceRate_le_add_finset_sup P hf hM hK hAmeas
+    (pairwise_disjoint_bands hδ) (iUnion_bands_eq_univ hδ hM) (F := F) (fun _ _ hx ↦ hx.1)
+    (fun _ _ hx ↦ hx.2) n
+  -- Stated without a type ascription: elaborating against the expected type times out.
+  have hsup := limsup_finset_sup_le K
+    (fun j n ↦ (((j : ℝ) * δ : ℝ) : EReal) + logProbabilityRate P (F j) n)
+    (fun j _ ↦ limsup_band_le P hP hf δ j)
+  have hε : Tendsto (fun n : ℕ ↦ (((n + 1 : ℝ)⁻¹ * Real.log (K.card : ℝ) : ℝ) : EReal))
+      atTop (𝓝 ((0 : ℝ) : EReal)) := by
+    refine (EReal.tendsto_coe).2 ?_
+    have hinv : Tendsto (fun n : ℕ ↦ (n + 1 : ℝ)⁻¹) atTop (𝓝 0) := by
+      have hsum : Tendsto (fun n : ℕ ↦ (n + 1 : ℝ)) atTop atTop := by
+        simpa [Nat.cast_add] using
+          tendsto_atTop_add_const_right atTop (1 : ℝ) tendsto_natCast_atTop_atTop
+      exact hsum.inv_tendsto_atTop
+    simpa using hinv.mul_const (Real.log (K.card : ℝ))
+  refine (limsup_le_limsup (Eventually.of_forall hle)).trans
+    ((limsup_add_le_of_tendsto hε).trans ?_)
+  rw [EReal.coe_zero, zero_add]
+  exact hsup
+
 /-- The Laplace rate has limsup at most the variational supremum. -/
 private lemma limsup_laplaceRate_le [OpensMeasurableSpace X] (P : ℕ → Measure X)
     [∀ n, IsProbabilityMeasure (P n)] {I : X → ℝ≥0∞}
@@ -239,278 +467,8 @@ private lemma limsup_laplaceRate_le [OpensMeasurableSpace X] (P : ℕ → Measur
       ⨆ x, (f x : EReal) - (I x : EReal) := by
   set α : EReal := ⨆ x, (f x : EReal) - (I x : EReal)
   have hδ : ∀ δ : ℝ, 0 < δ →
-      limsup (fun n ↦ (laplaceRate P f n : EReal)) atTop ≤ α + δ := by
-    intro δ hδ
-    obtain ⟨x0⟩ := nonempty_of_isProbabilityMeasure (P 0)
-    have hM0 : 0 ≤ M := (abs_nonneg (f x0)).trans (hM x0)
-    let j0 : ℤ := ⌊-M / δ⌋ + 1
-    let j1 : ℤ := ⌊M / δ⌋ + 1
-    have hj01 : j0 ≤ j1 := by
-      have hdiv : -M / δ ≤ M / δ := by
-        rw [div_le_div_iff_of_pos_right hδ]
-        linarith
-      exact add_le_add_left (Int.floor_le_floor hdiv) 1
-    let K : Finset ℤ := Icc j0 j1
-    have hK : K.Nonempty := ⟨j0, mem_Icc.mpr ⟨le_rfl, hj01⟩⟩
-    let A : ℤ → Set X := fun j ↦ {x | ((j - 1 : ℤ) : ℝ) * δ ≤ f x ∧ f x < (j : ℝ) * δ}
-    let F : ℤ → Set X := fun j ↦ {x | ((j - 1 : ℤ) : ℝ) * δ ≤ f x}
-    have hAmeas : ∀ j, MeasurableSet (A j) := by
-      intro j
-      exact (isClosed_le continuous_const hf).measurableSet.inter
-        (isOpen_lt hf continuous_const).measurableSet
-    have hFclosed : ∀ j, IsClosed (F j) := fun j ↦ isClosed_le continuous_const hf
-    have hAF : ∀ j, A j ⊆ F j := fun j x hx ↦ hx.1
-    have hpair : Pairwise (fun j k ↦ Disjoint (A j) (A k)) := by
-      intro j k hjk
-      rcases lt_or_gt_of_ne hjk with hlt | hlt
-      · refine disjoint_left.2 fun x hxj hxk ↦ ?_
-        have hjk' : (j : ℝ) ≤ (k : ℝ) - 1 := by
-          exact_mod_cast (Int.le_sub_one_iff.mpr hlt)
-        have hmul : (j : ℝ) * δ ≤ ((k : ℝ) - 1) * δ :=
-          mul_le_mul_of_nonneg_right hjk' hδ.le
-        have hfk : ((k - 1 : ℤ) : ℝ) * δ ≤ f x := hxk.1
-        have hfj : f x < (j : ℝ) * δ := hxj.2
-        have hcast : ((k - 1 : ℤ) : ℝ) = (k : ℝ) - 1 := by push_cast; ring
-        have hltx : f x < f x := by
-          calc
-            f x < (j : ℝ) * δ := hfj
-            _ ≤ ((k : ℝ) - 1) * δ := hmul
-            _ = ((k - 1 : ℤ) : ℝ) * δ := by rw [hcast]
-            _ ≤ f x := hfk
-        exact lt_irrefl _ hltx
-      · refine disjoint_left.2 fun x hxj hxk ↦ ?_
-        have hjk' : (k : ℝ) ≤ (j : ℝ) - 1 := by
-          exact_mod_cast (Int.le_sub_one_iff.mpr hlt)
-        have hmul : (k : ℝ) * δ ≤ ((j : ℝ) - 1) * δ :=
-          mul_le_mul_of_nonneg_right hjk' hδ.le
-        have hfj : ((j - 1 : ℤ) : ℝ) * δ ≤ f x := hxj.1
-        have hfk : f x < (k : ℝ) * δ := hxk.2
-        have hcast : ((j - 1 : ℤ) : ℝ) = (j : ℝ) - 1 := by push_cast; ring
-        have hltx : f x < f x := by
-          calc
-            f x < (k : ℝ) * δ := hfk
-            _ ≤ ((j : ℝ) - 1) * δ := hmul
-            _ = ((j - 1 : ℤ) : ℝ) * δ := by rw [hcast]
-            _ ≤ f x := hfj
-        exact lt_irrefl _ hltx
-    have hcover : ⋃ j ∈ K, A j = Set.univ := by
-      ext x
-      refine ⟨fun _ ↦ trivial, fun _ ↦ ?_⟩
-      have hfx := abs_le.mp (hM x)
-      let t : ℝ := f x / δ
-      let j : ℤ := ⌊t⌋ + 1
-      have hjmem : j ∈ K := by
-        have hlo : -M / δ ≤ t := by
-          change -M / δ ≤ f x / δ
-          exact (div_le_div_iff_of_pos_right hδ).2 hfx.1
-        have hhi : t ≤ M / δ := by
-          change f x / δ ≤ M / δ
-          exact (div_le_div_iff_of_pos_right hδ).2 hfx.2
-        refine Finset.mem_Icc.mpr ⟨?_, ?_⟩
-        · exact add_le_add_left (Int.floor_le_floor hlo) 1
-        · exact add_le_add_left (Int.floor_le_floor hhi) 1
-      have hfloor : (⌊t⌋ : ℝ) ≤ t := Int.floor_le t
-      have hfloor' : t < (⌊t⌋ : ℝ) + 1 := Int.lt_floor_add_one t
-      have hmul1 : (⌊t⌋ : ℝ) * δ ≤ f x := by
-        have := mul_le_mul_of_nonneg_right hfloor hδ.le
-        simpa [t, div_mul_cancel₀ _ hδ.ne'] using this
-      have hmul2 : f x < ((⌊t⌋ : ℝ) + 1) * δ := by
-        have := mul_lt_mul_of_pos_right hfloor' hδ
-        simpa [t, div_mul_cancel₀ _ hδ.ne'] using this
-      refine mem_iUnion₂.mpr ⟨j, hjmem, ?_, ?_⟩
-      · simpa [j, Int.cast_sub, Int.cast_one] using hmul1
-      · simpa [j] using hmul2
-    have hg (n : ℕ) : Integrable (fun x ↦ Real.exp ((n + 1 : ℝ) * f x)) (P n) ∧
-        0 < ∫ x, Real.exp ((n + 1 : ℝ) * f x) ∂P n :=
-      laplaceIntegral_pos (P n) hf hM n
-    have hpoint : ∀ j, ∀ x ∈ F j,
-        ↑((j : ℝ) * δ) - (I x : EReal) ≤ α + δ := by
-      intro j x hxF
-      have hfx : (j : ℝ) * δ ≤ f x + δ := by
-        have hge : ((j - 1 : ℤ) : ℝ) * δ ≤ f x := hxF
-        have hsum : ((j - 1 : ℤ) : ℝ) * δ + δ = (j : ℝ) * δ := by push_cast; ring
-        linarith
-      have hsub : ↑((j : ℝ) * δ) - (I x : EReal) ≤
-          ((f x : EReal) + δ) - (I x : EReal) :=
-        EReal.sub_le_sub (by exact_mod_cast hfx) le_rfl
-      rw [add_real_sub_ennreal] at hsub
-      exact hsub.trans <| add_le_add_left
-        (le_iSup (fun y ↦ (f y : EReal) - (I y : EReal)) x) δ
-    have hterm : ∀ j, limsup (fun n ↦ ↑((j : ℝ) * δ) + logProbabilityRate P (F j) n) atTop ≤
-        α + δ := by
-      intro j
-      let β : EReal := ⨅ x ∈ F j, (I x : EReal)
-      have hLDP : limsup (logProbabilityRate P (F j)) atTop ≤ -β := hP.2 (F j) (hFclosed j)
-      have hadd : limsup (fun n ↦ ↑((j : ℝ) * δ) + logProbabilityRate P (F j) n) atTop ≤
-          ↑((j : ℝ) * δ) + limsup (logProbabilityRate P (F j)) atTop := by
-        let u : ℕ → EReal := fun _ ↦ ↑((j : ℝ) * δ)
-        let v : ℕ → EReal := logProbabilityRate P (F j)
-        have hconst : limsup u atTop = ↑((j : ℝ) * δ) := limsup_const _
-        have hsum : limsup (u + v) atTop ≤ limsup u atTop + limsup v atTop :=
-          EReal.limsup_add_le
-            (Or.inl <| by
-              rw [hconst]
-              exact EReal.coe_ne_bot _)
-            (Or.inl <| by
-              rw [hconst]
-              exact EReal.coe_ne_top _)
-        have hfun : u + v = fun n ↦ u n + v n := by
-          funext n
-          rfl
-        rw [hfun, hconst] at hsum
-        simpa [u, v] using hsum
-      have : ↑((j : ℝ) * δ) + limsup (logProbabilityRate P (F j)) atTop ≤
-          ↑((j : ℝ) * δ) - β := by
-        rw [sub_eq_add_neg]
-        exact add_le_add_right hLDP ↑((j : ℝ) * δ)
-      refine (hadd.trans this).trans ?_
-      by_cases hβ : β = ⊤
-      · simp [hβ, EReal.sub_top, bot_le]
-      · have hβbot : β ≠ ⊥ := ne_bot_of_le_ne_bot (EReal.coe_ne_bot 0)
-          (le_iInf₂ fun x _ ↦ EReal.coe_ennreal_nonneg (I x))
-        let r : ℝ := β.toReal
-        have hr : β = ↑r := (EReal.coe_toReal hβ hβbot).symm
-        refine (EReal.ge_of_forall_gt_iff_ge).1 ?_
-        intro z hz
-        rw [hr, ← EReal.coe_sub] at hz
-        have hzl : z < (j : ℝ) * δ - r := EReal.coe_lt_coe_iff.mp hz
-        let η : ℝ := (j : ℝ) * δ - r - z
-        have hη : 0 < η := sub_pos.mpr hzl
-        have hfind : ∃ x, x ∈ F j ∧ (I x : EReal) < ↑(r + η) := by
-          have hlt : β < ↑(r + η) := by
-            rw [hr]
-            exact_mod_cast lt_add_of_pos_right r hη
-          simpa only [β, iInf_lt_iff, exists_prop] using hlt
-        obtain ⟨x, hxF, hxI⟩ := hfind
-        have hne : I x ≠ ∞ := by
-          intro htop
-          rw [htop, EReal.coe_ennreal_top] at hxI
-          exact (lt_irrefl ⊤) (hxI.trans_le le_top)
-        have hto : (I x).toReal < r + η := by
-          rw [← EReal.coe_lt_coe_iff, EReal.coe_ennreal_toReal hne]
-          exact hxI
-        have hzlt : z < (j : ℝ) * δ - (I x).toReal := by
-          have hsum : r + η = (j : ℝ) * δ - z := by
-            simp only [η]
-            ring
-          linarith
-        have hzE : (z : EReal) < ↑((j : ℝ) * δ) - (I x : EReal) := by
-          rw [← EReal.coe_ennreal_toReal hne, ← EReal.coe_sub]
-          exact_mod_cast hzlt
-        exact (hzE.trans_le (hpoint j x hxF)).le
-    let φ : ℤ → ℕ → EReal := fun j n ↦ ↑((j : ℝ) * δ) + logProbabilityRate P (F j) n
-    have hsup : limsup (fun n ↦ K.sup (fun j ↦ φ j n)) atTop ≤ α + δ :=
-      limsup_finset_sup_le K φ fun j hj ↦ hterm j
-    let ε : ℕ → ℝ := fun n ↦ (n + 1 : ℝ)⁻¹ * Real.log (K.card : ℝ)
-    have hε : Tendsto (fun n ↦ (ε n : EReal)) atTop (𝓝 (0 : EReal)) := by
-      refine (EReal.tendsto_coe).2 ?_
-      have hinv : Tendsto (fun n : ℕ ↦ (n + 1 : ℝ)⁻¹) atTop (𝓝 0) := by
-        have hsum : Tendsto (fun n : ℕ ↦ (n + 1 : ℝ)) atTop atTop := by
-          simpa [Nat.cast_add] using
-            tendsto_atTop_add_const_right atTop (1 : ℝ) tendsto_natCast_atTop_atTop
-        exact hsum.inv_tendsto_atTop
-      simpa [ε] using hinv.mul_const (Real.log (K.card : ℝ))
-    have hle : ∀ n, (laplaceRate P f n : EReal) ≤
-        ↑(ε n) + K.sup (fun j ↦ φ j n) := by
-      intro n
-      let g : X → ℝ := fun x ↦ Real.exp ((n + 1 : ℝ) * f x)
-      have hint_sum : ∫ x, g x ∂P n = ∑ j ∈ K, ∫ x in A j, g x ∂P n := by
-        rw [← integral_biUnion_finset K (fun j _ ↦ hAmeas j)
-          (fun j hj k hk hjk ↦ hpair hjk) (fun j _ ↦ (hg n).1.integrableOn), hcover,
-          setIntegral_univ]
-      have hpiece : ∀ j ∈ K, ∫ x in A j, g x ∂P n ≤
-          Real.exp ((n + 1 : ℝ) * (j : ℝ) * δ) * (P n).real (F j) := by
-        intro j hj
-        have hconst : IntegrableOn (fun _ : X ↦ Real.exp ((n + 1 : ℝ) * (j : ℝ) * δ)) (A j)
-            (P n) := integrableOn_const (measure_ne_top _ _)
-        have hmono : ∫ x in A j, g x ∂P n ≤
-            ∫ _ in A j, Real.exp ((n + 1 : ℝ) * (j : ℝ) * δ) ∂P n := by
-          refine setIntegral_mono_on (hg n).1.integrableOn hconst (hAmeas j) ?_
-          intro x hx
-          refine Real.exp_le_exp.mpr ?_
-          calc
-            (n + 1 : ℝ) * f x ≤ (n + 1 : ℝ) * ((j : ℝ) * δ) :=
-              mul_le_mul_of_nonneg_left (le_of_lt hx.2) (by positivity)
-            _ = (n + 1 : ℝ) * (j : ℝ) * δ := by ring
-        refine hmono.trans ?_
-        rw [setIntegral_const, smul_eq_mul, mul_comm]
-        exact mul_le_mul_of_nonneg_left
-          (measureReal_mono (hAF j) (measure_ne_top _ _)) (Real.exp_pos _).le
-      let term : ℤ → ℝ := fun j ↦ Real.exp ((n + 1 : ℝ) * (j : ℝ) * δ) * (P n).real (F j)
-      have hsumle : ∫ x, g x ∂P n ≤ ∑ j ∈ K, term j := by
-        rw [hint_sum]
-        exact Finset.sum_le_sum hpiece
-      have hintpos : 0 < ∫ x, g x ∂P n := (hg n).2
-      have hSpos : 0 < ∑ j ∈ K, term j := hintpos.trans_le hsumle
-      let m : ℝ := K.sup' hK term
-      have hmbound : ∀ j ∈ K, term j ≤ m := (sup'_le_iff hK term).1 le_rfl
-      have hSm : ∑ j ∈ K, term j ≤ (K.card : ℝ) * m := by
-        calc
-          ∑ j ∈ K, term j ≤ ∑ _j ∈ K, m := Finset.sum_le_sum hmbound
-          _ = (K.card : ℝ) * m := by simp [sum_const, nsmul_eq_mul]
-      have hmpos : 0 < m := by
-        have hcard : 0 < (K.card : ℝ) := by exact_mod_cast hK.card_pos
-        exact (mul_pos_iff_of_pos_left hcard).1 (hSpos.trans_le hSm)
-      obtain ⟨j, hj, hjm⟩ := exists_mem_eq_sup' hK term
-      have hm_eq : m = term j := by
-        simpa [m] using hjm
-      have hμpos : 0 < (P n).real (F j) := by
-        have : 0 < term j := hm_eq ▸ hmpos
-        exact (mul_pos_iff_of_pos_left (Real.exp_pos _)).1 this
-      have hlogS : Real.log (∫ x, g x ∂P n) ≤
-          Real.log ((K.card : ℝ) * m) :=
-        Real.log_le_log hintpos (hsumle.trans hSm)
-      have hΛ : laplaceRate P f n ≤
-          (n + 1 : ℝ)⁻¹ * Real.log ((K.card : ℝ) * m) :=
-        mul_le_mul_of_nonneg_left hlogS (inv_nonneg.mpr (by positivity))
-      have hsplit : (n + 1 : ℝ)⁻¹ * Real.log ((K.card : ℝ) * m) =
-          ε n + (n + 1 : ℝ)⁻¹ * Real.log m := by
-        rw [Real.log_mul (Nat.cast_ne_zero.mpr hK.card_pos.ne') hmpos.ne', mul_add]
-      have hmlog : (n + 1 : ℝ)⁻¹ * Real.log m =
-          (j : ℝ) * δ + (n + 1 : ℝ)⁻¹ * Real.log ((P n).real (F j)) := by
-        rw [hm_eq, Real.log_mul (Real.exp_pos _).ne' hμpos.ne', Real.log_exp, mul_add]
-        congr 1
-        calc
-          (n + 1 : ℝ)⁻¹ * ((n + 1) * (j : ℝ) * δ) =
-              (n + 1 : ℝ)⁻¹ * ((n + 1) * ((j : ℝ) * δ)) := by ring
-          _ = (j : ℝ) * δ := by
-            rw [← mul_assoc, inv_mul_cancel₀ (by positivity), one_mul]
-      have hφ : ↑((n + 1 : ℝ)⁻¹ * Real.log m) = φ j n := by
-        rw [hmlog]
-        unfold φ
-        rw [EReal.coe_add, logProbabilityRate_of_real_ne_zero hμpos.ne']
-      rw [hsplit] at hΛ
-      have : (laplaceRate P f n : EReal) ≤ ↑(ε n) + ↑((n + 1 : ℝ)⁻¹ * Real.log m) := by
-        rw [← EReal.coe_add]
-        exact_mod_cast hΛ
-      have hsecond : ↑((n + 1 : ℝ)⁻¹ * Real.log m) ≤ K.sup (fun i ↦ φ i n) := by
-        rw [hφ]
-        exact Finset.le_sup (f := fun i ↦ φ i n) hj
-      exact this.trans (add_le_add_right hsecond ↑(ε n))
-    have hlim : limsup (fun n ↦ ↑(ε n) + K.sup (fun j ↦ φ j n)) atTop ≤
-        limsup (fun n ↦ (ε n : EReal)) atTop +
-          limsup (fun n ↦ K.sup (fun j ↦ φ j n)) atTop := by
-      let u : ℕ → EReal := fun n ↦ (ε n : EReal)
-      let v : ℕ → EReal := fun n ↦ K.sup (fun j ↦ φ j n)
-      have hsum : limsup (u + v) atTop ≤ limsup u atTop + limsup v atTop :=
-        EReal.limsup_add_le
-          (Or.inl <| by
-            rw [Tendsto.limsup_eq hε]
-            exact EReal.coe_ne_bot 0)
-          (Or.inl <| by
-            rw [Tendsto.limsup_eq hε]
-            exact EReal.coe_ne_top 0)
-      have hfun : u + v = fun n ↦ u n + v n := by
-        funext n
-        rfl
-      rw [hfun] at hsum
-      simpa [u, v] using hsum
-    have : limsup (fun n ↦ (laplaceRate P f n : EReal)) atTop ≤
-        limsup (fun n ↦ ↑(ε n) + K.sup (fun j ↦ φ j n)) atTop :=
-      limsup_le_limsup (Eventually.of_forall hle)
-    refine this.trans (hlim.trans ?_)
-    rw [Tendsto.limsup_eq hε, zero_add]
-    exact hsup
+      limsup (fun n ↦ (laplaceRate P f n : EReal)) atTop ≤ α + δ :=
+    fun δ hδ ↦ limsup_laplaceRate_le_add P hP hf hM hδ
   refine (EReal.le_of_forall_lt_iff_le).1 ?_
   intro z hz
   have hαtop : α ≠ ⊤ := (hz.trans (EReal.coe_lt_top z)).ne

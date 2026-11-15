@@ -6,10 +6,7 @@ Authors: CKMA contributors
 module
 
 public import Mathlib.Analysis.Distribution.TestFunction
-public import TauCeti.Analysis.Sobolev.W1p.Basic
-public import Mathlib.MeasureTheory.Measure.Lebesgue.VolumeOfBalls
 public import Mathlib.Analysis.InnerProductSpace.Laplacian
-public import Mathlib.Analysis.Calculus.Gradient.Basic
 
 /-!
 # Euclidean differential expressions and smooth tests

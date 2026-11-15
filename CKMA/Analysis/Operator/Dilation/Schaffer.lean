@@ -8,7 +8,6 @@ module
 public import CKMA.Analysis.Operator.Dilation.Defect
 public import CKMA.Analysis.Operator.Dilation.L2Shift
 public import Mathlib.Analysis.InnerProductSpace.ProdL2
-public import Mathlib.Analysis.Normed.Lp.ProdLp
 
 /-!
 # Schäffer's isometric coextension

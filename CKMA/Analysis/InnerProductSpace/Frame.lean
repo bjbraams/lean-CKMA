@@ -7,7 +7,8 @@ module
 
 public import Mathlib.Analysis.InnerProductSpace.l2Space
 public import Mathlib.Analysis.InnerProductSpace.Adjoint
-public import Mathlib.Analysis.InnerProductSpace.Positive
+
+import Mathlib.Analysis.InnerProductSpace.Positive
 
 /-!
 # Arbitrary-index Hilbert frames and canonical duals

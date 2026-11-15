@@ -5,9 +5,12 @@ Authors: CKMA contributors
 -/
 module
 
-public import Mathlib.Algebra.Module.Submodule.LinearMap
-public import Mathlib.Analysis.InnerProductSpace.Projection.Basic
-public import Mathlib.Analysis.Normed.Operator.Extend
+public import Mathlib.Analysis.Normed.Operator.Basic
+public import Mathlib.Analysis.InnerProductSpace.Defs
+public import Mathlib.Analysis.Complex.Basic
+
+import Mathlib.Analysis.InnerProductSpace.Projection.Basic
+import Mathlib.Analysis.Normed.Operator.Extend
 
 /-!
 # Contraction factors through a bounded operator

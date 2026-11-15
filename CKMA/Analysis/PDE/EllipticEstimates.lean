@@ -6,7 +6,7 @@ Authors: CKMA contributors
 module
 
 public import CKMA.Analysis.PDE.Euclidean
-public import Mathlib.MeasureTheory.Function.LpSpace.Basic
+public import TauCeti.Analysis.Sobolev.W1p.Basic
 
 /-!
 # Interior elliptic estimates and weak p-harmonic regularity

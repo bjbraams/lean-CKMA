@@ -6,13 +6,9 @@ Authors: CKMA contributors
 module
 
 public import CKMA.Analysis.Inequalities.ClassicalSequences.NewtonMaclaurin
-public import Mathlib.Topology.Algebra.InfiniteSum.ENNReal
 
-import Mathlib.Analysis.MeanInequalities
 import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
-import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
 import Mathlib.Analysis.SumIntegralComparisons
-import Mathlib.Order.Interval.Finset.Nat
 
 /-!
 # Newton–Maclaurin and discrete Hardy inequalities
@@ -464,6 +460,205 @@ private theorem hardy_weight_term_lower {p : ℝ} (hp : 1 < p) {m : ℕ} (hm : 1
         = (A * (p / (p - 1)) / m) ^ p := by rw [← hgoal]
     _ ≤ (S / m) ^ p := hpowle
 
+/-- A Hardy-type bound with constant `C`, tested on finitely supported nonnegative inputs, forces
+`0 ≤ C`: the unit vector at `0` has a positive left-hand side. -/
+private theorem hardy_constant_nonneg_of_bound {p C : ℝ}
+    (hbound : ∀ a : ℕ → ℝ, (∀ n, 0 ≤ a n) → (Function.support a).Finite →
+      (∑' n, ENNReal.ofReal (hardyAverage a n ^ p)) ≤
+        ENNReal.ofReal C * ∑' n, ENNReal.ofReal (a n ^ p)) :
+    0 ≤ C := by
+  by_contra hneg
+  have hlt : C < 0 := lt_of_not_ge hneg
+  let a : ℕ → ℝ := hardyTrunc p 1
+  have hbd := hbound a (fun n => hardyTrunc_nonneg p 1 n) (hardyTrunc_support_finite p 1)
+  have ha0 : a 0 = 1 := by
+    simp [a, hardyTrunc, one_rpow]
+  have hone : hardyAverage a 0 ^ p = 1 := by
+    simp [hardyAverage, ha0, one_rpow]
+  have hge : (1 : ℝ≥0∞) ≤ ∑' n, ENNReal.ofReal (hardyAverage a n ^ p) := by
+    calc
+      (1 : ℝ≥0∞) = ENNReal.ofReal (hardyAverage a 0 ^ p) := by simp [hone]
+      _ = ∑ n ∈ range 1, ENNReal.ofReal (hardyAverage a n ^ p) := by simp
+      _ ≤ ∑' n, ENNReal.ofReal (hardyAverage a n ^ p) := ENNReal.sum_le_tsum _
+  have hzero : ENNReal.ofReal C = 0 := ENNReal.ofReal_of_nonpos hlt.le
+  rw [hzero, zero_mul] at hbd
+  exact not_lt_of_ge (hge.trans hbd) zero_lt_one
+
+/-- The harmonic sums `∑_{k=1}^N 1/k` dominate `log (N + 1)` and hence tend to infinity. -/
+private theorem tendsto_sum_Icc_inv_atTop :
+    Tendsto (fun N : ℕ => ∑ k ∈ Icc 1 N, (k : ℝ)⁻¹) atTop atTop := by
+  have hlog : ∀ N : ℕ, Real.log ((N : ℝ) + 1) ≤ ∑ k ∈ Icc 1 N, (k : ℝ)⁻¹ := by
+    intro N
+    have hanti : AntitoneOn (fun x : ℝ => x⁻¹) (Set.Icc (↑(1 : ℕ)) (↑(N + 1))) :=
+      inv_antitoneOn_Ioi.mono fun x hx =>
+        lt_of_lt_of_le zero_lt_one (by simpa using hx.1)
+    have hint := AntitoneOn.integral_le_sum_Ico (a := 1) (b := N + 1) (by omega) hanti
+    have heq : ∑ k ∈ Ico 1 (N + 1), (k : ℝ)⁻¹ = ∑ k ∈ Icc 1 N, (k : ℝ)⁻¹ := by
+      rw [Ico_add_one_right_eq_Icc]
+    have hintv : ∫ x in (1 : ℕ)..(N + 1), x⁻¹ = Real.log ((N : ℝ) + 1) := by
+      rw [integral_inv_of_pos (by positivity : (0 : ℝ) < (1 : ℕ)) (by positivity)]
+      simp [div_one, Nat.cast_one]
+    simpa [heq, hintv] using hint
+  exact tendsto_atTop_mono hlog <| tendsto_log_atTop.comp <|
+    tendsto_atTop_add_const_right atTop (1 : ℝ) tendsto_natCast_atTop_atTop
+
+/-- The correction factor `((1 + 1/m) ^ β - m ^ (-β)) ^ p` of the Hardy lower bound is
+nonnegative for `m ≥ 1`. -/
+private theorem hardy_weight_factor_nonneg {p β : ℝ} (hβ0 : 0 < β) {m : ℕ} (hm : 1 ≤ m) :
+    0 ≤ ((1 + (m : ℝ)⁻¹) ^ β - (m : ℝ) ^ (-β)) ^ p := by
+  have hm0 : (0 : ℝ) < m := by exact_mod_cast hm
+  have hm1r : (1 : ℝ) ≤ m := by exact_mod_cast hm
+  have hinside : 0 ≤ (1 + (m : ℝ)⁻¹) ^ β - (m : ℝ) ^ (-β) := by
+    have hone : (1 : ℝ) ≤ (1 + (m : ℝ)⁻¹) ^ β :=
+      one_le_rpow (le_add_of_nonneg_right (inv_nonneg.mpr (Nat.cast_nonneg m))) hβ0.le
+    have hsmall : (m : ℝ) ^ (-β) ≤ 1 := by
+      rw [rpow_neg hm0.le]
+      exact inv_le_one_of_one_le₀ (one_le_rpow hm1r hβ0.le)
+    linarith
+  exact rpow_nonneg hinside _
+
+/-- The correction factor `((1 + 1/m) ^ β - m ^ (-β)) ^ p` of the Hardy lower bound tends
+to `1`. -/
+private theorem tendsto_hardy_weight_factor {p β : ℝ} (hp0 : 0 < p) (hβ0 : 0 < β) :
+    Tendsto (fun m : ℕ => ((1 + (m : ℝ)⁻¹) ^ β - (m : ℝ) ^ (-β)) ^ p) atTop (nhds 1) := by
+  have hinv : Tendsto (fun m : ℕ => (m : ℝ)⁻¹) atTop (nhds 0) :=
+    tendsto_inv_atTop_zero.comp tendsto_natCast_atTop_atTop
+  have hbase : Tendsto (fun m : ℕ => 1 + (m : ℝ)⁻¹) atTop (nhds 1) := by
+    simpa using tendsto_const_nhds.add hinv
+  have hleft : Tendsto (fun m : ℕ => (1 + (m : ℝ)⁻¹) ^ β) atTop (nhds 1) := by
+    have hcont := (continuousAt_rpow_const (1 : ℝ) β (Or.inl one_ne_zero)).tendsto
+    have hcomp := hcont.comp hbase
+    simp only [one_rpow] at hcomp
+    exact Tendsto.congr (fun _ => rfl) hcomp
+  have hright : Tendsto (fun m : ℕ => (m : ℝ) ^ (-β)) atTop (nhds 0) :=
+    (tendsto_rpow_neg_atTop hβ0).comp tendsto_natCast_atTop_atTop
+  have hsub : Tendsto (fun m : ℕ => (1 + (m : ℝ)⁻¹) ^ β - (m : ℝ) ^ (-β)) atTop (nhds 1) := by
+    simpa using hleft.sub hright
+  have hcontp := (continuous_rpow_const (q := p) hp0.le).continuousAt (x := 1)
+  have hcomp := hcontp.tendsto.comp hsub
+  simp only [one_rpow] at hcomp
+  exact Tendsto.congr (fun _ => rfl) hcomp
+
+/-- On `n < N` the `p`-th power of the truncated weight is `1 / (n + 1)`. -/
+private theorem hardyTrunc_rpow {p : ℝ} (hp0 : 0 < p) {N n : ℕ} (hn : n < N) :
+    hardyTrunc p N n ^ p = (n + 1 : ℝ)⁻¹ := by
+  simp only [hardyTrunc, ite_eq_left hn]
+  have hexp : -(1 / p) * p = -1 := by
+    field_simp
+  rw [← rpow_mul (by positivity : (0 : ℝ) ≤ (n + 1 : ℝ)), hexp, rpow_neg_one]
+
+/-- The `p`-th powers of the truncated weight sum to the harmonic sum `∑_{k=1}^N 1/k`. -/
+private theorem sum_range_hardyTrunc_rpow {p : ℝ} (hp0 : 0 < p) (N : ℕ) :
+    ∑ n ∈ range N, hardyTrunc p N n ^ p = ∑ k ∈ Icc 1 N, (k : ℝ)⁻¹ := by
+  have hcast : ∑ n ∈ range N, hardyTrunc p N n ^ p = ∑ n ∈ range N, (↑(n + 1))⁻¹ := by
+    refine sum_congr rfl fun n hn => ?_
+    rw [hardyTrunc_rpow hp0 (mem_range.mp hn), Nat.cast_add, Nat.cast_one]
+  rw [hcast, range_eq_Ico, sum_Ico_add' (fun k : ℕ => (k : ℝ)⁻¹) 0 N (c := 1),
+    Ico_add_one_right_eq_Icc]
+
+/-- On `n < N` the Hardy average of the truncated weight is the normalized partial sum
+`(∑_{k=1}^{n+1} k ^ (-1/p)) / (n + 1)`. -/
+private theorem hardyAverage_hardyTrunc (p : ℝ) {N n : ℕ} (hn : n < N) :
+    hardyAverage (hardyTrunc p N) n =
+      (∑ k ∈ Icc 1 (n + 1), (k : ℝ) ^ (-(1 / p))) / (n + 1 : ℝ) := by
+  have hterms : ∀ j ∈ range (n + 1), hardyTrunc p N j = (↑(j + 1)) ^ (-(1 / p)) := by
+    intro j hj
+    have hjN : j < N := lt_of_le_of_lt (Nat.le_of_lt_succ (mem_range.mp hj)) hn
+    simp only [hardyTrunc, ite_eq_left hjN, Nat.cast_add, Nat.cast_one]
+  simp only [hardyAverage]
+  rw [sum_congr rfl hterms, range_eq_Ico,
+    sum_Ico_add' (fun k : ℕ => (k : ℝ) ^ (-(1 / p))) 0 (n + 1) (c := 1),
+    Ico_add_one_right_eq_Icc]
+
+/-- Lower bound by integral comparison: the Hardy averages of the truncated weight dominate
+`(p / (p - 1)) ^ p` times the harmonic sum weighted by the correction factor. -/
+private theorem sum_weight_factor_le_sum_hardyAverage_hardyTrunc {p : ℝ} (hp : 1 < p) (N : ℕ) :
+    (p / (p - 1)) ^ p * ∑ m ∈ Icc 1 N,
+        ((1 + (m : ℝ)⁻¹) ^ ((p - 1) / p) - (m : ℝ) ^ (-((p - 1) / p))) ^ p * (m : ℝ)⁻¹ ≤
+      ∑ n ∈ range N, hardyAverage (hardyTrunc p N) n ^ p := by
+  have hre : ∑ n ∈ range N, hardyAverage (hardyTrunc p N) n ^ p =
+      ∑ m ∈ Icc 1 N, ((∑ k ∈ Icc 1 m, (k : ℝ) ^ (-(1 / p))) / (m : ℝ)) ^ p := by
+    rw [range_eq_Ico, ← Ico_add_one_right_eq_Icc,
+      ← sum_Ico_add' (fun m : ℕ => ((∑ k ∈ Icc 1 m, (k : ℝ) ^ (-(1 / p))) / (m : ℝ)) ^ p)
+        0 N (c := 1)]
+    refine sum_congr rfl fun n hn => ?_
+    rw [hardyAverage_hardyTrunc p (mem_Ico.mp hn).2, Nat.cast_add, Nat.cast_one]
+  rw [hre, mul_sum]
+  refine sum_le_sum fun m hm => ?_
+  refine le_trans (le_of_eq ?_) (hardy_weight_term_lower hp (mem_Icc.mp hm).1)
+  ring
+
+/-- Upper bound from the hypothesis: a Hardy bound with constant `C ≥ 0`, applied to the
+truncated weight, bounds its Hardy averages by `C` times the harmonic sum. -/
+private theorem sum_hardyAverage_hardyTrunc_le {p C : ℝ} (hp0 : 0 < p) (hC : 0 ≤ C)
+    (hbound : ∀ a : ℕ → ℝ, (∀ n, 0 ≤ a n) → (Function.support a).Finite →
+      (∑' n, ENNReal.ofReal (hardyAverage a n ^ p)) ≤
+        ENNReal.ofReal C * ∑' n, ENNReal.ofReal (a n ^ p)) (N : ℕ) :
+    ∑ n ∈ range N, hardyAverage (hardyTrunc p N) n ^ p ≤ C * ∑ k ∈ Icc 1 N, (k : ℝ)⁻¹ := by
+  set a : ℕ → ℝ := hardyTrunc p N
+  have ha : ∀ n, 0 ≤ a n := fun n => hardyTrunc_nonneg p N n
+  have hbd := hbound a ha (hardyTrunc_support_finite p N)
+  have hap : ∀ n, 0 ≤ a n ^ p := fun n => rpow_nonneg (ha n) _
+  have havg_nonneg : ∀ n, 0 ≤ hardyAverage a n ^ p := fun n =>
+    rpow_nonneg (div_nonneg (sum_nonneg fun j _ => ha j) (by positivity)) _
+  have htail : ∀ n, N ≤ n → a n = 0 := fun n hn => by
+    simp [a, hardyTrunc, not_lt.mpr hn]
+  have hcompl : ∑' i : ↥((range N : Set ℕ)ᶜ), ENNReal.ofReal (a i ^ p) = 0 := by
+    rw [ENNReal.tsum_eq_zero]
+    rintro ⟨n, hn⟩
+    have hnN : N ≤ n := by
+      simpa [Set.mem_compl_iff, mem_coe, mem_range, not_lt] using hn
+    rw [htail n hnN, zero_rpow hp0.ne', ENNReal.ofReal_zero]
+  have htsumR : ∑' n, ENNReal.ofReal (a n ^ p) =
+      ENNReal.ofReal (∑ n ∈ range N, a n ^ p) := by
+    have hadd :=
+      ENNReal.sum_add_tsum_compl (range N) (fun n => ENNReal.ofReal (a n ^ p))
+    rw [hcompl, add_zero] at hadd
+    rw [← hadd, ENNReal.ofReal_sum_of_nonneg fun n _ => hap n]
+  have hge : ENNReal.ofReal (∑ n ∈ range N, hardyAverage a n ^ p) ≤
+      ∑' n, ENNReal.ofReal (hardyAverage a n ^ p) := by
+    rw [ENNReal.ofReal_sum_of_nonneg fun n _ => havg_nonneg n]
+    exact ENNReal.sum_le_tsum (range N)
+  rw [htsumR, sum_range_hardyTrunc_rpow hp0 N] at hbd
+  have hle : ENNReal.ofReal (∑ n ∈ range N, hardyAverage a n ^ p) ≤
+      ENNReal.ofReal C * ENNReal.ofReal (∑ k ∈ Icc 1 N, (k : ℝ)⁻¹) := le_trans hge hbd
+  rw [← ENNReal.ofReal_mul hC] at hle
+  have hHN : 0 ≤ C * ∑ k ∈ Icc 1 N, (k : ℝ)⁻¹ :=
+    mul_nonneg hC (sum_nonneg fun k _ => inv_nonneg.mpr (Nat.cast_nonneg k))
+  exact (ENNReal.ofReal_le_ofReal_iff hHN).mp hle
+
+/-- If `φ ≥ 0` on the positive integers and `1 - η < φ m` for `m ≥ M`, then the weighted
+harmonic sum `∑_{m=1}^N φ(m)/m` is at least `1 - η` times the harmonic tail `∑_{m=M}^N 1/m`. -/
+private theorem one_sub_mul_harmonic_tail_le {φ : ℕ → ℝ} {η : ℝ} {M N : ℕ} (hM1 : 1 ≤ M)
+    (hMN : M ≤ N) (hφ0 : ∀ m, 1 ≤ m → 0 ≤ φ m) (hMφ : ∀ m ≥ M, 1 - η < φ m) :
+    (1 - η) * (∑ k ∈ Icc 1 N, (k : ℝ)⁻¹ - ∑ k ∈ Icc 1 (M - 1), (k : ℝ)⁻¹) ≤
+      ∑ m ∈ Icc 1 N, φ m * (m : ℝ)⁻¹ := by
+  have hunion : Icc 1 (M - 1) ∪ Icc M N = Icc 1 N := by
+    ext k
+    simp only [mem_union, mem_Icc]
+    omega
+  have hdisj : Disjoint (Icc 1 (M - 1)) (Icc M N) := by
+    rw [disjoint_left]
+    intro k hk1 hk2
+    simp only [mem_Icc] at hk1 hk2
+    omega
+  have hH : ∑ k ∈ Icc 1 N, (k : ℝ)⁻¹ =
+      ∑ k ∈ Icc 1 (M - 1), (k : ℝ)⁻¹ + ∑ k ∈ Icc M N, (k : ℝ)⁻¹ := by
+    rw [← sum_union hdisj, hunion]
+  have hφs : ∑ m ∈ Icc 1 N, φ m * (m : ℝ)⁻¹ =
+      ∑ m ∈ Icc 1 (M - 1), φ m * (m : ℝ)⁻¹ + ∑ m ∈ Icc M N, φ m * (m : ℝ)⁻¹ := by
+    rw [← sum_union hdisj, hunion]
+  have htail : (1 - η) * ∑ m ∈ Icc M N, (m : ℝ)⁻¹ ≤ ∑ m ∈ Icc M N, φ m * (m : ℝ)⁻¹ := by
+    rw [mul_sum]
+    refine sum_le_sum fun m hm => ?_
+    exact mul_le_mul_of_nonneg_right (le_of_lt (hMφ m (mem_Icc.mp hm).1))
+      (inv_nonneg.mpr (Nat.cast_nonneg m))
+  have hdrop : 0 ≤ ∑ m ∈ Icc 1 (M - 1), φ m * (m : ℝ)⁻¹ :=
+    sum_nonneg fun m hm =>
+      mul_nonneg (hφ0 m (mem_Icc.mp hm).1) (inv_nonneg.mpr (Nat.cast_nonneg m))
+  rw [hH, add_sub_cancel_left, hφs]
+  exact le_trans htail (le_add_of_nonneg_left hdrop)
+
 /-- The constant in Hardy's inequality is optimal already on finitely supported inputs. -/
 theorem discrete_hardy_constant_le {p C : ℝ} (hp : 1 < p)
     (hbound : ∀ a : ℕ → ℝ, (∀ n, 0 ≤ a n) → (Function.support a).Finite →
@@ -474,81 +669,19 @@ theorem discrete_hardy_constant_le {p C : ℝ} (hp : 1 < p)
   have hp0 : 0 < p := lt_trans zero_lt_one hp
   have hpm1 : 0 < p - 1 := sub_pos.mpr hp
   have hc0 : 0 < c := rpow_pos_of_pos (div_pos hp0 hpm1) _
-  have hC : 0 ≤ C := by
-    by_contra hneg
-    have hlt : C < 0 := lt_of_not_ge hneg
-    let a : ℕ → ℝ := hardyTrunc p 1
-    have ha : ∀ n, 0 ≤ a n := fun n => hardyTrunc_nonneg p 1 n
-    have hfin := hardyTrunc_support_finite p 1
-    have hbd := hbound a ha hfin
-    have ha0 : a 0 = 1 := by
-      simp [a, hardyTrunc, one_rpow]
-    have hone : hardyAverage a 0 ^ p = 1 := by
-      simp [hardyAverage, ha0, one_rpow]
-    have hge : (1 : ℝ≥0∞) ≤ ∑' n, ENNReal.ofReal (hardyAverage a n ^ p) := by
-      calc
-        (1 : ℝ≥0∞) = ENNReal.ofReal (hardyAverage a 0 ^ p) := by simp [hone]
-        _ = ∑ n ∈ range 1, ENNReal.ofReal (hardyAverage a n ^ p) := by simp
-        _ ≤ ∑' n, ENNReal.ofReal (hardyAverage a n ^ p) := ENNReal.sum_le_tsum _
-    have hzero : ENNReal.ofReal C = 0 := ENNReal.ofReal_of_nonpos hlt.le
-    rw [hzero, zero_mul] at hbd
-    exact not_lt_of_ge (hge.trans hbd) zero_lt_one
+  have hC : 0 ≤ C := hardy_constant_nonneg_of_bound hbound
   let H : ℕ → ℝ := fun N => ∑ k ∈ Icc 1 N, (k : ℝ)⁻¹
-  have hHlog : ∀ N : ℕ, Real.log ((N : ℝ) + 1) ≤ H N := by
-    intro N
-    have hanti : AntitoneOn (fun x : ℝ => x⁻¹) (Set.Icc (↑(1 : ℕ)) (↑(N + 1))) :=
-      inv_antitoneOn_Ioi.mono fun x hx =>
-        lt_of_lt_of_le zero_lt_one (by simpa using hx.1)
-    have hint := AntitoneOn.integral_le_sum_Ico (a := 1) (b := N + 1) (by omega) hanti
-    have heq : ∑ k ∈ Ico 1 (N + 1), (k : ℝ)⁻¹ = H N := by
-      rw [Ico_add_one_right_eq_Icc]
-    have hintv : ∫ x in (1 : ℕ)..(N + 1), x⁻¹ = Real.log ((N : ℝ) + 1) := by
-      rw [integral_inv_of_pos (by positivity : (0 : ℝ) < (1 : ℕ)) (by positivity)]
-      simp [div_one, Nat.cast_one]
-    simpa [heq, hintv] using hint
-  have hHtop : Tendsto H atTop atTop :=
-    tendsto_atTop_mono hHlog <| tendsto_log_atTop.comp <|
-      tendsto_atTop_add_const_right atTop (1 : ℝ) tendsto_natCast_atTop_atTop
-  set β : ℝ := (p - 1) / p
-  have hβ0 : 0 < β := div_pos hpm1 hp0
+  have hHtop : Tendsto H atTop atTop := tendsto_sum_Icc_inv_atTop
+  have hβ0 : 0 < (p - 1) / p := div_pos hpm1 hp0
   let φ : ℕ → ℝ := fun m =>
-    ((1 + (m : ℝ)⁻¹) ^ β - (m : ℝ) ^ (-β)) ^ p
-  have hφ_nonneg : ∀ m, 1 ≤ m → 0 ≤ φ m := by
-    intro m hm
-    have hm0 : (0 : ℝ) < m := by exact_mod_cast hm
-    have hm1r : (1 : ℝ) ≤ m := by exact_mod_cast hm
-    have hinside : 0 ≤ (1 + (m : ℝ)⁻¹) ^ β - (m : ℝ) ^ (-β) := by
-      have hone : (1 : ℝ) ≤ (1 + (m : ℝ)⁻¹) ^ β :=
-        one_le_rpow (le_add_of_nonneg_right (inv_nonneg.mpr (Nat.cast_nonneg m))) hβ0.le
-      have hsmall : (m : ℝ) ^ (-β) ≤ 1 := by
-        rw [rpow_neg hm0.le]
-        exact inv_le_one_of_one_le₀ (one_le_rpow hm1r hβ0.le)
-      linarith
-    exact rpow_nonneg hinside _
-  have hφ : Tendsto φ atTop (nhds 1) := by
-    have hinv : Tendsto (fun m : ℕ => (m : ℝ)⁻¹) atTop (nhds 0) :=
-      tendsto_inv_atTop_zero.comp tendsto_natCast_atTop_atTop
-    have hbase : Tendsto (fun m : ℕ => 1 + (m : ℝ)⁻¹) atTop (nhds 1) := by
-      simpa using tendsto_const_nhds.add hinv
-    have hleft : Tendsto (fun m : ℕ => (1 + (m : ℝ)⁻¹) ^ β) atTop (nhds 1) := by
-      have hcont := (continuousAt_rpow_const (1 : ℝ) β (Or.inl one_ne_zero)).tendsto
-      have hcomp := hcont.comp hbase
-      simp only [one_rpow] at hcomp
-      exact Tendsto.congr (fun _ => rfl) hcomp
-    have hright : Tendsto (fun m : ℕ => (m : ℝ) ^ (-β)) atTop (nhds 0) :=
-      (tendsto_rpow_neg_atTop hβ0).comp tendsto_natCast_atTop_atTop
-    have hsub : Tendsto (fun m : ℕ => (1 + (m : ℝ)⁻¹) ^ β - (m : ℝ) ^ (-β)) atTop (nhds 1) := by
-      simpa using hleft.sub hright
-    have hcontp := (continuous_rpow_const (q := p) hp0.le).continuousAt (x := 1)
-    have hcomp := hcontp.tendsto.comp hsub
-    simp only [one_rpow] at hcomp
-    exact Tendsto.congr (fun _ => rfl) hcomp
+    ((1 + (m : ℝ)⁻¹) ^ ((p - 1) / p) - (m : ℝ) ^ (-((p - 1) / p))) ^ p
+  have hφ : Tendsto φ atTop (nhds 1) := tendsto_hardy_weight_factor hp0 hβ0
+  -- Choose `δ` with `c * δ ≤ ε` and `η = δ / 2`, so that `1 - δ ≤ (1 - η) ^ 2`.
   refine le_of_forall_pos_le_add fun ε hε => ?_
   set δ : ℝ := min (1 / 2) (ε / c)
   have hδ0 : 0 < δ := by positivity
   have hδ1 : δ < 1 := by
     have hδle : δ ≤ 1 / 2 := min_le_left _ _
-    have : (1 : ℝ) / 2 < 1 := by norm_num
     linarith
   have hδε : c * δ ≤ ε := by
     have hδle : δ ≤ ε / c := min_le_right _ _
@@ -563,133 +696,32 @@ theorem discrete_hardy_constant_le {p C : ℝ} (hp : 1 < p)
   have hsq : 1 - δ ≤ (1 - η) ^ 2 := by
     have hηdef : η = δ / 2 := rfl
     nlinarith
-  have hcloseφ : ∀ᶠ m : ℕ in atTop, φ m ∈ Set.Ioo (1 - η) (1 + η) :=
-    hφ.eventually (Ioo_mem_nhds (sub_lt_self 1 hη0) (lt_add_of_pos_right 1 hη0))
-  obtain ⟨M0, hM0⟩ := eventually_atTop.mp hcloseφ
+  -- Choose `M` beyond which `φ > 1 - η`, and `N ≥ M` with `H (M - 1) ≤ η * H N`.
+  obtain ⟨M0, hM0⟩ := eventually_atTop.mp
+    (hφ.eventually (Ioo_mem_nhds (sub_lt_self 1 hη0) (lt_add_of_pos_right 1 hη0)))
   let M : ℕ := max M0 1
   have hM1 : 1 ≤ M := le_max_right _ _
-  have hMφ : ∀ m ≥ M, 1 - η < φ m := by
-    intro m hm
-    have hmem := hM0 m (le_trans (le_max_left _ _) hm)
-    rw [Set.mem_Ioo] at hmem
-    exact hmem.1
-  have hlarge : ∀ᶠ N : ℕ in atTop, H (M - 1) / η ≤ H N ∧ M ≤ N :=
-    (hHtop.eventually_ge_atTop (H (M - 1) / η)).and (eventually_ge_atTop M)
-  obtain ⟨N, hNge, hNM⟩ := hlarge.exists
-  have hN1 : 1 ≤ N := le_trans hM1 hNM
+  have hMφ : ∀ m ≥ M, 1 - η < φ m := fun m hm =>
+    (Set.mem_Ioo.mp (hM0 m (le_trans (le_max_left _ _) hm))).1
+  obtain ⟨N, hNge, hNM⟩ :=
+    ((hHtop.eventually_ge_atTop (H (M - 1) / η)).and (eventually_ge_atTop M)).exists
   have hHpos : 0 < H N := by
-    have hmem : (1 : ℕ) ∈ Icc 1 N := by simp [hN1]
+    have hmem : (1 : ℕ) ∈ Icc 1 N := by simp [le_trans hM1 hNM]
     have hone : (1 : ℝ)⁻¹ ≤ H N := by
       have hle := Finset.single_le_sum (f := fun k : ℕ => (k : ℝ)⁻¹)
         (fun k _ => inv_nonneg.mpr (Nat.cast_nonneg k)) hmem
       simpa [H] using hle
     have : (1 : ℝ) ≤ H N := by simpa using hone
     linarith
-  let a : ℕ → ℝ := hardyTrunc p N
-  have ha : ∀ n, 0 ≤ a n := fun n => hardyTrunc_nonneg p N n
-  have hfin := hardyTrunc_support_finite p N
-  have hbd := hbound a ha hfin
-  have hpow : ∀ n, n < N → a n ^ p = (n + 1 : ℝ)⁻¹ := by
-    intro n hn
-    simp only [a, hardyTrunc, ite_eq_left hn]
-    have hexp : -(1 / p) * p = -1 := by
-      field_simp
-    rw [← rpow_mul (by positivity : (0 : ℝ) ≤ (n + 1 : ℝ)), hexp, rpow_neg_one]
-  have hR : ∑ n ∈ range N, a n ^ p = H N := by
-    have hcast : ∑ n ∈ range N, a n ^ p = ∑ n ∈ range N, (↑(n + 1))⁻¹ := by
-      refine sum_congr rfl fun n hn => ?_
-      rw [hpow n (mem_range.mp hn), Nat.cast_add, Nat.cast_one]
-    rw [hcast, range_eq_Ico, sum_Ico_add' (fun k : ℕ => (k : ℝ)⁻¹) 0 N (c := 1),
-      Ico_add_one_right_eq_Icc]
-  let S : ℕ → ℝ := fun m => ∑ k ∈ Icc 1 m, (k : ℝ) ^ (-(1 / p))
-  have havg : ∀ n, n < N → hardyAverage a n = S (n + 1) / (n + 1 : ℝ) := by
-    intro n hn
-    have hterms : ∀ j ∈ range (n + 1), a j = (↑(j + 1)) ^ (-(1 / p)) := by
-      intro j hj
-      have hjN : j < N := lt_of_le_of_lt (Nat.le_of_lt_succ (mem_range.mp hj)) hn
-      simp only [a, hardyTrunc, ite_eq_left hjN, Nat.cast_add, Nat.cast_one]
-    simp only [hardyAverage, S]
-    rw [sum_congr rfl hterms, range_eq_Ico,
-      sum_Ico_add' (fun k : ℕ => (k : ℝ) ^ (-(1 / p))) 0 (n + 1) (c := 1),
-      Ico_add_one_right_eq_Icc]
+  -- Compare the two bounds on the Hardy averages of the truncated weight.
   have hpartial_ge : c * ∑ m ∈ Icc 1 N, φ m * (m : ℝ)⁻¹ ≤
-      ∑ n ∈ range N, hardyAverage a n ^ p := by
-    have hre : ∑ n ∈ range N, hardyAverage a n ^ p =
-        ∑ m ∈ Icc 1 N, (S m / (m : ℝ)) ^ p := by
-      rw [range_eq_Ico, ← Ico_add_one_right_eq_Icc,
-        ← sum_Ico_add' (fun m : ℕ => (S m / (m : ℝ)) ^ p) 0 N (c := 1)]
-      refine sum_congr rfl fun n hn => ?_
-      rw [havg n (mem_Ico.mp hn).2, Nat.cast_add, Nat.cast_one]
-    rw [hre, mul_sum]
-    refine sum_le_sum fun m hm => ?_
-    have hm1 : 1 ≤ m := (mem_Icc.mp hm).1
-    have hlow := hardy_weight_term_lower hp hm1
-    calc
-      c * (φ m * (m : ℝ)⁻¹) = c * (m : ℝ)⁻¹ * φ m := by
-        rw [mul_comm (φ m), mul_assoc]
-      _ ≤ (S m / (m : ℝ)) ^ p := by
-        simpa [S, φ, β] using hlow
-  have hpartial_le : ∑ n ∈ range N, hardyAverage a n ^ p ≤ C * H N := by
-    have hap : ∀ n, 0 ≤ a n ^ p := fun n => rpow_nonneg (ha n) _
-    have havg_nonneg : ∀ n, 0 ≤ hardyAverage a n ^ p := fun n =>
-      rpow_nonneg (div_nonneg (sum_nonneg fun j _ => ha j) (by positivity)) _
-    have htail : ∀ n, N ≤ n → a n = 0 := fun n hn => by
-      simp [a, hardyTrunc, not_lt.mpr hn]
-    have hcompl : ∑' i : ↥((range N : Set ℕ)ᶜ), ENNReal.ofReal (a i ^ p) = 0 := by
-      rw [ENNReal.tsum_eq_zero]
-      rintro ⟨n, hn⟩
-      have hnN : N ≤ n := by
-        simpa [Set.mem_compl_iff, mem_coe, mem_range, not_lt] using hn
-      rw [htail n hnN, zero_rpow hp0.ne', ENNReal.ofReal_zero]
-    have htsumR : ∑' n, ENNReal.ofReal (a n ^ p) =
-        ENNReal.ofReal (∑ n ∈ range N, a n ^ p) := by
-      have hadd :=
-        ENNReal.sum_add_tsum_compl (range N) (fun n => ENNReal.ofReal (a n ^ p))
-      rw [hcompl, add_zero] at hadd
-      rw [← hadd, ENNReal.ofReal_sum_of_nonneg fun n _ => hap n]
-    have hge : ENNReal.ofReal (∑ n ∈ range N, hardyAverage a n ^ p) ≤
-        ∑' n, ENNReal.ofReal (hardyAverage a n ^ p) := by
-      rw [ENNReal.ofReal_sum_of_nonneg fun n _ => havg_nonneg n]
-      exact ENNReal.sum_le_tsum (range N)
-    have hmul := hbd
-    rw [htsumR, hR] at hmul
-    have : ENNReal.ofReal (∑ n ∈ range N, hardyAverage a n ^ p) ≤
-        ENNReal.ofReal C * ENNReal.ofReal (H N) := le_trans hge hmul
-    rw [← ENNReal.ofReal_mul hC] at this
-    have hHN : 0 ≤ C * H N := mul_nonneg hC (le_of_lt hHpos)
-    exact (ENNReal.ofReal_le_ofReal_iff hHN).mp this
-  have hsplit : (1 - η) * (H N - H (M - 1)) ≤ ∑ m ∈ Icc 1 N, φ m * (m : ℝ)⁻¹ := by
-    have hunion : Icc 1 (M - 1) ∪ Icc M N = Icc 1 N := by
-      ext k
-      simp only [mem_union, mem_Icc]
-      omega
-    have hdisj : Disjoint (Icc 1 (M - 1)) (Icc M N) := by
-      rw [disjoint_left]
-      intro k hk1 hk2
-      simp only [mem_Icc] at hk1 hk2
-      omega
-    have hsum : ∑ m ∈ Icc 1 N, φ m * (m : ℝ)⁻¹ =
-        ∑ m ∈ Icc 1 (M - 1), φ m * (m : ℝ)⁻¹ + ∑ m ∈ Icc M N, φ m * (m : ℝ)⁻¹ := by
-      rw [← sum_union hdisj, hunion]
-    have htail : (1 - η) * ∑ m ∈ Icc M N, (m : ℝ)⁻¹ ≤
-        ∑ m ∈ Icc M N, φ m * (m : ℝ)⁻¹ := by
-      rw [mul_sum]
-      refine sum_le_sum fun m hm => ?_
-      have hmM : M ≤ m := (mem_Icc.mp hm).1
-      have hinv : 0 ≤ (m : ℝ)⁻¹ := inv_nonneg.mpr (Nat.cast_nonneg m)
-      exact mul_le_mul_of_nonneg_right (le_of_lt (hMφ m hmM)) hinv
-    have hHsplit : H N = H (M - 1) + ∑ m ∈ Icc M N, (m : ℝ)⁻¹ := by
-      have hsumH : ∑ m ∈ Icc 1 N, (m : ℝ)⁻¹ =
-          ∑ m ∈ Icc 1 (M - 1), (m : ℝ)⁻¹ + ∑ m ∈ Icc M N, (m : ℝ)⁻¹ := by
-        rw [← sum_union hdisj, hunion]
-      simpa [H] using hsumH
-    have hdrop : 0 ≤ ∑ m ∈ Icc 1 (M - 1), φ m * (m : ℝ)⁻¹ := by
-      refine sum_nonneg fun m hm => ?_
-      exact mul_nonneg (hφ_nonneg m (mem_Icc.mp hm).1) (inv_nonneg.mpr (Nat.cast_nonneg m))
-    have htail_le : (1 - η) * (H N - H (M - 1)) ≤ ∑ m ∈ Icc M N, φ m * (m : ℝ)⁻¹ := by
-      rw [hHsplit, add_sub_cancel_left]
-      exact htail
-    exact (le_trans htail_le (le_add_of_nonneg_left hdrop)).trans_eq hsum.symm
+      ∑ n ∈ range N, hardyAverage (hardyTrunc p N) n ^ p :=
+    sum_weight_factor_le_sum_hardyAverage_hardyTrunc hp N
+  have hpartial_le : ∑ n ∈ range N, hardyAverage (hardyTrunc p N) n ^ p ≤ C * H N :=
+    sum_hardyAverage_hardyTrunc_le hp0 hC hbound N
+  have hsplit : (1 - η) * (H N - H (M - 1)) ≤ ∑ m ∈ Icc 1 N, φ m * (m : ℝ)⁻¹ :=
+    one_sub_mul_harmonic_tail_le hM1 hNM
+      (fun m hm => hardy_weight_factor_nonneg hβ0 hm) hMφ
   have hratio : (1 - η) ^ 2 ≤ (∑ m ∈ Icc 1 N, φ m * (m : ℝ)⁻¹) / H N := by
     have hprev : H (M - 1) ≤ η * H N := by
       simpa [mul_comm] using (div_le_iff₀ hη0).mp hNge

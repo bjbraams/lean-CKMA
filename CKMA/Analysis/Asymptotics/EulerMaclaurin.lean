@@ -6,7 +6,6 @@ Authors: CKMA contributors
 module
 
 public import Mathlib.NumberTheory.ZetaValues
-public import Mathlib.Analysis.Calculus.IteratedDeriv.Lemmas
 
 /-!
 # Euler–Maclaurin summation with periodic remainder

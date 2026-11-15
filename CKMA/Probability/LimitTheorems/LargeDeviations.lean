@@ -7,19 +7,12 @@ module
 
 public import CKMA.Probability.LargeDeviations
 public import Mathlib.Probability.IdentDistrib
-public import Mathlib.Probability.Independence.Basic
 public import Mathlib.InformationTheory.KullbackLeibler.Basic
 public import TauCeti.Probability.Process.EmpiricalMeasure
 
-import Mathlib.Analysis.Convex.Integral
-import Mathlib.Analysis.Convex.SpecificFunctions.Basic
-import Mathlib.MeasureTheory.Integral.Lebesgue.Basic
 import Mathlib.MeasureTheory.Measure.Prokhorov
-import Mathlib.Order.LiminfLimsup
 import Mathlib.Probability.Moments.Basic
 import Mathlib.Probability.Moments.IntegrableExpMul
-import Mathlib.Topology.Instances.EReal.Lemmas
-import Mathlib.Topology.Order.Compact
 import TauCeti.InformationTheory.KullbackLeibler.Variational
 
 /-!

@@ -6,16 +6,8 @@ Authors: CKMA contributors
 module
 
 public import CKMA.Analysis.OrderedSpace.Representation.AL.BandProjection
-public import Mathlib.Analysis.Normed.Group.InfiniteSum
-public import Mathlib.MeasureTheory.Function.L1Space.AEEqFun
-public import Mathlib.MeasureTheory.Function.SimpleFunc
-public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
-public import Mathlib.MeasureTheory.Integral.Lebesgue.Map
-public import Mathlib.MeasureTheory.Measure.Map
-public import Mathlib.Order.Zorn
-public import Mathlib.Topology.Algebra.InfiniteSum.Group
-public import Mathlib.Topology.Algebra.InfiniteSum.Real
-public import Mathlib.Topology.Algebra.InfiniteSum.Module
+public import Mathlib.MeasureTheory.Function.LpOrder
+import CKMA.Analysis.OrderedSpace.Representation.AL
 
 /-!
 # Gluing of AL representations along a maximal disjoint family
@@ -48,8 +40,6 @@ meets only countably many bands.
 
 noncomputable section
 
-set_option linter.unusedSectionVars false
-
 open Metric Set Filter Topology MeasureTheory
 open scoped ENNReal
 
@@ -64,6 +54,7 @@ variable {E : Type u} [NormedAddCommGroup E] [NormedSpace ℝ E] [Lattice E]
 def IsPositiveDisjointFamily (S : Set E) : Prop :=
   (∀ x ∈ S, 0 < x) ∧ S.Pairwise (fun a b => LatticeDisjoint a b)
 
+omit [NormedSpace ℝ E] [IsOrderedAddMonoid E] [IsOrderedModule ℝ E] [HasSolidNorm E] in
 /-- Pairwise disjoint positive families are inductive, so a maximal one exists. -/
 theorem exists_maximal_positiveDisjointFamily :
     ∃ M : Set E, IsPositiveDisjointFamily M ∧ Maximal IsPositiveDisjointFamily M := by
@@ -96,6 +87,7 @@ theorem exists_maximal_positiveDisjointFamily :
 noncomputable def maximalPositiveDisjointFamily : Set E :=
   Classical.choose (exists_maximal_positiveDisjointFamily (E := E))
 
+omit [NormedSpace ℝ E] [IsOrderedAddMonoid E] [IsOrderedModule ℝ E] [HasSolidNorm E] in
 /-- The chosen family is a maximal positive disjoint family. -/
 theorem maximalPositiveDisjointFamily_spec :
     IsPositiveDisjointFamily (E := E) maximalPositiveDisjointFamily ∧
@@ -110,14 +102,17 @@ structure BandIndex where
   /-- Proof that the vector lies in the chosen family. -/
   mem_family : vec ∈ maximalPositiveDisjointFamily
 
+omit [NormedSpace ℝ E] [IsOrderedAddMonoid E] [IsOrderedModule ℝ E] [HasSolidNorm E] in
 /-- Each index vector is strictly positive. -/
 private theorem bandIndex_pos (i : BandIndex) : (0 : E) < i.vec :=
   (maximalPositiveDisjointFamily_spec (E := E)).1.1 i.vec i.mem_family
 
+omit [NormedSpace ℝ E] [IsOrderedAddMonoid E] [IsOrderedModule ℝ E] [HasSolidNorm E] in
 /-- Each index vector is nonnegative. -/
 theorem bandIndex_nonneg (i : BandIndex) : (0 : E) ≤ i.vec :=
   le_of_lt (bandIndex_pos i)
 
+omit [NormedSpace ℝ E] [IsOrderedAddMonoid E] [IsOrderedModule ℝ E] [HasSolidNorm E] in
 /-- Distinct index vectors are lattice disjoint. -/
 private theorem bandIndex_disjoint {i j : BandIndex} (hij : i ≠ j) :
     LatticeDisjoint (E := E) i.vec j.vec := by
@@ -181,6 +176,7 @@ theorem indexProjection_eq_clm (i : BandIndex) (x : E) :
     indexProjection hE i.mem_family x = (bandProjectionCLM hE (bandIndex_nonneg i)) x :=
   rfl
 
+omit [NormedSpace ℝ E] [IsOrderedModule ℝ E] [HasSolidNorm E] [CompleteSpace E] in
 /-- Distinct index vectors meet in zero. -/
 private theorem bandIndex_inf_eq_zero {i j : BandIndex} (hij : i ≠ j) : i.vec ⊓ j.vec =
     (0 : E) := by

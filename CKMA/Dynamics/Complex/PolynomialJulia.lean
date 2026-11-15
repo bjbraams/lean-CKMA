@@ -6,11 +6,9 @@ Authors: CKMA contributors
 module
 
 public import CKMA.Dynamics.Orbit
-public import Mathlib.Analysis.Polynomial.Basic
-public import Mathlib.Analysis.Calculus.Deriv.Polynomial
-public import Mathlib.Topology.Connected.Basic
-public import Mathlib.Topology.MetricSpace.ProperSpace
 public import Mathlib.Analysis.SpecialFunctions.Log.Basic
+public import Mathlib.Analysis.Calculus.Deriv.Basic
+public import Mathlib.Algebra.Polynomial.Derivative
 
 /-!
 # Polynomial Julia sets, escape rates and entire escape (46)

@@ -5,9 +5,8 @@ Authors: CKMA contributors
 -/
 module
 
-public import TauCeti.Analysis.BoundedVariation.TotalVariation
 public import TauCeti.Analysis.BoundedVariation.Perimeter
-public import Mathlib.MeasureTheory.Measure.Lebesgue.VolumeOfBalls
+public import Mathlib.Analysis.Normed.Lp.MeasurableSpace
 
 /-!
 # BV compactness and the coarea formula
@@ -56,8 +55,7 @@ theorem isBVFunctionOn_zero {d : ℕ} (Ω : Opens (EuclideanSpace ℝ (Fin d))) 
     IsBVFunctionOn Ω (fun _ ↦ 0) := by
   constructor
   · exact integrableOn_zero
-  · simpa using (TauCeti.totalVariationOn_zero (μ := (volume : Measure (EuclideanSpace ℝ (Fin d))))
-      (Ω := Ω))
+  · simp
 
 /-- **37.24**, whole-space BV compactness for uniformly bounded families supported in a fixed
 compact set. The bounded-Lipschitz-domain extension interface is a separate target. -/

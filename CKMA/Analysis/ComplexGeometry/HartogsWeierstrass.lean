@@ -5,12 +5,9 @@ Authors: CKMA contributors
 -/
 module
 
-public import Mathlib.Analysis.Complex.Basic
-public import Mathlib.Analysis.InnerProductSpace.PiL2
 public import Mathlib.Analysis.Analytic.Order
-public import Mathlib.Analysis.Calculus.FDeriv.Basic
-public import Mathlib.Analysis.Analytic.Composition
-public import Mathlib.Algebra.MvPolynomial.Basic
+public import Mathlib.Analysis.Complex.Basic
+public import Mathlib.Algebra.MvPolynomial.Eval
 
 /-!
 # Several-variable extension, preparation and approximation

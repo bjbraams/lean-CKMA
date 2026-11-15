@@ -5,10 +5,7 @@ Authors: CKMA contributors
 -/
 module
 
-public import TauCeti.Analysis.Semigroups.Resolvent.Complex
-public import TauCeti.Analysis.Semigroups.Generator.Neg
-public import TauCeti.Analysis.Normed.Operator.Resolvent.Spectrum
-public import Mathlib.MeasureTheory.Integral.Bochner.Basic
+public import TauCeti.Analysis.Semigroups.Generator.ComplexLinear
 
 /-!
 # Sectorial operators, fractional powers and spectral mapping

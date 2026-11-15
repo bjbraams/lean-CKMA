@@ -6,10 +6,9 @@ Authors: CKMA contributors
 module
 
 public import CKMA.Analysis.PDE.Euclidean
-public import Mathlib.Analysis.Convex.Function
-public import Mathlib.MeasureTheory.Integral.Prod
-public import Mathlib.Topology.MetricSpace.Lipschitz
-public import Mathlib.Analysis.Calculus.LocalExtr.Basic
+public import Mathlib.Analysis.Calculus.Gradient.Basic
+public import Mathlib.Analysis.Normed.Lp.MeasurableSpace
+public import Mathlib.MeasureTheory.Measure.Haar.OfBasis
 
 /-!
 # Kružkov entropy solutions and Hopf–Lax evolution

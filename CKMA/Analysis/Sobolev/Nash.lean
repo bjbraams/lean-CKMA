@@ -6,14 +6,11 @@ Authors: CKMA contributors
 module
 
 public import TauCeti.Analysis.Sobolev.WeakDeriv.Basic
-public import TauCeti.Analysis.Sobolev.WeakDeriv.TemperedDistribution
-public import TauCeti.Analysis.Distribution.TemperedDistribution.Lp
-public import Mathlib.Analysis.Fourier.LpSpace
-public import Mathlib.Analysis.InnerProductSpace.Dual
-public import Mathlib.MeasureTheory.Measure.Lebesgue.VolumeOfBalls
-public import Mathlib.MeasureTheory.Function.LpSeminorm.LpNorm
-public import Mathlib.MeasureTheory.Function.L2Space
-public import Mathlib.Analysis.SpecialFunctions.Pow.Real
+public import Mathlib.Analysis.Normed.Lp.MeasurableSpace
+import TauCeti.Analysis.Sobolev.WeakDeriv.TemperedDistribution
+import TauCeti.Analysis.Distribution.TemperedDistribution.Lp
+import Mathlib.Analysis.Fourier.LpSpace
+import Mathlib.MeasureTheory.Measure.Lebesgue.VolumeOfBalls
 
 /-!
 # Nash inequality
@@ -319,6 +316,46 @@ variable {d : ℕ}
 
 local notation "E" => EuclideanSpace ℝ (Fin d)
 
+/-- The complexified `L¹` and `L²` classes of a function in `L¹ ∩ L²` agree almost
+everywhere. -/
+private theorem ofRealCLM_compLp_toLp_ae_eq {u : E → ℝ} (hu1 : MemLp u 1 volume)
+    (hu2 : MemLp u 2 volume) :
+    (Complex.ofRealCLM.compLp (hu1.toLp u) : E → ℂ) =ᵐ[volume]
+      (Complex.ofRealCLM.compLp (hu2.toLp u) : E → ℂ) := by
+  have h1 : (Complex.ofRealCLM.compLp (hu1.toLp u) : E → ℂ) =ᵐ[volume]
+      fun x => (u x : ℂ) := by
+    filter_upwards [Complex.ofRealCLM.coeFn_compLp (hu1.toLp u), hu1.coeFn_toLp]
+      with x hxc hxu
+    rw [hxc, hxu, Complex.ofRealCLM_apply]
+  have h2 : (Complex.ofRealCLM.compLp (hu2.toLp u) : E → ℂ) =ᵐ[volume]
+      fun x => (u x : ℂ) := by
+    filter_upwards [Complex.ofRealCLM.coeFn_compLp (hu2.toLp u), hu2.coeFn_toLp]
+      with x hxc hxu
+    rw [hxc, hxu, Complex.ofRealCLM_apply]
+  exact h1.trans h2.symm
+
+/-- The complexification of a real function in `Lᵖ` has the same `Lᵖ` norm. -/
+private theorem toReal_eLpNorm_ofRealCLM_compLp {p : ℝ≥0∞} [Fact (1 ≤ p)] {u : E → ℝ}
+    (hu : MemLp u p volume) :
+    (eLpNorm (Complex.ofRealCLM.compLp (hu.toLp u) : E → ℂ) p volume).toReal =
+      (eLpNorm u p volume).toReal := by
+  refine congrArg ENNReal.toReal ?_
+  refine eLpNorm_congr_norm_ae (Lp.aestronglyMeasurable _) hu.aestronglyMeasurable ?_
+  filter_upwards [Complex.ofRealCLM.coeFn_compLp (hu.toLp u), hu.coeFn_toLp] with x hxc hxu
+  rw [hxc, hxu, Complex.ofRealCLM_apply, Complex.norm_real]
+
+/-- Squared `L²` norm of a function in `L²` as the integral of the squared pointwise norm. -/
+private theorem integral_norm_sq_eq_toReal_eLpNorm_sq {F : Type*} [NormedAddCommGroup F]
+    {g : E → F} (hg : MemLp g 2 volume) :
+    ∫ x, ‖g x‖ ^ 2 ∂volume = (eLpNorm g 2 volume).toReal ^ 2 := by
+  calc ∫ x, ‖g x‖ ^ 2 ∂volume
+      = ∫ x, ‖(hg.toLp g : E → F) x‖ ^ 2 ∂volume := by
+        refine integral_congr_ae ?_
+        filter_upwards [hg.coeFn_toLp] with x hx
+        rw [← hx]
+      _ = ‖hg.toLp g‖ ^ 2 := integral_norm_sq_eq_sq_norm (hg.toLp g)
+      _ = (eLpNorm g 2 volume).toReal ^ 2 := by rw [Lp.norm_toLp]
+
 /-- Squared `L²` norm of one weak directional derivative, as a weighted integral of `|û|²`. -/
 private theorem integral_sq_weakLine_fourier {u u' : E → ℝ} {v : E}
     (hu1 : MemLp u 1 volume) (hu2 : MemLp u 2 volume) (hu' : MemLp u' 2 volume)
@@ -335,14 +372,7 @@ private theorem integral_sq_weakLine_fourier {u u' : E → ℝ} {v : E}
   let uc2 : Lp ℂ 2 (volume : Measure E) := Complex.ofRealCLM.compLp u2
   let uc' : Lp ℂ 2 (volume : Measure E) := Complex.ofRealCLM.compLp up
   let uHat : E → ℂ := 𝓕 (uc1 : E → ℂ)
-  have hae12 : (uc1 : E → ℂ) =ᵐ[volume] (uc2 : E → ℂ) := by
-    have h1 : (uc1 : E → ℂ) =ᵐ[volume] fun x => (u x : ℂ) := by
-      filter_upwards [Complex.ofRealCLM.coeFn_compLp u1, hu1.coeFn_toLp] with x hxc hxu
-      rw [hxc, hxu, Complex.ofRealCLM_apply]
-    have h2 : (uc2 : E → ℂ) =ᵐ[volume] fun x => (u x : ℂ) := by
-      filter_upwards [Complex.ofRealCLM.coeFn_compLp u2, hu2.coeFn_toLp] with x hxc hxu
-      rw [hxc, hxu, Complex.ofRealCLM_apply]
-    exact h1.trans h2.symm
+  have hae12 : (uc1 : E → ℂ) =ᵐ[volume] (uc2 : E → ℂ) := ofRealCLM_compLp_toLp_ae_eq hu1 hu2
   have haeHat : fourierL2Fun (Complex.ofRealCLM.compLp u2) =ᵐ[volume] uHat :=
     fourier_l2_ae_eq_l1 uc1 uc2 hae12
   have hrest : (volume : Measure E).restrict (⊤ : Opens E) = volume := by
@@ -431,69 +461,54 @@ private theorem integral_sq_weakLine_fourier {u u' : E → ℝ} {v : E}
   · simpa [uHat] using hintw
   · rw [hleft, hright]
 
-/-- Fourier splitting of the Nash integrand at radius `R`. -/
-private theorem nash_ball_split (hd : 0 < d) {u : E → ℝ}
-    {U : E → E →L[ℝ] ℝ} (hu1 : MemLp u 1 volume) (hu2 : MemLp u 2 volume)
-    (hU : MemLp U 2 volume) (hweak : TauCeti.HasWeakFDerivOn volume ⊤ u U) {R : ℝ}
-    (hR : 0 < R) :
-    (eLpNorm u 2 volume).toReal ^ 2 ≤
-      nashVolumeFactor d * R ^ d * (eLpNorm u 1 volume).toReal ^ 2 +
-        nashFourierWeight * (eLpNorm U 2 volume).toReal ^ 2 / R ^ 2 := by
-  let u1 : Lp ℝ 1 (volume : Measure E) := hu1.toLp u
-  let uc1 : Lp ℂ 1 (volume : Measure E) := Complex.ofRealCLM.compLp u1
-  let uHat : E → ℂ := 𝓕 (uc1 : E → ℂ)
-  let A := (eLpNorm u 1 volume).toReal ^ 2
-  let B := (eLpNorm U 2 volume).toReal ^ 2
-  let f : E → ℝ := fun ξ => ‖uHat ξ‖ ^ 2
-  have hn1 : ∫ x, ‖(uc1 : E → ℂ) x‖ ∂volume = (eLpNorm u 1 volume).toReal := by
-    rw [← L1.norm_eq_integral_norm uc1, Lp.norm_def]
-    refine congrArg ENNReal.toReal ?_
-    refine eLpNorm_congr_norm_ae (Lp.aestronglyMeasurable uc1) hu1.aestronglyMeasurable ?_
-    filter_upwards [Complex.ofRealCLM.coeFn_compLp u1, hu1.coeFn_toLp] with x hxc hxu
-    rw [hxc, hxu, Complex.ofRealCLM_apply, Complex.norm_real]
-  have hbound : ∀ ξ, ‖uHat ξ‖ ≤ (eLpNorm u 1 volume).toReal := by
-    intro ξ
-    calc ‖uHat ξ‖
-        ≤ ∫ x, ‖(uc1 : E → ℂ) x‖ ∂volume := Real.norm_fourier_le_integral_norm _ ξ
-        _ = (eLpNorm u 1 volume).toReal := hn1
-  have hA : 0 ≤ A := sq_nonneg _
-  have hf_le : ∀ ξ, f ξ ≤ A := by
-    intro ξ
-    dsimp [f, A]
-    exact pow_le_pow_left₀ (norm_nonneg _) (hbound ξ) 2
-  let u2 : Lp ℝ 2 (volume : Measure E) := hu2.toLp u
-  let uc2 : Lp ℂ 2 (volume : Measure E) := Complex.ofRealCLM.compLp u2
-  have hae12 : (uc1 : E → ℂ) =ᵐ[volume] (uc2 : E → ℂ) := by
-    have h1 : (uc1 : E → ℂ) =ᵐ[volume] fun x => (u x : ℂ) := by
-      filter_upwards [Complex.ofRealCLM.coeFn_compLp u1, hu1.coeFn_toLp] with x hxc hxu
-      rw [hxc, hxu, Complex.ofRealCLM_apply]
-    have h2 : (uc2 : E → ℂ) =ᵐ[volume] fun x => (u x : ℂ) := by
-      filter_upwards [Complex.ofRealCLM.coeFn_compLp u2, hu2.coeFn_toLp] with x hxc hxu
-      rw [hxc, hxu, Complex.ofRealCLM_apply]
-    exact h1.trans h2.symm
-  have haeF : fourierL2Fun uc2 =ᵐ[volume] uHat := fourier_l2_ae_eq_l1 uc1 uc2 hae12
-  have hintf : Integrable f volume := by
-    have hint : Integrable (fun ξ => ‖fourierL2Fun uc2 ξ‖ ^ 2) volume := by
+/-- **Plancherel** for the integral Fourier transform `û` of `u ∈ L¹ ∩ L²`: `|û|²` is
+integrable with integral `‖u‖₂²`. -/
+private theorem integral_norm_fourier_ofReal_sq {u : E → ℝ} (hu1 : MemLp u 1 volume)
+    (hu2 : MemLp u 2 volume) :
+    Integrable (fun ξ : E =>
+        ‖𝓕 ((Complex.ofRealCLM.compLp (hu1.toLp u) : E → ℂ)) ξ‖ ^ 2) volume ∧
+      ∫ ξ, ‖𝓕 ((Complex.ofRealCLM.compLp (hu1.toLp u) : E → ℂ)) ξ‖ ^ 2 ∂volume =
+        (eLpNorm u 2 volume).toReal ^ 2 := by
+  let uc1 : Lp ℂ 1 (volume : Measure E) := Complex.ofRealCLM.compLp (hu1.toLp u)
+  let uc2 : Lp ℂ 2 (volume : Measure E) := Complex.ofRealCLM.compLp (hu2.toLp u)
+  have haeF : fourierL2Fun uc2 =ᵐ[volume] 𝓕 (uc1 : E → ℂ) :=
+    fourier_l2_ae_eq_l1 uc1 uc2 (ofRealCLM_compLp_toLp_ae_eq hu1 hu2)
+  have hcongr : (fun ξ => ‖fourierL2Fun uc2 ξ‖ ^ 2) =ᵐ[volume]
+      fun ξ => ‖𝓕 (uc1 : E → ℂ) ξ‖ ^ 2 := by
+    filter_upwards [haeF] with ξ hξ
+    rw [hξ]
+  refine ⟨?_, ?_⟩
+  · have hint : Integrable (fun ξ => ‖fourierL2Fun uc2 ξ‖ ^ 2) volume := by
       simpa [ENNReal.toReal_ofNat, Real.rpow_two] using
         (Lp.memLp (𝓕 uc2)).integrable_norm_rpow (by norm_num) (by norm_num)
-    refine hint.congr ?_
-    filter_upwards [haeF] with ξ hξ
-    simp [f, hξ]
-  have hM : ∫ ξ, f ξ ∂volume = (eLpNorm u 2 volume).toReal ^ 2 := by
-    calc ∫ ξ, f ξ ∂volume
-        = ∫ ξ, ‖fourierL2Fun uc2 ξ‖ ^ 2 ∂volume := by
-          refine integral_congr_ae ?_
-          filter_upwards [haeF] with ξ hξ
-          simp [f, hξ]
+    exact hint.congr hcongr
+  · calc ∫ ξ, ‖𝓕 (uc1 : E → ℂ) ξ‖ ^ 2 ∂volume
+        = ∫ ξ, ‖fourierL2Fun uc2 ξ‖ ^ 2 ∂volume := (integral_congr_ae hcongr).symm
         _ = ‖𝓕 uc2‖ ^ 2 := integral_norm_sq_eq_sq_norm (𝓕 uc2)
         _ = ‖uc2‖ ^ 2 := by rw [Lp.norm_fourier_eq]
-        _ = (eLpNorm (uc2 : E → ℂ) 2 volume).toReal ^ 2 := by rw [Lp.norm_def]
         _ = (eLpNorm u 2 volume).toReal ^ 2 := by
-          refine congrArg (fun t : ℝ≥0∞ => t.toReal ^ 2) ?_
-          refine eLpNorm_congr_norm_ae (Lp.aestronglyMeasurable uc2)
-            hu2.aestronglyMeasurable ?_
-          filter_upwards [Complex.ofRealCLM.coeFn_compLp u2, hu2.coeFn_toLp] with x hxc hxu
-          rw [hxc, hxu, Complex.ofRealCLM_apply, Complex.norm_real]
+          rw [Lp.norm_def, toReal_eLpNorm_ofRealCLM_compLp hu2]
+
+/-- The integral Fourier transform of `u ∈ L¹` is bounded pointwise by `‖u‖₁`. -/
+private theorem norm_fourier_ofReal_le {u : E → ℝ} (hu1 : MemLp u 1 volume) (ξ : E) :
+    ‖𝓕 ((Complex.ofRealCLM.compLp (hu1.toLp u) : E → ℂ)) ξ‖ ≤
+      (eLpNorm u 1 volume).toReal := by
+  let uc1 : Lp ℂ 1 (volume : Measure E) := Complex.ofRealCLM.compLp (hu1.toLp u)
+  calc ‖𝓕 (uc1 : E → ℂ) ξ‖
+      ≤ ∫ x, ‖(uc1 : E → ℂ) x‖ ∂volume := Real.norm_fourier_le_integral_norm _ ξ
+      _ = (eLpNorm u 1 volume).toReal := by
+        rw [← L1.norm_eq_integral_norm uc1, Lp.norm_def, toReal_eLpNorm_ofRealCLM_compLp hu1]
+
+/-- The homogeneous `H¹` seminorm on the Fourier side: for `u ∈ L¹ ∩ L²` with weak gradient
+`U ∈ L²`, the weight `‖ξ‖² |û|²` is integrable with integral `‖U‖₂² / (2π)²`. -/
+private theorem integral_norm_sq_mul_norm_fourier_ofReal_sq {u : E → ℝ}
+    {U : E → E →L[ℝ] ℝ} (hu1 : MemLp u 1 volume) (hu2 : MemLp u 2 volume)
+    (hU : MemLp U 2 volume) (hweak : TauCeti.HasWeakFDerivOn volume ⊤ u U) :
+    Integrable (fun ξ : E => ‖ξ‖ ^ 2 *
+        ‖𝓕 ((Complex.ofRealCLM.compLp (hu1.toLp u) : E → ℂ)) ξ‖ ^ 2) volume ∧
+      ∫ ξ, ‖ξ‖ ^ 2 * ‖𝓕 ((Complex.ofRealCLM.compLp (hu1.toLp u) : E → ℂ)) ξ‖ ^ 2 ∂volume =
+        nashFourierWeight * (eLpNorm U 2 volume).toReal ^ 2 := by
+  let f : E → ℝ := fun ξ => ‖𝓕 ((Complex.ofRealCLM.compLp (hu1.toLp u) : E → ℂ)) ξ‖ ^ 2
   let b := stdOrthonormalBasis ℝ E
   have hmem (i : Fin (Module.finrank ℝ E)) :
       MemLp (fun x => U x (b i)) 2 volume := by
@@ -502,104 +517,87 @@ private theorem nash_ball_split (hd : 0 < d) {u : E → ℝ}
     exact ContinuousLinearMap.apply_apply (b i) (U x)
   have hpack (i : Fin (Module.finrank ℝ E)) :=
     integral_sq_weakLine_fourier hu1 hu2 (hmem i) (hweak.hasWeakLineDerivOn (b i))
-  have hintDir (i : Fin (Module.finrank ℝ E)) :
-      Integrable (fun x => (U x (b i)) ^ 2) volume := (hmem i).integrable_sq
   have hintW (i : Fin (Module.finrank ℝ E)) :
-      Integrable (fun ξ => ⟪ξ, b i⟫ ^ 2 * f ξ) volume := by
-    simpa [uHat, f] using (hpack i).1
-  have hdir (i : Fin (Module.finrank ℝ E)) :
-      ∫ x, (U x (b i)) ^ 2 ∂volume =
-        (2 * Real.pi) ^ 2 * ∫ ξ, ⟪ξ, b i⟫ ^ 2 * f ξ ∂volume := by
-    simpa [uHat, f] using (hpack i).2
-  have hpoint : ∀ x, ‖U x‖ ^ 2 = ∑ i, (U x (b i)) ^ 2 := by
-    intro x
-    simpa [b] using (sum_sq_apply_orthonormalBasis (U x)).symm
+      Integrable (fun ξ => ⟪ξ, b i⟫ ^ 2 * f ξ) volume := (hpack i).1
+  have hsumW (ξ : E) : ∑ i, ⟪ξ, b i⟫ ^ 2 * f ξ = ‖ξ‖ ^ 2 * f ξ := by
+    rw [← Finset.sum_mul, b.sum_sq_inner_left ξ]
   have hintNorm : Integrable (fun ξ => ‖ξ‖ ^ 2 * f ξ) volume := by
-    have hpt : (fun ξ => ‖ξ‖ ^ 2 * f ξ) = fun ξ => ∑ i, ⟪ξ, b i⟫ ^ 2 * f ξ := by
-      funext ξ
-      rw [← Finset.sum_mul, b.sum_sq_inner_left ξ]
-    rw [hpt]
+    simp_rw [← hsumW]
     exact integrable_finsetSum Finset.univ fun i _ => hintW i
   have hsum : ∫ x, ‖U x‖ ^ 2 ∂volume =
       (2 * Real.pi) ^ 2 * ∫ ξ, ‖ξ‖ ^ 2 * f ξ ∂volume := by
     calc ∫ x, ‖U x‖ ^ 2 ∂volume
         = ∫ x, ∑ i, (U x (b i)) ^ 2 ∂volume := by
-          refine integral_congr_ae (ae_of_all _ fun x => ?_)
-          dsimp
-          exact hpoint x
-        _ = ∑ i, ∫ x, (U x (b i)) ^ 2 ∂volume := by
-          rw [integral_finsetSum Finset.univ fun i _ => hintDir i]
-        _ = ∑ i, (2 * Real.pi) ^ 2 * ∫ ξ, ⟪ξ, b i⟫ ^ 2 * f ξ ∂volume := by
-          refine Finset.sum_congr rfl fun i _ => hdir i
-        _ = (2 * Real.pi) ^ 2 * ∑ i, ∫ ξ, ⟪ξ, b i⟫ ^ 2 * f ξ ∂volume := by
-          rw [← Finset.mul_sum]
+          simp_rw [b, sum_sq_apply_orthonormalBasis]
+        _ = ∑ i, ∫ x, (U x (b i)) ^ 2 ∂volume :=
+          integral_finsetSum Finset.univ fun i _ => (hmem i).integrable_sq
+        _ = ∑ i, (2 * Real.pi) ^ 2 * ∫ ξ, ⟪ξ, b i⟫ ^ 2 * f ξ ∂volume :=
+          Finset.sum_congr rfl fun i _ => (hpack i).2
         _ = (2 * Real.pi) ^ 2 * ∫ ξ, ∑ i, ⟪ξ, b i⟫ ^ 2 * f ξ ∂volume := by
-          rw [integral_finsetSum Finset.univ fun i _ => hintW i]
-        _ = (2 * Real.pi) ^ 2 * ∫ ξ, ‖ξ‖ ^ 2 * f ξ ∂volume := by
-          refine congrArg (fun t => (2 * Real.pi) ^ 2 * t) ?_
-          refine integral_congr_ae (ae_of_all _ fun ξ => ?_)
-          dsimp
-          rw [← Finset.sum_mul, b.sum_sq_inner_left ξ]
-  have hBint : ∫ x, ‖U x‖ ^ 2 ∂volume = B := by
-    calc ∫ x, ‖U x‖ ^ 2 ∂volume
-        = ∫ x, ‖(hU.toLp U : E → E →L[ℝ] ℝ) x‖ ^ 2 ∂volume := by
-          refine integral_congr_ae ?_
-          filter_upwards [hU.coeFn_toLp] with x hx
-          rw [← hx]
-        _ = ‖hU.toLp U‖ ^ 2 := integral_norm_sq_eq_sq_norm (hU.toLp U)
-        _ = B := by
-          dsimp [B]
-          congr 1
-          rw [Lp.norm_def]
-          exact congrArg ENNReal.toReal (eLpNorm_congr_ae hU.coeFn_toLp)
-  have hweight : ∫ ξ, ‖ξ‖ ^ 2 * f ξ ∂volume = nashFourierWeight * B := by
-    have hmul : B = (2 * Real.pi) ^ 2 * ∫ ξ, ‖ξ‖ ^ 2 * f ξ ∂volume := by
-      rw [← hsum, hBint]
-    rw [nashFourierWeight, ← div_eq_inv_mul, eq_div_iff (by positivity)]
-    rw [mul_comm]
-    exact hmul.symm
+          rw [← Finset.mul_sum, integral_finsetSum Finset.univ fun i _ => hintW i]
+        _ = (2 * Real.pi) ^ 2 * ∫ ξ, ‖ξ‖ ^ 2 * f ξ ∂volume := by simp_rw [hsumW]
+  refine ⟨hintNorm, ?_⟩
+  rw [← integral_norm_sq_eq_toReal_eLpNorm_sq hU, hsum, nashFourierWeight, ← mul_assoc,
+    inv_mul_cancel₀ (by positivity), one_mul]
+
+/-- Splitting `∫ f` at the ball of radius `R`: the bound `f ≤ A` controls the ball and the
+weight `‖ξ‖² / R²` controls its complement. -/
+private theorem integral_le_ball_add_weighted (hd : 0 < d) {f : E → ℝ} {A R : ℝ}
+    (hR : 0 < R) (hf : Integrable f volume) (hf0 : ∀ ξ, 0 ≤ f ξ) (hfA : ∀ ξ, f ξ ≤ A)
+    (hw : Integrable (fun ξ => ‖ξ‖ ^ 2 * f ξ) volume) :
+    ∫ ξ, f ξ ∂volume ≤
+      nashVolumeFactor d * R ^ d * A + (∫ ξ, ‖ξ‖ ^ 2 * f ξ ∂volume) / R ^ 2 := by
   let s := Metric.ball (0 : E) R
   have hs : MeasurableSet s := measurableSet_ball
   have hconst : IntegrableOn (fun _ : E => A) s volume :=
     integrableOn_const (hs := measure_ball_ne_top) (hC := enorm_ne_top)
   have hball : ∫ ξ in s, f ξ ∂volume ≤ (volume : Measure E).real s * A := by
     have hmono : ∫ ξ in s, f ξ ∂volume ≤ ∫ ξ in s, A ∂volume :=
-      setIntegral_mono_on (hf := hintf.integrableOn) (hg := hconst) hs fun ξ _ => hf_le ξ
+      setIntegral_mono_on (hf := hf.integrableOn) (hg := hconst) hs fun ξ _ => hfA ξ
     rwa [setIntegral_const, smul_eq_mul] at hmono
   have htail : ∫ ξ in sᶜ, f ξ ∂volume ≤
       (∫ ξ, ‖ξ‖ ^ 2 * f ξ ∂volume) / R ^ 2 := by
-    have hdiv : Integrable (fun ξ => ‖ξ‖ ^ 2 * f ξ / R ^ 2) volume := hintNorm.div_const _
+    have hdiv : Integrable (fun ξ => ‖ξ‖ ^ 2 * f ξ / R ^ 2) volume := hw.div_const _
     have hmono : ∫ ξ in sᶜ, f ξ ∂volume ≤
         ∫ ξ in sᶜ, ‖ξ‖ ^ 2 * f ξ / R ^ 2 ∂volume := by
-      refine setIntegral_mono_on (hf := hintf.integrableOn) (hg := hdiv.integrableOn)
+      refine setIntegral_mono_on (hf := hf.integrableOn) (hg := hdiv.integrableOn)
         hs.compl ?_
       intro ξ hξ
       have hξR : R ≤ ‖ξ‖ := by
         simpa [s, Metric.mem_ball, dist_zero_right] using hξ
-      have hf0 : 0 ≤ f ξ := sq_nonneg _
       have hr : (1 : ℝ) ≤ ‖ξ‖ ^ 2 / R ^ 2 := by
         rw [one_le_div (by positivity : 0 < R ^ 2)]
         exact pow_le_pow_left₀ (by positivity : 0 ≤ R) hξR 2
       calc f ξ
           = f ξ * 1 := by ring
-          _ ≤ f ξ * (‖ξ‖ ^ 2 / R ^ 2) := mul_le_mul_of_nonneg_left hr hf0
+          _ ≤ f ξ * (‖ξ‖ ^ 2 / R ^ 2) := mul_le_mul_of_nonneg_left hr (hf0 ξ)
           _ = ‖ξ‖ ^ 2 * f ξ / R ^ 2 := by ring
     have hle2 : ∫ ξ in sᶜ, ‖ξ‖ ^ 2 * f ξ / R ^ 2 ∂volume ≤
         ∫ ξ, ‖ξ‖ ^ 2 * f ξ / R ^ 2 ∂volume :=
-      setIntegral_le_integral hdiv (ae_of_all _ fun ξ => by positivity)
+      setIntegral_le_integral hdiv (ae_of_all _ fun ξ => div_nonneg
+        (mul_nonneg (sq_nonneg _) (hf0 ξ)) (sq_nonneg _))
     have hquot : ∫ ξ, ‖ξ‖ ^ 2 * f ξ / R ^ 2 ∂volume =
         (∫ ξ, ‖ξ‖ ^ 2 * f ξ ∂volume) / R ^ 2 := integral_div _ _
     linarith
   rw [volume_real_ball_zero d hd hR.le] at hball
-  calc (eLpNorm u 2 volume).toReal ^ 2
-      = ∫ ξ, f ξ ∂volume := hM.symm
-      _ = ∫ ξ in s, f ξ ∂volume + ∫ ξ in sᶜ, f ξ ∂volume :=
-        (integral_add_compl hs hintf).symm
+  calc ∫ ξ, f ξ ∂volume
+      = ∫ ξ in s, f ξ ∂volume + ∫ ξ in sᶜ, f ξ ∂volume := (integral_add_compl hs hf).symm
       _ ≤ nashVolumeFactor d * R ^ d * A +
-          (∫ ξ, ‖ξ‖ ^ 2 * f ξ ∂volume) / R ^ 2 := by
-        gcongr
-      _ = nashVolumeFactor d * R ^ d * A + nashFourierWeight * B / R ^ 2 := by
-        rw [hweight, div_eq_mul_inv, mul_comm (nashFourierWeight * B) _, mul_assoc]
+          (∫ ξ, ‖ξ‖ ^ 2 * f ξ ∂volume) / R ^ 2 := by gcongr
+
+/-- Fourier splitting of the Nash integrand at radius `R`. -/
+private theorem nash_ball_split (hd : 0 < d) {u : E → ℝ}
+    {U : E → E →L[ℝ] ℝ} (hu1 : MemLp u 1 volume) (hu2 : MemLp u 2 volume)
+    (hU : MemLp U 2 volume) (hweak : TauCeti.HasWeakFDerivOn volume ⊤ u U) {R : ℝ}
+    (hR : 0 < R) :
+    (eLpNorm u 2 volume).toReal ^ 2 ≤
+      nashVolumeFactor d * R ^ d * (eLpNorm u 1 volume).toReal ^ 2 +
+        nashFourierWeight * (eLpNorm U 2 volume).toReal ^ 2 / R ^ 2 := by
+  obtain ⟨hintf, hM⟩ := integral_norm_fourier_ofReal_sq hu1 hu2
+  obtain ⟨hintw, hweight⟩ := integral_norm_sq_mul_norm_fourier_ofReal_sq hu1 hu2 hU hweak
+  have hsplit := integral_le_ball_add_weighted hd hR hintf (fun ξ => sq_nonneg _)
+    (fun ξ => pow_le_pow_left₀ (norm_nonneg _) (norm_fourier_ofReal_le hu1 ξ) 2) hintw
+  rwa [hM, hweight] at hsplit
 
 end Euclidean
 

@@ -5,9 +5,12 @@ Authors: CKMA contributors
 -/
 module
 
-public import CKMA.Analysis.Operator.Dilation.Minimal
 public import CKMA.Analysis.Operator.Dilation.WoldExtend
-public import Mathlib.Analysis.InnerProductSpace.Adjoint
+public import CKMA.Analysis.InnerProductSpace.HilbertModel
+public import Mathlib.Analysis.CStarAlgebra.Classes
+
+import CKMA.Analysis.Operator.Dilation.Minimal
+import Mathlib.Analysis.Normed.Algebra.GelfandRadius
 
 /-!
 # Minimal unitary power dilation
@@ -103,7 +106,6 @@ private theorem woldExtension_shift_orbit (J0 : H →ₗᵢ[ℂ] K) (V : K →�
   rw [hmul, ← zpow_add]
 
 omit [CompleteSpace H] in
-set_option linter.style.haveILetI false in
 /-- Density of the forward isometric orbit implies density of the bilateral embedded orbit. -/
 theorem minimalUnitary_of_minimalIsometric (J0 : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K)
     (hmin : (span ℂ {y : K | ∃ n : ℕ, ∃ x : H,
@@ -118,7 +120,7 @@ theorem minimalUnitary_of_minimalIsometric (J0 : H →ₗᵢ[ℂ] K) (V : K →�
   let S : Set L := {y | ∃ k : ℤ, ∃ x : H, y = (U ^ k) (J x)}
   let O : Set K := {y | ∃ n : ℕ, ∃ x : H, y = (V.toContinuousLinearMap ^ n) (J0 x)}
   let N := (span ℂ S).topologicalClosure
-  haveI : CompleteSpace N := topologicalClosure.completeSpace (span ℂ S)
+  have : CompleteSpace N := topologicalClosure.completeSpace (span ℂ S)
   have horth : Nᗮ = ⊥ := by
     rw [eq_bot_iff]
     intro y hy

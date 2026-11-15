@@ -6,17 +6,12 @@ Authors: CKMA contributors
 module
 
 public import CKMA.Analysis.OrderedSpace.Bands
-public import CKMA.Analysis.OrderedSpace.Representation.AM
-public import Mathlib.Analysis.Normed.Operator.Extend
-public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
-public import Mathlib.MeasureTheory.Function.ContinuousMapDense
 public import Mathlib.MeasureTheory.Function.LpOrder
 public import Mathlib.MeasureTheory.Function.LpSpace.ContinuousFunctions
-public import Mathlib.MeasureTheory.Integral.Bochner.SumMeasure
-public import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Real
-public import Mathlib.MeasureTheory.Measure.Sum
-public import Mathlib.Topology.Algebra.Module.ClosedSubmodule
 public import Mathlib.Topology.ContinuousMap.CompactlySupported
+import CKMA.Analysis.OrderedSpace.Representation.AM
+import Mathlib.MeasureTheory.Function.ContinuousMapDense
+import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Real
 
 /-!
 # Kakutani representation of an AL-space
@@ -46,8 +41,6 @@ Sources: GAPS 19.29; Aliprantis–Burkinshaw, Theorem 4.27; Schaefer, Theorem II
 @[expose] public section
 
 noncomputable section
-
-set_option linter.unusedSectionVars false
 
 open Set Metric Filter Topology MeasureTheory
 open scoped CompactlySupported
@@ -125,6 +118,7 @@ def alNormFunctional (hE : ∀ x y : E, 0 ≤ x → 0 ≤ y → ‖x + y‖ = �
     (fun c x hc _hx => by
       rw [norm_smul, Real.norm_eq_abs, abs_of_nonneg hc, smul_eq_mul])
 
+omit [HasSolidNorm E] in
 /-- On the positive cone the AL-norm functional is the ambient norm. -/
 private theorem alNormFunctional_apply_nonneg
     (hE : ∀ x y : E, 0 ≤ x → 0 ≤ y → ‖x + y‖ = ‖x‖ + ‖y‖)
@@ -137,6 +131,7 @@ private theorem alNormFunctional_abs
     alNormFunctional hE |x| = ‖x‖ := by
   rw [alNormFunctional_apply_nonneg hE (abs_nonneg x), norm_abs_eq_norm]
 
+omit [HasSolidNorm E] in
 /-- The AL-norm functional is monotone. -/
 private theorem alNormFunctional_mono
     (hE : ∀ x y : E, 0 ≤ x → 0 ≤ y → ‖x + y‖ = ‖x‖ + ‖y‖) :
@@ -149,6 +144,7 @@ private theorem alNormFunctional_mono
   rw [← sub_nonneg, hsub, alNormFunctional_apply_nonneg hE hdiff]
   exact norm_nonneg _
 
+omit [NormedSpace ℝ E] [IsOrderedModule ℝ E] [HasSolidNorm E] in
 /-- Positive parts of disjoint vectors remain disjoint. -/
 private theorem posPart_inf_posPart_eq_zero_of_disjoint {x y : E} (h : LatticeDisjoint x y) :
     x⁺ ⊓ y⁺ = 0 := by
@@ -159,6 +155,7 @@ private theorem posPart_inf_posPart_eq_zero_of_disjoint {x y : E} (h : LatticeDi
     _ = 0 := h
   · exact le_inf (posPart_nonneg x) (posPart_nonneg y)
 
+omit [NormedSpace ℝ E] [IsOrderedModule ℝ E] [HasSolidNorm E] in
 /-- Absolute values add when the vectors are lattice disjoint. -/
 private theorem abs_add_of_latticeDisjoint {x y : E} (h : LatticeDisjoint x y) :
     |x + y| = |x| + |y| := by
@@ -206,6 +203,7 @@ private theorem abs_add_of_latticeDisjoint {x y : E} (h : LatticeDisjoint x y) :
     _ = (x⁺ + x⁻) + (y⁺ + y⁻) := by abel
     _ = |x| + |y| := by rw [posPart_add_negPart, posPart_add_negPart]
 
+omit [NormedSpace ℝ E] [IsOrderedModule ℝ E] [HasSolidNorm E] in
 /-- A vector disjoint from each summand is disjoint from the sum. -/
 theorem latticeDisjoint_sum {ι : Type*} {s : Finset ι} {a : E} {x : ι → E}
     (ha : ∀ i ∈ s, LatticeDisjoint a (x i)) : LatticeDisjoint a (∑ i ∈ s, x i) := by
@@ -229,6 +227,7 @@ theorem latticeDisjoint_sum {ι : Type*} {s : Finset ι} {a : E} {x : ι → E}
       _ = 0 := by simp [haj, hrest]
     · exact le_inf (abs_nonneg _) (abs_nonneg _)
 
+omit [NormedSpace ℝ E] [IsOrderedModule ℝ E] in
 /-- The norm is additive on finite sums of pairwise lattice-disjoint vectors. -/
 theorem norm_sum_of_pairwise_latticeDisjoint
     (hE : ∀ x y : E, 0 ≤ x → 0 ≤ y → ‖x + y‖ = ‖x‖ + ‖y‖)
@@ -252,6 +251,7 @@ theorem norm_sum_of_pairwise_latticeDisjoint
         (Finset.mem_insert_of_mem hj) hij
     rw [ih hdisj']
 
+omit [HasSolidNorm E] in
 /-- Scalar truncation of the remainder meets the unit in a vector dominated by `x`. -/
 private theorem trunc_smul_le {u x : E} (hu : 0 ≤ u) (hx : 0 ≤ x) (n : ℕ) :
     (n : ℝ) • ((x - x ⊓ ((n : ℝ) • u)) ⊓ u) ≤ x := by
@@ -305,22 +305,26 @@ theorem norm_trunc_remainder_le {u x : E} (hu : 0 ≤ u) (hx : 0 ≤ x) {n : ℕ
 /-- The set of admissible gauge scalars. -/
 private def gaugeSet (u x : E) : Set ℝ := {c : ℝ | 0 ≤ c ∧ |x| ≤ c • u}
 
+omit [IsOrderedAddMonoid E] [IsOrderedModule ℝ E] [HasSolidNorm E] in
 /-- The gauge set of an ideal element is nonempty and bounded below by zero. -/
 private theorem gaugeSet_nonempty {u x : E} (hx : x ∈ principalOrderIdeal u) :
     (gaugeSet u x).Nonempty := by
   obtain ⟨c, hc, hx⟩ := hx
   exact ⟨c, hc, hx⟩
 
+omit [IsOrderedAddMonoid E] [IsOrderedModule ℝ E] [HasSolidNorm E] in
 /-- Every gauge scalar is nonnegative. -/
 private theorem bddBelow_gaugeSet (u x : E) : BddBelow (gaugeSet u x) :=
   ⟨0, fun _ hc => hc.1⟩
 
+omit [IsOrderedAddMonoid E] [IsOrderedModule ℝ E] [HasSolidNorm E] in
 /-- The order-unit gauge of an ideal element is nonnegative. -/
 theorem gauge_nonneg {u x : E} (hx : x ∈ principalOrderIdeal u) :
     0 ≤ orderUnitGauge u x := by
   unfold orderUnitGauge
   exact le_csInf (gaugeSet_nonempty hx) fun _ hc => hc.1
 
+omit [IsOrderedAddMonoid E] [IsOrderedModule ℝ E] [HasSolidNorm E] in
 /-- An admissible scalar dominates the gauge. -/
 private theorem gauge_le_of_mem {u x : E} {c : ℝ} (hc : c ∈ gaugeSet u x) :
     orderUnitGauge u x ≤ c := by
@@ -432,6 +436,7 @@ private theorem gauge_add {u x y : E} (hu : 0 ≤ u) (hx : x ∈ principalOrderI
       _ = (orderUnitGauge u x + orderUnitGauge u y) • u := by rw [add_smul]
   exact (gauge_le_iff hu hxy (add_nonneg (gauge_nonneg hx) (gauge_nonneg hy))).2 habs
 
+omit [NormedSpace ℝ E] [IsOrderedModule ℝ E] [HasSolidNorm E] in
 /-- The absolute value of a supremum is dominated by the supremum of the absolute values. -/
 private theorem abs_sup_le_sup_abs (x y : E) : |x ⊔ y| ≤ |x| ⊔ |y| := by
   refine sup_le ?_ ?_
@@ -439,11 +444,13 @@ private theorem abs_sup_le_sup_abs (x y : E) : |x ⊔ y| ≤ |x| ⊔ |y| := by
   · rw [neg_sup]
     exact inf_le_left.trans ((neg_le_abs x).trans le_sup_left)
 
+omit [NormedSpace ℝ E] [IsOrderedModule ℝ E] [HasSolidNorm E] in
 /-- The absolute value of an infimum is dominated by the supremum of the absolute values. -/
 private theorem abs_inf_le_sup_abs (x y : E) : |x ⊓ y| ≤ |x| ⊔ |y| := by
   rw [show x ⊓ y = -(-x ⊔ -y) by rw [← neg_inf, neg_neg], abs_neg]
   exact (abs_sup_le_sup_abs (-x) (-y)).trans (by simp [abs_neg])
 
+omit [HasSolidNorm E] in
 /-- Nonnegative scaling preserves a principal ideal. -/
 theorem principalOrderIdeal_smul {u : E} {c : ℝ} {x : E} (hx : x ∈ principalOrderIdeal u) :
     c • x ∈ principalOrderIdeal u := by
@@ -453,12 +460,14 @@ theorem principalOrderIdeal_smul {u : E} {c : ℝ} {x : E} (hx : x ∈ principal
     _ ≤ |c| • (d • u) := smul_le_smul_of_nonneg_left hxd (abs_nonneg c)
     _ = (|c| * d) • u := by rw [mul_smul]
 
+omit [IsOrderedAddMonoid E] [IsOrderedModule ℝ E] [HasSolidNorm E] in
 /-- Negation preserves a principal ideal. -/
 theorem principalOrderIdeal_neg {u x : E} (hx : x ∈ principalOrderIdeal u) :
     -x ∈ principalOrderIdeal u := by
   obtain ⟨c, hc, hxc⟩ := hx
   exact ⟨c, hc, by simpa [abs_neg] using hxc⟩
 
+omit [IsOrderedModule ℝ E] [HasSolidNorm E] in
 /-- Addition preserves a principal ideal. -/
 theorem principalOrderIdeal_add {u x y : E} (hx : x ∈ principalOrderIdeal u)
     (hy : y ∈ principalOrderIdeal u) : x + y ∈ principalOrderIdeal u := by
@@ -469,23 +478,27 @@ theorem principalOrderIdeal_add {u x y : E} (hx : x ∈ principalOrderIdeal u)
     _ ≤ c • u + d • u := add_le_add hxc hyd
     _ = (c + d) • u := by rw [add_smul]
 
+omit [IsOrderedModule ℝ E] [HasSolidNorm E] in
 /-- Subtraction preserves a principal ideal. -/
 theorem principalOrderIdeal_sub {u x y : E} (hx : x ∈ principalOrderIdeal u)
     (hy : y ∈ principalOrderIdeal u) : x - y ∈ principalOrderIdeal u := by
   simpa [sub_eq_add_neg] using principalOrderIdeal_add hx (principalOrderIdeal_neg hy)
 
+omit [HasSolidNorm E] in
 /-- Natural scaling preserves a principal ideal. -/
 theorem principalOrderIdeal_nsmul {u : E} {n : ℕ} {x : E} (hx : x ∈ principalOrderIdeal u) :
     n • x ∈ principalOrderIdeal u := by
   rw [← Nat.cast_smul_eq_nsmul ℝ]
   exact principalOrderIdeal_smul hx
 
+omit [HasSolidNorm E] in
 /-- Integer scaling preserves a principal ideal. -/
 theorem principalOrderIdeal_zsmul {u : E} {n : ℤ} {x : E} (hx : x ∈ principalOrderIdeal u) :
     n • x ∈ principalOrderIdeal u := by
   rw [← Int.cast_smul_eq_zsmul ℝ]
   exact principalOrderIdeal_smul hx
 
+omit [IsOrderedModule ℝ E] [HasSolidNorm E] in
 /-- A principal ideal is closed under binary suprema. -/
 theorem principalOrderIdeal_sup {u x y : E} (hx : x ∈ principalOrderIdeal u)
     (hy : y ∈ principalOrderIdeal u) : x ⊔ y ∈ principalOrderIdeal u := by
@@ -498,6 +511,7 @@ theorem principalOrderIdeal_sup {u x y : E} (hx : x ∈ principalOrderIdeal u)
     _ ≤ c • u + d • u := add_le_add hxc hyd
     _ = (c + d) • u := by rw [add_smul]
 
+omit [IsOrderedModule ℝ E] [HasSolidNorm E] in
 /-- A principal ideal is closed under binary infima. -/
 theorem principalOrderIdeal_inf {u x y : E} (hx : x ∈ principalOrderIdeal u)
     (hy : y ∈ principalOrderIdeal u) : x ⊓ y ∈ principalOrderIdeal u := by
@@ -571,6 +585,7 @@ namespace OrderUnitSpace
 
 variable {u : E}
 
+omit [IsOrderedAddMonoid E] [IsOrderedModule ℝ E] [HasSolidNorm E] in
 /-- The underlying-vector map is injective. -/
 theorem toVec_injective : Function.Injective (toVec : OrderUnitSpace u → E) :=
   fun _ _ h => OrderUnitSpace.ext h
@@ -596,18 +611,25 @@ instance : SMul ℤ (OrderUnitSpace u) where
 instance : SMul ℝ (OrderUnitSpace u) where
   smul c x := ⟨c • x.toVec, principalOrderIdeal_smul x.mem_ideal⟩
 
+omit [IsOrderedModule ℝ E] [HasSolidNorm E] in
 @[simp] theorem toVec_zero : (0 : OrderUnitSpace u).toVec = 0 := rfl
 
+omit [IsOrderedModule ℝ E] [HasSolidNorm E] in
 @[simp] theorem toVec_add (x y : OrderUnitSpace u) : (x + y).toVec = x.toVec + y.toVec := rfl
 
+omit [IsOrderedAddMonoid E] [IsOrderedModule ℝ E] [HasSolidNorm E] in
 @[simp] theorem toVec_neg (x : OrderUnitSpace u) : (-x).toVec = -x.toVec := rfl
 
+omit [IsOrderedModule ℝ E] [HasSolidNorm E] in
 @[simp] theorem toVec_sub (x y : OrderUnitSpace u) : (x - y).toVec = x.toVec - y.toVec := rfl
 
+omit [HasSolidNorm E] in
 @[simp] theorem toVec_nsmul (n : ℕ) (x : OrderUnitSpace u) : (n • x).toVec = n • x.toVec := rfl
 
+omit [HasSolidNorm E] in
 @[simp] theorem toVec_zsmul (n : ℤ) (x : OrderUnitSpace u) : (n • x).toVec = n • x.toVec := rfl
 
+omit [HasSolidNorm E] in
 @[simp] theorem toVec_smul (c : ℝ) (x : OrderUnitSpace u) : (c • x).toVec = c • x.toVec := rfl
 
 instance : AddCommGroup (OrderUnitSpace u) :=
@@ -629,6 +651,7 @@ def toVecₗ : OrderUnitSpace u →ₗ[ℝ] E where
   map_add' := fun _ _ => rfl
   map_smul' := fun _ _ => rfl
 
+omit [HasSolidNorm E] in
 @[simp] theorem toVecₗ_apply (x : OrderUnitSpace u) : toVecₗ x = x.toVec := rfl
 
 instance : PartialOrder (OrderUnitSpace u) where
@@ -647,10 +670,13 @@ instance : Lattice (OrderUnitSpace u) where
   inf_le_right := fun _ _ => inf_le_right
   le_inf := fun _ _ _ hxy hxz => le_inf hxy hxz
 
+omit [IsOrderedModule ℝ E] [HasSolidNorm E] in
 @[simp] theorem toVec_sup (x y : OrderUnitSpace u) : (x ⊔ y).toVec = x.toVec ⊔ y.toVec := rfl
 
+omit [IsOrderedModule ℝ E] [HasSolidNorm E] in
 @[simp] theorem toVec_inf (x y : OrderUnitSpace u) : (x ⊓ y).toVec = x.toVec ⊓ y.toVec := rfl
 
+omit [HasSolidNorm E] in
 @[simp] theorem toVec_abs (x : OrderUnitSpace u) : |x|.toVec = |x.toVec| := by
   simp [abs]
 
@@ -677,6 +703,7 @@ variable [Fact (0 ≤ u)]
 def unit : OrderUnitSpace u :=
   ⟨u, ⟨1, zero_le_one, by rw [abs_of_nonneg (Fact.out : 0 ≤ u), one_smul]⟩⟩
 
+omit [IsOrderedModule ℝ E] [HasSolidNorm E] in
 @[simp] theorem toVec_unit : (unit : OrderUnitSpace u).toVec = u := rfl
 
 instance : Norm (OrderUnitSpace u) where
@@ -822,6 +849,7 @@ private theorem ball_eq_Icc : closedBall (0 : OrderUnitSpace u) 1 = Icc (-unit) 
       rw [toVec_neg, toVec_unit] at hx
       exact (neg_le_neg hx).trans_eq (by simp)
 
+omit [IsOrderedModule ℝ E] [HasSolidNorm E] in
 /-- The order unit is positive. -/
 theorem unit_nonneg : 0 ≤ (unit : OrderUnitSpace u) := by
   change (0 : OrderUnitSpace u).toVec ≤ unit.toVec

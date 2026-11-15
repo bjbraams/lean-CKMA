@@ -6,8 +6,8 @@ Authors: CKMA contributors
 module
 
 public import CKMA.Analysis.PDE.Euclidean
-public import Mathlib.MeasureTheory.Integral.Prod
-public import Mathlib.Analysis.SpecialFunctions.Log.Monotone
+public import Mathlib.Analysis.Normed.Lp.MeasurableSpace
+public import Mathlib.MeasureTheory.Measure.Haar.OfBasis
 
 /-!
 # Hard-sphere collisions and entropy dissipation

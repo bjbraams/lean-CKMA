@@ -5,28 +5,12 @@ Authors: CKMA contributors
 -/
 module
 
-public import Mathlib.Analysis.InnerProductSpace.Positive
-public import Mathlib.Analysis.Normed.Algebra.Exponential
-public import Mathlib.Analysis.Normed.Algebra.Spectrum
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 public import TauCeti.Analysis.InnerProductSpace.BorelCalculus.DiagonalMeasure
 
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unital
 import Mathlib.Analysis.Calculus.Deriv.Mul
 import Mathlib.Analysis.Complex.RealDeriv
-import Mathlib.Analysis.Complex.Trigonometric
-import Mathlib.Analysis.InnerProductSpace.LinearMap
-import Mathlib.Analysis.InnerProductSpace.Orthogonal
-import Mathlib.Analysis.InnerProductSpace.Projection.Basic
-import Mathlib.Analysis.InnerProductSpace.Projection.Submodule
-import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.ExpLog.Basic
-import Mathlib.MeasureTheory.Function.L1Space.Integrable
-import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
-import Mathlib.MeasureTheory.Integral.Bochner.Set
-import Mathlib.MeasureTheory.Integral.DominatedConvergence
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
-import Mathlib.Order.Filter.AtTopBot.Archimedean
-import Mathlib.Tactic.Linarith
 
 /-!
 # Lorentz CFC approximants, Cesàro phase kernels, and spectral measure atoms

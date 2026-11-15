@@ -8,6 +8,8 @@ module
 public import CKMA.Probability.InfinitelyDivisible.Existence
 public import CKMA.Probability.InfinitelyDivisible.Uniqueness
 
+import CKMA.Probability.InfinitelyDivisible.Law
+
 /-!
 # Infinite divisibility and Lévy–Khintchine triplets (06.51)
 

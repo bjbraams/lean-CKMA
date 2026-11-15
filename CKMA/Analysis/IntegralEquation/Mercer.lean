@@ -7,9 +7,6 @@ module
 
 public import CKMA.Analysis.Operator.Basic
 public import CKMA.Analysis.IntegralEquation.HilbertSchmidt
-public import Mathlib.Analysis.Matrix.PosDef
-public import Mathlib.MeasureTheory.Measure.Support
-public import Mathlib.Topology.ContinuousMap.Compact
 
 /-!
 # Mercer expansions of continuous positive-semidefinite kernels

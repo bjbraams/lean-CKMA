@@ -5,13 +5,8 @@ Authors: CKMA contributors
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Ring.Finset
-public import Mathlib.Algebra.Group.Finsupp
 public import Mathlib.Analysis.InnerProductSpace.Adjoint
-public import Mathlib.Analysis.InnerProductSpace.LinearMap
 public import Mathlib.Analysis.Normed.Operator.Extend
-public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
-public import Mathlib.Topology.DenseEmbedding
 
 /-!
 # Uniqueness of a minimal unitary power dilation

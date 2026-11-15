@@ -7,6 +7,8 @@ module
 
 public import CKMA.Analysis.Fourier.CircleSummation
 
+import Mathlib.MeasureTheory.Measure.Haar.Unique
+
 /-!
 # Convergence of Fejer means
 
@@ -29,8 +31,6 @@ Source: GAPS 27.17.
 noncomputable section
 
 namespace CKMA
-
-set_option backward.isDefEq.respectTransparency false
 
 open MeasureTheory Filter Topology
 open scoped BigOperators ENNReal Real ComplexConjugate
@@ -213,10 +213,9 @@ private lemma fejerMean_sub {f g : 𝕋 → ℂ} (hf : Integrable f haar) (hg : 
       simp only [Pi.sub_apply, smul_sub]
     simp_rw [fourierCoeff, hpt]
     exact integral_sub (hf.fourier_smul (-k)) (hg.fourier_smul (-k))
-  have halg : ∀ (w a b z : ℂ), w * (a - b) * z = w * a * z - w * b * z :=
-    set_option backward.isDefEq.respectTransparency true in by
-      intro w a b z
-      ring
+  have halg : ∀ (w a b z : ℂ), w * (a - b) * z = w * a * z - w * b * z := by
+    intro w a b z
+    ring
   rw [fejerMean_eq_weighted, fejerMean_eq_weighted, fejerMean_eq_weighted]
   simp_rw [hcoeff, ← Finset.sum_sub_distrib]
   refine Finset.sum_congr rfl fun k _ => halg _ _ _ _
@@ -377,10 +376,9 @@ theorem fejerMean_tendsto_Lp {p : ℝ≥0∞} (hp : 1 ≤ p) (hpt : p < ∞)
   have hη : 0 < (ε / 3).toReal :=
     ENNReal.toReal_pos hε3.ne' (ENNReal.div_lt_top hεtop (by simp)).ne
   filter_upwards [hgu _ hη] with N hN
-  have halg : ∀ (a b c d : ℂ), (a - b - (c - d)) + (b - d) = a - c :=
-    set_option backward.isDefEq.respectTransparency true in by
-      intro a b c d
-      abel
+  have halg : ∀ (a b c d : ℂ), (a - b - (c - d)) + (b - d) = a - c := by
+    intro a b c d
+    abel
   have hdecomp : (fun x => fejerMean f N x - f x) =
       (fun x => fejerMean (f - (g : 𝕋 → ℂ)) N x - ((f - (g : 𝕋 → ℂ)) x)) +
         fun x => fejerMean (g : 𝕋 → ℂ) N x - g x := by
@@ -525,6 +523,103 @@ private lemma fejer_annulus_const (N k : ℕ) (ε : ℝ) :
       rw [pow_succ]
       ring
 
+/-- Interval integrability on `[-1/2, 1/2]` passes to every subinterval. -/
+private lemma intervalIntegrable_of_le_half {g : ℝ → ℝ} {a b : ℝ}
+    (hg : IntervalIntegrable g volume (-(1 / 2)) (1 / 2)) (hab : a ≤ b)
+    (ha : -(1 / 2) ≤ a) (hb : b ≤ 1 / 2) : IntervalIntegrable g volume a b :=
+  hg.mono_set <| by
+    rw [Set.uIcc_of_le hab, Set.uIcc_of_le (by norm_num : -(1 / 2 : ℝ) ≤ 1 / 2)]
+    exact Set.Icc_subset_Icc ha hb
+
+/-- For nonnegative `φ`, the integral over `[a, b]` is at most the integral over any interval
+`[c, d] ⊇ [a, b]` inside `[-1/2, 1/2]`. -/
+private lemma integral_le_integral_of_le_half {φ : ℝ → ℝ} (hφ : ∀ t, 0 ≤ φ t)
+    (hφint : IntervalIntegrable φ volume (-(1 / 2)) (1 / 2)) {a b c d : ℝ}
+    (hca : c ≤ a) (hab : a ≤ b) (hbd : b ≤ d) (hc : -(1 / 2) ≤ c) (hd : d ≤ 1 / 2) :
+    ∫ t in a..b, φ t ≤ ∫ t in c..d, φ t :=
+  intervalIntegral.integral_mono_interval hca hab hbd (ae_restrict_of_ae (ae_of_all _ hφ))
+    (intervalIntegrable_of_le_half hφint (hca.trans (hab.trans hbd)) hc hd)
+
+/-- A bound `fejerKernelReal N ≤ C` on `[a, b] ⊆ [-1/2, 1/2]` bounds the weighted integral by
+`C` times the integral of the nonnegative weight. -/
+private lemma integral_fejerKernelReal_mul_le {φ : ℝ → ℝ} (hφ : ∀ t, 0 ≤ φ t)
+    (hφint : IntervalIntegrable φ volume (-(1 / 2)) (1 / 2)) {N : ℕ} {a b C : ℝ}
+    (hab : a ≤ b) (ha : -(1 / 2) ≤ a) (hb : b ≤ 1 / 2)
+    (hC : ∀ t ∈ Set.Icc a b, fejerKernelReal N t ≤ C) :
+    ∫ t in a..b, fejerKernelReal N t * φ t ≤ C * ∫ t in a..b, φ t := by
+  have hφsub := intervalIntegrable_of_le_half hφint hab ha hb
+  rw [← intervalIntegral.integral_const_mul]
+  exact intervalIntegral.integral_mono_on hab
+    (hφsub.continuousOn_mul (continuous_fejerKernelReal N).continuousOn) (hφsub.const_mul _)
+    fun t ht => mul_le_mul_of_nonneg_right (hC t ht) (hφ t)
+
+/-- At distance at least `δ > 0` from the origin, `fejerKernelReal N ≤ 1 / (4 (N + 1) δ²)`. -/
+private lemma fejerKernelReal_le_of_le_abs {N : ℕ} {δ t : ℝ} (hδ : 0 < δ) (htδ : δ ≤ |t|)
+    (ht : |t| ≤ 1 / 2) : fejerKernelReal N t ≤ 1 / (4 * (N + 1) * δ ^ 2) := by
+  have ht0 : t ≠ 0 := by
+    intro ht0
+    simp [ht0] at htδ
+    linarith
+  have ht2 : δ ^ 2 ≤ t ^ 2 := by
+    simpa [sq_abs] using pow_le_pow_left₀ hδ.le htδ 2
+  have hden : 4 * (N + 1 : ℝ) * δ ^ 2 ≤ 4 * (N + 1) * t ^ 2 :=
+    mul_le_mul_of_nonneg_left ht2 (by positivity)
+  exact (fejerKernelReal_le_inv_sq ht0 ht).trans
+    ((one_div_le_one_div (by positivity) (by positivity)).2 hden)
+
+/-- One dyadic piece `[b_k, b_{k+1}]`, with `b_k = min δ (2^k α)` and `α = 1 / (N + 1)`, of the
+right annulus contributes less than `(ε / 8) 2^{-k}`. -/
+private lemma integral_dyadic_piece_lt {φ : ℝ → ℝ} {ε δ α : ℝ} {N : ℕ}
+    (hφ : ∀ t, 0 ≤ φ t) (hφint : IntervalIntegrable φ volume (-(1 / 2)) (1 / 2))
+    (hε : 0 < ε) (hδhalf : δ ≤ 1 / 2) (hα0 : 0 < α) (hα : α = 1 / (N + 1 : ℝ))
+    (hsmall : ∀ r, 0 < r → r ≤ δ → ∫ t in (-r)..r, φ t < (ε / 4) * r) (k : ℕ) :
+    ∫ t in min δ ((2 : ℝ) ^ k * α)..min δ ((2 : ℝ) ^ (k + 1) * α),
+        fejerKernelReal N t * φ t < (ε / 8) * (1 / 2) ^ k := by
+  set b₀ := min δ ((2 : ℝ) ^ k * α)
+  set b₁ := min δ ((2 : ℝ) ^ (k + 1) * α)
+  have hb01 : b₀ ≤ b₁ := min_le_min le_rfl <|
+    mul_le_mul_of_nonneg_right (pow_le_pow_right₀ one_le_two k.le_succ) hα0.le
+  rcases hb01.eq_or_lt with hEq | hlt
+  · rw [hEq, intervalIntegral.integral_same]
+    positivity
+  have hb₁δ : b₁ ≤ δ := min_le_left _ _
+  have hαk : (2 : ℝ) ^ k * α < δ := by
+    by_contra hge
+    have hb₀δ : b₀ = δ := min_eq_left (le_of_not_gt hge)
+    exact absurd (hb₀δ ▸ hlt) (not_lt.2 hb₁δ)
+  have hbk : b₀ = (2 : ℝ) ^ k * α := min_eq_right hαk.le
+  have hb₀pos : 0 < b₀ := by rw [hbk]; positivity
+  have hb₁pos : 0 < b₁ := hb₀pos.trans hlt
+  have hC : ∀ t ∈ Set.Icc b₀ b₁, fejerKernelReal N t ≤ (N + 1 : ℝ) / (4 * (4 : ℝ) ^ k) := by
+    intro t ht
+    have htpos : 0 ≤ t := hb₀pos.le.trans ht.1
+    refine (fejerKernelReal_le_of_le_abs hb₀pos (by rw [abs_of_nonneg htpos]; exact ht.1)
+      (by rw [abs_of_nonneg htpos]; linarith [ht.2])).trans_eq ?_
+    have hfour : (4 : ℝ) ^ k = (2 : ℝ) ^ (2 * k) := by
+      rw [show (4 : ℝ) = (2 : ℝ) ^ 2 by norm_num, ← pow_mul]
+    rw [hbk, hα, mul_pow, ← pow_mul, hfour]
+    field_simp
+    ring
+  have hle := integral_fejerKernelReal_mul_le hφ hφint hlt.le (by linarith) (by linarith) hC
+  have hsym : ∫ t in b₀..b₁, φ t ≤ ∫ t in (-b₁)..b₁, φ t :=
+    integral_le_integral_of_le_half hφ hφint (by linarith) hlt.le le_rfl (by linarith)
+      (by linarith)
+  have hCpos : 0 < (N + 1 : ℝ) / (4 * (4 : ℝ) ^ k) := by positivity
+  have hbpow : b₁ ≤ (2 : ℝ) ^ (k + 1) * α := min_le_right _ _
+  have hlast : (N + 1 : ℝ) / (4 * (4 : ℝ) ^ k) * ((ε / 4) * b₁) ≤ (ε / 8) * (1 / 2) ^ k := by
+    calc
+      (N + 1 : ℝ) / (4 * (4 : ℝ) ^ k) * ((ε / 4) * b₁)
+          ≤ (N + 1 : ℝ) / (4 * (4 : ℝ) ^ k) * ((ε / 4) * ((2 : ℝ) ^ (k + 1) * α)) :=
+            mul_le_mul_of_nonneg_left (mul_le_mul_of_nonneg_left hbpow (by positivity))
+              hCpos.le
+      _ = (N + 1 : ℝ) / (4 * (4 : ℝ) ^ k) * (ε / 4) * (2 : ℝ) ^ (k + 1) * α := by
+        ring
+      _ = (ε / 8) * (1 / 2) ^ k := by
+        rw [hα]
+        simpa [div_eq_mul_inv, one_mul, mul_assoc] using fejer_annulus_const N k ε
+  exact (hle.trans (mul_le_mul_of_nonneg_left hsym hCpos.le)).trans_lt
+    ((mul_lt_mul_of_pos_left (hsmall _ hb₁pos hb₁δ) hCpos).trans_le hlast)
+
 /-- On `(α, δ]`, the Fejer kernel integrates a controlled symmetric average below `ε / 4`. -/
 private lemma integral_right_annulus_lt {φ : ℝ → ℝ} {ε δ α : ℝ} {N : ℕ}
     (hφ : ∀ t, 0 ≤ φ t)
@@ -533,6 +628,7 @@ private lemma integral_right_annulus_lt {φ : ℝ → ℝ} {ε δ α : ℝ} {N :
     (hα0 : 0 < α) (hαδ : α < δ) (hα : α = 1 / (N + 1 : ℝ))
     (hsmall : ∀ r, 0 < r → r ≤ δ → ∫ t in (-r)..r, φ t < (ε / 4) * r) :
     ∫ t in α..δ, fejerKernelReal N t * φ t < ε / 4 := by
+  -- Cut `[α, δ]` at the points `b k = min δ (2^k α)`, `k ≤ N`.
   let b : ℕ → ℝ := fun k => min δ ((2 : ℝ) ^ k * α)
   have hb0 : b 0 = α := by
     simp only [b, pow_zero, one_mul]
@@ -560,115 +656,9 @@ private lemma integral_right_annulus_lt {φ : ℝ → ℝ} {ε δ α : ℝ} {N :
   have hpiece : ∀ k, IntervalIntegrable (fun t => fejerKernelReal N t * φ t) volume
       (b k) (b (k + 1)) := by
     intro k
-    refine hψint.mono_set ?_
-    rw [Set.uIcc_of_le (hbmono k),
-      Set.uIcc_of_le (by norm_num : -(1 / 2 : ℝ) ≤ 1 / 2)]
-    refine Set.Icc_subset_Icc ?_ ?_
-    · have hbk : 0 ≤ b k := by
-        simp only [b]
-        exact le_min hδ.le (mul_nonneg (pow_nonneg (by norm_num) _) hα0.le)
-      linarith
-    · have hbk : b (k + 1) ≤ δ := by simp [b]
-      linarith
-  have hintk : ∀ k ∈ Finset.range N,
-      ∫ t in b k..b (k + 1), fejerKernelReal N t * φ t <
-        (ε / 8) * (1 / 2) ^ k := by
-    intro k hk
-    by_cases hEq : b k = b (k + 1)
-    · rw [hEq, intervalIntegral.integral_same]
-      positivity
-    · have hlt : b k < b (k + 1) := lt_of_le_of_ne (hbmono k) hEq
-      have hbkδ : b k < δ := lt_of_lt_of_le hlt (by simp [b])
-      have hαk : (2 : ℝ) ^ k * α < δ := by
-        by_contra hge
-        have hmin : b k = δ := by
-          simp [b, min_eq_left (le_of_not_gt hge)]
-        exact (hmin ▸ hbkδ).false
-      have hbk : b k = (2 : ℝ) ^ k * α := by
-        simp [b, min_eq_right hαk.le]
-      have hbpos : 0 < b (k + 1) := lt_of_le_of_lt (by
-        have : 0 ≤ b k := by rw [hbk]; positivity
-        exact this) hlt
-      have hbδ : b (k + 1) ≤ δ := by simp [b]
-      have hC : ∀ t ∈ Set.Icc (b k) (b (k + 1)),
-          fejerKernelReal N t ≤ (N + 1 : ℝ) / (4 * (4 : ℝ) ^ k) := by
-        intro t ht
-        have ht0 : t ≠ 0 := by
-          have : 0 < b k := by rw [hbk]; positivity
-          exact ne_of_gt (lt_of_lt_of_le this ht.1)
-        have htabs : |t| ≤ 1 / 2 := by
-          rw [abs_of_nonneg (le_trans (by
-            have : 0 ≤ b k := by rw [hbk]; positivity
-            exact this) ht.1)]
-          exact le_trans ht.2 (hbδ.trans hδhalf)
-        have hinv : fejerKernelReal N t ≤ 1 / (4 * (N + 1) * t ^ 2) :=
-          fejerKernelReal_le_inv_sq ht0 htabs
-        have ht2 : b k ^ 2 ≤ t ^ 2 :=
-          pow_le_pow_left₀ (by rw [hbk]; positivity) ht.1 2
-        have hden : 4 * (N + 1 : ℝ) * b k ^ 2 ≤ 4 * (N + 1) * t ^ 2 :=
-          mul_le_mul_of_nonneg_left ht2 (by positivity)
-        have hleC : 1 / (4 * (N + 1) * t ^ 2) ≤ 1 / (4 * (N + 1) * b k ^ 2) :=
-          (one_div_le_one_div (by positivity) (by positivity)).2 hden
-        have hbkC : 1 / (4 * (N + 1) * b k ^ 2) =
-            (N + 1 : ℝ) / (4 * (4 : ℝ) ^ k) := by
-          have hfour : (4 : ℝ) ^ k = (2 : ℝ) ^ (2 * k) := by
-            rw [show (4 : ℝ) = (2 : ℝ) ^ 2 by norm_num, ← pow_mul]
-          rw [hbk, hα, mul_pow, ← pow_mul, hfour]
-          field_simp
-          ring
-        exact hinv.trans (hleC.trans_eq hbkC)
-      have hφk : IntervalIntegrable φ volume (b k) (b (k + 1)) := by
-        refine hφint.mono_set ?_
-        rw [Set.uIcc_of_le hlt.le,
-          Set.uIcc_of_le (by norm_num : -(1 / 2 : ℝ) ≤ 1 / 2)]
-        refine Set.Icc_subset_Icc (by
-          have : 0 ≤ b k := by rw [hbk]; positivity
-          linarith) (by linarith [hbδ, hδhalf])
-      have hprod : IntervalIntegrable (fun t => fejerKernelReal N t * φ t) volume
-          (b k) (b (k + 1)) := hpiece k
-      have hconst : IntervalIntegrable
-          (fun t => (N + 1 : ℝ) / (4 * (4 : ℝ) ^ k) * φ t) volume
-          (b k) (b (k + 1)) := hφk.const_mul _
-      have hle : ∫ t in b k..b (k + 1), fejerKernelReal N t * φ t ≤
-          (N + 1 : ℝ) / (4 * (4 : ℝ) ^ k) * ∫ t in b k..b (k + 1), φ t := by
-        rw [← intervalIntegral.integral_const_mul]
-        exact intervalIntegral.integral_mono_on hlt.le hprod hconst fun t ht =>
-          mul_le_mul_of_nonneg_right (hC t ht) (hφ t)
-      have hneg : -b (k + 1) ≤ b k := by
-        have hbk0 : 0 ≤ b k := by rw [hbk]; positivity
-        linarith
-      have hsym : ∫ t in b k..b (k + 1), φ t ≤ ∫ t in (-b (k + 1))..b (k + 1), φ t :=
-        intervalIntegral.integral_mono_interval hneg hlt.le le_rfl
-          (ae_restrict_of_ae (ae_of_all _ hφ))
-          (hφint.mono_set (by
-            rw [Set.uIcc_of_le (by linarith [hbpos] : -b (k + 1) ≤ b (k + 1)),
-              Set.uIcc_of_le (by norm_num : -(1 / 2 : ℝ) ≤ 1 / 2)]
-            refine Set.Icc_subset_Icc ?_ ?_
-            · linarith [hbδ, hδhalf]
-            · linarith [hbδ, hδhalf]))
-      have hintφ : ∫ t in (-b (k + 1))..b (k + 1), φ t < (ε / 4) * b (k + 1) :=
-        hsmall _ hbpos hbδ
-      have hCpos : 0 < (N + 1 : ℝ) / (4 * (4 : ℝ) ^ k) := by positivity
-      have hstrict : (N + 1 : ℝ) / (4 * (4 : ℝ) ^ k) *
-          ∫ t in (-b (k + 1))..b (k + 1), φ t <
-          (N + 1 : ℝ) / (4 * (4 : ℝ) ^ k) * ((ε / 4) * b (k + 1)) :=
-        mul_lt_mul_of_pos_left hintφ hCpos
-      have hbpow : b (k + 1) ≤ (2 : ℝ) ^ (k + 1) * α := by simp [b]
-      have hcoef : 0 ≤ (N + 1 : ℝ) / (4 * (4 : ℝ) ^ k) * (ε / 4) := by positivity
-      have hlast : (N + 1 : ℝ) / (4 * (4 : ℝ) ^ k) * ((ε / 4) * b (k + 1)) ≤
-          (ε / 8) * (1 / 2) ^ k := by
-        calc
-          (N + 1 : ℝ) / (4 * (4 : ℝ) ^ k) * ((ε / 4) * b (k + 1))
-              ≤ (N + 1 : ℝ) / (4 * (4 : ℝ) ^ k) * ((ε / 4) * ((2 : ℝ) ^ (k + 1) * α)) :=
-                mul_le_mul_of_nonneg_left (mul_le_mul_of_nonneg_left hbpow (by positivity))
-                  (by positivity)
-          _ = (N + 1 : ℝ) / (4 * (4 : ℝ) ^ k) * (ε / 4) * (2 : ℝ) ^ (k + 1) * α := by
-            ring
-          _ = (ε / 8) * (1 / 2) ^ k := by
-            rw [hα]
-            simpa [div_eq_mul_inv, one_mul, mul_assoc] using fejer_annulus_const N k ε
-      exact lt_of_le_of_lt (hle.trans (mul_le_mul_of_nonneg_left hsym (by positivity)))
-        (hstrict.trans_le hlast)
+    have hbk : 0 ≤ b k := le_min hδ.le (mul_nonneg (pow_nonneg (by norm_num) _) hα0.le)
+    have hbk1 : b (k + 1) ≤ δ := min_le_left _ _
+    exact intervalIntegrable_of_le_half hψint (hbmono k) (by linarith) (by linarith)
   have hNpos : 0 < N := by
     have hhalf : α < 1 / 2 := hαδ.trans_le hδhalf
     rw [hα] at hhalf
@@ -677,12 +667,14 @@ private lemma integral_right_annulus_lt {φ : ℝ → ℝ} {ε δ α : ℝ} {N :
       linarith
     have hnat : 2 < N + 1 := by exact_mod_cast hlt
     omega
+  -- Sum the dyadic pieces and compare with a geometric series.
   have hsum : ∑ k ∈ Finset.range N,
       ∫ t in b k..b (k + 1), fejerKernelReal N t * φ t <
       ∑ k ∈ Finset.range N, (ε / 8) * (1 / 2) ^ k :=
     Finset.sum_lt_sum_of_nonempty (by
       rw [Finset.nonempty_range_iff]
-      exact hNpos.ne') hintk
+      exact hNpos.ne') fun k _ =>
+        integral_dyadic_piece_lt hφ hφint hε hδhalf hα0 hα hsmall k
   have hadj : ∑ k ∈ Finset.range N,
       ∫ t in b k..b (k + 1), fejerKernelReal N t * φ t =
       ∫ t in b 0..b N, fejerKernelReal N t * φ t :=
@@ -702,6 +694,114 @@ private lemma integral_right_annulus_lt {φ : ℝ → ℝ} {ε δ α : ℝ} {N :
       _ = ε / 4 := by ring
   exact hsum.trans hgeom
 
+/-- The reflected annulus `[-δ, -α]` obeys the same bound, by evenness of the Fejer kernel. -/
+private lemma integral_left_annulus_lt {φ : ℝ → ℝ} {ε δ α : ℝ} {N : ℕ}
+    (hφ : ∀ t, 0 ≤ φ t)
+    (hφint : IntervalIntegrable φ volume (-(1 / 2)) (1 / 2))
+    (hε : 0 < ε) (hδ : 0 < δ) (hδhalf : δ ≤ 1 / 2)
+    (hα0 : 0 < α) (hαδ : α < δ) (hα : α = 1 / (N + 1 : ℝ))
+    (hsmall : ∀ r, 0 < r → r ≤ δ → ∫ t in (-r)..r, φ t < (ε / 4) * r) :
+    ∫ t in (-δ)..(-α), fejerKernelReal N t * φ t < ε / 4 := by
+  have hφnegint : IntervalIntegrable (fun t => φ (-t)) volume (-(1 / 2)) (1 / 2) := by
+    have hneg := (IntervalIntegrable.iff_comp_neg (f := φ)
+      (a := -(1 / 2)) (b := 1 / 2)).mp hφint
+    simpa [neg_neg] using hneg.symm
+  have hsmallneg : ∀ r, 0 < r → r ≤ δ → ∫ t in (-r)..r, φ (-t) < (ε / 4) * r := by
+    intro r hr0 hrδ
+    rw [intervalIntegral.integral_comp_neg]
+    simpa using hsmall r hr0 hrδ
+  have hleft : ∫ t in (-δ)..(-α), fejerKernelReal N t * φ t =
+      ∫ t in α..δ, fejerKernelReal N t * φ (-t) := by
+    have hcomp := intervalIntegral.integral_comp_neg (a := -δ) (b := -α)
+      (f := fun u => fejerKernelReal N u * φ (-u))
+    simp_rw [fejerKernelReal_neg, neg_neg] at hcomp
+    exact hcomp
+  rw [hleft]
+  exact integral_right_annulus_lt (fun t => hφ _) hφnegint hε hδ hδhalf hα0 hαδ hα hsmallneg
+
+/-- Near the origin, `fejerKernelReal N ≤ N + 1`, so a small symmetric integral of the weight
+over `[-α, α]`, `α = 1 / (N + 1)`, gives a weighted integral below `ε / 4`. -/
+private lemma integral_fejerKernelReal_mul_center_lt {φ : ℝ → ℝ} (hφ : ∀ t, 0 ≤ φ t)
+    (hφint : IntervalIntegrable φ volume (-(1 / 2)) (1 / 2)) {ε α : ℝ} {N : ℕ}
+    (hα0 : 0 < α) (hαhalf : α ≤ 1 / 2) (hα : α = 1 / (N + 1 : ℝ))
+    (hsmall : ∫ t in (-α)..α, φ t < (ε / 4) * α) :
+    ∫ t in (-α)..α, fejerKernelReal N t * φ t < ε / 4 := by
+  have hle := integral_fejerKernelReal_mul_le hφ hφint (by linarith : -α ≤ α) (by linarith)
+    hαhalf fun t _ => fejerKernelReal_le_succ N t
+  have hcoef : (N + 1 : ℝ) * ((ε / 4) * α) = ε / 4 := by
+    rw [hα]
+    field_simp
+  exact hle.trans_lt ((mul_lt_mul_of_pos_left hsmall (by positivity)).trans_eq hcoef)
+
+/-- On a subinterval of `[-1/2, 1/2]` at distance at least `δ > 0` from the origin, the
+weighted Fejer integral is at most `1 / (4 (N + 1) δ²)` times the integral of the weight over
+`[-1/2, 1/2]`. -/
+private lemma integral_fejerKernelReal_mul_far_le {φ : ℝ → ℝ} (hφ : ∀ t, 0 ≤ φ t)
+    (hφint : IntervalIntegrable φ volume (-(1 / 2)) (1 / 2)) {N : ℕ} {a b δ : ℝ}
+    (hδ : 0 < δ) (hab : a ≤ b) (ha : -(1 / 2) ≤ a) (hb : b ≤ 1 / 2)
+    (hfar : ∀ t ∈ Set.Icc a b, δ ≤ |t|) :
+    ∫ t in a..b, fejerKernelReal N t * φ t ≤
+      1 / (4 * (N + 1) * δ ^ 2) * ∫ t in (-(1 / 2))..(1 / 2), φ t := by
+  have hK : ∀ t ∈ Set.Icc a b, fejerKernelReal N t ≤ 1 / (4 * (N + 1) * δ ^ 2) :=
+    fun t ht => fejerKernelReal_le_of_le_abs hδ (hfar t ht)
+      (abs_le.2 ⟨by linarith [ht.1], by linarith [ht.2]⟩)
+  exact (integral_fejerKernelReal_mul_le hφ hφint hab ha hb hK).trans
+    (mul_le_mul_of_nonneg_left
+      (integral_le_integral_of_le_half hφ hφint ha hab hb le_rfl le_rfl) (by positivity))
+
+/-- Vanishing symmetric averages of `φ ≥ 0` give `δ ∈ (0, 1/2]` with
+`∫_{-r}^{r} φ < (ε / 4) r` for all `r ∈ (0, δ]`. -/
+private lemma exists_integral_symm_lt {φ : ℝ → ℝ} (hφ : ∀ t, 0 ≤ φ t)
+    (hφavg : Tendsto (fun r : ℝ => (2 * r)⁻¹ * ∫ t in (-r)..r, φ t) (𝓝[>] 0) (𝓝 0))
+    {ε : ℝ} (hε : 0 < ε) :
+    ∃ δ, 0 < δ ∧ δ ≤ 1 / 2 ∧ ∀ r, 0 < r → r ≤ δ → ∫ t in (-r)..r, φ t < (ε / 4) * r := by
+  have hε8 : 0 < ε / 8 := by positivity
+  rw [Metric.tendsto_nhds] at hφavg
+  have hnear := hφavg (ε / 8) hε8
+  rw [eventually_nhdsWithin_iff] at hnear
+  obtain ⟨η, hη, hηφ⟩ := Metric.eventually_nhds_iff.mp hnear
+  refine ⟨min (η / 2) (1 / 2), lt_min (by positivity) (by norm_num), min_le_right _ _, ?_⟩
+  intro r hr0 hrδ
+  have hdist : dist r 0 < η := by
+    rw [Real.dist_0_eq_abs, abs_of_pos hr0]
+    exact lt_of_le_of_lt (hrδ.trans (min_le_left _ _)) (half_lt_self hη)
+  have havg : dist ((2 * r)⁻¹ * ∫ t in (-r)..r, φ t) 0 < ε / 8 :=
+    hηφ hdist (by simpa [Set.mem_Ioi] using hr0)
+  have hintnn : 0 ≤ ∫ t in (-r)..r, φ t :=
+    intervalIntegral.integral_nonneg_of_forall (by linarith) hφ
+  have havgnn : 0 ≤ (2 * r)⁻¹ * ∫ t in (-r)..r, φ t :=
+    mul_nonneg (inv_nonneg.mpr (by positivity)) hintnn
+  rw [Real.dist_0_eq_abs, abs_of_nonneg havgnn] at havg
+  have hmul := mul_lt_mul_of_pos_left havg (by positivity : 0 < 2 * r)
+  have hcancel : (2 * r) * ((2 * r)⁻¹ * ∫ t in (-r)..r, φ t) =
+      ∫ t in (-r)..r, φ t := by
+    rw [← mul_assoc, mul_inv_cancel₀ (by positivity), one_mul]
+  rw [hcancel] at hmul
+  have hcoef : (2 * r) * (ε / 8) = (ε / 4) * r := by ring
+  linarith
+
+/-- Splitting `[-1/2, 1/2]` at `-δ ≤ -α ≤ α ≤ δ`, with the two outer pieces grouped. -/
+private lemma integral_half_eq_far_add_near {ψ : ℝ → ℝ}
+    (hψ : IntervalIntegrable ψ volume (-(1 / 2)) (1 / 2)) {α δ : ℝ} (hα : 0 ≤ α)
+    (hαδ : α ≤ δ) (hδ : δ ≤ 1 / 2) :
+    ∫ t in (-(1 / 2))..(1 / 2), ψ t =
+      ((∫ t in (-(1 / 2))..(-δ), ψ t) + ∫ t in δ..(1 / 2), ψ t) +
+        ((∫ t in (-δ)..(-α), ψ t) + (∫ t in (-α)..α, ψ t) + ∫ t in α..δ, ψ t) := by
+  have hI : ∀ a b, a ≤ b → -(1 / 2) ≤ a → b ≤ 1 / 2 → IntervalIntegrable ψ volume a b :=
+    fun a b hab ha hb => intervalIntegrable_of_le_half hψ hab ha hb
+  rw [← intervalIntegral.integral_add_adjacent_intervals
+      (hI (-(1 / 2)) (-δ) (by linarith) le_rfl (by linarith))
+      (hI (-δ) (1 / 2) (by linarith) (by linarith) le_rfl),
+    ← intervalIntegral.integral_add_adjacent_intervals
+      (hI (-δ) (-α) (by linarith) (by linarith) (by linarith))
+      (hI (-α) (1 / 2) (by linarith) (by linarith) le_rfl),
+    ← intervalIntegral.integral_add_adjacent_intervals
+      (hI (-α) α (by linarith) (by linarith) (by linarith))
+      (hI α (1 / 2) (by linarith) (by linarith) le_rfl),
+    ← intervalIntegral.integral_add_adjacent_intervals
+      (hI α δ hαδ (by linarith) (by linarith)) (hI δ (1 / 2) hδ (by linarith) le_rfl)]
+  ring
+
 /-- Nonnegative densities with vanishing symmetric averages are concentrated by the Fejer kernel. -/
 private lemma tendsto_integral_fejerKernelReal_mul {φ : ℝ → ℝ} (hφ : ∀ t, 0 ≤ φ t)
     (hφint : IntervalIntegrable φ volume (-(1 / 2)) (1 / 2))
@@ -710,36 +810,7 @@ private lemma tendsto_integral_fejerKernelReal_mul {φ : ℝ → ℝ} (hφ : ∀
       atTop (𝓝 0) := by
   rw [Metric.tendsto_nhds]
   intro ε hε
-  have hε8 : 0 < ε / 8 := by positivity
-  rw [Metric.tendsto_nhds] at hφavg
-  have hnear := hφavg (ε / 8) hε8
-  rw [eventually_nhdsWithin_iff] at hnear
-  obtain ⟨η, hη, hηφ⟩ := Metric.eventually_nhds_iff.mp hnear
-  let δ : ℝ := min (η / 2) (1 / 2)
-  have hδ : 0 < δ := by
-    have : 0 < η / 2 := by positivity
-    exact lt_min this (by norm_num)
-  have hδhalf : δ ≤ 1 / 2 := min_le_right _ _
-  have hδη : δ ≤ η / 2 := min_le_left _ _
-  have hsmall : ∀ r, 0 < r → r ≤ δ → ∫ t in (-r)..r, φ t < (ε / 4) * r := by
-    intro r hr0 hrδ
-    have hdist : dist r 0 < η := by
-      rw [Real.dist_0_eq_abs, abs_of_pos hr0]
-      exact lt_of_le_of_lt hrδ (lt_of_le_of_lt hδη (half_lt_self hη))
-    have havg : dist ((2 * r)⁻¹ * ∫ t in (-r)..r, φ t) 0 < ε / 8 :=
-      hηφ hdist (by simpa [Set.mem_Ioi] using hr0)
-    have hintnn : 0 ≤ ∫ t in (-r)..r, φ t :=
-      intervalIntegral.integral_nonneg_of_forall (by linarith) hφ
-    have havgnn : 0 ≤ (2 * r)⁻¹ * ∫ t in (-r)..r, φ t :=
-      mul_nonneg (inv_nonneg.mpr (by positivity)) hintnn
-    rw [Real.dist_0_eq_abs, abs_of_nonneg havgnn] at havg
-    have hmul := mul_lt_mul_of_pos_left havg (by positivity : 0 < 2 * r)
-    have hcancel : (2 * r) * ((2 * r)⁻¹ * ∫ t in (-r)..r, φ t) =
-        ∫ t in (-r)..r, φ t := by
-      rw [← mul_assoc, mul_inv_cancel₀ (by positivity), one_mul]
-    rw [hcancel] at hmul
-    have hcoef : (2 * r) * (ε / 8) = (ε / 4) * r := by ring
-    linarith
+  obtain ⟨δ, hδ, hδhalf, hsmall⟩ := exists_integral_symm_lt hφ hφavg hε
   let I : ℝ := ∫ t in (-(1 / 2))..(1 / 2), φ t
   have hI : 0 ≤ I :=
     intervalIntegral.integral_nonneg_of_forall (by norm_num) hφ
@@ -750,188 +821,37 @@ private lemma tendsto_integral_fejerKernelReal_mul {φ : ℝ → ℝ} (hφ : ∀
     simpa [mul_zero] using tendsto_const_nhds.mul hinv
   have hε4 : 0 < ε / 4 := by positivity
   rw [Metric.tendsto_nhds] at hfar0
-  have hfarEv := hfar0 (ε / 4) hε4
-  filter_upwards [hinv.eventually (Metric.ball_mem_nhds 0 hδ), hfarEv] with N hαlt hfar
+  filter_upwards [hinv.eventually (Metric.ball_mem_nhds 0 hδ), hfar0 (ε / 4) hε4]
+    with N hαlt hfar
   rw [Real.dist_0_eq_abs, abs_of_nonneg (inv_nonneg.mpr (by positivity))] at hαlt
+  -- The near scale `α = 1 / (N + 1) < δ`.
   have hα0 : 0 < 1 / (N + 1 : ℝ) := by positivity
   have hαδ : 1 / (N + 1 : ℝ) < δ := by
     rw [one_div]
     exact hαlt
   let α : ℝ := 1 / (N + 1)
   have hαdef : α = 1 / (N + 1 : ℝ) := rfl
-  have hann := integral_right_annulus_lt hφ hφint hε hδ hδhalf hα0 hαδ hαdef hsmall
-  have hφneg : ∀ t, 0 ≤ φ (-t) := fun t => hφ _
-  have hφnegint : IntervalIntegrable (fun t => φ (-t)) volume (-(1 / 2)) (1 / 2) := by
-    have hneg := (IntervalIntegrable.iff_comp_neg (f := φ)
-      (a := -(1 / 2)) (b := 1 / 2)).mp hφint
-    simpa [neg_neg] using hneg.symm
-  have hsmallneg : ∀ r, 0 < r → r ≤ δ → ∫ t in (-r)..r, φ (-t) < (ε / 4) * r := by
-    intro r hr0 hrδ
-    rw [intervalIntegral.integral_comp_neg]
-    simpa using hsmall r hr0 hrδ
-  have hannneg := integral_right_annulus_lt hφneg hφnegint hε hδ hδhalf hα0 hαδ hαdef hsmallneg
-  have hleft : ∫ t in (-δ)..(-α), fejerKernelReal N t * φ t =
-      ∫ t in α..δ, fejerKernelReal N t * φ (-t) := by
-    have hcomp := intervalIntegral.integral_comp_neg (a := -δ) (b := -α)
-      (f := fun u => fejerKernelReal N u * φ (-u))
-    simp_rw [fejerKernelReal_neg, neg_neg] at hcomp
-    exact hcomp
-  have hM : ∀ t, δ ≤ |t| → |t| ≤ 1 / 2 →
-      fejerKernelReal N t ≤ 1 / (4 * (N + 1) * δ ^ 2) := by
-    intro t htδ ht
-    have ht0 : t ≠ 0 := by
-      intro ht0
-      simp [ht0] at htδ
-      linarith
-    have hinv : fejerKernelReal N t ≤ 1 / (4 * (N + 1) * t ^ 2) :=
-      fejerKernelReal_le_inv_sq ht0 ht
-    have ht2 : δ ^ 2 ≤ t ^ 2 := by
-      have habs : δ ≤ |t| := htδ
-      have := pow_le_pow_left₀ hδ.le habs 2
-      simpa [sq_abs] using this
-    have hden : 4 * (N + 1 : ℝ) * δ ^ 2 ≤ 4 * (N + 1) * t ^ 2 :=
-      mul_le_mul_of_nonneg_left ht2 (by positivity)
-    exact hinv.trans ((one_div_le_one_div (by positivity) (by positivity)).2 hden)
-  have hfarR : ∫ t in δ..(1 / 2), fejerKernelReal N t * φ t ≤
-      1 / (4 * (N + 1) * δ ^ 2) * I := by
-    have hab : δ ≤ 1 / 2 := hδhalf
-    by_cases hEq : δ = 1 / 2
-    · rw [hEq, intervalIntegral.integral_same]
-      exact mul_nonneg (by positivity) hI
-    · have hlt : δ < 1 / 2 := lt_of_le_of_ne hab hEq
-      have hφsub : IntervalIntegrable φ volume δ (1 / 2) :=
-        hφint.mono_set (by
-          rw [Set.uIcc_of_le hlt.le, Set.uIcc_of_le (by norm_num : -(1 / 2 : ℝ) ≤ 1 / 2)]
-          exact Set.Icc_subset_Icc (by linarith) le_rfl)
-      have hprod : IntervalIntegrable (fun t => fejerKernelReal N t * φ t) volume δ (1 / 2) :=
-        hφsub.continuousOn_mul (continuous_fejerKernelReal N).continuousOn
-      have hconst : IntervalIntegrable
-          (fun t => 1 / (4 * (N + 1 : ℝ) * δ ^ 2) * φ t) volume δ (1 / 2) :=
-        hφsub.const_mul _
-      have hle1 : ∫ t in δ..(1 / 2), fejerKernelReal N t * φ t ≤
-          1 / (4 * (N + 1) * δ ^ 2) * ∫ t in δ..(1 / 2), φ t := by
-        rw [← intervalIntegral.integral_const_mul]
-        exact intervalIntegral.integral_mono_on hlt.le hprod hconst fun t ht =>
-          mul_le_mul_of_nonneg_right (hM t
-            (by
-              rw [abs_of_nonneg (le_trans hδ.le ht.1)]
-              exact ht.1)
-            (by
-              rw [abs_of_nonneg (le_trans hδ.le ht.1)]
-              exact ht.2)) (hφ t)
-      have hle2 : ∫ t in δ..(1 / 2), φ t ≤ I :=
-        intervalIntegral.integral_mono_interval (by linarith) hlt.le le_rfl
-          (ae_restrict_of_ae (ae_of_all _ hφ)) hφint
-      exact hle1.trans (mul_le_mul_of_nonneg_left hle2 (by positivity))
-  have hfarL : ∫ t in (-(1 / 2))..(-δ), fejerKernelReal N t * φ t ≤
-      1 / (4 * (N + 1) * δ ^ 2) * I := by
-    have hab : -(1 / 2 : ℝ) ≤ -δ := by linarith
-    by_cases hEq : -(1 / 2 : ℝ) = -δ
-    · rw [hEq, intervalIntegral.integral_same]
-      exact mul_nonneg (by positivity) hI
-    · have hlt : -(1 / 2 : ℝ) < -δ := lt_of_le_of_ne hab hEq
-      have hφsub : IntervalIntegrable φ volume (-(1 / 2)) (-δ) :=
-        hφint.mono_set (by
-          rw [Set.uIcc_of_le hlt.le, Set.uIcc_of_le (by norm_num : -(1 / 2 : ℝ) ≤ 1 / 2)]
-          exact Set.Icc_subset_Icc le_rfl (by linarith))
-      have hprod : IntervalIntegrable (fun t => fejerKernelReal N t * φ t) volume
-          (-(1 / 2)) (-δ) :=
-        hφsub.continuousOn_mul (continuous_fejerKernelReal N).continuousOn
-      have hconst : IntervalIntegrable
-          (fun t => 1 / (4 * (N + 1 : ℝ) * δ ^ 2) * φ t) volume
-          (-(1 / 2)) (-δ) := hφsub.const_mul _
-      have hle1 : ∫ t in (-(1 / 2))..(-δ), fejerKernelReal N t * φ t ≤
-          1 / (4 * (N + 1) * δ ^ 2) * ∫ t in (-(1 / 2))..(-δ), φ t := by
-        rw [← intervalIntegral.integral_const_mul]
-        exact intervalIntegral.integral_mono_on hlt.le hprod hconst fun t ht =>
-          mul_le_mul_of_nonneg_right (hM t
-            (by
-              have htneg : t ≤ 0 := le_trans ht.2 (neg_nonpos.mpr hδ.le)
-              rw [abs_of_nonpos htneg]
-              exact (neg_neg δ).symm.trans_le (neg_le_neg ht.2))
-            (by
-              have htneg : t ≤ 0 := le_trans ht.2 (neg_nonpos.mpr hδ.le)
-              rw [abs_of_nonpos htneg]
-              exact (neg_le_neg ht.1).trans_eq (neg_neg (1 / 2)))) (hφ t)
-      have hle2 : ∫ t in (-(1 / 2))..(-δ), φ t ≤ I :=
-        intervalIntegral.integral_mono_interval le_rfl hlt.le (by linarith)
-          (ae_restrict_of_ae (ae_of_all _ hφ)) hφint
-      exact hle1.trans (mul_le_mul_of_nonneg_left hle2 (by positivity))
-  have hnear : ∫ t in (-α)..α, fejerKernelReal N t * φ t < ε / 4 := by
-    have hφsub : IntervalIntegrable φ volume (-α) α :=
-      hφint.mono_set (by
-        rw [Set.uIcc_of_le (by linarith : -α ≤ α),
-          Set.uIcc_of_le (by norm_num : -(1 / 2 : ℝ) ≤ 1 / 2)]
-        exact Set.Icc_subset_Icc (by linarith [hαδ, hδhalf]) (by linarith [hαδ, hδhalf]))
-    have hprod : IntervalIntegrable (fun t => fejerKernelReal N t * φ t) volume (-α) α :=
-      hφsub.continuousOn_mul (continuous_fejerKernelReal N).continuousOn
-    have hconst : IntervalIntegrable (fun t => (N + 1 : ℝ) * φ t) volume (-α) α :=
-      hφsub.const_mul _
-    have hle : ∫ t in (-α)..α, fejerKernelReal N t * φ t ≤
-        (N + 1 : ℝ) * ∫ t in (-α)..α, φ t := by
-      rw [← intervalIntegral.integral_const_mul]
-      exact intervalIntegral.integral_mono_on (by linarith : -α ≤ α) hprod hconst fun t _ =>
-        mul_le_mul_of_nonneg_right (fejerKernelReal_le_succ N t) (hφ t)
-    have hintφ : ∫ t in (-α)..α, φ t < (ε / 4) * α := hsmall α hα0 hαδ.le
-    have : (N + 1 : ℝ) * ∫ t in (-α)..α, φ t < (N + 1 : ℝ) * ((ε / 4) * α) :=
-      mul_lt_mul_of_pos_left hintφ (by positivity)
-    have hcoef : (N + 1 : ℝ) * ((ε / 4) * α) = ε / 4 := by
-      rw [hαdef]
-      field_simp
-    exact lt_of_le_of_lt hle (this.trans_eq hcoef)
+  -- Split `[-1/2, 1/2]` into two far pieces, two annuli and the centre.
   have hψ : IntervalIntegrable (fun t => fejerKernelReal N t * φ t) volume
       (-(1 / 2)) (1 / 2) :=
     hφint.continuousOn_mul (continuous_fejerKernelReal N).continuousOn
-  have hmono (a b : ℝ) (hab : a ≤ b) (hca : -(1 / 2) ≤ a) (hbd : b ≤ 1 / 2) :
-      IntervalIntegrable (fun t => fejerKernelReal N t * φ t) volume a b :=
-    hψ.mono_set <| by
-      rw [Set.uIcc_of_le hab, Set.uIcc_of_le (by norm_num : -(1 / 2 : ℝ) ≤ 1 / 2)]
-      exact Set.Icc_subset_Icc hca hbd
-  have hψ1 := hmono (-(1 / 2)) (-δ) (by linarith) le_rfl (by linarith)
-  have hψ2 := hmono (-δ) (-α) (by linarith) (by linarith) (by linarith)
-  have hψ3 := hmono (-α) α (by linarith) (by linarith) (by linarith)
-  have hψ4 := hmono α δ hαδ.le (by linarith) (by linarith)
-  have hψ5 := hmono δ (1 / 2) hδhalf (by linarith) le_rfl
-  have hsplit :
-      (∫ t in (-(1 / 2))..(-δ), fejerKernelReal N t * φ t) +
-        (∫ t in (-δ)..(-α), fejerKernelReal N t * φ t) +
-        (∫ t in (-α)..α, fejerKernelReal N t * φ t) +
-        (∫ t in α..δ, fejerKernelReal N t * φ t) +
-        (∫ t in δ..(1 / 2), fejerKernelReal N t * φ t) =
-      ∫ t in (-(1 / 2))..(1 / 2), fejerKernelReal N t * φ t := by
-    have h12 := intervalIntegral.integral_add_adjacent_intervals hψ1 hψ2
-    have h123 := intervalIntegral.integral_add_adjacent_intervals (hψ1.trans hψ2) hψ3
-    have h1234 := intervalIntegral.integral_add_adjacent_intervals
-      ((hψ1.trans hψ2).trans hψ3) hψ4
-    have h12345 := intervalIntegral.integral_add_adjacent_intervals
-      (((hψ1.trans hψ2).trans hψ3).trans hψ4) hψ5
-    calc
-      (∫ t in (-(1 / 2))..(-δ), fejerKernelReal N t * φ t) +
-          (∫ t in (-δ)..(-α), fejerKernelReal N t * φ t) +
-          (∫ t in (-α)..α, fejerKernelReal N t * φ t) +
-          (∫ t in α..δ, fejerKernelReal N t * φ t) +
-          (∫ t in δ..(1 / 2), fejerKernelReal N t * φ t)
-        = (∫ t in (-(1 / 2))..(-α), fejerKernelReal N t * φ t) +
-            (∫ t in (-α)..α, fejerKernelReal N t * φ t) +
-            (∫ t in α..δ, fejerKernelReal N t * φ t) +
-            (∫ t in δ..(1 / 2), fejerKernelReal N t * φ t) := by
-          rw [h12]
-      _ = (∫ t in (-(1 / 2))..α, fejerKernelReal N t * φ t) +
-            (∫ t in α..δ, fejerKernelReal N t * φ t) +
-            (∫ t in δ..(1 / 2), fejerKernelReal N t * φ t) := by
-          rw [h123]
-      _ = (∫ t in (-(1 / 2))..δ, fejerKernelReal N t * φ t) +
-            (∫ t in δ..(1 / 2), fejerKernelReal N t * φ t) := by
-          rw [h1234]
-      _ = ∫ t in (-(1 / 2))..(1 / 2), fejerKernelReal N t * φ t := h12345
   have hnn : 0 ≤ ∫ t in (-(1 / 2))..(1 / 2), fejerKernelReal N t * φ t :=
     intervalIntegral.integral_nonneg_of_forall (by norm_num) fun t =>
       mul_nonneg (fejerKernelReal_nonneg N t) (hφ t)
-  rw [Real.dist_0_eq_abs, abs_of_nonneg hnn, ← hsplit]
-  have hILann : ∫ t in (-δ)..(-α), fejerKernelReal N t * φ t < ε / 4 := by
-    rw [hleft]
-    exact hannneg
-  have hIRann : ∫ t in α..δ, fejerKernelReal N t * φ t < ε / 4 := hann
+  rw [Real.dist_0_eq_abs, abs_of_nonneg hnn,
+    integral_half_eq_far_add_near hψ hα0.le hαδ.le hδhalf]
+  have hfarL : ∫ t in (-(1 / 2))..(-δ), fejerKernelReal N t * φ t ≤
+      1 / (4 * (N + 1) * δ ^ 2) * I :=
+    integral_fejerKernelReal_mul_far_le hφ hφint hδ (by linarith) le_rfl (by linarith)
+      fun t ht => by
+        rw [abs_of_nonpos (by linarith [ht.2])]
+        linarith [ht.2]
+  have hfarR : ∫ t in δ..(1 / 2), fejerKernelReal N t * φ t ≤
+      1 / (4 * (N + 1) * δ ^ 2) * I :=
+    integral_fejerKernelReal_mul_far_le hφ hφint hδ hδhalf (by linarith) le_rfl
+      fun t ht => by
+        rw [abs_of_nonneg (by linarith [ht.1])]
+        exact ht.1
   have hfarlt : I / (2 * δ ^ 2) * ((N : ℝ) + 1)⁻¹ < ε / 4 := by
     have hnnI : 0 ≤ I / (2 * δ ^ 2) * ((N : ℝ) + 1)⁻¹ := by positivity
     rwa [Real.dist_0_eq_abs, abs_of_nonneg hnnI] at hfar
@@ -949,20 +869,11 @@ private lemma tendsto_integral_fejerKernelReal_mul {φ : ℝ → ℝ} (hφ : ∀
   have hrest : (∫ t in (-δ)..(-α), fejerKernelReal N t * φ t) +
       (∫ t in (-α)..α, fejerKernelReal N t * φ t) +
       (∫ t in α..δ, fejerKernelReal N t * φ t) < ε / 4 + ε / 4 + ε / 4 :=
-    add_lt_add (add_lt_add hILann hnear) hIRann
-  have hjoin :
-      (∫ t in (-(1 / 2))..(-δ), fejerKernelReal N t * φ t) +
-        (∫ t in (-δ)..(-α), fejerKernelReal N t * φ t) +
-        (∫ t in (-α)..α, fejerKernelReal N t * φ t) +
-        (∫ t in α..δ, fejerKernelReal N t * φ t) +
-        (∫ t in δ..(1 / 2), fejerKernelReal N t * φ t) =
-      ((∫ t in (-(1 / 2))..(-δ), fejerKernelReal N t * φ t) +
-        (∫ t in δ..(1 / 2), fejerKernelReal N t * φ t)) +
-        ((∫ t in (-δ)..(-α), fejerKernelReal N t * φ t) +
-          (∫ t in (-α)..α, fejerKernelReal N t * φ t) +
-          (∫ t in α..δ, fejerKernelReal N t * φ t)) := by
-    set_option backward.isDefEq.respectTransparency true in abel
-  rw [hjoin]
+    add_lt_add (add_lt_add
+      (integral_left_annulus_lt hφ hφint hε hδ hδhalf hα0 hαδ hαdef hsmall)
+      (integral_fejerKernelReal_mul_center_lt hφ hφint hα0 (by linarith) hαdef
+        (hsmall α hα0 hαδ.le)))
+      (integral_right_annulus_lt hφ hφint hε hδ hδhalf hα0 hαδ hαdef hsmall)
   have hεeq : ε / 4 + (ε / 4 + ε / 4 + ε / 4) = ε := by ring
   exact (add_lt_add htwo hrest).trans_eq hεeq
 

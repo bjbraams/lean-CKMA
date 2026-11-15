@@ -5,9 +5,7 @@ Authors: CKMA contributors
 -/
 module
 
-public import Mathlib.MeasureTheory.Measure.Haar.Basic
 public import Mathlib.MeasureTheory.Function.LpSpace.Basic
-public import Mathlib.Analysis.Normed.Operator.Basic
 
 /-!
 # Invariant means on Haar L∞ spaces

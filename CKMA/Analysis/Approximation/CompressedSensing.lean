@@ -6,7 +6,6 @@ Authors: CKMA contributors
 module
 
 public import Mathlib.Analysis.InnerProductSpace.PiL2
-public import Mathlib.Analysis.Convex.Function
 
 /-!
 # Restricted isometry and stable sparse recovery

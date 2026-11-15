@@ -6,9 +6,8 @@ Authors: CKMA contributors
 module
 
 public import CKMA.Analysis.PDE.Euclidean
-public import Mathlib.MeasureTheory.Function.EssSup
-public import Mathlib.Analysis.Fourier.LpSpace
-public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
+public import Mathlib.Analysis.Distribution.SchwartzSpace.Basic
+public import Mathlib.Analysis.Fourier.FourierTransform
 
 /-!
 # Schrödinger spacetime norms and the focusing virial identity

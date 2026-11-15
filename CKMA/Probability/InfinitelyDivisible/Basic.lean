@@ -5,10 +5,7 @@ Authors: CKMA contributors
 -/
 module
 
-public import Mathlib.MeasureTheory.Group.Convolution
-public import Mathlib.MeasureTheory.Measure.CharacteristicFunction.Basic
 public import Mathlib.MeasureTheory.Integral.Bochner.Basic
-public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 
 /-!
 # Infinite divisibility and Lévy triplets

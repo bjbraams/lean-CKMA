@@ -6,9 +6,8 @@ Authors: CKMA contributors
 module
 
 public import Mathlib.Topology.Algebra.PontryaginDual
-public import Mathlib.MeasureTheory.Measure.Haar.Basic
-public import Mathlib.MeasureTheory.Function.L2Space
-public import Mathlib.Analysis.Normed.Operator.Basic
+public import Mathlib.MeasureTheory.Integral.Bochner.Basic
+public import Mathlib.Analysis.InnerProductSpace.Basic
 
 /-!
 # Pontryagin duality and LCA Fourier analysis

@@ -7,8 +7,6 @@ module
 
 public import Mathlib.Probability.Distributions.Gaussian.Multivariate
 public import CKMA.Probability.GaussianLogSobolev.OneDimLSI
-public import Mathlib.Analysis.Calculus.ContDiff.Basic
-public import Mathlib.MeasureTheory.Function.LpSpace.Basic
 
 /-!
 # Gaussian entropy and the log-Sobolev inequality (07.17)

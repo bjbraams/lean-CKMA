@@ -6,9 +6,8 @@ Authors: CKMA contributors
 module
 
 public import CKMA.Analysis.Operator.Dilation.CommutantBlock
-public import Mathlib.Analysis.Normed.Operator.Basic
-public import Mathlib.Topology.Algebra.InfiniteSum.NatInt
-public import Mathlib.Topology.MetricSpace.Basic
+
+import CKMA.Analysis.Operator.Dilation.Wold
 
 /-!
 # Commutant lifting series

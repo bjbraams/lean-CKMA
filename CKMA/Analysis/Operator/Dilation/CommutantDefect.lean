@@ -5,8 +5,9 @@ Authors: CKMA contributors
 -/
 module
 
-public import CKMA.Analysis.Operator.Dilation.Wold
-public import Mathlib.Analysis.InnerProductSpace.Orthogonal
+public import Mathlib.Analysis.InnerProductSpace.Adjoint
+
+import CKMA.Analysis.Operator.Dilation.Wold
 
 /-!
 # Defect of an isometric coextension

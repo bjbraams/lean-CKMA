@@ -5,17 +5,14 @@ Authors: CKMA contributors
 -/
 module
 
-public import CKMA.Probability.InfinitelyDivisible.CompoundPoisson
-public import CKMA.Probability.InfinitelyDivisible.Convergence
-public import Mathlib.Algebra.Polynomial.Roots
-public import Mathlib.Analysis.Complex.BranchLogRoot
-public import Mathlib.Analysis.Convex.Contractible
-public import Mathlib.Analysis.LocallyConvex.WithSeminorms
-public import Mathlib.Analysis.SpecificLimits.Basic
-public import Mathlib.MeasureTheory.Measure.CharacteristicFunction.TaylorExpansion
-public import Mathlib.Topology.Algebra.Module.LocallyConvex
-public import Mathlib.Topology.Connected.Clopen
-public import Mathlib.Topology.Order.IntermediateValue
+public import CKMA.Probability.InfinitelyDivisible.Basic
+public import Mathlib.MeasureTheory.Measure.CharacteristicFunction.Basic
+
+import CKMA.Probability.InfinitelyDivisible.CompoundPoisson
+import CKMA.Probability.InfinitelyDivisible.Convergence
+import Mathlib.Analysis.Complex.BranchLogRoot
+import Mathlib.Analysis.Convex.Contractible
+import Mathlib.MeasureTheory.Measure.CharacteristicFunction.TaylorExpansion
 
 /-!
 # Logarithms of infinitely divisible characteristic functions

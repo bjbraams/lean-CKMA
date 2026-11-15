@@ -6,10 +6,6 @@ Authors: CKMA contributors
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Bessel
-public import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
-public import Mathlib.Analysis.SpecialFunctions.Exponential
-public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
-public import Mathlib.Topology.Basic
 
 /-!
 # Bessel second solutions, Airy and Mittag–Leffler functions

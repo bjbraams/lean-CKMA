@@ -7,16 +7,7 @@ module
 
 public import CKMA.Analysis.Interpolation.Basic
 
-import Mathlib.Analysis.Calculus.FDeriv.Add
-import Mathlib.Analysis.Calculus.FDeriv.Mul
-import Mathlib.Analysis.Complex.Exponential
-import Mathlib.Analysis.Normed.Group.Continuity
 import Mathlib.Analysis.SpecialFunctions.ExpDeriv
-import Mathlib.Analysis.SpecialFunctions.Pow.Real
-import Mathlib.Tactic.Linarith
-import Mathlib.Topology.Algebra.MulAction
-import Mathlib.Topology.Compactness.Compact
-import Mathlib.Topology.Order.Compact
 
 /-!
 # Complex interpolation operator bound

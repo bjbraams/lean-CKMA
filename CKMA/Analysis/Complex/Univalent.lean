@@ -5,10 +5,7 @@ Authors: CKMA contributors
 -/
 module
 
-public import CKMA.Analysis.Complex.Hardy
 public import CKMA.Analysis.Complex.Laurent
-public import Mathlib.Analysis.Calculus.IteratedDeriv.Lemmas
-public import Mathlib.MeasureTheory.Measure.Lebesgue.Complex
 
 /-!
 # Schlicht functions and radial Loewner evolution

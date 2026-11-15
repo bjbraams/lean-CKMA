@@ -6,13 +6,9 @@ Authors: CKMA contributors
 module
 
 public import CKMA.Analysis.Complex.Basic
-public import Mathlib.MeasureTheory.Function.LpSpace.Basic
 public import Mathlib.MeasureTheory.Integral.Bochner.Basic
-public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
-public import Mathlib.Analysis.Complex.Basic
-public import Mathlib.Analysis.Calculus.Deriv.Basic
-public import Mathlib.Analysis.SpecialFunctions.Complex.Log
-public import Mathlib.Topology.Algebra.InfiniteSum.Ring
+public import Mathlib.MeasureTheory.Measure.Haar.OfBasis
+public import Mathlib.Analysis.Calculus.FDeriv.Defs
 
 /-!
 # Analytic Hardy classes and canonical disk factors

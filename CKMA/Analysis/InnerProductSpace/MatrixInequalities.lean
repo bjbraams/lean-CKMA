@@ -5,14 +5,10 @@ Authors: CKMA contributors
 -/
 module
 
-public import TauCeti.Analysis.InnerProductSpace.CourantFischer
-public import TauCeti.Analysis.InnerProductSpace.NormalOperator
-public import TauCeti.Analysis.InnerProductSpace.FanDominance
-public import Mathlib.LinearAlgebra.Trace
-import Mathlib.LinearAlgebra.Dimension.Finite
-import Mathlib.Algebra.Module.Submodule.Lattice
+public import TauCeti.Analysis.InnerProductSpace.UnitarilyInvariantSeminorm.Basic
+
+import TauCeti.Analysis.InnerProductSpace.FanDominance
 import Mathlib.Analysis.Convex.Birkhoff
-import TauCeti.Analysis.OperatorIdeal.ApproximationNumber.Basic
 import TauCeti.Analysis.OperatorIdeal.ApproximationNumber.EckartYoung
 
 /-!

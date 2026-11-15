@@ -6,7 +6,8 @@ Authors: CKMA contributors
 module
 
 public import Mathlib.Probability.Independence.Basic
-public import Mathlib.Probability.Moments.Basic
+public import Mathlib.MeasureTheory.Integral.Bochner.Basic
+
 import TauCeti.Probability.Moments.Bernstein
 
 /-!

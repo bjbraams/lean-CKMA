@@ -6,8 +6,7 @@ Authors: CKMA contributors
 module
 
 public import CKMA.Analysis.PDE.Euclidean
-public import Mathlib.Topology.ContinuousMap.Compact
-public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
+public import TauCeti.Analysis.Sobolev.W1p.Basic
 
 /-!
 # Finite-energy waves and finite propagation

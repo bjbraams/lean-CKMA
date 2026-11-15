@@ -5,10 +5,7 @@ Authors: CKMA contributors
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
-public import Mathlib.Algebra.Field.GeomSum
 public import Mathlib.Analysis.SpecialFunctions.Pow.Real
-public import Mathlib.Data.Nat.PadicValNat
 
 /-!
 # Dyadic chaining on the unit interval

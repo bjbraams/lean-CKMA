@@ -5,15 +5,11 @@ Authors: CKMA contributors
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-public import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
-public import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
-public import Mathlib.Algebra.Order.Floor.Ring
-public import Mathlib.Combinatorics.Additive.Corner.Roth
-public import Mathlib.Order.Filter.IsBounded
+public import Mathlib.Basic.Real.Basic
 public import Mathlib.Order.Interval.Finset.Nat
 
 import Mathlib.Tactic
+import Mathlib.Combinatorics.Additive.Corner.Roth
 
 /-!
 # Varnavides window counting for arithmetic progressions
@@ -546,6 +542,125 @@ private lemma card_good_le_mul_progressionCount {M N : ℕ} {S : Finset ℕ} {go
     simpa [progressionCount] using card_le_card himage
   exact hmul.trans (Nat.mul_le_mul_left _ hcount)
 
+/-- Removing the two boundary strips of width `bnd ≤ (δ / 4) * N` from a set of density `δ`
+leaves a middle part of density at least `δ / 2`. -/
+private lemma card_middle_ge {N bnd : ℕ} {δ : ℝ} {S : Finset ℕ} (hS : S ⊆ range N)
+    (hbndN : bnd ≤ N) (hbnd : (bnd : ℝ) ≤ δ / 4 * N) (hdense : δ * (N : ℝ) ≤ (S.card : ℝ)) :
+    (δ / 2) * N ≤ ((S.filter fun y => bnd ≤ y ∧ y + bnd < N).card : ℝ) := by
+  have hsum : (S.card : ℝ) = ((S.filter fun y => bnd ≤ y ∧ y + bnd < N).card : ℝ) +
+      ((S.filter fun y => ¬ (bnd ≤ y ∧ y + bnd < N)).card : ℝ) := by
+    exact_mod_cast (card_filter_add_card_filter_not (s := S)
+      (fun y => bnd ≤ y ∧ y + bnd < N)).symm
+  have hout : ((S.filter fun y => ¬ (bnd ≤ y ∧ y + bnd < N)).card : ℝ) ≤ 2 * (bnd : ℝ) := by
+    exact_mod_cast outside_card_le S hS hbndN
+  linarith
+
+/-- Double counting: if the middle part of `S` has density `δ / 2`, then the total number of
+hits over all windows is at least `(δ / 2) * M` times the number of windows. -/
+private lemma mul_card_windowParams_le_sum_windowHits {S : Finset ℕ} {M N bnd R : ℕ} {δ : ℝ}
+    (hδ : 0 < δ) (hR : R = bnd / M) (hS : S ⊆ range N)
+    (hmid : (δ / 2) * N ≤ ((S.filter fun y => bnd ≤ y ∧ y + bnd < N).card : ℝ)) :
+    (δ / 2) * (M : ℝ) * (windowParams M N R).card ≤
+      ∑ p ∈ windowParams M N R, ((windowHits S M p).card : ℝ) := by
+  have hmidS : (S.filter fun y => bnd ≤ y ∧ y + bnd < N) ⊆ S := filter_subset _ _
+  have hinc := incidence_ge hR _ hmidS (hmidS.trans hS) fun y hy => (mem_filter.mp hy).2
+  rw [Nat.card_Icc, Nat.add_sub_cancel] at hinc
+  have hH := (Nat.cast_le (α := ℝ)).mpr hinc
+  push_cast at hH
+  have hPR := (Nat.cast_le (α := ℝ)).mpr (card_windowParams_le M N R)
+  push_cast at hPR
+  calc (δ / 2) * (M : ℝ) * (windowParams M N R).card ≤ (δ / 2) * M * (R * N) :=
+        mul_le_mul_of_nonneg_left hPR (by positivity)
+    _ = (δ / 2) * N * (M * R) := by ring
+    _ ≤ (S.filter fun y => bnd ≤ y ∧ y + bnd < N).card * (M * R) :=
+        mul_le_mul_of_nonneg_right hmid (by positivity)
+    _ = (S.filter fun y => bnd ≤ y ∧ y + bnd < N).card * M * R := by ring
+    _ ≤ _ := hH
+
+/-- Splitting a sum of values `f p ≤ M` at a threshold `t`: terms with `t ≤ f p` contribute
+at most `M` each, the others at most `t - 1` each. -/
+private lemma sum_le_card_filter_mul_add {ι : Type*} (W : Finset ι) (f : ι → ℕ) {M t : ℕ}
+    (hf : ∀ p ∈ W, f p ≤ M) :
+    ∑ p ∈ W, (f p : ℝ) ≤ ((W.filter fun p => t ≤ f p).card : ℝ) * M +
+      (W.card - ((W.filter fun p => t ≤ f p).card : ℝ)) * ((t : ℝ) - 1) := by
+  have hcard : ((W.filter fun p => t ≤ f p).card : ℝ) +
+      ((W.filter fun p => ¬ t ≤ f p).card : ℝ) = W.card := by
+    exact_mod_cast card_filter_add_card_filter_not (s := W) (fun p => t ≤ f p)
+  have hgood : ∑ p ∈ W.filter (fun p => t ≤ f p), (f p : ℝ) ≤
+      ((W.filter fun p => t ≤ f p).card : ℝ) * M := by
+    calc ∑ p ∈ W.filter (fun p => t ≤ f p), (f p : ℝ)
+        ≤ ∑ p ∈ W.filter (fun p => t ≤ f p), (M : ℝ) :=
+          sum_le_sum fun p hp => by exact_mod_cast hf p (mem_filter.mp hp).1
+      _ = _ := by rw [sum_const, nsmul_eq_mul]
+  have hbad : ∑ p ∈ W.filter (fun p => ¬ t ≤ f p), (f p : ℝ) ≤
+      ((W.filter fun p => ¬ t ≤ f p).card : ℝ) * ((t : ℝ) - 1) := by
+    calc ∑ p ∈ W.filter (fun p => ¬ t ≤ f p), (f p : ℝ)
+        ≤ ∑ p ∈ W.filter (fun p => ¬ t ≤ f p), ((t : ℝ) - 1) :=
+          sum_le_sum fun p hp => by
+            have hlt : f p + 1 ≤ t := Nat.lt_of_not_ge (mem_filter.mp hp).2
+            have hlt' : (f p : ℝ) + 1 ≤ t := by exact_mod_cast hlt
+            linarith
+      _ = _ := by rw [sum_const, nsmul_eq_mul]
+  rw [← sum_filter_add_sum_filter_not W (fun p => t ≤ f p)]
+  have hsub : (W.card : ℝ) - ((W.filter fun p => t ≤ f p).card : ℝ) =
+      ((W.filter fun p => ¬ t ≤ f p).card : ℝ) := by linarith
+  rw [hsub]
+  linarith
+
+/-- With `bnd = ⌊η * N⌋₊`, steps up to `bnd / M`, `4 * M ≤ η * N` and `η ≤ 1 / 4`, there are
+at least `η * N ^ 2 / (8 * M)` windows. -/
+private lemma div_le_card_windowParams {M N : ℕ} {η : ℝ} (hM : 1 ≤ M) (hη : 0 < η)
+    (hηle : η ≤ 1 / 4) (hscale : 4 * (M : ℝ) ≤ η * N) :
+    η * (N : ℝ) ^ 2 / (8 * (M : ℝ)) ≤ (windowParams M N (⌊η * N⌋₊ / M)).card := by
+  set bnd : ℕ := ⌊η * N⌋₊
+  set R : ℕ := bnd / M with hRdef
+  have hMpos : (0 : ℝ) < M := by exact_mod_cast hM
+  have hM1 : (1 : ℝ) ≤ M := by exact_mod_cast hM
+  have hN0 : (0 : ℝ) ≤ N := Nat.cast_nonneg N
+  have hbndR : (bnd : ℝ) ≤ η * N := Nat.floor_le (by positivity)
+  have hbndN : bnd ≤ N := by
+    have : (bnd : ℝ) ≤ N := hbndR.trans (by nlinarith)
+    exact_mod_cast this
+  have hfloor : η * N - 1 < (bnd : ℝ) := by
+    have := Nat.lt_floor_add_one (η * N)
+    linarith
+  have hbndhalf : η * (N : ℝ) / 2 ≤ (bnd : ℝ) := by linarith
+  have hRreal : (bnd : ℝ) / (2 * M) ≤ R := by
+    have hlt : bnd < M * (R + 1) := Nat.lt_mul_div_succ bnd (by omega)
+    have hcast : (bnd : ℝ) < M * ((R : ℝ) + 1) := by exact_mod_cast hlt
+    rw [div_le_iff₀ (by positivity)]
+    linarith
+  have hPge := (Nat.cast_le (α := ℝ)).mpr
+    (card_windowParams_ge (N := N) fun s hs => step_mul_le (M := M) hRdef hs)
+  rw [Nat.cast_mul] at hPge
+  have hNsub : (N : ℝ) / 2 ≤ ((N - bnd : ℕ) : ℝ) := by
+    rw [Nat.cast_sub hbndN]
+    nlinarith
+  have hRlow : η * (N : ℝ) / (4 * M) ≤ R := by
+    calc η * (N : ℝ) / (4 * M) = (η * N / 2) / (2 * M) := by ring
+      _ ≤ bnd / (2 * M) := div_le_div_of_nonneg_right hbndhalf (by positivity)
+      _ ≤ R := hRreal
+  calc η * (N : ℝ) ^ 2 / (8 * M) = (η * N / (4 * M)) * (N / 2) := by ring
+    _ ≤ R * ((N - bnd : ℕ) : ℝ) := mul_le_mul hRlow hNsub (by positivity) (by positivity)
+    _ ≤ _ := hPge
+
+/-- Each rich window carries a 3-term progression of `S`, so the number of rich windows
+divided by `M * M` is at most the progression count. -/
+private lemma card_filter_div_le_progressionCount {S : Finset ℕ} {M N R : ℕ} {δ : ℝ}
+    (hroth : (rothNumberNat M : ℝ) ≤ (δ / 8) * (M : ℝ)) (hM : 1 ≤ M) :
+    (((windowParams M N R).filter fun p =>
+        ⌈(δ / 4) * (M : ℝ)⌉₊ ≤ (windowHits S M p).card).card : ℝ) / (M * M) ≤
+      progressionCount 3 N S := by
+  have hnat := card_good_le_mul_progressionCount (N := N)
+    (good := (windowParams M N R).filter fun p => ⌈(δ / 4) * (M : ℝ)⌉₊ ≤ (windowHits S M p).card)
+    fun p hp => exists_indexAP_of_window (S := S) (N := N) (R := R) hroth hM
+      (mem_filter.mp hp).1 (mem_filter.mp hp).2
+  have hcast := (Nat.cast_le (α := ℝ)).mpr hnat
+  push_cast at hcast
+  have hMpos : (0 : ℝ) < M := by exact_mod_cast hM
+  rw [div_le_iff₀ (mul_pos hMpos hMpos)]
+  linarith
+
 /-- Positive-density subsets of long intervals contain quadratically many 3-term progressions. -/
 private lemma numerous_progression_three {δ : ℝ} (hδ : 0 < δ) :
     ∃ c : ℝ, 0 < c ∧ ∃ N0 : ℕ, ∀ N, N0 ≤ N → ∀ S : Finset ℕ,
@@ -559,260 +674,53 @@ private lemma numerous_progression_three {δ : ℝ} (hδ : 0 < δ) :
     have hNpos : (0 : ℝ) < N := by exact_mod_cast Nat.succ_le_iff.mp hN
     have hlt : (N : ℝ) < δ * N := by nlinarith
     exact absurd (hdense.trans hcard) hlt.not_ge
-  · have hδle : δ ≤ 1 := le_of_not_gt hδ1
-    obtain ⟨M, hM, hroth⟩ := exists_roth_scale (show 0 < δ / 8 by positivity)
-    have hMpos : (0 : ℝ) < M := by exact_mod_cast Nat.succ_le_iff.mp hM
-    let η : ℝ := δ / 4
-    have hη : 0 < η := by positivity
-    let cap : ℝ := (Nat.ceil ((δ / 4) * (M : ℝ)) : ℝ) - 1
-    have hcap : cap < (δ / 4) * (M : ℝ) := by
-      have hnonneg : 0 ≤ (δ / 4) * (M : ℝ) := by positivity
-      linarith [Nat.ceil_lt_add_one hnonneg]
-    let c0 : ℝ := ((δ / 2) * (M : ℝ) - cap) / ((M : ℝ) - cap)
-    let c : ℝ := c0 * η / (8 * (M : ℝ) ^ 3)
-    have hc0 : 0 < c0 := by
-      have hden : 0 < (M : ℝ) - cap := by
-        have hfrac : (δ / 4) * (M : ℝ) ≤ (M : ℝ) / 4 := by nlinarith
-        linarith
-      have hnum : 0 < (δ / 2) * (M : ℝ) - cap := by linarith
-      exact div_pos hnum hden
-    have hc : 0 < c := by positivity
-    let N0 : ℕ := Nat.ceil ((4 * (M : ℝ)) / η)
-    refine ⟨c, hc, N0, ?_⟩
-    intro N hN S hS hdense
-    have hNpos : (0 : ℝ) < N := by
-      have hN0 : 0 < N0 := by
-        have : (0 : ℝ) < (4 * (M : ℝ)) / η := by positivity
-        exact Nat.ceil_pos.mpr this
-      exact_mod_cast lt_of_lt_of_le hN0 hN
-    have hscale : 4 * (M : ℝ) ≤ η * N := by
-      have hceil : (4 * (M : ℝ)) / η ≤ (N0 : ℝ) := Nat.le_ceil _
-      have hcast : (N0 : ℝ) ≤ N := by exact_mod_cast hN
-      have hmul : 4 * (M : ℝ) ≤ (N : ℝ) * η := (div_le_iff₀ hη).mp (hceil.trans hcast)
-      rw [mul_comm (N : ℝ) η] at hmul
-      exact hmul
-    let bnd : ℕ := Nat.floor (η * N)
-    let R : ℕ := bnd / M
-    have hbndR : (bnd : ℝ) ≤ η * N := Nat.floor_le (by positivity)
-    have hηle : η ≤ 1 / 4 := by
-      dsimp [η]
-      nlinarith [hδle]
-    have hbndN : bnd ≤ N := by
-      have : (bnd : ℝ) ≤ N := hbndR.trans (by nlinarith [hηle])
-      exact_mod_cast this
-    have hRdef : R = bnd / M := rfl
-    have hstep : ∀ s, s ≤ R → (M - 1) * s ≤ bnd := fun s hs => step_mul_le hRdef hs
-    let middle := S.filter fun y => bnd ≤ y ∧ y + bnd < N
-    have hmidS : middle ⊆ S := filter_subset _ _
-    have hmidN : middle ⊆ range N := hmidS.trans hS
-    have hmidmem : ∀ y ∈ middle, bnd ≤ y ∧ y + bnd < N := by
-      intro y hy
-      exact (mem_filter.mp hy).2
-    have hsplit := card_filter_add_card_filter_not (s := S)
-      (fun y => bnd ≤ y ∧ y + bnd < N)
-    have hout := outside_card_le S hS hbndN
-    have hmidreal : (δ / 2) * N ≤ (middle.card : ℝ) := by
-      have hsum : (S.card : ℝ) = (middle.card : ℝ) +
-          ((S.filter fun y => ¬ (bnd ≤ y ∧ y + bnd < N)).card : ℝ) := by
-        exact_mod_cast hsplit.symm
-      have houtR : ((S.filter fun y => ¬ (bnd ≤ y ∧ y + bnd < N)).card : ℝ) ≤
-          2 * (bnd : ℝ) := by exact_mod_cast hout
-      dsimp [η] at hbndR
-      nlinarith [hdense, hbndR]
-    have hinc := incidence_ge (S := S) hRdef middle hmidS hmidN hmidmem
-    have hIcc : #(Icc 1 R) = R := by rw [Nat.card_Icc, Nat.add_sub_cancel]
-    have hinc' : middle.card * M * R ≤
-        ∑ p ∈ windowParams M N R, (windowHits S M p).card := by
-      rwa [hIcc] at hinc
-    let H : ℝ := ∑ p ∈ windowParams M N R, ((windowHits S M p).card : ℝ)
-    have hH : (middle.card : ℝ) * (M : ℝ) * (R : ℝ) ≤ H := by
-      have hcast := (Nat.cast_le (α := ℝ)).mpr hinc'
-      have hleft : ↑(middle.card * M * R) =
-          (middle.card : ℝ) * (M : ℝ) * (R : ℝ) := by simp only [Nat.cast_mul]
-      have hright : ↑(∑ p ∈ windowParams M N R, (windowHits S M p).card) = H := by
-        rw [Nat.cast_sum]
-      rw [hleft, hright] at hcast
-      exact hcast
-    have hHδ : (δ / 2) * (N : ℝ) * (M : ℝ) * (R : ℝ) ≤ H := by
-      have hnonneg : (0 : ℝ) ≤ (M : ℝ) * (R : ℝ) := by positivity
-      have hmul : (δ / 2) * (N : ℝ) * ((M : ℝ) * (R : ℝ)) ≤
-          (middle.card : ℝ) * ((M : ℝ) * (R : ℝ)) :=
-        mul_le_mul_of_nonneg_right hmidreal hnonneg
-      have hre1 : (δ / 2) * (N : ℝ) * ((M : ℝ) * (R : ℝ)) =
-          (δ / 2) * (N : ℝ) * (M : ℝ) * (R : ℝ) := by ring
-      have hre2 : (middle.card : ℝ) * ((M : ℝ) * (R : ℝ)) =
-          (middle.card : ℝ) * (M : ℝ) * (R : ℝ) := by ring
-      rw [hre1, hre2] at hmul
-      exact hmul.trans hH
-    have hPle : (windowParams M N R).card ≤ R * N := card_windowParams_le M N R
-    let P : ℝ := (windowParams M N R).card
-    have hPR : P ≤ (R : ℝ) * (N : ℝ) := by
-      have hcast : ((windowParams M N R).card : ℝ) ≤ ((R * N : ℕ) : ℝ) :=
-        Nat.cast_le.mpr hPle
-      rwa [Nat.cast_mul] at hcast
-    have hPδ : (δ / 2) * (M : ℝ) * P ≤ H := by
-      calc
-        (δ / 2) * (M : ℝ) * P ≤ (δ / 2) * (M : ℝ) * ((R : ℝ) * (N : ℝ)) :=
-          mul_le_mul_of_nonneg_left hPR (by positivity)
-        _ = (δ / 2) * (N : ℝ) * (M : ℝ) * (R : ℝ) := by ring
-        _ ≤ H := hHδ
-    let threshold : ℕ := Nat.ceil ((δ / 4) * (M : ℝ))
-    have hthreshold : 1 ≤ threshold := by
-      have : 0 < (δ / 4) * (M : ℝ) := by positivity
-      exact Nat.one_le_of_lt (Nat.ceil_pos.mpr this)
-    let good := (windowParams M N R).filter fun p =>
-      threshold ≤ (windowHits S M p).card
-    let bad := (windowParams M N R).filter fun p =>
-      ¬ threshold ≤ (windowHits S M p).card
-    have hdisj : Disjoint good bad := disjoint_filter_filter_not _ _ _
-    have hunion : good ∪ bad = windowParams M N R :=
-      filter_union_filter_not_eq
-        (p := fun q => threshold ≤ (windowHits S M q).card) (windowParams M N R)
-    have hsumH : H = ∑ p ∈ good, ((windowHits S M p).card : ℝ) +
-        ∑ p ∈ bad, ((windowHits S M p).card : ℝ) := by
-      rw [← Finset.sum_union hdisj, hunion]
-    have hgoodle : ∑ p ∈ good, ((windowHits S M p).card : ℝ) ≤ (good.card : ℝ) * M := by
-      calc
-        ∑ p ∈ good, ((windowHits S M p).card : ℝ) ≤ ∑ p ∈ good, (M : ℝ) := by
-          refine sum_le_sum fun p hp => ?_
-          have hsub : windowHits S M p ⊆ range M := windowHits_subset S M p
-          exact_mod_cast card_le_card hsub |>.trans_eq (card_range M)
-        _ = (good.card : ℝ) * M := by rw [sum_const, nsmul_eq_mul]
-    have hbadle : ∑ p ∈ bad, ((windowHits S M p).card : ℝ) ≤ (bad.card : ℝ) * cap := by
-      calc
-        ∑ p ∈ bad, ((windowHits S M p).card : ℝ) ≤ ∑ p ∈ bad, cap := by
-          refine sum_le_sum fun p hp => ?_
-          have hlt : (windowHits S M p).card ≤ threshold - 1 := by
-            have hnot : (windowHits S M p).card < threshold :=
-              Nat.lt_of_not_ge (mem_filter.mp hp).2
-            omega
-          have hcap' : ((threshold - 1 : ℕ) : ℝ) = cap := by
-            rw [Nat.cast_sub hthreshold, Nat.cast_one]
-          have hreal : ((windowHits S M p).card : ℝ) ≤ ((threshold - 1 : ℕ) : ℝ) :=
-            Nat.cast_le.mpr hlt
-          exact hreal.trans_eq hcap'
-        _ = (bad.card : ℝ) * cap := by
-          rw [sum_const]
-          simp [nsmul_eq_mul]
-    have hbadcard : (bad.card : ℝ) = P - (good.card : ℝ) := by
-      have hadd : good.card + bad.card = (windowParams M N R).card := by
-        rw [← card_union_of_disjoint hdisj, hunion]
-      have hnat : bad.card = (windowParams M N R).card - good.card :=
-        Nat.eq_sub_of_add_eq' hadd
-      have hgle : good.card ≤ (windowParams M N R).card := by
-        rw [← hadd]
-        exact Nat.le_add_right _ _
-      have hcast := congrArg (Nat.cast : ℕ → ℝ) hnat
-      rwa [Nat.cast_sub hgle] at hcast
-    let G : ℝ := good.card
-    have hbound : H ≤ G * (M : ℝ) + (P - G) * cap := by
-      rw [hsumH]
-      calc
-        ∑ p ∈ good, ((windowHits S M p).card : ℝ) +
-            ∑ p ∈ bad, ((windowHits S M p).card : ℝ) ≤
-            (good.card : ℝ) * (M : ℝ) + (bad.card : ℝ) * cap :=
-          add_le_add hgoodle hbadle
-        _ = G * (M : ℝ) + (P - G) * cap := by rw [hbadcard]
-    have hratio := good_ratio hMpos hδle hcap hPδ hbound
-    have hfloor : η * N - 1 < (bnd : ℝ) := by
-      have := Nat.lt_floor_add_one (η * N)
-      linarith
-    have hbndhalf : η * (N : ℝ) / 2 ≤ (bnd : ℝ) := by
-      have hM1 : (1 : ℝ) ≤ M := by exact_mod_cast hM
-      have h4 : (4 : ℝ) ≤ η * (N : ℝ) := by
-        have hmul : (4 : ℝ) * 1 ≤ 4 * (M : ℝ) :=
-          mul_le_mul_of_nonneg_left hM1 (by norm_num)
-        linarith [hscale]
-      have htwo : (2 : ℝ) ≤ η * (N : ℝ) := by linarith
-      have hlow : η * (N : ℝ) / 2 ≤ η * (N : ℝ) - 1 := by
-        rw [div_le_iff₀ (by norm_num : (0 : ℝ) < 2)]
-        linarith
-      exact hlow.trans (le_of_lt hfloor)
-    have hx : (2 : ℝ) ≤ (bnd : ℝ) / M := by
-      rw [le_div_iff₀ hMpos]
-      nlinarith [hbndhalf, hscale, hMpos]
-    have hRreal : (bnd : ℝ) / (2 * M) ≤ R := by
-      have hM0 : 0 < M := Nat.succ_le_iff.mp hM
-      have hlt : bnd < M * (R + 1) := by simpa [hRdef] using Nat.lt_mul_div_succ bnd hM0
-      have hcast : (bnd : ℝ) < (M : ℝ) * ((R : ℝ) + 1) := by exact_mod_cast hlt
-      have hsub : (bnd : ℝ) / M - 1 < R := by
-        have hdiv : (bnd : ℝ) / M < (R : ℝ) + 1 := by rwa [div_lt_iff₀ hMpos, mul_comm]
-        linarith
-      have hhalf : (bnd : ℝ) / (2 * M) ≤ (bnd : ℝ) / M - 1 := by
-        have heq : (bnd : ℝ) / (2 * M) = (bnd : ℝ) / M / 2 := by
-          rw [show (2 : ℝ) * M = M * 2 by ring, ← div_div]
-        rw [heq]
-        linarith [hx]
-      exact le_of_lt (lt_of_le_of_lt hhalf hsub)
-    have hPge : R * (N - bnd) ≤ (windowParams M N R).card :=
-      card_windowParams_ge hstep
-    have hNsub : (N : ℝ) / 2 ≤ ↑(N - bnd) := by
-      rw [Nat.cast_sub hbndN, le_sub_iff_add_le]
-      have hbnd4 : (bnd : ℝ) ≤ (N : ℝ) / 4 := by
-        have hηN : η * (N : ℝ) ≤ (1 / 4) * (N : ℝ) :=
-          mul_le_mul_of_nonneg_right hηle (by positivity)
-        linarith [hbndR]
-      have hsum : (N : ℝ) / 2 + (N : ℝ) / 4 ≤ N := by
-        have hre : (N : ℝ) / 2 + (N : ℝ) / 4 = (3 / 4) * N := by ring
-        have h34 : (3 / 4 : ℝ) ≤ 1 := by norm_num
-        have hmul : (3 / 4) * (N : ℝ) ≤ 1 * (N : ℝ) :=
-          mul_le_mul_of_nonneg_right h34 (by positivity)
-        linarith
-      linarith
-    have hRcast : (R : ℝ) * ↑(N - bnd) ≤ P := by
-      have hle : ((R * (N - bnd) : ℕ) : ℝ) ≤ P := Nat.cast_le.mpr hPge
-      simpa [Nat.cast_mul] using hle
-    have hRlow : η * (N : ℝ) / (4 * (M : ℝ)) ≤ (R : ℝ) := by
-      have hre : η * (N : ℝ) / (4 * (M : ℝ)) =
-          (η * (N : ℝ) / 2) / (2 * (M : ℝ)) := by ring
-      have hdiv : (η * (N : ℝ) / 2) / (2 * (M : ℝ)) ≤
-          (bnd : ℝ) / (2 * (M : ℝ)) :=
-        div_le_div_of_nonneg_right hbndhalf (by positivity)
-      rw [hre]
-      exact hdiv.trans hRreal
-    have hPquad : η * (N : ℝ) ^ 2 / (8 * (M : ℝ)) ≤ P := by
-      have hre : η * (N : ℝ) ^ 2 / (8 * (M : ℝ)) =
-          (η * (N : ℝ) / (4 * (M : ℝ))) * ((N : ℝ) / 2) := by ring
-      have hmul : (η * (N : ℝ) / (4 * (M : ℝ))) * ((N : ℝ) / 2) ≤
-          (R : ℝ) * ↑(N - bnd) :=
-        mul_le_mul hRlow hNsub (by positivity) (by positivity)
-      rw [← hre] at hmul
-      exact hmul.trans hRcast
-    have hG : c0 * η * (N : ℝ) ^ 2 / (8 * (M : ℝ)) ≤ G := by
-      have hratio' : c0 * P ≤ G := hratio
-      have hmul : c0 * (η * (N : ℝ) ^ 2 / (8 * (M : ℝ))) ≤ c0 * P :=
-        mul_le_mul_of_nonneg_left hPquad hc0.le
-      have hre : c0 * (η * (N : ℝ) ^ 2 / (8 * (M : ℝ))) =
-          c0 * η * (N : ℝ) ^ 2 / (8 * (M : ℝ)) := by ring
-      rw [hre] at hmul
-      exact hmul.trans hratio'
-    have hprog : ∀ p ∈ good, ∃ w : IndexAP M, 0 < p.2 ∧ 0 < w.u * p.2 ∧
-        p.1 + w.i * p.2 + 2 * (w.u * p.2) < N ∧ p.1 + w.i * p.2 ∈ S ∧
-        p.1 + w.i * p.2 + w.u * p.2 ∈ S ∧
-        p.1 + w.i * p.2 + 2 * (w.u * p.2) ∈ S := by
-      intro p hp
-      exact exists_indexAP_of_window hroth hM (mem_filter.mp hp).1 (mem_filter.mp hp).2
-    have hGcount : G ≤ (M * M : ℝ) * (progressionCount 3 N S : ℝ) := by
-      have hnat : good.card ≤ M * M * progressionCount 3 N S :=
-        card_good_le_mul_progressionCount hprog
-      have hcast := (Nat.cast_le (α := ℝ)).mpr hnat
-      have hsplit : ((M * M * progressionCount 3 N S : ℕ) : ℝ) =
-          (M : ℝ) * (M : ℝ) * (progressionCount 3 N S : ℝ) := by
-        simp only [Nat.cast_mul]
-      rw [hsplit] at hcast
-      exact hcast
-    have hdiv : G / (M * M : ℝ) ≤ progressionCount 3 N S := by
-      rw [div_le_iff₀ (by positivity : (0 : ℝ) < M * M)]
-      simpa [mul_comm] using hGcount
-    have hfinal : c * N ^ 2 ≤ G / (M * M : ℝ) := by
-      have hMpow : (M : ℝ) ^ 3 = M * (M * M) := by ring
-      calc
-        c * N ^ 2 = c0 * η / (8 * (M : ℝ) ^ 3) * N ^ 2 := rfl
-        _ = c0 * η * N ^ 2 / (8 * M) / (M * M) := by rw [hMpow]; ring
-        _ ≤ G / (M * M) := by
-          rw [div_le_div_iff_of_pos_right (by positivity)]
-          exact hG
-    exact hfinal.trans hdiv
+  have hδle : δ ≤ 1 := le_of_not_gt hδ1
+  -- Choose the window length `M` from Roth's theorem and the constants of the count.
+  obtain ⟨M, hM, hroth⟩ := exists_roth_scale (show 0 < δ / 8 by positivity)
+  have hMpos : (0 : ℝ) < M := by exact_mod_cast Nat.succ_le_iff.mp hM
+  let η : ℝ := δ / 4
+  have hη : 0 < η := by positivity
+  have hηle : η ≤ 1 / 4 := by dsimp only [η]; linarith
+  let cap : ℝ := (Nat.ceil ((δ / 4) * (M : ℝ)) : ℝ) - 1
+  have hcap : cap < (δ / 4) * (M : ℝ) := by
+    have hnonneg : 0 ≤ (δ / 4) * (M : ℝ) := by positivity
+    linarith [Nat.ceil_lt_add_one hnonneg]
+  let c0 : ℝ := ((δ / 2) * (M : ℝ) - cap) / ((M : ℝ) - cap)
+  let c : ℝ := c0 * η / (8 * (M : ℝ) ^ 3)
+  have hc0 : 0 < c0 := by
+    have hfrac : (δ / 4) * (M : ℝ) ≤ (M : ℝ) / 4 := by nlinarith
+    exact div_pos (by linarith) (by linarith)
+  have hc : 0 < c := by positivity
+  let N0 : ℕ := Nat.ceil ((4 * (M : ℝ)) / η)
+  refine ⟨c, hc, N0, fun N hN S hS hdense => ?_⟩
+  have hscale : 4 * (M : ℝ) ≤ η * N := by
+    have hcast : (N0 : ℝ) ≤ N := by exact_mod_cast hN
+    have hceil : (4 * (M : ℝ)) / η ≤ N := (Nat.le_ceil _).trans hcast
+    rw [div_le_iff₀ hη] at hceil
+    linarith
+  -- Windows of length `M` and step at most `R` in the middle of `{0, …, N - 1}`.
+  let bnd : ℕ := ⌊η * N⌋₊
+  let R : ℕ := bnd / M
+  have hbndR : (bnd : ℝ) ≤ η * N := Nat.floor_le (by positivity)
+  have hbndN : bnd ≤ N := by
+    have : (bnd : ℝ) ≤ N := hbndR.trans (by nlinarith [Nat.cast_nonneg (α := ℝ) N])
+    exact_mod_cast this
+  have hmid := card_middle_ge hS hbndN hbndR hdense
+  have hPδ := mul_card_windowParams_le_sum_windowHits (R := R) hδ rfl hS hmid
+  -- Many windows are rich, i.e. carry at least `⌈(δ / 4) * M⌉₊` hits.
+  have hbound := sum_le_card_filter_mul_add (windowParams M N R)
+    (fun p => (windowHits S M p).card) (t := ⌈(δ / 4) * (M : ℝ)⌉₊)
+    fun p _ => card_le_card (windowHits_subset S M p) |>.trans_eq (card_range M)
+  have hratio := good_ratio hMpos hδle hcap hPδ hbound
+  have hG := (mul_le_mul_of_nonneg_left (div_le_card_windowParams hM hη hηle hscale)
+    hc0.le).trans hratio
+  -- Each rich window yields a 3-term progression of `S`.
+  have hdiv := card_filter_div_le_progressionCount (N := N) (R := R) (S := S) hroth hM
+  have hMpow : (M : ℝ) ^ 3 = M * (M * M) := by ring
+  calc c * N ^ 2 = c0 * (η * (N : ℝ) ^ 2 / (8 * (M : ℝ))) / (M * M) := by
+        dsimp only [c]; rw [hMpow]; ring
+    _ ≤ _ := div_le_div_of_nonneg_right hG (by positivity)
+    _ ≤ _ := hdiv
 
 /-- Every positive-density subset of a long interval contains quadratically many
 nontrivial arithmetic progressions of length `L ≥ 4`. -/

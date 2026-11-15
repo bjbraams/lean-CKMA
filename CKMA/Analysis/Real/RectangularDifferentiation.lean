@@ -8,6 +8,9 @@ module
 public import CKMA.Analysis.Real.RectangularDifferentiation.CounterexampleSum
 public import CKMA.Analysis.Real.RectangularDifferentiation.Differentiate
 
+import CKMA.Analysis.Real.RectangularDifferentiation.Approximate
+import CKMA.Analysis.Real.RectangularDifferentiation.Step
+
 /-!
 # Strong maximal averages and rectangular differentiation
 

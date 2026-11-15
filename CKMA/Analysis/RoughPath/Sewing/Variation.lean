@@ -5,24 +5,9 @@ Authors: CKMA contributors
 -/
 module
 
-public import CKMA.Analysis.RoughPath.Sewing.Construction
-public import Mathlib.Basic.ENNReal.Real
-public import Mathlib.Basic.ENNReal.Operations
-public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
-public import Mathlib.Topology.UniformSpace.HeineCantor
-public import Mathlib.Analysis.MeanInequalities
-public import Mathlib.Topology.Order.IntermediateValue
-public import Mathlib.Analysis.PSeries
-import Mathlib.Tactic.Linarith
-import Mathlib.Tactic.Ring
-import Mathlib.Tactic.FieldSimp
-import Mathlib.Tactic.Positivity
-import Mathlib.Tactic.GCongr
-import Mathlib.Topology.Algebra.InfiniteSum.Real
-import Mathlib.Topology.Order.Compact
-import Mathlib.Algebra.Order.Archimedean.Basic
-import Mathlib.Algebra.Order.Archimedean.Real.Basic
-import Mathlib.Analysis.Convex.SpecificFunctions.Basic
+public import CKMA.Analysis.RoughPath.Sewing.Dyadic
+import Mathlib.Analysis.MeanInequalities
+import Mathlib.Analysis.PSeries
 
 /-!
 # Young–Loeve estimate for finite variation

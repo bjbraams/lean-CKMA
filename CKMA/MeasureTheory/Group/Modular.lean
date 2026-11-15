@@ -5,7 +5,9 @@ Authors: CKMA contributors
 -/
 module
 
-public import TauCeti.MeasureTheory.Group.ModularCharacter
+public import Mathlib.MeasureTheory.Group.ModularCharacter
+
+import TauCeti.MeasureTheory.Group.ModularCharacter
 
 /-!
 # Modular continuity and Haar inversion (28.2)

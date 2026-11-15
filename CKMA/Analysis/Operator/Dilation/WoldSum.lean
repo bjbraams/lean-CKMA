@@ -7,7 +7,6 @@ module
 
 public import CKMA.Analysis.Operator.Dilation.WoldUnitary
 public import Mathlib.Analysis.InnerProductSpace.l2Space
-public import Mathlib.Topology.Algebra.InfiniteSum.Basic
 
 /-!
 # Wold's decomposition as a Hilbert sum

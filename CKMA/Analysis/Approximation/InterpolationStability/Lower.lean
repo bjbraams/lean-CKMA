@@ -5,7 +5,11 @@ Authors: CKMA contributors
 -/
 module
 
-public import CKMA.Analysis.Approximation.InterpolationStability.Estimates
+public import CKMA.Analysis.Approximation.InterpolationStability.Basic
+
+import CKMA.Analysis.Approximation.InterpolationStability.Estimates
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Arctan
+import Mathlib.Algebra.Order.Ring.Star
 
 /-!
 # Midpoint lower bound for Chebyshev Lebesgue constants
@@ -28,7 +32,7 @@ noncomputable section
 
 namespace CKMA
 
-open Polynomial Real Polynomial.Chebyshev Finset Classical Lagrange
+open Polynomial Real Polynomial.Chebyshev Finset Lagrange
 open scoped BigOperators
 
 /-- Half-integer reciprocals dominate `log(2q + 3)`. -/
@@ -41,6 +45,57 @@ private lemma sum_half_ge_log (q : ℕ) :
   rw [← Finset.mul_sum]
   have h := sum_odd_reciprocal_ge_log q
   linarith
+
+/-- The central half-integer `(n - 1) / 2 + 1 / 2` is at most `n / 2`. -/
+private lemma midpoint_le_half {n : ℕ} (hn : 1 ≤ n) :
+    (((n - 1) / 2 : ℕ) : ℝ) + 1 / 2 ≤ (n : ℝ) / 2 := by
+  have hq : (((n - 1) / 2 : ℕ) : ℝ) ≤ ((n - 1 : ℕ) : ℝ) / 2 := Nat.cast_div_le
+  have hsub : ((n - 1 : ℕ) : ℝ) = (n : ℝ) - 1 := by
+    rw [Nat.cast_sub hn]
+    simp
+  linarith
+
+/-- Every node index lies within distance `n` of the central half-integer. -/
+private lemma abs_sub_midpoint_lt {n : ℕ} (hn : 1 ≤ n) (i : Fin (n + 1)) :
+    |(i.val : ℝ) - (((n - 1) / 2 : ℕ) + (1 : ℝ) / 2)| < n := by
+  have hνle := midpoint_le_half hn
+  have hn0 : (0 : ℝ) < n := by exact_mod_cast (by omega : 0 < n)
+  have hi : (i.val : ℝ) ≤ n := by exact_mod_cast Nat.le_of_lt_succ i.isLt
+  have hi0 : (0 : ℝ) ≤ i.val := Nat.cast_nonneg _
+  have hq0 : (0 : ℝ) ≤ (((n - 1) / 2 : ℕ) : ℝ) := Nat.cast_nonneg _
+  rw [abs_lt]
+  constructor <;> linarith
+
+/-- The central angular midpoint `((n - 1) / 2 + 1 / 2) π / n` lies in `(0, π / 2]`. -/
+private lemma midpointAngle_mem_Ioc {n : ℕ} (hn : 1 ≤ n) :
+    (((n - 1) / 2 : ℕ) + (1 : ℝ) / 2) * π / n ∈ Set.Ioc 0 (π / 2) := by
+  have hn0 : (0 : ℝ) < n := by exact_mod_cast (by omega : 0 < n)
+  have hνle := midpoint_le_half hn
+  refine ⟨by positivity, ?_⟩
+  rw [div_le_iff₀ hn0]
+  nlinarith [hνle, pi_pos]
+
+/-- At the central angular midpoint `θ`, `|sin (n θ)| = 1`. -/
+private lemma abs_sin_mul_midpointAngle {n : ℕ} (hn : 1 ≤ n) :
+    |sin ((n : ℝ) * ((((n - 1) / 2 : ℕ) + (1 : ℝ) / 2) * π / n))| = 1 := by
+  have hn0 : (0 : ℝ) < n := by exact_mod_cast (by omega : 0 < n)
+  have harg : (n : ℝ) * ((((n - 1) / 2 : ℕ) + (1 : ℝ) / 2) * π / n) =
+      (((n - 1) / 2 : ℕ) : ℝ) * π + π / 2 := by
+    field_simp
+  rw [harg, sin_add, sin_nat_mul_pi, cos_nat_mul_pi, sin_pi_div_two, cos_pi_div_two]
+  simp only [mul_zero, zero_add, mul_one]
+  exact abs_neg_one_pow _
+
+/-- The central angular midpoint is not a Chebyshev node angle. -/
+private lemma midpointAngle_ne_chebyshevNodeAngle {n : ℕ} (hn : 1 ≤ n) (i : Fin (n + 1)) :
+    (((n - 1) / 2 : ℕ) + (1 : ℝ) / 2) * π / n ≠ chebyshevNodeAngle n i := by
+  have hn0 : (0 : ℝ) < n := by exact_mod_cast (by omega : 0 < n)
+  intro hi
+  rw [chebyshevNodeAngle, div_left_inj' hn0.ne', mul_comm π] at hi
+  have hval := mul_right_cancel₀ pi_ne_zero hi
+  have heven : (2 : ℝ) * i.val = 2 * (((n - 1) / 2 : ℕ) : ℝ) + 1 := by linarith
+  have hnat : 2 * i.val = 2 * ((n - 1) / 2) + 1 := by exact_mod_cast heven
+  omega
 
 /-- Sum of unweighted midpoint reciprocals dominates `2 * log (n + 1)`. -/
 private lemma midpoint_sum_inv_ge_log {n : ℕ} (hn : 1 ≤ n) :
@@ -125,13 +180,7 @@ private lemma midpoint_sum_weighted_inv_ge {n : ℕ} (hn : 1 ≤ n) :
   let d : Fin (n + 1) → ℝ := fun i => |(i.val : ℝ) - ν|
   let wt : Fin (n + 1) → ℝ := fun i => chebyshevExtremalWeight n i
   have hνpos : 0 < ν := by unfold ν; positivity
-  have hνle : ν ≤ (n : ℝ) / 2 := by
-    have hq : (q : ℝ) ≤ ((n - 1 : ℕ) : ℝ) / 2 := Nat.cast_div_le
-    have hsub : ((n - 1 : ℕ) : ℝ) = (n : ℝ) - 1 := by
-      rw [Nat.cast_sub (by omega : 1 ≤ n)]
-      simp
-    unfold ν
-    linarith
+  have hνle : ν ≤ (n : ℝ) / 2 := midpoint_le_half hn
   have hdrop (i : Fin (n + 1)) : (1 : ℝ) / d i - 1 / (wt i * d i) ≤
       if i.val = 0 ∨ i.val = n then 1 else 0 := by
     by_cases hend : i.val = 0 ∨ i.val = n
@@ -193,25 +242,8 @@ private lemma midpoint_sum_err_le {n : ℕ} (hn : 1 ≤ n) :
   let ν : ℝ := (q : ℝ) + 1 / 2
   let d : Fin (n + 1) → ℝ := fun i => |(i.val : ℝ) - ν|
   let wt : Fin (n + 1) → ℝ := fun i => chebyshevExtremalWeight n i
-  have hνle : ν ≤ (n : ℝ) / 2 := by
-    have hq : (q : ℝ) ≤ ((n - 1 : ℕ) : ℝ) / 2 := Nat.cast_div_le
-    have hsub : ((n - 1 : ℕ) : ℝ) = (n : ℝ) - 1 := by
-      rw [Nat.cast_sub (by omega : 1 ≤ n)]
-      simp
-    unfold ν
-    linarith
   have hterm (i : Fin (n + 1)) : π * d i / (8 * (n : ℝ) ^ 2 * wt i) ≤ π / (8 * n) := by
-    have hdlt : d i < n := by
-      unfold d
-      rcases le_total (i.val : ℝ) ν with hle | hge
-      · rw [abs_of_nonpos (sub_nonpos.mpr hle)]
-        nlinarith [hνle, hn0]
-      · rw [abs_of_nonneg (sub_nonneg.mpr hge)]
-        have hi : (i.val : ℝ) ≤ n := by exact_mod_cast Nat.le_of_lt_succ i.isLt
-        have hνge : (1 : ℝ) / 2 ≤ ν := by
-          have hq0 : (0 : ℝ) ≤ q := Nat.cast_nonneg q
-          unfold ν; linarith
-        linarith
+    have hdlt : d i < n := abs_sub_midpoint_lt hn i
     have hα : 1 ≤ wt i := one_le_chebyshevExtremalWeight n i
     calc π * d i / (8 * (n : ℝ) ^ 2 * wt i)
         ≤ π * n / (8 * (n : ℝ) ^ 2 * wt i) := by gcongr
@@ -241,29 +273,8 @@ private lemma midpoint_sum_main_ge {n : ℕ} (hn : 1 ≤ n) :
   let θ : ℝ := ν * π / n
   let d : Fin (n + 1) → ℝ := fun i => |(i.val : ℝ) - ν|
   let wt : Fin (n + 1) → ℝ := fun i => chebyshevExtremalWeight n i
-  have hνle : ν ≤ (n : ℝ) / 2 := by
-    have hq : (q : ℝ) ≤ ((n - 1 : ℕ) : ℝ) / 2 := Nat.cast_div_le
-    have hsub : ((n - 1 : ℕ) : ℝ) = (n : ℝ) - 1 := by
-      rw [Nat.cast_sub (by omega : 1 ≤ n)]
-      simp
-    unfold ν
-    linarith
-  have hnode : ∀ i, θ ≠ chebyshevNodeAngle n i := by
-    intro i hi
-    have hval : (i.val : ℝ) = ν := by
-      unfold chebyshevNodeAngle at hi
-      have hθv : θ = π * ν / n := by unfold θ; ring
-      rw [hθv] at hi
-      field_simp at hi
-      linarith
-    have heven : (2 : ℝ) * i.val = 2 * (q : ℝ) + 1 := by unfold ν at hval; linarith
-    have hnat : 2 * i.val = 2 * q + 1 := by exact_mod_cast heven
-    omega
-  have hsin : |sin ((n : ℝ) * θ)| = 1 := by
-    have harg : (n : ℝ) * θ = (q : ℝ) * π + π / 2 := by unfold θ ν; field_simp
-    rw [harg, sin_add, sin_nat_mul_pi, cos_nat_mul_pi, sin_pi_div_two, cos_pi_div_two]
-    simp only [mul_zero, zero_add, mul_one]
-    exact abs_neg_one_pow q
+  have hnode : ∀ i, θ ≠ chebyshevNodeAngle n i := midpointAngle_ne_chebyshevNodeAngle hn
+  have hsin : |sin ((n : ℝ) * θ)| = 1 := abs_sin_mul_midpointAngle hn
   have hrecip := midpoint_sum_inv_ge_log hn
   have hdef := midpoint_sum_weighted_inv_ge hn
   have herr := midpoint_sum_err_le hn
@@ -290,16 +301,7 @@ private lemma midpoint_sum_main_ge {n : ℕ} (hn : 1 ≤ n) :
     have hu : u ∈ Set.Ioo 0 (π / 2) := by
       rw [hu_eq]
       refine ⟨by positivity, ?_⟩
-      have hdlt : d i < n := by
-        unfold d
-        rcases le_total (i.val : ℝ) ν with hle | hge
-        · rw [abs_of_nonpos (sub_nonpos.mpr hle)]; nlinarith [hνle, hn0]
-        · rw [abs_of_nonneg (sub_nonneg.mpr hge)]
-          have hi : (i.val : ℝ) ≤ n := by exact_mod_cast Nat.le_of_lt_succ i.isLt
-          have hνge : (1 : ℝ) / 2 ≤ ν := by
-            have hq0 : (0 : ℝ) ≤ q := Nat.cast_nonneg q
-            unfold ν; linarith
-          linarith
+      have hdlt : d i < n := abs_sub_midpoint_lt hn i
       rw [div_lt_div_iff₀ (by positivity) (by positivity)]
       nlinarith [hdlt, pi_pos]
     have hcot := one_div_sub_div_two_le_cot hu
@@ -361,45 +363,23 @@ private lemma midpoint_sum_main_ge {n : ℕ} (hn : 1 ≤ n) :
   rw [← hident]
   exact hfloor.trans (hdropB.trans hrewSum)
 
-set_option maxHeartbeats 400000 in
-/-- Sum of the cotangent correction terms at the central midpoint is at least `-1 / 2`. -/
-private lemma midpoint_sum_corr_ge {n : ℕ} (hn : 1 ≤ n) :
-    -(1 / 2) ≤
-      ∑ i, chebyshevLebesgueCorr n ((((n - 1) / 2 : ℕ) + (1 : ℝ) / 2) * π / n) i := by
+/-- At the central angular midpoint, the correction terms of the outer indices `i ≤ q` and
+`n - q ≤ i`, where `q = (n - 1) / 2`, are nonnegative. -/
+private lemma chebyshevLebesgueCorr_midpoint_nonneg {n : ℕ} (hn : 1 ≤ n) {i : Fin (n + 1)}
+    (hi : i.val ≤ (n - 1) / 2 ∨ n - (n - 1) / 2 ≤ i.val) :
+    0 ≤ chebyshevLebesgueCorr n ((((n - 1) / 2 : ℕ) + (1 : ℝ) / 2) * π / n) i := by
   have hn0 : (0 : ℝ) < n := by exact_mod_cast (by omega : 0 < n)
   let q : ℕ := (n - 1) / 2
   let ν : ℝ := (q : ℝ) + 1 / 2
   let θ : ℝ := ν * π / n
-  have hνle : ν ≤ (n : ℝ) / 2 := by
-    have hq : (q : ℝ) ≤ ((n - 1 : ℕ) : ℝ) / 2 := Nat.cast_div_le
-    have hsub : ((n - 1 : ℕ) : ℝ) = (n : ℝ) - 1 := by
-      rw [Nat.cast_sub (by omega : 1 ≤ n)]
-      simp
-    unfold ν
-    linarith
-  have hθmem : θ ∈ Set.Ioc 0 (π / 2) := by
-    refine ⟨by unfold θ ν; positivity, ?_⟩
-    unfold θ
-    rw [div_le_iff₀ hn0]
-    nlinarith [hνle, pi_pos]
-  have hsin : |sin ((n : ℝ) * θ)| = 1 := by
-    have harg : (n : ℝ) * θ = (q : ℝ) * π + π / 2 := by unfold θ ν; field_simp
-    rw [harg, sin_add, sin_nat_mul_pi, cos_nat_mul_pi, sin_pi_div_two, cos_pi_div_two]
-    simp only [mul_zero, zero_add, mul_one]
-    exact abs_neg_one_pow q
-  have hdiv' : n - 1 = 2 * q + (n - 1) % 2 := by
-    have h := Nat.div_add_mod (n - 1) 2
-    omega
-  let p : Fin (n + 1) → Prop := fun i => i.val ≤ q ∨ n - q ≤ i.val
-  have hadd := Finset.sum_filter_add_sum_filter_not univ p
-    (fun i => chebyshevLebesgueCorr n θ i)
-  have hside (i : Fin (n + 1)) (hp : p i) : 0 ≤ chebyshevLebesgueCorr n θ i := by
-    have hpref : 0 ≤ |sin ((n : ℝ) * θ)| /
-        (2 * (n : ℝ) * chebyshevExtremalWeight n i) :=
-      div_nonneg (abs_nonneg _)
-        (mul_pos (mul_pos (by norm_num : (0 : ℝ) < 2) hn0)
-          (chebyshevExtremalWeight_pos n i)).le
-    rcases hp with hleftI | hrightI
+  have hθmem : θ ∈ Set.Ioc 0 (π / 2) := midpointAngle_mem_Ioc hn
+  have hpref : 0 ≤ |sin ((n : ℝ) * θ)| /
+      (2 * (n : ℝ) * chebyshevExtremalWeight n i) :=
+    div_nonneg (abs_nonneg _)
+      (mul_pos (mul_pos (by norm_num : (0 : ℝ) < 2) hn0)
+        (chebyshevExtremalWeight_pos n i)).le
+  have key : 0 ≤ chebyshevLebesgueCorr n θ i := by
+    rcases hi with hleftI | hrightI
     · have hφ : chebyshevNodeAngle n i < θ := by
         have hiν : (i.val : ℝ) < ν := by
           have : (i.val : ℝ) ≤ q := by exact_mod_cast hleftI
@@ -447,15 +427,113 @@ private lemma midpoint_sum_corr_ge {n : ℕ} (hn : 1 ≤ n) :
         exact div_neg_of_neg_of_pos hcos hsin'
       unfold chebyshevLebesgueCorr
       rw [hsign]
-      have hnonnegCot : 0 ≤ -cot ((θ + chebyshevNodeAngle n i) / 2) := neg_nonneg.mpr hcot.le
+      have hnonnegCot : 0 ≤ -cot ((θ + chebyshevNodeAngle n i) / 2) :=
+        neg_nonneg.mpr hcot.le
       have hrew : |sin ((n : ℝ) * θ)| / (2 * (n : ℝ) * chebyshevExtremalWeight n i) *
           -1 * cot ((θ + chebyshevNodeAngle n i) / 2) =
           |sin ((n : ℝ) * θ)| / (2 * (n : ℝ) * chebyshevExtremalWeight n i) *
             (-cot ((θ + chebyshevNodeAngle n i) / 2)) := by ring
       rw [hrew]
       exact mul_nonneg hpref hnonnegCot
+  exact key
+
+/-- `tan (π / (4 n)) ≤ 1` for `n ≥ 1`. -/
+private lemma tan_pi_div_four_mul_le_one {n : ℕ} (hn : 1 ≤ n) : tan (π / (4 * n)) ≤ 1 := by
+  have hn0 : (0 : ℝ) < n := by exact_mod_cast (by omega : 0 < n)
+  have h4pos : (0 : ℝ) < 4 := by norm_num
+  have h2pos : (0 : ℝ) < 2 := by norm_num
+  have hden : 0 < 4 * (n : ℝ) := mul_pos h4pos hn0
+  have h1n : (1 : ℝ) ≤ n := by exact_mod_cast hn
+  have h4n : (4 : ℝ) ≤ 4 * n := by
+    simpa [mul_one] using mul_le_mul_of_nonneg_left h1n h4pos.le
+  have h2lt : (2 : ℝ) < 4 * n := (by norm_num : (2 : ℝ) < 4).trans_le h4n
+  have hxlt : π / (4 * n) < π / 2 := by
+    rw [div_lt_div_iff₀ hden h2pos]
+    exact mul_lt_mul_of_pos_left h2lt pi_pos
+  have hx0 : 0 ≤ π / (4 * n) := div_nonneg pi_pos.le hden.le
+  have hxneg : -(π / 2) < π / (4 * n) :=
+    (neg_lt_zero.mpr (div_pos pi_pos h2pos)).trans_le hx0
+  have hx : π / (4 * n) ∈ Set.Ioo (-(π / 2)) (π / 2) := ⟨hxneg, hxlt⟩
+  have hπ4 : π / 4 < π / 2 := by
+    rw [div_lt_div_iff₀ h4pos h2pos]
+    exact mul_lt_mul_of_pos_left (by norm_num : (2 : ℝ) < 4) pi_pos
+  have hy : π / 4 ∈ Set.Ioo (-(π / 2)) (π / 2) :=
+    ⟨(neg_lt_zero.mpr (div_pos pi_pos h2pos)).trans_le (div_nonneg pi_pos.le h4pos.le), hπ4⟩
+  have hle : π / (4 * n) ≤ π / 4 := by
+    rw [div_le_div_iff₀ hden h4pos]
+    exact mul_le_mul_of_nonneg_left h4n pi_pos.le
+  simpa [tan_pi_div_four] using strictMonoOn_tan.monotoneOn hx hy hle
+
+/-- For even `n`, the middle correction term at index `q + 1`, where `q = (n - 1) / 2`, is at
+least `-1 / 2` at the central angular midpoint. -/
+private lemma chebyshevLebesgueCorr_midpoint_middle_ge {n : ℕ} (hn : 1 ≤ n)
+    (hr1 : (n - 1) % 2 = 1) :
+    -(1 / 2) ≤ chebyshevLebesgueCorr n ((((n - 1) / 2 : ℕ) + (1 : ℝ) / 2) * π / n)
+      ⟨(n - 1) / 2 + 1, by omega⟩ := by
+  have hn0 : (0 : ℝ) < n := by exact_mod_cast (by omega : 0 < n)
+  let q : ℕ := (n - 1) / 2
+  let ν : ℝ := (q : ℝ) + 1 / 2
+  let θ : ℝ := ν * π / n
+  let j : Fin (n + 1) := ⟨q + 1, by omega⟩
+  have hsin : |sin ((n : ℝ) * θ)| = 1 := abs_sin_mul_midpointAngle hn
+  have hnEven : n = 2 * (q + 1) := by omega
+  have hφ : chebyshevNodeAngle n j = π / 2 := by
+    unfold chebyshevNodeAngle
+    have hcast : ((q + 1 : ℕ) : ℝ) = (n : ℝ) / 2 := by
+      have hnR : (n : ℝ) = 2 * ((q + 1 : ℕ) : ℝ) := by exact_mod_cast hnEven
+      rw [eq_div_iff (by norm_num : (2 : ℝ) ≠ 0)]
+      linarith
+    rw [hcast]; field_simp
+  have hθeq : θ = π / 2 - π / (2 * n) := by
+    unfold θ ν
+    have hνeq : (q : ℝ) + 1 / 2 = (n : ℝ) / 2 - 1 / 2 := by
+      have : (n : ℝ) = 2 * ((q : ℝ) + 1) := by exact_mod_cast hnEven
+      linarith
+    rw [hνeq]; field_simp
+  have havg : (θ + chebyshevNodeAngle n j) / 2 = π / 2 - π / (4 * n) := by
+    rw [hφ, hθeq]; ring
+  have hcot : cot ((θ + chebyshevNodeAngle n j) / 2) = tan (π / (4 * n)) := by
+    rw [havg, cot_eq_cos_div_sin, cos_pi_div_two_sub, sin_pi_div_two_sub,
+      tan_eq_sin_div_cos]
+  have hw : chebyshevExtremalWeight n j = 1 :=
+    chebyshevExtremalWeight_of_interior (by simp [j]) (by simp [j]; omega)
+  have hsign : chebyshevAngleSign n θ j = -1 :=
+    chebyshevAngleSign_of_not_lt (by
+      rw [hφ, hθeq]
+      exact not_lt_of_gt (sub_lt_self (π / 2)
+        (div_pos pi_pos (mul_pos (by norm_num : (0 : ℝ) < 2) hn0))))
+  have htan := tan_pi_div_four_mul_le_one hn
+  have key : -(1 / 2) ≤ chebyshevLebesgueCorr n θ j := by
+    unfold chebyshevLebesgueCorr
+    rw [hw, hsign, hcot, hsin]
+    have hstep : tan (π / (4 * n)) / (2 * (n : ℝ)) ≤ 1 / 2 := by
+      have hden : 0 < 2 * (n : ℝ) := mul_pos (by norm_num : (0 : ℝ) < 2) hn0
+      have hfrac : tan (π / (4 * n)) / (2 * (n : ℝ)) ≤ 1 / (2 * (n : ℝ)) :=
+        div_le_div_of_nonneg_right htan hden.le
+      have hsmall : (1 : ℝ) / (2 * n) ≤ 1 / 2 := by
+        rw [div_le_div_iff₀ hden (by norm_num : (0 : ℝ) < 2), one_mul, one_mul]
+        have h1 : (1 : ℝ) ≤ n := by exact_mod_cast hn
+        simpa [mul_one] using mul_le_mul_of_nonneg_left h1 (by norm_num : (0 : ℝ) ≤ 2)
+      exact hfrac.trans hsmall
+    have hid : (1 : ℝ) / (2 * n * 1) * -1 * tan (π / (4 * n)) =
+        -(tan (π / (4 * n)) / (2 * n)) := by
+      rw [mul_one, mul_assoc, neg_one_mul, mul_neg, mul_comm, mul_one_div]
+    rw [hid]
+    exact neg_le_neg hstep
+  exact key
+
+/-- Sum of the cotangent correction terms at the central midpoint is at least `-1 / 2`. -/
+private lemma midpoint_sum_corr_ge {n : ℕ} (hn : 1 ≤ n) :
+    -(1 / 2) ≤
+      ∑ i, chebyshevLebesgueCorr n ((((n - 1) / 2 : ℕ) + (1 : ℝ) / 2) * π / n) i := by
+  classical
+  let q : ℕ := (n - 1) / 2
+  let θ : ℝ := ((q : ℝ) + 1 / 2) * π / n
+  let p : Fin (n + 1) → Prop := fun i => i.val ≤ q ∨ n - q ≤ i.val
+  have hadd := Finset.sum_filter_add_sum_filter_not univ p
+    (fun i => chebyshevLebesgueCorr n θ i)
   have hgood : 0 ≤ ∑ i ∈ univ.filter p, chebyshevLebesgueCorr n θ i :=
-    Finset.sum_nonneg fun i hi => hside i (mem_filter.mp hi).2
+    Finset.sum_nonneg fun i hi => chebyshevLebesgueCorr_midpoint_nonneg hn (mem_filter.mp hi).2
   have hbad : -(1 / 2) ≤ ∑ i ∈ univ.filter (fun i => ¬ p i), chebyshevLebesgueCorr n θ i := by
     by_cases hr0 : (n - 1) % 2 = 0
     · have hempty : univ.filter (fun i : Fin (n + 1) => ¬ p i) = ∅ := by
@@ -493,110 +571,21 @@ private lemma midpoint_sum_corr_ge {n : ℕ} (hn : 1 ≤ n) :
           simp only [p] at hp
           omega
       rw [honly, Finset.sum_singleton]
-      let j : Fin (n + 1) := ⟨q + 1, by omega⟩
-      have hnEven : n = 2 * (q + 1) := by omega
-      have hφ : chebyshevNodeAngle n j = π / 2 := by
-        unfold chebyshevNodeAngle
-        have hcast : ((q + 1 : ℕ) : ℝ) = (n : ℝ) / 2 := by
-          have hnR : (n : ℝ) = 2 * ((q + 1 : ℕ) : ℝ) := by exact_mod_cast hnEven
-          rw [eq_div_iff (by norm_num : (2 : ℝ) ≠ 0)]
-          linarith
-        rw [hcast]; field_simp
-      have hθeq : θ = π / 2 - π / (2 * n) := by
-        unfold θ ν
-        have hνeq : (q : ℝ) + 1 / 2 = (n : ℝ) / 2 - 1 / 2 := by
-          have : (n : ℝ) = 2 * ((q : ℝ) + 1) := by exact_mod_cast hnEven
-          linarith
-        rw [hνeq]; field_simp
-      have havg : (θ + chebyshevNodeAngle n j) / 2 = π / 2 - π / (4 * n) := by
-        rw [hφ, hθeq]; ring
-      have hcot : cot ((θ + chebyshevNodeAngle n j) / 2) = tan (π / (4 * n)) := by
-        rw [havg, cot_eq_cos_div_sin, cos_pi_div_two_sub, sin_pi_div_two_sub,
-          tan_eq_sin_div_cos]
-      have hw : chebyshevExtremalWeight n j = 1 :=
-        chebyshevExtremalWeight_of_interior (by simp [j]) (by simp [j]; omega)
-      have hsign : chebyshevAngleSign n θ j = -1 :=
-        chebyshevAngleSign_of_not_lt (by
-          rw [hφ, hθeq]
-          exact not_lt_of_gt (sub_lt_self (π / 2)
-            (div_pos pi_pos (mul_pos (by norm_num : (0 : ℝ) < 2) hn0))))
-      have htan : tan (π / (4 * n)) ≤ 1 := by
-        have h4pos : (0 : ℝ) < 4 := by norm_num
-        have h2pos : (0 : ℝ) < 2 := by norm_num
-        have hden : 0 < 4 * (n : ℝ) := mul_pos h4pos hn0
-        have h1n : (1 : ℝ) ≤ n := by exact_mod_cast hn
-        have h4n : (4 : ℝ) ≤ 4 * n := by
-          simpa [mul_one] using mul_le_mul_of_nonneg_left h1n h4pos.le
-        have h2lt : (2 : ℝ) < 4 * n := (by norm_num : (2 : ℝ) < 4).trans_le h4n
-        have hxlt : π / (4 * n) < π / 2 := by
-          rw [div_lt_div_iff₀ hden h2pos]
-          exact mul_lt_mul_of_pos_left h2lt pi_pos
-        have hx0 : 0 ≤ π / (4 * n) := div_nonneg pi_pos.le hden.le
-        have hxneg : -(π / 2) < π / (4 * n) :=
-          (neg_lt_zero.mpr (div_pos pi_pos h2pos)).trans_le hx0
-        have hx : π / (4 * n) ∈ Set.Ioo (-(π / 2)) (π / 2) := ⟨hxneg, hxlt⟩
-        have hπ4 : π / 4 < π / 2 := by
-          rw [div_lt_div_iff₀ h4pos h2pos]
-          exact mul_lt_mul_of_pos_left (by norm_num : (2 : ℝ) < 4) pi_pos
-        have hy : π / 4 ∈ Set.Ioo (-(π / 2)) (π / 2) :=
-          ⟨(neg_lt_zero.mpr (div_pos pi_pos h2pos)).trans_le (div_nonneg pi_pos.le h4pos.le),
-            hπ4⟩
-        have hle : π / (4 * n) ≤ π / 4 := by
-          rw [div_le_div_iff₀ hden h4pos]
-          exact mul_le_mul_of_nonneg_left h4n pi_pos.le
-        simpa [tan_pi_div_four] using strictMonoOn_tan.monotoneOn hx hy hle
-      unfold chebyshevLebesgueCorr
-      rw [hw, hsign, hcot, hsin]
-      have hstep : tan (π / (4 * n)) / (2 * (n : ℝ)) ≤ 1 / 2 := by
-        have hden : 0 < 2 * (n : ℝ) := mul_pos (by norm_num : (0 : ℝ) < 2) hn0
-        have hfrac : tan (π / (4 * n)) / (2 * (n : ℝ)) ≤ 1 / (2 * (n : ℝ)) :=
-          div_le_div_of_nonneg_right htan hden.le
-        have hsmall : (1 : ℝ) / (2 * n) ≤ 1 / 2 := by
-          rw [div_le_div_iff₀ hden (by norm_num : (0 : ℝ) < 2), one_mul, one_mul]
-          have h1 : (1 : ℝ) ≤ n := by exact_mod_cast hn
-          simpa [mul_one] using mul_le_mul_of_nonneg_left h1 (by norm_num : (0 : ℝ) ≤ 2)
-        exact hfrac.trans hsmall
-      have hid : (1 : ℝ) / (2 * n * 1) * -1 * tan (π / (4 * n)) =
-          -(tan (π / (4 * n)) / (2 * n)) := by
-        rw [mul_one, mul_assoc, neg_one_mul, mul_neg, mul_comm, mul_one_div]
-      rw [hid]
-      exact neg_le_neg hstep
+      exact chebyshevLebesgueCorr_midpoint_middle_ge hn hr1
   have hsumc := add_le_add hgood hbad
   rw [hadd] at hsumc
-  simpa [θ, ν, q] using hsumc
+  simpa [θ, q] using hsumc
 
 /-- The central angular midpoint sees the full logarithmic growth. -/
 lemma lebesgueFunction_chebyshev_midpoint_ge {n : ℕ} (hn : 1 ≤ n) :
     (2 / π) * log ((n : ℝ) + 1) - (2 / π + π / 4 + 1 / 2) ≤
       lebesgueFunction (chebyshevExtremalNodes n)
         (cos ((((n - 1) / 2 : ℕ) + (1 : ℝ) / 2) * π / n)) := by
-  have hn0 : (0 : ℝ) < n := by exact_mod_cast (by omega : 0 < n)
   let q : ℕ := (n - 1) / 2
   let ν : ℝ := (q : ℝ) + 1 / 2
   let θ : ℝ := ν * π / n
-  have hνle : ν ≤ (n : ℝ) / 2 := by
-    have hq : (q : ℝ) ≤ ((n - 1 : ℕ) : ℝ) / 2 := Nat.cast_div_le
-    have hsub : ((n - 1 : ℕ) : ℝ) = (n : ℝ) - 1 := by
-      rw [Nat.cast_sub (by omega : 1 ≤ n)]
-      simp
-    unfold ν
-    linarith
-  have hθmem : θ ∈ Set.Ioc 0 (π / 2) := by
-    refine ⟨by unfold θ ν; positivity, ?_⟩
-    unfold θ
-    rw [div_le_iff₀ hn0]
-    nlinarith [hνle, pi_pos]
-  have hnode : ∀ i, θ ≠ chebyshevNodeAngle n i := by
-    intro i hi
-    have hval : (i.val : ℝ) = ν := by
-      unfold chebyshevNodeAngle at hi
-      have hθv : θ = π * ν / n := by unfold θ; ring
-      rw [hθv] at hi
-      field_simp at hi
-      linarith
-    have heven : (2 : ℝ) * i.val = 2 * (q : ℝ) + 1 := by unfold ν at hval; linarith
-    have hnat : 2 * i.val = 2 * q + 1 := by exact_mod_cast heven
-    omega
+  have hθmem : θ ∈ Set.Ioc 0 (π / 2) := midpointAngle_mem_Ioc hn
+  have hnode : ∀ i, θ ≠ chebyshevNodeAngle n i := midpointAngle_ne_chebyshevNodeAngle hn
   have hopen : θ ∈ Set.Ioo 0 π := ⟨hθmem.1, hθmem.2.trans_lt (by linarith [pi_pos])⟩
   have hcosarg : ((((n - 1) / 2 : ℕ) + (1 : ℝ) / 2) * π / n) = θ := rfl
   rw [hcosarg, lebesgueFunction_cos_eq hn hopen hnode]

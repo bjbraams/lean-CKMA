@@ -5,15 +5,11 @@ Authors: CKMA contributors
 -/
 module
 
-public import CKMA.Dynamics.ODE.Planar.Basic
-public import Mathlib.Analysis.Calculus.Deriv.Slope
-public import Mathlib.Analysis.Convex.Segment
-public import Mathlib.Analysis.InnerProductSpace.Calculus
-public import Mathlib.Topology.Compactness.Compact
-public import Mathlib.Topology.DiscreteSubset
-public import Mathlib.Topology.Order.LeftRightNhds
+public import CKMA.Dynamics.Flow
+public import Mathlib.Analysis.InnerProductSpace.Basic
 
-import Mathlib.Tactic.Module
+import Mathlib.Analysis.Calculus.Deriv.Slope
+import Mathlib.Analysis.InnerProductSpace.Calculus
 
 /-!
 # Transverse segments for a planar flow

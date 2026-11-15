@@ -7,6 +7,9 @@ module
 
 public import CKMA.Analysis.Approximation.InterpolationStability.Basic
 
+import Mathlib.NumberTheory.Harmonic.Bounds
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Bounds
+
 /-!
 # Chebyshev-extrema nodal estimates
 
@@ -38,7 +41,7 @@ noncomputable section
 
 namespace CKMA
 
-open Polynomial Real Polynomial.Chebyshev Finset Classical Lagrange
+open Polynomial Real Polynomial.Chebyshev Finset Lagrange
 open scoped BigOperators
 
 /-- Absolute value of a multiple-angle sine is at most the multiple of the sine. -/

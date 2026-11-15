@@ -6,6 +6,10 @@ Authors: CKMA contributors
 module
 
 public import CKMA.Dynamics.ODE.Planar.Transversal
+public import Mathlib.Analysis.Calculus.ContDiff.Defs
+public import Mathlib.Dynamics.OmegaLimit
+
+import CKMA.Dynamics.ODE.Planar.Basic
 
 /-!
 # Poincaré–Bendixson for a planar flow

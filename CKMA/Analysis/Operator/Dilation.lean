@@ -5,13 +5,11 @@ Authors: CKMA contributors
 -/
 module
 
-public import CKMA.Analysis.InnerProductSpace.Basic
 public import CKMA.Analysis.Operator.Dilation.Minimal
 public import CKMA.Analysis.Operator.Dilation.UnitaryExists
 public import CKMA.Analysis.Operator.Dilation.UnitaryUnique
 public import CKMA.Analysis.Operator.Dilation.Wold
 public import CKMA.Analysis.Operator.Dilation.CommutantLift
-public import Mathlib.Analysis.InnerProductSpace.Adjoint
 
 /-!
 # Wold decomposition, minimal dilations, and commuting lifts

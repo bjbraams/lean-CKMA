@@ -5,7 +5,14 @@ Authors: CKMA contributors
 -/
 module
 
-public import CKMA.Analysis.Approximation.InterpolationStability.Estimates
+public import CKMA.Analysis.Approximation.InterpolationStability.Basic
+
+import CKMA.Analysis.Approximation.InterpolationStability.Estimates
+import Mathlib.Analysis.SpecialFunctions.Log.Deriv
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Arctan
+import Mathlib.Algebra.Order.Ring.Star
+import Mathlib.Analysis.InnerProductSpace.Basic
 
 /-!
 # Chebyshev-extrema Lebesgue upper bounds
@@ -28,7 +35,7 @@ noncomputable section
 
 namespace CKMA
 
-open Polynomial Real Polynomial.Chebyshev Finset Classical Lagrange
+open Polynomial Real Polynomial.Chebyshev Finset Lagrange
 open scoped BigOperators
 
 /-- Derivative of the left-cluster logarithm. -/
@@ -40,6 +47,13 @@ private lemma hasDerivAt_leftCluster (θ ψ : ℝ) (hsin : 0 < sin ((θ + ψ) / 
   rw [cot_eq_cos_div_sin]
   field_simp [hsin.ne']
 
+/-- For `θ ∈ (0, π / 2]`, the scaled angle `n θ / π` is at most `n / 2`. -/
+private lemma mul_div_pi_le_half {n : ℕ} {θ : ℝ} (hθ : θ ∈ Set.Ioc 0 (π / 2)) :
+    (n : ℝ) * θ / π ≤ (n : ℝ) / 2 := by
+  have hn0 : (0 : ℝ) ≤ n := Nat.cast_nonneg n
+  rw [div_le_iff₀ pi_pos, div_mul_eq_mul_div]
+  nlinarith [hθ.2, hn0, pi_pos]
+
 /-- Middle-index cotangent corrections are nonpositive on `(0, π / 2]`. -/
 private lemma chebyshevLebesgueCorr_nonpos_of_between {n : ℕ} (hn : 1 ≤ n) {θ : ℝ}
     (hθ : θ ∈ Set.Ioc 0 (π / 2)) {i : Fin (n + 1)}
@@ -50,10 +64,7 @@ private lemma chebyshevLebesgueCorr_nonpos_of_between {n : ℕ} (hn : 1 ≤ n) {
   let ν : ℝ := (n : ℝ) * θ / π
   let m : ℕ := Nat.floor ν
   have hν0 : 0 < ν := div_pos (mul_pos hn0 hθ.1) pi_pos
-  have hνle : ν ≤ (n : ℝ) / 2 := by
-    unfold ν
-    rw [div_le_iff₀ pi_pos, div_mul_eq_mul_div]
-    nlinarith [hθ.2, hn0, pi_pos]
+  have hνle : ν ≤ (n : ℝ) / 2 := mul_div_pi_le_half hθ
   have hm_le_n : m ≤ n := by
     have hmν : (m : ℝ) ≤ n := (Nat.floor_le hν0.le).trans (hνle.trans (by linarith))
     exact_mod_cast hmν
@@ -96,6 +107,107 @@ private lemma chebyshevLebesgueCorr_nonpos_of_between {n : ℕ} (hn : 1 ≤ n) {
       (mul_nonneg (by positivity) (chebyshevExtremalWeight_pos n i).le)
   nlinarith [mul_nonneg hfac hcot.le]
 
+/-- Mean-value bound for the left-cluster logarithm `ψ ↦ 2 log (sin ((θ + ψ) / 2))` on an
+interval `[a, b]` with `0 ≤ a < b < θ ≤ π / 2`. -/
+private lemma cot_mul_sub_le_leftCluster {θ a b : ℝ} (hθ : θ ∈ Set.Ioc 0 (π / 2))
+    (ha0 : 0 ≤ a) (hab : a < b) (hbθ : b < θ) :
+    cot ((θ + b) / 2) * (b - a) ≤
+      2 * log (sin ((θ + b) / 2)) - 2 * log (sin ((θ + a) / 2)) := by
+  let F (ψ : ℝ) : ℝ := 2 * log (sin ((θ + ψ) / 2))
+  have hsin : ∀ ψ ∈ Set.Icc a b, 0 < sin ((θ + ψ) / 2) := fun ψ hψ ↦
+    sin_pos_of_pos_of_lt_pi (by linarith [hθ.1, hψ.1]) (by linarith [hψ.2, hθ.2, pi_pos])
+  have hcont : ContinuousOn F (Set.Icc a b) :=
+    ((continuous_sin.comp_continuousOn
+      ((continuous_const.add continuous_id).div_const _).continuousOn).log
+        fun ψ hψ ↦ (hsin ψ hψ).ne').const_mul 2
+  have hderiv : ∀ x ∈ Set.Ioo a b, HasDerivAt F (cot ((θ + x) / 2)) x := fun x hx ↦
+    hasDerivAt_leftCluster θ x (hsin x (Set.Ioo_subset_Icc_self hx))
+  obtain ⟨c, hc, hcEq⟩ := exists_hasDerivAt_eq_slope F (fun ψ => cot ((θ + ψ) / 2))
+    hab hcont hderiv
+  have hcEq' : cot ((θ + c) / 2) = (F b - F a) / (b - a) := hcEq
+  have havg (x : ℝ) (hx0 : 0 ≤ x) (hxθ : x ≤ θ) : (θ + x) / 2 ∈ Set.Ioo 0 π :=
+    ⟨by linarith [hθ.1], by linarith [hθ.2, pi_pos]⟩
+  have hcotb : cot ((θ + b) / 2) ≤ cot ((θ + c) / 2) :=
+    antitoneOn_cot (havg c (ha0.trans hc.1.le) (by linarith [hc.2]))
+      (havg b (ha0.trans hab.le) hbθ.le) (by linarith [hc.2])
+  have hba : 0 < b - a := sub_pos.mpr hab
+  calc
+    cot ((θ + b) / 2) * (b - a) ≤ cot ((θ + c) / 2) * (b - a) :=
+      mul_le_mul_of_nonneg_right hcotb hba.le
+    _ = F b - F a := by rw [hcEq', div_mul_cancel₀ _ hba.ne']
+
+/-- The left-cluster correction term at node `k + 1 ≤ m` is bounded by the increment of the
+left-cluster logarithm over the angular interval `[π k / n, π (k + 1) / n]`. -/
+private lemma chebyshevLebesgueCorr_succ_le_leftCluster {n m k : ℕ} (hm_lt : m < n)
+    (hk : k < m) {θ : ℝ} (hθ : θ ∈ Set.Ioc 0 (π / 2)) (hθm : π * (m : ℝ) / n < θ) :
+    chebyshevLebesgueCorr n θ ⟨k + 1, by omega⟩ ≤ |sin ((n : ℝ) * θ)| / (2 * π) *
+      (2 * log (sin ((θ + π * ((k + 1 : ℕ) : ℝ) / n) / 2)) -
+        2 * log (sin ((θ + π * (k : ℝ) / n) / 2))) := by
+  have hn0 : (0 : ℝ) < n := by exact_mod_cast (by omega : 0 < n)
+  let F (ψ : ℝ) : ℝ := 2 * log (sin ((θ + ψ) / 2))
+  let a : ℝ := π * k / n
+  let b : ℝ := π * (k + 1) / n
+  have hab : a < b := by unfold a b; field_simp; linarith [pi_pos]
+  have hbθ : b < θ := by
+    unfold b
+    have : (k + 1 : ℝ) ≤ m := by exact_mod_cast (Nat.succ_le_of_lt hk)
+    have : π * (k + 1 : ℝ) / n ≤ π * (m : ℝ) / n := by gcongr
+    linarith [hθm]
+  have ha0 : (0 : ℝ) ≤ a := by unfold a; positivity
+  have hba : b - a = π / n := by unfold a b; field_simp; ring
+  have hslope := cot_mul_sub_le_leftCluster hθ ha0 hab hbθ
+  rw [hba] at hslope
+  have hcotle : cot ((θ + b) / 2) ≤ (F b - F a) * n / π := by
+    rw [le_div_iff₀ pi_pos]
+    calc
+      cot ((θ + b) / 2) * π = cot ((θ + b) / 2) * (π / n) * n := by field_simp
+      _ ≤ (F b - F a) * n := mul_le_mul_of_nonneg_right hslope hn0.le
+  have hi1' : k + 1 < n + 1 := by omega
+  have hw : chebyshevExtremalWeight n ⟨k + 1, hi1'⟩ = 1 :=
+    chebyshevExtremalWeight_of_interior (Nat.succ_ne_zero k)
+      (Nat.ne_of_lt (Nat.lt_of_le_of_lt (Nat.succ_le_of_lt hk) hm_lt))
+  have hsign := chebyshevAngleSign_of_lt (n := n) (θ := θ)
+    (i := ⟨k + 1, hi1'⟩) (by simpa [chebyshevNodeAngle, b] using hbθ)
+  unfold chebyshevLebesgueCorr
+  rw [hw, hsign, show chebyshevNodeAngle n ⟨k + 1, hi1'⟩ = b by simp [chebyshevNodeAngle, b],
+    show (2 : ℝ) * n * 1 = 2 * n by ring, mul_one]
+  have hfac : 0 ≤ |sin ((n : ℝ) * θ)| / (2 * (n : ℝ)) := by positivity
+  have hineq := mul_le_mul_of_nonneg_left hcotle hfac
+  have hassoc : |sin ((n : ℝ) * θ)| / (2 * (n : ℝ)) * ((F b - F a) * n / π) =
+      |sin ((n : ℝ) * θ)| / (2 * π) * (F b - F a) := by field_simp
+  have hFab : F b - F a = F (π * ((k + 1 : ℕ) : ℝ) / n) - F (π * (k : ℝ) / n) := by
+    unfold a b
+    have hkcast : (k : ℝ) + 1 = ((k + 1 : ℕ) : ℝ) := by push_cast; ring
+    rw [hkcast]
+  rw [hFab] at hineq hassoc
+  exact hineq.trans_eq hassoc
+
+/-- The left-cluster logarithm increases by at most `2 log 2` on `[0, b]` when
+`0 ≤ b < θ ≤ π / 2`. -/
+private lemma leftCluster_sub_le_two_mul_log_two {θ b : ℝ} (hθ : θ ∈ Set.Ioc 0 (π / 2))
+    (hb0 : 0 ≤ b) (hbθ : b < θ) :
+    2 * log (sin ((θ + b) / 2)) - 2 * log (sin ((θ + 0) / 2)) ≤ 2 * log 2 := by
+  have hhalf0 : 0 < θ / 2 := by linarith [hθ.1]
+  have hsin_half : 0 < sin (θ / 2) :=
+    sin_pos_of_pos_of_lt_pi hhalf0 (by linarith [hθ.2, pi_pos])
+  have hmid0 : 0 < (θ + b) / 2 := div_pos (add_pos_of_pos_of_nonneg hθ.1 hb0) (by norm_num)
+  have hmidθ : (θ + b) / 2 < θ := by
+    rw [div_lt_iff₀ (by norm_num : (0 : ℝ) < 2)]
+    linarith
+  have hsin2 : 0 < sin ((θ + b) / 2) :=
+    sin_pos_of_pos_of_lt_pi hmid0 (hmidθ.trans_le (hθ.2.trans (by linarith [pi_pos])))
+  have hle : sin ((θ + b) / 2) ≤ sin θ :=
+    sin_le_sin_of_le_of_le_pi_div_two
+      (le_trans (by linarith [pi_pos] : -(π / 2) ≤ 0) hmid0.le) hθ.2 hmidθ.le
+  have hdouble : sin θ = 2 * sin (θ / 2) * cos (θ / 2) := by
+    have h := sin_two_mul (θ / 2)
+    rwa [show 2 * (θ / 2) = θ by ring] at h
+  have hratio : sin ((θ + b) / 2) / sin (θ / 2) ≤ 2 := by
+    rw [div_le_iff₀ hsin_half]
+    nlinarith [cos_le_one (θ / 2), hsin_half.le]
+  rw [add_zero, ← mul_sub, ← log_div hsin2.ne' hsin_half.ne']
+  exact mul_le_mul_of_nonneg_left (log_le_log (div_pos hsin2 hsin_half) hratio) (by norm_num)
+
 /-- Left interior cluster of cotangent corrections is bounded by `log 2 / π`. -/
 private lemma sum_chebyshevLebesgueCorr_left_le {n m : ℕ} (hn : 1 ≤ n) (hm_lt : m < n)
     {θ : ℝ} (hθ : θ ∈ Set.Ioc 0 (π / 2)) (hθm : π * (m : ℝ) / n < θ) :
@@ -105,155 +217,38 @@ private lemma sum_chebyshevLebesgueCorr_left_le {n m : ℕ} (hn : 1 ≤ n) (hm_l
   have hn0 : (0 : ℝ) < n := by exact_mod_cast (by omega : 0 < n)
   let Fc (j : ℕ) : ℝ :=
     if hj : j < n + 1 then chebyshevLebesgueCorr n θ ⟨j, hj⟩ else 0
-  have hFc (j : ℕ) (hj : j ≤ n) : Fc j = chebyshevLebesgueCorr n θ ⟨j, by omega⟩ := by
-    have hj' : j < n + 1 := by omega
-    unfold Fc
-    rw [dite_eq_left hj']
-  have hsin1 : |sin ((n : ℝ) * θ)| ≤ 1 := abs_sin_le_one _
+  have hFc (j : ℕ) (hj : j ≤ n) : Fc j = chebyshevLebesgueCorr n θ ⟨j, by omega⟩ :=
+    dite_eq_left (by omega)
   let F (ψ : ℝ) : ℝ := 2 * log (sin ((θ + ψ) / 2))
-  rcases Nat.eq_zero_or_pos m with hm0 | hm0
-  · simp [hm0]
-    exact div_nonneg (log_nonneg (by norm_num)) pi_pos.le
-  · have hcont : ContinuousOn F (Set.Icc 0 (π * (m : ℝ) / n)) := by
-      refine ((continuous_sin.comp_continuousOn
-        ((continuous_const.add continuous_id).div_const _).continuousOn).log ?_).const_mul 2
-      intro ψ hψ
-      have hlow : 0 < (θ + ψ) / 2 :=
-        div_pos (add_pos_of_pos_of_nonneg hθ.1 hψ.1) (by norm_num)
-      have hhigh : (θ + ψ) / 2 < π := by
-        have hψθ : ψ < θ := lt_of_le_of_lt hψ.2 hθm
-        have hhalf : (θ + ψ) / 2 < θ := by
-          rw [div_lt_iff₀ (by norm_num : (0 : ℝ) < 2)]
-          linarith
-        exact hhalf.trans_le (hθ.2.trans (by linarith [pi_pos]))
-      exact (sin_pos_of_pos_of_lt_pi hlow hhigh).ne'
-    have hderivAll : ∀ ψ ∈ Set.Ioo 0 θ, HasDerivAt F (cot ((θ + ψ) / 2)) ψ := by
-      intro ψ hψ
-      exact hasDerivAt_leftCluster θ ψ
-        (sin_pos_of_pos_of_lt_pi
-          (div_pos (add_pos hθ.1 hψ.1) (by norm_num))
-          (by
-            have hhalf : (θ + ψ) / 2 < θ := by
-              rw [div_lt_iff₀ (by norm_num : (0 : ℝ) < 2)]
-              linarith [hψ.2]
-            exact hhalf.trans_le (hθ.2.trans (by linarith [pi_pos]))))
-    have hstep : ∀ k ∈ range m, Fc (k + 1) ≤ |sin ((n : ℝ) * θ)| / (2 * π) *
-        (F (π * ((k + 1 : ℕ) : ℝ) / n) - F (π * (k : ℝ) / n)) := by
-      intro k hk
-      have hk' : k < m := Finset.mem_range.mp hk
-      let a : ℝ := π * k / n
-      let b : ℝ := π * (k + 1) / n
-      have hab : a < b := by unfold a b; field_simp; linarith [pi_pos]
-      have hbθ : b < θ := by
-        unfold b
-        have : (k + 1 : ℝ) ≤ m := by exact_mod_cast (Nat.succ_le_of_lt hk')
-        have : π * (k + 1 : ℝ) / n ≤ π * (m : ℝ) / n := by gcongr
-        linarith [hθm]
-      have hkmul : (k + 1 : ℝ) ≤ m := by exact_mod_cast Nat.succ_le_of_lt hk'
-      have hbTop : b ≤ π * (m : ℝ) / n :=
-        div_le_div_of_nonneg_right (mul_le_mul_of_nonneg_left hkmul pi_pos.le) hn0.le
-      have ha0 : (0 : ℝ) ≤ a := by unfold a; positivity
-      have hcont' : ContinuousOn F (Set.Icc a b) :=
-        hcont.mono (fun x hx => ⟨ha0.trans hx.1, hx.2.trans hbTop⟩)
-      have hderiv : ∀ x ∈ Set.Ioo a b, HasDerivAt F (cot ((θ + x) / 2)) x :=
-        fun x hx => hderivAll x ⟨ha0.trans_lt hx.1, hx.2.trans hbθ⟩
-      obtain ⟨c, hc, hcEq⟩ := exists_hasDerivAt_eq_slope F (fun ψ => cot ((θ + ψ) / 2))
-        hab hcont' hderiv
-      have havg (x : ℝ) (hx0 : 0 ≤ x) (hxθ : x ≤ θ) :
-          (θ + x) / 2 ∈ Set.Ioo 0 π := ⟨by linarith [hθ.1], by linarith [hθ.2, pi_pos]⟩
-      have hc0 : 0 ≤ c := ha0.trans hc.1.le
-      have hb0 : 0 ≤ b := by unfold b; positivity
-      have hcotb : cot ((θ + b) / 2) ≤ cot ((θ + c) / 2) :=
-        antitoneOn_cot (havg c hc0 (by linarith [hc.2, hbθ]))
-          (havg b hb0 hbθ.le) (by
-            rw [div_le_div_iff₀ (by norm_num : (0 : ℝ) < 2) (by norm_num)]
-            linarith [hc.2])
-      have hba : b - a = π / n := by unfold a b; field_simp; ring
-      have hcotle : cot ((θ + b) / 2) ≤ (F b - F a) * n / π := by
-        have hcmp : cot ((θ + b) / 2) ≤ (F b - F a) / (b - a) := by rw [← hcEq]; exact hcotb
-        have hrew : (F b - F a) / (π / n) = (F b - F a) * n / π := by field_simp
-        rwa [hba, hrew] at hcmp
-      have hi1 : k + 1 ≤ n := Nat.succ_le_of_lt (hk'.trans hm_lt)
-      have hi1' : k + 1 < n + 1 := Nat.lt_succ_of_le hi1
-      rw [hFc (k + 1) hi1]
-      have hw : chebyshevExtremalWeight n ⟨k + 1, hi1'⟩ = 1 :=
-        chebyshevExtremalWeight_of_interior (Nat.succ_ne_zero k)
-          (Nat.ne_of_lt (Nat.lt_of_le_of_lt (Nat.succ_le_of_lt hk') hm_lt))
-      have hsign := chebyshevAngleSign_of_lt (n := n) (θ := θ)
-        (i := ⟨k + 1, hi1'⟩) (by simpa [chebyshevNodeAngle, b] using hbθ)
-      unfold chebyshevLebesgueCorr
-      rw [hw, hsign, show chebyshevNodeAngle n ⟨k + 1, hi1'⟩ = b by simp [chebyshevNodeAngle, b],
-        show (2 : ℝ) * n * 1 = 2 * n by ring, mul_one]
-      have hfac : 0 ≤ |sin ((n : ℝ) * θ)| / (2 * (n : ℝ)) := by positivity
-      have hineq := mul_le_mul_of_nonneg_left hcotle hfac
-      have hassoc : |sin ((n : ℝ) * θ)| / (2 * (n : ℝ)) * ((F b - F a) * n / π) =
-          |sin ((n : ℝ) * θ)| / (2 * π) * (F b - F a) := by field_simp
-      have hFab : F b - F a =
-          F (π * ((k + 1 : ℕ) : ℝ) / n) - F (π * (k : ℝ) / n) := by
-        unfold a b
-        have hkcast : (k : ℝ) + 1 = ((k + 1 : ℕ) : ℝ) := by push_cast; ring
-        rw [hkcast]
-      rw [hFab] at hineq hassoc
-      exact hineq.trans_eq hassoc
-    calc ∑ k ∈ range m, Fc (k + 1)
-        ≤ ∑ k ∈ range m, |sin ((n : ℝ) * θ)| / (2 * π) *
-            (F (π * ((k + 1 : ℕ) : ℝ) / n) - F (π * (k : ℝ) / n)) :=
-          Finset.sum_le_sum hstep
-      _ = |sin ((n : ℝ) * θ)| / (2 * π) *
-            (F (π * (m : ℝ) / n) - F 0) := by
-          rw [← Finset.mul_sum, sum_range_sub (fun k => F (π * (k : ℝ) / n)) m]
-          simp
-      _ ≤ log 2 / π := by
-          have hdiff : F (π * (m : ℝ) / n) - F 0 ≤ 2 * log 2 := by
-            have hhalf0 : 0 < θ / 2 := by linarith [hθ.1]
-            have hsin_half : 0 < sin (θ / 2) :=
-              sin_pos_of_pos_of_lt_pi hhalf0 (by linarith [hθ.2, pi_pos])
-            have hmid0 : 0 < (θ + π * (m : ℝ) / n) / 2 :=
-              div_pos (add_pos_of_pos_of_nonneg hθ.1 (by positivity)) (by norm_num)
-            have hmidπ : (θ + π * (m : ℝ) / n) / 2 < π := by
-              have hlt : (θ + π * (m : ℝ) / n) / 2 < θ := by
-                rw [div_lt_iff₀ (by norm_num : (0 : ℝ) < 2)]
-                linarith [hθm]
-              exact hlt.trans_le (hθ.2.trans (le_of_lt (by linarith [pi_pos])))
-            have hsin2 : 0 < sin ((θ + π * (m : ℝ) / n) / 2) :=
-              sin_pos_of_pos_of_lt_pi hmid0 hmidπ
-            have hle : sin ((θ + π * (m : ℝ) / n) / 2) ≤ sin θ :=
-              sin_le_sin_of_le_of_le_pi_div_two
-                (le_trans (by linarith [pi_pos] : -(π / 2) ≤ 0) hmid0.le) hθ.2 (by
-                  rw [div_le_iff₀ (by norm_num : (0 : ℝ) < 2)]
-                  linarith [hθm])
-            have hdouble : sin θ = 2 * sin (θ / 2) * cos (θ / 2) := by
-              have h := sin_two_mul (θ / 2)
-              rwa [show 2 * (θ / 2) = θ by ring] at h
-            have hratio : sin ((θ + π * (m : ℝ) / n) / 2) / sin (θ / 2) ≤ 2 := by
-              have hmid : sin ((θ + π * (m : ℝ) / n) / 2) ≤
-                  2 * cos (θ / 2) * sin (θ / 2) := by
-                calc sin ((θ + π * (m : ℝ) / n) / 2)
-                    ≤ sin θ := hle
-                  _ = 2 * sin (θ / 2) * cos (θ / 2) := hdouble
-                  _ = 2 * cos (θ / 2) * sin (θ / 2) := by ring
-              rw [div_le_iff₀ hsin_half]
-              exact hmid.trans (by nlinarith [cos_le_one (θ / 2), hsin_half.le])
-            have hF : F (π * (m : ℝ) / n) - F 0 =
-                2 * log (sin ((θ + π * (m : ℝ) / n) / 2) / sin (θ / 2)) := by
-              unfold F
-              rw [log_div hsin2.ne' hsin_half.ne']
-              ring_nf
-            rw [hF]
-            exact mul_le_mul_of_nonneg_left
-              ((log_le_log (div_pos hsin2 hsin_half) hratio).trans_eq (by ring)) (by norm_num)
-          have hcoef : 0 ≤ |sin ((n : ℝ) * θ)| / (2 * π) := by positivity
-          have hineq := mul_le_mul_of_nonneg_left hdiff hcoef
-          have hsmall : |sin ((n : ℝ) * θ)| / (2 * π) * (2 * log 2) ≤ log 2 / π := by
-            have hlog : 0 ≤ log 2 := log_nonneg (by norm_num)
-            have hrew : |sin ((n : ℝ) * θ)| / (2 * π) * (2 * log 2) =
-                |sin ((n : ℝ) * θ)| * (2 * log 2) / (2 * π) := by ring
-            rw [hrew]
-            have hdiv : |sin ((n : ℝ) * θ)| * (2 * log 2) / (2 * π) ≤
-                1 * (2 * log 2) / (2 * π) := by gcongr
-            have hfin : 1 * (2 * log 2) / (2 * π) = log 2 / π := by ring
-            exact hdiv.trans_eq hfin
-          exact hineq.trans hsmall
+  have hstep : ∀ k ∈ range m, Fc (k + 1) ≤ |sin ((n : ℝ) * θ)| / (2 * π) *
+      (F (π * ((k + 1 : ℕ) : ℝ) / n) - F (π * (k : ℝ) / n)) := by
+    intro k hk
+    have hk' : k < m := Finset.mem_range.mp hk
+    rw [hFc (k + 1) (by omega)]
+    exact chebyshevLebesgueCorr_succ_le_leftCluster hm_lt hk' hθ hθm
+  calc ∑ k ∈ range m, Fc (k + 1)
+      ≤ ∑ k ∈ range m, |sin ((n : ℝ) * θ)| / (2 * π) *
+          (F (π * ((k + 1 : ℕ) : ℝ) / n) - F (π * (k : ℝ) / n)) :=
+        Finset.sum_le_sum hstep
+    _ = |sin ((n : ℝ) * θ)| / (2 * π) *
+          (F (π * (m : ℝ) / n) - F 0) := by
+        rw [← Finset.mul_sum, sum_range_sub (fun k => F (π * (k : ℝ) / n)) m]
+        simp
+    _ ≤ log 2 / π := by
+        have hdiff : F (π * (m : ℝ) / n) - F 0 ≤ 2 * log 2 :=
+          leftCluster_sub_le_two_mul_log_two hθ (by positivity) hθm
+        have hcoef : 0 ≤ |sin ((n : ℝ) * θ)| / (2 * π) := by positivity
+        have hineq := mul_le_mul_of_nonneg_left hdiff hcoef
+        have hsmall : |sin ((n : ℝ) * θ)| / (2 * π) * (2 * log 2) ≤ log 2 / π := by
+          have hlog : 0 ≤ log 2 := log_nonneg (by norm_num)
+          have hrew : |sin ((n : ℝ) * θ)| / (2 * π) * (2 * log 2) =
+              |sin ((n : ℝ) * θ)| * (2 * log 2) / (2 * π) := by ring
+          rw [hrew]
+          have hdiv : |sin ((n : ℝ) * θ)| * (2 * log 2) / (2 * π) ≤
+              1 * (2 * log 2) / (2 * π) := by gcongr; exact abs_sin_le_one _
+          have hfin : 1 * (2 * log 2) / (2 * π) = log 2 / π := by ring
+          exact hdiv.trans_eq hfin
+        exact hineq.trans hsmall
 
 /-- Right interior cluster of cotangent corrections is bounded by `1 / 4`. -/
 private lemma sum_chebyshevLebesgueCorr_right_le {n m : ℕ} (hn : 1 ≤ n) (hm_lt : m < n)
@@ -264,16 +259,11 @@ private lemma sum_chebyshevLebesgueCorr_right_le {n m : ℕ} (hn : 1 ≤ n) (hm_
   have hn0 : (0 : ℝ) < n := by exact_mod_cast (by omega : 0 < n)
   have hm_le_n : m ≤ n := hm_lt.le
   let ν : ℝ := (n : ℝ) * θ / π
-  have hνle : ν ≤ (n : ℝ) / 2 := by
-    unfold ν
-    rw [div_le_iff₀ pi_pos, div_mul_eq_mul_div]
-    nlinarith [hθ.2, hn0, pi_pos]
+  have hνle : ν ≤ (n : ℝ) / 2 := mul_div_pi_le_half hθ
   let Fc (j : ℕ) : ℝ :=
     if hj : j < n + 1 then chebyshevLebesgueCorr n θ ⟨j, hj⟩ else 0
-  have hFc (j : ℕ) (hj : j ≤ n) : Fc j = chebyshevLebesgueCorr n θ ⟨j, by omega⟩ := by
-    have hj' : j < n + 1 := by omega
-    unfold Fc
-    rw [dite_eq_left hj']
+  have hFc (j : ℕ) (hj : j ≤ n) : Fc j = chebyshevLebesgueCorr n θ ⟨j, by omega⟩ :=
+    dite_eq_left (by omega)
   have hterm : ∀ k ∈ range m, Fc (n - m + k) ≤ 1 / (2 * (n : ℝ)) := by
     intro k hk
     have hk' : k < m := Finset.mem_range.mp hk
@@ -370,10 +360,7 @@ private lemma sum_chebyshevLebesgueCorr_le {n : ℕ} (hn : 1 ≤ n) {θ : ℝ}
   let ν : ℝ := (n : ℝ) * θ / π
   let m : ℕ := Nat.floor ν
   have hν0 : 0 < ν := div_pos (mul_pos hn0 hθ.1) pi_pos
-  have hνle : ν ≤ (n : ℝ) / 2 := by
-    unfold ν
-    rw [div_le_iff₀ pi_pos, div_mul_eq_mul_div]
-    nlinarith [hθ.2, hn0, pi_pos]
+  have hνle : ν ≤ (n : ℝ) / 2 := mul_div_pi_le_half hθ
   have hm_le_n : m ≤ n := by
     have hmν : (m : ℝ) ≤ n := (Nat.floor_le hν0.le).trans (hνle.trans (by linarith))
     exact_mod_cast hmν
@@ -394,10 +381,8 @@ private lemma sum_chebyshevLebesgueCorr_le {n : ℕ} (hn : 1 ≤ n) {θ : ℝ}
   have hm_lt : m < n := by omega
   let Fc (j : ℕ) : ℝ :=
     if hj : j < n + 1 then chebyshevLebesgueCorr n θ ⟨j, hj⟩ else 0
-  have hFc (j : ℕ) (hj : j ≤ n) : Fc j = chebyshevLebesgueCorr n θ ⟨j, by omega⟩ := by
-    have hj' : j < n + 1 := by omega
-    unfold Fc
-    rw [dite_eq_left hj']
+  have hFc (j : ℕ) (hj : j ≤ n) : Fc j = chebyshevLebesgueCorr n θ ⟨j, by omega⟩ :=
+    dite_eq_left (by omega)
   have hdrop : ∑ i, chebyshevLebesgueCorr n θ i ≤
       ∑ i ∈ univ.filter (fun i : Fin (n + 1) => i.val ≤ m ∨ n - m ≤ i.val),
         chebyshevLebesgueCorr n θ i := by

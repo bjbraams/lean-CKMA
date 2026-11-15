@@ -10,8 +10,7 @@ public import CKMA.Analysis.Interpolation.Bounds.Real
 public import CKMA.Analysis.Interpolation.Bounds.Complex
 
 import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
-import Mathlib.Topology.Algebra.Order.Field
-import Mathlib.Topology.Instances.ENNReal.Lemmas
+
 
 /-!
 # Real and complex interpolation bounds

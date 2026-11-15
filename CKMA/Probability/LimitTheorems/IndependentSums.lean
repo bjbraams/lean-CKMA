@@ -5,12 +5,9 @@ Authors: CKMA contributors
 -/
 module
 
-public import Mathlib.Probability.Moments.Variance
-public import Mathlib.Probability.IdentDistrib
 public import Mathlib.Probability.Distributions.Gaussian.Real
 public import Mathlib.Probability.CDF
 public import Mathlib.MeasureTheory.Function.ConvergenceInDistribution
-public import Mathlib.Topology.Algebra.InfiniteSum.SummationFilter
 public import Mathlib.Tactic
 import TauCeti.Probability.CentralLimitTheorem.Lindeberg
 

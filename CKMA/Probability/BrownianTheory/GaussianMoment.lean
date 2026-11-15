@@ -6,7 +6,6 @@ Authors: CKMA contributors
 module
 
 public import Mathlib.Probability.BrownianMotion.Basic
-public import Mathlib.MeasureTheory.Integral.Bochner.L1
 
 /-!
 # Gaussian moments of pre-Brownian increments

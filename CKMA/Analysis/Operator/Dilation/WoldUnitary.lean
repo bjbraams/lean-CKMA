@@ -6,7 +6,6 @@ Authors: CKMA contributors
 module
 
 public import CKMA.Analysis.Operator.Dilation.Wold
-public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Restrict
 
 /-!
 # Unitary part of an isometry

@@ -5,13 +5,11 @@ Authors: CKMA contributors
 -/
 module
 
-public import CKMA.Probability.InfinitelyDivisible.SecondDiff
-public import Mathlib.Analysis.SpecialFunctions.Complex.Log
-public import Mathlib.NumberTheory.Real.Irrational
-public import Mathlib.Topology.Connected.Clopen
-public import Mathlib.Topology.Order.IntermediateValue
-public import Mathlib.Topology.Order.OrderClosed
-public import Mathlib.Topology.Separation.Hausdorff
+public import CKMA.Probability.InfinitelyDivisible.Basic
+
+import CKMA.Probability.InfinitelyDivisible.SecondDiff
+import Mathlib.NumberTheory.Real.Irrational
+import CKMA.Probability.InfinitelyDivisible.Exponent
 
 /-!
 # Uniqueness of a Lévy triplet

@@ -6,7 +6,6 @@ Authors: CKMA contributors
 module
 
 public import Mathlib.Analysis.InnerProductSpace.l2Space
-public import Mathlib.Topology.Algebra.InfiniteSum.NatInt
 
 /-!
 # Unilateral shift on `ℓ²(ℕ, H)`

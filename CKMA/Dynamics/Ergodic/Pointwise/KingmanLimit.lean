@@ -7,6 +7,11 @@ module
 
 public import CKMA.Dynamics.Ergodic.Pointwise.KingmanAE
 
+import CKMA.Dynamics.Ergodic.Pointwise.KingmanOrbit
+import CKMA.Dynamics.Ergodic.Pointwise.Kingman
+import CKMA.Dynamics.Ergodic.Pointwise.Maximal
+import Mathlib.MeasureTheory.Integral.DominatedConvergence
+
 import Mathlib.Tactic
 
 /-!
@@ -159,6 +164,203 @@ private lemma kingmanLiminfReal_ae_const_orbit [IsProbabilityMeasure μ]
     rw [Function.iterate_succ_apply']
     exact (hω i).trans ih
 
+omit [MeasurableSpace Ω] in
+/-- The comparison value is bounded by the slope plus the one-step increment. -/
+private lemma abs_kingmanCompare_le (f : ℕ → Ω → ℝ) (slope : Ω → ℝ) (k : ℕ) (ω : Ω) :
+    |kingmanCompare f slope k ω| ≤ |slope ω| + |f 1 ω| := by
+  unfold kingmanCompare
+  split_ifs
+  · exact le_add_of_nonneg_right (abs_nonneg _)
+  · exact le_add_of_nonneg_left (abs_nonneg _)
+
+omit [MeasurableSpace Ω] in
+/-- The tail majorant is bounded by the slope plus the one-step increment. -/
+private lemma abs_kingmanMajor_le (f : ℕ → Ω → ℝ) (slope : Ω → ℝ) (k : ℕ) (ω : Ω) :
+    |kingmanMajor f slope k ω| ≤ |slope ω| + |f 1 ω| :=
+  abs_max_le_max_abs_abs.trans
+    (max_le (abs_kingmanCompare_le f slope k ω) (le_add_of_nonneg_left (abs_nonneg _)))
+
+/-- Under an integrable measurable slope, each comparison value is integrable. -/
+private lemma integrable_kingmanCompare {f : ℕ → Ω → ℝ} {slope : Ω → ℝ}
+    (hf1 : Integrable (f 1) μ) (hf_meas : ∀ j : ℕ, 0 < j → Measurable (f j))
+    (hs : Integrable slope μ) (hs_meas : Measurable slope) (k : ℕ) :
+    Integrable (kingmanCompare f slope k) μ := by
+  have hdom : Integrable (fun ω => |slope ω| + |f 1 ω|) μ := hs.abs.add hf1.abs
+  refine hdom.mono (measurable_kingmanCompare hf_meas hs_meas).aestronglyMeasurable
+    (Eventually.of_forall fun ω => ?_)
+  rw [Real.norm_eq_abs, Real.norm_eq_abs]
+  exact (abs_kingmanCompare_le f slope k ω).trans (le_abs_self _)
+
+/-- Under an integrable measurable slope, each tail majorant is integrable. -/
+private lemma integrable_kingmanMajor {f : ℕ → Ω → ℝ} {slope : Ω → ℝ}
+    (hf1 : Integrable (f 1) μ) (hf_meas : ∀ j : ℕ, 0 < j → Measurable (f j))
+    (hs : Integrable slope μ) (hs_meas : Measurable slope) (k : ℕ) :
+    Integrable (kingmanMajor f slope k) μ := by
+  have hdom : Integrable (fun ω => |slope ω| + |f 1 ω|) μ := hs.abs.add hf1.abs
+  refine hdom.mono (measurable_kingmanMajor hf_meas hs_meas).aestronglyMeasurable
+    (Eventually.of_forall fun ω => ?_)
+  rw [Real.norm_eq_abs, Real.norm_eq_abs]
+  exact (abs_kingmanMajor_le f slope k ω).trans (le_abs_self _)
+
+omit [MeasurableSpace Ω] in
+/-- The comparison value at a site depends on the slope only through its value there. -/
+private lemma kingmanCompare_congr_slope {f : ℕ → Ω → ℝ} {s s' : Ω → ℝ} {k : ℕ} {ω : Ω}
+    (h : s ω = s' ω) : kingmanCompare f s k ω = kingmanCompare f s' k ω := by
+  unfold kingmanCompare HasKingmanExcursion
+  rw [h]
+
+omit [MeasurableSpace Ω] in
+/-- The tail majorant at a site depends on the slope only through its value there. -/
+private lemma kingmanMajor_congr_slope {f : ℕ → Ω → ℝ} {s s' : Ω → ℝ} {k : ℕ} {ω : Ω}
+    (h : s ω = s' ω) : kingmanMajor f s k ω = kingmanMajor f s' k ω := by
+  unfold kingmanMajor
+  rw [kingmanCompare_congr_slope h]
+
+omit [MeasurableSpace Ω] in
+/-- Where the extended liminf is the real liminf, some positive length lies strictly below
+`ε` above the liminf slope. -/
+private lemma exists_lt_mul_kingmanLiminfReal_add {f : ℕ → Ω → ℝ} {ω : Ω}
+    (hω : kingmanLiminf f ω = (kingmanLiminfReal f ω : EReal)) {ε : ℝ} (hε : 0 < ε) :
+    ∃ j, 0 < j ∧ f j ω < (j : ℝ) * (kingmanLiminfReal f ω + ε) := by
+  have hlt : kingmanLiminf f ω < (kingmanLiminfReal f ω + ε : EReal) := by
+    rw [hω]
+    exact EReal.coe_lt_coe_iff.mpr (by linarith)
+  have hfreq := frequently_lt_of_liminf_lt (f := atTop)
+    (u := fun n => (kingmanRatio f n ω : EReal))
+    (by
+      unfold Filter.IsCoboundedUnder
+      exact isCobounded_ge_of_top)
+    (by simpa [kingmanLiminf] using hlt)
+  obtain ⟨n, hn⟩ := hfreq.exists
+  refine ⟨n + 1, Nat.succ_pos n, ?_⟩
+  have hreal : kingmanRatio f n ω < kingmanLiminfReal f ω + ε :=
+    EReal.coe_lt_coe_iff.mp hn
+  unfold kingmanRatio at hreal
+  have hpos : (0 : ℝ) < n + 1 := by positivity
+  have hmul := mul_lt_mul_of_pos_left hreal hpos
+  have hnz : (n + 1 : ℝ) ≠ 0 := by positivity
+  rw [mul_inv_cancel_left₀ hnz] at hmul
+  have hcast : (n + 1 : ℝ) = ((n + 1 : ℕ) : ℝ) := by simp [Nat.cast_succ]
+  rw [hcast] at hmul
+  exact hmul
+
+omit [MeasurableSpace Ω] in
+/-- Along an orbit on which a slope is constant, the cocycle is bounded by the comparison
+sums with that slope. -/
+private lemma kingman_le_sum_compare_of_orbit {f : ℕ → Ω → ℝ} {slope : Ω → ℝ} {k n : ℕ}
+    {ω : Ω} (hconst : ∀ i, slope ((T^[i]) ω) = slope ω)
+    (hsub : ∀ i a b : ℕ, 0 < a → 0 < b →
+      f (a + b) ((T^[i]) ω) ≤ f a ((T^[i]) ω) + f b ((T^[a]) ((T^[i]) ω)))
+    (hk : 0 < k) (hn : k ≤ n) :
+    f n ω ≤ ∑ i ∈ range (n - k), kingmanCompare f slope k ((T^[i]) ω) +
+      ∑ i ∈ Finset.Ico (n - k) n, kingmanMajor f slope k ((T^[i]) ω) := by
+  have hsub' : ∀ i a b : ℕ, 0 < a → 0 < b →
+      f (a + b) ((T^[i]) ω) ≤ f a ((T^[i]) ω) + f b ((T^[i + a]) ω) :=
+    fun i a b ha hb => by
+      have hiter : (T^[a]) ((T^[i]) ω) = (T^[i + a]) ω := by
+        simpa [Nat.add_comm] using (Function.iterate_add_apply T a i ω).symm
+      simpa [hiter] using hsub i a b ha hb
+  have horb := kingman_orbit_compare_le (ω := ω) (slope := slope ω) hsub' hk hn
+  have h1 : ∀ i ∈ range (n - k), kingmanCompare f (fun _ : Ω => slope ω) k ((T^[i]) ω) =
+      kingmanCompare f slope k ((T^[i]) ω) :=
+    fun i _ => kingmanCompare_congr_slope (hconst i).symm
+  have h2 : ∀ i ∈ Finset.Ico (n - k) n, kingmanMajor f (fun _ : Ω => slope ω) k ((T^[i]) ω) =
+      kingmanMajor f slope k ((T^[i]) ω) :=
+    fun i _ => kingmanMajor_congr_slope (hconst i).symm
+  rwa [sum_congr rfl h1, sum_congr rfl h2] at horb
+
+/-- Integrating an orbit comparison: if `g` is a.e. bounded by `n - k` iterates of `ψ` plus
+the last `k` iterates of `m`, then its integral is at most `(n - k) ∫ ψ + k ∫ m`. -/
+private lemma integral_le_of_le_sum_iterates (hT : MeasurePreserving T μ μ)
+    {g ψ m : Ω → ℝ} {n k : ℕ} (hg : Integrable g μ) (hψ : Integrable ψ μ)
+    (hm : Integrable m μ) (hn : k ≤ n)
+    (hle : ∀ᵐ ω ∂μ, g ω ≤
+      ∑ i ∈ range (n - k), ψ ((T^[i]) ω) + ∑ i ∈ Ico (n - k) n, m ((T^[i]) ω)) :
+    ∫ ω, g ω ∂μ ≤ ((n - k : ℕ) : ℝ) * ∫ ω, ψ ω ∂μ + (k : ℝ) * ∫ ω, m ω ∂μ := by
+  have hψi : ∀ i, Integrable (fun ω => ψ ((T^[i]) ω)) μ := fun i => by
+    simpa [Function.comp_def] using (hT.iterate i).integrable_comp_of_integrable hψ
+  have hmi : ∀ i, Integrable (fun ω => m ((T^[i]) ω)) μ := fun i => by
+    simpa [Function.comp_def] using (hT.iterate i).integrable_comp_of_integrable hm
+  have hψs : Integrable (fun ω => ∑ i ∈ range (n - k), ψ ((T^[i]) ω)) μ :=
+    integrable_finsetSum _ fun i _ => hψi i
+  have hms : Integrable (fun ω => ∑ i ∈ Ico (n - k) n, m ((T^[i]) ω)) μ :=
+    integrable_finsetSum _ fun i _ => hmi i
+  have hle' : g ≤ᵐ[μ] (fun ω => ∑ i ∈ range (n - k), ψ ((T^[i]) ω)) +
+      fun ω => ∑ i ∈ Ico (n - k) n, m ((T^[i]) ω) := by
+    filter_upwards [hle] with ω hω
+    simpa [Pi.add_apply] using hω
+  have hint := integral_mono_ae hg (hψs.add hms) hle'
+  have hψint : ∫ ω, ∑ i ∈ range (n - k), ψ ((T^[i]) ω) ∂μ =
+      ((n - k : ℕ) : ℝ) * ∫ ω, ψ ω ∂μ := by
+    rw [integral_finsetSum _ fun i _ => hψi i]
+    have hterm : ∀ i ∈ range (n - k), ∫ ω, ψ ((T^[i]) ω) ∂μ = ∫ ω, ψ ω ∂μ :=
+      fun i _ => integral_comp_measurePreserving (hT.iterate i) hψ
+    rw [sum_congr rfl hterm, sum_const, card_range, nsmul_eq_mul]
+  have hmint : ∫ ω, ∑ i ∈ Ico (n - k) n, m ((T^[i]) ω) ∂μ = (k : ℝ) * ∫ ω, m ω ∂μ := by
+    rw [integral_finsetSum _ fun i _ => hmi i]
+    have hcard : (Finset.Ico (n - k) n).card = k := by
+      rw [Nat.card_Ico]
+      omega
+    have hterm : ∀ i ∈ Finset.Ico (n - k) n, ∫ ω, m ((T^[i]) ω) ∂μ = ∫ ω, m ω ∂μ :=
+      fun i _ => integral_comp_measurePreserving (hT.iterate i) hm
+    rw [sum_congr rfl hterm, sum_const, hcard, nsmul_eq_mul]
+  rw [integral_add' hψs hms, hψint, hmint] at hint
+  exact hint
+
+/-- The tail weight `k / (N + 1)` tends to zero. -/
+private lemma tendsto_natCast_div_add_one_atTop (k : ℕ) :
+    Tendsto (fun N : ℕ => (k : ℝ) / (N + 1 : ℝ)) atTop (𝓝 0) := by
+  simpa [Function.comp_def] using
+    (tendsto_const_div_atTop_nhds_zero_nat (k : ℝ)).comp (tendsto_add_atTop_nat 1)
+
+/-- The window weight `(N + 1 - k) / (N + 1)` tends to one. -/
+private lemma tendsto_natSub_div_add_one_atTop (k : ℕ) :
+    Tendsto (fun N : ℕ => ((N + 1 - k : ℕ) : ℝ) / (N + 1 : ℝ)) atTop (𝓝 1) := by
+  have h1 : Tendsto (fun N : ℕ => 1 - (k : ℝ) / (N + 1 : ℝ)) atTop (𝓝 1) := by
+    simpa using tendsto_const_nhds.sub (tendsto_natCast_div_add_one_atTop k)
+  refine h1.congr' ?_
+  filter_upwards [eventually_ge_atTop k] with N hN
+  have hnz : (N + 1 : ℝ) ≠ 0 := by positivity
+  rw [Nat.cast_sub (by omega), Nat.cast_add, Nat.cast_one, sub_div, div_self hnz]
+
+/-- With a slope that is almost surely constant along orbits, the Fekete infimum is at most
+the integral of each comparison value of positive window length. -/
+private lemma sInf_le_integral_kingmanCompare [IsProbabilityMeasure μ]
+    (hT : MeasurePreserving T μ μ) {f : ℕ → Ω → ℝ} {C : ℝ}
+    (hf : ∀ n : ℕ, 0 < n → Integrable (f n) μ)
+    (hf_meas : ∀ n : ℕ, 0 < n → Measurable (f n))
+    (hsub : ∀ n m : ℕ, 0 < n → 0 < m → ∀ᵐ ω ∂μ,
+      f (n + m) ω ≤ f n ω + f m ((T^[n]) ω))
+    (hC : ∀ n : ℕ, 0 < n → ∀ ω, -C * (n : ℝ) ≤ f n ω)
+    {slope : Ω → ℝ} (hs : Integrable slope μ) (hs_meas : Measurable slope)
+    (hconst : ∀ᵐ ω ∂μ, ∀ i, slope ((T^[i]) ω) = slope ω) {k : ℕ} (hk : 0 < k) :
+    sInf {a : ℝ | ∃ n : ℕ, 0 < n ∧ a = (n : ℝ)⁻¹ * ∫ ω, f n ω ∂μ} ≤
+      ∫ ω, kingmanCompare f slope k ω ∂μ := by
+  have hsuborb := ae_forall_iterate hT (kingman_ae_subadditive hsub)
+  have hbound : ∀ n, k ≤ n → ∫ ω, f n ω ∂μ ≤
+      ((n - k : ℕ) : ℝ) * ∫ ω, kingmanCompare f slope k ω ∂μ +
+        (k : ℝ) * ∫ ω, kingmanMajor f slope k ω ∂μ := by
+    intro n hn
+    refine integral_le_of_le_sum_iterates hT (hf n (hk.trans_le hn))
+      (integrable_kingmanCompare (hf 1 Nat.one_pos) hf_meas hs hs_meas k)
+      (integrable_kingmanMajor (hf 1 Nat.one_pos) hf_meas hs hs_meas k) hn ?_
+    filter_upwards [hconst, hsuborb] with ω hcω hsω
+    exact kingman_le_sum_compare_of_orbit hcω hsω hk hn
+  have hLHS := tendsto_kingmanIntegral_div hT hf hsub
+    ⟨-C, fun n hn => kingman_integral_ge_of_pointwise hf hC hn⟩
+  have hRHS : Tendsto (fun N : ℕ =>
+      (((N + 1 - k : ℕ) : ℝ) / (N + 1 : ℝ)) * ∫ ω, kingmanCompare f slope k ω ∂μ +
+        ((k : ℝ) / (N + 1 : ℝ)) * ∫ ω, kingmanMajor f slope k ω ∂μ) atTop
+      (𝓝 (∫ ω, kingmanCompare f slope k ω ∂μ)) := by
+    simpa using ((tendsto_natSub_div_add_one_atTop k).mul_const _).add
+      ((tendsto_natCast_div_add_one_atTop k).mul_const _)
+  refine le_of_tendsto_of_tendsto hLHS hRHS ?_
+  filter_upwards [eventually_ge_atTop k] with N hN
+  have hmul := mul_le_mul_of_nonneg_left (hbound (N + 1) (by omega))
+    (by positivity : (0 : ℝ) ≤ (N + 1 : ℝ)⁻¹)
+  calc _ ≤ _ := hmul
+    _ = _ := by ring
+
 /-- The liminf is integrable of mean equal to the Fekete infimum. -/
 lemma kingmanLiminfReal_integral_eq [IsProbabilityMeasure μ] (hT : MeasurePreserving T μ μ)
     {f : ℕ → Ω → ℝ} {C : ℝ} (hf : ∀ n : ℕ, 0 < n → Integrable (f n) μ)
@@ -168,282 +370,42 @@ lemma kingmanLiminfReal_integral_eq [IsProbabilityMeasure μ] (hT : MeasurePrese
     (hC : ∀ n : ℕ, 0 < n → ∀ ω, -C * (n : ℝ) ≤ f n ω) :
     ∫ ω, kingmanLiminfReal f ω ∂μ =
       sInf {a : ℝ | ∃ n : ℕ, 0 < n ∧ a = (n : ℝ)⁻¹ * ∫ ω, f n ω ∂μ} := by
-  set L : ℝ := sInf {a : ℝ | ∃ n : ℕ, 0 < n ∧ a = (n : ℝ)⁻¹ * ∫ ω, f n ω ∂μ}
   obtain ⟨hg_int, hle, hne, -⟩ := kingmanLiminfReal_integrable_le hT hf hf_meas hsub hC
   have hg_meas : Measurable (kingmanLiminfReal f) :=
     (measurable_kingmanLiminf hf_meas).ereal_toReal
   have hconst := kingmanLiminfReal_ae_const_orbit hT hf hf_meas hsub hC
-  have hsuborb := ae_forall_iterate hT (kingman_ae_subadditive hsub)
-  have hcoe : ∀ᵐ ω ∂μ, kingmanLiminf f ω = (kingmanLiminfReal f ω : EReal) := by
-    filter_upwards [hne] with ω htop
-    exact (EReal.coe_toReal htop (kingmanLiminf_ne_bot hC ω)).symm
-  suffices hge : L ≤ ∫ ω, kingmanLiminfReal f ω ∂μ by
-    linarith
-  refine le_of_forall_pos_le_add fun ε hε => ?_
+  refine le_antisymm hle (le_of_forall_pos_le_add fun ε hε => ?_)
+  -- Compare with the slope `liminf + ε`, which is constant along almost every orbit.
   let slope : Ω → ℝ := fun ω => kingmanLiminfReal f ω + ε
-  let ψ : ℕ → Ω → ℝ := fun k => kingmanCompare f slope k
-  let mx : ℕ → Ω → ℝ := fun k => kingmanMajor f slope k
-  have hslope_meas : Measurable slope := hg_meas.add measurable_const
-  have hψ_meas : ∀ k, Measurable (ψ k) := fun k =>
-    measurable_kingmanCompare hf_meas hslope_meas
-  have hmx_meas : ∀ k, Measurable (mx k) := fun k =>
-    measurable_kingmanMajor hf_meas hslope_meas
-  have hdom_int : Integrable (fun ω => |slope ω| + |f 1 ω|) μ :=
-    (hg_int.add (integrable_const ε)).abs.add (hf 1 Nat.one_pos).abs
-  have habsψ : ∀ k ω, |ψ k ω| ≤ |slope ω| + |f 1 ω| := by
-    intro k ω
-    by_cases hex : HasKingmanExcursion f slope k ω
-    · unfold ψ
-      rw [kingmanCompare, ite_eq_left hex]
-      exact le_add_of_nonneg_right (abs_nonneg _)
-    · unfold ψ
-      rw [kingmanCompare, ite_eq_right hex]
-      exact le_add_of_nonneg_left (abs_nonneg _)
-  have habsmx : ∀ k ω, |mx k ω| ≤ |slope ω| + |f 1 ω| := by
-    intro k ω
-    by_cases hex : HasKingmanExcursion f slope k ω
-    · unfold mx
-      rw [kingmanMajor]
-      have hcmp : kingmanCompare f slope k ω = slope ω := by
-        unfold kingmanCompare
-        rw [ite_eq_left hex]
-      rw [hcmp]
-      refine abs_le.mpr ⟨?_, ?_⟩
-      · exact le_trans (neg_le_neg (le_add_of_nonneg_right (abs_nonneg (f 1 ω))))
-          (le_trans (neg_abs_le (slope ω)) (le_max_left _ _))
-      · exact max_le
-          (le_trans (le_abs_self _) (le_add_of_nonneg_right (abs_nonneg _)))
-          (le_trans (le_abs_self _) (le_add_of_nonneg_left (abs_nonneg _)))
-    · unfold mx
-      rw [kingmanMajor]
-      have hcmp : kingmanCompare f slope k ω = f 1 ω := by
-        unfold kingmanCompare
-        rw [ite_eq_right hex]
-      rw [hcmp, max_self]
-      exact le_add_of_nonneg_left (abs_nonneg _)
-  have hψ_int : ∀ k, Integrable (ψ k) μ := by
-    intro k
-    refine hdom_int.mono (hψ_meas k).aestronglyMeasurable ?_
-    refine Eventually.of_forall fun ω => ?_
-    rw [Real.norm_eq_abs, Real.norm_eq_abs]
-    exact (habsψ k ω).trans (le_abs_self _)
-  have hmx_int : ∀ k, Integrable (mx k) μ := by
-    intro k
-    refine hdom_int.mono (hmx_meas k).aestronglyMeasurable ?_
-    refine Eventually.of_forall fun ω => ?_
-    rw [Real.norm_eq_abs, Real.norm_eq_abs]
-    exact (habsmx k ω).trans (le_abs_self _)
-  have hcatch : ∀ᵐ ω ∂μ, ∃ j, 0 < j ∧
-      f j ω < (j : ℝ) * (kingmanLiminfReal f ω + ε) := by
-    filter_upwards [hcoe] with ω hω
-    have hlt : kingmanLiminf f ω < (kingmanLiminfReal f ω + ε : EReal) := by
-      rw [hω]
-      exact EReal.coe_lt_coe_iff.mpr (by linarith)
-    have hfreq := frequently_lt_of_liminf_lt (f := atTop)
-      (u := fun n => (kingmanRatio f n ω : EReal))
-      (by
-        unfold Filter.IsCoboundedUnder
-        exact isCobounded_ge_of_top)
-      (by simpa [kingmanLiminf] using hlt)
-    obtain ⟨n, hn⟩ := hfreq.exists
-    refine ⟨n + 1, Nat.succ_pos n, ?_⟩
-    have hreal : kingmanRatio f n ω < kingmanLiminfReal f ω + ε :=
-      EReal.coe_lt_coe_iff.mp hn
-    unfold kingmanRatio at hreal
-    have hpos : (0 : ℝ) < n + 1 := by positivity
-    have hmul := mul_lt_mul_of_pos_left hreal hpos
-    have hnz : (n + 1 : ℝ) ≠ 0 := by positivity
-    rw [mul_inv_cancel_left₀ hnz] at hmul
-    have hcast : (n + 1 : ℝ) = ((n + 1 : ℕ) : ℝ) := by simp [Nat.cast_succ]
-    rw [hcast] at hmul
-    exact hmul
-  have hLk : ∀ k, 0 < k → L ≤ ∫ ω, ψ k ω ∂μ := by
-    intro k hk
-    have hineq_ae : ∀ n, k ≤ n → ∀ᵐ ω ∂μ, f n ω ≤
-        ∑ i ∈ range (n - k), ψ k ((T^[i]) ω) +
-          ∑ i ∈ Ico (n - k) n, mx k ((T^[i]) ω) := by
-      intro n hn
-      filter_upwards [hconst, hsuborb] with ω hconstω hsubω
-      have hsub' : ∀ i a b : ℕ, 0 < a → 0 < b →
-          f (a + b) ((T^[i]) ω) ≤ f a ((T^[i]) ω) + f b ((T^[i + a]) ω) :=
-        fun i a b ha hb => by
-          have hiter : (T^[a]) ((T^[i]) ω) = (T^[i + a]) ω := by
-            simpa [Nat.add_comm] using (Function.iterate_add_apply T a i ω).symm
-          simpa [hiter] using hsubω i a b ha hb
-      have horb := kingman_orbit_compare_le (ω := ω) (slope := kingmanLiminfReal f ω + ε)
-        hsub' hk hn
-      have hterm : ∀ i, kingmanCompare f (fun _ : Ω => kingmanLiminfReal f ω + ε) k
-          ((T^[i]) ω) = ψ k ((T^[i]) ω) := by
-        intro i
-        have hgs : kingmanLiminfReal f ((T^[i]) ω) = kingmanLiminfReal f ω := hconstω i
-        unfold ψ kingmanCompare slope
-        by_cases hex : HasKingmanExcursion f (fun _ : Ω => kingmanLiminfReal f ω + ε) k
-            ((T^[i]) ω)
-        · have hex' : HasKingmanExcursion f slope k ((T^[i]) ω) := by
-            obtain ⟨j, hj0, hjk, hjlt⟩ := hex
-            refine ⟨j, hj0, hjk, ?_⟩
-            change f j ((T^[i]) ω) < (j : ℝ) * (kingmanLiminfReal f ((T^[i]) ω) + ε)
-            rw [hgs]
-            exact hjlt
-          rw [ite_eq_left hex, ite_eq_left hex']
-          rw [hgs]
-        · have hex' : ¬ HasKingmanExcursion f slope k ((T^[i]) ω) := by
-            intro hexv
-            apply hex
-            obtain ⟨j, hj0, hjk, hjlt⟩ := hexv
-            refine ⟨j, hj0, hjk, ?_⟩
-            change f j ((T^[i]) ω) <
-              (j : ℝ) * (kingmanLiminfReal f ((T^[i]) ω) + ε) at hjlt
-            rw [hgs] at hjlt
-            exact hjlt
-          rw [ite_eq_right hex, ite_eq_right hex']
-      have hmaj : ∀ i, kingmanMajor f (fun _ : Ω => kingmanLiminfReal f ω + ε) k
-          ((T^[i]) ω) = mx k ((T^[i]) ω) := by
-        intro i
-        have hcmp := hterm i
-        unfold ψ at hcmp
-        simp only [kingmanMajor, mx, hcmp]
-      have hsum1 : ∑ i ∈ range (n - k),
-          kingmanCompare f (fun _ : Ω => kingmanLiminfReal f ω + ε) k ((T^[i]) ω) =
-          ∑ i ∈ range (n - k), ψ k ((T^[i]) ω) := by
-        refine sum_congr rfl fun i _ => hterm i
-      have hsum2 : ∑ i ∈ Ico (n - k) n,
-          kingmanMajor f (fun _ : Ω => kingmanLiminfReal f ω + ε) k ((T^[i]) ω) =
-          ∑ i ∈ Ico (n - k) n, mx k ((T^[i]) ω) := by
-        refine sum_congr rfl fun i _ => hmaj i
-      rw [hsum1, hsum2] at horb
-      exact horb
-    have hbound_n : ∀ n, k ≤ n → ∫ ω, f n ω ∂μ ≤
-        ((n - k : ℕ) : ℝ) * ∫ ω, ψ k ω ∂μ + (k : ℝ) * ∫ ω, mx k ω ∂μ := by
-      intro n hn
-      have hnpos : 0 < n := lt_of_lt_of_le hk hn
-      have hψi : ∀ i, Integrable (fun ω => ψ k ((T^[i]) ω)) μ := fun i => by
-        simpa [Function.comp_def] using
-          (hT.iterate i).integrable_comp_of_integrable (hψ_int k)
-      have hmxi : ∀ i, Integrable (fun ω => mx k ((T^[i]) ω)) μ := fun i => by
-        simpa [Function.comp_def] using
-          (hT.iterate i).integrable_comp_of_integrable (hmx_int k)
-      have hψs : Integrable (fun ω => ∑ i ∈ range (n - k), ψ k ((T^[i]) ω)) μ :=
-        integrable_finsetSum _ fun i _ => hψi i
-      have hmxs : Integrable (fun ω => ∑ i ∈ Ico (n - k) n, mx k ((T^[i]) ω)) μ :=
-        integrable_finsetSum _ fun i _ => hmxi i
-      have hright := hψs.add hmxs
-      have hle : (fun ω => f n ω) ≤ᵐ[μ]
-          (fun ω => ∑ i ∈ range (n - k), ψ k ((T^[i]) ω)) +
-            fun ω => ∑ i ∈ Ico (n - k) n, mx k ((T^[i]) ω) := by
-        filter_upwards [hineq_ae n hn] with ω hω
-        simpa [Pi.add_apply] using hω
-      have hint := integral_mono_ae (hf n hnpos) hright hle
-      have hψint : ∫ ω, ∑ i ∈ range (n - k), ψ k ((T^[i]) ω) ∂μ =
-          ((n - k : ℕ) : ℝ) * ∫ ω, ψ k ω ∂μ := by
-        rw [integral_finsetSum _ fun i _ => hψi i]
-        have hterm : ∀ i ∈ range (n - k),
-            ∫ ω, ψ k ((T^[i]) ω) ∂μ = ∫ ω, ψ k ω ∂μ :=
-          fun i _ => integral_comp_measurePreserving (hT.iterate i) (hψ_int k)
-        rw [sum_congr rfl hterm, sum_const, card_range, nsmul_eq_mul]
-      have hmxint : ∫ ω, ∑ i ∈ Ico (n - k) n, mx k ((T^[i]) ω) ∂μ =
-          (k : ℝ) * ∫ ω, mx k ω ∂μ := by
-        rw [integral_finsetSum _ fun i _ => hmxi i]
-        have hcard : (Finset.Ico (n - k) n).card = k := by
-          rw [Nat.card_Ico]
-          omega
-        have hterm : ∀ i ∈ Finset.Ico (n - k) n,
-            ∫ ω, mx k ((T^[i]) ω) ∂μ = ∫ ω, mx k ω ∂μ :=
-          fun i _ => integral_comp_measurePreserving (hT.iterate i) (hmx_int k)
-        rw [sum_congr rfl hterm, sum_const, hcard, nsmul_eq_mul]
-      rw [integral_add' hψs hmxs, hψint, hmxint] at hint
-      exact hint
-    have hlower : ∃ c : ℝ, ∀ n : ℕ, 0 < n → c ≤ (n : ℝ)⁻¹ * ∫ ω, f n ω ∂μ :=
-      ⟨-C, fun n hn => kingman_integral_ge_of_pointwise hf hC hn⟩
-    have hLHS := tendsto_kingmanIntegral_div hT hf hsub hlower
-    have hcoeff : Tendsto (fun N : ℕ => ((N + 1 - k : ℕ) : ℝ) / (N + 1 : ℝ)) atTop (𝓝 1) := by
-      have hden : Tendsto (fun N : ℕ => (N + 1 : ℝ)) atTop atTop := by
-        have heq : (fun N : ℕ => (N + 1 : ℝ)) = fun N => ((N + 1 : ℕ) : ℝ) := by
-          ext N
-          simp
-        rw [heq]
-        exact tendsto_natCast_atTop_atTop.comp (tendsto_add_atTop_nat 1)
-      have hinv : Tendsto (fun N : ℕ => (N + 1 : ℝ)⁻¹) atTop (𝓝 0) :=
-        tendsto_inv_atTop_zero.comp hden
-      have hsubtr : Tendsto (fun N : ℕ => (k : ℝ) * (N + 1 : ℝ)⁻¹) atTop (𝓝 0) := by
-        simpa using hinv.const_mul (k : ℝ)
-      have hform : ∀ N, k ≤ N + 1 → ((N + 1 - k : ℕ) : ℝ) / (N + 1 : ℝ) =
-          1 - (k : ℝ) * (N + 1 : ℝ)⁻¹ := by
-        intro N hNk
-        have hcast : ((N + 1 - k : ℕ) : ℝ) = (N + 1 : ℝ) - (k : ℝ) := by
-          rw [Nat.cast_sub hNk]
-          simp [Nat.cast_succ]
-        have hnz : (N + 1 : ℝ) ≠ 0 := by positivity
-        calc
-          ((N + 1 - k : ℕ) : ℝ) / (N + 1 : ℝ)
-              = ((N + 1 : ℝ) - (k : ℝ)) * (N + 1 : ℝ)⁻¹ := by
-                rw [hcast, div_eq_mul_inv]
-          _ = (N + 1 : ℝ) * (N + 1 : ℝ)⁻¹ - (k : ℝ) * (N + 1 : ℝ)⁻¹ := by
-                rw [sub_mul]
-          _ = 1 - (k : ℝ) * (N + 1 : ℝ)⁻¹ := by
-                rw [mul_inv_cancel₀ hnz]
-      have htend : Tendsto (fun N : ℕ => 1 - (k : ℝ) * (N + 1 : ℝ)⁻¹) atTop (𝓝 1) := by
-        simpa using tendsto_const_nhds.sub hsubtr
-      refine htend.congr' ?_
-      filter_upwards [eventually_ge_atTop k] with N hN
-      exact (hform N (by omega)).symm
-    have htail : Tendsto (fun N : ℕ => (k : ℝ) / (N + 1 : ℝ)) atTop (𝓝 0) := by
-      have hden : Tendsto (fun N : ℕ => (N + 1 : ℝ)) atTop atTop := by
-        have heq : (fun N : ℕ => (N + 1 : ℝ)) = fun N => ((N + 1 : ℕ) : ℝ) := by
-          ext N
-          simp
-        rw [heq]
-        exact tendsto_natCast_atTop_atTop.comp (tendsto_add_atTop_nat 1)
-      simpa [div_eq_mul_inv] using
-        (tendsto_inv_atTop_zero.comp hden).const_mul (k : ℝ)
-    have hRHSgoal : Tendsto (fun N : ℕ =>
-        (((N + 1 - k : ℕ) : ℝ) / (N + 1 : ℝ)) * ∫ ω, ψ k ω ∂μ +
-          ((k : ℝ) / (N + 1 : ℝ)) * ∫ ω, mx k ω ∂μ) atTop
-        (𝓝 (∫ ω, ψ k ω ∂μ)) := by
-      have hmul1 := hcoeff.mul (tendsto_const_nhds (x := ∫ ω, ψ k ω ∂μ))
-      have hmul2 := htail.mul (tendsto_const_nhds (x := ∫ ω, mx k ω ∂μ))
-      simpa [one_mul, zero_mul, add_zero] using hmul1.add hmul2
-    refine le_of_tendsto_of_tendsto (by simpa [L] using hLHS) hRHSgoal ?_
-    filter_upwards [eventually_ge_atTop k] with N hN
-    have hn : k ≤ N + 1 := by omega
-    have hdiv := hbound_n (N + 1) hn
-    have hpos : (0 : ℝ) ≤ (N + 1 : ℝ)⁻¹ := by positivity
-    have hmul := mul_le_mul_of_nonneg_left hdiv hpos
-    have hleft : (N + 1 : ℝ)⁻¹ *
-        (((N + 1 - k : ℕ) : ℝ) * ∫ ω, ψ k ω ∂μ + (k : ℝ) * ∫ ω, mx k ω ∂μ) =
-        (((N + 1 - k : ℕ) : ℝ) / (N + 1 : ℝ)) * ∫ ω, ψ k ω ∂μ +
-          ((k : ℝ) / (N + 1 : ℝ)) * ∫ ω, mx k ω ∂μ := by
-      have ha : ((N + 1 - k : ℕ) : ℝ) / (N + 1 : ℝ) =
-          (N + 1 : ℝ)⁻¹ * ((N + 1 - k : ℕ) : ℝ) := by
-        rw [div_eq_mul_inv, mul_comm]
-      have hb : (k : ℝ) / (N + 1 : ℝ) = (N + 1 : ℝ)⁻¹ * (k : ℝ) := by
-        rw [div_eq_mul_inv, mul_comm]
-      rw [ha, hb, mul_add, ← mul_assoc, ← mul_assoc]
-    rw [hleft] at hmul
-    exact hmul
-  have hψ_lim : Tendsto (fun k => ∫ ω, ψ k ω ∂μ) atTop
-      (𝓝 (∫ ω, kingmanLiminfReal f ω + ε ∂μ)) := by
+  have hs_int : Integrable slope μ := hg_int.add (integrable_const ε)
+  have hs_meas : Measurable slope := hg_meas.add measurable_const
+  have hsconst : ∀ᵐ ω ∂μ, ∀ i, slope ((T^[i]) ω) = slope ω := by
+    filter_upwards [hconst] with ω hω i
+    simp only [slope, hω i]
+  -- As the window grows, almost every site has an excursion, so the comparison values
+  -- converge to the slope.
+  have hψ_lim : Tendsto (fun k => ∫ ω, kingmanCompare f slope k ω ∂μ) atTop
+      (𝓝 (∫ ω, slope ω ∂μ)) := by
     refine tendsto_integral_of_dominated_convergence (fun ω => |slope ω| + |f 1 ω|)
-      (fun k => (hψ_meas k).aestronglyMeasurable) hdom_int (fun k => Eventually.of_forall
-        fun ω => by
-          rw [Real.norm_eq_abs]
-          exact habsψ k ω) ?_
-    filter_upwards [hcatch] with ω ⟨j, hj0, hjlt⟩
+      (fun k => (measurable_kingmanCompare hf_meas hs_meas).aestronglyMeasurable)
+      (hs_int.abs.add (hf 1 Nat.one_pos).abs)
+      (fun k => Eventually.of_forall fun ω => by
+        rw [Real.norm_eq_abs]
+        exact abs_kingmanCompare_le f slope k ω) ?_
+    filter_upwards [hne] with ω htop
+    obtain ⟨j, hj0, hjlt⟩ := exists_lt_mul_kingmanLiminfReal_add (ω := ω)
+      (EReal.coe_toReal htop (kingmanLiminf_ne_bot hC ω)).symm hε
     refine tendsto_const_nhds.congr' ?_
     filter_upwards [eventually_ge_atTop j] with k hk
-    have hex : HasKingmanExcursion f slope k ω := by
-      refine ⟨j, hj0, hk, ?_⟩
-      simpa only [slope] using hjlt
-    unfold ψ
+    have hex : HasKingmanExcursion f slope k ω := ⟨j, hj0, hk, hjlt⟩
     rw [kingmanCompare, ite_eq_left hex]
-  have hint_add : ∫ ω, kingmanLiminfReal f ω + ε ∂μ =
-      ∫ ω, kingmanLiminfReal f ω ∂μ + ε := by
+  have hint_slope : ∫ ω, slope ω ∂μ = ∫ ω, kingmanLiminfReal f ω ∂μ + ε := by
+    simp only [slope]
     rw [integral_add hg_int (integrable_const ε), integral_const]
     simp [measureReal_def, IsProbabilityMeasure.measure_univ]
-  have hlim : L ≤ ∫ ω, kingmanLiminfReal f ω + ε ∂μ := by
-    refine le_of_tendsto_of_tendsto tendsto_const_nhds hψ_lim ?_
-    filter_upwards [eventually_gt_atTop 0] with k hk
-    exact hLk k hk
-  simpa [hint_add] using hlim
+  rw [← hint_slope]
+  refine le_of_tendsto_of_tendsto tendsto_const_nhds hψ_lim ?_
+  filter_upwards [eventually_gt_atTop 0] with k hk
+  exact sInf_le_integral_kingmanCompare hT hf hf_meas hsub hC hs_int hs_meas hsconst hk
 
 end CKMA

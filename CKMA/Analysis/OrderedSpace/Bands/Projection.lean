@@ -6,9 +6,9 @@ Authors: CKMA contributors
 module
 
 public import CKMA.Analysis.OrderedSpace.Bands.Lattice
-public import Mathlib.Algebra.Order.Hom.Monoid
 public import Mathlib.Algebra.Module.Submodule.Range
-public import Mathlib.Algebra.Module.LinearMap.Basic
+import Mathlib.Algebra.Order.Hom.Monoid
+import Mathlib.Tactic.Abel
 
 /-!
 # Contractive projections on Riesz spaces
@@ -31,24 +31,25 @@ inside, and a smaller range yields a smaller projection.
 
 noncomputable section
 
-set_option linter.unusedSectionVars false
-
 namespace CKMA
 
 variable {E : Type*} [AddCommGroup E] [Lattice E] [Module ℝ E]
     [IsOrderedAddMonoid E] [IsOrderedModule ℝ E]
 
+omit [IsOrderedModule ℝ E] in
 /-- A positive linear map on a Riesz space is monotone. -/
 @[deprecated "use `(monotone_iff_map_nonneg P).2`" (since := "2026-11-15")]
 theorem positiveLinearMap_monotone {P : E →ₗ[ℝ] E}
     (hpos : ∀ x, 0 ≤ x → 0 ≤ P x) : Monotone P :=
   (monotone_iff_map_nonneg P).2 hpos
 
+omit [IsOrderedModule ℝ E] in
 /-- The complement of a contractive positive projection is nonnegative on the cone. -/
 theorem contractiveProjection_complement_nonneg {P : E →ₗ[ℝ] E}
     (hcon : ∀ x, 0 ≤ x → P x ≤ x) {x : E} (hx : 0 ≤ x) : 0 ≤ x - P x :=
   sub_nonneg.2 (hcon x hx)
 
+omit [IsOrderedModule ℝ E] in
 /-- The complement of a contractive positive projection is monotone. -/
 private theorem contractiveProjection_complement_monotone {P : E →ₗ[ℝ] E}
     (hcon : ∀ x, 0 ≤ x → P x ≤ x) : Monotone fun x => x - P x := by
@@ -61,6 +62,7 @@ private theorem contractiveProjection_complement_monotone {P : E →ₗ[ℝ] E}
     abel
   exact sub_nonneg.1 (by rw [← hdiff]; exact h0)
 
+omit [IsOrderedModule ℝ E] in
 /-- Positive values of a contractive projection are disjoint from the complement. -/
 theorem contractiveProjection_disjoint_nonneg {P : E →ₗ[ℝ] E}
     (hidem : ∀ x, P (P x) = P x) (hcon : ∀ x, 0 ≤ x → 0 ≤ P x ∧ P x ≤ x)
@@ -85,6 +87,7 @@ theorem contractiveProjection_disjoint_nonneg {P : E →ₗ[ℝ] E}
   rw [hIz, add_zero, hPz] at hz
   exact hz
 
+omit [IsOrderedModule ℝ E] in
 /-- Absolute value passes inside a contractive projection. -/
 theorem contractiveProjection_abs {P : E →ₗ[ℝ] E}
     (hcon : ∀ x, 0 ≤ x → 0 ≤ P x ∧ P x ≤ x)
@@ -106,6 +109,7 @@ theorem contractiveProjection_abs {P : E →ₗ[ℝ] E}
     _ = P (x⁺ + x⁻) := by rw [← map_add]
     _ = P |x| := by rw [posPart_add_negPart]
 
+omit [IsOrderedModule ℝ E] in
 /-- Absolute value passes inside the complementary projection. -/
 private theorem contractiveProjection_complement_abs {P : E →ₗ[ℝ] E}
     (hcon : ∀ x, 0 ≤ x → 0 ≤ P x ∧ P x ≤ x)
@@ -145,6 +149,7 @@ private theorem contractiveProjection_complement_abs {P : E →ₗ[ℝ] E}
         (x⁺ - P x⁺) + (x⁻ - P x⁻) = (x⁺ + x⁻) - (P x⁺ + P x⁻) := by abel
         _ = |x| - P |x| := by rw [← map_add, posPart_add_negPart x]
 
+omit [IsOrderedModule ℝ E] in
 /-- A contractive projection is lattice-disjoint from its complement. -/
 theorem contractiveProjection_disjoint {P : E →ₗ[ℝ] E}
     (hidem : ∀ x, P (P x) = P x) (hcon : ∀ x, 0 ≤ x → 0 ≤ P x ∧ P x ≤ x)
@@ -153,6 +158,7 @@ theorem contractiveProjection_disjoint {P : E →ₗ[ℝ] E}
     contractiveProjection_complement_abs hcon y]
   exact contractiveProjection_disjoint_nonneg hidem hcon (abs_nonneg x) (abs_nonneg y)
 
+omit [IsOrderedModule ℝ E] in
 /-- On the positive cone, a contractive projection is the maximum of its range
 in the order interval. -/
 private theorem contractiveProjection_isLUB {P : E →ₗ[ℝ] E}
@@ -172,6 +178,7 @@ private theorem contractiveProjection_isLUB {P : E →ₗ[ℝ] E}
   · intro b hb
     exact hb ⟨LinearMap.mem_range_self P x, (hcon x hx).1, (hcon x hx).2⟩
 
+omit [Lattice E] [IsOrderedAddMonoid E] [IsOrderedModule ℝ E] in
 /-- A contractive projection fixes every vector of its range. -/
 theorem contractiveProjection_eq_of_mem_range {P : E →ₗ[ℝ] E}
     (hidem : ∀ x, P (P x) = P x) {y : E} (hy : y ∈ LinearMap.range P) :
@@ -179,6 +186,7 @@ theorem contractiveProjection_eq_of_mem_range {P : E →ₗ[ℝ] E}
   obtain ⟨z, hz⟩ := hy
   rw [← hz, hidem]
 
+omit [IsOrderedModule ℝ E] in
 /-- A contractive projection with smaller range is smaller on the positive cone. -/
 theorem contractiveProjection_le_of_range_subset {P Q : E →ₗ[ℝ] E}
     (hPidem : ∀ x, P (P x) = P x) (hPcon : ∀ x, 0 ≤ x → 0 ≤ P x ∧ P x ≤ x)
@@ -189,6 +197,7 @@ theorem contractiveProjection_le_of_range_subset {P Q : E →ₗ[ℝ] E}
     ⟨hsubset (LinearMap.mem_range_self Q x), (hQcon x hx).1, (hQcon x hx).2⟩
   exact (contractiveProjection_isLUB hPidem hPcon hx).1 hmem
 
+omit [Lattice E] [IsOrderedAddMonoid E] [IsOrderedModule ℝ E] in
 /-- A contractive projection fixes a map whose range it contains. -/
 private theorem contractiveProjection_comp_eq_of_range_subset {P Q : E →ₗ[ℝ] E}
     (hPidem : ∀ x, P (P x) = P x)
@@ -198,6 +207,7 @@ private theorem contractiveProjection_comp_eq_of_range_subset {P Q : E →ₗ[�
   exact contractiveProjection_eq_of_mem_range hPidem
     (hsubset (LinearMap.mem_range_self Q x))
 
+omit [IsOrderedModule ℝ E] in
 /-- Nested contractive projections commute, and the smaller one absorbs the larger. -/
 theorem contractiveProjection_comp_left_eq_of_range_subset {P Q : E →ₗ[ℝ] E}
     (hPidem : ∀ x, P (P x) = P x) (hPcon : ∀ x, 0 ≤ x → 0 ≤ P x ∧ P x ≤ x)
@@ -231,6 +241,7 @@ theorem contractiveProjection_comp_left_eq_of_range_subset {P Q : E →ₗ[ℝ] 
   rw [LinearMap.comp_apply, ← posPart_sub_negPart x, map_sub, map_sub, map_sub,
     hpos (posPart_nonneg x), hpos (negPart_nonneg x)]
 
+omit [IsOrderedModule ℝ E] in
 /-- The difference of nested contractive projections is again a contractive projection. -/
 theorem contractiveProjection_sub {P Q : E →ₗ[ℝ] E}
     (hPidem : ∀ x, P (P x) = P x) (hPcon : ∀ x, 0 ≤ x → 0 ≤ P x ∧ P x ≤ x)

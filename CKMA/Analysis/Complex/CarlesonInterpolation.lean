@@ -6,7 +6,6 @@ Authors: CKMA contributors
 module
 
 public import CKMA.Analysis.Complex.Hardy
-public import Mathlib.LinearAlgebra.Matrix.PosDef
 
 /-!
 # Carleson measures and bounded disk interpolation

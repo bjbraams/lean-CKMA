@@ -6,14 +6,7 @@ Authors: CKMA contributors
 module
 
 public import CKMA.Probability.InfinitelyDivisible.Basic
-public import Mathlib.Analysis.Complex.Exponential
-public import Mathlib.Analysis.Normed.Algebra.Exponential
-public import Mathlib.Analysis.RCLike.Basic
-public import Mathlib.Analysis.SpecificLimits.Normed
-public import Mathlib.Basic.ENNReal.Basic
-public import Mathlib.Data.Nat.Factorial.Basic
-public import Mathlib.MeasureTheory.Integral.Bochner.SumMeasure
-public import Mathlib.Topology.Algebra.InfiniteSum.ENNReal
+public import Mathlib.MeasureTheory.Measure.CharacteristicFunction.Basic
 
 /-!
 # Convolution powers and compound Poisson laws

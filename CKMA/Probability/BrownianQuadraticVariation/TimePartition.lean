@@ -5,10 +5,13 @@ Authors: CKMA contributors
 -/
 module
 
-public import Mathlib.Order.Interval.Finset.Fin
-public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-public import Mathlib.Data.Real.Basic
-public import Mathlib.Data.NNReal.Basic
+public import Mathlib.Basic.NNReal.Defs
+public import Mathlib.Data.Finset.Lattice.Fold
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+public import Mathlib.Data.Fintype.Basic
+
+import Mathlib.Order.Interval.Finset.Fin
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Deterministic time partitions for quadratic variation
@@ -40,7 +43,6 @@ noncomputable section
 namespace CKMA
 
 open scoped NNReal BigOperators
-open Classical
 
 /-- A finite deterministic partition of `[0,T]`. Repeated nodes are allowed. -/
 structure TimePartition (T : ℝ≥0) where

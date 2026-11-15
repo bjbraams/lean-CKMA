@@ -5,8 +5,11 @@ Authors: CKMA contributors
 -/
 module
 
-public import Mathlib.Topology.Instances.EReal.Lemmas
-public import TauCeti.Topology.MetricSpace.Ekeland
+public import Mathlib.Data.EReal.Operations
+public import Mathlib.Topology.Semicontinuity.Defs
+public import Mathlib.Topology.MetricSpace.Defs
+public import Mathlib.Topology.UniformSpace.Cauchy
+import TauCeti.Topology.MetricSpace.Ekeland
 
 /-!
 # Ekeland's variational principle

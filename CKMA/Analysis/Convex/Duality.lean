@@ -8,12 +8,12 @@ module
 public import CKMA.Analysis.Convex.Basic
 public import CKMA.Analysis.Convex.Duality.Choquet
 public import CKMA.Analysis.Convex.Duality.KKT
-public import TauCeti.Analysis.Convex.FenchelMoreau
 public import Mathlib.Analysis.Convex.Extreme
-public import Mathlib.Tactic
 public import Mathlib.Topology.Algebra.ContinuousAffineMap
-public import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
 public import Mathlib.MeasureTheory.Integral.Bochner.Basic
+import CKMA.Analysis.Convex.Duality.FenchelRockafellar
+import CKMA.Analysis.Convex.Duality.Sum
+import Mathlib.Tactic
 
 /-!
 # Choquet measures, convex duality, and multiplier conditions

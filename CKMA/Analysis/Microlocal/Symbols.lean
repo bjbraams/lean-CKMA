@@ -6,8 +6,9 @@ Authors: CKMA contributors
 module
 
 public import CKMA.Analysis.PDE.Basic
-public import Mathlib.Analysis.Fourier.FourierTransform
-public import Mathlib.Analysis.Fourier.LpSpace
+public import Mathlib.Analysis.Distribution.SchwartzSpace.Basic
+public import Mathlib.Analysis.Normed.Lp.MeasurableSpace
+public import Mathlib.MeasureTheory.Measure.Haar.OfBasis
 
 /-!
 # Global symbols, left quantization and Sobolev estimates

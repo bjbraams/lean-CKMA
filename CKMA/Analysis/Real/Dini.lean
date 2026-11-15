@@ -8,6 +8,8 @@ module
 public import CKMA.Analysis.Real.Dini.Basic
 public import CKMA.Analysis.Real.Dini.Assembly
 
+import CKMA.Analysis.Real.Dini.Pattern
+
 /-!
 # Dini derivatives and Denjoy–Young–Saks alternatives
 

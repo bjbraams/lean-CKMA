@@ -6,9 +6,6 @@ Authors: CKMA contributors
 module
 
 public import CKMA.Analysis.OrderedSpace.Representation.AL.Gluing
-public import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
-public import Mathlib.MeasureTheory.Integral.Lebesgue.Basic
-public import Mathlib.Topology.Algebra.InfiniteSum.ENNReal
 
 /-!
 # Sum of the band measures
@@ -36,9 +33,7 @@ vector meets only countably many bands, and the norm series forces the rest to v
 
 noncomputable section
 
-set_option linter.unusedSectionVars false
-
-open Classical Set Filter Function MeasureTheory Topology
+open Set Filter Function MeasureTheory Topology
 open scoped ENNReal
 
 namespace CKMA
@@ -69,11 +64,13 @@ def bandMeasure (i : BandIndex (E := E)) : Measure (BandFiber hE i) :=
 def bandIncl (i : BandIndex (E := E)) : BandFiber hE i → ALCarrier hE :=
   Sigma.mk i
 
+omit [Fact (1 ≤ (1 : ENNReal))] in
 /-- A set in the disjoint union is measurable exactly on every fiber. -/
 private theorem measurableSet_alCarrier {s : Set (ALCarrier hE)} :
     MeasurableSet s ↔ ∀ i, MeasurableSet (bandIncl hE i ⁻¹' s) := by
   simp only [MeasurableSpace.measurableSet_iInf, MeasurableSpace.map_def, bandIncl]
 
+omit [Fact (1 ≤ (1 : ENNReal))] in
 /-- Each fiber inclusion is a measurable embedding. -/
 private theorem bandIncl_measurableEmbedding (i : BandIndex (E := E)) :
     MeasurableEmbedding (bandIncl hE i) where
@@ -103,6 +100,7 @@ private theorem bandIncl_measurableEmbedding (i : BandIndex (E := E)) :
 def alMeasure : Measure (ALCarrier hE) :=
   Measure.sum fun i => (bandMeasure hE i).map (bandIncl hE i)
 
+omit [Fact (1 ≤ (1 : ENNReal))] in
 /-- Fiberwise almost-everywhere equal measurable functions agree on the sum. -/
 theorem ae_eq_alCarrier {f g : ALCarrier hE → ℝ} (hf : Measurable f) (hg : Measurable g)
     (h : ∀ i, f ∘ bandIncl hE i =ᵐ[bandMeasure hE i] g ∘ bandIncl hE i) :
@@ -129,11 +127,13 @@ def toBandₗ (i : BandIndex (E := E)) : E →ₗ[ℝ] ClosedPrincipalBand i.vec
     ext
     exact (indexProjection hE i.mem_family).map_smul c x
 
+omit [Fact (1 ≤ (1 : ENNReal))] in
 /-- Underlying vector of `toBandₗ` is the index projection. -/
 @[simp]
 private theorem toBand_toVec (i : BandIndex (E := E)) (x : E) :
     (toBandₗ hE i x).toVec = indexProjection hE i.mem_family x := rfl
 
+omit [Fact (1 ≤ (1 : ENNReal))] in
 /-- The band projection preserves binary suprema. -/
 private theorem toBand_sup (i : BandIndex (E := E)) (x y : E) :
     toBandₗ hE i (x ⊔ y) = toBandₗ hE i x ⊔ toBandₗ hE i y := by
@@ -293,6 +293,7 @@ private theorem alRepₗ_sup (x y : E) :
     (Lp.memLp (alRepₗ hE x ⊔ alRepₗ hE y)) (hpt.trans hcoe.symm)
   simpa [alRepₗ, MemLp.coeFn_toLp] using hEq
 
+omit [Fact (1 ≤ (1 : ENNReal))] in
 /-- Restriction of an L¹ function to one fiber is integrable. -/
 theorem memLp_slice (ψ : Lp ℝ 1 (alMeasure hE)) (i : BandIndex (E := E)) :
     MemLp ((ψ : ALCarrier hE → ℝ) ∘ bandIncl hE i) 1 (bandMeasure hE i) := by
@@ -307,12 +308,14 @@ def alSlice (ψ : Lp ℝ 1 (alMeasure hE)) (i : BandIndex (E := E)) : ClosedPrin
   (componentRep hE i).symm ((memLp_slice hE ψ i).toLp
     ((ψ : ALCarrier hE → ℝ) ∘ bandIncl hE i))
 
+omit [Fact (1 ≤ (1 : ENNReal))] in
 /-- A vector of a closed band is fixed by its own index projection. -/
 private theorem indexProjection_eq_self_of_band (i : BandIndex (E := E))
     (y : ClosedPrincipalBand i.vec) :
     indexProjection hE i.mem_family y.toVec = y.toVec :=
   bandProjection_eq_of_mem_closure hE (bandIndex_nonneg i) y.mem_band
 
+omit [Fact (1 ≤ (1 : ENNReal))] in
 /-- A vector fixed by one band is killed by every other band. -/
 private theorem indexProjection_fixed_cross {i j : BandIndex (E := E)} (hij : i ≠ j) {x : E}
     (hx : indexProjection hE i.mem_family x = x) :
@@ -327,6 +330,7 @@ private theorem indexProjection_fixed_cross {i j : BandIndex (E := E)} (hij : i 
   rw [hsub, indexProjection_cross_eq_zero hE hij (posPart_nonneg x),
     indexProjection_cross_eq_zero hE hij (negPart_nonneg x), sub_self]
 
+omit [Fact (1 ≤ (1 : ENNReal))] in
 /-- Projection passes inside a sum of vectors supported on distinct bands. -/
 private theorem indexProjection_tsum_fixed {z : BandIndex (E := E) → E} (hsum : Summable z)
     (hself : ∀ i, indexProjection hE i.mem_family (z i) = z i)

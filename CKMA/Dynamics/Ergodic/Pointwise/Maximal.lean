@@ -5,12 +5,11 @@ Authors: CKMA contributors
 -/
 module
 
-public import Mathlib.Dynamics.BirkhoffSum.Average
-public import Mathlib.Dynamics.BirkhoffSum.QuasiMeasurePreserving
-public import Mathlib.Dynamics.Ergodic.MeasurePreserving
-public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
-public import Mathlib.MeasureTheory.Integral.Bochner.Set
-public import Mathlib.MeasureTheory.Integral.DominatedConvergence
+public import Mathlib.Dynamics.BirkhoffSum.Basic
+public import Mathlib.MeasureTheory.Integral.Bochner.Basic
+
+import Mathlib.Dynamics.BirkhoffSum.QuasiMeasurePreserving
+import Mathlib.MeasureTheory.Integral.Bochner.Set
 
 import Mathlib.Tactic
 

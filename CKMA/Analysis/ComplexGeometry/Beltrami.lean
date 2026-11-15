@@ -7,8 +7,6 @@ module
 
 public import CKMA.Analysis.Complex.Basic
 public import TauCeti.Analysis.Sobolev.WeakDeriv.Basic
-public import Mathlib.MeasureTheory.Function.LpSpace.Basic
-public import Mathlib.MeasureTheory.Measure.Lebesgue.Complex
 
 /-!
 # Weak Beltrami equations and quasiconformal area distortion

@@ -5,8 +5,12 @@ Authors: CKMA contributors
 -/
 module
 
-public import TauCeti.Analysis.LocallyConvex.Bipolar
-public import Mathlib.Analysis.LocallyConvex.WeakDual
+public import Mathlib.Analysis.LocallyConvex.Polar
+public import Mathlib.Analysis.LocallyConvex.AbsConvex
+public import Mathlib.Analysis.RCLike.Basic
+
+import TauCeti.Analysis.LocallyConvex.Bipolar
+import Mathlib.Analysis.LocallyConvex.WeakDual
 
 /-!
 # The bipolar theorem for a weak bilinear pairing

@@ -6,18 +6,11 @@ Authors: CKMA contributors
 module
 
 public import Mathlib.Analysis.CStarAlgebra.Classes
-public import Mathlib.Topology.Algebra.InfiniteSum.Basic
 public import TauCeti.Probability.FreeProbability.Cumulant.Series
 
-import Batteries.Data.Nat.Lemmas
-import Mathlib.Analysis.Normed.Operator.Basic
-import Mathlib.Analysis.SpecificLimits.Normed
 import Mathlib.Data.List.ChainOfFn
-import Mathlib.Data.Nat.Choose.Central
-import TauCeti.Combinatorics.Enumerative.Catalan
 import TauCeti.Combinatorics.NoncrossingPartition.Norm
 import TauCeti.Probability.FreeProbability.CentralLimit
-import TauCeti.Probability.FreeProbability.Cumulant.Bounds
 import TauCeti.RingTheory.PowerSeries.Substitution
 
 /-!

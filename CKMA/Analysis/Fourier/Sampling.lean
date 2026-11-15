@@ -8,6 +8,7 @@ module
 public import CKMA.Analysis.Fourier.Sampling.Band
 
 import CKMA.Analysis.Fourier.LpSpace
+import Mathlib.MeasureTheory.Function.LpSeminorm.LpNorm
 
 /-!
 # Bandlimited representatives and Shannon sampling

@@ -7,9 +7,7 @@ module
 
 public import CKMA.Analysis.Convex.Basic
 public import TauCeti.Analysis.Convex.Subdifferential
-public import Mathlib.Analysis.InnerProductSpace.Projection.Minimal
 import TauCeti.Analysis.Convex.FenchelMoreau
-import Mathlib.Analysis.SpecificLimits.Basic
 
 /-!
 # Proximal points of extended-real convex functions

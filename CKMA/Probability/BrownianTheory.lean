@@ -11,10 +11,9 @@ public import Mathlib.Probability.BrownianMotion.Basic
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.ContinuousMap
 public import Mathlib.Probability.Process.Stopping
 public import Mathlib.Topology.MetricSpace.Holder
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Metrizable
-import Mathlib.MeasureTheory.Integral.DominatedConvergence
-import Mathlib.MeasureTheory.Measure.HasOuterApproxClosed
+
 import TauCeti.Probability.Process.StoppingApproximation
+import CKMA.Probability.ProjectiveLimit
 
 /-!
 # Brownian laws, modifications, strong Markov and reflection (08.1, 08.3, 08.4)

@@ -5,16 +5,11 @@ Authors: CKMA contributors
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Exponential
-public import Mathlib.Analysis.Complex.ExponentialBounds
 public import Mathlib.Analysis.InnerProductSpace.PiL2
-public import Mathlib.Algebra.BigOperators.Fin
-public import Mathlib.Algebra.BigOperators.Ring.Finset
-public import Mathlib.Algebra.Order.Floor.Semiring
-public import Mathlib.Analysis.SpecialFunctions.Gaussian.GaussianIntegral
-public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Series
-public import Mathlib.Data.Fin.Tuple.Basic
-public import Mathlib.MeasureTheory.Group.Integral
+
+import Mathlib.Analysis.Complex.ExponentialBounds
+import Mathlib.Analysis.SpecialFunctions.Gaussian.GaussianIntegral
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Series
 
 /-!
 # Rademacher chaos and the Johnson–Lindenstrauss lemma

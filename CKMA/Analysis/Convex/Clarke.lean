@@ -5,33 +5,16 @@ Authors: CKMA contributors
 -/
 module
 
-public import Mathlib.Analysis.Calculus.FDeriv.Basic
-public import Mathlib.LinearAlgebra.FiniteDimensional.Basic
-public import Mathlib.Analysis.Convex.Topology
-public import Mathlib.Data.EReal.Operations
-public import Mathlib.Order.LiminfLimsup
-public import Mathlib.Analysis.Convex.Cone.Extension
-public import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
-public import Mathlib.Topology.Algebra.Order.LiminfLimsup
-public import Mathlib.Topology.Instances.EReal.Lemmas
-public import Mathlib.Analysis.Calculus.Deriv.Add
-public import Mathlib.Analysis.Calculus.Deriv.Comp
-public import Mathlib.Analysis.Calculus.Deriv.Mul
-public import Mathlib.Analysis.Calculus.Deriv.Slope
-public import Mathlib.Analysis.LocallyConvex.Separation
-public import Mathlib.Analysis.LocallyConvex.WithSeminorms
-public import Mathlib.Analysis.Normed.Module.FiniteDimension
-public import Mathlib.Analysis.Normed.Operator.Basic
-public import Mathlib.Analysis.Normed.Operator.Bilinear
-public import Mathlib.Analysis.SpecificLimits.Basic
-public import Mathlib.Order.WellFounded
-public import Mathlib.Topology.MetricSpace.Lipschitz
-public import Mathlib.Topology.MetricSpace.ProperSpace
-public import Mathlib.Topology.Order.DenselyOrdered
-public import Mathlib.Topology.Order.OrderClosed
-public import Mathlib.Topology.Sequences
-
+public import Mathlib.Analysis.Calculus.FDeriv.Defs
+public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
+public import Mathlib.Topology.Algebra.Module.Spaces.ContinuousLinearMap
 import CKMA.Analysis.Convex.Clarke.Representation
+import Mathlib.Analysis.Calculus.Deriv.Comp
+import Mathlib.Analysis.Calculus.Deriv.Mul
+import Mathlib.Analysis.Calculus.Deriv.Slope
+import Mathlib.Analysis.LocallyConvex.Separation
+import Mathlib.Analysis.Normed.Module.FiniteDimension
+import Mathlib.Topology.Algebra.Order.LiminfLimsup
 
 /-!
 # Clarke directional derivatives and generalized gradients
@@ -383,7 +366,6 @@ private lemma clarkeReal_smul_le {f : E → ℝ} {x : E} {r : ℝ} (hr : 0 < r) 
   · simp [clarkeReal_zero, zero_smul]
   · exact le_of_eq (clarkeReal_smul hr hf hc d).symm
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Hahn–Banach supplies a continuous linear functional in the subdifferential that attains the
 directional derivative at `d`. -/
 private lemma exists_mem_clarkeSubdifferential_eq_clarkeReal {f : E → ℝ} {x : E} {r : ℝ}

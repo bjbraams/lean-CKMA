@@ -6,7 +6,6 @@ Authors: CKMA contributors
 module
 
 public import CKMA.Analysis.Asymptotics.Expansions
-public import Mathlib.Analysis.Complex.TaylorSeries
 
 /-!
 # Directional Borel–Laplace summation

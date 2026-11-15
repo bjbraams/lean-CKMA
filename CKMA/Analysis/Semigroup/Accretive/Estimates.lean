@@ -5,17 +5,11 @@ Authors: CKMA contributors
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Intervals
-public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-public import Mathlib.Analysis.Normed.Operator.Basic
-public import Mathlib.Analysis.SpecificLimits.Normed
-public import Mathlib.Data.Nat.Choose.Sum
+public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.Analysis.Real.Sqrt
-public import Mathlib.Topology.Algebra.InfiniteSum.NatInt
-public import Mathlib.Topology.Instances.NNReal.Lemmas
-public import Mathlib.Algebra.Order.Floor.Semiring
-public import Mathlib.Topology.MetricSpace.Cauchy
-public import Mathlib.Topology.MetricSpace.Lipschitz
+
+import Mathlib.Analysis.SpecificLimits.Basic
+import Mathlib.Tactic.Module
 
 /-!
 # Accretive resolvents and nonlinear contraction semigroups

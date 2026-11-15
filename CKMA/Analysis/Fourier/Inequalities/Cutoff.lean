@@ -6,23 +6,8 @@ Authors: CKMA contributors
 module
 
 public import Mathlib.Analysis.Fourier.LpSpace
-public import Mathlib.Analysis.Fourier.FourierTransformDeriv
-public import Mathlib.MeasureTheory.Measure.Lebesgue.VolumeOfBalls
 
-import Mathlib.Analysis.Calculus.BumpFunction.InnerProduct
-import Mathlib.Analysis.Calculus.FDeriv.Add
-import Mathlib.Analysis.Calculus.FDeriv.Comp
-import Mathlib.Analysis.Calculus.FDeriv.Equiv
-import Mathlib.Analysis.Calculus.FDeriv.Mul
-import Mathlib.Analysis.Calculus.LineDeriv.IntegrationByParts
-import Mathlib.MeasureTheory.Function.LocallyIntegrable
-import Mathlib.MeasureTheory.Function.LpSpace.Indicator
-import Mathlib.MeasureTheory.Function.LpSeminorm.CompareExp
 import Mathlib.MeasureTheory.Function.LpSeminorm.LpNorm
-import Mathlib.MeasureTheory.Integral.DominatedConvergence
-import Mathlib.MeasureTheory.Measure.Haar.NormedSpace
-import Mathlib.Topology.Algebra.ConstMulAction
-import Mathlib.Topology.Order.Compact
 
 /-!
 # Frequency bump cutoffs and coordinate integration by parts

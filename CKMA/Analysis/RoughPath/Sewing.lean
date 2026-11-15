@@ -8,20 +8,7 @@ module
 public import CKMA.Analysis.RoughPath.Sewing.Construction
 public import CKMA.Analysis.RoughPath.Sewing.YoungIntegral
 public import Mathlib.Topology.MetricSpace.Holder
-public import Mathlib.Topology.ContinuousMap.Compact
-public import Mathlib.Analysis.Normed.Operator.Basic
-public import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
-public import Mathlib.Analysis.Normed.Group.InfiniteSum
-public import Mathlib.Analysis.Normed.Group.FunctionSeries
-public import Mathlib.Analysis.SpecificLimits.Basic
-public import Mathlib.Tactic.Continuity
-import Mathlib.Tactic.FieldSimp
-import Mathlib.Tactic.Linarith
-import Mathlib.Tactic.Positivity
-import Mathlib.Tactic.Ring
-import Mathlib.Algebra.Order.Floor.Semiring
-import Mathlib.Algebra.Order.Archimedean.Real.Basic
-import Mathlib.Topology.Instances.Real.Lemmas
+import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
 
 /-!
 # Sewing and Young integration

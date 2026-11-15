@@ -6,10 +6,6 @@ Authors: CKMA contributors
 module
 
 public import Mathlib.Analysis.Complex.Basic
-public import Mathlib.Analysis.Normed.Group.Basic
-public import Mathlib.Order.ConditionallyCompleteLattice.Basic
-public import Mathlib.Topology.Algebra.InfiniteSum.Basic
-public import Mathlib.Topology.Compactness.Compact
 
 /-!
 # Normal summability and basic complex domains

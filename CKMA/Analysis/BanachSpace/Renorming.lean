@@ -5,9 +5,7 @@ Authors: CKMA contributors
 -/
 module
 
-public import CKMA.Analysis.BanachSpace.Geometry
-public import Mathlib.Analysis.Normed.Module.Seminorm.Basic
-public import TauCeti.Analysis.Normed.Module.Dual.Reflexive.Basic
+public import Mathlib.Analysis.Normed.Module.DoubleDual
 
 /-!
 # Finite representability and superreflexive renorming

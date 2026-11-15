@@ -5,15 +5,11 @@ Authors: CKMA contributors
 -/
 module
 
-public import CKMA.Probability.GaussianLogSobolev.IntegrationByParts
-public import Mathlib.Analysis.Calculus.ParametricIntegral
-public import Mathlib.Analysis.SpecialFunctions.Log.Deriv
-public import Mathlib.Analysis.SpecialFunctions.Sqrt
-public import Mathlib.MeasureTheory.Function.L2Space
-public import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
-public import Mathlib.MeasureTheory.Integral.Prod
-public import Mathlib.Probability.HasLaw
-public import Mathlib.Probability.Independence.Basic
+public import Mathlib.Probability.Distributions.Gaussian.Real
+
+import CKMA.Probability.GaussianLogSobolev.IntegrationByParts
+import Mathlib.Analysis.Calculus.ParametricIntegral
+import Mathlib.Analysis.SpecialFunctions.Sqrt
 
 /-!
 # One-dimensional Ornstein–Uhlenbeck semigroup
@@ -26,7 +22,8 @@ integration-by-parts identity relating the generator action on `log u` to the Fi
 
 * `CKMA.ouScale`: Mehler scale factor `e^{-t}`.
 * `CKMA.ouStdev`: Mehler standard deviation `√(1 - e^{-2t})`.
-* `CKMA.ouSemigroup`: Ornstein–Uhlenbeck semigroup `P_t f(x) = ∫ f(e^{-t} x + √(1 - e^{-2t}) y) dγ(y)`.
+* `CKMA.ouSemigroup`: Ornstein–Uhlenbeck semigroup
+  `P_t f(x) = ∫ f(e^{-t} x + √(1 - e^{-2t}) y) dγ(y)`.
 
 ## Main results
 
@@ -666,6 +663,107 @@ lemma abs_deriv_ouSemigroup_time_le {f : ℝ → ℝ} {s x t0 B : ℝ} (ht0 : 0 
     _ = |B| * |x| + (|B| * C) * ∫ y, |y| ∂γ := hsplit
     _ = |B| * (|x| + C * ∫ y, |y| ∂γ) := by ring
 
+/-- Logarithms of the semigroup stay bounded when the integrand takes values in `[δ, M]`. -/
+lemma abs_log_ouSemigroup_le {f : ℝ → ℝ} {s x δ M : ℝ} (hf : Continuous f) (hδ : 0 < δ)
+    (hδf : ∀ y, δ ≤ f y) (hM : ∀ y, |f y| ≤ M) :
+    |Real.log (ouSemigroup s f x)| ≤ max |Real.log δ| |Real.log M| := by
+  have hlow : δ ≤ ouSemigroup s f x := ouSemigroup_lower hf ⟨M, hM⟩ hδf
+  have hu_le : ouSemigroup s f x ≤ M :=
+    ouSemigroup_upper hf ⟨M, hM⟩ (fun y => (le_abs_self (f y)).trans (hM y))
+  have hle1 := Real.log_le_log hδ hlow
+  have hle2 := Real.log_le_log (hδ.trans_le hlow) hu_le
+  refine abs_le.mpr ⟨?_, ?_⟩
+  · exact ((neg_le_neg (le_max_left _ _)).trans (neg_abs_le _)).trans hle1
+  · exact (hle2.trans (le_abs_self _)).trans (le_max_right _ _)
+
+/-- The space derivative of the semigroup of a `C¹` function is continuous. -/
+lemma continuous_deriv_ouSemigroup_space {f : ℝ → ℝ} {t : ℝ} (hf : ContDiff ℝ 1 f)
+    (hB : ∃ B, ∀ y, |deriv f y| ≤ B) (hM : ∃ M, ∀ y, |f y| ≤ M) :
+    Continuous (deriv (ouSemigroup t f)) := by
+  have hrew : deriv (ouSemigroup t f) = fun x => ouScale t * ouSemigroup t (deriv f) x :=
+    funext fun x => deriv_ouSemigroup_space hf hB hM
+  rw [hrew]
+  exact continuous_const.mul (continuous_ouSemigroup hf.continuous_deriv_one hB)
+
+/-- The second space derivative of the semigroup of a `C²` function is continuous. -/
+lemma continuous_deriv_deriv_ouSemigroup_space {f : ℝ → ℝ} {t : ℝ} (hf : ContDiff ℝ 2 f)
+    (hB : ∃ B, ∀ y, |deriv f y| ≤ B) (hB2 : ∃ B, ∀ y, |deriv (deriv f) y| ≤ B)
+    (hM : ∃ M, ∀ y, |f y| ≤ M) :
+    Continuous (deriv (deriv (ouSemigroup t f))) := by
+  have hrew : deriv (deriv (ouSemigroup t f)) =
+      fun x => ouScale t ^ 2 * ouSemigroup t (deriv (deriv f)) x :=
+    funext fun x => deriv_ouSemigroup_space₂ hf hB hB2 hM
+  rw [hrew]
+  exact continuous_const.mul
+    (continuous_ouSemigroup (contDiff_one_deriv_of_two hf).2.continuous_deriv_one hB2)
+
+/-- At positive time, the time derivative of the semigroup of a `C²` function is continuous in
+space. -/
+lemma continuous_deriv_ouSemigroup_time {f : ℝ → ℝ} {t : ℝ} (ht : 0 < t) (hf : ContDiff ℝ 2 f)
+    (hB : ∃ B, ∀ y, |deriv f y| ≤ B) (hB2 : ∃ B, ∀ y, |deriv (deriv f) y| ≤ B)
+    (hM : ∃ M, ∀ y, |f y| ≤ M) :
+    Continuous (fun x => deriv (fun s => ouSemigroup s f x) t) := by
+  have hrew : (fun x => deriv (fun s => ouSemigroup s f x) t) =
+      fun x => deriv (deriv (ouSemigroup t f)) x - x * deriv (ouSemigroup t f) x :=
+    funext fun x => deriv_ouSemigroup_eq_generator ht hf hB hB2 hM
+  rw [hrew]
+  exact (continuous_deriv_deriv_ouSemigroup_space hf hB hB2 hM).sub
+    (continuous_id.mul
+      (continuous_deriv_ouSemigroup_space (contDiff_one_deriv_of_two hf).1 hB hM))
+
+/-- A power of the Mehler scale times the semigroup of a function bounded by `B` is bounded
+by `B`. -/
+private lemma abs_ouScale_pow_mul_ouSemigroup_le {g : ℝ → ℝ} {t x B : ℝ} (ht : 0 ≤ t)
+    (hg : Continuous g) (hB : ∀ y, |g y| ≤ B) (k : ℕ) :
+    |ouScale t ^ k * ouSemigroup t g x| ≤ B := by
+  rw [abs_mul, abs_of_nonneg (pow_nonneg (ouScale_nonneg t) k)]
+  have hα : ouScale t ^ k ≤ 1 := pow_le_one₀ (ouScale_nonneg t) (ouScale_le_one ht)
+  exact (mul_le_mul hα (abs_ouSemigroup_le hg hB) (abs_nonneg _) zero_le_one).trans_eq
+    (one_mul B)
+
+/-- Derivative of the product of the space derivative of the semigroup with the logarithm of
+the semigroup. -/
+private lemma hasDerivAt_deriv_ouSemigroup_mul_log {f : ℝ → ℝ} {t x δ : ℝ}
+    (hf : ContDiff ℝ 2 f) (hB : ∃ B, ∀ y, |deriv f y| ≤ B)
+    (hB2 : ∃ B, ∀ y, |deriv (deriv f) y| ≤ B) (hM : ∃ M, ∀ y, |f y| ≤ M) (hδ : 0 < δ)
+    (hδf : ∀ y, δ ≤ f y) :
+    HasDerivAt (fun z => deriv (ouSemigroup t f) z * Real.log (ouSemigroup t f z))
+      (deriv (deriv (ouSemigroup t f)) x * Real.log (ouSemigroup t f x) +
+        (deriv (ouSemigroup t f) x) ^ 2 / ouSemigroup t f x) x := by
+  obtain ⟨hf1, hf'1⟩ := contDiff_one_deriv_of_two hf
+  have hpos : 0 < ouSemigroup t f x := hδ.trans_le (ouSemigroup_lower hf.continuous hM hδf)
+  have hdu (z : ℝ) : deriv (ouSemigroup t f) z = ouScale t * ouSemigroup t (deriv f) z :=
+    deriv_ouSemigroup_space hf1 hB hM
+  have huAt : HasDerivAt (ouSemigroup t f) (deriv (ouSemigroup t f) x) x :=
+    (hasDerivAt_ouSemigroup_space hf1 hB hM).congr_deriv (hdu x).symm
+  have hspace := hasDerivAt_ouSemigroup_space (f := deriv f) (t := t) (x := x) hf'1 hB2 hB
+  have hduAt : HasDerivAt (deriv (ouSemigroup t f)) (deriv (deriv (ouSemigroup t f)) x) x :=
+    ((hspace.const_mul (ouScale t)).congr_of_eventuallyEq
+      (Filter.EventuallyEq.of_eq (funext hdu))).congr_deriv (by
+        rw [deriv_ouSemigroup_space₂ hf hB hB2 hM]
+        ring)
+  refine (hduAt.mul (huAt.log hpos.ne')).congr_deriv ?_
+  field_simp [hpos.ne']
+
+/-- The Fisher integrand `a ^ 2 / b` is at most `B ^ 2 / δ` when `|a| ≤ B` and `δ ≤ b`. -/
+private lemma abs_sq_div_le {a b B δ : ℝ} (hδ : 0 < δ) (ha : |a| ≤ B) (hb : δ ≤ b) :
+    |a ^ 2 / b| ≤ B ^ 2 / δ := by
+  rw [abs_div, abs_of_pos (hδ.trans_le hb), abs_sq]
+  have hsq : a ^ 2 ≤ B ^ 2 := by
+    rw [← sq_abs]
+    exact pow_le_pow_left₀ (abs_nonneg _) ha 2
+  exact div_le_div₀ (sq_nonneg _) hsq hδ hb
+
+/-- The product of the identity with a bounded continuous function is integrable for the
+standard Gaussian. -/
+private lemma integrable_id_mul_of_abs_le {ψ : ℝ → ℝ} {C : ℝ} (hψ : Continuous ψ)
+    (hC : ∀ x, |ψ x| ≤ C) : Integrable (fun x => x * ψ x) (gaussianReal 0 1) := by
+  refine Integrable.mono' (integrable_abs_gaussianReal.const_mul C)
+    (continuous_id.mul hψ).aestronglyMeasurable ?_
+  filter_upwards with x
+  rw [Real.norm_eq_abs, abs_mul]
+  exact (mul_le_mul_of_nonneg_left (hC x) (abs_nonneg x)).trans_eq (mul_comm _ _)
+
 /-- Integration by parts converts the generator action on `log` into Fisher information. -/
 lemma integral_generator_mul_log {f : ℝ → ℝ} {t δ : ℝ} (ht : 0 < t) (hf : ContDiff ℝ 2 f)
     (hδ : 0 < δ) (hδf : ∀ y, δ ≤ f y) (hB : ∃ B, ∀ y, |deriv f y| ≤ B)
@@ -679,96 +777,41 @@ lemma integral_generator_mul_log {f : ℝ → ℝ} {t δ : ℝ} (ht : 0 < t) (hf
   obtain ⟨hf1, hf'1⟩ := contDiff_one_deriv_of_two hf
   let γ : Measure ℝ := gaussianReal 0 1
   let u : ℝ → ℝ := ouSemigroup t f
-  let α : ℝ := ouScale t
   have hB0 : 0 ≤ B := le_trans (abs_nonneg _) (hB 0)
   have hB20 : 0 ≤ B2 := le_trans (abs_nonneg _) (hB2 0)
-  have hMpos : 0 < M := lt_of_lt_of_le hδ ((hδf 0).trans ((le_abs_self _).trans (hM 0)))
-  have hpos : ∀ x, 0 < u x := fun x =>
-    lt_of_lt_of_le hδ (ouSemigroup_lower hf.continuous ⟨M, hM⟩ hδf)
-  have hu_le : ∀ x, u x ≤ M := fun x =>
-    ouSemigroup_upper hf.continuous ⟨M, hM⟩ (fun y => (le_abs_self (f y)).trans (hM y))
-  have hdu : ∀ x, deriv u x = α * ouSemigroup t (deriv f) x := fun x =>
-    deriv_ouSemigroup_space (t := t) (x := x) hf1 ⟨B, hB⟩ ⟨M, hM⟩
-  have hdu2 : ∀ x, deriv (deriv u) x =
-      α ^ 2 * ouSemigroup t (deriv (deriv f)) x := fun x =>
-    deriv_ouSemigroup_space₂ (t := t) (x := x) hf ⟨B, hB⟩ ⟨B2, hB2⟩ ⟨M, hM⟩
+  have hlow : ∀ x, δ ≤ u x := fun x => ouSemigroup_lower hf.continuous ⟨M, hM⟩ hδf
+  have hpos : ∀ x, 0 < u x := fun x => hδ.trans_le (hlow x)
   have hgen : ∀ x, deriv (fun s => ouSemigroup s f x) t =
       deriv (deriv u) x - x * deriv u x := fun x =>
     deriv_ouSemigroup_eq_generator (x := x) ht hf ⟨B, hB⟩ ⟨B2, hB2⟩ ⟨M, hM⟩
-  have hdu_bdd : ∀ x, |deriv u x| ≤ B := by
-    intro x
-    rw [hdu x, abs_mul, abs_of_nonneg (ouScale_nonneg t)]
-    have hα : α ≤ 1 := ouScale_le_one (le_of_lt ht)
-    have hP : |ouSemigroup t (deriv f) x| ≤ B :=
-      abs_ouSemigroup_le hf1.continuous_deriv_one hB
-    have hmul := mul_le_mul hα hP (abs_nonneg _) zero_le_one
-    simpa using hmul
-  have hdu2_bdd : ∀ x, |deriv (deriv u) x| ≤ B2 := by
-    intro x
-    rw [hdu2 x, abs_mul, abs_of_nonneg (sq_nonneg α)]
-    have hα : α ^ 2 ≤ 1 := by
-      have hα1 : α ≤ 1 := ouScale_le_one (le_of_lt ht)
-      have hα0 : 0 ≤ α := ouScale_nonneg t
-      nlinarith
-    have hP : |ouSemigroup t (deriv (deriv f)) x| ≤ B2 :=
-      abs_ouSemigroup_le hf'1.continuous_deriv_one hB2
-    have hmul := mul_le_mul hα hP (abs_nonneg _) zero_le_one
-    simpa using hmul
-  have hlog_bdd : ∃ L, ∀ x, |Real.log (u x)| ≤ L := by
-    refine ⟨max |Real.log δ| |Real.log M|, fun x => ?_⟩
-    have hle1 : Real.log δ ≤ Real.log (u x) :=
-      Real.log_le_log hδ (ouSemigroup_lower hf.continuous ⟨M, hM⟩ hδf)
-    have hle2 : Real.log (u x) ≤ Real.log M := Real.log_le_log (hpos x) (hu_le x)
-    refine abs_le.mpr ⟨?_, ?_⟩
-    · have hleft : -max |Real.log δ| |Real.log M| ≤ Real.log δ :=
-        (neg_le_neg (le_max_left _ _)).trans (neg_abs_le _)
-      exact hleft.trans hle1
-    · exact (hle2.trans (le_abs_self _)).trans (le_max_right _ _)
-  obtain ⟨L, hL⟩ := hlog_bdd
+  have hdu_bdd : ∀ x, |deriv u x| ≤ B := fun x => by
+    rw [deriv_ouSemigroup_space hf1 ⟨B, hB⟩ ⟨M, hM⟩, ← pow_one (ouScale t)]
+    exact abs_ouScale_pow_mul_ouSemigroup_le ht.le hf1.continuous_deriv_one hB 1
+  have hdu2_bdd : ∀ x, |deriv (deriv u) x| ≤ B2 := fun x => by
+    rw [deriv_ouSemigroup_space₂ hf ⟨B, hB⟩ ⟨B2, hB2⟩ ⟨M, hM⟩]
+    exact abs_ouScale_pow_mul_ouSemigroup_le ht.le hf'1.continuous_deriv_one hB2 2
+  let L : ℝ := max |Real.log δ| |Real.log M|
+  have hL : ∀ x, |Real.log (u x)| ≤ L := fun x =>
+    abs_log_ouSemigroup_le hf.continuous hδ hδf hM
   let ψ : ℝ → ℝ := fun x => deriv u x * Real.log (u x)
   have hψAt : ∀ x, HasDerivAt ψ
-      (deriv (deriv u) x * Real.log (u x) + (deriv u x) ^ 2 / u x) x := by
-    intro x
-    have huAt : HasDerivAt u (deriv u x) x :=
-      (hasDerivAt_ouSemigroup_space hf1 ⟨B, hB⟩ ⟨M, hM⟩).congr_deriv (hdu x).symm
-    have hlog := huAt.log (hpos x).ne'
-    have hspace := hasDerivAt_ouSemigroup_space (f := deriv f) (t := t) (x := x)
-      hf'1 ⟨B2, hB2⟩ ⟨B, hB⟩
-    have hmul0 := HasDerivAt.const_mul α hspace
-    have hfun : deriv u = fun z => α * ouSemigroup t (deriv f) z := funext hdu
-    have hduAt : HasDerivAt (deriv u) (deriv (deriv u) x) x :=
-      (hmul0.congr_of_eventuallyEq (Filter.EventuallyEq.of_eq hfun)).congr_deriv (by
-        rw [hdu2 x]
-        ring)
-    refine (hduAt.mul hlog).congr_deriv ?_
-    field_simp [(hpos x).ne']
+      (deriv (deriv u) x * Real.log (u x) + (deriv u x) ^ 2 / u x) x := fun x =>
+    hasDerivAt_deriv_ouSemigroup_mul_log hf ⟨B, hB⟩ ⟨B2, hB2⟩ ⟨M, hM⟩ hδ hδf
   have hψ_form : deriv ψ = fun x =>
       deriv (deriv u) x * Real.log (u x) + (deriv u x) ^ 2 / u x :=
     funext fun x => (hψAt x).deriv
   have hu_cont : Continuous u := continuous_ouSemigroup hf.continuous ⟨M, hM⟩
-  have hdu_cont : Continuous (deriv u) := by
-    rw [funext hdu]
-    exact continuous_const.mul (continuous_ouSemigroup hf1.continuous_deriv_one ⟨B, hB⟩)
-  have hdu2_cont : Continuous (deriv (deriv u)) := by
-    rw [funext hdu2]
-    exact continuous_const.mul
-      (continuous_ouSemigroup hf'1.continuous_deriv_one ⟨B2, hB2⟩)
+  have hdu_cont : Continuous (deriv u) :=
+    continuous_deriv_ouSemigroup_space hf1 ⟨B, hB⟩ ⟨M, hM⟩
+  have hdu2_cont : Continuous (deriv (deriv u)) :=
+    continuous_deriv_deriv_ouSemigroup_space hf ⟨B, hB⟩ ⟨B2, hB2⟩ ⟨M, hM⟩
   have hlog_cont : Continuous (fun x => Real.log (u x)) :=
     hu_cont.log (fun x => (hpos x).ne')
-  have hfish_le : ∀ x, |(deriv u x) ^ 2 / u x| ≤ B ^ 2 / δ := by
-    intro x
-    rw [abs_div, abs_of_pos (hpos x), abs_sq]
-    have hsq : (deriv u x) ^ 2 ≤ B ^ 2 := by
-      rw [← sq_abs]
-      exact pow_le_pow_left₀ (abs_nonneg _) (hdu_bdd x) 2
-    have hrec : (1 : ℝ) / u x ≤ 1 / δ :=
-      one_div_le_one_div_of_le hδ (ouSemigroup_lower hf.continuous ⟨M, hM⟩ hδf)
-    have hnonneg : 0 ≤ (1 : ℝ) / u x := div_nonneg zero_le_one (le_of_lt (hpos x))
-    have hmul := mul_le_mul hsq hrec hnonneg (sq_nonneg _)
-    have hrew : (deriv u x) ^ 2 / u x = (deriv u x) ^ 2 * (1 / u x) := by ring
-    have hrew' : B ^ 2 / δ = B ^ 2 * (1 / δ) := by ring
-    rw [hrew, hrew']
-    exact hmul
+  have hfish_le : ∀ x, |(deriv u x) ^ 2 / u x| ≤ B ^ 2 / δ := fun x =>
+    abs_sq_div_le hδ (hdu_bdd x) (hlow x)
+  have hlog_le : ∀ x, |deriv (deriv u) x * Real.log (u x)| ≤ B2 * L := fun x => by
+    rw [abs_mul]
+    exact mul_le_mul (hdu2_bdd x) (hL x) (abs_nonneg _) hB20
   have hψ_cont : Continuous (deriv ψ) := by
     rw [hψ_form]
     exact (hdu2_cont.mul hlog_cont).add
@@ -781,41 +824,20 @@ lemma integral_generator_mul_log {f : ℝ → ℝ} {t δ : ℝ} (ht : 0 < t) (hf
   have hψ'_le : ∀ x, |deriv ψ x| ≤ B2 * L + B ^ 2 / δ := by
     intro x
     rw [hψ_form]
-    have h1 : |deriv (deriv u) x * Real.log (u x)| ≤ B2 * L := by
-      rw [abs_mul]
-      exact mul_le_mul (hdu2_bdd x) (hL x) (abs_nonneg _) hB20
-    exact (abs_add_le _ _).trans (by linarith [h1, hfish_le x])
+    exact (abs_add_le _ _).trans (add_le_add (hlog_le x) (hfish_le x))
   have hip := integral_id_mul_eq_integral_deriv_gaussianReal hψ_diff hψ_cont
     ⟨B * L, hψ_le⟩ ⟨B2 * L + B ^ 2 / δ, hψ'_le⟩
   have hlog_int : Integrable (fun x => deriv (deriv u) x * Real.log (u x)) γ :=
-    integrable_of_abs_le ((hdu2_cont.mul hlog_cont).aestronglyMeasurable) (fun x => by
-      rw [abs_mul]
-      exact mul_le_mul (hdu2_bdd x) (hL x) (abs_nonneg _) hB20)
+    integrable_of_abs_le ((hdu2_cont.mul hlog_cont).aestronglyMeasurable) hlog_le
   have hfish_int : Integrable (fun x => (deriv u x) ^ 2 / u x) γ :=
     integrable_of_abs_le (((hdu_cont.pow 2).div hu_cont
-      (fun x => (hpos x).ne')).aestronglyMeasurable)
-      (fun x => (hfish_le x).trans (le_abs_self _))
-  have hxψ_int : Integrable (fun x => x * ψ x) γ := by
-    have hdom : Integrable (fun x => (B * L + 1) * |x|) γ :=
-      integrable_abs_gaussianReal.const_mul _
-    refine Integrable.mono' hdom ((continuous_id.mul hψ_diff.continuous).aestronglyMeasurable) ?_
-    filter_upwards with x
-    rw [Real.norm_eq_abs, abs_mul]
-    calc |x| * |ψ x| ≤ |x| * (B * L) :=
-          mul_le_mul_of_nonneg_left (hψ_le x) (abs_nonneg x)
-      _ ≤ (B * L + 1) * |x| := by
-          have hgrow : B * L ≤ B * L + 1 := le_add_of_nonneg_right zero_le_one
-          have := mul_le_mul_of_nonneg_left hgrow (abs_nonneg x)
-          linarith
-  have hderiv_int : ∫ x, deriv ψ x ∂γ =
-      ∫ x, deriv (deriv u) x * Real.log (u x) ∂γ +
-        ∫ x, (deriv u x) ^ 2 / u x ∂γ := by
-    rw [hψ_form, integral_add hlog_int hfish_int]
+      (fun x => (hpos x).ne')).aestronglyMeasurable) hfish_le
+  have hxψ_int : Integrable (fun x => x * ψ x) γ :=
+    integrable_id_mul_of_abs_le hψ_diff.continuous hψ_le
   have hxψ : ∫ x, x * ψ x ∂γ =
       ∫ x, deriv (deriv u) x * Real.log (u x) ∂γ +
         ∫ x, (deriv u x) ^ 2 / u x ∂γ := by
-    rw [hip]
-    exact hderiv_int
+    rw [hip, hψ_form, integral_add hlog_int hfish_int]
   have hsub : ∫ x, (deriv (deriv u) x - x * deriv u x) * Real.log (u x) ∂γ =
       ∫ x, deriv (deriv u) x * Real.log (u x) ∂γ - ∫ x, x * ψ x ∂γ := by
     have hfun : (fun x => (deriv (deriv u) x - x * deriv u x) * Real.log (u x)) =

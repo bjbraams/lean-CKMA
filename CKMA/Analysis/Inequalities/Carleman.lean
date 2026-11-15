@@ -5,12 +5,11 @@ Authors: CKMA contributors
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Stirling
-public import Mathlib.Analysis.MeanInequalities
-import Mathlib.Algebra.BigOperators.Intervals
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
+
+import Mathlib.Analysis.SpecialFunctions.Stirling
 import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
 import Mathlib.Analysis.PSeries
-import Mathlib.Topology.Algebra.InfiniteSum.Real
 
 /-!
 # Carleman inequality and its optimal constant

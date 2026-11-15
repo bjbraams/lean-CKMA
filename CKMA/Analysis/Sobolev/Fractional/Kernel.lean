@@ -6,21 +6,11 @@ Authors: CKMA contributors
 module
 
 public import Mathlib.Analysis.Complex.Circle
-public import Mathlib.Analysis.Complex.Exponential
-public import Mathlib.Analysis.Complex.Trigonometric
-public import Mathlib.Analysis.InnerProductSpace.LinearMap
-public import Mathlib.Analysis.InnerProductSpace.PiL2
-public import Mathlib.Analysis.InnerProductSpace.Projection.Reflection
-public import Mathlib.Analysis.Normed.Module.FiniteDimension
-public import Mathlib.Analysis.SpecialFunctions.JapaneseBracket
-public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
-public import Mathlib.Analysis.SpecialFunctions.Pow.Integral
-public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
-public import Mathlib.MeasureTheory.Group.LIntegral
-public import Mathlib.MeasureTheory.Integral.Bochner.Set
-public import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
 public import Mathlib.MeasureTheory.Measure.Haar.OfBasis
-public import Mathlib.Topology.Algebra.ConstMulAction
+public import Mathlib.Analysis.Normed.Lp.MeasurableSpace
+import Mathlib.Analysis.SpecialFunctions.JapaneseBracket
+import Mathlib.Analysis.SpecialFunctions.Pow.Integral
+import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
 
 /-!
 # The fractional translation kernel
@@ -321,8 +311,6 @@ private theorem fourierConst_lintegral {d : ℕ} (hd : 0 < d) {s : ℝ} (hs : 0 
   simpa [fourierConst] using
     ofReal_integral_eq_lintegral_ofReal (phaseKernel_integrable hd hs hs1)
       (ae_of_all _ fun x => phaseKernel_nonneg d hd s x)
-
-set_option backward.isDefEq.respectTransparency false
 
 /-- Every unit direction has the same phase-kernel integral. -/
 private theorem lintegral_phase_unit {d : ℕ} (hd : 0 < d) {s : ℝ} (hs : 0 < s) (hs1 : s < 1)

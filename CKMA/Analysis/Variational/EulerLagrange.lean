@@ -5,9 +5,10 @@ Authors: CKMA contributors
 -/
 module
 
-public import Mathlib.Analysis.Calculus.LocalExtr.Basic
+public import Mathlib.Analysis.Calculus.Deriv.Basic
 public import Mathlib.MeasureTheory.Integral.Bochner.Basic
-public import Mathlib.Analysis.Calculus.FDeriv.Basic
+
+import Mathlib.Analysis.Calculus.LocalExtr.Basic
 
 /-!
 # Weak Euler–Lagrange first variation

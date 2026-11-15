@@ -5,18 +5,10 @@ Authors: CKMA contributors
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Gamma.BohrMollerup
-public import Mathlib.Analysis.SpecialFunctions.Gamma.Beta
-public import Mathlib.Analysis.Analytic.Constructions
-public import Mathlib.Analysis.Analytic.IsolatedZeros
-public import Mathlib.Analysis.Analytic.Uniqueness
-public import Mathlib.Analysis.Complex.Trigonometric
-public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
-public import Mathlib.Analysis.Convex.Function
-public import Mathlib.RingTheory.Polynomial.Cyclotomic.Basic
-public import Mathlib.Algebra.Polynomial.Derivative
-public import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
-public import Mathlib.Data.Fintype.BigOperators
+public import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
+
+import Mathlib.Analysis.SpecialFunctions.Gamma.Beta
+import Mathlib.RingTheory.Polynomial.Cyclotomic.Basic
 
 /-!
 # Gauss's Gamma Multiplication Formula
@@ -47,7 +39,8 @@ private theorem convexOn_sum {ι : Type*} {s : Finset ι} {f : ι → ℝ → �
   | empty => simpa using convexOn_const (0 : ℝ) (convex_Ioi (0 : ℝ))
   | insert a s ha ih =>
     simp only [Finset.sum_insert ha]
-    exact (hf a (Finset.mem_insert_self a s)).add (ih fun i hi => hf i (Finset.mem_insert_of_mem hi))
+    exact (hf a (Finset.mem_insert_self a s)).add
+      (ih fun i hi => hf i (Finset.mem_insert_of_mem hi))
 
 open Filter Topology
 open scoped BigOperators ENNReal NNReal
@@ -59,11 +52,10 @@ section RealFormula
 open Real Finset Polynomial
 open scoped Real
 
-set_option linter.style.haveILetI false in
 /-- `∏_{k=1}^{n-1} (1 - exp(2 π I / n) ^ k) = n`, including the empty product `1 = 1`. -/
 private theorem prod_one_sub_exp (n : ℕ) (hn : 0 < n) :
     ∏ k ∈ Ioo 0 n, (1 - Complex.exp (2 * ↑π * Complex.I / n) ^ k) = n := by
-  haveI : NeZero n := ⟨hn.ne'⟩
+  have : NeZero n := ⟨hn.ne'⟩
   let ζ : ℂ := Complex.exp (2 * ↑π * Complex.I / n)
   have hζ : IsPrimitiveRoot ζ n := Complex.isPrimitiveRoot_exp n hn.ne'
   have hpoly : X ^ n - 1 = ∏ k ∈ range n, (X - C (ζ ^ k)) := by

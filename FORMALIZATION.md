@@ -46,9 +46,9 @@ statement. The scope list below records these distinctions entry by entry.
 
 ## Completed proofs and admissions
 
-There are **2087 inventoried public declarations**: 792 theorems, 459 lemmas
-and 836 definitions, abbreviations or structures. **181** depend on `sorryAx`
-(174 direct admissions). The other **1906** declarations use only standard axioms.
+There are **2092 inventoried public declarations**: 792 theorems, 463 lemmas
+and 837 definitions, abbreviations or structures. **181** depend on `sorryAx`
+(174 direct admissions). The other **1911** declarations use only standard axioms.
 Every lemma, definition, abbreviation and structure is free of `sorryAx`. The
 standard axioms are `propext`, `Classical.choice` and `Quot.sound`, or subsets of
 these.
@@ -154,8 +154,8 @@ The pins are Lean `v4.36.0-rc2`, Mathlib
 `1b1ccf4b088b32fa3f23f2de1127433254a81e1e` and TauCeti
 `396c3bd971e9722aa8656231760e710fe641d8cf`. [CREDITS.md](CREDITS.md)
 records the imported interfaces and adapted proof provenance. The library uses
-`258` Lean modules and `94381` source lines; the largest file has
-`1075` lines, above the 1,000-line splitting guideline and below the 1,500-line limit.
+`259` Lean modules and `92560` source lines; the largest file has
+`1029` lines, above the 1,000-line splitting guideline and below the 1,500-line limit.
 
 The ordinary build is `lake build > /tmp/ckma-build.log 2>&1`. The checker
 `python3 scripts/check_formalization.py` validates catalogue membership, locations,

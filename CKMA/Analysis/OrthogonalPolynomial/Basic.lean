@@ -5,23 +5,11 @@ Authors: CKMA contributors
 -/
 module
 
-public import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset
-public import Mathlib.Algebra.Order.Ring.Basic
-public import Mathlib.Data.Finset.Defs
-public import Mathlib.Algebra.Polynomial.FieldDivision
-public import Mathlib.Algebra.Polynomial.Roots
-public import Mathlib.Algebra.Ring.Parity
-public import Mathlib.Analysis.Convex.Basic
-public import Mathlib.Analysis.Convex.Hull
-public import Mathlib.Analysis.Polynomial.Basic
-public import Mathlib.Basic.Sign.Basic
-public import Mathlib.LinearAlgebra.Lagrange
 public import Mathlib.MeasureTheory.Integral.Bochner.Basic
 public import Mathlib.MeasureTheory.Measure.Support
-public import Mathlib.Topology.Algebra.Polynomial
-public import Mathlib.Topology.Compactness.Lindelof
-public import Mathlib.Topology.Instances.Sign
-public import Mathlib.Topology.MetricSpace.ProperSpace
+
+import Mathlib.LinearAlgebra.Lagrange
+import Mathlib.Topology.Algebra.Polynomial
 
 /-!
 # Orthogonal polynomial roots and Gaussian quadrature
@@ -282,6 +270,137 @@ private lemma isOrthogonalPolynomial_orthonormal {μ : Measure ℝ} (hm : HasFin
       simpa [eval_mul, mul_left_comm, mul_assoc] using
         (hm.integrable_eval_mul (p j) (p (n + 1))).const_mul (c j)
 
+/-- A nonzero real polynomial without real roots has a constant strict sign. -/
+private lemma exists_mul_eval_pos_of_roots_eq_zero {q : ℝ[X]} (hq0 : q ≠ 0) (hq : q.roots = 0) :
+    ∃ σ : ℝ, σ ≠ 0 ∧ ∀ x, 0 < σ * q.eval x := by
+  have hq_eval : ∀ x, q.eval x ≠ 0 := by
+    intro x hx
+    have : x ∈ q.roots := (mem_roots hq0).2 hx
+    simp [hq] at this
+  have hsign_eq : ∀ x, SignType.sign (q.eval x) = SignType.sign (q.eval 0) := fun x ↦
+    isPreconnected_univ.sign_eq_of_continuousOn q.continuousOn
+      (fun z _ ↦ hq_eval z) (mem_univ x) (mem_univ 0)
+  have hσ : ∀ x, 0 < (SignType.sign (q.eval 0) : ℝ) * q.eval x := by
+    intro x
+    rw [← hsign_eq x, sign_mul_self]
+    exact abs_pos.mpr (hq_eval x)
+  exact ⟨_, fun h ↦ by simpa [h] using hσ 0, hσ⟩
+
+/-- If `s` consists of odd-multiplicity roots of `p`, and every other odd-multiplicity root lies
+on one side of `K`, then `p * ∏ a ∈ s, (X - a)` has a constant weak sign on `K`. -/
+private lemma exists_mul_eval_mul_prod_nonneg {p : ℝ[X]} (hp0 : p ≠ 0) {K : Set ℝ}
+    {s : Finset ℝ} (hs : ∀ a ∈ s, a ∈ p.roots ∧ Odd (p.rootMultiplicity a))
+    (hside : ∀ a ∈ p.roots, Odd (p.rootMultiplicity a) → a ∉ s →
+      (∀ x ∈ K, 0 ≤ x - a) ∨ (∀ x ∈ K, x - a ≤ 0)) :
+    ∃ c : ℝ, c ≠ 0 ∧ ∀ z ∈ K, 0 ≤ c * (p * ∏ a ∈ s, (X - C a)).eval z := by
+  classical
+  obtain ⟨cof, hcof, -, hcof_roots⟩ := exists_prod_multiset_X_sub_C_mul p
+  have hcof0 : cof ≠ 0 := by
+    intro h
+    rw [h, mul_zero] at hcof
+    exact hp0 hcof.symm
+  obtain ⟨σ, hσ0, hσ⟩ := exists_mul_eval_pos_of_roots_eq_zero hcof0 hcof_roots
+  let Rset : Finset ℝ := p.roots.toFinset
+  let oddExt : Finset ℝ := Rset.filter fun a ↦ Odd (p.rootMultiplicity a) ∧ a ∉ s
+  let evenR : Finset ℝ := Rset.filter fun a ↦ Even (p.rootMultiplicity a)
+  have hoddE : ∀ a ∈ oddExt, Odd (p.rootMultiplicity a) :=
+    fun a ha ↦ (Finset.mem_filter.mp ha).2.1
+  obtain ⟨ε, hε, hεsign⟩ := exists_weakSign_prod_sub (K := K) (t := oddExt) fun a ha ↦ by
+    have ha' := Finset.mem_filter.mp ha
+    exact hside a (Multiset.mem_toFinset.mp ha'.1) ha'.2.1 ha'.2.2
+  have hfact : (∏ a ∈ Rset, (X - C a) ^ p.rootMultiplicity a) * cof = p := by
+    simpa [Rset, Polynomial.count_roots, Finset.prod_multiset_map_count] using hcof
+  have hdisj1 : Disjoint s oddExt :=
+    Finset.disjoint_left.mpr fun a ha ha' ↦ (Finset.mem_filter.mp ha').2.2 ha
+  have hdisj2 : Disjoint (s ∪ oddExt) evenR := by
+    refine Finset.disjoint_left.mpr fun a ha ha' ↦ ?_
+    have hodd : Odd (p.rootMultiplicity a) := by
+      rcases Finset.mem_union.mp ha with h | h
+      · exact (hs a h).2
+      · exact hoddE a h
+    exact Nat.not_even_iff_odd.mpr hodd (Finset.mem_filter.mp ha').2
+  have hcover : Rset = s ∪ oddExt ∪ evenR := by
+    ext a
+    constructor
+    · intro ha
+      by_cases hodd : Odd (p.rootMultiplicity a)
+      · by_cases hI : a ∈ s
+        · exact Finset.mem_union_left _ (Finset.mem_union_left _ hI)
+        · exact Finset.mem_union_left _ (Finset.mem_union_right _
+            (Finset.mem_filter.mpr ⟨ha, hodd, hI⟩))
+      · exact Finset.mem_union_right _
+          (Finset.mem_filter.mpr ⟨ha, Nat.not_odd_iff_even.mp hodd⟩)
+    · intro ha
+      simp only [Finset.mem_union] at ha
+      rcases ha with (ha | ha) | ha
+      · exact Multiset.mem_toFinset.mpr (hs a ha).1
+      · exact (Finset.mem_filter.mp ha).1
+      · exact (Finset.mem_filter.mp ha).1
+  have hsplit (t : Finset ℝ) (ht : ∀ a ∈ t, Odd (p.rootMultiplicity a)) (z : ℝ) :
+      ∏ a ∈ t, (z - a) ^ p.rootMultiplicity a =
+        (∏ a ∈ t, (z - a) ^ (p.rootMultiplicity a - 1)) * ∏ a ∈ t, (z - a) := by
+    rw [← Finset.prod_mul_distrib]
+    refine Finset.prod_congr rfl fun a ha ↦ ?_
+    rw [← pow_succ, Nat.sub_add_cancel (ht a ha).pos]
+  refine ⟨σ * ε, mul_ne_zero hσ0 (by rcases hε with rfl | rfl <;> norm_num), fun z hz ↦ ?_⟩
+  set A : ℝ := ∏ a ∈ s, (z - a) ^ (p.rootMultiplicity a - 1)
+  set B : ℝ := ∏ a ∈ s, (z - a)
+  set C0 : ℝ := ∏ a ∈ oddExt, (z - a) ^ (p.rootMultiplicity a - 1)
+  set D : ℝ := ∏ a ∈ oddExt, (z - a)
+  set E0 : ℝ := ∏ a ∈ evenR, (z - a) ^ p.rootMultiplicity a
+  set F : ℝ := cof.eval z
+  have hpz : p.eval z = (A * B) * (C0 * D) * E0 * F := by
+    have hprod : ∏ a ∈ Rset, (z - a) ^ p.rootMultiplicity a =
+        (∏ a ∈ s, (z - a) ^ p.rootMultiplicity a) *
+        (∏ a ∈ oddExt, (z - a) ^ p.rootMultiplicity a) *
+        (∏ a ∈ evenR, (z - a) ^ p.rootMultiplicity a) := by
+      rw [hcover, Finset.prod_union hdisj2, Finset.prod_union hdisj1]
+    rw [hsplit s (fun a ha ↦ (hs a ha).2) z, hsplit oddExt hoddE z] at hprod
+    have heval : p.eval z =
+        (∏ a ∈ Rset, (z - a) ^ p.rootMultiplicity a) * cof.eval z := by
+      conv_lhs => rw [← hfact]
+      rw [eval_mul, eval_prod]
+      simp [eval_pow, eval_sub, eval_X, eval_C]
+    rw [heval, hprod]
+  have htz : (∏ a ∈ s, (X - C a)).eval z = B := by
+    simp [B, eval_prod, eval_sub, eval_X, eval_C]
+  have hident : (σ * ε) * ((A * B) * (C0 * D) * E0 * F * B) =
+      A * C0 * E0 * B ^ 2 * (ε * D) * (σ * F) := by ring
+  rw [eval_mul, hpz, htz, hident]
+  have hA : 0 ≤ A := Finset.prod_nonneg fun a ha ↦
+    Even.pow_nonneg (Nat.Odd.sub_odd (hs a ha).2 odd_one) _
+  have hC0 : 0 ≤ C0 := Finset.prod_nonneg fun a ha ↦
+    Even.pow_nonneg (Nat.Odd.sub_odd (hoddE a ha) odd_one) _
+  have hE0 : 0 ≤ E0 := Finset.prod_nonneg fun a ha ↦
+    Even.pow_nonneg (Finset.mem_filter.mp ha).2 _
+  have hB : 0 ≤ B ^ 2 := sq_nonneg _
+  have hD : 0 ≤ ε * D := hεsign z hz
+  have hF : 0 ≤ σ * F := le_of_lt (hσ z)
+  positivity
+
+/-- An orthogonal polynomial times a nonzero polynomial of lower degree has no constant weak sign
+on the convex hull of the support of an infinite-support measure. -/
+private lemma not_forall_nonneg_mul_eval_mul {μ : Measure ℝ} (hm : HasFiniteMoments μ)
+    (hi : μ.support.Infinite) {p t : ℝ[X]} (hp : IsOrthogonalPolynomial μ p) (ht0 : t ≠ 0)
+    (ht : t.natDegree < p.natDegree) {c : ℝ} (hc : c ≠ 0) :
+    ¬ ∀ z ∈ convexHull ℝ μ.support, 0 ≤ c * (p * t).eval z := by
+  intro hsign
+  have hnn : 0 ≤ᵐ[μ] fun x ↦ c * (p * t).eval x := by
+    filter_upwards [Measure.support_mem_ae] with x hx
+    exact hsign x (subset_convexHull ℝ μ.support hx)
+  have hzero : ∫ x, c * (p * t).eval x ∂μ = 0 := by
+    rw [integral_const_mul]
+    have hfun : ∫ x, (p * t).eval x ∂μ = ∫ x, p.eval x * t.eval x ∂μ := by
+      refine integral_congr_ae (ae_of_all _ fun x ↦ ?_)
+      simp [eval_mul]
+    rw [hfun, hp.2 t ht, mul_zero]
+  have hgz : (fun x ↦ c * (p * t).eval x) =ᵐ[μ] 0 :=
+    (integral_eq_zero_iff_of_nonneg_ae hnn ((hm.integrable_eval (p * t)).const_mul c)).1 hzero
+  have hf : (fun x ↦ (p * t).eval x) =ᵐ[μ] 0 := by
+    filter_upwards [hgz] with x hx
+    exact (mul_eq_zero.mp hx).resolve_left hc
+  exact not_eventuallyEq_eval_zero_of_support_infinite hi (mul_ne_zero hp.1 ht0) hf
+
 /-- **48.6**: the roots are all real, distinct, interior to the convex support, and simple. -/
 theorem roots_orthogonalPolynomial (μ : Measure ℝ) (hm : HasFiniteMoments μ)
     (hi : μ.support.Infinite) {p : ℝ[X]} (hp : IsOrthogonalPolynomial μ p) :
@@ -289,13 +408,10 @@ theorem roots_orthogonalPolynomial (μ : Measure ℝ) (hm : HasFiniteMoments μ)
       x ∈ interior (convexHull ℝ μ.support) ∧ p.rootMultiplicity x = 1 := by
   classical
   have hp0 : p ≠ 0 := hp.1
-  let K : Set ℝ := convexHull ℝ μ.support
-  let I : Set ℝ := interior K
+  let I : Set ℝ := interior (convexHull ℝ μ.support)
   have : DecidablePred (· ∈ I) := Classical.decPred _
   let Rset : Finset ℝ := p.roots.toFinset
   let oddInt : Finset ℝ := Rset.filter fun a ↦ Odd (p.rootMultiplicity a) ∧ a ∈ I
-  let oddExt : Finset ℝ := Rset.filter fun a ↦ Odd (p.rootMultiplicity a) ∧ a ∉ I
-  let evenR : Finset ℝ := Rset.filter fun a ↦ Even (p.rootMultiplicity a)
   have hle : oddInt.card ≤ p.natDegree := by
     calc
       oddInt.card ≤ Rset.card := Finset.card_filter_le _ _
@@ -303,145 +419,19 @@ theorem roots_orthogonalPolynomial (μ : Measure ℝ) (hm : HasFiniteMoments μ)
       _ ≤ p.natDegree := p.card_roots'
   have hge : p.natDegree ≤ oddInt.card := by
     by_contra hlt
-    have hlt' : oddInt.card < p.natDegree := lt_of_not_ge hlt
-    obtain ⟨cof, hcof, -, hcof_roots⟩ := exists_prod_multiset_X_sub_C_mul p
-    have hcof0 : cof ≠ 0 := by
-      intro h
-      rw [h, mul_zero] at hcof
-      exact hp0 hcof.symm
-    have hcof_eval : ∀ x, cof.eval x ≠ 0 := by
-      intro x hx
-      have : x ∈ cof.roots := (mem_roots hcof0).2 hx
-      simp [hcof_roots] at this
-    have hsign_eq : ∀ x, SignType.sign (cof.eval x) = SignType.sign (cof.eval 0) := by
-      intro x
-      exact isPreconnected_univ.sign_eq_of_continuousOn cof.continuousOn
-        (fun z _ ↦ hcof_eval z) (mem_univ x) (mem_univ 0)
-    let σ : ℝ := SignType.sign (cof.eval 0)
-    have hσ : ∀ x, 0 < σ * cof.eval x := by
-      intro x
-      rw [show σ = (SignType.sign (cof.eval x) : ℝ) by rw [hsign_eq x], sign_mul_self]
-      exact abs_pos.mpr (hcof_eval x)
-    have hside : ∀ a ∈ oddExt,
-        (∀ x ∈ K, 0 ≤ x - a) ∨ (∀ x ∈ K, x - a ≤ 0) := by
-      intro a ha
-      exact side_of_not_mem_interior_convexHull (Finset.mem_filter.mp ha).2.2
-    obtain ⟨ε, hε, hεsign⟩ := exists_weakSign_prod_sub hside
-    let t : ℝ[X] := ∏ a ∈ oddInt, (X - C a)
-    have ht_nd : t.natDegree = oddInt.card := by
+    have ht_nd : (∏ a ∈ oddInt, (X - C a)).natDegree = oddInt.card := by
       rw [natDegree_prod_of_monic oddInt (fun a ↦ X - C a) (fun _ _ ↦ monic_X_sub_C _),
         Finset.card_eq_sum_ones]
       simp
-    have ht_lt : t.natDegree < p.natDegree := by rw [ht_nd]; exact hlt'
-    have horth : ∫ x, p.eval x * t.eval x ∂μ = 0 := hp.2 t ht_lt
-    have hfact : (∏ a ∈ Rset, (X - C a) ^ p.rootMultiplicity a) * cof = p := by
-      simpa [Rset, Polynomial.count_roots, Finset.prod_multiset_map_count] using hcof
-    have hdisj1 : Disjoint oddInt oddExt := by
-      refine Finset.disjoint_left.mpr fun a ha ha' ↦ ?_
-      exact (Finset.mem_filter.mp ha').2.2 (Finset.mem_filter.mp ha).2.2
-    have hdisj2 : Disjoint (oddInt ∪ oddExt) evenR := by
-      refine Finset.disjoint_left.mpr fun a ha ha' ↦ ?_
-      have heven : Even (p.rootMultiplicity a) := (Finset.mem_filter.mp ha').2
-      have hodd : Odd (p.rootMultiplicity a) := by
-        rcases Finset.mem_union.mp ha with h | h
-        · exact (Finset.mem_filter.mp h).2.1
-        · exact (Finset.mem_filter.mp h).2.1
-      exact Nat.not_even_iff_odd.mpr hodd heven
-    have hcover : Rset = oddInt ∪ oddExt ∪ evenR := by
-      ext a
-      constructor
-      · intro ha
-        by_cases hodd : Odd (p.rootMultiplicity a)
-        · by_cases hI : a ∈ I
-          · exact Finset.mem_union_left _ (Finset.mem_union_left _
-              (Finset.mem_filter.mpr ⟨ha, hodd, hI⟩))
-          · exact Finset.mem_union_left _ (Finset.mem_union_right _
-              (Finset.mem_filter.mpr ⟨ha, hodd, hI⟩))
-        · have heven : Even (p.rootMultiplicity a) := Nat.not_odd_iff_even.mp hodd
-          exact Finset.mem_union_right _ (Finset.mem_filter.mpr ⟨ha, heven⟩)
-      · intro ha
-        simp only [Finset.mem_union] at ha
-        rcases ha with (ha | ha) | ha
-        · exact (Finset.mem_filter.mp ha).1
-        · exact (Finset.mem_filter.mp ha).1
-        · exact (Finset.mem_filter.mp ha).1
-    have hsplit (s : Finset ℝ) (hs : s ⊆ Rset) (hsOdd : ∀ a ∈ s, Odd (p.rootMultiplicity a))
-        (z : ℝ) : ∏ a ∈ s, (z - a) ^ p.rootMultiplicity a =
-          (∏ a ∈ s, (z - a) ^ (p.rootMultiplicity a - 1)) * ∏ a ∈ s, (z - a) := by
-      rw [← Finset.prod_mul_distrib]
-      refine Finset.prod_congr rfl fun a ha ↦ ?_
-      have haR : a ∈ p.roots := by
-        simpa [Rset, Multiset.mem_toFinset] using hs ha
-      have hpos : 1 ≤ p.rootMultiplicity a :=
-        Nat.one_le_of_lt ((rootMultiplicity_pos hp0).2 ((mem_roots hp0).1 haR))
-      nth_rw 1 [← Nat.sub_add_cancel hpos]
-      rw [pow_add, pow_one]
-    have hsignK : ∀ z ∈ K, 0 ≤ (σ * ε) * (p * t).eval z := by
-      intro z hz
-      have hsubI : oddInt ⊆ Rset := Finset.filter_subset _ _
-      have hsubE : oddExt ⊆ Rset := Finset.filter_subset _ _
-      have hoddI : ∀ a ∈ oddInt, Odd (p.rootMultiplicity a) :=
-        fun a ha ↦ (Finset.mem_filter.mp ha).2.1
-      have hoddE : ∀ a ∈ oddExt, Odd (p.rootMultiplicity a) :=
-        fun a ha ↦ (Finset.mem_filter.mp ha).2.1
-      set A : ℝ := ∏ a ∈ oddInt, (z - a) ^ (p.rootMultiplicity a - 1)
-      set B : ℝ := ∏ a ∈ oddInt, (z - a)
-      set C0 : ℝ := ∏ a ∈ oddExt, (z - a) ^ (p.rootMultiplicity a - 1)
-      set D : ℝ := ∏ a ∈ oddExt, (z - a)
-      set E0 : ℝ := ∏ a ∈ evenR, (z - a) ^ p.rootMultiplicity a
-      set F : ℝ := cof.eval z
-      have hpz : p.eval z = (A * B) * (C0 * D) * E0 * F := by
-        have hprod : ∏ a ∈ Rset, (z - a) ^ p.rootMultiplicity a =
-            (∏ a ∈ oddInt, (z - a) ^ p.rootMultiplicity a) *
-            (∏ a ∈ oddExt, (z - a) ^ p.rootMultiplicity a) *
-            (∏ a ∈ evenR, (z - a) ^ p.rootMultiplicity a) := by
-          rw [hcover, Finset.prod_union hdisj2, Finset.prod_union hdisj1]
-        rw [hsplit oddInt hsubI hoddI z, hsplit oddExt hsubE hoddE z] at hprod
-        have heval : p.eval z =
-            (∏ a ∈ Rset, (z - a) ^ p.rootMultiplicity a) * cof.eval z := by
-          conv_lhs => rw [← hfact]
-          rw [eval_mul, eval_prod]
-          simp [eval_pow, eval_sub, eval_X, eval_C]
-        rw [heval, hprod]
-      have htz : t.eval z = B := by
-        simp [t, B, eval_prod, eval_sub, eval_X, eval_C]
-      have hmul : (p * t).eval z = p.eval z * t.eval z := eval_mul
-      have hident : (σ * ε) * ((A * B) * (C0 * D) * E0 * F * B) =
-          A * C0 * E0 * B ^ 2 * (ε * D) * (σ * F) := by ring
-      rw [hmul, hpz, htz, hident]
-      have hA : 0 ≤ A := Finset.prod_nonneg fun a ha ↦
-        Even.pow_nonneg (Nat.Odd.sub_odd (hoddI a ha) odd_one) _
-      have hC0 : 0 ≤ C0 := Finset.prod_nonneg fun a ha ↦
-        Even.pow_nonneg (Nat.Odd.sub_odd (hoddE a ha) odd_one) _
-      have hE0 : 0 ≤ E0 := Finset.prod_nonneg fun a ha ↦
-        Even.pow_nonneg (Finset.mem_filter.mp ha).2 _
-      have hB : 0 ≤ B ^ 2 := sq_nonneg _
-      have hD : 0 ≤ ε * D := hεsign z hz
-      have hF : 0 ≤ σ * F := le_of_lt (hσ z)
-      positivity
-    have hnn : 0 ≤ᵐ[μ] fun x ↦ (σ * ε) * (p * t).eval x := by
-      filter_upwards [Measure.support_mem_ae] with x hx
-      exact hsignK x (subset_convexHull ℝ μ.support hx)
-    have hint : Integrable (fun x ↦ (p * t).eval x) μ := hm.integrable_eval (p * t)
-    have hzero : ∫ x, (σ * ε) * (p * t).eval x ∂μ = 0 := by
-      rw [integral_const_mul]
-      have hfun : ∫ x, (p * t).eval x ∂μ = ∫ x, p.eval x * t.eval x ∂μ := by
-        refine integral_congr_ae (ae_of_all _ fun x ↦ ?_)
-        simp [eval_mul]
-      rw [hfun, horth, mul_zero]
-    have hgz : (fun x ↦ (σ * ε) * (p * t).eval x) =ᵐ[μ] 0 :=
-      (integral_eq_zero_iff_of_nonneg_ae hnn (hint.const_mul (σ * ε))).1 hzero
-    have hσε : σ * ε ≠ 0 := by
-      have hσ0 : σ ≠ 0 := by
-        intro h
-        simpa [h] using hσ 0
-      have hε0 : ε ≠ 0 := by rcases hε with rfl | rfl <;> simp
-      exact mul_ne_zero hσ0 hε0
-    have hf : (fun x ↦ (p * t).eval x) =ᵐ[μ] 0 := by
-      filter_upwards [hgz] with x hx
-      exact (mul_eq_zero.mp hx).resolve_left hσε
-    have ht0 : t ≠ 0 := (monic_prod_X_sub_C (fun a : ℝ ↦ a) oddInt).ne_zero
-    exact not_eventuallyEq_eval_zero_of_support_infinite hi (mul_ne_zero hp0 ht0) hf
+    obtain ⟨c, hc, hcsign⟩ := exists_mul_eval_mul_prod_nonneg hp0
+      (K := convexHull ℝ μ.support) (s := oddInt)
+      (fun a ha ↦ by
+        have ha' := Finset.mem_filter.mp ha
+        exact ⟨Multiset.mem_toFinset.mp ha'.1, ha'.2.1⟩)
+      (fun a ha hodd hs ↦ side_of_not_mem_interior_convexHull fun hI ↦
+        hs (Finset.mem_filter.mpr ⟨Multiset.mem_toFinset.mpr ha, hodd, hI⟩))
+    exact not_forall_nonneg_mul_eval_mul hm hi hp (t := ∏ a ∈ oddInt, (X - C a))
+      (monic_prod_X_sub_C (fun a : ℝ ↦ a) oddInt).ne_zero (by rw [ht_nd]; omega) hc hcsign
   have hcard_odd : oddInt.card = p.natDegree := le_antisymm hle hge
   have hcard_R : Rset.card = p.natDegree := by
     have h1 : oddInt.card ≤ Rset.card := Finset.card_filter_le _ _
@@ -506,6 +496,152 @@ def IsQuadratureRule {n : ℕ} (μ : Measure ℝ) (x w : Fin n → ℝ) (degree 
 def christoffelKernel (p : ℕ → ℝ[X]) (n : ℕ) (x y : ℝ) : ℝ :=
   ∑ j ∈ Finset.range n, (p j).eval x * (p j).eval y
 
+/-- The Lagrange basis at `n` distinct nodes has degree `n - 1`. -/
+private lemma natDegree_lagrangeBasis_univ {n : ℕ} {x : Fin n → ℝ} (hx : Function.Injective x)
+    (j : Fin n) : (Lagrange.basis Finset.univ x j).natDegree = n - 1 := by
+  simpa [Finset.card_univ, Fintype.card_fin] using
+    Lagrange.natDegree_basis hx.injOn (Finset.mem_univ j)
+
+/-- A weighted node sum of `ℓⱼ * q`, with `ℓⱼ` a Lagrange basis polynomial, keeps only the
+`j`th node. -/
+private lemma sum_mul_eval_lagrangeBasis_mul {n : ℕ} {x : Fin n → ℝ}
+    (hx : Function.Injective x) (w : Fin n → ℝ) (j : Fin n) (q : ℝ[X]) :
+    ∑ i, w i * (Lagrange.basis Finset.univ x j * q).eval (x i) = w j * q.eval (x j) := by
+  have hoff : ∀ i, i ≠ j → w i * (Lagrange.basis Finset.univ x j * q).eval (x i) = 0 := by
+    intro i hi
+    rw [eval_mul, Lagrange.eval_basis_of_ne hi.symm (Finset.mem_univ i), zero_mul, mul_zero]
+  rw [Fintype.sum_eq_single j hoff, eval_mul,
+    Lagrange.eval_basis_self hx.injOn (Finset.mem_univ j), one_mul]
+
+/-- Integrating the Lagrange basis at the zeros of an orthogonal polynomial of degree `n` gives
+a quadrature rule exact through degree `2n - 1`. -/
+private lemma isQuadratureRule_integral_lagrangeBasis {μ : Measure ℝ} (hm : HasFiniteMoments μ)
+    {P : ℝ[X]} (hP : IsOrthogonalPolynomial μ P) {n : ℕ} (hn : 0 < n) (hPn : P.natDegree = n)
+    {x : Fin n → ℝ} (hx : Function.Injective x) (hroot : ∀ j, P.eval (x j) = 0) :
+    IsQuadratureRule μ x (fun j ↦ ∫ t, (Lagrange.basis Finset.univ x j).eval t ∂μ)
+      (2 * n - 1) := by
+  have hinj : Set.InjOn x (SetLike.coe (Finset.univ : Finset (Fin n))) := hx.injOn
+  intro r hr
+  obtain ⟨q, s, hdiv, hq, hs⟩ := exists_quot_rem_natDegree_lt hn hPn hP.1 hr
+  have hr_eval : ∀ t, r.eval t = P.eval t * q.eval t + s.eval t := by
+    intro t
+    simpa [eval_add, eval_mul] using congr_arg (eval t) hdiv
+  have hkill : ∫ t, P.eval t * q.eval t ∂μ = 0 := hP.2 q (lt_of_lt_of_eq hq hPn.symm)
+  have hint_r : ∫ t, r.eval t ∂μ = ∫ t, s.eval t ∂μ := by
+    rw [integral_congr_ae (ae_of_all _ hr_eval),
+      integral_add (hm.integrable_eval_mul P q) (hm.integrable_eval s), hkill, zero_add]
+  have hs_deg : s.degree < (Finset.univ : Finset (Fin n)).card := by
+    rw [Finset.card_univ, Fintype.card_fin]
+    exact lt_of_le_of_lt degree_le_natDegree (WithBot.coe_lt_coe.mpr hs)
+  have hs_eq : s = ∑ i, C (s.eval (x i)) * Lagrange.basis Finset.univ x i := by
+    conv_lhs =>
+      rw [Lagrange.eq_interpolate hinj hs_deg, Lagrange.interpolate_apply]
+  have hrs : ∀ i, s.eval (x i) = r.eval (x i) := by
+    intro i
+    have hnode := hr_eval (x i)
+    rw [hroot i, zero_mul, zero_add] at hnode
+    exact hnode.symm
+  have hfun : (fun t ↦ s.eval t) =
+      fun t ↦ ∑ i, s.eval (x i) * (Lagrange.basis Finset.univ x i).eval t := by
+    ext t
+    conv_lhs => rw [hs_eq]
+    rw [eval_finsetSum]
+    refine Finset.sum_congr rfl fun i _ ↦ ?_
+    rw [eval_mul, eval_C]
+  rw [hint_r, hfun, integral_finsetSum]
+  · refine Finset.sum_congr rfl fun i _ ↦ ?_
+    rw [integral_const_mul, hrs i, mul_comm]
+  · intro i _
+    exact (hm.integrable_eval _).const_mul (s.eval (x i))
+
+/-- The weights of a rule exact through degree `2n - 1` at `n` distinct nodes are the integrals
+of the Lagrange basis polynomials. -/
+private lemma eq_integral_lagrangeBasis_of_isQuadratureRule {μ : Measure ℝ} {n : ℕ}
+    {x w : Fin n → ℝ} (hx : Function.Injective x) (hw : IsQuadratureRule μ x w (2 * n - 1))
+    (j : Fin n) : w j = ∫ t, (Lagrange.basis Finset.univ x j).eval t ∂μ := by
+  have hdeg : (Lagrange.basis Finset.univ x j).natDegree ≤ 2 * n - 1 := by
+    rw [natDegree_lagrangeBasis_univ hx j]
+    omega
+  have hsum := sum_mul_eval_lagrangeBasis_mul hx w j 1
+  simp only [mul_one, eval_one] at hsum
+  rw [hw _ hdeg, hsum]
+
+/-- The weights of a rule exact through degree `2n - 1` at `n` distinct nodes are positive for
+an infinite-support measure. -/
+private lemma pos_of_isQuadratureRule {μ : Measure ℝ} (hm : HasFiniteMoments μ)
+    (hi : μ.support.Infinite) {n : ℕ} {x w : Fin n → ℝ} (hx : Function.Injective x)
+    (hw : IsQuadratureRule μ x w (2 * n - 1)) (j : Fin n) : 0 < w j := by
+  have hdeg : (Lagrange.basis Finset.univ x j * Lagrange.basis Finset.univ x j).natDegree ≤
+      2 * n - 1 := by
+    refine natDegree_mul_le.trans ?_
+    rw [natDegree_lagrangeBasis_univ hx j]
+    omega
+  have hsum := sum_mul_eval_lagrangeBasis_mul hx w j (Lagrange.basis Finset.univ x j)
+  rw [Lagrange.eval_basis_self hx.injOn (Finset.mem_univ j), mul_one] at hsum
+  have hnn : ∀ t, 0 ≤
+      (Lagrange.basis Finset.univ x j * Lagrange.basis Finset.univ x j).eval t := fun t ↦ by
+    rw [eval_mul]
+    exact mul_self_nonneg _
+  have hℓ0 : Lagrange.basis Finset.univ x j ≠ 0 :=
+    Lagrange.basis_ne_zero hx.injOn (Finset.mem_univ j)
+  have hposint : 0 <
+      ∫ t, (Lagrange.basis Finset.univ x j * Lagrange.basis Finset.univ x j).eval t ∂μ := by
+    refine lt_of_le_of_ne (integral_nonneg hnn) ?_
+    intro hz
+    exact not_eventuallyEq_eval_zero_of_support_infinite hi (mul_ne_zero hℓ0 hℓ0)
+      ((integral_eq_zero_iff_of_nonneg hnn (hm.integrable_eval _)).1 hz.symm)
+  rwa [hw _ hdeg, hsum] at hposint
+
+/-- The weights of a rule exact through degree `2n - 1` at `n` distinct nodes are the reciprocal
+diagonal Christoffel kernel of an orthonormal degree-exact family. -/
+private lemma eq_inv_christoffelKernel_of_isQuadratureRule {μ : Measure ℝ}
+    (hm : HasFiniteMoments μ) (p : ℕ → ℝ[X]) (hd : ∀ j, (p j).natDegree = j)
+    (ho : ∀ j k, ∫ x, (p j).eval x * (p k).eval x ∂μ = if j = k then 1 else 0)
+    {n : ℕ} (hn : 0 < n) {x w : Fin n → ℝ} (hx : Function.Injective x)
+    (hw : IsQuadratureRule μ x w (2 * n - 1)) (j : Fin n) :
+    w j = (christoffelKernel p n (x j) (x j))⁻¹ := by
+  have hne : ∀ j, p j ≠ 0 := ne_zero_of_orthonormal p ho
+  obtain ⟨c, hc⟩ :=
+    eq_sum_range_of_natDegree_le p hd hne (n - 1) (natDegree_lagrangeBasis_univ hx j).le
+  rw [Nat.sub_add_cancel hn] at hc
+  have hck : ∀ k ∈ Finset.range n,
+      c k = ∫ t, (Lagrange.basis Finset.univ x j).eval t * (p k).eval t ∂μ := by
+    intro k hk
+    have hfun : (fun t ↦ (Lagrange.basis Finset.univ x j).eval t * (p k).eval t) =
+        fun t ↦ ∑ m ∈ Finset.range n, c m * ((p m).eval t * (p k).eval t) := by
+      ext t
+      rw [hc, eval_finsetSum, Finset.sum_mul]
+      refine Finset.sum_congr rfl fun m _ ↦ ?_
+      simp [eval_mul, eval_C, mul_assoc]
+    rw [hfun, integral_finsetSum]
+    · rw [Finset.sum_eq_single_of_mem k hk]
+      · rw [integral_const_mul, ho k k, ite_eq_left rfl, mul_one]
+      · intro m _ hmk
+        rw [integral_const_mul, ho m k, ite_eq_right hmk, mul_zero]
+    · intro m _
+      exact (hm.integrable_eval_mul (p m) (p k)).const_mul (c m)
+  have hckw : ∀ k ∈ Finset.range n, c k = w j * (p k).eval (x j) := by
+    intro k hk
+    have hklt : k < n := Finset.mem_range.mp hk
+    have hdeg : (Lagrange.basis Finset.univ x j * p k).natDegree ≤ 2 * n - 1 := by
+      refine natDegree_mul_le.trans ?_
+      rw [natDegree_lagrangeBasis_univ hx j, hd k]
+      omega
+    rw [hck k hk, ← sum_mul_eval_lagrangeBasis_mul hx w j (p k), ← hw _ hdeg]
+    refine integral_congr_ae (ae_of_all _ fun t ↦ ?_)
+    simp [eval_mul]
+  have hone : ∑ k ∈ Finset.range n, c k * (p k).eval (x j) = 1 := by
+    rw [← Lagrange.eval_basis_self hx.injOn (Finset.mem_univ j), hc, eval_finsetSum]
+    refine Finset.sum_congr rfl fun k _ ↦ ?_
+    simp [eval_mul, eval_C]
+  have hprod : ∑ k ∈ Finset.range n, c k * (p k).eval (x j) =
+      w j * christoffelKernel p n (x j) (x j) := by
+    rw [christoffelKernel, Finset.mul_sum]
+    refine Finset.sum_congr rfl fun k hk ↦ ?_
+    rw [hckw k hk]
+    ring
+  exact eq_inv_of_mul_eq_one_left (hprod.symm.trans hone)
+
 /-- **48.14**: the Gaussian rule at the roots is unique, positive, and has Christoffel weights.
 The family is orthonormal, so no squared-norm factors are omitted from the kernel. -/
 theorem existsUnique_gaussQuadrature (μ : Measure ℝ) (hm : HasFiniteMoments μ)
@@ -515,166 +651,12 @@ theorem existsUnique_gaussQuadrature (μ : Measure ℝ) (hm : HasFiniteMoments �
     (hroot : ∀ j, (p n).eval (x j) = 0) :
     ∃! w : Fin n → ℝ, IsQuadratureRule μ x w (2 * n - 1) ∧
       (∀ j, 0 < w j) ∧ ∀ j, w j = (christoffelKernel p n (x j) (x j))⁻¹ := by
-  have hne : ∀ j, p j ≠ 0 := ne_zero_of_orthonormal p ho
-  have horth : IsOrthogonalPolynomial μ (p n) :=
-    isOrthogonalPolynomial_orthonormal hm p hd ho n
-  have hroots := roots_orthogonalPolynomial μ hm hi horth
-  have hnodes : Finset.univ.image x = (p n).roots.toFinset := by
-    refine Finset.eq_of_subset_of_card_le ?_ ?_
-    · intro y hy
-      obtain ⟨j, -, rfl⟩ := Finset.mem_image.mp hy
-      exact Multiset.mem_toFinset.mpr ((mem_roots (hne n)).2 (hroot j))
-    · have hEq : (Finset.univ.image x).card = (p n).roots.toFinset.card := by
-        rw [Finset.card_image_of_injective _ hx, Finset.card_univ, Fintype.card_fin,
-          hroots.1, hd n]
-      exact hEq.symm.le
-  have hcard : (Finset.univ : Finset (Fin n)).card = (p n).roots.toFinset.card := by
-    calc
-      (Finset.univ : Finset (Fin n)).card = (Finset.univ.image x).card :=
-        (Finset.card_image_of_injective Finset.univ hx).symm
-      _ = (p n).roots.toFinset.card := by simp [hnodes]
-  let ℓ : Fin n → ℝ[X] := fun j ↦ Lagrange.basis Finset.univ x j
-  let w : Fin n → ℝ := fun j ↦ ∫ t, (ℓ j).eval t ∂μ
-  have hinj : Set.InjOn x (SetLike.coe (Finset.univ : Finset (Fin n))) := by
-    intro a _ b _ hxy
-    exact hx hxy
-  have hℓnd : ∀ j, (ℓ j).natDegree = n - 1 := fun j ↦ by
-    simpa [ℓ, Finset.card_univ, Fintype.card_fin] using
-      Lagrange.natDegree_basis hinj (Finset.mem_univ j)
-  have hℓself : ∀ j, (ℓ j).eval (x j) = 1 := fun j ↦ by
-    simpa [ℓ] using Lagrange.eval_basis_self hinj (Finset.mem_univ j)
-  have hℓne : ∀ i j, i ≠ j → (ℓ i).eval (x j) = 0 := fun i j hij ↦ by
-    simpa [ℓ] using Lagrange.eval_basis_of_ne hij (Finset.mem_univ j)
-  have hℓ0 : ∀ j, ℓ j ≠ 0 := fun j ↦ by
-    simpa [ℓ] using Lagrange.basis_ne_zero hinj (Finset.mem_univ j)
-  have hexact : IsQuadratureRule μ x w (2 * n - 1) := by
-    intro r hr
-    obtain ⟨q, s, hdiv, hq, hs⟩ :=
-      exists_quot_rem_natDegree_lt hn (hd n) (hne n) hr
-    have hr_eval : ∀ t, r.eval t = (p n).eval t * q.eval t + s.eval t := by
-      intro t
-      simpa [eval_add, eval_mul] using congr_arg (eval t) hdiv
-    have hkill : ∫ t, (p n).eval t * q.eval t ∂μ = 0 :=
-      horth.2 q (lt_of_lt_of_eq hq (hd n).symm)
-    have hint_r : ∫ t, r.eval t ∂μ = ∫ t, s.eval t ∂μ := by
-      have hadd :=
-        integral_add (hm.integrable_eval_mul (p n) q) (hm.integrable_eval s)
-      rw [integral_congr_ae (ae_of_all _ hr_eval), hadd, hkill, zero_add]
-    have hs_deg : s.degree < (Finset.univ : Finset (Fin n)).card := by
-      rw [hcard, hroots.1, hd n]
-      exact lt_of_le_of_lt degree_le_natDegree (WithBot.coe_lt_coe.mpr hs)
-    have hs_eq : s = ∑ i, C (s.eval (x i)) * ℓ i := by
-      conv_lhs =>
-        rw [Lagrange.eq_interpolate hinj hs_deg, Lagrange.interpolate_apply]
-    have hrs : ∀ i, s.eval (x i) = r.eval (x i) := by
-      intro i
-      have hnode := hr_eval (x i)
-      rw [hroot i, zero_mul, zero_add] at hnode
-      exact hnode.symm
-    have hfun : (fun t ↦ s.eval t) =
-        fun t ↦ ∑ i, s.eval (x i) * (ℓ i).eval t := by
-      ext t
-      conv_lhs => rw [hs_eq]
-      rw [eval_finsetSum]
-      refine Finset.sum_congr rfl fun i _ ↦ ?_
-      rw [eval_mul, eval_C]
-    rw [hint_r, hfun, integral_finsetSum]
-    · refine Finset.sum_congr rfl fun i _ ↦ ?_
-      rw [integral_const_mul, hrs i, mul_comm]
-    · intro i _
-      exact (hm.integrable_eval (ℓ i)).const_mul (s.eval (x i))
-  have hpos : ∀ j, 0 < w j := by
-    intro j
-    have hdeg : (ℓ j ^ 2).natDegree ≤ 2 * n - 1 := by
-      calc
-        (ℓ j ^ 2).natDegree ≤ 2 * (ℓ j).natDegree := natDegree_pow_le
-        _ = 2 * (n - 1) := by rw [hℓnd j]
-        _ ≤ 2 * n - 1 := by omega
-    have hint := hexact (ℓ j ^ 2) hdeg
-    have hoff : ∀ i, i ≠ j → w i * (ℓ j ^ 2).eval (x i) = 0 := by
-      intro i hi
-      rw [eval_pow, hℓne j i hi.symm, zero_pow (by decide : (2 : ℕ) ≠ 0), mul_zero]
-    have hsum : ∑ i, w i * (ℓ j ^ 2).eval (x i) = w j := by
-      rw [Fintype.sum_eq_single j hoff, eval_pow, hℓself j, one_pow, mul_one]
-    have hnn : ∀ t, 0 ≤ (ℓ j ^ 2).eval t := by
-      intro t
-      rw [eval_pow]
-      exact sq_nonneg _
-    have hintg : Integrable (fun t ↦ (ℓ j ^ 2).eval t) μ := hm.integrable_eval _
-    have hposint : 0 < ∫ t, (ℓ j ^ 2).eval t ∂μ := by
-      refine lt_of_le_of_ne (integral_nonneg hnn) ?_
-      intro hz
-      exact not_eventuallyEq_eval_zero_of_support_infinite hi
-        (pow_ne_zero 2 (hℓ0 j))
-        ((integral_eq_zero_iff_of_nonneg hnn hintg).1 hz.symm)
-    rw [hint, hsum] at hposint
-    exact hposint
-  have hchrist : ∀ j, w j = (christoffelKernel p n (x j) (x j))⁻¹ := by
-    intro j
-    obtain ⟨c, hc⟩ :=
-      eq_sum_range_of_natDegree_le p hd hne (n - 1) (hℓnd j).le
-    have hn1 : n - 1 + 1 = n := Nat.sub_add_cancel hn
-    rw [hn1] at hc
-    have hck : ∀ k ∈ Finset.range n,
-        c k = ∫ t, (ℓ j).eval t * (p k).eval t ∂μ := by
-      intro k hk
-      have hfun : (fun t ↦ (ℓ j).eval t * (p k).eval t) =
-          fun t ↦ ∑ m ∈ Finset.range n,
-            c m * ((p m).eval t * (p k).eval t) := by
-        ext t
-        rw [hc, eval_finsetSum, Finset.sum_mul]
-        refine Finset.sum_congr rfl fun m _ ↦ ?_
-        simp [eval_mul, eval_C, mul_assoc]
-      rw [hfun, integral_finsetSum]
-      · rw [Finset.sum_eq_single_of_mem k hk]
-        · rw [integral_const_mul, ho k k, ite_eq_left rfl, mul_one]
-        · intro m _ hmk
-          rw [integral_const_mul, ho m k, ite_eq_right hmk, mul_zero]
-      · intro m _
-        exact (hm.integrable_eval_mul (p m) (p k)).const_mul (c m)
-    have hckw : ∀ k ∈ Finset.range n, c k = w j * (p k).eval (x j) := by
-      intro k hk
-      have hklt : k < n := Finset.mem_range.mp hk
-      have hdeg : ((ℓ j) * p k).natDegree ≤ 2 * n - 1 := by
-        calc
-          ((ℓ j) * p k).natDegree ≤ (ℓ j).natDegree + (p k).natDegree :=
-            natDegree_mul_le
-          _ = (n - 1) + k := by rw [hℓnd j, hd k]
-          _ ≤ 2 * n - 1 := by omega
-      rw [hck k hk]
-      have hint := hexact (ℓ j * p k) hdeg
-      have hfun : ∫ t, (ℓ j).eval t * (p k).eval t ∂μ =
-          ∫ t, ((ℓ j) * p k).eval t ∂μ := by
-        refine integral_congr_ae (ae_of_all _ fun t ↦ ?_)
-        simp [eval_mul]
-      rw [hfun, hint]
-      have hoff : ∀ i, i ≠ j → w i * ((ℓ j) * p k).eval (x i) = 0 := by
-        intro i hi
-        rw [eval_mul, hℓne j i hi.symm, zero_mul, mul_zero]
-      rw [Fintype.sum_eq_single j hoff, eval_mul, hℓself j, one_mul]
-    have hone : ∑ k ∈ Finset.range n, c k * (p k).eval (x j) = 1 := by
-      rw [← hℓself j, hc, eval_finsetSum]
-      refine Finset.sum_congr rfl fun k _ ↦ ?_
-      simp [eval_mul, eval_C]
-    have hprod : ∑ k ∈ Finset.range n, c k * (p k).eval (x j) =
-        w j * christoffelKernel p n (x j) (x j) := by
-      rw [christoffelKernel, Finset.mul_sum]
-      refine Finset.sum_congr rfl fun k hk ↦ ?_
-      rw [hckw k hk]
-      ring
-    exact eq_inv_of_mul_eq_one_left (hprod.symm.trans hone)
-  refine ExistsUnique.intro w ⟨hexact, hpos, hchrist⟩ ?_
+  have hexact := isQuadratureRule_integral_lagrangeBasis hm
+    (isOrthogonalPolynomial_orthonormal hm p hd ho n) hn (hd n) hx hroot
+  refine ⟨_, ⟨hexact, pos_of_isQuadratureRule hm hi hx hexact,
+    eq_inv_christoffelKernel_of_isQuadratureRule hm p hd ho hn hx hexact⟩, ?_⟩
   intro w' hw'
   funext j
-  have hdeg : (ℓ j).natDegree ≤ 2 * n - 1 := by
-    rw [hℓnd j]
-    omega
-  have hoff : ∀ i, i ≠ j → w' i * (ℓ j).eval (x i) = 0 := by
-    intro i hi
-    rw [hℓne j i hi.symm, mul_zero]
-  have hsum : ∑ i, w' i * (ℓ j).eval (x i) = w' j := by
-    rw [Fintype.sum_eq_single j hoff, hℓself j, mul_one]
-  change w' j = ∫ t, (ℓ j).eval t ∂μ
-  rw [hw'.1 (ℓ j) hdeg, hsum]
+  exact eq_integral_lagrangeBasis_of_isQuadratureRule hx hw'.1 j
 
 end CKMA

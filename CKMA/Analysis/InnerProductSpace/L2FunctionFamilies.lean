@@ -7,16 +7,8 @@ module
 
 public import Mathlib.MeasureTheory.Function.L2Space
 public import CKMA.Analysis.InnerProductSpace.Frame
-public import Mathlib.Data.Finsupp.Basic
 
 import Mathlib.Algebra.FiniteSupport.Basic
-import Mathlib.Algebra.Module.Basic
-import Mathlib.Analysis.Normed.Group.Submodule
-import Mathlib.Analysis.Real.Sqrt
-import Mathlib.Analysis.SpecialFunctions.Pow.Real
-import Mathlib.LinearAlgebra.Finsupp.LinearCombination
-import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Extend
-import Mathlib.Topology.MetricSpace.Antilipschitz
 
 /-!
 # L2 function families, Riesz bounds, and frame bounds

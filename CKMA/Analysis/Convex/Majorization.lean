@@ -5,23 +5,10 @@ Authors: CKMA contributors
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Module
-public import Mathlib.Algebra.BigOperators.Pi
-public import Mathlib.Algebra.BigOperators.Ring.Finset
-public import Mathlib.Algebra.Module.BigOperators
-public import Mathlib.Algebra.Order.BigOperators.Group.Finset
-public import Mathlib.Algebra.Order.Rearrangement
-public import Mathlib.Analysis.Convex.Birkhoff
-public import Mathlib.Analysis.Convex.Jensen
-public import Mathlib.Analysis.Convex.Strict
-public import Mathlib.Analysis.LocallyConvex.Separation
+public import Mathlib.Analysis.Convex.DoublyStochasticMatrix
 public import Mathlib.Data.Fin.Tuple.Sort
-public import Mathlib.Data.Fintype.Basic
-public import Mathlib.Data.Fintype.BigOperators
-public import Mathlib.Data.List.FinRange
-public import Mathlib.Data.List.Sort
-public import Mathlib.Data.Multiset.Filter
-public import Mathlib.Order.Interval.Finset.Fin
+import Mathlib.Algebra.Order.Rearrangement
+import Mathlib.Analysis.Convex.Birkhoff
 
 /-!
 # Majorization, doubly stochastic mixing, and Karamata inequalities

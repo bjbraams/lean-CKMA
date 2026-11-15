@@ -5,17 +5,12 @@ Authors: CKMA contributors
 -/
 module
 
-public import CKMA.Probability.GaussianLogSobolev.Entropy
 public import Mathlib.InformationTheory.KullbackLeibler.KLFun
-public import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
 public import Mathlib.Analysis.SpecialFunctions.SmoothTransition
-public import Mathlib.Analysis.Calculus.ContDiff.Operations
-public import Mathlib.Analysis.Calculus.Deriv.Add
-public import Mathlib.Analysis.Calculus.Deriv.Pow
-public import Mathlib.MeasureTheory.Integral.DominatedConvergence
-public import Mathlib.MeasureTheory.Integral.Lebesgue.Add
-public import Mathlib.MeasureTheory.Integral.Bochner.Basic
-public import Mathlib.Topology.Order.LiminfLimsup
+public import Mathlib.Probability.Distributions.Gaussian.Real
+
+import CKMA.Probability.GaussianLogSobolev.Entropy
+import CKMA.Probability.GaussianLogSobolev.IntegrationByParts
 
 /-!
 # One-dimensional Gaussian logarithmic Sobolev inequality

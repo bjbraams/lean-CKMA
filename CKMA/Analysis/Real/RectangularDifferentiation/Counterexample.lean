@@ -5,29 +5,12 @@ Authors: CKMA contributors
 -/
 module
 
-public import CKMA.Analysis.Real.RectangularDifferentiation.Differentiate
-public import Mathlib.NumberTheory.Harmonic.Bounds
+public import CKMA.Analysis.Real.RectangularDifferentiation.Base
 
-import Mathlib.Algebra.BigOperators.Fin
-import Mathlib.Algebra.Order.Ring.Pow
-import Mathlib.Analysis.Complex.Exponential
 import Mathlib.Analysis.Complex.ExponentialBounds
-import Mathlib.Analysis.SpecialFunctions.Exp
-import Mathlib.Data.Fin.Tuple.Basic
-import Mathlib.Data.Fintype.Pi
-import Mathlib.MeasureTheory.Function.L1Space.Integrable
-import Mathlib.MeasureTheory.Integral.Bochner.Set
-import Mathlib.MeasureTheory.Integral.DominatedConvergence
-import Mathlib.MeasureTheory.Integral.Lebesgue.Add
-import Mathlib.MeasureTheory.Integral.Lebesgue.Markov
-import Mathlib.MeasureTheory.Integral.Prod
-import Mathlib.Dynamics.Ergodic.MeasurePreserving
-import Mathlib.MeasureTheory.Constructions.Pi
-import Mathlib.MeasureTheory.Group.Measure
 import Mathlib.MeasureTheory.Measure.Haar.Unique
-import Mathlib.MeasureTheory.Measure.Continuity
-import Mathlib.MeasureTheory.Measure.Prod
-import Mathlib.Order.Filter.AtTopBot.CountablyGenerated
+import CKMA.Analysis.Real.RectangularDifferentiation.Iteration
+import Mathlib.NumberTheory.Harmonic.Bounds
 
 /-!
 # An integrable function not differentiated by rectangles
@@ -54,7 +37,7 @@ The packing of translates, the higher-dimensional product, and the integrable sp
 
 noncomputable section
 
-open Classical MeasureTheory Set Filter Finset
+open MeasureTheory Set Filter Finset
 open scoped ENNReal NNReal BigOperators
 
 namespace CKMA.Bohr

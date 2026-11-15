@@ -5,15 +5,9 @@ Authors: CKMA contributors
 -/
 module
 
-public import Mathlib.MeasureTheory.Function.LpSpace.Basic
-public import Mathlib.Analysis.SpecialFunctions.Pow.Complex
-public import Mathlib.Analysis.Calculus.Deriv.Basic
 public import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
-public import Mathlib.MeasureTheory.Measure.Lebesgue.Complex
 public import Mathlib.Analysis.InnerProductSpace.Adjoint
 public import Mathlib.MeasureTheory.Function.L2Space
-public import Mathlib.MeasureTheory.Integral.Bochner.Basic
-public import Mathlib.MeasureTheory.Measure.WithDensity
 
 /-!
 # Weighted disk Bergman spaces

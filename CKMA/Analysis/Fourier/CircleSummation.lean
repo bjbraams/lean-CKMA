@@ -5,37 +5,10 @@ Authors: CKMA contributors
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
-public import Mathlib.Algebra.BigOperators.Ring.Finset
-public import Mathlib.Algebra.Field.GeomSum
-public import Mathlib.Algebra.Order.BigOperators.Group.Finset
-public import Mathlib.Analysis.Complex.Trigonometric
-public import Mathlib.Analysis.Convex.Integral
-public import Mathlib.Analysis.Convex.SpecificFunctions.Basic
 public import Mathlib.Analysis.Fourier.AddCircle
-public import Mathlib.Analysis.Normed.Group.AddCircle
-public import Mathlib.Analysis.Normed.Group.Bounded
-public import Mathlib.Analysis.SpecialFunctions.Complex.Log
-public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Bounds
-public import Mathlib.Data.Int.Interval
-public import Mathlib.MeasureTheory.Function.ContinuousMapDense
-public import Mathlib.MeasureTheory.Function.L1Space.Integrable
-public import Mathlib.MeasureTheory.Function.LpSeminorm.TriangleInequality
-public import Mathlib.MeasureTheory.Group.Integral
-public import Mathlib.MeasureTheory.Group.LIntegral
-public import Mathlib.MeasureTheory.Group.Prod
-public import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
-public import Mathlib.MeasureTheory.Integral.Bochner.Set
-public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
-public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Periodic
-public import Mathlib.MeasureTheory.Function.SpecialFunctions.Basic
-public import Mathlib.MeasureTheory.Integral.MeanInequalities
-public import Mathlib.MeasureTheory.Integral.Prod
-public import Mathlib.MeasureTheory.Measure.Haar.Unique
-public import Mathlib.Order.Interval.Finset.Nat
-public import Mathlib.Topology.ContinuousMap.Bounded.Normed
-public import Mathlib.Topology.UniformSpace.HeineCantor
-public import Mathlib.Topology.UniformSpace.UniformConvergence
+
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Bounds
+import Mathlib.MeasureTheory.Measure.Haar.Unique
 
 /-!
 # Fourier summation on the probability circle
@@ -72,8 +45,6 @@ Sources: GAPS 27.17 and 27.22.
 noncomputable section
 
 namespace CKMA
-
-set_option backward.isDefEq.respectTransparency false
 
 open MeasureTheory Filter Topology
 open scoped BigOperators ENNReal Real ComplexConjugate
@@ -643,14 +614,12 @@ lemma tendsto_fejerKernel_tail {δ : ℝ} (hδ : 0 < δ) :
       tendsto_const_nhds
     simpa [mul_zero] using hc.mul hinv
 
-set_option backward.isDefEq.respectTransparency true in
 /-- A character of a difference factors out of a pointwise product. -/
 private lemma fourier_sub_mul (k : ℤ) (x t : 𝕋) (z : ℂ) :
     fourier k (x - t) * z = fourier k x * (fourier (-k) t * z) :=
   (congr_arg (fun w : ℂ => w * z) (fourier_sub_right k x t)).trans
     (mul_assoc (fourier k x) (fourier (-k) t) z)
 
-set_option backward.isDefEq.respectTransparency true in
 /-- An integrable function has Fejer means given by convolution against the kernel. -/
 lemma fejerMean_eq_conv {f : 𝕋 → ℂ} (hf : Integrable f haar) (N : ℕ) (x : 𝕋) :
     fejerMean f N x = ∫ t, (fejerKernel N t : ℂ) * f (x - t) ∂haar := by
@@ -686,7 +655,6 @@ lemma fejerMean_eq_conv {f : 𝕋 → ℂ} (hf : Integrable f haar) (N : ℕ) (x
   rw [hfun]
   exact integral_sub_left_eq_self g haar x
 
-set_option backward.isDefEq.respectTransparency true in
 /-- Subtracting the value leaves a convolution against the kernel of mass one. -/
 lemma fejerMean_sub_eq_conv {f : 𝕋 → ℂ} (hf : Integrable f haar) (N : ℕ) (x : 𝕋) :
     fejerMean f N x - f x = ∫ t, (fejerKernel N t : ℂ) * (f (x - t) - f x) ∂haar := by

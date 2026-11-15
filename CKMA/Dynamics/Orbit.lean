@@ -5,8 +5,9 @@ Authors: CKMA contributors
 -/
 module
 
-public import Mathlib.Analysis.Normed.Group.Bounded
-public import Mathlib.Logic.Function.Iterate
+public import Mathlib.Analysis.Normed.Group.Defs
+
+import Mathlib.Analysis.Normed.Group.Bounded
 
 /-!
 # Bounded forward orbits

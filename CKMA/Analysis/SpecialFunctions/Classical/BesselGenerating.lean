@@ -6,13 +6,6 @@ Authors: CKMA contributors
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Bessel
-public import Mathlib.Analysis.Normed.Algebra.Exponential
-public import Mathlib.Analysis.Normed.Group.Bounded
-public import Mathlib.Analysis.Normed.Ring.InfiniteSum
-public import Mathlib.Algebra.Order.Archimedean.Real.Basic
-public import Mathlib.Topology.Algebra.GroupWithZero
-public import Mathlib.Topology.Algebra.InfiniteSum.Constructions
-public import Mathlib.Topology.Algebra.InfiniteSum.NatInt
 public import CKMA.Analysis.Complex.Basic
 
 /-!

@@ -7,7 +7,6 @@ module
 
 public import CKMA.Analysis.InnerProductSpace.Basic
 public import Mathlib.Analysis.Fourier.LpSpace
-public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 
 /-!
 # Rectangular Gabor density and the Balian–Low obstruction

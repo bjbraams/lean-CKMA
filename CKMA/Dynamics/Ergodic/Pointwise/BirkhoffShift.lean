@@ -5,9 +5,9 @@ Authors: CKMA contributors
 -/
 module
 
+public import Mathlib.Data.EReal.Operations
+public import Mathlib.Order.LiminfLimsup
 public import Mathlib.Dynamics.BirkhoffSum.Average
-public import Mathlib.Topology.Instances.EReal.Lemmas
-public import Mathlib.Order.Filter.AtTopBot.Basic
 
 import Mathlib.Tactic
 

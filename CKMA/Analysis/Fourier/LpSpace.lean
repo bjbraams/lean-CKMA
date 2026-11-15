@@ -5,8 +5,10 @@ Authors: CKMA contributors
 -/
 module
 
-public import TauCeti.Analysis.Fourier.LpSpace
+public import Mathlib.Analysis.Fourier.LpSpace
 
+import TauCeti.Analysis.Distribution.TemperedDistribution.Lp
+import TauCeti.Analysis.Fourier.Continuous
 /-!
 # The inverse Fourier integral on `L¹ ∩ L²`
 

@@ -6,10 +6,11 @@ Authors: CKMA contributors
 module
 
 public import CKMA.Probability.InfinitelyDivisible.Basic
-public import Mathlib.Analysis.Complex.RealDeriv
-public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
-public import Mathlib.MeasureTheory.Function.L1Space.Integrable
-public import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
+
+import Mathlib.Analysis.Calculus.Deriv.Linear
+import Mathlib.Analysis.Calculus.Deriv.Pow
+import Mathlib.Analysis.SpecialFunctions.ExpDeriv
+import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
 
 /-!
 # Integrand of a Lévy characteristic exponent

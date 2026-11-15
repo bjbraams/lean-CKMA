@@ -5,12 +5,10 @@ Authors: CKMA contributors
 -/
 module
 
-public import CKMA.Analysis.Approximation.Polynomial.Chebyshev
+public import CKMA.Analysis.Approximation.Polynomial.Alternation
+public import Mathlib.Algebra.Polynomial.Derivative
 public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
-public import Mathlib.Analysis.SpecialFunctions.Log.Basic
-public import Mathlib.Analysis.Calculus.Deriv.Polynomial
-public import Mathlib.Analysis.Normed.Module.FiniteDimension
-public import Mathlib.Topology.MetricSpace.ProperSpace
+import Mathlib.Analysis.Normed.Module.FiniteDimension
 
 /-!
 # Uniform polynomial and rational approximation

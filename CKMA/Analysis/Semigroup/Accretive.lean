@@ -7,6 +7,8 @@ module
 
 public import CKMA.Analysis.Semigroup.Accretive.Estimates
 
+import Mathlib.Analysis.SpecificLimits.Basic
+
 /-!
 # Crandall–Liggett semigroup
 
@@ -267,7 +269,171 @@ private lemma continuous_accretiveSemigroup {G : Set (X × X)} (hG : IsMAccretiv
     rwa [hεeq] at this
   exact hlt
 
-/-- The semigroup law holds for an initial value in the graph. -/
+/-- Choice of the step count for the semigroup law: for positive times `s`, `t`, a slope
+bound `C > 0` and a tolerance `ε > 0`, some `N > 0` makes the step `t / N` times `C`, the
+`N`-step Euler rate, and the rate for `⌊s / (t / N)⌋₊ > 0` steps all smaller than `ε / 5`. -/
+private lemma exists_nat_accretiveStep_bounds {s t C ε : ℝ} (hs0 : 0 < s) (ht0 : 0 < t)
+    (hC : 0 < C) (hε : 0 < ε) :
+    ∃ N : ℕ, 0 < N ∧ 0 < ⌊s / (t / N)⌋₊ ∧ t / N * C < ε / 5 ∧
+      (s + t) * C * Real.sqrt (1 / (N : ℝ)) < ε / 5 ∧
+      s * C * Real.sqrt (1 / (⌊s / (t / N)⌋₊ : ℝ)) < ε / 5 := by
+  let K1 : ℝ := 2 * t / s
+  let K2 : ℝ := (5 * (s + t) * C / ε) ^ 2
+  let K3 : ℝ := 2 * s * t * (5 * C / ε) ^ 2
+  let K : ℝ := max 1 (max K1 (max K2 K3))
+  obtain ⟨N, hN⟩ := exists_nat_gt K
+  have hlt {z : ℝ} (hz : z ≤ K) : z < (N : ℝ) := lt_of_le_of_lt hz hN
+  have h1lt : (1 : ℝ) < N := hlt (le_max_left 1 (max K1 (max K2 K3)))
+  have hNge : 1 ≤ N := by exact_mod_cast h1lt.le
+  have hNpos : 0 < N := by omega
+  have hK1 : K1 < (N : ℝ) :=
+    hlt ((le_max_left K1 (max K2 K3)).trans (le_max_right 1 (max K1 (max K2 K3))))
+  have hK2 : K2 < (N : ℝ) :=
+    hlt (((le_max_left K2 K3).trans (le_max_right K1 (max K2 K3))).trans
+      (le_max_right 1 (max K1 (max K2 K3))))
+  have hK3 : K3 < (N : ℝ) :=
+    hlt (((le_max_right K2 K3).trans (le_max_right K1 (max K2 K3))).trans
+      (le_max_right 1 (max K1 (max K2 K3))))
+  let h : ℝ := t / N
+  have ha : s / h = s * (N : ℝ) / t := by
+    simpa [h] using div_div_eq_mul_div (a := s) (b := t) (c := (N : ℝ))
+  have ha2 : (2 : ℝ) < s / h := by
+    rw [ha]
+    have hmul : 2 * t < (N : ℝ) * s := (div_lt_iff₀ hs0).mp hK1
+    rw [mul_comm (N : ℝ) s] at hmul
+    exact (lt_div_iff₀ ht0).mpr hmul
+  have hmain : (s + t) * C / Real.sqrt (N : ℝ) < ε / 5 := by
+    refine div_sqrt_lt_five ?_ (by exact_mod_cast hNpos) hε ?_
+    · exact mul_nonneg (add_nonneg hs0.le ht0.le) hC.le
+    · convert hK2 using 1
+      simp only [K2]
+      ring
+  have hsqrtLe : Real.sqrt (N : ℝ) ≤ (N : ℝ) :=
+    (Real.sqrt_le_left (by positivity)).2 (by nlinarith [h1lt.le])
+  have hstepSmall : h * C < ε / 5 := by
+    have hle : h * C ≤ t * C / Real.sqrt (N : ℝ) := by
+      calc h * C = t / (N : ℝ) * C := rfl
+        _ = t * C / (N : ℝ) := by ring
+        _ ≤ t * C / Real.sqrt (N : ℝ) :=
+            div_le_div_of_nonneg_left (mul_nonneg ht0.le hC.le)
+              (Real.sqrt_pos.mpr (by exact_mod_cast hNpos)) hsqrtLe
+    have hmono : t * C / Real.sqrt (N : ℝ) ≤ (s + t) * C / Real.sqrt (N : ℝ) := by
+      refine div_le_div_of_nonneg_right ?_ (Real.sqrt_nonneg _)
+      exact mul_le_mul_of_nonneg_right (le_add_of_nonneg_left hs0.le) hC.le
+    exact lt_of_le_of_lt (hle.trans hmono) hmain
+  let M : ℕ := ⌊s / h⌋₊
+  have hMgt : (s / h) / 2 < (M : ℝ) := by
+    have hfloor : s / h < (M : ℝ) + 1 := Nat.lt_floor_add_one (s / h)
+    have hhalfLt : (s / h) / 2 < s / h - 1 := by linarith [ha2]
+    linarith
+  have hM1 : (1 : ℝ) < M := by
+    have hgt1 : (1 : ℝ) < (s / h) / 2 := by linarith [ha2]
+    exact hgt1.trans hMgt
+  have hMpos : 0 < M := by
+    have hMge : 1 ≤ M := by exact_mod_cast hM1.le
+    omega
+  have hhalf : (s / h) / 2 = s * (N : ℝ) / (2 * t) := by
+    calc (s / h) / 2 = (s * (N : ℝ) / t) / 2 := by rw [ha]
+      _ = s * (N : ℝ) / (t * 2) := div_div _ _ _
+      _ = s * (N : ℝ) / (2 * t) := by rw [mul_comm t 2]
+  have hdenPos : 0 < s * (N : ℝ) / (2 * t) := by positivity
+  have hMden : s * (N : ℝ) / (2 * t) < (M : ℝ) := by
+    rw [← hhalf]
+    exact hMgt
+  have hcancel : s / (2 * t) * K3 = (5 * s * C / ε) ^ 2 := by
+    simp only [K3]
+    set q : ℝ := (5 * C / ε) ^ 2
+    have hre : 2 * s * t * q = (2 * t) * (s * q) := by ring
+    have htr : 2 * t ≠ 0 := (by positivity : (0 : ℝ) < 2 * t).ne'
+    calc s / (2 * t) * (2 * s * t * q)
+        = s / (2 * t) * ((2 * t) * (s * q)) := by rw [hre]
+      _ = (s / (2 * t) * (2 * t)) * (s * q) := by rw [← mul_assoc]
+      _ = s * (s * q) := by rw [div_mul_cancel₀ _ htr]
+      _ = (s * s) * q := by rw [← mul_assoc]
+      _ = (s * (5 * C / ε)) ^ 2 := by
+          rw [show q = (5 * C / ε) ^ 2 from rfl, ← sq s, ← mul_pow]
+      _ = (5 * s * C / ε) ^ 2 := by
+          congr 1
+          rw [← mul_div_assoc, mul_left_comm s 5 C, mul_assoc]
+  have hsqDen : (5 * s * C / ε) ^ 2 < s * (N : ℝ) / (2 * t) := by
+    have hcoef : 0 < s / (2 * t) := by positivity
+    have hmul := mul_lt_mul_of_pos_left hK3 hcoef
+    rwa [hcancel, div_mul_eq_mul_div] at hmul
+  have hMbound : s * C * Real.sqrt (1 / (M : ℝ)) < ε / 5 := by
+    have hinv : (1 : ℝ) / M < 1 / (s * (N : ℝ) / (2 * t)) :=
+      (one_div_lt_one_div (by exact_mod_cast hMpos) hdenPos).mpr hMden
+    have hsq := Real.sqrt_lt_sqrt (by positivity) hinv
+    have hform : Real.sqrt (1 / (s * (N : ℝ) / (2 * t))) =
+        1 / Real.sqrt (s * (N : ℝ) / (2 * t)) := by
+      rw [one_div, Real.sqrt_inv, ← one_div]
+    rw [hform] at hsq
+    have hmul := mul_lt_mul_of_pos_left hsq (mul_pos hs0 hC)
+    have hrew : s * C * (1 / Real.sqrt (s * (N : ℝ) / (2 * t))) =
+        s * C / Real.sqrt (s * (N : ℝ) / (2 * t)) := by ring
+    rw [hrew] at hmul
+    refine hmul.trans (div_sqrt_lt_five (mul_nonneg hs0.le hC.le) hdenPos hε ?_)
+    convert hsqDen using 1
+    ring
+  refine ⟨N, hNpos, hMpos, hstepSmall, ?_, hMbound⟩
+  rw [Real.sqrt_div zero_le_one, Real.sqrt_one, mul_one_div]
+  exact hmain
+
+omit [CompleteSpace X] in
+/-- The Euler product with `k` steps of size `h`, up to time `k * h`, is the `k`-th iterate
+of the resolvent at scale `h`. -/
+private lemma accretiveEulerProduct_sub_one_eq_iterate (G : Set (X × X)) {h : ℝ} {k : ℕ}
+    (hk : 0 < k) {r : ℝ≥0} (hr : (r : ℝ) = (k : ℝ) * h) (z : X) :
+    accretiveEulerProduct G r (k - 1) z = (accretiveResolvent G h)^[k] z := by
+  have h1 : 1 ≤ k := hk
+  have hcount : (k - 1) + 1 = k := Nat.sub_add_cancel h1
+  have hden : (r : ℝ) / (↑(k - 1) + 1) = h := by
+    have hc : (↑(k - 1) : ℝ) + 1 = (k : ℝ) := by
+      rw [Nat.cast_sub h1, Nat.cast_one]
+      ring
+    rw [hc, hr]
+    exact mul_div_cancel_left₀ h (by exact_mod_cast hk.ne')
+  simp only [accretiveEulerProduct]
+  rw [hden, hcount]
+
+/-- At a graph point with slope norm at most `C`, times closer than `h` give semigroup values
+closer than `h * C`. -/
+private lemma norm_accretiveSemigroup_sub_lt {G : Set (X × X)} (hG : IsMAccretiveGraph G)
+    {x u : X} (hx : (x, u) ∈ G) {C h : ℝ} (hC : 0 < C) (huC : ‖u‖ ≤ C) {a b : ℝ≥0}
+    (hab : |(a : ℝ) - (b : ℝ)| < h) :
+    ‖accretiveSemigroup G a x - accretiveSemigroup G b x‖ < h * C :=
+  calc ‖accretiveSemigroup G a x - accretiveSemigroup G b x‖
+      ≤ |(a : ℝ) - (b : ℝ)| * ‖u‖ := norm_accretiveSemigroup_time hG hx a b
+    _ ≤ |(a : ℝ) - (b : ℝ)| * C := by gcongr
+    _ < h * C := mul_lt_mul_of_pos_right hab hC
+
+/-- The Euler rate at a graph point in a uniform form: with `k` steps up to a time `r ≤ R` from
+a graph point with slope norm at most `C`, the defect is at most `R * C * √(1 / m)` whenever
+`0 < m ≤ k`. -/
+private lemma norm_accretiveEulerProduct_sub_semigroup_le {G : Set (X × X)}
+    (hG : IsMAccretiveGraph G) {x u : X} (hx : (x, u) ∈ G) {C R : ℝ} (huC : ‖u‖ ≤ C)
+    {r : ℝ≥0} (hrR : (r : ℝ) ≤ R) {k m : ℕ} (hm : 0 < m) (hmk : m ≤ k) :
+    ‖accretiveEulerProduct G r (k - 1) x - accretiveSemigroup G r x‖ ≤
+      R * C * Real.sqrt (1 / (m : ℝ)) := by
+  have hk : 1 ≤ k := by omega
+  have hden : ((k - 1 : ℕ) : ℝ) + 1 = (k : ℝ) := by
+    rw [Nat.cast_sub hk, Nat.cast_one]
+    ring
+  have hsq : Real.sqrt (1 / (((k - 1 : ℕ) : ℝ) + 1)) ≤ Real.sqrt (1 / (m : ℝ)) := by
+    rw [hden]
+    refine Real.sqrt_le_sqrt ?_
+    exact div_le_div_of_nonneg_left zero_le_one (by exact_mod_cast hm) (by exact_mod_cast hmk)
+  have hR : 0 ≤ R := (NNReal.coe_nonneg r).trans hrR
+  have hC : 0 ≤ C := (norm_nonneg u).trans huC
+  calc ‖accretiveEulerProduct G r (k - 1) x - accretiveSemigroup G r x‖
+      ≤ (r : ℝ) * ‖u‖ * Real.sqrt (1 / (((k - 1 : ℕ) : ℝ) + 1)) :=
+        norm_accretiveEulerProduct_sub_semigroup hG hx (k - 1) r
+    _ ≤ R * C * Real.sqrt (1 / (m : ℝ)) :=
+        mul_le_mul (mul_le_mul hrR huC (norm_nonneg u) hR) hsq (Real.sqrt_nonneg _)
+          (mul_nonneg hR hC)
+
+/-- The semigroup law holds for an initial value in the graph. With `N` resolvent steps of
+size `h = t / N` and `M = ⌊s / h⌋₊`, the two sides are compared through five intermediate
+values, each step costing less than `ε / 5`. -/
 private lemma accretiveSemigroup_add_domain {G : Set (X × X)} (hG : IsMAccretiveGraph G)
     {x u : X} (hx : (x, u) ∈ G) (s t : ℝ≥0) :
     accretiveSemigroup G (s + t) x =
@@ -283,158 +449,53 @@ private lemma accretiveSemigroup_add_domain {G : Set (X × X)} (hG : IsMAccretiv
   apply sub_eq_zero.mp
   apply norm_le_zero_iff.mp
   refine le_of_forall_pos_le_add fun ε hε => ?_
-  let sr : ℝ := s
-  let tr : ℝ := t
   let C : ℝ := ‖u‖ + 1
   have hC : 0 < C := by positivity
   have huC : ‖u‖ ≤ C := by
     simp only [C]
     exact le_add_of_nonneg_right zero_le_one
-  let K1 : ℝ := 2 * tr / sr
-  let K2 : ℝ := (5 * (sr + tr) * C / ε) ^ 2
-  let K3 : ℝ := 2 * sr * tr * (5 * C / ε) ^ 2
-  let K : ℝ := max 1 (max K1 (max K2 K3))
-  obtain ⟨N, hN⟩ := exists_nat_gt K
-  have hlt {z : ℝ} (hz : z ≤ K) : z < (N : ℝ) := lt_of_le_of_lt hz hN
-  have h1lt : (1 : ℝ) < N := hlt (le_max_left 1 (max K1 (max K2 K3)))
-  have hNge : 1 ≤ N := by exact_mod_cast h1lt.le
-  have hNpos : 0 < N := by omega
-  have hK1 : K1 < (N : ℝ) :=
-    hlt ((le_max_left K1 (max K2 K3)).trans (le_max_right 1 (max K1 (max K2 K3))))
-  have hK2 : K2 < (N : ℝ) :=
-    hlt (((le_max_left K2 K3).trans (le_max_right K1 (max K2 K3))).trans
-      (le_max_right 1 (max K1 (max K2 K3))))
-  have hK3 : K3 < (N : ℝ) :=
-    hlt (((le_max_right K2 K3).trans (le_max_right K1 (max K2 K3))).trans
-      (le_max_right 1 (max K1 (max K2 K3))))
-  let h : ℝ := tr / N
+  obtain ⟨N, hNpos, hMpos, hstepSmall, hNbound, hMbound⟩ :=
+    exists_nat_accretiveStep_bounds hs0 ht0 hC hε
+  set h : ℝ := (t : ℝ) / N
+  set M : ℕ := ⌊(s : ℝ) / h⌋₊
   have hh : 0 < h := div_pos ht0 (by exact_mod_cast hNpos)
-  have hNh : (N : ℝ) * h = tr :=
-    mul_div_cancel₀ tr (by exact_mod_cast hNpos.ne')
-  have ha : sr / h = sr * (N : ℝ) / tr := by
-    simpa [h] using div_div_eq_mul_div (a := sr) (b := tr) (c := (N : ℝ))
-  have ha2 : (2 : ℝ) < sr / h := by
-    rw [ha]
-    have hmul : 2 * tr < (N : ℝ) * sr := (div_lt_iff₀ hs0).mp hK1
-    rw [mul_comm (N : ℝ) sr] at hmul
-    exact (lt_div_iff₀ ht0).mpr hmul
-  have hmain : (sr + tr) * C / Real.sqrt (N : ℝ) < ε / 5 := by
-    refine div_sqrt_lt_five ?_ (by exact_mod_cast hNpos) hε ?_
-    · exact mul_nonneg (add_nonneg (NNReal.coe_nonneg s) (NNReal.coe_nonneg t)) hC.le
-    · convert hK2 using 1
-      simp only [K2]
-      ring
-  have hsqrtLe : Real.sqrt (N : ℝ) ≤ (N : ℝ) :=
-    (Real.sqrt_le_left (by positivity)).2 (by nlinarith [h1lt.le])
-  have hstepSmall : h * C < ε / 5 := by
-    have hle : h * C ≤ tr * C / Real.sqrt (N : ℝ) := by
-      calc h * C = tr / (N : ℝ) * C := rfl
-        _ = tr * C / (N : ℝ) := by ring
-        _ ≤ tr * C / Real.sqrt (N : ℝ) :=
-            div_le_div_of_nonneg_left (mul_nonneg (NNReal.coe_nonneg t) hC.le)
-              (Real.sqrt_pos.mpr (by exact_mod_cast hNpos)) hsqrtLe
-    have hmono : tr * C / Real.sqrt (N : ℝ) ≤ (sr + tr) * C / Real.sqrt (N : ℝ) := by
-      refine div_le_div_of_nonneg_right ?_ (Real.sqrt_nonneg _)
-      exact mul_le_mul_of_nonneg_right (le_add_of_nonneg_left (NNReal.coe_nonneg s)) hC.le
-    exact lt_of_le_of_lt (hle.trans hmono) hmain
-  let M : ℕ := ⌊sr / h⌋₊
-  have hMgt : (sr / h) / 2 < (M : ℝ) := by
-    have hfloor : sr / h < (M : ℝ) + 1 := Nat.lt_floor_add_one (sr / h)
-    have hhalfLt : (sr / h) / 2 < sr / h - 1 := by linarith [ha2]
-    linarith
-  have hM1 : (1 : ℝ) < M := by
-    have hgt1 : (1 : ℝ) < (sr / h) / 2 := by linarith [ha2]
-    exact hgt1.trans hMgt
-  have hMpos : 0 < M := by
-    have hMge : 1 ≤ M := by exact_mod_cast hM1.le
-    omega
-  have hhalf : (sr / h) / 2 = sr * (N : ℝ) / (2 * tr) := by
-    calc (sr / h) / 2 = (sr * (N : ℝ) / tr) / 2 := by rw [ha]
-      _ = sr * (N : ℝ) / (tr * 2) := div_div _ _ _
-      _ = sr * (N : ℝ) / (2 * tr) := by rw [mul_comm tr 2]
-  have hdenPos : 0 < sr * (N : ℝ) / (2 * tr) := by positivity
-  have hMden : sr * (N : ℝ) / (2 * tr) < (M : ℝ) := by
-    rw [← hhalf]
-    exact hMgt
-  have hcancel : sr / (2 * tr) * K3 = (5 * sr * C / ε) ^ 2 := by
-    simp only [K3]
-    set X : ℝ := (5 * C / ε) ^ 2
-    have hre : 2 * sr * tr * X = (2 * tr) * (sr * X) := by ring
-    have htr : 2 * tr ≠ 0 := (by positivity : (0 : ℝ) < 2 * tr).ne'
-    calc sr / (2 * tr) * (2 * sr * tr * X)
-        = sr / (2 * tr) * ((2 * tr) * (sr * X)) := by rw [hre]
-      _ = (sr / (2 * tr) * (2 * tr)) * (sr * X) := by rw [← mul_assoc]
-      _ = sr * (sr * X) := by rw [div_mul_cancel₀ _ htr]
-      _ = (sr * sr) * X := by rw [← mul_assoc]
-      _ = (sr * (5 * C / ε)) ^ 2 := by
-          rw [show X = (5 * C / ε) ^ 2 from rfl, ← sq sr, ← mul_pow]
-      _ = (5 * sr * C / ε) ^ 2 := by
-          congr 1
-          rw [← mul_div_assoc, mul_left_comm sr 5 C, mul_assoc]
-  have hsqDen : (5 * sr * C / ε) ^ 2 < sr * (N : ℝ) / (2 * tr) := by
-    have hcoef : 0 < sr / (2 * tr) := by positivity
-    have hmul := mul_lt_mul_of_pos_left hK3 hcoef
-    rwa [hcancel, div_mul_eq_mul_div] at hmul
-  have hMbound : sr * C * Real.sqrt (1 / (M : ℝ)) < ε / 5 := by
-    have hinv : (1 : ℝ) / M < 1 / (sr * (N : ℝ) / (2 * tr)) :=
-      (one_div_lt_one_div (by exact_mod_cast hMpos) hdenPos).mpr hMden
-    have hsq := Real.sqrt_lt_sqrt (by positivity) hinv
-    have hform : Real.sqrt (1 / (sr * (N : ℝ) / (2 * tr))) =
-        1 / Real.sqrt (sr * (N : ℝ) / (2 * tr)) := by
-      rw [one_div, Real.sqrt_inv, ← one_div]
-    rw [hform] at hsq
-    have hmul := mul_lt_mul_of_pos_left hsq (mul_pos hs0 hC)
-    have hrew : sr * C * (1 / Real.sqrt (sr * (N : ℝ) / (2 * tr))) =
-        sr * C / Real.sqrt (sr * (N : ℝ) / (2 * tr)) := by ring
-    rw [hrew] at hmul
-    refine hmul.trans (div_sqrt_lt_five (mul_nonneg hs0.le hC.le) hdenPos hε ?_)
-    convert hsqDen using 1
-    ring
+  have hNh : (N : ℝ) * h = t := mul_div_cancel₀ (t : ℝ) (by exact_mod_cast hNpos.ne')
   let σr : ℝ := (M : ℝ) * h
-  let τr : ℝ := σr + tr
   have hσnn : 0 ≤ σr := by positivity
-  have hτnn : 0 ≤ τr := by positivity
+  have hτnn : 0 ≤ σr + t := by positivity
   let σ : ℝ≥0 := ⟨σr, hσnn⟩
-  let τ : ℝ≥0 := ⟨τr, hτnn⟩
-  have hσle : σr ≤ sr := by
-    have hfl : (M : ℝ) ≤ sr / h := Nat.floor_le (div_nonneg (NNReal.coe_nonneg s) hh.le)
+  let τ : ℝ≥0 := ⟨σr + t, hτnn⟩
+  have hσle : σr ≤ s := by
+    have hfl : (M : ℝ) ≤ s / h := Nat.floor_le (div_nonneg (NNReal.coe_nonneg s) hh.le)
     calc σr = (M : ℝ) * h := rfl
-      _ ≤ (sr / h) * h := mul_le_mul_of_nonneg_right hfl hh.le
-      _ = sr := by field_simp
-  have hgap : sr - σr < h := by
-    have hlt : sr / h < (M : ℝ) + 1 := Nat.lt_floor_add_one (sr / h)
-    have hmul : sr < ((M : ℝ) + 1) * h := (div_lt_iff₀ hh).mp hlt
+      _ ≤ (s / h) * h := mul_le_mul_of_nonneg_right hfl hh.le
+      _ = s := by field_simp
+  have hgap : (s : ℝ) - σr < h := by
+    have hlt : s / h < (M : ℝ) + 1 := Nat.lt_floor_add_one (s / h)
+    have hmul : (s : ℝ) < ((M : ℝ) + 1) * h := (div_lt_iff₀ hh).mp hlt
     have hσeq : σr = (M : ℝ) * h := rfl
     linarith
-  have hτeq : ((M + N : ℕ) : ℝ) * h = τr := by
+  have hτeq : (τ : ℝ) = ((M + N : ℕ) : ℝ) * h := by
     rw [Nat.cast_add, add_mul, hNh]
+    rfl
   let J : ℝ → X → X := accretiveResolvent G
   let y : X := (J h)^[N] x
-  have hEstep {z : X} (k : ℕ) (hk : 0 < k) (r : ℝ≥0) (hr : (r : ℝ) = (k : ℝ) * h) :
-      accretiveEulerProduct G r (k - 1) z = (J h)^[k] z := by
-    have h1 : 1 ≤ k := by omega
-    have hcount : (k - 1) + 1 = k := Nat.sub_add_cancel h1
-    have hden : (r : ℝ) / (↑(k - 1) + 1) = h := by
-      have hc : (↑(k - 1) : ℝ) + 1 = (k : ℝ) := by
-        rw [Nat.cast_sub h1, Nat.cast_one]
-        ring
-      rw [hc, hr]
-      exact mul_div_cancel_left₀ h (by exact_mod_cast hk.ne')
-    simp only [accretiveEulerProduct, J]
-    rw [hden, hcount]
-  have hyE : accretiveEulerProduct G t (N - 1) x = y := by
-    simpa [y] using hEstep N hNpos t hNh.symm
+  have hyE : accretiveEulerProduct G t (N - 1) x = y :=
+    accretiveEulerProduct_sub_one_eq_iterate G hNpos hNh.symm x
   obtain ⟨v, hv, hvn, _⟩ := accretiveResolvent_iterate_slope hG hh hx hNpos
   have hv' : (y, v) ∈ G := by simpa [y, J] using hv
   have hvC : ‖v‖ ≤ C := hvn.trans huC
   have hyCl : y ∈ closure (accretiveGraphDomain G) := subset_closure ⟨v, hv'⟩
   have hcomp : (J h)^[M] y = (J h)^[M + N] x := by
     simpa [y] using (iterate_add_apply (J h) M N x).symm
-  have hMt : 0 < M + N := by omega
   have hEτ : accretiveEulerProduct G τ (M + N - 1) x = (J h)^[M + N] x :=
-    hEstep (M + N) hMt τ hτeq.symm
+    accretiveEulerProduct_sub_one_eq_iterate G (by omega) hτeq x
   have hEσ : accretiveEulerProduct G σ (M - 1) y = (J h)^[M] y :=
-    hEstep M hMpos σ rfl
+    accretiveEulerProduct_sub_one_eq_iterate G hMpos rfl y
+  have hτle : (τ : ℝ) ≤ s + t := by
+    have hτ : (τ : ℝ) = σr + t := rfl
+    rw [hτ]
+    linarith
   let A : X := accretiveSemigroup G (s + t) x
   let B : X := accretiveSemigroup G τ x
   let Cstep : X := (J h)^[M] y
@@ -442,105 +503,35 @@ private lemma accretiveSemigroup_add_domain {G : Set (X × X)} (hG : IsMAccretiv
   let Es : X := accretiveSemigroup G s y
   let F : X := accretiveSemigroup G s (accretiveSemigroup G t x)
   have hAB : ‖A - B‖ < ε / 5 := by
-    have htime := norm_accretiveSemigroup_time hG hx (s + t) τ
-    have hdiff : ((s + t : ℝ≥0) : ℝ) - (τ : ℝ) = sr - σr := by
-      rw [NNReal.coe_add]
-      have hτ : (τ : ℝ) = σr + tr := rfl
-      rw [hτ]
-      simp only [sr, tr]
+    refine (norm_accretiveSemigroup_sub_lt hG hx hC huC ?_).trans hstepSmall
+    have hdiff : ((s + t : ℝ≥0) : ℝ) - (τ : ℝ) = s - σr := by
+      have hτ : (τ : ℝ) = σr + t := rfl
+      rw [NNReal.coe_add, hτ]
       abel
-    have habs : |((s + t : ℝ≥0) : ℝ) - (τ : ℝ)| < h := by
-      rw [hdiff, abs_of_nonneg (sub_nonneg.mpr hσle)]
-      exact hgap
-    have hle : |((s + t : ℝ≥0) : ℝ) - (τ : ℝ)| * ‖u‖ ≤
-        |((s + t : ℝ≥0) : ℝ) - (τ : ℝ)| * C := by
-      gcongr
-    have hstrict : |((s + t : ℝ≥0) : ℝ) - (τ : ℝ)| * C < h * C :=
-      mul_lt_mul_of_pos_right habs hC
-    exact lt_of_le_of_lt htime (lt_of_le_of_lt hle (hstrict.trans hstepSmall))
+    rw [hdiff, abs_of_nonneg (sub_nonneg.mpr hσle)]
+    exact hgap
   have hBC : ‖B - Cstep‖ < ε / 5 := by
-    have hrate := norm_accretiveEulerProduct_sub_semigroup hG hx (M + N - 1) τ
+    have hrate := norm_accretiveEulerProduct_sub_semigroup_le hG hx huC hτle hNpos
+      (Nat.le_add_left N M)
     rw [hEτ, ← hcomp, norm_sub_rev] at hrate
-    have hden : ((M + N - 1 : ℕ) : ℝ) + 1 = ((M + N : ℕ) : ℝ) := by
-      have hone : 1 ≤ M + N := by omega
-      rw [Nat.cast_sub hone, Nat.cast_one]
-      ring
-    have hsqle : Real.sqrt (1 / (((M + N - 1 : ℕ) : ℝ) + 1)) ≤
-        Real.sqrt (1 / (N : ℝ)) := by
-      refine Real.sqrt_le_sqrt ?_
-      have hnum : (N : ℝ) ≤ ((M + N - 1 : ℕ) : ℝ) + 1 := by
-        rw [hden]
-        exact_mod_cast Nat.le_add_left N M
-      exact div_le_div_of_nonneg_left zero_le_one (by exact_mod_cast hNpos) hnum
-    have hτle : τr ≤ sr + tr := by
-      have hσ : σr ≤ sr := hσle
-      simp only [τr]
-      linarith
-    have hle : (τ : ℝ) * ‖u‖ * Real.sqrt (1 / (((M + N - 1 : ℕ) : ℝ) + 1)) ≤
-        (sr + tr) * C / Real.sqrt (N : ℝ) := by
-      have h1 : (τ : ℝ) * ‖u‖ * Real.sqrt (1 / (((M + N - 1 : ℕ) : ℝ) + 1)) ≤
-          τr * ‖u‖ * Real.sqrt (1 / (N : ℝ)) := by
-        rw [show (τ : ℝ) = τr by rfl]
-        exact mul_le_mul_of_nonneg_left hsqle (mul_nonneg hτnn (norm_nonneg u))
-      have h2 : τr * ‖u‖ * Real.sqrt (1 / (N : ℝ)) ≤
-          (sr + tr) * C * Real.sqrt (1 / (N : ℝ)) := by
-        refine mul_le_mul_of_nonneg_right ?_ (Real.sqrt_nonneg _)
-        exact mul_le_mul hτle huC (norm_nonneg u)
-          (add_nonneg (NNReal.coe_nonneg s) (NNReal.coe_nonneg t))
-      have h3 : (sr + tr) * C * Real.sqrt (1 / (N : ℝ)) =
-          (sr + tr) * C / Real.sqrt (N : ℝ) := by
-        rw [Real.sqrt_div zero_le_one, Real.sqrt_one, mul_one_div]
-      exact h1.trans (h2.trans_eq h3)
-    simpa [B, Cstep] using lt_of_le_of_lt (hrate.trans hle) hmain
+    exact hrate.trans_lt hNbound
   have hCD : ‖Cstep - Dσ‖ < ε / 5 := by
-    have hrate := norm_accretiveEulerProduct_sub_semigroup hG hv' (M - 1) σ
+    have hrate := norm_accretiveEulerProduct_sub_semigroup_le hG hv' hvC (R := s)
+      (r := σ) hσle hMpos le_rfl
     rw [hEσ] at hrate
-    have hdenM : ((M - 1 : ℕ) : ℝ) + 1 = (M : ℝ) := by
-      have hone : 1 ≤ M := by omega
-      rw [Nat.cast_sub hone, Nat.cast_one]
-      ring
-    have hle : (σ : ℝ) * ‖v‖ * Real.sqrt (1 / (((M - 1 : ℕ) : ℝ) + 1)) ≤
-        sr * C * Real.sqrt (1 / (M : ℝ)) := by
-      rw [show (σ : ℝ) = σr by rfl, hdenM]
-      refine mul_le_mul_of_nonneg_right ?_ (Real.sqrt_nonneg _)
-      exact mul_le_mul hσle hvC (norm_nonneg v) (NNReal.coe_nonneg s)
-    simpa [Cstep, Dσ] using lt_of_le_of_lt (hrate.trans hle) hMbound
+    exact hrate.trans_lt hMbound
   have hDE : ‖Dσ - Es‖ < ε / 5 := by
-    have htime := norm_accretiveSemigroup_time hG hv' σ s
-    have habs : |(σ : ℝ) - (s : ℝ)| < h := by
-      rw [show (σ : ℝ) = σr by rfl, abs_sub_comm, abs_of_nonneg (sub_nonneg.mpr hσle)]
-      exact hgap
-    have hle : |(σ : ℝ) - (s : ℝ)| * ‖v‖ ≤ |(σ : ℝ) - (s : ℝ)| * C := by
-      gcongr
-    have hstrict : |(σ : ℝ) - (s : ℝ)| * C < h * C := mul_lt_mul_of_pos_right habs hC
-    simpa [Dσ, Es] using
-      lt_of_le_of_lt htime (lt_of_le_of_lt hle (hstrict.trans hstepSmall))
+    refine (norm_accretiveSemigroup_sub_lt hG hv' hC hvC ?_).trans hstepSmall
+    rw [show (σ : ℝ) = σr by rfl, abs_sub_comm, abs_of_nonneg (sub_nonneg.mpr hσle)]
+    exact hgap
   have hEF : ‖Es - F‖ < ε / 5 := by
     have hyS : accretiveSemigroup G t x ∈ closure (accretiveGraphDomain G) :=
       accretiveSemigroup_mem_closure hG (subset_closure ⟨u, hx⟩) t
     have hcont := norm_accretiveSemigroup_le hG hyCl hyS s
-    have hrate := norm_accretiveEulerProduct_sub_semigroup hG hx (N - 1) t
+    have hrate := norm_accretiveEulerProduct_sub_semigroup_le hG hx huC (R := s + t)
+      (r := t) (le_add_of_nonneg_left (NNReal.coe_nonneg s)) hNpos le_rfl
     rw [hyE] at hrate
-    have hdenN : ((N - 1 : ℕ) : ℝ) + 1 = (N : ℝ) := by
-      rw [Nat.cast_sub hNge, Nat.cast_one]
-      ring
-    have hle : (t : ℝ) * ‖u‖ * Real.sqrt (1 / (((N - 1 : ℕ) : ℝ) + 1)) ≤
-        (sr + tr) * C / Real.sqrt (N : ℝ) := by
-      rw [hdenN, show (t : ℝ) = tr by rfl]
-      have h1 : tr * ‖u‖ ≤ tr * C :=
-        mul_le_mul_of_nonneg_left huC (NNReal.coe_nonneg t)
-      have h2 : tr * ‖u‖ * Real.sqrt (1 / (N : ℝ)) ≤
-          tr * C * Real.sqrt (1 / (N : ℝ)) :=
-        mul_le_mul_of_nonneg_right h1 (Real.sqrt_nonneg _)
-      have h3 : tr * C * Real.sqrt (1 / (N : ℝ)) ≤
-          (sr + tr) * C * Real.sqrt (1 / (N : ℝ)) := by
-        refine mul_le_mul_of_nonneg_right ?_ (Real.sqrt_nonneg _)
-        exact mul_le_mul_of_nonneg_right (le_add_of_nonneg_left (NNReal.coe_nonneg s)) hC.le
-      have h4 : (sr + tr) * C * Real.sqrt (1 / (N : ℝ)) =
-          (sr + tr) * C / Real.sqrt (N : ℝ) := by
-        rw [Real.sqrt_div zero_le_one, Real.sqrt_one, mul_one_div]
-      exact h2.trans (h3.trans_eq h4)
-    simpa [Es, F] using lt_of_le_of_lt (hcont.trans (hrate.trans hle)) hmain
+    exact (hcont.trans hrate).trans_lt hNbound
   have hsplit : A - F =
       (A - B) + ((B - Cstep) + ((Cstep - Dσ) + ((Dσ - Es) + (Es - F)))) := by abel
   have hle : ‖A - F‖ ≤

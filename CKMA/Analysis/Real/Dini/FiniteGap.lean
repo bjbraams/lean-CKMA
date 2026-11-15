@@ -5,13 +5,13 @@ Authors: CKMA contributors
 -/
 module
 
-public import CKMA.Analysis.Real.Dini.Infinite
-public import Mathlib.MeasureTheory.Covering.Differentiation
-public import Mathlib.MeasureTheory.Covering.OneDim
-public import Mathlib.MeasureTheory.Measure.Continuity
-import Mathlib.Tactic.Linarith
-import Mathlib.Tactic.Positivity
-import Mathlib.Tactic.Ring
+public import CKMA.Analysis.Real.Dini.Basic
+public import Mathlib.MeasureTheory.Measure.Haar.OfBasis
+
+import CKMA.Analysis.Real.Dini.Infinite
+import CKMA.Analysis.Real.Dini.Covering
+import Mathlib.MeasureTheory.Covering.OneDim
+import Mathlib.MeasureTheory.Measure.Haar.Unique
 
 /-!
 # Finite gaps between opposite Dini derivatives

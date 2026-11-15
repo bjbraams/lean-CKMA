@@ -6,9 +6,8 @@ Authors: CKMA contributors
 module
 
 public import CKMA.Probability.BrownianTheory.DyadicPath
-public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
-public import Mathlib.Analysis.SpecificLimits.Basic
-public import Mathlib.Topology.UniformSpace.Cauchy
+
+import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 
 /-!
 # Hölder limits of dyadic floors

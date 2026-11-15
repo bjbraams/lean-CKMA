@@ -5,10 +5,8 @@ Authors: CKMA contributors
 -/
 module
 
-public import CKMA.Analysis.Semigroup.Sectorial
-public import Mathlib.Analysis.InnerProductSpace.Adjoint
 public import Mathlib.Analysis.Normed.Module.DoubleDual
-public import TauCeti.Analysis.Normed.Module.Dual.Reflexive.Basic
+public import TauCeti.Analysis.Semigroups.Generator.ComplexLinear
 
 /-!
 # Long-time semigroup stability

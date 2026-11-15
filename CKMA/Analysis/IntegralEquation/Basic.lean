@@ -5,13 +5,12 @@ Authors: CKMA contributors
 -/
 module
 
-public import Mathlib.MeasureTheory.Integral.IntervalIntegral.AbsolutelyContinuousFun
 public import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
-import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
+public import Mathlib.MeasureTheory.Function.AbsolutelyContinuous
+
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.LebesgueDifferentiationThm
-import Mathlib.MeasureTheory.Integral.Prod
-import Mathlib.MeasureTheory.Measure.OpenPos
 import TauCeti.Analysis.SpecialFunctions.Beta
+import Mathlib.MeasureTheory.Integral.IntervalIntegral.AbsolutelyContinuousFun
 
 /-!
 # Volterra equations and fractional integrals
@@ -33,8 +32,8 @@ at the left endpoint. The semigroup identity uses
 
 * `CKMA.existsUnique_volterra` (**25.18**): unique continuous solvability of linear Volterra
   integral equations of the second kind.
-* `CKMA.fractionalIntegral_add`: the positive-order Riemann–Liouville semigroup law `I^α I^β = I^{α+β}`
-  almost everywhere on `(0, T)`.
+* `CKMA.fractionalIntegral_add`: the positive-order Riemann–Liouville semigroup law
+  `I^α I^β = I^{α+β}` almost everywhere on `(0, T)`.
 * `CKMA.mem_range_fractionalIntegral_iff` and `CKMA.fractionalIntegral_deriv_inverse` (**25.23**):
   Abel range characterization and inversion formula for `I^α` on `L¹(0, T)` for `0 < α < 1`.
 -/

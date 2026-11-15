@@ -5,12 +5,9 @@ Authors: CKMA contributors
 -/
 module
 
+public import CKMA.Analysis.RoughPath.Sewing.Construction
 public import CKMA.Analysis.RoughPath.Sewing.VariationEstimate
-import Mathlib.Tactic.FieldSimp
-import Mathlib.Tactic.Linarith
-import Mathlib.Tactic.Ring
-import Mathlib.Tactic.Positivity
-import Mathlib.Algebra.Order.Archimedean.Basic
+import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
 
 /-!
 # Uniform grid approximations for the Young integral

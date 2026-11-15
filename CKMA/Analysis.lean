@@ -16,7 +16,8 @@ public import CKMA.Analysis.Approximation.InterpolationStability.Lower
 public import CKMA.Analysis.Approximation.InterpolationStability.Upper
 public import CKMA.Analysis.Approximation.Korovkin
 public import CKMA.Analysis.Approximation.Polynomial
-public import CKMA.Analysis.Approximation.Polynomial.Chebyshev
+public import CKMA.Analysis.Approximation.Polynomial.Alternation
+public import CKMA.Analysis.Approximation.Polynomial.Basic
 public import CKMA.Analysis.Approximation.Trigonometric
 public import CKMA.Analysis.Asymptotics.BorelLaplace
 public import CKMA.Analysis.Asymptotics.EulerMaclaurin

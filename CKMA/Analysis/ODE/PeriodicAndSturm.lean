@@ -7,49 +7,15 @@ module
 
 public import CKMA.Analysis.ODE.PeriodicAndSturm.Floquet
 public import Mathlib.Analysis.Normed.Algebra.Exponential
-public import Mathlib.Analysis.Calculus.Deriv.Basic
-public import Mathlib.Analysis.Calculus.Deriv.Add
-public import Mathlib.Analysis.Calculus.Deriv.Inv
-public import Mathlib.Analysis.Calculus.Deriv.MeanValue
-public import Mathlib.Analysis.Calculus.Deriv.Mul
-public import Mathlib.Analysis.Calculus.ContDiff.Basic
-public import Mathlib.Analysis.Calculus.ContDiff.Deriv
-public import Mathlib.Analysis.Calculus.ContDiff.Operations
-public import Mathlib.Analysis.Calculus.MeanValue
-public import Mathlib.Analysis.Calculus.TangentCone.Real
-public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
-public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
-public import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
-public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Invertible
-public import Mathlib.Topology.Algebra.Order.Field
-public import Mathlib.Topology.Order.IntermediateValue
-public import Mathlib.Analysis.InnerProductSpace.PiL2
-public import Mathlib.Analysis.ODE.ExistUnique
-public import Mathlib.Analysis.Calculus.Deriv.Comp
-public import Mathlib.Analysis.Calculus.Deriv.Pow
-public import Mathlib.Analysis.Calculus.Deriv.Shift
-public import Mathlib.Analysis.Calculus.FDeriv.Linear
-public import Mathlib.Analysis.Complex.RealDeriv
-public import Mathlib.Analysis.Normed.Operator.Bilinear
-public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
-public import Mathlib.Analysis.SpecialFunctions.Exponential
-public import Mathlib.Analysis.SpecialFunctions.Log.Basic
-public import Mathlib.LinearAlgebra.Determinant
-public import Mathlib.LinearAlgebra.Dimension.Free
-public import Mathlib.LinearAlgebra.DFinsupp
-public import Mathlib.LinearAlgebra.Eigenspace.Minpoly
-public import Mathlib.LinearAlgebra.Eigenspace.Semisimple
-public import Mathlib.LinearAlgebra.JordanChevalley
-public import Mathlib.LinearAlgebra.Lagrange
-public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
-public import Mathlib.LinearAlgebra.Matrix.RowCol
-public import Mathlib.LinearAlgebra.Basis.Defs
-public import Mathlib.LinearAlgebra.Finsupp.Defs
-public import Mathlib.LinearAlgebra.Matrix.ToLin
-public import Mathlib.LinearAlgebra.Matrix.Trace
-public import Mathlib.RingTheory.Adjoin.Polynomial.Basic
-public import Mathlib.Topology.Algebra.Module.Determinant
-public import Mathlib.Topology.Algebra.Module.FiniteDimension
+public import Mathlib.Analysis.Calculus.ContDiff.Defs
+public import Mathlib.Analysis.InnerProductSpace.Basic
+
+import Mathlib.Analysis.Calculus.Deriv.Inv
+import Mathlib.Analysis.Calculus.Deriv.MeanValue
+import Mathlib.Analysis.Calculus.ContDiff.Deriv
+import Mathlib.Analysis.Calculus.ContDiff.Operations
+import Mathlib.Analysis.Calculus.MeanValue
+import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
 
 /-!
 # Floquet decompositions and Sturm zero theorems
@@ -306,24 +272,31 @@ private lemma tendsto_div_nhdsLT {b : ℝ} {u v : ℝ → ℝ} {u' vb : ℝ}
   · have hneg : vb / u' < 0 := lt_of_le_of_ne (not_lt.mp hsign) (div_ne_zero hvb hu')
     exact (hquot.neg_mul_atBot hneg hinv).congr' hident
 
+/-- The difference quotient at the left endpoint tends to the one-sided derivative. -/
+private lemma tendsto_slope_nhdsGT_derivWithin {a b : ℝ} (hab : a < b) {u : ℝ → ℝ}
+    (hu : ContDiffOn ℝ 2 u (Icc a b)) :
+    Tendsto (fun x ↦ (u x - u a) / (x - a)) (𝓝[>] a) (𝓝 (derivWithin u (Icc a b) a)) := by
+  have hdw : HasDerivWithinAt u (derivWithin u (Icc a b) a) (Icc a b) a :=
+    ((hu.differentiableOn (by norm_num)) a ⟨le_rfl, hab.le⟩).hasDerivWithinAt
+  have htend := hasDerivWithinAt_iff_tendsto_slope.mp hdw
+  simp_rw [slope_fun_def_field] at htend
+  rwa [Icc_sdiff_left, nhdsWithin_Ioc_eq_nhdsGT hab] at htend
+
+/-- The difference quotient at the right endpoint tends to the one-sided derivative. -/
+private lemma tendsto_slope_nhdsLT_derivWithin {a b : ℝ} (hab : a < b) {u : ℝ → ℝ}
+    (hu : ContDiffOn ℝ 2 u (Icc a b)) :
+    Tendsto (fun x ↦ (u x - u b) / (x - b)) (𝓝[<] b) (𝓝 (derivWithin u (Icc a b) b)) := by
+  have hdw : HasDerivWithinAt u (derivWithin u (Icc a b) b) (Icc a b) b :=
+    ((hu.differentiableOn (by norm_num)) b ⟨hab.le, le_rfl⟩).hasDerivWithinAt
+  have htend := hasDerivWithinAt_iff_tendsto_slope.mp hdw
+  simp_rw [slope_fun_def_field] at htend
+  rwa [Icc_sdiff_right, nhdsWithin_Ico_eq_nhdsLT hab] at htend
+
 /-- Positive values on `(a, b)` force a nonnegative left derivative at `a`. -/
 private lemma derivWithin_left_nonneg {a b : ℝ} (hab : a < b) {u : ℝ → ℝ}
     (hu : ContDiffOn ℝ 2 u (Icc a b)) (hua : u a = 0)
     (hpos : ∀ x ∈ Ioo a b, 0 < u x) : 0 ≤ derivWithin u (Icc a b) a := by
-  have hdw : HasDerivWithinAt u (derivWithin u (Icc a b) a) (Icc a b) a :=
-    ((hu.differentiableOn (by norm_num)) a ⟨le_rfl, hab.le⟩).hasDerivWithinAt
-  have htend := (hasDerivWithinAt_iff_tendsto_slope.mp hdw)
-  simp_rw [slope_fun_def_field] at htend
-  have hset : Icc a b \ {a} = Ioc a b := by
-    ext x
-    simp only [Set.mem_sdiff, mem_Icc, mem_singleton_iff, mem_Ioc]
-    constructor
-    · rintro ⟨⟨hax, hxb⟩, hne⟩
-      exact ⟨lt_of_le_of_ne hax (Ne.symm hne), hxb⟩
-    · rintro ⟨hax, hxb⟩
-      exact ⟨⟨hax.le, hxb⟩, Ne.symm hax.ne⟩
-  rw [hset, nhdsWithin_Ioc_eq_nhdsGT hab] at htend
-  refine ge_of_tendsto htend ?_
+  refine ge_of_tendsto (tendsto_slope_nhdsGT_derivWithin hab hu) ?_
   have hmem : Ioo a b ∈ 𝓝[>] a := by
     rw [← nhdsWithin_Ioo_eq_nhdsGT hab]
     exact self_mem_nhdsWithin
@@ -334,20 +307,7 @@ private lemma derivWithin_left_nonneg {a b : ℝ} (hab : a < b) {u : ℝ → ℝ
 private lemma derivWithin_right_nonpos {a b : ℝ} (hab : a < b) {u : ℝ → ℝ}
     (hu : ContDiffOn ℝ 2 u (Icc a b)) (hub : u b = 0)
     (hpos : ∀ x ∈ Ioo a b, 0 < u x) : derivWithin u (Icc a b) b ≤ 0 := by
-  have hdw : HasDerivWithinAt u (derivWithin u (Icc a b) b) (Icc a b) b :=
-    ((hu.differentiableOn (by norm_num)) b ⟨hab.le, le_rfl⟩).hasDerivWithinAt
-  have htend := (hasDerivWithinAt_iff_tendsto_slope.mp hdw)
-  simp_rw [slope_fun_def_field] at htend
-  have hset : Icc a b \ {b} = Ico a b := by
-    ext x
-    simp only [Set.mem_sdiff, mem_Icc, mem_singleton_iff, mem_Ico]
-    constructor
-    · rintro ⟨⟨hax, hxb⟩, hne⟩
-      exact ⟨hax, lt_of_le_of_ne hxb hne⟩
-    · rintro ⟨hax, hxb⟩
-      exact ⟨⟨hax, hxb.le⟩, hxb.ne⟩
-  rw [hset, nhdsWithin_Ico_eq_nhdsLT hab] at htend
-  refine le_of_tendsto htend ?_
+  refine le_of_tendsto (tendsto_slope_nhdsLT_derivWithin hab hu) ?_
   have hmem : Ioo a b ∈ 𝓝[<] b := by
     rw [← nhdsWithin_Ioo_eq_nhdsLT hab]
     exact self_mem_nhdsWithin
@@ -374,6 +334,71 @@ private lemma right_endpoint_nonneg {a b : ℝ} (hab : a < b) {v : ℝ → ℝ}
   filter_upwards [by rw [← nhdsWithin_Ioo_eq_nhdsLT hab]; exact self_mem_nhdsWithin] with x hx
   exact (hpos x hx).le
 
+/-- The negative of a Sturm–Liouville solution is a solution with the same parameter. -/
+private lemma IsSturmLiouvilleSolutionOn.neg {p q w u : ℝ → ℝ} {μ : ℝ} {I : Set ℝ}
+    (hu : IsSturmLiouvilleSolutionOn p q w μ u I) :
+    IsSturmLiouvilleSolutionOn p q w μ (fun t ↦ -u t) I := by
+  refine ⟨hu.1.neg, fun x hx ↦ ?_⟩
+  have hfun : (fun t ↦ p t * deriv (fun s ↦ -u s) t) = fun t ↦ -(p t * deriv u t) := by
+    funext t
+    rw [deriv.fun_neg, mul_neg]
+  rw [hfun, deriv.fun_neg]
+  beta_reduce
+  linear_combination -hu.2 x hx
+
+/-- **Abel's identity**: for two solutions with the same parameter, `p` times their Wronskian is
+constant on `(a, b)`. -/
+private lemma exists_mul_sturmWronskian_eq_const {a b μ : ℝ} {p q w u v : ℝ → ℝ}
+    (hp : ContDiffOn ℝ 1 p (Icc a b))
+    (hu : IsSturmLiouvilleSolutionOn p q w μ u (Icc a b))
+    (hv : IsSturmLiouvilleSolutionOn p q w μ v (Icc a b)) :
+    ∃ c, ∀ x ∈ Ioo a b, p x * sturmWronskian u v x = c := by
+  have hHas : ∀ x ∈ Ioo a b, HasDerivAt (fun t ↦ p t * sturmWronskian u v t) 0 x := by
+    intro x hx
+    have hcross := hasDerivAt_sturmCross p q w u v μ μ hp hu hv hx
+    have hfun : (fun t ↦ u t * (p t * deriv v t) - v t * (p t * deriv u t)) =
+        fun t ↦ p t * sturmWronskian u v t := by
+      funext t
+      simp only [sturmWronskian]
+      ring
+    rw [hfun] at hcross
+    exact hcross.congr_deriv (by ring)
+  exact isOpen_Ioo.exists_is_const_of_deriv_eq_zero isPreconnected_Ioo
+    (fun x hx ↦ (hHas x hx).differentiableAt.differentiableWithinAt)
+    (fun x hx ↦ (hHas x hx).deriv)
+
+/-- At a point of `[a, b]`, the derivative of a `C²` function on `[a, b]` tends along `(a, b)`
+to the derivative within `[a, b]`. -/
+private lemma tendsto_deriv_nhdsWithin_Ioo {a b x : ℝ} (hab : a < b) {u : ℝ → ℝ}
+    (hu : ContDiffOn ℝ 2 u (Icc a b)) (hx : x ∈ Icc a b) :
+    Tendsto (deriv u) (𝓝[Ioo a b] x) (𝓝 (derivWithin u (Icc a b) x)) := by
+  have hcont := hu.continuousOn_derivWithin (uniqueDiffOn_Icc hab) (by norm_num)
+  refine ((hcont x hx).tendsto.mono_left (nhdsWithin_mono x Ioo_subset_Icc_self)).congr' ?_
+  filter_upwards [self_mem_nhdsWithin] with y hy
+  exact derivWithin_of_mem_nhds (Icc_mem_nhds_iff.mpr hy)
+
+/-- If `p` times the Wronskian is constant on `(a, b)`, the same constant is obtained at a
+point of `[a, b]` from the Wronskian formed with derivatives within `[a, b]`. -/
+private lemma const_eq_mul_sturmWronskian_of_mem_Icc {a b x c : ℝ} (hab : a < b)
+    {p u v : ℝ → ℝ} (hp : ContinuousOn p (Icc a b)) (hu : ContDiffOn ℝ 2 u (Icc a b))
+    (hv : ContDiffOn ℝ 2 v (Icc a b)) (hc : ∀ y ∈ Ioo a b, p y * sturmWronskian u v y = c)
+    (hx : x ∈ Icc a b) :
+    c = p x * (u x * derivWithin v (Icc a b) x - v x * derivWithin u (Icc a b) x) := by
+  have hne : (𝓝[Ioo a b] x).NeBot := by
+    rw [← mem_closure_iff_nhdsWithin_neBot, closure_Ioo hab.ne]
+    exact hx
+  have hle : 𝓝[Ioo a b] x ≤ 𝓝[Icc a b] x := nhdsWithin_mono x Ioo_subset_Icc_self
+  have hW : Tendsto (sturmWronskian u v) (𝓝[Ioo a b] x)
+      (𝓝 (u x * derivWithin v (Icc a b) x - v x * derivWithin u (Icc a b) x)) :=
+    (((hu.continuousOn x hx).tendsto.mono_left hle).mul
+      (tendsto_deriv_nhdsWithin_Ioo hab hv hx)).sub
+      (((hv.continuousOn x hx).tendsto.mono_left hle).mul
+        (tendsto_deriv_nhdsWithin_Ioo hab hu hx))
+  refine tendsto_nhds_unique (tendsto_const_nhds.congr' ?_)
+    (((hp x hx).tendsto.mono_left hle).mul hW)
+  filter_upwards [self_mem_nhdsWithin] with y hy
+  exact (hc y hy).symm
+
 /-- **31.20**, separation: independent solutions have exactly one intervening zero. -/
 theorem sturm_separation {a b : ℝ} (hab : a < b) (p q w u v : ℝ → ℝ) (μ : ℝ)
     (hp : ContDiffOn ℝ 1 p (Set.Icc a b)) (hp_pos : ∀ x ∈ Set.Icc a b, 0 < p x)
@@ -382,136 +407,53 @@ theorem sturm_separation {a b : ℝ} (hab : a < b) (p q w u v : ℝ → ℝ) (μ
     (hua : u a = 0) (hub : u b = 0) (hno : ∀ x ∈ Set.Ioo a b, u x ≠ 0)
     (hind : sturmWronskian u v a ≠ 0) : ∃! x, x ∈ Set.Ioo a b ∧ v x = 0 := by
   let W := sturmWronskian u v
-  let f := fun t ↦ p t * W t
-  have hHas : ∀ x ∈ Ioo a b, HasDerivAt f 0 x := by
-    intro x hx
-    have hcross := hasDerivAt_sturmCross p q w u v μ μ hp hu hv hx
-    have hfun : (fun t ↦ u t * (p t * deriv v t) - v t * (p t * deriv u t)) = f := by
-      funext t
-      simp only [f, W, sturmWronskian]
-      ring
-    rw [hfun] at hcross
-    exact hcross.congr_deriv (by ring)
-  have hdiff : DifferentiableOn ℝ f (Ioo a b) := fun x hx ↦
-    (hHas x hx).differentiableAt.differentiableWithinAt
-  have hderiv0 : Ioo a b |>.EqOn (deriv f) 0 := fun x hx ↦ (hHas x hx).deriv
-  obtain ⟨c, hc⟩ := isOpen_Ioo.exists_is_const_of_deriv_eq_zero isPreconnected_Ioo hdiff hderiv0
+  obtain ⟨c, hc⟩ := exists_mul_sturmWronskian_eq_const hp hu hv
+  have hpa : 0 < p a := hp_pos a ⟨le_rfl, hab.le⟩
+  have hpb : 0 < p b := hp_pos b ⟨hab.le, le_rfl⟩
   have hdu_a : DifferentiableAt ℝ u a := by
     by_contra hnot
     exact hind (by simp [sturmWronskian, hua, deriv_zero_of_not_differentiableAt hnot])
   have hu'a : derivWithin u (Icc a b) a = deriv u a :=
     hdu_a.hasDerivAt.hasDerivWithinAt.derivWithin
       (uniqueDiffOn_Icc hab a ⟨le_rfl, hab.le⟩)
-  have hle_a : 𝓝[>] a ≤ 𝓝[Icc a b] a :=
-    (nhdsWithin_Ioo_eq_nhdsGT hab).symm.le.trans (nhdsWithin_mono a Ioo_subset_Icc_self)
-  have hle_b : 𝓝[<] b ≤ 𝓝[Icc a b] b :=
-    (nhdsWithin_Ioo_eq_nhdsLT hab).symm.le.trans (nhdsWithin_mono b Ioo_subset_Icc_self)
-  have hmem_a : Ioo a b ∈ 𝓝[>] a := by
-    rw [← nhdsWithin_Ioo_eq_nhdsGT hab]
-    exact self_mem_nhdsWithin
-  have hmem_b : Ioo a b ∈ 𝓝[<] b := by
-    rw [← nhdsWithin_Ioo_eq_nhdsLT hab]
-    exact self_mem_nhdsWithin
-  have hcont_du := hu.1.continuousOn_derivWithin (uniqueDiffOn_Icc hab) (by norm_num)
-  have hcont_dv := hv.1.continuousOn_derivWithin (uniqueDiffOn_Icc hab) (by norm_num)
-  have hlim_du : Tendsto (deriv u) (𝓝[>] a) (𝓝 (deriv u a)) := by
-    have hbase := (hcont_du.continuousWithinAt ⟨le_rfl, hab.le⟩).tendsto.mono_left hle_a
-    rw [hu'a] at hbase
-    refine hbase.congr' ?_
-    filter_upwards [hmem_a] with x hx
-    exact derivWithin_of_mem_nhds (Icc_mem_nhds_iff.mpr hx)
-  have hlim_dv : Tendsto (deriv v) (𝓝[>] a) (𝓝 (derivWithin v (Icc a b) a)) := by
-    have hbase := (hcont_dv.continuousWithinAt ⟨le_rfl, hab.le⟩).tendsto.mono_left hle_a
-    refine hbase.congr' ?_
-    filter_upwards [hmem_a] with x hx
-    exact derivWithin_of_mem_nhds (Icc_mem_nhds_iff.mpr hx)
-  have hlim_u := (hu.1.continuousOn.continuousWithinAt ⟨le_rfl, hab.le⟩).tendsto.mono_left hle_a
-  have hlim_v := (hv.1.continuousOn.continuousWithinAt ⟨le_rfl, hab.le⟩).tendsto.mono_left hle_a
-  have hlim_p := (hp.continuousOn.continuousWithinAt ⟨le_rfl, hab.le⟩).tendsto.mono_left hle_a
-  have hlimW : Tendsto W (𝓝[>] a) (𝓝 (W a)) := by
-    have hprod := (hlim_u.mul hlim_dv).sub (hlim_v.mul hlim_du)
-    have hpt : W a = u a * derivWithin v (Icc a b) a - v a * deriv u a := by
-      simp [W, sturmWronskian, hua]
-    have hfun : W = fun x ↦ u x * deriv v x - v x * deriv u x := by
-      ext x
-      simp [W, sturmWronskian]
-    rw [hpt, hfun]
-    exact hprod
-  have hlimf : Tendsto f (𝓝[>] a) (𝓝 (p a * W a)) := by simpa [f] using hlim_p.mul hlimW
-  have hlimc : Tendsto f (𝓝[>] a) (𝓝 c) := by
-    refine tendsto_const_nhds.congr' ?_
-    filter_upwards [hmem_a] with x hx
-    exact (hc x hx).symm
-  have hc_eq : c = p a * W a := tendsto_nhds_unique hlimc hlimf
-  have hc_ne : c ≠ 0 := hc_eq ▸ mul_ne_zero (hp_pos a ⟨le_rfl, hab.le⟩).ne' hind
-  have hpa : 0 < p a := hp_pos a ⟨le_rfl, hab.le⟩
-  have hpb : 0 < p b := hp_pos b ⟨hab.le, le_rfl⟩
+  -- The constant `c` at both endpoints.
+  have hc_eq : c = p a * W a := by
+    have h := const_eq_mul_sturmWronskian_of_mem_Icc hab hp.continuousOn hu.1 hv.1 hc
+      ⟨le_rfl, hab.le⟩
+    rw [h, hu'a]
+    simp [W, sturmWronskian, hua]
+  have hc_ne : c ≠ 0 := hc_eq ▸ mul_ne_zero hpa.ne' hind
+  let ub : ℝ := derivWithin u (Icc a b) b
+  have hWb : -(v b * ub) = c / p b := by
+    have h := const_eq_mul_sturmWronskian_of_mem_Icc hab hp.continuousOn hu.1 hv.1 hc
+      ⟨hab.le, le_rfl⟩
+    rw [h, hub]
+    field_simp [hpb.ne']
+    ring
   have hv_a : v a ≠ 0 := by
     intro hv0
     exact hind (by simp [sturmWronskian, hua, hv0])
   have hu'a_ne : deriv u a ≠ 0 := by
     intro hu0
     exact hind (by simp [sturmWronskian, hua, hu0])
-  have hlim_du_b : Tendsto (deriv u) (𝓝[<] b) (𝓝 (derivWithin u (Icc a b) b)) := by
-    have hbase := (hcont_du.continuousWithinAt ⟨hab.le, le_rfl⟩).tendsto.mono_left hle_b
-    refine hbase.congr' ?_
-    filter_upwards [hmem_b] with x hx
-    exact derivWithin_of_mem_nhds (Icc_mem_nhds_iff.mpr hx)
-  have hlim_dv_b : Tendsto (deriv v) (𝓝[<] b) (𝓝 (derivWithin v (Icc a b) b)) := by
-    have hbase := (hcont_dv.continuousWithinAt ⟨hab.le, le_rfl⟩).tendsto.mono_left hle_b
-    refine hbase.congr' ?_
-    filter_upwards [hmem_b] with x hx
-    exact derivWithin_of_mem_nhds (Icc_mem_nhds_iff.mpr hx)
-  have hlim_u_b := (hu.1.continuousOn.continuousWithinAt ⟨hab.le, le_rfl⟩).tendsto.mono_left hle_b
-  have hlim_v_b := (hv.1.continuousOn.continuousWithinAt ⟨hab.le, le_rfl⟩).tendsto.mono_left hle_b
-  have hlim_p_b := (hp.continuousOn.continuousWithinAt ⟨hab.le, le_rfl⟩).tendsto.mono_left hle_b
-  have hlimf_b : Tendsto f (𝓝[<] b) (𝓝 c) := by
-    refine tendsto_const_nhds.congr' ?_
-    filter_upwards [hmem_b] with x hx
-    exact (hc x hx).symm
-  have hlimW_b : Tendsto W (𝓝[<] b) (𝓝 (c / p b)) := by
-    have hW : W =ᶠ[𝓝[<] b] fun x ↦ f x / p x := by
-      filter_upwards [hmem_b] with x hx
-      have hpne := (hp_pos x (Ioo_subset_Icc_self hx)).ne'
-      rw [eq_div_iff hpne, mul_comm]
-    exact (hlimf_b.div hlim_p_b hpb.ne').congr' hW.symm
-  have hstruct_b : Tendsto W (𝓝[<] b) (𝓝 (-(v b * derivWithin u (Icc a b) b))) := by
-    have hprod := (hlim_u_b.mul hlim_dv_b).sub (hlim_v_b.mul hlim_du_b)
-    have hfun : (fun x ↦ u x * deriv v x - v x * deriv u x) = W := by
-      ext x
-      simp [W, sturmWronskian]
-    rw [← hfun]
-    simpa [hub] using hprod
-  have hWb : -(v b * derivWithin u (Icc a b) b) = c / p b :=
-    tendsto_nhds_unique hstruct_b hlimW_b
   have hv_b : v b ≠ 0 := by
     intro hv0
     have : c / p b = 0 := by simpa [hv0] using hWb.symm
     exact hc_ne (((div_eq_zero_iff.mp this).resolve_right hpb.ne'))
-  have hu'b_ne : derivWithin u (Icc a b) b ≠ 0 := by
+  have hu'b_ne : ub ≠ 0 := by
     intro hu0
     have : c / p b = 0 := by simpa [hu0] using hWb.symm
     exact hc_ne (((div_eq_zero_iff.mp this).resolve_right hpb.ne'))
+  -- The quotient `v / u` is strictly monotone and blows up at both ends.
+  have hle_a : 𝓝[>] a ≤ 𝓝[Icc a b] a :=
+    (nhdsWithin_Ioo_eq_nhdsGT hab).symm.le.trans (nhdsWithin_mono a Ioo_subset_Icc_self)
+  have hle_b : 𝓝[<] b ≤ 𝓝[Icc a b] b :=
+    (nhdsWithin_Ioo_eq_nhdsLT hab).symm.le.trans (nhdsWithin_mono b Ioo_subset_Icc_self)
+  have hlim_v := (hv.1.continuousOn.continuousWithinAt ⟨le_rfl, hab.le⟩).tendsto.mono_left hle_a
+  have hlim_v_b := (hv.1.continuousOn.continuousWithinAt ⟨hab.le, le_rfl⟩).tendsto.mono_left hle_b
   have hslope_a : Tendsto (fun x ↦ (u x - u a) / (x - a)) (𝓝[>] a) (𝓝 (deriv u a)) := by
-    have h := hdu_a.hasDerivAt.tendsto_slope
-    simp_rw [slope_fun_def_field] at h
-    exact h.mono_left (nhdsGT_le_nhdsNE a)
-  have hslope_b : Tendsto (fun x ↦ (u x - u b) / (x - b)) (𝓝[<] b)
-      (𝓝 (derivWithin u (Icc a b) b)) := by
-    have hdw : HasDerivWithinAt u (derivWithin u (Icc a b) b) (Icc a b) b :=
-      ((hu.1.differentiableOn (by norm_num)) b ⟨hab.le, le_rfl⟩).hasDerivWithinAt
-    have h := (hasDerivWithinAt_iff_tendsto_slope.mp hdw)
-    simp_rw [slope_fun_def_field] at h
-    have hset : Icc a b \ {b} = Ico a b := by
-      ext x
-      simp only [Set.mem_sdiff, mem_Icc, mem_singleton_iff, mem_Ico]
-      constructor
-      · rintro ⟨⟨hax, hxb⟩, hne⟩
-        exact ⟨hax, lt_of_le_of_ne hxb hne⟩
-      · rintro ⟨hax, hxb⟩
-        exact ⟨⟨hax, hxb.le⟩, hxb.ne⟩
-    rw [hset, nhdsWithin_Ico_eq_nhdsLT hab] at h
-    exact h
+    simpa [hu'a] using tendsto_slope_nhdsGT_derivWithin hab hu.1
+  have hslope_b := tendsto_slope_nhdsLT_derivWithin hab hu.1
   let ratio := fun t ↦ v t / u t
   have hratio_cont : ContinuousOn ratio (Ioo a b) :=
     (hv.1.continuousOn.mono Ioo_subset_Icc_self).div
@@ -537,21 +479,12 @@ theorem sturm_separation {a b : ℝ} (hab : a < b) (p q w u v : ℝ → ℝ) (μ
     have hW : W a = -(v a * deriv u a) := by simp [W, sturmWronskian, hua]
     rw [← hWa, hW]
     field_simp [hu'a_ne]
-  let ub : ℝ := derivWithin u (Icc a b) b
   have hdiv_b : v b / ub = -(c / p b) / ub ^ 2 := by
     have hmul : v b * ub = -(c / p b) := (neg_eq_iff_eq_neg).mp hWb
     rw [← hmul]
     exact (div_eq_div_iff hu'b_ne (pow_ne_zero 2 hu'b_ne)).mpr (by ring)
   have hratio_a := tendsto_div_nhdsGT hua hu'a_ne hv_a hslope_a hlim_v
   have hratio_b := tendsto_div_nhdsLT hub hu'b_ne hv_b hslope_b hlim_v_b
-  have hmono_pos : 0 < c → StrictMonoOn ratio (Ioo a b) := by
-    intro hc_pos
-    refine strictMonoOn_of_deriv_pos (convex_Ioo a b) hratio_cont ?_
-    intro x hx
-    rw [isOpen_Ioo.interior_eq] at hx
-    rw [hratio_deriv x hx, hW_eq x hx]
-    exact div_pos (div_pos hc_pos (hp_pos x (Ioo_subset_Icc_self hx)))
-      (sq_pos_of_ne_zero (hno x hx))
   rcases lt_or_gt_of_ne hc_ne with hc_neg | hc_pos
   · have hlt_a : 0 < v a / deriv u a := by
       rw [hdiv_a]
@@ -563,19 +496,15 @@ theorem sturm_separation {a b : ℝ} (hab : a < b) (p q w u v : ℝ → ℝ) (μ
         (sq_pos_of_ne_zero hu'b_ne)
     rw [ite_eq_left hlt_a] at hratio_a
     rw [ite_eq_left hlt_b] at hratio_b
-    have hanti : StrictAntiOn ratio (Ioo a b) := by
-      refine strictAntiOn_of_deriv_neg (convex_Ioo a b) hratio_cont ?_
+    have hmono : StrictMonoOn (fun x ↦ -ratio x) (Ioo a b) := by
+      refine strictMonoOn_of_deriv_pos (convex_Ioo a b) hratio_cont.neg ?_
       intro x hx
       rw [isOpen_Ioo.interior_eq] at hx
-      rw [hratio_deriv x hx, hW_eq x hx]
+      rw [deriv.fun_neg, hratio_deriv x hx, hW_eq x hx, neg_pos]
       exact div_neg_of_neg_of_pos (div_neg_of_neg_of_pos hc_neg
         (hp_pos x (Ioo_subset_Icc_self hx))) (sq_pos_of_ne_zero (hno x hx))
-    have hmono : StrictMonoOn (fun x ↦ -ratio x) (Ioo a b) := by
-      intro x hx y hy hxy
-      exact neg_lt_neg (hanti hx hy hxy)
-    have hroot := existsUnique_strictMono_zero hab hratio_cont.neg hmono
+    obtain ⟨x, ⟨hx, hx0⟩, huniq⟩ := existsUnique_strictMono_zero hab hratio_cont.neg hmono
       (tendsto_neg_atTop_atBot.comp hratio_a) (tendsto_neg_atBot_atTop.comp hratio_b)
-    obtain ⟨x, ⟨hx, hx0⟩, huniq⟩ := hroot
     refine ⟨x, ⟨hx, ?_⟩, ?_⟩
     · have hx0' : -(v x / u x) = 0 := by simpa [ratio] using hx0
       exact ((div_eq_zero_iff).mp (neg_eq_zero.mp hx0')).resolve_right (hno x hx)
@@ -591,25 +520,29 @@ theorem sturm_separation {a b : ℝ} (hab : a < b) (p q w u v : ℝ → ℝ) (μ
         (sq_pos_of_ne_zero hu'b_ne)
     rw [ite_eq_right (not_lt_of_gt hlt_a)] at hratio_a
     rw [ite_eq_right (not_lt_of_gt hlt_b)] at hratio_b
+    have hmono : StrictMonoOn ratio (Ioo a b) := by
+      refine strictMonoOn_of_deriv_pos (convex_Ioo a b) hratio_cont ?_
+      intro x hx
+      rw [isOpen_Ioo.interior_eq] at hx
+      rw [hratio_deriv x hx, hW_eq x hx]
+      exact div_pos (div_pos hc_pos (hp_pos x (Ioo_subset_Icc_self hx)))
+        (sq_pos_of_ne_zero (hno x hx))
     obtain ⟨x, ⟨hx, hx0⟩, huniq⟩ := existsUnique_strictMono_zero (f := ratio) hab hratio_cont
-      (hmono_pos hc_pos) hratio_a hratio_b
+      hmono hratio_a hratio_b
     refine ⟨x, ⟨hx, (div_eq_zero_iff.mp (by simpa [ratio] using hx0)).resolve_right (hno x hx)⟩, ?_⟩
     intro y hy
     exact huniq y ⟨hy.1, by simp [ratio, hy.2]⟩
 
-/-- Increasing the spectral parameter forces a zero between successive zeros of a lower mode. -/
-theorem sturm_comparison {a b μ ν : ℝ} (hab : a < b) (hμν : μ < ν)
-    (p q w u v : ℝ → ℝ) (hp : ContDiffOn ℝ 1 p (Set.Icc a b))
-    (hw : ContinuousOn w (Set.Icc a b))
-    (hp_pos : ∀ x ∈ Set.Icc a b, 0 < p x) (hw_pos : ∀ x ∈ Set.Icc a b, 0 < w x)
-    (hu : IsSturmLiouvilleSolutionOn p q w μ u (Set.Icc a b))
-    (hv : IsSturmLiouvilleSolutionOn p q w ν v (Set.Icc a b))
-    (hua : u a = 0) (hub : u b = 0) (hno : ∀ x ∈ Set.Ioo a b, u x ≠ 0) :
-    ∃ x ∈ Set.Ioo a b, v x = 0 := by
-  by_contra hnone
-  have hv_ne : ∀ x ∈ Ioo a b, v x ≠ 0 := by
-    intro x hx hvx
-    exact hnone ⟨x, hx, hvx⟩
+/-- The positive case of `sturm_comparison`: if `μ < ν`, a solution `u` for `μ` that is positive
+on `(a, b)` and vanishes at both ends rules out a solution for `ν` positive on `(a, b)`, since
+the integral of `(ν - μ) w u v` would be both positive and nonpositive. -/
+private lemma sturm_comparison_of_pos {a b μ ν : ℝ} (hab : a < b) (hμν : μ < ν)
+    {p q w u v : ℝ → ℝ} (hp : ContDiffOn ℝ 1 p (Icc a b)) (hw : ContinuousOn w (Icc a b))
+    (hp_pos : ∀ x ∈ Icc a b, 0 < p x) (hw_pos : ∀ x ∈ Icc a b, 0 < w x)
+    (hu : IsSturmLiouvilleSolutionOn p q w μ u (Icc a b))
+    (hv : IsSturmLiouvilleSolutionOn p q w ν v (Icc a b))
+    (hua : u a = 0) (hub : u b = 0) (hu_pos : ∀ x ∈ Ioo a b, 0 < u x)
+    (hv_pos : ∀ x ∈ Ioo a b, 0 < v x) : False := by
   let s : Set ℝ := Icc a b
   let du := derivWithin u s
   let dv := derivWithin v s
@@ -640,115 +573,53 @@ theorem sturm_comparison {a b μ ν : ℝ} (hab : a < b) (hμν : μ < ν)
     ring
   have hFTC := integral_eq_sub_of_hasDerivAt_of_le hab.le hF_cont hF_deriv
     (hg_cont.intervalIntegrable_of_Icc hab.le)
-  have hFa : F a = v a * (p a * du a) := by simp [F, hua]
-  have hFb : F b = v b * (p b * du b) := by simp [F, hub]
+  have hFa0 : 0 ≤ F a := by
+    have hFa : F a = v a * (p a * du a) := by simp [F, hua]
+    rw [hFa]
+    exact mul_nonneg (left_endpoint_nonneg hab hv.1.continuousOn hv_pos)
+      (mul_nonneg (hp_pos a ⟨le_rfl, hab.le⟩).le (derivWithin_left_nonneg hab hu.1 hua hu_pos))
+  have hFb0 : F b ≤ 0 := by
+    have hFb : F b = v b * (p b * du b) := by simp [F, hub]
+    rw [hFb]
+    exact mul_nonpos_of_nonneg_of_nonpos (right_endpoint_nonneg hab hv.1.continuousOn hv_pos)
+      (mul_nonpos_of_nonneg_of_nonpos (hp_pos b ⟨hab.le, le_rfl⟩).le
+        (derivWithin_right_nonpos hab hu.1 hub hu_pos))
+  have hgt : ∀ x ∈ Ioo a b, 0 < g x := fun x hx ↦
+    mul_pos (mul_pos (mul_pos (sub_pos.mpr hμν) (hw_pos x (Ioo_subset_Icc_self hx)))
+      (hu_pos x hx)) (hv_pos x hx)
+  have hnn : ∀ x ∈ Ioc a b, 0 ≤ g x := by
+    intro x hx
+    rcases eq_or_lt_of_le hx.2 with rfl | hxb
+    · simp [g, hub]
+    · exact (hgt x ⟨hx.1, hxb⟩).le
   have hmid : (a + b) / 2 ∈ Ioo a b := ⟨by linarith, by linarith⟩
-  have hIntPos (hgt : ∀ x ∈ Ioo a b, 0 < g x) (hle : F b - F a ≤ 0) : False := by
-    have hnn : ∀ x ∈ Ioc a b, 0 ≤ g x := by
-      intro x hx
-      rcases eq_or_lt_of_le hx.2 with rfl | hxb
-      · simp [g, hub]
-      · exact (hgt x ⟨hx.1, hxb⟩).le
-    have hpos := integral_pos hab hg_cont hnn ⟨(a + b) / 2, Ioo_subset_Icc_self hmid, hgt _ hmid⟩
-    linarith [hFTC, hpos]
-  have hIntNeg (hlt : ∀ x ∈ Ioo a b, g x < 0) (hge : 0 ≤ F b - F a) : False := by
-    have hgt : ∀ x ∈ Ioo a b, 0 < -g x := fun x hx ↦ neg_pos.mpr (hlt x hx)
-    have hnn : ∀ x ∈ Ioc a b, 0 ≤ -g x := by
-      intro x hx
-      rcases eq_or_lt_of_le hx.2 with rfl | hxb
-      · simp [g, hub]
-      · exact (hgt x ⟨hx.1, hxb⟩).le
-    have hpos := integral_pos hab hg_cont.neg hnn
-      ⟨(a + b) / 2, Ioo_subset_Icc_self hmid, hgt _ hmid⟩
-    have hpos' : 0 < ∫ x in a..b, -g x := by simpa [Pi.neg_apply] using hpos
-    have hnegint : ∫ x in a..b, -g x = -∫ x in a..b, g x :=
-      intervalIntegral.integral_neg (a := a) (b := b) (μ := MeasureTheory.volume) (f := g)
-    have hlt_int : ∫ x in a..b, g x < 0 := by
-      rw [hnegint] at hpos'
-      linarith
-    linarith [hFTC, hlt_int]
-  have hpa := hp_pos a ⟨le_rfl, hab.le⟩
-  have hpb := hp_pos b ⟨hab.le, le_rfl⟩
-  rcases sign_const_of_ne_zero hab hu.1.continuousOn hno with hu_pos | hu_neg
-  · have hdu_a : 0 ≤ du a := derivWithin_left_nonneg hab hu.1 hua hu_pos
-    have hdu_b : du b ≤ 0 := derivWithin_right_nonpos hab hu.1 hub hu_pos
+  have hpos := integral_pos hab hg_cont hnn ⟨(a + b) / 2, Ioo_subset_Icc_self hmid, hgt _ hmid⟩
+  linarith [hFTC, hpos]
+
+/-- Increasing the spectral parameter forces a zero between successive zeros of a lower mode. -/
+theorem sturm_comparison {a b μ ν : ℝ} (hab : a < b) (hμν : μ < ν)
+    (p q w u v : ℝ → ℝ) (hp : ContDiffOn ℝ 1 p (Set.Icc a b))
+    (hw : ContinuousOn w (Set.Icc a b))
+    (hp_pos : ∀ x ∈ Set.Icc a b, 0 < p x) (hw_pos : ∀ x ∈ Set.Icc a b, 0 < w x)
+    (hu : IsSturmLiouvilleSolutionOn p q w μ u (Set.Icc a b))
+    (hv : IsSturmLiouvilleSolutionOn p q w ν v (Set.Icc a b))
+    (hua : u a = 0) (hub : u b = 0) (hno : ∀ x ∈ Set.Ioo a b, u x ≠ 0) :
+    ∃ x ∈ Set.Ioo a b, v x = 0 := by
+  by_contra hnone
+  have hv_ne : ∀ x ∈ Ioo a b, v x ≠ 0 := fun x hx hvx ↦ hnone ⟨x, hx, hvx⟩
+  have hneg {f : ℝ → ℝ} (hf : ∀ x ∈ Ioo a b, f x < 0) : ∀ x ∈ Ioo a b, 0 < -f x :=
+    fun x hx ↦ neg_pos.mpr (hf x hx)
+  have hua' : -u a = 0 := by simp [hua]
+  have hub' : -u b = 0 := by simp [hub]
+  -- Replacing `u` or `v` by its negative reduces to the case of positive solutions.
+  rcases sign_const_of_ne_zero hab hu.1.continuousOn hno with hu_pos | hu_neg <;>
     rcases sign_const_of_ne_zero hab hv.1.continuousOn hv_ne with hv_pos | hv_neg
-    · have hFa0 : 0 ≤ F a := by
-        rw [hFa]
-        exact mul_nonneg (left_endpoint_nonneg hab hv.1.continuousOn hv_pos)
-          (mul_nonneg hpa.le hdu_a)
-      have hFb0 : F b ≤ 0 := by
-        rw [hFb]
-        exact mul_nonpos_of_nonneg_of_nonpos (right_endpoint_nonneg hab hv.1.continuousOn hv_pos)
-          (mul_nonpos_of_nonneg_of_nonpos hpb.le hdu_b)
-      exact hIntPos (fun x hx ↦ by
-        have hwx := hw_pos x (Ioo_subset_Icc_self hx)
-        have h1 : 0 < (ν - μ) * w x := mul_pos (sub_pos.mpr hμν) hwx
-        have h2 : 0 < (ν - μ) * w x * u x := mul_pos h1 (hu_pos x hx)
-        simpa [g] using mul_pos h2 (hv_pos x hx)) (by linarith)
-    · have hva : v a ≤ 0 := by
-        simpa using left_endpoint_nonneg hab hv.1.continuousOn.neg
-          (fun x hx ↦ neg_pos.mpr (hv_neg x hx))
-      have hvb : v b ≤ 0 := by
-        simpa using right_endpoint_nonneg hab hv.1.continuousOn.neg
-          (fun x hx ↦ neg_pos.mpr (hv_neg x hx))
-      have hFa0 : F a ≤ 0 := by
-        rw [hFa]
-        exact mul_nonpos_of_nonpos_of_nonneg hva (mul_nonneg hpa.le hdu_a)
-      have hFb0 : 0 ≤ F b := by
-        rw [hFb]
-        exact mul_nonneg_of_nonpos_of_nonpos hvb (mul_nonpos_of_nonneg_of_nonpos hpb.le hdu_b)
-      exact hIntNeg (fun x hx ↦ by
-        have hwx := hw_pos x (Ioo_subset_Icc_self hx)
-        have h1 : 0 < (ν - μ) * w x := mul_pos (sub_pos.mpr hμν) hwx
-        have h2 : 0 < (ν - μ) * w x * u x := mul_pos h1 (hu_pos x hx)
-        simpa [g] using mul_neg_of_pos_of_neg h2 (hv_neg x hx)) (by linarith)
-  · have hdu_a : du a ≤ 0 := by
-      have h := derivWithin_left_nonneg hab (ContDiffOn.neg hu.1) (by simpa using hua)
-        (fun x hx ↦ neg_pos.mpr (hu_neg x hx))
-      have hfun : (fun t ↦ -u t) = -u := by
-        ext t
-        simp [Pi.neg_apply]
-      rw [hfun, derivWithin.neg] at h
-      simpa [du, s] using h
-    have hdu_b : 0 ≤ du b := by
-      have h := derivWithin_right_nonpos hab (ContDiffOn.neg hu.1) (by simpa using hub)
-        (fun x hx ↦ neg_pos.mpr (hu_neg x hx))
-      have hfun : (fun t ↦ -u t) = -u := by
-        ext t
-        simp [Pi.neg_apply]
-      rw [hfun, derivWithin.neg] at h
-      simpa [du, s] using h
-    rcases sign_const_of_ne_zero hab hv.1.continuousOn hv_ne with hv_pos | hv_neg
-    · have hva : 0 ≤ v a := left_endpoint_nonneg hab hv.1.continuousOn hv_pos
-      have hvb : 0 ≤ v b := right_endpoint_nonneg hab hv.1.continuousOn hv_pos
-      have hFa0 : F a ≤ 0 := by
-        rw [hFa]
-        exact mul_nonpos_of_nonneg_of_nonpos hva (mul_nonpos_of_nonneg_of_nonpos hpa.le hdu_a)
-      have hFb0 : 0 ≤ F b := by
-        rw [hFb]
-        exact mul_nonneg hvb (mul_nonneg hpb.le hdu_b)
-      exact hIntNeg (fun x hx ↦ by
-        have hwx := hw_pos x (Ioo_subset_Icc_self hx)
-        have h1 : 0 < (ν - μ) * w x := mul_pos (sub_pos.mpr hμν) hwx
-        have h2 : (ν - μ) * w x * u x < 0 := mul_neg_of_pos_of_neg h1 (hu_neg x hx)
-        simpa [g] using mul_neg_of_neg_of_pos h2 (hv_pos x hx)) (by linarith)
-    · have hva : v a ≤ 0 := by
-        simpa using left_endpoint_nonneg hab hv.1.continuousOn.neg
-          (fun x hx ↦ neg_pos.mpr (hv_neg x hx))
-      have hvb : v b ≤ 0 := by
-        simpa using right_endpoint_nonneg hab hv.1.continuousOn.neg
-          (fun x hx ↦ neg_pos.mpr (hv_neg x hx))
-      have hFa0 : 0 ≤ F a := by
-        rw [hFa]
-        exact mul_nonneg_of_nonpos_of_nonpos hva (mul_nonpos_of_nonneg_of_nonpos hpa.le hdu_a)
-      have hFb0 : F b ≤ 0 := by
-        rw [hFb]
-        exact mul_nonpos_of_nonpos_of_nonneg hvb (mul_nonneg hpb.le hdu_b)
-      exact hIntPos (fun x hx ↦ by
-        have hwx := hw_pos x (Ioo_subset_Icc_self hx)
-        have h1 : 0 < (ν - μ) * w x := mul_pos (sub_pos.mpr hμν) hwx
-        have h2 : 0 < u x * v x := mul_pos_of_neg_of_neg (hu_neg x hx) (hv_neg x hx)
-        simpa [g, mul_assoc] using mul_pos h1 h2) (by linarith)
+  · exact sturm_comparison_of_pos hab hμν hp hw hp_pos hw_pos hu hv hua hub hu_pos hv_pos
+  · exact sturm_comparison_of_pos hab hμν hp hw hp_pos hw_pos hu hv.neg hua hub hu_pos
+      (hneg hv_neg)
+  · exact sturm_comparison_of_pos hab hμν hp hw hp_pos hw_pos hu.neg hv hua' hub'
+      (hneg hu_neg) hv_pos
+  · exact sturm_comparison_of_pos hab hμν hp hw hp_pos hw_pos hu.neg hv.neg hua' hub'
+      (hneg hu_neg) (hneg hv_neg)
 
 end CKMA

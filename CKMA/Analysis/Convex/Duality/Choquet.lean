@@ -5,34 +5,13 @@ Authors: CKMA contributors
 -/
 module
 
-public import Mathlib.Algebra.Module.Submodule.Equiv
-public import Mathlib.Analysis.Convex.Basic
-public import Mathlib.Analysis.Convex.Cone.Extension
 public import Mathlib.Analysis.Convex.Extreme
-public import Mathlib.Analysis.Convex.Segment
-public import Mathlib.Analysis.LocallyConvex.SeparatingDual
-public import Mathlib.Analysis.Normed.Group.FunctionSeries
-public import Mathlib.Analysis.Normed.Group.InfiniteSum
-public import Mathlib.Analysis.SpecificLimits.Basic
-public import Mathlib.LinearAlgebra.Prod
-public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
-public import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
-public import Mathlib.MeasureTheory.Function.LocallyIntegrable
+public import Mathlib.Analysis.Normed.Group.AddTorsor
 public import Mathlib.MeasureTheory.Integral.Bochner.Basic
-public import Mathlib.MeasureTheory.Integral.IntegrableOn
-public import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Real
-public import Mathlib.MeasureTheory.Measure.Dirac.Basic
-public import Mathlib.MeasureTheory.Measure.Typeclasses.Probability
 public import Mathlib.Topology.Algebra.ContinuousAffineMap
-public import Mathlib.Topology.Algebra.InfiniteSum.Group
-public import Mathlib.Topology.Algebra.InfiniteSum.Ring
-public import Mathlib.Topology.Compactness.Lindelof
-public import Mathlib.Topology.ContinuousMap.Compact
 public import Mathlib.Topology.ContinuousMap.CompactlySupported
-public import Mathlib.Topology.ContinuousMap.Ordered
-public import Mathlib.Topology.Metrizable.Basic
-public import Mathlib.Topology.Order.Compact
-public import Mathlib.Topology.Semicontinuity.Basic
+import Mathlib.Analysis.LocallyConvex.SeparatingDual
+import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Real
 
 /-!
 # Choquet representation on compact metrizable convex sets
@@ -735,15 +714,16 @@ private lemma abs_envelope_le {K : Set V} [CompactSpace K] (ell : ℕ → Strong
     rw [ContinuousAffineMap.coe_const]
     exact fStrict_le_norm ell y
 
-/-- Choquet representation when `K` has at least two points. -/
-private theorem exists_choquet_bonsall (K : Set V) (hK : IsCompact K) (hc : Convex ℝ K)
-    [TopologicalSpace.MetrizableSpace K] [MeasurableSpace K] [BorelSpace K]
-    (hns : ¬ Subsingleton K) (x0 : K) :
-    ∃ μ : Measure K, IsProbabilityMeasure μ ∧
-      μ {y : K | y.1 ∉ K.extremePoints ℝ} = 0 ∧
-      ∀ a : V →ᴬ[ℝ] ℝ, (∫ y : K, a y.1 ∂μ) = a x0.1 := by
-  haveI : CompactSpace K := isCompact_iff_compactSpace.mp hK
-  obtain ⟨ell, hell⟩ := exists_separatingSeq (K := K)
+/-- Hahn–Banach extension of the barycentric evaluation. When the separating series is not
+affine, the evaluation at `x0` on affine restrictions plus multiples of the series extends to a
+positive linear functional on `C(K, ℝ)` that evaluates affine maps at `x0` and gives the series
+the value of its envelope at `x0`. -/
+private lemma exists_positive_functional_envelope {K : Set V} [CompactSpace K]
+    (hc : Convex ℝ K) (hns : ¬ Subsingleton K) (ell : ℕ → StrongDual ℝ V)
+    (hell : ∀ ⦃p q : K⦄, p ≠ q → ∃ n, ell n p.1 ≠ ell n q.1) (x0 : K) :
+    ∃ L : C(K, ℝ) →ₗ[ℝ] ℝ, (∀ g : C(K, ℝ), 0 ≤ g → 0 ≤ L g) ∧
+      (∀ a : V →ᴬ[ℝ] ℝ, L (affRestrictLM K a) = a x0.1) ∧
+      L (fStrict ell) = envelope (fStrict ell) x0 := by
   let decomp := seriesDecomp (K := K) ell
   have hinj : Function.Injective decomp := seriesDecomp_injective hc hns ell hell
   let equiv := LinearEquiv.ofInjective decomp hinj
@@ -762,14 +742,9 @@ private theorem exists_choquet_bonsall (K : Set V) (hK : IsCompact K) (hc : Conv
     have hle := pairEval_le_envelope ell x0 pre
     rw [show seriesDecomp ell pre = (x : C(K, ℝ)) from hcoe] at hle
     exact hle
-  have hhom : ∀ c : ℝ, 0 < c → ∀ g : C(K, ℝ),
-      envelope (c • g) x0 = c * envelope g x0 :=
-    fun c hc g => envelope_smul g x0 hc
-  have hadd : ∀ g h : C(K, ℝ),
-      envelope (g + h) x0 ≤ envelope g x0 + envelope h x0 :=
-    fun g h => envelope_add_le g h x0
   obtain ⟨L, hL, hN⟩ :=
-    exists_extension_of_le_sublinear pmap (fun g => envelope g x0) hhom hadd hdom
+    exists_extension_of_le_sublinear pmap (fun g => envelope g x0)
+      (fun c hc g => envelope_smul g x0 hc) (fun g h => envelope_add_le g h x0) hdom
   have hpos : ∀ g : C(K, ℝ), 0 ≤ g → 0 ≤ L g := by
     intro g hg
     have hmaj : ContinuousAffineMap.const ℝ V 0 ∈ majorants (-g) := by
@@ -793,21 +768,6 @@ private theorem exists_choquet_bonsall (K : Set V) (hK : IsCompact K) (hc : Conv
       change pairEval x0 ell (equiv.symm (equiv pr)) = pairEval x0 ell pr
       rw [LinearEquiv.symm_apply_apply]
     rw [← hlhs, hagree, hrhs]
-  have hconst : L 1 = 1 := by
-    let a1 := ContinuousAffineMap.const ℝ V (1 : ℝ)
-    let φ : LinearMap.range (affRestrictLM K) :=
-      ⟨affRestrictLM K a1, LinearMap.mem_range_self _ a1⟩
-    have hdec : decomp (φ, 0) = 1 := by
-      ext y
-      rw [show (decomp (φ, 0)) y = seriesDecomp ell (φ, 0) y from rfl,
-        seriesDecomp_apply ell (φ, 0) y, zero_mul, add_zero]
-      simp [a1, φ, affRestrictLM, affRestrict, ContinuousAffineMap.coe_const,
-        ContinuousMap.one_apply]
-    have heval : pairEval x0 ell (φ, 0) = 1 := by
-      dsimp [pairEval]
-      rw [zero_mul, add_zero]
-      simp [a1, φ, affRestrictLM, affRestrict, ContinuousAffineMap.coe_const]
-    rw [← hdec, hpair (φ, 0), heval]
   have haff : ∀ a : V →ᴬ[ℝ] ℝ, L (affRestrictLM K a) = a x0.1 := by
     intro a
     let φ : LinearMap.range (affRestrictLM K) :=
@@ -834,8 +794,15 @@ private theorem exists_choquet_bonsall (K : Set V) (hK : IsCompact K) (hc : Conv
       simp [ContinuousMap.zero_apply, zero_add]
     have hLde : L (decomp (φ0, 1)) = envelope (fStrict ell) x0 := by
       rw [hpair, heval]
-    rw [hdec] at hLde
-    exact hLde
+    rwa [hdec] at hLde
+  exact ⟨L, hpos, haff, hfL⟩
+
+omit [Module ℝ V] [ContinuousSMul ℝ V] [LocallyConvexSpace ℝ V] in
+/-- **Riesz–Markov–Kakutani** on a compact space: a positive linear functional on `C(K, ℝ)` is
+integration against a measure. -/
+private lemma exists_measure_integral_eq {K : Set V} [CompactSpace K] [MeasurableSpace K]
+    [BorelSpace K] (L : C(K, ℝ) →ₗ[ℝ] ℝ) (hpos : ∀ g : C(K, ℝ), 0 ≤ g → 0 ≤ L g) :
+    ∃ μ : Measure K, ∀ g : C(K, ℝ), ∫ y, g y ∂μ = L g := by
   let ccToC : C_c(K, ℝ) →ₗ[ℝ] C(K, ℝ) :=
     { toFun := fun f => f.toContinuousMap
       map_add' := fun f g => by
@@ -850,84 +817,98 @@ private theorem exists_choquet_bonsall (K : Set V) (hK : IsCompact K) (hc : Conv
       rw [ContinuousMap.le_def]
       intro y
       exact (CompactlySupportedContinuousMap.le_def.mp hg) y
-  let μ : Measure K := RealRMK.rieszMeasure Λ
-  have hintegral : ∀ g : C(K, ℝ), ∫ y, g y ∂μ = L g := by
-    intro g
-    have hri := RealRMK.integral_rieszMeasure (Λ := Λ)
-      (CompactlySupportedContinuousMap.continuousMapEquiv g)
-    have hfun : (fun y : K =>
-        (CompactlySupportedContinuousMap.continuousMapEquiv g) y) = g := by
-      ext y
-      simp [CompactlySupportedContinuousMap.continuousMapEquiv]
-    have hΛ : Λ (CompactlySupportedContinuousMap.continuousMapEquiv g) = L g := by
-      change L (ccToC (CompactlySupportedContinuousMap.continuousMapEquiv g)) = L g
-      congr 1
-    simpa [μ, hfun] using hri.trans hΛ
-  have hprob : IsProbabilityMeasure μ := by
-    rw [isProbabilityMeasure_iff_real]
-    have hint := integral_const (μ := μ) (1 : ℝ)
-    have h1 : ∫ _ : K, (1 : ℝ) ∂μ = 1 := by
-      have hfun : (fun _ : K => (1 : ℝ)) = (1 : C(K, ℝ)) := by
-        ext y
-        simp
-      rw [hfun, hintegral, hconst]
-    have hsmul : μ.real univ • (1 : ℝ) = μ.real univ := by simp
-    rw [h1] at hint
-    simpa [hsmul] using hint.symm
+  refine ⟨RealRMK.rieszMeasure Λ, fun g => ?_⟩
+  have hri := RealRMK.integral_rieszMeasure (Λ := Λ)
+    (CompactlySupportedContinuousMap.continuousMapEquiv g)
+  have hfun : (fun y : K =>
+      (CompactlySupportedContinuousMap.continuousMapEquiv g) y) = g := by
+    ext y
+    simp [CompactlySupportedContinuousMap.continuousMapEquiv]
+  have hΛ : Λ (CompactlySupportedContinuousMap.continuousMapEquiv g) = L g := by
+    change L (ccToC (CompactlySupportedContinuousMap.continuousMapEquiv g)) = L g
+    congr 1
+  simpa [hfun] using hri.trans hΛ
+
+/-- If a probability measure has barycenter `x0` for every affine map and integrates the series
+to the value of its envelope at `x0`, then it is carried by the set where the series equals its
+envelope. -/
+private lemma measure_lt_envelope_eq_zero {K : Set V} [CompactSpace K] [MeasurableSpace K]
+    [BorelSpace K] (ell : ℕ → StrongDual ℝ V) (x0 : K) (μ : Measure K) [IsProbabilityMeasure μ]
+    (haff : ∀ a : V →ᴬ[ℝ] ℝ, (∫ y : K, a y.1 ∂μ) = a x0.1)
+    (hf : ∫ y, fStrict ell y ∂μ = envelope (fStrict ell) x0) :
+    μ {y : K | fStrict ell y < envelope (fStrict ell) y} = 0 := by
+  have hmeas : Measurable (envelope (fStrict (K := K) ell)) :=
+    (envelope_upperSemicontinuous (fStrict (K := K) ell)).measurable
+  have hbound : ∀ y : K,
+      ‖envelope (fStrict (K := K) ell) y‖ ≤ ‖fStrict (K := K) ell‖ := by
+    intro y
+    rw [Real.norm_eq_abs]
+    exact abs_envelope_le (K := K) ell y
+  have hinte : Integrable (envelope (fStrict ell)) μ :=
+    Integrable.of_bound hmeas.aestronglyMeasurable ‖fStrict ell‖ (ae_of_all _ hbound)
+  have hintf : Integrable (fStrict ell) μ :=
+    (fStrict ell).continuous.integrable_of_hasCompactSupport
+      (HasCompactSupport.of_compactSpace _)
+  have hint_le : ∫ y, envelope (fStrict ell) y ∂μ ≤ envelope (fStrict ell) x0 := by
+    refine le_csInf (valueAt_nonempty _ x0) ?_
+    intro r hr
+    obtain ⟨a, ha, rfl⟩ := hr
+    have hinta : Integrable (fun y : K => a y.1) μ :=
+      (a.continuous.comp continuous_subtype_val).integrable_of_hasCompactSupport
+        (HasCompactSupport.of_compactSpace _)
+    have hpt : envelope (fStrict ell) ≤ fun y => a y.1 :=
+      fun y => envelope_le_of_majorant _ y ha
+    have hmono := integral_mono hinte hinta hpt
+    have heq : ∫ y, a y.1 ∂μ = a x0.1 := haff a
+    linarith
+  have hge : envelope (fStrict ell) x0 ≤ ∫ y, envelope (fStrict ell) y ∂μ := by
+    have hpt : ∀ y : K, fStrict ell y ≤ envelope (fStrict ell) y :=
+      fun y => le_envelope (fStrict ell) y
+    have hmono := integral_mono_ae hintf hinte (ae_of_all _ hpt)
+    rw [hf] at hmono
+    exact hmono
+  have hdiff : ∫ y, envelope (fStrict ell) y - fStrict ell y ∂μ = 0 := by
+    rw [integral_sub hinte hintf]
+    linarith
+  have hnn : 0 ≤ fun y : K => envelope (fStrict ell) y - fStrict ell y :=
+    fun y => sub_nonneg.mpr (le_envelope _ y)
+  have hae : (fun y : K => envelope (fStrict ell) y - fStrict ell y) =ᵐ[μ] 0 :=
+    (integral_eq_zero_iff_of_nonneg hnn (hinte.sub hintf)).1 hdiff
+  have hnull : μ {y | envelope (fStrict ell) y - fStrict ell y ≠ 0} = 0 := by
+    rw [← ae_iff]
+    have hzero := hae
+    rw [Filter.EventuallyEq] at hzero
+    exact hzero.mono fun y hy => hy.trans (Pi.zero_apply y)
+  refine measure_mono_null ?_ hnull
+  intro y hy
+  exact ne_of_gt (sub_pos.mpr hy)
+
+/-- Choquet representation when `K` has at least two points. -/
+private theorem exists_choquet_bonsall (K : Set V) (hK : IsCompact K) (hc : Convex ℝ K)
+    [TopologicalSpace.MetrizableSpace K] [MeasurableSpace K] [BorelSpace K]
+    (hns : ¬ Subsingleton K) (x0 : K) :
+    ∃ μ : Measure K, IsProbabilityMeasure μ ∧
+      μ {y : K | y.1 ∉ K.extremePoints ℝ} = 0 ∧
+      ∀ a : V →ᴬ[ℝ] ℝ, (∫ y : K, a y.1 ∂μ) = a x0.1 := by
+  have : CompactSpace K := isCompact_iff_compactSpace.mp hK
+  obtain ⟨ell, hell⟩ := exists_separatingSeq (K := K)
+  obtain ⟨L, hpos, haff, hfL⟩ := exists_positive_functional_envelope hc hns ell hell x0
+  obtain ⟨μ, hintegral⟩ := exists_measure_integral_eq L hpos
   have haff_int : ∀ a : V →ᴬ[ℝ] ℝ, (∫ y : K, a y.1 ∂μ) = a x0.1 := by
     intro a
     have hfun : (fun y : K => a y.1) = affRestrictLM K a := by
       ext y
       simp [affRestrictLM, affRestrict]
     rw [hfun, hintegral, haff]
-  have hlt_null : μ {y : K | fStrict ell y < envelope (fStrict ell) y} = 0 := by
-    have hmeas : Measurable (envelope (fStrict (K := K) ell)) :=
-      (envelope_upperSemicontinuous (fStrict (K := K) ell)).measurable
-    have hbound : ∀ y : K,
-        ‖envelope (fStrict (K := K) ell) y‖ ≤ ‖fStrict (K := K) ell‖ := by
-      intro y
-      rw [Real.norm_eq_abs]
-      exact abs_envelope_le (K := K) ell y
-    have hinte : Integrable (envelope (fStrict ell)) μ :=
-      Integrable.of_bound hmeas.aestronglyMeasurable ‖fStrict ell‖ (ae_of_all _ hbound)
-    have hintf : Integrable (fStrict ell) μ :=
-      (fStrict ell).continuous.integrable_of_hasCompactSupport
-        (HasCompactSupport.of_compactSpace _)
-    have hint_le : ∫ y, envelope (fStrict ell) y ∂μ ≤ envelope (fStrict ell) x0 := by
-      refine le_csInf (valueAt_nonempty _ x0) ?_
-      intro r hr
-      obtain ⟨a, ha, rfl⟩ := hr
-      have hinta : Integrable (fun y : K => a y.1) μ :=
-        (a.continuous.comp continuous_subtype_val).integrable_of_hasCompactSupport
-          (HasCompactSupport.of_compactSpace _)
-      have hpt : envelope (fStrict ell) ≤ fun y => a y.1 :=
-        fun y => envelope_le_of_majorant _ y ha
-      have hmono := integral_mono hinte hinta hpt
-      have heq : ∫ y, a y.1 ∂μ = a x0.1 := haff_int a
-      linarith
-    have hge : envelope (fStrict ell) x0 ≤ ∫ y, envelope (fStrict ell) y ∂μ := by
-      have hpt : ∀ y : K, fStrict ell y ≤ envelope (fStrict ell) y :=
-        fun y => le_envelope (fStrict ell) y
-      have hmono := integral_mono_ae hintf hinte (ae_of_all _ hpt)
-      rw [hintegral, hfL] at hmono
-      exact hmono
-    have hint_eq : ∫ y, envelope (fStrict ell) y ∂μ = ∫ y, fStrict ell y ∂μ := by
-      linarith [hint_le, hge, show ∫ y, fStrict ell y ∂μ = envelope (fStrict ell) x0 from
-        (hintegral (fStrict ell)).trans hfL]
-    have hdiff : ∫ y, envelope (fStrict ell) y - fStrict ell y ∂μ = 0 := by
-      rw [integral_sub hinte hintf, hint_eq, sub_self]
-    have hnn : 0 ≤ fun y : K => envelope (fStrict ell) y - fStrict ell y :=
-      fun y => sub_nonneg.mpr (le_envelope _ y)
-    have hae : (fun y : K => envelope (fStrict ell) y - fStrict ell y) =ᵐ[μ] 0 :=
-      (integral_eq_zero_iff_of_nonneg hnn (hinte.sub hintf)).1 hdiff
-    have hnull : μ {y | envelope (fStrict ell) y - fStrict ell y ≠ 0} = 0 := by
-      rw [← ae_iff]
-      have hzero := hae
-      rw [Filter.EventuallyEq] at hzero
-      exact hzero.mono fun y hy => hy.trans (Pi.zero_apply y)
-    refine measure_mono_null ?_ hnull
-    intro y hy
-    exact ne_of_gt (sub_pos.mpr hy)
+  have hprob : IsProbabilityMeasure μ := by
+    rw [isProbabilityMeasure_iff_real]
+    have hint := integral_const (μ := μ) (1 : ℝ)
+    have h1 : ∫ _ : K, (1 : ℝ) ∂μ = 1 := by
+      simpa using haff_int (ContinuousAffineMap.const ℝ V (1 : ℝ))
+    rw [h1] at hint
+    simpa using hint.symm
+  have hlt_null : μ {y : K | fStrict ell y < envelope (fStrict ell) y} = 0 :=
+    measure_lt_envelope_eq_zero ell x0 μ haff_int ((hintegral _).trans hfL)
   have hextreme : μ {y : K | y.1 ∉ K.extremePoints ℝ} = 0 := by
     refine measure_mono_null ?_ hlt_null
     intro y hy

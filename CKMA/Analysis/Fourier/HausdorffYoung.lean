@@ -5,22 +5,11 @@ Authors: CKMA contributors
 -/
 module
 
-public import Mathlib.Analysis.Fourier.FourierTransformDeriv
-public import Mathlib.MeasureTheory.Measure.Lebesgue.VolumeOfBalls
-public import TauCeti.Analysis.Fourier.HausdorffYoung
-
-import Mathlib.Analysis.Calculus.BumpFunction.InnerProduct
+public import Mathlib.Analysis.Distribution.SchwartzSpace.Basic
+public import Mathlib.Analysis.Calculus.BumpFunction.Basic
+public import Mathlib.Analysis.Fourier.FourierTransform
 import Mathlib.Analysis.Calculus.BumpFunction.Normed
-import Mathlib.Analysis.Complex.Trigonometric
-import Mathlib.Analysis.Distribution.SchwartzSpace.Basic
-import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
-import Mathlib.MeasureTheory.Function.LpSpace.Indicator
-import Mathlib.MeasureTheory.Group.Integral
-import Mathlib.MeasureTheory.Group.LIntegral
-import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
-import Mathlib.MeasureTheory.Integral.Lebesgue.Add
-import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
-import Mathlib.Topology.Algebra.Support
+import TauCeti.Analysis.Fourier.HausdorffYoung
 
 /-!
 # Hausdorff–Young

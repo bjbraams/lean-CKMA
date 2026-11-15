@@ -5,13 +5,13 @@ Authors: CKMA contributors
 -/
 module
 
-public import CKMA.Analysis.OrderedSpace.Bands
 public import CKMA.Analysis.OrderedSpace.Representation.AL.Gluing.Sum
 public import CKMA.Analysis.OrderedSpace.Representation.AM
 public import Mathlib.Topology.ContinuousMap.Compact
 public import Mathlib.Topology.Category.CompHaus.Basic
 public import Mathlib.Topology.ContinuousMap.Ordered
 public import Mathlib.MeasureTheory.Function.LpOrder
+import CKMA.Analysis.OrderedSpace.Representation.AL
 
 /-!
 # AM and AL Banach lattices and their representations

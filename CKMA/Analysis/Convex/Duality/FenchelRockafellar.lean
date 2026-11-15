@@ -5,10 +5,10 @@ Authors: CKMA contributors
 -/
 module
 
-public import CKMA.Analysis.Convex.Duality.Subdifferential
-public import Mathlib.Algebra.Order.Floor.Semiring
-public import Mathlib.Tactic
-public import TauCeti.Data.EReal.Operations
+public import CKMA.Analysis.Convex.Basic
+public import TauCeti.Analysis.Convex.Conjugate
+import CKMA.Analysis.Convex.Duality.Subdifferential
+import Mathlib.Tactic
 
 /-!
 # Fenchel–Rockafellar dual attainment

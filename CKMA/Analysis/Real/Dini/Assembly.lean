@@ -5,8 +5,12 @@ Authors: CKMA contributors
 -/
 module
 
-public import CKMA.Analysis.Real.Dini.FiniteGap
-public import CKMA.Analysis.Real.Dini.Pattern
+public import CKMA.Analysis.Real.Dini.Basic
+public import Mathlib.MeasureTheory.Measure.Haar.OfBasis
+
+import CKMA.Analysis.Real.Dini.FiniteGap
+import CKMA.Analysis.Real.Dini.Infinite
+import CKMA.Analysis.Real.Dini.Young
 
 /-!
 # Assembly of the Denjoy–Young–Saks alternatives

@@ -5,9 +5,9 @@ Authors: CKMA contributors
 -/
 module
 
-public import Mathlib.Analysis.Complex.Hadamard
-public import Mathlib.MeasureTheory.Function.LpSpace.Basic
-public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
+public import Mathlib.MeasureTheory.Measure.Haar.OfBasis
+public import Mathlib.MeasureTheory.Measure.WithDensity
+public import Mathlib.Analysis.Calculus.FDeriv.Defs
 
 /-!
 # Banach couples and real and complex interpolation gauges

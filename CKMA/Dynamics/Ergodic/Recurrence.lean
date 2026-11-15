@@ -5,18 +5,11 @@ Authors: CKMA contributors
 -/
 module
 
-public import Mathlib.Dynamics.Ergodic.Conservative
-public import Mathlib.Dynamics.Ergodic.Ergodic
-public import Mathlib.MeasureTheory.Constructions.BorelSpace.Metric
-public import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
+public import Mathlib.Dynamics.Ergodic.MeasurePreserving
 public import Mathlib.MeasureTheory.Constructions.Polish.Basic
-public import Mathlib.MeasureTheory.MeasurableSpace.Embedding
-public import Mathlib.Topology.Algebra.InfiniteSum.ENNReal
-public import Mathlib.Topology.Bases
-public import Mathlib.Topology.Instances.ENNReal.Lemmas
-public import Mathlib.Topology.Metrizable.CompletelyMetrizable
 
 import Mathlib.Tactic
+import Mathlib.Dynamics.Ergodic.Conservative
 
 import CKMA.Dynamics.Ergodic.Recurrence.Multiple
 
@@ -66,7 +59,6 @@ def towerLevel (T : Ω → Ω) (B : Set Ω) (i : ℕ) : Set Ω := (T^[i]) '' B
 
 section Rokhlin
 
-set_option linter.unusedSectionVars false
 
 variable [StandardBorelSpace Ω] [IsProbabilityMeasure μ] (T : Ω ≃ᵐ Ω)
 
@@ -101,11 +93,13 @@ private lemma iterate_symm_apply (i : ℕ) (x : Ω) : (T^[i]) ((T.symm^[i]) x) =
     rw [Function.iterate_succ, Function.iterate_succ_apply', Function.comp_apply,
       T.apply_symm_apply, ih]
 
+omit [StandardBorelSpace Ω] in
 /-- `(T^[a])` after `(T^[b])` is the iterate of length `b + a`. -/
 private lemma iterate_apply_add (a b : ℕ) (x : Ω) :
     (T^[a]) ((T^[b]) x) = (T^[b + a]) x := by
   rw [(iterate_add_apply (⇑T) a b x).symm, Nat.add_comm]
 
+omit [StandardBorelSpace Ω] in
 /-- An iterate image is the preimage under the inverse iterate. -/
 private lemma image_iterate_eq_preimage_symm (s : Set Ω) (i : ℕ) :
     (T^[i]) '' s = (T.symm^[i]) ⁻¹' s := by
@@ -118,11 +112,13 @@ private lemma image_iterate_eq_preimage_symm (s : Set Ω) (i : ℕ) :
   · intro hx
     exact ⟨(T.symm^[i]) x, hx, iterate_symm_apply T i x⟩
 
+omit [StandardBorelSpace Ω] [IsProbabilityMeasure μ] in
 /-- Preimages of a measurable set under iterates have the same measure. -/
 private lemma measure_preimage_iterate (hT : MeasurePreserving T μ μ) {A : Set Ω}
     (hA : MeasurableSet A) (k : ℕ) : μ ((T^[k]) ⁻¹' A) = μ A :=
   (hT.iterate k).measure_preimage hA.nullMeasurableSet
 
+omit [IsProbabilityMeasure μ] [StandardBorelSpace Ω] in
 /-- Images of a null set under iterates are null. -/
 private lemma measure_image_iterate_null (hT : MeasurePreserving T μ μ) {A : Set Ω}
     (hA : μ A = 0) (k : ℕ) : μ ((T^[k]) '' A) = 0 := by
@@ -134,11 +130,13 @@ private def IsDisjointPreimage (M : ℕ) (A : Set Ω) : Prop :=
   MeasurableSet A ∧
     ∀ i j : ℕ, i < M → j < M → i ≠ j → Disjoint ((T^[i]) ⁻¹' A) ((T^[j]) ⁻¹' A)
 
+omit [StandardBorelSpace Ω] in
 /-- The empty set is a disjoint-preimage base of every height. -/
 private lemma isDisjointPreimage_empty (M : ℕ) : IsDisjointPreimage T M ∅ := by
   refine ⟨MeasurableSet.empty, fun i j _ _ _ => ?_⟩
   simp
 
+omit [StandardBorelSpace Ω] in
 /-- Disjointness from the first `M` shifts implies disjoint preimages. -/
 private lemma IsDisjointPreimage.of_shifts {M : ℕ} {A : Set Ω} (hA : MeasurableSet A)
     (h : ∀ k, 0 < k → k < M → Disjoint A ((T^[k]) ⁻¹' A)) : IsDisjointPreimage T M A := by
@@ -165,12 +163,14 @@ private lemma IsDisjointPreimage.of_shifts {M : ℕ} {A : Set Ω} (hA : Measurab
 private def orbitNbhd (M : ℕ) (P : Set Ω) : Set Ω :=
   (⋃ d ∈ Finset.range M, (T^[d]) ⁻¹' P) ∪ (⋃ d ∈ Finset.range M, (T.symm^[d]) ⁻¹' P)
 
+omit [StandardBorelSpace Ω] in
 /-- `P` sits in its own time-`M` neighborhood once `M` is positive. -/
 private lemma orbitNbhd_self {M : ℕ} (hM : 0 < M) (P : Set Ω) : P ⊆ orbitNbhd T M P := by
   intro x hx
   refine Or.inl (mem_iUnion₂.2 ⟨0, Finset.mem_range.mpr hM, ?_⟩)
   simpa using hx
 
+omit [StandardBorelSpace Ω] in
 /-- Disjoint preimage bases that avoid each other's `M`-neighborhood may be united. -/
 private lemma IsDisjointPreimage.union_of_subset_compl {M : ℕ} {P A : Set Ω}
     (hP : IsDisjointPreimage T M P) (hA : IsDisjointPreimage T M A)
@@ -211,10 +211,12 @@ private lemma IsDisjointPreimage.union_of_subset_compl {M : ℕ} {P A : Set Ω}
 private def IsAdmissible (M : ℕ) (P A : Set Ω) : Prop :=
   IsDisjointPreimage T M A ∧ A ⊆ (orbitNbhd T M P)ᶜ
 
+omit [StandardBorelSpace Ω] in
 /-- The empty set is admissible against every obstacle. -/
 private lemma isAdmissible_empty (M : ℕ) (P : Set Ω) : IsAdmissible T M P ∅ :=
   ⟨isDisjointPreimage_empty T M, empty_subset _⟩
 
+omit [StandardBorelSpace Ω] in
 /-- The set of measures of admissible bases is bounded above by one. -/
 private lemma adm_bddAbove (M : ℕ) (P : Set Ω) :
     BddAbove (μ '' {A | IsAdmissible T M P A}) := by
@@ -223,6 +225,7 @@ private lemma adm_bddAbove (M : ℕ) (P : Set Ω) :
   rw [← hxμ]
   exact prob_le_one
 
+omit [StandardBorelSpace Ω] in
 /-- The supremum of admissible measures is at most one. -/
 private lemma admSup_le_one (M : ℕ) (P : Set Ω) :
     sSup (μ '' {A | IsAdmissible T M P A}) ≤ 1 := by
@@ -231,6 +234,7 @@ private lemma admSup_le_one (M : ℕ) (P : Set Ω) :
   rw [← hxμ]
   exact prob_le_one
 
+omit [StandardBorelSpace Ω] in
 /-- An admissible base whose measure is at least half the supremum. -/
 private lemma exists_halfPiece (M : ℕ) (P : Set Ω) :
     ∃ A, IsAdmissible T M P A ∧ sSup (μ '' {A | IsAdmissible T M P A}) ≤ 2 * μ A := by
@@ -254,6 +258,7 @@ private lemma exists_halfPiece (M : ℕ) (P : Set Ω) :
 private noncomputable def halfPiece (M : ℕ) (P : Set Ω) : Set Ω :=
   Classical.choose (exists_halfPiece (μ := μ) T M P)
 
+omit [StandardBorelSpace Ω] in
 /-- The chosen half-piece is admissible and at least half-maximal. -/
 private lemma halfPiece_spec (M : ℕ) (P : Set Ω) :
     IsAdmissible T M P (halfPiece (μ := μ) T M P) ∧
@@ -265,10 +270,12 @@ private noncomputable def cum (M : ℕ) : ℕ → Set Ω
   | 0 => ∅
   | n + 1 => cum M n ∪ halfPiece (μ := μ) T M (cum M n)
 
+omit [StandardBorelSpace Ω] in
 /-- Each partial union is contained in the next one. -/
 private lemma cum_succ_subset (M n : ℕ) : cum (μ := μ) T M n ⊆ cum (μ := μ) T M (n + 1) := by
   simp [cum]
 
+omit [StandardBorelSpace Ω] in
 /-- The partial unions increase with the stage. -/
 private lemma cum_mono (M) {a b : ℕ} (h : a ≤ b) : cum (μ := μ) T M a ⊆ cum (μ := μ) T M b := by
   induction b with
@@ -280,6 +287,7 @@ private lemma cum_mono (M) {a b : ℕ} (h : a ≤ b) : cum (μ := μ) T M a ⊆ 
     · exact (ih (Nat.le_of_lt_succ hlt)).trans (cum_succ_subset T M b)
     · exact subset_rfl
 
+omit [StandardBorelSpace Ω] in
 /-- Every partial union is a disjoint-preimage set. -/
 private lemma cum_isDisjointPreimage (M n : ℕ) : IsDisjointPreimage T M (cum (μ := μ) T M n) := by
   induction n with
@@ -290,12 +298,14 @@ private lemma cum_isDisjointPreimage (M n : ℕ) : IsDisjointPreimage T M (cum (
       (halfPiece_spec T M (cum (μ := μ) T M n)).1.1
       (halfPiece_spec T M (cum (μ := μ) T M n)).1.2
 
+omit [StandardBorelSpace Ω] in
 /-- A half-piece lies in the complement of the obstacle it was chosen against. -/
 private lemma halfPiece_subset_compl {M : ℕ} (hM : 0 < M) (P : Set Ω) :
     halfPiece (μ := μ) T M P ⊆ Pᶜ := by
   intro x hx hxP
   exact (halfPiece_spec T M P).1.2 hx (orbitNbhd_self T hM P hxP)
 
+omit [StandardBorelSpace Ω] in
 /-- Half-pieces at distinct stages are disjoint. -/
 private lemma halfPiece_pairwise (M : ℕ) (hM : 0 < M) :
     Pairwise (Disjoint on fun n => halfPiece (μ := μ) T M (cum (μ := μ) T M n)) := by
@@ -312,6 +322,7 @@ private lemma halfPiece_pairwise (M : ℕ) (hM : 0 < M) :
 private noncomputable def sweep (M : ℕ) : Set Ω :=
   ⋃ n, halfPiece (μ := μ) T M (cum (μ := μ) T M n)
 
+omit [StandardBorelSpace Ω] in
 /-- Each partial union is contained in the sweep. -/
 private lemma cum_subset_sweep (M n : ℕ) : cum (μ := μ) T M n ⊆ sweep (μ := μ) T M := by
   induction n with
@@ -323,6 +334,7 @@ private lemma cum_subset_sweep (M n : ℕ) : cum (μ := μ) T M n ⊆ sweep (μ 
     · exact ih hx
     · exact mem_iUnion.2 ⟨n, hx⟩
 
+omit [StandardBorelSpace Ω] in
 /-- The sweep is a disjoint-preimage set. -/
 private lemma sweep_isDisjointPreimage (M : ℕ) :
     IsDisjointPreimage T M (sweep (μ := μ) T M) := by
@@ -339,6 +351,7 @@ private lemma sweep_isDisjointPreimage (M : ℕ) :
   exact disjoint_left.mp
     ((cum_isDisjointPreimage T M (max a b + 1)).2 i j hi hj hij) haC hbC
 
+omit [StandardBorelSpace Ω] in
 /-- `M` disjoint preimages bound the base by `1 / M`. -/
 private lemma measure_le_inv (hT : MeasurePreserving T μ μ) {M : ℕ} (hM : 0 < M) {A : Set Ω}
     (hA : IsDisjointPreimage T M A) : μ A ≤ 1 / (M : ℝ≥0∞) := by
@@ -376,6 +389,7 @@ private def entrance (A : Set Ω) (k : ℕ) : Set Ω :=
 private def skyscraper (A : Set Ω) (n : ℕ) : Set Ω :=
   ⋃ q : ℕ, entrance T A ((q + 1) * n)
 
+omit [StandardBorelSpace Ω] in
 /-- Shifting an entrance time by `d ≤ k` lands in the entrance at time `k - d`. -/
 private lemma mem_entrance_iterate {A : Set Ω} {k d : ℕ} (hd : d ≤ k) {x : Ω}
     (hx : x ∈ entrance T A k) : (T^[d]) x ∈ entrance T A (k - d) := by
@@ -395,6 +409,7 @@ private lemma mem_entrance_iterate {A : Set Ω} {k d : ℕ} (hd : d ≤ k) {x : 
       omega
     exact hxnot (mem_iUnion₂.2 ⟨j + d, Finset.mem_range.mpr hjd, hjA'⟩)
 
+omit [StandardBorelSpace Ω] in
 /-- Distinct entrance times are disjoint. -/
 private lemma disjoint_entrance {A : Set Ω} {k m : ℕ} (hkm : k ≠ m) :
     Disjoint (entrance T A k) (entrance T A m) := by
@@ -406,6 +421,7 @@ private lemma disjoint_entrance {A : Set Ω} {k m : ℕ} (hkm : k ≠ m) :
     intro x hx hxm
     exact hx.2 (mem_iUnion₂.2 ⟨m, Finset.mem_range.mpr hlt, hxm.1⟩)
 
+omit [StandardBorelSpace Ω] in
 /-- Preimages of the skyscraper under distinct shifts of length less than `n` are disjoint. -/
 private lemma disjoint_skyscraper_shifts {A : Set Ω} {n r s : ℕ}
     (hr : r < n) (hs : s < n) (hrs : r ≠ s) :
@@ -447,6 +463,7 @@ private lemma disjoint_skyscraper_shifts {A : Set Ω} {n r s : ℕ}
   · exact hone hlt hs
   · exact (hone hlt hr).symm
 
+omit [IsProbabilityMeasure μ] in
 /-- A positive-measure measurable piece of `J` with pairwise disjoint preimages of length `M`.
 Aperiodicity kills short periods, and a compatible complete metric separates the rest. -/
 private lemma exists_isDisjointPreimage_of_pos (ha : IsAperiodicModMeasure T μ) {M : ℕ}
@@ -672,6 +689,7 @@ private lemma exists_sweep (hT : MeasurePreserving T μ μ) (ha : IsAperiodicMod
     exact measure_mono_null hcompl hunion
   exact ⟨A, hAdisj.1, hAμ, hμF⟩
 
+omit [IsProbabilityMeasure μ] [StandardBorelSpace Ω] in
 /-- A Rokhlin base cut from a measurable set whose forward saturation is conull. -/
 private lemma exists_tower_of_forward (hT : MeasurePreserving T μ μ) {A : Set Ω}
     (hA : MeasurableSet A) (hF : μ (forwardSat T A)ᶜ = 0) {n : ℕ} (hn : 0 < n) :

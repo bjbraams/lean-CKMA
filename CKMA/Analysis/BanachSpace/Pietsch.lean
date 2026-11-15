@@ -7,8 +7,6 @@ module
 
 public import TauCeti.Analysis.Normed.Operator.AbsolutelySumming.Basic
 public import Mathlib.MeasureTheory.Integral.Bochner.Basic
-public import Mathlib.Analysis.Normed.Module.WeakDual
-public import Mathlib.MeasureTheory.Measure.Regular
 
 /-!
 # Pietsch domination on the weak-star dual ball

@@ -5,22 +5,12 @@ Authors: CKMA contributors
 -/
 module
 
-public import Mathlib.MeasureTheory.Integral.MeanInequalities
-public import Mathlib.MeasureTheory.Function.LpSpace.Basic
-public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
-public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 
-import Mathlib.Algebra.BigOperators.Intervals
-import Mathlib.Analysis.Calculus.Deriv.Inv
+public import Mathlib.MeasureTheory.Measure.Haar.OfBasis
+public import Mathlib.MeasureTheory.Function.LpSeminorm.Defs
+
 import Mathlib.Analysis.SpecialFunctions.Gamma.Beta
 import Mathlib.Analysis.SumIntegralComparisons
-import Mathlib.MeasureTheory.Function.JacobianOneDim
-import Mathlib.MeasureTheory.Function.SpecialFunctions.Basic
-import Mathlib.MeasureTheory.Integral.Bochner.Set
-import Mathlib.MeasureTheory.Integral.Lebesgue.Countable
-import Mathlib.MeasureTheory.Measure.Prod
-import Mathlib.Topology.Algebra.InfiniteSum.ENNReal
-import Mathlib.Topology.Algebra.InfiniteSum.Real
 
 /-!
 # Hilbert integral and sequence inequalities
@@ -55,7 +45,7 @@ noncomputable section
 namespace CKMA
 
 open MeasureTheory Set intervalIntegral
-open scoped Classical ENNReal
+open scoped ENNReal
 
 /-- Hilbert's sharp constant at exponent `p`. -/
 def hilbertConstant (p : ℝ) : ℝ := Real.pi / Real.sin (Real.pi / p)
