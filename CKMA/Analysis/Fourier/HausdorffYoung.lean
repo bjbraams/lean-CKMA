@@ -6,8 +6,8 @@ Authors: CKMA contributors
 module
 
 public import Mathlib.Analysis.Fourier.FourierTransformDeriv
-public import Mathlib.Analysis.Fourier.LpSpace
 public import Mathlib.MeasureTheory.Measure.Lebesgue.VolumeOfBalls
+public import TauCeti.Analysis.Fourier.HausdorffYoung
 
 import Mathlib.Analysis.Calculus.BumpFunction.InnerProduct
 import Mathlib.Analysis.Calculus.BumpFunction.Normed
@@ -25,8 +25,9 @@ import Mathlib.Topology.Algebra.Support
 /-!
 # Hausdorff–Young
 
-At Mathlib's `exp(-2πi x·ξ)` normalization, the Fourier integral satisfies
-Hausdorff–Young on `L¹ ∩ Lᵖ` for `1 ≤ p ≤ 2`. No finite constant gives the same
+At Mathlib's `exp(-2πi x·ξ)` normalization, the Fourier integral of an integrable function
+satisfies Hausdorff–Young for `1 ≤ p ≤ 2`; this is derived from the pinned TauCeti
+(`MeasureTheory.Integrable.eLpNorm_fourier_le`). No finite constant gives the same
 bound for an exponent above two, already on Schwartz functions in positive dimension.
 Spatially separated modulated bumps have almost disjoint Fourier packets, so the
 ratio of the two norms is unbounded.
@@ -35,7 +36,8 @@ Source: GAPS 27.4.
 
 ## Main results
 
-* `CKMA.hausdorff_young`: Hausdorff–Young inequality on `L¹ ∩ Lᵖ` for `1 ≤ p ≤ 2` (**27.4**).
+* `CKMA.hausdorff_young`: Hausdorff–Young inequality for integrable functions and
+  `1 ≤ p ≤ 2` (**27.4**).
 * `CKMA.not_hausdorff_young`: failure of the Hausdorff–Young inequality for `p > 2` in positive
   dimension, already on Schwartz functions.
 -/
@@ -49,14 +51,16 @@ namespace CKMA
 open Complex Filter Finset FourierTransform MeasureTheory Metric Real Set Topology
 open scoped BigOperators Complex ENNReal FourierTransform RealInnerProductSpace
 
-/-- **27.4**: Hausdorff–Young on the dense intersection `L¹ ∩ Lᵖ`, with the `p=1` endpoint.
-This formulation uses the Fourier integral; extension to all of `Lᵖ` needs a bounded-map
-construction. -/
-theorem hausdorff_young {d : ℕ} {p q : ℝ≥0∞} (hp : 1 ≤ p) (hp2 : p ≤ 2)
-    (hpq : p⁻¹ + q⁻¹ = 1) {f : EuclideanSpace ℝ (Fin d) → ℂ}
-    (hf1 : Integrable f volume) (hfp : MemLp f p volume) :
+/-- **27.4**: Hausdorff–Young for integrable functions on a finite-dimensional real inner
+product space, with the `p = 1` endpoint. Both sides may be infinite; when `f ∈ Lᵖ` the bound
+shows `𝓕 f ∈ L^q`. This is TauCeti's `MeasureTheory.Integrable.eLpNorm_fourier_le`. -/
+theorem hausdorff_young {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
+    [FiniteDimensional ℝ E] [MeasurableSpace E] [BorelSpace E] {p q : ℝ≥0∞} (hp : 1 ≤ p)
+    (hp2 : p ≤ 2) (hpq : p⁻¹ + q⁻¹ = 1) {f : E → ℂ} (hf1 : Integrable f volume) :
     eLpNorm (𝓕 f) q volume ≤ eLpNorm f p volume := by
-  sorry
+  have : p.HolderConjugate q := ⟨by rwa [inv_one]⟩
+  rw [← ENNReal.HolderConjugate.conjExponent_eq (p := p) (q := q)]
+  exact hf1.eLpNorm_fourier_le hp hp2
 
 section NotHausdorffYoung
 

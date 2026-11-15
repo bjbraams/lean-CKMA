@@ -26,7 +26,7 @@ passage. Sending the mesh and the gap above the level to zero removes the oversh
 
 * `CKMA.measure_hit_le`: the closed hitting measure is at most twice the endpoint measure.
 * `CKMA.two_mul_endpoint_le_hit`: twice the endpoint measure is at most the hitting measure.
-* `CKMA.reflection_principle`: the reflection principle for a real Brownian motion (**08.4**).
+* `CKMA.brownian_reflection`: the reflection principle for a real Brownian motion (**08.4**).
 -/
 
 @[expose] public section
@@ -545,8 +545,9 @@ lemma reflection_continuous {C : ℝ≥0 → Ω → ℝ} (hC : IsBrownianReal C 
   · exact le_antisymm (measure_hit_le hC hm hcont (pos_iff_ne_zero.mpr ht))
       (two_mul_endpoint_le_hit hC hm hcont (pos_iff_ne_zero.mpr ht) ha)
 
-/-- **08.4**: the reflection principle for a real Brownian motion. -/
-theorem reflection_principle {Ω : Type*} [MeasurableSpace Ω] (μ : Measure Ω)
+/-- **08.4**: the Brownian reflection principle for a strictly positive level, including time
+zero. -/
+theorem brownian_reflection {Ω : Type*} [MeasurableSpace Ω] (μ : Measure Ω)
     [IsProbabilityMeasure μ] {B : ℝ≥0 → Ω → ℝ} (hB : IsBrownianReal B μ) {a : ℝ} (ha : 0 < a)
     (t : ℝ≥0) :
     μ {ω | ∃ s : ℝ≥0, s ≤ t ∧ a ≤ B s ω} = 2 * μ {ω | a ≤ B t ω} := by
@@ -572,6 +573,8 @@ theorem reflection_principle {Ω : Type*} [MeasurableSpace Ω] (μ : Measure Ω)
       _ = 2 * μ (endpointSet C t a) := hident
       _ = 2 * μ (endpointSet B t a) := by rw [measure_congr hend.symm]
   simpa [hitSet, endpointSet] using hgoal
+
+@[deprecated (since := "2026-11-15")] alias reflection_principle := brownian_reflection
 
 @[deprecated (since := "2026-11-15")] alias measure_isTau_le_two := measure_firstGridHitSet_le_two
 

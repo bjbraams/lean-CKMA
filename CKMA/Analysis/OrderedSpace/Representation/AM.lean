@@ -181,13 +181,6 @@ theorem posNorm_add_le (y₁ y₂ : E) : ‖(y₁ + y₂)⁺‖ ≤ ‖y₁⁺�
 theorem posNorm_smul {c : ℝ} (hc : 0 < c) (y : E) : ‖(c • y)⁺‖ = c * ‖y⁺‖ := by
   rw [posPart_smul_of_nonneg hc.le, norm_smul, Real.norm_eq_abs, abs_of_pos hc]
 
-/-- Monotonicity of a linear map that is nonnegative on the positive cone. -/
-theorem monotone_of_map_nonneg {φ : E →ₗ[ℝ] ℝ} (hpos : ∀ x, 0 ≤ x → 0 ≤ φ x) : Monotone φ := by
-  intro a b hab
-  have hsub : 0 ≤ φ (b - a) := hpos _ (sub_nonneg.mpr hab)
-  have : 0 ≤ φ b - φ a := by simpa [map_sub] using hsub
-  exact sub_nonneg.mp this
-
 include he0 hball in
 set_option backward.isDefEq.respectTransparency false in
 /-- A positive norm-one state normalizing a given positive vector. -/
@@ -242,7 +235,8 @@ theorem exists_amState_norming (he : e ≠ 0) {x : E} (hx0 : 0 ≤ x) (hx : x �
       have hxle : x ≤ ‖x‖ • e := by
         simpa [abs_of_nonneg hx0] using abs_le_smul_amUnit he0 hball x
       simpa [map_smul, smul_eq_mul] using
-        (monotone_of_map_nonneg (φ := ψ.toLinearMap) fun y hy => by simpa using hψpos y hy) hxle
+        ((monotone_iff_map_nonneg ψ.toLinearMap).2 fun y hy => by
+          simpa using hψpos y hy) hxle
     have hone : 1 ≤ ψ e := by
       have hxpos : 0 < ‖x‖ := (norm_pos_iff).mpr hx
       have : ‖x‖ ≤ ‖x‖ * ψ e := by simpa [hψx] using hle
@@ -486,7 +480,7 @@ theorem amState_extreme_abs (he : e ≠ 0) {φ : WeakDual ℝ E}
   have hmem : φ ∈ amStateSet e := extremePoints_subset hφ
   let ψ := φ.toStrongDual
   have hposψ : ∀ y, 0 ≤ y → 0 ≤ ψ y := fun y hy => by simpa [ψ] using hmem.1 y hy
-  have hmono : Monotone ψ.toLinearMap := monotone_of_map_nonneg fun y hy => by
+  have hmono : Monotone ψ.toLinearMap := (monotone_iff_map_nonneg _).2 fun y hy => by
     simpa using hposψ y hy
   let v : E := x⁻
   have hadd : ∀ a b : E, 0 ≤ a → 0 ≤ b →

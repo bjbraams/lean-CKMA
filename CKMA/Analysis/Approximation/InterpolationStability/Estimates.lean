@@ -24,6 +24,8 @@ bound on the Lebesgue constant.
 
 ## Main results
 
+* `CKMA.lebesgueFunction_cos_eq`: off the nodes, the Lebesgue function is the sum of main and
+  correction terms.
 * `CKMA.abs_cardinal_eq_main_add_corr`: off a node, each cardinal polynomial is the sum of its
   main and correction terms.
 * `CKMA.sum_chebyshevLebesgueMain_le`: sum of the cotangent main terms compared with
@@ -253,12 +255,12 @@ private lemma abs_eval_cardinal_div {n : ℕ} (hn : 1 ≤ n) (i : Fin (n + 1)) {
 /-- Reflected cardinal polynomials are the originals composed with `-X`. -/
 private lemma cardinal_comp_neg {n : ℕ} (hn : 1 ≤ n) (i : Fin (n + 1)) :
     (lagrangeCardinalPolynomial (chebyshevExtremalNodes n) i).comp (-X) =
-      lagrangeCardinalPolynomial (chebyshevExtremalNodes n) (reflectNode n i) := by
+      lagrangeCardinalPolynomial (chebyshevExtremalNodes n) i.rev := by
   let x := chebyshevExtremalNodes n
   have hvs : Set.InjOn x (univ : Finset (Fin (n + 1))) :=
     (chebyshevExtremalNodes_injective (by omega)).injOn
   let p := (lagrangeCardinalPolynomial x i).comp (-X)
-  let target := lagrangeCardinalPolynomial x (reflectNode n i)
+  let target := lagrangeCardinalPolynomial x i.rev
   have hdegP : p.degree < #(univ : Finset (Fin (n + 1))) := by
     rw [degree_comp_neg_X, degree_basis hvs (Finset.mem_univ i), Finset.card_univ,
       Fintype.card_fin]
@@ -271,19 +273,19 @@ private lemma cardinal_comp_neg {n : ℕ} (hn : 1 ≤ n) (i : Fin (n + 1)) :
     rw [eval_comp]
     have hnegX : (-X).eval (x j) = -x j := by simp
     rw [hnegX]
-    have hneg : -x j = x (reflectNode n j) :=
+    have hneg : -x j = x j.rev :=
       (chebyshevExtremalNodes_reflect (by omega) j).symm
     rw [hneg]
-    by_cases hji : reflectNode n j = i
-    · have hj : j = reflectNode n i := by
-        apply_fun reflectNode n at hji
-        simpa [reflectNode_involutive n] using hji
-      simp [hj, reflectNode_involutive n i, target, lagrangeCardinalPolynomial,
+    by_cases hji : j.rev = i
+    · have hj : j = i.rev := by
+        apply_fun Fin.rev at hji
+        simpa using hji
+      simp [hj, target, lagrangeCardinalPolynomial,
         eval_basis_self hvs (Finset.mem_univ _)]
-    · have hjr : j ≠ reflectNode n i := by
+    · have hjr : j ≠ i.rev := by
         intro hj
         apply hji
-        simpa [hj] using reflectNode_involutive n i
+        simp [hj]
       rw [eval_basis_of_ne (Ne.symm hji) (Finset.mem_univ _),
         eval_basis_of_ne (Ne.symm hjr) (Finset.mem_univ _)]
   have htarg : target = Lagrange.interpolate univ x (fun j => target.eval (x j)) :=
@@ -297,9 +299,9 @@ lemma lebesgueFunction_neg {n : ℕ} (hn : 1 ≤ n) (t : ℝ) :
     lebesgueFunction (chebyshevExtremalNodes n) (-t) =
       lebesgueFunction (chebyshevExtremalNodes n) t := by
   unfold lebesgueFunction
-  refine Finset.sum_nbij' (s := univ) (t := univ) (reflectNode n) (reflectNode n)
+  refine Finset.sum_nbij' (s := univ) (t := univ) Fin.rev Fin.rev
     (fun _ _ => Finset.mem_univ _) (fun _ _ => Finset.mem_univ _)
-    (fun a _ => reflectNode_involutive n a) (fun a _ => reflectNode_involutive n a) ?_
+    (fun a _ => Fin.rev_rev a) (fun a _ => Fin.rev_rev a) ?_
   intro i _
   rw [← cardinal_comp_neg hn i, eval_comp]
   simp
@@ -862,5 +864,14 @@ lemma chebyshevLebesgueCorr_last_le {n : ℕ} (hn : 1 ≤ n) {θ : ℝ}
       |sin ((n : ℝ) * θ)| / (4 * (n : ℝ)) * tan (θ / 2) := by ring
   rw [hneg]
   exact hprod.trans (by linarith [hθ2])
+
+/-- Off the nodes, the Lebesgue function is the sum of main and correction terms. -/
+lemma lebesgueFunction_cos_eq {n : ℕ} (hn : 1 ≤ n) {θ : ℝ}
+    (hθ : θ ∈ Set.Ioo 0 π) (hnode : ∀ i, θ ≠ nodeAngle n i) :
+    lebesgueFunction (chebyshevExtremalNodes n) (cos θ) =
+      (∑ i, chebyshevLebesgueMain n θ i) + ∑ i, chebyshevLebesgueCorr n θ i := by
+  unfold lebesgueFunction
+  rw [← Finset.sum_add_distrib]
+  exact Finset.sum_congr rfl fun i _ => abs_cardinal_eq_main_add_corr hn hθ hnode i
 
 end CKMA

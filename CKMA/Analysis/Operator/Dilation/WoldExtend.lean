@@ -6,6 +6,7 @@ Authors: CKMA contributors
 module
 
 public import CKMA.Analysis.Operator.Dilation.WoldSum
+import CKMA.Analysis.Operator.Dilation.L2Shift
 public import Mathlib.Analysis.InnerProductSpace.l2Space
 
 /-!
@@ -38,18 +39,6 @@ open scoped InnerProductSpace
 open ContinuousLinearMap Submodule
 
 universe u
-
-variable {ι : Type*} {G : ι → Type u} [∀ i, NormedAddCommGroup (G i)]
-
-/-- The squared `ℓ²` norm is the sum of the squared coordinate norms. -/
-theorem woldLp_norm_sq_eq_tsum (f : lp G 2) :
-    ‖f‖ ^ 2 = ∑' i, ‖(f : ∀ i, G i) i‖ ^ 2 := by
-  have hp : 0 < (2 : ENNReal).toReal := by
-    rw [ENNReal.toReal_ofNat]
-    norm_num
-  have h := lp.norm_rpow_eq_tsum (p := 2) hp f
-  rw [ENNReal.toReal_ofNat] at h
-  simpa [Real.rpow_natCast] using h
 
 variable {H : Type u} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
 
@@ -209,7 +198,7 @@ def woldPadLinear (V : H →ₗᵢ[ℂ] H) :
 theorem norm_woldPad (V : H →ₗᵢ[ℂ] H) (f : lp (woldSummandNat V) 2) :
     ‖woldPad V f‖ = ‖f‖ := by
   rw [← sq_eq_sq₀ (norm_nonneg _) (norm_nonneg _)]
-  rw [woldLp_norm_sq_eq_tsum (woldPad V f), woldLp_norm_sq_eq_tsum f]
+  rw [lp_norm_sq_eq_tsum (woldPad V f), lp_norm_sq_eq_tsum f]
   let φ : Option ℤ → ℝ := fun i => ‖woldPadFun V (f : ∀ i, woldSummandNat V i) i‖ ^ 2
   have hcomp : (fun j => φ (woldExtendIndex j)) =
       fun j => ‖(f : ∀ i, woldSummandNat V i) j‖ ^ 2 := by
@@ -363,7 +352,7 @@ def woldBilateralLinear (V : H →ₗᵢ[ℂ] H) :
 theorem norm_woldBilateral (V : H →ₗᵢ[ℂ] H) (f : lp (woldSummandInt V) 2) :
     ‖woldBilateral V f‖ = ‖f‖ := by
   rw [← sq_eq_sq₀ (norm_nonneg _) (norm_nonneg _)]
-  rw [woldLp_norm_sq_eq_tsum (woldBilateral V f), woldLp_norm_sq_eq_tsum f]
+  rw [lp_norm_sq_eq_tsum (woldBilateral V f), lp_norm_sq_eq_tsum f]
   have hsum : Summable fun i => ‖(f : ∀ i, woldSummandInt V i) i‖ ^ 2 := by
     have hp : 0 < (2 : ENNReal).toReal := by
       rw [ENNReal.toReal_ofNat]

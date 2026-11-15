@@ -8,6 +8,7 @@ module
 public import CKMA.Analysis.Real.RectangularDifferentiation.Step
 import Mathlib.Algebra.Order.Archimedean.Basic
 import Mathlib.Analysis.Normed.Group.Basic
+import Mathlib.Analysis.SpecialFunctions.Log.PosLog
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Real
 import Mathlib.MeasureTheory.Constructions.Pi
@@ -71,7 +72,8 @@ theorem strongMaximalGrowth_zero (d : ℕ) : strongMaximalGrowth d 0 = 0 := by
 theorem strongMaximalGrowth_mono {d : ℕ} {u v : ℝ} (hu : 0 ≤ u) (huv : u ≤ v) :
     strongMaximalGrowth d u ≤ strongMaximalGrowth d v := by
   have hv : 0 ≤ v := le_trans hu huv
-  have hlog := logPlus_mono hu huv
+  have hlog : max 0 (Real.log u) ≤ max 0 (Real.log v) :=
+    Real.posLog_le_posLog (by linarith) huv
   have hbase : 0 ≤ 1 + max 0 (Real.log u) := by
     linarith [le_max_left (0 : ℝ) (Real.log u)]
   unfold strongMaximalGrowth
@@ -85,7 +87,8 @@ theorem strongMaximalGrowth_mono {d : ℕ} {u v : ℝ} (hu : 0 ≤ u) (huv : u �
 /-- A bound on the argument gives a linear bound of the same growth order. -/
 theorem strongMaximalGrowth_le_mul_of_le {d : ℕ} {u M : ℝ} (hu : 0 ≤ u) (huM : u ≤ M) :
     strongMaximalGrowth d u ≤ (1 + max 0 (Real.log M)) ^ (d - 1) * u := by
-  have hlog := logPlus_mono hu huM
+  have hlog : max 0 (Real.log u) ≤ max 0 (Real.log M) :=
+    Real.posLog_le_posLog (by linarith) huM
   have hbase : 0 ≤ 1 + max 0 (Real.log u) := by
     linarith [le_max_left (0 : ℝ) (Real.log u)]
   unfold strongMaximalGrowth

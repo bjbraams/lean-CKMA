@@ -213,20 +213,13 @@ private def IsAdmissible (M : ℕ) (P A : Set Ω) : Prop :=
 private lemma isAdmissible_empty (M : ℕ) (P : Set Ω) : IsAdmissible T M P ∅ :=
   ⟨isDisjointPreimage_empty T M, empty_subset _⟩
 
-/-- Every admissible set has measure at most one. -/
-private lemma measure_admissible_le_one (A : Set Ω) :
-    μ A ≤ 1 := by
-  calc
-    μ A ≤ μ (Set.univ : Set Ω) := measure_mono (Set.subset_univ A)
-    _ = 1 := measure_univ
-
 /-- The set of measures of admissible bases is bounded above by one. -/
 private lemma adm_bddAbove (M : ℕ) (P : Set Ω) :
     BddAbove (μ '' {A | IsAdmissible T M P A}) := by
   refine ⟨1, fun x hx => ?_⟩
   rcases hx with ⟨A, _, hxμ⟩
   rw [← hxμ]
-  exact measure_admissible_le_one A
+  exact prob_le_one
 
 /-- The supremum of admissible measures is at most one. -/
 private lemma admSup_le_one (M : ℕ) (P : Set Ω) :
@@ -234,7 +227,7 @@ private lemma admSup_le_one (M : ℕ) (P : Set Ω) :
   refine csSup_le' fun x hx => ?_
   rcases hx with ⟨A, _, hxμ⟩
   rw [← hxμ]
-  exact measure_admissible_le_one A
+  exact prob_le_one
 
 /-- An admissible base whose measure is at least half the supremum. -/
 private lemma exists_halfPiece (M : ℕ) (P : Set Ω) :

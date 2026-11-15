@@ -5,8 +5,8 @@ and their stable SYNOPSIS identifiers. [FORMALIZATION.md](FORMALIZATION.md) and
 [formalization.json](formalization.json) record the exact scope, representative
 conventions and audited proof status of the local declarations.
 
-The compiled library uses Mathlib `911003dd6dea5df215dff57f2717be762e11a6ca`,
-TauCeti `a049b4264d2cf4dbf4720796f844a3a3764914a5` and Lean `v4.36.0-rc1`.
+The compiled library uses Mathlib `1b1ccf4b088b32fa3f23f2de1127433254a81e1e`,
+TauCeti `396c3bd971e9722aa8656231760e710fe641d8cf` and Lean `v4.36.0-rc2`.
 The coverage inventories retain their separate source baselines. The toolchain and
 manifest setup derives from the sibling `lean-DLMF` project; its additional
 project-specific dependencies are not part of this library. Sources use the

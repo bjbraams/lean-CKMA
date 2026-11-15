@@ -6,7 +6,8 @@ Authors: CKMA contributors
 module
 
 public import CKMA.Analysis.Fourier.Sampling.Band
-public import Mathlib.Analysis.Distribution.AEEqOfIntegralContDiff
+
+import CKMA.Analysis.Fourier.LpSpace
 
 /-!
 # Bandlimited representatives and Shannon sampling
@@ -34,7 +35,7 @@ noncomputable section
 namespace CKMA
 
 open MeasureTheory FourierTransform Filter Topology Metric
-open scoped BigOperators ENNReal FourierTransform Real Interval SchwartzMap
+open scoped BigOperators ENNReal FourierTransform Real Interval
 
 variable {B : ℝ}
 
@@ -216,111 +217,6 @@ private lemma fourierInv_sub {f g : ℝ → ℂ} (hf : Integrable f) (hg : Integ
   rw [hsub, hpoint, integral_sub]
   · simpa [inner_neg_right, neg_neg] using (Real.fourierIntegral_convergent_iff (-t)).2 hf
   · simpa [inner_neg_right, neg_neg] using (Real.fourierIntegral_convergent_iff (-t)).2 hg
-
-omit hB in
-/-- Inner product on `ℝ` is symmetric, so negating it is invariant under flip. -/
-private lemma neg_inner_flip : LinearMap.flip (-innerₗ ℝ) = -innerₗ ℝ := by
-  ext
-  simp [LinearMap.flip_apply, LinearMap.neg_apply]
-
-omit hB in
-/-- The integral inverse Fourier transform of an `L¹ ∩ L²` function agrees almost everywhere
-with the `L²` inverse Fourier transform. -/
-private lemma fourierInv_toLp_ae_eq {f : ℝ → ℂ} (hf1 : Integrable f) (hf2 : MemLp f 2 volume) :
-    (⇑(𝓕⁻ (hf2.toLp f) : Lp ℂ 2 volume) : ℝ → ℂ) =ᵐ[volume] 𝓕⁻ f := by
-  let F : Lp ℂ 2 volume := hf2.toLp f
-  let G : Lp ℂ 2 volume := 𝓕⁻ F
-  have hlocLp : LocallyIntegrable (⇑G) volume :=
-    (Lp.memLp G).locallyIntegrable fact_one_le_two_ennreal.elim
-  have hcontL : Continuous fun p : ℝ × ℝ => (innerₗ ℝ) p.1 p.2 :=
-    continuous_snd.mul continuous_fst
-  have hcontNeg : Continuous fun p : ℝ × ℝ => (-innerₗ ℝ) p.1 p.2 := by
-    have hneg : (fun p : ℝ × ℝ => (-innerₗ ℝ) p.1 p.2) =
-        fun p => -((innerₗ ℝ) p.1 p.2) := by
-      ext p
-      simp [LinearMap.neg_apply]
-    rw [hneg]
-    exact hcontL.neg
-  have hcontF : Continuous (𝓕 f) :=
-    VectorFourier.fourierIntegral_continuous (L := innerₗ ℝ)
-      Real.continuous_fourierChar hcontL hf1
-  have hlocInv : LocallyIntegrable (𝓕⁻ f) volume := by
-    have heq : 𝓕⁻ f = fun w => 𝓕 f (-w) := by
-      ext w
-      exact Real.fourierInv_eq_fourier_neg f w
-    rw [heq]
-    exact (hcontF.comp continuous_neg).locallyIntegrable
-  refine ae_eq_of_integral_contDiff_smul_eq hlocLp hlocInv ?_
-  intro g hg_diff hg_supp
-  let phiFun : ℝ → ℂ := fun x => (g x : ℂ)
-  have hphiSupp : HasCompactSupport phiFun := hg_supp.comp_left Complex.ofReal_zero
-  have hphiDiff : ContDiff ℝ ((⊤ : ℕ∞) : WithTop ℕ∞) phiFun :=
-    (Complex.ofRealCLM.contDiff.of_le
-      (m := ((⊤ : ℕ∞) : WithTop ℕ∞)) le_top).comp hg_diff
-  let phi : 𝓢(ℝ, ℂ) := hphiSupp.toSchwartzMap hphiDiff
-  have hphiCoe : (phi : ℝ → ℂ) = phiFun := rfl
-  have hsmul : ∀ x z, g x • z = phiFun x * z := by
-    intro x z
-    simp [phiFun, Algebra.smul_def]
-  have hleft : ∫ x, g x • G x =
-      ∫ x, phi x • G x := by
-    refine integral_congr_ae ?_
-    filter_upwards with x
-    rw [hphiCoe, hsmul]
-    simp [smul_eq_mul]
-  have hright : ∫ x, g x • 𝓕⁻ f x = ∫ x, phiFun x * 𝓕⁻ f x := by
-    refine integral_congr_ae ?_
-    filter_upwards with x
-    rw [hsmul]
-  rw [hleft, hright]
-  have hdist := congrArg (fun T : 𝓢'(ℝ, ℂ) => T phi)
-     (Lp.fourierInv_toTemperedDistribution_eq F)
-  simp only [TemperedDistribution.fourierInv_apply] at hdist
-  rw [Lp.toTemperedDistribution_apply, Lp.toTemperedDistribution_apply] at hdist
-  have hcoe : (⇑F : ℝ → ℂ) =ᵐ[volume] f := hf2.coeFn_toLp
-  have hswap : ∫ x, (𝓕⁻ phi) x • F x =
-      ∫ x, (𝓕⁻ (phi : ℝ → ℂ)) x * f x := by
-    refine integral_congr_ae ?_
-    filter_upwards [hcoe] with x hx
-    rw [hx, SchwartzMap.fourierInv_coe, smul_eq_mul]
-  rw [hswap] at hdist
-  have hFub : ∫ x, (𝓕⁻ (phi : ℝ → ℂ)) x * f x =
-      ∫ x, phiFun x * 𝓕⁻ f x := by
-    have hphiInt : Integrable (phi : ℝ → ℂ) := phi.integrable
-    have hadj := VectorFourier.integral_bilin_fourierIntegral_eq_flip
-      (μ := (volume : Measure ℝ)) (ν := (volume : Measure ℝ))
-      (L := -innerₗ ℝ) (e := 𝐞)
-      (ContinuousLinearMap.mul ℂ ℂ)
-      Real.continuous_fourierChar hcontNeg hphiInt hf1
-    simp only [ContinuousLinearMap.mul_apply', neg_inner_flip] at hadj
-    have hFT : ∀ (g : ℝ → ℂ) (w : ℝ),
-        VectorFourier.fourierIntegral 𝐞 volume (-innerₗ ℝ) g w = 𝓕⁻ g w := by
-      intro g w
-      rw [Real.fourierInv_eq, VectorFourier.fourierIntegral]
-      refine integral_congr_ae (ae_of_all _ fun v => ?_)
-      simp [LinearMap.neg_apply, innerₗ_apply_apply]
-    simp_rw [hFT] at hadj
-    simpa [hphiCoe] using hadj
-  rw [← hdist, hFub]
-
-omit hB in
-/-- Plancherel: the integral inverse Fourier transform preserves the `L²` norm. -/
-private lemma eLpNorm_fourierInv_eq {f : ℝ → ℂ} (hf1 : Integrable f) (hf2 : MemLp f 2 volume) :
-    eLpNorm (𝓕⁻ f) 2 volume = eLpNorm f 2 volume := by
-  let F : Lp ℂ 2 volume := hf2.toLp f
-  let G : Lp ℂ 2 volume := 𝓕⁻ F
-  have hF : ⇑F =ᵐ[volume] f := hf2.coeFn_toLp
-  have hinv : ⇑G =ᵐ[volume] 𝓕⁻ f := fourierInv_toLp_ae_eq hf1 hf2
-  have hnorm : ‖G‖ = ‖F‖ := by
-    rw [← Lp.norm_fourier_eq G, fourier_fourierInv_eq]
-  have henn : eLpNorm (⇑G) 2 volume = eLpNorm (⇑F) 2 volume := by
-    have hreal : (eLpNorm (⇑G) 2 volume).toReal =
-        (eLpNorm (⇑F) 2 volume).toReal := by
-      simp_rw [← Lp.norm_def]
-      exact hnorm
-    exact (ENNReal.toReal_eq_toReal_iff' (Lp.memLp G).eLpNorm_ne_top
-      (Lp.memLp F).eLpNorm_ne_top).1 hreal
-  rw [← eLpNorm_congr_ae hinv, henn, eLpNorm_congr_ae hF]
 
 /-- Cauchy–Schwarz on the band upgrades an `L²` remainder to a uniform bound. -/
 private lemma norm_shannon_remainder_le (u : Lp ℂ 2 (volume : Measure ℝ))
@@ -519,7 +415,7 @@ theorem shannon_sampling_L2 {B : ℝ} (hB : 0 < B)
           bandlimitedRepresentative B u t) =
         𝓕⁻ (freqBand B (bandlimitedRepresentative B u) s - bandCutoff B (⇑u)) by
       ext t
-      exact hpoint s t, eLpNorm_fourierInv_eq hf1 hf2]
+      exact hpoint s t, Integrable.eLpNorm_fourierInv_two_eq hf1 hf2]
   have htail := tendsto_lpNorm_remainder hB u
   have hmem : ∀ s, MemLp (freqBand B (bandlimitedRepresentative B u) s - bandCutoff B (⇑u)) 2 :=
     fun s => (memLp_freqBand _ s).sub (memLp_bandCutoff u)
@@ -608,7 +504,7 @@ theorem shannon_norm_identity {B : ℝ} (hB : 0 < B)
       exact bandlimitedRepresentative_eq_fourierInv u t
     have hmemRep : MemLp (bandlimitedRepresentative B u) 2 volume := by
       change eLpNorm (bandlimitedRepresentative B u) 2 volume < ⊤
-      rw [hrep, eLpNorm_fourierInv_eq hf1 hf2]
+      rw [hrep, Integrable.eLpNorm_fourierInv_two_eq hf1 hf2]
       exact hf2
     have hlpRep := lpNorm_eq_integral_norm_rpow_toReal (p := 2) (by simp) (by simp)
       hmemRep.aestronglyMeasurable
@@ -618,7 +514,7 @@ theorem shannon_norm_identity {B : ℝ} (hB : 0 < B)
     simp_rw [Real.rpow_two] at hlpRep hlpCut
     have hsame : lpNorm (bandlimitedRepresentative B u) 2 volume =
         lpNorm (bandCutoff B (⇑u)) 2 volume := by
-      rw [hrep, lpNorm, lpNorm, eLpNorm_fourierInv_eq hf1 hf2]
+      rw [hrep, lpNorm, lpNorm, Integrable.eLpNorm_fourierInv_two_eq hf1 hf2]
     have hsq : (∫ t, ‖bandlimitedRepresentative B u t‖ ^ 2) ^ (2 : ℝ)⁻¹ =
         (∫ x, ‖bandCutoff B (⇑u) x‖ ^ 2) ^ (2 : ℝ)⁻¹ := by
       rw [← hlpRep, ← hlpCut, hsame]
@@ -642,7 +538,7 @@ theorem shannon_norm_identity {B : ℝ} (hB : 0 < B)
         ext t
         exact bandlimitedRepresentative_eq_fourierInv u t
       change eLpNorm (bandlimitedRepresentative B u) 2 volume < ⊤
-      rw [hfun, eLpNorm_fourierInv_eq hf1 hf2]
+      rw [hfun, Integrable.eLpNorm_fourierInv_two_eq hf1 hf2]
       exact hf2
     simpa [ENNReal.toReal_ofNat, Real.rpow_two] using
       hmem.integrable_norm_rpow (p := 2) (by simp) (by simp)

@@ -19,14 +19,12 @@ import Mathlib.Order.Interval.Finset.Fin
 import Mathlib.Probability.Distributions.Gaussian.HasGaussianLaw.Basic
 import Mathlib.Probability.Distributions.Gaussian.HasGaussianLaw.Independence
 import Mathlib.Probability.Distributions.Gaussian.IsGaussianProcess.Basic
-import Mathlib.Probability.Distributions.Gaussian.Real
 import Mathlib.Probability.HasLaw
 import Mathlib.Probability.Independence.Integration
 import Mathlib.Probability.Moments.Covariance
-import Mathlib.Probability.Moments.Variance
-import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 import Mathlib.Topology.Algebra.InfiniteSum.ENNReal
 import Mathlib.Topology.Algebra.InfiniteSum.NatInt
+import TauCeti.Probability.BrownianMotion.QuadraticVariation
 
 /-!
 # Brownian quadratic variation and covariation (08.7)
@@ -42,8 +40,8 @@ countably many evaluation times are involved. Time and partition nodes are nonne
 reals; covariance normalization is the standard Brownian one.
 
 The uniform estimate is Kolmogorov's maximal inequality applied to the centered sum of
-squared increments. The Gaussian fourth moment is read from the fourth derivative of the
-moment-generating function. Cross variation reduces to quadratic variation by polarization.
+squared increments; its `L²` bound is TauCeti's mean-square estimate for Brownian quadratic
+sums. Cross variation reduces to quadratic variation by polarization.
 
 ## Main definitions
 
@@ -73,231 +71,30 @@ open scoped NNReal ENNReal ProbabilityTheory BigOperators
 open Classical
 open MeasureTheory ProbabilityTheory Filter Topology
 
-/-- Real Gaussian parameter of one partition increment. -/
-private lemma increment_eq_nndist {T : ℝ≥0} (π : TimePartition T) (i : Fin π.size) :
-    (nndist (π.node i.succ : ℝ) (π.node i.castSucc : ℝ) : ℝ) = π.increment i := by
-  have hle : π.node i.castSucc ≤ π.node i.succ := π.monotone_node (Fin.castSucc_le_succ i)
-  have hnonneg : 0 ≤ (π.node i.succ : ℝ) - π.node i.castSucc :=
-    sub_nonneg.mpr (NNReal.coe_le_coe.mpr hle)
-  calc
-    (nndist (π.node i.succ : ℝ) (π.node i.castSucc : ℝ) : ℝ)
-        = |(π.node i.succ : ℝ) - π.node i.castSucc| := by
-          simp [nndist_eq_nnnorm, Real.norm_eq_abs]
-    _ = (π.node i.succ : ℝ) - π.node i.castSucc := abs_of_nonneg hnonneg
-    _ = π.increment i := by simp [TimePartition.increment, NNReal.coe_sub hle]
-
-/-- Second moment of a centered Gaussian increment. -/
-private lemma integral_sq_increment {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω}
-    [IsProbabilityMeasure μ] {B : ℝ≥0 → Ω → ℝ} (hB : IsPreBrownianReal B μ)
-    {T : ℝ≥0} (π : TimePartition T) (i : Fin π.size) :
-    ∫ ω, (B (π.node i.succ) ω - B (π.node i.castSucc) ω) ^ 2 ∂μ = π.increment i := by
-  let raw : Ω → ℝ := fun ω ↦ B (π.node i.succ) ω - B (π.node i.castSucc) ω
-  have hlaw : HasLaw raw (gaussianReal 0
-      (nndist (π.node i.succ : ℝ) (π.node i.castSucc : ℝ))) μ :=
-    hB.hasLaw_sub (π.node i.succ) (π.node i.castSucc)
-  have hmean : ∫ ω, raw ω ∂μ = 0 := by
-    rw [hlaw.integral_eq, integral_id_gaussianReal]
-  have hvar : variance raw μ = π.increment i := by
-    rw [hlaw.variance_eq, variance_id_gaussianReal, increment_eq_nndist π i]
-  rw [variance_of_integral_eq_zero hlaw.aemeasurable hmean] at hvar
-  simpa [raw] using hvar
-
-/-- Fourth moment of the centered standard Gaussian measure, via its moment-generating function. -/
-private lemma integral_id_pow_four_gaussianReal (v : ℝ≥0) :
-    ∫ x, x ^ 4 ∂gaussianReal 0 v = 3 * (v : ℝ) ^ 2 := by
-  let φ : ℝ → ℝ := fun t ↦ Real.exp ((v : ℝ) * t ^ 2 / 2)
-  have hφder (t : ℝ) : HasDerivAt φ ((v : ℝ) * t * φ t) t := by
-    have hpow : HasDerivAt (fun s ↦ s ^ 2) (2 * t) t := by
-      simpa using hasDerivAt_pow 2 t
-    have hmul : HasDerivAt (fun s ↦ (v : ℝ) * s ^ 2) ((v : ℝ) * (2 * t)) t :=
-      hpow.const_mul (v : ℝ)
-    have hdiv : HasDerivAt (fun s ↦ (v : ℝ) * s ^ 2 / 2) ((v : ℝ) * t) t := by
-      have h := hmul.div_const 2
-      exact h.congr_deriv (by ring)
-    exact (hdiv.exp).congr_deriv (by simp [φ, mul_comm])
-  have hψder (t : ℝ) : HasDerivAt (fun s ↦ (v : ℝ) * s * φ s)
-      (((v : ℝ) + (v : ℝ) ^ 2 * t ^ 2) * φ t) t := by
-    exact ((hasDerivAt_id t).const_mul (v : ℝ)).mul (hφder t) |>.congr_deriv
-      (by simp only [id_eq]; ring)
-  have hρder (t : ℝ) : HasDerivAt (fun s ↦ ((v : ℝ) + (v : ℝ) ^ 2 * s ^ 2) * φ s)
-      ((v : ℝ) ^ 2 * t * (3 + (v : ℝ) * t ^ 2) * φ t) t := by
-    have hpow : HasDerivAt (fun s ↦ s ^ 2) (2 * t) t := by
-      simpa using hasDerivAt_pow 2 t
-    have hcoeff : HasDerivAt (fun s ↦ (v : ℝ) + (v : ℝ) ^ 2 * s ^ 2)
-        (2 * (v : ℝ) ^ 2 * t) t := by
-      exact ((hasDerivAt_const t (v : ℝ)).add (hpow.const_mul ((v : ℝ) ^ 2))).congr_deriv
-        (by ring)
-    exact (hcoeff.mul (hφder t)).congr_deriv (by ring)
-  have hσ : deriv (fun s ↦ (v : ℝ) ^ 2 * s * (3 + (v : ℝ) * s ^ 2) * φ s) 0 =
-      3 * (v : ℝ) ^ 2 := by
-    have hlin : HasDerivAt (fun s ↦ (v : ℝ) ^ 2 * s) ((v : ℝ) ^ 2) 0 := by
-      refine HasDerivAt.congr_deriv (HasDerivAt.congr_of_eventuallyEq
-        ((hasDerivAt_id 0).const_mul ((v : ℝ) ^ 2))
-        (Eventually.of_forall fun s ↦ by simp [id_eq])) (by simp)
-    have hcube : HasDerivAt (fun s : ℝ ↦ s ^ 3) (0 : ℝ) 0 := by
-      simpa using hasDerivAt_pow 3 (0 : ℝ)
-    have hpoly : HasDerivAt (fun s ↦ 3 * (v : ℝ) ^ 2 * s + (v : ℝ) ^ 3 * s ^ 3)
-        (3 * (v : ℝ) ^ 2) 0 := by
-      refine (((hlin.const_mul 3).add (hcube.const_mul ((v : ℝ) ^ 3))).congr_deriv
-        (by simp [mul_zero, add_zero])).congr_of_eventuallyEq
-        (Eventually.of_forall fun s ↦ by simp only [Pi.add_apply]; ring)
-    have hpoly' : HasDerivAt (fun s ↦ (v : ℝ) ^ 2 * s * (3 + (v : ℝ) * s ^ 2))
-        (3 * (v : ℝ) ^ 2) 0 := by
-      convert hpoly using 1
-      ext s
-      ring
-    exact ((hpoly'.mul (hφder 0)).congr_deriv
-      (by simp [φ, Real.exp_zero, mul_zero, zero_mul, add_zero, mul_one])).deriv
-  calc
-    ∫ x, x ^ 4 ∂gaussianReal 0 v
-        = iteratedDeriv 4 (mgf (fun x ↦ x) (gaussianReal 0 v)) 0 := by
-          rw [iteratedDeriv_mgf_zero (by simp) 4]
-          simp
-    _ = iteratedDeriv 4 φ 0 := by
-          rw [mgf_fun_id_gaussianReal]
-          congr 1
-          ext t
-          simp [φ]
-    _ = deriv (deriv (deriv (deriv φ))) 0 := by
-          rw [iteratedDeriv_succ, iteratedDeriv_succ, iteratedDeriv_succ,
-            iteratedDeriv_succ, iteratedDeriv_zero]
-    _ = 3 * (v : ℝ) ^ 2 := by
-          have h1 : deriv φ = fun t ↦ (v : ℝ) * t * φ t := by
-            ext t
-            exact (hφder t).deriv
-          have h2 : deriv (fun t ↦ (v : ℝ) * t * φ t) =
-              fun t ↦ ((v : ℝ) + (v : ℝ) ^ 2 * t ^ 2) * φ t := by
-            ext t
-            exact (hψder t).deriv
-          have h3 : deriv (fun t ↦ ((v : ℝ) + (v : ℝ) ^ 2 * t ^ 2) * φ t) =
-              fun t ↦ (v : ℝ) ^ 2 * t * (3 + (v : ℝ) * t ^ 2) * φ t := by
-            ext t
-            exact (hρder t).deriv
-          rw [h1, h2, h3, hσ]
-
-/-- Fourth moment of a centered Gaussian increment. -/
-private lemma integral_pow_four_increment {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω}
-    [IsProbabilityMeasure μ] {B : ℝ≥0 → Ω → ℝ} (hB : IsPreBrownianReal B μ)
-    {T : ℝ≥0} (π : TimePartition T) (i : Fin π.size) :
-    ∫ ω, (B (π.node i.succ) ω - B (π.node i.castSucc) ω) ^ 4 ∂μ =
-      3 * π.increment i ^ 2 := by
-  let v : ℝ≥0 := nndist (π.node i.succ : ℝ) (π.node i.castSucc : ℝ)
-  let raw : Ω → ℝ := fun ω ↦ B (π.node i.succ) ω - B (π.node i.castSucc) ω
-  have hlaw : HasLaw raw (gaussianReal 0 v) μ := hB.hasLaw_sub _ _
-  have hint := hlaw.integral_comp (f := fun x : ℝ ↦ x ^ 4)
-    ((continuous_pow 4).aestronglyMeasurable)
-  rw [Function.comp_def] at hint
-  have hv : (v : ℝ) = π.increment i := increment_eq_nndist π i
-  calc
-    ∫ ω, raw ω ^ 4 ∂μ = ∫ x, x ^ 4 ∂gaussianReal 0 v := hint
-    _ = 3 * (v : ℝ) ^ 2 := integral_id_pow_four_gaussianReal v
-    _ = 3 * π.increment i ^ 2 := by rw [hv]
-
-/-- Fourth-moment and squared second-moment `L^p` bounds for a measurable version of a
-pre-Brownian increment. -/
-private lemma memLp_increment_and_sq {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω}
-    [IsProbabilityMeasure μ] {B : ℝ≥0 → Ω → ℝ} (hB : IsPreBrownianReal B μ)
-    {T : ℝ≥0} (π : TimePartition T) {Y : Fin π.size → Ω → ℝ}
-    (hYmeas : ∀ i, Measurable (Y i))
-    (hYae : ∀ i, (fun ω ↦ B (π.node i.succ) ω - B (π.node i.castSucc) ω) =ᵐ[μ] Y i)
-    (i : Fin π.size) :
-    MemLp (Y i) 4 μ ∧ MemLp (fun ω ↦ Y i ω ^ 2) 2 μ := by
-  have hYLp4 : MemLp (Y i) 4 μ := by
-    have hlaw := hB.hasLaw_sub (π.node i.succ) (π.node i.castSucc)
-    exact (hlaw.memLp (memLp_id_gaussianReal' 4 (by simp))).ae_eq (hYae i)
-  refine ⟨hYLp4, ?_⟩
-  rw [memLp_two_iff_integrable_sq ((hYmeas i).pow_const 2).aestronglyMeasurable]
-  convert hYLp4.integrable_norm_pow (by decide : (4 : ℕ) ≠ 0) using 1
-  ext x
-  rw [Real.norm_eq_abs]
-  have hinner : Y i x ^ 2 = |Y i x| ^ 2 := (sq_abs (Y i x)).symm
-  rw [hinner, ← pow_mul]
-
-/-- Energy of the centered squared increments is at most twice mesh times `T`. -/
+/-- Energy of the centered squared increments is at most twice mesh times `T`
+(TauCeti's `IsPreBrownianReal.integral_sq_quadraticSum_sub_le`). -/
 private lemma centeredIncrement_energy_le {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω}
-    [IsProbabilityMeasure μ] {B : ℝ≥0 → Ω → ℝ} (hB : IsPreBrownianReal B μ)
+    {B : ℝ≥0 → Ω → ℝ} (hB : IsPreBrownianReal B μ)
     {T : ℝ≥0} (π : TimePartition T) (Y : Fin π.size → Ω → ℝ)
-    (hYmeas : ∀ i, Measurable (Y i))
-    (hYae : ∀ i, (fun ω ↦ B (π.node i.succ) ω - B (π.node i.castSucc) ω) =ᵐ[μ] Y i)
-    (hYindep : iIndepFun Y μ) :
+    (hYae : ∀ i, (fun ω ↦ B (π.node i.succ) ω - B (π.node i.castSucc) ω) =ᵐ[μ] Y i) :
     ∫ ω, (∑ i : Fin π.size, ((Y i ω) ^ 2 - π.increment i)) ^ 2 ∂μ ≤
       2 * (π.mesh : ℝ) * (T : ℝ) := by
-  let X : Fin π.size → Ω → ℝ := fun i ω ↦ (Y i ω) ^ 2 - π.increment i
-  have hsq (i : Fin π.size) : ∫ ω, (Y i ω) ^ 2 ∂μ = π.increment i := by
-    have hpow : (fun ω ↦ (B (π.node i.succ) ω - B (π.node i.castSucc) ω) ^ 2) =ᵐ[μ]
-        fun ω ↦ (Y i ω) ^ 2 := (hYae i).mono fun ω h ↦ by simp [h]
-    rw [← integral_congr_ae hpow]
-    exact integral_sq_increment hB π i
-  have hfour (i : Fin π.size) : ∫ ω, (Y i ω) ^ 4 ∂μ = 3 * π.increment i ^ 2 := by
-    have hpow : (fun ω ↦ (B (π.node i.succ) ω - B (π.node i.castSucc) ω) ^ 4) =ᵐ[μ]
-        fun ω ↦ (Y i ω) ^ 4 := (hYae i).mono fun ω h ↦ by simp [h]
-    rw [← integral_congr_ae hpow]
-    exact integral_pow_four_increment hB π i
-  have hsqLp (i : Fin π.size) : MemLp (fun ω ↦ Y i ω ^ 2) 2 μ :=
-    (memLp_increment_and_sq hB π hYmeas hYae i).2
-  have hmeanX (i : Fin π.size) : ∫ ω, X i ω ∂μ = 0 := by
-    have hint : Integrable (fun ω ↦ Y i ω ^ 2) μ :=
-      memLp_one_iff_integrable.1 ((hsqLp i).mono_exponent (by simp : (1 : ℝ≥0∞) ≤ 2))
-    rw [show X i = fun ω ↦ Y i ω ^ 2 - π.increment i by rfl,
-      integral_sub hint (integrable_const _), hsq i, integral_const, probReal_univ]
-    simp
-  have hvar (i : Fin π.size) : ∫ ω, (X i ω) ^ 2 ∂μ = 2 * π.increment i ^ 2 := by
-    have hAE : AEStronglyMeasurable (fun ω ↦ Y i ω ^ 2) μ :=
-      ((hYmeas i).pow_const 2).aestronglyMeasurable
-    have hsub : variance (X i) μ = variance (fun ω ↦ Y i ω ^ 2) μ := by
-      simpa [X, sub_eq_add_neg] using variance_sub_const hAE (π.increment i)
-    have heq : variance (fun ω ↦ Y i ω ^ 2) μ =
-        ∫ ω, (Y i ω ^ 2) ^ 2 ∂μ - (∫ ω, Y i ω ^ 2 ∂μ) ^ 2 :=
-      variance_eq_sub (hsqLp i)
-    have hpow4 : ∫ ω, (Y i ω ^ 2) ^ 2 ∂μ = ∫ ω, (Y i ω) ^ 4 ∂μ := by
-      refine integral_congr_ae (ae_of_all _ fun ω ↦ ?_)
-      ring
-    have hXvar : variance (X i) μ = ∫ ω, (X i ω) ^ 2 ∂μ :=
-      variance_of_integral_eq_zero ((hYmeas i).pow_const 2 |>.sub measurable_const).aemeasurable
-        (hmeanX i)
-    rw [← hXvar, hsub, heq, hpow4, hsq i, hfour i]
-    ring
-  have hXLp (i : Fin π.size) : MemLp (X i) 2 μ := (hsqLp i).sub (memLp_const _)
-  have hXindep : iIndepFun X μ := by
-    have hcomp := hYindep.comp (fun i x ↦ x ^ 2 - π.increment i)
-      (fun i ↦ (measurable_id.pow_const 2).sub measurable_const)
-    simpa [X, Function.comp_def] using hcomp
-  have hvarSum : variance (fun ω ↦ ∑ i : Fin π.size, X i ω) μ =
-      ∑ i : Fin π.size, variance (X i) μ := by
-    have hpi := IndepFun.variance_sum (s := (Finset.univ : Finset (Fin π.size)))
-      (fun i _ ↦ hXLp i) (fun i _ j _ hij ↦ hXindep.indepFun hij)
-    have hcongr : (fun ω ↦ ∑ i : Fin π.size, X i ω) =ᵐ[μ]
-        ∑ i ∈ Finset.univ, X i :=
-      ae_of_all _ fun ω ↦ (Finset.sum_apply _ _ _).symm
-    rw [variance_congr hcongr]
-    simpa using hpi
-  have hmeanSum : ∫ ω, (∑ i : Fin π.size, X i ω) ∂μ = 0 := by
-    rw [integral_finsetSum]
-    · simp [hmeanX]
-    · intro i _
-      exact memLp_one_iff_integrable.1
-        ((hXLp i).mono_exponent (by simp : (1 : ℝ≥0∞) ≤ 2))
-  have henergy : ∫ ω, (∑ i : Fin π.size, X i ω) ^ 2 ∂μ =
-      ∑ i : Fin π.size, 2 * π.increment i ^ 2 := by
-    have hvarFun : variance (fun ω ↦ ∑ i : Fin π.size, X i ω) μ =
-        ∫ ω, (∑ i : Fin π.size, X i ω) ^ 2 ∂μ :=
-      variance_of_integral_eq_zero
-        (Finset.measurable_sum Finset.univ fun i _ ↦
-          ((hYmeas i).pow_const 2).sub measurable_const).aemeasurable hmeanSum
-    have hvarI (i : Fin π.size) : variance (X i) μ = ∫ ω, (X i ω) ^ 2 ∂μ :=
-      variance_of_integral_eq_zero
-        (((hYmeas i).pow_const 2).sub measurable_const).aemeasurable (hmeanX i)
-    rw [← hvarFun, hvarSum]
-    refine Finset.sum_congr rfl fun i _ ↦ ?_
-    rw [hvarI i, hvar i]
-  rw [henergy]
+  have hae : (fun ω ↦ (∑ i : Fin π.size, ((Y i ω) ^ 2 - π.increment i)) ^ 2) =ᵐ[μ]
+      fun ω ↦ (TauCeti.Probability.quadraticSum B π.node ω -
+        ((π.node (Fin.last π.size) : ℝ) - π.node 0)) ^ 2 := by
+    filter_upwards [ae_all_iff.2 hYae] with ω hω
+    have h (i : Fin π.size) : Y i ω = B (π.node i.succ) ω - B (π.node i.castSucc) ω :=
+      (hω i).symm
+    simp only [TauCeti.Probability.quadraticSum_def, h, Finset.sum_sub_distrib, π.sum_increment,
+      π.node_last, π.node_zero, NNReal.coe_zero, sub_zero]
+  rw [integral_congr_ae hae]
   calc
-    ∑ i : Fin π.size, 2 * π.increment i ^ 2
-        = 2 * ∑ i : Fin π.size, π.increment i ^ 2 := by rw [Finset.mul_sum]
-    _ ≤ 2 * ((π.mesh : ℝ) * (T : ℝ)) := by
-      gcongr
-      exact π.sum_sq_increment_le
-    _ = 2 * (π.mesh : ℝ) * (T : ℝ) := by ring
+    _ ≤ 2 * ((π.node (Fin.last π.size) : ℝ) - π.node 0) * π.mesh :=
+      hB.integral_sq_quadraticSum_sub_le π.monotone_node fun i ↦
+        (π.increment_eq_sub i).symm.trans_le (π.increment_le_mesh i)
+    _ = 2 * (π.mesh : ℝ) * (T : ℝ) := by
+      rw [π.node_last, π.node_zero, NNReal.coe_zero, sub_zero]
+      ring
 
 /-- One-partition bound for the nonstrict quadratic-variation deviation. -/
 private lemma quadraticVariation_measure_le {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω}
@@ -316,7 +113,8 @@ private lemma quadraticVariation_measure_le {Ω : Type*} [MeasurableSpace Ω] {�
   have hYindep : iIndepFun Y μ :=
     (iIndepFun_congr hYae).1 (hB.hasIndepIncrements π.size π.node π.monotone_node)
   have hsqLp (i : Fin π.size) : MemLp (fun ω ↦ Y i ω ^ 2) 2 μ :=
-    (memLp_increment_and_sq hB π hYmeas hYae i).2
+    (hB.memLp_sq_sub (π.node i.succ) (π.node i.castSucc)).ae_eq <|
+      (hYae i).mono fun ω hω ↦ by simp only [raw] at hω ⊢; rw [hω]
   let X : Fin π.size → Ω → ℝ := fun i ω ↦ (Y i ω) ^ 2 - π.increment i
   have hXmeas : ∀ i, Measurable (X i) :=
     fun i ↦ ((hYmeas i).pow_const 2).sub measurable_const
@@ -325,9 +123,8 @@ private lemma quadraticVariation_measure_le {Ω : Type*} [MeasurableSpace Ω] {�
     have hsq : ∫ ω, (Y i ω) ^ 2 ∂μ = π.increment i := by
       have hpow : (fun ω ↦ (raw i ω) ^ 2) =ᵐ[μ] fun ω ↦ (Y i ω) ^ 2 :=
         (hYae i).mono fun ω hω ↦ congrArg (fun z ↦ z ^ 2) hω
-      rw [← integral_congr_ae hpow]
-      unfold raw
-      exact integral_sq_increment hB π i
+      rw [← integral_congr_ae hpow, π.increment_eq_sub]
+      exact hB.integral_sq_sub_of_le (π.monotone_node (Fin.castSucc_le_succ i))
     have hint : Integrable (fun ω ↦ Y i ω ^ 2) μ :=
       memLp_one_iff_integrable.1 ((hsqLp i).mono_exponent (by simp : (1 : ℝ≥0∞) ≤ 2))
     rw [show X i = fun ω ↦ Y i ω ^ 2 - π.increment i by rfl,
@@ -339,7 +136,7 @@ private lemma quadraticVariation_measure_le {Ω : Type*} [MeasurableSpace Ω] {�
       (fun _ ↦ (measurable_id.pow_const 2).sub measurable_const)
     simpa [X, Function.comp_def] using hcomp
   have hkol := kolmogorov_maximal hXmeas hXmean hXLp hXindep (half_pos hε)
-  have henergy := centeredIncrement_energy_le hB π Y hYmeas hYae hYindep
+  have henergy := centeredIncrement_energy_le hB π Y hYae
   have hlast : ∀ ω, partialSum X (Fin.last π.size) ω =
       ∑ i : Fin π.size, X i ω := partialSum_last X
   have hintLe : ∫ ω, (partialSum X (Fin.last π.size) ω) ^ 2 ∂μ ≤

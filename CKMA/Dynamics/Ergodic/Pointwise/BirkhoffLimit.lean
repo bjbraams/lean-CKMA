@@ -101,7 +101,7 @@ lemma subset_positive_of_birkhoffLimsup_gt {α : ℝ} {E : Set Ω}
       limsup (fun n => Real.toEReal (birkhoffAverage ℝ T f n ω)) atTop := by
     simpa [birkhoffLimsup] using hsub hω
   have hfreq : ∃ᶠ n in atTop, (α : EReal) < Real.toEReal (birkhoffAverage ℝ T f n ω) :=
-    frequently_lt_of_lt_limsup (hu := ereal_isCoboundedUnder_le _ _) hlt
+    frequently_lt_of_lt_limsup (h := hlt)
   rw [frequently_atTop] at hfreq
   obtain ⟨n, hn, hltn⟩ := hfreq 1
   have hn0 : 0 < n := by omega
@@ -155,13 +155,6 @@ lemma measurable_birkhoffLiminf (hT : Measurable T) (hf : Measurable f) :
   unfold birkhoffLiminf
   refine Measurable.liminf fun n => ?_
   exact continuous_coe_real_ereal.measurable.comp (measurable_birkhoffAverage hT hf n)
-
-/-- Real part of an extended real, sending both infinities to zero. -/
-lemma measurable_ereal_toReal : Measurable EReal.toReal := by
-  have hs : (({⊥, ⊤}ᶜ : Set EReal)ᶜ).Countable := by
-    rw [compl_compl]
-    exact (countable_singleton (⊤ : EReal)).insert ⊥
-  exact EReal.continuousOn_toReal.measurable_of_countable_compl hs
 
 /-- Pointwise finite part of the extended limsup of the averages. -/
 def birkhoffLimit (T : Ω → Ω) (f : Ω → ℝ) (ω : Ω) : ℝ :=
@@ -365,7 +358,6 @@ lemma birkhoffAverage_ae_tendsto_birkhoffLimit [IsProbabilityMeasure μ] {T : Ω
     simpa [birkhoffLiminf, birkhoffLimsup] using
       liminf_le_limsup (f := atTop)
         (u := fun n => Real.toEReal (birkhoffAverage ℝ T f n ω))
-        (ereal_isBoundedUnder_le _ _) (ereal_isBoundedUnder_ge _ _)
   have heq : birkhoffLiminf T f ω = birkhoffLimsup T f ω := by
     refine le_antisymm hle ?_
     by_contra hlt
@@ -396,7 +388,6 @@ lemma birkhoffAverage_ae_tendsto_birkhoffLimit [IsProbabilityMeasure μ] {T : Ω
     unfold birkhoffLimsup at hcoe
     rw [hcoe]
   have htend := tendsto_of_liminf_eq_limsup hinf hsup
-    (ereal_isBoundedUnder_le _ _) (ereal_isBoundedUnder_ge _ _)
   exact (EReal.tendsto_coe).1 htend
 
 end Null

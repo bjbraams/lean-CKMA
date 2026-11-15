@@ -72,17 +72,6 @@ lemma continuousOn_ctrl_right {s : ℝ} (hs : a ≤ s) (_hsb : s ≤ b) :
   refine (hvX.mul hvY).congr fun r _ => ?_
   simp [youngCtrl, Pi.mul_apply]
 
-/-- Doubling `2 ^ (-θ)` gives `2 ^ (1 - θ)`. -/
-lemma two_rpow_neg (θ : ℝ) : (2 : ℝ) * (2 : ℝ) ^ (-θ) = (2 : ℝ) ^ (1 - θ) := by
-  have h2 : (2 : ℝ) ^ (1 : ℝ) = 2 := Real.rpow_one _
-  calc
-    (2 : ℝ) * (2 : ℝ) ^ (-θ) = (2 : ℝ) ^ (1 : ℝ) * (2 : ℝ) ^ (-θ) := by
-      conv_lhs => arg 1; rw [← h2]
-    _ = (2 : ℝ) ^ ((1 : ℝ) + -θ) := by
-      rw [← Real.rpow_add (by norm_num : (0 : ℝ) < 2) (1 : ℝ) (-θ)]
-    _ = (2 : ℝ) ^ (1 - θ) := by
-      congr 1
-
 /-- Fixed-point relation for the geometric sewing constant. -/
 lemma sewingConstant_shift {θ : ℝ} (hθ : 1 < θ) :
     sewingConstant θ * (2 : ℝ) ^ (1 - θ) + 1 = sewingConstant θ := by
@@ -94,7 +83,7 @@ lemma sewingConstant_shift {θ : ℝ} (hθ : 1 < θ) :
 
 /-- Removing one medial point upgrades the loose bound to the sewing constant. -/
 lemma norm_defect_iterate {s t : ℝ} (hs : a ≤ s) (hst : s ≤ t) (ht : t ≤ b) (n : ℕ) :
-    ‖youngLimit s t - youngStep youngLeftPath youngRightPath s t‖ ≤
+    ‖youngLimit s t - youngIncrement youngLeftPath youngRightPath s t‖ ≤
       sewingConstant (youngTheta p q) * youngModulus p q youngLeftPath youngRightPath s t +
         ((2 : ℝ) ^ (1 - youngTheta p q)) ^ n * youngLoose (youngTheta p q) *
           youngModulus p q youngLeftPath youngRightPath s t := by
@@ -166,12 +155,12 @@ lemma norm_defect_iterate {s t : ℝ} (hs : a ≤ s) (hst : s ≤ t) (ht : t ≤
       set Λ : ℝ := youngLoose (youngTheta p q)
       set κ : ℝ := sewingConstant (youngTheta p q)
       have hadd := youngLimit_add hs hm.1 hm.2 ht
-      have hAlg : youngLimit s t - youngStep youngLeftPath youngRightPath s t =
-          (youngLimit s m - youngStep youngLeftPath youngRightPath s m) +
-            (youngLimit m t - youngStep youngLeftPath youngRightPath m t) +
-            (youngStep youngLeftPath youngRightPath s m +
-              youngStep youngLeftPath youngRightPath m t -
-              youngStep youngLeftPath youngRightPath s t) := by
+      have hAlg : youngLimit s t - youngIncrement youngLeftPath youngRightPath s t =
+          (youngLimit s m - youngIncrement youngLeftPath youngRightPath s m) +
+            (youngLimit m t - youngIncrement youngLeftPath youngRightPath m t) +
+            (youngIncrement youngLeftPath youngRightPath s m +
+              youngIncrement youngLeftPath youngRightPath m t -
+              youngIncrement youngLeftPath youngRightPath s t) := by
         rw [hadd]
         abel
       have hδ := norm_young_defect hm.1 hm.2 one_le_leftExponent one_le_rightExponent
@@ -186,7 +175,8 @@ lemma norm_defect_iterate {s t : ℝ} (hs : a ≤ s) (hst : s ≤ t) (ht : t ≤
               (2 : ℝ) ^ (-youngTheta p q) * ρ + (2 : ℝ) ^ (-youngTheta p q) * ρ := by
             rw [hρL]; exact add_le_add le_rfl hρR
           _ = ((2 : ℝ) * (2 : ℝ) ^ (-youngTheta p q)) * ρ := by ring
-          _ = r * ρ := by rw [two_rpow_neg]
+          _ = r * ρ := by
+            rw [mul_comm 2, ← Real.rpow_add_one two_ne_zero, neg_add_eq_sub]
       have hr0 : 0 ≤ r := Real.rpow_nonneg (by norm_num) _
       have hΛ0 : 0 ≤ Λ := youngLoose_nonneg (by simpa [youngTheta] using one_lt_inv_add_inv)
       have hκ0 : 0 ≤ κ :=
@@ -194,20 +184,20 @@ lemma norm_defect_iterate {s t : ℝ} (hs : a ≤ s) (hst : s ≤ t) (ht : t ≤
       have hcoef : 0 ≤ κ + r ^ n * Λ :=
         add_nonneg hκ0 (mul_nonneg (pow_nonneg hr0 n) hΛ0)
       have hmul := mul_le_mul_of_nonneg_left hsumρ hcoef
-      have hthree : ‖youngLimit s t - youngStep youngLeftPath youngRightPath s t‖ ≤
-          ‖youngLimit s m - youngStep youngLeftPath youngRightPath s m‖ +
-            ‖youngLimit m t - youngStep youngLeftPath youngRightPath m t‖ + ρ := by
+      have hthree : ‖youngLimit s t - youngIncrement youngLeftPath youngRightPath s t‖ ≤
+          ‖youngLimit s m - youngIncrement youngLeftPath youngRightPath s m‖ +
+            ‖youngLimit m t - youngIncrement youngLeftPath youngRightPath m t‖ + ρ := by
         simp only [ρ]
         rw [hAlg]
         refine (norm_add_le _ _).trans ?_
         refine (add_le_add (norm_add_le _ _) le_rfl).trans ?_
         exact add_le_add le_rfl hδ
-      have hbound : ‖youngLimit s t - youngStep youngLeftPath youngRightPath s t‖ ≤
+      have hbound : ‖youngLimit s t - youngIncrement youngLeftPath youngRightPath s t‖ ≤
           (κ + r ^ n * Λ) * (r * ρ) + ρ := by
         calc
-          ‖youngLimit s t - youngStep youngLeftPath youngRightPath s t‖ ≤
-              ‖youngLimit s m - youngStep youngLeftPath youngRightPath s m‖ +
-                ‖youngLimit m t - youngStep youngLeftPath youngRightPath m t‖ + ρ := hthree
+          ‖youngLimit s t - youngIncrement youngLeftPath youngRightPath s t‖ ≤
+              ‖youngLimit s m - youngIncrement youngLeftPath youngRightPath s m‖ +
+                ‖youngLimit m t - youngIncrement youngLeftPath youngRightPath m t‖ + ρ := hthree
           _ ≤ (κ * youngModulus p q youngLeftPath youngRightPath s m +
                 r ^ n * Λ * youngModulus p q youngLeftPath youngRightPath s m) +
                 (κ * youngModulus p q youngLeftPath youngRightPath m t +
@@ -220,7 +210,7 @@ lemma norm_defect_iterate {s t : ℝ} (hs : a ≤ s) (hst : s ≤ t) (ht : t ≤
       have hsew := sewingConstant_shift (by simpa [youngTheta] using one_lt_inv_add_inv)
       have hrκ : κ * r + 1 = κ := by simpa [κ, r, youngTheta] using hsew
       calc
-        ‖youngLimit s t - youngStep youngLeftPath youngRightPath s t‖ ≤
+        ‖youngLimit s t - youngIncrement youngLeftPath youngRightPath s t‖ ≤
             (κ + r ^ n * Λ) * (r * ρ) + ρ := hbound
         _ = κ * r * ρ + r ^ n * r * Λ * ρ + ρ := by ring
         _ = (κ * r + 1) * ρ + (r ^ n * r) * Λ * ρ := by ring
@@ -228,7 +218,7 @@ lemma norm_defect_iterate {s t : ℝ} (hs : a ≤ s) (hst : s ≤ t) (ht : t ≤
 
 /-- Sharp Young–Loeve remainder bound with `sewingConstant (p⁻¹ + q⁻¹)`. -/
 lemma norm_youngLimit_sharp {s t : ℝ} (hs : a ≤ s) (hst : s ≤ t) (ht : t ≤ b) :
-    ‖youngLimit s t - youngStep youngLeftPath youngRightPath s t‖ ≤
+    ‖youngLimit s t - youngIncrement youngLeftPath youngRightPath s t‖ ≤
       sewingConstant (p⁻¹ + q⁻¹) * (pathVariationPower p youngLeftPath s t).toReal ^ p⁻¹ *
         (pathVariationPower q youngRightPath s t).toReal ^ q⁻¹ := by
   have hr := Sewing.sewingRatio_mem (by simpa [youngTheta] using one_lt_inv_add_inv)
@@ -237,10 +227,10 @@ lemma norm_youngLimit_sharp {s t : ℝ} (hs : a ≤ s) (hst : s ≤ t) (ht : t �
   set κ : ℝ := sewingConstant (youngTheta p q)
   set Λ : ℝ := youngLoose (youngTheta p q)
   set r : ℝ := (2 : ℝ) ^ (1 - youngTheta p q)
-  have hstep : ∀ n, ‖youngLimit s t - youngStep youngLeftPath youngRightPath s t‖ ≤
+  have hstep : ∀ n, ‖youngLimit s t - youngIncrement youngLeftPath youngRightPath s t‖ ≤
       κ * ρ + r ^ n * Λ * ρ :=
     fun n => norm_defect_iterate hs hst ht n
-  have hlim : ‖youngLimit s t - youngStep youngLeftPath youngRightPath s t‖ ≤ κ * ρ := by
+  have hlim : ‖youngLimit s t - youngIncrement youngLeftPath youngRightPath s t‖ ≤ κ * ρ := by
     have htend : Tendsto (fun n : ℕ => κ * ρ + r ^ n * Λ * ρ) atTop (𝓝 (κ * ρ)) := by
       have hzero : Tendsto (fun n : ℕ => r ^ n * (Λ * ρ)) atTop (𝓝 0) := by
         have hrθ : r = (2 : ℝ) ^ (1 - (p⁻¹ + q⁻¹)) := by simp [r, youngTheta]
@@ -310,7 +300,7 @@ lemma partition_step_le_mesh {s t : ℝ} (π : OrderedIntervalPartition s t) (i 
 lemma exists_partition_close {s t : ℝ} (hs : a ≤ s) (_hst : s ≤ t) (ht : t ≤ b) (ε : ℝ)
     (hε : 0 < ε) :
     ∃ δ : ℝ, 0 < δ ∧ ∀ π : OrderedIntervalPartition s t, (π.mesh : ℝ) < δ →
-      ‖π.incrementSum (youngStep youngLeftPath youngRightPath) - youngLimit s t‖ < ε := by
+      ‖π.incrementSum (youngIncrement youngLeftPath youngRightPath) - youngLimit s t‖ < ε := by
   have hθ : 1 < youngTheta p q := by simpa [youngTheta] using one_lt_inv_add_inv
   have hθ1 : 0 < youngTheta p q - 1 := sub_pos.mpr hθ
   set κ : ℝ := sewingConstant (youngTheta p q)
@@ -340,7 +330,7 @@ lemma exists_partition_close {s t : ℝ} (hs : a ≤ s) (_hst : s ≤ t) (ht : t
   rw [youngLimit_nodes hs ht π, OrderedIntervalPartition.incrementSum, ← sum_sub_distrib]
   refine lt_of_le_of_lt ((norm_sum_le _ _).trans ?_) (by linarith : ε / 2 < ε)
   have hpiece : ∀ i : Fin π.size,
-      ‖youngStep youngLeftPath youngRightPath (π.node i.castSucc) (π.node i.succ) -
+      ‖youngIncrement youngLeftPath youngRightPath (π.node i.castSucc) (π.node i.succ) -
         youngLimit (π.node i.castSucc) (π.node i.succ)‖ ≤
         κ * η ^ (youngTheta p q - 1) *
           youngCtrl p q youngLeftPath youngRightPath (π.node i.castSucc) (π.node i.succ) := by
@@ -407,9 +397,9 @@ theorem young_integral {a b p q : ℝ} (hab : a ≤ b) (hp : 1 ≤ p) (hq : 1 �
     (hX : ContinuousOn X (Set.Icc a b)) (hY : ContinuousOn Y (Set.Icc a b))
     (hVp : pathVariationPower p X a b ≠ ∞) (hVq : pathVariationPower q Y a b ≠ ∞) :
     ∃! I : C(Set.Icc a b, F), IsLeftNormalized I ∧
-      HasPartitionSumLimit (youngStep X Y) I ∧
+      HasPartitionSumLimit (youngIncrement X Y) I ∧
       ∀ s t : Set.Icc a b, s.val ≤ t.val →
-        ‖(I t - I s) - youngStep X Y s.val t.val‖ ≤
+        ‖(I t - I s) - youngIncrement X Y s.val t.val‖ ≤
           sewingConstant (p⁻¹ + q⁻¹) *
             (pathVariationPower p X s.val t.val).toReal ^ p⁻¹ *
             (pathVariationPower q Y s.val t.val).toReal ^ q⁻¹ := by
@@ -435,7 +425,7 @@ theorem young_integral {a b p q : ℝ} (hab : a ≤ b) (hp : 1 ≤ p) (hq : 1 �
     change youngLimit a x.val = 0
     rw [hx]
     exact youngLimit_same le_rfl hab
-  have hlim : HasPartitionSumLimit (youngStep X Y) I := by
+  have hlim : HasPartitionSumLimit (youngIncrement X Y) I := by
     intro s t hst ε hε
     obtain ⟨δ, hδ, hδπ⟩ := exists_partition_close s.2.1 hst t.2.2 ε hε
     refine ⟨δ, hδ, fun π hmesh => ?_⟩

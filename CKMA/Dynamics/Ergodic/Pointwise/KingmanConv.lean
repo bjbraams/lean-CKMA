@@ -328,8 +328,7 @@ lemma kingman_ratio_eventually_le {f : ℕ → Ω → ℝ} {C φ : ℝ} {m : ℕ
 lemma kingmanLimsup_ge {f : ℕ → Ω → ℝ} {C : ℝ}
     (hC : ∀ n : ℕ, 0 < n → ∀ ω, -C * (n : ℝ) ≤ f n ω) (ω : Ω) :
     (-C : EReal) ≤ kingmanLimsup f ω :=
-  (kingmanLiminf_ge hC ω).trans (liminf_le_limsup
-    (ereal_isBoundedUnder_le atTop _) (ereal_isBoundedUnder_ge atTop _))
+  (kingmanLiminf_ge hC ω).trans liminf_le_limsup
 
 /-- The extended limsup is never `⊥` under a real linear lower bound. -/
 lemma kingmanLimsup_ne_bot {f : ℕ → Ω → ℝ} {C : ℝ}
@@ -375,7 +374,7 @@ lemma kingmanLimsup_le_condExp [IsProbabilityMeasure μ] (hT : MeasurePreserving
   have hev := kingman_ratio_eventually_le hm (fun k hk => hC k hk ω) hcocycle hconvω
     htail_pt hε
   rw [← EReal.coe_add]
-  apply limsup_le_of_le (ereal_isCoboundedUnder_le atTop _)
+  refine limsup_le_of_le (h := ?_)
   filter_upwards [hev] with n hn
   rw [kingmanRatio_eq_div]
   exact EReal.coe_le_coe_iff.mpr (le_of_lt hn)
@@ -507,8 +506,7 @@ lemma kingmanLiminfReal_ae_eq_limsupReal [IsProbabilityMeasure μ]
   have hne_sup := kingmanLimsup_ae_ne_top hT hf hf_meas hsub hC
   have hle : kingmanLiminfReal f ≤ᵐ[μ] kingmanLimsupReal f := by
     filter_upwards [hne_inf, hne_sup] with ω hinf hsup
-    have horder := liminf_le_limsup (u := fun n => (kingmanRatio f n ω : EReal))
-      (ereal_isBoundedUnder_le atTop _) (ereal_isBoundedUnder_ge atTop _)
+    have horder := liminf_le_limsup (f := atTop) (u := fun n => (kingmanRatio f n ω : EReal))
     have hreal := EReal.toReal_le_toReal horder (kingmanLiminf_ne_bot hC ω) hsup
     unfold kingmanLiminfReal kingmanLimsupReal
     exact hreal

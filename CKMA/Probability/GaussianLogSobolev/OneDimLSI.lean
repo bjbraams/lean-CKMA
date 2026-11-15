@@ -27,7 +27,8 @@ smooth cutoffs and Fatou's lemma. The constant is the sharp constant `2` of `gau
 
 ## Main definitions
 
-* `CKMA.entropyExpr`: Extended entropy of a real function written with `InformationTheory.klFun`.
+* `CKMA.nonnegativeFunctionEntropy`: Extended entropy of a nonnegative function over a probability
+  measure, written with `InformationTheory.klFun`.
 * `CKMA.oneDimCutoff`: Smooth cutoff equal to `1` on `[-R, R]` and `0` outside `[-R - 1, R + 1]`.
 
 ## Main results
@@ -47,10 +48,13 @@ namespace CKMA
 open MeasureTheory ProbabilityTheory Set Filter InformationTheory
 open scoped NNReal ENNReal Real Topology
 
-/-- Extended entropy of a real function, written with Mathlib's `klFun`. -/
-def entropyExpr {E : Type*} [MeasurableSpace E] (μ : Measure E) (h : E → ℝ) : ℝ≥0∞ :=
+/-- Nonnegative extended entropy of an integrable nonnegative function over a probability measure.
+Normalization uses Mathlib's nonnegative KL integrand, retaining infinite positive entropy.
+For positive mass this equals `∫ h log h - (∫ h) log (∫ h)`, and zero mass gives zero. -/
+def nonnegativeFunctionEntropy {E : Type*} [MeasurableSpace E]
+    (μ : Measure E) (h : E → ℝ) : ℝ≥0∞ :=
   ENNReal.ofReal (∫ x, h x ∂μ) *
-    ∫⁻ x, ENNReal.ofReal (klFun (h x / ∫ y, h y ∂μ)) ∂μ
+    ∫⁻ x, ENNReal.ofReal (klFun (h x / (∫ y, h y ∂μ))) ∂μ
 
 /-- A nonnegative number at most `M` satisfies `|t log t| ≤ (max M 1) ^ 2`. -/
 lemma abs_mul_log_le {t M : ℝ} (ht : 0 ≤ t) (hM : t ≤ M) :
@@ -250,9 +254,9 @@ lemma integral_mul_klFun_eq {h : ℝ → ℝ} (hcont : Continuous h) (hnn : ∀ 
   simpa [m, γ, hint_kl] using hfin
 
 /-- The `klFun` entropy equals the real entropy for a bounded positive-mass integrand. -/
-lemma entropyExpr_eq_ofReal {h : ℝ → ℝ} (hcont : Continuous h) (hnn : ∀ x, 0 ≤ h x)
-    (hbd : ∃ M, ∀ x, h x ≤ M) (hm : 0 < ∫ x, h x ∂gaussianReal 0 1) :
-    entropyExpr (gaussianReal 0 1) h =
+lemma nonnegativeFunctionEntropy_eq_ofReal {h : ℝ → ℝ} (hcont : Continuous h)
+    (hnn : ∀ x, 0 ≤ h x) (hbd : ∃ M, ∀ x, h x ≤ M) (hm : 0 < ∫ x, h x ∂gaussianReal 0 1) :
+    nonnegativeFunctionEntropy (gaussianReal 0 1) h =
       ENNReal.ofReal ((∫ x, h x * Real.log (h x) ∂gaussianReal 0 1) -
         (∫ x, h x ∂gaussianReal 0 1) *
           Real.log (∫ x, h x ∂gaussianReal 0 1)) := by
@@ -284,7 +288,7 @@ lemma entropyExpr_eq_ofReal {h : ℝ → ℝ} (hcont : Continuous h) (hnn : ∀ 
       (fun x => klFun (h x / m))).1 hint_mul
   have hkl_nn : 0 ≤ᵐ[γ] fun x => klFun (h x / m) :=
     ae_of_all _ fun x => klFun_nonneg (div_nonneg (hnn x) hm'.le)
-  unfold entropyExpr
+  unfold nonnegativeFunctionEntropy
   rw [← ofReal_integral_eq_lintegral_ofReal hint_kl hkl_nn]
   rw [← ENNReal.ofReal_mul hm'.le]
   exact congrArg ENNReal.ofReal (by simpa [m, γ] using hid)
@@ -379,9 +383,9 @@ lemma gaussian_realEntropy_sq_add_le {φ : ℝ → ℝ} {R δ : ℝ}
     _ = 2 * ∫ x, (deriv φ x) ^ 2 ∂γ := hmul
 
 /-- Entropy of `φ ^ 2 + δ` for smooth compactly supported `φ`. -/
-lemma entropyExpr_sq_add_support_le {φ : ℝ → ℝ} {R δ : ℝ}
+lemma nonnegativeFunctionEntropy_sq_add_support_le {φ : ℝ → ℝ} {R δ : ℝ}
     (hφ : ContDiff ℝ (↑(⊤ : ℕ∞)) φ) (h0 : ∀ x, R ≤ |x| → φ x = 0) (hδ : 0 < δ) :
-    entropyExpr (gaussianReal 0 1) (fun x => φ x ^ 2 + δ) ≤
+    nonnegativeFunctionEntropy (gaussianReal 0 1) (fun x => φ x ^ 2 + δ) ≤
       ENNReal.ofReal (2 * ∫ x, (deriv φ x) ^ 2 ∂gaussianReal 0 1) := by
   let γ : Measure ℝ := gaussianReal 0 1
   let h : ℝ → ℝ := fun x => φ x ^ 2 + δ
@@ -407,7 +411,7 @@ lemma entropyExpr_sq_add_support_le {φ : ℝ → ℝ} {R δ : ℝ}
     have hmono := integral_mono (integrable_const δ) hint hge
     rw [hconst] at hmono
     exact lt_of_lt_of_le hδ hmono
-  rw [entropyExpr_eq_ofReal hcont hnn ⟨Bφ ^ 2 + δ, hbd⟩ (by simpa [h, γ] using hm)]
+  rw [nonnegativeFunctionEntropy_eq_ofReal hcont hnn ⟨Bφ ^ 2 + δ, hbd⟩ (by simpa [h, γ] using hm)]
   exact ENNReal.ofReal_le_ofReal (by simpa [h, γ] using gaussian_realEntropy_sq_add_le hφ h0 hδ)
 
 /-- Smooth cutoff equal to `1` on `[-R, R]` and to `0` outside `[-R - 1, R + 1]`. -/
@@ -587,15 +591,17 @@ lemma sq_deriv_mul_cutoff_le {φ : ℝ → ℝ} {C R x : ℝ} (hφ : Differentia
   rw [← sq_abs]
   exact (pow_le_pow_left₀ (abs_nonneg _) hle 2).trans hsq
 
-/-- Fatou lower semicontinuity of `entropyExpr` along a sequence of bounded approximants. -/
-lemma entropyExpr_le_of_nat_approx {hApprox : ℕ → ℝ → ℝ} {hLim : ℝ → ℝ} {c : ℕ → ℝ} {c0 : ℝ}
+/-- Fatou lower semicontinuity of `nonnegativeFunctionEntropy` along a sequence of bounded
+approximants. -/
+lemma nonnegativeFunctionEntropy_le_of_nat_approx {hApprox : ℕ → ℝ → ℝ} {hLim : ℝ → ℝ}
+    {c : ℕ → ℝ} {c0 : ℝ}
     (hcont : ∀ n, Continuous (hApprox n)) (hnnLim : ∀ x, 0 ≤ hLim x)
     (hpt : ∀ x, Tendsto (fun n => hApprox n x) atTop (𝓝 (hLim x)))
     (hmass : Tendsto (fun n => ∫ x, hApprox n x ∂gaussianReal 0 1) atTop
       (𝓝 (∫ x, hLim x ∂gaussianReal 0 1)))
-    (hineq : ∀ n, entropyExpr (gaussianReal 0 1) (hApprox n) ≤ ENNReal.ofReal (c n))
+    (hineq : ∀ n, nonnegativeFunctionEntropy (gaussianReal 0 1) (hApprox n) ≤ ENNReal.ofReal (c n))
     (hc : Tendsto c atTop (𝓝 c0)) (hc0 : 0 ≤ c0) :
-    entropyExpr (gaussianReal 0 1) hLim ≤ ENNReal.ofReal c0 := by
+    nonnegativeFunctionEntropy (gaussianReal 0 1) hLim ≤ ENNReal.ofReal c0 := by
   let γ : Measure ℝ := gaussianReal 0 1
   let mass : ℕ → ℝ := fun n => ∫ x, hApprox n x ∂γ
   let m : ℝ := ∫ x, hLim x ∂γ
@@ -603,11 +609,11 @@ lemma entropyExpr_le_of_nat_approx {hApprox : ℕ → ℝ → ℝ} {hLim : ℝ �
     ∫⁻ x, ENNReal.ofReal (klFun (hApprox n x / mass n)) ∂γ
   have hmass' : Tendsto mass atTop (𝓝 m) := by simpa [mass, m, γ] using hmass
   by_cases hm0 : m = 0
-  · simp [entropyExpr, m, γ, hm0, ENNReal.ofReal_zero, zero_mul]
+  · simp [nonnegativeFunctionEntropy, m, γ, hm0, ENNReal.ofReal_zero, zero_mul]
   · have hm : 0 < m := lt_of_le_of_ne (integral_nonneg fun x => hnnLim x) (Ne.symm hm0)
     have hineq' : ∀ n, ENNReal.ofReal (mass n) * a n ≤ ENNReal.ofReal (c n) := by
       intro n
-      simpa [entropyExpr, mass, a, γ] using hineq n
+      simpa [nonnegativeFunctionEntropy, mass, a, γ] using hineq n
     have hmeas : ∀ n, AEMeasurable
         (fun x => ENNReal.ofReal (klFun (hApprox n x / mass n))) γ := by
       intro n
@@ -666,8 +672,9 @@ lemma entropyExpr_le_of_nat_approx {hApprox : ℕ → ℝ → ℝ} {hLim : ℝ �
         exact hpw x
       simpa [a, hrew] using hfatou
     calc
-      entropyExpr γ hLim = ENNReal.ofReal m * ∫⁻ x, ENNReal.ofReal (klFun (hLim x / m)) ∂γ := by
-        simp [entropyExpr, m, γ]
+      nonnegativeFunctionEntropy γ hLim =
+          ENNReal.ofReal m * ∫⁻ x, ENNReal.ofReal (klFun (hLim x / m)) ∂γ := by
+        simp [nonnegativeFunctionEntropy, m, γ]
       _ ≤ ENNReal.ofReal m * liminf a atTop :=
           mul_le_mul_of_nonneg_left hfatou' bot_le
       _ ≤ ENNReal.ofReal m * ENNReal.ofReal (c0 / m) :=
@@ -678,11 +685,11 @@ lemma entropyExpr_le_of_nat_approx {hApprox : ℕ → ℝ → ℝ} {hLim : ℝ �
           field_simp
 
 /-- Entropy of `φ ^ 2 + δ` for smooth square-integrable `φ` with integrable derivative. -/
-lemma gaussian_entropyExpr_sq_add_le {φ : ℝ → ℝ} {δ : ℝ}
+lemma gaussian_nonnegativeFunctionEntropy_sq_add_le {φ : ℝ → ℝ} {δ : ℝ}
     (hφ : ContDiff ℝ (↑(⊤ : ℕ∞)) φ)
     (hφ2 : Integrable (fun x => φ x ^ 2) (gaussianReal 0 1))
     (hφ' : Integrable (fun x => (deriv φ x) ^ 2) (gaussianReal 0 1)) (hδ : 0 < δ) :
-    entropyExpr (gaussianReal 0 1) (fun x => φ x ^ 2 + δ) ≤
+    nonnegativeFunctionEntropy (gaussianReal 0 1) (fun x => φ x ^ 2 + δ) ≤
       ENNReal.ofReal (2 * ∫ x, (deriv φ x) ^ 2 ∂gaussianReal 0 1) := by
   let γ : Measure ℝ := gaussianReal 0 1
   obtain ⟨C, hC0, hC⟩ := exists_smoothTransition_deriv_bound
@@ -697,10 +704,11 @@ lemma gaussian_entropyExpr_sq_add_le {φ : ℝ → ℝ} {δ : ℝ}
     rw [oneDimCutoff_eq_zero_of_le hx]
     simp
   have hdiff : Differentiable ℝ φ := (contDiff_infty_iff_deriv.mp hφ).1
-  have hineq : ∀ n, entropyExpr γ (fun x => φn n x ^ 2 + δ) ≤
+  have hineq : ∀ n, nonnegativeFunctionEntropy γ (fun x => φn n x ^ 2 + δ) ≤
       ENNReal.ofReal (2 * ∫ x, (deriv (φn n) x) ^ 2 ∂γ) := by
     intro n
-    simpa [γ] using entropyExpr_sq_add_support_le (R := (n : ℝ) + 1) (hφnC n) (hφn0 n) hδ
+    simpa [γ] using
+      nonnegativeFunctionEntropy_sq_add_support_le (R := (n : ℝ) + 1) (hφnC n) (hφn0 n) hδ
   have hdom : ∀ n x, (deriv (φn n) x) ^ 2 ≤
       2 * (deriv φ x) ^ 2 + 8 * C ^ 2 * φ x ^ 2 := by
     intro n x
@@ -788,7 +796,7 @@ lemma gaussian_entropyExpr_sq_add_le {φ : ℝ → ℝ} {δ : ℝ}
         probReal_univ]
       simp
     simpa [hadd, hlim_add] using hsq_tend.add tendsto_const_nhds
-  have happ := entropyExpr_le_of_nat_approx
+  have happ := nonnegativeFunctionEntropy_le_of_nat_approx
     (hApprox := fun n x => φn n x ^ 2 + δ) (hLim := fun x => φ x ^ 2 + δ)
     (c := fun n => 2 * ∫ x, (deriv (φn n) x) ^ 2 ∂γ)
     (c0 := 2 * ∫ x, (deriv φ x) ^ 2 ∂γ)
@@ -803,7 +811,7 @@ lemma gaussian_entropyExpr_sq_add_le {φ : ℝ → ℝ} {δ : ℝ}
 /-- **One-dimensional Gaussian logarithmic Sobolev inequality** with constant `2`. -/
 theorem gaussian_logSobolev_oneDim (φ : ℝ → ℝ) (hφ : ContDiff ℝ (↑(⊤ : ℕ∞)) φ)
     (hLp : MemLp φ 2 (gaussianReal 0 1)) :
-    entropyExpr (gaussianReal 0 1) (fun x => φ x ^ 2) ≤
+    nonnegativeFunctionEntropy (gaussianReal 0 1) (fun x => φ x ^ 2) ≤
       2 * ∫⁻ x, ENNReal.ofReal ((deriv φ x) ^ 2) ∂gaussianReal 0 1 := by
   let γ : Measure ℝ := gaussianReal 0 1
   by_cases htop : ∫⁻ x, ENNReal.ofReal ((deriv φ x) ^ 2) ∂γ = ⊤
@@ -818,9 +826,9 @@ theorem gaussian_logSobolev_oneDim (φ : ℝ → ℝ) (hφ : ContDiff ℝ (↑(�
         (ae_of_all _ fun _ => sq_nonneg _)).1 htop
     have hint2 : Integrable (fun x => φ x ^ 2) γ := by simpa [γ] using hLp.integrable_sq
     have hδ : ∀ n : ℕ, 0 < 1 / ((n : ℝ) + 1) := fun n => by positivity
-    have hineq_δ : ∀ n : ℕ, entropyExpr γ (fun x => φ x ^ 2 + 1 / ((n : ℝ) + 1)) ≤
+    have hineq_δ : ∀ n : ℕ, nonnegativeFunctionEntropy γ (fun x => φ x ^ 2 + 1 / ((n : ℝ) + 1)) ≤
         ENNReal.ofReal (2 * ∫ x, (deriv φ x) ^ 2 ∂γ) := fun n => by
-      simpa [γ] using gaussian_entropyExpr_sq_add_le hφ (by simpa [γ] using hint2)
+      simpa [γ] using gaussian_nonnegativeFunctionEntropy_sq_add_le hφ (by simpa [γ] using hint2)
         (by simpa [γ] using hint') (hδ n)
     have htend_mass : Tendsto (fun n : ℕ =>
         ∫ x, (φ x ^ 2 + 1 / ((n : ℝ) + 1)) ∂γ) atTop (𝓝 (∫ x, φ x ^ 2 ∂γ)) := by
@@ -836,7 +844,7 @@ theorem gaussian_logSobolev_oneDim (φ : ℝ → ℝ) (hφ : ContDiff ℝ (↑(�
       have hsum := (tendsto_const_nhds (x := ∫ x, φ x ^ 2 ∂γ)).add hinv
       rw [add_zero] at hsum
       exact Tendsto.congr (fun n => (hadd n).symm) hsum
-    have happ := entropyExpr_le_of_nat_approx
+    have happ := nonnegativeFunctionEntropy_le_of_nat_approx
       (hApprox := fun n x => φ x ^ 2 + 1 / ((n : ℝ) + 1))
       (hLim := fun x => φ x ^ 2)
       (c := fun _ : ℕ => 2 * ∫ x, (deriv φ x) ^ 2 ∂γ)

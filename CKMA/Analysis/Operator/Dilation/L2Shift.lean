@@ -103,10 +103,9 @@ def l2ShiftRightLinear : lp (fun _ : ℕ => H) 2 →ₗ[ℂ] lp (fun _ : ℕ => 
   map_add' := l2ShiftRightElem_add
   map_smul' := l2ShiftRightElem_smul
 
-omit [InnerProductSpace ℂ H] in
 /-- The squared `ℓ²` norm is the sum of the squared coordinate norms. -/
-theorem lp_norm_sq_eq_tsum (f : lp (fun _ : ℕ => H) 2) :
-    ‖f‖ ^ 2 = ∑' n, ‖(f : ℕ → H) n‖ ^ 2 := by
+theorem lp_norm_sq_eq_tsum {ι : Type*} {G : ι → Type*} [∀ i, NormedAddCommGroup (G i)]
+    (f : lp G 2) : ‖f‖ ^ 2 = ∑' i, ‖(f : ∀ i, G i) i‖ ^ 2 := by
   have hp : 0 < (2 : ENNReal).toReal := by
     rw [ENNReal.toReal_ofNat]
     norm_num

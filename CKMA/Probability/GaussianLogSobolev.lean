@@ -6,7 +6,7 @@ Authors: CKMA contributors
 module
 
 public import Mathlib.Probability.Distributions.Gaussian.Multivariate
-public import Mathlib.InformationTheory.KullbackLeibler.KLFun
+public import CKMA.Probability.GaussianLogSobolev.OneDimLSI
 public import Mathlib.Analysis.Calculus.ContDiff.Basic
 public import Mathlib.MeasureTheory.Function.LpSpace.Basic
 
@@ -23,8 +23,8 @@ entropy formula; inner products and covariance follow Mathlib's Gaussian convent
 
 ## Main definitions
 
-* `CKMA.nonnegativeFunctionEntropy`: Extended entropy of a nonnegative function over a probability
-  measure using `InformationTheory.klFun`.
+* `CKMA.nonnegativeFunctionEntropy` (in `GaussianLogSobolev.OneDimLSI`): Extended entropy of a
+  nonnegative function over a probability measure using `InformationTheory.klFun`.
 
 ## Main results
 
@@ -39,14 +39,6 @@ namespace CKMA
 
 open MeasureTheory ProbabilityTheory
 open scoped ENNReal
-
-/-- Nonnegative extended entropy of an integrable nonnegative function over a probability measure.
-Normalization uses Mathlib's nonnegative KL integrand, retaining infinite positive entropy.
-For positive mass this equals `∫ h log h - (∫ h) log (∫ h)`, and zero mass gives zero. -/
-def nonnegativeFunctionEntropy {E : Type*} [MeasurableSpace E]
-    (μ : Measure E) (h : E → ℝ) : ℝ≥0∞ :=
-  ENNReal.ofReal (∫ x, h x ∂μ) *
-    ∫⁻ x, ENNReal.ofReal (InformationTheory.klFun (h x / (∫ y, h y ∂μ))) ∂μ
 
 /-- **07.17**: Gaussian logarithmic Sobolev inequality with exact constant two.
 The extended integral formulation does not assume in advance that the entropy is finite. -/

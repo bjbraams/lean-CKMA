@@ -13,6 +13,7 @@ public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 public import Mathlib.Analysis.Fourier.FourierTransform
 
 import Mathlib.Algebra.Order.Archimedean.Basic
+import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Algebra.Polynomial.BigOperators
 import Mathlib.Algebra.Polynomial.Degree.Operations
 import Mathlib.Analysis.Complex.Polynomial.Basic
@@ -69,30 +70,9 @@ open scoped FourierTransform
 
 /-- A vector bounded in norm by `C / n` for every integer `n ≥ 2` is zero. -/
 theorem eq_zero_of_norm_le_div_nat {E : Type*} [NormedAddCommGroup E] {z : E} {C : ℝ}
-    (h : ∀ n : ℕ, 2 ≤ n → ‖z‖ ≤ C / (n : ℝ)) : z = 0 := by
-  by_cases hC : 0 < C
-  · by_contra hz
-    have hpos : 0 < ‖z‖ := norm_pos_iff.mpr hz
-    obtain ⟨k, hk⟩ := exists_nat_gt (C / ‖z‖)
-    have hk0 : 0 < k := by
-      have hnonneg : 0 ≤ C / ‖z‖ := div_nonneg hC.le hpos.le
-      by_contra hk0
-      rw [Nat.eq_zero_of_not_pos hk0, Nat.cast_zero] at hk
-      exact not_lt_of_ge hnonneg hk
-    let n : ℕ := max k 2
-    have hn : 2 ≤ n := le_max_right k 2
-    have hkn : (k : ℝ) ≤ n := by exact_mod_cast le_max_left k 2
-    have hkpos : (0 : ℝ) < k := by exact_mod_cast hk0
-    have hnpos : (0 : ℝ) < n := lt_of_lt_of_le hkpos hkn
-    have hdiv : C / (k : ℝ) < ‖z‖ := by
-      rw [div_lt_iff₀ hkpos, mul_comm]
-      rwa [← div_lt_iff₀ hpos]
-    have hle : C / (n : ℝ) ≤ C / (k : ℝ) :=
-      div_le_div_of_nonneg_left hC.le hkpos hkn
-    exact (hle.trans_lt hdiv).not_ge (h n hn)
-  · have hnonpos : C / 2 ≤ 0 :=
-      div_nonpos_of_nonpos_of_nonneg (le_of_not_gt hC) (by norm_num)
-    exact norm_eq_zero.mp <| le_antisymm ((h 2 le_rfl).trans hnonpos) (norm_nonneg _)
+    (h : ∀ n : ℕ, 2 ≤ n → ‖z‖ ≤ C / (n : ℝ)) : z = 0 :=
+  norm_eq_zero.mp <| le_antisymm (ge_of_tendsto (tendsto_const_div_atTop_nhds_zero_nat C)
+    (eventually_atTop.2 ⟨2, h⟩)) (norm_nonneg _)
 
 /-- A complex-linear map sending `1` to `1` and preserving squares is multiplicative. -/
 private theorem linearMap_mul_of_sq {A : Type*} [Ring A] [Algebra ℂ A] (F : A →ₗ[ℂ] ℂ)

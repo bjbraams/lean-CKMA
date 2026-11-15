@@ -5,7 +5,7 @@ Authors: CKMA contributors
 -/
 module
 
-public import CKMA.Analysis.Approximation.InterpolationStability.Upper
+public import CKMA.Analysis.Approximation.InterpolationStability.Estimates
 
 /-!
 # Midpoint lower bound for Chebyshev Lebesgue constants
@@ -621,12 +621,9 @@ theorem chebyshev_lebesgueConstant_lower_bound (n : ℕ) :
     linarith [chebyshevLebesgueSlack_nonneg]
   · have hn : 1 ≤ n := by omega
     let L : ℝ := (2 / Real.pi) * Real.log ((n : ℝ) + 1)
-    let C : ℝ := chebyshevLebesgueSlack
     have hbdd : BddAbove
-        (lebesgueFunction (chebyshevExtremalNodes n) '' Set.Icc (-1 : ℝ) 1) := by
-      refine ⟨L + C, ?_⟩
-      rintro y ⟨t, ht, rfl⟩
-      exact lebesgueFunction_chebyshev_upper hn ht
+        (lebesgueFunction (chebyshevExtremalNodes n) '' Set.Icc (-1 : ℝ) 1) :=
+      isCompact_Icc.bddAbove_image (continuous_lebesgueFunction _).continuousOn
     have hpt := lebesgueFunction_chebyshev_midpoint_ge hn
     let tθ : ℝ := Real.cos ((((n - 1) / 2 : ℕ) + (1 : ℝ) / 2) * Real.pi / n)
     have hval : lebesgueFunction (chebyshevExtremalNodes n) tθ ≤

@@ -38,11 +38,6 @@ namespace CKMA
 open MeasureTheory Complex Set Topology Filter
 open scoped NNReal ENNReal
 
-/-- An integer of absolute value less than one is zero. -/
-lemma int_eq_zero_of_abs_cast_lt_one {n : ℤ} (h : |(n : ℝ)| < 1) : n = 0 := by
-  rw [← Int.cast_abs, ← Int.cast_one, Int.cast_lt, Int.abs_lt_one_iff] at h
-  exact h
-
 /-- The modulus of an integral multiple of `2πi`. -/
 lemma norm_int_mul_two_pi_I (n : ℤ) :
     ‖n * (2 * Real.pi * I)‖ = |(n : ℝ)| * (2 * Real.pi) := by
@@ -90,7 +85,7 @@ lemma eq_of_exp_eq_of_continuous {f g : ℝ → ℂ} (hf : Continuous f) (hg : C
     have hlt : |(n : ℝ)| < 1 :=
       (mul_lt_mul_iff_of_pos_right hpos).mp (by simpa [one_mul] using hball)
     have hδt : δ t = 0 := by
-      rw [hn, int_eq_zero_of_abs_cast_lt_one hlt]
+      rw [hn, Int.abs_lt_one_iff.mp (by exact_mod_cast hlt : |n| < 1)]
       simp
     simpa [s] using hδt
   have huniv : s = univ :=
@@ -269,16 +264,6 @@ lemma drift_eq_of_exponent_eq {L M : LevyTriplet}
   rw [hone, mul_one, mul_one] at hlin
   have hcast : (L.drift : ℂ) = (M.drift : ℂ) := mul_left_cancel₀ I_ne_zero hlin
   exact ofReal_inj.mp hcast
-
-/-- Lévy triplets with the same data are equal. -/
-lemma LevyTriplet.ext {L M : LevyTriplet} (hγ : L.gaussianVariance = M.gaussianVariance)
-    (hb : L.drift = M.drift) (hν : L.jumpMeasure = M.jumpMeasure) : L = M := by
-  cases L
-  cases M
-  subst hγ
-  subst hb
-  subst hν
-  rfl
 
 /-- Characteristic exponents with the same exponential determine the same triplet. -/
 lemma levyTriplet_eq_of_forall_charFun_eq {L M : LevyTriplet}

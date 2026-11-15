@@ -33,7 +33,7 @@ and short intervals carry an arbitrarily small control.
 
 ## Main definitions
 
-* `CKMA.YoungLoeve.youngStep`: left-point Young increment `Y s (X t - X s)`.
+* `CKMA.youngIncrement`: left-point Young increment `Y s (X t - X s)`.
 * `CKMA.YoungLoeve.timeReflect`: time reflection of a path on `[c, d]`.
 
 ## Main results
@@ -161,25 +161,34 @@ lemma exists_light_ctrl {n : ℕ} (hn : 2 ≤ n) (c : ℕ → ℝ) (hc : Monoton
     have hsum_le := add_le_add hodd_le heven_le
     linarith
 
-/-- Left-point Young increment. -/
-def youngStep {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+end YoungLoeve
+
+/-- The field of left-point Young increments `Y s (X t - X s)` for an operator-valued
+integrand. -/
+def youngIncrement {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [NormedAddCommGroup F] [NormedSpace ℝ F] (X : ℝ → E) (Y : ℝ → E →L[ℝ] F) (s t : ℝ) : F :=
   Y s (X t - X s)
 
-/-- The three-point defect of `youngStep` is bounded by `youngModulus`. -/
+namespace YoungLoeve
+
+variable {E : Type*} [SeminormedAddCommGroup E]
+
+@[deprecated (since := "2026-11-15")] alias youngStep := youngIncrement
+
+/-- The three-point defect of `youngIncrement` is bounded by `youngModulus`. -/
 lemma norm_young_defect {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [NormedAddCommGroup F] [NormedSpace ℝ F] {s u t : ℝ} (hsu : s ≤ u) (hut : u ≤ t)
     {p q : ℝ} (hp : 1 ≤ p) (hq : 1 ≤ q) (X : ℝ → E)
     (Y : ℝ → E →L[ℝ] F) (hX : pathVariationPower p X s t ≠ ∞)
     (hY : pathVariationPower q Y s t ≠ ∞) :
-    ‖youngStep X Y s u + youngStep X Y u t - youngStep X Y s t‖ ≤
+    ‖youngIncrement X Y s u + youngIncrement X Y u t - youngIncrement X Y s t‖ ≤
       youngModulus p q X Y s t := by
-  have hneg : youngStep X Y s u + youngStep X Y u t - youngStep X Y s t =
-      - (youngStep X Y s t - youngStep X Y s u - youngStep X Y u t) := by abel
+  have hneg : youngIncrement X Y s u + youngIncrement X Y u t - youngIncrement X Y s t =
+      - (youngIncrement X Y s t - youngIncrement X Y s u - youngIncrement X Y u t) := by abel
   rw [hneg, norm_neg]
-  have hAlg : youngStep X Y s t - youngStep X Y s u - youngStep X Y u t =
+  have hAlg : youngIncrement X Y s t - youngIncrement X Y s u - youngIncrement X Y u t =
       (Y s - Y u) (X t - X u) := by
-    simp only [youngStep]
+    simp only [youngIncrement]
     rw [← map_sub]
     have : (X t - X s) - (X u - X s) = X t - X u := by abel
     rw [this, ← sub_apply]
@@ -213,13 +222,13 @@ lemma young_step_bound {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     ∀ (n : ℕ) (c : ℕ → ℝ), Monotone c →
       pathVariationPower p X (c 0) (c n) ≠ ∞ →
       pathVariationPower q Y (c 0) (c n) ≠ ∞ →
-      ‖stepSum (youngStep X Y) c n - youngStep X Y (c 0) (c n)‖ ≤
+      ‖stepSum (youngIncrement X Y) c n - youngIncrement X Y (c 0) (c n)‖ ≤
         youngPartial (youngTheta p q) (n - 1) * youngModulus p q X Y (c 0) (c n) := by
   intro n
   induction n with
   | zero =>
     intro c hc hX hY
-    simp [stepSum, youngStep, youngPartial, map_zero, norm_zero]
+    simp [stepSum, youngIncrement, youngPartial, map_zero, norm_zero]
   | succ n ih =>
     intro c hc hX hY
     by_cases hn0 : n = 0
@@ -235,9 +244,9 @@ lemma young_step_bound {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
         simpa [hd0, hdn] using hY
       have ih' := ih (dropNode c j) (monotone_dropNode hc j) hXd hYd
       rw [hd0, hdn] at ih'
-      have hsplit := stepSum_drop (youngStep X Y) c hj0 hjlt
-      have hδ : ‖youngStep X Y (c (j - 1)) (c j) + youngStep X Y (c j) (c (j + 1)) -
-          youngStep X Y (c (j - 1)) (c (j + 1))‖ ≤
+      have hsplit := stepSum_drop (youngIncrement X Y) c hj0 hjlt
+      have hδ : ‖youngIncrement X Y (c (j - 1)) (c j) + youngIncrement X Y (c j) (c (j + 1)) -
+          youngIncrement X Y (c (j - 1)) (c (j + 1))‖ ≤
           (2 / (n : ℝ)) ^ youngTheta p q * youngModulus p q X Y (c 0) (c (n + 1)) := by
         have hsj : c (j - 1) ≤ c j := hc (by omega)
         have hjt : c j ≤ c (j + 1) := hc (by omega)
@@ -251,8 +260,8 @@ lemma young_step_bound {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
         have hr0 : 0 ≤ (2 : ℝ) / (n : ℝ) :=
           div_nonneg (by norm_num) (Nat.cast_nonneg _)
         calc
-          ‖youngStep X Y (c (j - 1)) (c j) + youngStep X Y (c j) (c (j + 1)) -
-              youngStep X Y (c (j - 1)) (c (j + 1))‖ ≤
+          ‖youngIncrement X Y (c (j - 1)) (c j) + youngIncrement X Y (c j) (c (j + 1)) -
+              youngIncrement X Y (c (j - 1)) (c (j + 1))‖ ≤
               youngModulus p q X Y (c (j - 1)) (c (j + 1)) := hmod
           _ = youngCtrl p q X Y (c (j - 1)) (c (j + 1)) ^ youngTheta p q :=
             youngModulus_eq_ctrl_pow hp hq hpq X Y (c (j - 1)) (c (j + 1))
@@ -264,24 +273,24 @@ lemma young_step_bound {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
             Real.mul_rpow hr0 (youngCtrl_nonneg X Y (c 0) (c (n + 1)))
           _ = (2 / (n : ℝ)) ^ youngTheta p q * youngModulus p q X Y (c 0) (c (n + 1)) := by
             rw [← youngModulus_eq_ctrl_pow hp hq hpq X Y (c 0) (c (n + 1))]
-      have hregroup : stepSum (youngStep X Y) c (n + 1) -
-          youngStep X Y (c 0) (c (n + 1)) =
-          (stepSum (youngStep X Y) (dropNode c j) n -
-            youngStep X Y (c 0) (c (n + 1))) +
-          (youngStep X Y (c (j - 1)) (c j) + youngStep X Y (c j) (c (j + 1)) -
-            youngStep X Y (c (j - 1)) (c (j + 1))) := by
+      have hregroup : stepSum (youngIncrement X Y) c (n + 1) -
+          youngIncrement X Y (c 0) (c (n + 1)) =
+          (stepSum (youngIncrement X Y) (dropNode c j) n -
+            youngIncrement X Y (c 0) (c (n + 1))) +
+          (youngIncrement X Y (c (j - 1)) (c j) + youngIncrement X Y (c j) (c (j + 1)) -
+            youngIncrement X Y (c (j - 1)) (c (j + 1))) := by
         rw [hsplit, show n + 1 - 1 = n by omega]
         abel_nf
       calc
-        ‖stepSum (youngStep X Y) c (n + 1) - youngStep X Y (c 0) (c (n + 1))‖ =
-            ‖(stepSum (youngStep X Y) (dropNode c j) n -
-              youngStep X Y (c 0) (c (n + 1))) +
-              (youngStep X Y (c (j - 1)) (c j) + youngStep X Y (c j) (c (j + 1)) -
-                youngStep X Y (c (j - 1)) (c (j + 1)))‖ := by rw [hregroup]
-        _ ≤ ‖stepSum (youngStep X Y) (dropNode c j) n -
-              youngStep X Y (c 0) (c (n + 1))‖ +
-            ‖youngStep X Y (c (j - 1)) (c j) + youngStep X Y (c j) (c (j + 1)) -
-              youngStep X Y (c (j - 1)) (c (j + 1))‖ := norm_add_le _ _
+        ‖stepSum (youngIncrement X Y) c (n + 1) - youngIncrement X Y (c 0) (c (n + 1))‖ =
+            ‖(stepSum (youngIncrement X Y) (dropNode c j) n -
+              youngIncrement X Y (c 0) (c (n + 1))) +
+              (youngIncrement X Y (c (j - 1)) (c j) + youngIncrement X Y (c j) (c (j + 1)) -
+                youngIncrement X Y (c (j - 1)) (c (j + 1)))‖ := by rw [hregroup]
+        _ ≤ ‖stepSum (youngIncrement X Y) (dropNode c j) n -
+              youngIncrement X Y (c 0) (c (n + 1))‖ +
+            ‖youngIncrement X Y (c (j - 1)) (c j) + youngIncrement X Y (c j) (c (j + 1)) -
+              youngIncrement X Y (c (j - 1)) (c (j + 1))‖ := norm_add_le _ _
         _ ≤ youngPartial (youngTheta p q) (n - 1) * youngModulus p q X Y (c 0) (c (n + 1)) +
             (2 / (n : ℝ)) ^ youngTheta p q * youngModulus p q X Y (c 0) (c (n + 1)) :=
           add_le_add ih' hδ

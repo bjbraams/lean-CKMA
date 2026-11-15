@@ -10,6 +10,7 @@ public import Mathlib.Analysis.CStarAlgebra.ContinuousLinearMap
 public import Mathlib.Analysis.InnerProductSpace.Adjoint
 public import Mathlib.Analysis.InnerProductSpace.StarOrder
 public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Basic
+import TauCeti.Analysis.InnerProductSpace.Positive.Basic
 
 /-!
 # Defect operator of a Hilbert-space contraction
@@ -44,10 +45,9 @@ variable {H : Type u} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [Complete
 /-- A contraction satisfies `T* T ≤ 1`. -/
 theorem contraction_star_mul_self_le_one (T : H →L[ℂ] H) (hT : ‖T‖ ≤ 1) :
     star T * T ≤ 1 := by
-  have hpos : 0 ≤ star T * T := star_mul_self_nonneg T
-  rw [← CStarAlgebra.norm_le_one_iff_of_nonneg (star T * T) hpos]
-  rw [CStarRing.norm_star_mul_self]
-  exact (mul_le_mul hT hT (norm_nonneg T) zero_le_one).trans_eq (mul_one 1)
+  simpa [ContinuousLinearMap.star_eq_adjoint, ContinuousLinearMap.mul_def] using
+    (ContinuousLinearMap.self_comp_adjoint_le_one_iff (ContinuousLinearMap.adjoint T)).2
+      (by rwa [LinearIsometryEquiv.norm_map])
 
 /-- The defect element `1 - T* T` of a contraction is positive. -/
 theorem contraction_one_sub_star_mul_self_nonneg (T : H →L[ℂ] H) (hT : ‖T‖ ≤ 1) :

@@ -11,6 +11,7 @@ public import Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic
 public import Mathlib.MeasureTheory.MeasurableSpace.Invariants
 public import Mathlib.MeasureTheory.Function.LpSeminorm.Basic
 public import Mathlib.Probability.Notation
+public import CKMA.Dynamics.Ergodic.Pointwise.KingmanFull
 
 import CKMA.Dynamics.Ergodic.Pointwise.Maximal
 import CKMA.Dynamics.Ergodic.Pointwise.Birkhoff
@@ -32,7 +33,8 @@ bound on the normalized expectations.
 
 * `CKMA.maximalErgodicSet`: the finite maximal-positive Birkhoff-sum set.
 * `CKMA.IsSubadditiveProcess`: subadditivity of a sequence of observables along `T`.
-* `CKMA.subadditiveMeanRate`: the infimum of normalized positive-length expectations.
+* `CKMA.subadditiveMeanRate` (from `Pointwise.KingmanFull`): the infimum of normalized
+  positive-length expectations.
 
 ## Main results
 
@@ -85,10 +87,6 @@ def IsSubadditiveProcess (T : Ω → Ω) (f : ℕ → Ω → ℝ) (μ : Measure 
   ∀ n m : ℕ, 0 < n → 0 < m → ∀ᵐ ω ∂μ,
     f (n + m) ω ≤ f n ω + f m ((T^[n]) ω)
 
-/-- The infimum of the normalized positive-length expectations in Kingman's theorem. -/
-def subadditiveMeanRate (f : ℕ → Ω → ℝ) (μ : Measure Ω) : ℝ :=
-  sInf {a : ℝ | ∃ n : ℕ, 0 < n ∧ a = (n : ℝ)⁻¹ * ∫ ω, f n ω ∂μ}
-
 /-- **10.7**, Kingman's theorem: an invariant integrable limit, pointwise and L1 convergence,
 and the Fekete infimum formula for its expectation. -/
 theorem kingman_subadditive [IsProbabilityMeasure μ] {T : Ω → Ω}
@@ -101,7 +99,7 @@ theorem kingman_subadditive [IsProbabilityMeasure μ] {T : Ω → Ω}
       Tendsto (fun n : ℕ ↦ eLpNorm (fun ω ↦ (n + 1 : ℝ)⁻¹ * f (n + 1) ω - g ω) 1 μ)
         atTop (𝓝 0) ∧
       (∫ ω, g ω ∂μ) = subadditiveMeanRate f μ := by
-  simpa [IsSubadditiveProcess, subadditiveMeanRate, kingmanFekete] using
+  simpa [IsSubadditiveProcess] using
     kingman_of_integrable hT hf hsub hlower
 
 /-- The subadditive ergodic limit is constant and equal to the infimum mean rate. -/
@@ -112,7 +110,7 @@ theorem kingman_subadditive_of_ergodic [IsProbabilityMeasure μ] {T : Ω → Ω}
     (hlower : ∃ c : ℝ, ∀ n : ℕ, 0 < n → c ≤ (n : ℝ)⁻¹ * ∫ ω, f n ω ∂μ) :
     ∀ᵐ ω ∂μ, Tendsto (fun n : ℕ ↦ (n + 1 : ℝ)⁻¹ * f (n + 1) ω) atTop
       (𝓝 (subadditiveMeanRate f μ)) := by
-  simpa [IsSubadditiveProcess, subadditiveMeanRate, kingmanFekete] using
+  simpa [IsSubadditiveProcess] using
     kingman_ae_tendsto_of_ergodic hT hf hsub hlower
 
 end CKMA

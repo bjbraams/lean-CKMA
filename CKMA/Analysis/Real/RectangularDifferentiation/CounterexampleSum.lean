@@ -52,40 +52,13 @@ open scoped ENNReal NNReal BigOperators
 
 namespace CKMA.Bohr
 
-/-- A constant extended sum over a finite type is the cardinality times the constant. -/
-lemma tsum_fin_const (n : ℕ) (c : ℝ≥0∞) : ∑' _i : Fin n, c = (n : ℝ≥0∞) * c := by
-  classical
-  rw [ENNReal.tsum_eq_iSup_sum]
-  refine le_antisymm ?_ ?_
-  · exact iSup_le fun s => by
-      calc
-        ∑ _i ∈ s, c ≤ ∑ _i ∈ (Finset.univ : Finset (Fin n)), c :=
-          Finset.sum_le_sum_of_subset (Finset.subset_univ _)
-        _ = (n : ℝ≥0∞) * c := by
-          simp [Finset.sum_const, nsmul_eq_mul, Fintype.card_fin]
-  · have hsum : ∑ _i ∈ (Finset.univ : Finset (Fin n)), c = (n : ℝ≥0∞) * c := by
-      simp [Finset.sum_const, nsmul_eq_mul, Fintype.card_fin]
-    rw [← hsum]
-    exact le_iSup (fun s : Finset (Fin n) => ∑ _i ∈ s, c) Finset.univ
-
-/-- The shifted geometric series of ratio one half sums to one half. -/
-lemma tsum_half_pow_shift : ∑' k : ℕ, (1 / 2 : ℝ) ^ (k + 2) = 1 / 2 := by
-  have hpow : ∀ k, (1 / 2 : ℝ) ^ (k + 2) = (1 / 4) * (1 / 2) ^ k := by
-    intro k
-    rw [pow_add, pow_two]
-    have : (1 / 2 : ℝ) * (1 / 2) = 1 / 4 := by norm_num
-    rw [this, mul_comm]
-  simp_rw [hpow]
-  rw [summable_geometric_two.tsum_mul_left (1 / 4), tsum_geometric_two]
-  norm_num
-
 /-- One stage of chosen spikes has integral `copyCount` times one spike mass. -/
 lemma lintegral_stage (d : ℕ) (hd : 2 ≤ d) (k : ℕ) :
     ∑' i : Fin (copyCount k), ∫⁻ x, bumpENN d hd k (chosenShifts k i) x =
       (copyCount k : ℝ≥0∞) *
         ENNReal.ofReal (spikeHeight k * stageScale k ^ 2) := by
   simp_rw [lintegral_bump d hd k]
-  exact tsum_fin_const (copyCount k) _
+  simp
 
 /-- The geometric tail of ratio one half is summable. -/
 lemma summable_half_pow_shift :

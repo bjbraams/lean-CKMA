@@ -45,6 +45,9 @@ and its supremum is the Lebesgue constant. Chebyshev extrema are the nodes
 * `CKMA.abs_derivative_chebyshevExtremalNodal`: absolute derivative of the nodal polynomial at
   each Chebyshev extremal node.
 * `CKMA.lebesgueFunction_chebyshev_node`: the Lebesgue function equals `1` at each extremal node.
+* `CKMA.continuous_lebesgueFunction`: the Lebesgue function is continuous.
+* `CKMA.interpolationLebesgueConstant_chebyshev_zero`: the zero-degree Chebyshev-extrema
+  Lebesgue constant is `1`.
 -/
 
 @[expose] public section
@@ -323,28 +326,17 @@ lemma chebyshevMidpointDeficit_le_slack :
   have hpos : 0 ≤ 2 - π / 8 := by linarith [pi_lt_four]
   linarith
 
-/-- Reversal of an extremal index. -/
-def reflectNode (n : ℕ) (i : Fin (n + 1)) : Fin (n + 1) :=
-  ⟨n - i.val, by have := i.isLt; omega⟩
-
-/-- Reflection is an involution on the extremal indices. -/
-lemma reflectNode_involutive (n : ℕ) (i : Fin (n + 1)) :
-    reflectNode n (reflectNode n i) = i := by
-  apply Fin.ext
-  have := i.isLt
-  simp [reflectNode]
-  omega
-
 /-- Extremal nodes are symmetric about zero. -/
 lemma chebyshevExtremalNodes_reflect {n : ℕ} (hn : n ≠ 0) (i : Fin (n + 1)) :
-    chebyshevExtremalNodes n (reflectNode n i) = -chebyshevExtremalNodes n i := by
+    chebyshevExtremalNodes n i.rev = -chebyshevExtremalNodes n i := by
   rw [chebyshevExtremalNodes_eq_cos, chebyshevExtremalNodes_eq_cos]
-  have hangle : nodeAngle n (reflectNode n i) = π - nodeAngle n i := by
-    unfold nodeAngle reflectNode
+  have hangle : nodeAngle n i.rev = π - nodeAngle n i := by
+    unfold nodeAngle
     have hn0 : (n : ℝ) ≠ 0 := by exact_mod_cast hn
     have hi : i.val ≤ n := Nat.le_of_lt_succ i.isLt
-    have hsub : ((n - i.val : ℕ) : ℝ) = (n : ℝ) - i.val := Nat.cast_sub hi
-    rw [hsub]
+    have hrev : (i.rev.val : ℝ) = (n : ℝ) - i.val := by
+      rw [Fin.val_rev, show n + 1 - (i.val + 1) = n - i.val by omega, Nat.cast_sub hi]
+    rw [hrev]
     field_simp
   rw [hangle, cos_sub, cos_pi, sin_pi]
   ring
@@ -360,5 +352,35 @@ lemma lebesgueFunction_chebyshev_node {n : ℕ} (hn : n ≠ 0) (i : Fin (n + 1))
   · intro j _ hji
     simp [lagrangeCardinalPolynomial, eval_basis_of_ne hji (mem_univ i)]
   · simp
+
+/-- The Lebesgue function of a finite node family is continuous. -/
+theorem continuous_lebesgueFunction {n : ℕ} (x : Fin n → ℝ) :
+    Continuous (lebesgueFunction x) :=
+  continuous_finsetSum _ fun i _ ↦ (lagrangeCardinalPolynomial x i).continuous.abs
+
+/-- For `n = 0`, the Lebesgue function of the single Chebyshev extremal node is identically `1`. -/
+lemma lebesgueFunction_chebyshev_zero (t : ℝ) :
+    lebesgueFunction (chebyshevExtremalNodes 0) t = 1 := by
+  unfold lebesgueFunction
+  rw [Fin.sum_univ_one]
+  have huniv : (Finset.univ : Finset (Fin 1)) = {(0 : Fin 1)} := by
+    ext i
+    simp [Fin.eq_zero]
+  rw [lagrangeCardinalPolynomial, huniv, Lagrange.basis_singleton]
+  simp
+
+/-- For `n = 0`, the Lebesgue constant of the Chebyshev extrema is `1`. -/
+lemma interpolationLebesgueConstant_chebyshev_zero :
+    interpolationLebesgueConstant (chebyshevExtremalNodes 0) = 1 := by
+  have him : lebesgueFunction (chebyshevExtremalNodes 0) '' Set.Icc (-1 : ℝ) 1 = {1} := by
+    ext y
+    simp only [Set.mem_image, Set.mem_Icc, Set.mem_singleton_iff]
+    constructor
+    · rintro ⟨t, _, rfl⟩
+      exact lebesgueFunction_chebyshev_zero t
+    · intro hy
+      refine ⟨0, by norm_num, ?_⟩
+      rw [lebesgueFunction_chebyshev_zero, hy]
+  rw [interpolationLebesgueConstant, him, csSup_singleton]
 
 end CKMA

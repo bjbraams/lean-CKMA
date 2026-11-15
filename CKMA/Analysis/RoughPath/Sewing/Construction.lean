@@ -520,15 +520,6 @@ lemma sewnIncrement_add (hab : a ≤ b) (hγ : 1 < γ) (hC : 0 ≤ C)
       ((hlimL.add hlimR).congr' <| Eventually.of_forall fun n => (haddN n).symm)
       tendsto_const_nhds).symm
 
-/-- Telescoping sum of consecutive real increments. -/
-lemma real_telescope (f : ℕ → ℝ) (n : ℕ) :
-    ∑ i ∈ range n, (f (i + 1) - f i) = f n - f 0 := by
-  induction n with
-  | zero => simp
-  | succ n ih =>
-    rw [sum_range_succ, ih]
-    abel
-
 /-- Sewn increments add along a monotone sequence in `[a, b]`. -/
 lemma sewnIncrement_sum_nat (hab : a ≤ b) (hγ : 1 < γ) (hC : 0 ≤ C)
     (hcont : ContinuousOn (fun p : ℝ × ℝ => A p.1 p.2) (sewingTriangle a b))
@@ -677,7 +668,7 @@ lemma norm_partition_sub (hab : a ≤ b) (hγ : 1 < γ) (hC : 0 ≤ C)
   have hsumΔ : ∑ i : Fin π.size, (π.node i.succ - π.node i.castSucc) = t - s := by
     let f : ℕ → ℝ := fun j => if h : j < π.size + 1 then π.node ⟨j, h⟩ else t
     have hId : ∑ i ∈ range π.size, (f (i + 1) - f i) = t - s := by
-      rw [real_telescope f π.size]
+      rw [Finset.sum_range_sub f π.size]
       have hf0 : f 0 = s := by
         have h0 : 0 < π.size + 1 := Nat.succ_pos _
         rw [show f 0 = π.node ⟨0, h0⟩ by simp [f]]

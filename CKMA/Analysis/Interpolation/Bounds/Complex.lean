@@ -106,20 +106,15 @@ lemma stripWeight_norm_le {M₀ M₁ θ : ℝ} (hθ : 0 ≤ θ) (hθ1 : θ ≤ 1
   rw [stripWeight, Complex.norm_exp]
   exact Real.exp_le_exp.mpr hmul
 
-/-- Real part of a purely imaginary point. -/
-lemma re_ofReal_mul_I (t : ℝ) : ((t : ℂ) * Complex.I).re = 0 := by
-  rw [Complex.mul_re, Complex.ofReal_re, Complex.ofReal_im, Complex.I_re, Complex.I_im]
-  ring
-
 /-- Real part of a point on the right-hand edge of the strip. -/
 lemma re_one_add_ofReal_mul_I (t : ℝ) : (1 + (t : ℂ) * Complex.I).re = 1 := by
-  rw [Complex.add_re, Complex.one_re, re_ofReal_mul_I]
+  rw [Complex.add_re, Complex.one_re, Complex.mul_I_re, Complex.ofReal_im, neg_zero]
   ring
 
 /-- On the left edge, the weight modulus times `M₀` is the interpolation factor. -/
 lemma stripWeight_norm_left_mul {M₀ M₁ θ : ℝ} (hM₀ : 0 < M₀) (hM₁ : 0 < M₁) (t : ℝ) :
     ‖stripWeight M₀ M₁ θ ((t : ℂ) * Complex.I)‖ * M₀ = M₀ ^ (1 - θ) * M₁ ^ θ := by
-  rw [stripWeight_norm hM₀ hM₁, re_ofReal_mul_I, zero_sub, sub_zero]
+  rw [stripWeight_norm hM₀ hM₁, Complex.mul_I_re, Complex.ofReal_im, neg_zero, zero_sub, sub_zero]
   have hpow : M₀ ^ (-θ) * M₀ = M₀ ^ (1 - θ) := by
     conv_lhs => arg 2; rw [← Real.rpow_one M₀]
     rw [← Real.rpow_add hM₀]
@@ -213,7 +208,7 @@ lemma weightedLeftBoundary_zero (T : CoupleMap C D) (M₀ M₁ θ : ℝ)
       ‖stripWeight M₀ M₁ θ 0‖ := by
     intro t
     exact stripWeight_norm_eq_of_re_eq
-      (by rw [re_ofReal_mul_I, Complex.zero_re])
+      (by rw [Complex.mul_I_re, Complex.ofReal_im, neg_zero, Complex.zero_re])
   have hF : Tendsto (fun t : ℝ => ‖F.leftBoundary t‖) (cocompact ℝ) (𝓝 0) :=
     tendsto_zero_iff_norm_tendsto_zero.mp F.left_zero
   have hineq : ∀ t, ‖weightedLeftBoundary T M₀ M₁ θ F t‖ ≤

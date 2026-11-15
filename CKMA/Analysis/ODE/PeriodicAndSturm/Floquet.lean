@@ -61,17 +61,6 @@ noncomputable section
 
 namespace CKMA
 
-/-- A finite sum of continuous complex functions of a real variable is continuous. -/
-private lemma continuous_finset_sum' {ι : Type*} {s : Finset ι} {f : ι → ℝ → ℂ}
-    (hf : ∀ i ∈ s, Continuous (f i)) : Continuous (fun t ↦ ∑ i ∈ s, f i t) := by
-  classical
-  induction s using Finset.induction with
-  | empty =>
-    simpa using continuous_const
-  | insert a s ha ih =>
-    simp only [Finset.sum_insert ha]
-    exact (hf a (Finset.mem_insert_self a s)).add (ih fun i hi ↦ hf i (Finset.mem_insert_of_mem hi))
-
 open Filter Topology Set intervalIntegral
 
 /-- A normalized fundamental operator for a linear equation. -/
@@ -301,7 +290,7 @@ lemma fundamental_det_ne_zero {E : Type*} [NormedAddCommGroup E] [NormedSpace �
       ext s
       simp [trA, Matrix.trace, Matrix.diag_apply]
     rw [hsum]
-    exact continuous_finset_sum' fun i _ ↦ hentry i
+    exact continuous_finsetSum _ fun i _ ↦ hentry i
   have hdet (s : ℝ) : HasDerivAt (fun u ↦ (M u).det)
       ((LinearMap.toMatrix b b (A s).toLinearMap).trace * (M s).det) s :=
     hasDerivAt_det_left_mul fun i j ↦ hasDerivAt_fundamental_entry (hU.2 s) b i j

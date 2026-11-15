@@ -24,7 +24,10 @@ whose coordinate process is Brownian.
 
 ## Main results
 
-* `CKMA.exists_wienerMeasure`: existence of Wiener measure on `C(ℝ≥0, ℝ)`.
+* `CKMA.coordinatePreBrownian_isPreBrownian`: the coordinate process of a projective limit of
+  Brownian finite-dimensional laws is pre-Brownian.
+* `CKMA.wienerOfPreBrownian_isBrownian`: the coordinate process on path space is Brownian under
+  the pushed-forward law. `CKMA.exists_brownianMeasure` (**08.1**) combines these.
 -/
 
 @[expose] public section
@@ -92,18 +95,5 @@ lemma wienerOfPreBrownian_isBrownian {Ω : Type*} [MeasurableSpace Ω] {μ : Mea
       exact ((holderPath_isBrownian hB).hasLaw I).map_eq
   }
   cont := Filter.Eventually.of_forall fun ω => ω.continuous
-
-/-- A Brownian probability measure exists on the space of continuous paths. -/
-theorem exists_wienerMeasure : ∃ μ : Measure C(ℝ≥0, ℝ),
-    IsProbabilityMeasure μ ∧ IsBrownianReal (fun t ω => ω t) μ := by
-  have : ∀ I : Finset ℝ≥0, IsProbabilityMeasure (BrownianReal.projectiveFamily I) :=
-    fun _ => inferInstance
-  obtain ⟨ν, hν, _⟩ := existsUnique_isProjectiveLimit (ι := ℝ≥0) (X := fun _ => ℝ)
-    BrownianReal.projectiveFamily BrownianReal.isProjectiveMeasureFamily_projectiveFamily
-  obtain ⟨hprob, hlim⟩ := hν
-  have : IsProbabilityMeasure ν := hprob
-  refine ⟨wienerOfPreBrownian (coordinatePreBrownian_isPreBrownian ν hlim),
-    isProbabilityMeasure_wienerOfPreBrownian _,
-    wienerOfPreBrownian_isBrownian _⟩
 
 end CKMA

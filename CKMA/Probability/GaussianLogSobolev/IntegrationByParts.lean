@@ -171,58 +171,29 @@ lemma integral_id_mul_eq_integral_deriv_gaussianReal {ψ : ℝ → ℝ}
 space. -/
 lemma integrable_of_abs_le {E : Type*} [MeasurableSpace E] {μ : Measure E}
     [IsFiniteMeasure μ] {f : E → ℝ} (hf : AEStronglyMeasurable f μ) {M : ℝ}
-    (hM : ∀ x, |f x| ≤ M) : Integrable f μ := by
-  refine Integrable.mono' (integrable_const (|M|)) hf ?_
-  filter_upwards with x
-  rw [Real.norm_eq_abs]
-  exact (hM x).trans (le_abs_self M)
+    (hM : ∀ x, |f x| ≤ M) : Integrable f μ :=
+  .of_bound hf M (ae_of_all _ fun x => (Real.norm_eq_abs _).trans_le (hM x))
 
 /-- A function with vanishing derivative outside a compact interval equals its endpoint value. -/
 lemma eq_endpoint_of_deriv_eq_zero {f : ℝ → ℝ} {R : ℝ} (hR : 0 ≤ R)
     (hf : Differentiable ℝ f) (hderiv : ∀ x, R ≤ |x| → deriv f x = 0)
     {x : ℝ} (hx : R ≤ |x|) :
     f x = f (if 0 ≤ x then R else -R) := by
-  by_cases hx0 : 0 ≤ x
-  · have hxR : R ≤ x := by
-      rw [abs_of_nonneg hx0] at hx
-      exact hx
-    simp only [hx0, ite_true]
-    rcases hxR.eq_or_lt with rfl | hxlt
-    · rfl
-    · obtain ⟨c, hc, hslope⟩ :=
-        exists_deriv_eq_slope f hxlt hf.continuous.continuousOn hf.differentiableOn
-      have hcabs : R ≤ |c| := by
-        have hc0 : 0 ≤ c := le_trans hR hc.1.le
-        rw [abs_of_nonneg hc0]
-        exact hc.1.le
-      have hslope' : (f x - f R) / (x - R) = 0 := by
-        rw [hderiv c hcabs] at hslope
-        exact hslope.symm
-      rw [div_eq_zero_iff] at hslope'
-      rcases hslope' with h | h
-      · linarith
-      · linarith
-  · have hx0' : x < 0 := lt_of_not_ge hx0
-    have hxR : x ≤ -R := by
-      rw [abs_of_neg hx0'] at hx
+  have hd : ∀ y, R ≤ |y| → HasDerivWithinAt f 0 (Ici y) y := fun y hy => by
+    have h := (hf y).hasDerivAt
+    rw [hderiv y hy] at h
+    exact h.hasDerivWithinAt
+  split_ifs with hx0
+  · exact constant_of_has_deriv_right_zero hf.continuous.continuousOn
+      (fun y hy => hd y (hy.1.trans (le_abs_self y))) x
+      ⟨by rwa [abs_of_nonneg hx0] at hx, le_rfl⟩
+  · have hxR : x ≤ -R := by
+      rw [abs_of_neg (not_le.1 hx0)] at hx
       linarith
-    simp only [hx0, ite_false]
-    rcases hxR.eq_or_lt with rfl | hxlt
-    · rfl
-    · obtain ⟨c, hc, hslope⟩ :=
-        exists_deriv_eq_slope f hxlt hf.continuous.continuousOn hf.differentiableOn
-      have hcabs : R ≤ |c| := by
-        have hc0 : c < 0 := lt_of_lt_of_le hc.2 (neg_nonpos.2 hR)
-        rw [abs_of_neg hc0]
-        have : -R ≥ c := hc.2.le
-        linarith
-      have hslope' : (f (-R) - f x) / (-R - x) = 0 := by
-        rw [hderiv c hcabs] at hslope
-        exact hslope.symm
-      rw [div_eq_zero_iff] at hslope'
-      rcases hslope' with h | h
-      · linarith
-      · linarith
+    refine (constant_of_has_deriv_right_zero hf.continuous.continuousOn
+      (fun y hy => hd y ?_) (-R) ⟨hxR, le_rfl⟩).symm
+    rw [abs_of_neg (by linarith [hy.2] : y < 0)]
+    linarith [hy.2]
 
 /-- A differentiable function whose derivative vanishes for `R ≤ |x|` is bounded. -/
 lemma exists_bound_of_deriv_eq_zero {f : ℝ → ℝ} {R : ℝ} (hR : 0 ≤ R)

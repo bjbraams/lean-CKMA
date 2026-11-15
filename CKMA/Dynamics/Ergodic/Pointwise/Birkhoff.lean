@@ -211,8 +211,7 @@ lemma abs_birkhoffLimit_le_of_abs_le {M : ℝ} (hM : 0 ≤ M) (hf : ∀ ω, |f �
     exact hinf.trans (by
       simpa [birkhoffLiminf, birkhoffLimsup] using
         liminf_le_limsup (f := atTop)
-          (u := fun n => Real.toEReal (birkhoffAverage ℝ T f n ω))
-          (ereal_isBoundedUnder_le _ _) (ereal_isBoundedUnder_ge _ _))
+          (u := fun n => Real.toEReal (birkhoffAverage ℝ T f n ω)))
   have htop : birkhoffLimsup T f ω ≠ ⊤ := fun h => by
     have : (M : EReal) < ⊤ := EReal.coe_lt_top M
     rw [← h] at this
@@ -309,8 +308,7 @@ lemma birkhoffLimit_integrable_le_of_nonneg [IsProbabilityMeasure μ]
       exact hinf.trans (by
         simpa [birkhoffLiminf, birkhoffLimsup] using
           liminf_le_limsup (f := atTop)
-            (u := fun n => Real.toEReal (birkhoffAverage ℝ T f n ω))
-            (ereal_isBoundedUnder_le _ _) (ereal_isBoundedUnder_ge _ _))
+            (u := fun n => Real.toEReal (birkhoffAverage ℝ T f n ω)))
     unfold birkhoffLimit
     exact EReal.toReal_nonneg hlow
   have hconv := birkhoffAverage_ae_tendsto_birkhoffLimit hT hf hf_meas

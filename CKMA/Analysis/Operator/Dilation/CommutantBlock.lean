@@ -100,14 +100,6 @@ theorem norm_coextensionCompress_le (X : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K)
       mul_le_mul_of_nonneg_left (norm_embed_adjoint_le J) (norm_nonneg X)
     _ = ‖X‖ := mul_one _
 
-omit [CompleteSpace H] in
-/-- A contraction does not increase vector norms. -/
-theorem contraction_norm_apply_le (T : H →L[ℂ] H) (hT : ‖T‖ ≤ 1) (x : H) : ‖T x‖ ≤ ‖x‖ := by
-  have hmul : ‖T‖ * ‖x‖ ≤ 1 * ‖x‖ :=
-    mul_le_mul_of_nonneg_right hT (norm_nonneg x)
-  rw [one_mul] at hmul
-  exact (le_opNorm T x).trans hmul
-
 /-- Pointwise squared norm of the compression. -/
 theorem coextensionCompress_apply_norm_sq_le (X : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K) (y : K) :
     ‖coextensionCompress X J y‖ ^ 2 ≤ ‖X‖ ^ 2 * ‖y‖ ^ 2 := by

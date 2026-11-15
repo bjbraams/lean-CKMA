@@ -10,11 +10,13 @@ public import Mathlib.MeasureTheory.Integral.Prod
 public import Mathlib.Dynamics.Ergodic.MeasurePreserving
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
 public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
+public import TauCeti.Probability.Distributions.Rademacher.Basic
 
 /-!
 # Empirical symmetrization for countable classes (07.33)
 
-`IsRademacher` fixes the symmetric law on the real signs. `symmetrization` bounds the
+`IsRademacher` fixes the symmetric law on the real signs, TauCeti's
+`TauCeti.Probability.rademacherMeasure`. `symmetrization` bounds the
 expected supremum of centered empirical averages by twice the corresponding signed
 supremum for a nonempty countable function class with an integrable envelope.
 
@@ -41,69 +43,13 @@ namespace CKMA
 
 open scoped NNReal ENNReal
 
-open MeasureTheory ProbabilityTheory
+open MeasureTheory ProbabilityTheory TauCeti.Probability
 open scoped BigOperators
 
-open Classical
-
-/-- A measurable sign with the symmetric law on `{-1, 1}`. -/
+/-- A measurable sign with the symmetric law on `{-1, 1}`, TauCeti's
+`TauCeti.Probability.rademacherMeasure`. -/
 def IsRademacher {Ω : Type*} [MeasurableSpace Ω] (ε : Ω → ℝ) (μ : Measure Ω) : Prop :=
-  Measurable ε ∧ μ.map ε =
-    (1 / 2 : ℝ≥0∞) • Measure.dirac (-1) + (1 / 2 : ℝ≥0∞) • Measure.dirac 1
-
-/-- The two symmetric weights on the extended nonnegative line sum to one. -/
-private lemma half_add_half : (1 / 2 : ℝ≥0∞) + 1 / 2 = 1 := by
-  simp only [one_div]
-  rw [← two_mul]
-  exact ENNReal.mul_inv_cancel (by simp) (by simp)
-
-/-- The symmetric two-point law on `{-1, 1}` is a probability measure. -/
-private lemma rademacherLaw_isProbabilityMeasure :
-    IsProbabilityMeasure
-      ((1 / 2 : ℝ≥0∞) • Measure.dirac (-1) +
-        (1 / 2 : ℝ≥0∞) • Measure.dirac (1 : ℝ)) := by
-  refine ⟨?_⟩
-  simp only [Measure.add_apply, Measure.smul_apply, measure_univ, smul_eq_mul, mul_one]
-  exact half_add_half
-
-/-- The symmetric two-point law is supported on `{-1, 1}`. -/
-private lemma rademacherLaw_apply_pair :
-    (((1 / 2 : ℝ≥0∞) • Measure.dirac (-1) +
-        (1 / 2 : ℝ≥0∞) • Measure.dirac (1 : ℝ)) : Measure ℝ) ({-1, 1} : Set ℝ) = 1 := by
-  have hneg : (-1 : ℝ) ∈ ({-1, 1} : Set ℝ) := by simp
-  have hpos : (1 : ℝ) ∈ ({-1, 1} : Set ℝ) := by simp
-  simp only [Measure.add_apply, Measure.smul_apply, Measure.dirac_apply_of_mem hneg,
-    Measure.dirac_apply_of_mem hpos, smul_eq_mul, mul_one]
-  exact half_add_half
-
-/-- The image of a finite measure under a measurable map is finite. -/
-private lemma isFiniteMeasure_map {α β : Type*} [MeasurableSpace α] [MeasurableSpace β]
-    {μ : Measure α} [IsFiniteMeasure μ] {φ : α → β} (hφ : Measurable φ) :
-    IsFiniteMeasure (μ.map φ) where
-  measure_univ_lt_top := by
-    rw [Measure.map_apply hφ MeasurableSet.univ, Set.preimage_univ]
-    exact measure_lt_top μ Set.univ
-
-/-- A probability space has real total mass one. -/
-private lemma prob_real_univ {α : Type*} [MeasurableSpace α] {μ : Measure α}
-    [IsProbabilityMeasure μ] : μ.real Set.univ = 1 := by
-  simp [Measure.real]
-
-/-- Integrating out a probability coordinate leaves the first marginal. -/
-private lemma integral_fst_of_prob {α β : Type*} [MeasurableSpace α] [MeasurableSpace β]
-    {μ : Measure α} {ν : Measure β} [IsProbabilityMeasure μ] [IsProbabilityMeasure ν]
-    {f : α → ℝ} (hf : Integrable f μ) :
-    ∫ p, f p.1 ∂μ.prod ν = ∫ a, f a ∂μ := by
-  rw [integral_prod _ (hf.comp_fst ν)]
-  simp [integral_const]
-
-/-- Integrating out a probability coordinate leaves the second marginal. -/
-private lemma integral_snd_of_prob {α β : Type*} [MeasurableSpace α] [MeasurableSpace β]
-    {μ : Measure α} {ν : Measure β} [IsProbabilityMeasure μ] [IsProbabilityMeasure ν]
-    {f : β → ℝ} (hf : Integrable f ν) :
-    ∫ p, f p.2 ∂μ.prod ν = ∫ b, f b ∂ν := by
-  rw [integral_prod_symm _ (hf.comp_snd μ)]
-  simp [integral_const]
+  Measurable ε ∧ μ.map ε = rademacherMeasure
 
 /-- Swap the paired coordinates whose sign equals `-1`. -/
 private def pairFlip {E J : Type*} (σ : J → ℝ) (z : J → E × E) :
@@ -144,10 +90,6 @@ private lemma ghostFlip_measurePreserving {E J : Type*} [MeasurableSpace E] [Fin
         simp [flip, hσ]
       rw [hfun]
       exact Measure.map_id
-  have hfin (j : J) : IsFiniteMeasure ((P.prod P).map (flip j)) :=
-    isFiniteMeasure_map (hφ j)
-  have : ∀ j : J, SigmaFinite ((P.prod P).map (flip j)) := fun j =>
-    @IsFiniteMeasure.toSigmaFinite _ _ ((P.prod P).map (flip j)) (hfin j)
   have hpair_meas : Measurable (pairFlip (E := E) σ) := by
     rw [measurable_pi_iff]
     intro j
@@ -187,7 +129,6 @@ private lemma integrable_of_envelope {E : Type*} [MeasurableSpace E] {P : Measur
   rw [Real.norm_eq_abs, Real.norm_eq_abs, abs_of_nonneg (henv0 x)]
   exact hbound x
 
-set_option maxHeartbeats 2000000 in
 /-- Centering an empirical mean by an independent ghost sample does not decrease the
 expected supremum. -/
 private lemma expectedSup_centered_le_ghost {E ι J : Type*} [MeasurableSpace E] [Countable ι]
@@ -231,7 +172,7 @@ private lemma expectedSup_centered_le_ghost {E ι J : Type*} [MeasurableSpace E]
     have hsub (j : J) :
         ∫ y', f i (y j) - f i (y' j) ∂π = f i (y j) - ∫ x, f i x ∂P := by
       rw [integral_sub (integrable_const _) (hevalf i j), integral_const, hmarg i j,
-        prob_real_univ, one_smul]
+        probReal_univ, one_smul]
     simp_rw [hsub, Finset.sum_sub_distrib]
     have hsummean : ∑ _j : J, (∫ x, f i x ∂P) = (n : ℝ) * ∫ x, f i x ∂P := by
       rw [Finset.sum_const, Finset.card_univ, nsmul_eq_mul]
@@ -358,7 +299,6 @@ private lemma expectedSup_centered_le_ghost {E ι J : Type*} [MeasurableSpace E]
       integral_mono hleft_int houter hsup_le
     _ = ∫ p, Φ p ∂π.prod π := (integral_prod _ hΦint).symm
 
-set_option maxHeartbeats 2000000 in
 /-- Random signs do not change the ghost comparison, and the triangle inequality
 splits it into two equidistributed signed copies. -/
 private lemma expectedSup_ghost_le_twice_signed {E ι J : Type*} [MeasurableSpace E]
@@ -369,15 +309,10 @@ private lemma expectedSup_ghost_le_twice_signed {E ι J : Type*} [MeasurableSpac
         ∂(Measure.pi (fun _ : J => P)).prod (Measure.pi (fun _ : J => P))) ≤
       2 * ∫ q, ⨆ i, |(Fintype.card J : ℝ)⁻¹ * ∑ j, q.2 j * f i (q.1 j)|
         ∂(Measure.pi (fun _ : J => P)).prod
-          (Measure.pi (fun _ : J =>
-            (1 / 2 : ℝ≥0∞) • Measure.dirac (-1) +
-              (1 / 2 : ℝ≥0∞) • Measure.dirac (1 : ℝ))) := by
+          (Measure.pi (fun _ : J => rademacherMeasure)) := by
   let n : ℕ := Fintype.card J
   let π : Measure (J → E) := Measure.pi (fun _ => P)
-  let rad : Measure ℝ :=
-    (1 / 2 : ℝ≥0∞) • Measure.dirac (-1) + (1 / 2 : ℝ≥0∞) • Measure.dirac (1 : ℝ)
-  have : IsProbabilityMeasure rad := rademacherLaw_isProbabilityMeasure
-  let ρ : Measure (J → ℝ) := Measure.pi (fun _ => rad)
+  let ρ : Measure (J → ℝ) := Measure.pi (fun _ => rademacherMeasure)
   let S : Set (J → ℝ) := Set.univ.pi (fun _ => ({-1, 1} : Set ℝ))
   have henv0 (x : E) : 0 ≤ envelope x :=
     Nonempty.elim ‹Nonempty ι› fun i => (abs_nonneg _).trans (hbound i x)
@@ -388,8 +323,9 @@ private lemma expectedSup_ghost_le_twice_signed {E ι J : Type*} [MeasurableSpac
   have hSmeasure : ρ S = 1 := by
     dsimp only [ρ, S]
     rw [Measure.pi_pi]
-    have hrad : rad ({-1, 1} : Set ℝ) = 1 := by
-      simpa [rad] using rademacherLaw_apply_pair
+    have hrad : rademacherMeasure ({-1, 1} : Set ℝ) = 1 := by
+      rw [rademacherMeasure_eq]
+      simp [ENNReal.inv_two_add_inv_two]
     simp only [hrad, Finset.prod_const_one]
   have hnull : ρ Sᶜ = 0 := by
     rw [measure_compl hSmeas (by simp [hSmeasure] : ρ S ≠ ∞), hSmeasure, measure_univ]
@@ -602,7 +538,7 @@ private lemma expectedSup_ghost_le_twice_signed {E ι J : Type*} [MeasurableSpac
         fun _ => ∫ p, Φ p ∂π.prod π := by
       filter_upwards [haeS] with σ hσ
       simpa [Φσ] using hint_eq hσ
-    rw [integral_congr_ae hinner, integral_const, prob_real_univ, one_smul]
+    rw [integral_congr_ae hinner, integral_const, probReal_univ, one_smul]
   have htri (z) : Φσ z ≤ Ψ1 z + Ψ2 z := by
     refine ciSup_le fun i => ?_
     have hsplit : ∑ j, z.2 j * (f i (z.1.1 j) - f i (z.1.2 j)) =
@@ -628,11 +564,11 @@ private lemma expectedSup_ghost_le_twice_signed {E ι J : Type*} [MeasurableSpac
     exact habs.trans (add_le_add (le_ciSup (hbddψ z.2 z.1.1) i) (le_ciSup (hbddψ z.2 z.1.2) i))
   have hsum_int : Integrable (fun z => Ψ1 z + Ψ2 z) m := hΨ1int.add hΨ2int
   have hI1 : ∫ z, Ψ1 z ∂m = ∫ q, ψ q ∂π.prod ρ := by
-    have hF : Integrable (fun y => ∫ σ, ψ (y, σ) ∂ρ) π := hψint.integral_prod_left
-    rw [integral_prod _ hΨ1int, integral_fst_of_prob hF, integral_prod _ hψint]
+    rw [integral_prod _ hΨ1int, integral_prod _ hψint]
+    exact (integral_fun_fst (fun y => ∫ σ, ψ (y, σ) ∂ρ)).trans (by rw [probReal_univ, one_smul])
   have hI2 : ∫ z, Ψ2 z ∂m = ∫ q, ψ q ∂π.prod ρ := by
-    have hF : Integrable (fun y => ∫ σ, ψ (y, σ) ∂ρ) π := hψint.integral_prod_left
-    rw [integral_prod _ hΨ2int, integral_snd_of_prob hF, integral_prod _ hψint]
+    rw [integral_prod _ hΨ2int, integral_prod _ hψint]
+    exact (integral_fun_snd (fun y => ∫ σ, ψ (y, σ) ∂ρ)).trans (by rw [probReal_univ, one_smul])
   calc
     ∫ p, Φ p ∂π.prod π = ∫ z, Φσ z ∂m := heq_sign.symm
     _ ≤ ∫ z, Ψ1 z + Ψ2 z ∂m := integral_mono hΦσint hsum_int htri
@@ -657,9 +593,7 @@ theorem symmetrization {Ω Ω' E ι J : Type*} [MeasurableSpace Ω] [MeasurableS
       2 * ∫ ω, ⨆ i, |(Fintype.card J : ℝ)⁻¹ * ∑ j, ε j ω.2 * f i (X j ω.1)| ∂μ.prod ν := by
   let n : ℕ := Fintype.card J
   let π : Measure (J → E) := Measure.pi (fun _ => P)
-  let ρ : Measure (J → ℝ) :=
-    Measure.pi (fun _ : J =>
-      (1 / 2 : ℝ≥0∞) • Measure.dirac (-1) + (1 / 2 : ℝ≥0∞) • Measure.dirac (1 : ℝ))
+  let ρ : Measure (J → ℝ) := Measure.pi (fun _ : J => rademacherMeasure)
   let sample : Ω → J → E := fun ω j => X j ω
   let signs : Ω' → J → ℝ := fun ω' j => ε j ω'
   have hsample_meas : Measurable sample := by

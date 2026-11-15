@@ -29,7 +29,6 @@ sums.
 ## Main results
 
 * `CKMA.TimePartition.sum_increment`: partition increments sum to `T`.
-* `CKMA.TimePartition.sum_sq_increment_le`: sum of squared increments is at most `mesh * T`.
 * `CKMA.TimePartition.abs_t_sub_covered_le_mesh`: distance from `t` to the last completed node is
   at most the mesh.
 -/
@@ -121,6 +120,11 @@ lemma completed_iff_val_lt (t : ℝ≥0) (i : Fin π.size) :
 def increment (i : Fin π.size) : ℝ :=
   ((π.node i.succ - π.node i.castSucc : ℝ≥0) : ℝ)
 
+/-- A real increment is the difference of consecutive real nodes. -/
+lemma increment_eq_sub (i : Fin π.size) :
+    π.increment i = (π.node i.succ : ℝ) - π.node i.castSucc := by
+  rw [increment, NNReal.coe_sub (π.monotone_node (Fin.castSucc_le_succ i))]
+
 /-- Sum of the first `m` real increments equals the corresponding node. -/
 lemma sum_increment_initial :
     ∀ m (hm : m ≤ π.size),
@@ -182,17 +186,6 @@ lemma increment_le_mesh (i : Fin π.size) : π.increment i ≤ π.mesh := by
     (NNReal.coe_le_coe.mpr
       (Finset.le_sup (f := fun j : Fin π.size ↦ π.node j.succ - π.node j.castSucc)
         (Finset.mem_univ i)))
-
-/-- Sum of squared increments is at most mesh times `T`. -/
-lemma sum_sq_increment_le : ∑ i : Fin π.size, π.increment i ^ 2 ≤ (π.mesh : ℝ) * (T : ℝ) := by
-  calc
-    ∑ i : Fin π.size, π.increment i ^ 2
-        ≤ ∑ i : Fin π.size, (π.mesh : ℝ) * π.increment i := by
-          refine Finset.sum_le_sum fun i _ ↦ ?_
-          have hinc : 0 ≤ π.increment i := by simp [increment]
-          nlinarith [π.increment_le_mesh i, hinc, sq_nonneg (π.increment i)]
-    _ = (π.mesh : ℝ) * ∑ i : Fin π.size, π.increment i := by rw [Finset.mul_sum]
-    _ = (π.mesh : ℝ) * (T : ℝ) := by rw [π.sum_increment]
 
 /-- On `[0,T]`, time differs from the covered node by at most the mesh. -/
 lemma abs_t_sub_covered_le_mesh {t : ℝ≥0} (ht : t ≤ T) :

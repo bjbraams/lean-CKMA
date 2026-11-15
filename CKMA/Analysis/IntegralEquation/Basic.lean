@@ -59,8 +59,8 @@ theorem existsUnique_volterra {T : ℝ} (hT : 0 ≤ T) (k : ℝ → ℝ → ℂ)
     (hk : ContinuousOn (fun p : ℝ × ℝ ↦ k p.1 p.2)
       {p | 0 ≤ p.2 ∧ p.2 ≤ p.1 ∧ p.1 ≤ T}) (c : ℂ) (f : C(Set.Icc 0 T, ℂ)) :
     ∃! u : C(Set.Icc 0 T, ℂ), ∀ t : Set.Icc 0 T,
-      u t = f t + c * ∫ s in (0 : ℝ)..t.1,
-        k t.1 s * (if hs : s ∈ Set.Icc 0 T then u ⟨s, hs⟩ else 0) := by
+      u t = f t + c * volterraIntegral k
+        (fun s ↦ if hs : s ∈ Set.Icc 0 T then u ⟨s, hs⟩ else 0) t.1 := by
   sorry
 
 /-- Riemann–Liouville fractional integration, with the Gamma normalization. -/
@@ -917,12 +917,14 @@ private lemma fractionalIntegral_ae_eq_zero {T β : ℝ} (hT : 0 < T) (hβ : 0 <
       rw [fractionalIntegral_congr hz ht.1.le ht.2.le, fractionalIntegral_zero]
   exact ae_eq_zero_of_fractionalIntegral_one hT hu (hadd.symm.trans hzero)
 
-/-- `I^α` inverts differentiation of the absolutely continuous representative of `I^(1-α) f`. -/
-private lemma fractionalIntegral_of_acDeriv {T α : ℝ} (hT : 0 < T) (hα : 0 < α)
-    (hα1 : α < 1) {f g : ℝ → ℝ} (hf : IntegrableOn f (Ioo 0 T))
-    (hg : AbsolutelyContinuousOnInterval g 0 T) (hg0 : g 0 = 0)
-    (heq : g =ᵐ[volume.restrict (Ioo 0 T)] fractionalIntegral (1 - α) f) :
-    fractionalIntegral α (deriv g) =ᵐ[volume.restrict (Ioo 0 T)] f := by
+/-- **25.23**, inverse formula: `I^α` inverts differentiation of the absolutely continuous
+representative of `I^(1-α) f`. -/
+theorem fractionalIntegral_deriv_inverse {T α : ℝ} (hT : 0 < T)
+    (hα : 0 < α) (hα1 : α < 1) {f g : ℝ → ℝ}
+    (hf : IntegrableOn f (Set.Ioo 0 T)) (hg : AbsolutelyContinuousOnInterval g 0 T)
+    (hg0 : g 0 = 0)
+    (heq : g =ᵐ[volume.restrict (Set.Ioo 0 T)] fractionalIntegral (1 - α) f) :
+    fractionalIntegral α (deriv g) =ᵐ[volume.restrict (Set.Ioo 0 T)] f := by
   have h1α : 0 < 1 - α := sub_pos.mpr hα1
   have h1α1 : 1 - α < 1 := sub_lt_self 1 hα
   let u := deriv g
@@ -982,15 +984,6 @@ theorem mem_range_fractionalIntegral_iff {T α : ℝ} (hT : 0 < T)
     refine ⟨deriv g,
       (intervalIntegrable_iff_integrableOn_Ioo_of_le (μ := volume) hT.le).1
         hg.intervalIntegrable_deriv,
-      fractionalIntegral_of_acDeriv hT hα hα1 hf hg hg0 heq⟩
-
-/-- Differentiating that absolutely continuous representative gives the inverse. -/
-theorem fractionalIntegral_deriv_inverse {T α : ℝ} (hT : 0 < T)
-    (hα : 0 < α) (hα1 : α < 1) {f g : ℝ → ℝ}
-    (hf : IntegrableOn f (Set.Ioo 0 T)) (hg : AbsolutelyContinuousOnInterval g 0 T)
-    (hg0 : g 0 = 0)
-    (heq : g =ᵐ[volume.restrict (Set.Ioo 0 T)] fractionalIntegral (1 - α) f) :
-    fractionalIntegral α (deriv g) =ᵐ[volume.restrict (Set.Ioo 0 T)] f :=
-  fractionalIntegral_of_acDeriv hT hα hα1 hf hg hg0 heq
+      fractionalIntegral_deriv_inverse hT hα hα1 hf hg hg0 heq⟩
 
 end CKMA

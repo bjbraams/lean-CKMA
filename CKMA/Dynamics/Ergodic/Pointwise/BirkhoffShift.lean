@@ -39,49 +39,25 @@ open Filter Topology
 
 variable {Ω : Type*}
 
-/-- Shifting the index by one does not change the filter `atTop` on `ℕ`. -/
-lemma map_add_one_atTop_eq_atTop : map (fun n : ℕ => n + 1) atTop = atTop := by
-  refine map_atTop_eq_of_gc (fun m => m - 1) 1 (fun _ _ hab => Nat.add_le_add_right hab 1) ?_ ?_
-  · intro a c hc
-    constructor
-    · intro h
-      exact Nat.le_sub_of_add_le h
-    · intro h
-      exact Nat.add_le_of_le_sub hc h
-  · intro c hc
-    simp [Nat.sub_add_cancel hc]
-
 /-- Every extended-real sequence is cobounded above. -/
+@[deprecated "drop the argument: `isBoundedDefault` supplies it" (since := "2026-11-15")]
 lemma ereal_isCoboundedUnder_le {ι : Type*} (l : Filter ι) (u : ι → EReal) :
-    l.IsCoboundedUnder (· ≤ ·) u := by
-  unfold Filter.IsCoboundedUnder
-  exact isCobounded_le_of_bot
+    l.IsCoboundedUnder (· ≤ ·) u :=
+  isCobounded_le_of_bot
 
 /-- Every extended-real sequence is bounded above. -/
+@[deprecated "drop the argument: `isBoundedDefault` supplies it" (since := "2026-11-15")]
 lemma ereal_isBoundedUnder_le {ι : Type*} (l : Filter ι) (u : ι → EReal) :
-    l.IsBoundedUnder (· ≤ ·) u := by
-  unfold Filter.IsBoundedUnder
-  exact isBounded_le_of_top
+    l.IsBoundedUnder (· ≤ ·) u :=
+  isBounded_le_of_top
 
 /-- Every extended-real sequence is bounded below. -/
+@[deprecated "drop the argument: `isBoundedDefault` supplies it" (since := "2026-11-15")]
 lemma ereal_isBoundedUnder_ge {ι : Type*} (l : Filter ι) (u : ι → EReal) :
-    l.IsBoundedUnder (· ≥ ·) u := by
-  unfold Filter.IsBoundedUnder
-  exact isBounded_ge_of_bot
+    l.IsBoundedUnder (· ≥ ·) u :=
+  isBounded_ge_of_bot
 
-/-- The extended limsup is unchanged by discarding the first term. -/
-lemma limsup_add_one {u : ℕ → EReal} :
-    limsup (fun n => u (n + 1)) atTop = limsup u atTop := by
-  have hcomp : (fun n => u (n + 1)) = u ∘ fun n => n + 1 := rfl
-  simp only [Filter.limsup, hcomp]
-  rw [← Filter.map_map, map_add_one_atTop_eq_atTop]
-
-/-- The extended liminf is unchanged by discarding the first term. -/
-lemma liminf_add_one {u : ℕ → EReal} :
-    liminf (fun n => u (n + 1)) atTop = liminf u atTop := by
-  have hcomp : (fun n => u (n + 1)) = u ∘ fun n => n + 1 := rfl
-  simp only [Filter.liminf, hcomp]
-  rw [← Filter.map_map, map_add_one_atTop_eq_atTop]
+@[deprecated (since := "2026-11-15")] alias liminf_add_one := liminf_nat_add
 
 /-- Adding a real null sequence does not change the extended limsup of a real sequence. -/
 lemma limsup_add_tendsto_zero {u z : ℕ → ℝ} (hz : Tendsto z atTop (𝓝 0)) :
@@ -178,7 +154,7 @@ lemma limsup_mul_tendsto_one {c u : ℕ → ℝ} (hc_ge : ∀ n, 1 ≤ c n)
         have hlt : ((max q 0 + 1 : ℝ) : EReal) < limsup U atTop := by
           simpa [hL] using EReal.coe_lt_top (max q 0 + 1 : ℝ)
         have hfreq : ∃ᶠ n in atTop, ((max q 0 + 1 : ℝ) : EReal) < U n :=
-          frequently_lt_of_lt_limsup (hu := ereal_isCoboundedUnder_le _ _) hlt
+          frequently_lt_of_lt_limsup (h := hlt)
         refine hfreq.mono fun n hn => ?_
         have hu : max q 0 + 1 < u n := EReal.coe_lt_coe_iff.mp hn
         have hpos : 0 < u n := by
@@ -204,7 +180,7 @@ lemma limsup_mul_tendsto_one {c u : ℕ → ℝ} (hc_ge : ∀ n, 1 ≤ c n)
         obtain ⟨z, hqz, hza⟩ := exists_between hqa
         have hfreq : ∃ᶠ n in atTop, (z : EReal) < U n := by
           have : (z : EReal) < limsup U atTop := by simpa [hL] using EReal.coe_lt_coe hza
-          exact frequently_lt_of_lt_limsup (hu := ereal_isCoboundedUnder_le _ _) this
+          exact frequently_lt_of_lt_limsup (h := this)
         have hcz : Tendsto (fun n => c n * z) atTop (𝓝 z) := by
           simpa using hc.mul tendsto_const_nhds
         have hev : ∀ᶠ n in atTop, q < c n * z := hcz.eventually (Ioi_mem_nhds hqz)
@@ -295,7 +271,7 @@ def birkhoffLiminf (T : Ω → Ω) (f : Ω → ℝ) (ω : Ω) : EReal :=
 /-- The extended limsup of the averages is unchanged by one application of `T`. -/
 lemma birkhoffLimsup_comp (ω : Ω) : birkhoffLimsup T f (T ω) = birkhoffLimsup T f ω := by
   unfold birkhoffLimsup
-  rw [← limsup_add_one (u := fun n => Real.toEReal (birkhoffAverage ℝ T f n (T ω)))]
+  rw [← limsup_nat_add (fun n => Real.toEReal (birkhoffAverage ℝ T f n (T ω))) 1]
   have hnat : Tendsto (fun n : ℕ => ((n + 1 : ℕ) : ℝ)) atTop atTop :=
     tendsto_natCast_atTop_atTop.comp (tendsto_add_atTop_nat 1)
   have hreal : Tendsto (fun n : ℕ => (n + 1 : ℝ)) atTop atTop := by
@@ -323,8 +299,8 @@ lemma birkhoffLimsup_comp (ω : Ω) : birkhoffLimsup T f (T ω) = birkhoffLimsup
     exact limsup_mul_tendsto_one (u := fun n => birkhoffAverage ℝ T f (n + 2) ω)
       one_le_birkhoffCoeff tendsto_birkhoffCoeff
   rw [hshift]
-  exact (limsup_add_one (u := fun n => Real.toEReal (birkhoffAverage ℝ T f (n + 1) ω))).trans
-    (limsup_add_one (u := fun n => Real.toEReal (birkhoffAverage ℝ T f n ω)))
+  exact (limsup_nat_add (fun n => Real.toEReal (birkhoffAverage ℝ T f (n + 1) ω)) 1).trans
+    (limsup_nat_add (fun n => Real.toEReal (birkhoffAverage ℝ T f n ω)) 1)
 
 /-- Negating the observable negates the extended liminf into an extended limsup. -/
 lemma birkhoffLiminf_neg (ω : Ω) :

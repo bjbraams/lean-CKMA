@@ -21,7 +21,7 @@ liminf and the limsup. The truncated L¹ convergence then passes to the original
 
 ## Main definitions
 
-* `CKMA.kingmanFekete`: the Fekete infimum of normalized positive-length integrals.
+* `CKMA.subadditiveMeanRate`: the Fekete infimum of normalized positive-length integrals.
 * `CKMA.kingmanMk`: a measurable representative of each positive-length integrable function.
 * `CKMA.kingmanTrunc`: the height truncation `max(f n, -K n)`.
 
@@ -45,28 +45,18 @@ variable {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} {T : Ω → Ω}
 
 attribute [local instance] Classical.propDecidable
 
-omit [MeasurableSpace Ω] in
-/-- On `EReal`, the linear maximum agrees with the lattice supremum. -/
-lemma ereal_max_eq_sup (a b : EReal) : max a b = a ⊔ b := by
-  rcases le_total a b with hab | hba
-  · calc
-      max a b = b := max_eq_right hab
-      _ = a ⊔ b := (sup_of_le_right hab).symm
-  · calc
-      max a b = a := max_eq_left hba
-      _ = a ⊔ b := (sup_of_le_left hba).symm
-
-omit [MeasurableSpace Ω] in
 /-- The coercion into `EReal` preserves binary maxima. -/
+@[deprecated Monotone.map_max (since := "2026-11-15")]
 lemma ereal_coe_max (a b : ℝ) :
-    ((max a b : ℝ) : EReal) = max (a : EReal) (b : EReal) := by
-  rcases le_total a b with hab | hba
-  · rw [max_eq_right hab, max_eq_right (EReal.coe_le_coe_iff.mpr hab)]
-  · rw [max_eq_left hba, max_eq_left (EReal.coe_le_coe_iff.mpr hba)]
+    ((max a b : ℝ) : EReal) = max (a : EReal) (b : EReal) :=
+  EReal.coe_strictMono.monotone.map_max
 
-/-- The Fekete infimum of the normalized positive-length integrals. -/
-def kingmanFekete (f : ℕ → Ω → ℝ) (μ : Measure Ω) : ℝ :=
+/-- The infimum of the normalized positive-length expectations in Kingman's theorem
+(the Fekete infimum). -/
+def subadditiveMeanRate (f : ℕ → Ω → ℝ) (μ : Measure Ω) : ℝ :=
   sInf {a : ℝ | ∃ n : ℕ, 0 < n ∧ a = (n : ℝ)⁻¹ * ∫ ω, f n ω ∂μ}
+
+@[deprecated (since := "2026-11-15")] alias kingmanFekete := subadditiveMeanRate
 
 omit [MeasurableSpace Ω] in
 /-- A nonpositive floor does not increase the absolute value of a maximum. -/
@@ -168,8 +158,8 @@ lemma kingmanMk_integral {f : ℕ → Ω → ℝ} (hf : ∀ n : ℕ, 0 < n → I
 
 /-- The Fekete infima of a process and of its measurable representative agree. -/
 lemma kingmanMk_fekete {f : ℕ → Ω → ℝ} (hf : ∀ n : ℕ, 0 < n → Integrable (f n) μ) :
-    kingmanFekete (kingmanMk hf) μ = kingmanFekete f μ := by
-  unfold kingmanFekete
+    subadditiveMeanRate (kingmanMk hf) μ = subadditiveMeanRate f μ := by
+  unfold subadditiveMeanRate
   congr 1
   ext a
   constructor
@@ -281,14 +271,14 @@ lemma kingmanLiminf_trunc (K : ℕ) (f : ℕ → Ω → ℝ) (ω : Ω) :
   have hrat : ∀ n, (kingmanRatio (kingmanTrunc K f) n ω : EReal) =
       (kingmanRatio f n ω : EReal) ⊔ -((K : ℝ) : EReal) := by
     intro n
-    rw [kingmanRatio_trunc, ereal_coe_max, EReal.coe_neg, ereal_max_eq_sup]
+    rw [kingmanRatio_trunc, EReal.coe_strictMono.monotone.map_max, EReal.coe_neg]
   have hswap : (fun n => (kingmanRatio f n ω : EReal) ⊔ -((K : ℝ) : EReal)) =
       fun n => -((K : ℝ) : EReal) ⊔ (kingmanRatio f n ω : EReal) := by
     ext n
     exact sup_comm _ _
   simp_rw [hrat, hswap]
   rw [← sup_liminf (f := atTop) (u := fun n => (kingmanRatio f n ω : EReal))
-    (-((K : ℝ) : EReal)), sup_comm, ← ereal_max_eq_sup]
+    (-((K : ℝ) : EReal)), sup_comm]
 
 omit [MeasurableSpace Ω] in
 /-- Truncation raises the extended limsup exactly to `-K`. -/
@@ -299,14 +289,14 @@ lemma kingmanLimsup_trunc (K : ℕ) (f : ℕ → Ω → ℝ) (ω : Ω) :
   have hrat : ∀ n, (kingmanRatio (kingmanTrunc K f) n ω : EReal) =
       (kingmanRatio f n ω : EReal) ⊔ -((K : ℝ) : EReal) := by
     intro n
-    rw [kingmanRatio_trunc, ereal_coe_max, EReal.coe_neg, ereal_max_eq_sup]
+    rw [kingmanRatio_trunc, EReal.coe_strictMono.monotone.map_max, EReal.coe_neg]
   have hswap : (fun n => (kingmanRatio f n ω : EReal) ⊔ -((K : ℝ) : EReal)) =
       fun n => -((K : ℝ) : EReal) ⊔ (kingmanRatio f n ω : EReal) := by
     ext n
     exact sup_comm _ _
   simp_rw [hrat, hswap]
   rw [← sup_limsup (f := atTop) (u := fun n => (kingmanRatio f n ω : EReal))
-    (-((K : ℝ) : EReal)), sup_comm, ← ereal_max_eq_sup]
+    (-((K : ℝ) : EReal)), sup_comm]
 
 /-- Normalized integrals of a fixed length pass to the limit under truncation. -/
 lemma tendsto_integral_kingmanTrunc [IsProbabilityMeasure μ] {f : ℕ → Ω → ℝ} {n : ℕ}
@@ -334,12 +324,12 @@ lemma tendsto_integral_kingmanTrunc [IsProbabilityMeasure μ] {f : ℕ → Ω �
   exact hint.const_mul (n : ℝ)⁻¹
 
 /-- Every truncated Fekete value lies above the untruncated one. -/
-lemma kingmanFekete_le_trunc [IsProbabilityMeasure μ] {K : ℕ} {f : ℕ → Ω → ℝ}
+lemma subadditiveMeanRate_le_trunc [IsProbabilityMeasure μ] {K : ℕ} {f : ℕ → Ω → ℝ}
     (hf : ∀ n : ℕ, 0 < n → Integrable (f n) μ)
     (hf_meas : ∀ n : ℕ, 0 < n → Measurable (f n))
     (hlower : ∃ c : ℝ, ∀ n : ℕ, 0 < n → c ≤ (n : ℝ)⁻¹ * ∫ ω, f n ω ∂μ) :
-    kingmanFekete f μ ≤ kingmanFekete (kingmanTrunc K f) μ := by
-  unfold kingmanFekete
+    subadditiveMeanRate f μ ≤ subadditiveMeanRate (kingmanTrunc K f) μ := by
+  unfold subadditiveMeanRate
   obtain ⟨c, hc⟩ := hlower
   refine le_csInf ⟨((1 : ℕ) : ℝ)⁻¹ * ∫ ω, kingmanTrunc K f 1 ω ∂μ,
       ⟨1, Nat.one_pos, rfl⟩⟩ ?_
@@ -358,5 +348,8 @@ lemma kingmanFekete_le_trunc [IsProbabilityMeasure μ] {K : ℕ} {f : ℕ → Ω
         fun ω => kingmanTrunc_ge
     exact mul_le_mul_of_nonneg_left hint (inv_nonneg.mpr (Nat.cast_nonneg _))
   exact ha.trans hmono
+
+@[deprecated (since := "2026-11-15")] alias kingmanFekete_le_trunc :=
+  subadditiveMeanRate_le_trunc
 
 end CKMA

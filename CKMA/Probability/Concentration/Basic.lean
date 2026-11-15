@@ -26,11 +26,12 @@ Basic predicates and equivalence estimates for sub-Gaussian real random variable
 
 ## Main results
 
-* `CKMA.hasGaussianTail_of_hasPsiTwoBound`: exponential square bound implies Gaussian tails.
-* `CKMA.hasPsiTwoBound_of_hasGaussianTail`: Gaussian tails imply exponential square bound.
-* `CKMA.hasGaussianMoments_of_hasPsiTwoBound`: exponential square bound implies moment growth.
-* `CKMA.hasPsiTwoBound_of_hasGaussianMoments`: moment growth implies exponential square bound.
-* `CKMA.hasSubgaussianMGF_of_hasPsiTwoBound`: centered exponential square bound implies
+* `CKMA.hasPsiTwoBound_of_psiTwoGauge_le`: a gauge at most `K` gives an admissible scale `2K`.
+* `CKMA.HasPsiTwoBound.hasGaussianTail`: exponential square bound implies Gaussian tails.
+* `CKMA.HasGaussianTail.hasPsiTwoBound`: Gaussian tails imply exponential square bound.
+* `CKMA.HasPsiTwoBound.hasGaussianMoments`: exponential square bound implies moment growth.
+* `CKMA.HasGaussianMoments.hasPsiTwoBound`: moment growth implies exponential square bound.
+* `CKMA.HasPsiTwoBound.hasSubgaussianMGF`: centered exponential square bound implies
   sub-Gaussian MGF.
 -/
 
@@ -68,8 +69,35 @@ theorem HasPsiTwoBound.psiTwoGauge_le {X : Ω → ℝ} {K : ℝ}
     (h : HasPsiTwoBound X μ K) : psiTwoGauge X μ ≤ ENNReal.ofReal K :=
   sInf_le ⟨K, rfl, h⟩
 
-/-- Exponential square control implies Gaussian tails, without centering. -/
-lemma hasGaussianTail_of_hasPsiTwoBound
+/-- A larger scale remains an admissible psi-two bound. -/
+theorem HasPsiTwoBound.mono {X : Ω → ℝ} {K L : ℝ} (h : HasPsiTwoBound X μ K) (hKL : K ≤ L) :
+    HasPsiTwoBound X μ L := by
+  refine ⟨h.1.trans_le hKL, ?_⟩
+  have hdiv : ∀ ω, (X ω / L) ^ 2 ≤ (X ω / K) ^ 2 := by
+    intro ω
+    have habs : |X ω| / L ≤ |X ω| / K :=
+      div_le_div_of_nonneg_left (abs_nonneg _) h.1 hKL
+    have hsq := pow_le_pow_left₀ (div_nonneg (abs_nonneg _) (h.1.trans_le hKL).le) habs 2
+    simpa [div_pow, sq_abs] using hsq
+  calc
+    ∫⁻ ω, ENNReal.ofReal (Real.exp ((X ω / L) ^ 2)) ∂μ ≤
+        ∫⁻ ω, ENNReal.ofReal (Real.exp ((X ω / K) ^ 2)) ∂μ := by
+      refine lintegral_mono fun ω ↦ ENNReal.ofReal_le_ofReal (Real.exp_le_exp.mpr (hdiv ω))
+    _ ≤ 2 := h.2
+
+/-- A gauge at most `K` yields an admissible psi-two bound at scale `2K`. -/
+theorem hasPsiTwoBound_of_psiTwoGauge_le {X : Ω → ℝ} {K : ℝ} (hK : 0 < K)
+    (h : psiTwoGauge X μ ≤ ENNReal.ofReal K) : HasPsiTwoBound X μ (2 * K) := by
+  have hlt : psiTwoGauge X μ < ENNReal.ofReal (2 * K) :=
+    h.trans_lt ((ENNReal.ofReal_lt_ofReal_iff (by linarith : 0 < 2 * K)).mpr (by linarith))
+  rw [psiTwoGauge, sInf_lt_iff] at hlt
+  obtain ⟨s, hs, hslt⟩ := hlt
+  obtain ⟨K', rfl, hK'⟩ := hs
+  have hK'lt : K' < 2 * K := (ENNReal.ofReal_lt_ofReal_iff (by linarith)).mp hslt
+  exact hK'.mono hK'lt.le
+
+/-- **07.6**: exponential square control implies Gaussian tails, without centering. -/
+theorem HasPsiTwoBound.hasGaussianTail
     {X : Ω → ℝ} (hm : Measurable X) {K : ℝ} (h : HasPsiTwoBound X μ K) :
     HasGaussianTail X μ K := by
   refine ⟨h.1, fun t ht ↦ ?_⟩
@@ -143,7 +171,7 @@ private lemma lintegral_exp_le_of_exp_tail [IsProbabilityMeasure μ]
     add_le_add_left (hrem.trans hc) 1
 
 /-- Gaussian tails give the exponential square condition at twice the scale. -/
-lemma hasPsiTwoBound_of_hasGaussianTail [IsProbabilityMeasure μ]
+theorem HasGaussianTail.hasPsiTwoBound [IsProbabilityMeasure μ]
     {X : Ω → ℝ} (hm : Measurable X) {K : ℝ} (h : HasGaussianTail X μ K) :
     HasPsiTwoBound X μ (2 * K) := by
   refine ⟨mul_pos (by norm_num) h.1, ?_⟩
@@ -196,7 +224,7 @@ private lemma rpow_le_scaled_exp_sq (r K p : ℝ) (hr : 0 ≤ r) (hK : 0 < K) (h
 
 /-- Exponential square control implies square-root moment growth, without probability
 normalization. -/
-lemma hasGaussianMoments_of_hasPsiTwoBound
+theorem HasPsiTwoBound.hasGaussianMoments
     {X : Ω → ℝ} (hm : Measurable X) {K : ℝ} (h : HasPsiTwoBound X μ K) :
     HasGaussianMoments X μ (2 * K) := by
   refine ⟨mul_pos (by norm_num) h.1, fun p hp => ?_⟩
@@ -307,7 +335,7 @@ private lemma lintegral_exp_coefficient_le_of_gaussianMoments [IsProbabilityMeas
       ENNReal.ofReal_le_ofReal (gaussian_moment_exp_coefficient_le n)
 
 /-- Moment growth gives exponential square integrability, with a universal change of scale. -/
-lemma hasPsiTwoBound_of_hasGaussianMoments [IsProbabilityMeasure μ]
+theorem HasGaussianMoments.hasPsiTwoBound [IsProbabilityMeasure μ]
     {X : Ω → ℝ} (hm : Measurable X) {K : ℝ} (h : HasGaussianMoments X μ K) :
     HasPsiTwoBound X μ (4 * K) := by
   refine ⟨mul_pos (by norm_num) h.1, ?_⟩
@@ -406,7 +434,7 @@ private lemma one_add_scaled_exp_sq_le (z : ℝ) (hz : 0 ≤ z) :
 
 /-- Centered exponential square control implies a sub-Gaussian MGF.
 The numerical constant is deliberately nonoptimal. -/
-lemma hasSubgaussianMGF_of_hasPsiTwoBound [IsProbabilityMeasure μ]
+theorem HasPsiTwoBound.hasSubgaussianMGF [IsProbabilityMeasure μ]
     {X : Ω → ℝ} (hm : Measurable X) (hc : ∫ ω, X ω ∂μ = 0)
     {K : ℝ} (h : HasPsiTwoBound X μ K) :
     HasSubgaussianMGF X (⟨16 * K ^ 2, by positivity⟩ : ℝ≥0) μ := by
@@ -419,7 +447,7 @@ lemma hasSubgaussianMGF_of_hasPsiTwoBound [IsProbabilityMeasure μ]
   have hX : Integrable X μ := by
     apply memLp_one_iff_integrable.1
     change eLpNorm X 1 μ < ∞
-    have hmom := (hasGaussianMoments_of_hasPsiTwoBound hm h).2 1 le_rfl
+    have hmom := (HasPsiTwoBound.hasGaussianMoments hm h).2 1 le_rfl
     simpa only [ENNReal.ofReal_one] using hmom.trans_lt ENNReal.ofReal_lt_top
   refine ⟨h.integrable_exp_mul hm, fun t ↦ ?_⟩
   let c := 2 * (t * K) ^ 2 * Real.exp ((t * K) ^ 2 / 2)

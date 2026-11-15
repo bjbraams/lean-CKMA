@@ -35,7 +35,8 @@ Sources: GAPS 09.21 and 09.22.
 
 ## Main definitions
 
-* `CKMA.youngIncrement`: left-point Young increment `Y s (X t - X s)`.
+* `CKMA.youngIncrement`: left-point Young increment `Y s (X t - X s)`
+  (in `Sewing.VariationEstimate`).
 
 ## Main results
 
@@ -132,11 +133,6 @@ theorem sewing_lemma {E : Type*} [NormedAddCommGroup E] [CompleteSpace E]
   have hJ0 := hJ.1 a0 rfl
   have hEq := Sewing.partitionLimit_unique x.2.1 (hlim a0 x x.2.1) (hJ.2.2 a0 x x.2.1)
   simpa [hI0, hJ0] using hEq.symm
-
-/-- The field of left-point Young increments for an operator-valued integrand. -/
-def youngIncrement {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-    [NormedAddCommGroup F] [NormedSpace ℝ F]
-    (X : ℝ → E) (Y : ℝ → E →L[ℝ] F) (s t : ℝ) : F := Y s (X t - X s)
 
 /-- **09.21**: Hölder Young integration with the Young–Loeve remainder estimate. -/
 theorem young_holder {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
@@ -245,9 +241,6 @@ theorem young_variation {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
           sewingConstant (p⁻¹ + q⁻¹) *
             (pathVariationPower p X s.val t.val).toReal ^ p⁻¹ *
             (pathVariationPower q Y s.val t.val).toReal ^ q⁻¹ := by
-  have hstep : youngIncrement X Y = YoungLoeve.youngStep X Y := by
-    funext s t
-    rfl
-  simpa [← hstep] using YoungLoeve.young_integral hab hp hq hpq X Y hX hY hVp hVq
+  exact YoungLoeve.young_integral hab hp hq hpq X Y hX hY hVp hVq
 
 end CKMA

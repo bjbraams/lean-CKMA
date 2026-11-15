@@ -128,11 +128,11 @@ lemma gridNode_last {s t : ℝ} {k : ℕ} (hk : 0 < k) : gridNode s t k k = t :=
 
 /-- Sum of Young increments on the uniform `k`-grid. -/
 def youngGrid (s t : ℝ) (k : ℕ) : F :=
-  equalSewn (youngStep youngLeftPath youngRightPath) s t k
+  equalSewn (youngIncrement youngLeftPath youngRightPath) s t k
 
 /-- The uniform grid sum equals the step sum along `gridNode`. -/
 lemma youngGrid_eq_step (s t : ℝ) (k : ℕ) :
-    youngGrid s t k = stepSum (youngStep youngLeftPath youngRightPath) (gridNode s t k) k := by
+    youngGrid s t k = stepSum (youngIncrement youngLeftPath youngRightPath) (gridNode s t k) k := by
   unfold youngGrid stepSum gridNode
   refine sum_congr rfl fun i hi => ?_
   have hi0 : i ≤ k := le_of_lt (mem_range.mp hi)
@@ -142,7 +142,7 @@ lemma youngGrid_eq_step (s t : ℝ) (k : ℕ) :
 /-- A priori removal bound for one uniform Young sum. -/
 lemma norm_youngGrid_sub {s t : ℝ} (hs : a ≤ s) (hst : s ≤ t) (ht : t ≤ b) {k : ℕ}
     (hk : 0 < k) :
-    ‖youngGrid s t k - youngStep youngLeftPath youngRightPath s t‖ ≤
+    ‖youngGrid s t k - youngIncrement youngLeftPath youngRightPath s t‖ ≤
       youngLoose (youngTheta p q) * youngModulus p q youngLeftPath youngRightPath s t := by
   have h0 := gridNode_zero s t k
   have hlast : gridNode s t k k = t := gridNode_last hk
@@ -194,7 +194,7 @@ lemma youngGrid_mul {s t : ℝ} {k m : ℕ} (hk : 0 < k) (hm : 0 < m) :
       ∑ i ∈ range k,
         youngGrid (equalNode s t k i) (equalNode s t k (i + 1)) m := by
   unfold youngGrid equalSewn
-  rw [sum_range_mul (fun n => youngStep youngLeftPath youngRightPath (equalNode s t (k * m) n)
+  rw [sum_range_mul (fun n => youngIncrement youngLeftPath youngRightPath (equalNode s t (k * m) n)
     (equalNode s t (k * m) (n + 1))) k m]
   refine sum_congr rfl fun i _ => ?_
   refine sum_congr rfl fun j _ => ?_
@@ -260,11 +260,11 @@ lemma norm_youngGrid_mul_sub {s t η : ℝ} (hs : a ≤ s) (hst : s ≤ t) (ht :
         youngCtrl p q youngLeftPath youngRightPath s t := by
   have hsum : youngGrid s t (k * m) - youngGrid s t k =
       ∑ i ∈ range k, (youngGrid (equalNode s t k i) (equalNode s t k (i + 1)) m -
-        youngStep youngLeftPath youngRightPath (equalNode s t k i)
+        youngIncrement youngLeftPath youngRightPath (equalNode s t k i)
           (equalNode s t k (i + 1))) := by
     rw [youngGrid_mul hk hm]
     have hgrid : youngGrid s t k =
-        ∑ i ∈ range k, youngStep youngLeftPath youngRightPath (equalNode s t k i)
+        ∑ i ∈ range k, youngIncrement youngLeftPath youngRightPath (equalNode s t k i)
           (equalNode s t k (i + 1)) := by
       simp [youngGrid, equalSewn]
     rw [hgrid, ← sum_sub_distrib]
@@ -275,7 +275,7 @@ lemma norm_youngGrid_mul_sub {s t η : ℝ} (hs : a ≤ s) (hst : s ≤ t) (ht :
     mul_nonneg (youngLoose_nonneg hθ) (Real.rpow_nonneg hη _)
   have hterm : ∀ i ∈ range k,
       ‖youngGrid (equalNode s t k i) (equalNode s t k (i + 1)) m -
-          youngStep youngLeftPath youngRightPath (equalNode s t k i)
+          youngIncrement youngLeftPath youngRightPath (equalNode s t k i)
             (equalNode s t k (i + 1))‖ ≤
         (youngLoose (youngTheta p q) * η ^ (youngTheta p q - 1)) *
           youngCtrl p q youngLeftPath youngRightPath (equalNode s t k i)
@@ -290,7 +290,7 @@ lemma norm_youngGrid_mul_sub {s t η : ℝ} (hs : a ≤ s) (hst : s ≤ t) (ht :
     have hpow := youngModulus_le_eta hη (hpiece i (mem_range.mp hi))
     calc
       ‖youngGrid (equalNode s t k i) (equalNode s t k (i + 1)) m -
-          youngStep youngLeftPath youngRightPath (equalNode s t k i)
+          youngIncrement youngLeftPath youngRightPath (equalNode s t k i)
             (equalNode s t k (i + 1))‖ ≤
           youngLoose (youngTheta p q) *
             youngModulus p q youngLeftPath youngRightPath (equalNode s t k i)
@@ -431,7 +431,7 @@ lemma youngLimit_same {s : ℝ} (hs : a ≤ s) (hsb : s ≤ b) : youngLimit s s 
     intro k
     unfold youngGrid equalSewn
     refine sum_eq_zero fun i _ => ?_
-    simp [equalNode, youngStep, map_zero]
+    simp [equalNode, youngIncrement, map_zero]
   have htend := tendsto_youngGrid hs le_rfl hsb
   have hfun : (fun k => youngGrid s s (k + 1)) = fun _ => 0 := by
     funext k; exact hgrid k
@@ -440,15 +440,15 @@ lemma youngLimit_same {s : ℝ} (hs : a ≤ s) (hsb : s ≤ b) : youngLimit s s 
 
 /-- The loose series controls the distance from the limit to the increment. -/
 lemma norm_youngLimit_sub {s t : ℝ} (hs : a ≤ s) (hst : s ≤ t) (ht : t ≤ b) :
-    ‖youngLimit s t - youngStep youngLeftPath youngRightPath s t‖ ≤
+    ‖youngLimit s t - youngIncrement youngLeftPath youngRightPath s t‖ ≤
       youngLoose (youngTheta p q) * youngModulus p q youngLeftPath youngRightPath s t := by
   have htend : Tendsto
-      (fun k => ‖youngGrid s t (k + 1) - youngStep youngLeftPath youngRightPath s t‖) atTop
-      (𝓝 ‖youngLimit s t - youngStep youngLeftPath youngRightPath s t‖) :=
+      (fun k => ‖youngGrid s t (k + 1) - youngIncrement youngLeftPath youngRightPath s t‖) atTop
+      (𝓝 ‖youngLimit s t - youngIncrement youngLeftPath youngRightPath s t‖) :=
     ((tendsto_youngGrid hs hst ht).sub tendsto_const_nhds).norm
   refine le_of_tendsto' htend ?_
   intro k
-  simpa [youngStep] using norm_youngGrid_sub hs hst ht (Nat.succ_pos k)
+  simpa [youngIncrement] using norm_youngGrid_sub hs hst ht (Nat.succ_pos k)
 
 /-- Each uniform grid node depends continuously on the interval endpoints. -/
 lemma continuous_equalNode (k i : ℕ) :
@@ -466,7 +466,7 @@ lemma equalNode_mapsTo {k i : ℕ} (hk : 0 < k) (hi : i ≤ k) :
 
 /-- Each piece of a uniform Young sum is continuous on `sewingTriangle a b`. -/
 lemma continuousOn_youngPiece {k i : ℕ} (hk : 0 < k) (hi : i < k) :
-    ContinuousOn (fun p : ℝ × ℝ => youngStep youngLeftPath youngRightPath
+    ContinuousOn (fun p : ℝ × ℝ => youngIncrement youngLeftPath youngRightPath
       (equalNode p.1 p.2 k i) (equalNode p.1 p.2 k (i + 1))) (sewingTriangle a b) := by
   have hYc := continuousOn_youngRightPath.comp (continuous_equalNode k i).continuousOn
     (equalNode_mapsTo hk (le_of_lt hi))
@@ -475,7 +475,7 @@ lemma continuousOn_youngPiece {k i : ℕ} (hk : 0 < k) (hi : i < k) :
       (equalNode_mapsTo hk (Nat.succ_le_of_lt hi))).sub
       (continuousOn_youngLeftPath.comp (continuous_equalNode k i).continuousOn
         (equalNode_mapsTo hk (le_of_lt hi)))
-  simpa [youngStep] using hYc.clm_apply hsub
+  simpa [youngIncrement] using hYc.clm_apply hsub
 
 /-- Uniform Young grid sums are continuous on `sewingTriangle a b`. -/
 lemma continuousOn_youngGrid (k : ℕ) :
@@ -538,7 +538,7 @@ lemma youngLimit_grid_add {s t : ℝ} (hs : a ≤ s) (hst : s ≤ t) (ht : t ≤
         youngGrid (equalNode s t k j) t ((k - j) * (m + 1)) := by
     intro m
     have hm : 0 < m + 1 := Nat.succ_pos m
-    have hcut := equalSewn_cut (youngStep youngLeftPath youngRightPath) s t (Nat.mul_pos hk hm)
+    have hcut := equalSewn_cut (youngIncrement youngLeftPath youngRightPath) s t (Nat.mul_pos hk hm)
       (Nat.mul_pos hj0 hm) (Nat.mul_lt_mul_of_pos_right hj hm)
     have hnode : equalNode s t (k * (m + 1)) (j * (m + 1)) =
         equalNode s t k j := equalNode_mul s t hk hm

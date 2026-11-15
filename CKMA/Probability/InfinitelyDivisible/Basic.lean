@@ -50,6 +50,7 @@ def IsLevyMeasure (ν : Measure ℝ) : Prop :=
   ν {0} = 0 ∧ (∫⁻ x, ENNReal.ofReal (min 1 (x ^ 2)) ∂ν) < ∞
 
 /-- A Levy triplet for the truncation `x * 1_{|x|≤1}`. -/
+@[ext]
 structure LevyTriplet where
   /-- Nonnegative Gaussian variance coefficient. -/
   gaussianVariance : ℝ≥0

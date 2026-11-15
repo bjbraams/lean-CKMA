@@ -70,15 +70,10 @@ variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteS
 def purePointOperatorSubspace (A : H →L[ℂ] H) : Submodule ℂ H :=
   (Submodule.span ℂ {x : H | ∃ a : ℝ, A x = (a : ℂ) • x}).topologicalClosure
 
-/-- A real scalar is a self-adjoint complex number. -/
-lemma isSelfAdjoint_of_im_eq_zero {lam : ℂ} (hlam : lam.im = 0) : IsSelfAdjoint lam := by
-  rw [isSelfAdjoint_iff, Complex.star_def]
-  exact Complex.conj_eq_iff_im.mpr hlam
-
 /-- The real translate `A - λ` of a self-adjoint operator is self-adjoint. -/
 lemma eigenShift_isSelfAdjoint (A : H →L[ℂ] H) (hA : IsSelfAdjoint A) {lam : ℂ}
     (hlam : lam.im = 0) : IsSelfAdjoint (A - lam • (1 : H →L[ℂ] H)) :=
-  hA.sub ((isSelfAdjoint_of_im_eq_zero hlam).smul
+  hA.sub (((Complex.im_eq_zero_iff_isSelfAdjoint lam).mp hlam).smul
     (IsSelfAdjoint.one (H →L[ℂ] H)))
 
 /-- `A - λ` is the continuous functional calculus of `z ↦ z - λ`. -/

@@ -30,9 +30,6 @@ public import CKMA.Probability.GaussianLogSobolev.IntegrationByParts
 public import CKMA.Probability.GaussianLogSobolev.OneDim
 public import CKMA.Probability.GaussianLogSobolev.OneDimLSI
 public import CKMA.Probability.HansonWright
-public import CKMA.Probability.HansonWright.Bound
-public import CKMA.Probability.HansonWright.Estimates
-public import CKMA.Probability.HansonWright.OffDiagonal
 public import CKMA.Probability.InfinitelyDivisible
 public import CKMA.Probability.InfinitelyDivisible.Basic
 public import CKMA.Probability.InfinitelyDivisible.CharRoot

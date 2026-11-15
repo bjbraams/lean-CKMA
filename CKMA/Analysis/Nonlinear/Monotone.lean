@@ -69,17 +69,6 @@ noncomputable section
 
 namespace CKMA
 
-/-- A finite sum of continuous functions into a topological additive monoid is continuous. -/
-private lemma continuous_finset_sum' {α β ι : Type*} [TopologicalSpace α] [AddCommMonoid β] [TopologicalSpace β] [ContinuousAdd β] (s : Finset ι) {f : ι → α → β}
-    (hf : ∀ i ∈ s, Continuous (f i)) : Continuous (fun t ↦ ∑ i ∈ s, f i t) := by
-  classical
-  induction s using Finset.induction with
-  | empty =>
-    simpa using continuous_const
-  | insert a s ha ih =>
-    simp only [Finset.sum_insert ha]
-    exact (hf a (Finset.mem_insert_self a s)).add (ih fun i hi ↦ hf i (Finset.mem_insert_of_mem hi))
-
 open Filter Topology Bornology
 open scoped InnerProductSpace
 
@@ -273,7 +262,7 @@ private theorem exists_common_monotoneSlice {A : Set (H × H)} (hA : IsMonotoneG
     (continuous_apply i).comp continuous_subtype_val
   have hbary : Continuous fun s : Simplex => bary (s : Fin n → ℝ) := by
     unfold bary
-    exact continuous_finset_sum' Finset.univ fun i _ => (hcoord i).smul continuous_const
+    exact continuous_finsetSum Finset.univ fun i _ => (hcoord i).smul continuous_const
   have hgapC (i : Fin n) : Continuous fun s : Simplex => gap (s : Fin n → ℝ) i := by
     unfold gap
     exact (hbary.sub continuous_const).inner
@@ -283,7 +272,7 @@ private theorem exists_common_monotoneSlice {A : Set (H × H)} (hA : IsMonotoneG
     exact continuous_const.max (hgapC i).neg
   have hdenC : Continuous fun s : Simplex => total (s : Fin n → ℝ) := by
     unfold total
-    exact continuous_finset_sum' Finset.univ fun i _ => (hcoord i).add (hslackC i)
+    exact continuous_finsetSum Finset.univ fun i _ => (hcoord i).add (hslackC i)
   have hT : Continuous T := by
     refine Continuous.subtype_mk ?_ hnext
     exact continuous_pi fun i =>

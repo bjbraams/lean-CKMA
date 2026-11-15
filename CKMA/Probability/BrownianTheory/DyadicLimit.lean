@@ -33,16 +33,6 @@ namespace CKMA
 open Finset Filter
 open scoped Topology
 
-/-- `(1 / 2 ^ n)` is the real power `2 ^ (-n)`. -/
-lemma one_div_two_pow_eq_rpow (n : ℕ) : (1 : ℝ) / 2 ^ n = (2 : ℝ) ^ (-(n : ℝ)) := by
-  have h2 : (0 : ℝ) ≤ 2 := by positivity
-  rw [one_div, ← Real.rpow_natCast, ← Real.rpow_neg h2]
-
-/-- The base `2 ^ (-α)` is strictly smaller than one. -/
-lemma two_rpow_neg_lt_one {α : ℝ} (hα : 0 < α) : (2 : ℝ) ^ (-α) < 1 := by
-  have h2 : (1 : ℝ) < 2 := by norm_num
-  exact Real.rpow_lt_one_of_one_lt_of_neg h2 (neg_lt_zero.2 hα)
-
 /-- Two consecutive meshes add to one and a half times the coarser mesh. -/
 lemma two_mesh_sum (n : ℕ) :
     (1 : ℝ) / 2 ^ n + 1 / 2 ^ (n + 1) = (3 / 2) * (2 : ℝ) ^ (-(n : ℝ)) := by
@@ -80,7 +70,7 @@ lemma cauchySeq_dyadicFloor {f : ℝ → ℝ} {α : ℝ} {K : ℕ → ℝ} {N : 
     CauchySeq (fun n => f (dyadicFloorReal n t)) := by
   let C : ℝ := dyadicHolderFactor α * (∑ j ∈ range N, K j) * ((3 : ℝ) / 2) ^ α
   refine cauchySeq_of_le_geometric (r := (2 : ℝ) ^ (-α)) (C := C)
-    (two_rpow_neg_lt_one hα) ?_
+    (Real.rpow_lt_one_of_one_lt_of_neg one_lt_two (neg_lt_zero.2 hα)) ?_
   intro n
   have hstep := abs_sub_dyadicFloor_levels hα hK hinc (Nat.le_succ n) ht0 htN
   have hpow := two_mesh_sum_rpow (α := α) n

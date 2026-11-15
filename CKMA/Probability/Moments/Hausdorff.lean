@@ -8,6 +8,7 @@ module
 public import Mathlib.MeasureTheory.Measure.Dirac
 public import Mathlib.MeasureTheory.Integral.Bochner.Basic
 public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
+public import Mathlib.Algebra.Group.ForwardDiff
 public import Mathlib.Data.Nat.Choose.Basic
 public import Mathlib.Tactic
 
@@ -44,7 +45,7 @@ the Weierstrass approximation theorem on `[0,1]`.
 
 ## Main definitions
 
-* `CKMA.forwardDifference`: forward difference of a real sequence.
+* `CKMA.forwardDifference`: forward difference of a real sequence, Mathlib's `fwdDiff 1`.
 * `CKMA.IsCompletelyMonotoneSequence`: complete monotonicity of a real sequence.
 * `CKMA.hausdorffWeight`: Bernstein discrete moment weight.
 * `CKMA.hausdorffApproximant`: discrete measure on `[0, 1]` built from Bernstein weights.
@@ -64,8 +65,13 @@ namespace CKMA
 open MeasureTheory Filter Topology
 open scoped BigOperators BoundedContinuousFunction ENNReal NNReal
 
-/-- The forward difference of a real sequence. -/
-def forwardDifference (s : ℕ → ℝ) (n : ℕ) : ℝ := s (n + 1) - s n
+/-- The forward difference of a real sequence, Mathlib's `fwdDiff` with step `1`. -/
+def forwardDifference (s : ℕ → ℝ) : ℕ → ℝ := fwdDiff 1 s
+
+/-- The forward difference at `n` is `s (n + 1) - s n`. -/
+theorem forwardDifference_apply (s : ℕ → ℝ) (n : ℕ) :
+    forwardDifference s n = s (n + 1) - s n :=
+  rfl
 
 /-- Discrete complete monotonicity with the forward-difference sign convention. -/
 def IsCompletelyMonotoneSequence (s : ℕ → ℝ) : Prop :=
@@ -96,7 +102,7 @@ theorem IsCompletelyMonotoneSequence.antitone {s : ℕ → ℝ}
   apply antitone_nat_of_succ_le
   intro n
   have h := hs n 1
-  simp only [pow_one, Function.iterate_one, forwardDifference] at h
+  simp only [pow_one, Function.iterate_one, forwardDifference_apply] at h
   linarith
 
 /-- A finite measure concentrated on `[0,1]` represents all the moments of `s`. -/
@@ -105,160 +111,24 @@ def RepresentsHausdorffMoments (μ : Measure ℝ) (s : ℕ → ℝ) : Prop :=
 
 /-! ### Binomial arithmetic -/
 
-/-- Even and odd powers of `-1` agree when the exponents have the same parity. -/
-private lemma neg_one_pow_two_mul_sub (a j : ℕ) (hj : j ≤ a) :
-    (-1 : ℝ) ^ (2 * a - j) = (-1) ^ j := by
-  have hle : j ≤ 2 * a := by omega
-  have hsum : 2 * a - j + j = 2 * a := Nat.sub_add_cancel hle
-  have heven : Even (2 * a) := even_two_mul a
-  have hiff : Even (2 * a - j) ↔ Even j := by
-    have hpar := Nat.even_add (m := 2 * a - j) (n := j)
-    rw [hsum] at hpar
-    simpa [heven] using hpar
-  by_cases h : Even j
-  · have h2 : Even (2 * a - j) := hiff.mpr h
-    calc (-1 : ℝ) ^ (2 * a - j) = (1 : ℝ) ^ (2 * a - j) := h2.neg_pow 1
-      _ = 1 := one_pow _
-      _ = (1 : ℝ) ^ j := (one_pow _).symm
-      _ = (-1) ^ j := (h.neg_pow 1).symm
-  · have hodd : Odd j := Nat.not_even_iff_odd.mp h
-    have h2 : Odd (2 * a - j) :=
-      Nat.not_even_iff_odd.mp (fun he => h (hiff.mp he))
-    calc (-1 : ℝ) ^ (2 * a - j) = -1 := h2.neg_one_pow
-      _ = (-1) ^ j := hodd.neg_one_pow.symm
-
 /-- The sign in the expanded Bernstein weight simplifies to `(-1) ^ j`. -/
 private lemma neg_one_mul_pow_sub (a j : ℕ) (hj : j ≤ a) :
     (-1 : ℝ) ^ a * (-1) ^ (a - j) = (-1) ^ j := by
-  have hsum : a + (a - j) = 2 * a - j := by omega
-  rw [← pow_add, hsum]
-  exact neg_one_pow_two_mul_sub a j hj
+  obtain ⟨d, rfl⟩ := Nat.exists_eq_add_of_le hj
+  rw [Nat.add_sub_cancel_left, pow_add, mul_assoc, ← pow_add, ← two_mul, pow_mul, neg_one_sq,
+    one_pow, mul_one]
 
-/-- Negating a power of `-1` raises the exponent by one. -/
-private lemma neg_neg_one_pow_sub (a b : ℕ) (hb : b ≤ a) :
-    -((-1 : ℝ) ^ (a - b)) = (-1) ^ (a + 1 - b) := by
-  have h : a + 1 - b = a - b + 1 := by omega
-  rw [h, pow_succ, mul_neg_one]
-
-/-- Moving the first index of a range sum onto an interval. -/
-private lemma sum_range_succ_eq_Ico (f : ℕ → ℝ) (n : ℕ) :
-    ∑ j ∈ Finset.range n, f (j + 1) = ∑ t ∈ Finset.Ico 1 (n + 1), f t := by
-  refine Finset.sum_nbij' (fun j => j + 1) (fun t => t - 1) ?_ ?_ ?_ ?_
-      (fun _ _ => rfl) <;>
-    intro a ha <;> simp only [Finset.mem_range, Finset.mem_Ico] at ha ⊢ <;> omega
-
-/-- Binomial expansion of one step of the forward difference. -/
-private lemma forwardDifference_sum_step (s : ℕ → ℝ) (k n : ℕ) :
-    (∑ j ∈ Finset.range (k + 1),
-        (k.choose j : ℝ) * (-1 : ℝ) ^ (k - j) * s (n + 1 + j)) -
-      ∑ j ∈ Finset.range (k + 1),
-        (k.choose j : ℝ) * (-1 : ℝ) ^ (k - j) * s (n + j) =
-      ∑ j ∈ Finset.range (k + 2),
-        ((k + 1).choose j : ℝ) * (-1 : ℝ) ^ (k + 1 - j) * s (n + j) := by
-  classical
-  let α : ℕ → ℝ := fun j => (k.choose j : ℝ) * (-1 : ℝ) ^ (k - j)
-  have hα_last : α (k + 1) = 0 := by
-    simp [α]
-  have hpad (t : ℕ) :
-      ∑ j ∈ Finset.range (k + 1), α j * s (t + j) =
-        ∑ j ∈ Finset.range (k + 2), α j * s (t + j) := by
-    rw [Finset.sum_range_succ (fun j => α j * s (t + j)) (k + 1), hα_last, zero_mul,
-      add_zero]
-  have hS1 :
-      ∑ j ∈ Finset.range (k + 2), α j * s (n + 1 + j) =
-        ∑ t ∈ Finset.Ico 1 (k + 2), α (t - 1) * s (n + t) := by
-    have hshift :
-        ∑ j ∈ Finset.range (k + 2), α j * s (n + 1 + j) =
-          ∑ j ∈ Finset.range (k + 2), α ((j + 1) - 1) * s (n + (j + 1)) := by
-      refine Finset.sum_congr rfl fun j _hj => ?_
-      have : n + 1 + j = n + (j + 1) := by omega
-      simp [this]
-    rw [hshift, sum_range_succ_eq_Ico (fun t => α (t - 1) * s (n + t)) (k + 2),
-      Finset.sum_Ico_succ_top (by omega : 1 ≤ k + 2)]
-    simp [hα_last, show (k + 2) - 1 = k + 1 by omega]
-  have hS2 :
-      ∑ j ∈ Finset.range (k + 2), α j * s (n + j) =
-        α 0 * s n + ∑ t ∈ Finset.Ico 1 (k + 2), α t * s (n + t) := by
-    rw [Finset.sum_range_succ' (fun j => α j * s (n + j)) (k + 1), add_comm,
-      ← sum_range_succ_eq_Ico (fun t => α t * s (n + t)) (k + 1)]
-    simp
-  rw [hpad (n + 1), hpad n, hS1, hS2]
-  have hdiff :
-      ∑ t ∈ Finset.Ico 1 (k + 2), α (t - 1) * s (n + t) -
-          (α 0 * s n + ∑ t ∈ Finset.Ico 1 (k + 2), α t * s (n + t)) =
-        -(α 0 * s n) +
-          ∑ t ∈ Finset.Ico 1 (k + 2), (α (t - 1) - α t) * s (n + t) := by
-    rw [sub_add_eq_sub_sub, sub_right_comm]
-    have hsub :
-        ∑ t ∈ Finset.Ico 1 (k + 2), α (t - 1) * s (n + t) -
-            ∑ t ∈ Finset.Ico 1 (k + 2), α t * s (n + t) =
-          ∑ t ∈ Finset.Ico 1 (k + 2), (α (t - 1) - α t) * s (n + t) := by
-      rw [← Finset.sum_sub_distrib]
-      refine Finset.sum_congr rfl fun t _ht => ?_
-      ring
-    rw [hsub, sub_eq_add_neg, add_comm]
-  rw [hdiff]
-  have hsplit :
-      -(α 0 * s n) +
-          ∑ t ∈ Finset.Ico 1 (k + 2), (α (t - 1) - α t) * s (n + t) =
-        ∑ t ∈ Finset.range (k + 2),
-          (if t = 0 then -α 0 else α (t - 1) - α t) * s (n + t) := by
-    rw [Finset.sum_range_succ' (fun t =>
-        (if t = 0 then -α 0 else α (t - 1) - α t) * s (n + t)) (k + 1),
-      add_comm]
-    congr 1
-    · exact (sum_range_succ_eq_Ico (fun t => (α (t - 1) - α t) * s (n + t)) (k + 1)).symm
-    · simp
-  rw [hsplit]
-  refine Finset.sum_congr rfl fun t ht => ?_
-  have ht' : t ≤ k + 1 := by
-    simp only [Finset.mem_range] at ht
-    omega
-  have hcoeff :
-      (if t = 0 then -α 0 else α (t - 1) - α t) =
-        ((k + 1).choose t : ℝ) * (-1) ^ (k + 1 - t) := by
-    by_cases ht0 : t = 0
-    · subst ht0
-      have hsign := neg_neg_one_pow_sub k 0 (Nat.zero_le k)
-      simp only [Nat.sub_zero] at hsign
-      simp [α, hsign, Nat.choose_zero_right]
-    · have htpos : 0 < t := Nat.pos_of_ne_zero ht0
-      have hsub : k - (t - 1) = k + 1 - t := by omega
-      by_cases htk : t ≤ k
-      · have hsign : -((-1 : ℝ) ^ (k - t)) = (-1) ^ (k + 1 - t) :=
-          neg_neg_one_pow_sub k t htk
-        have hpascal : (k + 1).choose t = k.choose (t - 1) + k.choose t :=
-          Nat.choose_succ_left k t htpos
-        rw [ite_eq_right ht0]
-        dsimp only [α]
-        rw [hsub]
-        calc
-          (k.choose (t - 1) : ℝ) * (-1) ^ (k + 1 - t) -
-              (k.choose t : ℝ) * (-1) ^ (k - t) =
-            (k.choose (t - 1) : ℝ) * (-1) ^ (k + 1 - t) +
-              (k.choose t : ℝ) * (-1) ^ (k + 1 - t) := by
-            rw [← hsign]; ring
-          _ = ((k.choose (t - 1) + k.choose t : ℕ) : ℝ) *
-              (-1) ^ (k + 1 - t) := by
-            simp [Nat.cast_add]; ring
-          _ = ((k + 1).choose t : ℝ) * (-1) ^ (k + 1 - t) := by rw [← hpascal]
-      · have hteq : t = k + 1 := by omega
-        subst hteq
-        rw [ite_eq_right ht0]
-        have hsubk : k - (k + 1) = 0 := by omega
-        simp [α, hsubk, Nat.choose_self, pow_zero]
-  rw [hcoeff]
-
-/-- Iterated forward differences expand by the binomial theorem. -/
+/-- Iterated forward differences expand by the binomial theorem
+(Mathlib's `fwdDiff_iter_eq_sum_shift`). -/
 private lemma forwardDifference_iterate_eq_sum (s : ℕ → ℝ) (k n : ℕ) :
     (forwardDifference^[k] s) n =
       ∑ j ∈ Finset.range (k + 1),
         (k.choose j : ℝ) * (-1 : ℝ) ^ (k - j) * s (n + j) := by
-  induction k generalizing n with
-  | zero => simp
-  | succ k ih =>
-    rw [Function.iterate_succ_apply', forwardDifference, ih (n + 1), ih n,
-      forwardDifference_sum_step]
+  rw [show forwardDifference = fwdDiff 1 from rfl, fwdDiff_iter_eq_sum_shift]
+  refine Finset.sum_congr rfl fun j _ => ?_
+  simp only [smul_eq_mul, mul_one, zsmul_eq_mul]
+  push_cast
+  ring
 
 /-- Reindex the triangle `k + j ≤ N` by the sum `m = k + j`. -/
 private lemma sum_triangle {M : Type*} [AddCommMonoid M] (N : ℕ) (f : ℕ → ℕ → M) :
@@ -737,7 +607,7 @@ private lemma forwardDifference_iterate_eq_integral {μ : Measure ℝ} {s : ℕ 
   | zero =>
     simp [hμ.2.2 n]
   | succ k ih =>
-    rw [Function.iterate_succ_apply', forwardDifference, ih (n + 1), ih n]
+    rw [Function.iterate_succ_apply', forwardDifference_apply, ih (n + 1), ih n]
     rw [← integral_sub (integrable_pow_of_represents hμ (n + 1) k)
       (integrable_pow_of_represents hμ n k)]
     refine integral_congr_ae (ae_of_all _ fun x => ?_)

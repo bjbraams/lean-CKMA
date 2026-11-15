@@ -8,8 +8,6 @@ module
 public import TauCeti.Analysis.Complex.CauchyIntegralPolydisc
 public import CKMA.Analysis.Complex.Basic
 public import Mathlib.Algebra.BigOperators.Fin
-public import Mathlib.Analysis.Analytic.Constructions
-public import Mathlib.Analysis.Calculus.FDeriv.Analytic
 public import Mathlib.Analysis.Calculus.FDeriv.Prod
 public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 public import Mathlib.Analysis.Normed.Group.Bounded
@@ -19,19 +17,14 @@ public import Mathlib.Analysis.SpecificLimits.Normed
 public import Mathlib.Data.Fin.Tuple.Basic
 public import Mathlib.MeasureTheory.Function.LocallyIntegrable
 public import Mathlib.MeasureTheory.Integral.DominatedConvergence
-public import Mathlib.Topology.Algebra.Algebra
-public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.PiProd
 public import Mathlib.Topology.Algebra.Module.FiniteDimension
 public import Mathlib.Topology.Compactness.LocallyCompact
-public import Mathlib.Topology.ContinuousMap.Algebra
-public import Mathlib.Topology.ContinuousMap.Compact
-public import Mathlib.Topology.ContinuousMap.Units
 public import Mathlib.Topology.MetricSpace.ProperSpace
 public import Mathlib.Topology.MetricSpace.Pseudo.Pi
 public import Mathlib.Topology.Order.Compact
-public import Mathlib.Topology.UniformSpace.CompactConvergence
 public import Mathlib.Topology.UniformSpace.LocallyUniformConvergence
 public import Mathlib.Topology.UniformSpace.UniformApproximation
+import TauCeti.Analysis.Complex.UniformLimit
 
 /-!
 # Full-polydisc Taylor expansion
@@ -39,8 +32,9 @@ public import Mathlib.Topology.UniformSpace.UniformApproximation
 Coordinate polyradii define open and closed polydiscs. Cauchy integrals over the
 distinguished boundary give multiindex Taylor coefficients, their estimates and normal
 convergence on the full open polydisc. Locally uniform limits on open subsets of ℂⁿ
-remain holomorphic. Torus integration reuses TauCeti's polydisc Cauchy integral API;
-the coefficient bound uses Mathlib's norm estimate for torus integrals.
+remain holomorphic, by TauCeti's theorem on uniform limits of holomorphic maps on complex
+normed spaces. Torus integration reuses TauCeti's polydisc Cauchy integral API; the coefficient
+bound uses Mathlib's norm estimate for torus integrals.
 
 Source: GAPS 45.2.
 
@@ -608,296 +602,22 @@ theorem polydisc_taylor {n : ℕ} (f : (Fin n → ℂ) → ℂ)
   ⟨fun z hz ↦ hasSum_polydiscTaylor_of_mem f c R hR hsub hf hz,
     normallySummableOn_polydiscTaylor f c R hR hsub hf⟩
 
-/-- Angle parametrization of an equal-radius torus, with values on the product of circles. -/
-private noncomputable def polydiscTorusParam {n : ℕ} (z : Fin n → ℂ) (R : ℝ) (hR : 0 ≤ R) :
-    C(Fin n → ℝ, (i : Fin n) → sphere (z i) R) :=
-  ⟨fun θ i ↦ ⟨torusMap z (fun _ ↦ R) θ i,
-      TauCeti.torusMap_mem_pi_sphere (fun _ ↦ hR) θ i (mem_univ i)⟩,
-    continuous_pi fun i ↦
-      ((continuous_apply i).comp (TauCeti.continuous_torusMap z fun _ ↦ R)).subtype_mk _⟩
-
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
 
-/-- Integration over an equal-radius torus, as a continuous linear map on continuous functions. -/
-private noncomputable def polydiscTorusIntegralCLM {n : ℕ} (z : Fin n → ℂ) (R : ℝ) (hR : 0 ≤ R)
-    (F : C((i : Fin n) → sphere (z i) R, E)) :
-    C((i : Fin n) → sphere (z i) R, ℂ) →L[ℂ] E :=
-  LinearMap.mkContinuous
-    { toFun := fun g ↦ ∫ θ in Icc (0 : Fin n → ℝ) (fun _ ↦ 2 * Real.pi),
-        (∏ i : Fin n, (R : ℂ) * exp (θ i * I) * I) •
-          (g (polydiscTorusParam z R hR θ) • F (polydiscTorusParam z R hR θ))
-      map_add' := fun g h ↦ by
-        simp only [ContinuousMap.add_apply, add_smul, smul_add]
-        exact integral_add (Continuous.integrableOn_Icc (by fun_prop))
-          (Continuous.integrableOn_Icc (by fun_prop))
-      map_smul' := fun a g ↦ by
-        simp only [ContinuousMap.smul_apply, smul_eq_mul, RingHom.id_apply]
-        have hpull : ∀ θ, (∏ i : Fin n, (R : ℂ) * exp (θ i * I) * I) •
-            ((a * g (polydiscTorusParam z R hR θ)) • F (polydiscTorusParam z R hR θ)) =
-            a • ((∏ i : Fin n, (R : ℂ) * exp (θ i * I) * I) •
-              (g (polydiscTorusParam z R hR θ) • F (polydiscTorusParam z R hR θ))) := by
-          intro θ
-          rw [← mul_smul, smul_smul, smul_smul]
-          congr 1
-          ring
-        simp_rw [hpull]
-        exact integral_smul a _ }
-    (R ^ n * ‖F‖ * volume.real (Icc (0 : Fin n → ℝ) fun _ ↦ 2 * Real.pi)) fun g ↦ by
-      simp only [LinearMap.coe_mk, AddHom.coe_mk]
-      calc
-        _ ≤ R ^ n * ‖F‖ * ‖g‖ * volume.real (Icc (0 : Fin n → ℝ) fun _ ↦ 2 * Real.pi) :=
-            norm_setIntegral_le_of_norm_le_const measure_Icc_lt_top fun θ _ ↦ by
-              simp only [norm_smul, norm_prod, norm_mul, norm_real, norm_exp_ofReal_mul_I,
-                norm_I, mul_one, Real.norm_eq_abs, abs_of_nonneg hR, Finset.prod_const,
-                Finset.card_univ, Fintype.card_fin]
-              have hmul : ‖g (polydiscTorusParam z R hR θ)‖ *
-                  ‖F (polydiscTorusParam z R hR θ)‖ ≤ ‖F‖ * ‖g‖ := by
-                rw [mul_comm ‖F‖]
-                exact mul_le_mul (g.norm_coe_le_norm _) (F.norm_coe_le_norm _)
-                  (norm_nonneg _) (norm_nonneg _)
-              nlinarith [mul_le_mul_of_nonneg_left hmul (pow_nonneg hR n)]
-        _ = _ := by ring
-
-/-- The torus integration functional computes the torus integral of its boundary values. -/
-private lemma polydiscTorusIntegralCLM_apply {n : ℕ} {z : Fin n → ℂ} {R : ℝ} (hR : 0 ≤ R)
-    {F : C((i : Fin n) → sphere (z i) R, E)} {g : C((i : Fin n) → sphere (z i) R, ℂ)}
-    {f : (Fin n → ℂ) → E} {G : (Fin n → ℂ) → ℂ}
-    (hF : ∀ x, F x = f fun i ↦ (x i : ℂ)) (hG : ∀ x, g x = G fun i ↦ (x i : ℂ)) :
-    polydiscTorusIntegralCLM z R hR F g = ∯ zeta in T(z, fun _ ↦ R), G zeta • f zeta := by
-  simp only [polydiscTorusIntegralCLM, LinearMap.mkContinuous_apply, LinearMap.coe_mk,
-    AddHom.coe_mk, torusIntegral, hF, hG]
-  rfl
-
-/-- A point of an equal-radius torus is distinct from every point of the open ball. -/
-private lemma torusMap_ne_of_mem_ball {n : ℕ} {z w : Fin n → ℂ} {R : ℝ} (hR : 0 < R)
-    (hw : w ∈ univ.pi fun i ↦ ball (z i) R) (θ : Fin n → ℝ) (i : Fin n) :
-    torusMap z (fun _ ↦ R) θ i ≠ w i := by
-  intro hEq
-  have hs : ‖torusMap z (fun _ ↦ R) θ i - z i‖ = R := by
-    have hm := TauCeti.torusMap_mem_pi_sphere (c := z) (fun _ ↦ hR.le) θ i (mem_univ i)
-    simpa [mem_sphere, dist_eq_norm] using hm
-  have hb : ‖w i - z i‖ < R := by
-    have hwi := hw i (mem_univ i)
-    simpa [mem_ball, dist_eq_norm] using hwi
-  rw [hEq] at hs
-  exact lt_irrefl _ (hs.symm ▸ hb)
-
-/-- Locally uniform limits preserve the polydisc Cauchy integral formula. -/
-private lemma torusIntegral_eq_of_locallyUniformLimit [CompleteSpace E] {n : ℕ}
-    {F : ℕ → (Fin n → ℂ) → E} {f : (Fin n → ℂ) → E} {U : Set (Fin n → ℂ)}
-    (hF : ∀ k, DifferentiableOn ℂ (F k) U)
-    (hlim : TendstoLocallyUniformlyOn F f atTop U) {z : Fin n → ℂ} {R : ℝ} (hR : 0 < R)
-    (hRs : closedBall z R ⊆ U) {w : Fin n → ℂ} (hw : w ∈ ball z R) :
-    (∯ zeta in T(z, fun _ ↦ R), (∏ i, (zeta i - w i))⁻¹ • f zeta) =
-      (2 * Real.pi * I) ^ n • f w := by
-  have hclosed : univ.pi (fun i ↦ closedBall (z i) R) ⊆ U := by
-    rw [← closedBall_pi z hR.le]
-    exact hRs
-  have hball : w ∈ univ.pi fun i ↦ ball (z i) R := by
-    rwa [← ball_pi z hR]
-  have hFk : ∀ k, (∯ zeta in T(z, fun _ ↦ R), (∏ i, (zeta i - w i))⁻¹ • F k zeta) =
-      (2 * Real.pi * I) ^ n • F k w := by
-    intro k
-    have hd : DifferentiableOn ℂ (F k) (univ.pi fun i ↦ closedBall (z i) R) :=
-      (hF k).mono hclosed
-    exact hd.torusIntegral_prod_sub_inv_smul hball
-  have hfCont : ContinuousOn f U :=
-    hlim.continuousOn (Filter.Frequently.of_forall fun k ↦ (hF k).continuousOn)
-  let radii : Fin n → ℝ := fun _ ↦ R
-  let cube : Set (Fin n → ℝ) := Icc (0 : Fin n → ℝ) fun _ ↦ 2 * Real.pi
-  let tor : (Fin n → ℝ) → Fin n → ℂ := torusMap z radii
-  let Kset : Set (Fin n → ℂ) := tor '' cube
-  have hKcomp : IsCompact Kset :=
-    isCompact_Icc.image (TauCeti.continuous_torusMap z radii)
-  have hKsub : Kset ⊆ U := by
-    intro x hx
-    obtain ⟨θ, _, rfl⟩ := hx
-    apply hRs
-    rw [closedBall_pi z hR.le, mem_univ_pi]
-    intro i
-    exact sphere_subset_closedBall
-      (TauCeti.torusMap_mem_pi_sphere (fun _ ↦ hR.le) θ i (mem_univ i))
-  have hzero : (0 : Fin n → ℝ) ∈ cube := by
-    refine mem_Icc.2 ⟨fun _ ↦ le_rfl, fun _ ↦ ?_⟩
-    simpa using Real.two_pi_pos.le
-  have hKne : Kset.Nonempty := ⟨tor 0, mem_image_of_mem _ hzero⟩
-  have hunif : TendstoUniformlyOn F f atTop Kset :=
-    (tendstoLocallyUniformlyOn_iff_tendstoUniformlyOn_of_compact hKcomp).1 (hlim.mono hKsub)
-  have hkerCont : ContinuousOn (fun zeta ↦ (∏ i, (zeta i - w i))⁻¹) Kset := by
-    refine ContinuousOn.inv₀ ?_ ?_
-    · exact continuousOn_finsetProd _ fun i _ ↦
-        ((continuous_apply i).sub continuous_const).continuousOn
-    · intro zeta hzeta
-      obtain ⟨θ, _, rfl⟩ := hzeta
-      exact Finset.prod_ne_zero_iff.2 fun i _ ↦
-        sub_ne_zero.2 (by simpa [tor, radii] using torusMap_ne_of_mem_ball hR hball θ i)
-  obtain ⟨C, hC⟩ := hKcomp.exists_bound_of_continuousOn hkerCont
-  have hC0 : 0 ≤ C := by
-    obtain ⟨zeta, hzeta⟩ := hKne
-    exact (norm_nonneg _).trans (hC zeta hzeta)
-  have hwU : w ∈ U := hRs (ball_subset_closedBall hw)
-  have htend : Tendsto (fun k ↦ ∯ zeta in T(z, radii), (∏ i, (zeta i - w i))⁻¹ • F k zeta)
-      atTop (𝓝 (∯ zeta in T(z, radii), (∏ i, (zeta i - w i))⁻¹ • f zeta)) := by
-    rw [Metric.tendsto_nhds]
-    intro ε hε
-    let jacN : ℝ := ∏ _ : Fin n, |R|
-    let vol : ℝ := volume.real cube
-    let S : ℝ := vol * jacN * C
-    have hS0 : 0 ≤ S := by
-      have hvol : 0 ≤ vol := by
-        simp [vol]
-      have hjac : 0 ≤ jacN := Finset.prod_nonneg fun _ _ ↦ abs_nonneg _
-      exact mul_nonneg (mul_nonneg hvol hjac) hC0
-    have hδpos : 0 < ε / (S + 1) := div_pos hε (by linarith)
-    have hunifδ := (Metric.tendstoUniformlyOn_iff.mp hunif) (ε / (S + 1)) hδpos
-    filter_upwards [hunifδ] with k hk
-    rw [dist_eq_norm]
-    let kern : (Fin n → ℂ) → ℂ := fun zeta ↦ (∏ i, (zeta i - w i))⁻¹
-    let jac : (Fin n → ℝ) → ℂ := fun θ ↦ ∏ i, (R : ℂ) * exp (θ i * I) * I
-    have hFkInt : (∯ zeta in T(z, radii), (∏ i, (zeta i - w i))⁻¹ • F k zeta) =
-        ∫ θ in cube, jac θ • (kern (tor θ) • F k (tor θ)) := by
-      simp only [torusIntegral, kern, jac, radii, tor, cube]
-    have hfInt : (∯ zeta in T(z, radii), (∏ i, (zeta i - w i))⁻¹ • f zeta) =
-        ∫ θ in cube, jac θ • (kern (tor θ) • f (tor θ)) := by
-      simp only [torusIntegral, kern, jac, radii, tor, cube]
-    have hjacC : Continuous jac :=
-      continuous_finsetProd _ fun i _ ↦ by fun_prop
-    have hkerθ : Continuous fun θ ↦ kern (tor θ) := by
-      have hprodθ : Continuous fun θ ↦ ∏ i, (tor θ i - w i) :=
-        continuous_finsetProd _ fun i _ ↦
-          (((continuous_apply i).comp (TauCeti.continuous_torusMap z radii)).sub
-            continuous_const)
-      have hinv : Continuous fun θ ↦ (∏ i, (tor θ i - w i))⁻¹ :=
-        Continuous.inv₀ hprodθ fun θ ↦ Finset.prod_ne_zero_iff.2 fun i _ ↦
-          sub_ne_zero.2 (by simpa [tor, radii] using torusMap_ne_of_mem_ball hR hball θ i)
-      simpa [kern] using hinv
-    have hFcont : Continuous fun θ ↦ F k (tor θ) :=
-      ((hF k).continuousOn.mono hclosed).comp_continuous
-        (TauCeti.continuous_torusMap z radii) fun θ ↦ by
-          rw [mem_univ_pi]
-          intro i
-          exact sphere_subset_closedBall
-            (TauCeti.torusMap_mem_pi_sphere (c := z) (fun _ ↦ hR.le) θ i (mem_univ i))
-    have hfC : Continuous fun θ ↦ f (tor θ) :=
-      hfCont.comp_continuous (TauCeti.continuous_torusMap z radii) fun θ ↦ by
-        apply hRs
-        rw [closedBall_pi z hR.le, mem_univ_pi]
-        intro i
-        exact sphere_subset_closedBall
-          (TauCeti.torusMap_mem_pi_sphere (c := z) (fun _ ↦ hR.le) θ i (mem_univ i))
-    have hcontK : Continuous fun θ ↦ jac θ • (kern (tor θ) • F k (tor θ)) :=
-      hjacC.smul (hkerθ.smul hFcont)
-    have hcontf : Continuous fun θ ↦ jac θ • (kern (tor θ) • f (tor θ)) :=
-      hjacC.smul (hkerθ.smul hfC)
-    rw [hFkInt, hfInt, ← integral_sub hcontK.integrableOn_Icc.integrable
-      hcontf.integrableOn_Icc.integrable]
-    have hEq : EqOn (fun θ ↦ jac θ • (kern (tor θ) • F k (tor θ)) -
-        jac θ • (kern (tor θ) • f (tor θ)))
-        (fun θ ↦ jac θ • (kern (tor θ) • (F k (tor θ) - f (tor θ)))) cube :=
-      fun θ _ ↦ by simp [smul_sub]
-    rw [setIntegral_congr_fun measurableSet_Icc hEq]
-    have hbound : ∀ θ ∈ cube, ‖jac θ • (kern (tor θ) • (F k (tor θ) - f (tor θ)))‖ ≤
-        jacN * C * (ε / (S + 1)) := by
-      intro θ hθ
-      have hdist : ‖F k (tor θ) - f (tor θ)‖ ≤ ε / (S + 1) := by
-        have hlt := hk (tor θ) (mem_image_of_mem _ hθ)
-        rw [dist_eq_norm, norm_sub_rev] at hlt
-        exact hlt.le
-      have hkern : ‖kern (tor θ)‖ ≤ C := hC _ (mem_image_of_mem _ hθ)
-      have hjac : ‖jac θ‖ = jacN := by
-        simp [jac, jacN]
-      calc
-        ‖jac θ • (kern (tor θ) • (F k (tor θ) - f (tor θ)))‖
-            = ‖jac θ‖ * ‖kern (tor θ)‖ * ‖F k (tor θ) - f (tor θ)‖ := by
-              rw [norm_smul, norm_smul, mul_assoc]
-        _ ≤ jacN * C * (ε / (S + 1)) := by
-              rw [hjac]
-              exact mul_le_mul (mul_le_mul_of_nonneg_left hkern (by positivity)) hdist
-                (norm_nonneg _) (mul_nonneg (by positivity) hC0)
-    have hint : ‖∫ θ in cube, jac θ • (kern (tor θ) • (F k (tor θ) - f (tor θ)))‖ ≤
-        (jacN * C * (ε / (S + 1))) * vol :=
-      norm_setIntegral_le_of_norm_le_const measure_Icc_lt_top hbound
-    have hSδ : S * (ε / (S + 1)) < ε := by
-      have hS1 : 0 < S + 1 := by positivity
-      rw [← mul_div_assoc, div_lt_iff₀ hS1]
-      nlinarith [hε]
-    have hscale : (jacN * C * (ε / (S + 1))) * vol = S * (ε / (S + 1)) := by
-      simp only [S, vol]
-      ring
-    exact hint.trans_lt (by rw [hscale]; exact hSδ)
-  have hpoint : Tendsto (fun k ↦ (2 * Real.pi * I) ^ n • F k w) atTop
-      (𝓝 ((2 * Real.pi * I) ^ n • f w)) :=
-    (hlim.tendsto_at hwU).const_smul _
-  have hleft : Tendsto (fun k ↦ (2 * Real.pi * I) ^ n • F k w) atTop
-      (𝓝 (∯ zeta in T(z, radii), (∏ i, (zeta i - w i))⁻¹ • f zeta)) :=
-    htend.congr' (Eventually.of_forall fun k ↦ by simpa [radii] using hFk k)
-  exact by simpa [radii] using tendsto_nhds_unique hleft hpoint
-
-/-- A Cauchy-kernel representation on a polydisc is analytic at the centre.
-The operator and the inversion step follow TauCeti's argument for
-`DifferentiableOn.analyticAt_of_finiteDimensional`. -/
-private lemma analyticAt_of_torusIntegral_representation [CompleteSpace E]
-    {n : ℕ} {f : (Fin n → ℂ) → E}
-    {z : Fin n → ℂ} {R : ℝ} (hR : 0 < R)
-    (hf : ContinuousOn f (univ.pi fun i ↦ closedBall (z i) R))
-    (hrepr : ∀ w ∈ univ.pi fun i ↦ ball (z i) R,
-      (∯ zeta in T(z, fun _ ↦ R), (∏ i, (zeta i - w i))⁻¹ • f zeta) =
-        (2 * Real.pi * I) ^ n • f w) : AnalyticAt ℂ f z := by
-  let Fmap : C((i : Fin n) → sphere (z i) R, E) :=
-    ⟨fun x ↦ f fun i ↦ (x i : ℂ),
-      hf.comp_continuous (by fun_prop) fun x i _ ↦ sphere_subset_closedBall (x i).2⟩
-  let Kfun : (Fin n → ℂ) → C((i : Fin n) → sphere (z i) R, ℂ) := fun w ↦
-    ∏ i, (⟨fun x ↦ (x i : ℂ), by fun_prop⟩ - algebraMap ℂ _ (w i))
-  have hKapply : ∀ w x, Kfun w x = ∏ i, ((x i : ℂ) - w i) := fun w x ↦ by
-    simp [Kfun, ContinuousMap.prod_apply]
-  have hK : AnalyticAt ℂ Kfun z := by
-    refine Finset.analyticAt_fun_prod _ fun i _ ↦ analyticAt_const.sub ?_
-    exact ((algebraMapCLM ℂ C((i : Fin n) → sphere (z i) R, ℂ)).comp
-      (ContinuousLinearMap.proj i)).analyticAt z
-  have hunit : IsUnit (Kfun z) := (ContinuousMap.isUnit_iff_forall_ne_zero _).2 fun x ↦ by
-    rw [hKapply]
-    exact Finset.prod_ne_zero_iff.2 fun i _ ↦ sub_ne_zero.2 (ne_of_mem_sphere (x i).2 hR.ne')
-  have hinv : AnalyticAt ℂ (fun w ↦ Ring.inverse (Kfun w)) z := by
-    have h := analyticAt_inverse (𝕜 := ℂ) hunit.unit
-    rw [hunit.unit_spec] at h
-    exact h.comp hK
-  refine ((((polydiscTorusIntegralCLM z R hR.le Fmap).analyticAt _).comp hinv).const_smul
-    (c := ((2 * Real.pi * I) ^ n)⁻¹)).congr ?_
-  filter_upwards [hK.continuousAt.preimage_mem_nhds (Units.isOpen.mem_nhds hunit),
-    ball_mem_nhds z hR] with w hw hwb
-  rw [ball_pi z hR] at hwb
-  have hinvw : ∀ x, Ring.inverse (Kfun w) x = (∏ i, ((x i : ℂ) - w i))⁻¹ := fun x ↦ by
-    refine eq_inv_of_mul_eq_one_left ?_
-    rw [← hKapply, ← ContinuousMap.mul_apply, Ring.inverse_mul_cancel _ hw,
-      ContinuousMap.one_apply]
-  rw [Pi.smul_apply, Function.comp_apply,
-    polydiscTorusIntegralCLM_apply (G := fun zeta ↦ (∏ i, (zeta i - w i))⁻¹) hR.le
-      (fun _ ↦ rfl) hinvw,
-    hrepr w hwb, smul_smul, inv_mul_cancel₀ (pow_ne_zero _ two_pi_I_ne_zero), one_smul]
-
-/-- The several-variable Weierstrass theorem on open subsets of `ℂⁿ`. -/
+/-- The several-variable Weierstrass theorem on open subsets of `ℂⁿ`: a locally uniform limit of
+holomorphic functions is holomorphic. This is TauCeti's `TendstoUniformlyOn.differentiableOn`
+applied on small balls, whose closures are compact. -/
 theorem differentiableOn_of_locallyUniformLimit [CompleteSpace E] {n : ℕ}
     {F : ℕ → (Fin n → ℂ) → E} {f : (Fin n → ℂ) → E} {U : Set (Fin n → ℂ)}
     (hU : IsOpen U) (hF : ∀ k, DifferentiableOn ℂ (F k) U)
     (hlim : TendstoLocallyUniformlyOn F f atTop U) : DifferentiableOn ℂ f U := by
   intro z hz
   obtain ⟨R, hR, hRs⟩ := nhds_basis_closedBall.mem_iff.1 (hU.mem_nhds hz)
-  have hfContU : ContinuousOn f U :=
-    hlim.continuousOn (Filter.Frequently.of_forall fun k ↦ (hF k).continuousOn)
-  have hsub : univ.pi (fun i ↦ closedBall (z i) R) ⊆ U := by
-    rw [← closedBall_pi z hR.le]
-    exact hRs
-  have hfCont : ContinuousOn f (univ.pi fun i ↦ closedBall (z i) R) := hfContU.mono hsub
-  have hrepr : ∀ w ∈ univ.pi fun i ↦ ball (z i) R,
-      (∯ zeta in T(z, fun _ ↦ R), (∏ i, (zeta i - w i))⁻¹ • f zeta) =
-        (2 * Real.pi * I) ^ n • f w := by
-    intro w hw
-    have hwball : w ∈ ball z R := by
-      rwa [ball_pi z hR]
-    have hclosedBall : closedBall z R ⊆ U := by
-      rwa [closedBall_pi z hR.le]
-    exact torusIntegral_eq_of_locallyUniformLimit hF hlim hR hclosedBall hwball
-  have hA := analyticAt_of_torusIntegral_representation hR hfCont hrepr
-  exact hA.differentiableAt.differentiableWithinAt
+  have hunif : TendstoUniformlyOn F f atTop (ball z R) :=
+    ((tendstoLocallyUniformlyOn_iff_tendstoUniformlyOn_of_compact (isCompact_closedBall z R)).1
+      (hlim.mono hRs)).mono ball_subset_closedBall
+  have hd : DifferentiableOn ℂ f (ball z R) := hunif.differentiableOn
+    (Eventually.of_forall fun k ↦ (hF k).mono (ball_subset_closedBall.trans hRs)) isOpen_ball
+  exact (hd.differentiableAt (ball_mem_nhds z hR)).differentiableWithinAt
 
 end CKMA

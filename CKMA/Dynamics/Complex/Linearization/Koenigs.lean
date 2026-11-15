@@ -59,30 +59,6 @@ namespace CKMA
 
 open Filter Finset Function Metric Set Topology
 
-/-- A nonnegative real different from `1` has no positive power equal to `1`. -/
-theorem pow_ne_one_of_ne_one {r : ℝ} {n : ℕ} (hr : 0 ≤ r) (h1 : r ≠ 1) (hn : n ≠ 0) :
-    r ^ n ≠ 1 := by
-  intro h
-  by_cases hlt : r < 1
-  · exact (pow_lt_one₀ hr hlt hn).ne h
-  · exact ((one_lt_pow₀ (lt_of_le_of_ne (not_lt.mp hlt) h1.symm) hn).ne') h
-
-/-- A positive real strictly less than `1` is strictly less than its square root. -/
-theorem lt_sqrt_of_pos_of_lt_one {r : ℝ} (hr0 : 0 < r) (hr1 : r < 1) : r < Real.sqrt r := by
-  rw [Real.lt_sqrt hr0.le]
-  have hmul : r * r < r * 1 := mul_lt_mul_of_pos_left hr1 hr0
-  simpa [sq, mul_one] using hmul
-
-/-- A ratio strictly between a positive real and its square root, when that real is below `1`. -/
-theorem exists_between_self_and_sqrt {r : ℝ} (hr0 : 0 < r) (hr1 : r < 1) :
-    ∃ q : ℝ, r < q ∧ q < Real.sqrt r := by
-  have hlt : r < Real.sqrt r := lt_sqrt_of_pos_of_lt_one hr0 hr1
-  refine ⟨(r + Real.sqrt r) / 2, ?_, ?_⟩
-  · rw [lt_div_iff₀ zero_lt_two]
-    linarith
-  · rw [div_lt_iff₀ zero_lt_two]
-    linarith
-
 /-- The rescaled quadratic weight in the Koenigs Cauchy estimate. -/
 theorem koenigs_remainder_ratio (a q z : ℝ) (n : ℕ) :
     a⁻¹ ^ (n + 1) * (q ^ n * z) ^ 2 = a⁻¹ * (q ^ 2 * a⁻¹) ^ n * z ^ 2 := by
@@ -138,7 +114,8 @@ theorem exists_attracting_disk {f : ℂ → ℂ} (hf : AnalyticAt ℂ f 0) (hf0 
   let lam : ℂ := deriv f 0
   have hlam : lam = deriv f 0 := rfl
   have hpos : 0 < ‖lam‖ := norm_pos_iff.mpr (hlam ▸ hc)
-  obtain ⟨q, hq_gt, hq_sqrt⟩ := exists_between_self_and_sqrt hpos (hlam ▸ hlt)
+  obtain ⟨q, hq_gt, hq_sqrt⟩ :=
+    exists_between (Real.lt_sqrt_self_iff.2 ⟨hpos.ne', hlam ▸ hlt⟩)
   have hq_pos : 0 < q := lt_trans hpos hq_gt
   have hsqrt_lt_one : Real.sqrt ‖lam‖ < 1 := by
     rw [← Real.sqrt_one]
@@ -582,7 +559,6 @@ theorem koenigsCoordinate_eventuallyEq_of {f phi psi : ℂ → ℂ} {c : ℂ} (h
         _ = 1 * c := (one_mul c).symm
     have hnorm : ‖c‖ ^ (m - 1) = 1 := by
       rw [← norm_pow, hpow, norm_one]
-    exact absurd hnorm <|
-      pow_ne_one_of_ne_one (norm_nonneg _) hunit (by omega : m - 1 ≠ 0)
+    exact absurd ((pow_eq_one_iff_of_nonneg (norm_nonneg _) (by omega : m - 1 ≠ 0)).1 hnorm) hunit
 
 end CKMA

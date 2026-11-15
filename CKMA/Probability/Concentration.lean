@@ -30,7 +30,8 @@ normalizations are explicit at the theorem interfaces.
 
 ## Main results
 
-* `CKMA.bernstein`: scalar Bernstein inequality for independent bounded centered summands.
+* `CKMA.bernstein`: scalar Bernstein inequality for independent bounded centered summands
+  (in `Concentration.Bernstein`).
 * `CKMA.HasPsiTwoBound.hasGaussianTail`: exponential square control implies Gaussian tails.
 * `CKMA.HasGaussianTail.hasPsiTwoBound`: Gaussian tails imply exponential square control.
 * `CKMA.HasPsiTwoBound.hasGaussianMoments`: exponential square control implies moment growth.
@@ -38,6 +39,8 @@ normalizations are explicit at the theorem interfaces.
 * `CKMA.HasPsiTwoBound.hasSubgaussianMGF`: centered exponential square control implies
   sub-Gaussian MGF.
 * `CKMA.johnson_lindenstrauss`: Johnson–Lindenstrauss finite-set dimension reduction.
+
+The implication theorems are in `Concentration.Basic`.
 -/
 
 @[expose] public section
@@ -45,53 +48,6 @@ normalizations are explicit at the theorem interfaces.
 noncomputable section
 
 namespace CKMA
-
-open scoped NNReal ENNReal BigOperators
-open MeasureTheory ProbabilityTheory
-
-variable {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω}
-
-/-- **07.4**: scalar Bernstein inequality for independent bounded centered summands. -/
-theorem bernstein [IsProbabilityMeasure μ] {n : ℕ} (X : Fin n → Ω → ℝ)
-    (hm : ∀ i, Measurable (X i)) (hi : iIndepFun X μ)
-    (hc : ∀ i, ∫ ω, X i ω ∂μ = 0) {b t : ℝ} (hb : 0 ≤ b) (ht : 0 ≤ t)
-    (hbound : ∀ i, ∀ᵐ ω ∂μ, |X i ω| ≤ b) :
-    μ {ω | t ≤ |∑ i, X i ω|} ≤ ENNReal.ofReal
-      (2 * Real.exp (-(t ^ 2 / (2 * ((∑ i, ∫ ω, (X i ω) ^ 2 ∂μ) + b * t / 3))))) :=
-  bernstein_of_bounded X hm hi hc hb ht hbound
-
-/-- **07.6**: exponential square control implies Gaussian tails, without centering. -/
-theorem HasPsiTwoBound.hasGaussianTail
-    {X : Ω → ℝ} (hm : Measurable X) {K : ℝ} (h : HasPsiTwoBound X μ K) :
-    HasGaussianTail X μ K :=
-  hasGaussianTail_of_hasPsiTwoBound hm h
-
-/-- Gaussian tails give the exponential square condition at twice the scale. -/
-theorem HasGaussianTail.hasPsiTwoBound [IsProbabilityMeasure μ]
-    {X : Ω → ℝ} (hm : Measurable X) {K : ℝ} (h : HasGaussianTail X μ K) :
-    HasPsiTwoBound X μ (2 * K) :=
-  hasPsiTwoBound_of_hasGaussianTail hm h
-
-/-- Exponential square control implies square-root moment growth, without probability
-normalization. -/
-theorem HasPsiTwoBound.hasGaussianMoments
-    {X : Ω → ℝ} (hm : Measurable X) {K : ℝ} (h : HasPsiTwoBound X μ K) :
-    HasGaussianMoments X μ (2 * K) :=
-  hasGaussianMoments_of_hasPsiTwoBound hm h
-
-/-- Moment growth gives exponential square integrability, with a universal change of scale. -/
-theorem HasGaussianMoments.hasPsiTwoBound [IsProbabilityMeasure μ]
-    {X : Ω → ℝ} (hm : Measurable X) {K : ℝ} (h : HasGaussianMoments X μ K) :
-    HasPsiTwoBound X μ (4 * K) :=
-  hasPsiTwoBound_of_hasGaussianMoments hm h
-
-/-- Centered exponential square control implies a sub-Gaussian MGF.
-The numerical constant is deliberately nonoptimal. -/
-theorem HasPsiTwoBound.hasSubgaussianMGF [IsProbabilityMeasure μ]
-    {X : Ω → ℝ} (hm : Measurable X) (hc : ∫ ω, X ω ∂μ = 0)
-    {K : ℝ} (h : HasPsiTwoBound X μ K) :
-    HasSubgaussianMGF X (⟨16 * K ^ 2, by positivity⟩ : ℝ≥0) μ :=
-  hasSubgaussianMGF_of_hasPsiTwoBound hm hc h
 
 /-- **07.47**: Johnson–Lindenstrauss, with a constant uniform in dimensions and points.
 The `max N 1` convention includes the empty configuration. -/

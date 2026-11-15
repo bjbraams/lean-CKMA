@@ -88,16 +88,9 @@ lemma mem_ratioList {f : ℝ → ℝ} {α : ℝ} {j N n i : ℕ} (hn : n < N) (h
   refine List.mem_flatMap.2 ⟨n, List.mem_range.2 hn, ?_⟩
   exact List.mem_map.2 ⟨i, List.mem_range.2 hi, rfl⟩
 
-/-- `(1 / 2 ^ n) ^ α` is the negative real power `2 ^ (-α n)`. -/
-lemma one_div_two_pow_rpow {α : ℝ} (n : ℕ) :
-    ((1 : ℝ) / 2 ^ n) ^ α = (2 : ℝ) ^ (-(α * ↑n)) := by
-  have h2 : (0 : ℝ) ≤ 2 := by positivity
-  calc
-    ((1 : ℝ) / 2 ^ n) ^ α = (((2 : ℝ) ^ n)⁻¹) ^ α := by rw [one_div]
-    _ = (((2 : ℝ) ^ (n : ℝ))⁻¹) ^ α := by rw [← Real.rpow_natCast]
-    _ = ((2 : ℝ) ^ (-(n : ℝ))) ^ α := by rw [← Real.rpow_neg h2]
-    _ = (2 : ℝ) ^ ((-(n : ℝ)) * α) := by rw [← Real.rpow_mul h2]
-    _ = (2 : ℝ) ^ (-(α * ↑n)) := by ring_nf
+/-- `(1 / 2 ^ n)` is the real power `2 ^ (-n)`. -/
+lemma one_div_two_pow_eq_rpow (n : ℕ) : (1 : ℝ) / 2 ^ n = (2 : ℝ) ^ (-(n : ℝ)) := by
+  rw [one_div, ← Real.rpow_natCast, ← Real.rpow_neg (by norm_num : (0 : ℝ) ≤ 2)]
 
 /-- Eventual unit increment bounds produce a finite dyadic Hölder constant. -/
 lemma hasDyadicIncrements_of_eventually {f : ℝ → ℝ} {α : ℝ} {j N : ℕ}
@@ -118,7 +111,9 @@ lemma hasDyadicIncrements_of_eventually {f : ℝ → ℝ} {α : ℝ} {j N : ℕ}
           holderConstFrom f α j N / (2 : ℝ) ^ (α * ↑n) := hΔ
       _ = holderConstFrom f α j N * (2 : ℝ) ^ (-(α * ↑n)) := by
         rw [div_eq_mul_inv, ← Real.rpow_neg (by positivity)]
-      _ = holderConstFrom f α j N * ((1 : ℝ) / 2 ^ n) ^ α := by rw [one_div_two_pow_rpow]
+      _ = holderConstFrom f α j N * ((1 : ℝ) / 2 ^ n) ^ α := by
+        rw [one_div_two_pow_eq_rpow, ← Real.rpow_mul (by norm_num : (0 : ℝ) ≤ 2), neg_mul,
+          mul_comm (n : ℝ) α]
   · have hn' : N ≤ n := by omega
     exact (hN n hn' i hi).trans <| by
       nth_rw 1 [← one_mul (((1 : ℝ) / 2 ^ n) ^ α)]

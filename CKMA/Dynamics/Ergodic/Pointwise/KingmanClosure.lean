@@ -74,21 +74,21 @@ lemma eLpNorm_one_eq_ofReal_abs {w : Ω → ℝ} (hw : AEStronglyMeasurable w μ
   rw [hfun, ← ofReal_integral_eq_lintegral_ofReal habs hnn]
 
 /-- Truncated Fekete values decrease to the untruncated infimum. -/
-lemma tendsto_kingmanFekete_trunc [IsProbabilityMeasure μ] {f : ℕ → Ω → ℝ}
+lemma tendsto_subadditiveMeanRate_trunc [IsProbabilityMeasure μ] {f : ℕ → Ω → ℝ}
     (hf : ∀ n : ℕ, 0 < n → Integrable (f n) μ)
     (hf_meas : ∀ n : ℕ, 0 < n → Measurable (f n))
     (hlower : ∃ c : ℝ, ∀ n : ℕ, 0 < n → c ≤ (n : ℝ)⁻¹ * ∫ ω, f n ω ∂μ) :
-    Tendsto (fun K : ℕ => kingmanFekete (kingmanTrunc K f) μ) atTop
-      (𝓝 (kingmanFekete f μ)) := by
-  set L : ℝ := kingmanFekete f μ
-  set LK : ℕ → ℝ := fun K => kingmanFekete (kingmanTrunc K f) μ
-  have hL_le : ∀ K, L ≤ LK K := fun K => kingmanFekete_le_trunc hf hf_meas hlower
+    Tendsto (fun K : ℕ => subadditiveMeanRate (kingmanTrunc K f) μ) atTop
+      (𝓝 (subadditiveMeanRate f μ)) := by
+  set L : ℝ := subadditiveMeanRate f μ
+  set LK : ℕ → ℝ := fun K => subadditiveMeanRate (kingmanTrunc K f) μ
+  have hL_le : ∀ K, L ≤ LK K := fun K => subadditiveMeanRate_le_trunc hf hf_meas hlower
   rw [Metric.tendsto_nhds]
   intro ε hε
   obtain ⟨a, haMem, haLt⟩ := exists_lt_of_csInf_lt
     (s := {a : ℝ | ∃ n : ℕ, 0 < n ∧ a = (n : ℝ)⁻¹ * ∫ ω, f n ω ∂μ})
     ⟨((1 : ℕ) : ℝ)⁻¹ * ∫ ω, f 1 ω ∂μ, ⟨1, Nat.one_pos, rfl⟩⟩
-    (lt_add_of_pos_right (kingmanFekete f μ) hε)
+    (lt_add_of_pos_right (subadditiveMeanRate f μ) hε)
   rcases haMem with ⟨n, hn, rfl⟩
   have htr := tendsto_integral_kingmanTrunc hn (hf n hn) (hf_meas n hn)
   filter_upwards [htr.eventually (isOpen_Iio.mem_nhds haLt)] with K hK
@@ -104,7 +104,7 @@ lemma tendsto_kingmanFekete_trunc [IsProbabilityMeasure μ] {f : ℕ → Ω → 
           (integrable_kingmanTrunc (hf m hm) (hf_meas m hm)) fun _ => kingmanTrunc_ge
       exact (hc m hm).trans (mul_le_mul_of_nonneg_left hmono
         (inv_nonneg.mpr (Nat.cast_nonneg _)))
-    simpa [LK, kingmanFekete] using csInf_le hbdd ⟨n, hn, rfl⟩
+    simpa [LK, subadditiveMeanRate] using csInf_le hbdd ⟨n, hn, rfl⟩
   linarith [hLK_le.trans_lt hK]
 
 /-- A measurable subadditive process has an invariant Kingman limit with the Fekete mean. -/
@@ -118,7 +118,7 @@ lemma kingman_limit_of_measurable [IsProbabilityMeasure μ] (hT : MeasurePreserv
       (kingmanLiminfReal f ∘ T =ᵐ[μ] kingmanLiminfReal f) ∧
       (∀ᵐ ω ∂μ, Tendsto (fun n : ℕ ↦ (n + 1 : ℝ)⁻¹ * f (n + 1) ω) atTop
         (𝓝 (kingmanLiminfReal f ω))) ∧
-      (∫ ω, kingmanLiminfReal f ω ∂μ) = kingmanFekete f μ ∧
+      (∫ ω, kingmanLiminfReal f ω ∂μ) = subadditiveMeanRate f μ ∧
       (∀ᵐ ω ∂μ, ∀ K : ℕ, kingmanLiminfReal (kingmanTrunc K f) ω =
         max (kingmanLiminfReal f ω) (-(K : ℝ))) := by
   have htrunc_int : ∀ K n, 0 < n → Integrable (kingmanTrunc K f n) μ :=
@@ -129,9 +129,9 @@ lemma kingman_limit_of_measurable [IsProbabilityMeasure μ] (hT : MeasurePreserv
       -(K : ℝ) * (n : ℝ) ≤ kingmanTrunc K f n ω :=
     fun K n hn ω => kingmanTrunc_lower
   let gK : ℕ → Ω → ℝ := fun K => kingmanLiminfReal (kingmanTrunc K f)
-  let LK : ℕ → ℝ := fun K => kingmanFekete (kingmanTrunc K f) μ
+  let LK : ℕ → ℝ := fun K => subadditiveMeanRate (kingmanTrunc K f) μ
   let g : Ω → ℝ := kingmanLiminfReal f
-  let L : ℝ := kingmanFekete f μ
+  let L : ℝ := subadditiveMeanRate f μ
   have hratioK : ∀ᵐ ω ∂μ, ∀ K, Tendsto (fun n => kingmanRatio (kingmanTrunc K f) n ω)
       atTop (𝓝 (gK K ω)) :=
     (ae_all_iff).2 fun K => by
@@ -148,11 +148,11 @@ lemma kingman_limit_of_measurable [IsProbabilityMeasure μ] (hT : MeasurePreserv
       (kingmanTrunc_subadditive hsub) (htrunc_C K)).1
   have hintK : ∀ K, ∫ ω, gK K ω ∂μ = LK K := by
     intro K
-    simpa [gK, LK, kingmanFekete] using kingmanLiminfReal_integral_eq hT (htrunc_int K)
+    simpa [gK, LK, subadditiveMeanRate] using kingmanLiminfReal_integral_eq hT (htrunc_int K)
       (htrunc_meas K) (kingmanTrunc_subadditive hsub) (htrunc_C K)
-  have hL_le : ∀ K, L ≤ LK K := fun K => kingmanFekete_le_trunc hf hf_meas hlower
+  have hL_le : ∀ K, L ≤ LK K := fun K => subadditiveMeanRate_le_trunc hf hf_meas hlower
   have hLK_tend : Tendsto LK atTop (𝓝 L) := by
-    simpa [LK, L] using tendsto_kingmanFekete_trunc hf hf_meas hlower
+    simpa [LK, L] using tendsto_subadditiveMeanRate_trunc hf hf_meas hlower
   have hmax : ∀ᵐ ω ∂μ, ∀ K : ℕ,
       max (kingmanLiminf f ω) (-((K : ℝ) : EReal)) = (gK K ω : EReal) ∧
       max (kingmanLimsup f ω) (-((K : ℝ) : EReal)) = (gK K ω : EReal) := by
@@ -229,7 +229,7 @@ lemma kingman_limit_of_measurable [IsProbabilityMeasure μ] (hT : MeasurePreserv
     have hμpos : 0 < μ.real A := lt_of_not_ge hgt
     obtain ⟨c, hc⟩ := hlower
     have hcL : c ≤ L := by
-      unfold L kingmanFekete
+      unfold L subadditiveMeanRate
       refine le_csInf ⟨((1 : ℕ) : ℝ)⁻¹ * ∫ ω, f 1 ω ∂μ, ⟨1, Nat.one_pos, rfl⟩⟩ ?_
       rintro a ⟨n, hn, rfl⟩
       exact hc n hn
@@ -306,7 +306,7 @@ lemma kingman_limit_of_measurable [IsProbabilityMeasure μ] (hT : MeasurePreserv
   have hcut : ∀ᵐ ω ∂μ, ∀ K, gK K ω = max (g ω) (-(K : ℝ)) := by
     filter_upwards [hmax, hgood] with ω hmaxω hgoodω K
     have hmaxg := (hmaxω K).1
-    rw [hgoodω.1, ← EReal.coe_neg (K : ℝ), ← ereal_coe_max] at hmaxg
+    rw [hgoodω.1, ← EReal.coe_neg (K : ℝ), ← EReal.coe_strictMono.monotone.map_max] at hmaxg
     exact (EReal.coe_injective hmaxg).symm
   have hinv : g ∘ T =ᵐ[μ] g := by
     have hcutT := hT.quasiMeasurePreserving.ae hcut
@@ -424,12 +424,12 @@ lemma kingman_eLpNorm_of_measurable [IsProbabilityMeasure μ] (hT : MeasurePrese
   obtain ⟨hg_int, -, -, hint_g, hcut⟩ :=
     kingman_limit_of_measurable hT hf hf_meas hsub hlower
   let g : Ω → ℝ := kingmanLiminfReal f
-  let L : ℝ := kingmanFekete f μ
+  let L : ℝ := subadditiveMeanRate f μ
   have hg_meas : Measurable g := (measurable_kingmanLiminf hf_meas).ereal_toReal
-  have hLK_tend : Tendsto (fun K : ℕ => kingmanFekete (kingmanTrunc K f) μ) atTop (𝓝 L) := by
-    simpa [L] using tendsto_kingmanFekete_trunc hf hf_meas hlower
-  have hL_le : ∀ K, L ≤ kingmanFekete (kingmanTrunc K f) μ :=
-    fun K => kingmanFekete_le_trunc hf hf_meas hlower
+  have hLK_tend : Tendsto (fun K : ℕ => subadditiveMeanRate (kingmanTrunc K f) μ) atTop (𝓝 L) := by
+    simpa [L] using tendsto_subadditiveMeanRate_trunc hf hf_meas hlower
+  have hL_le : ∀ K, L ≤ subadditiveMeanRate (kingmanTrunc K f) μ :=
+    fun K => subadditiveMeanRate_le_trunc hf hf_meas hlower
   have hint_abs : Tendsto (fun n : ℕ =>
       ∫ ω, |kingmanRatio f n ω - g ω| ∂μ) atTop (𝓝 0) := by
     rw [Metric.tendsto_atTop]
@@ -438,7 +438,7 @@ lemma kingman_eLpNorm_of_measurable [IsProbabilityMeasure μ] (hT : MeasurePrese
     have hε4 : 0 < ε / 4 := div_pos hε h4pos
     obtain ⟨K0, hK0⟩ := (Metric.tendsto_atTop.mp hLK_tend) (ε / 4) hε4
     let K : ℕ := K0
-    let FK : ℝ := kingmanFekete (kingmanTrunc K f) μ
+    let FK : ℝ := subadditiveMeanRate (kingmanTrunc K f) μ
     have hδ : FK - L < ε / 4 := by
       have hdist := hK0 K le_rfl
       rw [Real.dist_eq, abs_of_nonneg (sub_nonneg.mpr (hL_le K))] at hdist
@@ -456,7 +456,7 @@ lemma kingman_eLpNorm_of_measurable [IsProbabilityMeasure μ] (hT : MeasurePrese
       (kingmanLiminfReal_integrable_le hT htrunc_int htrunc_meas
         (kingmanTrunc_subadditive hsub) hC).1
     have hintK : ∫ ω, gK ω ∂μ = FK := by
-      simpa [gK, FK, kingmanFekete] using kingmanLiminfReal_integral_eq hT htrunc_int
+      simpa [gK, FK, subadditiveMeanRate] using kingmanLiminfReal_integral_eq hT htrunc_int
         htrunc_meas (kingmanTrunc_subadditive hsub) hC
     have hlowerK : ∃ c : ℝ, ∀ n : ℕ, 0 < n →
         c ≤ (n : ℝ)⁻¹ * ∫ ω, kingmanTrunc K f n ω ∂μ := by
@@ -475,7 +475,7 @@ lemma kingman_eLpNorm_of_measurable [IsProbabilityMeasure μ] (hT : MeasurePrese
       rw [integral_sub (integrable_kingmanRatio htrunc_int n) (integrable_kingmanRatio hf n)]
       simp only [kingmanRatio, integral_const_mul]
     have hu_tend : Tendsto (fun n => ∫ ω, ρK n ω - ρ n ω ∂μ) atTop (𝓝 (FK - L)) := by
-      simpa [FK, L, kingmanFekete] using (hdivK.sub hdiv).congr fun n => (hu_eq n).symm
+      simpa [FK, L, subadditiveMeanRate] using (hdivK.sub hdiv).congr fun n => (hu_eq n).symm
     have hLpK : Tendsto (fun n => eLpNorm (fun ω => ρK n ω - gK ω) 1 μ) atTop (𝓝 0) := by
       simpa [ρK, gK, kingmanRatio] using kingman_eLpNorm_tendsto_of_linear hT htrunc_int
         htrunc_meas (kingmanTrunc_subadditive hsub) hC
@@ -580,7 +580,7 @@ lemma kingman_of_measurable [IsProbabilityMeasure μ] (hT : MeasurePreserving T 
       (∀ᵐ ω ∂μ, Tendsto (fun n : ℕ ↦ (n + 1 : ℝ)⁻¹ * f (n + 1) ω) atTop (𝓝 (g ω))) ∧
       Tendsto (fun n : ℕ ↦ eLpNorm (fun ω ↦ (n + 1 : ℝ)⁻¹ * f (n + 1) ω - g ω) 1 μ)
         atTop (𝓝 0) ∧
-      (∫ ω, g ω ∂μ) = kingmanFekete f μ := by
+      (∫ ω, g ω ∂μ) = subadditiveMeanRate f μ := by
   obtain ⟨hg, hinv, hconv, hint, -⟩ :=
     kingman_limit_of_measurable hT hf hf_meas hsub hlower
   exact ⟨kingmanLiminfReal f, hg, hinv, hconv,
@@ -596,7 +596,7 @@ lemma kingman_of_integrable [IsProbabilityMeasure μ] (hT : MeasurePreserving T 
       (∀ᵐ ω ∂μ, Tendsto (fun n : ℕ ↦ (n + 1 : ℝ)⁻¹ * f (n + 1) ω) atTop (𝓝 (g ω))) ∧
       Tendsto (fun n : ℕ ↦ eLpNorm (fun ω ↦ (n + 1 : ℝ)⁻¹ * f (n + 1) ω - g ω) 1 μ)
         atTop (𝓝 0) ∧
-      (∫ ω, g ω ∂μ) = kingmanFekete f μ := by
+      (∫ ω, g ω ∂μ) = subadditiveMeanRate f μ := by
   have hf_int : ∀ n : ℕ, 0 < n → Integrable (kingmanMk hf n) μ :=
     fun n hn => integrable_kingmanMk hf hn
   have hf_meas : ∀ n : ℕ, 0 < n → Measurable (kingmanMk hf n) :=
@@ -628,11 +628,11 @@ lemma kingman_ae_tendsto_of_ergodic [IsProbabilityMeasure μ] (hT : Ergodic T μ
       f (n + m) ω ≤ f n ω + f m ((T^[n]) ω))
     (hlower : ∃ c : ℝ, ∀ n : ℕ, 0 < n → c ≤ (n : ℝ)⁻¹ * ∫ ω, f n ω ∂μ) :
     ∀ᵐ ω ∂μ, Tendsto (fun n : ℕ ↦ (n + 1 : ℝ)⁻¹ * f (n + 1) ω) atTop
-      (𝓝 (kingmanFekete f μ)) := by
+      (𝓝 (subadditiveMeanRate f μ)) := by
   obtain ⟨g, hg_int, hinv, hconv, -, hint⟩ :=
     kingman_of_integrable hT.toMeasurePreserving hf hsub hlower
   obtain ⟨c, hc⟩ := hT.ae_eq_const_of_ae_eq_comp_ae hg_int.aestronglyMeasurable hinv
-  have hcL : c = kingmanFekete f μ := by
+  have hcL : c = subadditiveMeanRate f μ := by
     have heq : ∫ ω, g ω ∂μ = c := by
       rw [integral_congr_ae hc]
       simp only [Function.const]

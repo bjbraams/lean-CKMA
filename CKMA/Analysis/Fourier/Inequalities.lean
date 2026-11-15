@@ -7,6 +7,7 @@ module
 
 public import CKMA.Analysis.Fourier.Inequalities.Cutoff
 
+import CKMA.Analysis.Fourier.LpSpace
 import Mathlib.MeasureTheory.Function.LocallyIntegrable
 import Mathlib.Topology.Algebra.ConstMulAction
 
@@ -120,13 +121,10 @@ private lemma fderiv_cutoff_ae (n : ℕ) (j : Fin d) (f : Lp ℂ 2 (volume : Mea
     rw [hc, Pi.smul_apply, smul_eq_mul, hcut]
   have hint : Integrable (fun v ↦ (c • ξCut) v) volume :=
     (integrable_congr hcoe).2 ((integrable_freqCutoff n ξLp).smul c)
-  have hae := fourierInv_ae_eq_lp hint (Lp.memLp (c • ξCut))
-  filter_upwards [hae, hψ, hcoe] with x hx hψx hcoex
-  rw [hderiv]
-  rw [fourierInv_congr_ae hψ]
-  rw [fourierInv_congr_ae hcoe.symm]
-  rw [hx]
-  rw [Lp.toLp_coeFn _ (Lp.memLp (c • ξCut))]
+  have hae := Integrable.coeFn_fourierInv_toLp hint (Lp.memLp (c • ξCut))
+  filter_upwards [hae] with x hx
+  rw [hderiv, Real.fourierInv_congr_ae hψ, Real.fourierInv_congr_ae hcoe.symm, ← hx,
+    Lp.toLp_coeFn _ (Lp.memLp (c • ξCut))]
 
 /-- Coordinate weight of the cutoff inverse transform, identified in `L²`. -/
 private lemma coord_mul_cutoff_ae (n : ℕ) (j : Fin d) (f : Lp ℂ 2 (volume : Measure V))
@@ -155,10 +153,11 @@ private lemma coord_mul_cutoff_ae (n : ℕ) (j : Fin d) (f : Lp ℂ 2 (volume : 
           (gLp : TemperedDistribution V ℂ) := by rw [hinner]
     rw [← hsmul]
   have hg_ae : g =ᵐ[volume] fun x ↦ gLp x :=
-    fourierInv_ae_eq_lp (integrable_freqCutoff n (𝓕 f)) (freqBump_mul_memLp n (𝓕 f))
+    (Integrable.coeFn_fourierInv_toLp (integrable_freqCutoff n (𝓕 f))
+      (freqBump_mul_memLp n (𝓕 f))).symm
   apply ae_eq_of_integral_contDiff_smul_eq
     ((coordFun_hasTemperateGrowth j).1.continuous.mul
-      (continuous_fourierInv_of_integrable (integrable_freqCutoff n (𝓕 f)))).locallyIntegrable
+      (integrable_freqCutoff n (𝓕 f)).continuous_fourierInv).locallyIntegrable
     ((Lp.memLp (c⁻¹ • 𝓕⁻ w)).locallyIntegrable one_le_two)
   intro ψ hψ hsup
   let ψC : V → ℂ := fun x ↦ (ψ x : ℂ)
@@ -189,7 +188,7 @@ private lemma coord_mul_cutoff_ae (n : ℕ) (j : Fin d) (f : Lp ℂ 2 (volume : 
       c * ∫ (x : V), ζ x * (coordFun j x * gLp x) := by
     simpa [hζg] using happly
   have hc : c ≠ 0 := by
-    simpa only [c, neg_ne_zero] using two_pi_I_ne_zero
+    simpa only [c, neg_ne_zero] using Complex.two_pi_I_ne_zero
   have hmul : ∫ (x : V), ζ x * (c⁻¹ * (𝓕⁻ w) x) =
       ∫ (x : V), ζ x * (coordFun j x * gLp x) := by
     apply mul_left_cancel₀ hc
@@ -237,7 +236,8 @@ private lemma cutoff_sq_le (n : ℕ) (j : Fin d) (f : Lp ℂ 2 (volume : Measure
   let c : ℂ := -(2 * π * I)
   have hgcont : ContDiff ℝ (⊤ : ℕ∞) g := contDiff_fourierInv_freqCutoff n (𝓕 f)
   have hgae : g =ᵐ[volume] fun x ↦ (𝓕⁻ uLp) x :=
-    fourierInv_ae_eq_lp (integrable_freqCutoff n (𝓕 f)) (freqBump_mul_memLp n (𝓕 f))
+    (Integrable.coeFn_fourierInv_toLp (integrable_freqCutoff n (𝓕 f))
+      (freqBump_mul_memLp n (𝓕 f))).symm
   have hgmem : MemLp g 2 volume := (Lp.memLp (𝓕⁻ uLp)).ae_eq hgae.symm
   have hxae := coord_mul_cutoff_ae n j f hx
   have hxmem : MemLp (fun x ↦ coordFun j x * g x) 2 volume :=

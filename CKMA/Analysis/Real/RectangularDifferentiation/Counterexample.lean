@@ -75,29 +75,6 @@ def stageScale (k : ℕ) : ℝ :=
 /-- Side length of the bounding square of one scaled picture. -/
 def boxSide (k : ℕ) : ℝ := stageScale k * stageCount k
 
-/-- `k + 1` is at most a power of two. -/
-lemma nat_succ_le_two_pow (k : ℕ) : k + 1 ≤ 2 ^ (k + 1) := by
-  induction k with
-  | zero => decide
-  | succ k ih =>
-    calc
-      k + 1 + 1 ≤ 2 ^ (k + 1) + 2 ^ (k + 1) := by
-        have : 1 ≤ 2 ^ (k + 1) := Nat.one_le_two_pow
-        omega
-      _ = 2 ^ (k + 2) := by rw [← two_mul, ← pow_succ']
-
-/-- `n + 1 ≤ 2 ^ n`. -/
-lemma succ_le_two_pow (n : ℕ) : n + 1 ≤ 2 ^ n := by
-  induction n with
-  | zero => decide
-  | succ n ih =>
-    calc
-      n + 1 + 1 ≤ 2 ^ n + 1 := by omega
-      _ ≤ 2 ^ n + 2 ^ n := by
-        have : 1 ≤ 2 ^ n := Nat.one_le_two_pow
-        omega
-      _ = 2 ^ (n + 1) := by rw [← two_mul, ← pow_succ']
-
 /-- The scale is positive. -/
 lemma stageScale_pos (k : ℕ) : 0 < stageScale k := by
   unfold stageScale
@@ -599,7 +576,7 @@ lemma removalRatio_mem_Ioo (k : ℕ) : 0 < removalRatio k ∧ removalRatio k < 1
   have hhalf : (stageLog k : ℝ) / 2 < stageCount k := by
     have hlt : stageLog k < 2 * stageCount k := by
       have hpow : stageLog k ≤ 2 ^ stageLog k := by
-        have hsucc := succ_le_two_pow (stageLog k)
+        have hsucc : stageLog k + 1 ≤ 2 ^ stageLog k := Nat.lt_two_pow_self
         omega
       have htwo : 2 ^ stageLog k < 2 * 2 ^ stageLog k := by
         have hone : 1 ≤ 2 ^ stageLog k := Nat.one_le_two_pow

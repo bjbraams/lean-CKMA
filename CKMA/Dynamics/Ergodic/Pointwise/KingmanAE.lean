@@ -305,7 +305,7 @@ lemma kingmanLiminf_le_comp {f : ℕ → Ω → ℝ} {C : ℝ}
   have hshift : liminf (fun n => ((kingmanRatio f (n + 1) ω : ℝ) : EReal)) atTop =
       kingmanLiminf f ω := by
     simpa [kingmanLiminf] using
-      (liminf_add_one (u := fun n => (kingmanRatio f n ω : EReal)))
+      (liminf_nat_add (fun n => (kingmanRatio f n ω : EReal)) 1)
   have hzero : liminf (fun n => ((c n * z n : ℝ) : EReal)) atTop + (0 : EReal) =
       liminf (fun n => ((c n * z n : ℝ) : EReal)) atTop := by simp
   calc kingmanLiminf f ω
@@ -392,10 +392,6 @@ lemma liminf_ofReal_add_const {z : ℕ → ℝ} {C : ℝ} :
   have hmono : Monotone EReal.toENNReal := fun _ _ hxy => EReal.toENNReal_le_toENNReal hxy
   have hmap := hmono.map_liminf_of_continuousAt (F := atTop)
     (a := fun n => ((z n + C : ℝ) : EReal)) EReal.continuous_toENNReal.continuousAt
-    (cobdd := by
-      unfold Filter.IsCoboundedUnder
-      exact isCobounded_ge_of_top)
-    (bdd_below := ereal_isBoundedUnder_ge atTop _)
   have hcomp : EReal.toENNReal ∘ (fun n => ((z n + C : ℝ) : EReal)) =
       fun n => ENNReal.ofReal (z n + C) := by
     ext n

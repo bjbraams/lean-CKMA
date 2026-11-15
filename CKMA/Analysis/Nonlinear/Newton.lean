@@ -383,17 +383,6 @@ private lemma isInvertible_of_norm_sub_id_lt [CompleteSpace E] {f : E →L[𝕜]
   have ht : ‖t‖ < 1 := by simpa [t, norm_sub_rev] using hf
   have hf' : f = 1 - t := by
     simp only [t, ContinuousLinearMap.one_def, sub_sub_cancel]
-  have hsum : Summable fun n : ℕ => ‖t‖ ^ n :=
-    summable_geometric_of_lt_one (norm_nonneg _) ht
-  have hpow : ∀ n, ‖t ^ n‖ ≤ ‖t‖ ^ n := by
-    intro n
-    cases n with
-    | zero =>
-      simpa [ContinuousLinearMap.one_def] using
-        ContinuousLinearMap.norm_id_le (𝕜 := 𝕜) (E := E)
-    | succ n => simpa [pow_succ] using norm_pow_le' t n.succ_pos
-  have hsum_pow : Summable fun n : ℕ => ‖t ^ n‖ :=
-    Summable.of_nonneg_of_le (fun _ => norm_nonneg _) hpow hsum
   have hleft : f ∘L (∑' n : ℕ, t ^ n) = ContinuousLinearMap.id 𝕜 E := by
     have hmul := mul_neg_geom_series t ht
     simpa [hf', ContinuousLinearMap.mul_def, ContinuousLinearMap.one_def] using hmul
@@ -402,11 +391,11 @@ private lemma isInvertible_of_norm_sub_id_lt [CompleteSpace E] {f : E →L[𝕜]
     simpa [hf', ContinuousLinearMap.mul_def, ContinuousLinearMap.one_def] using hmul
   refine ⟨ContinuousLinearMap.IsInvertible.of_inverse hleft hright, ?_⟩
   rw [ContinuousLinearMap.inverse_eq hleft hright]
-  calc
-    ‖∑' n : ℕ, t ^ n‖ ≤ ∑' n : ℕ, ‖t ^ n‖ := norm_tsum_le_tsum_norm hsum_pow
-    _ ≤ ∑' n : ℕ, ‖t‖ ^ n := hsum_pow.tsum_le_tsum hpow hsum
-    _ = (1 - ‖t‖)⁻¹ := tsum_geometric_of_lt_one (norm_nonneg _) ht
-    _ = (1 - ‖f - ContinuousLinearMap.id 𝕜 E‖)⁻¹ := by simp [t, norm_sub_rev]
+  have h1 : ‖(1 : E →L[𝕜] E)‖ ≤ 1 := by
+    simpa [ContinuousLinearMap.one_def] using ContinuousLinearMap.norm_id_le (𝕜 := 𝕜) (E := E)
+  have hle := tsum_geometric_le_of_norm_lt_one t ht
+  rw [show ‖f - ContinuousLinearMap.id 𝕜 E‖ = ‖t‖ by simp [t, norm_sub_rev]]
+  linarith
 
 /-- Quadratic Taylor remainder on a convex set, from a Lipschitz bound on the derivative. -/
 private lemma norm_taylor_remainder_le [NormedSpace ℝ E] [CompleteSpace E] {G : E → E}

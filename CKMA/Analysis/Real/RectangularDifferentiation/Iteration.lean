@@ -9,6 +9,7 @@ public import CKMA.Analysis.Real.RectangularDifferentiation.Base
 import Mathlib.MeasureTheory.Constructions.Pi
 import Mathlib.MeasureTheory.Measure.Prod
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
+import Mathlib.Analysis.SpecialFunctions.Log.PosLog
 import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 import Mathlib.MeasureTheory.Function.SpecialFunctions.Basic
 import Mathlib.MeasureTheory.Integral.Layercake
@@ -669,15 +670,10 @@ theorem exists_ratRectangle_of_strongMaximal_gt {d : ℕ} (hd : 0 < d)
   exact ⟨J, hsub hxmem, hJ⟩
 
 /-- The positive part of the logarithm is monotone on the nonnegative reals. -/
+@[deprecated "use `Real.posLog_le_posLog`" (since := "2026-11-15")]
 theorem logPlus_mono {u v : ℝ} (hu : 0 ≤ u) (huv : u ≤ v) :
-    max 0 (Real.log u) ≤ max 0 (Real.log v) := by
-  by_cases hu1 : u ≤ 1
-  · have hlog : Real.log u ≤ 0 := Real.log_nonpos hu hu1
-    simp only [max_eq_left hlog, le_max_left]
-  · have hu1' : 1 < u := lt_of_not_ge hu1
-    have hv1 : 1 < v := lt_of_lt_of_le hu1' huv
-    rw [max_eq_right (Real.log_nonneg hu1'.le), max_eq_right (Real.log_nonneg hv1.le)]
-    exact Real.log_le_log (zero_lt_one.trans hu1') huv
+    max 0 (Real.log u) ≤ max 0 (Real.log v) :=
+  Real.posLog_le_posLog (by linarith) huv
 
 /-- Dividing the argument by an integer multiplies the growth by at most `1 / k`. -/
 theorem strongMaximalGrowth_div_le {n k : ℕ} (hk : 1 ≤ k) {v : ℝ} (hv : 0 ≤ v) :
@@ -686,7 +682,7 @@ theorem strongMaximalGrowth_div_le {n k : ℕ} (hk : 1 ≤ k) {v : ℝ} (hv : 0 
   have hlog : max 0 (Real.log (v / k)) ≤ max 0 (Real.log v) := by
     by_cases hv0 : v = 0
     · simp [hv0, Real.log_zero]
-    · exact logPlus_mono (div_nonneg hv hk0.le) (by
+    · exact Real.posLog_le_posLog (by linarith [div_nonneg hv hk0.le]) (by
         rw [div_le_iff₀ hk0]
         nlinarith [show (1 : ℝ) ≤ k by exact_mod_cast hk])
   simp only [strongMaximalGrowth]

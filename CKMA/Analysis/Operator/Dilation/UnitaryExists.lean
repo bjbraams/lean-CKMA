@@ -40,23 +40,10 @@ variable {E : Type u} [NormedAddCommGroup E] [InnerProductSpace ℂ E]
 /-- A continuous linear functional that vanishes on a densely spanning set vanishes everywhere. -/
 theorem clm_vanish_of_dense_span (f : E →L[ℂ] ℂ) {s : Set E}
     (hspan : (span ℂ s).topologicalClosure = ⊤) (hf : ∀ w ∈ s, f w = 0) (z : E) : f z = 0 := by
-  have hsub : (span ℂ s : Set E) ⊆ {w | f w = 0} := by
-    intro w hw
-    refine span_induction ?_ ?_ ?_ ?_ hw
-    · intro u hu
-      exact hf u hu
-    · simp
-    · intro a b _ _ ha hb
-      simp only [Set.mem_ofPred_eq] at ha hb ⊢
-      rw [map_add, ha, hb, add_zero]
-    · intro c a _ ha
-      simp only [Set.mem_ofPred_eq] at ha ⊢
-      rw [map_smul, ha, smul_zero]
-  have hcl : IsClosed {w : E | f w = 0} := isClosed_eq f.continuous continuous_const
   have hz : z ∈ closure (span ℂ s : Set E) := by
     rw [← topologicalClosure_coe, hspan]
     exact mem_top
-  exact closure_minimal hsub hcl hz
+  exact eqOn_closure_span (g := 0) (fun w hw ↦ hf w hw) hz
 
 /-- Iterates of a linear isometric equivalence agree with its monoid powers. -/
 theorem equiv_iterate_pow_apply (e : E ≃ₗᵢ[ℂ] E) (n : ℕ) (x : E) : (e^[n]) x = (e ^ n) x := by

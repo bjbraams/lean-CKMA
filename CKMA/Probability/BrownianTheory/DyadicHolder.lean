@@ -426,18 +426,6 @@ lemma dyadicHolderFactor_eq {α : ℝ} :
   rw [one_sub_two_rpow_neg]
   field_simp
 
-/-- A natural power of two, raised to `α`, is the geometric term `(2 ^ α) ^ q`. -/
-lemma two_pow_rpow_eq {α : ℝ} (q : ℕ) :
-    ((2 : ℝ) ^ q) ^ α = ((2 : ℝ) ^ α) ^ q := by
-  have h2 : (0 : ℝ) ≤ 2 := by positivity
-  calc
-    ((2 : ℝ) ^ q) ^ α = ((2 : ℝ) ^ (q : ℝ)) ^ α := by
-      rw [← Real.rpow_natCast 2 q]
-    _ = (2 : ℝ) ^ ((q : ℝ) * α) := by rw [Real.rpow_mul h2]
-    _ = (2 : ℝ) ^ (α * (q : ℝ)) := by ring_nf
-    _ = ((2 : ℝ) ^ α) ^ (q : ℝ) := by rw [← Real.rpow_mul h2]
-    _ = ((2 : ℝ) ^ α) ^ q := by rw [Real.rpow_natCast ((2 : ℝ) ^ α) q]
-
 /-- Twice the geometric sum of `2 ^ (q α)` is at most the Hölder factor times `(2 ^ m) ^ α`. -/
 lemma two_mul_geom_le {α : ℝ} {m : ℕ} (hα : 0 < α) :
     2 * ∑ q ∈ Finset.range (m + 1), ((2 : ℝ) ^ q) ^ α ≤
@@ -447,7 +435,7 @@ lemma two_mul_geom_le {α : ℝ} {m : ℕ} (hα : 0 < α) :
   have hx1 : 1 < x := Real.one_lt_rpow h2 hα
   have hxne : x ≠ 1 := ne_of_gt hx1
   have hxpos : 0 < x - 1 := by linarith
-  simp_rw [two_pow_rpow_eq]
+  simp_rw [← Real.rpow_pow_comm (by norm_num : (0 : ℝ) ≤ 2)]
   have hgeom : ∑ q ∈ Finset.range (m + 1), x ^ q = (x ^ (m + 1) - 1) / (x - 1) :=
     geom_sum_eq hxne (m + 1)
   rw [hgeom]
@@ -458,7 +446,7 @@ lemma two_mul_geom_le {α : ℝ} {m : ℕ} (hα : 0 < α) :
   have hmul : x ^ (m + 1) = x * x ^ m := by ring
   rw [hmul]
   have hxm : x ^ m = ((2 : ℝ) ^ m) ^ α := by
-    simpa [x] using (two_pow_rpow_eq m).symm
+    simpa [x] using Real.rpow_pow_comm (by norm_num : (0 : ℝ) ≤ 2) α m
   rw [hxm, dyadicHolderFactor_eq]
   have hxdef : x = (2 : ℝ) ^ α := rfl
   rw [hxdef]

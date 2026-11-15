@@ -6,6 +6,8 @@ Authors: CKMA contributors
 module
 
 public import TauCeti.Analysis.OperatorIdeal.Family.Schatten
+public import TauCeti.Analysis.OperatorIdeal.Nuclear.Basic
+import TauCeti.Analysis.OperatorIdeal.Family.TraceClass
 public import TauCeti.Analysis.OperatorIdeal.ApproximationNumber.Basic
 public import TauCeti.Analysis.OperatorIdeal.ApproximationNumber.KyFan
 public import TauCeti.Analysis.Normed.Operator.Compact.Finite.Rank
@@ -29,8 +31,8 @@ public import Mathlib.LinearAlgebra.Basis.VectorSpace
 # Schatten products and the Hilbert-space trace
 
 Schatten gauges reuse TauCeti's operator-ideal family, with finite Banach exponents at least one.
-The product estimate has constant one at conjugate exponents. Trace class is finiteness of the
-Schatten-one gauge.
+The product estimate has constant one at conjugate exponents. Trace class is finiteness of
+TauCeti's nuclear gauge `ContinuousLinearMap.nuclearENorm`, which is the Schatten-one gauge.
 
 A supplied Hilbert basis defines the scalar trace sum. Trace-class membership gives absolute
 convergence, independence of the possibly differently indexed basis, and cyclicity under bounded
@@ -45,6 +47,8 @@ multiplication. Inner products are linear in the second slot. Sources: GAPS 21.2
 ## Main results
 
 * `CKMA.schatten_holder` (**21.22**): Schatten Hölder inequality with constant one.
+* `CKMA.isTraceClassOperator_iff_schattenGauge_ne_top`: trace class is finiteness of the
+  Schatten-one gauge.
 * `CKMA.IsTraceClassOperator.summable_trace` (**21.23**): absolute convergence of the trace series
   and the trace-norm bound.
 * `CKMA.hilbertTrace_basis_independent`: basis independence of the Hilbert-space trace.
@@ -77,8 +81,19 @@ theorem schatten_holder {p q r : ℝ} (hp : 1 ≤ p) (hq : 1 ≤ q) (hr : 1 ≤ 
     schattenGauge r hr (S.comp T) ≤ schattenGauge p hp S * schattenGauge q hq T := by
   sorry
 
-/-- Trace-class membership through the actual upstream extended Schatten-one gauge. -/
-def IsTraceClassOperator (T : H →L[𝕜] K) : Prop := schattenGauge 1 le_rfl T ≠ ∞
+/-- The Schatten-one gauge is TauCeti's nuclear gauge. -/
+theorem schattenGauge_one_eq_nuclearENorm (T : H →L[𝕜] K) :
+    schattenGauge 1 le_rfl T = T.nuclearENorm := by
+  simp [schattenGauge, TauCeti.OperatorIdealFamily.schatten_one]
+
+/-- Trace-class membership: finiteness of TauCeti's nuclear gauge
+`ContinuousLinearMap.nuclearENorm`, the Schatten-one gauge. -/
+def IsTraceClassOperator (T : H →L[𝕜] K) : Prop := T.nuclearENorm ≠ ∞
+
+/-- Trace class is finiteness of the Schatten-one gauge. -/
+theorem isTraceClassOperator_iff_schattenGauge_ne_top (T : H →L[𝕜] K) :
+    IsTraceClassOperator T ↔ schattenGauge 1 le_rfl T ≠ ∞ := by
+  rw [IsTraceClassOperator, schattenGauge_one_eq_nuclearENorm]
 
 /-- Trace computed in a supplied Hilbert basis, using Mathlib's second-variable-linear inner
 product convention. The trace-class theorems establish that this sum is legitimate. -/
@@ -89,44 +104,6 @@ omit [CompleteSpace H] in
 /-- The trace of the zero operator is zero. -/
 theorem hilbertTrace_zero (b : HilbertBasis ι 𝕜 H) : hilbertTrace b (0 : H →L[𝕜] H) = 0 := by
   simp [hilbertTrace]
-
-/-- Sum of the approximation numbers, the nuclear gauge. -/
-private abbrev nuclearGauge (T : H →L[𝕜] K) : ℝ≥0∞ :=
-  ∑' n, (T.singularValue n : ℝ≥0∞)
-
-/-- The Schatten-one gauge is the nuclear gauge. -/
-private theorem schattenGauge_one_eq_nuclearGauge (T : H →L[𝕜] K) :
-    schattenGauge 1 le_rfl T = nuclearGauge T := by
-  simp [schattenGauge, nuclearGauge, TauCeti.OperatorIdealFamily.gauge_schatten,
-    ENNReal.rpow_one]
-
-/-- Each Ky Fan prefix is at most the nuclear gauge. -/
-private theorem kyFanGauge_le_nuclearGauge (T : H →L[𝕜] K) (k : ℕ) :
-    (T.kyFanGauge k : ℝ≥0∞) ≤ nuclearGauge T := by
-  rw [nuclearGauge, ContinuousLinearMap.kyFanGauge_def, ENNReal.ofNNReal_finsetSum]
-  exact ENNReal.sum_le_tsum (Finset.range k)
-
-/-- Postcomposition does not increase the nuclear gauge beyond the operator enorm. -/
-private theorem nuclearGauge_comp_left_le (A : K →L[𝕜] L) (T : H →L[𝕜] K) :
-    nuclearGauge (A.comp T) ≤ ‖A‖ₑ * nuclearGauge T := by
-  have hpoint (n : ℕ) :
-      ((A.comp T).singularValue n : ℝ≥0∞) ≤ ‖A‖ₑ * (T.singularValue n : ℝ≥0∞) := by
-    rw [enorm_eq_nnnorm]
-    exact_mod_cast A.singularValue_comp_le_left T n
-  calc nuclearGauge (A.comp T)
-      ≤ ∑' n, ‖A‖ₑ * (T.singularValue n : ℝ≥0∞) := ENNReal.tsum_le_tsum hpoint
-    _ = ‖A‖ₑ * nuclearGauge T := by simp [nuclearGauge, ENNReal.tsum_mul_left]
-
-/-- Precomposition does not increase the nuclear gauge beyond the operator enorm. -/
-private theorem nuclearGauge_comp_right_le (T : K →L[𝕜] L) (B : H →L[𝕜] K) :
-    nuclearGauge (T.comp B) ≤ nuclearGauge T * ‖B‖ₑ := by
-  have hpoint (n : ℕ) :
-      ((T.comp B).singularValue n : ℝ≥0∞) ≤ (T.singularValue n : ℝ≥0∞) * ‖B‖ₑ := by
-    rw [enorm_eq_nnnorm]
-    exact_mod_cast T.singularValue_comp_le_right B n
-  calc nuclearGauge (T.comp B)
-      ≤ ∑' n, (T.singularValue n : ℝ≥0∞) * ‖B‖ₑ := ENNReal.tsum_le_tsum hpoint
-    _ = nuclearGauge T * ‖B‖ₑ := by simp [nuclearGauge, ENNReal.tsum_mul_right]
 
 /-- Unit-ball scalar with `phaseScalar z * z = (‖z‖ : 𝕜)`. At zero the scalar vanishes. -/
 private def phaseScalar (z : 𝕜) : 𝕜 := (‖z‖ : 𝕜) * z⁻¹
@@ -170,7 +147,7 @@ private theorem opNorm_sum_phase_rankOne_le {ι : Type*} (b : HilbertBasis ι �
 /-- A finite pairing of two orthonormal families is bounded by the nuclear gauge. -/
 private theorem enorm_sum_inner_two_families_le (T : H →L[𝕜] H) {ι : Type*} [Fintype ι]
     (u v : ι → H) (hu : Orthonormal 𝕜 u) (hv : Orthonormal 𝕜 v) :
-    ‖∑ i, ⟪u i, T (v i)⟫_𝕜‖ₑ ≤ nuclearGauge T := by
+    ‖∑ i, ⟪u i, T (v i)⟫_𝕜‖ₑ ≤ T.nuclearENorm := by
   classical
   let W : Submodule 𝕜 H := Submodule.span 𝕜 (Set.range u)
   let V : Submodule 𝕜 H := Submodule.span 𝕜 (Set.range v)
@@ -209,20 +186,21 @@ private theorem enorm_sum_inner_two_families_le (T : H →L[𝕜] H) {ι : Type*
     calc ‖W.orthogonalProjectionOnto‖₊ * T.singularValue n * ‖V.subtypeL‖₊
         ≤ 1 * T.singularValue n * 1 := by gcongr
       _ = T.singularValue n := by simp
-  have hnu : nuclearGauge C ≤ nuclearGauge T :=
-    ENNReal.tsum_le_tsum fun n ↦ by exact_mod_cast hsing n
+  have hnu : C.nuclearENorm ≤ T.nuclearENorm := by
+    simp only [nuclearENorm_def]
+    exact ENNReal.tsum_le_tsum fun n ↦ by exact_mod_cast hsing n
   calc ‖∑ i, ⟪u i, T (v i)⟫_𝕜‖ₑ
       = ENNReal.ofReal ‖∑ i, ⟪u i, T (v i)⟫_𝕜‖ := by simp [ofReal_norm]
     _ ≤ ENNReal.ofReal (C.kyFanGauge (Fintype.card ι) : ℝ) :=
         ENNReal.ofReal_le_ofReal hky
     _ = (C.kyFanGauge (Fintype.card ι) : ℝ≥0∞) := by simp
-    _ ≤ nuclearGauge C := kyFanGauge_le_nuclearGauge C _
-    _ ≤ nuclearGauge T := hnu
+    _ ≤ C.nuclearENorm := C.kyFanGauge_le_nuclearENorm _
+    _ ≤ T.nuclearENorm := hnu
 
 /-- A finite orthonormal compression has nuclear gauge at most that of the original operator. -/
-private theorem enorm_finset_sum_inner_le_nuclearGauge (T : H →L[𝕜] H) {ι : Type*} (v : ι → H)
+private theorem enorm_finset_sum_inner_le_nuclearENorm (T : H →L[𝕜] H) {ι : Type*} (v : ι → H)
     (hv : Orthonormal 𝕜 v) (s : Finset ι) :
-    ‖∑ i ∈ s, ⟪v i, T (v i)⟫_𝕜‖ₑ ≤ nuclearGauge T := by
+    ‖∑ i ∈ s, ⟪v i, T (v i)⟫_𝕜‖ₑ ≤ T.nuclearENorm := by
   classical
   let u : s → H := fun i ↦ v i
   have hu : Orthonormal 𝕜 u := hv.comp (fun i : s ↦ (i : ι)) Subtype.val_injective
@@ -230,9 +208,9 @@ private theorem enorm_finset_sum_inner_le_nuclearGauge (T : H →L[𝕜] H) {ι 
   simpa [u] using enorm_sum_inner_two_families_le T u u hu hu
 
 /-- Finite sums of absolute diagonal entries are bounded by the nuclear gauge. -/
-private theorem sum_norm_inner_diag_le (T : H →L[𝕜] H) (hT : nuclearGauge T ≠ ∞)
+private theorem sum_norm_inner_diag_le (T : H →L[𝕜] H) (hT : T.nuclearENorm ≠ ∞)
     (b : HilbertBasis ι 𝕜 H) (s : Finset ι) :
-    ∑ i ∈ s, ‖⟪b i, T (b i)⟫_𝕜‖ ≤ (nuclearGauge T).toReal := by
+    ∑ i ∈ s, ‖⟪b i, T (b i)⟫_𝕜‖ ≤ T.nuclearENorm.toReal := by
   let c : ι → 𝕜 := fun i ↦ phaseScalar ⟪b i, T (b i)⟫_𝕜
   let U : H →L[𝕜] H := ∑ i ∈ s, c i • rankOne 𝕜 (b i) (b i)
   have hU : ‖U‖ ≤ 1 := opNorm_sum_phase_rankOne_le b c s fun _ _ ↦ norm_phaseScalar_le_one _
@@ -252,14 +230,15 @@ private theorem sum_norm_inner_diag_le (T : H →L[𝕜] H) (hT : nuclearGauge T
     rw [← map_sum (algebraMap ℝ 𝕜), RCLike.norm_ofReal,
       abs_of_nonneg (Finset.sum_nonneg fun _ _ ↦ norm_nonneg _)]
   have hUnn : ‖U‖₊ ≤ 1 := by exact_mod_cast hU
-  have hnu : nuclearGauge (T.comp U) ≤ nuclearGauge T := by
+  have hnu : (T.comp U).nuclearENorm ≤ T.nuclearENorm := by
+    simp only [nuclearENorm_def]
     refine ENNReal.tsum_le_tsum fun n ↦ ?_
     have hle : (T.comp U).singularValue n ≤ T.singularValue n :=
       (T.singularValue_comp_le_right U n).trans (mul_le_of_le_one_right' hUnn)
     exact_mod_cast hle
-  have hbig : ENNReal.ofReal (∑ i ∈ s, ‖⟪b i, T (b i)⟫_𝕜‖) ≤ nuclearGauge T := by
+  have hbig : ENNReal.ofReal (∑ i ∈ s, ‖⟪b i, T (b i)⟫_𝕜‖) ≤ T.nuclearENorm := by
     rw [← hreal, ofReal_norm, ← hdiag]
-    exact (enorm_finset_sum_inner_le_nuclearGauge (T.comp U) b b.orthonormal s).trans hnu
+    exact (enorm_finset_sum_inner_le_nuclearENorm (T.comp U) b b.orthonormal s).trans hnu
   exact (ENNReal.ofReal_le_iff_le_toReal hT).mp hbig
 
 /-- **21.23**: absolute convergence and the trace-norm bound for every Hilbert basis. -/
@@ -267,49 +246,14 @@ theorem IsTraceClassOperator.summable_trace {T : H →L[𝕜] H} (hT : IsTraceCl
     (b : HilbertBasis ι 𝕜 H) :
     Summable (fun i ↦ ‖⟪b i, T (b i)⟫_𝕜‖) ∧
       ‖hilbertTrace b T‖ₑ ≤ schattenGauge 1 le_rfl T := by
-  have hnu : nuclearGauge T ≠ ∞ := by
-    rw [← schattenGauge_one_eq_nuclearGauge]
-    exact hT
+  have hnu : T.nuclearENorm ≠ ∞ := hT
   have hsum : Summable fun i ↦ ‖⟪b i, T (b i)⟫_𝕜‖ :=
     summable_of_sum_le (fun _ ↦ norm_nonneg _) fun s ↦ sum_norm_inner_diag_le T hnu b s
   refine ⟨hsum, ?_⟩
-  rw [schattenGauge_one_eq_nuclearGauge, hilbertTrace]
+  rw [schattenGauge_one_eq_nuclearENorm, hilbertTrace]
   refine le_of_tendsto'
     ((continuous_enorm.tendsto _).comp (Summable.of_norm hsum).hasSum) fun s ↦ ?_
-  simpa using enorm_finset_sum_inner_le_nuclearGauge T b b.orthonormal s
-
-/-- Approximation numbers tend to zero exactly for operator-norm limits of rank-controlled maps. -/
-private theorem tendsto_singularValue_nhds_zero_iff {T : H →L[𝕜] K} :
-    Tendsto T.singularValue atTop (𝓝 0) ↔
-      ∃ R : ℕ → H →L[𝕜] K, (∀ n, (R n).rank ≤ n) ∧ Tendsto R atTop (𝓝 T) := by
-  constructor
-  · intro h
-    choose R hR hRT using fun n : ℕ ↦ ContinuousLinearMap.exists_rank_le_nnnorm_sub_lt
-      (lt_add_of_pos_right (T.singularValue n) (by positivity : (0 : ℝ≥0) < 1 / ((n : ℝ≥0) + 1)))
-    have hlim : Tendsto (fun n : ℕ ↦ T.singularValue n + 1 / ((n : ℝ≥0) + 1)) atTop (𝓝 0) := by
-      simpa using h.add tendsto_one_div_add_atTop_nhds_zero_nat
-    refine ⟨R, hR, tendsto_iff_norm_sub_tendsto_zero.mpr ?_⟩
-    refine squeeze_zero (fun _ ↦ norm_nonneg _) (fun n ↦ ?_) (NNReal.tendsto_coe.mpr hlim)
-    rw [norm_sub_rev]
-    exact_mod_cast (hRT n).le
-  · rintro ⟨R, hR, hRT⟩
-    have hnorm : Tendsto (fun n ↦ ‖T - R n‖₊) atTop (𝓝 0) := by
-      rw [← NNReal.tendsto_coe]
-      simpa [norm_sub_rev] using tendsto_iff_norm_sub_tendsto_zero.mp hRT
-    exact tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds hnorm (fun _ ↦ zero_le)
-      fun n ↦ T.singularValue_le_nnnorm_sub (hR n)
-
-/-- Finite nuclear gauge implies compactness. -/
-private theorem isCompactOperator_of_nuclearGauge_ne_top {T : H →L[𝕜] K}
-    (hT : nuclearGauge T ≠ ∞) : IsCompactOperator T := by
-  haveI : ProperSpace 𝕜 := FiniteDimensional.proper_rclike ℝ 𝕜
-  have hlim : Tendsto T.singularValue atTop (𝓝 0) :=
-    ENNReal.tendsto_coe.mp (ENNReal.tendsto_atTop_zero_of_tsum_ne_top hT)
-  obtain ⟨R, hR, hRT⟩ := tendsto_singularValue_nhds_zero_iff.mp hlim
-  refine isCompactOperator_of_tendsto hRT (.of_forall fun n ↦ ?_)
-  have : Module.Finite 𝕜 (LinearMap.range (R n : H →ₗ[𝕜] K)) :=
-    Module.rank_lt_aleph0_iff.mp ((hR n).trans_lt Cardinal.natCast_lt_aleph0)
-  exact LinearMap.HasFiniteRange.isCompactOperator (Module.Finite.iff_fg.mp this)
+  simpa using enorm_finset_sum_inner_le_nuclearENorm T b b.orthonormal s
 
 /-- A vector orthogonal to a Hilbert basis of a subspace is orthogonal to the subspace. -/
 private theorem hilbertBasis_inner_eq_zero {K : Submodule 𝕜 H} {ι : Type*}
@@ -322,7 +266,7 @@ private theorem hilbertBasis_inner_eq_zero {K : Submodule 𝕜 H} {ι : Type*}
   exact hzero.unique hasSum_zero
 
 /-- A trace-class operator has a Hilbert basis of eigenvectors of `T† ∘ T`. -/
-private theorem exists_gramEigenbasis (T : H →L[𝕜] H) (hT : nuclearGauge T ≠ ∞) :
+private theorem exists_gramEigenbasis (T : H →L[𝕜] H) (hT : T.nuclearENorm ≠ ∞) :
     ∃ (s : Set H) (e : HilbertBasis s 𝕜 H),
       (∀ i, (T† ∘L T) (e i) = (‖T (e i)‖ ^ 2 : 𝕜) • e i) := by
   classical
@@ -337,7 +281,7 @@ private theorem exists_gramEigenbasis (T : H →L[𝕜] H) (hT : nuclearGauge T 
           rw [comp_apply, adjoint_inner_right]
   have hSc : IsCompactOperator S := by
     rw [show (S : H → H) = ⇑(T†) ∘ ⇑T by simp [S, coe_comp]]
-    exact (isCompactOperator_of_nuclearGauge_ne_top hT).clm_comp (T†)
+    exact (isCompactOperator_of_nuclearENorm_ne_top hT).clm_comp (T†)
   have hspan : (⨆ mu : 𝕜, eigenspace (S : Module.End 𝕜 H) mu)ᗮ = ⊥ :=
     ContinuousLinearMap.orthogonalComplement_iSup_eigenspaces_eq_bot hSc hsym
   have hbasis : ∀ mu : 𝕜, ∃ (w : Set (eigenspace (S : Module.End 𝕜 H) mu))
@@ -411,15 +355,15 @@ private theorem tsum_mul_abs_inner_le (b : HilbertBasis κ 𝕜 H) (x y : H) :
     (sum_mul_abs_inner_le b x y)
 
 /-- On a Gram eigenbasis, `∑ ‖T eᵢ‖` converges and is at most the nuclear gauge. -/
-private theorem summable_norm_apply_gram (T : H →L[𝕜] H) (hT : nuclearGauge T ≠ ∞)
+private theorem summable_norm_apply_gram (T : H →L[𝕜] H) (hT : T.nuclearENorm ≠ ∞)
     {s : Set H} (e : HilbertBasis s 𝕜 H)
     (hE : ∀ i, (T† ∘L T) (e i) = (‖T (e i)‖ ^ 2 : 𝕜) • e i) :
-    Summable (fun i ↦ ‖T (e i)‖) ∧ ∑' i, ‖T (e i)‖ ≤ (nuclearGauge T).toReal := by
+    Summable (fun i ↦ ‖T (e i)‖) ∧ ∑' i, ‖T (e i)‖ ≤ T.nuclearENorm.toReal := by
   classical
   have horth {i j : s} (hij : i ≠ j) : ⟪T (e i), T (e j)⟫_𝕜 = 0 := by
     rw [← adjoint_inner_left T (e j) (T (e i)), ← ContinuousLinearMap.comp_apply, hE i,
       inner_smul_left, e.orthonormal.inner_eq_zero hij, mul_zero]
-  have hfin (t0 : Finset s) : ∑ i ∈ t0, ‖T (e i)‖ ≤ (nuclearGauge T).toReal := by
+  have hfin (t0 : Finset s) : ∑ i ∈ t0, ‖T (e i)‖ ≤ T.nuclearENorm.toReal := by
     let t : Finset s := t0.filter fun i ↦ T (e i) ≠ 0
     have hsplit : ∑ i ∈ t0, ‖T (e i)‖ = ∑ i ∈ t, ‖T (e i)‖ := by
       symm
@@ -458,7 +402,7 @@ private theorem summable_norm_apply_gram (T : H →L[𝕜] H) (hT : nuclearGauge
     have hreal : ‖∑ i : t, (‖T (e i)‖ : 𝕜)‖ = ∑ i ∈ t, ‖T (e i)‖ := by
       rw [Finset.sum_coe_sort t (fun i : s ↦ (‖T (e i)‖ : 𝕜)), ← map_sum (algebraMap ℝ 𝕜),
         RCLike.norm_ofReal, abs_of_nonneg (Finset.sum_nonneg fun _ _ ↦ norm_nonneg _)]
-    have hbig : ENNReal.ofReal (∑ i ∈ t, ‖T (e i)‖) ≤ nuclearGauge T := by
+    have hbig : ENNReal.ofReal (∑ i ∈ t, ‖T (e i)‖) ≤ T.nuclearENorm := by
       have hfam := enorm_sum_inner_two_families_le T u v hu hv
       rw [show ∑ i, ⟪u i, T (v i)⟫_𝕜 = ∑ i : t, (‖T (e i)‖ : 𝕜) from
         Finset.sum_congr rfl fun i _ ↦ hdiag i] at hfam
@@ -509,9 +453,7 @@ private theorem hilbertTrace_eq_sum_inner_apply (T : H →L[𝕜] H) {s : Type*}
 /-- The trace is independent of the possibly differently indexed Hilbert basis. -/
 theorem hilbertTrace_basis_independent {T : H →L[𝕜] H} (hT : IsTraceClassOperator T)
     (b : HilbertBasis ι 𝕜 H) (c : HilbertBasis κ 𝕜 H) : hilbertTrace b T = hilbertTrace c T := by
-  have hnu : nuclearGauge T ≠ ∞ := by
-    rw [← schattenGauge_one_eq_nuclearGauge]
-    exact hT
+  have hnu : T.nuclearENorm ≠ ∞ := hT
   obtain ⟨s, e, hE⟩ := exists_gramEigenbasis T hnu
   obtain ⟨hsum, -⟩ := summable_norm_apply_gram T hnu e hE
   rw [hilbertTrace_eq_sum_inner_apply T e hsum b, hilbertTrace_eq_sum_inner_apply T e hsum c]
@@ -521,16 +463,16 @@ theorem IsTraceClassOperator.trace_cyclic {T : H →L[𝕜] H} (hT : IsTraceClas
     (A : H →L[𝕜] H) (b : HilbertBasis ι 𝕜 H) :
     IsTraceClassOperator (A.comp T) ∧ IsTraceClassOperator (T.comp A) ∧
       hilbertTrace b (A.comp T) = hilbertTrace b (T.comp A) := by
-  have hnu : nuclearGauge T ≠ ∞ := by
-    rw [← schattenGauge_one_eq_nuclearGauge]
-    exact hT
-  have hA : ‖A‖ₑ ≠ ∞ := by simp [enorm_eq_nnnorm]
+  have hnu : T.nuclearENorm ≠ ∞ := hT
+  have hfin (B : H →L[𝕜] H) : ‖B‖ₑ ≠ ∞ := by simp [enorm_eq_nnnorm]
   have hAT : IsTraceClassOperator (A.comp T) := by
-    rw [IsTraceClassOperator, schattenGauge_one_eq_nuclearGauge]
-    exact ne_top_of_le_ne_top (ENNReal.mul_ne_top hA hnu) (nuclearGauge_comp_left_le A T)
+    have h := nuclearENorm_comp_comp_le A T (ContinuousLinearMap.id 𝕜 H)
+    rw [comp_id] at h
+    exact ne_top_of_le_ne_top (ENNReal.mul_ne_top (ENNReal.mul_ne_top (hfin _) hnu) (hfin _)) h
   have hTA : IsTraceClassOperator (T.comp A) := by
-    rw [IsTraceClassOperator, schattenGauge_one_eq_nuclearGauge]
-    exact ne_top_of_le_ne_top (ENNReal.mul_ne_top hnu hA) (nuclearGauge_comp_right_le T A)
+    have h := nuclearENorm_comp_comp_le (ContinuousLinearMap.id 𝕜 H) T A
+    rw [id_comp] at h
+    exact ne_top_of_le_ne_top (ENNReal.mul_ne_top (ENNReal.mul_ne_top (hfin _) hnu) (hfin _)) h
   obtain ⟨s, e, hE⟩ := exists_gramEigenbasis T hnu
   obtain ⟨hsum, -⟩ := summable_norm_apply_gram T hnu e hE
   let f : s → ι → 𝕜 := fun i j ↦ ⟪e i, b j⟫_𝕜 * ⟪b j, A (T (e i))⟫_𝕜

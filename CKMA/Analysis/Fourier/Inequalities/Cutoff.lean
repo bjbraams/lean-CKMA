@@ -28,8 +28,7 @@ import Mathlib.Topology.Order.Compact
 # Frequency bump cutoffs and coordinate integration by parts
 
 Coordinate integration by parts for smooth `L²` functions, smooth compactly supported
-frequency-space cutoffs `φₙ`, and agreement of the `L¹` and `L²` inverse Fourier transforms
-used in the proof of Heisenberg coordinate uncertainty.
+frequency-space cutoffs `φₙ`, used in the proof of Heisenberg coordinate uncertainty.
 
 Source: GAPS 27.13.
 
@@ -46,8 +45,6 @@ Source: GAPS 27.13.
 * `CKMA.integral_norm_sq_le_two_mul_coord`: coordinate integration by parts bounding `‖g‖²`
   by `2 ‖xⱼ g‖ ‖∂ⱼ g‖`.
 * `CKMA.tendsto_freqBump_mul`: `L²` convergence of frequency cutoff truncations `φₙ u → u`.
-* `CKMA.fourierInv_ae_eq_lp`: almost-everywhere agreement of the integral and `L²` inverse
-  Fourier transforms on `L¹ ∩ L²`.
 
 ## Notation
 
@@ -275,10 +272,6 @@ lemma integral_norm_sq_le_two_mul_coord
 lemma norm_two_pi_I : ‖(2 * π * I : ℂ)‖ = 2 * π := by
   rw [norm_mul, norm_mul, Complex.norm_I, mul_one, Complex.norm_two,
     Complex.norm_of_nonneg Real.pi_pos.le]
-
-/-- The scalar `2πi` is nonzero. -/
-lemma two_pi_I_ne_zero : (2 * π * I : ℂ) ≠ 0 := by
-  simp [Complex.I_ne_zero, Real.pi_ne_zero]
 
 /-- Coordinate multiplication on an `L²` class agrees with the distributional product. -/
 private lemma toTemperedDistribution_coord_mul (j : Fin d)
@@ -787,105 +780,9 @@ lemma lineDeriv_freqBump_lp (n : ℕ) (j : Fin d)
   rw [hsch]
   simp [map_add, map_neg]
 
-/-- Reflected self-adjointness of the Fourier integral. -/
-private lemma integral_fourier_mul_neg {u : V → ℂ} (hu : Integrable u volume)
-    (φ : SchwartzMap V ℂ) :
-    ∫ x, 𝓕 u x * (φ : V → ℂ) (-x) ∂volume =
-      ∫ x, u x * 𝓕 (fun y ↦ (φ : V → ℂ) (-y)) x ∂volume := by
-  have hg : Integrable (fun x ↦ (φ : V → ℂ) (-x)) volume :=
-    (integrable_comp (LinearIsometryEquiv.neg ℝ) (φ : V → ℂ)).2
-      (SchwartzMap.integrable (μ := volume) φ)
-  simpa [ContinuousLinearMap.mul_apply', flip_innerₗ] using!
-    VectorFourier.integral_bilin_fourierIntegral_eq_flip
-      (ContinuousLinearMap.mul ℂ ℂ) (L := innerₗ V) (μ := volume) (ν := volume)
-      continuous_fourierChar continuous_inner hu hg
-
-/-- The inverse Fourier integral is self-adjoint on `L¹` against Schwartz functions. -/
-private lemma integral_fourierInv_mul {u : V → ℂ} (hu : Integrable u volume)
-    (φ : SchwartzMap V ℂ) :
-    ∫ x, 𝓕⁻ u x * (φ : V → ℂ) x ∂volume =
-      ∫ x, u x * 𝓕⁻ (φ : V → ℂ) x ∂volume := by
-  have hchg : ∫ x, 𝓕 u (-x) * (φ : V → ℂ) x ∂volume =
-      ∫ x, 𝓕 u x * (φ : V → ℂ) (-x) ∂volume := by
-    have h := integral_comp (LinearIsometryEquiv.neg ℝ)
-      (fun x ↦ 𝓕 u (-x) * (φ : V → ℂ) x)
-    simpa [neg_neg] using h.symm
-  have hinv : ∀ x, 𝓕⁻ u x = 𝓕 u (-x) := fun x ↦ fourierInv_eq_fourier_neg _ x
-  simp_rw [hinv]
-  rw [hchg, integral_fourier_mul_neg hu φ]
-  simp [fourierInv_eq_fourier_comp_neg]
-
-/-- The inverse Fourier integral of an integrable function is continuous. -/
-lemma continuous_fourierInv_of_integrable {u : V → ℂ} (hu : Integrable u volume) :
-    Continuous (𝓕⁻ u) := by
-  have hEq : 𝓕⁻ u = fun x ↦ 𝓕 u (-x) := by
-    ext x
-    exact fourierInv_eq_fourier_neg _ x
-  rw [hEq]
-  refine Continuous.comp ?_ continuous_neg
-  have hF : 𝓕 u = VectorFourier.fourierIntegral 𝐞 volume (innerₗ V) u := by funext x; rfl
-  rw [hF]
-  exact VectorFourier.fourierIntegral_continuous continuous_fourierChar continuous_inner hu
-
-/-- Agreement of the two inverse Fourier transforms on `L¹ ∩ L²`. -/
-lemma fourierInv_congr_ae {u v : V → ℂ} (h : u =ᵐ[volume] v) (x : V) :
-    𝓕⁻ u x = 𝓕⁻ v x := by
-  rw [fourierInv_eq_fourier_neg, fourierInv_eq_fourier_neg, fourier_congr_ae h]
-
-/-- The integral inverse Fourier transform represents the `L²` inverse transform. -/
-lemma fourierInv_ae_eq_lp {u : V → ℂ} (hu1 : Integrable u volume)
-    (hu2 : MemLp u 2 volume) :
-    𝓕⁻ u =ᵐ[volume] fun x ↦ (𝓕⁻ (hu2.toLp u) : Lp ℂ 2 (volume : Measure V)) x := by
-  let gLp : Lp ℂ 2 (volume : Measure V) := 𝓕⁻ (hu2.toLp u)
-  apply ae_eq_of_integral_contDiff_smul_eq
-    (continuous_fourierInv_of_integrable hu1).locallyIntegrable
-    ((Lp.memLp gLp).locallyIntegrable one_le_two)
-  intro ψ hψ hψsup
-  let ψC : V → ℂ := fun x ↦ (ψ x : ℂ)
-  have hψC : ContDiff ℝ (⊤ : ℕ∞) ψC := Complex.ofRealCLM.contDiff.comp hψ
-  have hsupC : HasCompactSupport ψC :=
-    hψsup.comp_left (g := Complex.ofReal) (by simp)
-  let ζ : SchwartzMap V ℂ := hsupC.toSchwartzMap hψC
-  have hcoe : (ζ : V → ℂ) = ψC := by
-    ext x
-    rfl
-  have hintL : Integrable (fun x ↦ ψC x * 𝓕⁻ u x) volume :=
-    ((hψC.continuous).mul (continuous_fourierInv_of_integrable hu1)).integrable_of_hasCompactSupport
-      (hsupC.mul_right)
-  have hintR : Integrable (fun x ↦ ψC x * gLp x) volume := by
-    have hmul : MemLp (fun x ↦ (ζ : V → ℂ) x * gLp x) 1 volume :=
-      (SchwartzMap.memLp ζ 2 volume).mul (Lp.memLp gLp)
-    simpa [hcoe] using (memLp_one_iff_integrable).1 hmul
-  have hreal : ∀ x, ψ x • 𝓕⁻ u x = ψC x * 𝓕⁻ u x := by
-    intro x
-    simp [ψC, Complex.real_smul]
-  have hreal' : ∀ x, ψ x • gLp x = ψC x * gLp x := by
-    intro x
-    simp [ψC, Complex.real_smul]
-  rw [integral_congr_ae (ae_of_all volume hreal),
-    integral_congr_ae (ae_of_all volume hreal')]
-  rw [show (fun x ↦ ψC x * 𝓕⁻ u x) = fun x ↦ 𝓕⁻ u x * (ζ : V → ℂ) x by
-    ext x; simp [hcoe, mul_comm]]
-  rw [integral_fourierInv_mul hu1 ζ]
-  rw [show (fun x ↦ u x * 𝓕⁻ (ζ : V → ℂ) x) = fun x ↦ (𝓕⁻ ζ) x * u x by
-    ext x; rw [SchwartzMap.fourierInv_coe]; ring]
-  have hg : (gLp : TemperedDistribution V ℂ) =
-      𝓕⁻ (hu2.toLp u : TemperedDistribution V ℂ) :=
-    (Lp.fourierInv_toTemperedDistribution_eq (hu2.toLp u)).symm
-  have happly := congrArg (fun T : TemperedDistribution V ℂ ↦ T ζ) hg
-  rw [TemperedDistribution.fourierInv_apply, Lp.toTemperedDistribution_apply,
-    Lp.toTemperedDistribution_apply] at happly
-  simp only [smul_eq_mul] at happly
-  rw [show (fun x ↦ ψC x * gLp x) = fun x ↦ (ζ : V → ℂ) x * gLp x by
-    ext x; simp [hcoe]]
-  rw [happly]
-  refine integral_congr_ae ?_
-  filter_upwards [hu2.coeFn_toLp] with x hx
-  rw [hx]
-
 /-- The inverse Fourier transform preserves the `L²` norm. -/
-lemma norm_fourierInv_eq (u : Lp ℂ 2 (volume : Measure V)) : ‖𝓕⁻ u‖ = ‖u‖ := by
-  rw [← Lp.norm_fourier_eq (𝓕⁻ u), fourier_fourierInv_eq]
+lemma norm_fourierInv_eq (u : Lp ℂ 2 (volume : Measure V)) : ‖𝓕⁻ u‖ = ‖u‖ :=
+  (Lp.fourierTransformₗᵢ V ℂ).symm.norm_map u
 
 end HeisenbergAux
 

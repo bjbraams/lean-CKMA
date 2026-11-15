@@ -16,8 +16,6 @@ The matching midpoint lower bound is in
 
 ## Main results
 
-* `CKMA.lebesgueFunction_cos_eq`: off the nodes, the Lebesgue function is the sum of main and
-  correction terms.
 * `CKMA.lebesgueFunction_chebyshev_upper`: uniform upper bound for the Chebyshev-extrema
   Lebesgue function on `[-1, 1]`.
 * `CKMA.chebyshev_lebesgueConstant_upper_bound`: upper bound `(2 / π) log (n + 1) + C` for the
@@ -481,15 +479,6 @@ private lemma sum_chebyshevLebesgueCorr_le {n : ℕ} (hn : 1 ≤ n) {θ : ℝ}
     _ ≤ (log 2 / π + 1 / 2) + (1 / 4 + π / 8) := add_le_add hleftSum hrightSum
     _ = 3 / 4 + π / 8 + log 2 / π := by ring
 
-/-- Off the nodes, the Lebesgue function is the sum of main and correction terms. -/
-lemma lebesgueFunction_cos_eq {n : ℕ} (hn : 1 ≤ n) {θ : ℝ}
-    (hθ : θ ∈ Set.Ioo 0 π) (hnode : ∀ i, θ ≠ nodeAngle n i) :
-    lebesgueFunction (chebyshevExtremalNodes n) (cos θ) =
-      (∑ i, chebyshevLebesgueMain n θ i) + ∑ i, chebyshevLebesgueCorr n θ i := by
-  unfold lebesgueFunction
-  rw [← Finset.sum_add_distrib]
-  exact Finset.sum_congr rfl fun i _ => abs_cardinal_eq_main_add_corr hn hθ hnode i
-
 /-- Lebesgue values on the right half of `(0, π]` fold to the left half. -/
 private lemma lebesgueFunction_Ioc_le {n : ℕ} (hn : 1 ≤ n) {θ : ℝ}
     (hθ : θ ∈ Set.Ioc 0 (π / 2)) :
@@ -550,31 +539,6 @@ lemma lebesgueFunction_chebyshev_upper {n : ℕ} (hn : 1 ≤ n) {t : ℝ}
         _ = -cos (π - θ) := congrArg Neg.neg (cos_pi_sub θ).symm
     rw [hcos, lebesgueFunction_neg hn]
     exact lebesgueFunction_Ioc_le hn hθ'
-
-/-- For `n = 0`, the Lebesgue function of the single Chebyshev extremal node is identically `1`. -/
-lemma lebesgueFunction_chebyshev_zero (t : ℝ) :
-    lebesgueFunction (chebyshevExtremalNodes 0) t = 1 := by
-  unfold lebesgueFunction
-  rw [Fin.sum_univ_one]
-  have huniv : (Finset.univ : Finset (Fin 1)) = {(0 : Fin 1)} := by
-    ext i
-    simp [Fin.eq_zero]
-  rw [lagrangeCardinalPolynomial, huniv, Lagrange.basis_singleton]
-  simp
-
-/-- For `n = 0`, the Lebesgue constant of the Chebyshev extrema is `1`. -/
-lemma interpolationLebesgueConstant_chebyshev_zero :
-    interpolationLebesgueConstant (chebyshevExtremalNodes 0) = 1 := by
-  have him : lebesgueFunction (chebyshevExtremalNodes 0) '' Set.Icc (-1 : ℝ) 1 = {1} := by
-    ext y
-    simp only [Set.mem_image, Set.mem_Icc, Set.mem_singleton_iff]
-    constructor
-    · rintro ⟨t, _, rfl⟩
-      exact lebesgueFunction_chebyshev_zero t
-    · intro hy
-      refine ⟨0, by norm_num, ?_⟩
-      rw [lebesgueFunction_chebyshev_zero, hy]
-  rw [interpolationLebesgueConstant, him, csSup_singleton]
 
 /-- Upper bound `(2 / π) log (n + 1) + C` for the Chebyshev-extrema Lebesgue constant. -/
 theorem chebyshev_lebesgueConstant_upper_bound (n : ℕ) :

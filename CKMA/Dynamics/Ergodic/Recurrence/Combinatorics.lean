@@ -817,7 +817,7 @@ lemma numerous_progression_three {δ : ℝ} (hδ : 0 < δ) :
 
 /-- Every positive-density subset of a long interval contains quadratically many
 nontrivial arithmetic progressions of length `L ≥ 4`. -/
-lemma numerous_progression_long {L : ℕ} (hL : 4 ≤ L) {δ : ℝ} (hδ : 0 < δ) :
+theorem numerous_progression_long {L : ℕ} (hL : 4 ≤ L) {δ : ℝ} (hδ : 0 < δ) :
     ∃ c : ℝ, 0 < c ∧ ∃ N0 : ℕ, ∀ N, N0 ≤ N → ∀ S : Finset ℕ,
       S ⊆ range N → δ * (N : ℝ) ≤ (S.card : ℝ) →
       c * (N : ℝ) ^ 2 ≤ (progressionCount L N S : ℝ) := by

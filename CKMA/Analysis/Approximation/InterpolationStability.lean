@@ -6,6 +6,7 @@ Authors: CKMA contributors
 module
 
 public import CKMA.Analysis.Approximation.InterpolationStability.Lower
+public import CKMA.Analysis.Approximation.InterpolationStability.Upper
 
 /-!
 # Polynomial interpolation and Lebesgue constants
@@ -49,11 +50,6 @@ theorem chebyshev_lebesgueConstant_log_bound : ∃ C : ℝ, 0 ≤ C ∧ ∀ n : 
   have hup := chebyshev_lebesgueConstant_upper_bound n
   have hlo := chebyshev_lebesgueConstant_lower_bound n
   exact abs_sub_le_iff.mpr ⟨by linarith, by linarith⟩
-
-/-- The Lebesgue function of a finite node family is continuous. -/
-theorem continuous_lebesgueFunction {n : ℕ} (x : Fin n → ℝ) :
-    Continuous (lebesgueFunction x) := by
-  exact continuous_finsetSum _ fun i _ ↦ (lagrangeCardinalPolynomial x i).continuous.abs
 
 /-- The interval Lebesgue constant bounds the Lebesgue function at each interval point. -/
 theorem lebesgueFunction_le_interpolationLebesgueConstant {n : ℕ} (x : Fin n → ℝ)
