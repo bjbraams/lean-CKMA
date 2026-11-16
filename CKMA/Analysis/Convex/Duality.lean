@@ -11,8 +11,10 @@ public import CKMA.Analysis.Convex.Duality.KKT
 public import Mathlib.Analysis.Convex.Extreme
 public import Mathlib.Topology.Algebra.ContinuousAffineMap
 public import Mathlib.MeasureTheory.Integral.Bochner.Basic
+public import Mathlib.Analysis.Convex.Intrinsic
 import CKMA.Analysis.Convex.Duality.FenchelRockafellar
 import CKMA.Analysis.Convex.Duality.Sum
+import CKMA.Analysis.Convex.Duality.SumIntrinsic
 import Mathlib.Tactic
 
 /-!
@@ -24,8 +26,10 @@ assuming Bochner integrability of the ambient identity map.
 
 Subdifferentials and Fenchel conjugates reuse TauCeti's continuous-dual pairing. Extended-real
 properness and finite-domain continuity hypotheses control the sum rule and Fenchel–Rockafellar
-dual attainment. The finite-dimensional KKT interface separates feasibility from nonnegative
-multipliers, stationarity, and complementary slackness; sufficiency holds in any normed space.
+dual attainment; in finite dimensions, meeting relative interiors of the domains is an
+alternative qualification for the sum rule. The finite-dimensional KKT interface separates
+feasibility from nonnegative multipliers, stationarity, and complementary slackness; sufficiency
+holds in any normed space.
 Sources: GAPS 12.9, 12.21, 12.39, and 12.40.
 
 ## Main definitions
@@ -41,6 +45,8 @@ Sources: GAPS 12.9, 12.21, 12.39, and 12.40.
 
 * `CKMA.exists_choquetMeasure`: Choquet representation on compact metrizable convex sets (12.9).
 * `CKMA.dualSubdifferential_add`: Banach-space Moreau–Rockafellar sum rule (12.21).
+* `CKMA.dualSubdifferential_add_of_intrinsicInterior`: finite-dimensional sum rule under the
+  relative-interior qualification (12.21).
 * `CKMA.exists_fenchelDual_maximizer`: Fenchel–Rockafellar strong duality and attainment (12.39).
 * `CKMA.exists_convexKKTMultipliers`: KKT multipliers under Slater's condition (12.40).
 * `CKMA.HasConvexKKTMultipliers.isMinOn`: sufficiency of KKT conditions.
@@ -89,7 +95,8 @@ private theorem mem_realSubdifferential_iff {f : E → ℝ} {x : E} {u : StrongD
   TauCeti.mem_subdifferential_coe_iff (topDualPairing ℝ E).flip f
 
 /-- **12.21**: the Banach-space sum rule with a common finite-domain continuity point.
-The relative-interior alternative in finite dimensions is a separate target. -/
+The relative-interior alternative in finite dimensions is
+`dualSubdifferential_add_of_intrinsicInterior`. -/
 theorem dualSubdifferential_add {f g : E → EReal}
     (hf : IsProperERealFunction f) (hg : IsProperERealFunction g)
     (hcf : Convex ℝ {p : E × ℝ | f p.1 ≤ p.2})
@@ -99,6 +106,18 @@ theorem dualSubdifferential_add {f g : E → EReal}
       dualSubdifferential f x + dualSubdifferential g x := by
   simpa [dualSubdifferential] using
     subdifferential_add_eq hf hg hcf hcg hfin hcont x
+
+/-- **12.21**: the finite-dimensional sum rule when the relative interiors of the finite
+domains meet (Rockafellar, Theorem 23.8). Lower semicontinuity is not needed. -/
+theorem dualSubdifferential_add_of_intrinsicInterior [FiniteDimensional ℝ E] {f g : E → EReal}
+    (hf : IsProperERealFunction f) (hg : IsProperERealFunction g)
+    (hcf : Convex ℝ {p : E × ℝ | f p.1 ≤ p.2})
+    (hcg : Convex ℝ {p : E × ℝ | g p.1 ≤ p.2})
+    (hri : (intrinsicInterior ℝ {y | f y ≠ ⊤} ∩ intrinsicInterior ℝ {y | g y ≠ ⊤}).Nonempty)
+    (x : E) :
+    dualSubdifferential (fun y ↦ f y + g y) x =
+      dualSubdifferential f x + dualSubdifferential g x :=
+  subdifferential_add_eq_of_intrinsicInterior hf hg hcf hcg hri x
 
 /-- The primal Fenchel value, in extended reals. -/
 def fenchelPrimalValue (f : E → EReal) (g : F → EReal) (A : E →L[ℝ] F) : EReal :=

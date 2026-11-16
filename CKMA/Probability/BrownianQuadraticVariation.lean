@@ -21,7 +21,8 @@ import TauCeti.Probability.BrownianMotion.QuadraticVariation
 zero time interval. Its mesh controls quadratic and bilinear covariation sums formed
 from completed partition intervals. The main statements give uniform convergence in
 probability, almost-sure convergence under a summable mesh condition, and cross-coordinate
-covariation for independent Brownian coordinates.
+covariation for independent Brownian coordinates, in probability and almost surely. The bracket
+`quadraticCovariation` packages the limit as a process, determined almost surely at each time.
 
 The process interface is pre-Brownian: for a sequence of deterministic partitions only
 countably many evaluation times are involved. Time and partition nodes are nonnegative
@@ -39,6 +40,9 @@ sums. Cross variation reduces to quadratic variation by polarization.
   (in `BrownianQuadraticVariation.TimePartition`).
 * `CKMA.TimePartition.covariation`: quadratic covariation sum over completed partition intervals
   (in `BrownianQuadraticVariation.TimePartition`).
+* `CKMA.IsQuadraticCovariation`: a process is the limit, uniformly on compacts in probability,
+  of the covariation sums along every deterministic vanishing-mesh partition sequence.
+* `CKMA.quadraticCovariation`: the bracket `[X, Y]`, a chosen quadratic covariation process.
 
 ## Main results
 
@@ -47,6 +51,10 @@ sums. Cross variation reduces to quadratic variation by polarization.
 * `CKMA.brownian_quadraticVariation_ae`: almost-sure uniform convergence under summable meshes.
 * `CKMA.brownian_covariation_ucp`: diagonal quadratic covariation for independent Brownian
   coordinates.
+* `CKMA.brownian_covariation_ae`: almost-sure diagonal covariation under summable meshes.
+* `CKMA.IsQuadraticCovariation.ae_eq`: quadratic covariation processes agree almost surely at
+  each time.
+* `CKMA.brownian_quadraticCovariation`: `[Bⁱ, Bʲ]_t = δᵢⱼ t` almost surely.
 -/
 
 @[expose] public section
@@ -279,11 +287,11 @@ theorem brownian_quadraticVariation_ae {Ω : Type*} [MeasurableSpace Ω]
     have hzero : Tendsto (fun n ↦ ((π n).mesh : ℝ)) atTop (𝓝 0) := hmesh.tendsto_atTop_zero
     obtain ⟨N, hN⟩ := eventually_atTop.1 (hzero.eventually (Iio_mem_nhds (half_pos hε)))
     have htail : ∑' i, bump (i + N) = 0 := by
-      rw [ENNReal.tsum_eq_zero]
+      rw [tsum_eq_zero_iff]
       intro i
       simp [bump, hN (i + N) (Nat.le_add_left N i)]
     have heq := Summable.sum_add_tsum_nat_add' (f := bump) (k := N)
-      (ENNReal.summable (f := fun i ↦ bump (i + N)))
+      (CompleteLattice.summable (f := fun i ↦ bump (i + N)))
     have hsumLe : ∑ i ∈ Finset.range N, bump i ≤ N := by
       calc
         ∑ i ∈ Finset.range N, bump i ≤ ∑ i ∈ Finset.range N, (1 : ℝ≥0∞) := by
@@ -295,8 +303,8 @@ theorem brownian_quadraticVariation_ae {Ω : Type*} [MeasurableSpace Ω]
       rw [← heq, htail, add_zero]
       exact ne_top_of_le_ne_top (by simp) hsumLe
     have htsum : ∑' n, μ (bad n) ≠ ∞ := by
-      refine ne_top_of_le_ne_top ?_ (ENNReal.tsum_le_tsum hle)
-      rw [ENNReal.tsum_add]
+      refine ne_top_of_le_ne_top ?_ (tsum_le_tsum hle)
+      rw [tsum_add]
       exact ENNReal.add_ne_top.2 ⟨hofReal, hbump⟩
     filter_upwards [ae_eventually_notMem htsum] with ω hω
     exact hω.mono fun n hn t ht ↦ by
@@ -407,6 +415,37 @@ private lemma isPreBrownianReal_normalizedSum {Ω : Type*} [MeasurableSpace Ω]
     rw [hsq]
     ring
 
+/-- A normalized difference of independent pre-Brownian motions is pre-Brownian. -/
+private lemma isPreBrownianReal_normalizedDiff {Ω : Type*} [MeasurableSpace Ω]
+    {μ : Measure Ω} [IsProbabilityMeasure μ] {B C : ℝ≥0 → Ω → ℝ}
+    (hB : IsPreBrownianReal B μ) (hC : IsPreBrownianReal C μ)
+    (hind : IndepFun (fun ω ↦ fun t ↦ B t ω) (fun ω ↦ fun t ↦ C t ω) μ) :
+    IsPreBrownianReal (fun t ω ↦ (B t ω - C t ω) / Real.sqrt 2) μ := by
+  have hnegMeas : Measurable (fun f : ℝ≥0 → ℝ ↦ -f) :=
+    Measurable.of_eval fun t ↦ measurable_neg.comp (measurable_pi_apply t)
+  have hsum := isPreBrownianReal_normalizedSum hB hC.neg (hind.comp measurable_id hnegMeas)
+  refine IsPreBrownianReal.congr hsum fun t ↦ ae_of_all μ fun ω ↦ ?_
+  simp [Pi.neg_apply, sub_eq_add_neg]
+
+/-- Polarization bound: the bilinear covariation is at most the mean of the deviations of
+the two normalized quadratic variations from elapsed time. -/
+private lemma abs_covariation_le_polarized {Ω : Type*} {T : ℝ≥0} (π : TimePartition T)
+    (B C : ℝ≥0 → Ω → ℝ) (t : ℝ≥0) (ω : Ω) :
+    |π.covariation B C t ω| ≤
+      (|π.covariation (fun s ω ↦ (B s ω + C s ω) / Real.sqrt 2)
+          (fun s ω ↦ (B s ω + C s ω) / Real.sqrt 2) t ω - (t : ℝ)| +
+        |π.covariation (fun s ω ↦ (B s ω - C s ω) / Real.sqrt 2)
+          (fun s ω ↦ (B s ω - C s ω) / Real.sqrt 2) t ω - (t : ℝ)|) / 2 := by
+  have hpol := covariation_polarization π B C t ω
+  rw [show π.covariation B C t ω =
+      ((π.covariation (fun s ω ↦ (B s ω + C s ω) / Real.sqrt 2)
+          (fun s ω ↦ (B s ω + C s ω) / Real.sqrt 2) t ω - (t : ℝ)) -
+        (π.covariation (fun s ω ↦ (B s ω - C s ω) / Real.sqrt 2)
+          (fun s ω ↦ (B s ω - C s ω) / Real.sqrt 2) t ω - (t : ℝ))) / 2 by linarith,
+    abs_div, abs_of_pos (by norm_num : (0 : ℝ) < 2)]
+  gcongr
+  exact abs_sub _ _
+
 /-- Independent Brownian coordinates have diagonal quadratic covariation.
 Independence is imposed on the coordinate processes as random elements, rather than only
 on pairs of one-time marginals. -/
@@ -427,14 +466,8 @@ theorem brownian_covariation_ucp {Ω : Type*} [MeasurableSpace Ω]
     let M : ℝ≥0 → Ω → ℝ := fun t ω ↦ (B i t ω - B j t ω) / Real.sqrt 2
     have hP : IsPreBrownianReal P μ :=
       isPreBrownianReal_normalizedSum (hB i) (hB j) (hind.indepFun hij)
-    have hM : IsPreBrownianReal M μ := by
-      have hneg : IsPreBrownianReal (-B j) μ := (hB j).neg
-      have hnegMeas : Measurable (fun f : ℝ≥0 → ℝ ↦ -f) :=
-        Measurable.of_eval fun t ↦ measurable_neg.comp (measurable_pi_apply t)
-      have hindneg := (hind.indepFun hij).comp measurable_id hnegMeas
-      have hsum := isPreBrownianReal_normalizedSum (hB i) hneg hindneg
-      refine IsPreBrownianReal.congr hsum fun t ↦ ae_of_all μ fun ω ↦ ?_
-      simp [M, Pi.neg_apply, sub_eq_add_neg]
+    have hM : IsPreBrownianReal M μ :=
+      isPreBrownianReal_normalizedDiff (hB i) (hB j) (hind.indepFun hij)
     have htendP := brownian_quadraticVariation_ucp μ hP π hmesh ε hε
     have htendM := brownian_quadraticVariation_ucp μ hM π hmesh ε hε
     have hupper : Tendsto
@@ -448,17 +481,10 @@ theorem brownian_covariation_ucp {Ω : Type*} [MeasurableSpace Ω]
     refine Eventually.of_forall fun n ↦ ?_
     refine le_trans (measure_mono ?_) (measure_union_le _ _)
     intro ω ⟨t, ht, hdev⟩
-    have hpol := covariation_polarization (π n) (B i) (B j) t ω
     have hbound : |(π n).covariation (B i) (B j) t ω| ≤
         (|(π n).covariation P P t ω - (t : ℝ)| +
-          |(π n).covariation M M t ω - (t : ℝ)|) / 2 := by
-      have hEq : (π n).covariation (B i) (B j) t ω =
-          (((π n).covariation P P t ω - (t : ℝ)) -
-            ((π n).covariation M M t ω - (t : ℝ))) / 2 := by
-        linarith [hpol]
-      rw [hEq, abs_div, abs_of_pos (by norm_num : (0 : ℝ) < 2)]
-      gcongr
-      exact abs_sub _ _
+          |(π n).covariation M M t ω - (t : ℝ)|) / 2 :=
+      abs_covariation_le_polarized (π n) (B i) (B j) t ω
     have hsum : ε < (|(π n).covariation P P t ω - (t : ℝ)| +
         |(π n).covariation M M t ω - (t : ℝ)|) / 2 := by
       have hdev0 : ε < |(π n).covariation (B i) (B j) t ω| := by
@@ -470,5 +496,131 @@ theorem brownian_covariation_ucp {Ω : Type*} [MeasurableSpace Ω]
     · refine Or.inr ⟨t, ht, ?_⟩
       have hle : |(π n).covariation P P t ω - (t : ℝ)| ≤ ε := le_of_not_gt hp
       linarith
+
+/-- **08.7**, almost-sure covariation: for independent Brownian coordinates and partitions with
+summable meshes (for example dyadic partitions), the completed-interval covariation sums converge
+almost surely to `δᵢⱼ t`, uniformly on `[0, T]`. -/
+theorem brownian_covariation_ae {Ω : Type*} [MeasurableSpace Ω]
+    (μ : Measure Ω) [IsProbabilityMeasure μ] {d : ℕ} (B : Fin d → ℝ≥0 → Ω → ℝ)
+    (hB : ∀ i, IsPreBrownianReal (B i) μ)
+    (hind : iIndepFun (fun i ω ↦ fun t ↦ B i t ω) μ)
+    {T : ℝ≥0} (π : ℕ → TimePartition T)
+    (hmesh : Summable (fun n ↦ ((π n).mesh : ℝ))) (i j : Fin d) :
+    ∀ᵐ ω ∂μ, ∀ ε : ℝ, 0 < ε → ∀ᶠ n in atTop, ∀ t ≤ T,
+      |(π n).covariation (B i) (B j) t ω - if i = j then (t : ℝ) else 0| < ε := by
+  by_cases hij : i = j
+  · subst hij
+    simpa using brownian_quadraticVariation_ae μ (hB i) π hmesh
+  · have hP := brownian_quadraticVariation_ae μ
+      (isPreBrownianReal_normalizedSum (hB i) (hB j) (hind.indepFun hij)) π hmesh
+    have hM := brownian_quadraticVariation_ae μ
+      (isPreBrownianReal_normalizedDiff (hB i) (hB j) (hind.indepFun hij)) π hmesh
+    filter_upwards [hP, hM] with ω hPω hMω
+    intro ε hε
+    filter_upwards [hPω ε hε, hMω ε hε] with n hPn hMn t ht
+    rw [ite_eq_right hij, sub_zero]
+    have hb := abs_covariation_le_polarized (π n) (B i) (B j) t ω
+    linarith [hPn t ht, hMn t ht]
+
+section Bracket
+
+variable {Ω : Type*} [MeasurableSpace Ω]
+
+/-- `A` is a quadratic covariation process of `X` and `Y` under `μ`: for every horizon `T` and
+every sequence of deterministic partitions of `[0, T]` with mesh tending to zero, the
+completed-interval covariation sums converge to `A` in probability, uniformly on `[0, T]`. -/
+def IsQuadraticCovariation (X Y : ℝ≥0 → Ω → ℝ) (μ : Measure Ω) (A : ℝ≥0 → Ω → ℝ) : Prop :=
+  ∀ (T : ℝ≥0) (π : ℕ → TimePartition T), Tendsto (fun n ↦ (π n).mesh) atTop (𝓝 0) →
+    ∀ ε : ℝ, 0 < ε → Tendsto (fun n ↦ μ {ω | ∃ t ≤ T,
+      ε < |(π n).covariation X Y t ω - A t ω|}) atTop (𝓝 0)
+
+/-- Defining property of `IsQuadraticCovariation`. -/
+theorem isQuadraticCovariation_iff {X Y : ℝ≥0 → Ω → ℝ} {μ : Measure Ω}
+    {A : ℝ≥0 → Ω → ℝ} : IsQuadraticCovariation X Y μ A ↔
+      ∀ (T : ℝ≥0) (π : ℕ → TimePartition T), Tendsto (fun n ↦ (π n).mesh) atTop (𝓝 0) →
+        ∀ ε : ℝ, 0 < ε → Tendsto (fun n ↦ μ {ω | ∃ t ≤ T,
+          ε < |(π n).covariation X Y t ω - A t ω|}) atTop (𝓝 0) :=
+  Iff.rfl
+
+/-- The uniform partitions of `[0, T]` have mesh tending to zero. -/
+theorem TimePartition.tendsto_mesh_uniform (T : ℝ≥0) :
+    Tendsto (fun n ↦ (TimePartition.uniform T n).mesh) atTop (𝓝 0) := by
+  have hlim : Tendsto (fun n : ℕ ↦ T * (1 / ((n : ℝ≥0) + 1))) atTop (𝓝 0) := by
+    simpa using tendsto_one_div_add_atTop_nhds_zero_nat.const_mul T
+  refine tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds hlim
+    (fun _ ↦ zero_le) fun n ↦ ?_
+  rw [mul_one_div]
+  exact TimePartition.mesh_uniform_le T n
+
+/-- Quadratic covariation processes are unique up to modification: two of them agree almost
+surely at each fixed time. -/
+theorem IsQuadraticCovariation.ae_eq {X Y : ℝ≥0 → Ω → ℝ} {μ : Measure Ω}
+    {A A' : ℝ≥0 → Ω → ℝ} (hA : IsQuadraticCovariation X Y μ A)
+    (hA' : IsQuadraticCovariation X Y μ A') (t : ℝ≥0) : A t =ᵐ[μ] A' t := by
+  have hsmall : ∀ ε : ℝ, 0 < ε → μ {ω | ε < |A t ω - A' t ω|} = 0 := by
+    intro ε hε
+    let π := TimePartition.uniform t
+    have h1 := hA t π (TimePartition.tendsto_mesh_uniform t) (ε / 2) (half_pos hε)
+    have h2 := hA' t π (TimePartition.tendsto_mesh_uniform t) (ε / 2) (half_pos hε)
+    refine le_antisymm (ge_of_tendsto' (by simpa using h1.add h2) fun n ↦ ?_) zero_le
+    refine (measure_mono fun ω hω ↦ ?_).trans (measure_union_le _ _)
+    have hω : ε < |A t ω - A' t ω| := hω
+    by_contra hnot
+    simp only [Set.mem_union, Set.mem_ofPred_eq, not_or, not_exists, not_and, not_lt] at hnot
+    have ha := hnot.1 t le_rfl
+    have hb := hnot.2 t le_rfl
+    have htri : |A t ω - A' t ω| ≤ |(π n).covariation X Y t ω - A t ω| +
+        |(π n).covariation X Y t ω - A' t ω| := by
+      calc
+        |A t ω - A' t ω| = |((π n).covariation X Y t ω - A' t ω) -
+            ((π n).covariation X Y t ω - A t ω)| := by ring_nf
+        _ ≤ _ := (abs_sub _ _).trans_eq (add_comm _ _)
+    linarith
+  have hunion : {ω | A t ω ≠ A' t ω} ⊆ ⋃ m : ℕ, {ω | 1 / ((m : ℝ) + 1) < |A t ω - A' t ω|} := by
+    intro ω hω
+    obtain ⟨m, hm⟩ := exists_nat_one_div_lt (abs_pos.2 (sub_ne_zero.2 hω))
+    exact Set.mem_iUnion.2 ⟨m, hm⟩
+  exact ae_iff.2 (measure_mono_null hunion
+    (measure_iUnion_null fun m ↦ hsmall _ (by positivity)))
+
+open Classical in
+/-- The quadratic covariation bracket `[X, Y]`: a chosen quadratic covariation process when one
+exists, and `0` otherwise. By `IsQuadraticCovariation.ae_eq` it is determined almost surely at
+each time. -/
+def quadraticCovariation (X Y : ℝ≥0 → Ω → ℝ) (μ : Measure Ω) : ℝ≥0 → Ω → ℝ :=
+  if h : ∃ A, IsQuadraticCovariation X Y μ A then h.choose else 0
+
+/-- If a quadratic covariation process exists, the bracket is one. -/
+theorem IsQuadraticCovariation.isQuadraticCovariation_quadraticCovariation
+    {X Y : ℝ≥0 → Ω → ℝ} {μ : Measure Ω} {A : ℝ≥0 → Ω → ℝ}
+    (hA : IsQuadraticCovariation X Y μ A) :
+    IsQuadraticCovariation X Y μ (quadraticCovariation X Y μ) := by
+  have h : ∃ A, IsQuadraticCovariation X Y μ A := ⟨A, hA⟩
+  rw [quadraticCovariation, dite_eq_left h]
+  exact h.choose_spec
+
+/-- The bracket agrees almost surely, at each time, with any quadratic covariation process. -/
+theorem IsQuadraticCovariation.quadraticCovariation_ae_eq
+    {X Y : ℝ≥0 → Ω → ℝ} {μ : Measure Ω} {A : ℝ≥0 → Ω → ℝ}
+    (hA : IsQuadraticCovariation X Y μ A) (t : ℝ≥0) :
+    quadraticCovariation X Y μ t =ᵐ[μ] A t :=
+  hA.isQuadraticCovariation_quadraticCovariation.ae_eq hA t
+
+/-- **08.7**: for independent Brownian coordinates, `δᵢⱼ t` is a quadratic covariation process
+of `Bⁱ` and `Bʲ`. -/
+theorem brownian_isQuadraticCovariation (μ : Measure Ω) [IsProbabilityMeasure μ] {d : ℕ}
+    (B : Fin d → ℝ≥0 → Ω → ℝ) (hB : ∀ i, IsPreBrownianReal (B i) μ)
+    (hind : iIndepFun (fun i ω ↦ fun t ↦ B i t ω) μ) (i j : Fin d) :
+    IsQuadraticCovariation (B i) (B j) μ (fun t _ ↦ if i = j then (t : ℝ) else 0) :=
+  fun _ π hmesh ↦ brownian_covariation_ucp μ B hB hind π hmesh i j
+
+/-- **08.7**, bracket form: `[Bⁱ, Bʲ]_t = δᵢⱼ t` almost surely, for each time `t`. -/
+theorem brownian_quadraticCovariation (μ : Measure Ω) [IsProbabilityMeasure μ] {d : ℕ}
+    (B : Fin d → ℝ≥0 → Ω → ℝ) (hB : ∀ i, IsPreBrownianReal (B i) μ)
+    (hind : iIndepFun (fun i ω ↦ fun t ↦ B i t ω) μ) (i j : Fin d) (t : ℝ≥0) :
+    quadraticCovariation (B i) (B j) μ t =ᵐ[μ] fun _ ↦ if i = j then (t : ℝ) else 0 :=
+  (brownian_isQuadraticCovariation μ B hB hind i j).quadraticCovariation_ae_eq t
+
+end Bracket
 
 end CKMA

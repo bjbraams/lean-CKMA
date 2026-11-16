@@ -8,12 +8,14 @@ module
 public import TauCeti.Probability.Distributions.Rademacher.Basic
 
 /-!
-# Empirical symmetrization for countable classes (07.33)
+# Empirical symmetrization (07.33)
 
 `IsRademacher` fixes the symmetric law on the real signs, TauCeti's
 `TauCeti.Probability.rademacherMeasure`. `symmetrization` bounds the
 expected supremum of centered empirical averages by twice the corresponding signed
-supremum for a nonempty countable function class with an integrable envelope.
+supremum for a nonempty countable function class with an integrable envelope;
+`symmetrization_of_measurable` proves the same inequality for an arbitrary nonempty class
+whose relevant suprema are measurable functions of the sample points.
 
 Data and signs are sampled on separate probability spaces. Independence within each
 sample and equality of the data laws are explicit; the nonempty finite sample index
@@ -26,6 +28,8 @@ avoids a zero-sample mean convention.
 
 ## Main results
 
+* `CKMA.symmetrization_of_measurable`: empirical symmetrization inequality for an arbitrary
+  nonempty function class with an integrable envelope and measurable suprema (**07.33**).
 * `CKMA.symmetrization`: empirical symmetrization inequality for a nonempty countable function
   class with an integrable envelope (**07.33**).
 -/
@@ -162,9 +166,11 @@ private lemma ghostSup_le {E ι J : Type*} [Nonempty ι] [Fintype J] {f : ι →
 
 /-- The supremum of the averaged ghost differences is integrable for two i.i.d. samples,
 and so is each of its sections in the second sample. -/
-private lemma integrable_ghostSup {E ι J : Type*} [MeasurableSpace E] [Countable ι]
+private lemma integrable_ghostSup {E ι J : Type*} [MeasurableSpace E]
     [Nonempty ι] [Fintype J] {P : Measure E} [IsProbabilityMeasure P] {f : ι → E → ℝ}
-    (hf : ∀ i, Measurable (f i)) {envelope : E → ℝ} (he : Integrable envelope P)
+    (hmeas : Measurable fun p : (J → E) × (J → E) =>
+      ⨆ i, |(Fintype.card J : ℝ)⁻¹ * ∑ j, (f i (p.1 j) - f i (p.2 j))|)
+    {envelope : E → ℝ} (he : Integrable envelope P)
     (hbound : ∀ i x, |f i x| ≤ envelope x) :
     Integrable (fun p : (J → E) × (J → E) =>
         ⨆ i, |(Fintype.card J : ℝ)⁻¹ * ∑ j, (f i (p.1 j) - f i (p.2 j))|)
@@ -175,7 +181,6 @@ private lemma integrable_ghostSup {E ι J : Type*} [MeasurableSpace E] [Countabl
   let π : Measure (J → E) := Measure.pi fun _ => P
   have henvSum : Integrable (fun y : J → E => ∑ j, envelope (y j)) π :=
     integrable_sum_envelope he
-  have hmeas := measurable_ghostSup (J := J) hf
   have hnorm (y y' : J → E) :
       ‖⨆ i, |(Fintype.card J : ℝ)⁻¹ * ∑ j, (f i (y j) - f i (y' j))|‖ ≤
         (Fintype.card J : ℝ)⁻¹ * ∑ j, (envelope (y j) + envelope (y' j)) := by
@@ -234,9 +239,12 @@ private lemma integral_avg_sub_ghost {E J : Type*} [MeasurableSpace E] [Fintype 
 
 /-- The supremum of the centered empirical means is integrable, being dominated by the
 averaged envelope plus the mean envelope. -/
-private lemma integrable_centeredSup {E ι J : Type*} [MeasurableSpace E] [Countable ι]
+private lemma integrable_centeredSup {E ι J : Type*} [MeasurableSpace E]
     [Nonempty ι] [Fintype J] {P : Measure E} [IsProbabilityMeasure P] {f : ι → E → ℝ}
-    (hf : ∀ i, Measurable (f i)) {envelope : E → ℝ} (he : Integrable envelope P)
+    (hf : ∀ i, Measurable (f i))
+    (hmeas : Measurable fun y : J → E =>
+      ⨆ i, |(Fintype.card J : ℝ)⁻¹ * (∑ j, f i (y j)) - ∫ x, f i x ∂P|)
+    {envelope : E → ℝ} (he : Integrable envelope P)
     (hbound : ∀ i x, |f i x| ≤ envelope x) :
     Integrable (fun y : J → E =>
       ⨆ i, |(Fintype.card J : ℝ)⁻¹ * (∑ j, f i (y j)) - ∫ x, f i x ∂P|)
@@ -266,18 +274,21 @@ private lemma integrable_centeredSup {E ι J : Type*} [MeasurableSpace E] [Count
   have hdomL : Integrable (fun y : J → E =>
       (Fintype.card J : ℝ)⁻¹ * ∑ j, envelope (y j) + hC) (Measure.pi fun _ => P) :=
     ((integrable_sum_envelope he).const_mul _).add (integrable_const _)
-  refine hdomL.mono'
-    (measurable_centeredSup hf fun i => ∫ x, f i x ∂P).aemeasurable.aestronglyMeasurable ?_
+  refine hdomL.mono' hmeas.aemeasurable.aestronglyMeasurable ?_
   filter_upwards with y
   rw [Real.norm_eq_abs, abs_of_nonneg (Real.iSup_nonneg fun _ => abs_nonneg _)]
   exact ciSup_le fun i => hcent_le i y
 
 /-- Centering an empirical mean by an independent ghost sample does not decrease the
 expected supremum. -/
-private lemma expectedSup_centered_le_ghost {E ι J : Type*} [MeasurableSpace E] [Countable ι]
+private lemma expectedSup_centered_le_ghost {E ι J : Type*} [MeasurableSpace E]
     [Nonempty ι] [Fintype J] [Nonempty J] {P : Measure E} [IsProbabilityMeasure P]
-    {f : ι → E → ℝ} (hf : ∀ i, Measurable (f i)) {envelope : E → ℝ}
-    (he : Integrable envelope P) (hbound : ∀ i x, |f i x| ≤ envelope x) :
+    {f : ι → E → ℝ} (hf : ∀ i, Measurable (f i))
+    (hcent : Measurable fun y : J → E =>
+      ⨆ i, |(Fintype.card J : ℝ)⁻¹ * (∑ j, f i (y j)) - ∫ x, f i x ∂P|)
+    (hghost : Measurable fun p : (J → E) × (J → E) =>
+      ⨆ i, |(Fintype.card J : ℝ)⁻¹ * ∑ j, (f i (p.1 j) - f i (p.2 j))|)
+    {envelope : E → ℝ} (he : Integrable envelope P) (hbound : ∀ i x, |f i x| ≤ envelope x) :
     (∫ y, ⨆ i, |(Fintype.card J : ℝ)⁻¹ * (∑ j, f i (y j)) - ∫ x, f i x ∂P|
         ∂Measure.pi (fun _ : J => P)) ≤
       ∫ p, ⨆ i, |(Fintype.card J : ℝ)⁻¹ * ∑ j, (f i (p.1 j) - f i (p.2 j))|
@@ -287,7 +298,7 @@ private lemma expectedSup_centered_le_ghost {E ι J : Type*} [MeasurableSpace E]
     ⨆ i, |(Fintype.card J : ℝ)⁻¹ * ∑ j, (f i (p.1 j) - f i (p.2 j))|
   have henv0 (x : E) : 0 ≤ envelope x :=
     Nonempty.elim ‹Nonempty ι› fun i => (abs_nonneg _).trans (hbound i x)
-  obtain ⟨hΦint, hslice⟩ := integrable_ghostSup (J := J) hf he hbound
+  obtain ⟨hΦint, hslice⟩ := integrable_ghostSup (J := J) hghost he hbound
   have hsup_le (y : J → E) :
       ⨆ i, |(Fintype.card J : ℝ)⁻¹ * (∑ j, f i (y j)) - ∫ x, f i x ∂P| ≤
         ∫ y', Φ (y, y') ∂π := by
@@ -301,7 +312,7 @@ private lemma expectedSup_centered_le_ghost {E ι J : Type*} [MeasurableSpace E]
   calc
     (∫ y, ⨆ i, |(Fintype.card J : ℝ)⁻¹ * (∑ j, f i (y j)) - ∫ x, f i x ∂P| ∂π) ≤
         ∫ y, ∫ y', Φ (y, y') ∂π ∂π :=
-      integral_mono (integrable_centeredSup hf he hbound) hΦint.integral_prod_left hsup_le
+      integral_mono (integrable_centeredSup hf hcent he hbound) hΦint.integral_prod_left hsup_le
     _ = ∫ p, Φ p ∂π.prod π := (integral_prod _ hΦint).symm
 
 /-- Almost every Rademacher sign vector takes values in `{-1, 1}`. -/
@@ -333,22 +344,16 @@ private lemma abs_eq_one_of_mem_signs {J : Type*} {σ : J → ℝ}
     simpa [Set.mem_univ_pi, Set.mem_insert_iff, Set.mem_singleton_iff] using hσ j
   rcases hj with h | h <;> simp [h]
 
-/-- For a fixed sign vector with values in `{-1, 1}`, multiplying the ghost differences by
-the signs does not change the expected ghost supremum, because swapping the two samples on
-the coordinates with sign `-1` preserves their joint law. -/
-private lemma integral_signedGhostSup_eq {E ι J : Type*} [MeasurableSpace E] [Countable ι]
-    [Fintype J] {P : Measure E} [IsProbabilityMeasure P] {f : ι → E → ℝ}
-    (hf : ∀ i, Measurable (f i)) {σ : J → ℝ} (hσ : σ ∈ Set.univ.pi fun _ => ({-1, 1} : Set ℝ)) :
-    ∫ p, ⨆ i, |(Fintype.card J : ℝ)⁻¹ * ∑ j, σ j * (f i (p.1 j) - f i (p.2 j))|
-        ∂(Measure.pi (fun _ : J => P)).prod (Measure.pi (fun _ : J => P)) =
-      ∫ p, ⨆ i, |(Fintype.card J : ℝ)⁻¹ * ∑ j, (f i (p.1 j) - f i (p.2 j))|
-        ∂(Measure.pi (fun _ : J => P)).prod (Measure.pi (fun _ : J => P)) := by
-  let π : Measure (J → E) := Measure.pi (fun _ => P)
-  let Φ : (J → E) × (J → E) → ℝ := fun p =>
-    ⨆ i, |(Fintype.card J : ℝ)⁻¹ * ∑ j, (f i (p.1 j) - f i (p.2 j))|
+/-- For a sign vector with values in `{-1, 1}`, multiplying the ghost differences by the
+signs amounts to swapping the two samples on the coordinates with sign `-1`. -/
+private lemma signedGhostSup_eq_ghostFlip {E ι J : Type*} [Fintype J] {f : ι → E → ℝ}
+    {σ : J → ℝ} (hσ : σ ∈ Set.univ.pi fun _ => ({-1, 1} : Set ℝ)) (p : (J → E) × (J → E)) :
+    ⨆ i, |(Fintype.card J : ℝ)⁻¹ * ∑ j, σ j * (f i (p.1 j) - f i (p.2 j))| =
+      ⨆ i, |(Fintype.card J : ℝ)⁻¹ *
+        ∑ j, (f i ((ghostFlip σ p).1 j) - f i ((ghostFlip σ p).2 j))| := by
   have hone : (1 : ℝ) ≠ -1 :=
     (ne_of_lt (lt_trans (neg_lt_zero.mpr zero_lt_one) zero_lt_one)).symm
-  have hterms (p : (J → E) × (J → E)) (i : ι) :
+  have hterms (i : ι) :
       ∑ j, (f i ((ghostFlip σ p).1 j) - f i ((ghostFlip σ p).2 j)) =
         ∑ j, σ j * (f i (p.1 j) - f i (p.2 j)) := by
     refine Finset.sum_congr rfl fun j _ => ?_
@@ -362,16 +367,44 @@ private lemma integral_signedGhostSup_eq {E ι J : Type*} [MeasurableSpace E] [C
       have h1 : (ghostFlip σ p).1 j = p.1 j := by simp [ghostFlip, hne]
       have h2 : (ghostFlip σ p).2 j = p.2 j := by simp [ghostFlip, hne]
       rw [h1, h2, hj, one_mul]
+  exact congr_arg iSup (funext fun i => by rw [hterms i])
+
+/-- The sign-dependent swap of the two ghost samples is jointly measurable. -/
+private lemma measurable_ghostFlip_uncurry {E J : Type*} [MeasurableSpace E] [Fintype J] :
+    Measurable fun z : ((J → E) × (J → E)) × (J → ℝ) => ghostFlip z.2 z.1 := by
+  have hset (j : J) : MeasurableSet {z : ((J → E) × (J → E)) × (J → ℝ) | z.2 j = -1} :=
+    measurableSet_eq_fun ((measurable_pi_apply j).comp measurable_snd) measurable_const
+  have h1 (j : J) : Measurable fun z : ((J → E) × (J → E)) × (J → ℝ) => z.1.1 j :=
+    (measurable_pi_apply j).comp (measurable_fst.comp measurable_fst)
+  have h2 (j : J) : Measurable fun z : ((J → E) × (J → E)) × (J → ℝ) => z.1.2 j :=
+    (measurable_pi_apply j).comp (measurable_snd.comp measurable_fst)
+  refine Measurable.prodMk ?_ ?_ <;> rw [measurable_pi_iff] <;> intro j
+  · exact Measurable.ite (hset j) (h2 j) (h1 j)
+  · exact Measurable.ite (hset j) (h1 j) (h2 j)
+
+/-- For a fixed sign vector with values in `{-1, 1}`, multiplying the ghost differences by
+the signs does not change the expected ghost supremum, because swapping the two samples on
+the coordinates with sign `-1` preserves their joint law. -/
+private lemma integral_signedGhostSup_eq {E ι J : Type*} [MeasurableSpace E]
+    [Fintype J] {P : Measure E} [IsProbabilityMeasure P] {f : ι → E → ℝ}
+    (hghost : Measurable fun p : (J → E) × (J → E) =>
+      ⨆ i, |(Fintype.card J : ℝ)⁻¹ * ∑ j, (f i (p.1 j) - f i (p.2 j))|)
+    {σ : J → ℝ} (hσ : σ ∈ Set.univ.pi fun _ => ({-1, 1} : Set ℝ)) :
+    ∫ p, ⨆ i, |(Fintype.card J : ℝ)⁻¹ * ∑ j, σ j * (f i (p.1 j) - f i (p.2 j))|
+        ∂(Measure.pi (fun _ : J => P)).prod (Measure.pi (fun _ : J => P)) =
+      ∫ p, ⨆ i, |(Fintype.card J : ℝ)⁻¹ * ∑ j, (f i (p.1 j) - f i (p.2 j))|
+        ∂(Measure.pi (fun _ : J => P)).prod (Measure.pi (fun _ : J => P)) := by
+  let π : Measure (J → E) := Measure.pi (fun _ => P)
+  let Φ : (J → E) × (J → E) → ℝ := fun p =>
+    ⨆ i, |(Fintype.card J : ℝ)⁻¹ * ∑ j, (f i (p.1 j) - f i (p.2 j))|
   have hpres := ghostFlip_measurePreserving (P := P) σ
   have hint : ∫ p, Φ (ghostFlip σ p) ∂π.prod π = ∫ p, Φ p ∂π.prod π := by
     conv_rhs => rw [← hpres.map_eq]
     exact (integral_map hpres.measurable.aemeasurable
-      ((measurable_ghostSup hf).aestronglyMeasurable :
+      (hghost.aestronglyMeasurable :
         AEStronglyMeasurable Φ (Measure.map (ghostFlip σ) (π.prod π)))).symm
   rw [← hint]
-  refine integral_congr_ae (ae_of_all _ fun p => ?_)
-  refine congr_arg iSup (funext fun i => ?_)
-  rw [hterms p i]
+  exact integral_congr_ae (ae_of_all _ fun p => signedGhostSup_eq_ghostFlip (f := f) hσ p)
 
 /-- The supremum over the class of signed averages is measurable. -/
 private lemma measurable_signedSup {E ι J : Type*} [MeasurableSpace E] [Countable ι]
@@ -415,9 +448,11 @@ private lemma signedSup_le_of_mem {E ι J : Type*} [Nonempty ι] [Fintype J] {f 
   simp only [abs_eq_one_of_mem_signs hσ, one_mul]
 
 /-- The signed supremum is integrable for a sample and independent Rademacher signs. -/
-private lemma integrable_signedSup {E ι J : Type*} [MeasurableSpace E] [Countable ι]
+private lemma integrable_signedSup {E ι J : Type*} [MeasurableSpace E]
     [Nonempty ι] [Fintype J] {P : Measure E} [IsProbabilityMeasure P] {f : ι → E → ℝ}
-    (hf : ∀ i, Measurable (f i)) {envelope : E → ℝ} (he : Integrable envelope P)
+    (hsigned : Measurable fun q : (J → E) × (J → ℝ) =>
+      ⨆ i, |(Fintype.card J : ℝ)⁻¹ * ∑ j, q.2 j * f i (q.1 j)|)
+    {envelope : E → ℝ} (he : Integrable envelope P)
     (hbound : ∀ i x, |f i x| ≤ envelope x) :
     Integrable (fun q : (J → E) × (J → ℝ) =>
       ⨆ i, |(Fintype.card J : ℝ)⁻¹ * ∑ j, q.2 j * f i (q.1 j)|)
@@ -426,7 +461,7 @@ private lemma integrable_signedSup {E ι J : Type*} [MeasurableSpace E] [Countab
       (Fintype.card J : ℝ)⁻¹ * ∑ j, envelope (q.1 j))
       ((Measure.pi fun _ : J => P).prod (Measure.pi fun _ : J => rademacherMeasure)) :=
     ((integrable_sum_envelope he).const_mul _).comp_fst _
-  refine hdom.mono' (measurable_signedSup hf).aemeasurable.aestronglyMeasurable ?_
+  refine hdom.mono' hsigned.aemeasurable.aestronglyMeasurable ?_
   filter_upwards [(Measure.quasiMeasurePreserving_snd
     (μ := Measure.pi fun _ : J => P)).ae ae_mem_signs] with q hq
   rw [Real.norm_eq_abs, abs_of_nonneg (Real.iSup_nonneg fun _ => abs_nonneg _)]
@@ -451,31 +486,33 @@ private lemma signedGhostSup_le {E ι J : Type*} [Nonempty ι] [Fintype J] {f : 
 
 /-- The signed ghost supremum is integrable for two i.i.d. samples and independent
 Rademacher signs. -/
-private lemma integrable_signedGhostSup {E ι J : Type*} [MeasurableSpace E] [Countable ι]
+private lemma integrable_signedGhostSup {E ι J : Type*} [MeasurableSpace E]
     [Nonempty ι] [Fintype J] {P : Measure E} [IsProbabilityMeasure P] {f : ι → E → ℝ}
-    (hf : ∀ i, Measurable (f i)) {envelope : E → ℝ} (he : Integrable envelope P)
+    (hghost : Measurable fun p : (J → E) × (J → E) =>
+      ⨆ i, |(Fintype.card J : ℝ)⁻¹ * ∑ j, (f i (p.1 j) - f i (p.2 j))|)
+    {envelope : E → ℝ} (he : Integrable envelope P)
     (hbound : ∀ i x, |f i x| ≤ envelope x) :
     Integrable (fun z : ((J → E) × (J → E)) × (J → ℝ) =>
       ⨆ i, |(Fintype.card J : ℝ)⁻¹ * ∑ j, z.2 j * (f i (z.1.1 j) - f i (z.1.2 j))|)
       (((Measure.pi fun _ : J => P).prod (Measure.pi fun _ : J => P)).prod
         (Measure.pi fun _ : J => rademacherMeasure)) := by
   let π : Measure (J → E) := Measure.pi (fun _ => P)
-  have hmeas : Measurable fun z : ((J → E) × (J → E)) × (J → ℝ) =>
-      ⨆ i, |(Fintype.card J : ℝ)⁻¹ * ∑ j, z.2 j * (f i (z.1.1 j) - f i (z.1.2 j))| := by
-    refine Measurable.iSup fun i => continuous_abs.measurable.comp ?_
-    refine (Finset.measurable_fun_sum Finset.univ fun j _ => ?_).const_mul _
-    exact (((measurable_pi_apply j).comp measurable_snd).mul
-      (((hf i).comp ((measurable_pi_apply j).comp (measurable_fst.comp measurable_fst))).sub
-        ((hf i).comp ((measurable_pi_apply j).comp (measurable_snd.comp measurable_fst)))))
+  have hsigns := (Measure.quasiMeasurePreserving_snd (μ := π.prod π)).ae
+    (ae_mem_signs (J := J))
+  have hmeas : AEStronglyMeasurable (fun z : ((J → E) × (J → E)) × (J → ℝ) =>
+      ⨆ i, |(Fintype.card J : ℝ)⁻¹ * ∑ j, z.2 j * (f i (z.1.1 j) - f i (z.1.2 j))|)
+      ((π.prod π).prod (Measure.pi fun _ : J => rademacherMeasure)) := by
+    refine (hghost.comp measurable_ghostFlip_uncurry).aestronglyMeasurable.congr ?_
+    filter_upwards [hsigns] with z hz
+    exact (signedGhostSup_eq_ghostFlip hz z.1).symm
   have hdom : Integrable (fun z : ((J → E) × (J → E)) × (J → ℝ) =>
       (Fintype.card J : ℝ)⁻¹ * ∑ j, envelope (z.1.1 j) +
         (Fintype.card J : ℝ)⁻¹ * ∑ j, envelope (z.1.2 j))
         ((π.prod π).prod (Measure.pi fun _ : J => rademacherMeasure)) :=
     ((((integrable_sum_envelope he).const_mul _).comp_fst π).comp_fst _).add
       ((((integrable_sum_envelope he).const_mul _).comp_snd π).comp_fst _)
-  refine hdom.mono' hmeas.aemeasurable.aestronglyMeasurable ?_
-  filter_upwards [(Measure.quasiMeasurePreserving_snd (μ := π.prod π)).ae ae_mem_signs]
-    with z hz
+  refine hdom.mono' hmeas ?_
+  filter_upwards [hsigns] with z hz
   rw [Real.norm_eq_abs, abs_of_nonneg (Real.iSup_nonneg fun _ => abs_nonneg _)]
   exact (signedGhostSup_le hbound z.2 z.1.1 z.1.2).trans
     (add_le_add (signedSup_le_of_mem hbound hz _) (signedSup_le_of_mem hbound hz _))
@@ -498,9 +535,12 @@ private lemma integrable_comp_fst_and_integral_eq {α β γ : Type*} [Measurable
 /-- Random signs do not change the ghost comparison, and the triangle inequality
 splits it into two equidistributed signed copies. -/
 private lemma expectedSup_ghost_le_twice_signed {E ι J : Type*} [MeasurableSpace E]
-    [Countable ι] [Nonempty ι] [Fintype J] {P : Measure E} [IsProbabilityMeasure P]
-    {f : ι → E → ℝ} (hf : ∀ i, Measurable (f i)) {envelope : E → ℝ}
-    (he : Integrable envelope P) (hbound : ∀ i x, |f i x| ≤ envelope x) :
+    [Nonempty ι] [Fintype J] {P : Measure E} [IsProbabilityMeasure P] {f : ι → E → ℝ}
+    (hghost : Measurable fun p : (J → E) × (J → E) =>
+      ⨆ i, |(Fintype.card J : ℝ)⁻¹ * ∑ j, (f i (p.1 j) - f i (p.2 j))|)
+    (hsigned : Measurable fun q : (J → E) × (J → ℝ) =>
+      ⨆ i, |(Fintype.card J : ℝ)⁻¹ * ∑ j, q.2 j * f i (q.1 j)|)
+    {envelope : E → ℝ} (he : Integrable envelope P) (hbound : ∀ i x, |f i x| ≤ envelope x) :
     (∫ p, ⨆ i, |(Fintype.card J : ℝ)⁻¹ * ∑ j, (f i (p.1 j) - f i (p.2 j))|
         ∂(Measure.pi (fun _ : J => P)).prod (Measure.pi (fun _ : J => P))) ≤
       2 * ∫ q, ⨆ i, |(Fintype.card J : ℝ)⁻¹ * ∑ j, q.2 j * f i (q.1 j)|
@@ -512,9 +552,9 @@ private lemma expectedSup_ghost_le_twice_signed {E ι J : Type*} [MeasurableSpac
     ⨆ i, |(Fintype.card J : ℝ)⁻¹ * ∑ j, z.2 j * (f i (z.1.1 j) - f i (z.1.2 j))|
   let ψ : (J → E) × (J → ℝ) → ℝ := fun q =>
     ⨆ i, |(Fintype.card J : ℝ)⁻¹ * ∑ j, q.2 j * f i (q.1 j)|
-  have hψmeas : Measurable ψ := measurable_signedSup hf
-  have hψint : Integrable ψ (π.prod ρ) := integrable_signedSup hf he hbound
-  have hΦσint : Integrable Φσ ((π.prod π).prod ρ) := integrable_signedGhostSup hf he hbound
+  have hψmeas : Measurable ψ := hsigned
+  have hψint : Integrable ψ (π.prod ρ) := integrable_signedSup hsigned he hbound
+  have hΦσint : Integrable Φσ ((π.prod π).prod ρ) := integrable_signedGhostSup hghost he hbound
   obtain ⟨hΨ1int, hI1⟩ :=
     integrable_comp_fst_and_integral_eq (measurePreserving_fst (μ := π) (ν := π)) hψmeas hψint
   obtain ⟨hΨ2int, hI2⟩ :=
@@ -527,7 +567,7 @@ private lemma expectedSup_ghost_le_twice_signed {E ι J : Type*} [MeasurableSpac
         fun _ => ∫ p, ⨆ i,
           |(Fintype.card J : ℝ)⁻¹ * ∑ j, (f i (p.1 j) - f i (p.2 j))| ∂π.prod π := by
       filter_upwards [ae_mem_signs] with σ hσ
-      exact integral_signedGhostSup_eq hf hσ
+      exact integral_signedGhostSup_eq hghost hσ
     rw [integral_congr_ae hinner, integral_const, probReal_univ, one_smul]
   calc
     _ = ∫ z, Φσ z ∂(π.prod π).prod ρ := heq_sign.symm
@@ -537,11 +577,13 @@ private lemma expectedSup_ghost_le_twice_signed {E ι J : Type*} [MeasurableSpac
       integral_add hΨ1int hΨ2int
     _ = 2 * ∫ q, ψ q ∂π.prod ρ := by rw [hI1, hI2, ← two_mul]
 
-/-- **07.33**: symmetrization for a nonempty countable class with an integrable envelope.
-The signs are sampled on a separate probability space, so independence from the data is
-explicit. -/
-theorem symmetrization {Ω Ω' E ι J : Type*} [MeasurableSpace Ω] [MeasurableSpace Ω']
-    [MeasurableSpace E] [Countable ι] [Nonempty ι] [Fintype J] [Nonempty J]
+/-- **07.33**, measurable-supremum form: symmetrization for an arbitrary nonempty class with
+an integrable envelope, assuming that the three suprema over the class occurring in the argument
+are measurable functions of the sample points: the centered empirical supremum, the supremum of
+the ghost-sample differences, and the signed supremum. Data and signs live on separate
+probability spaces, and the signed side is integrated over the product. -/
+theorem symmetrization_of_measurable {Ω Ω' E ι J : Type*} [MeasurableSpace Ω]
+    [MeasurableSpace Ω'] [MeasurableSpace E] [Nonempty ι] [Fintype J] [Nonempty J]
     (μ : Measure Ω) (ν : Measure Ω') (P : Measure E)
     [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] [IsProbabilityMeasure P]
     (X : J → Ω → E) (ε : J → Ω' → ℝ)
@@ -549,7 +591,13 @@ theorem symmetrization {Ω Ω' E ι J : Type*} [MeasurableSpace Ω] [MeasurableS
     (hlaw : ∀ j, μ.map (X j) = P) (hε : ∀ j, IsRademacher (ε j) ν)
     (hεi : iIndepFun ε ν) (f : ι → E → ℝ) (hf : ∀ i, Measurable (f i))
     (envelope : E → ℝ) (he : Integrable envelope P)
-    (hbound : ∀ i x, |f i x| ≤ envelope x) :
+    (hbound : ∀ i x, |f i x| ≤ envelope x)
+    (hcent : Measurable fun y : J → E =>
+      ⨆ i, |(Fintype.card J : ℝ)⁻¹ * (∑ j, f i (y j)) - ∫ x, f i x ∂P|)
+    (hghost : Measurable fun p : (J → E) × (J → E) =>
+      ⨆ i, |(Fintype.card J : ℝ)⁻¹ * ∑ j, (f i (p.1 j) - f i (p.2 j))|)
+    (hsigned : Measurable fun q : (J → E) × (J → ℝ) =>
+      ⨆ i, |(Fintype.card J : ℝ)⁻¹ * ∑ j, q.2 j * f i (q.1 j)|) :
     (∫ ω, ⨆ i, |(Fintype.card J : ℝ)⁻¹ * (∑ j, f i (X j ω)) - ∫ x, f i x ∂P| ∂μ) ≤
       2 * ∫ ω, ⨆ i, |(Fintype.card J : ℝ)⁻¹ * ∑ j, ε j ω.2 * f i (X j ω.1)| ∂μ.prod ν := by
   let n : ℕ := Fintype.card J
@@ -577,22 +625,39 @@ theorem symmetrization {Ω Ω' E ι J : Type*} [MeasurableSpace Ω] [MeasurableS
     exact (hε j).2
   have hpush : (μ.prod ν).map (Prod.map sample signs) = π.prod ρ := by
     rw [← Measure.map_prod_map μ ν hsample_meas hsigns_meas, hsample_law, hsigns_law]
-  have hleft_meas := measurable_centeredSup (J := J) hf fun i => ∫ x, f i x ∂P
-  have hright_meas := measurable_signedSup (J := J) hf
   calc
     (∫ ω, ⨆ i, |(n : ℝ)⁻¹ * (∑ j, f i (X j ω)) - ∫ x, f i x ∂P| ∂μ) =
         ∫ y, ⨆ i, |(n : ℝ)⁻¹ * (∑ j, f i (y j)) - ∫ x, f i x ∂P| ∂π := by
       rw [← hsample_law]
       exact (integral_map hsample_meas.aemeasurable
-        hleft_meas.aemeasurable.aestronglyMeasurable).symm
+        hcent.aemeasurable.aestronglyMeasurable).symm
     _ ≤ ∫ p, ⨆ i, |(n : ℝ)⁻¹ * ∑ j, (f i (p.1 j) - f i (p.2 j))| ∂π.prod π :=
-      expectedSup_centered_le_ghost hf he hbound
+      expectedSup_centered_le_ghost hf hcent hghost he hbound
     _ ≤ 2 * ∫ q, ⨆ i, |(n : ℝ)⁻¹ * ∑ j, q.2 j * f i (q.1 j)| ∂π.prod ρ :=
-      expectedSup_ghost_le_twice_signed hf he hbound
+      expectedSup_ghost_le_twice_signed hghost hsigned he hbound
     _ = 2 * ∫ ω, ⨆ i, |(n : ℝ)⁻¹ * ∑ j, ε j ω.2 * f i (X j ω.1)| ∂μ.prod ν := by
       rw [← hpush]
       refine congrArg (fun t : ℝ => 2 * t) ?_
       exact integral_map (hsample_meas.prodMap hsigns_meas).aemeasurable
-        hright_meas.aemeasurable.aestronglyMeasurable
+        hsigned.aemeasurable.aestronglyMeasurable
+
+/-- **07.33**: symmetrization for a nonempty countable class with an integrable envelope.
+The signs are sampled on a separate probability space, so independence from the data is
+explicit. -/
+theorem symmetrization {Ω Ω' E ι J : Type*} [MeasurableSpace Ω] [MeasurableSpace Ω']
+    [MeasurableSpace E] [Countable ι] [Nonempty ι] [Fintype J] [Nonempty J]
+    (μ : Measure Ω) (ν : Measure Ω') (P : Measure E)
+    [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] [IsProbabilityMeasure P]
+    (X : J → Ω → E) (ε : J → Ω' → ℝ)
+    (hX : ∀ j, Measurable (X j)) (hXi : iIndepFun X μ)
+    (hlaw : ∀ j, μ.map (X j) = P) (hε : ∀ j, IsRademacher (ε j) ν)
+    (hεi : iIndepFun ε ν) (f : ι → E → ℝ) (hf : ∀ i, Measurable (f i))
+    (envelope : E → ℝ) (he : Integrable envelope P)
+    (hbound : ∀ i x, |f i x| ≤ envelope x) :
+    (∫ ω, ⨆ i, |(Fintype.card J : ℝ)⁻¹ * (∑ j, f i (X j ω)) - ∫ x, f i x ∂P| ∂μ) ≤
+      2 * ∫ ω, ⨆ i, |(Fintype.card J : ℝ)⁻¹ * ∑ j, ε j ω.2 * f i (X j ω.1)| ∂μ.prod ν :=
+  symmetrization_of_measurable μ ν P X ε hX hXi hlaw hε hεi f hf envelope he hbound
+    (measurable_centeredSup hf fun i => ∫ x, f i x ∂P) (measurable_ghostSup hf)
+    (measurable_signedSup hf)
 
 end CKMA

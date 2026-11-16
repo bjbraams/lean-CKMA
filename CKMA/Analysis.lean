@@ -53,6 +53,7 @@ public import CKMA.Analysis.Convex.Duality.FenchelRockafellar
 public import CKMA.Analysis.Convex.Duality.KKT
 public import CKMA.Analysis.Convex.Duality.Subdifferential
 public import CKMA.Analysis.Convex.Duality.Sum
+public import CKMA.Analysis.Convex.Duality.SumIntrinsic
 public import CKMA.Analysis.Convex.Ekeland
 public import CKMA.Analysis.Convex.Majorization
 public import CKMA.Analysis.Convex.Proximal
@@ -77,6 +78,7 @@ public import CKMA.Analysis.Inequalities.Carleman
 public import CKMA.Analysis.Inequalities.ClassicalSequences
 public import CKMA.Analysis.Inequalities.ClassicalSequences.NewtonMaclaurin
 public import CKMA.Analysis.Inequalities.Hilbert
+public import CKMA.Analysis.Inequalities.Hilbert.Kernel
 public import CKMA.Analysis.InnerProductSpace.Basic
 public import CKMA.Analysis.InnerProductSpace.Frame
 public import CKMA.Analysis.InnerProductSpace.HilbertModel

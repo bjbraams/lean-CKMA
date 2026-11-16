@@ -10,6 +10,9 @@ public import Mathlib.Probability.CDF
 public import Mathlib.MeasureTheory.Function.ConvergenceInDistribution
 public import Mathlib.Tactic
 import TauCeti.Probability.CentralLimitTheorem.Lindeberg
+import CKMA.Probability.LimitTheorems.LindebergFeller
+import CKMA.Probability.LimitTheorems.ThreeSeries
+import CKMA.Probability.LimitTheorems.BerryEsseen
 
 /-!
 # Ordered random series, LIL and quantitative central limits (06.23, 06.27, 06.34, 06.36)
@@ -85,8 +88,8 @@ def HasThreeSeries {Ω : Type*} [MeasurableSpace Ω]
 theorem kolmogorov_threeSeries {Ω : Type*} [MeasurableSpace Ω] (μ : Measure Ω)
     [IsProbabilityMeasure μ] (X : ℕ → Ω → ℝ) (hm : ∀ n, Measurable (X n))
     (hi : iIndepFun X μ) {A : ℝ} (hA : 0 < A) :
-    (∀ᵐ ω ∂μ, IsOrderedSummable (fun n ↦ X n ω)) ↔ HasThreeSeries X μ A := by
-  sorry
+    (∀ᵐ ω ∂μ, IsOrderedSummable (fun n ↦ X n ω)) ↔ HasThreeSeries X μ A :=
+  ae_summable_conditional_iff_threeSeries X hm hi hA
 
 /-- The iterated-logarithm normalization, totalized at the first few indices. -/
 def iteratedLogScale (varianceParam : ℝ) (n : ℕ) : ℝ :=
@@ -197,12 +200,13 @@ theorem lindeberg_feller {Ω : Type*} [MeasurableSpace Ω] (μ : Measure Ω)
   condition. -/
 theorem lindeberg_feller_iff {Ω : Type*} [MeasurableSpace Ω] (μ : Measure Ω)
     [IsProbabilityMeasure μ] {k : ℕ → ℕ} (X : ∀ n, Fin (k n) → Ω → ℝ)
-    (hm : ∀ n i, Measurable (X n i)) (hi : ∀ n, iIndepFun (X n) μ)
+    (hi : ∀ n, iIndepFun (X n) μ)
     (hLp : ∀ n i, MemLp (X n i) 2 μ) (hc : ∀ n i, ∫ ω, X n i ω ∂μ = 0)
     (hv : ∀ n, 0 < arrayRowVariance X μ n) (hF : HasFellerCondition X μ) :
     HasLindebergCondition X μ ↔
-      TendstoInDistribution (normalizedArraySum X μ) atTop id (fun _ ↦ μ) (gaussianReal 0 1) := by
-  sorry
+      TendstoInDistribution (normalizedArraySum X μ) atTop id (fun _ ↦ μ) (gaussianReal 0 1) :=
+  ⟨lindeberg_feller μ X hi hLp hc hv,
+    lindeberg_of_feller_of_tendstoInDistribution_div_sqrt hi hLp hc hv hF⟩
 
 /-- Supremum of differences of the real CDFs. On probability measures this is the
 Kolmogorov distance; the raw formula also accepts arbitrary measures. -/
@@ -220,6 +224,16 @@ theorem berry_esseen {Ω : Type*} [MeasurableSpace Ω] (μ : Measure Ω)
       (μ.map (fun ω ↦ (∑ j ∈ Finset.range n, X j ω) / (σ * Real.sqrt n)))
       (gaussianReal 0 1) ≤
       100 * (∫ ω, |X 0 ω| ^ 3 ∂μ) / (σ ^ 3 * Real.sqrt n) := by
-  sorry
+  have hW : Measurable fun ω ↦ (∑ j ∈ Finset.range n, X j ω) / (σ * Real.sqrt n) :=
+    (Finset.measurable_sum _ fun j _ ↦ hm j).div_const _
+  have hρ : 0 ≤ ∫ ω, |X 0 ω| ^ 3 ∂μ := integral_nonneg fun _ ↦ by positivity
+  have hd : 0 < σ ^ 3 * Real.sqrt n := by
+    have : 0 < Real.sqrt n := Real.sqrt_pos.2 (Nat.cast_pos.2 hn)
+    positivity
+  refine csSup_le (Set.range_nonempty _) (Set.forall_mem_range.2 fun x ↦ ?_)
+  rw [cdf_eq_real (μ.map _), map_measureReal_apply hW measurableSet_Iic]
+  refine (abs_measureReal_sum_div_le_sub_cdf_le X hm hi hid hLp hc hσ hv hn x).trans ?_
+  gcongr
+  norm_num
 
 end CKMA

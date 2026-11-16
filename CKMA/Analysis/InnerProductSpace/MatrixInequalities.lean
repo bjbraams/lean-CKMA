@@ -452,7 +452,43 @@ theorem hoffman_wielandt (A B : E →ₗ[𝕜] E)
 theorem norm_trace_adjoint_comp_le (A B : E →ₗ[𝕜] E) :
     ‖LinearMap.trace 𝕜 E (A.adjoint ∘ₗ B)‖ ≤
       ∑ i : Fin (finrank 𝕜 E), A.singularValues i * B.singularValues i := by
-  sorry
+  obtain ⟨w, hw⟩ := A.exists_orthonormalBasis_apply_eq_leftSingularVector
+  let v := A.rightSingularBasis
+  have hAv (i : Fin (finrank 𝕜 E)) : A (v i) = ((A.singularValues i : ℝ) : 𝕜) • w i := by
+    rw [A.apply_rightSingularBasis]
+    by_cases hσ : A.singularValues i = 0
+    · simp [hσ]
+    · rw [hw i i rfl hσ]
+  set z := LinearMap.trace 𝕜 E (A.adjoint ∘ₗ B) with hz
+  have htr : z = ∑ i : Fin (finrank 𝕜 E),
+      ((A.singularValues i : ℝ) : 𝕜) * ⟪w i, B (v i)⟫_𝕜 := by
+    rw [hz, LinearMap.trace_eq_sum_inner _ v]
+    refine Finset.sum_congr rfl fun i _ ↦ ?_
+    rw [LinearMap.comp_apply, LinearMap.adjoint_inner_right, hAv, inner_smul_left,
+      RCLike.conj_ofReal]
+  -- Rotate `B` by a unimodular phase that makes the trace real and nonnegative.
+  obtain ⟨c, hc, hcz⟩ : ∃ c : 𝕜, ‖c‖ = 1 ∧ (‖z‖ : 𝕜) = c * z := by
+    by_cases hz0 : z = 0
+    · exact ⟨1, by simp, by simp [hz0]⟩
+    · have hn : (‖z‖ : 𝕜) ≠ 0 := by exact_mod_cast norm_ne_zero_iff.mpr hz0
+      refine ⟨starRingEnd 𝕜 z / ‖z‖, ?_, ?_⟩
+      · rw [norm_div, RCLike.norm_conj, RCLike.norm_ofReal, abs_norm,
+          div_self (norm_ne_zero_iff.mpr hz0)]
+      · rw [div_mul_eq_mul_div, RCLike.conj_mul, ← RCLike.ofReal_pow, RCLike.ofReal_pow, sq,
+          mul_div_assoc, div_self hn, mul_one]
+  have hcross := (c • B).sum_antitone_mul_re_inner_le_sum_mul_singularValues
+    w v w.orthonormal v.orthonormal (fun i _ ↦ A.singularValues_antitone (Nat.le_succ i))
+    (A.singularValues_nonneg _)
+  have hre : ‖z‖ = ∑ i : Fin (finrank 𝕜 E),
+      A.singularValues i * RCLike.re ⟪w i, (c • B) (v i)⟫_𝕜 := by
+    have h := congrArg RCLike.re hcz
+    rw [RCLike.ofReal_re] at h
+    rw [h, htr, Finset.mul_sum, map_sum]
+    refine Finset.sum_congr rfl fun i _ ↦ ?_
+    rw [LinearMap.smul_apply, inner_smul_right, ← RCLike.re_ofReal_mul]
+    ring_nf
+  rw [hre]
+  simpa [hc] using hcross
 
 /-- The rank-`k` SVD truncation, defined using TauCeti's canonical right singular basis. -/
 def svdTruncation (A : E →ₗ[𝕜] F) (k : ℕ) : E →ₗ[𝕜] F :=

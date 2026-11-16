@@ -18,12 +18,12 @@
       "id": "04.39",
       "title": "Duality",
       "easy": false,
-      "status": "statement",
+      "status": "proved",
       "module": "CKMA.Analysis.Measure.LpDuality",
       "declarations": [
         "CKMA.existsUnique_lpDualRepresentation"
       ],
-      "scope": ""
+      "scope": "σ-finite measure spaces and 1 ≤ p < ∞ with Hölder conjugate q, real or complex scalars; existence, uniqueness and the norm identity of the representing g ∈ L^q. The case p = 1 reduces to finite measures by a positive integrable weight."
     },
     {
       "id": "05.7",
@@ -97,7 +97,7 @@
       "id": "06.23",
       "title": "Kolmogorov three-series theorem",
       "easy": false,
-      "status": "statement",
+      "status": "proved",
       "module": "CKMA.Probability.LimitTheorems.IndependentSums",
       "declarations": [
         "CKMA.kolmogorov_threeSeries"
@@ -119,7 +119,7 @@
       "id": "06.34",
       "title": "Lindeberg–Feller theorem",
       "easy": false,
-      "status": "statement",
+      "status": "proved",
       "module": "CKMA.Probability.LimitTheorems.IndependentSums",
       "declarations": [
         "CKMA.lindeberg_feller",
@@ -131,12 +131,12 @@
       "id": "06.36",
       "title": "Berry–Esseen bound",
       "easy": false,
-      "status": "statement",
+      "status": "proved",
       "module": "CKMA.Probability.LimitTheorems.IndependentSums",
       "declarations": [
         "CKMA.berry_esseen"
       ],
-      "scope": "Kolmogorov distance of laws, positive variance and finite absolute third moment; explicit nonoptimal universal constant 100."
+      "scope": "Kolmogorov distance of laws, positive variance and finite absolute third moment; explicit nonoptimal universal constant 100 (the proof, by Stein's method, gives 40)."
     },
     {
       "id": "06.51",
@@ -162,7 +162,7 @@
       "id": "06.60",
       "title": "Cramér's theorem",
       "easy": false,
-      "status": "statement",
+      "status": "proved",
       "module": "CKMA.Probability.LimitTheorems.LargeDeviations",
       "declarations": [
         "CKMA.cramer"
@@ -206,25 +206,29 @@
       "id": "07.6",
       "title": "Equivalent sub-Gaussian descriptions",
       "easy": true,
-      "status": "partial",
+      "status": "proved",
       "module": "CKMA.Probability.Concentration.Basic",
       "declarations": [
         "CKMA.HasPsiTwoBound.hasGaussianTail",
         "CKMA.HasGaussianTail.hasPsiTwoBound",
         "CKMA.HasPsiTwoBound.hasGaussianMoments",
         "CKMA.HasGaussianMoments.hasPsiTwoBound",
-        "CKMA.HasPsiTwoBound.hasSubgaussianMGF"
+        "CKMA.HasPsiTwoBound.hasSubgaussianMGF",
+        "CKMA.psiTwoGauge_le_ofReal_iff",
+        "CKMA.hasGaussianTail_of_hasSubgaussianMGF",
+        "CKMA.hasPsiTwoBound_of_hasSubgaussianMGF"
       ],
-      "scope": "Concrete extended gauge and quantitative scale implications; the MGF-to-gauge adapter and the exact infimum-gauge equivalence remain."
+      "scope": "Concrete extended ψ₂ gauge, attained at its infimum, and quantitative scale implications among the tail, moment, ψ₂ and Mathlib sub-Gaussian MGF descriptions."
     },
     {
       "id": "07.17",
       "title": "Gaussian logarithmic Sobolev inequality",
       "easy": false,
-      "status": "statement",
+      "status": "proved",
       "module": "CKMA.Probability.GaussianLogSobolev",
       "declarations": [
-        "CKMA.gaussian_logSobolev"
+        "CKMA.gaussian_logSobolev",
+        "CKMA.gaussian_logSobolev_piLp"
       ],
       "scope": "Smooth real functions in Gaussian L2 on arbitrary finite-dimensional real Hilbert spaces; normalized KL-integrand entropy retains infinite entropy and has the exact factor two."
     },
@@ -250,12 +254,13 @@
       "id": "07.33",
       "title": "Symmetrization",
       "easy": true,
-      "status": "partial",
+      "status": "proved",
       "module": "CKMA.Probability.Symmetrization",
       "declarations": [
-        "CKMA.symmetrization"
+        "CKMA.symmetrization",
+        "CKMA.symmetrization_of_measurable"
       ],
-      "scope": "Nonempty countable function classes with a measurable integrable envelope; signs on an independent product factor. The general measurable-supremum formulation remains."
+      "scope": "Arbitrary nonempty function classes with a measurable integrable envelope, assuming measurability of the centered, ghost and signed suprema on the sample spaces; countable classes need no measurability hypothesis. Signs on an independent product factor."
     },
     {
       "id": "07.37",
@@ -331,12 +336,14 @@
       "id": "08.3",
       "title": "Strong Markov property",
       "easy": false,
-      "status": "partial",
+      "status": "proved",
       "module": "CKMA.Probability.BrownianTheory",
       "declarations": [
-        "CKMA.brownian_strongMarkov"
+        "CKMA.brownian_strongMarkov",
+        "CKMA.brownian_strongMarkov_of_indep",
+        "CKMA.brownian_strongMarkov_augmented"
       ],
-      "scope": "Finite-valued stopping times for the raw natural filtration; the post-stopping process is Brownian and finite-dimensional events are independent of Mathlib's stopping-time sigma-algebra. The completed right-continuous augmented-filtration interface remains."
+      "scope": "Stopping times for any filtration independent of future increments, in particular the raw natural filtration and its right-continuous augmentation by ambient-measurable null sets (the usual augmentation for a complete measure); almost surely finite stopping times for the augmented filtration. The post-stopping process is Brownian and finite-dimensional events are independent of the stopping-time sigma-algebra."
     },
     {
       "id": "08.4",
@@ -353,14 +360,19 @@
       "id": "08.7",
       "title": "Quadratic variation",
       "easy": true,
-      "status": "partial",
+      "status": "proved",
       "module": "CKMA.Probability.BrownianQuadraticVariation",
       "declarations": [
         "CKMA.brownian_quadraticVariation_ucp",
         "CKMA.brownian_quadraticVariation_ae",
-        "CKMA.brownian_covariation_ucp"
+        "CKMA.brownian_covariation_ucp",
+        "CKMA.brownian_covariation_ae",
+        "CKMA.IsQuadraticCovariation",
+        "CKMA.quadraticCovariation",
+        "CKMA.brownian_isQuadraticCovariation",
+        "CKMA.brownian_quadraticCovariation"
       ],
-      "scope": "Completed-interval sums are proved: scalar UCP and summable-mesh a.s. convergence, and independent-coordinate UCP covariation. The a.s. cross-coordinate statement and a bundled bracket process remain."
+      "scope": "Completed-interval sums: scalar and cross-coordinate UCP convergence, almost-sure convergence along summable-mesh partitions, and a bracket process characterized by UCP convergence along every vanishing-mesh sequence, unique up to modification, with bracket δᵢⱼ t for independent coordinates."
     },
     {
       "id": "08.13",
@@ -753,13 +765,17 @@
       "id": "11.37",
       "title": "Hilbert's integral inequality",
       "easy": true,
-      "status": "partial",
+      "status": "proved",
       "module": "CKMA.Analysis.Inequalities.Hilbert",
       "declarations": [
         "CKMA.hilbert_integral",
-        "CKMA.hilbert_tsum"
+        "CKMA.hilbert_tsum",
+        "CKMA.hilbertConstant_le_of_hilbert_integral_le",
+        "CKMA.hilbertConstant_le_of_hilbert_tsum_le",
+        "CKMA.isLeast_hilbertConstant_integral",
+        "CKMA.isLeast_hilbertConstant_tsum"
       ],
-      "scope": "Integral and discrete upper bounds with the sharp proposed constant; the optimality assertions remain unstated."
+      "scope": "Integral and discrete upper bounds with the constant π/sin(π/p), and its optimality: it is the least admissible constant in both forms."
     },
     {
       "id": "11.38",
@@ -788,12 +804,13 @@
       "id": "12.21",
       "title": "Subdifferential sum rule",
       "easy": false,
-      "status": "partial",
+      "status": "proved",
       "module": "CKMA.Analysis.Convex.Duality",
       "declarations": [
-        "CKMA.dualSubdifferential_add"
+        "CKMA.dualSubdifferential_add",
+        "CKMA.dualSubdifferential_add_of_intrinsicInterior"
       ],
-      "scope": "The Banach sum rule under a common finite-domain continuity qualification is proved. The finite-dimensional relative-interior alternative remains."
+      "scope": "The Banach sum rule under a common finite-domain continuity qualification, and the finite-dimensional sum rule when the relative interiors of the domains meet; lower semicontinuity is not assumed."
     },
     {
       "id": "12.32",
@@ -892,12 +909,12 @@
       "id": "13.13",
       "title": "Von Neumann trace inequality",
       "easy": true,
-      "status": "statement",
+      "status": "proved",
       "module": "CKMA.Analysis.InnerProductSpace.MatrixInequalities",
       "declarations": [
         "CKMA.norm_trace_adjoint_comp_le"
       ],
-      "scope": ""
+      "scope": "Linear endomorphisms of a finite-dimensional real or complex inner-product space, with singular values in decreasing order."
     },
     {
       "id": "13.18",
@@ -10395,10 +10412,34 @@
       ]
     },
     {
+      "name": "CKMA.subdifferential_add_subset",
+      "kind": "theorem",
+      "module": "CKMA.Analysis.Convex.Duality.Sum",
+      "line": 50,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
       "name": "CKMA.subdifferential_add_eq",
       "kind": "theorem",
       "module": "CKMA.Analysis.Convex.Duality.Sum",
-      "line": 192,
+      "line": 195,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.subdifferential_add_eq_of_intrinsicInterior",
+      "kind": "theorem",
+      "module": "CKMA.Analysis.Convex.Duality.SumIntrinsic",
+      "line": 339,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -10410,7 +10451,7 @@
       "name": "CKMA.exists_choquetMeasure",
       "kind": "theorem",
       "module": "CKMA.Analysis.Convex.Duality",
-      "line": 61,
+      "line": 67,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -10422,7 +10463,7 @@
       "name": "CKMA.dualSubdifferential",
       "kind": "def",
       "module": "CKMA.Analysis.Convex.Duality",
-      "line": 78,
+      "line": 84,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -10434,7 +10475,7 @@
       "name": "CKMA.realSubdifferential",
       "kind": "def",
       "module": "CKMA.Analysis.Convex.Duality",
-      "line": 82,
+      "line": 88,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -10446,7 +10487,19 @@
       "name": "CKMA.dualSubdifferential_add",
       "kind": "theorem",
       "module": "CKMA.Analysis.Convex.Duality",
-      "line": 93,
+      "line": 100,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.dualSubdifferential_add_of_intrinsicInterior",
+      "kind": "theorem",
+      "module": "CKMA.Analysis.Convex.Duality",
+      "line": 112,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -10458,7 +10511,7 @@
       "name": "CKMA.fenchelPrimalValue",
       "kind": "def",
       "module": "CKMA.Analysis.Convex.Duality",
-      "line": 104,
+      "line": 123,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -10470,7 +10523,7 @@
       "name": "CKMA.fenchelDualValue",
       "kind": "def",
       "module": "CKMA.Analysis.Convex.Duality",
-      "line": 109,
+      "line": 128,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -10482,7 +10535,7 @@
       "name": "CKMA.exists_fenchelDual_maximizer",
       "kind": "theorem",
       "module": "CKMA.Analysis.Convex.Duality",
-      "line": 117,
+      "line": 136,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -10494,7 +10547,7 @@
       "name": "CKMA.convexFeasibleSet",
       "kind": "def",
       "module": "CKMA.Analysis.Convex.Duality",
-      "line": 135,
+      "line": 154,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -10506,7 +10559,7 @@
       "name": "CKMA.HasConvexKKTMultipliers",
       "kind": "def",
       "module": "CKMA.Analysis.Convex.Duality",
-      "line": 141,
+      "line": 160,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -10518,7 +10571,7 @@
       "name": "CKMA.exists_convexKKTMultipliers",
       "kind": "theorem",
       "module": "CKMA.Analysis.Convex.Duality",
-      "line": 151,
+      "line": 170,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -10530,7 +10583,7 @@
       "name": "CKMA.HasConvexKKTMultipliers.isMinOn",
       "kind": "theorem",
       "module": "CKMA.Analysis.Convex.Duality",
-      "line": 170,
+      "line": 189,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -12529,10 +12582,238 @@
       ]
     },
     {
+      "name": "CKMA.Hilbert.rpowPos",
+      "kind": "def",
+      "module": "CKMA.Analysis.Inequalities.Hilbert.Kernel",
+      "line": 49,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.Hilbert.rpowPos_eq",
+      "kind": "lemma",
+      "module": "CKMA.Analysis.Inequalities.Hilbert.Kernel",
+      "line": 53,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.Hilbert.rpowPos_nonneg",
+      "kind": "lemma",
+      "module": "CKMA.Analysis.Inequalities.Hilbert.Kernel",
+      "line": 57,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.Hilbert.rpowPos_pos",
+      "kind": "lemma",
+      "module": "CKMA.Analysis.Inequalities.Hilbert.Kernel",
+      "line": 64,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.Hilbert.measurable_rpowPos",
+      "kind": "lemma",
+      "module": "CKMA.Analysis.Inequalities.Hilbert.Kernel",
+      "line": 69,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.Hilbert.hilbertKernel",
+      "kind": "def",
+      "module": "CKMA.Analysis.Inequalities.Hilbert.Kernel",
+      "line": 312,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.Hilbert.hilbertKernel_eq",
+      "kind": "lemma",
+      "module": "CKMA.Analysis.Inequalities.Hilbert.Kernel",
+      "line": 328,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.Hilbert.hilbertKernel_antitone",
+      "kind": "lemma",
+      "module": "CKMA.Analysis.Inequalities.Hilbert.Kernel",
+      "line": 341,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.Hilbert.lintegral_hilbertKernel",
+      "kind": "lemma",
+      "module": "CKMA.Analysis.Inequalities.Hilbert.Kernel",
+      "line": 353,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.Hilbert.tsum_hilbertKernel_le",
+      "kind": "lemma",
+      "module": "CKMA.Analysis.Inequalities.Hilbert.Kernel",
+      "line": 437,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.Hilbert.lintegral_Ioc_rpow",
+      "kind": "lemma",
+      "module": "CKMA.Analysis.Inequalities.Hilbert.Kernel",
+      "line": 456,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.Hilbert.lintegral_Ioi_rpow",
+      "kind": "lemma",
+      "module": "CKMA.Analysis.Inequalities.Hilbert.Kernel",
+      "line": 468,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.Hilbert.ofReal_pi_div_sin_le_lintegral_Ioo",
+      "kind": "lemma",
+      "module": "CKMA.Analysis.Inequalities.Hilbert.Kernel",
+      "line": 494,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.Hilbert.rpow_mul_rpow_div_eq",
+      "kind": "lemma",
+      "module": "CKMA.Analysis.Inequalities.Hilbert.Kernel",
+      "line": 537,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.Hilbert.ofReal_inv_mul_tail",
+      "kind": "lemma",
+      "module": "CKMA.Analysis.Inequalities.Hilbert.Kernel",
+      "line": 544,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.Hilbert.le_of_forall_nat_le_mul_le",
+      "kind": "lemma",
+      "module": "CKMA.Analysis.Inequalities.Hilbert.Kernel",
+      "line": 561,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.Hilbert.lintegral_Ioo_inv",
+      "kind": "lemma",
+      "module": "CKMA.Analysis.Inequalities.Hilbert.Kernel",
+      "line": 573,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.Hilbert.lintegral_Ioo_le_sum_of_antitoneOn",
+      "kind": "lemma",
+      "module": "CKMA.Analysis.Inequalities.Hilbert.Kernel",
+      "line": 586,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.Hilbert.sum_le_lintegral_Ioc_of_antitoneOn",
+      "kind": "lemma",
+      "module": "CKMA.Analysis.Inequalities.Hilbert.Kernel",
+      "line": 612,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
       "name": "CKMA.hilbertConstant",
       "kind": "def",
       "module": "CKMA.Analysis.Inequalities.Hilbert",
-      "line": 51,
+      "line": 60,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -12544,7 +12825,7 @@
       "name": "CKMA.hilbert_integral",
       "kind": "theorem",
       "module": "CKMA.Analysis.Inequalities.Hilbert",
-      "line": 715,
+      "line": 317,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -12556,7 +12837,55 @@
       "name": "CKMA.hilbert_tsum",
       "kind": "theorem",
       "module": "CKMA.Analysis.Inequalities.Hilbert",
-      "line": 841,
+      "line": 443,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.hilbertConstant_le_of_hilbert_integral_le",
+      "kind": "theorem",
+      "module": "CKMA.Analysis.Inequalities.Hilbert",
+      "line": 672,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.hilbertConstant_le_of_hilbert_tsum_le",
+      "kind": "theorem",
+      "module": "CKMA.Analysis.Inequalities.Hilbert",
+      "line": 823,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.isLeast_hilbertConstant_integral",
+      "kind": "theorem",
+      "module": "CKMA.Analysis.Inequalities.Hilbert",
+      "line": 880,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.isLeast_hilbertConstant_tsum",
+      "kind": "theorem",
+      "module": "CKMA.Analysis.Inequalities.Hilbert",
+      "line": 894,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -13085,19 +13414,18 @@
       "kind": "theorem",
       "module": "CKMA.Analysis.InnerProductSpace.MatrixInequalities",
       "line": 452,
-      "direct_sorry": true,
+      "direct_sorry": false,
       "axioms": [
         "Classical.choice",
         "Quot.sound",
-        "propext",
-        "sorryAx"
+        "propext"
       ]
     },
     {
       "name": "CKMA.svdTruncation",
       "kind": "def",
       "module": "CKMA.Analysis.InnerProductSpace.MatrixInequalities",
-      "line": 458,
+      "line": 494,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -13109,7 +13437,7 @@
       "name": "CKMA.svdTruncation_minimizes",
       "kind": "theorem",
       "module": "CKMA.Analysis.InnerProductSpace.MatrixInequalities",
-      "line": 669,
+      "line": 705,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -13121,7 +13449,7 @@
       "name": "CKMA.frobeniusNormSq_sub_svdTruncation",
       "kind": "theorem",
       "module": "CKMA.Analysis.InnerProductSpace.MatrixInequalities",
-      "line": 699,
+      "line": 735,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -13133,7 +13461,7 @@
       "name": "CKMA.norm_sub_svdTruncation",
       "kind": "theorem",
       "module": "CKMA.Analysis.InnerProductSpace.MatrixInequalities",
-      "line": 707,
+      "line": 743,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -13651,7 +13979,7 @@
       "name": "CKMA.lpDualPairing",
       "kind": "def",
       "module": "CKMA.Analysis.Measure.LpDuality",
-      "line": 42,
+      "line": 56,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -13663,13 +13991,12 @@
       "name": "CKMA.existsUnique_lpDualRepresentation",
       "kind": "theorem",
       "module": "CKMA.Analysis.Measure.LpDuality",
-      "line": 47,
-      "direct_sorry": true,
+      "line": 169,
+      "direct_sorry": false,
       "axioms": [
         "Classical.choice",
         "Quot.sound",
-        "propext",
-        "sorryAx"
+        "propext"
       ]
     },
     {
@@ -27433,7 +27760,7 @@
       "name": "CKMA.TimePartition",
       "kind": "structure",
       "module": "CKMA.Probability.BrownianQuadraticVariation.TimePartition",
-      "line": 48,
+      "line": 50,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -27445,7 +27772,7 @@
       "name": "CKMA.TimePartition.mesh",
       "kind": "def",
       "module": "CKMA.Probability.BrownianQuadraticVariation.TimePartition",
-      "line": 61,
+      "line": 63,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -27457,7 +27784,7 @@
       "name": "CKMA.TimePartition.covariation",
       "kind": "def",
       "module": "CKMA.Probability.BrownianQuadraticVariation.TimePartition",
-      "line": 66,
+      "line": 68,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -27469,7 +27796,7 @@
       "name": "CKMA.TimePartition.completedCount",
       "kind": "def",
       "module": "CKMA.Probability.BrownianQuadraticVariation.TimePartition",
-      "line": 77,
+      "line": 79,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -27481,7 +27808,7 @@
       "name": "CKMA.TimePartition.completedCount_le_size",
       "kind": "lemma",
       "module": "CKMA.Probability.BrownianQuadraticVariation.TimePartition",
-      "line": 81,
+      "line": 83,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -27493,7 +27820,7 @@
       "name": "CKMA.TimePartition.covered",
       "kind": "def",
       "module": "CKMA.Probability.BrownianQuadraticVariation.TimePartition",
-      "line": 87,
+      "line": 89,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -27505,7 +27832,7 @@
       "name": "CKMA.TimePartition.completed_iff_val_lt",
       "kind": "lemma",
       "module": "CKMA.Probability.BrownianQuadraticVariation.TimePartition",
-      "line": 91,
+      "line": 93,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -27517,7 +27844,7 @@
       "name": "CKMA.TimePartition.increment",
       "kind": "def",
       "module": "CKMA.Probability.BrownianQuadraticVariation.TimePartition",
-      "line": 122,
+      "line": 124,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -27529,7 +27856,7 @@
       "name": "CKMA.TimePartition.increment_eq_sub",
       "kind": "lemma",
       "module": "CKMA.Probability.BrownianQuadraticVariation.TimePartition",
-      "line": 126,
+      "line": 128,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -27541,7 +27868,7 @@
       "name": "CKMA.TimePartition.sum_increment_initial",
       "kind": "lemma",
       "module": "CKMA.Probability.BrownianQuadraticVariation.TimePartition",
-      "line": 131,
+      "line": 133,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -27553,7 +27880,7 @@
       "name": "CKMA.TimePartition.sum_increment",
       "kind": "lemma",
       "module": "CKMA.Probability.BrownianQuadraticVariation.TimePartition",
-      "line": 177,
+      "line": 179,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -27565,7 +27892,7 @@
       "name": "CKMA.TimePartition.increment_le_mesh",
       "kind": "lemma",
       "module": "CKMA.Probability.BrownianQuadraticVariation.TimePartition",
-      "line": 186,
+      "line": 188,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -27577,7 +27904,55 @@
       "name": "CKMA.TimePartition.abs_sub_covered_le_mesh",
       "kind": "lemma",
       "module": "CKMA.Probability.BrownianQuadraticVariation.TimePartition",
-      "line": 193,
+      "line": 195,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.TimePartition.uniform",
+      "kind": "def",
+      "module": "CKMA.Probability.BrownianQuadraticVariation.TimePartition",
+      "line": 287,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.TimePartition.uniform_size",
+      "kind": "lemma",
+      "module": "CKMA.Probability.BrownianQuadraticVariation.TimePartition",
+      "line": 300,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.TimePartition.uniform_node",
+      "kind": "lemma",
+      "module": "CKMA.Probability.BrownianQuadraticVariation.TimePartition",
+      "line": 303,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.TimePartition.mesh_uniform_le",
+      "kind": "lemma",
+      "module": "CKMA.Probability.BrownianQuadraticVariation.TimePartition",
+      "line": 307,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -27589,7 +27964,7 @@
       "name": "CKMA.brownian_quadraticVariation_ucp",
       "kind": "theorem",
       "module": "CKMA.Probability.BrownianQuadraticVariation",
-      "line": 213,
+      "line": 221,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -27601,7 +27976,7 @@
       "name": "CKMA.brownian_quadraticVariation_ae",
       "kind": "theorem",
       "module": "CKMA.Probability.BrownianQuadraticVariation",
-      "line": 247,
+      "line": 255,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -27613,7 +27988,127 @@
       "name": "CKMA.brownian_covariation_ucp",
       "kind": "theorem",
       "module": "CKMA.Probability.BrownianQuadraticVariation",
-      "line": 413,
+      "line": 452,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.brownian_covariation_ae",
+      "kind": "theorem",
+      "module": "CKMA.Probability.BrownianQuadraticVariation",
+      "line": 503,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.IsQuadraticCovariation",
+      "kind": "def",
+      "module": "CKMA.Probability.BrownianQuadraticVariation",
+      "line": 532,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.isQuadraticCovariation_iff",
+      "kind": "theorem",
+      "module": "CKMA.Probability.BrownianQuadraticVariation",
+      "line": 538,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.TimePartition.tendsto_mesh_uniform",
+      "kind": "theorem",
+      "module": "CKMA.Probability.BrownianQuadraticVariation",
+      "line": 546,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.IsQuadraticCovariation.ae_eq",
+      "kind": "theorem",
+      "module": "CKMA.Probability.BrownianQuadraticVariation",
+      "line": 557,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.quadraticCovariation",
+      "kind": "def",
+      "module": "CKMA.Probability.BrownianQuadraticVariation",
+      "line": 590,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.IsQuadraticCovariation.isQuadraticCovariation_quadraticCovariation",
+      "kind": "theorem",
+      "module": "CKMA.Probability.BrownianQuadraticVariation",
+      "line": 594,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.IsQuadraticCovariation.quadraticCovariation_ae_eq",
+      "kind": "theorem",
+      "module": "CKMA.Probability.BrownianQuadraticVariation",
+      "line": 603,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.brownian_isQuadraticCovariation",
+      "kind": "theorem",
+      "module": "CKMA.Probability.BrownianQuadraticVariation",
+      "line": 611,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.brownian_quadraticCovariation",
+      "kind": "theorem",
+      "module": "CKMA.Probability.BrownianQuadraticVariation",
+      "line": 618,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -28597,7 +29092,7 @@
       "name": "CKMA.exists_brownianMeasure",
       "kind": "theorem",
       "module": "CKMA.Probability.BrownianTheory",
-      "line": 63,
+      "line": 75,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -28609,7 +29104,7 @@
       "name": "CKMA.exists_holder_brownianModification",
       "kind": "theorem",
       "module": "CKMA.Probability.BrownianTheory",
-      "line": 79,
+      "line": 91,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -28621,7 +29116,19 @@
       "name": "CKMA.brownianShift",
       "kind": "def",
       "module": "CKMA.Probability.BrownianTheory",
-      "line": 89,
+      "line": 101,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.brownian_strongMarkov_of_indep",
+      "kind": "theorem",
+      "module": "CKMA.Probability.BrownianTheory",
+      "line": 306,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -28633,7 +29140,19 @@
       "name": "CKMA.brownian_strongMarkov",
       "kind": "theorem",
       "module": "CKMA.Probability.BrownianTheory",
-      "line": 293,
+      "line": 336,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.brownian_strongMarkov_augmented",
+      "kind": "theorem",
+      "module": "CKMA.Probability.BrownianTheory",
+      "line": 371,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -28645,7 +29164,7 @@
       "name": "CKMA.HasPsiTwoBound",
       "kind": "def",
       "module": "CKMA.Probability.Concentration.Basic",
-      "line": 49,
+      "line": 53,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -28657,7 +29176,7 @@
       "name": "CKMA.psiTwoGauge",
       "kind": "def",
       "module": "CKMA.Probability.Concentration.Basic",
-      "line": 53,
+      "line": 57,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -28669,7 +29188,7 @@
       "name": "CKMA.HasGaussianTail",
       "kind": "def",
       "module": "CKMA.Probability.Concentration.Basic",
-      "line": 57,
+      "line": 61,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -28681,7 +29200,7 @@
       "name": "CKMA.HasGaussianMoments",
       "kind": "def",
       "module": "CKMA.Probability.Concentration.Basic",
-      "line": 62,
+      "line": 66,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -28693,7 +29212,7 @@
       "name": "CKMA.HasPsiTwoBound.psiTwoGauge_le",
       "kind": "theorem",
       "module": "CKMA.Probability.Concentration.Basic",
-      "line": 67,
+      "line": 71,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -28705,7 +29224,7 @@
       "name": "CKMA.HasPsiTwoBound.mono",
       "kind": "theorem",
       "module": "CKMA.Probability.Concentration.Basic",
-      "line": 72,
+      "line": 76,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -28717,7 +29236,7 @@
       "name": "CKMA.hasPsiTwoBound_of_psiTwoGauge_le",
       "kind": "theorem",
       "module": "CKMA.Probability.Concentration.Basic",
-      "line": 88,
+      "line": 92,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -28729,7 +29248,7 @@
       "name": "CKMA.HasPsiTwoBound.hasGaussianTail",
       "kind": "theorem",
       "module": "CKMA.Probability.Concentration.Basic",
-      "line": 99,
+      "line": 103,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -28741,7 +29260,7 @@
       "name": "CKMA.HasGaussianTail.hasPsiTwoBound",
       "kind": "theorem",
       "module": "CKMA.Probability.Concentration.Basic",
-      "line": 173,
+      "line": 177,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -28753,7 +29272,7 @@
       "name": "CKMA.HasPsiTwoBound.hasGaussianMoments",
       "kind": "theorem",
       "module": "CKMA.Probability.Concentration.Basic",
-      "line": 226,
+      "line": 230,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -28765,7 +29284,7 @@
       "name": "CKMA.HasGaussianMoments.hasPsiTwoBound",
       "kind": "theorem",
       "module": "CKMA.Probability.Concentration.Basic",
-      "line": 337,
+      "line": 341,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -28777,7 +29296,7 @@
       "name": "CKMA.HasPsiTwoBound.integrable_exp_sq",
       "kind": "theorem",
       "module": "CKMA.Probability.Concentration.Basic",
-      "line": 401,
+      "line": 405,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -28789,7 +29308,7 @@
       "name": "CKMA.HasPsiTwoBound.integrable_exp_mul",
       "kind": "theorem",
       "module": "CKMA.Probability.Concentration.Basic",
-      "line": 409,
+      "line": 413,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -28801,7 +29320,43 @@
       "name": "CKMA.HasPsiTwoBound.hasSubgaussianMGF",
       "kind": "theorem",
       "module": "CKMA.Probability.Concentration.Basic",
-      "line": 436,
+      "line": 440,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.psiTwoGauge_le_ofReal_iff",
+      "kind": "theorem",
+      "module": "CKMA.Probability.Concentration.Basic",
+      "line": 489,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.hasGaussianTail_of_hasSubgaussianMGF",
+      "kind": "theorem",
+      "module": "CKMA.Probability.Concentration.Basic",
+      "line": 527,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.hasPsiTwoBound_of_hasSubgaussianMGF",
+      "kind": "theorem",
+      "module": "CKMA.Probability.Concentration.Basic",
+      "line": 561,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -28934,6 +29489,66 @@
       "kind": "lemma",
       "module": "CKMA.Probability.GaussianLogSobolev.Entropy",
       "line": 584,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.nonnegativeFunctionEntropy_eq_lintegral",
+      "kind": "theorem",
+      "module": "CKMA.Probability.GaussianLogSobolev.EntropyTensorization",
+      "line": 58,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.nonnegativeFunctionEntropy_comp_measurePreserving",
+      "kind": "theorem",
+      "module": "CKMA.Probability.GaussianLogSobolev.EntropyTensorization",
+      "line": 66,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.measurable_nonnegativeFunctionEntropy_slice",
+      "kind": "theorem",
+      "module": "CKMA.Probability.GaussianLogSobolev.EntropyTensorization",
+      "line": 75,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.nonnegativeFunctionEntropy_prod_le",
+      "kind": "theorem",
+      "module": "CKMA.Probability.GaussianLogSobolev.EntropyTensorization",
+      "line": 170,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.nonnegativeFunctionEntropy_pi_le",
+      "kind": "theorem",
+      "module": "CKMA.Probability.GaussianLogSobolev.EntropyTensorization",
+      "line": 360,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -29482,16 +30097,27 @@
       ]
     },
     {
-      "name": "CKMA.gaussian_logSobolev",
+      "name": "CKMA.gaussian_logSobolev_piLp",
       "kind": "theorem",
       "module": "CKMA.Probability.GaussianLogSobolev",
-      "line": 43,
-      "direct_sorry": true,
+      "line": 57,
+      "direct_sorry": false,
       "axioms": [
         "Classical.choice",
         "Quot.sound",
-        "propext",
-        "sorryAx"
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.gaussian_logSobolev",
+      "kind": "theorem",
+      "module": "CKMA.Probability.GaussianLogSobolev",
+      "line": 117,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
       ]
     },
     {
@@ -30839,10 +31465,94 @@
       ]
     },
     {
+      "name": "CKMA.integral_abs_mul_integral_sq_le",
+      "kind": "theorem",
+      "module": "CKMA.Probability.LimitTheorems.BerryEsseen",
+      "line": 124,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.integral_sq_pow_three_le",
+      "kind": "theorem",
+      "module": "CKMA.Probability.LimitTheorems.BerryEsseen",
+      "line": 137,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.integral_mul_ite_abs_sub_le_le",
+      "kind": "theorem",
+      "module": "CKMA.Probability.LimitTheorems.BerryEsseen",
+      "line": 198,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.measureReal_abs_sum_sub_le",
+      "kind": "theorem",
+      "module": "CKMA.Probability.LimitTheorems.BerryEsseen",
+      "line": 353,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.abs_measureReal_sum_le_sub_cdf_le",
+      "kind": "theorem",
+      "module": "CKMA.Probability.LimitTheorems.BerryEsseen",
+      "line": 659,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.abs_measureReal_sum_div_le_sub_cdf_le",
+      "kind": "theorem",
+      "module": "CKMA.Probability.LimitTheorems.BerryEsseen",
+      "line": 802,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.neg_iSup_sub_log_lintegral_le_liminf_log_pi",
+      "kind": "theorem",
+      "module": "CKMA.Probability.LimitTheorems.CramerLowerBound",
+      "line": 655,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
       "name": "CKMA.IsOrderedSummable",
       "kind": "abbrev",
       "module": "CKMA.Probability.LimitTheorems.IndependentSums",
-      "line": 61,
+      "line": 64,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -30854,7 +31564,7 @@
       "name": "CKMA.Summable.isOrderedSummable",
       "kind": "theorem",
       "module": "CKMA.Probability.LimitTheorems.IndependentSums",
-      "line": 65,
+      "line": 68,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -30866,7 +31576,7 @@
       "name": "CKMA.symmetricTruncation",
       "kind": "def",
       "module": "CKMA.Probability.LimitTheorems.IndependentSums",
-      "line": 73,
+      "line": 76,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -30878,7 +31588,7 @@
       "name": "CKMA.HasThreeSeries",
       "kind": "def",
       "module": "CKMA.Probability.LimitTheorems.IndependentSums",
-      "line": 78,
+      "line": 81,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -30890,20 +31600,19 @@
       "name": "CKMA.kolmogorov_threeSeries",
       "kind": "theorem",
       "module": "CKMA.Probability.LimitTheorems.IndependentSums",
-      "line": 85,
-      "direct_sorry": true,
+      "line": 88,
+      "direct_sorry": false,
       "axioms": [
         "Classical.choice",
         "Quot.sound",
-        "propext",
-        "sorryAx"
+        "propext"
       ]
     },
     {
       "name": "CKMA.iteratedLogScale",
       "kind": "def",
       "module": "CKMA.Probability.LimitTheorems.IndependentSums",
-      "line": 92,
+      "line": 95,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -30915,7 +31624,7 @@
       "name": "CKMA.hartman_wintner",
       "kind": "theorem",
       "module": "CKMA.Probability.LimitTheorems.IndependentSums",
-      "line": 97,
+      "line": 100,
       "direct_sorry": true,
       "axioms": [
         "Classical.choice",
@@ -30928,7 +31637,7 @@
       "name": "CKMA.arrayRowVariance",
       "kind": "def",
       "module": "CKMA.Probability.LimitTheorems.IndependentSums",
-      "line": 110,
+      "line": 113,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -30940,7 +31649,7 @@
       "name": "CKMA.HasLindebergCondition",
       "kind": "def",
       "module": "CKMA.Probability.LimitTheorems.IndependentSums",
-      "line": 115,
+      "line": 118,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -30952,7 +31661,7 @@
       "name": "CKMA.HasFellerCondition",
       "kind": "def",
       "module": "CKMA.Probability.LimitTheorems.IndependentSums",
-      "line": 122,
+      "line": 125,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -30964,7 +31673,7 @@
       "name": "CKMA.normalizedArraySum",
       "kind": "def",
       "module": "CKMA.Probability.LimitTheorems.IndependentSums",
-      "line": 129,
+      "line": 132,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -30976,7 +31685,7 @@
       "name": "CKMA.lindeberg_feller",
       "kind": "theorem",
       "module": "CKMA.Probability.LimitTheorems.IndependentSums",
-      "line": 136,
+      "line": 139,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -30988,20 +31697,19 @@
       "name": "CKMA.lindeberg_feller_iff",
       "kind": "theorem",
       "module": "CKMA.Probability.LimitTheorems.IndependentSums",
-      "line": 198,
-      "direct_sorry": true,
+      "line": 201,
+      "direct_sorry": false,
       "axioms": [
         "Classical.choice",
         "Quot.sound",
-        "propext",
-        "sorryAx"
+        "propext"
       ]
     },
     {
       "name": "CKMA.kolmogorovDistance",
       "kind": "def",
       "module": "CKMA.Probability.LimitTheorems.IndependentSums",
-      "line": 209,
+      "line": 213,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -31013,20 +31721,19 @@
       "name": "CKMA.berry_esseen",
       "kind": "theorem",
       "module": "CKMA.Probability.LimitTheorems.IndependentSums",
-      "line": 213,
-      "direct_sorry": true,
+      "line": 217,
+      "direct_sorry": false,
       "axioms": [
         "Classical.choice",
         "Quot.sound",
-        "propext",
-        "sorryAx"
+        "propext"
       ]
     },
     {
       "name": "CKMA.extendedLogMGF",
       "kind": "def",
       "module": "CKMA.Probability.LimitTheorems.LargeDeviations",
-      "line": 54,
+      "line": 58,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -31038,7 +31745,7 @@
       "name": "CKMA.cramerRate",
       "kind": "def",
       "module": "CKMA.Probability.LimitTheorems.LargeDeviations",
-      "line": 59,
+      "line": 63,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -31050,7 +31757,7 @@
       "name": "CKMA.sampleMeanLaws",
       "kind": "def",
       "module": "CKMA.Probability.LimitTheorems.LargeDeviations",
-      "line": 63,
+      "line": 67,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -31062,20 +31769,19 @@
       "name": "CKMA.cramer",
       "kind": "theorem",
       "module": "CKMA.Probability.LimitTheorems.LargeDeviations",
-      "line": 747,
+      "line": 797,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
         "Quot.sound",
-        "propext",
-        "sorryAx"
+        "propext"
       ]
     },
     {
       "name": "CKMA.empiricalProbability",
       "kind": "def",
       "module": "CKMA.Probability.LimitTheorems.LargeDeviations",
-      "line": 762,
+      "line": 811,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -31087,7 +31793,7 @@
       "name": "CKMA.sanovRate",
       "kind": "def",
       "module": "CKMA.Probability.LimitTheorems.LargeDeviations",
-      "line": 767,
+      "line": 816,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -31099,13 +31805,289 @@
       "name": "CKMA.sanov",
       "kind": "theorem",
       "module": "CKMA.Probability.LimitTheorems.LargeDeviations",
-      "line": 802,
+      "line": 851,
       "direct_sorry": true,
       "axioms": [
         "Classical.choice",
         "Quot.sound",
         "propext",
         "sorryAx"
+      ]
+    },
+    {
+      "name": "CKMA.tendsto_sum_integral_cos_sub_one_of_feller",
+      "kind": "theorem",
+      "module": "CKMA.Probability.LimitTheorems.LindebergFeller",
+      "line": 52,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.lindeberg_of_feller_of_tendstoInDistribution",
+      "kind": "theorem",
+      "module": "CKMA.Probability.LimitTheorems.LindebergFeller",
+      "line": 145,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.lindeberg_of_feller_of_tendstoInDistribution_div_sqrt",
+      "kind": "theorem",
+      "module": "CKMA.Probability.LimitTheorems.LindebergFeller",
+      "line": 203,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.mul_cdf_neg_le_gaussianPDFReal",
+      "kind": "theorem",
+      "module": "CKMA.Probability.LimitTheorems.SteinSolution",
+      "line": 53,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.steinDeriv_def",
+      "kind": "theorem",
+      "module": "CKMA.Probability.LimitTheorems.SteinSolution",
+      "line": 112,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.steinSolution_nonneg",
+      "kind": "theorem",
+      "module": "CKMA.Probability.LimitTheorems.SteinSolution",
+      "line": 132,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.abs_mul_steinSolution_le_one",
+      "kind": "theorem",
+      "module": "CKMA.Probability.LimitTheorems.SteinSolution",
+      "line": 136,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.steinSolution_le",
+      "kind": "theorem",
+      "module": "CKMA.Probability.LimitTheorems.SteinSolution",
+      "line": 171,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.abs_steinSolution_le",
+      "kind": "theorem",
+      "module": "CKMA.Probability.LimitTheorems.SteinSolution",
+      "line": 202,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.continuous_steinSolution",
+      "kind": "theorem",
+      "module": "CKMA.Probability.LimitTheorems.SteinSolution",
+      "line": 207,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.measurable_steinSolution",
+      "kind": "theorem",
+      "module": "CKMA.Probability.LimitTheorems.SteinSolution",
+      "line": 216,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.measurable_steinDeriv",
+      "kind": "theorem",
+      "module": "CKMA.Probability.LimitTheorems.SteinSolution",
+      "line": 220,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.abs_steinDeriv_le",
+      "kind": "theorem",
+      "module": "CKMA.Probability.LimitTheorems.SteinSolution",
+      "line": 226,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.hasDerivWithinAt_steinSolution",
+      "kind": "theorem",
+      "module": "CKMA.Probability.LimitTheorems.SteinSolution",
+      "line": 235,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.abs_steinSolution_sub_le",
+      "kind": "theorem",
+      "module": "CKMA.Probability.LimitTheorems.SteinSolution",
+      "line": 286,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.abs_steinDeriv_add_sub_le",
+      "kind": "theorem",
+      "module": "CKMA.Probability.LimitTheorems.SteinSolution",
+      "line": 335,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.abs_steinSolution_add_sub_sub_le",
+      "kind": "theorem",
+      "module": "CKMA.Probability.LimitTheorems.SteinSolution",
+      "line": 346,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.ae_tendsto_sum_sub_integral_of_summable_variance",
+      "kind": "theorem",
+      "module": "CKMA.Probability.LimitTheorems.ThreeSeries",
+      "line": 62,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.charFun_map_re",
+      "kind": "theorem",
+      "module": "CKMA.Probability.LimitTheorems.ThreeSeries",
+      "line": 145,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.charFun_map_im",
+      "kind": "theorem",
+      "module": "CKMA.Probability.LimitTheorems.ThreeSeries",
+      "line": 155,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.norm_charFun_map_sq_le_one_sub_variance",
+      "kind": "theorem",
+      "module": "CKMA.Probability.LimitTheorems.ThreeSeries",
+      "line": 165,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.summable_variance_of_ae_tendsto_sum",
+      "kind": "theorem",
+      "module": "CKMA.Probability.LimitTheorems.ThreeSeries",
+      "line": 237,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.ae_summable_conditional_iff_threeSeries",
+      "kind": "theorem",
+      "module": "CKMA.Probability.LimitTheorems.ThreeSeries",
+      "line": 325,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
       ]
     },
     {
@@ -31244,7 +32226,19 @@
       "name": "CKMA.IsRademacher",
       "kind": "def",
       "module": "CKMA.Probability.Symmetrization",
-      "line": 46,
+      "line": 50,
+      "direct_sorry": false,
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "name": "CKMA.symmetrization_of_measurable",
+      "kind": "theorem",
+      "module": "CKMA.Probability.Symmetrization",
+      "line": 585,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -31256,7 +32250,7 @@
       "name": "CKMA.symmetrization",
       "kind": "theorem",
       "module": "CKMA.Probability.Symmetrization",
-      "line": 543,
+      "line": 647,
       "direct_sorry": false,
       "axioms": [
         "Classical.choice",
@@ -31310,8 +32304,9 @@
     "CKMA/Analysis/Convex/Duality/FenchelRockafellar.lean": "8aab0063096b200e2d9cbbf5be10400c57a45a1a235ce127623a6d1f47b49c13",
     "CKMA/Analysis/Convex/Duality/KKT.lean": "55892d6ae2e3baef920911c1845fb2f4c881e2536a0cb78a0621fa982db49c91",
     "CKMA/Analysis/Convex/Duality/Subdifferential.lean": "f0bc5f922928c43b24ab1c490a1f101f0a52a8502c58d7cad6f03a30838385f7",
-    "CKMA/Analysis/Convex/Duality/Sum.lean": "bd229e505e653b51633fc863dce1e76ac05e8efbdb870444d219fddaf9d9c33e",
-    "CKMA/Analysis/Convex/Duality.lean": "1c8de938579dd70b73dd7cc2a9d15c160caac5685f1516b404d528d2f621ab39",
+    "CKMA/Analysis/Convex/Duality/Sum.lean": "dc1d2d558e6c43cc9a81cad43b54b1076e2311e99b8ba87ac0183155e9f12ecf",
+    "CKMA/Analysis/Convex/Duality/SumIntrinsic.lean": "5fe8aec627ab2b3cd681beba0ac86899632c3d973de8a27653f331104ac1b286",
+    "CKMA/Analysis/Convex/Duality.lean": "15bc7b118d5ee4b5a9c2f52fed66d808af21e8005f968fe170c307ee0862e1b3",
     "CKMA/Analysis/Convex/Ekeland.lean": "68c8034832e59f0e4b0b994d5a2084fb2a3ff987e73b19ed2877a156d0db5d6f",
     "CKMA/Analysis/Convex/Majorization.lean": "fbd933047557db1017999ea4079df53bb85763c51f5195df9fce3b5ad30aa6d0",
     "CKMA/Analysis/Convex/Proximal.lean": "f300c167df937d94d18c09bd5823231adccd62ca1817ad0e1e8e0aba23cefd5b",
@@ -31335,12 +32330,13 @@
     "CKMA/Analysis/Inequalities/Carleman.lean": "129e2f7d09003fb9911fc98a84c45d6894cffea72378bc25074d369669a9a507",
     "CKMA/Analysis/Inequalities/ClassicalSequences/NewtonMaclaurin.lean": "6be914c14791b78de215ca234f4542afc71a21d064c4d88c006530030a85d322",
     "CKMA/Analysis/Inequalities/ClassicalSequences.lean": "a1951a6fa248c233c56750c6610f620124ce8cb4ddabec7cfa94898210a45f6f",
-    "CKMA/Analysis/Inequalities/Hilbert.lean": "678baa82928ef808bc1b87b06f0f6a901d936b4a39164970fa90c28918bd6656",
+    "CKMA/Analysis/Inequalities/Hilbert/Kernel.lean": "cdda476f441f63184f61d054014aa5db3697cac353e41e29322145b73df1d620",
+    "CKMA/Analysis/Inequalities/Hilbert.lean": "d12ad8fec8d69f7643d500663a35e72088b92abbe2c514933d77d503a75ffd91",
     "CKMA/Analysis/InnerProductSpace/Basic.lean": "e9b81d17becac56b5e52e949306821a19f785ad2a5461038e2ab40ef69f6e1e5",
     "CKMA/Analysis/InnerProductSpace/Frame.lean": "14325b7d83e18fbf6e830c26cf13143302dfdd22fc148e60587af9ad20553916",
     "CKMA/Analysis/InnerProductSpace/HilbertModel.lean": "3f3ca59ee52f729b190d72169e5d5292aa88779fa3840d6dd8a3b722de1dca5e",
     "CKMA/Analysis/InnerProductSpace/L2FunctionFamilies.lean": "0fdf0fd23a933285351f101e97f42be1c04040a10f452b58a5ba324bf73d55ed",
-    "CKMA/Analysis/InnerProductSpace/MatrixInequalities.lean": "6205aa0c4d0489e2c7746dd8ea13ed940e221c84b59ad1bccfa5417fe3bab133",
+    "CKMA/Analysis/InnerProductSpace/MatrixInequalities.lean": "759b808e7fb26f75f01eeee9fc985ba49b6799ea2d0031395219a0421cec90ba",
     "CKMA/Analysis/IntegralEquation/Basic.lean": "093d6dae81deceb5a05d10c5540dab2ed643a951d4afb5a143717c97d494a23f",
     "CKMA/Analysis/IntegralEquation/CollectiveCompactness.lean": "f0a58bee7179db01389f1747b26436a7a96b84c171cd494f6256139bc43b73cb",
     "CKMA/Analysis/IntegralEquation/HilbertSchmidt.lean": "239d7c6927848a22f87e6e86c74833d34004248ea0f4b7adba6d72b313905db0",
@@ -31350,7 +32346,7 @@
     "CKMA/Analysis/Interpolation/Bounds/Real.lean": "b0d3bb14f20915da7f8b0d887eb0446628c7aab4d332752213b64d42b19eef4e",
     "CKMA/Analysis/Interpolation/Bounds.lean": "260875a197b3e64514829e60f71e43cc7344bee9968125e5ae2b1cd2d7660318",
     "CKMA/Analysis/LocallyConvex/Bipolar.lean": "e2bcea8ac2920b104afe5d19548902b44658be51218e4d4ac5334b00fdbb03ca",
-    "CKMA/Analysis/Measure/LpDuality.lean": "a89d0e6dc0e9e070f0835e1a220fbef24254fadad12e0d18d18b8444f70526ce",
+    "CKMA/Analysis/Measure/LpDuality.lean": "5ca093fa0e253877bcbcbc09eca9dc9cee2fe6b6d0f7a645fa536c9432937747",
     "CKMA/Analysis/Microlocal/Symbols.lean": "438b7d47288f134b4fde81bf56e17598eb1ebfb89567110f0d210945418df284",
     "CKMA/Analysis/Nonlinear/FixedPoint.lean": "69efc1a1ce46769693e69daed086af042a01ceda762e71f26c0a5cc2c9d4310f",
     "CKMA/Analysis/Nonlinear/Monotone.lean": "eb60d5c1085d9c5c7ef731f8f1284ece0f50aaf81e8c530dd18164067641f508",
@@ -31451,7 +32447,7 @@
     "CKMA/Analysis/SpecialFunctions/Classical.lean": "99667c3d144f55578044b3bb5e17c3f219fa59df203317a0f0fc021648a4f218",
     "CKMA/Analysis/Variational/EulerLagrange.lean": "86f5bdfbe88d5d28dbdbff221e1f471d5ed9943795a8a6b585962c21b35ae663",
     "CKMA/Analysis/Variational/MountainPass.lean": "51fcef4e74861400e4d8c066b6a4f9cf0289fc5717993d298f6c5ec609ca2350",
-    "CKMA/Analysis.lean": "2c23528a75890bae702e5c545bc66df26772a3f379bf26968a4b39de25e0062d",
+    "CKMA/Analysis.lean": "981f41c4a95bebd42c5f52e6a6bacd3b9845497495efaae84efe33b1fba8e004",
     "CKMA/Dynamics/Complex/Linearization/Boettcher.lean": "00b82b05fa5a9d8133832dbb9e1688b8f3ab98323c0d8e877235fcdcd97ca2b3",
     "CKMA/Dynamics/Complex/Linearization/Koenigs.lean": "216ff75508aa4766301d4e78ba183c939642482b9d5cabb6275449ccb1ec76af",
     "CKMA/Dynamics/Complex/Linearization.lean": "5123b19b4cef00f85875326fb70b766b69a1b35232b8aab66853a012b4e46e1b",
@@ -31483,8 +32479,8 @@
     "CKMA/MeasureTheory/Group/Modular.lean": "87ba06c16a7c8c1d7569b68b755f10684ed158511034cf3e5a4a5de879b4f9c6",
     "CKMA/MeasureTheory.lean": "cc18b6d6dbabde27b2dbf85670fef52154b79ec73656e78b148005a7fae5d36a",
     "CKMA/Probability/BrownianQuadraticVariation/KolmogorovMaximal.lean": "c1c1176579ac46eaed2cea553bfc8540a21a1361764a22aadf1239948e0e7e43",
-    "CKMA/Probability/BrownianQuadraticVariation/TimePartition.lean": "9d4220357e532b9fbab6e62fc77cd3c4f5ca6f3a4af217cf7de1fb60bf906e26",
-    "CKMA/Probability/BrownianQuadraticVariation.lean": "791b24fcd248bbdb8c445917c28e99ad08e89ef1c3dcd53292bf279ed42bb5c8",
+    "CKMA/Probability/BrownianQuadraticVariation/TimePartition.lean": "306d7e5f5724d44bd082bfa6d2310063a9b6a7e8791c9c982b88d4cef55b18f8",
+    "CKMA/Probability/BrownianQuadraticVariation.lean": "02b1b732a6c827aea719a32a707f2a0ad0559316d963b748e05bb3715512dc30",
     "CKMA/Probability/BrownianTheory/DyadicHolder.lean": "0962e2c48fe7c44f71da89a133d9973ff5e076d1019e08c8f65c9bd51858e90d",
     "CKMA/Probability/BrownianTheory/DyadicLimit.lean": "2429bf90b031fc35b56e1e80b2f225d0a5affb1c651a098cfdfe1a603f7904b4",
     "CKMA/Probability/BrownianTheory/DyadicPath.lean": "f1629de5f5d9d165e4f6291ca9f3da319285f286cc05a9bc44bbe46c38e7148d",
@@ -31495,16 +32491,17 @@
     "CKMA/Probability/BrownianTheory/Reflection/Bound.lean": "a2e6564b7d084b39beb2a2561c180a59444869bf228be3ba44444db7ad6dc4dd",
     "CKMA/Probability/BrownianTheory/Reflection/Grid.lean": "e8b02594d462949bc7c36e94962f8afd6c772179e04a0842a517aaccbf1200f0",
     "CKMA/Probability/BrownianTheory/Reflection/Past.lean": "87b731e51dee2bb8f26c085d4c47d33bd8f6b1f0faec2b44b7acc4a443090a52",
-    "CKMA/Probability/BrownianTheory.lean": "1b9fb5466420e01e7bb00c670be9caa53a7439d159b4a7a7c54aeafd36c81db3",
-    "CKMA/Probability/Concentration/Basic.lean": "d4fcbd11796bf6f4c7f0f751977ace677e45552069b30081f5474d332b4f1792",
+    "CKMA/Probability/BrownianTheory.lean": "0dae6c035147413953db5ae3508fe9d36085b86c2f861a5c32529f9b1f775b8d",
+    "CKMA/Probability/Concentration/Basic.lean": "b15eb7a9fa023593595e1cc7cab5e208f9646285468fd5b5309d4ba7cfe6212d",
     "CKMA/Probability/Concentration/Bernstein.lean": "24144af6b620ceeb79968b8ee4d53e659077836f476cec754d75bdca1f7b579c",
     "CKMA/Probability/Concentration/JohnsonLindenstrauss.lean": "17866013463f283684422dbc06f56f05a5b6fc3356cf98f43415e735def4f2f1",
     "CKMA/Probability/Concentration.lean": "c5bd5f227a2ebf4c079ab7d03c0487da2fc1efc6f844ac263bdff0ad08c61454",
     "CKMA/Probability/GaussianLogSobolev/Entropy.lean": "fb93289f0bc99fbdbb36e317b813d42e196a5de70fdb46c3c26452b6f92bcb00",
+    "CKMA/Probability/GaussianLogSobolev/EntropyTensorization.lean": "315b1f1e5887e2e1f962e9550dff36912db149539811d6c6a238d90b464161ba",
     "CKMA/Probability/GaussianLogSobolev/IntegrationByParts.lean": "11e19d56a3e08904979740f94b19449870a10f2dd1dd4ddf054982ff747b89ea",
     "CKMA/Probability/GaussianLogSobolev/OneDim.lean": "d451eb0255a25011d5bd03c05d96026f9dd738b5591f6987504639968d5e8c3f",
     "CKMA/Probability/GaussianLogSobolev/OneDimLSI.lean": "9ea639c9e43028d18186432fa90998dc657d0ba204117c8a2338c66cc5bbc7da",
-    "CKMA/Probability/GaussianLogSobolev.lean": "4c0937d89aa1ebd5dd19e0647f368b37eed75af0feacd5e9dba96ecb5a64286b",
+    "CKMA/Probability/GaussianLogSobolev.lean": "a92d252fded93754ba9e7c006fe6a41078dc815df0a1ed5ef553662b1f04e549",
     "CKMA/Probability/HansonWright.lean": "cb25250f0a6f758db4d1e454134c7e10480bbd48badcbb671f5f2e6d406b7edd",
     "CKMA/Probability/InfinitelyDivisible/Basic.lean": "373bc21f3952fe3e72e40b724a1d6994f23a94f6e94566a2c5180f0c6d02420c",
     "CKMA/Probability/InfinitelyDivisible/CharRoot.lean": "4d24af81d9cb9b9e926cf7cb65a9bfc107ec9c49eac7e626ed8f2fdac1b8027e",
@@ -31519,12 +32516,17 @@
     "CKMA/Probability/InfinitelyDivisible/Uniqueness.lean": "2505562880a0f763c6f2a3a1a99815adb6c56b235c5874824084e6b963fc13d5",
     "CKMA/Probability/InfinitelyDivisible.lean": "33c94ffd1a6e1493b5edea0dc95a41d57b5c3ac927dbf699b2875bc1f3017c54",
     "CKMA/Probability/LargeDeviations.lean": "f91f14acc96bed206628623158b4469e4dc9bd9fbf0e885e27a47e22f28799e8",
-    "CKMA/Probability/LimitTheorems/IndependentSums.lean": "91659602248e321f896a5c22f84b33be1dcedae4ff712ed2fda4e613c1c9a4d1",
-    "CKMA/Probability/LimitTheorems/LargeDeviations.lean": "3093e25328b7c4486796e08e803644abce7d8587e303b5619652f308c3c6e4c8",
+    "CKMA/Probability/LimitTheorems/BerryEsseen.lean": "0cd886a2c1a710716ef97b687287fcb3b6fea47a8d866eb77769badead96197c",
+    "CKMA/Probability/LimitTheorems/CramerLowerBound.lean": "9a8c4b8ff3d67ed85d1dad52bb4e0a9125e172a4234a1cb302e2f395669e8abf",
+    "CKMA/Probability/LimitTheorems/IndependentSums.lean": "3a49023c9eee062e9f0c332ad20372f11b129b3bd2e3022bec7f19ec1aebd25e",
+    "CKMA/Probability/LimitTheorems/LargeDeviations.lean": "5fe0ed178b1cdba6b2147144e5a923b7ec09b80a07a3c09887ea9fbe8a4377f1",
+    "CKMA/Probability/LimitTheorems/LindebergFeller.lean": "357eed5f722515c267f753afbf80b473d106b174f84dff4e1210b926c55e9be8",
+    "CKMA/Probability/LimitTheorems/SteinSolution.lean": "3a46589d491764fb55492b106c0c505e5f14b4a0ff57014c9c11a809d4843826",
+    "CKMA/Probability/LimitTheorems/ThreeSeries.lean": "83573c2ae438359d89154154470d6f98eb12c6fe0e1287ac09295068f34f85c2",
     "CKMA/Probability/Moments/Hausdorff.lean": "c624c851f70f86a95bbb4c60a7ad13b99de5c919554786b4059e7433f1e904c1",
     "CKMA/Probability/ProjectiveLimit.lean": "68d2890df552d962569609be6916eb469b4aaee24dcaee50bb449b9cff2e86ae",
-    "CKMA/Probability/Symmetrization.lean": "c5f0c0d830844a32915f52ba450123a22ee5fe729c47f46b20a17778cbffc0de",
-    "CKMA/Probability.lean": "1a759b1c391927e4625c9fa3c089e8326aea81b0c677ab5e1fdcce1439799015"
+    "CKMA/Probability/Symmetrization.lean": "36d7740da988063e3b3edea2a71d99784e4aa7baef4b664c11604c5e13eeba70",
+    "CKMA/Probability.lean": "db860f54a51d7ccda50a6a8357629c2a5871c82ee3a2956e9b0035f2f3ebbc79"
   },
   "batches": [
     {

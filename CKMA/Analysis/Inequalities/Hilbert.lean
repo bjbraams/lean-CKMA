@@ -9,8 +9,8 @@ module
 public import Mathlib.MeasureTheory.Measure.Haar.OfBasis
 public import Mathlib.MeasureTheory.Function.LpSeminorm.Defs
 
-import Mathlib.Analysis.SpecialFunctions.Gamma.Beta
-import Mathlib.Analysis.SumIntegralComparisons
+import CKMA.Analysis.Inequalities.Hilbert.Kernel
+import Mathlib.Analysis.PSeries
 
 /-!
 # Hilbert integral and sequence inequalities
@@ -20,10 +20,14 @@ with conjugate exponents and constant `pi / sin (pi / p)`. The discrete denomina
 `m+n+2` corresponds to positive integers `m+1,n+1`. Nonnegative integrals and sums
 preserve infinite values; the input norms use Mathlib's `MemLp` and `eLpNorm`.
 
-The constant is the Beta integral `Beta(b, 1 - b)`. The substitution `t = u / (1 - u)`
-and Euler's reflection formula are Mathlib's `Complex.betaIntegral` and
-`Real.Gamma_mul_Gamma_one_sub`. The bilinear bound is Hölder's inequality in
+The constant is the Beta integral `Beta(b, 1 - b)`, computed with the kernel estimates in
+`CKMA.Analysis.Inequalities.Hilbert.Kernel`. The bilinear bound is Hölder's inequality in
 `ENNReal`, and the sequence bound compares the decreasing kernel with that integral.
+
+The constant is optimal in both forms. The test functions `x ^ (-1 / p)` and `y ^ (-1 / q)`
+truncated to `(1, N)` (respectively the sequences `(m + 1) ^ (-1 / p)` and `(n + 1) ^ (-1 / q)`
+for `m, n < N`) have norm product `log N` (respectively the harmonic sum `H_N`), while the
+bilinear form is at least `π / sin (π / p)` times that quantity minus a bounded error.
 Source: GAPS 11.37.
 
 ## Main definitions
@@ -36,6 +40,11 @@ Source: GAPS 11.37.
   functions, with nonnegative extended integrals.
 * `CKMA.hilbert_tsum` (**11.37**): the discrete Hilbert inequality for sequences in `ℓ^p` and
   `ℓ^q`.
+* `CKMA.hilbertConstant_le_of_hilbert_integral_le`,
+  `CKMA.hilbertConstant_le_of_hilbert_tsum_le` (**11.37**): any admissible constant is at least
+  `π / sin (π / p)`.
+* `CKMA.isLeast_hilbertConstant_integral`, `CKMA.isLeast_hilbertConstant_tsum` (**11.37**):
+  `π / sin (π / p)` is the least admissible constant in each form.
 -/
 
 @[expose] public section
@@ -44,418 +53,11 @@ noncomputable section
 
 namespace CKMA
 
-open MeasureTheory Set intervalIntegral
+open MeasureTheory Set intervalIntegral Hilbert
 open scoped ENNReal
 
 /-- Hilbert's sharp constant at exponent `p`. -/
 def hilbertConstant (p : ℝ) : ℝ := Real.pi / Real.sin (Real.pi / p)
-
-/-- Real power `x ^ c` for `x > 0`, and `0` otherwise. -/
-private def rpowPos (c x : ℝ) : ℝ :=
-  if 0 < x then Real.exp (c * Real.log x) else 0
-
-/-- `rpowPos` agrees with `Real.rpow` on positive bases. -/
-private lemma rpowPos_eq {c x : ℝ} (hx : 0 < x) : rpowPos c x = x ^ c := by
-  simp [rpowPos, hx, Real.rpow_def_of_pos hx, mul_comm]
-
-/-- `rpowPos` is nonnegative. -/
-private lemma rpowPos_nonneg (c x : ℝ) : 0 ≤ rpowPos c x := by
-  unfold rpowPos
-  split_ifs
-  · exact (Real.exp_pos _).le
-  · exact le_rfl
-
-/-- `rpowPos` is positive on a positive base. -/
-private lemma rpowPos_pos {c x : ℝ} (hx : 0 < x) : 0 < rpowPos c x := by
-  simp [rpowPos, hx, Real.exp_pos]
-
-/-- `rpowPos` is measurable in the base. -/
-@[fun_prop]
-private lemma measurable_rpowPos (c : ℝ) : Measurable (rpowPos c) := by
-  unfold rpowPos
-  exact Measurable.ite measurableSet_Ioi
-    (Real.measurable_exp.comp (measurable_const.mul Real.measurable_log)) measurable_const
-
-/-- Integrand `u ^ (b - 1) * (1 - u) ^ (-b)` of the Beta reflection identity. -/
-private def betaIntegrand (b u : ℝ) : ℝ :=
-  u ^ (b - 1) * (1 - u) ^ (-b)
-
-/-- Integrand `t ^ (b - 1) / (1 + t)` on the positive half-line. -/
-private def betaTail (b t : ℝ) : ℝ :=
-  t ^ (b - 1) / (1 + t)
-
-/-- The complex Beta integrand agrees with the real one on `[0, 1]`. -/
-private lemma betaIntegrand_eqOn {b : ℝ} :
-    EqOn (fun x : ℝ => (x : ℂ) ^ ((b : ℂ) - 1) *
-        (1 - (x : ℂ)) ^ (((1 - b : ℝ) : ℂ) - 1))
-      (fun x : ℝ => (betaIntegrand b x : ℂ)) (Icc 0 1) := by
-  intro x hx
-  have hx0 : 0 ≤ x := hx.1
-  have h1x : 0 ≤ 1 - x := sub_nonneg.mpr hx.2
-  have hbexp : ((b : ℂ) - 1) = (b - 1 : ℝ) := by push_cast; ring
-  have hvexp : (((1 - b : ℝ) : ℂ) - 1) = (-b : ℝ) := by push_cast; ring
-  have hsub : (1 : ℂ) - (x : ℂ) = (1 - x : ℝ) := by push_cast; ring
-  dsimp
-  rw [hbexp, hvexp, hsub, betaIntegrand, ← Complex.ofReal_cpow hx0,
-    ← Complex.ofReal_cpow h1x, ← Complex.ofReal_mul]
-
-/-- The Beta integrand is interval-integrable on `[0, 1]`. -/
-private lemma betaIntegrand_intervalIntegrable {b : ℝ} (hb0 : 0 < b) (hb1 : b < 1) :
-    IntervalIntegrable (betaIntegrand b) volume 0 1 := by
-  have h01 : (0 : ℝ) ≤ 1 := by norm_num
-  have hbC : 0 < ((b : ℂ).re) := by simpa using hb0
-  have h1bC : 0 < (((1 - b : ℝ) : ℂ).re) := by simpa using sub_pos.mpr hb1
-  have hEqOn : EqOn (fun x : ℝ => (x : ℂ) ^ ((b : ℂ) - 1) *
-      (1 - (x : ℂ)) ^ (((1 - b : ℝ) : ℂ) - 1))
-      (fun x => (betaIntegrand b x : ℂ)) (uIoc 0 1) := by
-    intro x hx
-    rw [uIoc_of_le h01] at hx
-    exact betaIntegrand_eqOn (Ioc_subset_Icc_self hx)
-  have hEqC : IntervalIntegrable (fun x : ℝ => (betaIntegrand b x : ℂ)) volume 0 1 :=
-    (intervalIntegrable_congr hEqOn).1 (Complex.betaIntegral_convergent hbC h1bC)
-  have hI : Integrable (fun x => (betaIntegrand b x : ℂ))
-      (volume.restrict (Ioc 0 1)) :=
-    ((intervalIntegrable_iff_integrableOn_Ioc_of_le h01).1 hEqC).integrable
-  have hLip := LipschitzWith.integrable_comp_iff_of_antilipschitz
-    Complex.ofRealLI.lipschitzWith Complex.ofRealLI.antilipschitzWith
-    Complex.ofRealLI.map_zero (μ := volume.restrict (Ioc (0 : ℝ) 1))
-    (f := betaIntegrand b)
-  have hcomp : Integrable (Complex.ofRealLI ∘ betaIntegrand b)
-      (volume.restrict (Ioc 0 1)) := by
-    simpa [Function.comp_def, Complex.ofRealLI_apply] using hI
-  rw [intervalIntegrable_iff_integrableOn_Ioc_of_le h01, IntegrableOn]
-  exact hLip.1 hcomp
-
-/-- Reflection evaluation of the real Beta integral on `(0, 1)`. -/
-private lemma intervalIntegral_betaIntegrand {b : ℝ} (hb0 : 0 < b) (hb1 : b < 1) :
-    ∫ u in (0 : ℝ)..1, betaIntegrand b u =
-      Real.pi / Real.sin (Real.pi * b) := by
-  have h01 : (0 : ℝ) ≤ 1 := by norm_num
-  have hbC : 0 < ((b : ℂ).re) := by simpa using hb0
-  have h1bC : 0 < (((1 - b : ℝ) : ℂ).re) := by simpa using sub_pos.mpr hb1
-  have hsum : (b : ℂ) + ((1 - b : ℝ) : ℂ) = 1 := by push_cast; ring
-  have hbeta : Complex.betaIntegral (b : ℂ) ((1 - b : ℝ) : ℂ) =
-      Complex.ofReal (Real.pi / Real.sin (Real.pi * b)) := by
-    rw [Complex.betaIntegral_eq_Gamma_mul_div _ _ hbC h1bC, hsum, Complex.Gamma_one, div_one,
-      Complex.Gamma_ofReal b, Complex.Gamma_ofReal (1 - b), ← Complex.ofReal_mul,
-      Real.Gamma_mul_Gamma_one_sub]
-  have hcongr : EqOn (fun x : ℝ => (x : ℂ) ^ ((b : ℂ) - 1) *
-      (1 - (x : ℂ)) ^ (((1 - b : ℝ) : ℂ) - 1))
-      (fun x => (betaIntegrand b x : ℂ)) (uIcc 0 1) := by
-    rw [uIcc_of_le h01]
-    exact betaIntegrand_eqOn
-  rw [Complex.betaIntegral, intervalIntegral.integral_congr hcongr,
-    intervalIntegral.integral_ofReal] at hbeta
-  exact Complex.ofReal_inj.mp hbeta
-
-/-- Lebesgue form of the Beta reflection integral on `(0, 1)`. -/
-private lemma lintegral_betaIntegrand {b : ℝ} (hb0 : 0 < b) (hb1 : b < 1) :
-    ∫⁻ u in Ioo (0 : ℝ) 1, ENNReal.ofReal (betaIntegrand b u) =
-      ENNReal.ofReal (Real.pi / Real.sin (Real.pi * b)) := by
-  have h01 : (0 : ℝ) ≤ 1 := by norm_num
-  have hInt : Integrable (betaIntegrand b) (volume.restrict (Ioc (0 : ℝ) 1)) :=
-    ((intervalIntegrable_iff_integrableOn_Ioc_of_le h01).1
-      (betaIntegrand_intervalIntegrable hb0 hb1)).integrable
-  have hnn : ∀ u ∈ Ioc (0 : ℝ) 1, 0 ≤ betaIntegrand b u := by
-    intro u hu
-    exact mul_nonneg (Real.rpow_nonneg hu.1.le _) (Real.rpow_nonneg (sub_nonneg.mpr hu.2) _)
-  rw [setLIntegral_congr (Ioo_ae_eq_Ioc (a := (0 : ℝ)) (b := 1)),
-    ← ofReal_integral_eq_lintegral_ofReal hInt
-      (ae_restrict_of_forall_mem measurableSet_Ioc hnn),
-    ← intervalIntegral.integral_of_le h01, intervalIntegral_betaIntegrand hb0 hb1]
-
-/-- Derivative of the substitution `u ↦ u / (1 - u)`. -/
-private lemma phi_hasDerivAt {u : ℝ} (hu : u ≠ 1) :
-    HasDerivAt (fun v => v / (1 - v)) (1 / (1 - u) ^ 2) u := by
-  have hne : 1 - u ≠ 0 := sub_ne_zero.mpr (ne_comm.mp hu)
-  have hd : HasDerivAt (fun v => 1 - v) (-1) u :=
-    (hasDerivAt_id' u).const_sub (1 : ℝ)
-  refine ((hasDerivAt_id' u).fun_div hd hne).congr_deriv ?_
-  rw [one_mul, mul_neg, mul_one, sub_neg_eq_add, sub_add_cancel]
-
-/-- The substitution `u ↦ u / (1 - u)` sends `(0, 1)` onto `(0, ∞)`. -/
-private lemma phi_image :
-    (fun u : ℝ => u / (1 - u)) '' Ioo 0 1 = Ioi (0 : ℝ) := by
-  ext t
-  constructor
-  · rintro ⟨u, hu, rfl⟩
-    exact div_pos hu.1 (sub_pos.mpr hu.2)
-  · intro ht
-    have h1t : 0 < 1 + t := add_pos zero_lt_one ht
-    have hu0 : 0 < t / (1 + t) := div_pos ht h1t
-    have hu1 : t / (1 + t) < 1 := by
-      rw [div_lt_one h1t]
-      linarith
-    refine ⟨t / (1 + t), ⟨hu0, hu1⟩, ?_⟩
-    have hsub : 1 - t / (1 + t) = 1 / (1 + t) := by
-      rw [one_sub_div h1t.ne', add_sub_cancel_right]
-    dsimp
-    rw [hsub, div_div_eq_mul_div, div_one, div_mul_cancel₀ _ h1t.ne']
-
-/-- The substitution `u ↦ u / (1 - u)` is injective on `(0, 1)`. -/
-private lemma phi_injOn : InjOn (fun u : ℝ => u / (1 - u)) (Ioo (0 : ℝ) 1) := by
-  intro u hu v hv h
-  have hu' : 1 - u ≠ 0 := sub_ne_zero.mpr (ne_comm.mp hu.2.ne)
-  have hv' : 1 - v ≠ 0 := sub_ne_zero.mpr (ne_comm.mp hv.2.ne)
-  field_simp at h
-  linarith
-
-/-- Jacobian identity for `t = u / (1 - u)` in the Beta substitution. -/
-private lemma phi_kernel {b u : ℝ} (hu0 : 0 < u) (hu1 : u < 1) :
-    |1 / (1 - u) ^ 2| * ((u / (1 - u)) ^ (b - 1) / (1 + u / (1 - u))) =
-      betaIntegrand b u := by
-  have ha : 0 < 1 - u := sub_pos.mpr hu1
-  have ha0 : 1 - u ≠ 0 := ha.ne'
-  have habs : |1 / (1 - u) ^ 2| = 1 / (1 - u) ^ 2 :=
-    abs_of_pos (div_pos one_pos (sq_pos_of_pos ha))
-  have hden : 1 + u / (1 - u) = 1 / (1 - u) := by
-    rw [one_add_div ha0, sub_add_cancel]
-  have hr : (u / (1 - u)) ^ (b - 1) = u ^ (b - 1) / (1 - u) ^ (b - 1) :=
-    Real.div_rpow hu0.le ha.le _
-  have hstep : (1 / (1 - u) ^ 2) *
-      ((u / (1 - u)) ^ (b - 1) / (1 / (1 - u))) =
-      (u / (1 - u)) ^ (b - 1) / (1 - u) := by
-    set a : ℝ := 1 - u
-    set W : ℝ := (u / a) ^ (b - 1)
-    have hcoef : (1 / a ^ 2) * a = 1 / a := by
-      rw [div_mul_eq_mul_div, one_mul, sq, ← div_div, div_self ha0]
-    rw [div_div_eq_mul_div, div_one, mul_left_comm, hcoef, mul_one_div]
-  have hexp : -(b - 1) + (-1 : ℝ) = -b := by
-    calc
-      -(b - 1) + (-1) = (1 - b) + (-1) := by rw [neg_sub]
-      _ = (1 + -b) + -1 := by rw [sub_eq_add_neg]
-      _ = 1 + (-b + -1) := by rw [add_assoc]
-      _ = 1 + (-1 + -b) := by rw [add_comm (-b)]
-      _ = (1 + -1) + -b := by rw [← add_assoc]
-      _ = 0 + -b := by rw [add_neg_cancel]
-      _ = -b := by rw [zero_add]
-  calc
-    |1 / (1 - u) ^ 2| * ((u / (1 - u)) ^ (b - 1) / (1 + u / (1 - u)))
-        = (u / (1 - u)) ^ (b - 1) / (1 - u) := by rw [habs, hden, hstep]
-    _ = u ^ (b - 1) / (1 - u) ^ (b - 1) / (1 - u) := by rw [hr]
-    _ = u ^ (b - 1) * ((1 - u) ^ (b - 1))⁻¹ * (1 - u)⁻¹ := by
-        rw [div_div, div_eq_mul_inv, mul_inv, mul_assoc]
-    _ = u ^ (b - 1) * (1 - u) ^ (-(b - 1)) * (1 - u) ^ (-1 : ℝ) := by
-        rw [← Real.rpow_neg ha.le, ← Real.rpow_neg_one]
-    _ = u ^ (b - 1) * (1 - u) ^ (-b) := by
-        rw [mul_assoc, ← Real.rpow_add ha, hexp]
-    _ = betaIntegrand b u := by rw [betaIntegrand]
-
-/-- Half-line form of the reflection integral, for `0 < b < 1`. -/
-private lemma lintegral_betaTail {b : ℝ} (hb0 : 0 < b) (hb1 : b < 1) :
-    ∫⁻ t in Ioi (0 : ℝ), ENNReal.ofReal (betaTail b t) =
-      ENNReal.ofReal (Real.pi / Real.sin (Real.pi * b)) := by
-  let φ : ℝ → ℝ := fun u => u / (1 - u)
-  have hderiv : ∀ u ∈ Ioo (0 : ℝ) 1, HasDerivWithinAt φ (1 / (1 - u) ^ 2) (Ioo 0 1) u := by
-    intro u hu
-    exact (phi_hasDerivAt hu.2.ne).hasDerivWithinAt
-  rw [← phi_image, lintegral_image_eq_lintegral_abs_deriv_mul measurableSet_Ioo hderiv phi_injOn]
-  refine (setLIntegral_congr_fun measurableSet_Ioo ?_).trans (lintegral_betaIntegrand hb0 hb1)
-  intro u hu
-  dsimp
-  rw [← ENNReal.ofReal_mul (abs_nonneg _)]
-  exact congrArg ENNReal.ofReal <| by
-    simpa [φ, betaTail] using phi_kernel hu.1 hu.2
-
-/-- `π / sin (π α)` is positive for `α ∈ (0, 1)`. -/
-private lemma pi_div_sin_pi_pos {α : ℝ} (hα0 : 0 < α) (hα1 : α < 1) :
-    0 < Real.pi / Real.sin (Real.pi * α) := by
-  refine div_pos Real.pi_pos (Real.sin_pos_of_pos_of_lt_pi ?_ ?_)
-  · exact mul_pos Real.pi_pos hα0
-  · calc
-      Real.pi * α < Real.pi * 1 := mul_lt_mul_of_pos_left hα1 Real.pi_pos
-      _ = Real.pi := mul_one _
-
-/-- Scaling identity `(x / (x t)) ^ α / (x + x t) * x = t ^ (-α) / (1 + t)`. -/
-private lemma scale_kernel {α x t : ℝ} (hx : 0 < x) (ht : 0 < t) :
-    |x| * ((x / (x * t)) ^ α / (x + x * t)) = t ^ (-α) / (1 + t) := by
-  have hxt : 0 < x * t := mul_pos hx ht
-  rw [abs_of_pos hx]
-  have hdiv : x / (x * t) = t⁻¹ := by field_simp
-  have hsum : x + x * t = x * (1 + t) := by ring
-  have hpow : (t⁻¹) ^ α = t ^ (-α) := by
-    rw [← Real.rpow_neg_one, ← Real.rpow_mul ht.le]
-    congr 1
-    ring
-  rw [hdiv, hsum, hpow]
-  field_simp
-
-/-- Schur slice: `∫_{y > 0} (x / y) ^ α / (x + y) dy = π / sin (π α)`. -/
-private lemma lintegral_hilbert_slice {α x : ℝ} (hα0 : 0 < α) (hα1 : α < 1) (hx : 0 < x) :
-    ∫⁻ y in Ioi (0 : ℝ), ENNReal.ofReal ((x / y) ^ α / (x + y)) =
-      ENNReal.ofReal (Real.pi / Real.sin (Real.pi * α)) := by
-  let ψ : ℝ → ℝ := fun t => x * t
-  have hderiv : ∀ t ∈ Ioi (0 : ℝ), HasDerivWithinAt ψ x (Ioi 0) t := fun t _ =>
-    (hasDerivAt_const_mul (x := t) x).hasDerivWithinAt
-  have hinj : InjOn ψ (Ioi (0 : ℝ)) := fun _ _ _ _ h => mul_right_injective₀ hx.ne' h
-  have himg : ψ '' Ioi (0 : ℝ) = Ioi 0 := by
-    ext y
-    constructor
-    · rintro ⟨t, ht, rfl⟩
-      exact mul_pos hx ht
-    · intro hy
-      refine ⟨y / x, div_pos hy hx, ?_⟩
-      dsimp [ψ]
-      exact mul_div_cancel₀ y hx.ne'
-  have htail : ∫⁻ t in Ioi (0 : ℝ), ENNReal.ofReal (betaTail (1 - α) t) =
-      ENNReal.ofReal (Real.pi / Real.sin (Real.pi * α)) := by
-    rw [lintegral_betaTail (sub_pos.mpr hα1) (sub_lt_self 1 hα0)]
-    congr 1
-    rw [show Real.pi * (1 - α) = Real.pi - Real.pi * α by ring, Real.sin_pi_sub]
-  rw [← himg, lintegral_image_eq_lintegral_abs_deriv_mul measurableSet_Ioi hderiv hinj]
-  refine (setLIntegral_congr_fun measurableSet_Ioi ?_).trans htail
-  intro t ht
-  dsimp
-  rw [← ENNReal.ofReal_mul (abs_nonneg _)]
-  apply congrArg ENNReal.ofReal
-  dsimp [ψ]
-  have hexp : (1 - α) - 1 = -α := by
-    rw [sub_right_comm, sub_self, zero_sub]
-  rw [scale_kernel hx ht, betaTail, hexp]
-
-/-- Positive kernel `(k / t) ^ α / (k + t)`, extended by `0` off `(0, ∞)`. -/
-private def hilbertKernel (k α t : ℝ) : ℝ :=
-  if 0 < t then rpowPos α (k / t) / (k + t) else 0
-
-/-- The kernel is nonnegative. -/
-private lemma hilbertKernel_nonneg (k α t : ℝ) : 0 ≤ hilbertKernel k α t := by
-  unfold hilbertKernel
-  split_ifs with ht
-  · by_cases hkt : 0 < k / t
-    · have hk : 0 < k := by
-        rw [← div_mul_cancel₀ k ht.ne']
-        exact mul_pos hkt ht
-      exact div_nonneg (rpowPos_nonneg _ _) (add_pos hk ht).le
-    · rw [rpowPos, ite_eq_right_iff.mpr fun h => (hkt h).elim, zero_div]
-  · exact le_rfl
-
-/-- On `(0, ∞)` the kernel is the real power `(k / t) ^ α / (k + t)`. -/
-private lemma hilbertKernel_eq {k α t : ℝ} (hk : 0 < k) (ht : 0 < t) :
-    hilbertKernel k α t = (k / t) ^ α / (k + t) := by
-  have hdiv : 0 < k / t := div_pos hk ht
-  simp [hilbertKernel, ht, rpowPos_eq (c := α) hdiv]
-
-/-- The kernel is measurable. -/
-private lemma measurable_hilbertKernel (k α : ℝ) : Measurable (hilbertKernel k α) := by
-  unfold hilbertKernel
-  refine Measurable.ite measurableSet_Ioi ?_ measurable_const
-  exact ((measurable_rpowPos α).comp (measurable_const.div measurable_id)).div
-    (measurable_const.add measurable_id)
-
-/-- The kernel decreases on `(0, ∞)` for a positive exponent. -/
-private lemma hilbertKernel_antitone {k α : ℝ} (hk : 0 < k) (hα : 0 < α) :
-    AntitoneOn (hilbertKernel k α) (Ioi (0 : ℝ)) := by
-  intro s hs t ht hst
-  rw [hilbertKernel_eq hk hs, hilbertKernel_eq hk ht]
-  have hrat : k / t ≤ k / s := div_le_div_of_nonneg_left hk.le hs hst
-  have hnum : (k / t) ^ α ≤ (k / s) ^ α :=
-    Real.rpow_le_rpow (div_nonneg hk.le ht.le) hrat hα.le
-  have hden : k + s ≤ k + t := add_le_add_right hst k
-  exact le_trans (div_le_div_of_nonneg_right hnum (add_pos hk ht).le)
-    (div_le_div_of_nonneg_left (Real.rpow_nonneg (div_pos hk hs).le _) (add_pos hk hs) hden)
-
-/-- Lebesgue integral of the kernel, for `0 < α < 1` and `k > 0`. -/
-private lemma lintegral_hilbertKernel {k α : ℝ} (hk : 0 < k) (hα0 : 0 < α) (hα1 : α < 1) :
-    ∫⁻ t in Ioi (0 : ℝ), ENNReal.ofReal (hilbertKernel k α t) =
-      ENNReal.ofReal (Real.pi / Real.sin (Real.pi * α)) := by
-  refine (setLIntegral_congr_fun measurableSet_Ioi ?_).trans (lintegral_hilbert_slice hα0 hα1 hk)
-  intro t ht
-  dsimp
-  rw [hilbertKernel_eq hk ht]
-
-/-- The kernel is integrable on `(0, ∞)`. -/
-private lemma integrableOn_hilbertKernel {k α : ℝ} (hk : 0 < k) (hα0 : 0 < α) (hα1 : α < 1) :
-    IntegrableOn (hilbertKernel k α) (Ioi (0 : ℝ)) := by
-  refine ⟨(measurable_hilbertKernel k α).aestronglyMeasurable.mono_measure
-      Measure.restrict_le_self, ?_⟩
-  rw [hasFiniteIntegral_iff_enorm]
-  rw [setLIntegral_congr_fun measurableSet_Ioi
-      (fun t ht => by rw [Real.enorm_eq_ofReal (hilbertKernel_nonneg k α t)])]
-  rw [lintegral_hilbertKernel hk hα0 hα1]
-  exact ENNReal.ofReal_lt_top
-
-/-- Bochner integral of the kernel. -/
-private lemma integral_hilbertKernel {k α : ℝ} (hk : 0 < k) (hα0 : 0 < α) (hα1 : α < 1) :
-    ∫ t in Ioi (0 : ℝ), hilbertKernel k α t =
-      Real.pi / Real.sin (Real.pi * α) := by
-  have hint := integrableOn_hilbertKernel hk hα0 hα1
-  have hnn : 0 ≤ᵐ[volume.restrict (Ioi (0 : ℝ))] hilbertKernel k α :=
-    ae_of_all _ (hilbertKernel_nonneg k α)
-  have hlin := lintegral_hilbertKernel hk hα0 hα1
-  rw [← ofReal_integral_eq_lintegral_ofReal hint hnn] at hlin
-  exact (ENNReal.ofReal_eq_ofReal_iff
-    (setIntegral_nonneg measurableSet_Ioi fun t _ => hilbertKernel_nonneg k α t)
-    (pi_div_sin_pi_pos hα0 hα1).le).mp hlin
-
-/-- A value at `1` is at most the integral of an antitone function over `(0, 1]`. -/
-private lemma antitone_at_one_le_integral {f : ℝ → ℝ}
-    (hanti : AntitoneOn f (Ioi (0 : ℝ))) (hint : IntegrableOn f (Ioi (0 : ℝ))) :
-    f 1 ≤ ∫ t in Ioc (0 : ℝ) 1, f t := by
-  have hconst : IntegrableOn (fun _ : ℝ => f 1) (Ioc (0 : ℝ) 1) :=
-    integrableOn_const (by simp)
-  have hf : IntegrableOn f (Ioc (0 : ℝ) 1) := hint.mono_set Ioc_subset_Ioi_self
-  have hmono : ∫ t in Ioc (0 : ℝ) 1, f 1 ≤ ∫ t in Ioc (0 : ℝ) 1, f t :=
-    setIntegral_mono_on hconst hf measurableSet_Ioc fun t ht =>
-      hanti ht.1 (by norm_num : (0 : ℝ) < 1) ht.2
-  have hconstInt : ∫ t in Ioc (0 : ℝ) 1, f 1 = f 1 := by
-    rw [setIntegral_const, Measure.real, Real.volume_Ioc]
-    simp
-  exact hconstInt.symm.trans_le hmono
-
-/-- Partial sums of an antitone nonnegative function are bounded by the half-line integral. -/
-private lemma sum_range_antitone_Ioi_le {f : ℝ → ℝ}
-    (hanti : AntitoneOn f (Ioi (0 : ℝ))) (hint : IntegrableOn f (Ioi (0 : ℝ)))
-    (hnn : ∀ t ∈ Ioi (0 : ℝ), 0 ≤ f t) (N : ℕ) :
-    ∑ i ∈ Finset.range N, f (↑i + 1) ≤ ∫ t in Ioi (0 : ℝ), f t := by
-  cases N with
-  | zero =>
-    simp
-    exact setIntegral_nonneg measurableSet_Ioi hnn
-  | succ N =>
-    have hpos : 0 < N + 1 := Nat.succ_pos N
-    have hcast : ∀ i : ℕ, f (↑i + 1) = f ↑(i + 1) := fun i => by
-      congr 1
-      rw [Nat.cast_add, Nat.cast_one]
-    rw [Finset.sum_range_eq_add_Ico (fun i => f (↑i + 1)) hpos]
-    have hsub : Icc ((1 : ℕ) : ℝ) ((N + 1 : ℕ) : ℝ) ⊆ Ioi (0 : ℝ) := by
-      intro t ht
-      have h1 : (1 : ℝ) ≤ t := by simpa [Nat.cast_one] using ht.1
-      exact lt_of_lt_of_le zero_lt_one h1
-    have htail : ∑ i ∈ Finset.Ico 1 (N + 1), f (↑i + 1) ≤ ∫ t in Ioi (1 : ℝ), f t := by
-      simp_rw [hcast]
-      simpa [Nat.cast_one] using
-        AntitoneOn.sum_Ico_le_integral (a := 1) (b := N + 1) (hanti.mono hsub)
-          (hint.mono_set (Ioi_subset_Ioi (Nat.cast_nonneg (1 : ℕ))))
-          (fun t ht => hnn t (Ioi_subset_Ioi (Nat.cast_nonneg (1 : ℕ)) ht))
-    have hadd : (∫ t in Ioc (0 : ℝ) 1, f t) + (∫ t in Ioi (1 : ℝ), f t) =
-        ∫ t in Ioi (0 : ℝ), f t := by
-      rw [← setIntegral_union Ioc_disjoint_Ioi_same measurableSet_Ioi
-          (hint.mono_set Ioc_subset_Ioi_self)
-          (hint.mono_set (Ioi_subset_Ioi zero_le_one)),
-        Ioc_union_Ioi_eq_Ioi zero_le_one]
-    have hhead : f (↑(0 : ℕ) + 1) ≤ ∫ t in Ioc (0 : ℝ) 1, f t := by
-      rw [Nat.cast_zero, zero_add]
-      exact antitone_at_one_le_integral hanti hint
-    exact (add_le_add hhead htail).trans_eq hadd
-
-/-- The series of kernel samples is at most the kernel integral. -/
-private lemma tsum_hilbertKernel_le {k α : ℝ} (hk : 0 < k) (hα0 : 0 < α) (hα1 : α < 1) :
-    ∑' n : ℕ, ENNReal.ofReal (hilbertKernel k α (↑n + 1)) ≤
-      ENNReal.ofReal (Real.pi / Real.sin (Real.pi * α)) := by
-  have hint := integrableOn_hilbertKernel hk hα0 hα1
-  have hanti := hilbertKernel_antitone hk hα0
-  have hnn : ∀ t ∈ Ioi (0 : ℝ), 0 ≤ hilbertKernel k α t :=
-    fun _ _ => hilbertKernel_nonneg k α _
-  have hpartial : ∀ N, ∑ i ∈ Finset.range N, hilbertKernel k α (↑i + 1) ≤
-      ∫ t in Ioi (0 : ℝ), hilbertKernel k α t :=
-    fun N => sum_range_antitone_Ioi_le hanti hint hnn N
-  have hterm : ∀ n : ℕ, 0 ≤ hilbertKernel k α (↑n + 1) :=
-    fun _ => hilbertKernel_nonneg k α _
-  have hsummable : Summable fun n : ℕ => hilbertKernel k α (↑n + 1) :=
-    summable_of_sum_range_le hterm hpartial
-  rw [← ENNReal.ofReal_tsum_of_nonneg hterm hsummable]
-  exact ENNReal.ofReal_le_ofReal
-    ((Real.tsum_le_of_sum_range_le hterm hpartial).trans_eq (integral_hilbertKernel hk hα0 hα1))
 
 /-- Left Schur factor `f(x) (x / y) ^ (1 / (p q)) / (x + y) ^ (1 / p)`. -/
 private def hilbertLeft (p q : ℝ) (f : ℝ → ℝ) (x y : ℝ) : ℝ :=
@@ -927,5 +529,377 @@ theorem hilbert_tsum {p : ℝ} (hp : 1 < p) {a b : ℕ → ℝ}
     unfold q
     rfl
   rw [hqexp]
+
+/-! ### Optimality of the constant -/
+
+/-- `L^r` norm of a nonnegative function as the `r`-th root of the integral of its power. -/
+private lemma eLpNorm_eq_lintegral_rpow_inv {α : Type*} [MeasurableSpace α] {r : ℝ}
+    (hr : 1 < r) {f : α → ℝ} {μ : Measure α} (hf0 : ∀ x, 0 ≤ f x)
+    (hf : AEStronglyMeasurable f μ) :
+    eLpNorm f (ENNReal.ofReal r) μ = (∫⁻ x, ENNReal.ofReal (f x) ^ r ∂μ) ^ r⁻¹ := by
+  rw [lintegral_ofReal_rpow_eq_eLpNorm_rpow hr hf0 hf,
+    ENNReal.rpow_rpow_inv (zero_lt_one.trans hr).ne']
+
+/-- `L ^ (1 / p) * L ^ (1 / q) = L` for conjugate exponents and finite nonzero `L`. -/
+private lemma rpow_inv_mul_rpow_inv {L : ℝ≥0∞} {p q : ℝ} (hpq : p⁻¹ + q⁻¹ = 1)
+    (h0 : L ≠ 0) (ht : L ≠ ⊤) : L ^ p⁻¹ * L ^ q⁻¹ = L := by
+  rw [← ENNReal.rpow_add _ _ h0 ht, hpq, ENNReal.rpow_one]
+
+/-- A power `x ^ e` raised to `r` with `e r = -1` is `x⁻¹`. -/
+private lemma ofReal_rpow_rpow_eq_inv {x e r : ℝ} (hx : 0 < x) (hr : 0 ≤ r)
+    (her : e * r = -1) : ENNReal.ofReal (x ^ e) ^ r = ENNReal.ofReal x⁻¹ := by
+  rw [ENNReal.ofReal_rpow_of_nonneg (Real.rpow_nonneg hx.le _) hr, ← Real.rpow_mul hx.le, her,
+    Real.rpow_neg_one]
+
+/-- Sine form of Hilbert's constant at the conjugate weight `a = 1 - 1 / p`. -/
+private lemma hilbertConstant_eq_conj (p : ℝ) :
+    hilbertConstant p = Real.pi / Real.sin (Real.pi * (1 - p⁻¹)) := by
+  rw [hilbertConstant, mul_sub, mul_one, ← div_eq_mul_inv, Real.sin_pi_sub]
+
+/-! #### The integral inequality -/
+
+private lemma Ioo_one_subset_Ioi_zero {N : ℝ} : Ioo (1 : ℝ) N ⊆ Ioi 0 :=
+  fun _ hx => zero_lt_one.trans hx.1
+
+/-- Truncated power `x ^ e` on `(1, N)`, the test function for the integral optimality. -/
+private def hilbertTest (N e : ℝ) : ℝ → ℝ := (Ioo 1 N).indicator fun x => x ^ e
+
+private lemma hilbertTest_nonneg (N e x : ℝ) : 0 ≤ hilbertTest N e x :=
+  Set.indicator_nonneg (fun _ hy => Real.rpow_nonneg (Ioo_one_subset_Ioi_zero hy).le _) x
+
+private lemma measurable_hilbertTest (N e : ℝ) : Measurable (hilbertTest N e) :=
+  (measurable_id.pow_const e).indicator measurableSet_Ioo
+
+/-- The `L^r` norm of the test function with `e r = -1`. -/
+private lemma eLpNorm_hilbertTest {N e r : ℝ} (hr : 1 < r) (her : e * r = -1) :
+    eLpNorm (hilbertTest N e) (ENNReal.ofReal r) (volume.restrict (Ioi 0)) =
+      (∫⁻ x in Ioo 1 N, ENNReal.ofReal x⁻¹) ^ r⁻¹ := by
+  rw [eLpNorm_eq_lintegral_rpow_inv hr (hilbertTest_nonneg N e)
+    (measurable_hilbertTest N e).aestronglyMeasurable]
+  congr 1
+  have hpt : EqOn (fun x => ENNReal.ofReal (hilbertTest N e x) ^ r)
+      ((Ioo 1 N).indicator fun x => ENNReal.ofReal x⁻¹) (Ioi 0) := by
+    intro x hx
+    by_cases hxS : x ∈ Ioo (1 : ℝ) N
+    · simp only [hilbertTest, indicator_of_mem hxS]
+      exact ofReal_rpow_rpow_eq_inv hx (by linarith) her
+    · simp only [hilbertTest, indicator_of_notMem hxS, ENNReal.ofReal_zero]
+      exact ENNReal.zero_rpow_of_pos (by linarith)
+  rw [setLIntegral_congr_fun measurableSet_Ioi hpt, setLIntegral_indicator measurableSet_Ioo,
+    inter_eq_left.mpr Ioo_one_subset_Ioi_zero]
+
+/-- The inner integral of the test integrand. -/
+private lemma lintegral_hilbertTest_inner {a N x : ℝ} (hx : 0 < x) :
+    ∫⁻ y in Ioi (0 : ℝ),
+        ENNReal.ofReal (hilbertTest N (a - 1) x * hilbertTest N (-a) y / (x + y)) =
+      (Ioo 1 N).indicator (fun x => ENNReal.ofReal x⁻¹ *
+        ∫⁻ y in Ioo 1 N, ENNReal.ofReal (hilbertKernel x a y)) x := by
+  by_cases hxS : x ∈ Ioo (1 : ℝ) N
+  · rw [indicator_of_mem hxS]
+    have hpt : EqOn
+        (fun y => ENNReal.ofReal (hilbertTest N (a - 1) x * hilbertTest N (-a) y / (x + y)))
+        ((Ioo 1 N).indicator fun y =>
+          ENNReal.ofReal x⁻¹ * ENNReal.ofReal (hilbertKernel x a y)) (Ioi 0) := by
+      intro y hy
+      by_cases hyS : y ∈ Ioo (1 : ℝ) N
+      · simp only [hilbertTest, indicator_of_mem hxS, indicator_of_mem hyS]
+        rw [rpow_mul_rpow_div_eq hx hy, ENNReal.ofReal_mul (inv_nonneg.mpr hx.le)]
+      · simp [hilbertTest, indicator_of_notMem hyS]
+    rw [setLIntegral_congr_fun measurableSet_Ioi hpt, setLIntegral_indicator measurableSet_Ioo,
+      inter_eq_left.mpr Ioo_one_subset_Ioi_zero,
+      lintegral_const_mul' _ _ ENNReal.ofReal_ne_top]
+  · simp [hilbertTest, indicator_of_notMem hxS]
+
+/-- Lower bound for the bilinear form of the truncated power test functions. -/
+private lemma hilbert_integral_lower {a N : ℝ} (ha0 : 0 < a) (ha1 : a < 1) (hN : 1 < N) :
+    ENNReal.ofReal (Real.pi / Real.sin (Real.pi * a)) *
+        ∫⁻ x in Ioo 1 N, ENNReal.ofReal x⁻¹ ≤
+      (∫⁻ x in Ioi (0 : ℝ), ∫⁻ y in Ioi (0 : ℝ),
+          ENNReal.ofReal (hilbertTest N (a - 1) x * hilbertTest N (-a) y / (x + y))) +
+        (ENNReal.ofReal (-1 / (a - 1)) * ENNReal.ofReal (1 - a)⁻¹ +
+          ENNReal.ofReal (1 / (a * a))) := by
+  have hN0 : 0 < N := zero_lt_one.trans hN
+  set c : ℝ := N ^ (-a) / a with hc
+  have hI : (∫⁻ x in Ioi (0 : ℝ), ∫⁻ y in Ioi (0 : ℝ),
+        ENNReal.ofReal (hilbertTest N (a - 1) x * hilbertTest N (-a) y / (x + y))) =
+      ∫⁻ x in Ioo 1 N, ENNReal.ofReal x⁻¹ *
+        ∫⁻ y in Ioo 1 N, ENNReal.ofReal (hilbertKernel x a y) := by
+    rw [setLIntegral_congr_fun measurableSet_Ioi fun x hx => lintegral_hilbertTest_inner hx,
+      setLIntegral_indicator measurableSet_Ioo,
+      inter_eq_left.mpr Ioo_one_subset_Ioi_zero]
+  have htail_meas : Measurable fun x : ℝ => ENNReal.ofReal (x ^ (a - 2)) *
+      ENNReal.ofReal (1 - a)⁻¹ + ENNReal.ofReal (x ^ (a - 1)) * ENNReal.ofReal c := by
+    fun_prop
+  have hE1 : ∫⁻ x in Ioo 1 N, ENNReal.ofReal (x ^ (a - 2)) * ENNReal.ofReal (1 - a)⁻¹ ≤
+      ENNReal.ofReal (-1 / (a - 1)) * ENNReal.ofReal (1 - a)⁻¹ := by
+    rw [lintegral_mul_const' _ _ ENNReal.ofReal_ne_top]
+    refine mul_le_mul_left ((lintegral_mono_set Ioo_subset_Ioi_self).trans_eq ?_) _
+    rw [lintegral_Ioi_rpow (by linarith) one_pos, Real.one_rpow, show a - 2 + 1 = a - 1 by ring]
+  have hE2 : ∫⁻ x in Ioo 1 N, ENNReal.ofReal (x ^ (a - 1)) * ENNReal.ofReal c ≤
+      ENNReal.ofReal (1 / (a * a)) := by
+    rw [lintegral_mul_const' _ _ ENNReal.ofReal_ne_top]
+    calc (∫⁻ x in Ioo 1 N, ENNReal.ofReal (x ^ (a - 1))) * ENNReal.ofReal c
+        ≤ (∫⁻ x in Ioc 0 N, ENNReal.ofReal (x ^ (a - 1))) * ENNReal.ofReal c :=
+          mul_le_mul_left (lintegral_mono_set (show Ioo (1 : ℝ) N ⊆ Ioc 0 N from
+            fun x hx => ⟨zero_lt_one.trans hx.1, hx.2.le⟩)) _
+      _ = ENNReal.ofReal (1 / (a * a)) := by
+          rw [lintegral_Ioc_rpow (by linarith) hN0, show a - 1 + 1 = a by ring,
+            ← ENNReal.ofReal_mul (by positivity), hc, Real.rpow_neg hN0.le]
+          congr 1
+          field_simp
+  calc ENNReal.ofReal (Real.pi / Real.sin (Real.pi * a)) *
+        ∫⁻ x in Ioo 1 N, ENNReal.ofReal x⁻¹
+      = ∫⁻ x in Ioo 1 N, ENNReal.ofReal x⁻¹ * ENNReal.ofReal
+          (Real.pi / Real.sin (Real.pi * a)) := by
+        rw [lintegral_mul_const' _ _ ENNReal.ofReal_ne_top, mul_comm]
+    _ ≤ ∫⁻ x in Ioo 1 N, (ENNReal.ofReal x⁻¹ *
+          ∫⁻ y in Ioo 1 N, ENNReal.ofReal (hilbertKernel x a y)) +
+          (ENNReal.ofReal (x ^ (a - 2)) * ENNReal.ofReal (1 - a)⁻¹ +
+            ENNReal.ofReal (x ^ (a - 1)) * ENNReal.ofReal c) := by
+        refine setLIntegral_mono' measurableSet_Ioo fun x hx => ?_
+        have hx0 : 0 < x := zero_lt_one.trans hx.1
+        rw [← ofReal_inv_mul_tail hx0, ← mul_add]
+        exact mul_le_mul_right (ofReal_pi_div_sin_le_lintegral_Ioo ha0 ha1 hx0 hN0) _
+    _ = _ := lintegral_add_right _ htail_meas
+    _ ≤ _ := by
+        rw [hI]
+        refine add_le_add le_rfl ?_
+        rw [lintegral_add_left (by fun_prop)]
+        exact add_le_add hE1 hE2
+
+/-- **11.37** (optimality, integral form): no constant smaller than `π / sin (π / p)` bounds
+Hilbert's bilinear form on `(0, ∞)`. -/
+theorem hilbertConstant_le_of_hilbert_integral_le {p : ℝ} (hp : 1 < p) {C : ℝ≥0∞}
+    (hC : ∀ f g : ℝ → ℝ, (∀ x, 0 ≤ f x) → (∀ x, 0 ≤ g x) →
+      MemLp f (ENNReal.ofReal p) (volume.restrict (Ioi 0)) →
+      MemLp g (ENNReal.ofReal (p / (p - 1))) (volume.restrict (Ioi 0)) →
+      (∫⁻ x in Ioi (0 : ℝ), ∫⁻ y in Ioi (0 : ℝ), ENNReal.ofReal (f x * g y / (x + y))) ≤
+        C * eLpNorm f (ENNReal.ofReal p) (volume.restrict (Ioi 0)) *
+          eLpNorm g (ENNReal.ofReal (p / (p - 1))) (volume.restrict (Ioi 0))) :
+    ENNReal.ofReal (hilbertConstant p) ≤ C := by
+  set a : ℝ := 1 - p⁻¹ with ha
+  set q : ℝ := p / (p - 1) with hq
+  have hp0 : 0 < p := zero_lt_one.trans hp
+  have hinv1 : p⁻¹ < 1 := inv_lt_one_of_one_lt₀ hp
+  have ha0 : 0 < a := by linarith
+  have ha1 : a < 1 := by linarith [inv_pos.mpr hp0]
+  have hq1 : 1 < q := by
+    rw [hq, lt_div_iff₀ (by linarith)]
+    linarith
+  have hqinv : q⁻¹ = a := by
+    rw [hq, ha, inv_div]
+    field_simp
+  have hpq : p⁻¹ + q⁻¹ = 1 := by rw [hqinv, ha]; ring
+  have hep : (a - 1) * p = -1 := by rw [ha]; field_simp; ring
+  have heq : (-a) * q = -1 := by rw [← hqinv, neg_mul, inv_mul_cancel₀ (by linarith)]
+  rw [hilbertConstant_eq_conj]
+  refine le_of_forall_nat_le_mul_le (d := ENNReal.ofReal (-1 / (a - 1)) *
+      ENNReal.ofReal (1 - a)⁻¹ + ENNReal.ofReal (1 / (a * a)))
+    (by finiteness) fun n => ?_
+  set N : ℝ := Real.exp (n + 1) with hN
+  have hN1 : 1 < N := Real.one_lt_exp_iff.mpr (by positivity)
+  have hL : ∫⁻ x in Ioo 1 N, ENNReal.ofReal x⁻¹ = ENNReal.ofReal (n + 1) := by
+    rw [lintegral_Ioo_inv hN1, hN, Real.log_exp]
+  set L := ∫⁻ x in Ioo 1 N, ENNReal.ofReal x⁻¹ with hLdef
+  have hL0 : L ≠ 0 := by rw [hL]; exact (ENNReal.ofReal_pos.mpr (by positivity)).ne'
+  have hLt : L ≠ ⊤ := by rw [hL]; exact ENNReal.ofReal_ne_top
+  refine ⟨L, ?_, hLt, ?_⟩
+  · rw [hL, ← ENNReal.ofReal_natCast]
+    exact ENNReal.ofReal_le_ofReal (by linarith)
+  have hnF := eLpNorm_hilbertTest (N := N) hp hep
+  have hnG := eLpNorm_hilbertTest (N := N) hq1 heq
+  have hmF : MemLp (hilbertTest N (a - 1)) (ENNReal.ofReal p) (volume.restrict (Ioi 0)) :=
+    by rw [memLp_iff, hnF]; exact ENNReal.rpow_lt_top_of_nonneg (by positivity) hLt
+  have hmG : MemLp (hilbertTest N (-a)) (ENNReal.ofReal q) (volume.restrict (Ioi 0)) :=
+    by rw [memLp_iff, hnG]; exact ENNReal.rpow_lt_top_of_nonneg (by positivity) hLt
+  have hbound := hC _ _ (hilbertTest_nonneg N _) (hilbertTest_nonneg N _) hmF hmG
+  rw [hnF, hnG, mul_assoc, rpow_inv_mul_rpow_inv hpq hL0 hLt] at hbound
+  exact (hilbert_integral_lower ha0 ha1 hN1).trans (add_le_add hbound le_rfl)
+
+/-! #### The sequence inequality -/
+
+/-- Truncated power sequence `(m + 1) ^ e` for `m < N`, the test sequence for the discrete
+optimality. -/
+private def hilbertSeq (N : ℕ) (e : ℝ) (m : ℕ) : ℝ := if m < N then ((m : ℝ) + 1) ^ e else 0
+
+private lemma hilbertSeq_nonneg (N : ℕ) (e : ℝ) (m : ℕ) : 0 ≤ hilbertSeq N e m := by
+  unfold hilbertSeq
+  split_ifs
+  · positivity
+  · exact le_rfl
+
+/-- The `ℓ^r` norm of the test sequence with `e r = -1`. -/
+private lemma eLpNorm_hilbertSeq {N : ℕ} {e r : ℝ} (hr : 1 < r) (her : e * r = -1) :
+    eLpNorm (hilbertSeq N e) (ENNReal.ofReal r) Measure.count =
+      (∑ m ∈ Finset.range N, ENNReal.ofReal ((m : ℝ) + 1)⁻¹) ^ r⁻¹ := by
+  rw [eLpNorm_eq_lintegral_rpow_inv hr (hilbertSeq_nonneg N e)
+    Measurable.of_discrete.aestronglyMeasurable, lintegral_count]
+  congr 1
+  rw [tsum_eq_sum (s := Finset.range N) fun m hm => by
+    simp only [hilbertSeq, show ¬m < N by simpa using hm, ↓reduceIte, ENNReal.ofReal_zero]
+    exact ENNReal.zero_rpow_of_pos (by linarith)]
+  refine Finset.sum_congr rfl fun m hm => ?_
+  simp only [hilbertSeq, Finset.mem_range.mp hm, ↓reduceIte]
+  exact ofReal_rpow_rpow_eq_inv (by positivity) (by linarith) her
+
+/-- The bilinear form of the test sequences, as a finite double sum. -/
+private lemma tsum_hilbertSeq {N : ℕ} {a : ℝ} :
+    ∑' m, ∑' n, ENNReal.ofReal
+        (hilbertSeq N (a - 1) m * hilbertSeq N (-a) n / (m + n + 2 : ℝ)) =
+      ∑ m ∈ Finset.range N, ENNReal.ofReal ((m : ℝ) + 1)⁻¹ *
+        ∑ n ∈ Finset.range N, ENNReal.ofReal (hilbertKernel ((m : ℝ) + 1) a ((n : ℝ) + 1)) := by
+  calc ∑' m, ∑' n, ENNReal.ofReal
+        (hilbertSeq N (a - 1) m * hilbertSeq N (-a) n / (m + n + 2 : ℝ))
+      = ∑ m ∈ Finset.range N, ∑' n, ENNReal.ofReal
+          (hilbertSeq N (a - 1) m * hilbertSeq N (-a) n / (m + n + 2 : ℝ)) :=
+        tsum_eq_sum fun m hm => tsum_eq_zero_iff.mpr fun n => by
+          simp [hilbertSeq, Finset.mem_range.not.mp hm]
+    _ = ∑ m ∈ Finset.range N, ∑ n ∈ Finset.range N, ENNReal.ofReal
+          (hilbertSeq N (a - 1) m * hilbertSeq N (-a) n / (m + n + 2 : ℝ)) :=
+        Finset.sum_congr rfl fun m _ => tsum_eq_sum fun n hn => by
+          simp [hilbertSeq, Finset.mem_range.not.mp hn]
+    _ = _ := Finset.sum_congr rfl fun m hm => by
+        rw [Finset.mul_sum]
+        refine Finset.sum_congr rfl fun n hn => ?_
+        simp only [hilbertSeq, Finset.mem_range.mp hm, Finset.mem_range.mp hn, ↓reduceIte]
+        rw [show (m + n + 2 : ℝ) = ((m : ℝ) + 1) + ((n : ℝ) + 1) by ring,
+          rpow_mul_rpow_div_eq (by positivity) (by positivity),
+          ENNReal.ofReal_mul (by positivity)]
+
+/-- Lower bound for the bilinear form of the truncated power test sequences. -/
+private lemma hilbert_tsum_lower {a : ℝ} (ha0 : 0 < a) (ha1 : a < 1) (N : ℕ) :
+    ENNReal.ofReal (Real.pi / Real.sin (Real.pi * a)) *
+        ∑ m ∈ Finset.range N, ENNReal.ofReal ((m : ℝ) + 1)⁻¹ ≤
+      (∑' m, ∑' n, ENNReal.ofReal
+          (hilbertSeq N (a - 1) m * hilbertSeq N (-a) n / (m + n + 2 : ℝ))) +
+        ((∑' m : ℕ, ENNReal.ofReal (((m : ℝ) + 1) ^ (a - 2))) * ENNReal.ofReal (1 - a)⁻¹ +
+          ENNReal.ofReal (1 / (a * a))) := by
+  set M : ℝ := (N : ℝ) + 1 with hM
+  have hM0 : 0 < M := by positivity
+  set c : ℝ := M ^ (-a) / a with hc
+  rw [tsum_hilbertSeq]
+  have hanti : AntitoneOn (fun x : ℝ => ENNReal.ofReal (x ^ (a - 1))) (Ioi 0) :=
+    fun x hx y _ hxy => ENNReal.ofReal_le_ofReal (Real.rpow_le_rpow_of_nonpos hx hxy (by linarith))
+  have hE1 : ∑ m ∈ Finset.range N,
+      ENNReal.ofReal (((m : ℝ) + 1) ^ (a - 2)) * ENNReal.ofReal (1 - a)⁻¹ ≤
+      (∑' m : ℕ, ENNReal.ofReal (((m : ℝ) + 1) ^ (a - 2))) * ENNReal.ofReal (1 - a)⁻¹ := by
+    rw [← Finset.sum_mul]
+    exact mul_le_mul_left (sum_le_tsum _) _
+  have hE2 : ∑ m ∈ Finset.range N,
+      ENNReal.ofReal (((m : ℝ) + 1) ^ (a - 1)) * ENNReal.ofReal c ≤
+      ENNReal.ofReal (1 / (a * a)) := by
+    rw [← Finset.sum_mul]
+    calc (∑ m ∈ Finset.range N, ENNReal.ofReal (((m : ℝ) + 1) ^ (a - 1))) * ENNReal.ofReal c
+        ≤ (∫⁻ x in Ioc 0 M, ENNReal.ofReal (x ^ (a - 1))) * ENNReal.ofReal c :=
+          mul_le_mul_left ((sum_le_lintegral_Ioc_of_antitoneOn hanti N).trans
+            (lintegral_mono_set (Ioc_subset_Ioc_right (by linarith)))) _
+      _ = ENNReal.ofReal (1 / (a * a)) := by
+          rw [lintegral_Ioc_rpow (by linarith) hM0, show a - 1 + 1 = a by ring,
+            ← ENNReal.ofReal_mul (by positivity), hc, Real.rpow_neg hM0.le]
+          congr 1
+          field_simp
+  calc ENNReal.ofReal (Real.pi / Real.sin (Real.pi * a)) *
+        ∑ m ∈ Finset.range N, ENNReal.ofReal ((m : ℝ) + 1)⁻¹
+      = ∑ m ∈ Finset.range N, ENNReal.ofReal ((m : ℝ) + 1)⁻¹ *
+          ENNReal.ofReal (Real.pi / Real.sin (Real.pi * a)) := by
+        rw [Finset.mul_sum]
+        exact Finset.sum_congr rfl fun _ _ => mul_comm _ _
+    _ ≤ ∑ m ∈ Finset.range N, (ENNReal.ofReal ((m : ℝ) + 1)⁻¹ *
+          ∑ n ∈ Finset.range N, ENNReal.ofReal (hilbertKernel ((m : ℝ) + 1) a ((n : ℝ) + 1)) +
+          (ENNReal.ofReal (((m : ℝ) + 1) ^ (a - 2)) * ENNReal.ofReal (1 - a)⁻¹ +
+            ENNReal.ofReal (((m : ℝ) + 1) ^ (a - 1)) * ENNReal.ofReal c)) := by
+        refine Finset.sum_le_sum fun m _ => ?_
+        have hx0 : (0 : ℝ) < (m : ℝ) + 1 := by positivity
+        have hrow := lintegral_Ioo_le_sum_of_antitoneOn (fun s hs t ht hst =>
+          ENNReal.ofReal_le_ofReal (hilbertKernel_antitone hx0 ha0 hs ht hst)) N
+        rw [← ofReal_inv_mul_tail hx0, ← mul_add]
+        exact mul_le_mul_right ((ofReal_pi_div_sin_le_lintegral_Ioo ha0 ha1 hx0 hM0).trans
+          (add_le_add hrow le_rfl)) _
+    _ = _ := by rw [Finset.sum_add_distrib, Finset.sum_add_distrib]
+    _ ≤ _ := add_le_add le_rfl (add_le_add hE1 hE2)
+
+/-- **11.37** (optimality, discrete form): no constant smaller than `π / sin (π / p)` bounds
+the discrete Hilbert form with denominator `m + n + 2`. -/
+theorem hilbertConstant_le_of_hilbert_tsum_le {p : ℝ} (hp : 1 < p) {C : ℝ≥0∞}
+    (hC : ∀ u v : ℕ → ℝ, (∀ n, 0 ≤ u n) → (∀ n, 0 ≤ v n) →
+      MemLp u (ENNReal.ofReal p) Measure.count →
+      MemLp v (ENNReal.ofReal (p / (p - 1))) Measure.count →
+      (∑' m, ∑' n, ENNReal.ofReal (u m * v n / (m + n + 2 : ℝ))) ≤
+        C * eLpNorm u (ENNReal.ofReal p) Measure.count *
+          eLpNorm v (ENNReal.ofReal (p / (p - 1))) Measure.count) :
+    ENNReal.ofReal (hilbertConstant p) ≤ C := by
+  set a : ℝ := 1 - p⁻¹ with ha
+  set q : ℝ := p / (p - 1) with hq
+  have hp0 : 0 < p := zero_lt_one.trans hp
+  have hinv1 : p⁻¹ < 1 := inv_lt_one_of_one_lt₀ hp
+  have ha0 : 0 < a := by linarith
+  have ha1 : a < 1 := by linarith [inv_pos.mpr hp0]
+  have hq1 : 1 < q := by
+    rw [hq, lt_div_iff₀ (by linarith)]
+    linarith
+  have hqinv : q⁻¹ = a := by
+    rw [hq, ha, inv_div]
+    field_simp
+  have hpq : p⁻¹ + q⁻¹ = 1 := by rw [hqinv, ha]; ring
+  have hep : (a - 1) * p = -1 := by rw [ha]; field_simp; ring
+  have heq : (-a) * q = -1 := by rw [← hqinv, neg_mul, inv_mul_cancel₀ (by linarith)]
+  have hsum : Summable fun m : ℕ => ((m : ℝ) + 1) ^ (a - 2) := by
+    have h := (summable_nat_add_iff 1).mpr
+      (Real.summable_nat_rpow.mpr (show a - 2 < -1 by linarith))
+    exact_mod_cast h
+  rw [hilbertConstant_eq_conj]
+  refine le_of_forall_nat_le_mul_le (d := (∑' m : ℕ, ENNReal.ofReal (((m : ℝ) + 1) ^ (a - 2))) *
+      ENNReal.ofReal (1 - a)⁻¹ + ENNReal.ofReal (1 / (a * a))) ?_ fun n => ?_
+  · rw [← ENNReal.ofReal_tsum_of_nonneg (fun m => by positivity) hsum]
+    finiteness
+  obtain ⟨N, hN⟩ := (Filter.tendsto_atTop.mp Real.tendsto_sum_range_one_div_nat_succ_atTop
+    ((n : ℝ) + 1)).exists
+  set H := ∑ m ∈ Finset.range N, ENNReal.ofReal ((m : ℝ) + 1)⁻¹ with hHdef
+  have hH : H = ENNReal.ofReal (∑ m ∈ Finset.range N, 1 / ((m : ℝ) + 1)) := by
+    rw [hHdef, ENNReal.ofReal_sum_of_nonneg fun m _ => by positivity]
+    simp only [one_div]
+  have hnH : ENNReal.ofReal ((n : ℝ) + 1) ≤ H := hH ▸ ENNReal.ofReal_le_ofReal hN
+  have hH0 : H ≠ 0 := (lt_of_lt_of_le (ENNReal.ofReal_pos.mpr (by positivity)) hnH).ne'
+  have hHt : H ≠ ⊤ := by rw [hH]; exact ENNReal.ofReal_ne_top
+  refine ⟨H, le_trans ?_ hnH, hHt, ?_⟩
+  · rw [← ENNReal.ofReal_natCast]
+    exact ENNReal.ofReal_le_ofReal (by linarith)
+  have hnu := eLpNorm_hilbertSeq (N := N) hp hep
+  have hnv := eLpNorm_hilbertSeq (N := N) hq1 heq
+  have hmu : MemLp (hilbertSeq N (a - 1)) (ENNReal.ofReal p) Measure.count := by
+    rw [memLp_iff, hnu]
+    exact ENNReal.rpow_lt_top_of_nonneg (by positivity) hHt
+  have hmv : MemLp (hilbertSeq N (-a)) (ENNReal.ofReal q) Measure.count := by
+    rw [memLp_iff, hnv]
+    exact ENNReal.rpow_lt_top_of_nonneg (by positivity) hHt
+  have hbound := hC _ _ (hilbertSeq_nonneg N _) (hilbertSeq_nonneg N _) hmu hmv
+  rw [hnu, hnv, mul_assoc, rpow_inv_mul_rpow_inv hpq hH0 hHt] at hbound
+  exact (hilbert_tsum_lower ha0 ha1 N).trans (add_le_add hbound le_rfl)
+
+/-- **11.37**: `π / sin (π / p)` is the least constant in Hilbert's integral inequality. -/
+theorem isLeast_hilbertConstant_integral {p : ℝ} (hp : 1 < p) :
+    IsLeast {C : ℝ≥0∞ | ∀ f g : ℝ → ℝ,
+      (∀ᵐ x ∂volume.restrict (Ioi 0), 0 ≤ f x) → (∀ᵐ x ∂volume.restrict (Ioi 0), 0 ≤ g x) →
+      MemLp f (ENNReal.ofReal p) (volume.restrict (Ioi 0)) →
+      MemLp g (ENNReal.ofReal (p / (p - 1))) (volume.restrict (Ioi 0)) →
+      (∫⁻ x in Ioi (0 : ℝ), ∫⁻ y in Ioi (0 : ℝ), ENNReal.ofReal (f x * g y / (x + y))) ≤
+        C * eLpNorm f (ENNReal.ofReal p) (volume.restrict (Ioi 0)) *
+          eLpNorm g (ENNReal.ofReal (p / (p - 1))) (volume.restrict (Ioi 0))}
+      (ENNReal.ofReal (hilbertConstant p)) :=
+  ⟨fun _ _ hf0 hg0 hf hg => hilbert_integral hp hf0 hg0 hf hg,
+    fun _ hC => hilbertConstant_le_of_hilbert_integral_le hp fun f g hf0 hg0 hf hg =>
+      hC f g (ae_of_all _ hf0) (ae_of_all _ hg0) hf hg⟩
+
+/-- **11.37**: `π / sin (π / p)` is the least constant in the discrete Hilbert inequality. -/
+theorem isLeast_hilbertConstant_tsum {p : ℝ} (hp : 1 < p) :
+    IsLeast {C : ℝ≥0∞ | ∀ u v : ℕ → ℝ, (∀ n, 0 ≤ u n) → (∀ n, 0 ≤ v n) →
+      MemLp u (ENNReal.ofReal p) Measure.count →
+      MemLp v (ENNReal.ofReal (p / (p - 1))) Measure.count →
+      (∑' m, ∑' n, ENNReal.ofReal (u m * v n / (m + n + 2 : ℝ))) ≤
+        C * eLpNorm u (ENNReal.ofReal p) Measure.count *
+          eLpNorm v (ENNReal.ofReal (p / (p - 1))) Measure.count}
+      (ENNReal.ofReal (hilbertConstant p)) :=
+  ⟨fun _ _ hu0 hv0 hu hv => hilbert_tsum hp hu0 hv0 hu hv,
+    fun _ hC => hilbertConstant_le_of_hilbert_tsum_le hp hC⟩
 
 end CKMA

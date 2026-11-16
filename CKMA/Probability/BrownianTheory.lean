@@ -11,8 +11,10 @@ public import Mathlib.Probability.BrownianMotion.Basic
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.ContinuousMap
 public import Mathlib.Probability.Process.Stopping
 public import Mathlib.Topology.MetricSpace.Holder
+public import TauCeti.Probability.Process.Filtration.AmbientNullAugmentation
 
 import TauCeti.Probability.Process.StoppingApproximation
+import TauCeti.Probability.BrownianMotion.RightContinuity
 import CKMA.Probability.ProjectiveLimit
 
 /-!
@@ -24,12 +26,18 @@ modification theorem starts from an arbitrary pre-Brownian process and gives eve
 local Hölder exponent below one half.
 
 `brownianShift` describes increments after a finite-valued stopping time. The strong
-Markov interface uses the raw natural filtration and finite-dimensional independence;
-the reflection principle uses a strictly positive level and includes time zero.
+Markov property is stated for any filtration relative to which the future increment process
+after each deterministic time is independent of the past, with finite-dimensional
+independence from the stopping-time sigma-algebra. It is specialized to the raw natural
+filtration and to the right-continuous natural filtration augmented by the ambient null
+events, where almost surely finite stopping times are allowed. The reflection principle uses
+a strictly positive level and includes time zero.
 
 The strong Markov property is proved by rounding the stopping time up to dyadic grids
-(TauCeti's `dyadicCeilTime`). At each grid value Mathlib's weak Markov property
-`IsPreBrownianReal.indepFun_shift` applies. Path continuity and dominated convergence then pass
+(TauCeti's `dyadicCeilTime`). At each grid value the independence of the future increments
+applies: Mathlib's weak Markov property `IsPreBrownianReal.indepFun_shift` for the natural
+filtration, and TauCeti's `IsBrownianReal.indep_shift_rightCont_natural` for its
+right-continuous augmentation. Path continuity and dominated convergence then pass
 the identity to the original time, and finite Borel laws are identified by bounded continuous
 test functions.
 The target statements correspond to the indicated entries of `GAPS.md`.
@@ -44,7 +52,11 @@ The target statements correspond to the indicated entries of `GAPS.md`.
   in `BrownianTheory.Existence`).
 * `CKMA.exists_holder_brownianModification`: existence of a continuous modification with every
   local Hölder exponent below `1 / 2`.
-* `CKMA.brownian_strongMarkov`: strong Markov property for Brownian motion (**08.3**).
+* `CKMA.brownian_strongMarkov_of_indep`: strong Markov property relative to any filtration
+  whose past is independent of the future increments (**08.3**).
+* `CKMA.brownian_strongMarkov`: strong Markov property for the natural filtration (**08.3**).
+* `CKMA.brownian_strongMarkov_augmented`: strong Markov property for almost surely finite
+  stopping times of the augmented right-continuous natural filtration (**08.3**).
 * `CKMA.brownian_reflection`: reflection principle for Brownian motion (**08.4**,
   in `BrownianTheory.Reflection.Bound`).
 -/
@@ -135,13 +147,11 @@ private lemma tendsto_dyadicTime {Ω : Type*} (T : Ω → ℝ≥0) (ω : Ω) :
   refine tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds ?_ hle hlt
   simpa only [add_zero] using tendsto_const_nhds.add hpow
 
-variable {Ω : Type*} [MeasurableSpace Ω] {B : ℝ≥0 → Ω → ℝ} (hm : ∀ t, Measurable (B t))
-  {T : Ω → ℝ≥0}
+variable {Ω : Type*} [MeasurableSpace Ω] {B : ℝ≥0 → Ω → ℝ} {T : Ω → ℝ≥0}
+  {𝒢 : Filtration ℝ≥0 ‹MeasurableSpace Ω›}
 
 /-- The dyadic index of a stopping time is measurable. -/
-private lemma measurable_ceil
-    (hT : IsStoppingTime (Filtration.natural B (fun t ↦ (hm t).stronglyMeasurable))
-      (fun ω ↦ (T ω : WithTop ℝ≥0))) (n : ℕ) :
+private lemma measurable_ceil (hT : IsStoppingTime 𝒢 (fun ω ↦ (T ω : WithTop ℝ≥0))) (n : ℕ) :
     Measurable (fun ω ↦ ⌈T ω * 2 ^ n⌉₊) := by
   refine measurable_to_countable' fun k ↦ ?_
   rw [show (fun ω ↦ ⌈T ω * 2 ^ n⌉₊) ⁻¹' {k} = {ω | ⌈T ω * 2 ^ n⌉₊ = k} from rfl,
@@ -150,9 +160,8 @@ private lemma measurable_ceil
     (TauCeti.countable_range_dyadicCeilTime _ n) _)
 
 /-- Brownian increments after a dyadically rounded stopping time are measurable. -/
-private lemma measurable_brownianShift_dyadicTime
-    (hT : IsStoppingTime (Filtration.natural B (fun t ↦ (hm t).stronglyMeasurable))
-      (fun ω ↦ (T ω : WithTop ℝ≥0))) (n : ℕ) (s : ℝ≥0) :
+private lemma measurable_brownianShift_dyadicTime (hm : ∀ t, Measurable (B t))
+    (hT : IsStoppingTime 𝒢 (fun ω ↦ (T ω : WithTop ℝ≥0))) (n : ℕ) (s : ℝ≥0) :
     Measurable (fun ω ↦ brownianShift B (dyadicTime T n) s ω) := by
   have hF : Measurable (fun p : Ω × ℕ ↦
       B ((p.2 : ℝ≥0) / 2 ^ n + s) p.1 - B ((p.2 : ℝ≥0) / 2 ^ n) p.1) :=
@@ -164,19 +173,29 @@ private lemma measurable_brownianShift_dyadicTime
     funext ω
     simp only [Function.comp_apply, brownianShift, dyadicTime]
   rw [heq]
-  exact hF.comp (measurable_id'.prodMk (measurable_ceil hm hT n))
+  exact hF.comp (measurable_id'.prodMk (measurable_ceil hT n))
+
+/-- The natural filtration satisfies the independence hypothesis of the generic strong Markov
+argument: Mathlib's weak Markov property `IsPreBrownianReal.indepFun_shift`. -/
+private lemma indep_shift_natural (hm : ∀ t, Measurable (B t)) {μ : Measure Ω}
+    (hB : IsPreBrownianReal B μ) (s : ℝ≥0) :
+    Indep (MeasurableSpace.comap (fun ω v ↦ B (s + v) ω - B s ω) inferInstance)
+      (Filtration.natural B (fun t ↦ (hm t).stronglyMeasurable) s) μ := by
+  rw [Filtration.natural_eq_comap]
+  exact (IndepFun_iff_Indep ..).1 (hB.indepFun_shift s)
 
 /-- Strong Markov identity at a dyadically rounded stopping time. The rounded time has countably
-many values, and at each value the weak Markov property applies. -/
-private lemma measure_inter_brownianShift_dyadicTime (μ : Measure Ω)
-    (hB : IsPreBrownianReal B μ)
-    (hT : IsStoppingTime (Filtration.natural B (fun t ↦ (hm t).stronglyMeasurable))
-      (fun ω ↦ (T ω : WithTop ℝ≥0)))
+many values, and at each value the future increments are independent of the past. -/
+private lemma measure_inter_brownianShift_dyadicTime (hm : ∀ t, Measurable (B t))
+    (μ : Measure Ω) (hB : IsPreBrownianReal B μ)
+    (hindep : ∀ s, Indep (MeasurableSpace.comap (fun ω v ↦ B (s + v) ω - B s ω) inferInstance)
+      (𝒢 s) μ)
+    (hT : IsStoppingTime 𝒢 (fun ω ↦ (T ω : WithTop ℝ≥0)))
     {A : Set Ω} (hA : MeasurableSet[hT.measurableSpace] A) (n : ℕ)
     {ι : Type*} [Fintype ι] (t : ι → ℝ≥0) {S : Set (ι → ℝ)} (hS : MeasurableSet S) :
     μ (A ∩ (fun ω i ↦ brownianShift B (dyadicTime T n) (t i) ω) ⁻¹' S) =
       μ A * μ ((fun ω i ↦ B (t i) ω) ⁻¹' S) := by
-  let ℱ := Filtration.natural B (fun t ↦ (hm t).stronglyMeasurable)
+  let ℱ := 𝒢
   let K : Ω → ℕ := fun ω ↦ ⌈T ω * 2 ^ n⌉₊
   let q : ℕ → ℝ≥0 := fun k ↦ (k : ℝ≥0) / 2 ^ n
   have hσ := hT.dyadicCeilTime n
@@ -211,11 +230,7 @@ private lemma measure_inter_brownianShift_dyadicTime (μ : Measure Ω)
   have hmeasA (k : ℕ) : MeasurableSet (A ∩ {ω | K ω = k}) := ℱ.le _ _ (hpast k)
   have hterm (k : ℕ) : μ ((A ∩ {ω | K ω = k}) ∩ shiftQ k ⁻¹' G) =
       μ (A ∩ {ω | K ω = k}) * μ ((fun ω i ↦ B (t i) ω) ⁻¹' S) := by
-    have hcomap : MeasurableSet[MeasurableSpace.comap
-        (fun ω (j : Set.Iic (q k)) ↦ B j ω) inferInstance] (A ∩ {ω | K ω = k}) :=
-      Filtration.natural_eq_comap B (fun t ↦ (hm t).stronglyMeasurable) (q k) ▸ hpast k
-    obtain ⟨s', hs', hpre⟩ := MeasurableSpace.measurableSet_comap.1 hcomap
-    have hmul := (hB.indepFun_shift (q k)).measure_inter_preimage_eq_mul G s' hG hs'
+    have hmul := (Indep_iff _ _ μ).1 (hindep (q k)) (shiftQ k ⁻¹' G) _ ⟨G, hG, rfl⟩ (hpast k)
     have hlaw : μ (shiftQ k ⁻¹' G) = μ ((fun ω i ↦ B (t i) ω) ⁻¹' S) := by
       have h : μ.map (fun ω i ↦ B (q k + t i) ω - B (q k) ω) = μ.map (fun ω i ↦ B (t i) ω) :=
         map_eval_eq_of_isPreBrownianReal (hB.shift (q k)) hB t
@@ -225,11 +240,7 @@ private lemma measure_inter_brownianShift_dyadicTime (μ : Measure Ω)
               (hm (q k + t i)).sub (hm (q k))) hS).symm
         _ = μ.map (fun ω i ↦ B (t i) ω) S := by rw [h]
         _ = _ := Measure.map_apply (Measurable.of_eval fun i ↦ hm (t i)) hS
-    calc μ ((A ∩ {ω | K ω = k}) ∩ shiftQ k ⁻¹' G)
-        = μ (shiftQ k ⁻¹' G ∩ (fun ω (j : Set.Iic (q k)) ↦ B j ω) ⁻¹' s') := by
-          rw [Set.inter_comm (A ∩ _), hpre]
-      _ = μ (shiftQ k ⁻¹' G) * μ ((fun ω (j : Set.Iic (q k)) ↦ B j ω) ⁻¹' s') := hmul
-      _ = _ := by rw [mul_comm, hpre, hlaw]
+    rw [Set.inter_comm, hmul, hlaw, mul_comm]
   have hdisj : Pairwise (Function.onFun Disjoint fun k ↦ (A ∩ {ω | K ω = k}) ∩ shiftQ k ⁻¹' G) :=
     fun j k hjk ↦ Set.disjoint_left.2 fun ω hj hk ↦ hjk (hj.1.2.symm.trans hk.1.2)
   have hdisjA : Pairwise (Function.onFun Disjoint fun k ↦ A ∩ {ω | K ω = k}) :=
@@ -243,10 +254,11 @@ private lemma measure_inter_brownianShift_dyadicTime (μ : Measure Ω)
 /-- After a finite stopping time the increment vector, restricted to a stopping-time event,
 has the law of the Brownian vector scaled by the event's probability. Dyadic rounding and path
 continuity pass the countable-valued identity to the limit. -/
-private lemma map_restrict_brownianShift (μ : Measure Ω) [IsProbabilityMeasure μ]
-    (hB : IsBrownianReal B μ)
-    (hT : IsStoppingTime (Filtration.natural B (fun t ↦ (hm t).stronglyMeasurable))
-      (fun ω ↦ (T ω : WithTop ℝ≥0)))
+private lemma map_restrict_brownianShift (hm : ∀ t, Measurable (B t))
+    (μ : Measure Ω) [IsProbabilityMeasure μ] (hB : IsBrownianReal B μ)
+    (hindep : ∀ s, Indep (MeasurableSpace.comap (fun ω v ↦ B (s + v) ω - B s ω) inferInstance)
+      (𝒢 s) μ)
+    (hT : IsStoppingTime 𝒢 (fun ω ↦ (T ω : WithTop ℝ≥0)))
     {A : Set Ω} (hA : MeasurableSet[hT.measurableSpace] A)
     {ι : Type*} [Fintype ι] (t : ι → ℝ≥0) :
     AEMeasurable (fun ω i ↦ brownianShift B T (t i) ω) μ ∧
@@ -268,7 +280,7 @@ private lemma map_restrict_brownianShift (μ : Measure Ω) [IsProbabilityMeasure
     ext S hS
     rw [Measure.map_apply (hFm n) hS, Measure.restrict_apply ((hFm n) hS), smul_apply,
       Measure.map_apply hBm hS, smul_eq_mul, Set.inter_comm]
-    exact measure_inter_brownianShift_dyadicTime hm μ hB.toIsPreBrownianReal hT hA n t hS
+    exact measure_inter_brownianShift_dyadicTime hm μ hB.toIsPreBrownianReal hindep hT hA n t hS
   have hGmA : AEMeasurable G (μ.restrict A) := hGm.mono_measure Measure.restrict_le_self
   have hGA : (μ.restrict A).map G = (μ.restrict A).map (F 0) := by
     refine ext_of_forall_integral_eq_of_IsFiniteMeasure fun φ ↦ ?_
@@ -287,9 +299,40 @@ private lemma map_restrict_brownianShift (μ : Measure Ω) [IsProbabilityMeasure
     exact tendsto_nhds_unique htend (tendsto_const_nhds.congr fun n ↦ (hconst n).symm)
   exact ⟨hGm, hGA.trans (hFA 0)⟩
 
+/-- **08.3**, filtration interface: let `𝒢` be a filtration relative to which the whole future
+increment process of Brownian motion after each deterministic time `s` is independent of `𝒢 s`.
+For a finite-valued `𝒢`-stopping time the shifted process is Brownian, and its
+finite-dimensional laws are independent of the sigma-algebra at the stopping time. -/
+theorem brownian_strongMarkov_of_indep {Ω : Type*} [MeasurableSpace Ω]
+    (μ : Measure Ω) [IsProbabilityMeasure μ] (B : ℝ≥0 → Ω → ℝ)
+    (hm : ∀ t, Measurable (B t)) (hB : IsBrownianReal B μ) (𝒢 : Filtration ℝ≥0 ‹_›)
+    (hindep : ∀ s, Indep (MeasurableSpace.comap (fun ω v ↦ B (s + v) ω - B s ω) inferInstance)
+      (𝒢 s) μ)
+    (T : Ω → ℝ≥0) (hT : IsStoppingTime 𝒢 (fun ω ↦ (T ω : WithTop ℝ≥0))) :
+    IsBrownianReal (brownianShift B T) μ ∧
+      ∀ A : Set Ω, MeasurableSet[hT.measurableSpace] A →
+      ∀ (n : ℕ) (t : Fin n → ℝ≥0) (S : Set (Fin n → ℝ)), MeasurableSet S →
+        μ (A ∩ {ω | (fun i ↦ brownianShift B T (t i) ω) ∈ S}) =
+          μ A * μ {ω | (fun i ↦ B (t i) ω) ∈ S} := by
+  refine ⟨⟨⟨fun I ↦ ?_⟩, ?_⟩, fun A hA n t S hS ↦ ?_⟩
+  · obtain ⟨hGm, hmap⟩ := map_restrict_brownianShift hm μ hB hindep hT
+      (@MeasurableSet.univ _ hT.measurableSpace) (fun i : I ↦ (i : ℝ≥0))
+    rw [Measure.restrict_univ, measure_univ, one_smul] at hmap
+    exact ⟨hGm, hmap.trans (hB.hasLaw I).map_eq⟩
+  · filter_upwards [hB.cont] with ω hω
+    simp only [brownianShift]
+    fun_prop
+  · obtain ⟨hGm, hmap⟩ := map_restrict_brownianShift hm μ hB hindep hT hA t
+    have h : (μ.restrict A).map (fun ω i ↦ brownianShift B T (t i) ω) S =
+        (μ A • μ.map (fun ω i ↦ B (t i) ω)) S := by rw [hmap]
+    rwa [Measure.map_apply_of_aemeasurable (hGm.mono_measure Measure.restrict_le_self) hS,
+      Measure.restrict_apply' (hT.measurableSpace_le A hA), smul_apply,
+      Measure.map_apply (Measurable.of_eval fun i ↦ hm (t i)) hS, smul_eq_mul,
+      Set.inter_comm] at h
+
 /-- **08.3**, raw-natural-filtration version: the shifted process is Brownian and its
 finite-dimensional laws are independent of the sigma-algebra at the stopping time.
-The completed right-continuous augmentation is a separate interface. -/
+The completed right-continuous augmentation is `brownian_strongMarkov_augmented`. -/
 theorem brownian_strongMarkov {Ω : Type*} [MeasurableSpace Ω]
     (μ : Measure Ω) [IsProbabilityMeasure μ] (B : ℝ≥0 → Ω → ℝ)
     (hm : ∀ t, Measurable (B t)) (hB : IsBrownianReal B μ) (T : Ω → ℝ≥0)
@@ -299,21 +342,85 @@ theorem brownian_strongMarkov {Ω : Type*} [MeasurableSpace Ω]
       ∀ A : Set Ω, MeasurableSet[hT.measurableSpace] A →
       ∀ (n : ℕ) (t : Fin n → ℝ≥0) (S : Set (Fin n → ℝ)), MeasurableSet S →
         μ (A ∩ {ω | (fun i ↦ brownianShift B T (t i) ω) ∈ S}) =
+          μ A * μ {ω | (fun i ↦ B (t i) ω) ∈ S} :=
+  brownian_strongMarkov_of_indep μ B hm hB _
+    (indep_shift_natural hm hB.toIsPreBrownianReal) T hT
+
+/-- The right-continuous natural filtration augmented by the ambient null events satisfies the
+independence hypothesis of `brownian_strongMarkov_of_indep` (TauCeti's
+`IsBrownianReal.indep_shift_rightCont_natural`, which uses path continuity). -/
+private lemma indep_shift_augmented (hm : ∀ t, Measurable (B t)) {μ : Measure Ω}
+    (hB : IsBrownianReal B μ) (s : ℝ≥0) :
+    Indep (MeasurableSpace.comap (fun ω v ↦ B (s + v) ω - B s ω) inferInstance)
+      ((Filtration.natural B (fun t ↦ (hm t).stronglyMeasurable)).rightCont.ambientNullAugmentation
+        μ s) μ := by
+  have h := (Indep_iff _ _ μ).1
+    (hB.indep_shift_rightCont_natural (fun t ↦ (hm t).stronglyMeasurable) s)
+  rw [Indep_iff]
+  intro t₁ t₂ ht₁ ht₂
+  obtain ⟨-, t₃, ht₃, h₂₃⟩ :=
+    (Filtration.measurableSet_ambientNullAugmentation_iff _ μ s t₂).1 ht₂
+  rw [measure_congr (EventuallyEqSet.inter EventuallyEq.rfl h₂₃), measure_congr h₂₃]
+  exact h t₁ t₃ ht₁ ht₃
+
+/-- **08.3**, completed right-continuous augmentation: let `𝒢` be the right-continuous natural
+filtration of Brownian motion with all ambient-measurable null events adjoined. For an almost
+surely finite `𝒢`-stopping time `T`, the shifted process `B (T + t) - B T` (with `T` replaced
+by `0` on the null event `T = ∞`) is Brownian, and its finite-dimensional laws are independent
+of the sigma-algebra at `T`. -/
+theorem brownian_strongMarkov_augmented {Ω : Type*} [MeasurableSpace Ω]
+    (μ : Measure Ω) [IsProbabilityMeasure μ] (B : ℝ≥0 → Ω → ℝ)
+    (hm : ∀ t, Measurable (B t)) (hB : IsBrownianReal B μ) (T : Ω → WithTop ℝ≥0)
+    (hT : IsStoppingTime ((Filtration.natural B
+      (fun t ↦ (hm t).stronglyMeasurable)).rightCont.ambientNullAugmentation μ) T)
+    (hfin : ∀ᵐ ω ∂μ, T ω ≠ ⊤) :
+    IsBrownianReal (brownianShift B fun ω ↦ (T ω).untopD 0) μ ∧
+      ∀ A : Set Ω, MeasurableSet[hT.measurableSpace] A →
+      ∀ (n : ℕ) (t : Fin n → ℝ≥0) (S : Set (Fin n → ℝ)), MeasurableSet S →
+        μ (A ∩ {ω | (fun i ↦ brownianShift B (fun ω ↦ (T ω).untopD 0) (t i) ω) ∈ S}) =
           μ A * μ {ω | (fun i ↦ B (t i) ω) ∈ S} := by
-  refine ⟨⟨⟨fun I ↦ ?_⟩, ?_⟩, fun A hA n t S hS ↦ ?_⟩
-  · obtain ⟨hGm, hmap⟩ := map_restrict_brownianShift hm μ hB hT
-      (@MeasurableSet.univ _ hT.measurableSpace) (fun i : I ↦ (i : ℝ≥0))
-    rw [Measure.restrict_univ, measure_univ, one_smul] at hmap
-    exact ⟨hGm, hmap.trans (hB.hasLaw I).map_eq⟩
-  · filter_upwards [hB.cont] with ω hω
-    simp only [brownianShift]
-    fun_prop
-  · obtain ⟨hGm, hmap⟩ := map_restrict_brownianShift hm μ hB hT hA t
-    have h : (μ.restrict A).map (fun ω i ↦ brownianShift B T (t i) ω) S =
-        (μ A • μ.map (fun ω i ↦ B (t i) ω)) S := by rw [hmap]
-    rwa [Measure.map_apply_of_aemeasurable (hGm.mono_measure Measure.restrict_le_self) hS,
-      Measure.restrict_apply' (hT.measurableSpace_le A hA), smul_apply,
-      Measure.map_apply (Measurable.of_eval fun i ↦ hm (t i)) hS, smul_eq_mul,
-      Set.inter_comm] at h
+  let 𝒢 := (Filtration.natural B
+    (fun t ↦ (hm t).stronglyMeasurable)).rightCont.ambientNullAugmentation μ
+  let T' : Ω → ℝ≥0 := fun ω ↦ (T ω).untopD 0
+  have htop : {ω | T ω = ⊤} = (⋃ k : ℕ, {ω | T ω ≤ ((k : ℝ≥0) : WithTop ℝ≥0)})ᶜ := by
+    ext ω
+    simp only [Set.mem_ofPred_eq, Set.mem_compl_iff, Set.mem_iUnion, not_exists]
+    refine ⟨fun h k hk ↦ by simp [h] at hk, fun h ↦ ?_⟩
+    by_contra hne
+    obtain ⟨x, hx⟩ := WithTop.ne_top_iff_exists.1 hne
+    obtain ⟨k, hk⟩ := exists_nat_ge x
+    exact h k (hx ▸ WithTop.coe_le_coe.2 hk)
+  have hNm : MeasurableSet {ω | T ω = ⊤} := by
+    rw [htop]
+    exact (MeasurableSet.iUnion fun k : ℕ ↦ 𝒢.le _ _ (hT (k : ℝ≥0))).compl
+  have hN0 : μ {ω | T ω = ⊤} = 0 := by
+    rw [ae_iff] at hfin
+    simpa only [ne_eq, not_not] using hfin
+  have hsplit (A : Set Ω) (i : ℝ≥0) : A ∩ {ω | (T' ω : WithTop ℝ≥0) ≤ i} =
+      (A ∩ {ω | T ω ≤ i}) ∪ (A ∩ {ω | T ω = ⊤}) := by
+    ext ω
+    simp only [Set.mem_inter_iff, Set.mem_union, Set.mem_ofPred_eq, T']
+    by_cases h : T ω = ⊤
+    · simp only [h, WithTop.untopD_top, WithTop.coe_le_coe, zero_le, top_le_iff,
+        WithTop.coe_ne_top]
+      tauto
+    · obtain ⟨x, hx⟩ := WithTop.ne_top_iff_exists.1 h
+      simp only [← hx, WithTop.untopD_coe, WithTop.coe_ne_top, and_false, or_false]
+  have hnull (A : Set Ω) (hA : MeasurableSet A) (i : ℝ≥0) :
+      MeasurableSet[𝒢 i] (A ∩ {ω | T ω = ⊤}) :=
+    Filtration.measurableSet_ambientNullAugmentation_of_null _ μ i (hA.inter hNm)
+      (measure_mono_null Set.inter_subset_right hN0)
+  have hT' : IsStoppingTime 𝒢 (fun ω ↦ (T' ω : WithTop ℝ≥0)) := by
+    intro i
+    have h := (MeasurableSet.univ.inter (hT i)).union (hnull Set.univ MeasurableSet.univ i)
+    rwa [← hsplit Set.univ i, Set.univ_inter] at h
+  have hA' (A : Set Ω) (hA : MeasurableSet[hT.measurableSpace] A) :
+      MeasurableSet[hT'.measurableSpace] A := by
+    refine ⟨hA.1, fun i ↦ ?_⟩
+    rw [hsplit A i]
+    exact (hA.2 i).union (hnull A (hT.measurableSpace_le A hA) i)
+  obtain ⟨hlaw, hind⟩ := brownian_strongMarkov_of_indep μ B hm hB 𝒢
+    (indep_shift_augmented hm hB) T' hT'
+  exact ⟨hlaw, fun A hA ↦ hind A (hA' A hA)⟩
 
 end CKMA

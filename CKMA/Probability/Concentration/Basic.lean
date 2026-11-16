@@ -25,6 +25,8 @@ Basic predicates and equivalence estimates for sub-Gaussian real random variable
 
 ## Main results
 
+* `CKMA.psiTwoGauge_le_ofReal_iff`: for `K > 0`, the gauge is at most `K` exactly when `K` is
+  an admissible scale; the infimum defining the gauge is attained.
 * `CKMA.hasPsiTwoBound_of_psiTwoGauge_le`: a gauge at most `K` gives an admissible scale `2K`.
 * `CKMA.HasPsiTwoBound.hasGaussianTail`: exponential square bound implies Gaussian tails.
 * `CKMA.HasGaussianTail.hasPsiTwoBound`: Gaussian tails imply exponential square bound.
@@ -32,6 +34,8 @@ Basic predicates and equivalence estimates for sub-Gaussian real random variable
 * `CKMA.HasGaussianMoments.hasPsiTwoBound`: moment growth implies exponential square bound.
 * `CKMA.HasPsiTwoBound.hasSubgaussianMGF`: centered exponential square bound implies
   sub-Gaussian MGF.
+* `CKMA.hasGaussianTail_of_hasSubgaussianMGF`, `CKMA.hasPsiTwoBound_of_hasSubgaussianMGF`:
+  a sub-Gaussian MGF bound gives Gaussian tails and an admissible psi-two scale.
 -/
 
 @[expose] public section
@@ -350,7 +354,7 @@ theorem HasGaussianMoments.hasPsiTwoBound [IsProbabilityMeasure μ]
   rw [lintegral_congr hseries, lintegral_tsum (fun n ↦ (hmeas n).aemeasurable)]
   calc
     _ ≤ ∑' n : ℕ, ENNReal.ofReal ((1 / 2 : ℝ) ^ n) :=
-      ENNReal.tsum_le_tsum (lintegral_exp_coefficient_le_of_gaussianMoments hm h)
+      tsum_le_tsum (lintegral_exp_coefficient_le_of_gaussianMoments hm h)
     _ = 2 := by
       rw [← ENNReal.ofReal_tsum_of_nonneg (fun _ ↦ by positivity)
         (summable_geometric_of_abs_lt_one (by norm_num : |(1 / 2 : ℝ)| < 1)),
@@ -478,5 +482,85 @@ theorem HasPsiTwoBound.hasSubgaussianMGF [IsProbabilityMeasure μ]
       change Real.exp (8 * (t * K) ^ 2) = Real.exp ((16 * K ^ 2) * t ^ 2 / 2)
       congr 1
       ring
+
+/-- **07.6**, exact infimum gauge: for a positive scale `K`, the Luxemburg gauge is at most `K`
+exactly when `K` itself is an admissible scale. In particular a positive finite gauge is
+attained. -/
+theorem psiTwoGauge_le_ofReal_iff {X : Ω → ℝ} (hm : AEMeasurable X μ) {K : ℝ} (hK : 0 < K) :
+    psiTwoGauge X μ ≤ ENNReal.ofReal K ↔ HasPsiTwoBound X μ K := by
+  refine ⟨fun h ↦ ⟨hK, ?_⟩, HasPsiTwoBound.psiTwoGauge_le⟩
+  let F : ℝ → Ω → ℝ≥0∞ := fun s ω ↦ ENNReal.ofReal (Real.exp ((X ω / s) ^ 2))
+  have hadm : ∀ᶠ s in nhdsWithin K (Set.Ioi K), (∫⁻ ω, F s ω ∂μ) ≤ 2 := by
+    filter_upwards [self_mem_nhdsWithin] with s hs
+    have hs' : K < s := hs
+    have hlt : psiTwoGauge X μ < ENNReal.ofReal s :=
+      h.trans_lt ((ENNReal.ofReal_lt_ofReal_iff (hK.trans hs')).mpr hs')
+    rw [psiTwoGauge, sInf_lt_iff] at hlt
+    obtain ⟨_, ⟨K', rfl, hK'⟩, hK's⟩ := hlt
+    exact (hK'.mono ((ENNReal.ofReal_lt_ofReal_iff (hK.trans hs')).mp hK's).le).2
+  have hlim (ω : Ω) :
+      Filter.Tendsto (fun s ↦ F s ω) (nhdsWithin K (Set.Ioi K)) (nhds (F K ω)) := by
+    apply tendsto_nhdsWithin_of_tendsto_nhds
+    have hc : ContinuousAt (fun s : ℝ ↦ Real.exp ((X ω / s) ^ 2)) K := by
+      fun_prop (disch := exact hK.ne')
+    exact (ENNReal.continuous_ofReal.continuousAt.comp hc).tendsto
+  have hmeas (s : ℝ) : AEMeasurable (F s) μ :=
+    ENNReal.measurable_ofReal.comp_aemeasurable
+      (Real.measurable_exp.comp_aemeasurable ((hm.div_const s).pow_const 2))
+  calc
+    ∫⁻ ω, F K ω ∂μ = ∫⁻ ω, Filter.liminf (fun s ↦ F s ω) (nhdsWithin K (Set.Ioi K)) ∂μ :=
+      lintegral_congr fun ω ↦ (hlim ω).liminf_eq.symm
+    _ ≤ Filter.liminf (fun s ↦ ∫⁻ ω, F s ω ∂μ) (nhdsWithin K (Set.Ioi K)) :=
+      lintegral_liminf_le' hmeas
+    _ ≤ 2 := Filter.liminf_le_of_frequently_le' hadm.frequently
+
+/-- A sub-Gaussian MGF bound with parameter `c` persists for every larger parameter. -/
+private lemma hasSubgaussianMGF_of_le {X : Ω → ℝ} {c d : ℝ≥0} (h : HasSubgaussianMGF X c μ)
+    (hcd : c ≤ d) : HasSubgaussianMGF X d μ :=
+  ⟨h.integrable_exp_mul, fun t ↦ (h.mgf_le t).trans (Real.exp_le_exp.mpr (by
+    have : (c : ℝ) ≤ d := hcd
+    have ht := sq_nonneg t
+    nlinarith))⟩
+
+/-- **07.6**, MGF to tail: a sub-Gaussian MGF bound with parameter `c ≤ K ^ 2` gives
+two-sided Gaussian tails at scale `√2 * K`. No centering is needed in this direction. -/
+theorem hasGaussianTail_of_hasSubgaussianMGF [IsProbabilityMeasure μ]
+    {X : Ω → ℝ} {c : ℝ≥0} (h : HasSubgaussianMGF X c μ) {K : ℝ} (hK : 0 < K)
+    (hcK : (c : ℝ) ≤ K ^ 2) : HasGaussianTail X μ (Real.sqrt 2 * K) := by
+  refine ⟨by positivity, fun t ht ↦ ?_⟩
+  let d : ℝ≥0 := ⟨K ^ 2, sq_nonneg K⟩
+  have hd : HasSubgaussianMGF X d μ := hasSubgaussianMGF_of_le h (by exact_mod_cast hcK)
+  have hd2 : (d : ℝ) = K ^ 2 := rfl
+  have hexp : Real.exp (-t ^ 2 / (2 * (d : ℝ))) =
+      Real.exp (-((t / (Real.sqrt 2 * K)) ^ 2)) := by
+    congr 1
+    rw [div_pow, mul_pow, Real.sq_sqrt (by norm_num : (0 : ℝ) ≤ 2), hd2]
+    ring
+  have hright : μ {ω | t ≤ X ω} ≤
+      ENNReal.ofReal (Real.exp (-((t / (Real.sqrt 2 * K)) ^ 2))) := by
+    rw [← hexp, ← ofReal_measureReal]
+    exact ENNReal.ofReal_le_ofReal (hd.measure_ge_le ht)
+  have hleft : μ {ω | t ≤ -X ω} ≤
+      ENNReal.ofReal (Real.exp (-((t / (Real.sqrt 2 * K)) ^ 2))) := by
+    rw [← hexp, ← ofReal_measureReal]
+    exact ENNReal.ofReal_le_ofReal (by simpa using hd.neg.measure_ge_le ht)
+  have hsub : {ω | t < |X ω|} ⊆ {ω | t ≤ X ω} ∪ {ω | t ≤ -X ω} := by
+    intro ω hω
+    rcases le_total 0 (X ω) with h0 | h0
+    · exact Or.inl (by simpa [abs_of_nonneg h0] using (show t < |X ω| from hω).le)
+    · exact Or.inr (by simpa [abs_of_nonpos h0] using (show t < |X ω| from hω).le)
+  calc
+    μ {ω | t < |X ω|} ≤ μ ({ω | t ≤ X ω} ∪ {ω | t ≤ -X ω}) := measure_mono hsub
+    _ ≤ μ {ω | t ≤ X ω} + μ {ω | t ≤ -X ω} := measure_union_le _ _
+    _ ≤ _ := by
+      rw [two_mul, ENNReal.ofReal_add (Real.exp_pos _).le (Real.exp_pos _).le]
+      exact add_le_add hright hleft
+
+/-- **07.6**, MGF to gauge: a sub-Gaussian MGF bound with parameter `c ≤ K ^ 2` gives an
+admissible psi-two scale `2 * √2 * K`. -/
+theorem hasPsiTwoBound_of_hasSubgaussianMGF [IsProbabilityMeasure μ]
+    {X : Ω → ℝ} (hm : Measurable X) {c : ℝ≥0} (h : HasSubgaussianMGF X c μ) {K : ℝ}
+    (hK : 0 < K) (hcK : (c : ℝ) ≤ K ^ 2) : HasPsiTwoBound X μ (2 * (Real.sqrt 2 * K)) :=
+  (hasGaussianTail_of_hasSubgaussianMGF h hK hcK).hasPsiTwoBound hm
 
 end CKMA

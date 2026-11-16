@@ -26,6 +26,7 @@ public import CKMA.Probability.Concentration.Bernstein
 public import CKMA.Probability.Concentration.JohnsonLindenstrauss
 public import CKMA.Probability.GaussianLogSobolev
 public import CKMA.Probability.GaussianLogSobolev.Entropy
+public import CKMA.Probability.GaussianLogSobolev.EntropyTensorization
 public import CKMA.Probability.GaussianLogSobolev.IntegrationByParts
 public import CKMA.Probability.GaussianLogSobolev.OneDim
 public import CKMA.Probability.GaussianLogSobolev.OneDimLSI
@@ -43,8 +44,13 @@ public import CKMA.Probability.InfinitelyDivisible.SecondDiff
 public import CKMA.Probability.InfinitelyDivisible.Tightness
 public import CKMA.Probability.InfinitelyDivisible.Uniqueness
 public import CKMA.Probability.LargeDeviations
+public import CKMA.Probability.LimitTheorems.BerryEsseen
+public import CKMA.Probability.LimitTheorems.CramerLowerBound
 public import CKMA.Probability.LimitTheorems.IndependentSums
 public import CKMA.Probability.LimitTheorems.LargeDeviations
+public import CKMA.Probability.LimitTheorems.LindebergFeller
+public import CKMA.Probability.LimitTheorems.SteinSolution
+public import CKMA.Probability.LimitTheorems.ThreeSeries
 public import CKMA.Probability.Moments.Hausdorff
 public import CKMA.Probability.ProjectiveLimit
 public import CKMA.Probability.Symmetrization

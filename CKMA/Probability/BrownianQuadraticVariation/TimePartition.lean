@@ -28,12 +28,14 @@ sums.
 * `CKMA.TimePartition.completedCount`: number of partition intervals completed by time `t`.
 * `CKMA.TimePartition.covered`: right endpoint of the last interval completed by time `t`.
 * `CKMA.TimePartition.increment`: real length of one partition increment.
+* `CKMA.TimePartition.uniform`: the uniform partition of `[0, T]` into `n + 1` intervals.
 
 ## Main results
 
 * `CKMA.TimePartition.sum_increment`: partition increments sum to `T`.
 * `CKMA.TimePartition.abs_sub_covered_le_mesh`: distance from `t` to the last completed node is
   at most the mesh.
+* `CKMA.TimePartition.mesh_uniform_le`: the uniform partition has mesh at most `T / (n + 1)`.
 -/
 
 @[expose] public section
@@ -280,6 +282,34 @@ lemma abs_sub_covered_le_mesh {t : ℝ≥0} (ht : t ≤ T) :
         le_of_lt (lt_of_lt_of_le (by linarith) hstep)
       rw [abs_of_nonneg (sub_nonneg.mpr hs_le_t)]
       exact hdiff
+
+/-- The uniform partition of `[0,T]` into `n + 1` intervals of length `T / (n + 1)`. -/
+def uniform (T : ℝ≥0) (n : ℕ) : TimePartition T where
+  size := n + 1
+  node k := T * (k.val : ℝ≥0) / ((n : ℝ≥0) + 1)
+  monotone_node a b hab := by
+    dsimp only
+    gcongr
+    exact_mod_cast hab
+  node_zero := by simp
+  node_last := by
+    simp only [Fin.val_last, Nat.cast_add, Nat.cast_one]
+    rw [mul_div_assoc, div_self (by positivity), mul_one]
+
+@[simp]
+lemma uniform_size (T : ℝ≥0) (n : ℕ) : (uniform T n).size = n + 1 := rfl
+
+@[simp]
+lemma uniform_node (T : ℝ≥0) (n : ℕ) (k : Fin ((uniform T n).size + 1)) :
+    (uniform T n).node k = T * (k.val : ℝ≥0) / ((n : ℝ≥0) + 1) := rfl
+
+/-- The mesh of the uniform partition is at most `T / (n + 1)`. -/
+lemma mesh_uniform_le (T : ℝ≥0) (n : ℕ) : (uniform T n).mesh ≤ T / ((n : ℝ≥0) + 1) := by
+  refine Finset.sup_le fun i _ ↦ tsub_le_iff_right.2 (le_of_eq ?_)
+  simp only [uniform_node, Fin.val_succ, Fin.val_castSucc, Nat.cast_add, Nat.cast_one]
+  rw [← add_div]
+  congr 1
+  ring
 
 @[deprecated (since := "2026-11-15")] alias abs_t_sub_covered_le_mesh := abs_sub_covered_le_mesh
 

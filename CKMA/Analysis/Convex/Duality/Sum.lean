@@ -22,6 +22,8 @@ Optimization*, Theorem 4.1.6; GAPS 12.21.
 
 ## Main results
 
+* `CKMA.subdifferential_add_subset`: subgradients of the summands add to a subgradient of the
+  sum, without hypotheses.
 * `CKMA.subdifferential_add_eq`: Moreau–Rockafellar subdifferential sum rule under a continuity
   qualification (GAPS 12.21).
 -/
@@ -43,8 +45,9 @@ private lemma add_real_reassoc (a b : EReal) (p q : ℝ) :
       (a + (p : EReal)) + (b + (q : EReal)) := by
   rw [EReal.coe_add, add_assoc, add_left_comm b (p : EReal), ← add_assoc]
 
-/-- Subgradients of the summands add to a subgradient of the sum. -/
-private lemma subdifferential_add_subset {f g : E → EReal} (x : E) :
+/-- Subgradients of the summands add to a subgradient of the sum. This inclusion needs no
+convexity or qualification hypotheses. -/
+theorem subdifferential_add_subset {f g : E → EReal} (x : E) :
     TauCeti.subdifferential (topDualPairing ℝ E).flip f x +
         TauCeti.subdifferential (topDualPairing ℝ E).flip g x ⊆
       TauCeti.subdifferential (topDualPairing ℝ E).flip (fun y => f y + g y) x := by

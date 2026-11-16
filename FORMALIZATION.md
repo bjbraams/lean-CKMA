@@ -2,7 +2,7 @@
 
 The library represents **242 of the 603 selected gaps** in [GAPS.md](GAPS.md),
 including all 59 entries of [GAPS_EASY.md](GAPS_EASY.md). The entry statuses are
-86 statements, 86 partial interfaces, 70 proved entries and
+79 statements, 80 partial interfaces, 83 proved entries and
 361 entries without a local statement. These units are catalogue entries,
 not individual Lean declarations.
 
@@ -46,28 +46,38 @@ statement. The scope list below records these distinctions entry by entry.
 
 ## Completed proofs and admissions
 
-There are **2092 inventoried public declarations**: 792 theorems, 463 lemmas
-and 837 definitions, abbreviations or structures. **181** depend on `sorryAx`
-(174 direct admissions). The other **1911** declarations use only standard axioms.
+There are **2174 inventoried public declarations**: 849 theorems, 483 lemmas
+and 842 definitions, abbreviations or structures. **174** depend on `sorryAx`
+(168 direct admissions). The other **2000** declarations use only standard axioms.
 Every lemma, definition, abbreviation and structure is free of `sorryAx`. The
 standard axioms are `propext`, `Classical.choice` and `Quot.sound`, or subsets of
 these.
 
 The fully proved selected entries are:
 
+- **04.39 Duality**.
 - **05.7 Baire classification of derivatives**.
 - **05.10 Denjoy–Young–Saks theorem**.
 - **05.30 Approximate continuity**.
 - **05.31 Rectangular differentiation**.
 - **05.33 Kirszbraun's theorem**.
 - **06.1 Kolmogorov extension theorem**.
+- **06.23 Kolmogorov three-series theorem**.
+- **06.34 Lindeberg–Feller theorem**.
+- **06.36 Berry–Esseen bound**.
 - **06.51 Lévy–Khintchine formula**.
+- **06.60 Cramér's theorem**.
 - **06.62 Varadhan's integral lemma**.
 - **07.4 Bernstein's inequality**.
+- **07.6 Equivalent sub-Gaussian descriptions**.
+- **07.17 Gaussian logarithmic Sobolev inequality**.
+- **07.33 Symmetrization**.
 - **07.43 Hanson–Wright inequality**.
 - **07.47 Johnson–Lindenstrauss lemma**.
 - **08.1 Brownian construction and continuous modification**.
+- **08.3 Strong Markov property**.
 - **08.4 Reflection principle**.
+- **08.7 Quadratic variation**.
 - **09.21 Young's integration theorem**.
 - **09.22 Sewing lemma**.
 - **10.5 Birkhoff pointwise theorem**.
@@ -77,8 +87,10 @@ The fully proved selected entries are:
 - **11.22 Hardy–Littlewood–Pólya characterization**.
 - **11.24 Karamata's inequality**.
 - **11.32 Discrete Hardy inequality**.
+- **11.37 Hilbert's integral inequality**.
 - **11.38 Carleman's inequality**.
 - **12.9 Choquet representation**.
+- **12.21 Subdifferential sum rule**.
 - **12.32 Everywhere-defined proximal mapping**.
 - **12.39 Fenchel–Rockafellar duality**.
 - **12.40 Slater and KKT conditions**.
@@ -87,6 +99,7 @@ The fully proved selected entries are:
 - **13.7 Cauchy interlacing**.
 - **13.8 Weyl inequalities**.
 - **13.10 Hoffman–Wielandt inequality**.
+- **13.13 Von Neumann trace inequality**.
 - **13.18 Eckart–Young–Mirsky theorem**.
 - **14.40 Nash inequality**.
 - **15.28 Eberlein–Šmulian theorem**.
@@ -154,7 +167,7 @@ The pins are Lean `v4.36.0-rc2`, Mathlib
 `1b1ccf4b088b32fa3f23f2de1127433254a81e1e` and TauCeti
 `396c3bd971e9722aa8656231760e710fe641d8cf`. [CREDITS.md](CREDITS.md)
 records the imported interfaces and adapted proof provenance. The library uses
-`259` Lean modules and `92560` source lines; the largest file has
+`267` Lean modules and `97269` source lines; the largest file has
 `1029` lines, above the 1,000-line splitting guideline and below the 1,500-line limit.
 
 The ordinary build is `lake build > /tmp/ckma-build.log 2>&1`. The checker
@@ -171,31 +184,31 @@ The following list includes every started entry. `statement` denotes a typed tar
 `partial` an explicitly limited interface, and `proved` a selected entry whose
 listed assertions have no admitted dependencies.
 
-- **04.39 Duality** — statement; [CKMA.Analysis.Measure.LpDuality](CKMA/Analysis/Measure/LpDuality.lean).
+- **04.39 Duality** — proved; [CKMA.Analysis.Measure.LpDuality](CKMA/Analysis/Measure/LpDuality.lean). σ-finite measure spaces and 1 ≤ p < ∞ with Hölder conjugate q, real or complex scalars; existence, uniqueness and the norm identity of the representing g ∈ L^q. The case p = 1 reduces to finite measures by a positive integrable weight.
 - **05.7 Baire classification of derivatives** — proved; [CKMA.Analysis.Real.Baire](CKMA/Analysis/Real/Baire.lean). Open subsets of the real line, including disconnected sets and the empty set.
 - **05.10 Denjoy–Young–Saks theorem** — proved; [CKMA.Analysis.Real.Dini](CKMA/Analysis/Real/Dini.lean). All finite real functions, with no measurability assumption, and exactly one of four extended Dini types almost everywhere. Left limits use negative increments in the same difference quotient.
 - **05.30 Approximate continuity** — proved; [CKMA.Analysis.Real.ApproximateContinuity](CKMA/Analysis/Real/ApproximateContinuity.lean). Finite measurable real functions on a second-countable Borel space, for a locally finite uniformly locally doubling measure, are approximately continuous almost everywhere. Euclidean volume is included.
 - **05.31 Rectangular differentiation** — proved; [CKMA.Analysis.Real.RectangularDifferentiation](CKMA/Analysis/Real/RectangularDifferentiation.lean). The endpoint strong maximal inequality, in dimension at least two, and almost-everywhere differentiation of the local `L(log⁺L)^{d-1}` class, in every positive dimension, are proved for open axis-aligned rectangles with no eccentricity bound. In dimension at least two an integrable function fails to be differentiated on a set of positive measure. Positive integrals and maximal values retain infinity.
 - **05.33 Kirszbraun's theorem** — proved; [CKMA.Analysis.Real.Kirszbraun](CKMA/Analysis/Real/Kirszbraun.lean). Exact Lipschitz constant on arbitrary subsets of a real inner-product domain into a complete real Hilbert target; empty subsets and zero constants are included.
 - **06.1 Kolmogorov extension theorem** — proved; [CKMA.Probability.ProjectiveLimit](CKMA/Probability/ProjectiveLimit.lean). Unique probability projective limit of a consistent family of finite-dimensional probabilities on standard Borel coordinates, for an arbitrary index.
-- **06.23 Kolmogorov three-series theorem** — statement; [CKMA.Probability.LimitTheorems.IndependentSums](CKMA/Probability/LimitTheorems/IndependentSums.lean). Ordinary sequence-order convergence, not unconditional Summable, for the random series and the truncated mean series; variances and probability tails have nonnegative summability.
+- **06.23 Kolmogorov three-series theorem** — proved; [CKMA.Probability.LimitTheorems.IndependentSums](CKMA/Probability/LimitTheorems/IndependentSums.lean). Ordinary sequence-order convergence, not unconditional Summable, for the random series and the truncated mean series; variances and probability tails have nonnegative summability.
 - **06.27 Hartman–Wintner iterated-logarithm law** — statement; [CKMA.Probability.LimitTheorems.IndependentSums](CKMA/Probability/LimitTheorems/IndependentSums.lean). IID centered real variables of strictly positive finite variance; extended-real limsup/liminf and an index shift avoid small logarithm exceptions.
-- **06.34 Lindeberg–Feller theorem** — statement; [CKMA.Probability.LimitTheorems.IndependentSums](CKMA/Probability/LimitTheorems/IndependentSums.lean). Independent centered rows of square-integrable real variables with positive row variances. Feller infinitesimality is imposed only for the reverse implication.
-- **06.36 Berry–Esseen bound** — statement; [CKMA.Probability.LimitTheorems.IndependentSums](CKMA/Probability/LimitTheorems/IndependentSums.lean). Kolmogorov distance of laws, positive variance and finite absolute third moment; explicit nonoptimal universal constant 100.
+- **06.34 Lindeberg–Feller theorem** — proved; [CKMA.Probability.LimitTheorems.IndependentSums](CKMA/Probability/LimitTheorems/IndependentSums.lean). Independent centered rows of square-integrable real variables with positive row variances. Feller infinitesimality is imposed only for the reverse implication.
+- **06.36 Berry–Esseen bound** — proved; [CKMA.Probability.LimitTheorems.IndependentSums](CKMA/Probability/LimitTheorems/IndependentSums.lean). Kolmogorov distance of laws, positive variance and finite absolute third moment; explicit nonoptimal universal constant 100 (the proof, by Stein's method, gives 40).
 - **06.51 Lévy–Khintchine formula** — proved; [CKMA.Probability.InfinitelyDivisible](CKMA/Probability/InfinitelyDivisible.lean). Probability convolution roots and actual Levy triplets with no atom at zero. The compensated exponent uses truncation x*1_{|x|<=1}, which fixes uniqueness.
-- **06.60 Cramér's theorem** — statement; [CKMA.Probability.LimitTheorems.LargeDeviations](CKMA/Probability/LimitTheorems/LargeDeviations.lean). Reuses the existing LDP predicates at speed n+1; the rate is the Legendre transform of the extended-log MGF, retaining infinite exponential moments.
+- **06.60 Cramér's theorem** — proved; [CKMA.Probability.LimitTheorems.LargeDeviations](CKMA/Probability/LimitTheorems/LargeDeviations.lean). Reuses the existing LDP predicates at speed n+1; the rate is the Legendre transform of the extended-log MGF, retaining infinite exponential moments.
 - **06.61 Sanov's theorem** — statement; [CKMA.Probability.LimitTheorems.LargeDeviations](CKMA/Probability/LimitTheorems/LargeDeviations.lean). Polish state spaces, weak topology on ProbabilityMeasure, TauCeti finite empirical probabilities, and Mathlib relative entropy.
 - **06.62 Varadhan's integral lemma** — proved; [CKMA.Probability.LargeDeviations](CKMA/Probability/LargeDeviations.lean). Full open-lower/closed-upper LDP at speed n+1 and bounded continuous test functions, without goodness of the rate. Zero probabilities and infinite rates use extended logarithms and suprema.
 - **07.4 Bernstein's inequality** — proved; [CKMA.Probability.Concentration.Bernstein](CKMA/Probability/Concentration/Bernstein.lean).
-- **07.6 Equivalent sub-Gaussian descriptions** — partial; [CKMA.Probability.Concentration.Basic](CKMA/Probability/Concentration/Basic.lean). Concrete extended gauge and quantitative scale implications; the MGF-to-gauge adapter and the exact infimum-gauge equivalence remain.
-- **07.17 Gaussian logarithmic Sobolev inequality** — statement; [CKMA.Probability.GaussianLogSobolev](CKMA/Probability/GaussianLogSobolev.lean). Smooth real functions in Gaussian L2 on arbitrary finite-dimensional real Hilbert spaces; normalized KL-integrand entropy retains infinite entropy and has the exact factor two.
-- **07.33 Symmetrization** — partial; [CKMA.Probability.Symmetrization](CKMA/Probability/Symmetrization.lean). Nonempty countable function classes with a measurable integrable envelope; signs on an independent product factor. The general measurable-supremum formulation remains.
+- **07.6 Equivalent sub-Gaussian descriptions** — proved; [CKMA.Probability.Concentration.Basic](CKMA/Probability/Concentration/Basic.lean). Concrete extended ψ₂ gauge, attained at its infimum, and quantitative scale implications among the tail, moment, ψ₂ and Mathlib sub-Gaussian MGF descriptions.
+- **07.17 Gaussian logarithmic Sobolev inequality** — proved; [CKMA.Probability.GaussianLogSobolev](CKMA/Probability/GaussianLogSobolev.lean). Smooth real functions in Gaussian L2 on arbitrary finite-dimensional real Hilbert spaces; normalized KL-integrand entropy retains infinite entropy and has the exact factor two.
+- **07.33 Symmetrization** — proved; [CKMA.Probability.Symmetrization](CKMA/Probability/Symmetrization.lean). Arbitrary nonempty function classes with a measurable integrable envelope, assuming measurability of the centered, ghost and signed suprema on the sample spaces; countable classes need no measurability hypothesis. Signs on an independent product factor.
 - **07.43 Hanson–Wright inequality** — proved; [CKMA.Probability.HansonWright](CKMA/Probability/HansonWright.lean). A constant uniform over dimensions, probability spaces, coordinate laws and real matrices; concrete Euclidean operator and Frobenius norms. No symmetry restriction on the real matrix is needed.
 - **07.47 Johnson–Lindenstrauss lemma** — proved; [CKMA.Probability.Concentration](CKMA/Probability/Concentration.lean). Uses log(2 max(N,1)) to include the empty configuration.
 - **08.1 Brownian construction and continuous modification** — proved; [CKMA.Probability.BrownianTheory](CKMA/Probability/BrownianTheory.lean). Canonical probability law on the Borel space of continuous real paths; continuous modifications of pre-Brownian processes on their original probability space and every positive local Holder exponent below one half.
-- **08.3 Strong Markov property** — partial; [CKMA.Probability.BrownianTheory](CKMA/Probability/BrownianTheory.lean). Finite-valued stopping times for the raw natural filtration; the post-stopping process is Brownian and finite-dimensional events are independent of Mathlib's stopping-time sigma-algebra. The completed right-continuous augmented-filtration interface remains.
+- **08.3 Strong Markov property** — proved; [CKMA.Probability.BrownianTheory](CKMA/Probability/BrownianTheory.lean). Stopping times for any filtration independent of future increments, in particular the raw natural filtration and its right-continuous augmentation by ambient-measurable null sets (the usual augmentation for a complete measure); almost surely finite stopping times for the augmented filtration. The post-stopping process is Brownian and finite-dimensional events are independent of the stopping-time sigma-algebra.
 - **08.4 Reflection principle** — proved; [CKMA.Probability.BrownianTheory.Reflection.Bound](CKMA/Probability/BrownianTheory/Reflection/Bound.lean). Strictly positive barrier, nonnegative observation time including zero, and a path-supremum event expressed by existence of a hitting time.
-- **08.7 Quadratic variation** — partial; [CKMA.Probability.BrownianQuadraticVariation](CKMA/Probability/BrownianQuadraticVariation.lean). Completed-interval sums are proved: scalar UCP and summable-mesh a.s. convergence, and independent-coordinate UCP covariation. The a.s. cross-coordinate statement and a bundled bracket process remain.
+- **08.7 Quadratic variation** — proved; [CKMA.Probability.BrownianQuadraticVariation](CKMA/Probability/BrownianQuadraticVariation.lean). Completed-interval sums: scalar and cross-coordinate UCP convergence, almost-sure convergence along summable-mesh partitions, and a bracket process characterized by UCP convergence along every vanishing-mesh sequence, unique up to modification, with bracket δᵢⱼ t for independent coordinates.
 - **09.21 Young's integration theorem** — proved; [CKMA.Analysis.RoughPath.Sewing](CKMA/Analysis/RoughPath/Sewing.lean). Operator-valued integrands and Banach-valued integrators and outputs on a finite interval. The Hölder criterion and the complementary finite `p,q`-variation criterion are proved, including all-partition convergence and the Young–Loeve remainder. The sewing primitive is normalized and defined only on its interval.
 - **09.22 Sewing lemma** — proved; [CKMA.Analysis.RoughPath.Sewing](CKMA/Analysis/RoughPath/Sewing.lean). Continuous increment fields with defect exponent greater than one, which forces vanishing on the diagonal; a unique normalized continuous interval primitive and convergence along arbitrary ordered partitions, including degenerate intervals.
 - **10.5 Birkhoff pointwise theorem** — proved; [CKMA.Dynamics.Ergodic.Pointwise](CKMA/Dynamics/Ergodic/Pointwise.lean). Arbitrary probability-preserving measurable systems and integrable real observables; finite maximal ergodic inequality, a.e. invariant-conditional-expectation limit, and ergodic scalar-mean limit. No standard-Borel restriction is needed here.
@@ -206,10 +219,10 @@ listed assertions have no admitted dependencies.
 - **11.22 Hardy–Littlewood–Pólya characterization** — proved; [CKMA.Analysis.Convex.Majorization](CKMA/Analysis/Convex/Majorization.lean).
 - **11.24 Karamata's inequality** — proved; [CKMA.Analysis.Convex.Majorization](CKMA/Analysis/Convex/Majorization.lean).
 - **11.32 Discrete Hardy inequality** — proved; [CKMA.Analysis.Inequalities.ClassicalSequences](CKMA/Analysis/Inequalities/ClassicalSequences.lean). Extended nonnegative sums for arbitrary nonnegative sequences; sharpness already on finitely supported inputs, for every real exponent p>1.
-- **11.37 Hilbert's integral inequality** — partial; [CKMA.Analysis.Inequalities.Hilbert](CKMA/Analysis/Inequalities/Hilbert.lean). Integral and discrete upper bounds with the sharp proposed constant; the optimality assertions remain unstated.
+- **11.37 Hilbert's integral inequality** — proved; [CKMA.Analysis.Inequalities.Hilbert](CKMA/Analysis/Inequalities/Hilbert.lean). Integral and discrete upper bounds with the constant π/sin(π/p), and its optimality: it is the least admissible constant in both forms.
 - **11.38 Carleman's inequality** — proved; [CKMA.Analysis.Inequalities.Carleman](CKMA/Analysis/Inequalities/Carleman.lean). Nonnegative summable sequences; the constant e is optimal already for finitely supported sequences.
 - **12.9 Choquet representation** — proved; [CKMA.Analysis.Convex.Duality](CKMA/Analysis/Convex/Duality.lean). Compact metrizable convex subsets of locally convex Hausdorff real spaces; probability on the subset, carried by its extreme points, tested by continuous affine maps.
-- **12.21 Subdifferential sum rule** — partial; [CKMA.Analysis.Convex.Duality](CKMA/Analysis/Convex/Duality.lean). The Banach sum rule under a common finite-domain continuity qualification is proved. The finite-dimensional relative-interior alternative remains.
+- **12.21 Subdifferential sum rule** — proved; [CKMA.Analysis.Convex.Duality](CKMA/Analysis/Convex/Duality.lean). The Banach sum rule under a common finite-domain continuity qualification, and the finite-dimensional sum rule when the relative interiors of the domains meet; lower semicontinuity is not assumed.
 - **12.32 Everywhere-defined proximal mapping** — proved; [CKMA.Analysis.Convex.Proximal](CKMA/Analysis/Convex/Proximal.lean). Proper lower semicontinuous convex extended-real functions on real Hilbert spaces: proximal existence and uniqueness, subdifferential characterization, firm nonexpansiveness and a guarded totalized proximal map.
 - **12.39 Fenchel–Rockafellar duality** — proved; [CKMA.Analysis.Convex.Duality](CKMA/Analysis/Convex/Duality.lean). Proper lower-semicontinuous convex Banach-space functions, a common finite continuity point, finite primal value; equality and dual attainment, without primal attainment.
 - **12.40 Slater and KKT conditions** — proved; [CKMA.Analysis.Convex.Duality](CKMA/Analysis/Convex/Duality.lean). Finite-dimensional Slater/KKT necessity, and sufficiency in arbitrary real normed spaces; explicit subgradient and complementary-slackness data, including empty finite constraint lists.
@@ -218,7 +231,7 @@ listed assertions have no admitted dependencies.
 - **13.7 Cauchy interlacing** — proved; [CKMA.Analysis.InnerProductSpace.MatrixInequalities](CKMA/Analysis/InnerProductSpace/MatrixInequalities.lean). Real or complex finite-dimensional Hilbert endomorphisms. Compression is supplied by a linear isometry; symmetry of the compression is derived internally.
 - **13.8 Weyl inequalities** — proved; [CKMA.Analysis.InnerProductSpace.MatrixInequalities](CKMA/Analysis/InnerProductSpace/MatrixInequalities.lean). Real or complex Hermitian endomorphisms with zero-based sorted indices. Symmetry of the sum follows from the two summands.
 - **13.10 Hoffman–Wielandt inequality** — proved; [CKMA.Analysis.InnerProductSpace.MatrixInequalities](CKMA/Analysis/InnerProductSpace/MatrixInequalities.lean). Real or complex operators with supplied orthonormal eigenbases; unconditional normal eigenbasis existence is a complex-space fact supplied by TauCeti.
-- **13.13 Von Neumann trace inequality** — statement; [CKMA.Analysis.InnerProductSpace.MatrixInequalities](CKMA/Analysis/InnerProductSpace/MatrixInequalities.lean).
+- **13.13 Von Neumann trace inequality** — proved; [CKMA.Analysis.InnerProductSpace.MatrixInequalities](CKMA/Analysis/InnerProductSpace/MatrixInequalities.lean). Linear endomorphisms of a finite-dimensional real or complex inner-product space, with singular values in decreasing order.
 - **13.18 Eckart–Young–Mirsky theorem** — proved; [CKMA.Analysis.InnerProductSpace.MatrixInequalities](CKMA/Analysis/InnerProductSpace/MatrixInequalities.lean). SVD truncation of rank at most k is minimal for every unitarily invariant seminorm. The operator-norm error equals the singular value of index k, and the squared Frobenius error is the tail of squares from that index.
 - **14.40 Nash inequality** — proved; [CKMA.Analysis.Sobolev.Nash](CKMA/Analysis/Sobolev/Nash.lean). Real scalar L1 ∩ H1 with a supplied weak Frechet derivative; positive dimension.
 - **15.28 Eberlein–Šmulian theorem** — proved; [CKMA.Analysis.FunctionalAnalysis.WeakCompactness](CKMA/Analysis/FunctionalAnalysis/WeakCompactness.lean). Real or complex normed spaces, without a completeness assumption; relative compactness is closure-compactness in the actual weak topology, and subsequence limits are allowed in the ambient space.

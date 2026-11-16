@@ -10,6 +10,8 @@ public import Mathlib.Probability.IdentDistrib
 public import Mathlib.InformationTheory.KullbackLeibler.Basic
 public import TauCeti.Probability.Process.EmpiricalMeasure
 
+import CKMA.Probability.LimitTheorems.CramerLowerBound
+
 import Mathlib.MeasureTheory.Measure.Prokhorov
 import Mathlib.Probability.Moments.Basic
 import Mathlib.Probability.Moments.IntegrableExpMul
@@ -20,7 +22,9 @@ import TauCeti.InformationTheory.KullbackLeibler.Variational
 
 `extendedLogMGF` retains infinite exponential moments and `cramerRate` is its real
 Legendre conjugate. `sampleMeanLaws` uses sample size `n + 1`; Cramér's theorem supplies
-a good rate and full LDP under local exponential integrability.
+a good rate and full LDP under local exponential integrability. The closed-set upper bound
+is Chernoff's bound; the open-set lower bound is
+`CKMA.neg_iSup_sub_log_lintegral_le_liminf_log_pi`, applied to the product law of the sample.
 
 Sanov's theorem is formulated in the weak topology of probability measures on a Polish
 space. Empirical measures reuse the Tau Ceti contributors' finite-population construction
@@ -218,6 +222,12 @@ private lemma ereal_neg_iSup {ι : Sort*} (f : ι → EReal) :
   refine iSup_le fun i ↦ ?_
   have hi : ⨅ j, - f j ≤ - f i := iInf_le (fun j ↦ - f j) i
   simpa using EReal.neg_strictAnti.antitone hi
+
+/-- Negation of an indexed infimum is the indexed supremum of the negations. -/
+private lemma ereal_neg_iInf {ι : Sort*} (f : ι → EReal) :
+    - ⨅ i, f i = ⨆ i, - f i := by
+  rw [← neg_neg (⨆ i, - f i), ereal_neg_iSup]
+  simp
 
 /-- A positive scalar distributes over a maximum in `EReal`. -/
 private lemma ereal_mul_max {c a b : EReal} (hc : 0 ≤ c) :
@@ -743,6 +753,46 @@ private lemma limsup_closed_le {Ω : Type*} [MeasurableSpace Ω] {μ : Measure �
       simp
     simp [hrate, hinf, EReal.neg_top]
 
+/-- Open sets obey the large-deviation lower bound at speed `n + 1`. -/
+private lemma le_liminf_open {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω}
+    [IsProbabilityMeasure μ] {X : ℕ → Ω → ℝ} (hm : ∀ n, Measurable (X n))
+    (hi : iIndepFun X μ) (hid : ∀ n, IdentDistrib (X n) (X 0) μ μ) {G : Set ℝ}
+    (hG : IsOpen G) :
+    -(⨅ x ∈ G, (cramerRate (X 0) μ x : EReal)) ≤
+      liminf (logProbabilityRate (sampleMeanLaws X μ) G) atTop := by
+  set ρ := μ.map (X 0)
+  simp_rw [ereal_neg_iInf]
+  refine iSup₂_le fun x hx ↦ ?_
+  obtain ⟨δ, hδ, hball⟩ := Metric.isOpen_iff.mp hG x hx
+  have hlaw : ∀ t, ENNReal.log (∫⁻ y, ENNReal.ofReal (Real.exp (t * y)) ∂ρ) =
+      extendedLogMGF (X 0) μ t := fun t ↦ by
+    rw [extendedLogMGF, lintegral_map (by fun_prop) (hm 0)]
+  have hpi : ∀ n : ℕ, Measure.pi (fun _ : Fin (n + 1) ↦ ρ)
+      {y | dist ((n + 1 : ℝ)⁻¹ * ∑ i, y i) x < δ} = sampleMeanLaws X μ n (ball x δ) := by
+    intro n
+    have hind : iIndepFun (X ∘ Fin.val : Fin (n + 1) → Ω → ℝ) μ :=
+      hi.precomp (g := (Fin.val : Fin (n + 1) → ℕ)) Fin.val_injective
+    have hmap := (iIndepFun_iff_map_fun_eq_pi_map (f := (X ∘ Fin.val : Fin (n + 1) → Ω → ℝ))
+      (fun i ↦ (hm i).aemeasurable)).mp hind
+    have hlaws : (fun i : Fin (n + 1) ↦ μ.map ((X ∘ Fin.val) i)) = fun _ ↦ ρ :=
+      funext fun i ↦ (hid i).map_eq
+    rw [hlaws] at hmap
+    have hvec : Measurable fun ω (i : Fin (n + 1)) ↦ (X ∘ Fin.val) i ω :=
+      measurable_pi_iff.mpr fun i ↦ hm i
+    have hset : MeasurableSet {y : Fin (n + 1) → ℝ | dist ((n + 1 : ℝ)⁻¹ * ∑ i, y i) x < δ} :=
+      measurableSet_lt (by fun_prop) measurable_const
+    rw [← hmap, Measure.map_apply hvec hset, sampleMeanLaws,
+      Measure.map_apply (measurable_sampleMean hm n) measurableSet_ball]
+    congr 1
+    ext ω
+    simp [Finset.sum_range, Metric.mem_ball]
+  have key := neg_iSup_sub_log_lintegral_le_liminf_log_pi ρ x hδ
+  simp_rw [hlaw, hpi] at key
+  calc -(cramerRate (X 0) μ x : EReal) = -cramerLegendre (X 0) μ x := by rw [coe_cramerRate]
+    _ ≤ liminf (logProbabilityRate (sampleMeanLaws X μ) (ball x δ)) atTop := key
+    _ ≤ liminf (logProbabilityRate (sampleMeanLaws X μ) G) atTop :=
+        liminf_le_liminf (Eventually.of_forall fun n ↦ logProbabilityRate_mono hball n)
+
 /-- **06.60**: Cramer's theorem with the actual extended-log-MGF conjugate as good rate. -/
 theorem cramer {Ω : Type*} [MeasurableSpace Ω] (μ : Measure Ω) [IsProbabilityMeasure μ]
     (X : ℕ → Ω → ℝ) (hm : ∀ n, Measurable (X n)) (hi : iIndepFun X μ)
@@ -753,10 +803,9 @@ theorem cramer {Ω : Type*} [MeasurableSpace Ω] (μ : Measure Ω) [IsProbabilit
       HasLargeDeviationPrinciple (sampleMeanLaws X μ) (cramerRate (X 0) μ) := by
   refine ⟨isGoodRateFunction_cramerRate hexp, ?_⟩
   unfold HasLargeDeviationPrinciple
-  refine ⟨?_, ?_⟩
-  · sorry
-  · intro F hF
-    exact limsup_closed_le hm hi hid hexp hF
+  refine ⟨fun G hG ↦ le_liminf_open hm hi hid hG, ?_⟩
+  intro F hF
+  exact limsup_closed_le hm hi hid hexp hF
 
 /-- The empirical probability measure, reusing TauCeti's finite-population construction. -/
 def empiricalProbability {Ω E : Type*} [MeasurableSpace E]
