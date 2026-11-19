@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.InnerProductSpace.Basic
 public import Mathlib.Analysis.Normed.Module.DoubleDual
+public import CKMA.Analysis.Nonlinear.Monotone.Variational
 
 import CKMA.Analysis.Nonlinear.FixedPoint
 import Mathlib.Analysis.InnerProductSpace.Convex
@@ -25,7 +26,8 @@ base-point constraint.
 For maps into a real Banach dual, monotonicity, hemicontinuity, boundedness on bounded sets,
 and coercivity are expressed directly in the dual pairing. Reflexivity uses surjectivity of
 the canonical bidual inclusion. Variational inequalities have separate bounded-domain and
-coercive unbounded-domain existence statements. Sources: GAPS 35.32, 35.40, and 35.45.
+coercive unbounded-domain existence statements. Those arguments are in
+`CKMA.Analysis.Nonlinear.Monotone.Variational`. Sources: GAPS 35.32, 35.40, and 35.45.
 
 ## Main definitions
 
@@ -297,6 +299,7 @@ private theorem sum_mul_inner_barycenter_nonneg {A : Set (H × H)} (hA : IsMonot
   rw [hsplit]
   exact mul_nonneg ha hmono
 
+set_option linter.deprecated false in
 /-- Finitely many monotone slices meet: a simplex map fixes a convex combination in every slice. -/
 private theorem exists_common_monotoneSlice {A : Set (H × H)} (hA : IsMonotoneGraph A) {a : ℝ}
     (ha : 0 < a) {n : ℕ} (hn : 0 < n) (p : Fin n → H × H) (hp : ∀ i, p i ∈ A) (x : H) :
@@ -421,7 +424,7 @@ theorem isMaximalMonotoneGraph_iff_range [CompleteSpace H]
         Metric.closedBall ((2⁻¹ : ℝ) • ((q : H × H).1 + (x - a • (q : H × H).2)))
           (‖(x - a • (q : H × H).2) - (q : H × H).1‖ / 2) := by
       ext y
-      simp only [slice, Set.mem_setOf_eq]
+      simp only [slice, Set.mem_ofPred_eq]
       rw [show x - y - a • (q : H × H).2 = (x - a • (q : H × H).2) - y by abel]
       exact inner_nonneg_iff_mem_closedBall (v := (q : H × H).1)
         (c := x - a • (q : H × H).2) (y := y)
@@ -438,7 +441,7 @@ theorem isMaximalMonotoneGraph_iff_range [CompleteSpace H]
       have hqfin : ∀ i, qfin i ∈ A := by
         intro i
         by_cases h : (i : ℕ) < u.card
-        · exact (by simpa [qfin, h] using (u.equivFin.symm ⟨(i : ℕ), h⟩).1.2)
+        · exact (by simp [qfin, h])
         · exact (by simpa [qfin, h] using hq0)
       obtain ⟨y, hy⟩ :=
         exists_common_monotoneSlice hA ha (Nat.succ_pos u.card) qfin hqfin x
@@ -450,13 +453,13 @@ theorem isMaximalMonotoneGraph_iff_range [CompleteSpace H]
         intro q hq
         let i0 : Fin u.card := u.equivFin ⟨q, hq⟩
         let j : Fin (u.card + 1) := i0.castSucc
-        have hj : (j : ℕ) < u.card := by
+        have _hj : (j : ℕ) < u.card := by
           have : (j : ℕ) = (i0 : ℕ) := by simp [j, Fin.val_castSucc]
-          simpa [this] using i0.isLt
+          simp [this]
         have hqj : qfin j = (q : H × H) := by
           have heq : (u.equivFin.symm i0).1 = q :=
             congrArg Subtype.val (u.equivFin.symm_apply_apply ⟨q, hq⟩)
-          simp [qfin, hj, j, Fin.val_castSucc, heq]
+          simp [qfin, j, Fin.val_castSucc, heq]
         exact ⟨y, by simpa [slice, hqj] using hy j, rfl⟩
     have hinter : (⋂ q : ↥A, toWeakSpace ℝ H '' slice q).Nonempty :=
       ((hcompact ⟨q0, hq0⟩).inter_iInter_nonempty (fun q : ↥A => toWeakSpace ℝ H '' slice q)
@@ -521,81 +524,5 @@ def normalConeGraph (C : Set H) : Set (H × H) :=
   {p | p.1 ∈ C ∧ ∀ y ∈ C, ⟪p.2, y - p.1⟫_ℝ ≤ 0}
 
 end Hilbert
-
-section Banach
-
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-
-/-- Monotonicity for a map taking values in the continuous dual. -/
-def IsMonotoneDualMap (A : E → StrongDual ℝ E) : Prop :=
-  ∀ x y, 0 ≤ (A x - A y) (x - y)
-
-/-- Strict monotonicity in the dual pairing. -/
-def IsStrictlyMonotoneDualMap (A : E → StrongDual ℝ E) : Prop :=
-  ∀ x y, x ≠ y → 0 < (A x - A y) (x - y)
-
-/-- Hemicontinuity means continuity of every dual evaluation along each line segment. -/
-def IsHemicontinuousDualMap (A : E → StrongDual ℝ E) : Prop :=
-  ∀ x y z, ContinuousOn (fun t : ℝ ↦ A (x + t • y) z) (Set.Icc 0 1)
-
-/-- Boundedness on bounded sets, without assuming global boundedness. -/
-def MapsBoundedSetsToBoundedSets (A : E → StrongDual ℝ E) : Prop :=
-  ∀ C : Set E, Bornology.IsBounded C → Bornology.IsBounded (A '' C)
-
-/-- Coercivity in the dual pairing as the norm tends to infinity.
-The ratio is totalized at zero, which does not affect this filter. -/
-def IsCoerciveDualMap (A : E → StrongDual ℝ E) : Prop :=
-  Tendsto (fun x ↦ A x x / ‖x‖) (Filter.comap (fun x : E ↦ ‖x‖) atTop) atTop
-
-/-- **35.40**: Browder–Minty surjectivity for an everywhere-defined reflexive-Banach operator.
-Reflexivity is expressed by the established bidual inclusion, as in TauCeti's weak compactness API.
-  -/
-theorem IsMonotoneDualMap.surjective [CompleteSpace E]
-    (hreflexive : Function.Surjective (NormedSpace.inclusionInDoubleDual ℝ E))
-    {A : E → StrongDual ℝ E} (hm : IsMonotoneDualMap A)
-    (hh : IsHemicontinuousDualMap A) (hb : MapsBoundedSetsToBoundedSets A)
-    (hc : IsCoerciveDualMap A) : Function.Surjective A := by
-  sorry
-
-/-- Strict monotonicity makes an inverse single-valued independently of existence. -/
-theorem IsStrictlyMonotoneDualMap.injective {A : E → StrongDual ℝ E}
-    (hA : IsStrictlyMonotoneDualMap A) : Function.Injective A := by
-  intro x y hxy
-  by_contra hne
-  have h := hA x y hne
-  simp [hxy] at h
-
-/-- A variational inequality on `C` at forcing `f`. -/
-def SolvesVariationalInequality (A : E → StrongDual ℝ E) (C : Set E)
-    (f : StrongDual ℝ E) (u : E) : Prop :=
-  u ∈ C ∧ ∀ v ∈ C, 0 ≤ (A u - f) (v - u)
-
-/-- **35.45**: bounded-domain variational-inequality existence in a reflexive Banach space. -/
-theorem exists_solution_variationalInequality [CompleteSpace E]
-    (hreflexive : Function.Surjective (NormedSpace.inclusionInDoubleDual ℝ E))
-    {A : E → StrongDual ℝ E} (hm : IsMonotoneDualMap A)
-    (hh : IsHemicontinuousDualMap A) (hb : MapsBoundedSetsToBoundedSets A)
-    {C : Set E} (hne : C.Nonempty) (hclosed : IsClosed C)
-    (hbounded : Bornology.IsBounded C) (hc : Convex ℝ C) (f : StrongDual ℝ E) :
-    ∃ u, SolvesVariationalInequality A C f u := by
-  sorry
-
-/-- Coercivity relative to a point of an unbounded constraint set. -/
-def IsCoerciveOnAt (A : E → StrongDual ℝ E) (C : Set E)
-    (f : StrongDual ℝ E) (u₀ : E) : Prop :=
-  Tendsto (fun u ↦ (A u - f) (u - u₀) / ‖u‖)
-    ((Filter.comap (fun u : E ↦ ‖u‖) atTop) ⊓ Filter.principal C) atTop
-
-/-- The unbounded-domain version uses coercivity relative to one feasible point. -/
-theorem exists_solution_variationalInequality_of_coercive [CompleteSpace E]
-    (hreflexive : Function.Surjective (NormedSpace.inclusionInDoubleDual ℝ E))
-    {A : E → StrongDual ℝ E} (hm : IsMonotoneDualMap A)
-    (hh : IsHemicontinuousDualMap A) (hb : MapsBoundedSetsToBoundedSets A)
-    {C : Set E} (hclosed : IsClosed C) (hc : Convex ℝ C)
-    (f : StrongDual ℝ E) {u₀ : E} (hu₀ : u₀ ∈ C) (hcoercive : IsCoerciveOnAt A C f u₀) :
-    ∃ u, SolvesVariationalInequality A C f u := by
-  sorry
-
-end Banach
 
 end CKMA

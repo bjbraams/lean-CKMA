@@ -7,6 +7,7 @@ module
 
 public import TauCeti.MeasureTheory.Integral.MaximalFunction
 public import Mathlib.Analysis.Normed.Lp.MeasurableSpace
+public import CKMA.Analysis.Fourier.WeightedMaximal.Comparison
 
 import Mathlib.MeasureTheory.Covering.Vitali
 import Mathlib.MeasureTheory.Measure.RegularityCompacts
@@ -111,7 +112,7 @@ private lemma setLIntegral_eq_of_support {g : E → ℝ≥0∞} {s t : Set E}
   apply le_antisymm
   · calc ∫⁻ z in t, g z ∂volume
         = ∫⁻ z in t, s.indicator g z ∂volume := by
-          refine setLIntegral_congr_fun ht fun z hz => ?_
+          refine setLIntegral_congr_fun ht fun z _ => ?_
           by_cases hzs : z ∈ s
           · simp [hzs]
           · simp [hzs, hsupp z hzs]
@@ -204,7 +205,7 @@ private lemma one_ball_weighted_estimate {w : E → ℝ} {C : ℝ} (hC : 0 < C)
     rw [ball_volume_mul (by norm_num : (0 : ℝ) < 5) hr x y]
     simp [five, v, ofReal_pow (by norm_num : (0 : ℝ) ≤ 5), ofReal_ofNat]
   have hlow : ∀ᵐ y ∂volume, y ∈ ball x r → I4 / coef ≤ ofReal (w y) := by
-    filter_upwards [hA, hpos] with y hAy hypos hy
+    filter_upwards [hA, hpos] with y hAy _hypos hy
     have hsub : closedBall x (4 * r) ⊆ ball y (5 * r) := closedBall_subset_ball_five hy
     have hI : I4 ≤ ∫⁻ z in ball y (5 * r), ‖w z‖ₑ ∂volume := by
       calc I4
@@ -267,7 +268,7 @@ private lemma weighted_compact_mul_le {w : E → ℝ} {C : ℝ} (hm : Measurable
     ofReal a * weightedLebesgueMeasure w K ≤
       ofReal C * (5 : ℝ≥0∞) ^ d * ∫⁻ x, ‖f x‖ₑ ∂weightedLebesgueMeasure w := by
   classical
-  rcases K.eq_empty_or_nonempty with rfl | hKne
+  rcases K.eq_empty_or_nonempty with rfl | _
   · simp
   have hex : ∀ x ∈ K, ∃ s δ : ℝ, 0 < s ∧ 0 < δ ∧ ∀ y, dist y x < δ →
       ofReal a * volume (ball y s) < ∫⁻ z in ball y s, ‖f z‖ₑ ∂volume :=
@@ -313,7 +314,7 @@ private lemma weighted_compact_mul_le {w : E → ℝ} {C : ℝ} (hm : Measurable
           withDensity_apply _ isClosed_closedBall.measurableSet]
     _ ≤ ∑' b : u, ofReal C * five *
           ∫⁻ y in ball (b : E) (radius b), g y ∂volume := by
-        refine ENNReal.tsum_le_tsum fun b => ?_
+        refine tsum_le_tsum fun b => ?_
         simpa [g, five] using one_ball_weighted_estimate hC hA hpos hloc
           (hrad b (hu b.2)).1 (havg b (hu b.2))
     _ = ofReal C * five * ∑' b : u, ∫⁻ y in ball (b : E) (radius b), g y ∂volume :=
@@ -506,8 +507,8 @@ private lemma testing_product_le {p : ℝ} (hp : 1 < p) {w : E → ℝ} (hm : Me
     rw [enorm_truncatedDual, ite_eq_right fun h => hz h.1]
   have hIbound : In ≤ ofReal (n : ℝ) * v := by
     calc In
-        ≤ ∫⁻ y in ball x r, ofReal (n : ℝ) ∂volume := by
-          refine setLIntegral_mono' measurableSet_ball fun y _hy => ?_
+        ≤ ∫⁻ _ in ball x r, ofReal (n : ℝ) ∂volume := by
+          refine setLIntegral_mono' measurableSet_ball fun _ _hy => ?_
           rw [enorm_truncatedDual]
           split_ifs with hcut
           · exact ofReal_le_ofReal hcut.2
@@ -673,8 +674,10 @@ theorem weighted_maximal_iff {d : ℕ} {p : ℝ} (hp : 1 < p)
         (∫⁻ x, (TauCeti.maximalFunction volume f x) ^ p ∂weightedLebesgueMeasure w) ≤
           C * (eLpNorm f (ENNReal.ofReal p) (weightedLebesgueMeasure w)) ^ p := by
   constructor
-  · -- Sufficiency uses the reverse Hölder property of an A_p weight.
-    sorry
+  · intro hw
+    exact exists_weightedMaximal_bound hp hm hpos hloc
+      (lt_top_iff_ne_top.mp hw.2.2.2.2) fun x r hr =>
+        le_iSup_of_le x (le_iSup_of_le r (le_iSup_of_le hr le_rfl))
   · intro h
     obtain ⟨C, hC, hbound⟩ := h
     refine ⟨hp, hm, hpos, hloc, ?_⟩

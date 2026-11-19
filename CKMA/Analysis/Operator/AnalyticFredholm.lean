@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.Calculus.ImplicitContDiff
 public import Mathlib.Analysis.Normed.Operator.Compact.Basic
 public import Mathlib.Analysis.CStarAlgebra.Classes
+public import CKMA.Analysis.Operator.AnalyticFredholm.Reduction
 
 import Mathlib.Analysis.Normed.Algebra.GelfandRadius
 
@@ -82,7 +83,8 @@ theorem analytic_fredholm {U : Set ℂ} (hU : IsOpen U) (hconn : IsPreconnected 
       ∀ z ∈ fredholmExceptionalSet K U, dist z a < r → z = a) ∧
     DifferentiableOn ℂ (fun z ↦ Ring.inverse (1 - K z)) (U \ fredholmExceptionalSet K U) ∧
     ∀ a ∈ fredholmExceptionalSet K U, HasOperatorInversePole K a := by
-  sorry
+  unfold fredholmExceptionalSet HasOperatorInversePole
+  exact analyticFredholm_aux hU hconn K hK hc hunit
 
 /-- Partial derivative in `(z, u)` of `(φ u - 1, A u - z • u)`. -/
 private def simpleEigenPartial (A0 : X →L[ℂ] X) (z₀ : ℂ) (u₀ : X) (phi : X →L[ℂ] ℂ) :

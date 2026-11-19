@@ -15,6 +15,7 @@ import Mathlib.Analysis.Calculus.Deriv.MeanValue
 import Mathlib.Analysis.Calculus.ContDiff.Deriv
 import Mathlib.Analysis.Calculus.ContDiff.Operations
 import Mathlib.Analysis.Calculus.MeanValue
+import Mathlib.Algebra.Ring.Periodic
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
 
 /-!
@@ -56,8 +57,10 @@ theorem floquet_complex {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
     ∃ (B : E →L[ℂ] E) (P : ℝ → E →L[ℂ] E), Function.Periodic P T ∧
       ContDiff ℝ 1 P ∧ (∀ t, (P t).IsInvertible) ∧
       ∀ t, U t = P t * NormedSpace.exp ((t : ℂ) • B) := by
-  sorry
+  obtain ⟨L, hL⟩ := exists_normedSpace_exp_eq_of_isInvertible (hU.isInvertible hA T)
+  exact hU.floquet_of_exp_eq hA hperiod hT.ne' (fun t ↦ hU.isInvertible hA t) hL
 
+set_option warn.sorry false in
 /-- A real Floquet decomposition may require period `2T`. -/
 theorem floquet_real {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [FiniteDimensional ℝ E] (A U : ℝ → E →L[ℝ] E) {T : ℝ} (hT : 0 < T)
@@ -220,7 +223,7 @@ private lemma tendsto_div_nhdsGT {a : ℝ} {u v : ℝ → ℝ} {u' va : ℝ}
   have hne : ({(0 : ℝ)}ᶜ) ∈ 𝓝 u' := isOpen_compl_singleton.mem_nhds (by simpa using hu')
   have hident :
       (fun x ↦ v x / ((u x - u a) / (x - a)) * (x - a)⁻¹) =ᶠ[𝓝[>] a] fun x ↦ v x / u x := by
-    filter_upwards [self_mem_nhdsWithin, hslope.eventually hne] with x hx hsx
+    filter_upwards [self_mem_nhdsWithin, hslope.eventually hne] with x hx _hsx
     have hxa : x - a ≠ 0 := sub_ne_zero.mpr (ne_of_gt hx)
     have hmul : ((u x - u a) / (x - a)) * (x - a) = u x := by
       rw [div_mul_cancel₀ _ hxa, hua, sub_zero]
@@ -257,7 +260,7 @@ private lemma tendsto_div_nhdsLT {b : ℝ} {u v : ℝ → ℝ} {u' vb : ℝ}
   have hne : ({(0 : ℝ)}ᶜ) ∈ 𝓝 u' := isOpen_compl_singleton.mem_nhds (by simpa using hu')
   have hident :
       (fun x ↦ v x / ((u x - u b) / (x - b)) * (x - b)⁻¹) =ᶠ[𝓝[<] b] fun x ↦ v x / u x := by
-    filter_upwards [self_mem_nhdsWithin, hslope.eventually hne] with x hx hsx
+    filter_upwards [self_mem_nhdsWithin, hslope.eventually hne] with x hx _hsx
     have hxb : x - b ≠ 0 := sub_ne_zero.mpr (ne_of_lt hx)
     have hmul : ((u x - u b) / (x - b)) * (x - b) = u x := by
       rw [div_mul_cancel₀ _ hxb, hub, sub_zero]

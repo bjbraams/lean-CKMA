@@ -5,18 +5,41 @@ Authors: CKMA contributors
 -/
 module
 
+public import Mathlib.Analysis.Calculus.ContDiff.Defs
 public import Mathlib.Analysis.Calculus.Deriv.Basic
+public import Mathlib.Analysis.Normed.Algebra.Exponential
 public import Mathlib.Topology.Algebra.Module.FiniteDimension
 public import Mathlib.Analysis.Complex.Basic
 
+import Mathlib.Algebra.Module.Torsion.Field
+import Mathlib.Analysis.Calculus.ContDiff.Deriv
+import Mathlib.Analysis.Calculus.Deriv.Comp
+import Mathlib.Analysis.Calculus.Deriv.Linear
+import Mathlib.Analysis.Calculus.Deriv.Mul
+import Mathlib.Analysis.Normed.Group.Submodule
+import Mathlib.Analysis.Normed.Module.Basic
+import Mathlib.Analysis.Normed.Operator.NNNorm
+import Mathlib.Analysis.Normed.Ring.Lemmas
 import Mathlib.Analysis.ODE.ExistUnique
+import Mathlib.Analysis.Complex.Polynomial.Basic
+import Mathlib.Analysis.SpecialFunctions.Complex.Log
+import Mathlib.Analysis.SpecialFunctions.Exponential
+import Mathlib.FieldTheory.Finiteness
+import Mathlib.LinearAlgebra.DFinsupp
+import Mathlib.LinearAlgebra.Eigenspace.Triangularizable
+import Mathlib.LinearAlgebra.FiniteDimensional.Basic
+import TauCeti.RingTheory.Nilpotent.Log
 
 /-!
-# Fundamental operators and Liouville's formula for periodic linear ODEs
+# Fundamental operators, Liouville's formula, and Floquet factors
 
 Normalized fundamental operators of linear ODE systems, monodromy under periodic shifts,
 and Liouville's determinant formula establishing invertibility of complex fundamental
-operators at all times.
+operators at all times. A logarithm of an invertible complex endomorphism is built from
+the generalized eigenspace decomposition and TauCeti's finite logarithm of a unipotent
+element (`IsNilpotent.log`). On nilpotent elements the normed exponential is identified
+with that finite exponential by the same terminating-series argument as TauCeti's
+`IsNilpotent.normedSpace_exp_eq_exp`. The Floquet factor is assembled from the logarithm.
 
 ## Main definitions
 
@@ -31,6 +54,12 @@ operators at all times.
   a complex fundamental operator never vanishes.
 * `CKMA.IsFundamentalOperator.isInvertible`: A complex fundamental operator is invertible at
   every time.
+* `CKMA.exists_normedSpace_exp_eq_of_isInvertible`: An invertible endomorphism of a
+  finite-dimensional complex space has a logarithm.
+* `CKMA.IsFundamentalOperator.floquet_of_exp_eq`: A Floquet factor built from a logarithm of
+  the monodromy.
+* `CKMA.IsFundamentalOperator.isInvertible_of_finiteDimensional`: Finite-dimensional fundamental
+  operators are invertible at every time, by uniqueness for the linear ODE.
 -/
 
 @[expose] public section
@@ -309,5 +338,396 @@ lemma IsFundamentalOperator.isInvertible {E : Type*} [NormedAddCommGroup E] [Nor
   have hequiv := ContinuousLinearMap.isInvertible_equiv
     (f := (U t).toContinuousLinearEquivOfDetNeZero hdet)
   simpa [ContinuousLinearMap.coe_toContinuousLinearEquivOfDetNeZero] using hequiv
+
+open NormedSpace ContinuousLinearMap
+
+local notation:10000 n "!" => Nat.factorial n
+
+section ComplexLog
+
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] [FiniteDimensional ℂ E]
+
+/-- On a nilpotent element the normed exponential agrees with TauCeti's finite exponential.
+The argument is that of `IsNilpotent.normedSpace_exp_eq_exp`. -/
+private lemma normedSpace_exp_eq_isNilpotent_exp {A : Type*} [NormedRing A] [NormedAlgebra ℚ A]
+    {a : A} (ha : IsNilpotent a) : exp a = IsNilpotent.exp a := by
+  obtain ⟨n, hn⟩ := ha
+  rw [exp_eq_tsum_rat, IsNilpotent.exp_eq_sum hn]
+  exact tsum_eq_sum fun i hi ↦ by rw [pow_eq_zero_of_le (by simpa using hi) hn, smul_zero]
+
+/-- Rational algebra structure on endomorphisms of one generalized eigenspace. -/
+private instance instAlgebraRatMaxGenEigenspace (φ : Module.End ℂ E) (μ : ℂ) :
+    Algebra ℚ (Module.End ℂ (Module.End.maxGenEigenspace φ μ)) :=
+  Algebra.restrictScalars ℚ ℂ _
+
+/-- Rational normed algebra on continuous endomorphisms of one generalized eigenspace. -/
+private instance instNormedAlgebraRatMaxGenEigenspace (φ : Module.End ℂ E) (μ : ℂ) :
+    NormedAlgebra ℚ ((Module.End.maxGenEigenspace φ μ) →L[ℂ]
+      Module.End.maxGenEigenspace φ μ) :=
+  NormedAlgebra.restrictScalars ℚ ℂ _
+
+/-- An invertible endomorphism has trivial generalized eigenspace at eigenvalue `0`. -/
+private lemma maxGenEigenspace_eq_bot_of_isInvertible {f : E →L[ℂ] E} (hf : f.IsInvertible) :
+    Module.End.maxGenEigenspace f.toLinearMap 0 = ⊥ := by
+  rw [Submodule.eq_bot_iff]
+  intro v hv
+  rw [Module.End.mem_maxGenEigenspace] at hv
+  obtain ⟨k, hk⟩ := hv
+  have hk0 : (f ^ k) v = 0 := by
+    rw [← coe_coe, toLinearMap_pow]
+    simpa [zero_smul, sub_zero] using hk
+  have hmul : ∀ n, (f.inverse ^ n) * (f ^ n) = 1 := by
+    intro n
+    induction n with
+    | zero => simp
+    | succ n ih =>
+      rw [pow_succ', pow_succ, mul_assoc, ← mul_assoc (f.inverse ^ n) (f ^ n) f, ih, one_mul,
+        mul_def, hf.inverse_comp_self, ← one_def]
+  have happly : ((f.inverse ^ k) * (f ^ k)) v = v := by
+    rw [hmul k, one_apply_eq_self]
+  rw [mul_apply_eq_comp, hk0, map_zero] at happly
+  exact happly.symm
+
+/-- Logarithm of `φ` on its maximal generalized `μ`-eigenspace, branch `Complex.log`. -/
+private noncomputable def genEigenspaceLog (φ : Module.End ℂ E) (μ : ℂ) :
+    Module.End ℂ (Module.End.maxGenEigenspace φ μ) :=
+  if _hμ : μ = 0 then 0 else
+    let N0 := (φ - algebraMap ℂ (Module.End ℂ E) μ).restrict
+      (Module.End.mapsTo_maxGenEigenspace_of_comm
+        (Algebra.mul_sub_algebraMap_commutes φ μ) μ)
+    algebraMap ℂ (Module.End ℂ (Module.End.maxGenEigenspace φ μ)) (Complex.log μ) +
+      IsNilpotent.log (1 + μ⁻¹ • N0)
+
+/-- On a nonzero eigenvalue, the block logarithm exponentiates to the restriction of `φ`. -/
+private lemma exp_toContinuousLinearMap_genEigenspaceLog (φ : Module.End ℂ E) {μ : ℂ}
+    (hμ : μ ≠ 0) :
+    exp (Module.End.toContinuousLinearMap (𝕜 := ℂ) (Module.End.maxGenEigenspace φ μ)
+        (genEigenspaceLog φ μ)) =
+      Module.End.toContinuousLinearMap (𝕜 := ℂ) (Module.End.maxGenEigenspace φ μ)
+        (φ.restrict (Module.End.mapsTo_maxGenEigenspace_of_comm (Commute.refl φ) μ)) := by
+  haveI : IsNoetherian ℂ E := IsNoetherian.iff_fg.mpr inferInstance
+  let V := Module.End.maxGenEigenspace φ μ
+  haveI : CompleteSpace V := FiniteDimensional.complete ℂ V
+  haveI : FiniteDimensional ℂ (V →L[ℂ] V) := ContinuousLinearMap.finiteDimensional
+  haveI : CompleteSpace (V →L[ℂ] V) := FiniteDimensional.complete ℂ (V →L[ℂ] V)
+  let N0 := (φ - algebraMap ℂ (Module.End ℂ E) μ).restrict
+    (Module.End.mapsTo_maxGenEigenspace_of_comm (Algebra.mul_sub_algebraMap_commutes φ μ) μ)
+  have hN0 : IsNilpotent N0 :=
+    Module.End.isNilpotent_restrict_maxGenEigenspace_sub_algebraMap φ μ
+  let u : Module.End ℂ V := 1 + μ⁻¹ • N0
+  have hu1 : u - 1 = μ⁻¹ • N0 := by simp [u]
+  have hu : IsNilpotent (u - 1) := by rw [hu1]; exact hN0.smul μ⁻¹
+  let logu : Module.End ℂ V := IsNilpotent.log u
+  have hlogu : IsNilpotent logu := IsNilpotent.isNilpotent_log hu
+  let s : Module.End ℂ V := algebraMap ℂ (Module.End ℂ V) (Complex.log μ)
+  let ψ := Module.End.toContinuousLinearMap (𝕜 := ℂ) V
+  have hφ : MapsTo φ ↑V ↑V :=
+    Module.End.mapsTo_maxGenEigenspace_of_comm (Commute.refl φ) μ
+  have hscale : μ • u = algebraMap ℂ (Module.End ℂ V) μ + N0 := by
+    dsimp only [u]
+    rw [smul_add, smul_smul, mul_inv_cancel₀ hμ, one_smul, ← Algebra.algebraMap_eq_smul_one]
+  have hrest : φ.restrict hφ = algebraMap ℂ (Module.End ℂ V) μ + N0 := by
+    ext x
+    dsimp only [N0]
+    erw [LinearMap.coe_restrict_apply, LinearMap.add_apply, Submodule.coe_add,
+      Module.algebraMap_end_apply, LinearMap.coe_restrict_apply, LinearMap.sub_apply,
+      Module.algebraMap_end_apply]
+    rw [Submodule.coe_smul, add_comm, sub_add_cancel]
+  have hbody : genEigenspaceLog φ μ = s + logu := by
+    unfold genEigenspaceLog
+    rw [dite_eq_right hμ]
+  have hcomm : Commute (ψ s) (ψ logu) := by
+    dsimp only [s]
+    rw [ψ.commutes (Complex.log μ)]
+    exact Algebra.commutes (Complex.log μ) (ψ logu)
+  have hexps : exp (ψ s) = algebraMap ℂ (V →L[ℂ] V) μ := by
+    rw [ψ.commutes (Complex.log μ), ← algebraMap_exp_comm (𝕂 := ℂ) (Complex.log μ),
+      ← Complex.exp_eq_exp_ℂ, Complex.exp_log hμ]
+  have hexplog : exp (ψ logu) = ψ u := by
+    rw [normedSpace_exp_eq_isNilpotent_exp (hlogu.map ψ), ← IsNilpotent.map_exp hlogu ψ,
+      IsNilpotent.exp_log hu]
+  have hsum : ψ (s + logu) = ψ s + ψ logu := by
+    rw [map_add]
+  rw [hbody, hsum, exp_add_of_commute hcomm, hexps, hexplog, ← Algebra.smul_def, ← map_smul,
+    hscale, hrest]
+
+/-- An invertible endomorphism of a finite-dimensional complex space has a logarithm. -/
+lemma exists_normedSpace_exp_eq_of_isInvertible {f : E →L[ℂ] E} (hf : f.IsInvertible) :
+    ∃ L : E →L[ℂ] E, exp L = f := by
+  letI : DecidableEq ℂ := fun a b ↦ Classical.propDecidable (a = b)
+  haveI : IsNoetherian ℂ E := IsNoetherian.iff_fg.mpr inferInstance
+  haveI : CompleteSpace E := FiniteDimensional.complete ℂ E
+  haveI : FiniteDimensional ℂ (E →L[ℂ] E) := ContinuousLinearMap.finiteDimensional
+  haveI : CompleteSpace (E →L[ℂ] E) := FiniteDimensional.complete ℂ (E →L[ℂ] E)
+  let φ := f.toLinearMap
+  have hbot : Module.End.maxGenEigenspace φ 0 = ⊥ := maxGenEigenspace_eq_bot_of_isInvertible hf
+  let p : ℂ → Submodule ℂ E := Module.End.maxGenEigenspace φ
+  let e := (Module.End.independent_maxGenEigenspace φ).linearEquiv
+    (Module.End.iSup_maxGenEigenspace_eq_top φ)
+  let Ldf := DFinsupp.mapRange.linearMap (fun μ ↦ genEigenspaceLog φ μ)
+  let Llin : Module.End ℂ E := e.toLinearMap.comp (Ldf.comp e.symm.toLinearMap)
+  let L := LinearMap.toContinuousLinearMap Llin
+  have hact (μ : ℂ) (w : p μ) : L (w : E) = (genEigenspaceLog φ μ w : E) := by
+    have hs : e.symm (w : E) = DFinsupp.single μ ⟨(w : E), w.2⟩ :=
+      iSupIndep.linearEquiv_symm_apply (Module.End.independent_maxGenEigenspace φ)
+        (Module.End.iSup_maxGenEigenspace_eq_top φ) w.2
+    dsimp only [L, Llin]
+    rw [LinearMap.coe_toContinuousLinearMap', LinearMap.comp_apply, LinearMap.comp_apply]
+    rw [LinearEquiv.coe_coe, LinearEquiv.coe_coe e.symm]
+    rw [hs, DFinsupp.mapRange.linearMap_apply, DFinsupp.mapRange_single, Subtype.eta]
+    dsimp only [e, iSupIndep.linearEquiv]
+    erw [LinearEquiv.ofBijective_apply, DFinsupp.lsum_single, Submodule.subtype_apply]
+  refine ⟨L, ?_⟩
+  have hker : LinearMap.ker ((exp L - f).toLinearMap) = ⊤ := by
+    rw [eq_top_iff, ← Module.End.iSup_maxGenEigenspace_eq_top φ]
+    refine iSup_le fun μ ↦ ?_
+    intro v hv
+    rw [LinearMap.mem_ker, toLinearMap_sub, LinearMap.sub_apply, sub_eq_zero, coe_coe, coe_coe]
+    by_cases hμ : μ = 0
+    · have hv0 : v = 0 := by
+        rw [hμ, hbot] at hv
+        exact (Submodule.mem_bot ℂ).mp hv
+      simp [hv0]
+    · let w : p μ := ⟨v, hv⟩
+      haveI : CompleteSpace (p μ) := FiniteDimensional.complete ℂ (p μ)
+      haveI : FiniteDimensional ℂ ((p μ) →L[ℂ] p μ) := ContinuousLinearMap.finiteDimensional
+      haveI : CompleteSpace ((p μ) →L[ℂ] p μ) := FiniteDimensional.complete ℂ _
+      let blockC :=
+        Module.End.toContinuousLinearMap (𝕜 := ℂ) (p μ) (genEigenspaceLog φ μ)
+      have hpow : ∀ n, (L ^ n) v = ((blockC ^ n) w : E) := by
+        intro n
+        induction n with
+        | zero => simp [w]
+        | succ n ih =>
+          rw [pow_succ', mul_apply_eq_comp, ih]
+          have hstep := hact μ ((blockC ^ n) w)
+          rw [hstep]
+          rw [pow_succ', mul_apply_eq_comp]
+          rfl
+      have hsumL : HasSum (fun n ↦ (n !⁻¹ : ℂ) • (L ^ n) v) (exp L v) := by
+        simpa [apply_apply, smul_apply] using
+          (exp_series_hasSum_exp' (𝕂 := ℂ) L).mapL (apply ℂ E v)
+      have hsumB : HasSum (fun n ↦ (n !⁻¹ : ℂ) • ((blockC ^ n) w : E))
+          ((exp blockC w : E)) := by
+        have hs := (exp_series_hasSum_exp' (𝕂 := ℂ) blockC).mapL (apply ℂ (p μ) w)
+        have hsE := hs.mapL (p μ).subtype.toContinuousLinearMap
+        simpa [apply_apply, smul_apply, Submodule.coe_smul, LinearMap.coe_toContinuousLinearMap',
+          Submodule.subtype_apply] using hsE
+      have hsumL' : HasSum (fun n ↦ (n !⁻¹ : ℂ) • ((blockC ^ n) w : E)) (exp L v) := by
+        simpa [hpow] using hsumL
+      have hcoe := hsumL'.unique hsumB
+      rw [hcoe, exp_toContinuousLinearMap_genEigenspaceLog φ hμ]
+      rfl
+  ext v
+  have hvker : v ∈ LinearMap.ker ((exp L - f).toLinearMap) := by
+    rw [hker]
+    trivial
+  rw [LinearMap.mem_ker, toLinearMap_sub, LinearMap.sub_apply, sub_eq_zero, coe_coe, coe_coe]
+    at hvker
+  exact hvker
+
+end ComplexLog
+
+/-- A fundamental operator on a finite-dimensional space is invertible at every time. -/
+lemma IsFundamentalOperator.isInvertible_of_finiteDimensional {𝕜 E : Type*} [RCLike 𝕜]
+    [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedSpace ℝ E] [FiniteDimensional 𝕜 E]
+    {A U : ℝ → E →L[𝕜] E} (hA : Continuous A) (hU : IsFundamentalOperator A U) (t₀ : ℝ) :
+    (U t₀).IsInvertible := by
+  have hker : ∀ v, U t₀ v = 0 → v = 0 := by
+    intro v hv
+    let f : ℝ → E := fun s ↦ U s v
+    let g : ℝ → E := fun _ ↦ 0
+    let a := min t₀ (0 : ℝ) - 1
+    let b := max t₀ (0 : ℝ) + 1
+    have hab : a < b := by
+      dsimp [a, b]
+      linarith [min_le_max (a := t₀) (b := (0 : ℝ))]
+    have ht0 : (0 : ℝ) ∈ Ioo a b := by
+      constructor <;> dsimp [a, b] <;> linarith [min_le_left t₀ (0 : ℝ), min_le_right t₀ (0 : ℝ),
+        le_max_left t₀ (0 : ℝ), le_max_right t₀ (0 : ℝ)]
+    have htt : t₀ ∈ Ioo a b := by
+      constructor <;> dsimp [a, b] <;> linarith [min_le_left t₀ (0 : ℝ), min_le_right t₀ (0 : ℝ),
+        le_max_left t₀ (0 : ℝ), le_max_right t₀ (0 : ℝ)]
+    have h0mem : (0 : ℝ) ∈ Icc a b := Ioo_subset_Icc_self ht0
+    obtain ⟨x, -, hmax⟩ := isCompact_Icc.exists_isMaxOn
+      (f := fun s : ℝ ↦ ‖A s‖) (⟨a, left_mem_Icc.mpr hab.le⟩ : (Icc a b).Nonempty)
+      (continuous_norm.comp hA).continuousOn
+    let K : NNReal := ‖A x‖₊
+    have hLip : ∀ s ∈ Ioo a b, LipschitzOnWith K (fun y : E ↦ A s y) univ := by
+      intro s hs
+      have hle : ‖A s‖₊ ≤ K := NNReal.coe_le_coe.mp <| by
+        simpa [K] using (isMaxOn_iff.mp hmax) s (Ioo_subset_Icc_self hs)
+      exact ((A s).lipschitzWith.weaken hle).lipschitzOnWith
+    have hUc : Continuous U :=
+      continuous_iff_continuousAt.mpr fun s ↦ (hU.2 s).continuousAt
+    have hfcont : Continuous f := by
+      let φa : (E →L[𝕜] E) →L[ℝ] E := (apply 𝕜 E v).restrictScalars ℝ
+      simpa [f, φa, Function.comp_def, apply_apply, coe_restrictScalars'] using
+        φa.continuous.comp hUc
+    have hf' : ∀ s ∈ Ioo a b, HasDerivAt f (A s (f s)) s := by
+      intro s _
+      let φa : (E →L[𝕜] E) →L[ℝ] E := (apply 𝕜 E v).restrictScalars ℝ
+      have hd : HasDerivAt (⇑φa ∘ U) (φa ((A s).comp (U s))) s :=
+        φa.hasFDerivAt.comp_hasDerivAt s (hU.2 s)
+      simpa [f, φa, Function.comp_def, apply_apply, coe_restrictScalars', mul_def,
+        comp_apply] using hd
+    have hg' : ∀ s ∈ Ioo a b, HasDerivAt g (A s (g s)) s := by
+      intro s _
+      exact (hasDerivAt_const s (0 : E)).congr_deriv (by simp [g])
+    have hEq := ODE_solution_unique_of_mem_Icc hLip htt hfcont.continuousOn hf'
+      (fun _ _ ↦ mem_univ _) continuous_const.continuousOn hg' (fun _ _ ↦ mem_univ _)
+      (by simpa [f, g] using hv)
+    simpa [f, g, hU.1, one_apply_eq_self] using hEq h0mem
+  have hinj : Function.Injective (U t₀).toLinearMap := by
+    intro x y hxy
+    apply sub_eq_zero.mp
+    apply hker (x - y)
+    rw [← coe_coe, map_sub, hxy, sub_self]
+  let e := LinearEquiv.ofInjectiveEndo (U t₀).toLinearMap hinj
+  have he : (e.toContinuousLinearEquiv : E →L[𝕜] E) = U t₀ := by
+    ext v
+    rw [ContinuousLinearEquiv.coe_coe, LinearEquiv.coe_toContinuousLinearEquiv',
+      LinearEquiv.coe_ofInjectiveEndo, coe_coe]
+  rw [← he]
+  exact isInvertible_equiv
+
+/-- Floquet factor built from a logarithm of the monodromy `U T`. -/
+lemma IsFundamentalOperator.floquet_of_exp_eq {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E]
+    [NormedSpace 𝕜 E] [NormedSpace ℝ E] [IsScalarTower ℝ 𝕜 E] [FiniteDimensional 𝕜 E]
+    {A U : ℝ → E →L[𝕜] E} {T : ℝ}
+    (hU : IsFundamentalOperator A U) (hA : Continuous A) (hperiod : Function.Periodic A T)
+    (hT : T ≠ 0) (hInv : ∀ t, (U t).IsInvertible) {L : E →L[𝕜] E} (hL : exp L = U T) :
+    ∃ B : E →L[𝕜] E, ∃ P : ℝ → E →L[𝕜] E, Function.Periodic P T ∧ ContDiff ℝ 1 P ∧
+      (∀ t, (P t).IsInvertible) ∧ ∀ t, U t = P t * exp ((t : 𝕜) • B) := by
+  let +nondep : NormedAlgebra ℚ (E →L[𝕜] E) := .restrictScalars ℚ 𝕜 _
+  haveI : IsNoetherian 𝕜 E := IsNoetherian.iff_fg.mpr inferInstance
+  haveI : CompleteSpace E := FiniteDimensional.complete 𝕜 E
+  haveI : FiniteDimensional 𝕜 (E →L[𝕜] E) := ContinuousLinearMap.finiteDimensional
+  haveI : CompleteSpace (E →L[𝕜] E) := FiniteDimensional.complete 𝕜 (E →L[𝕜] E)
+  let B : E →L[𝕜] E := (T : 𝕜)⁻¹ • L
+  have hTB : (T : 𝕜) • B = L := by
+    dsimp only [B]
+    rw [smul_smul, mul_inv_cancel₀ (RCLike.ofReal_ne_zero.mpr hT), one_smul]
+  have hcomm (a b : 𝕜) : Commute (a • B) (b • B) :=
+    ((Commute.refl B).smul_left a).smul_right b
+  let Q : ℝ → E →L[𝕜] E := fun t ↦ exp (-((t : 𝕜) • B))
+  let P : ℝ → E →L[𝕜] E := fun t ↦ U t * Q t
+  have hQshift (t : ℝ) : Q (t + T) = Q t * exp (-L) := by
+    have harg : -(((t + T : ℝ) : 𝕜) • B) = -((t : 𝕜) • B) + -L := by
+      rw [RCLike.ofReal_add, add_smul, hTB, neg_add]
+    have hc : Commute (-((t : 𝕜) • B)) (-L) := by
+      rw [← hTB]
+      exact (hcomm (t : 𝕜) (T : 𝕜)).neg_left.neg_right
+    dsimp only [Q]
+    rw [harg, exp_add_of_commute hc]
+  have hslide (t : ℝ) : exp L * Q t = Q t * exp L := by
+    have hc : Commute L (-((t : 𝕜) • B)) := by
+      rw [← hTB]
+      exact (hcomm (T : 𝕜) (t : 𝕜)).neg_right
+    simpa [Q] using hc.exp.eq
+  have hcancel : exp L * exp (-L) = (1 : E →L[𝕜] E) := by
+    rw [← exp_add_of_commute (Commute.refl L).neg_right, add_neg_cancel, exp_zero]
+  have hPper : Function.Periodic P T := by
+    intro t
+    have hUshift := hU.add_period_eq_mul hA hperiod t
+    calc
+      P (t + T) = U (t + T) * Q (t + T) := rfl
+      _ = (U t * exp L) * (Q t * exp (-L)) := by rw [hUshift, hL, hQshift]
+      _ = U t * (exp L * (Q t * exp (-L))) := by rw [mul_assoc]
+      _ = U t * ((exp L * Q t) * exp (-L)) := by rw [← mul_assoc (exp L)]
+      _ = U t * ((Q t * exp L) * exp (-L)) := by rw [hslide]
+      _ = U t * (Q t * (exp L * exp (-L))) := by rw [mul_assoc]
+      _ = U t * (Q t * 1) := by rw [hcancel]
+      _ = U t * Q t := by rw [mul_one]
+      _ = P t := rfl
+  have hQinv (t : ℝ) : (Q t).IsInvertible := by
+    refine IsInvertible.of_inverse (g := exp ((t : 𝕜) • B)) ?_ ?_
+    · dsimp only [Q]
+      rw [← mul_def, ← exp_add_of_commute ((Commute.refl ((t : 𝕜) • B)).neg_left),
+        neg_add_cancel, exp_zero, one_def]
+    · dsimp only [Q]
+      rw [← mul_def, ← exp_add_of_commute ((Commute.refl ((t : 𝕜) • B)).neg_right),
+        add_neg_cancel, exp_zero, one_def]
+  have hPinv (t : ℝ) : (P t).IsInvertible := by
+    dsimp only [P]
+    rw [mul_def]
+    exact (hInv t).comp (hQinv t)
+  have hUcont : Continuous U :=
+    continuous_iff_continuousAt.mpr fun t ↦ (hU.2 t).continuousAt
+  have hQfun : Q = fun t : ℝ ↦ exp ((t : 𝕜) • -B) := by
+    funext t
+    dsimp only [Q]
+    rw [smul_neg]
+  have hQcont : Continuous Q := by
+    rw [hQfun]
+    exact ((differentiable_exp_smul_const 𝕜 (-B)).continuous).comp RCLike.continuous_ofReal
+  have hU' (t : ℝ) : HasDerivAt U (A t * U t) t := by
+    simpa [mul_def] using hU.2 t
+  have hQ' (t : ℝ) : HasDerivAt Q (Q t * -B) t := by
+    rw [hQfun]
+    have hg : HasDerivAt (fun z : 𝕜 ↦ exp (z • -B)) (exp ((t : 𝕜) • -B) * -B) (t : 𝕜) :=
+      hasDerivAt_exp_smul_const (-B) (t : 𝕜)
+    have hh : HasDerivAt (fun s : ℝ ↦ (s : 𝕜)) (1 : 𝕜) t := by
+      simpa [RCLike.ofRealCLM_apply] using (RCLike.ofRealCLM (K := 𝕜)).hasDerivAt (x := t)
+    simpa [Function.comp_def, one_smul] using hg.scomp t hh
+  have hsmul_mul_left (r : ℝ) (f g : E →L[𝕜] E) : (r • f) * g = r • (f * g) := by
+    ext x
+    simp [mul_def, comp_apply, smul_apply]
+  have hsmul_mul_right (r : ℝ) (f g : E →L[𝕜] E) : f * (r • g) = r • (f * g) := by
+    simp [mul_def]
+  have hP' (t : ℝ) : HasDerivAt P ((A t * U t) * Q t + U t * (Q t * -B)) t := by
+    rw [hasDerivAt_iff_isLittleO]
+    set U' := A t * U t
+    set Q' := Q t * -B
+    have hsplit : (fun s ↦ P s - P t - (s - t) • (U' * Q t + U t * Q')) =
+        fun s ↦ (U s - U t - (s - t) • U') * Q s + ((s - t) • U') * (Q s - Q t) +
+          U t * (Q s - Q t - (s - t) • Q') := by
+      funext s
+      dsimp only [P]
+      set h := s - t
+      set u1 := U s
+      set q1 := Q s
+      set u0 := U t
+      set q0 := Q t
+      have hL : h • (U' * q0) = (h • U') * q0 := (hsmul_mul_left h U' q0).symm
+      have hR : h • (u0 * Q') = u0 * (h • Q') := (hsmul_mul_right h u0 Q').symm
+      have hre : u1 = u1 - u0 - h • U' + (h • U') + u0 := by rw [sub_add_cancel, sub_add_cancel]
+      rw [mul_sub (h • U'), mul_sub u0, mul_sub u0, smul_add, hL, hR, sub_add_eq_sub_sub]
+      conv_lhs => rw [hre, add_mul, add_mul]
+      abel
+    have hUo := (hU' t).isLittleO
+    have hQo := (hQ' t).isLittleO
+    have hQb := (hQ' t).isBigO_sub
+    have hsq : (fun s : ℝ ↦ (s - t) * (s - t)) =o[𝓝 t] fun s ↦ s - t := by
+      have h0 : (fun s : ℝ ↦ s - t) =o[𝓝 t] fun _ ↦ (1 : ℝ) := by
+        rw [Asymptotics.isLittleO_one_iff]
+        simpa using (tendsto_id (x := 𝓝 t)).sub (tendsto_const_nhds (x := t) (f := 𝓝 t))
+      exact (h0.mul_isBigO (Asymptotics.isBigO_refl (fun s : ℝ ↦ s - t) (𝓝 t))).congr_right
+        (fun s ↦ by simp)
+    have hcross : (fun s ↦ ((s - t) • U') * (Q s - Q t)) =o[𝓝 t] fun s ↦ s - t := by
+      have h1 : (fun s ↦ (s - t) • U') =O[𝓝 t] fun s ↦ s - t := by
+        refine Asymptotics.IsBigO.of_bound ‖U'‖ (Filter.Eventually.of_forall fun s ↦ ?_)
+        exact (norm_smul_le (s - t) U').trans_eq (mul_comm _ _)
+      exact ((h1.mul hQb).trans_isLittleO hsq)
+    have hleft : (fun s ↦ (U s - U t - (s - t) • U') * Q s) =o[𝓝 t] fun s ↦ s - t := by
+      have hQ1 : Q =O[𝓝 t] fun _ ↦ (1 : ℝ) := hQcont.continuousAt.isBigO_one ℝ
+      simpa using hUo.mul_isBigO hQ1
+    have hright := hQo.const_mul_left (U t)
+    rw [hsplit]
+    exact (hleft.add hcross).add hright
+  have hC1 : ContDiff ℝ 1 P := by
+    rw [contDiff_one_iff_deriv]
+    refine ⟨fun t ↦ (hP' t).differentiableAt, ?_⟩
+    have hderivP : deriv P = fun t ↦ (A t * U t) * Q t + U t * (Q t * -B) := by
+      funext t
+      exact (hP' t).deriv
+    rw [hderivP]
+    exact ((hA.mul hUcont).mul hQcont).add (hUcont.mul (hQcont.mul continuous_const))
+  have hfact (t : ℝ) : U t = P t * exp ((t : 𝕜) • B) := by
+    have hmul : exp (-((t : 𝕜) • B)) * exp ((t : 𝕜) • B) = 1 := by
+      rw [← exp_add_of_commute ((Commute.refl ((t : 𝕜) • B)).neg_left), neg_add_cancel, exp_zero]
+    dsimp only [P, Q]
+    rw [mul_assoc, hmul, mul_one]
+  exact ⟨B, P, hPper, hC1, hPinv, hfact⟩
 
 end CKMA
