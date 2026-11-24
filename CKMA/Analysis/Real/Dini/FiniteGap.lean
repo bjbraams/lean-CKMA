@@ -37,7 +37,7 @@ right derivative, and the upper right derivative is finite. Source: GAPS 05.10.
   right Dini derivatives lies in `finiteStrict f`.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -94,6 +94,7 @@ private lemma volume_reflect_inter {E : Set ℝ} {a b : ℝ} :
 
 /-- Points with uniform slope bounds and a finite gap between the lower left and upper right
 derivatives. `n` fixes the scale `1 / (n + 1)`. -/
+@[expose]
 def finiteGap (f : ℝ → ℝ) (p r s q : ℚ) (n : ℕ) : Set ℝ :=
   {x |
     (∀ h, 0 < h → h ≤ (1 : ℝ) / (n + 1) → (f (x + h) - f x) / h < (p : ℝ)) ∧
@@ -414,6 +415,7 @@ private theorem volume_finiteGap_eq_zero (f : ℝ → ℝ) {p r s q : ℚ} {n : 
 
 /-- Points at which a finite lower left derivative lies strictly below a finite upper right
 derivative, witnessed by rational bounds. -/
+@[expose]
 def finiteStrict (f : ℝ → ℝ) : Set ℝ :=
   ⋃ p : ℚ, ⋃ r : ℚ, ⋃ s : ℚ, ⋃ q : ℚ, ⋃ n : ℕ,
     {x | (q : ℝ) < s ∧ (s : ℝ) < r ∧ (r : ℝ) < p ∧ x ∈ finiteGap f p r s q n}

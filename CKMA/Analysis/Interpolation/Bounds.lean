@@ -29,7 +29,7 @@ Sources: GAPS 26.53 and 26.54.
   bound at the gauge level.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

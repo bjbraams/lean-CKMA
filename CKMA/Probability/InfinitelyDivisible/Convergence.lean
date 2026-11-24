@@ -24,7 +24,7 @@ Lévy's continuity theorem along a weakly convergent subsequence.
   functions that is continuous at `0` is the characteristic function of a probability measure.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

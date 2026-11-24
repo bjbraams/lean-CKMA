@@ -25,7 +25,7 @@ correction on `{1 / 2 ≤ |x| ≤ 1}` replaces the continuous cutoff by the trun
   admits a Lévy–Khintchine triplet.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

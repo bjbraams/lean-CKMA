@@ -34,7 +34,7 @@ support function of a set is unchanged by passing to the closed convex hull.
   from a uniform bound on directional derivatives.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

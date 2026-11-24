@@ -26,7 +26,7 @@ Source: GAPS 27.17.
   every circle Lebesgue point.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

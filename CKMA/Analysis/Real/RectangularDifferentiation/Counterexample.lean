@@ -33,7 +33,7 @@ The packing of translates, the higher-dimensional product, and the integrable sp
   inner square in a definite fraction.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -43,19 +43,24 @@ open scoped ENNReal NNReal BigOperators
 namespace CKMA.Bohr
 
 /-- The target average at stage `k`. -/
+@[expose]
 def stageHeight (k : ℕ) : ℝ := k + 1
 
 /-- Dyadic length producing a harmonic sum at least half this integer. -/
+@[expose]
 def stageLog (k : ℕ) : ℕ := (k + 1) * 2 ^ (k + 4)
 
 /-- Number of strips in the Bohr picture at stage `k`. -/
+@[expose]
 def stageCount (k : ℕ) : ℕ := 2 ^ stageLog k
 
 /-- Linear scale that makes every witnessing rectangle narrower than `2 ^ (-(k + 1))`. -/
+@[expose]
 def stageScale (k : ℕ) : ℝ :=
   1 / ((2 ^ (k + 2) : ℕ) * (stageCount k + 1) : ℝ)
 
 /-- Side length of the bounding square of one scaled picture. -/
+@[expose]
 def boxSide (k : ℕ) : ℝ := stageScale k * stageCount k
 
 /-- The scale is positive. -/
@@ -147,6 +152,7 @@ private lemma stage_harmonic_lower (k : ℕ) :
   linarith
 
 /-- Lower bound on the area of one scaled Bohr union of strips. -/
+@[expose]
 def areaLower (k : ℕ) : ℝ :=
   stageScale k ^ 2 * stageCount k * (stageLog k / 2)
 
@@ -159,6 +165,7 @@ lemma areaLower_pos (k : ℕ) : 0 < areaLower k := by
       unfold stageLog; positivity)) (by norm_num)
 
 /-- The open square in which translates of one picture are allowed to sit. -/
+@[expose]
 def translateDomain (k : ℕ) : Set (Fin 2 → ℝ) :=
   univ.pi fun _ => Ioo 0 (1 - boxSide k)
 
@@ -204,6 +211,7 @@ private lemma volume_translateDomain_pos_lt_top (k : ℕ) :
     exact (translateDomainRect k).volume_carrier_lt_top
 
 /-- A plane strip of the scaled Bohr picture, for an index `j ≥ 2`. -/
+@[expose]
 def stripRect (k j : ℕ) (hj : 2 ≤ j) : OpenRectangle 2 where
   lower := fun i => if i = 0 then stageScale k * (j - 1) else 0
   upper := fun i =>
@@ -238,6 +246,7 @@ private lemma strip_width_y (k j : ℕ) (hj : 2 ≤ j) :
   ring
 
 /-- The `j`-th strip when `j` lies in the harmonic range, and the empty set otherwise. -/
+@[expose]
 def stripCarrier (k j : ℕ) : Set (Fin 2 → ℝ) :=
   if h : 2 ≤ j ∧ j ≤ stageCount k then (stripRect k j h.1).carrier else ∅
 
@@ -303,6 +312,7 @@ private lemma pairwise_stripCarrier (k : ℕ) :
     linarith [mul_le_mul_of_nonneg_left hineq hτ]
 
 /-- Union of the harmonic strips in one scaled picture. -/
+@[expose]
 def badPlane (k : ℕ) : Set (Fin 2 → ℝ) :=
   ⋃ j ∈ Finset.Icc 2 (stageCount k), stripCarrier k j
 
@@ -339,6 +349,7 @@ private lemma areaLower_le_volume_badPlane (k : ℕ) :
   exact mul_le_mul_of_nonneg_left (stage_harmonic_lower k) (by positivity)
 
 /-- Length of each extra side of a witnessing window. -/
+@[expose]
 def extraSide (d k : ℕ) : ℝ :=
   if d ≤ 2 then 0 else 1 / ((2 ^ (k + 2) * (d - 2) : ℕ) : ℝ)
 
@@ -373,14 +384,17 @@ lemma natCast_sub_two_mul_extraSide (d k : ℕ) (hd : 2 < d) :
   rw [mul_left_comm, mul_inv_cancel₀ hd0, mul_one]
 
 /-- Lower corner of the inner rectangle. -/
+@[expose]
 def innerLower (d k : ℕ) (i : Fin d) : ℝ :=
   if i.val ≤ 1 then boxSide k else extraSide d k / 2
 
 /-- Upper corner of the inner rectangle. -/
+@[expose]
 def innerUpper (d k : ℕ) (i : Fin d) : ℝ :=
   if i.val ≤ 1 then 1 - boxSide k else 1 - extraSide d k / 2
 
 /-- The inner rectangle, where translates still see a full strip. -/
+@[expose]
 def innerRect (d k : ℕ) (_hd : 2 ≤ d) : OpenRectangle d where
   lower := innerLower d k
   upper := innerUpper d k
@@ -402,6 +416,7 @@ def innerRect (d k : ℕ) (_hd : 2 ≤ d) : OpenRectangle d where
       linarith
 
 /-- Carrier of the inner rectangle. -/
+@[expose]
 def innerSet (d k : ℕ) (hd : 2 ≤ d) : Set (Fin d → ℝ) := (innerRect d k hd).carrier
 
 /-- Side lengths of the inner rectangle. -/
@@ -548,6 +563,7 @@ private lemma volume_real_innerSet_gt (d k : ℕ) (hd : 2 ≤ d) :
   linarith [show (1 / 4 : ℝ) * (3 / 4) = 3 / 16 by norm_num]
 
 /-- Fraction of the translate domain removed by one picture. -/
+@[expose]
 def removalRatio (k : ℕ) : ℝ := areaLower k / volume.real (translateDomain k)
 
 /-- The removal ratio lies in the unit interval. -/
@@ -587,6 +603,7 @@ lemma removalRatio_mem_Ioo (k : ℕ) : 0 < removalRatio k ∧ removalRatio k < 1
   linarith
 
 /-- Number of translates used at stage `k`. -/
+@[expose]
 def copyCount (k : ℕ) : ℕ := Nat.floor (1 / removalRatio k) + 1
 
 /-- The copies multiply the removal ratio to at least one. -/
@@ -625,6 +642,7 @@ private lemma measurableSet_translateDomain (k : ℕ) : MeasurableSet (translate
   exact (translateDomainRect k).measurableSet_carrier
 
 /-- The open square in the plane where a witness still fits. -/
+@[expose]
 def innerPlane (k : ℕ) : Set (Fin 2 → ℝ) := innerSet 2 k le_rfl
 
 /-- Real area of the plane inner square. -/

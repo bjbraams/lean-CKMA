@@ -20,13 +20,11 @@ Source: GAPS 05.10.
 
 ## Main results
 
-* `hasDiniType_zero`, `hasDiniType_one`, `hasDiniType_two`,
-  `hasDiniType_three`: constructors for the four Dini patterns.
 * `CKMA.Dini.existsUnique_diniType_of_patterns`: the two opposite-pair patterns determine a
-  unique Dini type.
+  unique Dini type. The four pattern constructors are internal to this file.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

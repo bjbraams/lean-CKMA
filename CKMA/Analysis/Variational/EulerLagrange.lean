@@ -32,7 +32,7 @@ Source: GAPS 36.1.
   local minimizer (**36.1**).
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -43,10 +43,12 @@ open MeasureTheory
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E]
 
 /-- The integral action with a supplied weak derivative field. -/
+@[expose]
 def variationalAction (μ : Measure E) (L : E → ℝ → (E →L[ℝ] ℝ) → ℝ)
     (u : E → ℝ) (U : E → E →L[ℝ] ℝ) : ℝ := ∫ x, L x (u x) (U x) ∂μ
 
 /-- The first variation integrand, differentiating the value and derivative variables together. -/
+@[expose]
 def firstVariationIntegrand (L : E → ℝ → (E →L[ℝ] ℝ) → ℝ)
     (u : E → ℝ) (U : E → E →L[ℝ] ℝ) (φ : E → ℝ) (x : E) : ℝ :=
   fderiv ℝ (fun p : ℝ × (E →L[ℝ] ℝ) ↦ L x p.1 p.2) (u x, U x)

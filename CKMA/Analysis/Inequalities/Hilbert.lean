@@ -32,7 +32,8 @@ Source: GAPS 11.37.
 
 ## Main definitions
 
-* `CKMA.hilbertConstant`: Hilbert's sharp constant `π / sin (π / p)`.
+* `CKMA.hilbertConstant`: Hilbert's sharp constant `π / sin (π / p)`. At `p = 1` the value is `0`;
+  the inequalities assume `1 < p`.
 
 ## Main results
 
@@ -47,7 +48,7 @@ Source: GAPS 11.37.
   `π / sin (π / p)` is the least admissible constant in each form.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -56,7 +57,9 @@ namespace CKMA
 open MeasureTheory Set intervalIntegral Hilbert
 open scoped ENNReal
 
-/-- Hilbert's sharp constant at exponent `p`. -/
+/-- Hilbert's sharp constant `π / sin (π / p)`. At `p = 1` the sine in the denominator is `0`,
+so the value is `0`; the inequalities assume `1 < p`. -/
+@[expose]
 def hilbertConstant (p : ℝ) : ℝ := Real.pi / Real.sin (Real.pi / p)
 
 /-- Left Schur factor `f(x) (x / y) ^ (1 / (p q)) / (x + y) ^ (1 / p)`. -/
@@ -312,6 +315,15 @@ private lemma holder_schur_mul {c n m : ℝ≥0∞} {p q : ℝ}
       _ = (c ^ p⁻¹ * c ^ q⁻¹) * n * m := (mul_assoc _ _ _).symm
   rw [hre, ← ENNReal.rpow_add _ _ hc0 hct, hpq, ENNReal.rpow_one]
 
+/-- Slice bounds `I x = ‖φ x‖ ^ r * c` integrate to `c * (eLpNorm φ r) ^ r`. -/
+private lemma lintegral_schur_pow {ν : Measure ℝ} {φ : ℝ → ℝ} {r : ℝ} {c : ℝ≥0∞}
+    {I : ℝ → ℝ≥0∞} (hr : 1 < r) (hφ0 : ∀ x, 0 ≤ φ x)
+    (hφ : AEStronglyMeasurable φ ν) (hct : c ≠ ∞)
+    (hinner : ∀ᵐ x ∂ν, I x = ENNReal.ofReal (φ x) ^ r * c) :
+    ∫⁻ x, I x ∂ν = c * eLpNorm φ (ENNReal.ofReal r) ν ^ r := by
+  rw [lintegral_congr_ae hinner, lintegral_mul_const' _ _ hct,
+    lintegral_ofReal_rpow_eq_eLpNorm_rpow hr hφ0 hφ, mul_comm]
+
 /-- **11.37**: Hilbert's integral inequality for nonnegative functions on the positive half-line.
 The nonnegative integral avoids the totalized Bochner integral for infinite bilinear forms. -/
 theorem hilbert_integral {p : ℝ} (hp : 1 < p) {f g : ℝ → ℝ}
@@ -382,40 +394,32 @@ theorem hilbert_integral {p : ℝ} (hp : 1 < p) {f g : ℝ → ℝ}
       ENNReal.ofReal (hilbertConstant p) *
         eLpNorm f2 (ENNReal.ofReal p) ν ^ p := by
     rw [lintegral_prod _ (hF.pow_const p).aemeasurable]
-    have hinner : ∀ᵐ x ∂ν, ∫⁻ y, F (x, y) ^ p ∂ν =
-        ENNReal.ofReal (f2 x) ^ p * ENNReal.ofReal (hilbertConstant p) := by
-      filter_upwards [ae_restrict_mem measurableSet_Ioi] with x hx
-      have hpoint : ∫⁻ y, F (x, y) ^ p ∂ν =
-          ∫⁻ y, ENNReal.ofReal (hilbertLeft p q (fun _ => f2 x) x y) ^ p ∂ν := by
-        refine lintegral_congr fun y => ?_
-        simp only [F]
-        unfold hilbertLeft
-        rfl
-      rw [hpoint]
-      exact lintegral_hilbertLeft_pow hpq hx (hf2nn x)
-    rw [lintegral_congr_ae hinner, lintegral_mul_const' _ _ hct,
-      lintegral_ofReal_rpow_eq_eLpNorm_rpow hp hf2nn
-        (hf2m.aestronglyMeasurable.mono_measure Measure.restrict_le_self),
-      mul_comm]
+    refine lintegral_schur_pow hp hf2nn
+      (hf2m.aestronglyMeasurable.mono_measure Measure.restrict_le_self) hct ?_
+    filter_upwards [ae_restrict_mem measurableSet_Ioi] with x hx
+    have hpoint : ∫⁻ y, F (x, y) ^ p ∂ν =
+        ∫⁻ y, ENNReal.ofReal (hilbertLeft p q (fun _ => f2 x) x y) ^ p ∂ν := by
+      refine lintegral_congr fun y => ?_
+      simp only [F]
+      unfold hilbertLeft
+      rfl
+    rw [hpoint]
+    exact lintegral_hilbertLeft_pow hpq hx (hf2nn x)
   have hGq : ∫⁻ z, G z ^ q ∂(ν.prod ν) =
       ENNReal.ofReal (hilbertConstant p) *
         eLpNorm g2 (ENNReal.ofReal q) ν ^ q := by
     rw [lintegral_prod_symm (fun z => G z ^ q) (hG.pow_const q).aemeasurable]
-    have hinner : ∀ᵐ y ∂ν, ∫⁻ x, G (x, y) ^ q ∂ν =
-        ENNReal.ofReal (g2 y) ^ q * ENNReal.ofReal (hilbertConstant p) := by
-      filter_upwards [ae_restrict_mem measurableSet_Ioi] with y hy
-      have hpoint : ∫⁻ x, G (x, y) ^ q ∂ν =
-          ∫⁻ x, ENNReal.ofReal (hilbertRight p q (fun _ => g2 y) x y) ^ q ∂ν := by
-        refine lintegral_congr fun x => ?_
-        simp only [G]
-        unfold hilbertRight
-        rfl
-      rw [hpoint]
-      exact lintegral_hilbertRight_pow hpq hy (hg2nn y)
-    rw [lintegral_congr_ae hinner, lintegral_mul_const' _ _ hct,
-      lintegral_ofReal_rpow_eq_eLpNorm_rpow hpq.symm.lt hg2nn
-        (hg2m.aestronglyMeasurable.mono_measure Measure.restrict_le_self),
-      mul_comm]
+    refine lintegral_schur_pow hpq.symm.lt hg2nn
+      (hg2m.aestronglyMeasurable.mono_measure Measure.restrict_le_self) hct ?_
+    filter_upwards [ae_restrict_mem measurableSet_Ioi] with y hy
+    have hpoint : ∫⁻ x, G (x, y) ^ q ∂ν =
+        ∫⁻ x, ENNReal.ofReal (hilbertRight p q (fun _ => g2 y) x y) ^ q ∂ν := by
+      refine lintegral_congr fun x => ?_
+      simp only [G]
+      unfold hilbertRight
+      rfl
+    rw [hpoint]
+    exact lintegral_hilbertRight_pow hpq hy (hg2nn y)
   have hHolder := ENNReal.lintegral_mul_le_Lp_mul_Lq (ν.prod ν) hpq
     hF.aemeasurable hG.aemeasurable
   rw [hprod] at hHolder
@@ -558,15 +562,18 @@ private lemma hilbertConstant_eq_conj (p : ℝ) :
 
 /-! #### The integral inequality -/
 
+/-- The open interval `(1, N)` lies in the positive half-line. -/
 private lemma Ioo_one_subset_Ioi_zero {N : ℝ} : Ioo (1 : ℝ) N ⊆ Ioi 0 :=
   fun _ hx => zero_lt_one.trans hx.1
 
 /-- Truncated power `x ^ e` on `(1, N)`, the test function for the integral optimality. -/
 private def hilbertTest (N e : ℝ) : ℝ → ℝ := (Ioo 1 N).indicator fun x => x ^ e
 
+/-- The truncated power test function is nonnegative. -/
 private lemma hilbertTest_nonneg (N e x : ℝ) : 0 ≤ hilbertTest N e x :=
   Set.indicator_nonneg (fun _ hy => Real.rpow_nonneg (Ioo_one_subset_Ioi_zero hy).le _) x
 
+/-- The truncated power test function is measurable. -/
 private lemma measurable_hilbertTest (N e : ℝ) : Measurable (hilbertTest N e) :=
   (measurable_id.pow_const e).indicator measurableSet_Ioo
 
@@ -667,6 +674,26 @@ private lemma hilbert_integral_lower {a N : ℝ} (ha0 : 0 < a) (ha1 : a < 1) (hN
         rw [lintegral_add_left (by fun_prop)]
         exact add_le_add hE1 hE2
 
+/-- For `1 < p`, the weight `a = 1 - p⁻¹` and the conjugate `q = p / (p - 1)` satisfy
+`0 < a < 1`, `1 < q`, `p⁻¹ + q⁻¹ = 1`, `(a - 1) * p = -1` and `(-a) * q = -1`. -/
+private lemma hilbertConjFacts {p : ℝ} (hp : 1 < p) :
+    0 < 1 - p⁻¹ ∧ 1 - p⁻¹ < 1 ∧ 1 < p / (p - 1) ∧
+      p⁻¹ + (p / (p - 1))⁻¹ = 1 ∧
+      ((1 - p⁻¹) - 1) * p = -1 ∧
+      (-(1 - p⁻¹)) * (p / (p - 1)) = -1 := by
+  refine ⟨?_, ?_, ?_, ?_, ?_, ?_⟩
+  · linarith [inv_lt_one_of_one_lt₀ hp]
+  · linarith [inv_pos.mpr (zero_lt_one.trans hp)]
+  · rw [lt_div_iff₀ (by linarith : (0 : ℝ) < p - 1)]
+    linarith
+  · rw [inv_div]
+    field_simp
+    ring
+  · field_simp
+    ring
+  · rw [neg_mul]
+    field_simp
+
 /-- **11.37** (optimality, integral form): no constant smaller than `π / sin (π / p)` bounds
 Hilbert's bilinear form on `(0, ∞)`. -/
 theorem hilbertConstant_le_of_hilbert_integral_le {p : ℝ} (hp : 1 < p) {C : ℝ≥0∞}
@@ -677,21 +704,9 @@ theorem hilbertConstant_le_of_hilbert_integral_le {p : ℝ} (hp : 1 < p) {C : �
         C * eLpNorm f (ENNReal.ofReal p) (volume.restrict (Ioi 0)) *
           eLpNorm g (ENNReal.ofReal (p / (p - 1))) (volume.restrict (Ioi 0))) :
     ENNReal.ofReal (hilbertConstant p) ≤ C := by
-  set a : ℝ := 1 - p⁻¹ with ha
-  set q : ℝ := p / (p - 1) with hq
-  have hp0 : 0 < p := zero_lt_one.trans hp
-  have hinv1 : p⁻¹ < 1 := inv_lt_one_of_one_lt₀ hp
-  have ha0 : 0 < a := by linarith
-  have ha1 : a < 1 := by linarith [inv_pos.mpr hp0]
-  have hq1 : 1 < q := by
-    rw [hq, lt_div_iff₀ (by linarith)]
-    linarith
-  have hqinv : q⁻¹ = a := by
-    rw [hq, ha, inv_div]
-    field_simp
-  have hpq : p⁻¹ + q⁻¹ = 1 := by rw [hqinv, ha]; ring
-  have hep : (a - 1) * p = -1 := by rw [ha]; field_simp; ring
-  have heq : (-a) * q = -1 := by rw [← hqinv, neg_mul, inv_mul_cancel₀ (by linarith)]
+  obtain ⟨ha0, ha1, hq1, hpq, hep, heq⟩ := hilbertConjFacts hp
+  set a : ℝ := 1 - p⁻¹
+  set q : ℝ := p / (p - 1)
   rw [hilbertConstant_eq_conj]
   refine le_of_forall_nat_le_mul_le (d := ENNReal.ofReal (-1 / (a - 1)) *
       ENNReal.ofReal (1 - a)⁻¹ + ENNReal.ofReal (1 / (a * a)))
@@ -722,6 +737,7 @@ theorem hilbertConstant_le_of_hilbert_integral_le {p : ℝ} (hp : 1 < p) {C : �
 optimality. -/
 private def hilbertSeq (N : ℕ) (e : ℝ) (m : ℕ) : ℝ := if m < N then ((m : ℝ) + 1) ^ e else 0
 
+/-- The truncated power test sequence is nonnegative. -/
 private lemma hilbertSeq_nonneg (N : ℕ) (e : ℝ) (m : ℕ) : 0 ≤ hilbertSeq N e m := by
   unfold hilbertSeq
   split_ifs
@@ -828,21 +844,9 @@ theorem hilbertConstant_le_of_hilbert_tsum_le {p : ℝ} (hp : 1 < p) {C : ℝ≥
         C * eLpNorm u (ENNReal.ofReal p) Measure.count *
           eLpNorm v (ENNReal.ofReal (p / (p - 1))) Measure.count) :
     ENNReal.ofReal (hilbertConstant p) ≤ C := by
-  set a : ℝ := 1 - p⁻¹ with ha
-  set q : ℝ := p / (p - 1) with hq
-  have hp0 : 0 < p := zero_lt_one.trans hp
-  have hinv1 : p⁻¹ < 1 := inv_lt_one_of_one_lt₀ hp
-  have ha0 : 0 < a := by linarith
-  have ha1 : a < 1 := by linarith [inv_pos.mpr hp0]
-  have hq1 : 1 < q := by
-    rw [hq, lt_div_iff₀ (by linarith)]
-    linarith
-  have hqinv : q⁻¹ = a := by
-    rw [hq, ha, inv_div]
-    field_simp
-  have hpq : p⁻¹ + q⁻¹ = 1 := by rw [hqinv, ha]; ring
-  have hep : (a - 1) * p = -1 := by rw [ha]; field_simp; ring
-  have heq : (-a) * q = -1 := by rw [← hqinv, neg_mul, inv_mul_cancel₀ (by linarith)]
+  obtain ⟨ha0, ha1, hq1, hpq, hep, heq⟩ := hilbertConjFacts hp
+  set a : ℝ := 1 - p⁻¹
+  set q : ℝ := p / (p - 1)
   have hsum : Summable fun m : ℕ => ((m : ℝ) + 1) ^ (a - 2) := by
     have h := (summable_nat_add_iff 1).mpr
       (Real.summable_nat_rpow.mpr (show a - 2 < -1 by linarith))

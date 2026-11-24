@@ -29,7 +29,7 @@ The matching midpoint lower bound is in
   Chebyshev-extrema Lebesgue constant.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

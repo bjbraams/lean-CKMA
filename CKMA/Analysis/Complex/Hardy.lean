@@ -44,7 +44,7 @@ Sources: GAPS 42.1 and 42.7.
 * `CKMA.exists_hardy_factorization`: canonical Blaschke–singular–outer factorization (**42.7**).
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -54,33 +54,41 @@ open Filter Topology MeasureTheory
 open scoped BigOperators ENNReal ComplexConjugate
 
 /-- The angular parametrization of the unit circle. -/
+@[expose]
 def unitCirclePoint (t : ℝ) : ℂ := Complex.exp ((t : ℂ) * Complex.I)
 
 /-- Normalized angular measure, on a half-open period so each circle point is represented once. -/
+@[expose]
 def normalizedAngularMeasure : Measure ℝ :=
   (ENNReal.ofReal (2 * Real.pi))⁻¹ • volume.restrict (Set.Ioc 0 (2 * Real.pi))
 
 /-- The radial `p`th mean, retaining infinite values. -/
+@[expose]
 def hardyRadialMean (p : ℝ) (f : ℂ → ℂ) (r : ℝ) : ℝ≥0∞ :=
   ∫⁻ t, (ENNReal.ofReal ‖f ((r : ℂ) * unitCirclePoint t)‖) ^ p ∂normalizedAngularMeasure
 
 /-- The analytic Hardy gauge for finite positive exponents. -/
+@[expose]
 def hardyGauge (p : ℝ) (f : ℂ → ℂ) : ℝ≥0∞ :=
   (⨆ (r : ℝ) (_hr : 0 ≤ r ∧ r < 1), hardyRadialMean p f r) ^ (1 / p)
 
 /-- Membership of the analytic Hardy class; theorems require `p>0`. -/
+@[expose]
 def MemHardyClass (p : ℝ) (f : ℂ → ℂ) : Prop :=
   DifferentiableOn ℂ f complexUnitDisk ∧ hardyGauge p f ≠ ∞
 
 /-- The extended supremum norm of a function on the disk. -/
+@[expose]
 def diskSupGauge (f : ℂ → ℂ) : ℝ≥0∞ :=
   ⨆ (z : ℂ) (_hz : z ∈ complexUnitDisk), ENNReal.ofReal ‖f z‖
 
 /-- Bounded holomorphic functions on the disk. -/
+@[expose]
 def MemHardyInfinity (f : ℂ → ℂ) : Prop :=
   DifferentiableOn ℂ f complexUnitDisk ∧ diskSupGauge f ≠ ∞
 
 /-- A nontangential boundary limit, required in every fixed Stolz region. -/
+@[expose]
 def HasNontangentialLimit (f : ℂ → ℂ) (ζ L : ℂ) : Prop :=
   ∀ A : ℝ, 1 < A → Tendsto f
     (𝓝[{z ∈ complexUnitDisk | ‖z - ζ‖ ≤ A * (1 - ‖z‖)}] ζ) (𝓝 L)
@@ -106,33 +114,45 @@ theorem hardyInfinity_boundary_realization {f : ℂ → ℂ} (hf : MemHardyInfin
   sorry
 
 /-- Inner functions: bounded by one in the disk, with boundary modulus one almost everywhere. -/
+@[expose]
 def IsDiskInner (f : ℂ → ℂ) : Prop :=
   DifferentiableOn ℂ f complexUnitDisk ∧ diskSupGauge f ≤ 1 ∧
     ∀ᵐ t ∂normalizedAngularMeasure,
       Tendsto (fun r : ℝ ↦ ‖f ((r : ℂ) * unitCirclePoint t)‖) (𝓝[<] 1) (𝓝 1)
 
 /-- A normalized elementary Blaschke factor. -/
+@[expose]
 def blaschkeFactor (a z : ℂ) : ℂ :=
   if a = 0 then z else (‖a‖ : ℂ) / a * (a - z) / (1 - conj a * z)
 
 /-- A finite or infinite Blaschke zero list; `none` permits finite lists without dummy zeros. -/
+@[expose]
 def IsBlaschkeZeroList (a : ℕ → Option ℂ) : Prop :=
   (∀ n z, a n = some z → ‖z‖ < 1) ∧
     (∑' n, match a n with | none => (0 : ℝ≥0∞) | some z => ENNReal.ofReal (1 - ‖z‖)) < ∞
 
 /-- The pointwise Blaschke product of a zero list. -/
+@[expose]
 def blaschkeProduct (a : ℕ → Option ℂ) (z : ℂ) : ℂ :=
   ∏' n, match a n with | none => 1 | some w => blaschkeFactor w z
 
 /-- The disk Herglotz kernel at a boundary angle. -/
+@[expose]
 def diskHerglotzKernel (z : ℂ) (t : ℝ) : ℂ :=
   (unitCirclePoint t + z) / (unitCirclePoint t - z)
 
-/-- The singular inner factor of a finite angular measure. -/
+/-- Singular inner factor `exp (-∫ diskHerglotzKernel z ∂μ)`.
+No finiteness hypothesis is required. The Bochner integral of a non-integrable integrand is `0`,
+so the value is `1` in that case. -/
+@[expose]
 def singularInnerFactor (μ : Measure ℝ) (z : ℂ) : ℂ :=
   Complex.exp (-∫ t, diskHerglotzKernel z t ∂μ)
 
-/-- The normalized outer factor with positive boundary modulus `h`. -/
+/-- Outer factor `exp (∫ diskHerglotzKernel z · Real.log ∘ h)`.
+Positivity and log-integrability of `h` are not required; they belong to
+`exists_hardy_factorization`. `Real.log` of a nonpositive argument is `0`. A non-integrable
+integrand integrates to `0`, and then the value is `1`. -/
+@[expose]
 def outerFactor (h : ℝ → ℝ) (z : ℂ) : ℂ :=
   Complex.exp (∫ t, diskHerglotzKernel z t * Real.log (h t) ∂normalizedAngularMeasure)
 

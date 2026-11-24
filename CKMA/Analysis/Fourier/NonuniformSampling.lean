@@ -38,7 +38,7 @@ Sources: GAPS 29.61 and 29.62.
   density bounds for stable sampling and interpolation (**29.62**).
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -48,6 +48,7 @@ open MeasureTheory Filter Topology
 open scoped BigOperators ENNReal
 
 /-- The normalized frequency-interval exponential at sampling location lambda. -/
+@[expose]
 def samplingExponential (B : ℝ) (samples : ℝ) (ξ : ℝ) : ℂ :=
   (Real.sqrt (2 * B) : ℂ)⁻¹ * Complex.exp (-2 * Real.pi * Complex.I * samples * ξ)
 
@@ -66,28 +67,34 @@ theorem kadec_oneQuarter_sharp {c : ℝ} (hc : 1 / 4 < c) :
   sorry
 
 /-- Uniform separation of a sample family; it also implies that the indexing is injective. -/
+@[expose]
 def IsUniformlySeparatedSamples {ι : Type*} (samples : ι → ℝ) : Prop :=
   ∃ δ : ℝ, 0 < δ ∧ ∀ i j, i ≠ j → δ ≤ dist (samples i) (samples j)
 
 /-- Sample counting on a closed interval. Under uniform separation this cardinal is finite.
 Outside the locally finite regime, `Set.ncard` assigns zero to infinite sets. -/
+@[expose]
 def sampleCount {ι : Type*} (samples : ι → ℝ) (x R : ℝ) : ℕ :=
   (Set.range samples ∩ Set.Icc x (x + R)).ncard
 
 /-- Lower uniform Beurling density for locally finite sample sets.
 The Landau targets impose uniform separation. -/
+@[expose]
 def lowerSampleDensity {ι : Type*} (samples : ι → ℝ) : ℝ≥0∞ :=
   liminf (fun R : ℝ ↦ ⨅ x : ℝ, ENNReal.ofReal (sampleCount samples x R / R)) atTop
 
 /-- Upper uniform Beurling density for locally finite sample sets. -/
+@[expose]
 def upperSampleDensity {ι : Type*} (samples : ι → ℝ) : ℝ≥0∞ :=
   limsup (fun R : ℝ ↦ ⨆ x : ℝ, ENNReal.ofReal (sampleCount samples x R / R)) atTop
 
 /-- Spectral support in the band [-B,B], interpreted almost everywhere. -/
+@[expose]
 def HasFrequencyBand (B : ℝ) (u : Lp ℂ 2 (volume : Measure ℝ)) : Prop :=
   ∀ᵐ ξ ∂volume, ξ ∉ Set.Icc (-B) B → u ξ = 0
 
 /-- Stable sampling for all inverse-integral bandlimited representatives. -/
+@[expose]
 def IsStableBandSampling {ι : Type*} (B : ℝ) (samples : ι → ℝ) : Prop :=
   ∃ A C : ℝ, 0 < A ∧ A ≤ C ∧ ∀ u : Lp ℂ 2 (volume : Measure ℝ),
     HasFrequencyBand B u →
@@ -97,6 +104,7 @@ def IsStableBandSampling {ι : Type*} (B : ℝ) (samples : ι → ℝ) : Prop :=
       ENNReal.ofReal (C * ‖u‖ ^ 2)
 
 /-- Stable interpolation means bounded solvability for all l2 data. -/
+@[expose]
 def IsStableBandInterpolation {ι : Type*} (B : ℝ) (samples : ι → ℝ) : Prop :=
   ∃ C : ℝ, 0 < C ∧ ∀ c : lp (fun _ : ι ↦ ℂ) 2,
     ∃ u : Lp ℂ 2 (volume : Measure ℝ), HasFrequencyBand B u ∧

@@ -33,7 +33,7 @@ map `ℝ → ℝ`. Source: GAPS 05.10.
   inequalities.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

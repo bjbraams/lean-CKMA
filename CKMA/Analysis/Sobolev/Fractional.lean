@@ -45,7 +45,7 @@ Source: GAPS 26.37.
   finite Gagliardo and Bessel-potential energies on `L²(ℝ^d)`.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -55,11 +55,13 @@ open MeasureTheory FourierTransform
 open scoped ENNReal FourierTransform RealInnerProductSpace
 
 /-- Gagliardo's squared fractional `L²` seminorm, allowing infinite energy. -/
+@[expose]
 def fractionalEnergy {d : ℕ} (s : ℝ) (u : EuclideanSpace ℝ (Fin d) → ℂ) : ℝ≥0∞ :=
   ∫⁻ x, ∫⁻ y, ENNReal.ofReal (‖u x - u y‖ ^ 2) /
     ENNReal.ofReal (‖x - y‖ ^ ((d : ℝ) + 2 * s))
 
 /-- The Bessel-potential energy at order `s`, on the Fourier side of `L²`. -/
+@[expose]
 def besselPotentialEnergy {d : ℕ} (s : ℝ)
     (u : Lp ℂ 2 (volume : Measure (EuclideanSpace ℝ (Fin d)))) : ℝ≥0∞ :=
   ∫⁻ ξ, ENNReal.ofReal ((1 + ‖ξ‖ ^ 2) ^ s * ‖(𝓕 u) ξ‖ ^ 2)

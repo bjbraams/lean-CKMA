@@ -35,7 +35,7 @@ with the full compact attractor.
   iterated function system.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

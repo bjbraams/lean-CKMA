@@ -34,7 +34,7 @@ Sources: GAPS 34.24 and 34.32.
 * `CKMA.focusing_nls_virial` (**34.32**): the classical Glassey virial identity for focusing NLS.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -44,24 +44,27 @@ open MeasureTheory FourierTransform
 open scoped ENNReal FourierTransform ComplexConjugate
 
 /-- Mathlib essential supremum with the measure argument first. -/
-@[deprecated "use `essSup f μ`" (since := "2026-11-15")]
+@[expose, deprecated "use `essSup f μ`" (since := "2026-11-15")]
 abbrev nonnegativeEssentialSup {X : Type*} [MeasurableSpace X] (μ : Measure X)
     (f : X → ℝ≥0∞) : ℝ≥0∞ :=
   essSup f μ
 
 /-- A mixed `L_t^q L_x^r` gauge for positive exponents, including `q = ∞`.
 Infinite spatial norms remain infinite; exponent zero retains the totalized power convention. -/
+@[expose]
 def mixedLebesgueGauge {d : ℕ} (q r : ℝ≥0∞) (I : Set ℝ)
     (u : ℝ → EuclideanRealSpace d → ℂ) : ℝ≥0∞ :=
   if q = ∞ then essSup (fun t ↦ eLpNorm (u t) r volume) (volume.restrict I)
   else (∫⁻ t in I, (eLpNorm (u t) r volume) ^ q.toReal) ^ (1 / q.toReal)
 
 /-- Schrödinger admissibility, including infinite exponents and excluding the forbidden endpoint. -/
+@[expose]
 def IsSchrodingerAdmissible (d : ℕ) (q r : ℝ≥0∞) : Prop :=
   2 ≤ q ∧ 2 ≤ r ∧ 2 * (q⁻¹).toReal + d * (r⁻¹).toReal = (d : ℝ) / 2 ∧
     ¬ (q = 2 ∧ r = ∞ ∧ d = 2)
 
 /-- Free Schrödinger evolution on integrable inputs in Mathlib's `2π` Fourier convention. -/
+@[expose]
 def freeSchrodinger {d : ℕ} (f : EuclideanRealSpace d → ℂ) (t : ℝ)
     (x : EuclideanRealSpace d) : ℂ :=
   ∫ ξ, Complex.exp (2 * Real.pi * Complex.I * (inner ℝ x ξ : ℝ) -
@@ -77,15 +80,18 @@ theorem homogeneous_strichartz {d : ℕ} (hd : 0 < d) {q r : ℝ≥0∞}
   sorry
 
 /-- Focusing NLS energy with the usual `1/2` and `1/(p+1)` normalization. -/
+@[expose]
 def focusingNLSEnergy {d : ℕ} (p : ℝ) (u : EuclideanRealSpace d → ℂ) : ℝ :=
   (1 / 2 : ℝ) * (∫ x, ∑ j : Fin d, ‖fderiv ℝ u x (euclideanUnitVector j)‖ ^ 2) -
     (p + 1)⁻¹ * ∫ x, ‖u x‖ ^ (p + 1)
 
 /-- Spatial variance of a complex wave. -/
+@[expose]
 def nlsVariance {d : ℕ} (u : EuclideanRealSpace d → ℂ) : ℝ :=
   ∫ x, ‖x‖ ^ 2 * ‖u x‖ ^ 2
 
 /-- The classical focusing NLS equation `i u_t + Δu = -|u|^{p-1}u`. -/
+@[expose]
 def IsClassicalFocusingNLS {d : ℕ} (p : ℝ)
     (u : ℝ → EuclideanRealSpace d → ℂ) (I : Set ℝ) : Prop :=
   ∀ t ∈ I, ∀ x, Complex.I * deriv (fun s ↦ u s x) t + Laplacian.laplacian (u t) x =

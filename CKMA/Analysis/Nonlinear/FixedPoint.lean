@@ -9,6 +9,7 @@ public import Mathlib.Analysis.Convex.Uniform
 public import Mathlib.Topology.Algebra.Module.LocallyConvex
 public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 import Mathlib.Analysis.Normed.Module.RCLike.Real
+import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.LinearAlgebra.FiniteDimensional.Basic
 import Mathlib.Order.Filter.AtTopBot.Archimedean
 import Mathlib.Order.Filter.AtTopBot.Tendsto
@@ -20,6 +21,7 @@ import Mathlib.Topology.Order.OrderClosed
 import Mathlib.Topology.Sequences
 import Mathlib.Topology.UniformSpace.Cauchy
 import TauCeti.AlgebraicTopology.Singular.BrouwerFixedPoint
+import TauCeti.Analysis.Convex.SchauderFixedPoint
 
 /-!
 # Fixed points beyond contraction mappings
@@ -33,10 +35,10 @@ The Browder–Göhde–Kirk statement uses uniform convexity and a nonexpansive 
 bounded convex set; compactness of the map is not required. Sources: GAPS 35.12, 35.13, 35.15, and
 35.21.
 
-Schauder's argument approximates the compact closure of the image by a finite net, projects onto
-the convex hull of that net by the continuous Schauder weights `schauderWeight`, and applies
-`TauCeti.brouwerFixedPoint_compactConvex_finiteSpan`. Completeness of the ambient space is not
-used beyond the stated Banach setting: the limit lives in the given compact closure.
+The approximation lemmas build a finite-net Schauder projection and call
+`TauCeti.brouwerFixedPoint_compactConvex_finiteSpan`. The closed-convex statement
+`exists_fixedPoint_schauder` is TauCeti's `schauderFixedPoint_closedConvex`, which does not
+require completeness of the ambient space.
 
 ## Main results
 
@@ -44,14 +46,15 @@ used beyond the stated Banach setting: the limit lives in the given compact clos
   finite-dimensional real normed space (**35.12**), derived from TauCeti's
   `TauCeti.brouwerFixedPoint_compactConvex`.
 * `CKMA.exists_fixedPoint_schauder`: Schauder's fixed-point theorem with relatively compact total
-  image on a closed convex set (**35.13**).
+  image on a closed convex set (**35.13**), from `TauCeti.schauderFixedPoint_closedConvex`.
 * `CKMA.exists_fixedPoint_kakutani`: Kakutani–Fan–Glicksberg fixed-point theorem for compact convex
   subsets of locally convex spaces (**35.15**).
 * `CKMA.exists_fixedPoint_nonexpansive`: Browder–Göhde–Kirk fixed-point theorem for nonexpansive
-  maps on uniformly convex Banach spaces (**35.21**).
+  maps on uniformly convex Banach spaces (**35.21**), via the unique asymptotic center
+  of a bounded orbit.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -71,6 +74,7 @@ section SchauderProjection
 variable {E : Type*} [NormedAddCommGroup E]
 
 /-- Truncated distance `max (ε - ‖x - y‖, 0)` of `x` from a net point `y`. -/
+@[expose]
 def schauderWeight (ε : ℝ) (y x : E) : ℝ := max (ε - ‖x - y‖) 0
 
 /-- The Schauder weight is nonnegative. -/
@@ -99,6 +103,7 @@ theorem continuous_schauderWeight (ε : ℝ) (y : E) : Continuous (schauderWeigh
   · exact continuous_const
 
 /-- Sum of the Schauder weights of a finite net `t` at `x`. -/
+@[expose]
 def schauderWeightSum (t : Finset E) (ε : ℝ) (x : E) : ℝ :=
   ∑ y ∈ t, schauderWeight ε y x
 
@@ -119,6 +124,7 @@ variable [NormedSpace ℝ E]
 
 /-- Schauder projection of `x` onto the convex hull of the finite net `t` at scale `ε`.
 The value is the junk center of mass `0` when every weight vanishes. -/
+@[expose]
 def schauderProjection (t : Finset E) (ε : ℝ) (x : E) : E :=
   t.centerMass (fun y ↦ schauderWeight ε y x) id
 
@@ -282,44 +288,16 @@ theorem exists_dist_le_schauder {E : Type*} [NormedAddCommGroup E] [NormedSpace 
   exact dist_schauderProjection_le (hSpos z)
 
 /-- **35.13**: Schauder's theorem with relatively compact total image on a closed convex set.
-Boundedness of the domain is not required when the total image is relatively compact. -/
+Boundedness of the domain is not required when the total image is relatively compact.
+Completeness of `E` is not required. This is `TauCeti.schauderFixedPoint_closedConvex`. -/
 theorem exists_fixedPoint_schauder {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-    [CompleteSpace E] {C : Set E} (hne : C.Nonempty) (hclosed : IsClosed C)
+    {C : Set E} (hne : C.Nonempty) (hclosed : IsClosed C)
     (hc : Convex ℝ C) (T : C → C) (hT : Continuous T)
     (himage : IsCompact (closure (Set.range (fun x : C ↦ (T x : E))))) :
     ∃ x : C, T x = x := by
-  -- The stated Banach hypothesis is not required for the compact-closure limit below.
-  have _ : CompleteSpace E := inferInstance
-  set K := closure (Set.range fun x : C ↦ (T x : E)) with hK
-  have hK_sub : K ⊆ C := by
-    rw [hK]
-    refine closure_minimal ?_ hclosed
-    rintro _ ⟨x, rfl⟩
-    exact (T x).2
-  choose x hx using fun n : ℕ ↦ exists_dist_le_schauder hne hclosed hc T hT himage
-    (ε := ((n : ℝ) + 1)⁻¹) (inv_pos.2 <| add_pos_of_nonneg_of_pos (Nat.cast_nonneg n) zero_lt_one)
-  obtain ⟨a, ha, φ, hφ, ha_lim⟩ :=
-    himage.tendsto_subseq fun n ↦ by
-      rw [hK]
-      exact subset_closure (mem_range_self (x n))
-  have hφ_inv : Tendsto (fun n ↦ ((φ n : ℝ) + 1)⁻¹) atTop (𝓝 0) :=
-    (tendsto_atTop_add_const_right atTop (1 : ℝ)
-      (tendsto_natCast_atTop_atTop.comp hφ.tendsto_atTop)).inv_tendsto_atTop
-  have hclose : Tendsto (fun n ↦ dist ((x (φ n) : E)) (T (x (φ n)) : E)) atTop (𝓝 0) :=
-    squeeze_zero (fun _ ↦ dist_nonneg) (fun n ↦ hx (φ n)) hφ_inv
-  have hx_lim : Tendsto (fun n ↦ (x (φ n) : E)) atTop (𝓝 a) := by
-    refine tendsto_iff_dist_tendsto_zero.mpr ?_
-    refine squeeze_zero (fun _ ↦ dist_nonneg)
-      (fun n ↦ dist_triangle ((x (φ n) : E)) (T (x (φ n)) : E) a) ?_
-    have hsum := hclose.add ((tendsto_iff_dist_tendsto_zero).mp ha_lim)
-    rw [add_zero] at hsum
-    exact hsum
-  have haC : a ∈ C := hK_sub ha
-  have hxC : Tendsto (fun n ↦ x (φ n)) atTop (𝓝 ⟨a, haC⟩) :=
-    tendsto_subtype_rng.mpr hx_lim
-  have hTlim : Tendsto (fun n ↦ (T (x (φ n)) : E)) atTop (𝓝 (T ⟨a, haC⟩ : E)) :=
-    (continuous_subtype_val.tendsto _).comp ((hT.tendsto ⟨a, haC⟩).comp hxC)
-  exact ⟨⟨a, haC⟩, Subtype.ext (tendsto_nhds_unique hTlim ha_lim)⟩
+  obtain ⟨x, hx⟩ :=
+    TauCeti.schauderFixedPoint_closedConvex hclosed hc hne ⟨T, hT⟩ himage
+  exact ⟨x, hx⟩
 
 set_option warn.sorry false in
 /-- **35.15**: Kakutani–Fan–Glicksberg for compact convex subsets of locally convex spaces.
@@ -333,13 +311,114 @@ theorem exists_fixedPoint_kakutani {E : Type*} [AddCommGroup E] [Module ℝ E]
     ∃ x ∈ C, x ∈ T x := by
   sorry
 
-set_option warn.sorry false in
 /-- **35.21**: Browder–Göhde–Kirk requires uniform convexity of the Banach space,
 not compactness of the nonexpansive map. -/
 theorem exists_fixedPoint_nonexpansive {E : Type*} [NormedAddCommGroup E]
     [NormedSpace ℝ E] [CompleteSpace E] [UniformConvexSpace E]
     {C : Set E} (hne : C.Nonempty) (hclosed : IsClosed C) (hbounded : Bornology.IsBounded C)
     (hc : Convex ℝ C) (T : C → C) (hT : LipschitzWith 1 T) : ∃ x : C, T x = x := by
-  sorry
+  classical
+  obtain ⟨x₀, hx₀⟩ := hne
+  let orbit (n : ℕ) : C := T^[n] ⟨x₀, hx₀⟩
+  -- Minimize the radii of balls containing a tail of the orbit.
+  let covers (x : C) (s : ℝ) := ∀ᶠ n in atTop, dist x (orbit n) ≤ s
+  let radii : Set ℝ := {s | ∃ x : C, covers x s}
+  let r := sInf radii
+  have hradii : radii.Nonempty := by
+    obtain ⟨D, hD⟩ := Metric.isBounded_iff.mp hbounded
+    exact ⟨D, ⟨x₀, hx₀⟩, Eventually.of_forall fun n ↦ hD hx₀ (orbit n).2⟩
+  have hradii_nonneg : ∀ s ∈ radii, 0 ≤ s := by
+    rintro s ⟨x, hx⟩
+    obtain ⟨n, hn⟩ := hx.exists
+    exact dist_nonneg.trans hn
+  have hradii_bdd : BddBelow radii := ⟨0, hradii_nonneg⟩
+  have hr : 0 ≤ r := le_csInf hradii hradii_nonneg
+  have hmono (x : C) {s t : ℝ} (hst : s ≤ t) (hx : covers x s) : covers x t :=
+    hx.mono fun _ hn ↦ hn.trans hst
+  have hnear (η : ℝ) (hη : 0 < η) : ∃ x : C, covers x (r + η) := by
+    obtain ⟨s, ⟨x, hx⟩, hs⟩ := exists_lt_of_csInf_lt hradii (lt_add_of_pos_right r hη)
+    exact ⟨x, hmono x hs.le hx⟩
+  -- Uniform convexity forces two nearly optimal centers to be close.
+  have hclose (ε : ℝ) (hε : 0 < ε) :
+      ∃ η > 0, ∀ x y : C, covers x (r + η) → covers y (r + η) → dist x y < ε := by
+    rcases hr.eq_or_lt with hr₀ | hrpos
+    · refine ⟨ε / 3, by positivity, fun x y hx hy ↦ ?_⟩
+      obtain ⟨n, hxn, hyn⟩ := (hx.and hy).exists
+      rw [← hr₀, zero_add] at hxn hyn
+      exact (dist_triangle_right x y (orbit n)).trans_lt (by linarith)
+    obtain ⟨δ, hδ, hconvex⟩ :=
+      exists_forall_closed_ball_dist_add_le_two_sub E (div_pos hε (by positivity : 0 < r + 1))
+    let η := min 1 (δ * r / 4)
+    have hη : 0 < η := lt_min zero_lt_one (by positivity)
+    let s := r + η
+    have hs : 0 < s := add_pos hrpos hη
+    have hs_upper : s ≤ r + 1 := add_le_add_right (min_le_left _ _) r
+    have hη_upper : η ≤ δ * r / 4 := min_le_right _ _
+    refine ⟨η, hη, fun x y hx hy ↦ ?_⟩
+    by_contra! hxy
+    let m : C := ⟨midpoint ℝ (x : E) (y : E), hc.midpoint_mem x.2 y.2⟩
+    have hm : covers m (s - δ * s / 2) := by
+      filter_upwards [hx, hy] with n hxn hyn
+      let z : E := orbit n
+      let u : E := (x : E) - z
+      let v : E := (y : E) - z
+      have hnorm (w : E) (hw : ‖w‖ ≤ s) : ‖s⁻¹ • w‖ ≤ 1 := by
+        rw [norm_smul_of_nonneg (inv_nonneg.mpr hs.le), inv_mul_eq_div]
+        exact (div_le_one hs).mpr hw
+      have hsub : u - v = (x : E) - (y : E) := sub_sub_sub_cancel_right _ _ _
+      have hsep : ε / (r + 1) ≤ ‖s⁻¹ • u - s⁻¹ • v‖ := by
+        rw [← smul_sub, hsub, norm_smul_of_nonneg (inv_nonneg.mpr hs.le),
+          inv_mul_eq_div, ← dist_eq_norm]
+        exact (div_le_div_of_nonneg_left hε.le hs hs_upper).trans
+          (div_le_div_of_nonneg_right hxy hs.le)
+      have hsum := hconvex (hnorm u (by simpa only [Subtype.dist_eq, dist_eq_norm] using hxn))
+        (hnorm v (by simpa only [Subtype.dist_eq, dist_eq_norm] using hyn)) hsep
+      rw [← smul_add, norm_smul_of_nonneg (inv_nonneg.mpr hs.le), inv_mul_eq_div,
+        div_le_iff₀ hs] at hsum
+      have hmz : (m : E) - z = (⅟(2 : ℝ)) • (u + v) := by
+        simpa only [vsub_eq_sub, smul_add] using midpoint_vsub (R := ℝ) (x : E) (y : E) z
+      have hd : dist m (orbit n) = ‖u + v‖ / 2 := by
+        rw [Subtype.dist_eq, dist_eq_norm, hmz, invOf_eq_inv,
+          norm_smul_of_nonneg (by norm_num : 0 ≤ (2 : ℝ)⁻¹), inv_mul_eq_div]
+      rw [hd]
+      linarith only [hsum]
+    have hmin : r ≤ s - δ * s / 2 := csInf_le hradii_bdd ⟨m, hm⟩
+    have hδr : δ * r ≤ δ * s := mul_le_mul_of_nonneg_left (le_add_of_nonneg_right hη.le) hδ.le
+    linarith only [hmin, hη_upper, hδr, mul_pos hδ hrpos]
+  let tolerance (n : ℕ) : ℝ := 1 / ((n : ℝ) + 1)
+  have htolerance : Tendsto tolerance atTop (𝓝 0) := tendsto_one_div_add_atTop_nhds_zero_nat
+  choose center hcenter using fun n : ℕ ↦ hnear (tolerance n) (by unfold tolerance; positivity)
+  have hcauchy : CauchySeq center := by
+    refine Metric.cauchySeq_iff.mpr fun ε hε ↦ ?_
+    obtain ⟨η, hη, hdiam⟩ := hclose ε hε
+    obtain ⟨N, hN⟩ := eventually_atTop.mp (htolerance.eventually (gt_mem_nhds hη))
+    exact ⟨N, fun i hi j hj ↦ hdiam _ _
+      (hmono _ (add_le_add_right (hN i hi).le r) (hcenter i))
+      (hmono _ (add_le_add_right (hN j hj).le r) (hcenter j))⟩
+  let : CompleteSpace C := hclosed.isComplete.completeSpace_coe
+  obtain ⟨x, hx⟩ := cauchySeq_tendsto_of_complete hcauchy
+  have hlimit (η : ℝ) (hη : 0 < η) : covers x (r + η) := by
+    have hhalf : 0 < η / 2 := half_pos hη
+    obtain ⟨i, hi, hdist⟩ :=
+      ((htolerance.eventually (gt_mem_nhds hhalf)).and
+        (hx.eventually (Metric.ball_mem_nhds x hhalf))).exists
+    filter_upwards [hcenter i] with n hn
+    have hdist' : dist x (center i) < η / 2 := by
+      simpa only [Metric.mem_ball, dist_comm] using hdist
+    exact (dist_triangle x (center i) (orbit n)).trans (by linarith)
+  have hTlimit (η : ℝ) (hη : 0 < η) : covers (T x) (r + η) := by
+    obtain ⟨N, hN⟩ := eventually_atTop.mp (hlimit η hη)
+    refine eventually_atTop.mpr ⟨N + 1, fun n hn ↦ ?_⟩
+    cases n with
+    | zero => omega
+    | succ n =>
+      have hstep : orbit (n + 1) = T (orbit n) := Function.iterate_succ_apply' T n _
+      rw [hstep]
+      have hle : dist (T x) (T (orbit n)) ≤ dist x (orbit n) := by
+        simpa only [NNReal.coe_one, one_mul] using hT.dist_le_mul x (orbit n)
+      exact hle.trans (hN n (by omega))
+  refine ⟨x, eq_of_dist_eq_zero (le_antisymm (le_of_not_gt fun hpos ↦ ?_) dist_nonneg)⟩
+  obtain ⟨η, hη, hdiam⟩ := hclose _ hpos
+  exact (hdiam _ _ (hTlimit η hη) (hlimit η hη)).false
 
 end CKMA

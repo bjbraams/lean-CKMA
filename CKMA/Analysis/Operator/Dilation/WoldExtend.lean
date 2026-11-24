@@ -29,7 +29,7 @@ This is the unitary extension in Sz.-Nagy–Foiaş–Bercovici–Kérchy, Chapte
 * `CKMA.woldExtension_minimal`: density of the two-sided orbit of `H` in the bilateral extension.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -43,29 +43,33 @@ universe u
 variable {H : Type u} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
 
 /-- Summands of the bilateral extension, indexed by the unitary slot and `ℤ`. -/
-@[reducible] def woldSummandInt (V : H →ₗᵢ[ℂ] H) : Option ℤ → Type u
+@[expose, reducible] def woldSummandInt (V : H →ₗᵢ[ℂ] H) : Option ℤ → Type u
   | none => woldUnitarySubspace V
   | some _ => woldWanderingSubspace V
 
 /-- Each bilateral summand is a normed group. -/
+@[expose]
 instance woldSummandInt.instNormedAddCommGroup (V : H →ₗᵢ[ℂ] H) (i : Option ℤ) :
     NormedAddCommGroup (woldSummandInt V i) :=
   Option.rec (inferInstanceAs (NormedAddCommGroup (woldUnitarySubspace V)))
     (fun _ => inferInstanceAs (NormedAddCommGroup (woldWanderingSubspace V))) i
 
 /-- Each bilateral summand is a complex inner product space. -/
+@[expose]
 instance woldSummandInt.instInnerProductSpace (V : H →ₗᵢ[ℂ] H) (i : Option ℤ) :
     InnerProductSpace ℂ (woldSummandInt V i) :=
   Option.rec (inferInstanceAs (InnerProductSpace ℂ (woldUnitarySubspace V)))
     (fun _ => inferInstanceAs (InnerProductSpace ℂ (woldWanderingSubspace V))) i
 
 /-- Each bilateral summand is complete. -/
+@[expose]
 instance woldSummandInt.instCompleteSpace (V : H →ₗᵢ[ℂ] H) (i : Option ℤ) :
     CompleteSpace (woldSummandInt V i) :=
   Option.rec (inferInstanceAs (CompleteSpace (woldUnitarySubspace V)))
     (fun _ => inferInstanceAs (CompleteSpace (woldWanderingSubspace V))) i
 
 /-- Nonnegative times, sent to the corresponding integer times. -/
+@[expose]
 def woldExtendIndex : Option ℕ → Option ℤ
   | none => none
   | some n => some (n : ℤ)
@@ -94,6 +98,7 @@ private theorem woldExtendIndex_injective : Function.Injective woldExtendIndex :
   rfl
 
 /-- Extend a finitely supported nonnegative coefficient by zero on negative times. -/
+@[expose]
 def woldPadFun (V : H →ₗᵢ[ℂ] H) (f : ∀ i, woldSummandNat V i) :
     ∀ i, woldSummandInt V i
   | none => f none
@@ -151,6 +156,7 @@ theorem summable_norm_sq_woldPadFun (V : H →ₗᵢ[ℂ] H) (f : lp (woldSumman
   exact (woldExtendIndex_injective.summable_iff hzero).mp hsum
 
 /-- The padded coefficient sequence, as an element of the bilateral `ℓ²` space. -/
+@[expose]
 def woldPad (V : H →ₗᵢ[ℂ] H) (f : lp (woldSummandNat V) 2) : lp (woldSummandInt V) 2 :=
   ⟨woldPadFun V f, memℓp_gen (by
     simp only [ENNReal.toReal_ofNat]
@@ -188,6 +194,7 @@ theorem woldPad_smul (V : H →ₗᵢ[ℂ] H) (c : ℂ) (f : lp (woldSummandNat 
     · simp [woldPad_apply, woldPadFun, dite_eq_right hk]
 
 /-- Padding as a linear map. -/
+@[expose]
 def woldPadLinear (V : H →ₗᵢ[ℂ] H) :
     lp (woldSummandNat V) 2 →ₗ[ℂ] lp (woldSummandInt V) 2 where
   toFun := woldPad V
@@ -234,6 +241,7 @@ theorem norm_woldPad (V : H →ₗᵢ[ℂ] H) (f : lp (woldSummandNat V) 2) :
   exact htsum
 
 /-- Padding as a linear isometry into the bilateral `ℓ²` space. -/
+@[expose]
 def woldPadIsometry (V : H →ₗᵢ[ℂ] H) :
     lp (woldSummandNat V) 2 →ₗᵢ[ℂ] lp (woldSummandInt V) 2 where
   toLinearMap := woldPadLinear V
@@ -241,6 +249,7 @@ def woldPadIsometry (V : H →ₗᵢ[ℂ] H) :
     simpa [woldPadLinear] using norm_woldPad V f
 
 /-- The source index of a bilaterally shifted coordinate. -/
+@[expose]
 def woldSlotSource : Option ℤ ≃ Option ℤ where
   toFun
     | none => none
@@ -271,12 +280,14 @@ def woldSlotSource : Option ℤ ≃ Option ℤ where
     woldSlotSource.symm (some k) = some (k + 1) := rfl
 
 /-- Move wandering mass one step toward positive time, and apply the unitary on its part. -/
+@[expose]
 def woldBilateralFun (V : H →ₗᵢ[ℂ] H) (f : ∀ i, woldSummandInt V i) :
     ∀ i, woldSummandInt V i
   | none => woldUnitaryEquiv V (f none)
   | some k => f (some (k - 1))
 
 /-- The inverse bilateral step. -/
+@[expose]
 def woldBilateralInvFun (V : H →ₗᵢ[ℂ] H) (f : ∀ i, woldSummandInt V i) :
     ∀ i, woldSummandInt V i
   | none => (woldUnitaryEquiv V).symm (f none)
@@ -310,6 +321,7 @@ theorem summable_norm_sq_woldBilateralFun (V : H →ₗᵢ[ℂ] H) (f : lp (wold
   exact (summable_congr fun i => (norm_sq_woldBilateralFun V (f : _) i).symm).mp hre
 
 /-- One bilateral step, as an `ℓ²` vector. -/
+@[expose]
 def woldBilateral (V : H →ₗᵢ[ℂ] H) (f : lp (woldSummandInt V) 2) :
     lp (woldSummandInt V) 2 :=
   ⟨woldBilateralFun V f, memℓp_gen (by
@@ -342,6 +354,7 @@ theorem woldBilateral_smul (V : H →ₗᵢ[ℂ] H) (c : ℂ) (f : lp (woldSumma
   | some k => simp [woldBilateral_apply, woldBilateralFun, lp.coeFn_smul]
 
 /-- A bilateral step as a linear map. -/
+@[expose]
 def woldBilateralLinear (V : H →ₗᵢ[ℂ] H) :
     lp (woldSummandInt V) 2 →ₗ[ℂ] lp (woldSummandInt V) 2 where
   toFun := woldBilateral V
@@ -373,6 +386,7 @@ theorem norm_woldBilateral (V : H →ₗᵢ[ℂ] H) (f : lp (woldSummandInt V) 2
   exact (tsum_congr hpt).trans hshift
 
 /-- A bilateral step as a linear isometry. -/
+@[expose]
 def woldBilateralIsometry (V : H →ₗᵢ[ℂ] H) :
     lp (woldSummandInt V) 2 →ₗᵢ[ℂ] lp (woldSummandInt V) 2 where
   toLinearMap := woldBilateralLinear V
@@ -380,6 +394,7 @@ def woldBilateralIsometry (V : H →ₗᵢ[ℂ] H) :
     simpa [woldBilateralLinear] using norm_woldBilateral V f
 
 /-- The inverse bilateral step, as an `ℓ²` vector. -/
+@[expose]
 def woldBilateralInv (V : H →ₗᵢ[ℂ] H) (f : lp (woldSummandInt V) 2) :
     lp (woldSummandInt V) 2 :=
   ⟨woldBilateralInvFun V f, memℓp_gen (by
@@ -438,6 +453,7 @@ private theorem woldBilateral_woldBilateralInv (V : H →ₗᵢ[ℂ] H) (f : lp 
     rw [sub_add_cancel]
 
 /-- The inverse step as a linear map. -/
+@[expose]
 def woldBilateralInvLinear (V : H →ₗᵢ[ℂ] H) :
     lp (woldSummandInt V) 2 →ₗ[ℂ] lp (woldSummandInt V) 2 where
   toFun := woldBilateralInv V
@@ -499,6 +515,7 @@ theorem woldBilateralInvLinear_comp (V : H →ₗᵢ[ℂ] H) :
   exact woldBilateralInv_woldBilateral V f
 
 /-- The bilateral shift is unitary on the extended coefficient space. -/
+@[expose]
 def woldBilateralEquiv (V : H →ₗᵢ[ℂ] H) :
     lp (woldSummandInt V) 2 ≃ₗᵢ[ℂ] lp (woldSummandInt V) 2 :=
   LinearIsometryEquiv.ofLinearIsometry (woldBilateralIsometry V) (woldBilateralInvLinear V)
@@ -510,6 +527,7 @@ private theorem woldBilateralEquiv_apply (V : H →ₗᵢ[ℂ] H) (f : lp (woldS
   rfl
 
 /-- The original space, sent to nonnegative Wold coordinates and then padded. -/
+@[expose]
 def woldExtensionIncl (V : H →ₗᵢ[ℂ] H) : H →ₗᵢ[ℂ] lp (woldSummandInt V) 2 :=
   (woldPadIsometry V).comp (wold_isHilbertSum V).linearIsometryEquiv.toLinearIsometry
 

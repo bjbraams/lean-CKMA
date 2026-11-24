@@ -16,7 +16,8 @@ obey the Kolmogorov moment bound with every exponent strictly above `2`.
 
 ## Main definitions
 
-* `CKMA.gaussianAbsMoment`: absolute moment of order `p` of a standard real Gaussian.
+* `CKMA.gaussianAbsMoment`: absolute moment of order `p` of a standard real Gaussian. For
+  `p ≤ -1` the integral is the junk value `0`.
 
 ## Main results
 
@@ -26,7 +27,7 @@ obey the Kolmogorov moment bound with every exponent strictly above `2`.
   increments.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -35,7 +36,10 @@ namespace CKMA
 open MeasureTheory ProbabilityTheory
 open scoped NNReal ENNReal
 
-/-- Absolute moment of order `p` of a standard real Gaussian. -/
+/-- Absolute moment `∫ |x| ^ p ∂gaussianReal 0 1`, for an arbitrary real order `p`. For `p ≤ -1`
+the integrand is not integrable near `0`, so the integral is `0`. For `0 < p`, finiteness is
+`integrable_abs_rpow_gaussianReal`. -/
+@[expose]
 def gaussianAbsMoment (p : ℝ) : ℝ :=
   ∫ x, |x| ^ p ∂gaussianReal 0 1
 
@@ -49,6 +53,17 @@ lemma integrable_abs_rpow_gaussianReal {p : ℝ} (hp : 0 < p) :
   have hint := hmem.integrable_norm_rpow hq0 hqtop
   have hpow : (Real.toNNReal p : ℝ) = p := Real.coe_toNNReal p hp.le
   simpa [Real.norm_eq_abs, hpow] using hint
+
+/-- Multiplication by `√v` sends the standard Gaussian to the centered Gaussian of variance `v`. -/
+private lemma gaussianReal_map_sqrt (v : ℝ≥0) :
+    (gaussianReal 0 1).map (fun x ↦ Real.sqrt (v : ℝ) * x) = gaussianReal 0 v := by
+  let c : ℝ := Real.sqrt (v : ℝ)
+  have h := gaussianReal_map_const_mul (μ := 0) (v := 1) c
+  have hv' : NNReal.mk (c ^ 2) (sq_nonneg c) = v := by
+    ext
+    simp [c, Real.sq_sqrt (NNReal.coe_nonneg v)]
+  rw [h, hv']
+  simp
 
 /-- `√v` raised to `p` is the variance raised to `p / 2`. -/
 private lemma sqrt_rpow_eq_rpow_div_two {p : ℝ} {v : ℝ≥0} :
@@ -71,13 +86,8 @@ lemma integral_abs_rpow_gaussianReal {p : ℝ} (hp : 0 < p) (v : ℝ≥0) :
       Real.zero_rpow hp.ne', gaussianAbsMoment]
   let c : ℝ := Real.sqrt (v : ℝ)
   have hc0 : 0 ≤ c := Real.sqrt_nonneg _
-  have hmap : (gaussianReal 0 1).map (fun x ↦ c * x) = gaussianReal 0 v := by
-    have h := gaussianReal_map_const_mul (μ := 0) (v := 1) c
-    have hv' : NNReal.mk (c ^ 2) (sq_nonneg c) = v := by
-      ext
-      simp [c, Real.sq_sqrt (NNReal.coe_nonneg v)]
-    rw [h, hv']
-    simp
+  have hmap : (gaussianReal 0 1).map (fun x ↦ c * x) = gaussianReal 0 v :=
+    gaussianReal_map_sqrt v
   have hpow : ∀ x : ℝ, |c * x| ^ p = c ^ p * |x| ^ p := by
     intro x
     rw [abs_mul, abs_of_nonneg hc0, Real.mul_rpow hc0 (abs_nonneg x)]
@@ -92,13 +102,8 @@ lemma integrable_abs_rpow_gaussianReal_var {p : ℝ} (hp : 0 < p) (v : ℝ≥0) 
   · rw [hv, gaussianReal_zero_var]
     exact integrable_dirac (by simp)
   let c : ℝ := Real.sqrt (v : ℝ)
-  have hmap : (gaussianReal 0 1).map (fun x ↦ c * x) = gaussianReal 0 v := by
-    have h := gaussianReal_map_const_mul (μ := 0) (v := 1) c
-    have hv' : NNReal.mk (c ^ 2) (sq_nonneg c) = v := by
-      ext
-      simp [c, Real.sq_sqrt (NNReal.coe_nonneg v)]
-    rw [h, hv']
-    simp
+  have hmap : (gaussianReal 0 1).map (fun x ↦ c * x) = gaussianReal 0 v :=
+    gaussianReal_map_sqrt v
   have hint : Integrable (fun x : ℝ ↦ |c * x| ^ p) (gaussianReal 0 1) := by
     have hpow : (fun x : ℝ ↦ |c * x| ^ p) = fun x ↦ |x| ^ p * c ^ p := by
       funext x

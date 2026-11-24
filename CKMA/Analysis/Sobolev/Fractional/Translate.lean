@@ -25,7 +25,7 @@ character `𝐞 ⟪h, ·⟫ - 1`. The Schwartz case is TauCeti's `fourier_comp_s
 follows by density of Schwartz functions in `L²`.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

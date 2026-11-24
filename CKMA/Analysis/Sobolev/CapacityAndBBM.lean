@@ -36,7 +36,7 @@ integration use Mathlib. Sources: GAPS 26.31 and 26.42.
 * `CKMA.tendsto_fractionalPEnergy_bbm`: Bourgain–Brezis–Mironescu limit as `s → 1⁻`.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -46,10 +46,12 @@ open MeasureTheory Filter Topology
 open scoped ENNReal
 
 /-- Inhomogeneous first-order `p`-energy of a smooth real function. -/
+@[expose]
 def sobolevTestEnergy {d : ℕ} (p : ℝ) (φ : EuclideanRealSpace d → ℝ) : ℝ≥0∞ :=
   ∫⁻ x, ENNReal.ofReal (|φ x| ^ p + ‖fderiv ℝ φ x‖ ^ p)
 
 /-- Variational `C_{1,p}` capacity on compact sets, using smooth compactly supported tests. -/
+@[expose]
 def compactSobolevCapacity {d : ℕ} (p : ℝ) (K : Set (EuclideanRealSpace d)) : ℝ≥0∞ :=
   ⨅ (φ : EuclideanRealSpace d → ℝ) (_h : IsCapacityAdmissible K φ), sobolevTestEnergy p φ
 
@@ -61,12 +63,14 @@ private theorem compactSobolevCapacity_eq_iInf {d : ℕ} (p : ℝ) (K : Set (Euc
   simp only [compactSobolevCapacity, IsCapacityAdmissible, iInf_and]
 
 /-- Outer Sobolev capacity, extended from compact sets through open sets. -/
+@[expose]
 def sobolevCapacity {d : ℕ} (p : ℝ) (A : Set (EuclideanRealSpace d)) : ℝ≥0∞ :=
   ⨅ (U : Set (EuclideanRealSpace d)) (_hU : IsOpen U) (_hAU : A ⊆ U),
     ⨆ (K : Set (EuclideanRealSpace d)) (_hK : IsCompact K) (_hKU : K ⊆ U),
       compactSobolevCapacity p K
 
 /-- Quasicontinuity for Sobolev capacity, with an open exceptional set at every scale. -/
+@[expose]
 def IsSobolevQuasicontinuous {d : ℕ} (p : ℝ) (f : EuclideanRealSpace d → ℝ) : Prop :=
   ∀ ε : ℝ, 0 < ε → ∃ U, IsOpen U ∧ sobolevCapacity p U < ENNReal.ofReal ε ∧
     ContinuousOn f Uᶜ
@@ -88,12 +92,14 @@ theorem sobolevQuasicontinuous_unique {d : ℕ} {p : ℝ} (hp : 1 < p)
   sorry
 
 /-- Fractional Gagliardo `p`-energy, allowing infinite values. -/
+@[expose]
 def fractionalPEnergy {d : ℕ} (s p : ℝ) (u : EuclideanRealSpace d → ℝ) : ℝ≥0∞ :=
   ∫⁻ x, ∫⁻ y, ENNReal.ofReal (|u x - u y| ^ p) /
     ENNReal.ofReal (‖x - y‖ ^ ((d : ℝ) + s * p))
 
 /-- The BBM constant written with a unit-ball moment rather than an ambiguously normalized
 surface measure: radial integration gives `(d+p)/p` times this ball moment. -/
+@[expose]
 def bbmConstant {d : ℕ} (j : Fin d) (p : ℝ) : ℝ :=
   ((d : ℝ) + p) / p * ∫ x in Metric.ball (0 : EuclideanRealSpace d) 1, |x j| ^ p
 

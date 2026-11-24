@@ -14,9 +14,10 @@ public import Mathlib.Analysis.InnerProductSpace.Laplacian
 Euclidean coordinates, compactly supported smooth tests, Hessian traces, divergence
 and squared vector-gradient energy. Uniform ellipticity allows nonsymmetric coefficient
 fields; nondivergence operators contract their coefficients with the Hessian.
-The definitions use Mathlib's Euclidean spaces and Fréchet calculus and TauCeti's
-weak-Sobolev infrastructure. The smooth-test and identity-coefficient adapters connect
-these expressions to Mathlib's `TestFunction` and orthonormal-basis Laplacian APIs.
+The definitions use Mathlib's Euclidean spaces, distributional test functions, and the
+orthonormal-basis Laplacian (`Mathlib.Analysis.Distribution.TestFunction` and
+`Mathlib.Analysis.InnerProductSpace.Laplacian`). The smooth-test and identity-coefficient
+adapters connect these expressions to `TestFunction` and that Laplacian.
 
 ## Main definitions
 
@@ -38,7 +39,7 @@ these expressions to Mathlib's `TestFunction` and orthonormal-basis Laplacian AP
   coefficients equals the Euclidean Laplacian.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -48,36 +49,44 @@ open MeasureTheory
 open scoped InnerProductSpace BigOperators
 
 /-- Real Euclidean space with an explicit spatial dimension. -/
+@[expose]
 abbrev EuclideanRealSpace (d : ℕ) := EuclideanSpace ℝ (Fin d)
 
 /-- The standard unit vector in a coordinate direction. -/
+@[expose]
 def euclideanUnitVector {d : ℕ} (i : Fin d) : EuclideanRealSpace d := EuclideanSpace.single i 1
 
 /-- A centered open ball bundled as an open set, for the weak Sobolev API. -/
+@[expose]
 def euclideanOpenBall (d : ℕ) (r : ℝ) : TopologicalSpace.Opens (EuclideanRealSpace d) :=
   ⟨Metric.ball 0 r, Metric.isOpen_ball⟩
 
 /-- Smooth compactly supported tests whose support lies in the indicated open region.
 For open regions these are the unbundled version of Mathlib's test functions. -/
+@[expose]
 def IsCompactSmoothTestOn {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [NormedAddCommGroup F] [NormedSpace ℝ F] (Ω : Set E) (φ : E → F) : Prop :=
   ContDiff ℝ (↑(⊤ : ℕ∞)) φ ∧ HasCompactSupport φ ∧ tsupport φ ⊆ Ω
 
 /-- Trace of a continuous bilinear form in Euclidean coordinates. -/
+@[expose]
 def euclideanHessianTrace {d : ℕ}
     (X : EuclideanRealSpace d →L[ℝ] EuclideanRealSpace d →L[ℝ] ℝ) : ℝ :=
   ∑ i, X (euclideanUnitVector i) (euclideanUnitVector i)
 
 /-- Pointwise divergence of a Euclidean vector field. -/
+@[expose]
 def euclideanDivergence {d : ℕ} (u : EuclideanRealSpace d → EuclideanRealSpace d)
     (x : EuclideanRealSpace d) : ℝ :=
   ∑ i, ⟪euclideanUnitVector i, fderiv ℝ u x (euclideanUnitVector i)⟫_ℝ
 
 /-- Squared Hilbert–Schmidt norm of a vector-field derivative, used in viscous energy. -/
+@[expose]
 def vectorGradientEnergy {d : ℕ} (G : EuclideanRealSpace d →L[ℝ] EuclideanRealSpace d) : ℝ :=
   ∑ i, ‖G (euclideanUnitVector i)‖ ^ 2
 
 /-- Bounded uniform ellipticity, without a symmetry assumption on the coefficient field. -/
+@[expose]
 def IsUniformlyEllipticOn {d : ℕ}
     (A : EuclideanRealSpace d → EuclideanRealSpace d →L[ℝ] EuclideanRealSpace d)
     (ell Λ : ℝ) (Ω : Set (EuclideanRealSpace d)) : Prop :=
@@ -85,12 +94,14 @@ def IsUniformlyEllipticOn {d : ℕ}
     (∀ v, ell * ‖v‖ ^ 2 ≤ ⟪v, A x v⟫_ℝ) ∧ ‖A x‖ ≤ Λ
 
 /-- Nondivergence-form principal part, with the coefficient matrix contracted with the Hessian. -/
+@[expose]
 def nondivergencePrincipal {d : ℕ}
     (A : EuclideanRealSpace d → EuclideanRealSpace d →L[ℝ] EuclideanRealSpace d)
     (u : EuclideanRealSpace d → ℝ) (x : EuclideanRealSpace d) : ℝ :=
   ∑ i, fderiv ℝ (fderiv ℝ u) x (euclideanUnitVector i) (A x (euclideanUnitVector i))
 
 /-- Scalar linear elliptic expression including drift and zeroth order terms. -/
+@[expose]
 def linearEllipticExpression {d : ℕ}
     (A : EuclideanRealSpace d → EuclideanRealSpace d →L[ℝ] EuclideanRealSpace d)
     (b : EuclideanRealSpace d → EuclideanRealSpace d) (c u : EuclideanRealSpace d → ℝ)

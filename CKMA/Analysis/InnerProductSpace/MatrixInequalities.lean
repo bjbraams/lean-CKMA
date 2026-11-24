@@ -45,7 +45,7 @@ tail, with zero-padding beyond the available rank. Sources: GAPS 13.7, 13.8, 13.
   (**13.18**).
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -59,14 +59,17 @@ variable {𝕜 E F : Type*} [RCLike 𝕜]
     [NormedAddCommGroup F] [InnerProductSpace 𝕜 F] [FiniteDimensional 𝕜 F]
 
 /-- The decreasing real eigenvalue list of a Hermitian endomorphism, with zero-based indices. -/
+@[expose]
 def orderedEigenvalues (A : E →ₗ[𝕜] E) (hA : A.IsSymmetric) :
     Fin (finrank 𝕜 E) → ℝ := hA.eigenvalues rfl
 
 /-- Squared Frobenius norm, expressed intrinsically as the sum of squared singular values. -/
+@[expose]
 def frobeniusNormSq (A : E →ₗ[𝕜] F) : ℝ :=
   ∑ i : Fin (finrank 𝕜 E), A.singularValues i ^ 2
 
 /-- Compression along a linear isometric inclusion. -/
+@[expose]
 def hermitianCompression (A : E →ₗ[𝕜] E) (V : F →ₗᵢ[𝕜] E) : F →ₗ[𝕜] F :=
   V.toLinearMap.adjoint ∘ₗ A ∘ₗ V.toLinearMap
 
@@ -491,6 +494,7 @@ theorem norm_trace_adjoint_comp_le (A B : E →ₗ[𝕜] E) :
   simpa [hc] using hcross
 
 /-- The rank-`k` SVD truncation, defined using TauCeti's canonical right singular basis. -/
+@[expose]
 def svdTruncation (A : E →ₗ[𝕜] F) (k : ℕ) : E →ₗ[𝕜] F :=
   ∑ i : Fin (finrank 𝕜 E), if i.val < k then
     (innerSL 𝕜 (A.rightSingularBasis i)).toLinearMap.smulRight

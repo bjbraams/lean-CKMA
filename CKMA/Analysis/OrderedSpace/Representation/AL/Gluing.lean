@@ -36,7 +36,7 @@ meets only countably many bands.
 * `CKMA.tsum_norm_indexProjection_eq`: the norms of the band projections sum to the ambient norm.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -51,6 +51,7 @@ variable {E : Type u} [NormedAddCommGroup E] [NormedSpace ℝ E] [Lattice E]
   [IsOrderedAddMonoid E] [IsOrderedModule ℝ E] [HasSolidNorm E]
 
 /-- A pairwise lattice-disjoint family of strictly positive vectors. -/
+@[expose]
 def IsPositiveDisjointFamily (S : Set E) : Prop :=
   (∀ x ∈ S, 0 < x) ∧ S.Pairwise (fun a b => LatticeDisjoint a b)
 
@@ -84,6 +85,7 @@ theorem exists_maximal_positiveDisjointFamily :
     exact hM.2 (by simpa using ht) hsub
 
 /-- A chosen maximal pairwise disjoint family of strictly positive vectors. -/
+@[expose]
 noncomputable def maximalPositiveDisjointFamily : Set E :=
   Classical.choose (exists_maximal_positiveDisjointFamily (E := E))
 
@@ -148,6 +150,7 @@ theorem bandComponent_nonempty (hE : ∀ x y : E, 0 ≤ x → 0 ≤ y → ‖x +
   exact ⟨⟨X, m, μ, U, hsup⟩⟩
 
 /-- Chosen L¹ representation of the closed band of a nonnegative vector. -/
+@[expose]
 noncomputable def bandComponent (hE : ∀ x y : E, 0 ≤ x → 0 ≤ y → ‖x + y‖ = ‖x‖ + ‖y‖)
     [CompleteSpace E] {u : E} (hu : 0 ≤ u) : BandComponent u :=
   Classical.choice (bandComponent_nonempty hE hu)
@@ -157,6 +160,7 @@ section IndexProj
 variable (hE : ∀ x y : E, 0 ≤ x → 0 ≤ y → ‖x + y‖ = ‖x‖ + ‖y‖) [CompleteSpace E]
 
 /-- Projection onto the closed band of one vector of the maximal family. -/
+@[expose]
 noncomputable def indexProjection {u : E} (hu : u ∈ maximalPositiveDisjointFamily) :
     E →ₗ[ℝ] E :=
   bandProjection hE (le_of_lt ((maximalPositiveDisjointFamily_spec (E := E)).1.1 u hu))

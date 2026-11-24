@@ -29,7 +29,7 @@ Source: GAPS 29.58.
 * `CKMA.shannon_norm_identity`: exact sampling Parseval identity.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

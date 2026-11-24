@@ -40,7 +40,7 @@ feed the Crandall–Liggett semigroup constructed in
   of the graph domain.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -52,24 +52,29 @@ open scoped NNReal BigOperators
 variable {X : Type*} [NormedAddCommGroup X] [NormedSpace ℝ X] [CompleteSpace X]
 
 /-- The domain of a possibly multivalued operator graph. -/
+@[expose]
 def accretiveGraphDomain (G : Set (X × X)) : Set X := {x | ∃ u, (x, u) ∈ G}
 
 /-- Accretivity of a graph in a real Banach space, stated by the resolvent norm inequality. -/
+@[expose]
 def IsAccretiveGraph (G : Set (X × X)) : Prop :=
   ∀ p ∈ G, ∀ q ∈ G, ∀ t : ℝ, 0 < t → ‖p.1 - q.1‖ ≤ ‖p.1 - q.1 + t • (p.2 - q.2)‖
 
 /-- Maximal accretivity includes surjectivity of every positive resolvent. -/
+@[expose]
 def IsMAccretiveGraph (G : Set (X × X)) : Prop :=
   IsAccretiveGraph G ∧ ∀ t : ℝ, 0 < t → ∀ x : X, ∃ y u : X, (y, u) ∈ G ∧ x = y + t • u
 
 /-- The nonlinear resolvent, with explicit totalizations: the identity at zero scale, and
 zero if no graph preimage exists. Under maximal accretivity the latter branch is never used. -/
+@[expose]
 def accretiveResolvent (G : Set (X × X)) (t : ℝ) (x : X) : X := by
   classical
   exact if t = 0 then x else
     if h : ∃ y u : X, (y, u) ∈ G ∧ x = y + t • u then Classical.choose h else 0
 
 /-- The implicit Euler product with `n+1` resolvent steps, including exact zero-time identity. -/
+@[expose]
 def accretiveEulerProduct (G : Set (X × X)) (t : ℝ≥0) (n : ℕ) (x : X) : X :=
   (accretiveResolvent G ((t : ℝ) / (n + 1 : ℝ)))^[n + 1] x
 

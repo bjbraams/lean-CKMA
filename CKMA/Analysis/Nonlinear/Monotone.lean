@@ -10,8 +10,8 @@ public import Mathlib.Analysis.Normed.Module.DoubleDual
 public import CKMA.Analysis.Nonlinear.Monotone.Variational
 
 import CKMA.Analysis.Nonlinear.FixedPoint
+import Mathlib.Analysis.InnerProductSpace.Continuous
 import Mathlib.Analysis.InnerProductSpace.Convex
-import Mathlib.Analysis.InnerProductSpace.PiL2
 import Mathlib.Analysis.LocallyConvex.WeakSpace
 import TauCeti.Analysis.Convex.Uniform.Basic
 import TauCeti.Analysis.Normed.Module.Dual.Reflexive.WeakCompact
@@ -60,7 +60,7 @@ coercive unbounded-domain existence statements. Those arguments are in
   inequality existence.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -74,15 +74,18 @@ section Hilbert
 variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
 
 /-- Monotonicity of a Hilbert-space graph. -/
+@[expose]
 def IsMonotoneGraph (A : Set (H × H)) : Prop :=
   ∀ p ∈ A, ∀ q ∈ A, 0 ≤ ⟪p.1 - q.1, p.2 - q.2⟫_ℝ
 
 /-- A monotone graph is maximal when it has no proper monotone enlargement. -/
+@[expose]
 def IsMaximalMonotoneGraph (A : Set (H × H)) : Prop :=
   IsMonotoneGraph A ∧ ∀ B, IsMonotoneGraph B → A ⊆ B → B ⊆ A
 
 /-- A resolvent fiber: `y` belongs when `x ∈ y + a A(y)`.
 This relation has a concrete body even before the existence theorem is proved. -/
+@[expose]
 def monotoneResolventFiber (A : Set (H × H)) (a : ℝ) (x : H) : Set H :=
   {y | ∃ u, (y, u) ∈ A ∧ x = y + a • u}
 
@@ -230,35 +233,8 @@ private theorem inner_nonneg_iff_mem_closedBall {v c y : H} :
 set `K ⊆ Fin n → ℝ` has a fixed point. -/
 private theorem exists_fixedPoint_of_isCompact_of_convex {n : ℕ} {K : Set (Fin n → ℝ)}
     (hne : K.Nonempty) (hcomp : IsCompact K) (hconv : Convex ℝ K) (T : K → K)
-    (hT : Continuous T) : ∃ s, T s = s := by
-  let Euc := EuclideanSpace ℝ (Fin n)
-  let e : Euc ≃L[ℝ] (Fin n → ℝ) := EuclideanSpace.equiv (Fin n) ℝ
-  let L : Set Euc := e.symm '' K
-  have hneL : L.Nonempty := by
-    obtain ⟨w0, hw0⟩ := hne
-    exact ⟨e.symm w0, w0, hw0, rfl⟩
-  have hcompL : IsCompact L := hcomp.image e.symm.continuous
-  have hconvL : Convex ℝ L := hconv.linear_image e.symm.toLinearMap
-  have hmemL (y : L) : e y.1 ∈ K := by
-    obtain ⟨w0, hw0, hy⟩ := y.2
-    have heq : e y.1 = w0 := by
-      rw [← hy]
-      simp
-    simpa [heq] using hw0
-  have hlift : Continuous fun y : L => (⟨e y.1, hmemL y⟩ : K) :=
-    Continuous.subtype_mk (e.continuous.comp continuous_subtype_val) hmemL
-  have hland (y : L) : e.symm (Subtype.val (T ⟨e y.1, hmemL y⟩)) ∈ L :=
-    ⟨Subtype.val (T ⟨e y.1, hmemL y⟩), (T ⟨e y.1, hmemL y⟩).2, rfl⟩
-  let S : L → L := fun y => ⟨e.symm (Subtype.val (T ⟨e y.1, hmemL y⟩)), hland y⟩
-  have hS : Continuous S :=
-    Continuous.subtype_mk
-      (e.symm.continuous.comp (continuous_subtype_val.comp (hT.comp hlift))) hland
-  obtain ⟨yL, hyL⟩ := exists_fixedPoint_brouwer hneL hcompL hconvL S hS
-  refine ⟨⟨e yL.1, hmemL yL⟩, Subtype.ext ?_⟩
-  have happly := congrArg e (congrArg Subtype.val hyL)
-  unfold S at happly
-  rw [e.apply_symm_apply] at happly
-  simpa using happly
+    (hT : Continuous T) : ∃ s, T s = s :=
+  exists_fixedPoint_brouwer hne hcomp hconv T hT
 
 /-- For convex weights `w` and points `p i` of a monotone graph, the weighted gaps at the
 barycenter `b = ∑ k, w k • (p k).1` are nonnegative on average when `0 ≤ a`:
@@ -520,6 +496,7 @@ theorem IsMaximalMonotoneGraph.existsUnique_resolvent [CompleteSpace H]
   exact ⟨y, hy, fun z hz ↦ hA.1.resolventFiber_subsingleton ha.le x hz hy⟩
 
 /-- The normal-cone graph of a convex set. Membership includes the base-point constraint. -/
+@[expose]
 def normalConeGraph (C : Set H) : Set (H × H) :=
   {p | p.1 ∈ C ∧ ∀ y ∈ C, ⟪p.2, y - p.1⟫_ℝ ≤ 0}
 

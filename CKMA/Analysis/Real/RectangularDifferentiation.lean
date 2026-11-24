@@ -35,7 +35,7 @@ The definitions `CKMA.OpenRectangle`, `CKMA.strongMaximalFunction`, `CKMA.strong
   measure.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -43,12 +43,12 @@ namespace CKMA
 
 open MeasureTheory Set Metric
 
-/-- **05.31**: the endpoint strong maximal bound. -/
-theorem strongMaximal_endpoint {d : ℕ} (hd : 2 ≤ d) :
+/-- **05.31**: the endpoint strong maximal bound, in every positive dimension. -/
+theorem strongMaximal_endpoint {d : ℕ} (hd : 1 ≤ d) :
     ∃ C : ℝ, 0 < C ∧ ∀ (f : (Fin d → ℝ) → ℝ), Measurable f →
       ∀ a : ℝ, 0 < a → volume {x | ENNReal.ofReal a < strongMaximalFunction f x} ≤
         ENNReal.ofReal C * ∫⁻ x, ENNReal.ofReal (strongMaximalGrowth d (|f x| / a)) := by
-  exact strongMaximal_orlicz (show 1 ≤ d by omega)
+  exact strongMaximal_orlicz hd
 
 /-- Rectangles differentiate the local `L(log⁺L)^(d-1)` class, in every positive dimension. -/
 theorem ae_rectanglesDifferentiateAt {d : ℕ} (hd : 1 ≤ d)

@@ -32,7 +32,7 @@ objective. Lower semicontinuity and completeness are not used. Source: Borwein�
   attainment under a continuity qualification (GAPS 12.39).
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -108,6 +108,7 @@ private lemma neg_add_eq_of_finite {a b : EReal} (ha_top : a ≠ ⊤) (ha_bot : 
   ring
 
 /-- The marginal of a primal pair, `y ↦ ⨅ x, f x + g (A x + y)`. -/
+@[expose]
 def marginalValue (f : E → EReal) (g : F → EReal) (A : E →L[ℝ] F) (y : F) : EReal :=
   ⨅ x, f x + g (A x + y)
 

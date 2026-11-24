@@ -44,7 +44,7 @@ Sources: GAPS 19.27 and 19.29.
 * `CKMA.IsALSpace.isKBSpace`: every AL space is a KB space.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -55,9 +55,11 @@ open Filter Topology MeasureTheory
 universe u
 
 /-- Mathlib's compact Hausdorff carrier, including the empty space for the zero AM space. -/
+@[expose]
 abbrev CompactHausdorffModel := CompHaus.{u}
 
 /-- The underlying carrier of a compact Hausdorff representation space. -/
+@[expose]
 abbrev CompactHausdorffModel.carrier (K : CompactHausdorffModel.{u}) : Type u := K
 
 /-- A measure-space carrier for an AL representation, without an unnecessary sigma-finiteness
@@ -76,19 +78,23 @@ variable {E : Type u} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [Lattice E] [IsOrderedAddMonoid E] [IsOrderedModule ℝ E] [HasSolidNorm E]
 
 /-- The maximum norm identity on the positive cone defining an AM space. -/
+@[expose]
 def IsAMSpace (E : Type*) [NormedAddCommGroup E] [Lattice E] : Prop :=
   ∀ x y : E, 0 ≤ x → 0 ≤ y → ‖x ⊔ y‖ = max ‖x‖ ‖y‖
 
-/-- An AM unit identifies its order interval with the closed norm unit ball. The space is then
-an AM space (`IsAMSpace E`), since the norm is the order-unit norm of `e`. -/
+/-- A positive vector whose order interval equals the closed norm unit ball.
+The AM-space norm identity is the separate predicate `IsAMSpace`. -/
+@[expose]
 def IsAMSpaceUnit (e : E) : Prop :=
   0 ≤ e ∧ Metric.closedBall (0 : E) 1 = Set.Icc (-e) e
 
 /-- Norm additivity on the positive cone defining an AL space. -/
+@[expose]
 def IsALSpace (E : Type*) [NormedAddCommGroup E] [Lattice E] : Prop :=
   ∀ x y : E, 0 ≤ x → 0 ≤ y → ‖x + y‖ = ‖x‖ + ‖y‖
 
 /-- The KB property, formulated with norm convergence of increasing bounded positive sequences. -/
+@[expose]
 def IsKBSpace (E : Type*) [NormedAddCommGroup E] [Lattice E] : Prop :=
   ∀ x : ℕ → E, Monotone x → (∀ n, 0 ≤ x n) →
     (∃ M : ℝ, ∀ n, ‖x n‖ ≤ M) → ∃ y : E, Tendsto x atTop (𝓝 y)

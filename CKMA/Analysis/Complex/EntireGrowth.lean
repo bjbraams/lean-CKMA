@@ -46,7 +46,7 @@ Sources: GAPS 41.10, 41.26, 41.38 and 41.48.
 * `CKMA.four_value_entire`: Nevanlinna's four-value theorem for entire functions.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -55,26 +55,32 @@ namespace CKMA
 open Filter Topology MeasureTheory Polynomial
 open scoped BigOperators ENNReal
 
-/-- Maximum modulus on a circle, totalized by the real supremum convention at empty spheres. -/
+/-- Maximum modulus on the circle of radius `r`, as a real supremum.
+`sSup` of the empty set is `0`, and `sSup` of a set that is not bounded above is `0`. -/
+@[expose]
 def maximumModulus (f : ℂ → ℂ) (r : ℝ) : ℝ := sSup ((fun z ↦ ‖f z‖) '' Metric.sphere 0 r)
 
 /-- Entire-function order, retaining the possibility of infinite order.
 The `max e` cutoff gives the usual order zero for constants and does not affect growth order. -/
+@[expose]
 def entireGrowthOrder (f : ℂ → ℂ) : EReal :=
   limsup (fun r : ℝ ↦ ((Real.log (Real.log (max (Real.exp 1) (maximumModulus f r))) /
     Real.log r : ℝ) : EReal)) atTop
 
 /-- Exponential type at most `σ`, allowing an arbitrarily small increase in the exponent. -/
+@[expose]
 def IsEntireExponentialType (f : ℂ → ℂ) (σ : ℝ) : Prop :=
   Differentiable ℂ f ∧ ∀ ε : ℝ, 0 < ε → ∃ C : ℝ, 0 < C ∧
     ∀ z : ℂ, ‖f z‖ ≤ C * Real.exp ((σ + ε) * ‖z‖)
 
 /-- The genus-`p` Weierstrass elementary factor. -/
+@[expose]
 def weierstrassElementaryFactor (p : ℕ) (z : ℂ) : ℂ :=
   (1 - z) * Complex.exp (∑ k ∈ Finset.range p, z ^ (k + 1) / (k + 1 : ℂ))
 
 /-- A zero list may be finite (entries `none`) or infinite and records multiplicity by repetition.
   -/
+@[expose]
 def canonicalProductFactor (p : ℕ) (a : ℕ → Option ℂ) (n : ℕ) (z : ℂ) : ℂ :=
   match a n with
   | none => 1
@@ -83,6 +89,7 @@ def canonicalProductFactor (p : ℕ) (a : ℕ → Option ℂ) (n : ℕ) (z : ℂ
 /-- The canonical product of fixed genus, evaluated pointwise. Its convergence is asserted
 explicitly in factorization targets, so the totalized infinite product is not mistaken for a proof.
   -/
+@[expose]
 def fixedGenusCanonicalProduct (p : ℕ) (a : ℕ → Option ℂ) (z : ℂ) : ℂ :=
   ∏' n : ℕ, canonicalProductFactor p a n z
 
@@ -150,9 +157,25 @@ theorem orderLE_of_entireGrowthOrder {f : ℂ → ℂ} (hf : Differentiable ℂ 
     _ = 1 * ‖Real.exp (‖z‖ ^ A')‖ := by
       rw [Real.norm_eq_abs, abs_of_pos (Real.exp_pos _), one_mul]
 
-/-- **41.10**: finite-order Hadamard factorization, including a fixed genus and its convergence. -/
+/-- The growth-order quotient is nonnegative for large radius, so the limsup is nonnegative. -/
+lemma zero_le_entireGrowthOrder (f : ℂ → ℂ) : 0 ≤ entireGrowthOrder f := by
+  unfold entireGrowthOrder
+  refine le_trans (le_liminf_of_le (by isBoundedDefault) ?_) liminf_le_limsup
+  filter_upwards [eventually_gt_atTop (1 : ℝ)] with r hr
+  refine EReal.coe_nonneg.2 ?_
+  have hlog : 0 < Real.log r := Real.log_pos hr
+  refine div_nonneg ?_ hlog.le
+  refine Real.log_nonneg ?_
+  have hmax : Real.exp 1 ≤ max (Real.exp 1) (maximumModulus f r) := le_max_left _ _
+  have hlogmax :
+      Real.log (Real.exp 1) ≤ Real.log (max (Real.exp 1) (maximumModulus f r)) :=
+    Real.log_le_log (Real.exp_pos 1) hmax
+  simpa [Real.log_exp] using hlogmax
+
+/-- **41.10**: finite-order Hadamard factorization, including a fixed genus and its convergence.
+Nonnegativity of `ρ` follows from `entireGrowthOrder`. -/
 theorem hadamard_factorization {f : ℂ → ℂ} (hf : Differentiable ℂ f)
-    (hne : ∃ z, f z ≠ 0) {ρ : ℝ} (hρ : 0 ≤ ρ) (horder : entireGrowthOrder f = (ρ : EReal)) :
+    (hne : ∃ z, f z ≠ 0) {ρ : ℝ} (horder : entireGrowthOrder f = (ρ : EReal)) :
     ∃ (m p : ℕ) (Q : ℂ[X]) (a : ℕ → Option ℂ),
       (p : ℝ) ≤ ρ ∧ (Q.natDegree : ℝ) ≤ ρ ∧
       (∀ n w, a n = some w → w ≠ 0) ∧
@@ -165,6 +188,9 @@ theorem hadamard_factorization {f : ℂ → ℂ} (hf : Differentiable ℂ f)
         (fixedGenusCanonicalProduct p a) atTop K) ∧
       ∀ z, f z = z ^ m * Complex.exp (Q.eval z) * fixedGenusCanonicalProduct p a z := by
   obtain ⟨g, hg, hg0, hfg⟩ := exists_removedZero hf hne
+  have hρ : 0 ≤ ρ := by
+    have h0 : 0 ≤ (ρ : EReal) := horder ▸ zero_le_entireGrowthOrder f
+    exact EReal.coe_nonneg.1 h0
   have hord : TauCeti.OrderLE g ρ :=
     orderLE_of_pow_mul (orderLE_of_entireGrowthOrder hf horder) hfg
   obtain ⟨p, Q, a, hp, hdeg, ha0, hsum, hmul, htend, heq⟩ :=
@@ -197,17 +223,20 @@ theorem hadamard_factorization {f : ℂ → ℂ} (hf : Differentiable ℂ f)
 
 /-- The extended logarithmic indicator; zeros use `log 0 = -∞`, rather than real-log totalization.
   -/
+@[expose]
 def entireIndicator (f : ℂ → ℂ) (ρ θ : ℝ) : EReal :=
   limsup (fun r : ℝ ↦ ((r ^ (-ρ) : ℝ) : EReal) *
     ENNReal.log (ENNReal.ofReal ‖f ((r : ℂ) * Complex.exp ((θ : ℂ) * Complex.I))‖)) atTop
 
 /-- Cartwright's class, with the real-axis logarithmic integrability written nonnegatively. -/
+@[expose]
 def IsCartwrightFunction (f : ℂ → ℂ) : Prop :=
   (∃ z, f z ≠ 0) ∧ (∃ σ : ℝ, 0 ≤ σ ∧ IsEntireExponentialType f σ) ∧
     (∫⁻ x : ℝ, ENNReal.ofReal (Real.log (max 1 ‖f x‖) / (1 + x ^ 2))) < ∞
 
 /-- Zero-counting measure of a nonzero entire function. At an infinite analytic order the
 coefficient is totalized by `toNat`; the theorems exclude the identically zero function. -/
+@[expose]
 def entireZeroCountingMeasure (f : ℂ → ℂ) : Measure ℂ :=
   Measure.sum (fun z : ℂ ↦ (analyticOrderAt f z).toNat • Measure.dirac z)
 

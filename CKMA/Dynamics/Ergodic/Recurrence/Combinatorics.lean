@@ -31,7 +31,7 @@ arithmetic progressions in dense subsets of `{0, …, N - 1}` from Roth's theore
   Roth's theorem; the case `L ≥ 4` is stated with `sorry`.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -43,10 +43,12 @@ open scoped BigOperators
 attribute [local instance] Classical.propDecidable
 
 /-- Pairs `(a, d)` indexing a nontrivial `L`-term progression inside `{0, …, N - 1}`. -/
+@[expose]
 def apParams (L N : ℕ) : Finset (ℕ × ℕ) :=
   (range N ×ˢ range N).filter fun p => 0 < p.2 ∧ p.1 + (L - 1) * p.2 < N
 
 /-- Nontrivial `L`-term progressions lying in `S` and in `{0, …, N - 1}`. -/
+@[expose]
 def progressionCount (L N : ℕ) (S : Finset ℕ) : ℕ :=
   ((apParams L N).filter fun p => ∀ j ∈ range L, p.1 + j * p.2 ∈ S).card
 
@@ -101,10 +103,12 @@ private lemma exists_roth_scale {ε : ℝ} (hε : 0 < ε) :
   exact hle
 
 /-- Windows `(t, s)` of length `M` and step `s ≤ R` contained in `{0, …, N - 1}`. -/
+@[expose]
 def windowParams (M N R : ℕ) : Finset (ℕ × ℕ) :=
   (range N ×ˢ Icc 1 R).filter fun p => p.1 + (M - 1) * p.2 < N
 
 /-- Indices at which a window meets `S`. -/
+@[expose]
 def windowHits (S : Finset ℕ) (M : ℕ) (p : ℕ × ℕ) : Finset ℕ :=
   (range M).filter fun i => p.1 + i * p.2 ∈ S
 

@@ -24,7 +24,7 @@ Source: GAPS 27.44. The comparison follows Lerner, Proc. Amer. Math. Soc. 136 (2
 outer exponent `1/(p-1)` required by the ball form of the `A_p` characteristic.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -41,11 +41,14 @@ namespace ApWeight
 
 variable {p : ℝ}
 
-/-- Weak-`(1,1)` constant of the weight, including the Vitali factor `5 ^ d`. -/
+/-- Weak-`(1,1)` constant `W.A * ENNReal.ofReal ((5 : ℝ) ^ d) ^ p` of the weight.
+The Vitali factor `(5 : ℝ) ^ d` is raised to the outer power `p`. -/
+@[expose]
 def weakConst (W : ApWeight (d := d) p) : ℝ≥0∞ :=
   W.A * ENNReal.ofReal ((5 : ℝ) ^ d) ^ p
 
 /-- Weak-`(1,1)` constant of the dual weight. -/
+@[expose]
 def dualWeakConst (W : ApWeight (d := d) p) : ℝ≥0∞ :=
   W.A ^ (p - 1)⁻¹ * ENNReal.ofReal ((5 : ℝ) ^ d) ^ W.conj
 
@@ -63,6 +66,7 @@ lemma dualWeakConst_ne_top (W : ApWeight (d := d) p) : W.dualWeakConst ≠ ∞ :
     (rpow_ne_top_of_nonneg' hfive ENNReal.ofReal_ne_top)
 
 /-- Lebesgue measure weighted by the measurable dual representative. -/
+@[expose]
 def dualMeasureMk (W : ApWeight (d := d) p) : Measure E :=
   volume.withDensity W.dualMk
 
@@ -167,6 +171,7 @@ lemma mul_measure_maximalFunction_dual (W : ApWeight (d := d) p) (g : E → ℝ�
   exact hdoub
 
 /-- Marcinkiewicz factor for the splitting `c = d = 1/2` and an `L^∞` constant `1`. -/
+@[expose]
 def marcFactor (t : ℝ) (D : ℝ≥0∞) : ℝ≥0∞ :=
   ENNReal.ofReal (t * (1 / 2) ^ (1 - t) / (t - 1)) * (ENNReal.ofReal (1 / 2)⁻¹ * D)
 

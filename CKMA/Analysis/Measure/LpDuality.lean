@@ -40,7 +40,7 @@ case: for an everywhere positive integrable weight `w`, multiplication by `w` ma
 null sets. The sesquilinear pairing is the bilinear one applied to `star g`.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -53,6 +53,7 @@ variable {𝕜 X : Type*} [RCLike 𝕜] [MeasurableSpace X]
 
 /-- The scalar `Lᵖ` dual pairing, linear in its first argument and conjugate-linear in its
 second. -/
+@[expose]
 def lpDualPairing {p q : ℝ≥0∞} {μ : Measure X} (f : Lp 𝕜 p μ) (g : Lp 𝕜 q μ) : 𝕜 :=
   ∫ x, f x * star (g x) ∂μ
 
@@ -67,6 +68,8 @@ private theorem memLp_one_weight_smul (hw : Measurable w)
   memLp_one_iff_integrable.2
     ((integrable_withDensity_iff_integrable_smul hw).1 (L1.integrable_coeFn f))
 
+/-- If `w` is everywhere positive, then `μ` is absolutely continuous with respect to
+`μ.withDensity w`. -/
 private theorem absolutelyContinuous_withDensity_weight (hw : Measurable w)
     (hpos : ∀ x, 0 < w x) : μ ≪ μ.withDensity fun x => (w x : ℝ≥0∞) :=
   withDensity_absolutelyContinuous' hw.coe_nnreal_ennreal.aemeasurable
@@ -102,6 +105,7 @@ private def weightSmulL1 (hw : Measurable w) (hpos : ∀ x, 0 < w x) :
       rw [hx]
       simp only [NNReal.smul_def, norm_smul, smul_eq_mul, Real.norm_of_nonneg (w x).coe_nonneg]
 
+/-- `weightSmulL1` acts by pointwise multiplication by `w`. -/
 private theorem weightSmulL1_coeFn (hw : Measurable w) (hpos : ∀ x, 0 < w x)
     (f : Lp 𝕜 1 (μ.withDensity fun x => (w x : ℝ≥0∞))) :
     weightSmulL1 hw hpos f =ᵐ[μ] fun x => w x • f x :=
@@ -167,10 +171,11 @@ private theorem lpDualPairing_eq_toDual_star {μ : Measure X} [SigmaFinite μ] {
 /-- **04.39**: every scalar functional is represented by a unique conjugate-exponent function,
 with the norm identity. Sigma-finiteness includes the `p=1, q=∞` endpoint. -/
 theorem existsUnique_lpDualRepresentation (μ : Measure X) [SigmaFinite μ]
-    {p q : ℝ≥0∞} [Fact (1 ≤ p)] [Fact (1 ≤ q)] (hp : p < ∞)
+    {p q : ℝ≥0∞} [Fact (1 ≤ p)] (hp : p < ∞)
     (hpq : p⁻¹ + q⁻¹ = 1) (ℓ : Lp 𝕜 p μ →L[𝕜] 𝕜) :
     ∃! g : Lp 𝕜 q μ, (∀ f, ℓ f = lpDualPairing f g) ∧ ‖ℓ‖ = ‖g‖ := by
   have : q.HolderConjugate p := ENNReal.holderConjugate_iff.2 (by rwa [add_comm])
+  have : Fact (1 ≤ q) := ⟨ENNReal.HolderConjugate.one_le q p⟩
   obtain ⟨g₀, hg₀⟩ : ∃ g₀ : Lp 𝕜 q μ, Lp.toDual 𝕜 μ q p g₀ = ℓ := by
     rcases (Fact.out : 1 ≤ p).eq_or_lt with h1 | h1
     · subst h1

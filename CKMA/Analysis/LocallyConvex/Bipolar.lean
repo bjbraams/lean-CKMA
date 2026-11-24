@@ -28,7 +28,7 @@ dual embedding for weak bilinear spaces. Source: GAPS 16.13.
   `WeakBilin` topology (**16.13**).
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

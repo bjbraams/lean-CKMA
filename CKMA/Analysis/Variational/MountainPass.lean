@@ -40,7 +40,7 @@ of the maximum set. Ekeland's principle selects the path, in the form
   level is at least the sphere barrier and is a critical value (**36.35**).
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -52,22 +52,27 @@ open scoped BigOperators
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 /-- The Palais–Smale condition at a real energy level, with strong convergence of a subsequence. -/
+@[expose]
 def HasPalaisSmaleAt (I : E → ℝ) (c : ℝ) : Prop :=
   ∀ u : ℕ → E, Tendsto (fun n ↦ I (u n)) atTop (𝓝 c) →
     Tendsto (fun n ↦ fderiv ℝ I (u n)) atTop (𝓝 0) →
     ∃ (φ : ℕ → ℕ) (x : E), StrictMono φ ∧ Tendsto (u ∘ φ) atTop (𝓝 x)
 
 /-- Continuous paths joining zero to the second well, parameterized on `[0,1]`. -/
+@[expose]
 def mountainPassPaths (e : E) : Set C(Set.Icc (0 : ℝ) 1, E) :=
   {γ | γ ⟨0, by norm_num⟩ = 0 ∧ γ ⟨1, by norm_num⟩ = e}
 
 /-- The real supremum of energy along a compact path. When the energy functional
-is continuous, as in the mountain-pass theorem, this is its attained maximum. -/
+is continuous, as in the mountain-pass theorem, this is its attained maximum.
+If the image is not bounded above, `sSup` on `ℝ` is `0`. -/
+@[expose]
 def pathMaxEnergy (I : E → ℝ) (γ : C(Set.Icc (0 : ℝ) 1, E)) : ℝ :=
   sSup (Set.range (fun t ↦ I (γ t)))
 
 /-- The mountain-pass minimax level. Under the theorem's hypotheses the infimum is finite
 and every path crosses the positive-energy sphere. -/
+@[expose]
 def mountainPassLevel (I : E → ℝ) (e : E) : ℝ :=
   sInf (pathMaxEnergy I '' mountainPassPaths e)
 

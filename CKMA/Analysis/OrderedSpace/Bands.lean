@@ -8,6 +8,8 @@ module
 public import CKMA.Analysis.OrderedSpace.Bands.Lattice
 public import CKMA.Analysis.OrderedSpace.Bands.Freudenthal
 public import Mathlib.Algebra.Order.Archimedean.Real.Basic
+public import Mathlib.Analysis.Normed.Module.Basic
+public import Mathlib.Analysis.Normed.Order.Lattice
 import Mathlib.Algebra.Order.Hom.Monoid
 import Mathlib.Tactic.Abel
 
@@ -35,7 +37,8 @@ criterion; regular maps are differences of positive maps. Sources: GAPS 19.5, 19
 * `CKMA.IsLatticeComponent`: component of a positive vector, disjoint from its remainder.
 * `CKMA.HasPrincipalBandProjections`: principal band projection property.
 * `CKMA.principalOrderIdeal`, `CKMA.orderUnitGauge`: principal order ideal of a vector and its
-  order-unit gauge.
+  order-unit gauge. On the ideal the gauge is the least admissible scalar; `Real.sInf` of the
+  empty set of scalars is `0`, so the gauge is used on the principal ideal.
 
 ## Main results
 
@@ -48,9 +51,12 @@ criterion; regular maps are differences of positive maps. Sources: GAPS 19.5, 19
 * `CKMA.exists_rieszKantorovich_sup`: the supremum of two order-bounded operators into a
   Dedekind-complete Riesz space, given on the positive cone by the Riesz–Kantorovich formula
   `(S ⊔ T) x = sup {S y + T (x - y) | 0 ≤ y ≤ x}`.
+* `CKMA.abs_le_gauge_smul`, `CKMA.gauge_le_iff`: the gauge attains `|x| ≤ c • u` and is the
+  least such scalar.
+* `CKMA.gauge_smul`, `CKMA.gauge_add`: absolute homogeneity and subadditivity of the gauge.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -71,6 +77,7 @@ structure RieszIdeal (E : Type*) [AddCommGroup E] [Lattice E] [Module ℝ E] whe
   solid : ∀ ⦃x y : E⦄, |x| ≤ |y| → y ∈ toSubmodule → x ∈ toSubmodule
 
 /-- A band is an ideal closed under existing suprema of nonempty positive subsets. -/
+@[expose]
 def RieszIdeal.IsBand (B : RieszIdeal E) : Prop :=
   ∀ s : Set E, s.Nonempty → (∀ x ∈ s, 0 ≤ x ∧ x ∈ B.toSubmodule) →
     ∀ x : E, IsLUB s x → x ∈ B.toSubmodule
@@ -82,6 +89,7 @@ variable {E₁ E₂ : Type*} [AddCommGroup E₁] [PartialOrder E₁] [Module ℝ
     [IsOrderedAddMonoid E₂]
 
 /-- Positivity of an algebraic linear operator on ordered real vector spaces. -/
+@[expose]
 def IsPositiveLinearMap (T : E₁ →ₗ[ℝ] E₂) : Prop := ∀ x, 0 ≤ x → 0 ≤ T x
 
 omit [IsOrderedAddMonoid E₁] in
@@ -105,10 +113,12 @@ theorem isPositiveLinearMap_iff_monotone (T : E₁ →ₗ[ℝ] E₂) :
     IsPositiveLinearMap T ↔ Monotone T := (monotone_iff_map_nonneg T).symm
 
 /-- The difference-of-positive-maps definition of a regular operator. -/
+@[expose]
 def IsRegularLinearMap (T : E₁ →ₗ[ℝ] E₂) : Prop :=
   ∃ S U : E₁ →ₗ[ℝ] E₂, IsPositiveLinearMap S ∧ IsPositiveLinearMap U ∧ T = S - U
 
 /-- Order boundedness is tested on every closed order interval. -/
+@[expose]
 def IsOrderBoundedLinearMap (T : E₁ →ₗ[ℝ] E₂) : Prop :=
   ∀ a b : E₁, ∃ c d : E₂, ∀ x : E₁, a ≤ x → x ≤ b → c ≤ T x ∧ T x ≤ d
 
@@ -131,6 +141,7 @@ private theorem IsRegularLinearMap.isOrderBounded {T : E₁ →ₗ[ℝ] E₂} (h
 end PositiveMaps
 
 /-- Dedekind completeness stated on the already chosen Riesz order. -/
+@[expose]
 def IsDedekindCompleteRieszSpace (E : Type*) [Lattice E] : Prop :=
   ∀ s : Set E, s.Nonempty → BddAbove s → ∃ x : E, IsLUB s x
 
@@ -306,23 +317,28 @@ theorem exists_bandProjection (hcomplete : IsDedekindCompleteRieszSpace E)
   exact ⟨hmem.2.1, hmem.2.2, hP x hx⟩
 
 /-- The Archimedean axiom appropriate to a partially ordered vector lattice. -/
+@[expose]
 def IsArchimedeanRieszSpace (E : Type*) [AddCommGroup E] [Lattice E] [Module ℝ E] : Prop :=
   ∀ x y : E, (∀ n : ℕ, (n : ℝ) • x ≤ y) → x ≤ 0
 
 /-- An element is a component of a nonnegative order unit when it is disjoint from its remainder. -/
+@[expose]
 def IsLatticeComponent (v u : E) : Prop := 0 ≤ v ∧ v ≤ u ∧ v ⊓ (u - v) = 0
 
 /-- The principal projection property is recorded by positive contractive order projections
 onto double disjoint complements, rather than by arbitrary assumed theorem predicates. -/
+@[expose]
 def HasPrincipalBandProjections (E : Type*) [AddCommGroup E] [Lattice E] [Module ℝ E] : Prop :=
   ∀ u : E, ∃ P : E →ₗ[ℝ] E,
     (LinearMap.range P : Set E) = latticeDisjointComplement (latticeDisjointComplement {u}) ∧
     (∀ x, P (P x) = P x) ∧ ∀ x, 0 ≤ x → 0 ≤ P x ∧ P x ≤ x
 
 /-- The principal order ideal as a concrete carrier. -/
+@[expose]
 def principalOrderIdeal (u : E) : Set E := {x | ∃ c : ℝ, 0 ≤ c ∧ |x| ≤ c • u}
 
 /-- The order-unit gauge, used only on the principal ideal when `u` is nonnegative. -/
+@[expose]
 def orderUnitGauge (u x : E) : ℝ := sInf {c : ℝ | 0 ≤ c ∧ |x| ≤ c • u}
 
 /-- **19.8**, Freudenthal approximation in the equivalent order-error form from the principal
@@ -481,5 +497,257 @@ theorem exists_rieszKantorovich_sup (hcomplete : IsDedekindCompleteRieszSpace F)
       S y + T (x - y) ≤ V y + V (x - y) :=
         add_le_add (hV y hy0).1 (hV (x - y) (sub_nonneg.2 hyx)).2
       _ = V x := by rw [← map_add, add_sub_cancel]
+
+
+section OrderUnitGauge
+
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [Lattice E]
+  [IsOrderedAddMonoid E] [IsOrderedModule ℝ E] [HasSolidNorm E]
+
+private theorem archimedean_of_norm {x y : E} (h : ∀ n : ℕ, (n : ℝ) • x ≤ y) : x ≤ 0 := by
+  have hpos : ∀ n : ℕ, (n : ℝ) • x⁺ ≤ y⁺ := by
+    intro n
+    rw [← posPart_smul_of_nonneg (Nat.cast_nonneg n)]
+    exact sup_le_sup_right (h n) 0
+  have hnorm : ∀ n : ℕ, (n : ℝ) * ‖x⁺‖ ≤ ‖y⁺‖ := by
+    intro n
+    have habs : |(n : ℝ) • x⁺| ≤ |y⁺| := by
+      rw [abs_of_nonneg (smul_nonneg (Nat.cast_nonneg n) (posPart_nonneg x)),
+        abs_of_nonneg (posPart_nonneg y)]
+      exact hpos n
+    have hle := norm_le_norm_of_abs_le_abs habs
+    rwa [norm_smul, Real.norm_eq_abs, abs_of_nonneg (Nat.cast_nonneg n)] at hle
+  have hz : ‖x⁺‖ = 0 := by
+    by_contra hne
+    have hpos' : 0 < ‖x⁺‖ := lt_of_le_of_ne (norm_nonneg _) (Ne.symm hne)
+    obtain ⟨n, hn⟩ := exists_nat_gt (‖y⁺‖ / ‖x⁺‖)
+    have hlt : ‖y⁺‖ < (n : ℝ) * ‖x⁺‖ := by
+      rwa [div_lt_iff₀ hpos'] at hn
+    exact not_lt.mpr (hnorm n) hlt
+  rw [norm_eq_zero] at hz
+  exact posPart_eq_zero.mp hz
+
+private def gaugeSet (u x : E) : Set ℝ := {c : ℝ | 0 ≤ c ∧ |x| ≤ c • u}
+
+omit [IsOrderedAddMonoid E] [IsOrderedModule ℝ E] [HasSolidNorm E] in
+/-- The gauge set of an ideal element is nonempty and bounded below by zero. -/
+private theorem gaugeSet_nonempty {u x : E} (hx : x ∈ principalOrderIdeal u) :
+    (gaugeSet u x).Nonempty := by
+  obtain ⟨c, hc, hx⟩ := hx
+  exact ⟨c, hc, hx⟩
+
+omit [IsOrderedAddMonoid E] [IsOrderedModule ℝ E] [HasSolidNorm E] in
+/-- Every gauge scalar is nonnegative. -/
+private theorem bddBelow_gaugeSet (u x : E) : BddBelow (gaugeSet u x) :=
+  ⟨0, fun _ hc => hc.1⟩
+
+omit [IsOrderedAddMonoid E] [IsOrderedModule ℝ E] [HasSolidNorm E] in
+/-- The order-unit gauge of an ideal element is nonnegative. -/
+theorem gauge_nonneg {u x : E} (hx : x ∈ principalOrderIdeal u) :
+    0 ≤ orderUnitGauge u x := by
+  unfold orderUnitGauge
+  exact le_csInf (gaugeSet_nonempty hx) fun _ hc => hc.1
+
+omit [IsOrderedAddMonoid E] [IsOrderedModule ℝ E] [HasSolidNorm E] in
+/-- An admissible scalar dominates the gauge. -/
+theorem gauge_le_of_mem {u x : E} {c : ℝ} (hc : 0 ≤ c ∧ |x| ≤ c • u) :
+    orderUnitGauge u x ≤ c := by
+  unfold orderUnitGauge
+  exact csInf_le (bddBelow_gaugeSet u x) hc
+
+/-- Archimedean attainment: the absolute value is bounded by the gauge multiple. -/
+theorem abs_le_gauge_smul {u x : E} (hu : 0 ≤ u) (hx : x ∈ principalOrderIdeal u) :
+    |x| ≤ orderUnitGauge u x • u := by
+  set p : ℝ := orderUnitGauge u x
+  have hp : 0 ≤ p := gauge_nonneg hx
+  let z : E := (|x| - p • u)⁺
+  have hz0 : 0 ≤ z := posPart_nonneg _
+  have hzε : ∀ ε : ℝ, 0 < ε → z ≤ ε • u := by
+    intro ε hε
+    have hnot : ¬ ∀ c ∈ gaugeSet u x, p + ε ≤ c := by
+      intro hall
+      have hle : p + ε ≤ p := le_csInf (gaugeSet_nonempty hx) hall
+      linarith
+    push Not at hnot
+    obtain ⟨c, hc, hclt⟩ := hnot
+    have habs : |x| ≤ c • u := hc.2
+    have hcε : c • u ≤ (p + ε) • u :=
+      smul_le_smul_of_nonneg_right (le_of_lt hclt) hu
+    have hdiff : |x| - p • u ≤ ε • u := by
+      have hsum : c • u ≤ p • u + ε • u := by
+        rw [← add_smul]
+        exact hcε
+      exact (sub_le_sub_right (habs.trans hsum) (p • u)).trans_eq (by abel)
+    have hpos : (|x| - p • u)⁺ ≤ ε • u := by
+      exact sup_le hdiff (smul_nonneg hε.le hu)
+    simpa [z] using hpos
+  have harch : ∀ n : ℕ, (n : ℝ) • z ≤ u := by
+    intro n
+    cases n with
+    | zero => simp [hu]
+    | succ n =>
+      have hε : (0 : ℝ) < 1 / ((n + 1 : ℕ) : ℝ) :=
+        one_div_pos.mpr (by exact_mod_cast Nat.succ_pos n)
+      have hz := hzε _ hε
+      have hmul := smul_le_smul_of_nonneg_left hz
+        (Nat.cast_nonneg (α := ℝ) (n + 1))
+      have hcoe : ((n + 1 : ℕ) : ℝ) * (1 / ((n + 1 : ℕ) : ℝ)) = 1 := by
+        rw [mul_one_div]
+        exact div_self (Nat.cast_ne_zero.mpr (Nat.succ_ne_zero n))
+      rw [smul_smul, hcoe, one_smul] at hmul
+      exact hmul
+  have hzle : z ≤ 0 := archimedean_of_norm harch
+  have hz : z = 0 := le_antisymm hzle hz0
+  exact sub_nonpos.mp (posPart_eq_zero.mp (by simpa [z] using hz))
+
+/-- Membership in the gauge set is equivalent to dominating the gauge, for ideal elements. -/
+theorem gauge_le_iff {u x : E} (hu : 0 ≤ u) (hx : x ∈ principalOrderIdeal u) {c : ℝ}
+    (hc : 0 ≤ c) : orderUnitGauge u x ≤ c ↔ |x| ≤ c • u := by
+  constructor
+  · intro hle
+    exact (abs_le_gauge_smul hu hx).trans (smul_le_smul_of_nonneg_right hle hu)
+  · intro habs
+    exact gauge_le_of_mem ⟨hc, habs⟩
+
+/-- The gauge is absolutely homogeneous on the principal ideal. -/
+theorem gauge_smul {u x : E} (hu : 0 ≤ u) (hx : x ∈ principalOrderIdeal u) (c : ℝ) :
+    orderUnitGauge u (c • x) = |c| * orderUnitGauge u x := by
+  have hx' : c • x ∈ principalOrderIdeal u := by
+    obtain ⟨d, hd, hxd⟩ := hx
+    refine ⟨|c| * d, mul_nonneg (abs_nonneg c) hd, ?_⟩
+    calc |c • x| = |c| • |x| := abs_smul c x
+      _ ≤ |c| • (d • u) := smul_le_smul_of_nonneg_left hxd (abs_nonneg c)
+      _ = (|c| * d) • u := by rw [mul_smul]
+  have hp : 0 ≤ orderUnitGauge u x := gauge_nonneg hx
+  have hq : 0 ≤ orderUnitGauge u (c • x) := gauge_nonneg hx'
+  apply le_antisymm
+  · have habs : |c • x| ≤ (|c| * orderUnitGauge u x) • u := by
+      calc |c • x| = |c| • |x| := abs_smul c x
+        _ ≤ |c| • (orderUnitGauge u x • u) :=
+            smul_le_smul_of_nonneg_left (abs_le_gauge_smul hu hx) (abs_nonneg c)
+        _ = (|c| * orderUnitGauge u x) • u := by rw [mul_smul]
+    exact (gauge_le_iff hu hx' (mul_nonneg (abs_nonneg c) hp)).2 habs
+  · rcases eq_or_ne c 0 with rfl | hc
+    · simpa using hq
+    · have habs : |x| ≤ (|c|⁻¹ * orderUnitGauge u (c • x)) • u := by
+        have hback : x = c⁻¹ • c • x := by
+          rw [← mul_smul, inv_mul_cancel₀ hc, one_smul]
+        calc |x| = |c⁻¹ • c • x| := by rw [← hback]
+          _ = |c|⁻¹ • |c • x| := by rw [abs_smul, abs_inv]
+          _ ≤ |c|⁻¹ • (orderUnitGauge u (c • x) • u) :=
+              smul_le_smul_of_nonneg_left (abs_le_gauge_smul hu hx') (inv_nonneg.mpr (abs_nonneg c))
+          _ = (|c|⁻¹ * orderUnitGauge u (c • x)) • u := by rw [mul_smul]
+      have hp' : orderUnitGauge u x ≤ |c|⁻¹ * orderUnitGauge u (c • x) :=
+        (gauge_le_iff hu hx (mul_nonneg (inv_nonneg.mpr (abs_nonneg c)) hq)).2 habs
+      have hmul := mul_le_mul_of_nonneg_left hp' (abs_nonneg c)
+      rwa [← mul_assoc, mul_inv_cancel₀ (abs_ne_zero.mpr hc), one_mul] at hmul
+
+/-- The gauge is subadditive on the principal ideal. -/
+theorem gauge_add {u x y : E} (hu : 0 ≤ u) (hx : x ∈ principalOrderIdeal u)
+    (hy : y ∈ principalOrderIdeal u) :
+    orderUnitGauge u (x + y) ≤ orderUnitGauge u x + orderUnitGauge u y := by
+  have hxy : x + y ∈ principalOrderIdeal u := by
+    obtain ⟨c, hc, hxc⟩ := hx
+    obtain ⟨d, hd, hyd⟩ := hy
+    refine ⟨c + d, add_nonneg hc hd, ?_⟩
+    calc |x + y| ≤ |x| + |y| := abs_add_le x y
+      _ ≤ c • u + d • u := add_le_add hxc hyd
+      _ = (c + d) • u := by rw [add_smul]
+  have habs : |x + y| ≤ (orderUnitGauge u x + orderUnitGauge u y) • u := by
+    calc |x + y| ≤ |x| + |y| := abs_add_le x y
+      _ ≤ orderUnitGauge u x • u + orderUnitGauge u y • u :=
+          add_le_add (abs_le_gauge_smul hu hx) (abs_le_gauge_smul hu hy)
+      _ = (orderUnitGauge u x + orderUnitGauge u y) • u := by rw [add_smul]
+  exact (gauge_le_iff hu hxy (add_nonneg (gauge_nonneg hx) (gauge_nonneg hy))).2 habs
+
+omit [NormedSpace ℝ E] [IsOrderedModule ℝ E] [HasSolidNorm E] in
+/-- The absolute value of a supremum is dominated by the supremum of the absolute values. -/
+private theorem abs_sup_le_sup_abs (x y : E) : |x ⊔ y| ≤ |x| ⊔ |y| := by
+  refine sup_le ?_ ?_
+  · exact sup_le_sup (le_abs_self x) (le_abs_self y)
+  · rw [neg_sup]
+    exact inf_le_left.trans ((neg_le_abs x).trans le_sup_left)
+
+omit [NormedSpace ℝ E] [IsOrderedModule ℝ E] [HasSolidNorm E] in
+/-- The absolute value of an infimum is dominated by the supremum of the absolute values. -/
+private theorem abs_inf_le_sup_abs (x y : E) : |x ⊓ y| ≤ |x| ⊔ |y| := by
+  rw [show x ⊓ y = -(-x ⊔ -y) by rw [← neg_inf, neg_neg], abs_neg]
+  exact (abs_sup_le_sup_abs (-x) (-y)).trans (by simp [abs_neg])
+
+omit [HasSolidNorm E] in
+/-- Nonnegative scaling preserves a principal ideal. -/
+theorem principalOrderIdeal_smul {u : E} {c : ℝ} {x : E} (hx : x ∈ principalOrderIdeal u) :
+    c • x ∈ principalOrderIdeal u := by
+  obtain ⟨d, hd, hxd⟩ := hx
+  refine ⟨|c| * d, mul_nonneg (abs_nonneg c) hd, ?_⟩
+  calc |c • x| = |c| • |x| := abs_smul c x
+    _ ≤ |c| • (d • u) := smul_le_smul_of_nonneg_left hxd (abs_nonneg c)
+    _ = (|c| * d) • u := by rw [mul_smul]
+
+omit [IsOrderedAddMonoid E] [IsOrderedModule ℝ E] [HasSolidNorm E] in
+/-- Negation preserves a principal ideal. -/
+theorem principalOrderIdeal_neg {u x : E} (hx : x ∈ principalOrderIdeal u) :
+    -x ∈ principalOrderIdeal u := by
+  obtain ⟨c, hc, hxc⟩ := hx
+  exact ⟨c, hc, by simpa [abs_neg] using hxc⟩
+
+omit [IsOrderedModule ℝ E] [HasSolidNorm E] in
+/-- Addition preserves a principal ideal. -/
+theorem principalOrderIdeal_add {u x y : E} (hx : x ∈ principalOrderIdeal u)
+    (hy : y ∈ principalOrderIdeal u) : x + y ∈ principalOrderIdeal u := by
+  obtain ⟨c, hc, hxc⟩ := hx
+  obtain ⟨d, hd, hyd⟩ := hy
+  refine ⟨c + d, add_nonneg hc hd, ?_⟩
+  calc |x + y| ≤ |x| + |y| := abs_add_le x y
+    _ ≤ c • u + d • u := add_le_add hxc hyd
+    _ = (c + d) • u := by rw [add_smul]
+
+omit [IsOrderedModule ℝ E] [HasSolidNorm E] in
+/-- Subtraction preserves a principal ideal. -/
+theorem principalOrderIdeal_sub {u x y : E} (hx : x ∈ principalOrderIdeal u)
+    (hy : y ∈ principalOrderIdeal u) : x - y ∈ principalOrderIdeal u := by
+  simpa [sub_eq_add_neg] using principalOrderIdeal_add hx (principalOrderIdeal_neg hy)
+
+omit [HasSolidNorm E] in
+/-- Natural scaling preserves a principal ideal. -/
+theorem principalOrderIdeal_nsmul {u : E} {n : ℕ} {x : E} (hx : x ∈ principalOrderIdeal u) :
+    n • x ∈ principalOrderIdeal u := by
+  rw [← Nat.cast_smul_eq_nsmul ℝ]
+  exact principalOrderIdeal_smul hx
+
+omit [HasSolidNorm E] in
+/-- Integer scaling preserves a principal ideal. -/
+theorem principalOrderIdeal_zsmul {u : E} {n : ℤ} {x : E} (hx : x ∈ principalOrderIdeal u) :
+    n • x ∈ principalOrderIdeal u := by
+  rw [← Int.cast_smul_eq_zsmul ℝ]
+  exact principalOrderIdeal_smul hx
+
+omit [IsOrderedModule ℝ E] [HasSolidNorm E] in
+/-- A principal ideal is closed under binary suprema. -/
+theorem principalOrderIdeal_sup {u x y : E} (hx : x ∈ principalOrderIdeal u)
+    (hy : y ∈ principalOrderIdeal u) : x ⊔ y ∈ principalOrderIdeal u := by
+  obtain ⟨c, hc, hxc⟩ := hx
+  obtain ⟨d, hd, hyd⟩ := hy
+  refine ⟨c + d, add_nonneg hc hd, ?_⟩
+  calc |x ⊔ y| ≤ |x| ⊔ |y| := abs_sup_le_sup_abs x y
+    _ ≤ |x| + |y| :=
+        sup_le (le_add_of_nonneg_right (abs_nonneg _)) (le_add_of_nonneg_left (abs_nonneg _))
+    _ ≤ c • u + d • u := add_le_add hxc hyd
+    _ = (c + d) • u := by rw [add_smul]
+
+omit [IsOrderedModule ℝ E] [HasSolidNorm E] in
+/-- A principal ideal is closed under binary infima. -/
+theorem principalOrderIdeal_inf {u x y : E} (hx : x ∈ principalOrderIdeal u)
+    (hy : y ∈ principalOrderIdeal u) : x ⊓ y ∈ principalOrderIdeal u := by
+  obtain ⟨c, hc, hxc⟩ := hx
+  obtain ⟨d, hd, hyd⟩ := hy
+  refine ⟨c + d, add_nonneg hc hd, ?_⟩
+  calc |x ⊓ y| ≤ |x| ⊔ |y| := abs_inf_le_sup_abs x y
+    _ ≤ |x| + |y| :=
+        sup_le (le_add_of_nonneg_right (abs_nonneg _)) (le_add_of_nonneg_left (abs_nonneg _))
+    _ ≤ c • u + d • u := add_le_add hxc hyd
+    _ = (c + d) • u := by rw [add_smul]
+
+end OrderUnitGauge
 
 end CKMA

@@ -38,7 +38,7 @@ coextension identity. Sources: GAPS 21.26, 21.30, and 21.37.
   isometric dilation.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -69,6 +69,7 @@ theorem wold_decomposition (V : H →ₗᵢ[ℂ] H) :
     woldUnitary_inner_shift_eq_zero V, wold_hasSum_decomposition V⟩
 
 /-- Power dilation and two-sided orbit minimality for a unitary realization. -/
+@[expose]
 def IsMinimalUnitaryPowerDilation (T : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K)
     (U : K ≃ₗᵢ[ℂ] K) : Prop :=
   (∀ n : ℕ, ∀ x : H, J.toContinuousLinearMap.adjoint ((U^[n]) (J x)) = (T ^ n) x) ∧
@@ -99,6 +100,7 @@ theorem minimalUnitaryPowerDilation_unique (T : H →L[ℂ] H)
     exact unitaryDilationEquiv_unique T J U hpow hmin J' U' hpow' hmin' W' hW'.1 hW'.2
 
 /-- Minimal isometric dilation with the original space co-invariant. -/
+@[expose]
 def IsMinimalIsometricDilation (T : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K)
     (V : K →ₗᵢ[ℂ] K) : Prop :=
   (∀ y : K, J.toContinuousLinearMap.adjoint (V y) = T (J.toContinuousLinearMap.adjoint y)) ∧

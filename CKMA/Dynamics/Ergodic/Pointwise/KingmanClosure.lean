@@ -26,7 +26,7 @@ Monotone convergence identifies the mean, and the truncated L¹ convergence pass
   `CKMA.kingman_subadditive_of_ergodic`, are in `Dynamics.Ergodic.Pointwise`.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -70,7 +70,7 @@ private lemma eLpNorm_one_eq_ofReal_abs {w : Ω → ℝ} (hw : AEStronglyMeasura
   rw [hfun, ← ofReal_integral_eq_lintegral_ofReal habs hnn]
 
 /-- Truncated Fekete values decrease to the untruncated infimum. -/
-lemma tendsto_subadditiveMeanRate_trunc [IsProbabilityMeasure μ] {f : ℕ → Ω → ℝ}
+lemma tendsto_subadditiveMeanRate_trunc [IsFiniteMeasure μ] {f : ℕ → Ω → ℝ}
     (hf : ∀ n : ℕ, 0 < n → Integrable (f n) μ)
     (hf_meas : ∀ n : ℕ, 0 < n → Measurable (f n))
     (hlower : ∃ c : ℝ, ∀ n : ℕ, 0 < n → c ≤ (n : ℝ)⁻¹ * ∫ ω, f n ω ∂μ) :
@@ -167,7 +167,7 @@ private lemma kingman_ae_max_trunc [IsProbabilityMeasure μ] (hT : MeasurePreser
   · simpa [kingmanLimsup_trunc] using hsup
 
 /-- Almost surely the extended limsup of a measurable subadditive process is not `⊤`. -/
-private lemma kingmanLimsup_ae_ne_top_of_measurable [IsProbabilityMeasure μ]
+private lemma kingmanLimsup_ae_ne_top_of_measurable [IsFiniteMeasure μ]
     (hT : MeasurePreserving T μ μ) {f : ℕ → Ω → ℝ}
     (hf : ∀ n : ℕ, 0 < n → Integrable (f n) μ)
     (hf_meas : ∀ n : ℕ, 0 < n → Measurable (f n))

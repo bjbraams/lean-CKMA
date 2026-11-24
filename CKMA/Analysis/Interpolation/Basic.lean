@@ -36,7 +36,7 @@ The operator bounds are in `CKMA.Analysis.Interpolation.Bounds`.
   complex interpolation gauge and its finite-gauge carrier.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -91,16 +91,19 @@ attribute [instance] BanachCouple.leftGroup BanachCouple.leftSpace BanachCouple.
   BanachCouple.ambientGroup BanachCouple.ambientSpace
 
 /-- Peetre's `K` functional, extended by `∞` off the algebraic sum. -/
+@[expose]
 def BanachCouple.kFunctional {𝕜 : Type*} [RCLike 𝕜] (C : BanachCouple 𝕜)
     (t : ℝ) (x : C.ambient) : ℝ≥0∞ :=
   ⨅ (x₀ : C.left) (x₁ : C.right) (_h : C.inLeft x₀ + C.inRight x₁ = x),
     ENNReal.ofReal (‖x₀‖ + t * ‖x₁‖)
 
 /-- The dilation-invariant measure `dt/t` on the positive half-line. -/
+@[expose]
 def interpolationMeasure : Measure ℝ :=
   (volume.restrict (Set.Ioi 0)).withDensity (fun t ↦ ENNReal.ofReal t⁻¹)
 
 /-- Real interpolation gauge, including `q = ∞`. -/
+@[expose]
 def BanachCouple.realInterpolationGauge {𝕜 : Type*} [RCLike 𝕜]
     (C : BanachCouple 𝕜) (θ : ℝ) (q : ℝ≥0∞) (x : C.ambient) : ℝ≥0∞ :=
   if q = ∞ then ⨆ (t : ℝ) (_ht : 0 < t),
@@ -110,6 +113,7 @@ def BanachCouple.realInterpolationGauge {𝕜 : Type*} [RCLike 𝕜]
 
 /-- The real interpolation space as its finite-gauge carrier.
 Bundled normed-space and completeness instances are separate infrastructure targets. -/
+@[expose]
 def BanachCouple.realInterpolationSet {𝕜 : Type*} [RCLike 𝕜]
     (C : BanachCouple 𝕜) (θ : ℝ) (q : ℝ≥0∞) : Set C.ambient :=
   {x | C.realInterpolationGauge θ q x ≠ ∞}
@@ -151,18 +155,21 @@ structure InterpolationStripFunction (C : BanachCouple ℂ) where
   right_zero : Tendsto rightBoundary (cocompact ℝ) (𝓝 0)
 
 /-- The supremum of the two endpoint norms. -/
+@[expose]
 def InterpolationStripFunction.boundaryNorm {C : BanachCouple ℂ}
     (F : InterpolationStripFunction C) : ℝ :=
   max (sSup (Set.range (fun t ↦ ‖F.leftBoundary t‖)))
     (sSup (Set.range (fun t ↦ ‖F.rightBoundary t‖)))
 
 /-- Complex interpolation gauge as the infimum of boundary norms of interpolants. -/
+@[expose]
 def BanachCouple.complexInterpolationGauge (C : BanachCouple ℂ)
     (θ : ℝ) (x : C.ambient) : ℝ≥0∞ :=
   ⨅ (F : InterpolationStripFunction C) (_h : F.toFun θ = x),
     ENNReal.ofReal F.boundaryNorm
 
 /-- Finite-gauge carrier of complex interpolation. -/
+@[expose]
 def BanachCouple.complexInterpolationSet (C : BanachCouple ℂ) (θ : ℝ) : Set C.ambient :=
   {x | C.complexInterpolationGauge θ x ≠ ∞}
 

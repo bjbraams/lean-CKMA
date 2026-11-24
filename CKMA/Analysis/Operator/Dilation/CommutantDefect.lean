@@ -30,7 +30,7 @@ commutant-lifting series.
 * `CKMA.inner_defectSpace_pow_eq_zero`: pairwise orthogonality of shifted defect subspaces.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -66,6 +66,7 @@ private theorem adjoint_coinvariant (T : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K)
   simpa [adjoint_comp, adjoint_adjoint] using hadj
 
 /-- The defect `V J - J T` of an isometric coextension. -/
+@[expose]
 def dilationDefect (T : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K) : H →L[ℂ] K :=
   V.toContinuousLinearMap.comp J.toContinuousLinearMap -
     J.toContinuousLinearMap.comp T
@@ -179,6 +180,7 @@ private theorem inner_dilationDefect_pow_eq_zero (T : H →L[ℂ] H) (J : H →�
     (dilationDefect_pow_mem_orthogonal T J V hcoin j y)
 
 /-- The closed span of the coextension defect. -/
+@[expose]
 def dilationDefectSpace (T : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K) : Submodule ℂ K :=
   (LinearMap.range (dilationDefect T J V).toLinearMap).topologicalClosure
 

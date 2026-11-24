@@ -37,7 +37,7 @@ Source: GAPS 27.44.
 * `CKMA.weighted_maximal_weakType`: weighted weak `(1, 1)` maximal inequality for `A_1` weights.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -47,11 +47,13 @@ open MeasureTheory MeasureTheory.Measure Metric Filter Set Topology ENNReal TauC
 open scoped ENNReal
 
 /-- The measure with a nonnegative real weight as density. -/
+@[expose]
 def weightedLebesgueMeasure {d : ℕ} (w : EuclideanSpace ℝ (Fin d) → ℝ) :
     Measure (EuclideanSpace ℝ (Fin d)) := volume.withDensity (fun x ↦ ENNReal.ofReal (w x))
 
 /-- The ball A_p characteristic. Balls and axis-parallel cubes give equivalent finite classes
 in Euclidean space, but the characteristic constants themselves depend on this convention. -/
+@[expose]
 def muckenhouptCharacteristic {d : ℕ} (p : ℝ) (w : EuclideanSpace ℝ (Fin d) → ℝ) : ℝ≥0∞ :=
   ⨆ (x : EuclideanSpace ℝ (Fin d)) (r : ℝ) (_hr : 0 < r),
     ((∫⁻ y in Metric.ball x r, ENNReal.ofReal (w y)) / volume (Metric.ball x r)) *
@@ -59,11 +61,13 @@ def muckenhouptCharacteristic {d : ℕ} (p : ℝ) (w : EuclideanSpace ℝ (Fin d
         volume (Metric.ball x r)) ^ (p - 1))
 
 /-- Positive, locally integrable A_p weights, with the characteristic retaining infinity. -/
+@[expose]
 def IsMuckenhouptWeight {d : ℕ} (p : ℝ) (w : EuclideanSpace ℝ (Fin d) → ℝ) : Prop :=
   1 < p ∧ Measurable w ∧ (∀ᵐ x ∂volume, 0 < w x) ∧ LocallyIntegrable w volume ∧
     muckenhouptCharacteristic p w < ∞
 
 /-- The A_1 class, using TauCeti's centered maximal function and its actual positive bound. -/
+@[expose]
 def IsMuckenhouptOneWeight {d : ℕ} (w : EuclideanSpace ℝ (Fin d) → ℝ) : Prop :=
   Measurable w ∧ (∀ᵐ x ∂volume, 0 < w x) ∧ LocallyIntegrable w volume ∧
     ∃ C : ℝ, 0 < C ∧ ∀ᵐ x ∂volume,

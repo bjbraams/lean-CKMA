@@ -31,7 +31,7 @@ weak compactness in normed spaces over `RCLike` scalars.
 * `CKMA.WeaklyConverges.isWeaklyCauchy`: weakly convergent sequences are weakly Cauchy.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -42,6 +42,7 @@ open Filter Topology
 variable {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 /-- Convergence against every continuous linear functional along an arbitrary filter. -/
+@[expose]
 def WeaklyTendsto (𝕜 : Type*) [RCLike 𝕜] {α E : Type*} [NormedAddCommGroup E]
     [NormedSpace 𝕜 E] (u : α → E) (l : Filter α) (x : E) : Prop :=
   ∀ ℓ : E →L[𝕜] 𝕜, Tendsto (fun a ↦ ℓ (u a)) l (𝓝 (ℓ x))
@@ -56,6 +57,7 @@ theorem weaklyTendsto_iff_tendsto {α : Type*} (u : α → E) (l : Filter α) (x
   exact (WeakBilin.tendsto_iff_forall_eval_tendsto (topDualPairing 𝕜 E).flip hi).symm
 
 /-- Weak convergence of a sequence, expressed on the original carrier. -/
+@[expose]
 def WeaklyConverges (𝕜 : Type*) [RCLike 𝕜] {E : Type*} [NormedAddCommGroup E]
     [NormedSpace 𝕜 E] (u : ℕ → E) (x : E) : Prop :=
   WeaklyTendsto 𝕜 u atTop x
@@ -67,11 +69,13 @@ theorem weaklyConverges_iff_tendsto (u : ℕ → E) (x : E) :
   weaklyTendsto_iff_tendsto u atTop x
 
 /-- Relative compactness for the weak topology, retaining ambient-space limit points. -/
+@[expose]
 def IsRelativelyWeaklyCompact (𝕜 : Type*) [RCLike 𝕜] {E : Type*}
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] (s : Set E) : Prop :=
   IsCompact (closure (toWeakSpace 𝕜 E '' s))
 
 /-- A sequence is weakly Cauchy when all of its continuous scalar images are Cauchy. -/
+@[expose]
 def IsWeaklyCauchy (𝕜 : Type*) [RCLike 𝕜] {E : Type*} [NormedAddCommGroup E]
     [NormedSpace 𝕜 E] (u : ℕ → E) : Prop :=
   ∀ ℓ : E →L[𝕜] 𝕜, CauchySeq (fun n ↦ ℓ (u n))

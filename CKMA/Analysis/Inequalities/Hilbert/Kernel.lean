@@ -36,7 +36,7 @@ argument for affine bounds in `ℝ≥0∞` complete the toolkit. Source: GAPS 11
 * `CKMA.Hilbert.ofReal_pi_div_sin_le_lintegral_Ioo`: the truncated slice estimate.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -46,6 +46,7 @@ open MeasureTheory Set intervalIntegral
 open scoped ENNReal
 
 /-- Real power `x ^ c` for `x > 0`, and `0` otherwise. -/
+@[expose]
 def rpowPos (c x : ℝ) : ℝ :=
   if 0 < x then Real.exp (c * Real.log x) else 0
 
@@ -309,6 +310,7 @@ private lemma lintegral_hilbert_slice {α x : ℝ} (hα0 : 0 < α) (hα1 : α < 
   rw [scale_kernel hx ht, betaTail, hexp]
 
 /-- Positive kernel `(k / t) ^ α / (k + t)`, extended by `0` off `(0, ∞)`. -/
+@[expose]
 def hilbertKernel (k α t : ℝ) : ℝ :=
   if 0 < t then rpowPos α (k / t) / (k + t) else 0
 

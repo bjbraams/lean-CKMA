@@ -28,7 +28,7 @@ restricting to the closed forward orbit of that copy.
   isometry.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -41,10 +41,12 @@ universe u
 variable {H : Type u} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
 
 /-- The carrier `H ⊕ ℓ²(ℕ, H)` of Schäffer's dilation. -/
+@[expose]
 abbrev SchafferSpace (H : Type u) [NormedAddCommGroup H] [InnerProductSpace ℂ H] :=
   WithLp 2 (H × lp (fun _ : ℕ => H) 2)
 
 /-- The linear pair `(h, f) ↦ (T h, D_T h + S f)` underlying Schäffer's isometry. -/
+@[expose]
 def schafferPair (T : H →L[ℂ] H) :
     H × lp (fun _ : ℕ => H) 2 →ₗ[ℂ] H × lp (fun _ : ℕ => H) 2 where
   toFun p := (T p.1, l2InsertZero (defectOperator T p.1) + l2ShiftRight p.2)
@@ -65,6 +67,7 @@ private theorem schafferPair_apply (T : H →L[ℂ] H) (h : H) (f : lp (fun _ : 
   rfl
 
 /-- Schäffer's operator on `H ⊕ ℓ²(ℕ, H)`. -/
+@[expose]
 def schafferLinear (T : H →L[ℂ] H) : SchafferSpace H →ₗ[ℂ] SchafferSpace H :=
   (WithLp.linearEquiv 2 ℂ (H × lp (fun _ : ℕ => H) 2)).symm.toLinearMap ∘ₗ
     schafferPair T ∘ₗ
@@ -92,6 +95,7 @@ theorem norm_schafferLinear (T : H →L[ℂ] H) (hT : ‖T‖ ≤ 1) (z : Schaff
     ← add_assoc, norm_sq_add_norm_sq_defectOperator T hT, ← WithLp.prod_norm_sq_eq_of_L2 z]
 
 /-- Schäffer's isometric coextension of a contraction. -/
+@[expose]
 def schafferIsometry (T : H →L[ℂ] H) (hT : ‖T‖ ≤ 1) :
     SchafferSpace H →ₗᵢ[ℂ] SchafferSpace H where
   toLinearMap := schafferLinear T
@@ -103,6 +107,7 @@ private theorem schafferIsometry_apply (T : H →L[ℂ] H) (hT : ‖T‖ ≤ 1) 
   rfl
 
 /-- The linear embedding of the original space as the first summand. -/
+@[expose]
 def schafferEmbedLinear : H →ₗ[ℂ] SchafferSpace H :=
   (WithLp.linearEquiv 2 ℂ (H × lp (fun _ : ℕ => H) 2)).symm.toLinearMap ∘ₗ
     LinearMap.inl ℂ H (lp (fun _ : ℕ => H) 2)
@@ -120,6 +125,7 @@ theorem norm_schafferEmbedLinear (x : H) : ‖schafferEmbedLinear x‖ = ‖x‖
   exact WithLp.norm_toLp_fst 2 H (lp (fun _ : ℕ => H) 2) x
 
 /-- The isometric embedding of the original Hilbert space. -/
+@[expose]
 def schafferEmbed : H →ₗᵢ[ℂ] SchafferSpace H where
   toLinearMap := schafferEmbedLinear
   norm_map' := norm_schafferEmbedLinear

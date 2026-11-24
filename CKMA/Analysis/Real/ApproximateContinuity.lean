@@ -36,7 +36,7 @@ for the complements of preimages of rational intervals, followed by countable in
   measurable real function is approximately continuous almost everywhere.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -49,6 +49,7 @@ variable {E F : Type*} [MetricSpace E] [MeasurableSpace E] [MetricSpace F]
 
 /-- Density zero in shrinking closed balls with eventually finite mass.
 Zero-mass balls use the extended-real ratio convention `0 / 0 = 0`. -/
+@[expose]
 def HasDensityZeroAt (μ : Measure E) (s : Set E) (x : E) : Prop :=
   (∀ᶠ r : ℝ in 𝓝[>] 0, μ (Metric.closedBall x r) < ∞) ∧
     Tendsto (fun r : ℝ ↦ μ (s ∩ Metric.closedBall x r) / μ (Metric.closedBall x r))
@@ -95,6 +96,7 @@ theorem ae_hasDensityZeroAt_of_notMem [BorelSpace E] [SecondCountableTopology E]
 alias ae_hasDensityZeroAt_of_not_mem := ae_hasDensityZeroAt_of_notMem
 
 /-- Approximate continuity with respect to `μ`, using closed-ball density. -/
+@[expose]
 def ApproximatelyContinuousAt (μ : Measure E) (f : E → F) (x : E) : Prop :=
   ∀ ε : ℝ, 0 < ε → HasDensityZeroAt μ {y | ε < dist (f y) (f x)} x
 

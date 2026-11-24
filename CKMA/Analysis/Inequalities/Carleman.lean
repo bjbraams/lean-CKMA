@@ -39,7 +39,7 @@ Source: GAPS 11.38.
   finitely supported nonnegative sequences.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -49,6 +49,7 @@ open Finset Filter Topology Asymptotics
 open scoped BigOperators Nat
 
 /-- The geometric mean of the first `n + 1` entries of a sequence indexed from zero. -/
+@[expose]
 def prefixGeometricMean (a : ℕ → ℝ) (n : ℕ) : ℝ :=
   (∏ k ∈ Finset.range (n + 1), a k) ^ (1 / (n + 1 : ℝ))
 

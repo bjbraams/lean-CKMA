@@ -36,7 +36,7 @@ Sources: GAPS 11.22 and 11.24.
   strictly convex functions.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -50,6 +50,7 @@ variable {n : ℕ}
 /-- Majorization without a chosen sorting permutation: every `k`-coordinate sum of `x`
 is bounded by some `k`-coordinate sum of `y`, and the total sums agree.
 This is the usual decreasing-partial-sum definition, including `n = 0`. -/
+@[expose]
 def IsMajorizedBy (x y : Fin n → ℝ) : Prop :=
   (∑ i, x i) = ∑ i, y i ∧
     ∀ s : Finset (Fin n), ∃ t : Finset (Fin n),
@@ -69,10 +70,12 @@ theorem IsMajorizedBy.trans {x y z : Fin n → ℝ}
   exact ⟨u, hu.trans ht, hst.trans htu⟩
 
 /-- Sum of the coordinates of `f` whose `Fin` indices are among the first `k`. -/
+@[expose]
 def sumInitial (f : Fin n → ℝ) (k : ℕ) : ℝ :=
   ∑ i ∈ univ.filter fun i : Fin n => (i : ℕ) < k, f i
 
 /-- Sum of `k` coordinates of `x` in the stable decreasing rearrangement. -/
+@[expose]
 def sumLargest (x : Fin n → ℝ) (k : ℕ) : ℝ :=
   sumInitial (x ∘ Tuple.sortDesc x) k
 

@@ -32,7 +32,7 @@ polynomials of bounded degree, and the coefficient parametrization of such polyn
   `n` vanishing on `[-1, 1]` is zero.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -41,28 +41,34 @@ namespace CKMA
 open Polynomial
 
 /-- Real continuous functions on the standard nondegenerate compact interval. -/
+@[expose]
 abbrev ApproximationIntervalMap := C(Set.Icc (-1 : ℝ) 1, ℝ)
 
 /-- A polynomial restricted to the standard approximation interval. -/
+@[expose]
 def polynomialOnApproximationInterval (p : ℝ[X]) : ApproximationIntervalMap :=
   ⟨fun x ↦ p.eval x.1, p.continuous.comp continuous_subtype_val⟩
 
 /-- Best uniform polynomial approximation error at degree at most `n`. -/
+@[expose]
 def bestPolynomialError (f : ApproximationIntervalMap) (n : ℕ) : ℝ :=
   sInf {r | ∃ p : ℝ[X], p.natDegree ≤ n ∧ r = ‖f - polynomialOnApproximationInterval p‖}
 
 /-- A best uniform polynomial approximant, with the degree bound included. -/
+@[expose]
 def IsBestPolynomialApproximation (f : ApproximationIntervalMap) (n : ℕ) (p : ℝ[X]) : Prop :=
   p.natDegree ≤ n ∧ ∀ q : ℝ[X], q.natDegree ≤ n →
     ‖f - polynomialOnApproximationInterval p‖ ≤ ‖f - polynomialOnApproximationInterval q‖
 
 /-- Alternation of the uniform residual at `n+2` strictly increasing points. -/
+@[expose]
 def HasPolynomialAlternation (f : ApproximationIntervalMap) (p : ℝ[X]) (n : ℕ) : Prop :=
   ∃ x : Fin (n + 2) → Set.Icc (-1 : ℝ) 1,
     StrictMono (fun i ↦ (x i).1) ∧ ∃ σ : ℝ, |σ| = 1 ∧ ∀ i,
       f (x i) - p.eval (x i).1 = σ * (-1) ^ i.val * ‖f - polynomialOnApproximationInterval p‖
 
 /-- The polynomial of degree at most `n` with the supplied coefficients. -/
+@[expose]
 def polynomialOfCoeffs (n : ℕ) (c : Fin (n + 1) → ℝ) : ℝ[X] :=
   ∑ i, monomial i.val (c i)
 

@@ -32,7 +32,7 @@ Source: GAPS 47.35.
 * `CKMA.interpolation_error_le`: Lebesgue's near-best interpolation estimate.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

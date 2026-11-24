@@ -62,7 +62,7 @@ with that finite exponential by the same terminating-series argument as TauCeti'
   operators are invertible at every time, by uniqueness for the linear ODE.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -71,6 +71,7 @@ namespace CKMA
 open Filter Topology Set intervalIntegral
 
 /-- A normalized fundamental operator for a linear equation. -/
+@[expose]
 def IsFundamentalOperator {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
     [NormedSpace ℝ E]
     (A U : ℝ → E →L[𝕜] E) : Prop :=

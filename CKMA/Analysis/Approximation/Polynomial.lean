@@ -9,6 +9,7 @@ public import CKMA.Analysis.Approximation.Polynomial.Alternation
 public import Mathlib.Algebra.Polynomial.Derivative
 public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 import Mathlib.Analysis.Normed.Module.FiniteDimension
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev.RootsExtrema
 
 /-!
 # Uniform polynomial and rational approximation
@@ -20,6 +21,8 @@ Müntz–Szász density, and polynomial and rational approximation rates for the
 Rational approximants have denominators without zeros on the interval.
 
 Sources: GAPS 47.6, 47.13, 47.24 and 47.40.
+`CKMA.polynomial_markov_sharp` is the Chebyshev polynomial of the first kind, using
+Mathlib's `Polynomial.Chebyshev.abs_iterate_derivative_T_real_le` and `T_derivative_eq_U`.
 
 ## Main definitions
 
@@ -40,7 +43,7 @@ Sources: GAPS 47.6, 47.13, 47.24 and 47.40.
 * `CKMA.newman_rational_approximation`: Newman's rational approximation rate for `|x|`.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -180,14 +183,49 @@ theorem polynomial_markov {n : ℕ} (p : ℝ[X]) (hp : p.natDegree ≤ n)
 /-- The `n²` Markov constant is attained by a nonzero polynomial of degree `n`. -/
 theorem polynomial_markov_sharp (n : ℕ) : ∃ p : ℝ[X], p.natDegree = n ∧ p ≠ 0 ∧
     ‖polynomialOnApproximationInterval p.derivative‖ =
-      (n : ℝ) ^ 2 * ‖polynomialOnApproximationInterval p‖ := by
-  sorry
+      (n : ℝ) ^ 2 * ‖polynomialOnApproximationInterval p‖ :=
+  open Polynomial.Chebyshev in by
+  let p : ℝ[X] := T ℝ (n : ℤ)
+  have hone : (1 : ℝ) ∈ Set.Icc (-1 : ℝ) 1 := ⟨by norm_num, le_rfl⟩
+  have hxabs (x : Set.Icc (-1 : ℝ) 1) : |x.1| ≤ 1 :=
+    abs_le.mpr ⟨by linarith [x.2.1], x.2.2⟩
+  have hder1 : p.derivative.eval 1 = (n : ℝ) ^ 2 := by
+    rw [T_derivative_eq_U, eval_mul, eval_intCast, U_eval_one]
+    push_cast
+    ring
+  have hTp : ‖polynomialOnApproximationInterval p‖ = 1 := by
+    apply le_antisymm
+    · rw [(polynomialOnApproximationInterval p).norm_le zero_le_one]
+      intro x
+      simpa [polynomialOnApproximationInterval, p] using abs_eval_T_real_le_one (n : ℤ) (hxabs x)
+    · have h := ContinuousMap.norm_coe_le_norm (polynomialOnApproximationInterval p) ⟨1, hone⟩
+      simpa [polynomialOnApproximationInterval, p, T_eval_one, Real.norm_eq_abs] using h
+  have hDp : ‖polynomialOnApproximationInterval p.derivative‖ = (n : ℝ) ^ 2 := by
+    apply le_antisymm
+    · rw [(polynomialOnApproximationInterval p.derivative).norm_le (sq_nonneg (n : ℝ))]
+      intro x
+      rw [polynomialOnApproximationInterval, ContinuousMap.coe_mk, Real.norm_eq_abs]
+      have hle := abs_iterate_derivative_T_real_le (n : ℤ) 1 (hxabs x)
+      rw [Function.iterate_one] at hle
+      simpa [p, hder1] using hle
+    · have h := ContinuousMap.norm_coe_le_norm
+        (polynomialOnApproximationInterval p.derivative) ⟨1, hone⟩
+      rw [polynomialOnApproximationInterval, ContinuousMap.coe_mk, Real.norm_eq_abs,
+        hder1, abs_of_nonneg (sq_nonneg _)] at h
+      exact h
+  refine ⟨p, ?_, T_ne_zero ℝ (n : ℤ), ?_⟩
+  · rw [natDegree_T]
+    simp
+  · rw [hDp, hTp]
+    ring
 
 /-- A nonnegative real power as a continuous function on `[0,1]`. -/
+@[expose]
 def muntzMonomial (a : ℝ) (ha : 0 ≤ a) : C(Set.Icc (0 : ℝ) 1, ℝ) :=
   ⟨fun x ↦ x.1 ^ a, (Real.continuous_rpow_const ha).comp continuous_subtype_val⟩
 
 /-- The Müntz span includes the constant function as well as all prescribed powers. -/
+@[expose]
 def muntzSpan (a : ℕ → ℝ) (ha : ∀ n, 0 ≤ a n) :
     Submodule ℝ C(Set.Icc (0 : ℝ) 1, ℝ) :=
   Submodule.span ℝ (insert 1 (Set.range (fun n ↦ muntzMonomial (a n) (ha n))))
@@ -201,6 +239,7 @@ theorem muntz_szasz (a : ℕ → ℝ) (ha0 : 0 < a 0) (hmono : StrictMono a)
   sorry
 
 /-- A rational function on the interval whose denominator has no interval zeros. -/
+@[expose]
 def rationalOnApproximationInterval (p q : ℝ[X])
     (hq : ∀ x : Set.Icc (-1 : ℝ) 1, q.eval x.1 ≠ 0) : ApproximationIntervalMap :=
   ⟨fun x ↦ p.eval x.1 / q.eval x.1,
@@ -208,11 +247,13 @@ def rationalOnApproximationInterval (p q : ℝ[X])
       (q.continuous.comp continuous_subtype_val) hq⟩
 
 /-- Best type-`(n,n)` rational approximation error, with poles excluded from the interval. -/
+@[expose]
 def bestRationalError (f : ApproximationIntervalMap) (n : ℕ) : ℝ :=
   sInf {r | ∃ (p q : ℝ[X]) (hq : ∀ x : Set.Icc (-1 : ℝ) 1, q.eval x.1 ≠ 0),
     p.natDegree ≤ n ∧ q.natDegree ≤ n ∧ r = ‖f - rationalOnApproximationInterval p q hq‖}
 
 /-- The cusp function used in Newman's theorem. -/
+@[expose]
 def absoluteValueOnApproximationInterval : ApproximationIntervalMap :=
   ⟨fun x ↦ |x.1|, continuous_subtype_val.abs⟩
 

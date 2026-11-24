@@ -34,7 +34,8 @@ open scoped BigOperators
 
 variable {ι : Type*}
 
-/-- The reciprocal power attached to one listed slope. A padding entry contributes zero. -/
+/-- Reciprocal power `‖w‖ ^ (-(p + 1))` of one listed slope. A padding entry contributes `0`.
+A zero slope has weight `0`, because `Real.rpow` of `0` to a negative power is `0`. -/
 @[expose]
 def slopeWeight (p : ℕ) (a : ι → Option ℂ) (i : ι) : ℝ :=
   match a i with
@@ -51,7 +52,8 @@ theorem slopeWeight_some {p : ℕ} {a : ι → Option ℂ} {i : ι} {w : ℂ} (h
     slopeWeight p a i = ‖w‖ ^ (-((p : ℝ) + 1)) := by
   simp [slopeWeight, ha]
 
-/-- A genus-`p` factor on an arbitrary index. On `ℕ` it agrees with `optionFactor`. -/
+/-- A genus-`p` factor on an arbitrary index. On `ℕ` it agrees with `optionFactor`.
+A zero slope makes `z / w = 0`, and the elementary factor at `0` equals `1`. -/
 @[expose]
 def genusFactor (p : ℕ) (a : ι → Option ℂ) (i : ι) (z : ℂ) : ℂ :=
   match a i with

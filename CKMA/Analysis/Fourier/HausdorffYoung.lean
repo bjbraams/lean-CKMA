@@ -31,7 +31,7 @@ Source: GAPS 27.4.
   dimension, already on Schwartz functions.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

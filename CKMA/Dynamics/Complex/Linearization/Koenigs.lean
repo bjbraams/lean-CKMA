@@ -29,7 +29,7 @@ attracting case and transferred along a local inverse in the repelling case.
   coordinates.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

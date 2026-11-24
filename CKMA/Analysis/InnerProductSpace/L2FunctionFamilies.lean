@@ -38,7 +38,7 @@ a.e. equivalence classes, and frame energies are extended nonnegative sums over 
 * `CKMA.IsL2RieszBasis.isL2FrameFamily`: every `L²` Riesz basis is an `L²` frame family.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -50,6 +50,7 @@ open scoped BigOperators ENNReal ComplexConjugate
 variable {𝕜 : Type*} [RCLike 𝕜]
 
 /-- The canonical L2 vectors associated with a family of square-integrable representatives. -/
+@[expose]
 def l2FamilyVectors {X ι : Type*} [MeasurableSpace X] {μ : Measure X}
     (f : ι → X → 𝕜) (hf : ∀ i, MemLp (f i) 2 μ) : ι → Lp 𝕜 2 μ :=
   fun i ↦ (hf i).toLp (f i)
@@ -66,14 +67,17 @@ theorem inner_l2FamilyVectors {X ι : Type*} [MeasurableSpace X] {μ : Measure X
   simp [RCLike.inner_apply, mul_comm]
 
 /-- A finite linear combination of a function family. -/
+@[expose]
 def l2FunctionCombination {X ι : Type*} (f : ι → X → 𝕜) (c : ι →₀ 𝕜) (x : X) : 𝕜 :=
   c.sum (fun i z ↦ z * f i x)
 
 /-- Squared coefficient l2 size, as a nonnegative extended real. -/
+@[expose]
 def finiteCoefficientEnergy {ι : Type*} (c : ι →₀ 𝕜) : ℝ≥0∞ :=
   c.sum (fun _ z ↦ ENNReal.ofReal (‖z‖ ^ 2))
 
 /-- An L2 Riesz sequence, specified by uniform lower and upper finite-coefficient bounds. -/
+@[expose]
 def IsL2RieszSequence {X ι : Type*} [MeasurableSpace X]
     (μ : Measure X) (f : ι → X → 𝕜) : Prop :=
   (∀ i, MemLp (f i) 2 μ) ∧ ∃ A B : ℝ, 0 < A ∧ A ≤ B ∧ ∀ c : ι →₀ 𝕜,
@@ -82,11 +86,13 @@ def IsL2RieszSequence {X ι : Type*} [MeasurableSpace X]
 
 /-- An orthogonality test on a function family: vanishing coefficients force a zero L2 class.
 Square-integrability of the family itself is supplied separately in the Riesz/frame predicates. -/
+@[expose]
 def IsL2CompleteFamily {X ι : Type*} [MeasurableSpace X]
     (μ : Measure X) (f : ι → X → 𝕜) : Prop :=
   ∀ u : Lp 𝕜 2 μ, (∀ i, ∫ x, conj (f i x) * u x ∂μ = 0) → u = 0
 
 /-- A Riesz basis is a complete Riesz sequence. -/
+@[expose]
 def IsL2RieszBasis {X ι : Type*} [MeasurableSpace X]
     (μ : Measure X) (f : ι → X → 𝕜) : Prop :=
   IsL2RieszSequence μ f ∧ IsL2CompleteFamily μ f
@@ -99,6 +105,7 @@ theorem IsL2RieszBasis.isL2RieszSequence {X ι : Type*} [MeasurableSpace X]
 alias IsL2RieszBasis.isRieszSequence := IsL2RieszBasis.isL2RieszSequence
 
 /-- Frame inequalities for a family of actual measurable L2 representatives. -/
+@[expose]
 def IsL2FrameFamily {X ι : Type*} [MeasurableSpace X]
     (μ : Measure X) (f : ι → X → 𝕜) : Prop :=
   (∀ i, MemLp (f i) 2 μ) ∧ ∃ A B : ℝ, 0 < A ∧ A ≤ B ∧ ∀ u : Lp 𝕜 2 μ,

@@ -31,7 +31,7 @@ Limits and extended-real operations use Mathlib. Source: GAPS 05.10.
   difference quotient under any filter.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -40,22 +40,27 @@ namespace CKMA
 open Filter Topology
 
 /-- The real difference quotient, embedded in the extended real line. -/
+@[expose]
 def extendedDifferenceQuotient (f : ℝ → ℝ) (x h : ℝ) : EReal :=
   ((f (x + h) - f x) / h : ℝ)
 
 /-- Upper right Dini derivative, with positive increments tending to zero. -/
+@[expose]
 def upperRightDiniDerivative (f : ℝ → ℝ) (x : ℝ) : EReal :=
   limsup (extendedDifferenceQuotient f x) (𝓝[>] 0)
 
 /-- Lower right Dini derivative. -/
+@[expose]
 def lowerRightDiniDerivative (f : ℝ → ℝ) (x : ℝ) : EReal :=
   liminf (extendedDifferenceQuotient f x) (𝓝[>] 0)
 
 /-- Upper left Dini derivative, with negative increments increasing to zero. -/
+@[expose]
 def upperLeftDiniDerivative (f : ℝ → ℝ) (x : ℝ) : EReal :=
   limsup (extendedDifferenceQuotient f x) (𝓝[<] 0)
 
 /-- Lower left Dini derivative. -/
+@[expose]
 def lowerLeftDiniDerivative (f : ℝ → ℝ) (x : ℝ) : EReal :=
   liminf (extendedDifferenceQuotient f x) (𝓝[<] 0)
 
@@ -82,6 +87,7 @@ alias diniQuotient_bddBelow := isBoundedUnder_ge_extendedDifferenceQuotient
 
 /-- The four alternatives of Denjoy–Young–Saks, numbered from zero.
 The left derivatives use the same quotient `(f(x+h)-f(x))/h` with `h<0`. -/
+@[expose]
 def HasDiniType (f : ℝ → ℝ) (x : ℝ) (i : Fin 4) : Prop :=
   match i.val with
   | 0 => ∃ a : ℝ, upperRightDiniDerivative f x = a ∧ lowerRightDiniDerivative f x = a ∧

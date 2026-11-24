@@ -33,7 +33,7 @@ infimum of those boundary norms.
   positive endpoint bounds `M₀, M₁ > 0`.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -45,6 +45,7 @@ open scoped ENNReal
 variable {C D : BanachCouple ℂ}
 
 /-- Entire scalar weight `exp ((z - θ) * (log M₀ - log M₁))`. -/
+@[expose]
 def stripWeight (M₀ M₁ θ : ℝ) (z : ℂ) : ℂ :=
   Complex.exp ((z - ↑θ) * ↑(Real.log M₀ - Real.log M₁))
 
@@ -177,6 +178,7 @@ private lemma boundaryNorm_nonneg (F : InterpolationStripFunction C) : 0 ≤ F.b
   (norm_nonneg (F.leftBoundary 0)).trans (norm_leftBoundary_le_boundaryNorm F 0)
 
 /-- Left boundary of the weighted target strip function. -/
+@[expose]
 def weightedLeftBoundary (T : CoupleMap C D) (M₀ M₁ θ : ℝ) (F : InterpolationStripFunction C) :
     C(ℝ, D.left) where
   toFun t := stripWeight M₀ M₁ θ ((t : ℂ) * Complex.I) • T.leftMap (F.leftBoundary t)
@@ -186,6 +188,7 @@ def weightedLeftBoundary (T : CoupleMap C D) (M₀ M₁ θ : ℝ) (F : Interpola
     exact hw.smul (T.leftMap.continuous.comp F.leftBoundary.continuous)
 
 /-- Right boundary of the weighted target strip function. -/
+@[expose]
 def weightedRightBoundary (T : CoupleMap C D) (M₀ M₁ θ : ℝ) (F : InterpolationStripFunction C) :
     C(ℝ, D.right) where
   toFun t :=
@@ -298,6 +301,7 @@ lemma weightedStrip_right_eq (T : CoupleMap C D) (M₀ M₁ θ : ℝ)
   exact (D.inRight.map_smul _ _).symm
 
 /-- Target strip function obtained by weighting `T` applied to `F`. -/
+@[expose]
 def weightedStrip (T : CoupleMap C D) {θ : ℝ} (hθ : 0 < θ) (hθ1 : θ < 1) (M₀ M₁ : ℝ)
     (F : InterpolationStripFunction C) : InterpolationStripFunction D where
   toFun z := stripWeight M₀ M₁ θ z • T.ambientMap (F.toFun z)

@@ -21,7 +21,7 @@ derivative, the boundary terms vanish and `∫ x ψ ∂γ = ∫ ψ' ∂γ`.
   measurable functions on finite measure spaces.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

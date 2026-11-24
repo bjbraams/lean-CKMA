@@ -9,7 +9,7 @@ public import Mathlib.Probability.Distributions.Gaussian.Real
 public import Mathlib.MeasureTheory.Function.ConvergenceInDistribution
 import Mathlib.MeasureTheory.Measure.LevyConvergence
 import Mathlib.Probability.Independence.CharacteristicFunction
-import TauCeti.Algebra.Order.BigOperators.ProdSubProd
+import TauCeti.Analysis.Normed.Ring.ProdSubProd
 import TauCeti.MeasureTheory.Function.LpSeminorm.Truncation
 import TauCeti.Probability.CentralLimitTheorem.Lindeberg
 import CKMA.Probability.LimitTheorems.ThreeSeries

@@ -29,7 +29,7 @@ limsup and liminf of the Birkhoff averages are strictly invariant.
 * `CKMA.birkhoffLiminf_comp`: shift invariance of the extended liminf of Birkhoff averages.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -231,6 +231,7 @@ private lemma birkhoffAverage_succ_comp (n : ℕ) (ω : Ω) :
   rw [hcoeff, mul_comm (f ω) a⁻¹]
 
 /-- The coefficient relating a Birkhoff average to the average at the image point. -/
+@[expose]
 def birkhoffCoeff (n : ℕ) : ℝ := (n + 2 : ℝ) / (n + 1)
 
 /-- The coefficient `(n+2)/(n+1)` stays at least `1`. -/
@@ -261,10 +262,12 @@ private lemma tendsto_birkhoffCoeff : Tendsto birkhoffCoeff atTop (𝓝 1) := by
   simpa [add_zero] using hsum
 
 /-- Extended limsup of the Birkhoff averages at `ω`. -/
+@[expose]
 def birkhoffLimsup (T : Ω → Ω) (f : Ω → ℝ) (ω : Ω) : EReal :=
   limsup (fun n => Real.toEReal (birkhoffAverage ℝ T f n ω)) atTop
 
 /-- Extended liminf of the Birkhoff averages at `ω`. -/
+@[expose]
 def birkhoffLiminf (T : Ω → Ω) (f : Ω → ℝ) (ω : Ω) : EReal :=
   liminf (fun n => Real.toEReal (birkhoffAverage ℝ T f n ω)) atTop
 

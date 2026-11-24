@@ -25,7 +25,7 @@ Source: GAPS 27.44. The doubling constant is the one used by Lerner’s reductio
 weighted strong-type bound to the weighted maximal operator on its own measure.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -39,19 +39,24 @@ variable {d : ℕ}
 local notation "E" => EuclideanSpace ℝ (Fin d)
 
 /-- Density of a real weight in `ℝ≥0∞`. -/
+@[expose]
 def weightDensity (w : E → ℝ) (y : E) : ℝ≥0∞ := ENNReal.ofReal (w y)
 
 /-- Dual density `w ^ (-1/(p-1))`, matching the ball `A_p` characteristic. -/
+@[expose]
 def dualDensity (p : ℝ) (w : E → ℝ) (y : E) : ℝ≥0∞ :=
   ENNReal.ofReal (w y ^ (-(p - 1)⁻¹))
 
 /-- Lebesgue measure weighted by `weightDensity w`. -/
+@[expose]
 def weightMeasure (w : E → ℝ) : Measure E := volume.withDensity (weightDensity w)
 
 /-- Lebesgue measure weighted by `dualDensity p w`. -/
+@[expose]
 def dualMeasure (p : ℝ) (w : E → ℝ) : Measure E := volume.withDensity (dualDensity p w)
 
 /-- The summand of the ball `A_p` characteristic at centre `x` and radius `r`. -/
+@[expose]
 def ballProduct (p : ℝ) (w : E → ℝ) (x : E) (r : ℝ) : ℝ≥0∞ :=
   ((∫⁻ y in ball x r, weightDensity w y ∂volume) / volume (ball x r)) *
     (((∫⁻ y in ball x r, dualDensity p w y ∂volume) / volume (ball x r)) ^ (p - 1))
@@ -80,21 +85,27 @@ namespace ApWeight
 variable {p : ℝ}
 
 /-- The conjugate exponent `p / (p - 1)`. -/
+@[expose]
 def conj (_W : ApWeight (d := d) p) : ℝ := Real.conjExponent p
 
 /-- `p` is conjugate to `W.conj`. -/
 lemma holder (W : ApWeight (d := d) p) : p.HolderConjugate W.conj :=
   Real.HolderConjugate.conjExponent W.hp
 
+/-- The conjugate exponent is strictly greater than one. -/
 lemma one_lt_conj (W : ApWeight (d := d) p) : 1 < W.conj :=
   (Real.holderConjugate_iff.mp W.holder.symm).1
 
+/-- The conjugate exponent is positive. -/
 lemma conj_pos (W : ApWeight (d := d) p) : 0 < W.conj := W.holder.symm.pos
 
+/-- The excess `p - 1` is positive. -/
 lemma sub_one_pos (W : ApWeight (d := d) p) : 0 < p - 1 := W.holder.sub_one_pos
 
+/-- The exponent `p` is positive. -/
 lemma p_pos (W : ApWeight (d := d) p) : 0 < p := W.holder.pos
 
+/-- `W.conj - 1` equals `(p - 1)⁻¹`. -/
 lemma conj_sub_one (W : ApWeight (d := d) p) : W.conj - 1 = (p - 1)⁻¹ := by
   rw [conj, Real.conjExponent]
   calc p / (p - 1) - 1
@@ -107,9 +118,11 @@ lemma conj_sub_one (W : ApWeight (d := d) p) : W.conj - 1 = (p - 1)⁻¹ := by
         ring
     _ = (p - 1)⁻¹ := by rw [one_div]
 
+/-- Dividing the exponent by its conjugate recovers `p - 1`. -/
 lemma div_conj (W : ApWeight (d := d) p) : p / W.conj = p - 1 :=
   W.holder.div_conj_eq_sub_one
 
+/-- Dividing the conjugate by the exponent recovers `(p - 1)⁻¹`. -/
 lemma conj_div (W : ApWeight (d := d) p) : W.conj / p = (p - 1)⁻¹ := by
   rw [div_eq_iff W.p_pos.ne', ← inv_mul_cancel_left₀ W.sub_one_pos.ne' W.conj,
     W.holder.sub_one_mul_conj]
@@ -119,6 +132,7 @@ lemma measurable_weightDensity (W : ApWeight (d := d) p) : Measurable (weightDen
   ENNReal.continuous_ofReal.measurable.comp W.measurable_w
 
 /-- A measurable representative of the dual density, equal to it where `w` is positive. -/
+@[expose]
 def dualMk (W : ApWeight (d := d) p) (y : E) : ℝ≥0∞ :=
   if 0 < W.w y then ENNReal.ofReal (Real.exp (Real.log (W.w y) * -(p - 1)⁻¹)) else 0
 
@@ -327,63 +341,110 @@ lemma rearrange_ap {t : ℝ} {A vE vQ wE wQ sQ : ℝ≥0∞} (ht : 1 < t)
   rw [hpow, div_eq_mul_inv, div_eq_mul_inv]
   ac_rfl
 
+/-- Hölder comparison of a smaller ball with a second density on a larger ball, when the
+conjugate powers of the two densities multiply to one. -/
+lemma volume_pow_le_density_mul {a b : ℝ} (hab : a.HolderConjugate b)
+    {ρ δ : E → ℝ≥0∞}
+    (hρ : AEMeasurable (fun y => ρ y ^ (1 / a)) volume)
+    (hδ : AEMeasurable (fun y => δ y ^ (1 / b)) volume)
+    (hprod : (fun y => ρ y ^ (1 / a) * δ y ^ (1 / b)) =ᵐ[volume] fun _ => 1)
+    {x : E} {r R : ℝ} (hR : r ≤ R) :
+    volume (ball x r) ^ a ≤
+      (∫⁻ y in ball x r, ρ y ∂volume) *
+        (∫⁻ y in ball x R, δ y ∂volume) ^ (a - 1) := by
+  let f := fun y => ρ y ^ (1 / a)
+  let g := fun y => δ y ^ (1 / b)
+  have hf : AEMeasurable f volume := hρ
+  have hg : AEMeasurable g volume := hδ
+  have hprodInt : ∫⁻ y in ball x r, f y * g y ∂volume = volume (ball x r) := by
+    refine (setLIntegral_congr_fun_ae measurableSet_ball ?_).trans (setLIntegral_one _)
+    filter_upwards [hprod] with y hy _
+    simpa [f, g] using hy
+  have hH := ENNReal.lintegral_mul_le_Lp_mul_Lq (volume.restrict (ball x r)) hab
+    hf.restrict hg.restrict
+  have hfg : ∫⁻ y in ball x r, (f * g) y ∂volume = ∫⁻ y in ball x r, f y * g y ∂volume :=
+    setLIntegral_congr_fun measurableSet_ball fun y _ => Pi.mul_apply f g y
+  have hfint : ∫⁻ y in ball x r, f y ^ a ∂volume = ∫⁻ y in ball x r, ρ y ∂volume :=
+    setLIntegral_congr_fun measurableSet_ball fun y _ => by
+      simp only [f]
+      rw [← rpow_mul, one_div, inv_mul_cancel₀ hab.pos.ne', rpow_one]
+  have hgint : ∫⁻ y in ball x r, g y ^ b ∂volume = ∫⁻ y in ball x r, δ y ∂volume :=
+    setLIntegral_congr_fun measurableSet_ball fun y _ => by
+      simp only [g]
+      rw [← rpow_mul, one_div, inv_mul_cancel₀ hab.symm.pos.ne', rpow_one]
+  have hsmall : volume (ball x r) ≤
+      (∫⁻ y in ball x r, ρ y ∂volume) ^ (1 / a) *
+        (∫⁻ y in ball x r, δ y ∂volume) ^ (1 / b) := by
+    rw [hfg, hprodInt, hfint, hgint] at hH
+    exact hH
+  have hmono : (∫⁻ y in ball x r, δ y ∂volume) ^ (1 / b) ≤
+      (∫⁻ y in ball x R, δ y ∂volume) ^ (1 / b) :=
+    rpow_le_rpow (lintegral_mono_set (ball_subset_ball hR))
+      (div_nonneg zero_le_one hab.symm.pos.le)
+  have hle : volume (ball x r) ≤
+      (∫⁻ y in ball x r, ρ y ∂volume) ^ (1 / a) *
+        (∫⁻ y in ball x R, δ y ∂volume) ^ (1 / b) :=
+    hsmall.trans (mul_le_mul_right hmono _)
+  have ha0 : 0 ≤ a := hab.pos.le
+  have hraise := rpow_le_rpow hle ha0
+  have hmulp : ((∫⁻ y in ball x r, ρ y ∂volume) ^ (1 / a) *
+      (∫⁻ y in ball x R, δ y ∂volume) ^ (1 / b)) ^ a =
+      (∫⁻ y in ball x r, ρ y ∂volume) *
+        (∫⁻ y in ball x R, δ y ∂volume) ^ (a - 1) := by
+    rw [mul_rpow_of_nonneg _ _ ha0]
+    refine congr_arg₂ HMul.hMul ?_ ?_
+    · rw [← rpow_mul, one_div, inv_mul_cancel₀ hab.pos.ne', rpow_one]
+    · rw [← rpow_mul]
+      exact congrArg
+        (fun t : ℝ => (∫⁻ y in ball x R, δ y ∂volume) ^ t)
+        (by rw [mul_comm, ← div_eq_mul_one_div]; exact hab.div_conj_eq_sub_one)
+  rw [hmulp] at hraise
+  exact hraise
+
 /-- Hölder comparison of a smaller ball against the dual integral of a larger one. -/
 lemma volume_pow_le_weight_mul_dual (W : ApWeight (d := d) p) {x : E} {r R : ℝ}
     (hR : r ≤ R) :
     volume (ball x r) ^ p ≤
       (∫⁻ y in ball x r, weightDensity W.w y ∂volume) *
-        (∫⁻ y in ball x R, dualDensity p W.w y ∂volume) ^ (p - 1) := by
-  let ρ := weightDensity W.w
-  let δ := dualDensity p W.w
-  let f := fun y => ρ y ^ (1 / p)
-  let g := fun y => δ y ^ (1 / W.conj)
-  have hf : AEMeasurable f volume := (W.measurable_weightDensity.pow_const _).aemeasurable
-  have hg : AEMeasurable g volume := W.aemeasurable_dualDensity.pow_const _
-  have hprod : ∫⁻ y in ball x r, f y * g y ∂volume = volume (ball x r) := by
-    refine (setLIntegral_congr_fun_ae measurableSet_ball ?_).trans (setLIntegral_one _)
-    filter_upwards [W.density_prod_ae_eq_one] with y hy _
-    simpa [f, g] using hy
-  have hH := ENNReal.lintegral_mul_le_Lp_mul_Lq (volume.restrict (ball x r)) W.holder
-    hf.restrict hg.restrict
-  have hfg : ∫⁻ y in ball x r, (f * g) y ∂volume = ∫⁻ y in ball x r, f y * g y ∂volume :=
-    setLIntegral_congr_fun measurableSet_ball fun y _ => Pi.mul_apply f g y
-  have hfint : ∫⁻ y in ball x r, f y ^ p ∂volume = ∫⁻ y in ball x r, ρ y ∂volume :=
-    setLIntegral_congr_fun measurableSet_ball fun y _ => by
-      simp only [f]
-      rw [← rpow_mul, one_div, inv_mul_cancel₀ W.p_pos.ne', rpow_one]
-  have hgint : ∫⁻ y in ball x r, g y ^ W.conj ∂volume =
-      ∫⁻ y in ball x r, δ y ∂volume :=
-    setLIntegral_congr_fun measurableSet_ball fun y _ => by
-      simp only [g]
-      rw [← rpow_mul, one_div, inv_mul_cancel₀ W.conj_pos.ne', rpow_one]
-  have hsmall : volume (ball x r) ≤
-      (∫⁻ y in ball x r, ρ y ∂volume) ^ (1 / p) *
-        (∫⁻ y in ball x r, δ y ∂volume) ^ (1 / W.conj) := by
-    rw [hfg, hprod, hfint, hgint] at hH
-    exact hH
-  have hmono : (∫⁻ y in ball x r, δ y ∂volume) ^ (1 / W.conj) ≤
-      (∫⁻ y in ball x R, δ y ∂volume) ^ (1 / W.conj) :=
-    rpow_le_rpow (lintegral_mono_set (ball_subset_ball hR))
-      (div_nonneg zero_le_one W.conj_pos.le)
-  have hle : volume (ball x r) ≤
-      (∫⁻ y in ball x r, ρ y ∂volume) ^ (1 / p) *
-        (∫⁻ y in ball x R, δ y ∂volume) ^ (1 / W.conj) :=
-    hsmall.trans (mul_le_mul_right hmono _)
-  have hp0 : 0 ≤ p := W.p_pos.le
-  have hraise := rpow_le_rpow hle hp0
-  have hmulp : ((∫⁻ y in ball x r, ρ y ∂volume) ^ (1 / p) *
-      (∫⁻ y in ball x R, δ y ∂volume) ^ (1 / W.conj)) ^ p =
+        (∫⁻ y in ball x R, dualDensity p W.w y ∂volume) ^ (p - 1) :=
+  volume_pow_le_density_mul W.holder
+    (W.measurable_weightDensity.pow_const _).aemeasurable
+    (W.aemeasurable_dualDensity.pow_const _) W.density_prod_ae_eq_one hR
+
+/-- Concentric doubling from a Hölder comparison and one ball characteristic. -/
+lemma measure_doubling_of_holder {ρ δ : E → ℝ≥0∞} {t : ℝ} {A : ℝ≥0∞}
+    (ht : 1 < t) {c : ℝ} (hc : 1 ≤ c) (x : E) {r : ℝ} (hr : 0 < r)
+    (hwQ0 : (∫⁻ y in ball x (c * r), ρ y ∂volume) ≠ 0)
+    (hwQt : (∫⁻ y in ball x (c * r), ρ y ∂volume) ≠ ∞)
+    (hhold : volume (ball x r) ^ t ≤
       (∫⁻ y in ball x r, ρ y ∂volume) *
-        (∫⁻ y in ball x R, δ y ∂volume) ^ (p - 1) := by
-    rw [mul_rpow_of_nonneg _ _ hp0]
-    refine congr_arg₂ HMul.hMul ?_ ?_
-    · rw [← rpow_mul, one_div, inv_mul_cancel₀ W.p_pos.ne', rpow_one]
-    · rw [← rpow_mul]
-      exact congrArg
-        (fun t : ℝ => (∫⁻ y in ball x R, δ y ∂volume) ^ t)
-        (by rw [mul_comm, ← div_eq_mul_one_div]; exact W.div_conj)
-  rw [hmulp] at hraise
-  simpa [ρ, δ] using hraise
+        (∫⁻ y in ball x (c * r), δ y ∂volume) ^ (t - 1))
+    (hchar : (∫⁻ y in ball x (c * r), ρ y ∂volume) / volume (ball x (c * r)) *
+        (((∫⁻ y in ball x (c * r), δ y ∂volume) /
+          volume (ball x (c * r))) ^ (t - 1)) ≤ A) :
+    volume.withDensity ρ (ball x (c * r)) ≤
+      A * ENNReal.ofReal (c ^ d) ^ t * volume.withDensity ρ (ball x r) := by
+  have hc0 : 0 < c := by linarith
+  let vE := volume (ball x r)
+  let vQ := volume (ball x (c * r))
+  let wE := ∫⁻ y in ball x r, ρ y ∂volume
+  let wQ := ∫⁻ y in ball x (c * r), ρ y ∂volume
+  have hvE0 : vE ≠ 0 := volume_ball_ne_zero x hr
+  have hvEt : vE ≠ ∞ := volume_ball_ne_top x r
+  have hvQ0 : vQ ≠ 0 := volume_ball_ne_zero x (mul_pos hc0 hr)
+  have hvQt : vQ ≠ ∞ := volume_ball_ne_top x (c * r)
+  have hrearr := rearrange_ap ht hvE0 hvEt hvQ0 hvQt hwQ0 hwQt hhold hchar
+  have hvol : vQ / vE = ENNReal.ofReal (c ^ d) := by
+    have hvQ' : vQ = volume (ball x (c * r)) := rfl
+    have hvE' : vE = volume (ball x r) := rfl
+    rw [hvQ', hvE', ball_volume_mul hc0 hr x x, ENNReal.mul_div_cancel_right hvE0 hvEt]
+  have hmeasE : volume.withDensity ρ (ball x r) = wE := by
+    rw [withDensity_apply _ measurableSet_ball]
+  have hmeasQ : volume.withDensity ρ (ball x (c * r)) = wQ := by
+    rw [withDensity_apply _ measurableSet_ball]
+  rw [hvol] at hrearr
+  rw [hmeasE, hmeasQ]
+  exact hrearr
 
 /-- The weight measure of a concentric enlargement. -/
 lemma weight_doubling (W : ApWeight (d := d) p) {c : ℝ} (hc : 1 ≤ c) (x : E) {r : ℝ}
@@ -392,32 +453,11 @@ lemma weight_doubling (W : ApWeight (d := d) p) {c : ℝ} (hc : 1 ≤ c) (x : E)
       W.A * ENNReal.ofReal (c ^ d) ^ p * weightMeasure W.w (ball x r) := by
   have hc0 : 0 < c := by linarith
   have hR : r ≤ c * r := by nlinarith [hr, hc]
-  let vE := volume (ball x r)
-  let vQ := volume (ball x (c * r))
-  let wE := ∫⁻ y in ball x r, weightDensity W.w y ∂volume
-  let wQ := ∫⁻ y in ball x (c * r), weightDensity W.w y ∂volume
-  let sQ := ∫⁻ y in ball x (c * r), dualDensity p W.w y ∂volume
-  have hvE0 : vE ≠ 0 := volume_ball_ne_zero x hr
-  have hvEt : vE ≠ ∞ := volume_ball_ne_top x r
-  have hvQ0 : vQ ≠ 0 := volume_ball_ne_zero x (mul_pos hc0 hr)
-  have hvQt : vQ ≠ ∞ := volume_ball_ne_top x (c * r)
-  have hwQ0 : wQ ≠ 0 := W.weight_ball_ne_zero x (mul_pos hc0 hr)
-  have hwQt : wQ ≠ ∞ := W.weight_ball_ne_top x (c * r)
-  have hhold := W.volume_pow_le_weight_mul_dual (x := x) hR
-  have hchar : wQ / vQ * (sQ / vQ) ^ (p - 1) ≤ W.A :=
-    W.ball_le x (c * r) (mul_pos hc0 hr)
-  have hrearr := rearrange_ap W.hp hvE0 hvEt hvQ0 hvQt hwQ0 hwQt hhold hchar
-  have hvol : vQ / vE = ENNReal.ofReal (c ^ d) := by
-    have hvQ' : vQ = volume (ball x (c * r)) := rfl
-    have hvE' : vE = volume (ball x r) := rfl
-    rw [hvQ', hvE', ball_volume_mul hc0 hr x x, ENNReal.mul_div_cancel_right hvE0 hvEt]
-  have hmeasE : weightMeasure W.w (ball x r) = wE := by
-    rw [weightMeasure, withDensity_apply _ measurableSet_ball]
-  have hmeasQ : weightMeasure W.w (ball x (c * r)) = wQ := by
-    rw [weightMeasure, withDensity_apply _ measurableSet_ball]
-  rw [hvol] at hrearr
-  rw [hmeasE, hmeasQ]
-  exact hrearr
+  exact measure_doubling_of_holder W.hp hc x hr
+    (W.weight_ball_ne_zero x (mul_pos hc0 hr))
+    (W.weight_ball_ne_top x (c * r))
+    (W.volume_pow_le_weight_mul_dual (x := x) hR)
+    (W.ball_le x (c * r) (mul_pos hc0 hr))
 
 /-- The dual ball product is the original product to the power `1/(p-1)`. -/
 lemma dual_ballProduct_le (W : ApWeight (d := d) p) (x : E) {r : ℝ} (hr : 0 < r) :
@@ -441,59 +481,13 @@ lemma volume_pow_le_dual_mul_weight (W : ApWeight (d := d) p) {x : E} {r R : ℝ
     (hR : r ≤ R) :
     volume (ball x r) ^ W.conj ≤
       (∫⁻ y in ball x r, dualDensity p W.w y ∂volume) *
-        (∫⁻ y in ball x R, weightDensity W.w y ∂volume) ^ (W.conj - 1) := by
-  let ρ := dualDensity p W.w
-  let δ := weightDensity W.w
-  let f := fun y => ρ y ^ (1 / W.conj)
-  let g := fun y => δ y ^ (1 / p)
-  have hf : AEMeasurable f volume := W.aemeasurable_dualDensity.pow_const _
-  have hg : AEMeasurable g volume := (W.measurable_weightDensity.pow_const _).aemeasurable
-  have hswap : W.conj.HolderConjugate p := W.holder.symm
-  have hprod : ∫⁻ y in ball x r, f y * g y ∂volume = volume (ball x r) := by
-    refine (setLIntegral_congr_fun_ae measurableSet_ball ?_).trans (setLIntegral_one _)
-    filter_upwards [W.density_prod_ae_eq_one] with y hy _
-    simpa [f, g, mul_comm] using hy
-  have hH := ENNReal.lintegral_mul_le_Lp_mul_Lq (volume.restrict (ball x r)) hswap
-    hf.restrict hg.restrict
-  have hfg : ∫⁻ y in ball x r, (f * g) y ∂volume = ∫⁻ y in ball x r, f y * g y ∂volume :=
-    setLIntegral_congr_fun measurableSet_ball fun y _ => Pi.mul_apply f g y
-  have hfint : ∫⁻ y in ball x r, f y ^ W.conj ∂volume =
-      ∫⁻ y in ball x r, ρ y ∂volume :=
-    setLIntegral_congr_fun measurableSet_ball fun y _ => by
-      simp only [f]
-      rw [← rpow_mul, one_div, inv_mul_cancel₀ W.conj_pos.ne', rpow_one]
-  have hgint : ∫⁻ y in ball x r, g y ^ p ∂volume = ∫⁻ y in ball x r, δ y ∂volume :=
-    setLIntegral_congr_fun measurableSet_ball fun y _ => by
-      simp only [g]
-      rw [← rpow_mul, one_div, inv_mul_cancel₀ W.p_pos.ne', rpow_one]
-  have hsmall : volume (ball x r) ≤
-      (∫⁻ y in ball x r, ρ y ∂volume) ^ (1 / W.conj) *
-        (∫⁻ y in ball x r, δ y ∂volume) ^ (1 / p) := by
-    rw [hfg, hprod, hfint, hgint] at hH
-    exact hH
-  have hmono : (∫⁻ y in ball x r, δ y ∂volume) ^ (1 / p) ≤
-      (∫⁻ y in ball x R, δ y ∂volume) ^ (1 / p) :=
-    rpow_le_rpow (lintegral_mono_set (ball_subset_ball hR))
-      (div_nonneg zero_le_one W.p_pos.le)
-  have hle : volume (ball x r) ≤
-      (∫⁻ y in ball x r, ρ y ∂volume) ^ (1 / W.conj) *
-        (∫⁻ y in ball x R, δ y ∂volume) ^ (1 / p) :=
-    hsmall.trans (mul_le_mul_right hmono _)
-  have hq0 : 0 ≤ W.conj := W.conj_pos.le
-  have hraise := rpow_le_rpow hle hq0
-  have hmulp : ((∫⁻ y in ball x r, ρ y ∂volume) ^ (1 / W.conj) *
-      (∫⁻ y in ball x R, δ y ∂volume) ^ (1 / p)) ^ W.conj =
-      (∫⁻ y in ball x r, ρ y ∂volume) *
-        (∫⁻ y in ball x R, δ y ∂volume) ^ (W.conj - 1) := by
-    rw [mul_rpow_of_nonneg _ _ hq0]
-    refine congr_arg₂ HMul.hMul ?_ ?_
-    · rw [← rpow_mul, one_div, inv_mul_cancel₀ W.conj_pos.ne', rpow_one]
-    · rw [← rpow_mul]
-      exact congrArg
-        (fun t : ℝ => (∫⁻ y in ball x R, δ y ∂volume) ^ t)
-        (by rw [mul_comm, ← div_eq_mul_one_div]; exact W.holder.symm.div_conj_eq_sub_one)
-  rw [hmulp] at hraise
-  simpa [ρ, δ] using hraise
+        (∫⁻ y in ball x R, weightDensity W.w y ∂volume) ^ (W.conj - 1) :=
+  volume_pow_le_density_mul W.holder.symm
+    (W.aemeasurable_dualDensity.pow_const _)
+    (W.measurable_weightDensity.pow_const _).aemeasurable
+    (by
+      filter_upwards [W.density_prod_ae_eq_one] with y hy
+      simpa [mul_comm] using hy) hR
 
 /-- The dual measure of a concentric enlargement. -/
 lemma dual_doubling (W : ApWeight (d := d) p) {c : ℝ} (hc : 1 ≤ c) (x : E) {r : ℝ}
@@ -504,32 +498,10 @@ lemma dual_doubling (W : ApWeight (d := d) p) {c : ℝ} (hc : 1 ≤ c) (x : E) {
   have hc0 : 0 < c := by linarith
   have hcr : 0 < c * r := mul_pos hc0 hr
   have hR : r ≤ c * r := by nlinarith [hr, hc]
-  let vE := volume (ball x r)
-  let vQ := volume (ball x (c * r))
-  let wE := ∫⁻ y in ball x r, dualDensity p W.w y ∂volume
-  let wQ := ∫⁻ y in ball x (c * r), dualDensity p W.w y ∂volume
-  let sQ := ∫⁻ y in ball x (c * r), weightDensity W.w y ∂volume
-  have hvE0 : vE ≠ 0 := volume_ball_ne_zero x hr
-  have hvEt : vE ≠ ∞ := volume_ball_ne_top x r
-  have hvQ0 : vQ ≠ 0 := volume_ball_ne_zero x hcr
-  have hvQt : vQ ≠ ∞ := volume_ball_ne_top x (c * r)
-  have hwQ0 : wQ ≠ 0 := W.dual_ball_ne_zero x hcr
-  have hwQt : wQ ≠ ∞ := W.dual_ball_ne_top x hcr
-  have hhold := W.volume_pow_le_dual_mul_weight (x := x) hR
-  have hchar : wQ / vQ * (sQ / vQ) ^ (W.conj - 1) ≤ W.A ^ (p - 1)⁻¹ := by
-    simpa [wQ, vQ, sQ] using W.dual_ballProduct_le x hcr
-  have hrearr := rearrange_ap W.one_lt_conj hvE0 hvEt hvQ0 hvQt hwQ0 hwQt hhold hchar
-  have hvol : vQ / vE = ENNReal.ofReal (c ^ d) := by
-    have hvQ' : vQ = volume (ball x (c * r)) := rfl
-    have hvE' : vE = volume (ball x r) := rfl
-    rw [hvQ', hvE', ball_volume_mul hc0 hr x x, ENNReal.mul_div_cancel_right hvE0 hvEt]
-  have hmeasE : dualMeasure p W.w (ball x r) = wE := by
-    rw [dualMeasure, withDensity_apply _ measurableSet_ball]
-  have hmeasQ : dualMeasure p W.w (ball x (c * r)) = wQ := by
-    rw [dualMeasure, withDensity_apply _ measurableSet_ball]
-  rw [hvol] at hrearr
-  rw [hmeasE, hmeasQ]
-  exact hrearr
+  exact measure_doubling_of_holder W.one_lt_conj hc x hr
+    (W.dual_ball_ne_zero x hcr) (W.dual_ball_ne_top x hcr)
+    (W.volume_pow_le_dual_mul_weight (x := x) hR)
+    (W.dual_ballProduct_le x hcr)
 
 end ApWeight
 

@@ -18,7 +18,7 @@ read off by splitting `r ≤ 1` and `r ≥ 1`, or by adding the two trivial lowe
 `r ^ (2 * s)`.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

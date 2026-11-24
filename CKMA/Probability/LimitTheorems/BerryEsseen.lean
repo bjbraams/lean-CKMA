@@ -52,11 +52,13 @@ section Moments
 
 variable [IsProbabilityMeasure μ] {X : Ω → ℝ}
 
+/-- A random variable in `L³` has an integrable third absolute moment. -/
 private lemma integrable_abs_pow_three (hX : MemLp X 3 μ) :
     Integrable (fun ω ↦ |X ω| ^ 3) μ := by
   have := (show MemLp X ((3 : ℕ) : ENNReal) μ by exact_mod_cast hX).integrable_norm_pow'
   simpa using this
 
+/-- A random variable in `L³` has an integrable square. -/
 private lemma integrable_sq_of_memLp_three (hX : MemLp X 3 μ) :
     Integrable (fun ω ↦ X ω ^ 2) μ :=
   (hX.mono_exponent (by norm_num)).integrable_sq
@@ -96,6 +98,7 @@ private lemma integral_abs_le_sqrt {Y : Ω → ℝ} (hY : MemLp Y 2 μ) :
   integral_abs_le_of_sq_eq hY (Real.sqrt_nonneg _)
     (Real.sq_sqrt (integral_nonneg fun _ ↦ sq_nonneg _))
 
+/-- If `m ≥ 0` and `m² = E X²`, then `m³ ≤ E|X|³`. -/
 private lemma pow_three_le_of_sq_eq (hX : MemLp X 3 μ) {m : ℝ} (hm : 0 ≤ m)
     (hm2 : m ^ 2 = ∫ ω, X ω ^ 2 ∂μ) : m ^ 3 ≤ ∫ ω, |X ω| ^ 3 ∂μ := by
   have hρ : 0 ≤ ∫ ω, |X ω| ^ 3 ∂μ := integral_nonneg fun _ ↦ by positivity
@@ -267,6 +270,7 @@ private lemma abs_mul_min_le_ramp (z r δ s x : ℝ) (hδ : 0 ≤ δ) (hs : |s -
     rcases le_total δ |x| with h | h <;> rw [hx] at h <;>
     simp only [min_def, max_def] <;> split_ifs <;> nlinarith
 
+/-- The ramp increment `x (ramp z K s - ramp z K (s - x))` is nonnegative. -/
 private lemma ramp_mul_nonneg (z K s x : ℝ) :
     0 ≤ x * (ramp z K s - ramp z K (s - x)) := by
   unfold ramp
@@ -275,6 +279,7 @@ private lemma ramp_mul_nonneg (z K s x : ℝ) :
   · exact mul_nonneg_of_nonpos_of_nonpos hx
       (sub_nonpos.2 (max_le_max le_rfl (min_le_min le_rfl (by linarith))))
 
+/-- For `γ > 0`, `x² - |x|³ / (4γ)` is at most `|x| * min γ |x|`. -/
 private lemma abs_mul_min_lower (γ x : ℝ) (hγ : 0 < γ) :
     x ^ 2 - |x| ^ 3 / (4 * γ) ≤ |x| * min γ |x| := by
   rcases le_total |x| γ with h | h
@@ -290,6 +295,7 @@ private lemma abs_mul_min_lower (γ x : ℝ) (hγ : 0 < γ) :
     rw [e, div_le_iff₀ h4]
     exact key
 
+/-- For `γ ≥ 0`, `(|x| * min γ |x|)²` is at most `γ * |x|³`. -/
 private lemma sq_abs_mul_min_le (γ x : ℝ) (hγ : 0 ≤ γ) :
     (|x| * min γ |x|) ^ 2 ≤ γ * |x| ^ 3 := by
   have h1 : min γ |x| ≤ γ := min_le_left _ _
@@ -480,12 +486,14 @@ section Stein
 
 variable [IsProbabilityMeasure μ]
 
+/-- `steinDeriv z ∘ T` is integrable on a probability space. -/
 private lemma integrable_steinDeriv_comp (z : ℝ) {T : Ω → ℝ} (hT : Measurable T) :
     Integrable (fun ω ↦ steinDeriv z (T ω)) μ :=
   Integrable.of_bound ((measurable_steinDeriv z).comp hT).aestronglyMeasurable 3
     (ae_of_all _ fun ω ↦ abs_steinDeriv_le z (T ω))
 
 omit [IsProbabilityMeasure μ] in
+/-- `X * (steinSolution z ∘ T)` is integrable when `X` is. -/
 private lemma integrable_mul_steinSolution_comp (z : ℝ) {X T : Ω → ℝ} (hX : Integrable X μ)
     (hT : Measurable T) : Integrable (fun ω ↦ X ω * steinSolution z (T ω)) μ := by
   refine (hX.abs.mul_const 6).mono'
@@ -494,6 +502,7 @@ private lemma integrable_mul_steinSolution_comp (z : ℝ) {X T : Ω → ℝ} (hX
   simp only [Real.norm_eq_abs, abs_mul]
   exact mul_le_mul_of_nonneg_left (abs_steinSolution_le z _) (abs_nonneg _)
 
+/-- The indicator of `|Y - z| ≤ |X|` is integrable. -/
 private lemma integrable_ite_abs_sub_le {X Y : Ω → ℝ} (hX : Measurable X) (hY : Measurable Y)
     (z : ℝ) : Integrable (fun ω ↦ if |Y ω - z| ≤ |X ω| then (1 : ℝ) else 0) μ := by
   refine Integrable.of_bound (Measurable.ite (measurableSet_le (by fun_prop) (by fun_prop))
@@ -501,6 +510,7 @@ private lemma integrable_ite_abs_sub_le {X Y : Ω → ℝ} (hX : Measurable X) (
   split_ifs <;> simp
 
 omit [IsProbabilityMeasure μ] in
+/-- `X² * (steinDeriv z ∘ T)` is integrable when `X²` is. -/
 private lemma integrable_sq_mul_steinDeriv_comp (z : ℝ) {X T : Ω → ℝ}
     (hX2 : Integrable (fun ω ↦ X ω ^ 2) μ) (hT : Measurable T) :
     Integrable (fun ω ↦ X ω ^ 2 * steinDeriv z (T ω)) μ :=

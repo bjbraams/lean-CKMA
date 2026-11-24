@@ -33,7 +33,7 @@ and one application of the logarithmic iteration kernel.
   iteration.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -43,6 +43,7 @@ open MeasureTheory Set
 open scoped BigOperators ENNReal intervalIntegral
 
 /-- Measurable splitting of a tuple into its last coordinate and its initial segment. -/
+@[expose]
 def lastCoordEquiv (n : ℕ) : (Fin (n + 1) → ℝ) ≃ᵐ ℝ × (Fin n → ℝ) :=
   MeasurableEquiv.piFinSuccAbove (fun _ : Fin (n + 1) ↦ ℝ) (Fin.last n)
 
@@ -59,10 +60,12 @@ private theorem lastCoordEquiv_symm_apply (n : ℕ) (y : ℝ) (z : Fin n → ℝ
     Fin.snocEquiv_apply]
 
 /-- The slice of a function at a fixed last coordinate. -/
+@[expose]
 def lastCoordSlice {n : ℕ} (f : (Fin (n + 1) → ℝ) → ℝ) (y : ℝ) (z : Fin n → ℝ) : ℝ :=
   f ((lastCoordEquiv n).symm (y, z))
 
 /-- The strong maximal function of one slice. -/
+@[expose]
 def partialStrongMax {n : ℕ} (f : (Fin (n + 1) → ℝ) → ℝ) (y : ℝ) (z : Fin n → ℝ) : ℝ≥0∞ :=
   strongMaximalFunction (lastCoordSlice f y) z
 
@@ -462,10 +465,12 @@ structure RatRectangle (d : ℕ) where
 namespace RatRectangle
 
 /-- The underlying open set. -/
+@[expose]
 def carrier {d : ℕ} (J : RatRectangle d) : Set (Fin d → ℝ) :=
   {x | ∀ j, (J.lower j : ℝ) < x j ∧ x j < J.upper j}
 
 /-- A rational rectangle viewed as an open rectangle. -/
+@[expose]
 def toOpen {d : ℕ} (J : RatRectangle d) : OpenRectangle d where
   lower := fun j ↦ J.lower j
   upper := fun j ↦ J.upper j
@@ -477,11 +482,13 @@ theorem carrier_toOpen {d : ℕ} (J : RatRectangle d) : J.toOpen.carrier = J.car
   simp [toOpen, carrier, OpenRectangle.carrier]
 
 /-- Rational rectangles form a countable family. -/
+@[expose]
 instance {d : ℕ} : Countable (RatRectangle d) :=
   Function.Injective.countable (f := fun J : RatRectangle d ↦ (J.lower, J.upper))
     (fun I J h ↦ by cases I; cases J; aesop)
 
 /-- Extended average of a nonnegative integrand. -/
+@[expose]
 def average {d : ℕ} (g : (Fin d → ℝ) → ℝ≥0∞) (J : RatRectangle d) : ℝ≥0∞ :=
   (∫⁻ x in J.carrier, g x) / volume J.carrier
 
@@ -693,6 +700,7 @@ theorem strongMaximalGrowth_div_le {n k : ℕ} (hk : 1 ≤ k) {v : ℝ} (hv : 0 
     _ = (1 / (k : ℝ)) * (v * (1 + max 0 (Real.log v)) ^ (n - 1)) := hdiv
 
 /-- Extended average of one slice over a rational rectangle. -/
+@[expose]
 def sliceRatAverage {n : ℕ} (f : (Fin (n + 1) → ℝ) → ℝ) (y : ℝ) (J : RatRectangle n) : ℝ≥0∞ :=
   RatRectangle.average (fun z ↦ ENNReal.ofReal |f ((lastCoordEquiv n).symm (y, z))|) J
 

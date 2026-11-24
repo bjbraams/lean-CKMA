@@ -32,7 +32,7 @@ finite variation are in `VariationEstimate`.
   monotone sequence.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -46,6 +46,7 @@ namespace YoungLoeve
 variable {E : Type*} [SeminormedAddCommGroup E]
 
 /-- Sum of `p`th powers of increments along one ordered partition. -/
+@[expose]
 def variationSum (p : ℝ) (X : ℝ → E) {a b : ℝ}
     (π : OrderedIntervalPartition a b) : ℝ≥0∞ :=
   ∑ i : Fin π.size, ENNReal.ofReal (‖X (π.node i.succ) - X (π.node i.castSucc)‖ ^ p)
@@ -54,6 +55,7 @@ end YoungLoeve
 
 /-- The `p`th power variation, retaining infinite variation: the supremum of
 `YoungLoeve.variationSum` over ordered partitions. -/
+@[expose]
 def pathVariationPower {E : Type*} [SeminormedAddCommGroup E]
     (p : ℝ) (X : ℝ → E) (a b : ℝ) : ℝ≥0∞ :=
   ⨆ π : OrderedIntervalPartition a b, YoungLoeve.variationSum p X π
@@ -67,6 +69,7 @@ lemma pathVariationPower_eq_iSup (p : ℝ) (X : ℝ → E) (a b : ℝ) :
     pathVariationPower p X a b = ⨆ π : OrderedIntervalPartition a b, variationSum p X π := rfl
 
 /-- Real `p`-variation power on a subinterval, or zero when the power is infinite. -/
+@[expose]
 def variationReal (p : ℝ) (X : ℝ → E) (s t : ℝ) : ℝ :=
   (pathVariationPower p X s t).toReal
 
@@ -133,6 +136,7 @@ lemma variationReal_point {p : ℝ} (hp : 0 < p) (X : ℝ → E) (s : ℝ) :
   simp [variationReal, pathVariationPower_point hp]
 
 /-- Reading an ordered partition as a monotone sequence on `ℕ`. -/
+@[expose]
 def nodeSeq {a b : ℝ} (π : OrderedIntervalPartition a b) (i : ℕ) : ℝ :=
   π.node ⟨min i π.size, by omega⟩
 
@@ -165,6 +169,7 @@ lemma monotone_nodeSeq {a b : ℝ} (π : OrderedIntervalPartition a b) : Monoton
     simp [Nat.min_eq_left hi, Nat.min_eq_left hj, hij]
 
 /-- Sum of a two-parameter increment along the first `n` steps of a sequence. -/
+@[expose]
 def stepSum {F : Type*} [AddCommMonoid F] (A : ℝ → ℝ → F) (c : ℕ → ℝ) (n : ℕ) : F :=
   ∑ i ∈ range n, A (c i) (c (i + 1))
 
@@ -431,6 +436,7 @@ private lemma young_split_le {α β x₁ x₂ y₁ y₂ : ℝ} (hα : 0 < α) (h
       exact (div_le_one hden).mp hfrac
 
 /-- Delete interior index `j` from a node sequence. -/
+@[expose]
 def dropNode (c : ℕ → ℝ) (j : ℕ) : ℕ → ℝ :=
   fun i => if i < j then c i else c (i + 1)
 
@@ -499,10 +505,12 @@ lemma stepSum_drop {F : Type*} [AddCommGroup F] (A : ℝ → ℝ → F) (c : ℕ
   abel
 
 /-- Partial sums of the point-removal series `(2 / k) ^ θ`. -/
+@[expose]
 def youngPartial (θ : ℝ) (n : ℕ) : ℝ :=
   ∑ k ∈ range n, (2 / ((k + 1) : ℝ)) ^ θ
 
 /-- Sum of the point-removal series, finite for `θ > 1`. -/
+@[expose]
 def youngLoose (θ : ℝ) : ℝ :=
   ∑' k : ℕ, (2 / ((k + 1) : ℝ)) ^ θ
 
@@ -566,12 +574,15 @@ lemma variationReal_nonneg (p : ℝ) (X : ℝ → E) (s t : ℝ) : 0 ≤ variati
   ENNReal.toReal_nonneg
 
 /-- Complementary Young exponent `p⁻¹ + q⁻¹`. -/
+@[expose]
 def youngTheta (p q : ℝ) : ℝ := p⁻¹ + q⁻¹
 
 /-- Weight of `p`-variation in the product control. -/
+@[expose]
 def youngAlpha (p q : ℝ) : ℝ := p⁻¹ / youngTheta p q
 
 /-- Weight of `q`-variation in the product control. -/
+@[expose]
 def youngBeta (p q : ℝ) : ℝ := q⁻¹ / youngTheta p q
 
 /-- Positivity of `youngTheta p q` when `1 < p⁻¹ + q⁻¹`. -/
@@ -596,11 +607,13 @@ lemma youngAlpha_add_beta {p q : ℝ} (hp : 1 ≤ p) (hq : 1 ≤ q) (hpq : 1 < p
   field_simp
 
 /-- Product control `v_X ^ α · v_Y ^ β`, with `α + β = 1`. -/
+@[expose]
 def youngCtrl (p q : ℝ) (X : ℝ → E) {G : Type*} [SeminormedAddCommGroup G]
     (Y : ℝ → G) (s t : ℝ) : ℝ :=
   variationReal p X s t ^ youngAlpha p q * variationReal q Y s t ^ youngBeta p q
 
 /-- The Young modulus `v_X ^ (1/p) · v_Y ^ (1/q)`. -/
+@[expose]
 def youngModulus (p q : ℝ) (X : ℝ → E) {G : Type*} [SeminormedAddCommGroup G]
     (Y : ℝ → G) (s t : ℝ) : ℝ :=
   variationReal p X s t ^ p⁻¹ * variationReal q Y s t ^ q⁻¹

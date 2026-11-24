@@ -52,7 +52,7 @@ Sources: GAPS 12.9, 12.21, 12.39, and 12.40.
 * `CKMA.HasConvexKKTMultipliers.isMinOn`: sufficiency of KKT conditions.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -81,10 +81,12 @@ variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 /-- The dual-valued subdifferential of an extended-real function, reusing TauCeti's
 pairing-based definition. The pairing is evaluation by the continuous dual. -/
+@[expose]
 def dualSubdifferential (f : E → EReal) (x : E) : Set (StrongDual ℝ E) :=
   TauCeti.subdifferential (topDualPairing ℝ E).flip f x
 
 /-- Real-valued convex subgradients, expressed as a specialization of the same definition. -/
+@[expose]
 def realSubdifferential (f : E → ℝ) (x : E) : Set (StrongDual ℝ E) :=
   dualSubdifferential (fun y ↦ (f y : EReal)) x
 
@@ -120,11 +122,13 @@ theorem dualSubdifferential_add_of_intrinsicInterior [FiniteDimensional ℝ E] {
   subdifferential_add_eq_of_intrinsicInterior hf hg hcf hcg hri x
 
 /-- The primal Fenchel value, in extended reals. -/
+@[expose]
 def fenchelPrimalValue (f : E → EReal) (g : F → EReal) (A : E →L[ℝ] F) : EReal :=
   ⨅ x, f x + g (A x)
 
 /-- The Fenchel dual objective. The sign is on the pulled-back dual variable,
 matching `-f*(-A* u)-g*(u)`. -/
+@[expose]
 def fenchelDualValue (f : E → EReal) (g : F → EReal) (A : E →L[ℝ] F)
     (u : StrongDual ℝ F) : EReal :=
   -TauCeti.fenchelConjugate (topDualPairing ℝ E).flip f ((-u).comp A) -
@@ -151,12 +155,14 @@ theorem exists_fenchelDual_maximizer
     exists_fenchelDual_maximizer_of_qual A hf hg hcf hcg hfin hcont hval'
 
 /-- Feasibility for finitely many convex inequalities and affine equalities. -/
+@[expose]
 def convexFeasibleSet {m : ℕ} {ι : Type*} (g : ι → E → ℝ)
     (A : E →L[ℝ] (Fin m → ℝ)) (b : Fin m → ℝ) : Set E :=
   {x | (∀ i, g i x ≤ 0) ∧ A x = b}
 
 /-- Subgradient KKT data, including nonnegative multipliers, stationarity and
 complementary slackness. Feasibility is kept separate. -/
+@[expose]
 def HasConvexKKTMultipliers {m : ℕ} {ι : Type*} [Fintype ι] (f : E → ℝ) (g : ι → E → ℝ)
     (A : E →L[ℝ] (Fin m → ℝ)) (x : E) : Prop :=
   ∃ (c : ι → ℝ) (u : StrongDual ℝ E)

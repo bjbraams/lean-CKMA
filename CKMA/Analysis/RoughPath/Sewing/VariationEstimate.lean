@@ -31,7 +31,7 @@ and short intervals carry an arbitrarily small control.
   continuous paths.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -151,6 +151,7 @@ end YoungLoeve
 
 /-- The field of left-point Young increments `Y s (X t - X s)` for an operator-valued
 integrand. -/
+@[expose]
 def youngIncrement {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [NormedAddCommGroup F] [NormedSpace ℝ F] (X : ℝ → E) (Y : ℝ → E →L[ℝ] F) (s t : ℝ) : F :=
   Y s (X t - X s)
@@ -343,6 +344,7 @@ private lemma variationSum_take (p : ℝ) (X : ℝ → E) {s u : ℝ} (π : Orde
   rwa [Nat.add_sub_of_le hk] at hsplit
 
 /-- Reflection of the time parameter through the interval `[c, d]`. -/
+@[expose]
 def timeReflect (c d : ℝ) (X : ℝ → E) (u : ℝ) : E :=
   X (c + d - u)
 

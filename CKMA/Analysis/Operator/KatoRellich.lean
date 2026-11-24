@@ -26,7 +26,7 @@ theorem together with the core identity. Source: GAPS 22.32.
   self-adjoint closure.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

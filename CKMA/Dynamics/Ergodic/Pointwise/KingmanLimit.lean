@@ -31,7 +31,7 @@ infimum, so the integrable liminf has that mean.
 * `CKMA.kingmanLiminfReal_integral_eq`: the liminf has integral equal to the Fekete infimum.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -45,16 +45,19 @@ variable {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} {T : Ω → Ω}
 attribute [local instance] Classical.propDecidable
 
 /-- A site has an excursion when some positive length at most `k` lies below the slope. -/
+@[expose]
 def HasKingmanExcursion (f : ℕ → Ω → ℝ) (slope : Ω → ℝ) (k : ℕ) (ω : Ω) : Prop :=
   ∃ j, 0 < j ∧ j ≤ k ∧ f j ω < (j : ℝ) * slope ω
 
 @[deprecated (since := "2026-11-15")] alias kingmanExcursion := HasKingmanExcursion
 
 /-- Comparison value: the slope on an excursion, and one step otherwise. -/
+@[expose]
 def kingmanCompare (f : ℕ → Ω → ℝ) (slope : Ω → ℝ) (k : ℕ) (ω : Ω) : ℝ :=
   if HasKingmanExcursion f slope k ω then slope ω else f 1 ω
 
 /-- Tail majorant of the comparison value and the one-step increment. -/
+@[expose]
 def kingmanMajor (f : ℕ → Ω → ℝ) (slope : Ω → ℝ) (k : ℕ) (ω : Ω) : ℝ :=
   max (kingmanCompare f slope k ω) (f 1 ω)
 

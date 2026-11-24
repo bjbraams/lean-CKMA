@@ -6,7 +6,7 @@ Authors: CKMA contributors
 module
 
 public import CKMA.Analysis.Operator.Dilation.WoldExtend
-public import CKMA.Analysis.InnerProductSpace.HilbertModel
+public import CKMA.Analysis.InnerProductSpace.Basic
 public import Mathlib.Analysis.CStarAlgebra.Classes
 
 import CKMA.Analysis.Operator.Dilation.Minimal
@@ -27,7 +27,7 @@ Sz.-Nagy–Foiaş–Bercovici–Kérchy.
 * `CKMA.exists_minimalUnitaryPowerDilation_data`: existence of a minimal unitary power dilation.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

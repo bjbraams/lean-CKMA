@@ -19,11 +19,12 @@ The predicate does not use a norm, an inner product, or convexity.
 * `CKMA.IsProperERealFunction`: properness predicate for extended-real functions.
 -/
 
-@[expose] public section
+public section
 
 namespace CKMA
 
 /-- Properness for extended-real convex analysis: no value is `-∞`, and some value is finite. -/
+@[expose]
 def IsProperERealFunction {E : Type*} (f : E → EReal) : Prop :=
   (∀ x, f x ≠ ⊥) ∧ ∃ x, f x ≠ ⊤
 

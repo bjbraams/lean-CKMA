@@ -56,14 +56,14 @@ private theorem enumeratedBall_finite (hg : Differentiable ℂ g) (R : ℝ) :
   have hσ : Finite σ := by
     have : Finite s := hs
     infer_instance
-  let e : σ ≃ {a : zeroAtom g // ‖(a.1 : ℂ)‖ ≤ R} :=
+  let e : σ ≃ {a : ZeroAtom g // ‖(a.1 : ℂ)‖ ≤ R} :=
     { toFun := fun x => ⟨⟨x.1.1, x.2⟩, x.1.2⟩
       invFun := fun a => ⟨⟨a.1.1, a.2⟩, a.1.2⟩
       left_inv := fun x => rfl
       right_inv := fun a => rfl }
-  have hatom : Finite {a : zeroAtom g // ‖(a.1 : ℂ)‖ ≤ R} := Finite.of_equiv σ e
+  have hatom : Finite {a : ZeroAtom g // ‖(a.1 : ℂ)‖ ≤ R} := Finite.of_equiv σ e
   have himage : {n | ∃ w, enumeratedZero hg n = some w ∧ ‖w‖ ≤ R} =
-      range fun a : {a : zeroAtom g // ‖(a.1 : ℂ)‖ ≤ R} => zeroEncode hg a.1 := by
+      range fun a : {a : ZeroAtom g // ‖(a.1 : ℂ)‖ ≤ R} => zeroEncode hg a.1 := by
     ext n
     constructor
     · intro hn
@@ -80,12 +80,12 @@ private theorem enumeratedBall_finite (hg : Differentiable ℂ g) (R : ℝ) :
 
 /-- The number of listed zeros of modulus at most `R` is `O(R ^ B)` for every `B` above the order.
   -/
-private theorem exists_enumerated_count_bound (hg : Differentiable ℂ g) (hg0 : g 0 ≠ 0) {ρ B : ℝ}
+private theorem exists_enumerated_count_bound (hg : Differentiable ℂ g) {ρ B : ℝ}
     (hord : TauCeti.OrderLE g ρ) (hB : ρ < B) :
     ∃ C > 0, ∀ᶠ R : ℝ in atTop,
       (({n | ∃ w, enumeratedZero hg n = some w ∧ ‖w‖ ≤ R}.ncard : ℝ) ≤ C * R ^ B) := by
   classical
-  obtain ⟨C, hCpos, hC⟩ := hord.eventually_sum_divisor_le hg hg0 hB
+  obtain ⟨C, hCpos, hC⟩ := hord.eventually_sum_divisor_le hg hB
   refine ⟨C, hCpos, hC.mono ?_⟩
   intro R hR
   let d := MeromorphicOn.divisor g Set.univ
@@ -93,12 +93,12 @@ private theorem exists_enumerated_count_bound (hg : Differentiable ℂ g) (hg0 :
   have hs : s.Finite := MeromorphicOn.divisor_norm_sublevel_finite g R
   have : Fintype s := hs.fintype
   let σ := Σ ρ : s, Fin ((d (ρ.1 : ℂ)).toNat)
-  let eAtom : σ ≃ {a : zeroAtom g // ‖(a.1 : ℂ)‖ ≤ R} :=
+  let eAtom : σ ≃ {a : ZeroAtom g // ‖(a.1 : ℂ)‖ ≤ R} :=
     { toFun := fun x => ⟨⟨x.1.1, x.2⟩, x.1.2⟩
       invFun := fun a => ⟨⟨a.1.1, a.2⟩, a.1.2⟩
       left_inv := fun _ => rfl
       right_inv := fun _ => rfl }
-  let eIdx : {a : zeroAtom g // ‖(a.1 : ℂ)‖ ≤ R} ≃
+  let eIdx : {a : ZeroAtom g // ‖(a.1 : ℂ)‖ ≤ R} ≃
       {n // ∃ w, enumeratedZero hg n = some w ∧ ‖w‖ ≤ R} :=
     Equiv.ofBijective
       (fun a => ⟨zeroEncode hg a.1, ⟨(a.1.1 : ℂ), enumeratedZero_zeroEncode hg a.1, a.2⟩⟩)
@@ -123,6 +123,8 @@ private theorem exists_enumerated_count_bound (hg : Differentiable ℂ g) (hg0 :
   have htsum := hA.tsum_divisor_subtype_le_sum_closedBall (R := R) s hsub
   exact (hreal.symm ▸ htsum).trans hR
 
+/-- Zeros of modulus at least `2R` contribute at most a constant times `R ^ (B - q)` to
+`∑ ‖w‖ ^ (-q)`. -/
 private theorem dyadic_tail_le {a : ℕ → Option ℂ} {B q C R0 : ℝ} (hBq : B < q) (hq : 0 ≤ q)
     (hC : 0 ≤ C) (hR0 : 1 ≤ R0)
     (hfin : ∀ R : ℝ, {n | ∃ w, a n = some w ∧ ‖w‖ ≤ R}.Finite)
@@ -303,11 +305,11 @@ private theorem dyadic_tail_le {a : ℕ → Option ℂ} {B q C R0 : ℝ} (hBq : 
   simpa [θ] using hbound
 
 /-- An eventual zero-count bound holds at every radius past a fixed threshold. -/
-private theorem exists_uniform_enumerated_count (hg : Differentiable ℂ g) (hg0 : g 0 ≠ 0)
+private theorem exists_uniform_enumerated_count (hg : Differentiable ℂ g)
     {ρ B R0 : ℝ} (hord : TauCeti.OrderLE g ρ) (hρB : ρ < B) (hB : 0 ≤ B) (hR0 : 1 ≤ R0) :
     ∃ C > 0, ∀ R : ℝ, R0 ≤ R →
       (({n | ∃ w, enumeratedZero hg n = some w ∧ ‖w‖ ≤ R}.ncard : ℝ) ≤ C * R ^ B) := by
-  obtain ⟨C, hCpos, hEv⟩ := exists_enumerated_count_bound hg hg0 hord hρB
+  obtain ⟨C, hCpos, hEv⟩ := exists_enumerated_count_bound hg hord hρB
   obtain ⟨R1, hR1⟩ := eventually_atTop.mp hEv
   let S := max R1 R0
   have hS1 : R1 ≤ S := le_max_left _ _
@@ -1216,14 +1218,14 @@ theorem exists_hadamard_of_orderLE {g : ℂ → ℂ} (hg : Differentiable ℂ g)
   have hne : ∀ n w, a n = some w → w ≠ 0 :=
     fun n w hw => enumeratedZero_ne_zero hg hg0 (by simpa [a] using hw)
   have hsum : Summable (slopeWeight p a) := by
-    refine (summable_enumeratedZero_rpow hg hg0 hord hp_lt).congr fun n => ?_
+    refine (summable_enumeratedZero_rpow hg hord hp_lt).congr fun n => ?_
     cases ha : enumeratedZero hg n with
     | none => simp [slopeWeight, a, ha]
     | some w => simp [slopeWeight, a, ha]
   have hfin : ∀ R : ℝ, {n | ∃ w, a n = some w ∧ ‖w‖ ≤ R}.Finite := by
     intro R
     simpa [a] using enumeratedBall_finite hg R
-  obtain ⟨C, hCpos, hcount0⟩ := exists_uniform_enumerated_count hg hg0 hord hρB hB0
+  obtain ⟨C, hCpos, hcount0⟩ := exists_uniform_enumerated_count hg hord hρB hB0
     (by norm_num : (1 : ℝ) ≤ 1)
   have hcount : ∀ R : ℝ, 1 ≤ R →
       (({n | ∃ w, a n = some w ∧ ‖w‖ ≤ R}.ncard : ℝ) ≤ C * R ^ B) := by

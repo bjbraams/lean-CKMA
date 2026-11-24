@@ -35,7 +35,7 @@ Source: GAPS 47.17.
 * `CKMA.korovkin_iff`: Korovkin's theorem characterizing strong convergence by three test functions.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -44,12 +44,15 @@ namespace CKMA
 open Filter Metric Topology
 
 /-- The real continuous functions on the unit interval, with their supremum norm. -/
+@[expose]
 abbrev UnitIntervalContinuousMap := C(Set.Icc (0 : ℝ) 1, ℝ)
 
 /-- The coordinate function on the unit interval. -/
+@[expose]
 def unitIntervalId : UnitIntervalContinuousMap := ⟨fun x ↦ x.1, continuous_subtype_val⟩
 
 /-- Order preservation of a linear operator, equivalently preservation of nonnegative functions. -/
+@[expose]
 abbrev IsPositiveContinuousMapOperator (L : UnitIntervalContinuousMap →L[ℝ]
     UnitIntervalContinuousMap) : Prop := Monotone L
 

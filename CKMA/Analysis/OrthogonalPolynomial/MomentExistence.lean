@@ -42,7 +42,7 @@ Sources: GAPS 48.4, 48.32, 48.33 and 48.36.
 * `CKMA.measure_eq_of_stieltjesCarleman`: Carleman uniqueness for the Stieltjes moment problem.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -52,13 +52,16 @@ open MeasureTheory Polynomial
 open scoped BigOperators ENNReal Matrix
 
 /-- The moment functional on real polynomials, defined by linear extension from monomials. -/
+@[expose]
 def momentFunctional (s : ℕ → ℝ) (p : ℝ[X]) : ℝ := p.sum (fun n c ↦ c * s n)
 
 /-- A finite shifted Hankel matrix. -/
+@[expose]
 def momentHankelMatrix (s : ℕ → ℝ) (shift n : ℕ) : Matrix (Fin n) (Fin n) ℝ :=
   fun i j ↦ s (i.val + j.val + shift)
 
 /-- Positivity of every unshifted finite Hankel matrix. -/
+@[expose]
 def HasPositiveHankelMatrices (s : ℕ → ℝ) : Prop :=
   ∀ n : ℕ, (momentHankelMatrix s 0 n).PosSemidef
 
@@ -69,6 +72,7 @@ theorem HasPositiveHankelMatrices.nonneg_even {s : ℕ → ℝ}
   simpa [momentHankelMatrix, two_mul] using h
 
 /-- A positive finite Borel measure represents the prescribed real moments. -/
+@[expose]
 def RepresentsRealMoments (μ : Measure ℝ) (s : ℕ → ℝ) : Prop :=
   HasFiniteMoments μ ∧ ∀ n : ℕ, ∫ x, x ^ n ∂μ = s n
 
@@ -135,6 +139,7 @@ alias positiveHankelMatrices_iff_squares :=
   hasPositiveHankelMatrices_iff_momentFunctional_mul_self_nonneg
 
 /-- The monic Jacobi recurrence with edge coefficients `a n` between sites `n` and `n+1`. -/
+@[expose]
 def jacobiMonicPolynomial (a b : ℕ → ℝ) : ℕ → ℝ[X]
   | 0 => 1
   | 1 => X - C (b 0)
@@ -168,10 +173,12 @@ theorem exists_favard_measure (a b : ℕ → ℝ) (ha : ∀ n, 0 < a n) :
 
 /-- Hamburger's Carleman divergence criterion. Extended powers give value `∞` at a zero moment,
 so degenerate measures are included rather than excluded by real inverse conventions. -/
+@[expose]
 def HamburgerCarlemanCondition (s : ℕ → ℝ) : Prop :=
   (∑' n : ℕ, (ENNReal.ofReal (s (2 * (n + 1)))) ^ (-1 / (2 * (n + 1) : ℝ))) = ∞
 
 /-- Stieltjes's corresponding Carleman condition using all positive moments. -/
+@[expose]
 def StieltjesCarlemanCondition (s : ℕ → ℝ) : Prop :=
   (∑' n : ℕ, (ENNReal.ofReal (s (n + 1))) ^ (-1 / (2 * (n + 1) : ℝ))) = ∞
 

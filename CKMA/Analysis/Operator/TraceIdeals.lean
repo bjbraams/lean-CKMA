@@ -42,7 +42,7 @@ multiplication. Inner products are linear in the second slot. Sources: GAPS 21.2
   trace is cyclic.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -58,6 +58,7 @@ variable {𝕜 H K L ι κ : Type*} [RCLike 𝕜]
     [NormedAddCommGroup L] [InnerProductSpace 𝕜 L] [CompleteSpace L]
 
 /-- The upstream Schatten gauge. No second approximation-number definition is introduced. -/
+@[expose]
 abbrev schattenGauge (p : ℝ) (hp : 1 ≤ p) (T : H →L[𝕜] K) : ℝ≥0∞ :=
   (TauCeti.OperatorIdealFamily.schatten 𝕜 p hp).gauge T
 
@@ -74,6 +75,7 @@ theorem schattenGauge_one_eq_nuclearENorm (T : H →L[𝕜] K) :
 
 /-- Trace-class membership: finiteness of TauCeti's nuclear gauge
 `ContinuousLinearMap.nuclearENorm`, the Schatten-one gauge. -/
+@[expose]
 def IsTraceClassOperator (T : H →L[𝕜] K) : Prop := T.nuclearENorm ≠ ∞
 
 /-- Trace class is finiteness of the Schatten-one gauge. -/
@@ -83,6 +85,7 @@ theorem isTraceClassOperator_iff_schattenGauge_ne_top (T : H →L[𝕜] K) :
 
 /-- Trace computed in a supplied Hilbert basis, using Mathlib's second-variable-linear inner
 product convention. The trace-class theorems establish that this sum is legitimate. -/
+@[expose]
 def hilbertTrace (b : HilbertBasis ι 𝕜 H) (T : H →L[𝕜] H) : 𝕜 :=
   ∑' i, ⟪b i, T (b i)⟫_𝕜
 

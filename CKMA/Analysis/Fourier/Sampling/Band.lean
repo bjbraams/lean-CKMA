@@ -42,7 +42,7 @@ the namespace `CKMA.Shannon`.
   tail of Parseval's series on `AddCircle (2 * B)`.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -53,13 +53,16 @@ open scoped BigOperators ENNReal FourierTransform Real Interval
 
 /-- The continuous representative of inverse Fourier data supported in `[-B,B]`.
 For `L²` data on this finite interval the integral is well-defined. -/
+@[expose]
 def bandlimitedRepresentative (B : ℝ) (u : Lp ℂ 2 (volume : Measure ℝ)) (t : ℝ) : ℂ :=
   ∫ ξ in Set.Icc (-B) B, Complex.exp (2 * Real.pi * Complex.I * t * ξ) * u ξ
 
 /-- The normalized sinc in the sampling convention; Mathlib's `Real.sinc` is unnormalized. -/
+@[expose]
 def normalizedSinc (t : ℝ) : ℝ := Real.sinc (Real.pi * t)
 
 /-- The `k`th Shannon summand at bandwidth `B`. -/
+@[expose]
 def shannonTerm (B : ℝ) (f : ℝ → ℂ) (k : ℤ) (t : ℝ) : ℂ :=
   f (k / (2 * B)) * normalizedSinc (2 * B * t - k)
 
@@ -68,18 +71,22 @@ namespace Shannon
 variable {B : ℝ}
 
 /-- Frequency datum cut off to the sampling band `[-B,B]`. -/
+@[expose]
 def bandCutoff (B : ℝ) (u : ℝ → ℂ) : ℝ → ℂ :=
   (Set.Icc (-B) B).indicator u
 
 /-- The character `exp(-2πi (k/(2B)) ξ)` paired with the sample at `k/(2B)`. -/
+@[expose]
 def samplingCharacter (B : ℝ) (k : ℤ) (x : ℝ) : ℂ :=
   Complex.exp (-(2 * Real.pi * Complex.I * (k / (2 * B)) * x))
 
 /-- Trigonometric partial sum with coefficients `(2B)⁻¹` times the samples of `f`. -/
+@[expose]
 def freqPartial (B : ℝ) (f : ℝ → ℂ) (s : Finset ℤ) (x : ℝ) : ℂ :=
   ∑ k ∈ s, ((2 * B)⁻¹ : ℝ) • f (k / (2 * B)) * samplingCharacter B k x
 
 /-- The partial sum, viewed as an `L²(ℝ)` function supported on `[-B,B]`. -/
+@[expose]
 def freqBand (B : ℝ) (f : ℝ → ℂ) (s : Finset ℤ) : ℝ → ℂ :=
   bandCutoff B (freqPartial B f s)
 

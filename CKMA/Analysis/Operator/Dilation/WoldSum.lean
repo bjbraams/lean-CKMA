@@ -31,7 +31,7 @@ Chapter I, Section 1.
   Wold Hilbert-sum coordinates.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -79,30 +79,33 @@ private theorem hasSum_option (a : E) (g : ℕ → E) (s : E) (hg : HasSum g s) 
 variable {H : Type u} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
 
 /-- Summands of the Wold decomposition, indexed by the unitary slot and `ℕ`. -/
-@[reducible] def woldSummandNat (V : H →ₗᵢ[ℂ] H) : Option ℕ → Type u
+@[expose, reducible] def woldSummandNat (V : H →ₗᵢ[ℂ] H) : Option ℕ → Type u
   | none => woldUnitarySubspace V
   | some _ => woldWanderingSubspace V
 
 /-- Each Wold summand is a normed group. -/
+@[expose]
 instance woldSummandNat.instNormedAddCommGroup (V : H →ₗᵢ[ℂ] H) (i : Option ℕ) :
     NormedAddCommGroup (woldSummandNat V i) :=
   Option.rec (inferInstanceAs (NormedAddCommGroup (woldUnitarySubspace V)))
     (fun _ => inferInstanceAs (NormedAddCommGroup (woldWanderingSubspace V))) i
 
 /-- Each Wold summand is a complex inner product space. -/
+@[expose]
 instance woldSummandNat.instInnerProductSpace (V : H →ₗᵢ[ℂ] H) (i : Option ℕ) :
     InnerProductSpace ℂ (woldSummandNat V i) :=
   Option.rec (inferInstanceAs (InnerProductSpace ℂ (woldUnitarySubspace V)))
     (fun _ => inferInstanceAs (InnerProductSpace ℂ (woldWanderingSubspace V))) i
 
 /-- Each Wold summand is complete. -/
+@[expose]
 instance woldSummandNat.instCompleteSpace (V : H →ₗᵢ[ℂ] H) (i : Option ℕ) :
     CompleteSpace (woldSummandNat V i) :=
   Option.rec (inferInstanceAs (CompleteSpace (woldUnitarySubspace V)))
     (fun _ => inferInstanceAs (CompleteSpace (woldWanderingSubspace V))) i
 
 /-- Inclusion of a Wold summand: the unitary part, or the `n`-th wandering shift. -/
-@[reducible] def woldSummandIncl (V : H →ₗᵢ[ℂ] H) : ∀ i, woldSummandNat V i →ₗᵢ[ℂ] H :=
+@[expose, reducible] def woldSummandIncl (V : H →ₗᵢ[ℂ] H) : ∀ i, woldSummandNat V i →ₗᵢ[ℂ] H :=
   Option.rec (woldUnitarySubspace V).subtypeₗᵢ (fun n => woldShift V n)
 
 /-- The unitary inclusion is the subtype inclusion. -/

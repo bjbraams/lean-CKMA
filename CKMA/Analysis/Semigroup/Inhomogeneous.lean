@@ -31,7 +31,7 @@ semigroup modules; integration uses Mathlib.
   and forcing agree on `[0, T]`.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -43,11 +43,13 @@ open scoped NNReal BoundedContinuousFunction
 variable {X : Type*} [NormedAddCommGroup X] [NormedSpace ℝ X] [CompleteSpace X]
 
 /-- The actual variation-of-constants trajectory, using the upstream real-time semigroup shim. -/
+@[expose]
 def forcedSemigroupTrajectory (S : StronglyContinuousSemigroup X) (x : X)
     (f : ℝ → X) (t : ℝ) : X := S.realOperator t x + ∫ s in (0 : ℝ)..t, S.realOperator (t - s) (f s)
 
 /-- An integrated solution of `u'=Au+f`, phrased independently of the variation-of-constants
 formula. The time integral, rather than every value of `u`, belongs to the generator domain. -/
+@[expose]
 def IsIntegratedSemigroupSolution (S : StronglyContinuousSemigroup X) (x : X)
     (f u : ℝ → X) (T : ℝ) : Prop :=
   ContinuousOn u (Set.Icc 0 T) ∧ ∀ t ∈ Set.Icc 0 T,
@@ -633,7 +635,8 @@ private theorem norm_duhamel_sub_le (S : StronglyContinuousSemigroup X) {T C : �
     rw [integral_of_le ht0]
     refine setIntegral_mono_set hfg.norm ?_ ?_
     · exact ae_restrict_of_forall_mem measurableSet_Icc fun _ _ => norm_nonneg _
-    · exact (Set.Ioc_subset_Icc_self.trans (Set.Icc_subset_Icc_right htT)).eventuallyLE
+    · exact ae_of_all volume
+        (Set.Ioc_subset_Icc_self.trans (Set.Icc_subset_Icc_right htT))
   calc ‖∫ s in (0 : ℝ)..t, S.realOperator (t - s) (g s - f s)‖
       ≤ ∫ s in (0 : ℝ)..t, ‖S.realOperator (t - s) (g s - f s)‖ :=
         norm_integral_le_integral_norm ht0
@@ -660,7 +663,8 @@ private theorem norm_intervalIntegral_sub_le {T : ℝ}
         rw [integral_of_le ht0]
         refine setIntegral_mono_set hfg.norm ?_ ?_
         · exact ae_restrict_of_forall_mem measurableSet_Icc fun _ _ => norm_nonneg _
-        · exact (Set.Ioc_subset_Icc_self.trans (Set.Icc_subset_Icc_right htT)).eventuallyLE
+        · exact ae_of_all volume
+            (Set.Ioc_subset_Icc_self.trans (Set.Icc_subset_Icc_right htT))
 
 omit [CompleteSpace X] in
 /-- Integrable forcing on `[0, T]` is an `L¹` limit of bounded continuous forcings, at rate

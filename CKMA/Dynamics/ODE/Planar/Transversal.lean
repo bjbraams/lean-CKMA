@@ -5,7 +5,7 @@ Authors: CKMA contributors
 -/
 module
 
-public import CKMA.Dynamics.Flow
+public import CKMA.Dynamics.Flow.Basic
 public import Mathlib.Analysis.InnerProductSpace.Basic
 
 import Mathlib.Analysis.Calculus.Deriv.Slope
@@ -35,7 +35,7 @@ passes close to an interior point crosses the open segment in a short time.
   times.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -45,10 +45,12 @@ open Filter Metric Set Topology
 open scoped ComplexConjugate InnerProductSpace
 
 /-- Signed height of `z` from the oriented line through `a` and `b`. -/
+@[expose]
 def transverseSide (a b z : ℂ) : ℝ :=
   ⟪z - a, Complex.I * (b - a)⟫_ℝ
 
 /-- Real coordinate of `z` along the direction `b - a`. -/
+@[expose]
 def lineParam (a b z : ℂ) : ℝ :=
   ((z - a) / (b - a)).re
 
@@ -308,19 +310,27 @@ private theorem mem_openSegment_of_lineParam_lt {a b v x : ℂ} (hab : a ≠ b)
     rw [hvsub, smul_smul, div_mul_cancel₀ _ hpv.ne', hx']
   simpa using hz
 
+/-- Points of a collapsed segment cannot realize a positive distance. -/
+private theorem ne_of_openSegment_dist {a b u v x : ℂ} (hu : u ∈ openSegment ℝ a b)
+    (hv : v ∈ openSegment ℝ u b ∨ v ∈ openSegment ℝ a u)
+    (hdist : dist x u < dist u v) : a ≠ b := by
+  intro hab
+  have hu' : u = b := by
+    rw [hab, openSegment_same] at hu
+    exact mem_singleton_iff.mp hu
+  have hv' : v = b := by
+    rcases hv with hv | hv
+    · rw [hu', openSegment_same] at hv
+      exact mem_singleton_iff.mp hv
+    · rw [hab, hu', openSegment_same] at hv
+      exact mem_singleton_iff.mp hv
+  exact (not_lt_of_ge dist_nonneg) (by simpa [hu', hv', dist_self] using hdist)
+
 /-- A point closer to `u` than `v` is, with `v` beyond `u`, still lies before `v`. -/
 theorem openSegment_separate_left {a b u v x : ℂ} (hu : u ∈ openSegment ℝ a b)
     (hv : v ∈ openSegment ℝ u b) (hx : x ∈ openSegment ℝ a b)
     (hdist : dist x u < dist u v) : x ∈ openSegment ℝ a v := by
-  have hab : a ≠ b := by
-    intro hab
-    have hu' : u = b := by
-      rw [hab, openSegment_same] at hu
-      exact mem_singleton_iff.mp hu
-    have hv' : v = b := by
-      rw [hu', openSegment_same] at hv
-      exact mem_singleton_iff.mp hv
-    exact (not_lt_of_ge dist_nonneg) (by simpa [hu', hv', dist_self] using hdist)
+  have hab : a ≠ b := ne_of_openSegment_dist hu (Or.inl hv) hdist
   have hvab : v ∈ openSegment ℝ a b := openSegment_subset_openSegment_right hab hu hv
   have hlt : lineParam a b u < lineParam a b v :=
     (mem_openSegment_right_iff hab hu hvab).mp hv
@@ -347,15 +357,7 @@ theorem openSegment_separate_left {a b u v x : ℂ} (hu : u ∈ openSegment ℝ 
 theorem openSegment_separate_right {a b u v x : ℂ} (hu : u ∈ openSegment ℝ a b)
     (hv : v ∈ openSegment ℝ a u) (hx : x ∈ openSegment ℝ a b)
     (hdist : dist x u < dist u v) : x ∈ openSegment ℝ v b := by
-  have hab : a ≠ b := by
-    intro hab
-    have hu' : u = b := by
-      rw [hab, openSegment_same] at hu
-      exact mem_singleton_iff.mp hu
-    have hv' : v = b := by
-      rw [hab, hu', openSegment_same] at hv
-      exact mem_singleton_iff.mp hv
-    exact (not_lt_of_ge dist_nonneg) (by simpa [hu', hv', dist_self] using hdist)
+  have hab : a ≠ b := ne_of_openSegment_dist hu (Or.inr hv) hdist
   have hvab : v ∈ openSegment ℝ a b := openSegment_subset_openSegment_left hab hu hv
   have hpv : lineParam a b v < lineParam a b u := by
     set sp : ℝ := lineParam a b u
@@ -392,7 +394,7 @@ theorem openSegment_separate_right {a b u v x : ℂ} (hu : u ∈ openSegment ℝ
 
 /-- Height along an orbit is differentiable, with derivative the height of the generator. -/
 theorem hasDerivAt_transverseSide {φ : Flow ℝ ℂ} {F : ℂ → ℂ}
-    (hgen : FlowHasGenerator φ F) (x : ℂ) (t : ℝ) (a b : ℂ) :
+    (hgen : HasFlowGenerator φ F) (x : ℂ) (t : ℝ) (a b : ℂ) :
     HasDerivAt (fun s ↦ transverseSide a b (φ s x))
       (⟪F (φ t x), Complex.I * (b - a)⟫_ℝ) t := by
   have hcurve : HasDerivAt (fun s ↦ φ s x - a) (F (φ t x)) t :=
@@ -538,7 +540,7 @@ private theorem exists_ball_subset_openSegment {a b p : ℂ} (hab : a ≠ b)
 
 /-- An orbit through a point sufficiently close to an interior point of a transverse segment
 crosses that open segment within a prescribed short time, and the crossing stays close. -/
-theorem exists_crossing_time {φ : Flow ℝ ℂ} {F : ℂ → ℂ} (hgen : FlowHasGenerator φ F)
+theorem exists_crossing_time {φ : Flow ℝ ℂ} {F : ℂ → ℂ} (hgen : HasFlowGenerator φ F)
     {a b : ℂ} (htr : IsTransverseSegment F a b) {p : ℂ}
     (hp : p ∈ openSegment ℝ a b) :
     ∀ ε > 0, ∃ δ > 0, ∀ z, dist z p < δ →
@@ -625,7 +627,7 @@ theorem exists_crossing_time {φ : Flow ℝ ℂ} {F : ℂ → ℂ} (hgen : FlowH
   · exact hρ _ (lt_of_lt_of_le hdistz (min_le_left _ _)) htg
 
 /-- A compact time interval meets a transverse segment in finitely many times. -/
-theorem finite_orbit_segment {φ : Flow ℝ ℂ} {F : ℂ → ℂ} (hgen : FlowHasGenerator φ F)
+theorem finite_orbit_segment {φ : Flow ℝ ℂ} {F : ℂ → ℂ} (hgen : HasFlowGenerator φ F)
     {a b : ℂ} (htr : IsTransverseSegment F a b) (x : ℂ) {t₁ t₂ : ℝ} :
     {t : ℝ | t ∈ Icc t₁ t₂ ∧ φ t x ∈ segment ℝ a b}.Finite := by
   set S : Set ℝ := {t : ℝ | t ∈ Icc t₁ t₂ ∧ φ t x ∈ segment ℝ a b}

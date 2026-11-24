@@ -38,7 +38,7 @@ Sources: GAPS 48.6 and 48.14.
   orthonormal family.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -48,6 +48,7 @@ open MeasureTheory Polynomial Set
 open scoped BigOperators
 
 /-- All polynomial moments are absolutely integrable. -/
+@[expose]
 def HasFiniteMoments (μ : Measure ℝ) : Prop := ∀ n : ℕ, Integrable (fun x ↦ x ^ n) μ
 
 /-- Finite absolute moments include integrability of the constant function one. -/
@@ -59,6 +60,7 @@ theorem HasFiniteMoments.isFiniteMeasure {μ : Measure ℝ} (hm : HasFiniteMomen
 
 /-- A nonzero polynomial orthogonal to all polynomials of smaller degree.
 Integrability is supplied separately by the moment hypothesis. -/
+@[expose]
 def IsOrthogonalPolynomial (μ : Measure ℝ) (p : ℝ[X]) : Prop :=
   p ≠ 0 ∧ ∀ q : ℝ[X], q.natDegree < p.natDegree → ∫ x, p.eval x * q.eval x ∂μ = 0
 
@@ -489,10 +491,12 @@ private lemma exists_quot_rem_natDegree_lt {n : ℕ} (hn : 0 < n) {d r : ℝ[X]}
       exact (natDegree_lt_iff_degree_lt hs0).2 hlt
 
 /-- Exactness of a quadrature rule through a specified polynomial degree. -/
+@[expose]
 def IsQuadratureRule {n : ℕ} (μ : Measure ℝ) (x w : Fin n → ℝ) (degree : ℕ) : Prop :=
   ∀ p : ℝ[X], p.natDegree ≤ degree → ∫ t, p.eval t ∂μ = ∑ j, w j * p.eval (x j)
 
 /-- The finite Christoffel kernel of an orthonormal polynomial system. -/
+@[expose]
 def christoffelKernel (p : ℕ → ℝ[X]) (n : ℕ) (x y : ℝ) : ℝ :=
   ∑ j ∈ Finset.range n, (p j).eval x * (p j).eval y
 

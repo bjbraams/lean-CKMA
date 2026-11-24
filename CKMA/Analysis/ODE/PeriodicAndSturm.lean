@@ -41,7 +41,7 @@ Sources: GAPS 31.17 and 31.20.
 * `CKMA.sturm_comparison`: Sturm comparison theorem for solutions at ordered spectral parameters.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -71,10 +71,12 @@ theorem floquet_real {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   sorry
 
 /-- A classical solution of `-(p u')' + q u = λ w u` on an interval. -/
+@[expose]
 def IsSturmLiouvilleSolutionOn (p q w : ℝ → ℝ) (μ : ℝ) (u : ℝ → ℝ) (I : Set ℝ) : Prop :=
   ContDiffOn ℝ 2 u I ∧ ∀ x ∈ I, -deriv (fun t ↦ p t * deriv u t) x + q x * u x = μ * w x * u x
 
 /-- The ordinary Wronskian, used only at a finite point to certify independence. -/
+@[expose]
 def sturmWronskian (u v : ℝ → ℝ) (x : ℝ) : ℝ := u x * deriv v x - v x * deriv u x
 
 /-- On the open interval, `ContDiffOn` supplies an ambient derivative. -/
@@ -116,6 +118,18 @@ private lemma hasDerivAt_sturmCross {a b : ℝ} (p q w u v : ℝ → ℝ) (μ ν
   have hmul := (hu'.hasDerivAt.mul hφv).sub (hv'.hasDerivAt.mul hφu)
   exact hmul.congr_deriv (by ring)
 
+/-- A continuous function that changes strict sign on a compact interval has a zero inside. -/
+private lemma exists_zero_of_neg_pos {c d : ℝ} (hcd : c < d) {u : ℝ → ℝ}
+    (hu : ContinuousOn u (Icc c d)) (hc : u c < 0) (hd : 0 < u d) :
+    ∃ z ∈ Ioo c d, u z = 0 := by
+  simpa [mem_image] using intermediate_value_Ioo hcd.le hu ⟨hc, hd⟩
+
+/-- A continuous function that changes strict sign on a compact interval has a zero inside. -/
+private lemma exists_zero_of_pos_neg {c d : ℝ} (hcd : c < d) {u : ℝ → ℝ}
+    (hu : ContinuousOn u (Icc c d)) (hc : 0 < u c) (hd : u d < 0) :
+    ∃ z ∈ Ioo c d, u z = 0 := by
+  simpa [mem_image] using intermediate_value_Ioo' hcd.le hu ⟨hd, hc⟩
+
 /-- A continuous function with no zero on an open interval has constant strict sign. -/
 private lemma sign_const_of_ne_zero {a b : ℝ} (hab : a < b) {u : ℝ → ℝ}
     (hu : ContinuousOn u (Icc a b)) (hno : ∀ x ∈ Ioo a b, u x ≠ 0) :
@@ -128,19 +142,13 @@ private lemma sign_const_of_ne_zero {a b : ℝ} (hab : a < b) {u : ℝ → ℝ}
     rcases lt_trichotomy x ((a + b) / 2) with hlt | heq | hgt
     · have hsub : ContinuousOn u (Icc x ((a + b) / 2)) :=
         hu.mono fun y hy ↦ ⟨hx.1.le.trans hy.1, hy.2.trans hc.2.le⟩
-      have h0 : (0 : ℝ) ∈ Ioo (u ((a + b) / 2)) (u x) := ⟨hneg, hxpos⟩
-      have himg := intermediate_value_Ioo' (le_of_lt hlt) hsub h0
-      rw [mem_image] at himg
-      obtain ⟨z, hz, hz0⟩ := himg
+      obtain ⟨z, hz, hz0⟩ := exists_zero_of_pos_neg hlt hsub hxpos hneg
       exact hno z ⟨hx.1.trans hz.1, hz.2.trans hc.2⟩ hz0
     · rw [heq] at hxpos
       exact lt_asymm hxpos hneg
     · have hsub : ContinuousOn u (Icc ((a + b) / 2) x) :=
         hu.mono fun y hy ↦ ⟨hc.1.le.trans hy.1, hy.2.trans hx.2.le⟩
-      have h0 : (0 : ℝ) ∈ Ioo (u ((a + b) / 2)) (u x) := ⟨hneg, hxpos⟩
-      have himg := intermediate_value_Ioo (le_of_lt hgt) hsub h0
-      rw [mem_image] at himg
-      obtain ⟨z, hz, hz0⟩ := himg
+      obtain ⟨z, hz, hz0⟩ := exists_zero_of_neg_pos hgt hsub hneg hxpos
       exact hno z ⟨hc.1.trans hz.1, hz.2.trans hx.2⟩ hz0
   · refine Or.inl fun x hx ↦ ?_
     by_contra hnot
@@ -148,19 +156,13 @@ private lemma sign_const_of_ne_zero {a b : ℝ} (hab : a < b) {u : ℝ → ℝ}
     rcases lt_trichotomy x ((a + b) / 2) with hlt | heq | hgt
     · have hsub : ContinuousOn u (Icc x ((a + b) / 2)) :=
         hu.mono fun y hy ↦ ⟨hx.1.le.trans hy.1, hy.2.trans hc.2.le⟩
-      have h0 : (0 : ℝ) ∈ Ioo (u x) (u ((a + b) / 2)) := ⟨hxneg, hpos⟩
-      have himg := intermediate_value_Ioo (le_of_lt hlt) hsub h0
-      rw [mem_image] at himg
-      obtain ⟨z, hz, hz0⟩ := himg
+      obtain ⟨z, hz, hz0⟩ := exists_zero_of_neg_pos hlt hsub hxneg hpos
       exact hno z ⟨hx.1.trans hz.1, hz.2.trans hc.2⟩ hz0
     · rw [heq] at hxneg
       exact lt_asymm hpos hxneg
     · have hsub : ContinuousOn u (Icc ((a + b) / 2) x) :=
         hu.mono fun y hy ↦ ⟨hc.1.le.trans hy.1, hy.2.trans hx.2.le⟩
-      have h0 : (0 : ℝ) ∈ Ioo (u x) (u ((a + b) / 2)) := ⟨hxneg, hpos⟩
-      have himg := intermediate_value_Ioo' (le_of_lt hgt) hsub h0
-      rw [mem_image] at himg
-      obtain ⟨z, hz, hz0⟩ := himg
+      obtain ⟨z, hz, hz0⟩ := exists_zero_of_pos_neg hgt hsub hpos hxneg
       exact hno z ⟨hc.1.trans hz.1, hz.2.trans hx.2⟩ hz0
 
 /-- A strictly increasing continuous function running from `-∞` to `+∞` has one root. -/

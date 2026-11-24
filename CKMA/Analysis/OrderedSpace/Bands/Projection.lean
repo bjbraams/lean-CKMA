@@ -27,7 +27,7 @@ inside, and a smaller range yields a smaller projection.
   contractive projection.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

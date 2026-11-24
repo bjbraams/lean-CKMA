@@ -10,6 +10,8 @@ public import Mathlib.Analysis.Calculus.Gradient.Basic
 public import Mathlib.Analysis.Normed.Lp.MeasurableSpace
 public import Mathlib.MeasureTheory.Measure.Haar.OfBasis
 
+import Mathlib.MeasureTheory.Measure.OpenPos
+
 /-!
 # Kružkov entropy solutions and Hopf–Lax evolution
 
@@ -36,7 +38,7 @@ Sources: GAPS 34.9 and 34.14.
   Hamilton–Jacobi equation in the viscosity sense.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -46,11 +48,14 @@ open MeasureTheory Filter Topology
 open scoped ENNReal NNReal InnerProductSpace
 
 /-- Kružkov's entropy flux at a constant state. -/
+@[expose]
 def kruzhkovFlux {d : ℕ} (f : ℝ → EuclideanRealSpace d) (k u : ℝ) : EuclideanRealSpace d :=
   (if k < u then (1 : ℝ) else if u < k then -1 else 0) • (f u - f k)
 
 /-- Bounded entropy solution on positive times, tested against nonnegative compact spacetime
-functions, including the initial trace term. -/
+functions, including the initial trace term. Each identity is a Bochner integral, so a
+non-integrable integrand has integral `0`. -/
+@[expose]
 def IsKruzhkovSolution {d : ℕ} (f : ℝ → EuclideanRealSpace d)
     (u₀ : EuclideanRealSpace d → ℝ) (u : ℝ → EuclideanRealSpace d → ℝ) : Prop :=
   Measurable (Function.uncurry u) ∧
@@ -64,6 +69,7 @@ def IsKruzhkovSolution {d : ℕ} (f : ℝ → EuclideanRealSpace d)
       ∫ x, |u₀ x - k| * φ (0, x)
 
 /-- Locally integrable initial trace in the `L¹_loc` sense. -/
+@[expose]
 def HasLocalInitialTrace {d : ℕ} (u₀ : EuclideanRealSpace d → ℝ)
     (u : ℝ → EuclideanRealSpace d → ℝ) : Prop :=
   ∀ R : ℝ, 0 < R → Tendsto (fun t : ℝ ↦ ∫⁻ x in Metric.ball 0 R,
@@ -73,12 +79,21 @@ def HasLocalInitialTrace {d : ℕ} (u₀ : EuclideanRealSpace d → ℝ)
 and maximum principle. Uniqueness is a.e. in spacetime, not equality of representatives. -/
 theorem exists_kruzhkovSolution {d : ℕ} (hd : 0 < d)
     (f : ℝ → EuclideanRealSpace d) (hf : ContDiff ℝ 2 f)
-    (u₀ : EuclideanRealSpace d → ℝ) (hu₀ : Measurable u₀) {M : ℝ} (hM : 0 ≤ M)
+    (u₀ : EuclideanRealSpace d → ℝ) (hu₀ : Measurable u₀) {M : ℝ}
     (hbound : ∀ᵐ x ∂volume, |u₀ x| ≤ M) :
     ∃ u, IsKruzhkovSolution f u₀ u ∧ HasLocalInitialTrace u₀ u ∧
       ∀ᵐ z ∂(volume : Measure (ℝ × EuclideanRealSpace d)).restrict
         (Set.Ioi 0 ×ˢ Set.univ), |u z.1 z.2| ≤ M := by
-  sorry
+  haveI : NeZero (volume : Measure (EuclideanRealSpace d)) := by
+    refine ⟨fun hμ => ?_⟩
+    have hpos := Metric.measure_ball_pos (volume : Measure (EuclideanRealSpace d))
+      (0 : EuclideanRealSpace d) one_pos
+    rw [hμ] at hpos
+    simp at hpos
+  by_cases hM : 0 ≤ M
+  · sorry
+  · obtain ⟨x, hx⟩ := hbound.exists
+    exact absurd ((abs_nonneg (u₀ x)).trans hx) hM
 
 /-- Uniqueness for the same bounded initial datum. -/
 theorem kruzhkov_unique {d : ℕ} (f : ℝ → EuclideanRealSpace d) (hf : ContDiff ℝ 2 f)
@@ -90,18 +105,21 @@ theorem kruzhkov_unique {d : ℕ} (f : ℝ → EuclideanRealSpace d) (hf : ContD
   sorry
 
 /-- The Euclidean Legendre transform of a finite Hamiltonian. -/
+@[expose]
 def hamiltonianLegendre {d : ℕ} (H : EuclideanRealSpace d → ℝ)
     (v : EuclideanRealSpace d) : EReal :=
   ⨆ p : EuclideanRealSpace d, ((⟪p, v⟫_ℝ - H p : ℝ) : EReal)
 
 /-- The Euclidean Hamiltonian Hopf–Lax infimum, retaining extended values until coercivity
 proves it finite. -/
+@[expose]
 def hopfLaxHamiltonian {d : ℕ} (H v₀ : EuclideanRealSpace d → ℝ)
     (t : ℝ) (x : EuclideanRealSpace d) : EReal :=
   ⨅ y : EuclideanRealSpace d,
     (v₀ y : EReal) + (t : EReal) * hamiltonianLegendre H (t⁻¹ • (x - y))
 
 /-- First-order viscosity tests for the Euclidean Hamilton–Jacobi equation. -/
+@[expose]
 def IsHamiltonJacobiViscositySolution {d : ℕ} (H : EuclideanRealSpace d → ℝ)
     (v : ℝ × EuclideanRealSpace d → ℝ) : Prop :=
   ContinuousOn v (Set.Ioi (0 : ℝ) ×ˢ Set.univ) ∧

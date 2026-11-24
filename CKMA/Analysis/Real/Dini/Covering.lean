@@ -31,7 +31,7 @@ The sets need not be measurable. Source: GAPS 05.10.
   right increments are available.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

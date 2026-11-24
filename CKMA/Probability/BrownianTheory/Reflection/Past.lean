@@ -25,7 +25,7 @@ of a level or by its reflected down-crossing.
   conditioned on the first grid visit at index `k`.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -39,6 +39,7 @@ variable {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsProbabilityMeasu
 namespace Brownian
 
 /-- The path stopped at time `s`. -/
+@[expose]
 def past (C : ℝ≥0 → Ω → ℝ) (s : ℝ≥0) (ω : Ω) : Iic s → ℝ :=
   fun u => C u ω
 
@@ -48,6 +49,7 @@ private lemma measurable_past {C : ℝ≥0 → Ω → ℝ} (hm : ∀ u, Measurab
   Measurable.of_eval fun u => hm u
 
 /-- Grid time `j` viewed as a time at most grid time `k`. -/
+@[expose]
 def gridCast {t : ℝ≥0} {n : ℕ} {j k : ℕ} (hjk : j ≤ k) : Iic (grid t n k) :=
   ⟨grid t n j, grid_mono hjk⟩
 
@@ -56,6 +58,7 @@ private lemma coe_gridCast {t : ℝ≥0} {n j k : ℕ} (hjk : j ≤ k) :
     (gridCast (t := t) (n := n) hjk : ℝ≥0) = grid t n j := rfl
 
 /-- Paths whose first grid visit to level `b` is at index `k`. -/
+@[expose]
 def firstPassage (t : ℝ≥0) (b : ℝ) (n k : ℕ) : Set (Iic (grid t n k) → ℝ) :=
   {y | b ≤ y ⟨grid t n k, le_rfl⟩ ∧ ∀ j (hj : j < k), y (gridCast (le_of_lt hj)) < b}
 

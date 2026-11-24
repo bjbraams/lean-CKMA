@@ -33,7 +33,7 @@ in `CKMA.Analysis.Inequalities.ClassicalSequences`. Source: GAPS 11.9.
   nonnegative multiset.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -44,6 +44,7 @@ open Finset Real
 open scoped BigOperators
 
 /-- The elementary symmetric mean `e_k / choose(n,k)` of a finite real tuple. -/
+@[expose]
 def normalizedElementaryMean {n : ℕ} (x : Fin n → ℝ) (k : ℕ) : ℝ :=
   (Finset.univ.val.map x).esymm k / (n.choose k : ℝ)
 
@@ -107,6 +108,7 @@ private theorem esymm_eq_zero_of_le {s : Multiset ℝ} (hs : ∀ x ∈ s, 0 ≤ 
         · simp [ih hs' hk0 hm']
 
 /-- Normalized elementary symmetric mean of a multiset, `e_k / choose(card, k)`. -/
+@[expose]
 def esymmMean (s : Multiset ℝ) (k : ℕ) : ℝ :=
   s.esymm k / (s.card.choose k : ℝ)
 

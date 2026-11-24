@@ -32,7 +32,7 @@ Sources: GAPS 37.4, 37.8 and 37.21.
 * `CKMA.planar_besicovitch_federer` (**37.21**): the planar Besicovitch–Federer projection theorem.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -43,6 +43,7 @@ open scoped ENNReal NNReal MeasureTheory
 
 /-- Frostman ball growth. Finiteness of the measure and positivity of the exponent
 and constant are separate hypotheses of the existence theorem. -/
+@[expose]
 def HasFrostmanBound {E : Type*} [MetricSpace E] [MeasurableSpace E]
     (μ : Measure E) (s C : ℝ) : Prop :=
   ∀ (x : E) (r : ℝ), 0 < r → μ (Metric.ball x r) ≤ ENNReal.ofReal (C * r ^ s)
@@ -58,6 +59,7 @@ theorem frostman_compact {d : ℕ} {s : ℝ} (hs : 0 < s)
   sorry
 
 /-- Orthogonal scalar coordinate projection of the Euclidean plane at angle theta. -/
+@[expose]
 def planarProjection (θ : ℝ) (x : EuclideanSpace ℝ (Fin 2)) : ℝ :=
   Real.cos θ * x 0 + Real.sin θ * x 1
 
@@ -68,6 +70,7 @@ theorem planar_projection_dimension {A : Set (EuclideanSpace ℝ (Fin 2))} (hA :
   sorry
 
 /-- Pure one-unrectifiability in the plane, tested against all Lipschitz curves. -/
+@[expose]
 def IsPurelyOneUnrectifiable (A : Set (EuclideanSpace ℝ (Fin 2))) : Prop :=
   ∀ (L : ℝ≥0) (f : ℝ → EuclideanSpace ℝ (Fin 2)), LipschitzWith L f →
     Measure.hausdorffMeasure 1 (A ∩ Set.range f) = 0

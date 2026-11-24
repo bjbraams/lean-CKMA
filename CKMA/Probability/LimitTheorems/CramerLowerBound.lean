@@ -504,7 +504,7 @@ private lemma cgf_restrict_mono (ρ : Measure ℝ) [IsFiniteMeasure ρ] {M M' : 
   refine Real.log_le_log (mgf_pos' hν (integrable_exp_restrict ρ M t)) ?_
   exact setIntegral_mono_set (integrable_exp_restrict ρ M' t)
     (Eventually.of_forall fun _ ↦ (Real.exp_pos _).le)
-    (Icc_subset_Icc (neg_le_neg h) h).eventuallyLE
+    (ae_of_all ρ (Icc_subset_Icc (neg_le_neg h) h))
 
 /-- Truncated cumulant generating functions are nonpositive at the origin. -/
 private lemma cgf_restrict_zero_nonpos (ρ : Measure ℝ) [IsProbabilityMeasure ρ] (M : ℝ) :

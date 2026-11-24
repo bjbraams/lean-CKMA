@@ -5,8 +5,8 @@ and their stable SYNOPSIS identifiers. [FORMALIZATION.md](FORMALIZATION.md) and
 [formalization.json](formalization.json) record the exact scope, representative
 conventions and audited proof status of the local declarations.
 
-The compiled library uses Mathlib `1b1ccf4b088b32fa3f23f2de1127433254a81e1e`,
-TauCeti `396c3bd971e9722aa8656231760e710fe641d8cf` and Lean `v4.36.0-rc2`.
+The compiled library uses Mathlib `fc4f59e577feb1a4956671bc04ac18aaaf8cd842`,
+TauCeti `d91980bdc255e6e50506be147ad9bcb88eb9fcc0` and Lean `v4.36.0`.
 The coverage inventories retain their separate source baselines. The toolchain and
 manifest setup derives from the sibling `lean-DLMF` project; its additional
 project-specific dependencies are not part of this library. Sources use the
@@ -43,6 +43,14 @@ local identifications and proof ingredients include:
   conventions specified in the mathematical module headers.
 - Ordered summability is `Summable` along `SummationFilter.conditional`. On `ℕ`
   that filter is the limit of sums over `Finset.range`.
+- Watson's lemma uses Mathlib's Gamma integral, its power-rescaling formula, and
+  integrability of exponentially weighted functions with an exponential bound.
+  The interior Laplace asymptotic uses Mathlib's second-order Taylor limit,
+  dominated convergence, and Gaussian integral.
+- The Browder–Göhde–Kirk proof applies
+  `exists_forall_closed_ball_dist_add_le_two_sub` to pairs of approximate centers of an orbit.
+  Newtonian capacity uses `IsCompact.elim_directed_family_closed` for continuity from
+  above on compact sets.
 
 ## TauCeti interfaces and proof provenance
 
@@ -51,8 +59,8 @@ contributors in `TauCeti/Analysis/Fredholm/CompactPerturbation.lean`, using its
 compact-perturbation theorem and the finite-rank compactness API. The proof is
 uniform over real or complex scalars. The arbitrary-pairing bipolar proof transports
 `StrongDual.bipolar_eq_closedAbsConvexHull` through Mathlib's
-`LinearMap.dualEmbedding_surjective`. The Kato–Rellich corollary uses TauCeti's
-self-adjointness theorem with an explicitly admitted local core prerequisite.
+`LinearMap.dualEmbedding_surjective`. The Kato–Rellich corollary combines TauCeti's
+self-adjointness theorem with the local graph-norm comparison for cores.
 
 Other imported infrastructure includes:
 
@@ -62,11 +70,48 @@ Other imported infrastructure includes:
   Hilbert–Schmidt operators and normal-operator interfaces.
 - Real and complex strongly continuous semigroups, growth bounds and generators.
   The imported semigroup sources credit mrdouglasny/hille-yosida.
+  The Trotter–Kato proof uses the generator resolvent's Laplace representation and
+  Hille–Yosida bound, and compares orbits through TauCeti's inhomogeneous Cauchy
+  problem and Duhamel formula.
+- The real Grothendieck inequality uses `Matrix.abs_sum_sum_mul_inner_le_eight_mul`
+  from `TauCeti/Analysis/Matrix/Grothendieck.lean`.
+- The forward implication of Kwapień's theorem uses the Hilbert-space type and cotype
+  lemmas and their transport across continuous linear equivalences in
+  `TauCeti/Analysis/Normed/Module/RademacherSum/TypeCotype.lean`.
+- Prescribed holomorphic zero divisors use the elementary Weierstrass factors in
+  `TauCeti/Analysis/Complex/CanonicalProduct/ElementaryFactor.lean` and the locally uniform
+  product and analytic-order theorems in `TauCeti/Analysis/Complex/InfiniteProd.lean`.
 - Empirical probability measures from `Probability.Process.EmpiricalMeasure`;
   countable projective limits from `MeasureTheory.Measure.ProjectiveLimit.Countable`.
 - Weak derivatives and the actual `W1p` value/gradient projections; total variation,
   perimeter, maximal functions, the Euclidean fundamental solution and Perron envelopes.
 - Polydisc Cauchy integration and the analytic interfaces identified in the imports.
+- Weierstrass preparation and division combine the existence theorems in
+  `TauCeti/Analysis/Complex/Weierstrass.lean` with germ uniqueness from
+  `TauCeti/Geometry/Manifold/Complex/StructureSheaf/Weierstrass.lean`.
+- Runge approximation uses TauCeti's `IsCompact.exists_norm_sub_sum_mul_sub_inv_smul_le`
+  and adapts the spectral argument in `TauCeti/Analysis/Complex/Runge/SimpleFraction.lean`.
+  Mathlib's `Subalgebra.spectrum_sUnion_connectedComponentIn` and
+  `Subalgebra.spectrum_isBounded_connectedComponentIn` control the poles.
+- Mittag–Leffler uses `TauCeti.exists_meromorphic_principalPart_eq` and
+  `TauCeti.hasPrescribedSingularities_eval_inv_sub_iff` after identifying the local finiteness
+  condition with a codiscrete complement within the domain.
+- Abelian Haar amenability averages the translates of normalized integration over a compact
+  neighborhood. The proof uses `Amenable.of_commGroup`,
+  `amenable_iff_exists_boundedContinuousFunction_mean`, `Set.setIntegralLp`, and
+  `PositiveLinearMap.continuous_lpTop` from TauCeti.
+- Pietsch domination uses the two implications in
+  `TauCeti/Analysis/Normed/Operator/AbsolutelySumming/Pietsch.lean`.
+  Mathlib's `borel_comap` identifies the measurable-space presentations of the dual unit ball.
+- The wave existence proof uses Mathlib's Lax–Milgram theorem for the resolvent and
+  TauCeti's Hilbert-space generation, bounded perturbation and Duhamel theorems for the
+  phase-space trajectory.
+- `exists_fixedPoint_schauder` is `TauCeti.schauderFixedPoint_closedConvex`.
+  `exists_fixedPoint_brouwer` is `TauCeti.brouwerFixedPoint_compactConvex`.
+- The squared `L²` identity used for Nash's inequality is
+  `MeasureTheory.Lp.integral_norm_sq_eq_norm_sq`.
+- `weierstrassFactor_eq_complex` identifies the genus-`p` factor with
+  `Complex.weierstrassFactor`.
 
 Imported prerequisites are not counted as completed local targets merely because
 their names exist. The axiom audit includes all transitive dependencies. Local
@@ -232,6 +277,63 @@ Other proof ingredients include:
   `NormedSpace.exp_eq_tsum_div`. Gauss regular singularities use explicit analytic
   regularizations. Koebe sharpness uses the quotient derivative, injectivity
   factorization and the omitted point `-1/4`, without the quarter theorem itself.
+- Unique continuous solvability of a second-kind Volterra equation extends the
+  continuous triangular kernel by `ContinuousMap.exists_restrict_eq`. Each iterate
+  has Lipschitz constant `(‖c‖ M T)^n / n!` by `integral_pow`, and
+  `ContractingWith.isFixedPt_fixedPoint_iterate` supplies the fixed point. For
+  `T < 0` the time interval is empty.
+- The weighted monomial norm on the disk is the Beta integral in polar coordinates.
+  `Complex.betaIntegral` and `Complex.Gamma_mul_Gamma_eq_betaIntegral` identify
+  `∫₀¹ xⁿ (1 - x)^α` for `α > -1`, and `Complex.integral_comp_polarCoord_symm`
+  with `MeasureTheory.integral_comp_rpow_Ioi_of_pos` converts the area integral.
+  `Real.rpow` of a nonpositive base is zero; the radial integral runs over `(0, 1)`.
+  Circular Fourier coefficients are Cauchy's formula
+  `DifferentiableOn.circleIntegral_one_div_sub_center_pow_smul`. The kernel series
+  is `one_div_one_sub_cpow_hasFPowerSeriesOnBall_zero`, with coefficients from
+  `Complex.Gamma_add_nat_div_Gamma_eq`, matched to Taylor coefficients by
+  `taylorSeries_eq_on_ball'`. Closedness uses locally uniform convergence on the
+  disk and `tendstoInMeasure_of_tendsto_Lp`. The orthogonal projection is
+  `Submodule.starProjection`; the constants lie in the subspace, so its norm is `1`.
+- The polynomial escape rate is a uniform limit of continuous approximants. Outside
+  an escape radius the orbit grows at least geometrically, the successive
+  logarithms form a Cauchy sequence by `cauchySeq_of_dist_le_of_summable` and a
+  real geometric series, and `continuous_of_uniform_approx_of_continuous` gives
+  continuity. Logarithms are applied only to `max 1 ‖·‖`. An attracting periodic
+  point is interior to the filled set by local contraction of the return map; the
+  degree is not used.
+- Euler–Maclaurin summation with an exact periodic remainder is the scalar
+  even-order case of `TauCeti.sum_Icc_eq_eulerMaclaurin_of_hasDerivAt`, rewritten
+  with Mathlib's `periodizedBernoulli` and `iteratedDeriv`.
+- The sharp Markov bound is attained by the Chebyshev polynomial `T ℝ n`, using
+  `Polynomial.Chebyshev.abs_iterate_derivative_T_real_le` and `T_derivative_eq_U`.
+- The Mittag–Leffler series `E_{α,β}` is entire by
+  `FormalMultilinearSeries.ofScalars_radius_eq_top_of_tendsto` and
+  `FormalMultilinearSeries.ofScalars_sum_eq`. The coefficient growth uses TauCeti's
+  `TauCeti.abs_log_norm_Gamma_sub_stirling_le`. The Airy initial series is majorized
+  by `Real.summable_pow_div_factorial` and differentiated by
+  `hasDerivAt_tsum_of_isPreconnected`. The differentiated series satisfies Airy's
+  equation by the coefficient recurrence.
+- The classical Aleksandrov–Bakelman–Pucci bound is
+  `TauCeti.PDE.le_add_mul_eLpNorm_negPart_div_det_rpow`. The coefficient is
+  replaced by `TauCeti.PDE.coefficientSymmetricPart`; positive-definiteness and
+  the determinant bound are `TauCeti.PDE.UniformlyEllipticOn.posDef` and
+  `TauCeti.PDE.UniformlyEllipticOn.pow_card_le_det`. The contraction identity is
+  `TauCeti.PDE.sum_coefficientSymmetricPart_mul_fderiv_fderiv`.
+- The classical Krylov–Safonov Hölder estimate is
+  `TauCeti.PDE.exists_holderOnWith_of_sum_mul_fderiv_fderiv_eq`, with exponent
+  half the TauCeti exponent. The Harnack inequality chains
+  `TauCeti.PDE.exists_eLpNorm_le_mul_rpow_mul_add_eLpNorm_posPart` on balls of
+  radius `1/2` with `TauCeti.PDE.exists_le_mul_rpow_mul_eLpNorm_posPart_add` on
+  the ball of radius `(1/2)/(16√d)`, across sixteen steps in `ball 0 1`.
+  Measurability of the coefficient is not used.
+- Cohen–Hewitt factorization uses Mathlib's sum-norm unitization
+  `WithLp 1 (Unitization 𝕜 A)`, the Neumann series `Units.oneSub` and
+  `tsum_geometric_le_of_norm_lt_one`, and `cauchySeq_of_le_geometric`. It does
+  not require a regular norm.
+- A compact group is amenable because the normalized Haar integral is a
+  left-invariant mean. Left invariance is `MeasureTheory.map_mul_left_eq_self`
+  and `Topology.IsClosedEmbedding.integral_map`. Hausdorff separation is not
+  required.
 
 The extended-real Ekeland principle reduces to the Tau Ceti contributors' real-valued
 `LowerSemicontinuous.exists_add_mul_dist_le_and_lt_add_mul_dist` in
@@ -247,8 +349,9 @@ Abel inversion uses TauCeti's beta integral `integral_rpow_mul_one_sub_rpow`, Fu
 triangle, and Mathlib's fundamental theorem for absolutely continuous functions.
 The polydisc coefficient bound uses Mathlib's `norm_torusIntegral_le_of_norm_le_const`
 and TauCeti's `torusMap_mem_pi_sphere`, with explicit normalization cancellation.
-The full-polydisc series and the Weierstrass theorem use TauCeti's
-`DifferentiableOn.torusIntegral_prod_sub_inv_smul`.
+The full-polydisc series uses TauCeti's
+`DifferentiableOn.torusIntegral_prod_sub_inv_smul`. The Weierstrass theorem on a ball uses
+TauCeti's `TendstoUniformlyOn.differentiableOn`.
 Koenigs linearization uses Mathlib's locally uniform limit of holomorphic functions and the
 analytic inverse-function theorem. Böttcher's coordinate uses `Complex.log` near one and the
 same locally uniform sum.

@@ -32,10 +32,10 @@ Source: GAPS 45.2.
 * `CKMA.norm_polydiscTaylorCoefficient_le`: Cauchy's estimate for multiindex Taylor coefficients.
 * `CKMA.polydisc_taylor`: normally convergent Taylor expansion on an open polydisc.
 * `CKMA.differentiableOn_of_locallyUniformLimit`: Weierstrass theorem for locally uniform limits
-  of holomorphic functions on open subsets of `ℂⁿ`.
+  of holomorphic maps on an open subset of a complex normed space.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -45,14 +45,17 @@ open Complex Filter MeasureTheory Metric Real Set Topology
 open scoped BigOperators
 
 /-- An open polydisc with unequal polyradii. -/
+@[expose]
 def polydisc {n : ℕ} (c : Fin n → ℂ) (R : Fin n → ℝ) : Set (Fin n → ℂ) :=
   {z | ∀ j, ‖z j - c j‖ < R j}
 
 /-- A closed polydisc with unequal polyradii. -/
+@[expose]
 def closedPolydisc {n : ℕ} (c : Fin n → ℂ) (R : Fin n → ℝ) : Set (Fin n → ℂ) :=
   {z | ∀ j, ‖z j - c j‖ ≤ R j}
 
 /-- Multivariable Cauchy coefficients on the distinguished boundary. -/
+@[expose]
 def polydiscTaylorCoefficient {n : ℕ} (f : (Fin n → ℂ) → ℂ)
     (c : Fin n → ℂ) (R : Fin n → ℝ) (α : Fin n → ℕ) : ℂ :=
   (2 * Real.pi * Complex.I) ^ (-(n : ℤ)) *
@@ -597,22 +600,21 @@ theorem polydisc_taylor {n : ℕ} (f : (Fin n → ℂ) → ℂ)
   ⟨fun z hz ↦ hasSum_polydiscTaylor_of_mem f c R hR hsub hf hz,
     normallySummableOn_polydiscTaylor f c R hR hsub hf⟩
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
+variable {V E : Type*} [NormedAddCommGroup V] [NormedSpace ℂ V]
+  [NormedAddCommGroup E] [NormedSpace ℂ E]
 
-/-- The several-variable Weierstrass theorem on open subsets of `ℂⁿ`: a locally uniform limit of
-holomorphic functions is holomorphic. This is TauCeti's `TendstoUniformlyOn.differentiableOn`
-applied on small balls, whose closures are compact. -/
-theorem differentiableOn_of_locallyUniformLimit [CompleteSpace E] {n : ℕ}
-    {F : ℕ → (Fin n → ℂ) → E} {f : (Fin n → ℂ) → E} {U : Set (Fin n → ℂ)}
-    (hU : IsOpen U) (hF : ∀ k, DifferentiableOn ℂ (F k) U)
-    (hlim : TendstoLocallyUniformlyOn F f atTop U) : DifferentiableOn ℂ f U := by
+/-- A locally uniform limit of holomorphic maps on a subset of a complex normed space is
+holomorphic. At each point the hypothesis supplies a ball, contained in the set, on which the
+convergence is uniform, and TauCeti's `TendstoUniformlyOn.differentiableOn` applies there. -/
+theorem differentiableOn_of_locallyUniformLimit [CompleteSpace E]
+    {F : ℕ → V → E} {f : V → E} {U : Set V}
+    (hF : ∀ k, DifferentiableOn ℂ (F k) U)
+    (hlim : ∀ z ∈ U, ∃ R > 0, ball z R ⊆ U ∧ TendstoUniformlyOn F f atTop (ball z R)) :
+    DifferentiableOn ℂ f U := by
   intro z hz
-  obtain ⟨R, hR, hRs⟩ := nhds_basis_closedBall.mem_iff.1 (hU.mem_nhds hz)
-  have hunif : TendstoUniformlyOn F f atTop (ball z R) :=
-    ((tendstoLocallyUniformlyOn_iff_tendstoUniformlyOn_of_compact (isCompact_closedBall z R)).1
-      (hlim.mono hRs)).mono ball_subset_closedBall
-  have hd : DifferentiableOn ℂ f (ball z R) := hunif.differentiableOn
-    (Eventually.of_forall fun k ↦ (hF k).mono (ball_subset_closedBall.trans hRs)) isOpen_ball
+  obtain ⟨R, hR, hsub, hunif⟩ := hlim z hz
+  have hd : DifferentiableOn ℂ f (ball z R) :=
+    hunif.differentiableOn (Eventually.of_forall fun k => (hF k).mono hsub) isOpen_ball
   exact (hd.differentiableAt (ball_mem_nhds z hR)).differentiableWithinAt
 
 end CKMA

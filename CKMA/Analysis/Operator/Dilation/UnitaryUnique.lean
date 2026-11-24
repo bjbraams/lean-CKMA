@@ -34,7 +34,7 @@ Sz.-Nagy–Foiaş–Bercovici–Kérchy, Chapter I.
 These assemble to `CKMA.minimalUnitaryPowerDilation_unique` in `CKMA.Analysis.Operator.Dilation`.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -71,10 +71,12 @@ private theorem linearIsometryEquiv_zpow_negSucc (U : K ≃ₗᵢ[ℂ] K) (n : �
 variable {H : Type u} [NormedAddCommGroup H] [InnerProductSpace ℂ H]
 
 /-- The two-sided orbit vector indexed by a time and a vector of `H`. -/
+@[expose]
 def unitaryOrbitVec (U : K ≃ₗᵢ[ℂ] K) (J : H →ₗᵢ[ℂ] K) (p : ℤ × H) : K :=
   (U ^ p.1) (J p.2)
 
 /-- Finite linear combinations of two-sided orbit vectors. -/
+@[expose]
 def unitaryOrbit (U : K ≃ₗᵢ[ℂ] K) (J : H →ₗᵢ[ℂ] K) :
     ((ℤ × H) →₀ ℂ) →ₗ[ℂ] K :=
   Finsupp.linearCombination ℂ (unitaryOrbitVec U J)
@@ -85,6 +87,7 @@ private theorem unitaryOrbit_single (U : K ≃ₗᵢ[ℂ] K) (J : H →ₗᵢ[�
   rw [unitaryOrbit, Finsupp.linearCombination_single]
 
 /-- Shift every time index of a finitely supported coefficient by one. -/
+@[expose]
 def unitaryOrbitShift (c : (ℤ × H) →₀ ℂ) : (ℤ × H) →₀ ℂ :=
   c.mapDomain (fun p => (p.1 + 1, p.2))
 
@@ -280,6 +283,7 @@ theorem denseRange_unitaryOrbit (U : K ≃ₗᵢ[ℂ] K) (J : H →ₗᵢ[ℂ] K
 
 /-- The linear isometry sending each orbit combination to the combination for the second
 dilation. -/
+@[expose]
 def unitaryDilationIsometry (T : H →L[ℂ] H)
     (J : H →ₗᵢ[ℂ] K) (U : K ≃ₗᵢ[ℂ] K)
     (hpow : ∀ n : ℕ, ∀ x : H,
@@ -334,6 +338,7 @@ theorem unitaryDilationIsometry_surjective (T : H →L[ℂ] H)
   exact hc.closure_eq.symm.trans hd.closure_eq
 
 /-- The unitary sending one minimal unitary power dilation onto the other. -/
+@[expose]
 def unitaryDilationEquiv (T : H →L[ℂ] H)
     (J : H →ₗᵢ[ℂ] K) (U : K ≃ₗᵢ[ℂ] K)
     (hpow : ∀ n : ℕ, ∀ x : H,

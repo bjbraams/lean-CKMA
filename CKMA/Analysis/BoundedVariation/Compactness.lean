@@ -20,7 +20,8 @@ expresses total variation through perimeters of superlevel sets, retaining infin
 Variation, perimeter and their lower semicontinuity are the objects of TauCeti's
 `Analysis.BoundedVariation.TotalVariation` and `Perimeter` modules.
 The coarea identity is `TauCeti.totalVariationOn_eq_lintegral_perimeter`.
-Whole-space compactness uses `TauCeti.totallyBounded_of_integrable_totalVariationOn_le`,
+Whole-space compactness uses
+`TauCeti.totallyBounded_of_lintegral_le_of_totalVariationOn_le`,
 and the variation bound on the limit is `TauCeti.totalVariationOn_le_liminf`.
 Sources: GAPS 37.24 and 37.30.
 
@@ -37,7 +38,7 @@ Sources: GAPS 37.24 and 37.30.
 * `CKMA.bv_coarea`: Fleming–Rishel coarea formula for BV functions.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -47,11 +48,13 @@ open MeasureTheory Filter Topology TopologicalSpace Set
 open scoped ENNReal
 
 /-- Integrable functions of finite variation, using TauCeti's actual distributional variation. -/
+@[expose]
 def IsBVFunctionOn {d : ℕ} (Ω : Opens (EuclideanSpace ℝ (Fin d)))
     (u : EuclideanSpace ℝ (Fin d) → ℝ) : Prop :=
   IntegrableOn u Ω ∧ TauCeti.totalVariationOn volume Ω u < ∞
 
 /-- The extended L1-plus-variation bound; no representative quotient or norm instance is assumed. -/
+@[expose]
 def bvSizeOn {d : ℕ} (Ω : Opens (EuclideanSpace ℝ (Fin d)))
     (u : EuclideanSpace ℝ (Fin d) → ℝ) : ℝ≥0∞ :=
   eLpNorm u 1 (volume.restrict Ω) + TauCeti.totalVariationOn volume Ω u
@@ -76,7 +79,7 @@ theorem bv_compactness_of_compact_support {d : ℕ}
       TauCeti.totalVariationOn volume ⊤ v ≤
         liminf (fun n ↦ TauCeti.totalVariationOn volume ⊤ (u (r n))) atTop := by
   -- Representatives supported on `K` have the same `L¹` class and the same variation, so
-  -- `TauCeti.totallyBounded_of_integrable_totalVariationOn_le` applies on the whole space.
+  -- `TauCeti.totallyBounded_of_lintegral_le_of_totalVariationOn_le` applies on the whole space.
   let u' : ℕ → EuclideanSpace ℝ (Fin d) → ℝ := fun n => K.indicator (u n)
   have hKm : MeasurableSet K := hK.isClosed.measurableSet
   have hae (n : ℕ) : u n =ᵐ[volume] u' n := by
@@ -111,22 +114,34 @@ theorem bv_compactness_of_compact_support {d : ℕ}
           rw [bvSizeOn, Opens.coe_top, Measure.restrict_univ]
           exact le_self_add
       _ ≤ C := hb n
-  have hTB := TauCeti.totallyBounded_of_integrable_totalVariationOn_le
-    (F := id) (S := range u') (L := K) (μ := volume) (M := C) (B := C)
-    hK.isBounded hC hC
-    (fun w hw x hx => by
-      obtain ⟨n, rfl⟩ := hw
-      exact indicator_of_notMem hx (u n))
-    (fun w hw => by
-      obtain ⟨n, rfl⟩ := hw
-      exact hint' n)
-    (fun w hw => by
-      obtain ⟨n, rfl⟩ := hw
-      exact hnorm n)
-    (fun w hw => by
-      obtain ⟨n, rfl⟩ := hw
-      exact hvar' n)
   let S : Set (Lp ℝ 1 volume) := {f | ∃ w ∈ range u', f =ᵐ[volume] w}
+  have hTB : TotallyBounded S :=
+    TauCeti.totallyBounded_of_lintegral_le_of_totalVariationOn_le
+      (S := S) (L := K) (M := C) (B := C) hK.isBounded hC hC
+      (fun f hf => by
+        obtain ⟨w, hw, hfw⟩ := hf
+        obtain ⟨n, rfl⟩ := hw
+        filter_upwards [hfw] with x hx
+        intro hxK
+        rw [hx]
+        exact indicator_of_notMem hxK (u n))
+      (fun f hf => by
+        obtain ⟨w, hw, hfw⟩ := hf
+        obtain ⟨n, rfl⟩ := hw
+        have hcongr : (fun x => ‖f x‖ₑ) =ᵐ[volume] fun x => ‖u' n x‖ₑ := by
+          filter_upwards [hfw] with x hx
+          rw [hx]
+        calc
+          ∫⁻ x, ‖f x‖ₑ ∂volume = ∫⁻ x, ‖u' n x‖ₑ ∂volume := lintegral_congr_ae hcongr
+          _ ≤ C := hnorm n)
+      (fun f hf => by
+        obtain ⟨w, hw, hfw⟩ := hf
+        obtain ⟨n, rfl⟩ := hw
+        rw [TauCeti.totalVariationOn_congr_ae (Ω := ⊤) (μ := volume)
+          (u := f) (v := u' n) ?_]
+        · exact hvar' n
+        · simp only [Opens.coe_top, Measure.restrict_univ]
+          exact hfw)
   have hcompact : IsCompact (closure S) := hTB.closure.isCompact_of_isClosed isClosed_closure
   let x : ℕ → Lp ℝ 1 volume := fun n => (hmem n).toLp (u' n)
   have hx (n : ℕ) : x n ∈ closure S :=

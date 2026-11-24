@@ -25,7 +25,7 @@ follow by replacing `Mᵢ` with `Mᵢ + ε` and passing to the limit, in
   endpoint bounds `M₀, M₁ > 0`.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

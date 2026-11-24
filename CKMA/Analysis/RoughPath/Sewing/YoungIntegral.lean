@@ -27,7 +27,7 @@ theorem is `CKMA.young_variation` in `CKMA.Analysis.RoughPath.Sewing`.
   the Young limit.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

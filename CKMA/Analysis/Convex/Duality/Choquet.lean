@@ -30,7 +30,7 @@ the Riesz measure of a positive extension is the representing measure.
   convex sets (GAPS 12.9).
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

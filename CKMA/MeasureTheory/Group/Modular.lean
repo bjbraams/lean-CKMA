@@ -31,7 +31,7 @@ every Haar measure is regular, by Mathlib's instance
   modular character.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

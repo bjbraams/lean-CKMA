@@ -47,7 +47,7 @@ bounded linear maps.
   series for the canonical dual frame (**29.3**).
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -59,22 +59,27 @@ variable {𝕜 H ι : Type*} [RCLike 𝕜] [NormedAddCommGroup H]
     [InnerProductSpace 𝕜 H] [CompleteSpace H]
 
 /-- The nonnegative coefficient energy, allowing infinite sums over arbitrary index types. -/
+@[expose]
 def frameEnergy (f : ι → H) (x : H) : ℝ≥0∞ := ∑' i, ENNReal.ofReal (‖⟪f i, x⟫_𝕜‖ ^ 2)
 
 /-- The Bessel upper bound. -/
+@[expose]
 def IsBesselSequence (f : ι → H) (B : ℝ) : Prop :=
   0 ≤ B ∧ ∀ x, frameEnergy (𝕜 := 𝕜) f x ≤ ENNReal.ofReal (B * ‖x‖ ^ 2)
 
 /-- A Hilbert frame with explicit positive lower and finite upper bounds. -/
+@[expose]
 def IsFrameWithBounds (f : ι → H) (A B : ℝ) : Prop :=
   0 < A ∧ A ≤ B ∧ ∀ x, ENNReal.ofReal (A * ‖x‖ ^ 2) ≤ frameEnergy (𝕜 := 𝕜) f x ∧
     frameEnergy (𝕜 := 𝕜) f x ≤ ENNReal.ofReal (B * ‖x‖ ^ 2)
 
 /-- A frame admits some positive lower and finite upper bound. -/
+@[expose]
 def IsFrame (f : ι → H) : Prop := ∃ A B, IsFrameWithBounds (𝕜 := 𝕜) f A B
 
 /-- A bounded operator is the analysis operator of `f` when its coordinates are the inner
 products. -/
+@[expose]
 def IsFrameAnalysis (f : ι → H) (C : H →L[𝕜] lp (fun _ : ι ↦ 𝕜) 2) : Prop :=
   ∀ x i, C x i = ⟪f i, x⟫_𝕜
 
@@ -144,6 +149,7 @@ theorem IsBesselSequence.exists_analysis {f : ι → H} {B : ℝ} (hf : IsBessel
   exact ⟨L.mkContinuous (Real.sqrt B) hbound, fun _ _ ↦ rfl⟩
 
 /-- The frame operator is analysis followed by synthesis. -/
+@[expose]
 def frameOperatorOfAnalysis (C : H →L[𝕜] lp (fun _ : ι ↦ 𝕜) 2) : H →L[𝕜] H := C.adjoint.comp C
 
 /-- Applying an invertible representative of the frame operator is synthesis of the analysis. -/
@@ -248,6 +254,7 @@ theorem IsFrameAnalysis.norm_le_sqrt {f : ι → H}
   simpa only [mul_pow, hs] using he
 
 /-- The canonical dual family for a supplied invertible frame operator. -/
+@[expose]
 def canonicalDualFrame (f : ι → H) (S : H ≃L[𝕜] H) : ι → H := fun i ↦ S.symm (f i)
 
 /-- The analysis of the canonical dual is analysis composed with the inverse frame operator. -/

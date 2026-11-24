@@ -22,8 +22,8 @@ smooth cutoffs and Fatou's lemma. The constant is the sharp constant `2` of `gau
 
 ## Main definitions
 
-* `CKMA.nonnegativeFunctionEntropy`: Extended entropy of a nonnegative function over a probability
-  measure, written with `InformationTheory.klFun`.
+* `CKMA.nonnegativeFunctionEntropy`: extended entropy
+  `ENNReal.ofReal (∫ h) * ∫⁻ klFun (h / ∫ h)`, with no integrability hypothesis.
 * `CKMA.oneDimCutoff`: Smooth cutoff equal to `1` on `[-R, R]` and `0` outside `[-R - 1, R + 1]`.
 
 ## Main results
@@ -34,7 +34,7 @@ smooth cutoffs and Fatou's lemma. The constant is the sharp constant `2` of `gau
   constant `2`.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -44,9 +44,11 @@ open GaussianLogSobolev
 open MeasureTheory ProbabilityTheory Set Filter InformationTheory
 open scoped NNReal ENNReal Real Topology
 
-/-- Nonnegative extended entropy of an integrable nonnegative function over a probability measure.
-Normalization uses Mathlib's nonnegative KL integrand, retaining infinite positive entropy.
-For positive mass this equals `∫ h log h - (∫ h) log (∫ h)`, and zero mass gives zero. -/
+/-- Extended entropy `ENNReal.ofReal (∫ h) * ∫⁻ klFun (h / ∫ h)`, with no integrability or
+probability hypothesis. The Bochner integral of a non-integrable function is `0`. Under the
+hypotheses of `nonnegativeFunctionEntropy_eq_ofReal`, this equals
+`ENNReal.ofReal (∫ h log h - (∫ h) log (∫ h))`. -/
+@[expose]
 def nonnegativeFunctionEntropy {E : Type*} [MeasurableSpace E]
     (μ : Measure E) (h : E → ℝ) : ℝ≥0∞ :=
   ENNReal.ofReal (∫ x, h x ∂μ) *
@@ -411,6 +413,7 @@ private lemma nonnegativeFunctionEntropy_sq_add_support_le {φ : ℝ → ℝ} {R
   exact ENNReal.ofReal_le_ofReal (by simpa [h, γ] using gaussian_realEntropy_sq_add_le hφ h0 hδ)
 
 /-- Smooth cutoff equal to `1` on `[-R, R]` and to `0` outside `[-R - 1, R + 1]`. -/
+@[expose]
 def oneDimCutoff (R x : ℝ) : ℝ :=
   Real.smoothTransition (R + 1 - x) * Real.smoothTransition (R + 1 + x)
 

@@ -5,7 +5,7 @@ Authors: CKMA contributors
 -/
 module
 
-public import CKMA.Dynamics.Flow
+public import CKMA.Dynamics.Flow.Basic
 public import Mathlib.Analysis.Calculus.ContDiff.Defs
 
 import Mathlib.Dynamics.OmegaLimit
@@ -36,7 +36,7 @@ rest set. Common flow, stability and invariant-subset definitions are in `CKMA.D
 * `CKMA.lasalle`: LaSalle's invariance principle on a compact positively invariant set.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -47,11 +47,12 @@ open Filter Metric Set Topology
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 /-- Derivative of `V` along the vector field. -/
+@[expose]
 def lyapunovDerivative (F : E → E) (V : E → ℝ) (x : E) : ℝ := fderiv ℝ V x (F x)
 
 /-- Chain rule for `V` along an orbit while the state lies in the ball of differentiability. -/
 private theorem hasDerivAt_comp_lyapunov_ball {ϕ : Flow ℝ E} {F : E → E} {V : E → ℝ} {x₀ x : E}
-    {r t : ℝ} (hflow : FlowHasGenerator ϕ F) (hV : ContDiffOn ℝ 1 V (ball x₀ r))
+    {r t : ℝ} (hflow : HasFlowGenerator ϕ F) (hV : ContDiffOn ℝ 1 V (ball x₀ r))
     (ht : ϕ t x ∈ ball x₀ r) :
     HasDerivAt (fun s ↦ V (ϕ s x)) (lyapunovDerivative F V (ϕ t x)) t := by
   have hFd : HasFDerivAt V (fderiv ℝ V (ϕ t x)) (ϕ t x) :=
@@ -60,7 +61,7 @@ private theorem hasDerivAt_comp_lyapunov_ball {ϕ : Flow ℝ E} {F : E → E} {V
 
 /-- Chain rule for `V` along an orbit when `V` is continuously differentiable on the whole space. -/
 private theorem hasDerivAt_comp_lyapunov {ϕ : Flow ℝ E} {F : E → E} {V : E → ℝ} {x : E} {t : ℝ}
-    (hflow : FlowHasGenerator ϕ F) (hV : ContDiff ℝ 1 V) :
+    (hflow : HasFlowGenerator ϕ F) (hV : ContDiff ℝ 1 V) :
     HasDerivAt (fun s ↦ V (ϕ s x)) (lyapunovDerivative F V (ϕ t x)) t := by
   have hFd : HasFDerivAt V (fderiv ℝ V (ϕ t x)) (ϕ t x) :=
     hV.differentiable_one.differentiableAt.hasFDerivAt
@@ -87,7 +88,7 @@ private theorem lyapunovDerivative_eq_zero_of_pos {F : E → E} {V : E → ℝ} 
 
 /-- On times whose orbit segment stays in the ball, nonpositive derivative makes `V` antitone. -/
 private theorem antitoneOn_comp_lyapunov_ball {ϕ : Flow ℝ E} {F : E → E} {V : E → ℝ} {x₀ x : E}
-    {r : ℝ} (hflow : FlowHasGenerator ϕ F) (hV : ContDiffOn ℝ 1 V (ball x₀ r))
+    {r : ℝ} (hflow : HasFlowGenerator ϕ F) (hV : ContDiffOn ℝ 1 V (ball x₀ r))
     (hdec : ∀ y ∈ ball x₀ r, lyapunovDerivative F V y ≤ 0) {D : Set ℝ} (hD : Convex ℝ D)
     (hstay : ∀ t ∈ D, ϕ t x ∈ ball x₀ r) : AntitoneOn (fun t ↦ V (ϕ t x)) D := by
   refine antitoneOn_of_deriv_nonpos hD ?_ ?_ ?_
@@ -102,7 +103,7 @@ private theorem antitoneOn_comp_lyapunov_ball {ϕ : Flow ℝ E} {F : E → E} {V
 
 /-- Global nonpositive Lyapunov derivative makes `V` antitone on any convex set of times. -/
 private theorem antitoneOn_comp_lyapunov {ϕ : Flow ℝ E} {F : E → E} {V : E → ℝ} {x : E}
-    (hflow : FlowHasGenerator ϕ F) (hV : ContDiff ℝ 1 V) {D : Set ℝ} (hD : Convex ℝ D)
+    (hflow : HasFlowGenerator ϕ F) (hV : ContDiff ℝ 1 V) {D : Set ℝ} (hD : Convex ℝ D)
     (hdec : ∀ t ∈ interior D, lyapunovDerivative F V (ϕ t x) ≤ 0) :
     AntitoneOn (fun t ↦ V (ϕ t x)) D := by
   refine antitoneOn_of_deriv_nonpos hD ?_ ?_ ?_
@@ -150,11 +151,70 @@ private theorem tendsto_atTop_of_antitoneOn_Ici {f : ℝ → ℝ} (hf : Antitone
     have hineq : (⨅ s, g s) ≤ g t := ciInf_le hg_bdd t
     rwa [show g t = f t from ite_eq_left ht] at hineq
 
+/-- First time a continuous orbit, starting inside the sphere, meets that sphere. -/
+private theorem exists_first_exit_time {ϕ : Flow ℝ E} {x x₀ : E} {eps t : ℝ}
+    (ht : 0 ≤ t) (hx : dist x x₀ < eps) (hge : eps ≤ dist (ϕ t x) x₀) :
+    ∃ T, 0 < T ∧ T ≤ t ∧ dist (ϕ T x) x₀ = eps ∧
+      ∀ s ∈ Icc 0 T, dist (ϕ s x) x₀ ≤ eps := by
+  let g : ℝ → ℝ := fun s ↦ dist (ϕ s x) x₀
+  have hgcont : Continuous g :=
+    (ϕ.continuous continuous_id continuous_const).dist continuous_const
+  let escape : Set ℝ := Icc 0 t ∩ g ⁻¹' Ici eps
+  have hesc_closed : IsClosed escape :=
+    isClosed_Icc.inter (isClosed_Ici.preimage hgcont)
+  have hesc_ne : escape.Nonempty := ⟨t, ⟨ht, le_rfl⟩, hge⟩
+  obtain ⟨T, hT, hTmin⟩ :=
+    (isCompact_Icc.of_isClosed_subset hesc_closed inter_subset_left).exists_isMinOn hesc_ne
+      continuous_id.continuousOn
+  have hT0 : 0 ≤ T := hT.1.1
+  have hTt : T ≤ t := hT.1.2
+  have hTg : eps ≤ g T := hT.2
+  have hTpos : 0 < T := by
+    by_contra hle
+    have hTeq : T = 0 := le_antisymm (le_of_not_gt hle) hT0
+    have hge0 : eps ≤ dist x x₀ := by
+      have : eps ≤ g 0 := by simpa [hTeq, g, ϕ.map_zero_apply] using hTg
+      simpa [g, ϕ.map_zero_apply] using this
+    exact lt_irrefl _ (hx.trans_le hge0)
+  have hgT_le : g T ≤ eps := by
+    by_contra hgt
+    have hgt : eps < g T := lt_of_not_ge hgt
+    obtain ⟨η, hη_pos, hη⟩ :=
+      Metric.continuousAt_iff.mp hgcont.continuousAt (g T - eps) (sub_pos.mpr hgt)
+    set d : ℝ := min (η / 2) (T / 2)
+    have hd_pos : 0 < d := lt_min (half_pos hη_pos) (half_pos hTpos)
+    set s : ℝ := T - d
+    have hs_lt : s < T := sub_lt_self _ hd_pos
+    have hs0 : 0 ≤ s := by
+      have hd_le : d ≤ T / 2 := min_le_right _ _
+      linarith
+    have hs_dist : dist s T < η := by
+      rw [Real.dist_eq, abs_of_neg (sub_neg.mpr hs_lt)]
+      have hd_lt : d ≤ η / 2 := min_le_left _ _
+      linarith [half_lt_self hη_pos]
+    have hgs : eps < g s := by
+      have hclose_g : dist (g s) (g T) < g T - eps := hη hs_dist
+      rw [Real.dist_eq, abs_lt] at hclose_g
+      linarith
+    have hs_mem : s ∈ escape := ⟨⟨hs0, hs_lt.le.trans hTt⟩, hgs.le⟩
+    have hTle : T ≤ s := hTmin hs_mem
+    exact lt_irrefl _ (hs_lt.trans_le hTle)
+  have hgT_eq : g T = eps := le_antisymm hgT_le hTg
+  have hgle : ∀ s ∈ Icc 0 T, g s ≤ eps := by
+    intro s hs
+    by_contra hgt
+    have hgt : eps < g s := lt_of_not_ge hgt
+    have hs_mem : s ∈ escape := ⟨⟨hs.1, hs.2.trans hTt⟩, hgt.le⟩
+    have hsT : s = T := le_antisymm hs.2 (hTmin hs_mem)
+    rw [hsT, hgT_eq] at hgt
+    exact lt_irrefl _ hgt
+  exact ⟨T, hTpos, hTt, hgT_eq, hgle⟩
+
 /-- **31.24**: the non-strict Lyapunov criterion, stated for an existing flow.
 Local ODE construction and continuation are not conclusions of this interface. -/
 theorem isLyapunovStable_of_lyapunov [ProperSpace E]
     (ϕ : Flow ℝ E) (F : E → E) (V : E → ℝ) (x₀ : E)
-    (hflow : FlowHasGenerator ϕ F) {r : ℝ} (hr : 0 < r)
+    (hflow : HasFlowGenerator ϕ F) {r : ℝ} (hr : 0 < r)
     (hV : ContDiffOn ℝ 1 V (Metric.ball x₀ r)) (hV₀ : V x₀ = 0)
     (hpos : ∀ x ∈ Metric.ball x₀ r, x ≠ x₀ → 0 < V x)
     (hdec : ∀ x ∈ Metric.ball x₀ r, lyapunovDerivative F V x ≤ 0) :
@@ -198,58 +258,8 @@ theorem isLyapunovStable_of_lyapunov [ProperSpace E]
     suffices hclose : dist (ϕ t x) x₀ < eps from lt_of_lt_of_le hclose heps_le
     by_contra hge
     have hge : eps ≤ dist (ϕ t x) x₀ := le_of_not_gt hge
-    let g : ℝ → ℝ := fun s ↦ dist (ϕ s x) x₀
-    have hgcont : Continuous g :=
-      (ϕ.continuous continuous_id continuous_const).dist continuous_const
-    let escape : Set ℝ := Icc 0 t ∩ g ⁻¹' Ici eps
-    have hesc_closed : IsClosed escape :=
-      isClosed_Icc.inter (isClosed_Ici.preimage hgcont)
-    have hesc_ne : escape.Nonempty := ⟨t, ⟨ht, le_rfl⟩, hge⟩
-    obtain ⟨T, hT, hTmin⟩ :=
-      (isCompact_Icc.of_isClosed_subset hesc_closed inter_subset_left).exists_isMinOn hesc_ne
-        continuous_id.continuousOn
-    have hT0 : 0 ≤ T := hT.1.1
-    have hTt : T ≤ t := hT.1.2
-    have hTg : eps ≤ g T := hT.2
-    have hTpos : 0 < T := by
-      by_contra hle
-      have hTeq : T = 0 := le_antisymm (le_of_not_gt hle) hT0
-      have hge0 : eps ≤ dist x x₀ := by
-        have : eps ≤ g 0 := by simpa [hTeq, g, ϕ.map_zero_apply] using hTg
-        simpa [g, ϕ.map_zero_apply] using this
-      exact lt_irrefl _ (hxeps.trans_le hge0)
-    have hgT_le : g T ≤ eps := by
-      by_contra hgt
-      have hgt : eps < g T := lt_of_not_ge hgt
-      obtain ⟨η, hη_pos, hη⟩ :=
-        Metric.continuousAt_iff.mp hgcont.continuousAt (g T - eps) (sub_pos.mpr hgt)
-      set d : ℝ := min (η / 2) (T / 2)
-      have hd_pos : 0 < d := lt_min (half_pos hη_pos) (half_pos hTpos)
-      set s : ℝ := T - d
-      have hs_lt : s < T := sub_lt_self _ hd_pos
-      have hs0 : 0 ≤ s := by
-        have hd_le : d ≤ T / 2 := min_le_right _ _
-        linarith
-      have hs_dist : dist s T < η := by
-        rw [Real.dist_eq, abs_of_neg (sub_neg.mpr hs_lt)]
-        have hd_lt : d ≤ η / 2 := min_le_left _ _
-        linarith [half_lt_self hη_pos]
-      have hgs : eps < g s := by
-        have hclose_g : dist (g s) (g T) < g T - eps := hη hs_dist
-        rw [Real.dist_eq, abs_lt] at hclose_g
-        linarith
-      have hs_mem : s ∈ escape := ⟨⟨hs0, hs_lt.le.trans hTt⟩, hgs.le⟩
-      have hTle : T ≤ s := hTmin hs_mem
-      exact lt_irrefl _ (hs_lt.trans_le hTle)
-    have hgT_eq : g T = eps := le_antisymm hgT_le hTg
-    have hgle : ∀ s ∈ Icc 0 T, g s ≤ eps := by
-      intro s hs
-      by_contra hgt
-      have hgt : eps < g s := lt_of_not_ge hgt
-      have hs_mem : s ∈ escape := ⟨⟨hs.1, hs.2.trans hTt⟩, hgt.le⟩
-      have hsT : s = T := le_antisymm hs.2 (hTmin hs_mem)
-      rw [hsT, hgT_eq] at hgt
-      exact lt_irrefl _ hgt
+    obtain ⟨T, hTpos, hTt, hgT_eq, hgle⟩ := exists_first_exit_time ht hxeps hge
+    have hT0 : 0 ≤ T := hTpos.le
     have hstay : ∀ s ∈ Icc 0 T, ϕ s x ∈ ball x₀ r := by
       intro s hs
       rw [mem_ball]
@@ -270,7 +280,7 @@ theorem isLyapunovStable_of_lyapunov [ProperSpace E]
 /-- The strict Lyapunov criterion implies local asymptotic stability. -/
 theorem isLocallyAttracting_of_strict_lyapunov [ProperSpace E]
     (ϕ : Flow ℝ E) (F : E → E) (V : E → ℝ) (x₀ : E)
-    (hflow : FlowHasGenerator ϕ F) {r : ℝ} (hr : 0 < r)
+    (hflow : HasFlowGenerator ϕ F) {r : ℝ} (hr : 0 < r)
     (hF : ContinuousOn F (Metric.ball x₀ r))
     (hV : ContDiffOn ℝ 1 V (Metric.ball x₀ r)) (hV₀ : V x₀ = 0)
     (hpos : ∀ x ∈ Metric.ball x₀ r, x ≠ x₀ → 0 < V x)
@@ -415,7 +425,7 @@ theorem isLocallyAttracting_of_strict_lyapunov [ProperSpace E]
 /-- **31.26**: LaSalle on a compact positively invariant set, without a finite-rest-set hypothesis.
   -/
 theorem lasalle (ϕ : Flow ℝ E) (F : E → E) (V : E → ℝ)
-    (hflow : FlowHasGenerator ϕ F) (hV : ContDiff ℝ 1 V)
+    (hflow : HasFlowGenerator ϕ F) (hV : ContDiff ℝ 1 V)
     (K : Set E) (hK : IsCompact K) (hinv : ∀ t : ℝ, 0 ≤ t → Set.MapsTo (ϕ t) K K)
     (hdec : ∀ x ∈ K, lyapunovDerivative F V x ≤ 0) {x : E} (hx : x ∈ K) :
     ∀ ε : ℝ, 0 < ε → ∀ᶠ t in atTop,

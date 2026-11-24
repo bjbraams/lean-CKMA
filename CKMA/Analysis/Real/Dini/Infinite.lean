@@ -32,7 +32,7 @@ to the same statement. Source: GAPS 05.10.
 * `CKMA.Dini.volume_infiniteDown`: `infiniteDown f` has Lebesgue measure zero.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -274,6 +274,7 @@ private lemma volume_leftSteep_eq_zero (f : ℝ → ℝ) (q : ℚ) (n : ℕ) :
     _ = 0 := by simp [hgrid, hU]
 
 /-- Where the upper right derivative is `⊤` and the lower left derivative is not `⊥`. -/
+@[expose]
 def infiniteUp (f : ℝ → ℝ) : Set ℝ :=
   {x | upperRightDiniDerivative f x = ⊤ ∧ lowerLeftDiniDerivative f x ≠ ⊥}
 
@@ -320,6 +321,7 @@ theorem volume_infiniteUp (f : ℝ → ℝ) : volume (infiniteUp f) = 0 := by
   exact volume_leftSteep_eq_zero f q n
 
 /-- Where the lower left derivative is `⊥` and the upper right derivative is not `⊤`. -/
+@[expose]
 def infiniteDown (f : ℝ → ℝ) : Set ℝ :=
   {x | lowerLeftDiniDerivative f x = ⊥ ∧ upperRightDiniDerivative f x ≠ ⊤}
 

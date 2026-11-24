@@ -60,32 +60,39 @@ section Banach
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 /-- Monotonicity for a map taking values in the continuous dual. -/
+@[expose]
 def IsMonotoneDualMap (A : E → StrongDual ℝ E) : Prop :=
   ∀ x y, 0 ≤ (A x - A y) (x - y)
 
 /-- Strict monotonicity in the dual pairing. -/
+@[expose]
 def IsStrictlyMonotoneDualMap (A : E → StrongDual ℝ E) : Prop :=
   ∀ x y, x ≠ y → 0 < (A x - A y) (x - y)
 
 /-- Hemicontinuity means continuity of every dual evaluation along each line segment. -/
+@[expose]
 def IsHemicontinuousDualMap (A : E → StrongDual ℝ E) : Prop :=
   ∀ x y z, ContinuousOn (fun t : ℝ ↦ A (x + t • y) z) (Set.Icc 0 1)
 
 /-- Boundedness on bounded sets, without assuming global boundedness. -/
+@[expose]
 def MapsBoundedSetsToBoundedSets (A : E → StrongDual ℝ E) : Prop :=
   ∀ C : Set E, Bornology.IsBounded C → Bornology.IsBounded (A '' C)
 
 /-- Coercivity in the dual pairing as the norm tends to infinity.
 The ratio is totalized at zero, which does not affect this filter. -/
+@[expose]
 def IsCoerciveDualMap (A : E → StrongDual ℝ E) : Prop :=
   Tendsto (fun x ↦ A x x / ‖x‖) (Filter.comap (fun x : E ↦ ‖x‖) atTop) atTop
 
 /-- A variational inequality on `C` at forcing `f`. -/
+@[expose]
 def SolvesVariationalInequality (A : E → StrongDual ℝ E) (C : Set E)
     (f : StrongDual ℝ E) (u : E) : Prop :=
   u ∈ C ∧ ∀ v ∈ C, 0 ≤ (A u - f) (v - u)
 
 /-- Coercivity relative to a point of an unbounded constraint set. -/
+@[expose]
 def IsCoerciveOnAt (A : E → StrongDual ℝ E) (C : Set E)
     (f : StrongDual ℝ E) (u₀ : E) : Prop :=
   Tendsto (fun u ↦ (A u - f) (u - u₀) / ‖u‖)
@@ -158,13 +165,8 @@ private theorem IsHemicontinuousDualMap.tendsto_segmentParam
 
 /-- An affine combination, rewritten from its first endpoint. -/
 private theorem segment_eq (u v : E) (t : ℝ) : (1 - t) • u + t • v = u + t • (v - u) := by
-  calc (1 - t) • u + t • v
-      = ((1 : ℝ) • u - t • u) + t • v := by rw [sub_smul]
-    _ = (u - t • u) + t • v := by rw [one_smul]
-    _ = (u + -(t • u)) + t • v := by rw [sub_eq_add_neg]
-    _ = u + (-(t • u) + t • v) := by rw [add_assoc]
-    _ = u + (t • v - t • u) := by rw [neg_add_eq_sub]
-    _ = u + t • (v - u) := by rw [← smul_sub]
+  rw [← AffineMap.lineMap_apply_module, AffineMap.lineMap_apply_module']
+  abel
 
 /-- Displacement along a segment is the scaled direction. -/
 private theorem segment_sub (u v : E) (t : ℝ) :

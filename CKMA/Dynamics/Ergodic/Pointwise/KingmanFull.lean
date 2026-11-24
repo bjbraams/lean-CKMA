@@ -30,7 +30,7 @@ liminf and the limsup. The truncated L¹ convergence then passes to the original
 * `CKMA.tendsto_integral_kingmanTrunc`: normalized integrals of truncations converge.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -50,7 +50,8 @@ lemma ereal_coe_max (a b : ℝ) :
   EReal.coe_strictMono.monotone.map_max
 
 /-- The infimum of the normalized positive-length expectations in Kingman's theorem
-(the Fekete infimum). -/
+(the Fekete infimum). On `ℝ`, `sInf` of a set that is not bounded below is `0`. -/
+@[expose]
 def subadditiveMeanRate (f : ℕ → Ω → ℝ) (μ : Measure Ω) : ℝ :=
   sInf {a : ℝ | ∃ n : ℕ, 0 < n ∧ a = (n : ℝ)⁻¹ * ∫ ω, f n ω ∂μ}
 
@@ -110,6 +111,7 @@ lemma ereal_eq_of_max_neg {x y : EReal} (hxy : x ≤ y) (hy_top : y ≠ ⊤) (hy
           exact hne hmaxK
 
 /-- A measurable representative of each positive-length integrable function. -/
+@[expose]
 def kingmanMk {f : ℕ → Ω → ℝ} (hf : ∀ n : ℕ, 0 < n → Integrable (f n) μ) (n : ℕ) : Ω → ℝ :=
   if hn : 0 < n then (hf n hn).aestronglyMeasurable.mk (f n) else 0
 
@@ -131,7 +133,7 @@ lemma integrable_kingmanMk {f : ℕ → Ω → ℝ} (hf : ∀ n : ℕ, 0 < n →
   (hf n hn).congr (kingmanMk_ae hf hn)
 
 /-- The measurable representative remains subadditive. -/
-lemma kingmanMk_subadditive [IsProbabilityMeasure μ] (hT : MeasurePreserving T μ μ)
+lemma kingmanMk_subadditive [IsFiniteMeasure μ] (hT : MeasurePreserving T μ μ)
     {f : ℕ → Ω → ℝ} (hf : ∀ n : ℕ, 0 < n → Integrable (f n) μ)
     (hsub : ∀ n m : ℕ, 0 < n → 0 < m → ∀ᵐ ω ∂μ,
       f (n + m) ω ≤ f n ω + f m ((T^[n]) ω)) :
@@ -167,6 +169,7 @@ lemma kingmanMk_fekete {f : ℕ → Ω → ℝ} (hf : ∀ n : ℕ, 0 < n → Int
     exact ⟨n, hn, by rw [kingmanMk_integral hf hn]⟩
 
 /-- The height truncation `max(f n, -K n)`. -/
+@[expose]
 def kingmanTrunc (K : ℕ) (f : ℕ → Ω → ℝ) (n : ℕ) (ω : Ω) : ℝ :=
   max (f n ω) (-(K : ℝ) * (n : ℝ))
 
@@ -297,7 +300,7 @@ lemma kingmanLimsup_trunc (K : ℕ) (f : ℕ → Ω → ℝ) (ω : Ω) :
     (-((K : ℝ) : EReal)), sup_comm]
 
 /-- Normalized integrals of a fixed length pass to the limit under truncation. -/
-lemma tendsto_integral_kingmanTrunc [IsProbabilityMeasure μ] {f : ℕ → Ω → ℝ} {n : ℕ}
+lemma tendsto_integral_kingmanTrunc [IsFiniteMeasure μ] {f : ℕ → Ω → ℝ} {n : ℕ}
     (hn : 0 < n) (hf : Integrable (f n) μ) (hf_meas : Measurable (f n)) :
     Tendsto (fun K : ℕ => (n : ℝ)⁻¹ * ∫ ω, kingmanTrunc K f n ω ∂μ) atTop
       (𝓝 ((n : ℝ)⁻¹ * ∫ ω, f n ω ∂μ)) := by
@@ -322,7 +325,7 @@ lemma tendsto_integral_kingmanTrunc [IsProbabilityMeasure μ] {f : ℕ → Ω �
   exact hint.const_mul (n : ℝ)⁻¹
 
 /-- Every truncated Fekete value lies above the untruncated one. -/
-lemma subadditiveMeanRate_le_trunc [IsProbabilityMeasure μ] {K : ℕ} {f : ℕ → Ω → ℝ}
+lemma subadditiveMeanRate_le_trunc [IsFiniteMeasure μ] {K : ℕ} {f : ℕ → Ω → ℝ}
     (hf : ∀ n : ℕ, 0 < n → Integrable (f n) μ)
     (hf_meas : ∀ n : ℕ, 0 < n → Measurable (f n))
     (hlower : ∃ c : ℝ, ∀ n : ℕ, 0 < n → c ≤ (n : ℝ)⁻¹ * ∫ ω, f n ω ∂μ) :

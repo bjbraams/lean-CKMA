@@ -34,7 +34,7 @@ increment estimate. Both characterizations include the zero space. Source: GAPS 
   characterization of superreflexivity.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -46,6 +46,7 @@ universe u
 
 /-- Finite representability in scaled embedding form. Every finite-dimensional subspace
 has, at every positive tolerance, an embedding with distortion at most `1+ε`. -/
+@[expose]
 def IsFinitelyRepresentableIn (F E : Type u) [NormedAddCommGroup F] [NormedSpace ℝ F]
     [NormedAddCommGroup E] [NormedSpace ℝ E] : Prop :=
   ∀ V : Submodule ℝ F, FiniteDimensional ℝ V → ∀ ε : ℝ, 0 < ε →
@@ -53,6 +54,7 @@ def IsFinitelyRepresentableIn (F E : Type u) [NormedAddCommGroup F] [NormedSpace
 
 /-- Superreflexivity through finite representability and the actual canonical bidual map.
 The test spaces range over the same carrier universe as the original space. -/
+@[expose]
 def IsSuperreflexive (E : Type u) [NormedAddCommGroup E] [NormedSpace ℝ E] : Prop :=
   ∀ (F : Type u) [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F],
     IsFinitelyRepresentableIn F E → Function.Surjective (inclusionInDoubleDual ℝ F)
@@ -61,17 +63,20 @@ variable {E : Type u} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 /-- Two-sided comparison makes a seminorm into an equivalent norm; its separation and Banach
 completeness follow from the lower and upper bounds and completeness of the original norm. -/
+@[expose]
 def IsEquivalentNorm (N : Seminorm ℝ E) : Prop :=
   ∃ c C : ℝ, 0 < c ∧ 0 < C ∧ ∀ x : E, c * ‖x‖ ≤ N x ∧ N x ≤ C * ‖x‖
 
 /-- Uniform convexity directly on the unit ball of a seminorm. The equivalent-norm hypothesis
 in the renorming theorem ensures that this is a genuine norm geometry. -/
+@[expose]
 def IsUniformlyConvexSeminorm (N : Seminorm ℝ E) : Prop :=
   ∀ ε : ℝ, 0 < ε → ∃ δ : ℝ, 0 < δ ∧ ∀ x y : E,
     N x ≤ 1 → N y ≤ 1 → ε ≤ N (x - y) → N ((1 / 2 : ℝ) • (x + y)) ≤ 1 - δ
 
 /-- Uniform smoothness expressed by the uniform `o(t)` estimate of the symmetric norm increment.
 This definition includes the zero vector space without a nonempty-unit-sphere hypothesis. -/
+@[expose]
 def IsUniformlySmoothSeminorm (N : Seminorm ℝ E) : Prop :=
   ∀ ε : ℝ, 0 < ε → ∃ δ : ℝ, 0 < δ ∧ ∀ t : ℝ, 0 < t → t < δ →
     ∀ x y : E, N x = 1 → N y = 1 →

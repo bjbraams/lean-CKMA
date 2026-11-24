@@ -36,7 +36,7 @@ Sources: GAPS 23.9 and 23.10.
   (**23.10**).
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -53,15 +53,18 @@ variable {A H K : Type*} [NonUnitalCStarAlgebra A]
 
 /-- A vector is cyclic if its algebra orbit is dense. Since the orbit is a linear subspace,
 no separate linear span is necessary. -/
+@[expose]
 def IsCyclicVector (π : A →⋆ₙₐ[ℂ] (H →L[ℂ] H)) (Ω : H) : Prop :=
   DenseRange (fun a ↦ π a Ω)
 
 /-- The vector realizes `φ`, using Mathlib's inner product, which is linear in the second
 variable. -/
+@[expose]
 def RealizesFunctional (π : A →⋆ₙₐ[ℂ] (H →L[ℂ] H)) (Ω : H) (φ : A → ℂ) : Prop :=
   ∀ a, φ a = ⟪Ω, π a Ω⟫_ℂ
 
 /-- The linear orbit map `a ↦ π a Ω`. -/
+@[expose]
 def cyclicOrbit (π : A →⋆ₙₐ[ℂ] (H →L[ℂ] H)) (Ω : H) : A →ₗ[ℂ] H where
   toFun a := π a Ω
   map_add' a b := by simp [map_add]

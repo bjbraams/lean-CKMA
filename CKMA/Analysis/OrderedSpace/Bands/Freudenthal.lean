@@ -28,7 +28,7 @@ of Aliprantis–Burkinshaw, Theorem 2.8, rewritten for a signed vector.
 * `CKMA.freudenthal_components`: Freudenthal spectral approximation by disjoint components.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

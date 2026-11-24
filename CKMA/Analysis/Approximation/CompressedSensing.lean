@@ -31,7 +31,7 @@ Source: GAPS 29.68.
 * `CKMA.restricted_isometry_stable_recovery`: stable basis-pursuit recovery below `√2 - 1`.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -40,15 +40,18 @@ namespace CKMA
 open scoped BigOperators
 
 /-- The finite coordinate l1 norm, given by the sum of the coordinate norms. -/
+@[expose]
 def coordinateOneNorm {ι α : Type*} [Fintype ι] [Norm α] (x : ι → α) : ℝ :=
   ∑ i, ‖x i‖
 
 /-- Coordinate sparsity, including the zero vector at sparsity zero. -/
+@[expose]
 def IsCoordinateSparse {ι α : Type*} [Fintype ι] [Zero α] (s : ℕ) (x : ι → α) : Prop := by
   classical
   exact (Finset.univ.filter (fun i ↦ x i ≠ 0)).card ≤ s
 
 /-- The best s-term l1 approximation error. -/
+@[expose]
 def bestSparseOneError {𝕜 : Type*} [RCLike 𝕜] {N : ℕ} (s : ℕ)
     (x : EuclideanSpace 𝕜 (Fin N)) : ℝ :=
   sInf {r | ∃ z : EuclideanSpace 𝕜 (Fin N),
@@ -56,12 +59,14 @@ def bestSparseOneError {𝕜 : Type*} [RCLike 𝕜] {N : ℕ} (s : ℕ)
 
 /-- Restricted isometry with an explicit admissible bound; the infimal constant is unnecessary
 in recovery statements, which can use any valid bound below the threshold. -/
+@[expose]
 def HasRestrictedIsometryBound {𝕜 : Type*} [RCLike 𝕜] {m N : ℕ}
     (A : EuclideanSpace 𝕜 (Fin N) →ₗ[𝕜] EuclideanSpace 𝕜 (Fin m)) (s : ℕ) (δ : ℝ) : Prop :=
   0 ≤ δ ∧ ∀ x : EuclideanSpace 𝕜 (Fin N), IsCoordinateSparse s x →
     (1 - δ) * ‖x‖ ^ 2 ≤ ‖A x‖ ^ 2 ∧ ‖A x‖ ^ 2 ≤ (1 + δ) * ‖x‖ ^ 2
 
 /-- Basis-pursuit feasibility and minimality in the actual l1 objective. -/
+@[expose]
 def IsBasisPursuitMinimizer {𝕜 : Type*} [RCLike 𝕜] {m N : ℕ}
     (A : EuclideanSpace 𝕜 (Fin N) →ₗ[𝕜] EuclideanSpace 𝕜 (Fin m))
     (y : EuclideanSpace 𝕜 (Fin m)) (η : ℝ) (z : EuclideanSpace 𝕜 (Fin N)) : Prop :=

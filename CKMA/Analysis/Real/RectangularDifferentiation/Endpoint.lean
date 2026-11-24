@@ -32,7 +32,7 @@ of the logarithmic iteration kernel raise the Orlicz exponent by one.
   at most a constant multiple of the integral of the truncated partial maximal function.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -122,6 +122,7 @@ theorem volume_partialStrongMax_gt_le {n : ℕ} (hn : 1 ≤ n) {C : ℝ}
       exact (lintegral_prod _ hgrow.aemeasurable).symm
 
 /-- The truncation that discards values at most half the height. -/
+@[expose]
 def halfLevelTrunc {α : Type*} (t : ℝ) (f : α → ℝ) (x : α) : ℝ :=
   if t / 2 < |f x| then f x else 0
 
@@ -293,6 +294,7 @@ private theorem exists_ratInterval_of_average_gt_local (g : ℝ → ℝ≥0∞) 
     exact ⟨J, hsub, lt_of_lt_of_le hJ hle⟩
 
 /-- The partial maximal function, set to zero on and below the half-height threshold. -/
+@[expose]
 def truncatedPartial {n : ℕ} (f : (Fin (n + 1) → ℝ) → ℝ) (a : ℝ) (y : ℝ)
     (z : Fin n → ℝ) : ℝ≥0∞ :=
   if ENNReal.ofReal (a / 2) < partialStrongMax f y z then partialStrongMax f y z else 0

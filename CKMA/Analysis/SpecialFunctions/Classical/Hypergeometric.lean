@@ -32,7 +32,7 @@ singular, as witnessed by analytic rational germs in local and reciprocal coordi
   equation.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -42,6 +42,7 @@ open Filter Topology
 open scoped BigOperators ENNReal NNReal
 
 /-- Gauss's hypergeometric differential expression. -/
+@[expose]
 def gaussDifferentialExpression (a b c : ℂ) (y : ℂ → ℂ) (z : ℂ) : ℂ :=
   z * (1 - z) * deriv (deriv y) z + (c - (a + b + 1) * z) * deriv y z - a * b * y z
 
@@ -331,12 +332,14 @@ theorem gauss_hypergeometric_unique (a b c : ℂ) (hc : ∀ n : ℕ, c ≠ -(n :
 /-- The regular-singular criterion for `y'' + P y' + Q y = 0`, allowing removable singularities.
 Punctured equalities avoid false continuity claims for totalized rational functions at their poles.
   -/
+@[expose]
 def IsRegularSingularAt (P Q : ℂ → ℂ) (a : ℂ) : Prop :=
   ∃ p q : ℂ → ℂ, AnalyticAt ℂ p a ∧ AnalyticAt ℂ q a ∧
     (∀ᶠ z in 𝓝[≠] a, p z = (z - a) * P z) ∧
     (∀ᶠ z in 𝓝[≠] a, q z = (z - a) ^ 2 * Q z)
 
 /-- The regular-singular criterion at infinity, after the coordinate change `z = 1/w`. -/
+@[expose]
 def IsRegularSingularAtInfinity (P Q : ℂ → ℂ) : Prop :=
   IsRegularSingularAt (fun w ↦ 2 / w - P w⁻¹ / w ^ 2) (fun w ↦ Q w⁻¹ / w ^ 4) 0
 

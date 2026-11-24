@@ -35,6 +35,7 @@ variable {d : ℕ}
 local notation "E" => EuclideanSpace ℝ (Fin d)
 
 /-- A positive rational, used as a countable family of ball radii. -/
+@[expose]
 abbrev PosRat := {q : ℚ // 0 < (q : ℝ)}
 
 /-- A rational strictly between two reals. -/

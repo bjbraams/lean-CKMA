@@ -32,7 +32,7 @@ Source: GAPS 25.47.
   sides under collectively compact approximation.
 -/
 
-@[expose] public section
+public section
 
 namespace CKMA
 
@@ -41,6 +41,7 @@ open ContinuousLinearEquiv Filter Metric Module End Set Topology
 variable {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] [CompleteSpace E]
 
 /-- Collective compactness of a sequence of operators. -/
+@[expose]
 def IsCollectivelyCompact (K : ℕ → E →L[𝕜] E) : Prop :=
   IsCompact (closure (⋃ n, K n '' Metric.closedBall 0 1))
 

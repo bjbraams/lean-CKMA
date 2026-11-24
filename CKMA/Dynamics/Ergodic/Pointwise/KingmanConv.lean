@@ -30,7 +30,7 @@ The liminf and limsup therefore agree, and Scheffé's identity gives L¹ converg
 * `CKMA.kingman_pointwise_of_linear`: Kingman's theorem under a linear lower bound.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -342,7 +342,7 @@ private lemma kingmanLimsup_ne_bot {f : ℕ → Ω → ℝ} {C : ℝ}
   exact not_le_of_gt (EReal.bot_lt_coe (-C)) hle
 
 /-- The limsup is at most the normalized invariant conditional expectation of each block. -/
-private lemma kingmanLimsup_le_condExp [IsProbabilityMeasure μ] (hT : MeasurePreserving T μ μ)
+private lemma kingmanLimsup_le_condExp [IsFiniteMeasure μ] (hT : MeasurePreserving T μ μ)
     {f : ℕ → Ω → ℝ} {C : ℝ} (hf : ∀ n : ℕ, 0 < n → Integrable (f n) μ)
     (hf_meas : ∀ n : ℕ, 0 < n → Measurable (f n))
     (hsub : ∀ n m : ℕ, 0 < n → 0 < m → ∀ᵐ ω ∂μ,
@@ -389,11 +389,12 @@ lemma measurable_kingmanLimsup {f : ℕ → Ω → ℝ}
   exact (measurable_kingmanRatio (hf (n + 1) (Nat.succ_pos n))).coe_real_ereal
 
 /-- The real representative of the extended limsup. Infinities are sent to zero. -/
+@[expose]
 def kingmanLimsupReal (f : ℕ → Ω → ℝ) (ω : Ω) : ℝ :=
   (kingmanLimsup f ω).toReal
 
 /-- The extended limsup is finite almost everywhere. -/
-lemma kingmanLimsup_ae_ne_top [IsProbabilityMeasure μ] (hT : MeasurePreserving T μ μ)
+lemma kingmanLimsup_ae_ne_top [IsFiniteMeasure μ] (hT : MeasurePreserving T μ μ)
     {f : ℕ → Ω → ℝ} {C : ℝ} (hf : ∀ n : ℕ, 0 < n → Integrable (f n) μ)
     (hf_meas : ∀ n : ℕ, 0 < n → Measurable (f n))
     (hsub : ∀ n m : ℕ, 0 < n → 0 < m → ∀ᵐ ω ∂μ,
@@ -407,7 +408,7 @@ lemma kingmanLimsup_ae_ne_top [IsProbabilityMeasure μ] (hT : MeasurePreserving 
   exact EReal.coe_lt_top _
 
 /-- Under a pointwise linear bound, the real limsup is integrable. -/
-private lemma kingmanLimsupReal_integrable [IsProbabilityMeasure μ] (hT : MeasurePreserving T μ μ)
+private lemma kingmanLimsupReal_integrable [IsFiniteMeasure μ] (hT : MeasurePreserving T μ μ)
     {f : ℕ → Ω → ℝ} {C : ℝ} (hf : ∀ n : ℕ, 0 < n → Integrable (f n) μ)
     (hf_meas : ∀ n : ℕ, 0 < n → Measurable (f n))
     (hsub : ∀ n m : ℕ, 0 < n → 0 < m → ∀ᵐ ω ∂μ,
@@ -453,7 +454,7 @@ private lemma kingmanLimsupReal_integrable [IsProbabilityMeasure μ] (hT : Measu
   exact hω
 
 /-- The real limsup has mean at most every normalized positive-length integral. -/
-private lemma kingmanLimsupReal_integral_le [IsProbabilityMeasure μ] (hT : MeasurePreserving T μ μ)
+private lemma kingmanLimsupReal_integral_le [IsFiniteMeasure μ] (hT : MeasurePreserving T μ μ)
     {f : ℕ → Ω → ℝ} {C : ℝ} (hf : ∀ n : ℕ, 0 < n → Integrable (f n) μ)
     (hf_meas : ∀ n : ℕ, 0 < n → Measurable (f n))
     (hsub : ∀ n m : ℕ, 0 < n → 0 < m → ∀ᵐ ω ∂μ,
@@ -479,7 +480,7 @@ private lemma kingmanLimsupReal_integral_le [IsProbabilityMeasure μ] (hT : Meas
   exact hineq
 
 /-- The real limsup has mean at most the Fekete infimum. -/
-private lemma kingmanLimsupReal_integral_le_mean [IsProbabilityMeasure μ]
+private lemma kingmanLimsupReal_integral_le_mean [IsFiniteMeasure μ]
     (hT : MeasurePreserving T μ μ) {f : ℕ → Ω → ℝ} {C : ℝ}
     (hf : ∀ n : ℕ, 0 < n → Integrable (f n) μ)
     (hf_meas : ∀ n : ℕ, 0 < n → Measurable (f n))

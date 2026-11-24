@@ -7,6 +7,8 @@ module
 
 public import CKMA.Analysis.PDE.EllipticEstimates
 
+import Mathlib.Topology.Semicontinuity.Basic
+
 /-!
 # Viscosity comparison and Evans–Krylov regularity
 
@@ -33,7 +35,7 @@ Sources: GAPS 33.23 and 33.30.
   concave fully nonlinear uniformly elliptic equations.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -44,17 +46,21 @@ open scoped ENNReal
 
 /-- Continuous bilinear scalar Hessian jets. Operators below ignore antisymmetric parts
 by the quadratic-form order in the ellipticity definition. -/
+@[expose]
 abbrev HessianJet (d : ℕ) := EuclideanRealSpace d →L[ℝ] EuclideanRealSpace d →L[ℝ] ℝ
 
 /-- Positive semidefiniteness of a real bilinear Hessian increment. -/
+@[expose]
 def IsNonnegativeHessian {d : ℕ} (X : HessianJet d) : Prop := ∀ v, 0 ≤ X v v
 
 /-- Degenerate ellipticity: increasing the Hessian decreases the equation operator. -/
+@[expose]
 def IsDegenerateElliptic {d : ℕ}
     (G : EuclideanRealSpace d → ℝ → (EuclideanRealSpace d →L[ℝ] ℝ) → HessianJet d → ℝ) : Prop :=
   ∀ x r p X Y, IsNonnegativeHessian (Y - X) → G x r p Y ≤ G x r p X
 
 /-- Upper semicontinuous viscosity subsolutions, tested by local `C²` upper contacts. -/
+@[expose]
 def IsViscositySubsolution {d : ℕ}
     (G : EuclideanRealSpace d → ℝ → (EuclideanRealSpace d →L[ℝ] ℝ) → HessianJet d → ℝ)
     (Ω : Set (EuclideanRealSpace d)) (u : EuclideanRealSpace d → ℝ) : Prop :=
@@ -63,6 +69,7 @@ def IsViscositySubsolution {d : ℕ}
       G x (u x) (fderiv ℝ φ x) (fderiv ℝ (fderiv ℝ φ) x) ≤ 0
 
 /-- Lower semicontinuous viscosity supersolutions use lower contacts and the reverse inequality. -/
+@[expose]
 def IsViscositySupersolution {d : ℕ}
     (G : EuclideanRealSpace d → ℝ → (EuclideanRealSpace d →L[ℝ] ℝ) → HessianJet d → ℝ)
     (Ω : Set (EuclideanRealSpace d)) (u : EuclideanRealSpace d → ℝ) : Prop :=
@@ -70,11 +77,20 @@ def IsViscositySupersolution {d : ℕ}
     ContDiffAt ℝ 2 φ x → IsLocalMinOn (fun y ↦ u y - φ y) Ω x →
       0 ≤ G x (u x) (fderiv ℝ φ x) (fderiv ℝ (fderiv ℝ φ) x)
 
-/-- A continuous viscosity solution is both a subsolution and a supersolution. -/
+/-- A viscosity solution is both a subsolution and a supersolution.
+Continuity on `Ω` follows from the two semicontinuity hypotheses. -/
+@[expose]
 def IsViscositySolution {d : ℕ}
     (G : EuclideanRealSpace d → ℝ → (EuclideanRealSpace d →L[ℝ] ℝ) → HessianJet d → ℝ)
     (Ω : Set (EuclideanRealSpace d)) (u : EuclideanRealSpace d → ℝ) : Prop :=
-  ContinuousOn u Ω ∧ IsViscositySubsolution G Ω u ∧ IsViscositySupersolution G Ω u
+  IsViscositySubsolution G Ω u ∧ IsViscositySupersolution G Ω u
+
+/-- Upper and lower semicontinuity of a viscosity solution give continuity on `Ω`. -/
+theorem IsViscositySolution.continuousOn {d : ℕ}
+    {G : EuclideanRealSpace d → ℝ → (EuclideanRealSpace d →L[ℝ] ℝ) → HessianJet d → ℝ}
+    {Ω : Set (EuclideanRealSpace d)} {u : EuclideanRealSpace d → ℝ}
+    (h : IsViscositySolution G Ω u) : ContinuousOn u Ω :=
+  continuousOn_iff_lower_upperSemicontinuousOn.2 ⟨h.2.1, h.1.1⟩
 
 /-- **33.23**: comparison for positive zeroth order and an autonomous degenerate elliptic part. -/
 theorem viscosity_comparison {d : ℕ} {Ω : Set (EuclideanRealSpace d)}
@@ -90,6 +106,7 @@ theorem viscosity_comparison {d : ℕ} {Ω : Set (EuclideanRealSpace d)}
   sorry
 
 /-- Uniform ellipticity in the increasing `F(D²u)` convention, measured against trace. -/
+@[expose]
 def IsUniformlyEllipticHessian {d : ℕ} (F : HessianJet d → ℝ) (ell Λ : ℝ) : Prop :=
   0 < ell ∧ ell ≤ Λ ∧ ∀ X P, IsNonnegativeHessian P →
     ell * euclideanHessianTrace P ≤ F (X + P) - F X ∧

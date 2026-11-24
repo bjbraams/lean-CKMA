@@ -117,6 +117,7 @@ private lemma enorm_div_pow_mul (W : ApWeight (d := d) p) (a : ℝ≥0∞) (y : 
     simp [hρ, hmk, mul_zero]
 
 /-- Factor coming from the radius-`3` enlargement of the dual measure. -/
+@[expose]
 def enlargeConst (W : ApWeight (d := d) p) : ℝ≥0∞ :=
   W.A ^ (p - 1)⁻¹ * ENNReal.ofReal ((3 : ℝ) ^ d) ^ W.conj
 
@@ -133,6 +134,7 @@ private lemma enlargeConst_pos (W : ApWeight (d := d) p) : 0 < W.enlargeConst :=
     (ENNReal.rpow_pos (ENNReal.ofReal_pos.mpr (by positivity)) ENNReal.ofReal_ne_top).ne'
 
 /-- Pointwise factor in the comparison of the two centred maximal operators. -/
+@[expose]
 def pointConst (W : ApWeight (d := d) p) : ℝ≥0∞ :=
   W.A ^ (p - 1)⁻¹ * W.enlargeConst
 

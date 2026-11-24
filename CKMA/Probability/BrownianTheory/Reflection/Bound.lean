@@ -30,7 +30,7 @@ The hitting, endpoint, band and oscillation events and the two one-sided estimat
 * `CKMA.brownian_reflection`: the reflection principle for a real Brownian motion (**08.4**).
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -77,6 +77,7 @@ private def strictHit (C : ℝ≥0 → Ω → ℝ) (t : ℝ≥0) (b : ℝ) : Set
   {ω | ∃ s : ℝ≥0, s ≤ t ∧ b < C s ω}
 
 /-- The endpoint lies at or above the level. -/
+@[expose]
 def endpointSet (C : ℝ≥0 → Ω → ℝ) (t : ℝ≥0) (b : ℝ) : Set Ω :=
   {ω | b ≤ C t ω}
 

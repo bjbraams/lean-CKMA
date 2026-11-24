@@ -29,7 +29,7 @@ and `c ^ (k - 1) = g 0`.
   root of unity.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

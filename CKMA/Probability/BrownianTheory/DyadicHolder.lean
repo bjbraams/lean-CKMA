@@ -27,7 +27,7 @@ internal construction of this file.
   dyadic grid of `[0, 1]` from bounds on its consecutive dyadic increments.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -395,6 +395,7 @@ private lemma count_greedyJumps_le_two (a b q : ℕ) : (greedyJumps a b).count (
   (count_greedyJumps_bounds (b - a)).1 a b q rfl
 
 /-- Constant in the unit-interval dyadic Hölder estimate. -/
+@[expose]
 def dyadicHolderFactor (α : ℝ) : ℝ :=
   2 / (1 - (2 : ℝ) ^ (-α))
 

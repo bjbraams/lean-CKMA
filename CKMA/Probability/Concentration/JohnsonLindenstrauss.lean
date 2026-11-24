@@ -23,7 +23,7 @@ projections, and the Johnson–Lindenstrauss finite-set dimension reduction theo
   sign matrices.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

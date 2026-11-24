@@ -33,7 +33,7 @@ conjugacies or convergence on the entire basin are not assumed.
   uniqueness up to a root of unity of Böttcher coordinates.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -42,6 +42,7 @@ namespace CKMA
 open Filter Topology
 
 /-- A normalized Koenigs coordinate at a fixed point placed at the origin. -/
+@[expose]
 def IsKoenigsCoordinate (f : ℂ → ℂ) (c : ℂ) (φ : ℂ → ℂ) : Prop :=
   AnalyticAt ℂ f 0 ∧ f 0 = 0 ∧ AnalyticAt ℂ φ 0 ∧ φ 0 = 0 ∧ deriv φ 0 = 1 ∧
     ∀ᶠ z in 𝓝 (0 : ℂ), φ (f z) = c * φ z
@@ -72,6 +73,7 @@ theorem koenigsCoordinate_eventuallyEq {f φ ψ : ℂ → ℂ} {c : ℂ}
     hψa hψ0 hψd hψe
 
 /-- A local analytic Böttcher coordinate, without a derivative normalization. -/
+@[expose]
 def IsBoettcherCoordinate (f : ℂ → ℂ) (k : ℕ) (φ : ℂ → ℂ) : Prop :=
   AnalyticAt ℂ f 0 ∧ f 0 = 0 ∧ AnalyticAt ℂ φ 0 ∧ φ 0 = 0 ∧ deriv φ 0 ≠ 0 ∧
     ∀ᶠ z in 𝓝 (0 : ℂ), φ (f z) = φ z ^ k

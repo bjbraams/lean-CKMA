@@ -23,7 +23,7 @@ alternating residual extrema) are a private proof device. The basic definitions 
 * `CKMA.eq_of_isBestPolynomialApproximation`: uniqueness of the best polynomial approximant.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

@@ -46,7 +46,7 @@ and its supremum is the Lebesgue constant. Chebyshev extrema are the nodes
   Lebesgue constant is `1`.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -57,27 +57,33 @@ open scoped BigOperators
 
 /-- Mathlib's Lagrange cardinal polynomial for all supplied nodes.
 Distinctness is a hypothesis of interpolation theorems rather than of this definition. -/
+@[expose]
 abbrev lagrangeCardinalPolynomial {n : ℕ} (x : Fin n → ℝ) (i : Fin n) : ℝ[X] :=
   Lagrange.basis Finset.univ x i
 
 /-- The absolute sum of cardinal polynomials at an evaluation point. -/
+@[expose]
 def lebesgueFunction {n : ℕ} (x : Fin n → ℝ) (t : ℝ) : ℝ :=
   ∑ i : Fin n, |(lagrangeCardinalPolynomial x i).eval t|
 
 /-- The Lebesgue constant on `[-1,1]` for a specified finite node set. -/
+@[expose]
 def interpolationLebesgueConstant {n : ℕ} (x : Fin n → ℝ) : ℝ :=
   sSup (lebesgueFunction x '' Set.Icc (-1 : ℝ) 1)
 
 /-- The Chebyshev extrema, in decreasing order; `n=0` is harmlessly totalized at the point one. -/
+@[expose]
 def chebyshevExtremalNodes (n : ℕ) (i : Fin (n + 1)) : ℝ :=
   Real.cos (Real.pi * i.val / n)
 
 /-- The polynomial interpolant at a supplied finite collection of interval nodes. -/
+@[expose]
 abbrev polynomialInterpolation {n : ℕ} (x : Fin n → Set.Icc (-1 : ℝ) 1)
     (f : ApproximationIntervalMap) : ℝ[X] :=
   Lagrange.interpolate Finset.univ (fun j ↦ (x j).1) (fun j ↦ f (x j))
 
 /-- Endpoint weight two, and weight one at every interior extremal node. -/
+@[expose]
 def chebyshevExtremalWeight (n : ℕ) (i : Fin (n + 1)) : ℝ :=
   if i.val = 0 ∨ i.val = n then 2 else 1
 
@@ -93,6 +99,7 @@ lemma chebyshevExtremalWeight_pos (n : ℕ) (i : Fin (n + 1)) :
   lt_of_lt_of_le zero_lt_one (one_le_chebyshevExtremalWeight n i)
 
 /-- Angular coordinate of an extremal node. Division by zero is unused for `n = 0`. -/
+@[expose]
 def chebyshevNodeAngle (n : ℕ) (i : Fin (n + 1)) : ℝ :=
   π * (i.val : ℝ) / n
 
@@ -135,6 +142,7 @@ private lemma chebyshevIndex_add_one {n : ℕ} (hn : 1 ≤ n) :
   exact_mod_cast (Nat.sub_add_cancel hn : (n - 1) + 1 = n)
 
 /-- The polynomial `(1 - X ^ 2) U_{n-1}`, vanishing on the extremal nodes. -/
+@[expose]
 def chebyshevExtremalNodal (n : ℕ) : ℝ[X] :=
   (1 - X ^ 2) * U ℝ ((n - 1 : ℕ) : ℤ)
 
@@ -296,6 +304,7 @@ lemma abs_derivative_chebyshevExtremalNodal {n : ℕ} (hn : 1 ≤ n)
       simpa [φ, chebyshevExtremalNodes_eq_cos, hw] using habs
 
 /-- Absolute slack large enough for both sides of the Chebyshev–Lebesgue asymptotic. -/
+@[expose]
 def chebyshevLebesgueSlack : ℝ :=
   11 / 4 + 2 / π + π / 8 + log 2 / π
 

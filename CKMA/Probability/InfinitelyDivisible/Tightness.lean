@@ -39,7 +39,7 @@ All declarations are in the namespace `CKMA.InfinitelyDivisible`.
   compact in `FiniteMeasure ℝ`.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -49,6 +49,7 @@ open MeasureTheory Complex Filter Topology Set Function
 open scoped NNReal ENNReal
 
 /-- Constant `3 π² / 2` in the comparison of `1 ∧ x²` with `1 - sinc`. -/
+@[expose]
 def sincComparison : ℝ := 3 * Real.pi ^ 2 / 2
 
 /-- The constant `3 π² / 2` is positive. -/
@@ -168,6 +169,7 @@ private lemma quadTrunc_le_sincComparison_mul (x : ℝ) :
   rwa [← mul_assoc, sincComparison_mul_sincCoeff, one_mul] at hmul
 
 /-- Modulus `r (1 + r exp r)` controlling an exponential increment. -/
+@[expose]
 def exponentModulus (r : ℝ) : ℝ := r * (1 + r * Real.exp r)
 
 /-- The exponential-increment modulus is continuous. -/
@@ -200,11 +202,13 @@ lemma exists_norm_charExponent_isMaxOn {μ : Measure ℝ} [IsProbabilityMeasure 
   · exact (continuous_norm.comp (continuous_charExponent h)).continuousOn
 
 /-- A point of `[-|δ|, |δ|]` at which the exponent norm is maximal. -/
+@[expose]
 def charExponentArg {μ : Measure ℝ} [IsProbabilityMeasure μ]
     (h : IsInfinitelyDivisible μ) (δ : ℝ) : ℝ :=
   Classical.choose (exists_norm_charExponent_isMaxOn h δ)
 
 /-- The exponent norm at the chosen maximizer. -/
+@[expose]
 def charExponentMax {μ : Measure ℝ} [IsProbabilityMeasure μ]
     (h : IsInfinitelyDivisible μ) (δ : ℝ) : ℝ :=
   ‖charExponent h (charExponentArg h δ)‖
@@ -246,11 +250,13 @@ private lemma tendsto_charExponentMax_inv {μ : Measure ℝ} [IsProbabilityMeasu
   simpa [charExponentMax, charExponentArg, t] using hnormψ
 
 /-- The convolution root of order `n + 1`. -/
+@[expose]
 def positiveRoot {μ : Measure ℝ} [IsProbabilityMeasure μ]
     (h : IsInfinitelyDivisible μ) (n : ℕ) : Measure ℝ :=
   convolutionRoot h (n + 1) (Nat.succ_pos n)
 
 /-- Each positive convolution root is a probability measure. -/
+@[expose]
 instance isProbabilityMeasure_positiveRoot {μ : Measure ℝ} [IsProbabilityMeasure μ]
     (h : IsInfinitelyDivisible μ) (n : ℕ) :
     IsProbabilityMeasure (positiveRoot h n) :=
@@ -521,6 +527,7 @@ private lemma quadTrunc_eq_one_of_one_le_abs {x : ℝ} (hx : 1 ≤ |x|) : quadTr
   exact min_eq_left this
 
 /-- Compact interval of radius `n + 1`, increasing in `n`. -/
+@[expose]
 def tailSet (n : ℕ) : Set ℝ := Icc (-(n + 1 : ℝ)) (n + 1 : ℝ)
 
 /-- The tail intervals increase with the index. -/
@@ -565,10 +572,12 @@ private lemma quadTrunc_le_of_notMem_tailSet {k : ℕ} {x : ℝ} (hx : x ∉ tai
   simpa [quadTrunc_eq_one_of_one_le_abs hbig] using hqδ
 
 /-- Uniform mass bound, as a nonnegative real, for every weighted root. -/
+@[expose]
 def idMass {μ : Measure ℝ} [IsProbabilityMeasure μ] (h : IsInfinitelyDivisible μ) : ℝ≥0 :=
   Real.toNNReal (sincComparison * exponentModulus (charExponentMax h 1))
 
 /-- Tail bound outside `[-k-1, k+1]`, independent of the root order. -/
+@[expose]
 def idTail {μ : Measure ℝ} [IsProbabilityMeasure μ] (h : IsInfinitelyDivisible μ)
     (k : ℕ) : ℝ≥0 :=
   Real.toNNReal (sincComparison *
@@ -662,6 +671,7 @@ private lemma quadWeighted_tail_le {μ : Measure ℝ} [IsProbabilityMeasure μ]
   exact hmul'.trans_eq hmul
 
 /-- Quadratically weighted positive root, packaged as a finite measure. -/
+@[expose]
 def idRootMeasure {μ : Measure ℝ} [IsProbabilityMeasure μ]
     (h : IsInfinitelyDivisible μ) (n : ℕ) : FiniteMeasure ℝ :=
   ⟨quadWeighted (n + 1) (positiveRoot h n), isFiniteMeasure_quadWeighted (n + 1)⟩

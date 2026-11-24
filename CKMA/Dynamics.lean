@@ -26,6 +26,7 @@ public import CKMA.Dynamics.Ergodic.Recurrence
 public import CKMA.Dynamics.Ergodic.Recurrence.Combinatorics
 public import CKMA.Dynamics.Ergodic.Recurrence.Multiple
 public import CKMA.Dynamics.Flow
+public import CKMA.Dynamics.Flow.Basic
 public import CKMA.Dynamics.IteratedFunctionSystem
 public import CKMA.Dynamics.Lyapunov
 public import CKMA.Dynamics.ODE.Planar
@@ -33,6 +34,7 @@ public import CKMA.Dynamics.ODE.Planar.Basic
 public import CKMA.Dynamics.ODE.Planar.Bendixson
 public import CKMA.Dynamics.ODE.Planar.Transversal
 public import CKMA.Dynamics.Orbit
+public import CKMA.Dynamics.Orbit.Basic
 
 /-!
 # Complex, ergodic and differential dynamics

@@ -36,7 +36,7 @@ Sources: GAPS 11.9 and 11.32.
   discrete inequality.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -77,6 +77,7 @@ theorem maclaurin_normalizedElementaryMean {n j k : ℕ} (x : Fin n → ℝ)
     maclaurin_esymmMean hs hcard hj hjk hkn
 
 /-- Cesaro average of the first `n+1` entries, indexed from zero. -/
+@[expose]
 def hardyAverage (a : ℕ → ℝ) (n : ℕ) : ℝ :=
   (∑ j ∈ Finset.range (n + 1), a j) / (n + 1 : ℝ)
 

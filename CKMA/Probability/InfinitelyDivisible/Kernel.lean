@@ -31,7 +31,7 @@ All declarations are in the namespace `CKMA.InfinitelyDivisible`.
   `levyKernel t` against the quadratically weighted measure plus `I * t * contDrift n ν`.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -41,6 +41,7 @@ open MeasureTheory Complex Filter Topology Finset
 open scoped NNReal ENNReal BoundedContinuousFunction
 
 /-- Quadratic weight `min(1, x²)`, vanishing only at the origin. -/
+@[expose]
 def quadTrunc (x : ℝ) : ℝ := min 1 (x ^ 2)
 
 /-- The quadratic weight is nonnegative. -/
@@ -69,6 +70,7 @@ private lemma quadTrunc_eq_sq_of_abs_le_one {x : ℝ} (hx : |x| ≤ 1) : quadTru
   exact min_eq_right this
 
 /-- Continuous cutoff, equal to `x` on `[-1/2, 1/2]` and equal to `0` for `|x| ≥ 1`. -/
+@[expose]
 def contTrunc (x : ℝ) : ℝ := x * max 0 (min 1 (2 - 2 * |x|))
 
 /-- The continuous cutoff is continuous. -/
@@ -116,10 +118,12 @@ private lemma abs_sub_contTrunc_le_of_abs_le_one {x : ℝ} (hx : |x| ≤ 1) :
     nlinarith [abs_nonneg x, hx, hmid]
 
 /-- Continuous compensator `exp(i t x) - 1 - i t c(x)`. -/
+@[expose]
 def contIntegrand (t x : ℝ) : ℂ :=
   exp (I * ↑t * ↑x) - 1 - I * ↑t * ↑(contTrunc x)
 
 /-- Lévy kernel for the continuous cutoff, with value `-t² / 2` at the origin. -/
+@[expose]
 def levyKernel (t x : ℝ) : ℂ :=
   if x = 0 then -((t : ℂ) ^ 2) / 2 else contIntegrand t x / ↑(quadTrunc x)
 
@@ -371,10 +375,12 @@ lemma norm_levyKernel_le (t x : ℝ) :
             gcongr
 
 /-- A frequency-dependent bound for the Lévy kernel. -/
+@[expose]
 def levyKernelBound (t : ℝ) : ℝ :=
   8 * (t ^ 2 + 1) * Real.exp |t| + 2
 
 /-- The Lévy kernel as a bounded continuous function. -/
+@[expose]
 def levyKernelBdd (t : ℝ) : ℝ →ᵇ ℂ :=
   BoundedContinuousFunction.ofNormedAddCommGroup (levyKernel t) (continuous_levyKernel t)
     (levyKernelBound t) (norm_levyKernel_le t)
@@ -438,6 +444,7 @@ private lemma integral_contIntegrand {ν : Measure ℝ} [IsProbabilityMeasure ν
     integral_const_mul, integral_complex_ofReal, hone, hchar]
 
 /-- `n` copies of a law, weighted by the quadratic truncation. -/
+@[expose]
 def quadWeighted (n : ℕ) (ν : Measure ℝ) : Measure ℝ :=
   (n : ℝ≥0∞) • ν.withDensity (fun x => ENNReal.ofReal (quadTrunc x))
 
@@ -456,6 +463,7 @@ lemma isFiniteMeasure_quadWeighted {ν : Measure ℝ} [IsFiniteMeasure ν] (n : 
     exact ENNReal.mul_lt_top (ENNReal.natCast_lt_top n) hden⟩
 
 /-- The real drift carried by the continuous cutoff. -/
+@[expose]
 def contDrift (n : ℕ) (ν : Measure ℝ) : ℝ :=
   (n : ℝ) * ∫ x, contTrunc x ∂ν
 

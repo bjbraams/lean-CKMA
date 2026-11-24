@@ -31,7 +31,7 @@ increment on that mesh.
   `n → ∞`.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -86,6 +86,7 @@ lemma ae_eq_of_continuous_of_nnrat {B C : ℝ≥0 → Ω → ℝ}
   exact congrFun hfun t
 
 /-- Dyadic time `k * t / 2 ^ n`. -/
+@[expose]
 def grid (t : ℝ≥0) (n k : ℕ) : ℝ≥0 :=
   ⟨(k : ℝ) * (t : ℝ) / 2 ^ n, by positivity⟩
 
@@ -128,6 +129,7 @@ private lemma grid_sub (t : ℝ≥0) (n k : ℕ) :
   ring
 
 /-- Mesh of the level-`n` grid. -/
+@[expose]
 def gridMesh (t : ℝ≥0) (n : ℕ) : ℝ := (t : ℝ) / 2 ^ n
 
 /-- The mesh is nonnegative. -/
@@ -198,6 +200,7 @@ lemma gridRange_nonempty (n : ℕ) : (Finset.range (2 ^ n)).Nonempty :=
   Finset.nonempty_range_iff.mpr (pow_ne_zero n (by decide : (2 : ℕ) ≠ 0))
 
 /-- Largest absolute increment between consecutive grid times. -/
+@[expose]
 def gridOsc (C : ℝ≥0 → Ω → ℝ) (t : ℝ≥0) (n : ℕ) (ω : Ω) : ℝ :=
   (Finset.range (2 ^ n)).sup' (gridRange_nonempty n) fun k =>
     |C (grid t n (k + 1)) ω - C (grid t n k) ω|
@@ -267,6 +270,7 @@ lemma tendsto_gridOsc {C : ℝ≥0 → Ω → ℝ} (hcont : ∀ ω, Continuous (
   exact hval
 
 /-- Paths whose first visit to level `b` on the dyadic grid of `[0, t]` occurs at index `k`. -/
+@[expose]
 def firstGridHitSet (C : ℝ≥0 → Ω → ℝ) (t : ℝ≥0) (b : ℝ) (n k : ℕ) : Set Ω :=
   {ω | k ≤ 2 ^ n ∧ b ≤ C (grid t n k) ω ∧ ∀ j, j < k → C (grid t n j) ω < b}
 

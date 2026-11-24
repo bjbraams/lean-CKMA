@@ -35,7 +35,7 @@ standard identities in Aliprantis–Burkinshaw, *Positive Operators*, §§1.1 an
 * `CKMA.coneAdditive_isLinearMap`: Jordan extension of an additive positively homogeneous cone map.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -47,6 +47,7 @@ variable {E F : Type*} [AddCommGroup E] [Lattice E] [Module ℝ E]
     [IsOrderedAddMonoid E] [IsOrderedModule ℝ E]
 
 /-- Disjoint vectors in a Riesz space, using lattice absolute values. -/
+@[expose]
 def LatticeDisjoint (x y : E) : Prop := |x| ⊓ |y| = 0
 
 omit [Module ℝ E] [IsOrderedAddMonoid E] [IsOrderedModule ℝ E] in
@@ -63,6 +64,7 @@ private theorem LatticeDisjoint.of_abs_le {x y x' y' : E} (h : LatticeDisjoint x
   exact (inf_le_inf hx hy).trans (le_of_eq h)
 
 /-- The disjoint complement of an arbitrary set of vectors. -/
+@[expose]
 def latticeDisjointComplement (s : Set E) : Set E :=
   {x | ∀ y ∈ s, LatticeDisjoint x y}
 
@@ -460,6 +462,7 @@ theorem coneAdditive_isLinearMap (f : E → F)
       _ = c • g x := by rw [neg_smul, neg_neg]
 
 /-- The linear extension of an additive positively homogeneous cone map. -/
+@[expose]
 def coneAdditiveLinearMap (f : E → F)
     (hadd : ∀ x y : E, 0 ≤ x → 0 ≤ y → f (x + y) = f x + f y)
     (hsmul : ∀ (c : ℝ) (x : E), 0 ≤ c → 0 ≤ x → f (c • x) = c • f x) : E →ₗ[ℝ] F :=

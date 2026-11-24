@@ -35,7 +35,7 @@ limsup.
 * `CKMA.kingmanLiminfReal_ae_invariant`: almost-everywhere invariance of the real liminf.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -49,19 +49,22 @@ variable {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} {T : Ω → Ω}
 attribute [local instance] Classical.propDecidable
 
 /-- Positive-length normalized values, in the indexing of the subadditive theorem. -/
+@[expose]
 def kingmanRatio (f : ℕ → Ω → ℝ) (n : ℕ) (ω : Ω) : ℝ :=
   (n + 1 : ℝ)⁻¹ * f (n + 1) ω
 
 /-- The extended liminf of the normalized subadditive process. -/
+@[expose]
 def kingmanLiminf (f : ℕ → Ω → ℝ) (ω : Ω) : EReal :=
   liminf (fun n => (kingmanRatio f n ω : EReal)) atTop
 
 /-- The extended limsup of the normalized subadditive process. -/
+@[expose]
 def kingmanLimsup (f : ℕ → Ω → ℝ) (ω : Ω) : EReal :=
   limsup (fun n => (kingmanRatio f n ω : EReal)) atTop
 
 /-- Tail measures of an integrable nonnegative function are summable. -/
-private lemma tsum_meas_ge_lt_top [IsProbabilityMeasure μ] {g : Ω → ℝ} (hg : Integrable g μ)
+private lemma tsum_meas_ge_lt_top [IsFiniteMeasure μ] {g : Ω → ℝ} (hg : Integrable g μ)
     (hg0 : ∀ ω, 0 ≤ g ω) (hg_meas : Measurable g) :
     (∑' n : ℕ, μ {ω | (n : ℝ) ≤ g ω}) < ⊤ := by
   let φ : ℝ → ℝ := fun t => μ.real {ω | t ≤ g ω}
@@ -102,7 +105,7 @@ private lemma tsum_meas_ge_lt_top [IsProbabilityMeasure μ] {g : Ω → ℝ} (hg
   exact ENNReal.ofReal_lt_top
 
 /-- An integrable observable is negligible along the orbit, after division by the time. -/
-lemma tendsto_comp_iterate_div [IsProbabilityMeasure μ] (hT : MeasurePreserving T μ μ)
+lemma tendsto_comp_iterate_div [IsFiniteMeasure μ] (hT : MeasurePreserving T μ μ)
     {g : Ω → ℝ} (hg : Integrable g μ) (hg_meas : Measurable g) :
     ∀ᵐ ω ∂μ, Tendsto (fun n : ℕ => g ((T^[n]) ω) / (n : ℝ)) atTop (𝓝 0) := by
   have htail : ∀ k : ℕ, ∀ᵐ ω ∂μ, ∀ᶠ n in atTop,
@@ -401,6 +404,7 @@ private lemma liminf_ofReal_add_const {z : ℕ → ℝ} {C : ℝ} :
   exact hmap.symm
 
 /-- The real representative of the extended liminf. Infinities are sent to zero. -/
+@[expose]
 def kingmanLiminfReal (f : ℕ → Ω → ℝ) (ω : Ω) : ℝ :=
   (kingmanLiminf f ω).toReal
 

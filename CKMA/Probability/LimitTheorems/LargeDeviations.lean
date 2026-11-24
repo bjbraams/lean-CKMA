@@ -5,7 +5,7 @@ Authors: CKMA contributors
 -/
 module
 
-public import CKMA.Probability.LargeDeviations
+public import CKMA.Probability.LargeDeviations.Basic
 public import Mathlib.Probability.IdentDistrib
 public import Mathlib.InformationTheory.KullbackLeibler.Basic
 public import TauCeti.Probability.Process.EmpiricalMeasure
@@ -45,7 +45,7 @@ in `TauCeti.Probability.Process.EmpiricalMeasure`; the rate is Mathlib's relativ
 * `CKMA.sanov`: Sanov's large deviation theorem for empirical measures (**06.61**).
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -55,15 +55,18 @@ open MeasureTheory ProbabilityTheory Filter Topology Set Metric
 open scoped BigOperators NNReal ENNReal
 
 /-- The log MGF as an extended real, retaining infinite exponential moments. -/
+@[expose]
 def extendedLogMGF {Ω : Type*} [MeasurableSpace Ω]
     (X : Ω → ℝ) (μ : Measure Ω) (t : ℝ) : EReal :=
   ENNReal.log (∫⁻ ω, ENNReal.ofReal (Real.exp (t * X ω)) ∂μ)
 
 /-- Cramer's convex conjugate rate. For a probability law its Legendre supremum is nonnegative. -/
+@[expose]
 def cramerRate {Ω : Type*} [MeasurableSpace Ω] (X : Ω → ℝ) (μ : Measure Ω) (x : ℝ) : ℝ≥0∞ :=
   (⨆ t : ℝ, (t * x : ℝ) - extendedLogMGF X μ t).toENNReal
 
 /-- The laws of empirical means, using sample size `n+1`. -/
+@[expose]
 def sampleMeanLaws {Ω : Type*} [MeasurableSpace Ω] (X : ℕ → Ω → ℝ)
     (μ : Measure Ω) (n : ℕ) : Measure ℝ :=
   μ.map (fun ω ↦ (n + 1 : ℝ)⁻¹ * ∑ j ∈ Finset.range (n + 1), X j ω)
@@ -808,11 +811,13 @@ theorem cramer {Ω : Type*} [MeasurableSpace Ω] (μ : Measure Ω) [IsProbabilit
   exact limsup_closed_le hm hi hid hexp hF
 
 /-- The empirical probability measure, reusing TauCeti's finite-population construction. -/
+@[expose]
 def empiricalProbability {Ω E : Type*} [MeasurableSpace E]
     (X : ℕ → Ω → E) (n : ℕ) (ω : Ω) : ProbabilityMeasure E :=
   TauCeti.Probability.empiricalMeasureOfFintype (fun i : Fin (n + 1) ↦ X i ω)
 
 /-- Sanov's entropy rate, using Mathlib's relative entropy of probability measures. -/
+@[expose]
 def sanovRate {E : Type*} [MeasurableSpace E] (P : ProbabilityMeasure E)
     (ν : ProbabilityMeasure E) : ℝ≥0∞ := InformationTheory.klDiv ν.toMeasure P.toMeasure
 

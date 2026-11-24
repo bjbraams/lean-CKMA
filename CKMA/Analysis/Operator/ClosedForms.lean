@@ -34,7 +34,7 @@ with relative form bound below one on the same domain. Sources: GAPS 22.19, 22.2
 * `CKMA.klmn`: KLMN theorem for symmetric relative-form perturbations.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -46,25 +46,30 @@ open scoped InnerProductSpace
 variable {𝕜 H : Type*} [RCLike 𝕜] [NormedAddCommGroup H] [InnerProductSpace 𝕜 H] [CompleteSpace H]
 
 /-- A sesquilinear form on a specified submodule domain, conjugate-linear in the first slot. -/
+@[expose]
 abbrev DomainSesquilinearForm (D : Submodule 𝕜 H) := D →ₗ⋆[𝕜] D →ₗ[𝕜] 𝕜
 
 /-- The graph/form norm for the lower bound `q[x] ≥ -c‖x‖²`. -/
+@[expose]
 def formGraphNorm {D : Submodule 𝕜 H} (q : DomainSesquilinearForm D) (c : ℝ) (x : D) : ℝ :=
   Real.sqrt (RCLike.re (q x x) + (c + 1) * ‖(x : H)‖ ^ 2)
 
 /-- Completeness in the actual form norm, expressed by its Cauchy and convergence criteria.
 This avoids silently imposing the original Hilbert norm on the form domain. -/
+@[expose]
 def IsCompleteFormDomain {D : Submodule 𝕜 H} (q : DomainSesquilinearForm D) (c : ℝ) : Prop :=
   ∀ u : ℕ → D,
     (∀ ε : ℝ, 0 < ε → ∃ N : ℕ, ∀ m n : ℕ, N ≤ m → N ≤ n → formGraphNorm q c (u m - u n) < ε) →
     ∃ x : D, Tendsto (fun n ↦ formGraphNorm q c (u n - x)) atTop (𝓝 0)
 
 /-- A closed symmetric form with an explicit lower-semibound constant. -/
+@[expose]
 def IsClosedSemiboundedForm {D : Submodule 𝕜 H} (q : DomainSesquilinearForm D) (c : ℝ) : Prop :=
   0 ≤ c ∧ (∀ x y : D, q x y = star (q y x)) ∧
     (∀ x : D, -c * ‖(x : H)‖ ^ 2 ≤ RCLike.re (q x x)) ∧ IsCompleteFormDomain q c
 
 /-- The representation identity with all domain inclusions explicit. -/
+@[expose]
 def IsAssociatedFormOperator {D : Submodule 𝕜 H} (q : DomainSesquilinearForm D)
     (A : H →ₗ.[𝕜] H) : Prop :=
   ∃ h : A.domain ≤ D, ∀ x : A.domain, ∀ y : D,

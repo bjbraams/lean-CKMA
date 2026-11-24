@@ -28,7 +28,7 @@ Optimization*, Theorem 4.1.6; GAPS 12.21.
   qualification (GAPS 12.21).
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

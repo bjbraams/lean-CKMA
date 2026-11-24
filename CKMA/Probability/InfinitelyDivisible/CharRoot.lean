@@ -34,7 +34,7 @@ root has characteristic function `exp` of that logarithm divided by the order of
   `exp (charExponent h t / n)`.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -60,6 +60,7 @@ private lemma charFun_symmetrize (μ : Measure ℝ) [IsProbabilityMeasure μ] (t
   simpa [normSq_eq_norm_sq] using mul_conj (charFun μ t)
 
 /-- A positive convolution root of an infinitely divisible law. -/
+@[expose]
 def convolutionRoot {μ : Measure ℝ} (h : IsInfinitelyDivisible μ) (n : ℕ) (hn : 0 < n) :
     Measure ℝ :=
   Classical.choose (h.2 n hn)
@@ -324,6 +325,7 @@ lemma exists_continuous_charExponent {μ : Measure ℝ} [IsProbabilityMeasure μ
     div_one]
 
 /-- A continuous logarithm of an infinitely divisible characteristic function, zero at `0`. -/
+@[expose]
 def charExponent {μ : Measure ℝ} [IsProbabilityMeasure μ] (h : IsInfinitelyDivisible μ) :
     ℝ → ℂ :=
   Classical.choose

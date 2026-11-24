@@ -33,7 +33,7 @@ integration-by-parts identity relating the generator action on `log u` to the Fi
 * `CKMA.integral_generator_mul_log`: Integration by parts `∫ (∂_t u) log u dγ = -∫ (u')² / u dγ`.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -44,9 +44,11 @@ open MeasureTheory ProbabilityTheory Set
 open scoped NNReal ENNReal Real RealInnerProductSpace
 
 /-- Mehler scale factor `e^{-t}` of the Ornstein–Uhlenbeck semigroup. -/
+@[expose]
 def ouScale (t : ℝ) : ℝ := Real.exp (-t)
 
 /-- Mehler width `√(1 - e^{-2t})` of the Ornstein–Uhlenbeck semigroup. -/
+@[expose]
 def ouStdev (t : ℝ) : ℝ := Real.sqrt (1 - Real.exp (-(2 * t)))
 
 /-- Square of the Mehler scale. -/
@@ -105,6 +107,7 @@ lemma hasDerivAt_ouStdev {t : ℝ} (ht : 0 < t) :
   field_simp [hσ]
 
 /-- Ornstein–Uhlenbeck semigroup, as a Gaussian average of the Mehler kernel. -/
+@[expose]
 def ouSemigroup (t : ℝ) (f : ℝ → ℝ) (x : ℝ) : ℝ :=
   ∫ y, f (ouScale t * x + ouStdev t * y) ∂gaussianReal 0 1
 

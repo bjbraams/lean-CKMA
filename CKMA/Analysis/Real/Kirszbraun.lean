@@ -24,7 +24,7 @@ are Mathlib's. Source: GAPS 05.33.
   inner-product space.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

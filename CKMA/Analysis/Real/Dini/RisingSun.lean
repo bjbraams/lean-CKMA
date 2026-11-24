@@ -31,7 +31,7 @@ is attained, and the function stays strictly below the maximum on the intervenin
 * `CKMA.Dini.risingSun_rightmost`: Riesz rising sun lemma for the rightmost maximum.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

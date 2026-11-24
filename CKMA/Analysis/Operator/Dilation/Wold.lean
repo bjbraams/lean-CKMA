@@ -29,7 +29,7 @@ theorem. The argument follows Sz.-Nagy–Foiaş–Bercovici–Kérchy, Chapter I
   series.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -125,6 +125,7 @@ theorem adjoint_isometry_apply (V : H →ₗᵢ[ℂ] H) (x : H) :
   rw [← LinearIsometry.coe_toContinuousLinearMap V, ← comp_apply, h, one_def, id_apply]
 
 /-- The range of an isometry is a Hilbert space. -/
+@[expose]
 instance completeSpace_range_linearIsometry (V : H →ₗᵢ[ℂ] H) :
     CompleteSpace (LinearMap.range V.toLinearMap) := by
   have hclosed : IsClosed (LinearMap.range V.toLinearMap : Set H) := by
@@ -133,6 +134,7 @@ instance completeSpace_range_linearIsometry (V : H →ₗᵢ[ℂ] H) :
   exact hclosed.completeSpace_coe
 
 /-- The wandering subspace `ker V*`. -/
+@[expose]
 def woldWanderingSubspace (V : H →ₗᵢ[ℂ] H) : Submodule ℂ H :=
   LinearMap.ker V.toContinuousLinearMap.adjoint.toLinearMap
 
@@ -142,6 +144,7 @@ theorem isClosed_woldWanderingSubspace (V : H →ₗᵢ[ℂ] H) :
   simpa [woldWanderingSubspace] using isClosed_ker V.toContinuousLinearMap.adjoint
 
 /-- The wandering subspace is a complete space. -/
+@[expose]
 instance completeSpace_woldWanderingSubspace (V : H →ₗᵢ[ℂ] H) :
     CompleteSpace (woldWanderingSubspace V) :=
   (isClosed_woldWanderingSubspace V).completeSpace_coe
@@ -158,6 +161,7 @@ private theorem orthogonal_woldWanderingSubspace (V : H →ₗᵢ[ℂ] H) :
   rw [woldWanderingSubspace_eq_orthogonal_range, orthogonal_orthogonal]
 
 /-- The unitary part is the intersection of all forward ranges. -/
+@[expose]
 def woldUnitarySubspace (V : H →ₗᵢ[ℂ] H) : Submodule ℂ H :=
   ⨅ n : ℕ, LinearMap.range ((V.toContinuousLinearMap ^ n).toLinearMap)
 
@@ -169,6 +173,7 @@ private theorem mem_woldUnitarySubspace_iff (V : H →ₗᵢ[ℂ] H) {x : H} :
   simp [woldUnitarySubspace, mem_iInf]
 
 /-- The inclusion of the wandering subspace, shifted by `Vⁿ`. -/
+@[expose]
 def woldShift (V : H →ₗᵢ[ℂ] H) (n : ℕ) : woldWanderingSubspace V →ₗᵢ[ℂ] H :=
   (V ^ n).comp (woldWanderingSubspace V).subtypeₗᵢ
 
@@ -332,6 +337,7 @@ theorem woldUnitary_inner_shift_eq_zero (V : H →ₗᵢ[ℂ] H) :
   exact hw (V y) ⟨y, rfl⟩
 
 /-- The Fourier coefficient of `x` along the `n`-th wandering shift. -/
+@[expose]
 def woldCoefficient (V : H →ₗᵢ[ℂ] H) (x : H) (n : ℕ) : woldWanderingSubspace V :=
   (woldShift V n).toContinuousLinearMap.adjoint x
 

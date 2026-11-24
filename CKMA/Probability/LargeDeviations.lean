@@ -33,7 +33,7 @@ the variational supremum retain their extended values.
 * `CKMA.varadhan`: Varadhan's integral lemma for bounded continuous functions (**06.62**).
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -47,14 +47,17 @@ open MeasureTheory Filter Topology Set Finset
 variable {X : Type*} [TopologicalSpace X] [MeasurableSpace X]
 
 /-- A good rate function has compact finite sublevels and is lower semicontinuous. -/
+@[expose]
 def IsGoodRateFunction (I : X → ℝ≥0∞) : Prop :=
   LowerSemicontinuous I ∧ ∀ a : ℝ≥0, IsCompact {x | I x ≤ a}
 
 /-- Logarithmic probability at speed `n + 1`. Extended logarithms retain zero probabilities. -/
+@[expose]
 def logProbabilityRate (P : ℕ → Measure X) (s : Set X) (n : ℕ) : EReal :=
   (((n + 1 : ℝ)⁻¹ : ℝ) : EReal) * ENNReal.log (P n s)
 
 /-- The open lower and closed upper bounds of a large deviation principle at speed `n + 1`. -/
+@[expose]
 def HasLargeDeviationPrinciple (P : ℕ → Measure X) (I : X → ℝ≥0∞) : Prop :=
   (∀ s, IsOpen s → -(⨅ x ∈ s, (I x : EReal)) ≤
     liminf (logProbabilityRate P s) atTop) ∧

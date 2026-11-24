@@ -23,7 +23,7 @@ Hölder on each compact interval, with constant equal to the summed dyadic facto
   dyadic constant.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

@@ -27,7 +27,7 @@ intervals holds for initial values in the graph. Source: GAPS 24.52.
   spaces (**24.52**).
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

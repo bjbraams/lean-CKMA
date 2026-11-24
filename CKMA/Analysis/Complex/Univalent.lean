@@ -41,7 +41,7 @@ Sources: GAPS 43.1, 43.3, 43.5, 43.8, 43.21 and 43.31.
 * `CKMA.loewner_kufarev`: Loewner–Kufarev differential equation for radial chains.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -51,13 +51,18 @@ open Filter Topology MeasureTheory
 open scoped BigOperators ENNReal ComplexConjugate
 
 /-- The normalized schlicht class on the unit disk. -/
+@[expose]
 def IsSchlicht (f : ℂ → ℂ) : Prop :=
   DifferentiableOn ℂ f complexUnitDisk ∧ Set.InjOn f complexUnitDisk ∧ f 0 = 0 ∧ deriv f 0 = 1
 
 /-- The Koebe extremal function. -/
+@[expose]
 def koebeFunction (z : ℂ) : ℂ := z / (1 - z) ^ 2
 
-/-- A rotation of the normalized Koebe function. -/
+/-- `ζ⁻¹` times the Koebe function at `ζ * z`.
+`ζ` is arbitrary. If `ζ = 0`, then `ζ⁻¹ = 0`, so the value is `0`.
+If `‖ζ‖ = 1`, this is a rotation of `koebeFunction`. -/
+@[expose]
 def koebeRotation (ζ z : ℂ) : ℂ := ζ⁻¹ * koebeFunction (ζ * z)
 
 /-- The Koebe function vanishes at the origin. -/
@@ -65,17 +70,21 @@ theorem koebeFunction_zero : koebeFunction 0 = 0 := by
   simp [koebeFunction]
 
 /-- The Taylor coefficient in the usual schlicht normalization. -/
+@[expose]
 def schlichtCoefficient (f : ℂ → ℂ) (n : ℕ) : ℂ := iteratedDeriv n f 0 / (n.factorial : ℂ)
 
 /-- The exterior disk. -/
+@[expose]
 def exteriorUnitDisk : Set ℂ := {z | 1 < ‖z‖}
 
 /-- Exterior schlicht functions, normalized to derivative one at infinity. -/
+@[expose]
 def IsExteriorSchlicht (g : ℂ → ℂ) : Prop :=
   DifferentiableOn ℂ g exteriorUnitDisk ∧ Set.InjOn g exteriorUnitDisk ∧
     ∃ b₀ : ℂ, Tendsto (fun z ↦ g z - z) (cocompact ℂ) (𝓝 b₀)
 
 /-- The nonnegative coefficient energy in Grönwall's exterior area theorem. -/
+@[expose]
 def exteriorCoefficientEnergy (g : ℂ → ℂ) : ℝ≥0∞ :=
   ∑' n : ℕ, (n + 1 : ℝ≥0∞) *
     ENNReal.ofReal (‖laurentCoefficient g 0 2 (-((n + 1 : ℕ) : ℤ))‖ ^ 2)
@@ -160,7 +169,9 @@ theorem de_branges {f : ℂ → ℂ} (hf : IsSchlicht f) (n : ℕ) (hn : 2 ≤ n
         Set.EqOn f (koebeRotation ζ) complexUnitDisk) := by
   sorry
 
-/-- Schwarzian derivative in the standard normalization. -/
+/-- Schwarzian derivative `(f''' / f') - (3 / 2) (f'' / f')²`.
+If `deriv f z = 0`, both quotients are `0`, so the value is `0`. -/
+@[expose]
 def schwarzianDerivative (f : ℂ → ℂ) (z : ℂ) : ℂ :=
   iteratedDeriv 3 f z / deriv f z - (3 / 2 : ℂ) * (iteratedDeriv 2 f z / deriv f z) ^ 2
 
@@ -173,6 +184,7 @@ theorem nehari_univalent {f : ℂ → ℂ} (hf : DifferentiableOn ℂ f complexU
 
 /-- Local absolute continuity of a time family, with an integrable bound uniform on compact
   subdisks. -/
+@[expose]
 def IsLocallyAbsolutelyContinuousDiskFamily (f : ℝ → ℂ → ℂ) : Prop :=
   ∀ T r : ℝ, 0 < T → 0 ≤ r → r < 1 → ∃ m : ℝ → ℝ,
     IntegrableOn m (Set.Icc 0 T) ∧ (∀ᵐ t ∂volume.restrict (Set.Icc 0 T), 0 ≤ m t) ∧
@@ -181,6 +193,7 @@ def IsLocallyAbsolutelyContinuousDiskFamily (f : ℝ → ℂ → ℂ) : Prop :=
 
 /-- A radial Loewner chain: univalent nested images, exponential derivative normalization,
 and the usual local absolute-continuity control. -/
+@[expose]
 def IsRadialLoewnerChain (f : ℝ → ℂ → ℂ) : Prop :=
   (∀ t : ℝ, 0 ≤ t → DifferentiableOn ℂ (f t) complexUnitDisk ∧
     Set.InjOn (f t) complexUnitDisk ∧ f t 0 = 0 ∧ deriv (f t) 0 = Real.exp t) ∧

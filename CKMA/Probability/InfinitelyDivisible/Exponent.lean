@@ -33,7 +33,7 @@ conjugation, and scales by `1 / n` under division of the triplet by `n`.
 * `CKMA.LevyTriplet.exponent_divNat`: dividing a triplet by `n` divides its exponent by `n`.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -43,6 +43,7 @@ open MeasureTheory Complex intervalIntegral Set
 open scoped BigOperators NNReal ENNReal Real
 
 /-- The Lévy–Khintchine integrand at frequency `t` and jump size `x`. -/
+@[expose]
 def levyIntegrand (t x : ℝ) : ℂ :=
   exp (I * t * x) - 1 - (if |x| ≤ 1 then I * t * x else 0)
 
@@ -367,6 +368,7 @@ lemma isLevyMeasure_inv_nsmul {ν : Measure ℝ} (hν : IsLevyMeasure ν) {n : �
     exact_mod_cast hn
 
 /-- The triplet scaled by `1 / n`, for the same truncation. -/
+@[expose]
 def LevyTriplet.divNat (L : LevyTriplet) (n : ℕ) (hn : 0 < n) : LevyTriplet where
   gaussianVariance := L.gaussianVariance / n
   drift := L.drift / n

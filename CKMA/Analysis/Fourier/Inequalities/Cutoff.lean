@@ -42,7 +42,7 @@ All declarations live in the auxiliary namespace `CKMA.Heisenberg`.
 * `V`: local notation for `EuclideanSpace ℝ (Fin d)`.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -76,6 +76,7 @@ private lemma norm_sq_eq_integral_norm_sq
   simp [Nat.cast_ofNat, Real.rpow_one]
 
 /-- Coordinate vector `eⱼ` in Euclidean space. -/
+@[expose]
 def coordVec (j : Fin d) : V :=
   EuclideanSpace.single j 1
 
@@ -88,6 +89,7 @@ private lemma norm_coordVec (j : Fin d) : ‖coordVec j‖ = 1 := by
   simp [coordVec, PiLp.norm_single]
 
 /-- The coordinate `x ↦ xⱼ`, as a complex scalar. -/
+@[expose]
 def coordFun (j : Fin d) : V → ℂ :=
   fun x ↦ (x j : ℂ)
 
@@ -306,11 +308,13 @@ lemma norm_fourier_coord_eq (j : Fin d) (f : Lp ℂ 2 (volume : Measure V))
   rw [FourierTransform.fourier_smul, norm_smul, norm_neg, Lp.norm_fourier_eq, norm_two_pi_I]
 
 /-- Smooth bump equal to one on the unit ball and supported in the ball of radius two. -/
+@[expose]
 def baseBump : ContDiffBump (0 : V) :=
   ⟨1, 2, zero_lt_one, one_lt_two⟩
 
 /-- Frequency cutoff `φₙ` at scale `n + 1`: the base bump rescaled by `n + 1`, equal to one
 on the ball of radius `n + 1` and supported in the ball of radius `2 (n + 1)`. -/
+@[expose]
 def freqBump (n : ℕ) (x : V) : ℝ :=
   (baseBump : ContDiffBump (0 : V)) (((n : ℝ) + 1)⁻¹ • x)
 
@@ -514,6 +518,7 @@ private lemma integrable_pow_mul_freqBump (n k : ℕ) (u : Lp ℂ 2 (volume : Me
     abs_of_nonneg hφ.1, abs_of_nonneg (pow_nonneg (norm_nonneg _) _), mul_assoc]
 
 /-- Pointwise product of an `L²` class by the frequency cutoff. -/
+@[expose]
 abbrev freqCutoff (n : ℕ) (u : Lp ℂ 2 (volume : Measure V)) : V → ℂ :=
   fun x ↦ (freqBump n x : ℂ) * u x
 
@@ -591,6 +596,7 @@ lemma fderiv_fourierInv_freqCutoff_coord (n : ℕ) (j : Fin d)
   rw [hnegF, neg_neg]
 
 /-- Complex coordinate cutoff `φₙ`. -/
+@[expose]
 def freqBumpScaled (n : ℕ) : V → ℂ :=
   fun x ↦ (freqBump n x : ℂ)
 
@@ -616,6 +622,7 @@ lemma memLp_top_freqBumpScaled (n : ℕ) :
     (contDiff_freqBump n).continuous).memLp_top_of_hasCompactSupport hsup volume
 
 /-- Complexified derivative of the cutoff along `eⱼ`. -/
+@[expose]
 def freqBumpDeriv (n : ℕ) (j : Fin d) : V → ℂ :=
   fun x ↦ (fderiv ℝ (freqBump n) x (coordVec j) : ℂ)
 

@@ -29,7 +29,7 @@ convention.
   theorem (**06.51**).
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

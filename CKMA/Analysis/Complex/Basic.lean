@@ -27,7 +27,7 @@ complex analysis and complex geometry.
 * `CKMA.isOpen_complexUnitDisk`: `complexUnitDisk` is open.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -36,6 +36,7 @@ namespace CKMA
 open scoped BigOperators
 
 /-- The open unit disk, shared by the analytic function-space interfaces. -/
+@[expose]
 def complexUnitDisk : Set ℂ := Metric.ball 0 1
 
 /-- The shared unit disk is open. This exported lemma avoids unfolding its implementation
@@ -44,6 +45,7 @@ theorem isOpen_complexUnitDisk : IsOpen complexUnitDisk := Metric.isOpen_ball
 
 /-- Normal summability on compact subsets, requiring bounded summands and summability
 of their compact supremum norms. -/
+@[expose]
 def NormallySummableOn {ι X E : Type*} [TopologicalSpace X] [NormedAddCommGroup E]
     (f : ι → X → E) (s : Set X) : Prop :=
   ∀ K : Set X, IsCompact K → K ⊆ s →

@@ -33,7 +33,7 @@ square root of the positive remainder `‖X‖² - X₀* X₀ - Σ Bₖ* Bₖ`.
 * `CKMA.re_inner_liftGram`: quadratic form of the accumulated Gram operator.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -49,6 +49,7 @@ variable {H K : Type u}
     [NormedAddCommGroup K] [InnerProductSpace ℂ K] [CompleteSpace K]
 
 /-- The compression `X J*` of an operator on the original space. -/
+@[expose]
 def coextensionCompress (X : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K) : K →L[ℂ] H :=
   X.comp J.toContinuousLinearMap.adjoint
 
@@ -147,6 +148,7 @@ private theorem isSelfAdjoint_smul_one_real (c : ℝ) :
   rw [isSelfAdjoint_iff, star_smul, star_one, Complex.star_def, Complex.conj_ofReal]
 
 /-- Positive remainder `‖X‖² I - X₀* X₀ - gram`. -/
+@[expose]
 def commutantRemainder (X : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K) (gram : K →L[ℂ] K) : K →L[ℂ] K :=
   Complex.ofReal (‖X‖ ^ 2) • (1 : K →L[ℂ] K) -
     (coextensionCompress X J).adjoint.comp (coextensionCompress X J) - gram
@@ -186,7 +188,10 @@ theorem commutantRemainder_nonneg (X : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K) {
   rw [reApplyInnerSelf_apply, re_inner_commutantRemainder]
   linarith [hquad y]
 
-/-- Square root of the commutant remainder. -/
+/-- `CFC.sqrt` of the commutant remainder.
+
+`CFC.sqrt` is `0` when its argument is not nonnegative. -/
+@[expose]
 def remainderSqrt (X : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K) (gram : K →L[ℂ] K) : K →L[ℂ] K :=
   CFC.sqrt (commutantRemainder X J gram)
 
@@ -204,6 +209,7 @@ theorem norm_sq_remainderSqrt (X : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K) (gram
   rw [apply_norm_sq_eq_inner_adjoint_left, hadj, ← mul_def, hmul]
 
 /-- The closed defect space is complete. -/
+@[expose]
 instance completeSpace_dilationDefectSpace (T : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K)
     (V : K →ₗᵢ[ℂ] K) : CompleteSpace (dilationDefectSpace T J V) :=
   Submodule.topologicalClosure.completeSpace
@@ -249,6 +255,7 @@ theorem commutantPrev_norm_le (T X : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K) (V 
   simpa [comp_apply] using hle
 
 /-- The next commutant block, as a map into the defect space. -/
+@[expose]
 def commutantBlock (T X : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K)
     (s : CommutantLiftState T X J V) : K →L[ℂ] dilationDefectSpace T J V :=
   (contractionFactor (dilationDefectSpace T J V)
@@ -294,6 +301,7 @@ private theorem norm_subtype_commutantBlock (T X : H →L[ℂ] H) (J : H →ₗ�
   rw [comp_apply, Submodule.subtypeL_apply, Submodule.norm_coe]
 
 /-- The Gram operator obtained by appending one block. -/
+@[expose]
 def commutantSuccGram (T X : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K)
     (s : CommutantLiftState T X J V) : K →L[ℂ] K :=
   s.gram + star ((dilationDefectSpace T J V).subtypeL.comp (commutantBlock T X J V s)) *
@@ -308,6 +316,7 @@ theorem re_inner_succGram (T X : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K) (V : K 
     star_eq_adjoint, mul_def, re_inner_adjoint_comp_self, norm_subtype_commutantBlock]
 
 /-- Appending a block preserves the quadratic bound and the shift identity. -/
+@[expose]
 def commutantLiftSucc (T X : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K)
     (s : CommutantLiftState T X J V) : CommutantLiftState T X J V where
   gram := commutantSuccGram T X J V s
@@ -337,6 +346,7 @@ def commutantLiftSucc (T X : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K) (V : K →�
     linarith [s.shift y]
 
 /-- The defect of the compression, viewed in the defect space. -/
+@[expose]
 def commutantBasePrev (T X : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K) :
     K →L[ℂ] dilationDefectSpace T J V :=
   ((dilationDefect T J V).comp (coextensionCompress X J)).codRestrict
@@ -352,6 +362,7 @@ theorem subtype_commutantBasePrev (T X : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K)
   rw [commutantBasePrev, coe_codRestrict_apply, comp_apply]
 
 /-- Initial state, with Gram zero and previous block the defect of `X₀`. -/
+@[expose]
 def commutantLiftBase (T X : H →L[ℂ] H) (hXT : Commute X T)
     (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K)
     (hcoin : ∀ y : K, J.toContinuousLinearMap.adjoint (V y) =
@@ -380,6 +391,7 @@ def commutantLiftBase (T X : H →L[ℂ] H) (hXT : Commute X T)
     ring
 
 /-- The block iteration. -/
+@[expose]
 def commutantLiftState (T X : H →L[ℂ] H) (hXT : Commute X T)
     (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K)
     (hcoin : ∀ y : K, J.toContinuousLinearMap.adjoint (V y) =
@@ -388,6 +400,7 @@ def commutantLiftState (T X : H →L[ℂ] H) (hXT : Commute X T)
   | n + 1 => commutantLiftSucc T X J V (commutantLiftState T X hXT J V hcoin n)
 
 /-- The block attached to the `n`th state. -/
+@[expose]
 def commutantLiftBlock (T X : H →L[ℂ] H) (hXT : Commute X T)
     (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K)
     (hcoin : ∀ y : K, J.toContinuousLinearMap.adjoint (V y) =

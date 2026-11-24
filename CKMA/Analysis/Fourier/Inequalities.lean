@@ -29,7 +29,7 @@ Source: GAPS 27.13.
 * `V`: local notation for `EuclideanSpace ℝ (Fin d)`.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

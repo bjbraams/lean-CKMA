@@ -34,7 +34,7 @@ the integral of the diagonal. Source: GAPS 25.8.
   positive-semidefinite kernels (**25.8**).
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -45,15 +45,18 @@ open scoped BigOperators ComplexConjugate ComplexOrder
 
 /-- Kernel positive-semidefiniteness through all finite Gram matrices.
 Zero eigenvalues, finite rank, and the zero kernel are allowed. -/
+@[expose]
 def IsPositiveSemidefiniteKernel {D : Type*} (k : D → D → ℂ) : Prop :=
   ∀ n : ℕ, ∀ x : Fin n → D, Matrix.PosSemidef (fun i j : Fin n ↦ k (x i) (x j))
 
 /-- The kth Mercer summand with its continuous eigenfunction representative. -/
+@[expose]
 def mercerTerm {D : Type*} [TopologicalSpace D] (a : ℕ → ℝ) (e : ℕ → C(D, ℂ))
     (n : ℕ) (p : D × D) : ℂ := (a n : ℂ) * e n p.1 * conj (e n p.2)
 
 /-- Uniform absolute convergence in the correct tail sense. Summability of individual
 supremum norms would be stronger than Mercer's theorem and is deliberately not assumed. -/
+@[expose]
 def HasUniformAbsoluteMercerTails {D : Type*} [TopologicalSpace D]
     (a : ℕ → ℝ) (e : ℕ → C(D, ℂ)) : Prop :=
   ∀ ε : ℝ, 0 < ε → ∃ N : ℕ, ∀ s : Finset ℕ, (∀ n ∈ s, N ≤ n) →

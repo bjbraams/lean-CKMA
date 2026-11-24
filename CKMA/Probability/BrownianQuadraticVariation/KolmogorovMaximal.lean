@@ -27,7 +27,7 @@ independent mean-zero square-integrable family.
   partial sums of a finite independent mean-zero `L²` family.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -37,6 +37,7 @@ open scoped NNReal ENNReal ProbabilityTheory BigOperators
 open MeasureTheory ProbabilityTheory
 
 /-- Indices strictly before a partial-sum time. -/
+@[expose]
 def pastFinset (n : ℕ) (k : Fin (n + 1)) : Finset (Fin n) :=
   Finset.univ.filter fun i ↦ i.val < k.val
 
@@ -45,6 +46,7 @@ private def futureFinset (n : ℕ) (k : Fin (n + 1)) : Finset (Fin n) :=
   Finset.univ.filter fun i ↦ k.val ≤ i.val
 
 /-- Sum of the family over indices strictly before `k`. -/
+@[expose]
 def partialSum {Ω : Type*} {n : ℕ} (X : Fin n → Ω → ℝ) (k : Fin (n + 1)) : Ω → ℝ :=
   fun ω ↦ ∑ i ∈ pastFinset n k, X i ω
 

@@ -50,7 +50,7 @@ extends a partial functional dominated by it, using Mathlib's Hahn–Banach theo
   Clarke directional derivative.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -63,29 +63,35 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 /-- Clarke's generalized directional derivative, with a joint limit in base point and
 positive step size. Extended reals avoid totalizing an unbounded real limsup. -/
+@[expose]
 def clarkeDirectionalDerivative (f : E → ℝ) (x d : E) : EReal :=
   limsup (fun p : E × ℝ ↦ (((f (p.1 + p.2 • d) - f p.1) / p.2 : ℝ) : EReal))
     (𝓝[Set.univ ×ˢ Set.Ioi 0] (x, 0))
 
 /-- The Clarke generalized gradient in the continuous dual. -/
+@[expose]
 def clarkeSubdifferential (f : E → ℝ) (x : E) : Set (StrongDual ℝ E) :=
   {u | ∀ d : E, (u d : EReal) ≤ clarkeDirectionalDerivative f x d}
 
 /-- Limits of ordinary derivatives at differentiability points approaching `x`. -/
+@[expose]
 def reachableDerivatives (f : E → ℝ) (x : E) : Set (StrongDual ℝ E) :=
   {u | ∃ y : ℕ → E, Tendsto y atTop (𝓝 x) ∧
     (∀ n, DifferentiableAt ℝ f (y n)) ∧
     Tendsto (fun n ↦ fderiv ℝ f (y n)) atTop (𝓝 u)}
 
 /-- Difference quotient of `f` at base point `p.1` with positive step `p.2`, in direction `d`. -/
+@[expose]
 def clarkeQuotient (f : E → ℝ) (d : E) (p : E × ℝ) : ℝ :=
   (f (p.1 + p.2 • d) - f p.1) / p.2
 
 /-- Neighborhoods of `(x, 0)` that retain only strictly positive steps. -/
+@[expose]
 def clarkeStepNhds (x : E) : Filter (E × ℝ) :=
   𝓝[Set.univ ×ˢ Set.Ioi 0] (x, 0)
 
 /-- The positive-step filter is nontrivial: `(x, 0)` lies in the closure of `{t > 0}`. -/
+@[expose]
 instance clarkeStepNhds_neBot (x : E) : (clarkeStepNhds x).NeBot := by
   rw [clarkeStepNhds, ← mem_closure_iff_nhdsWithin_neBot, closure_prod_eq, closure_univ,
     closure_Ioi]
@@ -251,6 +257,7 @@ private lemma clarkeDirectionalDerivative_mem_Icc {f : E → ℝ} {x : E} {r : �
 
 /-- Real limsup of the Clarke quotient. It agrees with the extended-real derivative once the
 quotient is locally bounded. -/
+@[expose]
 def clarkeReal (f : E → ℝ) (x d : E) : ℝ :=
   limsup (clarkeQuotient f d) (clarkeStepNhds x)
 

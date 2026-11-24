@@ -49,7 +49,7 @@ without changing the limiting assertions.
 * `CKMA.berry_esseen`: Berry–Esseen theorem (**06.36**).
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -61,6 +61,7 @@ open scoped BigOperators ENNReal
 /-- Convergence of partial sums in their given order.
 This is Mathlib conditional summability. For real sequences it allows conditional
 convergence, unlike unconditional `Summable`. -/
+@[expose]
 abbrev IsOrderedSummable {E : Type*} [AddCommMonoid E] [TopologicalSpace E] (a : ℕ → E) : Prop :=
   Summable a (SummationFilter.conditional ℕ)
 
@@ -73,11 +74,13 @@ theorem Summable.isOrderedSummable {E : Type*} [TopologicalSpace E] [AddCommMono
 alias isOrderedSummable_of_summable := Summable.isOrderedSummable
 
 /-- Symmetric truncation of a real random variable. -/
+@[expose]
 def symmetricTruncation {Ω : Type*} (A : ℝ) (X : Ω → ℝ) (ω : Ω) : ℝ :=
   if |X ω| ≤ A then X ω else 0
 
 /-- The three conditions in Kolmogorov's theorem; only the mean series may converge conditionally.
   -/
+@[expose]
 def HasThreeSeries {Ω : Type*} [MeasurableSpace Ω]
     (X : ℕ → Ω → ℝ) (μ : Measure Ω) (A : ℝ) : Prop :=
   (∑' n, μ {ω | A < |X n ω|}) < ∞ ∧
@@ -92,6 +95,7 @@ theorem kolmogorov_threeSeries {Ω : Type*} [MeasurableSpace Ω] (μ : Measure �
   ae_summable_conditional_iff_threeSeries X hm hi hA
 
 /-- The iterated-logarithm normalization, totalized at the first few indices. -/
+@[expose]
 def iteratedLogScale (varianceParam : ℝ) (n : ℕ) : ℝ :=
   Real.sqrt (2 * varianceParam * n * Real.log (Real.log n))
 
@@ -110,11 +114,13 @@ theorem hartman_wintner {Ω : Type*} [MeasurableSpace Ω] (μ : Measure Ω)
 
 /-- The sum of the uncentered second moments of one row.
 This is the row variance when every entry is centered. -/
+@[expose]
 def arrayRowVariance {Ω : Type*} [MeasurableSpace Ω] {k : ℕ → ℕ}
     (X : ∀ n, Fin (k n) → Ω → ℝ) (μ : Measure Ω) (n : ℕ) : ℝ :=
   ∑ i, ∫ ω, (X n i ω) ^ 2 ∂μ
 
 /-- Lindeberg's negligible large-increment condition, normalized by the row second-moment sum. -/
+@[expose]
 def HasLindebergCondition {Ω : Type*} [MeasurableSpace Ω] {k : ℕ → ℕ}
     (X : ∀ n, Fin (k n) → Ω → ℝ) (μ : Measure Ω) : Prop :=
   ∀ ε : ℝ, 0 < ε → Tendsto (fun n ↦ (arrayRowVariance X μ n)⁻¹ *
@@ -122,6 +128,7 @@ def HasLindebergCondition {Ω : Type*} [MeasurableSpace Ω] {k : ℕ → ℕ}
       then (X n i ω) ^ 2 else 0 ∂μ) atTop (𝓝 0)
 
 /-- No individual second moment contributes a positive fraction of the row second-moment sum. -/
+@[expose]
 def HasFellerCondition {Ω : Type*} [MeasurableSpace Ω] {k : ℕ → ℕ}
     (X : ∀ n, Fin (k n) → Ω → ℝ) (μ : Measure Ω) : Prop :=
   ∀ ε : ℝ, 0 < ε → ∀ᶠ n in atTop, ∀ i,
@@ -129,6 +136,7 @@ def HasFellerCondition {Ω : Type*} [MeasurableSpace Ω] {k : ℕ → ℕ}
 
 /-- Row sum normalized by the square root of the row second-moment sum.
 The sum is centered when the separate centering hypothesis of the limit theorems holds. -/
+@[expose]
 def normalizedArraySum {Ω : Type*} [MeasurableSpace Ω] {k : ℕ → ℕ}
     (X : ∀ n, Fin (k n) → Ω → ℝ) (μ : Measure Ω) (n : ℕ) (ω : Ω) : ℝ :=
   (∑ i, X n i ω) / Real.sqrt (arrayRowVariance X μ n)
@@ -210,6 +218,7 @@ theorem lindeberg_feller_iff {Ω : Type*} [MeasurableSpace Ω] (μ : Measure Ω)
 
 /-- Supremum of differences of the real CDFs. On probability measures this is the
 Kolmogorov distance; the raw formula also accepts arbitrary measures. -/
+@[expose]
 def kolmogorovDistance (μ ν : Measure ℝ) : ℝ :=
   sSup (Set.range (fun x ↦ |cdf μ x - cdf ν x|))
 

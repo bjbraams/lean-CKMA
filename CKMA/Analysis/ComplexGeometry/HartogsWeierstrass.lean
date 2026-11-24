@@ -8,6 +8,8 @@ module
 public import Mathlib.Analysis.Analytic.Order
 public import Mathlib.Analysis.Complex.Basic
 public import Mathlib.Algebra.MvPolynomial.Eval
+import TauCeti.Analysis.Complex.Weierstrass
+import TauCeti.Geometry.Manifold.Complex.StructureSheaf.Weierstrass
 
 /-!
 # Several-variable extension, preparation and approximation
@@ -17,6 +19,9 @@ Hartogs extension fills compact holes in dimension at least two. Distinguished
 polynomials with analytic coefficient germs give Weierstrass preparation and division,
 with uniqueness of the resulting germs. Polynomially convex compact sets admit
 Oka–Weil approximation by multivariate polynomials.
+
+The Weierstrass proofs use TauCeti's local analytic existence theorems and the
+germ uniqueness theorems from its holomorphic structure sheaf.
 
 Sources: GAPS 45.1, 45.5, 45.7, 45.8 and 45.20.
 
@@ -38,7 +43,7 @@ Sources: GAPS 45.1, 45.5, 45.7, 45.8 and 45.20.
 * `CKMA.polynomial_oka_weil`: Oka–Weil polynomial approximation theorem.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -48,6 +53,7 @@ open Filter Topology
 open scoped BigOperators
 
 /-- Separate holomorphy on an open coordinate domain; no continuity assumption is included. -/
+@[expose]
 def IsSeparatelyHolomorphicOn {n : ℕ} (f : (Fin n → ℂ) → ℂ) (Ω : Set (Fin n → ℂ)) : Prop :=
   ∀ z ∈ Ω, ∀ j : Fin n, DifferentiableAt ℂ (fun w ↦ f (Function.update z j w)) (z j)
 
@@ -71,18 +77,22 @@ theorem hartogs_extension {n : ℕ} (hn : 2 ≤ n) {Ω K : Set (Fin n → ℂ)}
   sorry
 
 /-- Holomorphic coefficients of a distinguished polynomial, all vanishing at the base origin. -/
+@[expose]
 def IsDistinguishedCoefficientFamily {n d : ℕ} (a : Fin d → (Fin n → ℂ) → ℂ) : Prop :=
   ∀ j, AnalyticAt ℂ (a j) 0 ∧ a j 0 = 0
 
 /-- A monic Weierstrass polynomial in the final coordinate. -/
+@[expose]
 def distinguishedPolynomial {n d : ℕ} (a : Fin d → (Fin n → ℂ) → ℂ)
     (z : (Fin n → ℂ) × ℂ) : ℂ := z.2 ^ d + ∑ j, a j z.1 * z.2 ^ j.val
 
 /-- A polynomial remainder of degree strictly less than `d` in the last coordinate. -/
+@[expose]
 def distinguishedRemainder {n d : ℕ} (a : Fin d → (Fin n → ℂ) → ℂ)
     (z : (Fin n → ℂ) × ℂ) : ℂ := ∑ j, a j z.1 * z.2 ^ j.val
 
 /-- The analytic factorization properties of Weierstrass preparation, as germ identities. -/
+@[expose]
 def IsWeierstrassPreparation {n d : ℕ} (f u : ((Fin n → ℂ) × ℂ) → ℂ)
     (a : Fin d → (Fin n → ℂ) → ℂ) : Prop :=
   AnalyticAt ℂ u 0 ∧ u 0 ≠ 0 ∧ IsDistinguishedCoefficientFamily a ∧
@@ -96,9 +106,22 @@ theorem weierstrass_preparation {n d : ℕ} {f : ((Fin n → ℂ) × ℂ) → �
       ∀ (v : ((Fin n → ℂ) × ℂ) → ℂ) (b : Fin d → (Fin n → ℂ) → ℂ),
         IsWeierstrassPreparation f v b →
           u =ᶠ[𝓝 (0 : (Fin n → ℂ) × ℂ)] v ∧ ∀ j, a j =ᶠ[𝓝 (0 : Fin n → ℂ)] b j := by
-  sorry
+  obtain ⟨a, u, ha, ha₀, hu, hu₀, hprep⟩ :=
+    AnalyticAt.exists_weierstrassPreparation (x₀ := (0 : Fin n → ℂ)) (w₀ := 0) hf horder
+  have hfu : f =ᶠ[𝓝 (0 : (Fin n → ℂ) × ℂ)] fun z ↦ u z * distinguishedPolynomial a z := by
+    simpa only [Prod.mk_zero_zero, TauCeti.Polynomial.eval_monicOfCoeff, sub_zero,
+      distinguishedPolynomial, mul_comm] using hprep
+  refine ⟨u, a, ⟨hu, hu₀, fun j ↦ ⟨ha j, ha₀ j⟩, hfu⟩, ?_⟩
+  rintro v b ⟨hv, hv₀, hb, hfv⟩
+  have h := TauCeti.eventuallyEq_of_weierstrassPreparation
+    ha ha₀ hu hu₀ (fun j ↦ (hb j).1) (fun j ↦ (hb j).2) hv hv₀
+    (by
+      simpa only [Prod.mk_zero_zero, TauCeti.Polynomial.eval_monicOfCoeff, sub_zero,
+        distinguishedPolynomial, mul_comm] using hfu.symm.trans hfv)
+  exact ⟨h.2, h.1⟩
 
 /-- Germ data for division by a distinguished polynomial. -/
+@[expose]
 def IsWeierstrassDivision {n d : ℕ} (g q : ((Fin n → ℂ) × ℂ) → ℂ)
     (a r : Fin d → (Fin n → ℂ) → ℂ) : Prop :=
   AnalyticAt ℂ q 0 ∧ (∀ j, AnalyticAt ℂ (r j) 0) ∧
@@ -114,10 +137,23 @@ theorem weierstrass_division {n d : ℕ} (a : Fin d → (Fin n → ℂ) → ℂ)
       ∀ (q' : ((Fin n → ℂ) × ℂ) → ℂ) (r' : Fin d → (Fin n → ℂ) → ℂ),
         IsWeierstrassDivision g q' a r' →
           q =ᶠ[𝓝 (0 : (Fin n → ℂ) × ℂ)] q' ∧ ∀ j, r j =ᶠ[𝓝 (0 : Fin n → ℂ)] r' j := by
-  sorry
+  obtain ⟨q, r, hq, hr, hdiv⟩ :=
+    AnalyticAt.exists_weierstrassDivision_monicOfCoeff (x₀ := (0 : Fin n → ℂ)) (w₀ := 0)
+      hg (fun j ↦ (ha j).1) (fun j ↦ (ha j).2)
+  have hgq : g =ᶠ[𝓝 (0 : (Fin n → ℂ) × ℂ)]
+      fun z ↦ q z * distinguishedPolynomial a z + distinguishedRemainder r z := by
+    simpa only [Prod.mk_zero_zero, TauCeti.Polynomial.eval_monicOfCoeff, sub_zero,
+      distinguishedPolynomial, distinguishedRemainder, mul_comm] using hdiv
+  refine ⟨q, r, ⟨hq, hr, hgq⟩, ?_⟩
+  rintro q' r' ⟨hq', hr', hgq'⟩
+  refine TauCeti.eventuallyEq_of_weierstrassDivision
+    (fun j ↦ (ha j).1) (fun j ↦ (ha j).2) hq hr hq' hr' ?_
+  simpa only [Prod.mk_zero_zero, TauCeti.Polynomial.eval_monicOfCoeff, sub_zero,
+    distinguishedPolynomial, distinguishedRemainder, mul_comm] using hgq.symm.trans hgq'
 
-/-- The polynomial hull in affine complex space, using actual multivariate polynomial evaluations.
-  -/
+/-- Polynomial hull in `ℂⁿ`: points where every polynomial is bounded by its supremum norm on `K`.
+`sSup` of an empty set, and of a set of norms that is not bounded above, is `0`. -/
+@[expose]
 def complexPolynomialHull {n : ℕ} (K : Set (Fin n → ℂ)) : Set (Fin n → ℂ) :=
   {z | ∀ p : MvPolynomial (Fin n) ℂ,
     ‖MvPolynomial.eval z p‖ ≤ sSup ((fun w ↦ ‖MvPolynomial.eval w p‖) '' K)}

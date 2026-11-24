@@ -26,7 +26,7 @@ corresponding lower bound for the Lebesgue constant.
   Chebyshev-extrema Lebesgue constant.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

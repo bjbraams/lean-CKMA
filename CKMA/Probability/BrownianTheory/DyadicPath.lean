@@ -31,7 +31,7 @@ times themselves, so the same bound passes to every uniform limit of the floors.
   Hölder bound.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -42,21 +42,25 @@ open Finset
 namespace Brownian
 
 /-- Consecutive increments of `f` on the integer interval starting at `j` obey a dyadic bound. -/
+@[expose]
 def HasDyadicIncrements (f : ℝ → ℝ) (α K : ℝ) (j : ℕ) : Prop :=
   ∀ n, ∀ i : ℕ, i < 2 ^ n →
     |f (↑j + (↑i + 1) / 2 ^ n) - f (↑j + (↑i : ℝ) / 2 ^ n)| ≤
       K * ((1 : ℝ) / 2 ^ n) ^ α
 
 /-- Absolute size of one dyadic increment, scaled by the mesh to the power `α`. -/
+@[expose]
 def incrementRatio (f : ℝ → ℝ) (α : ℝ) (j n i : ℕ) : ℝ :=
   |f (↑j + (↑i + 1) / 2 ^ n) - f (↑j + (↑i : ℝ) / 2 ^ n)| * (2 : ℝ) ^ (α * ↑n)
 
 /-- Ratios of the increments of level strictly less than `N` on the interval starting at `j`. -/
+@[expose]
 def ratioList (f : ℝ → ℝ) (α : ℝ) (j N : ℕ) : List ℝ :=
   (List.range N).flatMap fun n =>
     (List.range (2 ^ n)).map fun i => incrementRatio f α j n i
 
 /-- A constant dominating `1` and every increment ratio of level less than `N`. -/
+@[expose]
 def holderConstFrom (f : ℝ → ℝ) (α : ℝ) (j N : ℕ) : ℝ :=
   (ratioList f α j N).foldr max 1
 
@@ -251,6 +255,7 @@ private lemma abs_sub_on_units {f : ℝ → ℝ} {α : ℝ} {K : ℕ → ℝ} {N
             ring
 
 /-- Left dyadic floor of a nonnegative real, at mesh `2 ^ (-n)`. -/
+@[expose]
 def dyadicFloorReal (n : ℕ) (t : ℝ) : ℝ :=
   (Nat.floor (t * 2 ^ n) : ℝ) / 2 ^ n
 

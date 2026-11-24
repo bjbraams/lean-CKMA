@@ -31,7 +31,7 @@ Source: GAPS 12.45.
 * `CKMA.exists_isEkelandPoint`: Ekeland's variational principle on complete metric spaces (12.45).
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -40,6 +40,7 @@ namespace CKMA
 open Set
 
 /-- Ekeland's strict variational inequality at a selected point. -/
+@[expose]
 def IsEkelandPoint {X : Type*} [MetricSpace X] (f : X → EReal) (a : ℝ) (x : X) : Prop :=
   f x ≠ ⊥ ∧ f x ≠ ⊤ ∧ ∀ y, y ≠ x → f x - (a * dist y x : ℝ) < f y
 

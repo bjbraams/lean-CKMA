@@ -17,8 +17,9 @@ import TauCeti.MeasureTheory.Function.Lp.UniformConvex
 
 Weak convergence and weak Cauchy sequences are tested by continuous scalar-valued linear
 functionals. Relative weak compactness retains limits in the ambient space, so an original set
-need not contain its subsequential limits. Eberlein–Šmulian relates these notions; James's
-criterion concerns attainment of real continuous linear functionals on closed convex sets.
+need not contain its subsequential limits. Eberlein–Šmulian relates these notions. The
+sufficiency direction of James's criterion, over `ℝ`, concerns attainment of real continuous
+linear functionals on closed convex sets.
 
 Scalar Lp uniform convexity includes every exponent strictly between one and infinity, including
 two. On finite measure spaces, Dunford–Pettis uses Mathlib's uniform-integrability predicate,
@@ -28,8 +29,8 @@ which includes a uniform L1 bound. Sources: GAPS 15.28, 15.29, 15.33, and 17.23.
 
 * `CKMA.eberlein_smulian`: weak relative compactness is equivalent to weak sequential relative
   compactness (**15.28**).
-* `CKMA.isCompact_toWeakSpace_image_of_forall_exists_max`: James's weak compactness criterion
-  (**15.29**).
+* `CKMA.isCompact_toWeakSpace_image_of_forall_exists_max`: sufficiency, over `ℝ`, of James's
+  weak compactness criterion (**15.29**).
 * `CKMA.uniformConvexSpace_lp`: uniform convexity of `Lp 𝕜 p μ` for `1 < p < ∞` (**15.33**).
 * `CKMA.dunford_pettis`: Dunford–Pettis characterization of relative weak compactness in `L¹`
   (**17.23**).
@@ -39,7 +40,8 @@ which includes a uniform L1 bound. Sources: GAPS 15.28, 15.29, 15.33, and 17.23.
 Eberlein–Šmulian, Dunford–Pettis and the uniform convexity of `Lp` are derived from the pinned
 TauCeti results `TauCeti.isCompact_closure_toWeakSpace_iff`,
 `MeasureTheory.Lp.isCompact_closure_toWeakSpace_iff_uniformIntegrable` and
-`MeasureTheory.Lp.uniformConvexSpace`. James's theorem is not available upstream.
+`MeasureTheory.Lp.uniformConvexSpace`. The sufficiency direction of James's theorem over `ℝ`
+is not available upstream.
 -/
 
 public section

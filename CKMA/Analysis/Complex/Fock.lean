@@ -34,7 +34,7 @@ Source: GAPS 42.82.
 * `CKMA.fock_sampling_iff`: Seip–Wallstén density characterization of Fock sampling sets.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -44,34 +44,42 @@ open MeasureTheory Filter Topology
 open scoped BigOperators ENNReal
 
 /-- The normalized Gaussian area measure for Fock space. -/
+@[expose]
 def fockMeasure (α : ℝ) : Measure ℂ :=
   volume.withDensity (fun z ↦ ENNReal.ofReal ((α / Real.pi) * Real.exp (-α * ‖z‖ ^ 2)))
 
 /-- Entire Gaussian-square-integrable functions. -/
+@[expose]
 def MemFockClass (α : ℝ) (f : ℂ → ℂ) : Prop :=
   Differentiable ℂ f ∧ MemLp f 2 (fockMeasure α)
 
 /-- Fock square energy, preserving infinite values. -/
+@[expose]
 def fockEnergy (α : ℝ) (f : ℂ → ℂ) : ℝ≥0∞ :=
   ∫⁻ z, ENNReal.ofReal (‖f z‖ ^ 2) ∂fockMeasure α
 
 /-- A uniformly separated planar set. -/
+@[expose]
 def IsPlanarSeparated (Λ : Set ℂ) : Prop :=
   ∃ δ : ℝ, 0 < δ ∧ ∀ z ∈ Λ, ∀ w ∈ Λ, z ≠ w → δ ≤ dist z w
 
 /-- Planar counting with value `∞` if infinitely many nodes occur in a ball. -/
+@[expose]
 def planarNodeCount (Λ : Set ℂ) (c : ℂ) (r : ℝ) : ℝ≥0∞ :=
   ∑' z : Λ, if ‖z.1 - c‖ < r then 1 else 0
 
 /-- Lower uniform planar density, using a liminf rather than an assumed limit. -/
+@[expose]
 def lowerPlanarDensity (Λ : Set ℂ) : ℝ≥0∞ :=
   liminf (fun r : ℝ ↦ ⨅ c : ℂ, planarNodeCount Λ c r / ENNReal.ofReal (Real.pi * r ^ 2)) atTop
 
 /-- Upper uniform planar density. -/
+@[expose]
 def upperPlanarDensity (Λ : Set ℂ) : ℝ≥0∞ :=
   limsup (fun r : ℝ ↦ ⨆ c : ℂ, planarNodeCount Λ c r / ENNReal.ofReal (Real.pi * r ^ 2)) atTop
 
 /-- The weighted discrete sampling square norm. -/
+@[expose]
 def fockSamplingEnergy (α : ℝ) (Λ : Set ℂ) (f : ℂ → ℂ) : ℝ≥0∞ :=
   ∑' z : Λ, ENNReal.ofReal (‖f z.1‖ ^ 2 * Real.exp (-α * ‖z.1‖ ^ 2))
 

@@ -40,7 +40,7 @@ Sources: GAPS 27.17 and 27.22.
   everywhere convergence of symmetric Fourier partial sums for `1 < p`.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -56,19 +56,24 @@ local notation "𝕋" => AddCircle (1 : ℝ)
 local notation "haar" => AddCircle.haarAddCircle (T := 1)
 
 /-- Symmetric Fourier partial sums on the probability circle. -/
+@[expose]
 def fourierPartialSum (f : AddCircle (1 : ℝ) → ℂ) (N : ℕ)
     (x : AddCircle (1 : ℝ)) : ℂ :=
   ∑ k ∈ Finset.Icc (-(N : ℤ)) (N : ℤ), fourierCoeff f k * fourier k x
 
 /-- Fejer's Cesaro averages of the symmetric partial sums. -/
+@[expose]
 def fejerMean (f : AddCircle (1 : ℝ) → ℂ) (N : ℕ) (x : AddCircle (1 : ℝ)) : ℂ :=
   (N + 1 : ℂ)⁻¹ * ∑ n ∈ Finset.range (N + 1), fourierPartialSum f n x
 
 /-- The positive Carleson maximal function, retaining infinite suprema. -/
+@[expose]
 def carlesonMaximalFunction (f : AddCircle (1 : ℝ) → ℂ) (x : AddCircle (1 : ℝ)) : ℝ≥0∞ :=
   ⨆ N : ℕ, ENNReal.ofReal ‖fourierPartialSum f N x‖
 
-/-- A Lebesgue point on the circle, defined through local lifted averages. -/
+/-- A Lebesgue point on the circle, through the limit of local lifted averages. The interval
+integral of a non-integrable integrand is `0`, so the predicate can hold for that junk value. -/
+@[expose]
 def IsCircleLebesguePoint (f : AddCircle (1 : ℝ) → ℂ) (x : AddCircle (1 : ℝ)) : Prop :=
   Tendsto (fun r : ℝ ↦ (2 * r)⁻¹ * ∫ t in (-r)..r,
     ‖f (x + (t : AddCircle (1 : ℝ))) - f x‖) (𝓝[>] 0) (𝓝 0)
@@ -285,6 +290,7 @@ private lemma normSq_fourierSum (N : ℕ) (x : 𝕋) :
   exact card_sub_fiber N ((mem_Icc_iff_natAbs_le N k).1 hk)
 
 /-- The Fejer kernel on the probability circle, as a normalized square of characters. -/
+@[expose]
 def fejerKernel (N : ℕ) (x : 𝕋) : ℝ :=
   (N + 1 : ℝ)⁻¹ * ‖∑ j ∈ Finset.range (N + 1), fourier (j : ℤ) x‖ ^ 2
 
@@ -362,6 +368,7 @@ private lemma exists_coe_norm (x : 𝕋) :
   exact ⟨u, hu, hcoe, hnorm⟩
 
 /-- The classical sine-square formula of the Fejer kernel, with value `N+1` at integers. -/
+@[expose]
 def fejerKernelReal (N : ℕ) (t : ℝ) : ℝ :=
   if Real.sin (π * t) = 0 then (N + 1 : ℝ)
   else (N + 1 : ℝ)⁻¹ * (Real.sin (π * (N + 1) * t) / Real.sin (π * t)) ^ 2

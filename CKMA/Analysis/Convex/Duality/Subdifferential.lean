@@ -32,7 +32,7 @@ Nonlinear Optimization*, Theorem 4.1.6; GAPS 12.21 and 12.39.
   real convex functions.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

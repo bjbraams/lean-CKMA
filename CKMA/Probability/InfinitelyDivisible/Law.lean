@@ -33,7 +33,7 @@ such law is infinitely divisible.
   characteristic function is `exp (L.exponent t)` is infinitely divisible.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -45,6 +45,7 @@ open scoped BigOperators NNReal ENNReal MeasureTheory
 namespace InfinitelyDivisible
 
 /-- The truncation `x 1_{|x| ≤ 1}` used in the Lévy compensator. -/
+@[expose]
 def truncCompensator (x : ℝ) : ℝ :=
   if |x| ≤ 1 then x else 0
 
@@ -109,12 +110,14 @@ private lemma charFun_gaussian_conv_compoundPoisson {ν : Measure ℝ} [IsFinite
 namespace InfinitelyDivisible
 
 /-- Jumps kept by the `k`-th truncation, namely `{|x| ≥ 1 / (k + 1)}`. -/
+@[expose]
 def truncSet (k : ℕ) : Set ℝ :=
   {x | 1 / ((k : ℝ) + 1) ≤ |x|}
 
 end InfinitelyDivisible
 
 /-- Lévy triplet with jumps restricted to `{|x| ≥ 1 / (k + 1)}`. -/
+@[expose]
 def LevyTriplet.trunc (L : LevyTriplet) (k : ℕ) : LevyTriplet where
   gaussianVariance := L.gaussianVariance
   drift := L.drift
@@ -132,6 +135,7 @@ lemma LevyTriplet.isFiniteMeasure_trunc (L : LevyTriplet) (k : ℕ) :
       (ε := 1 / ((k : ℝ) + 1)) (by positivity)
 
 /-- Law of the Gaussian factor convolved with the compound Poisson law of the `k`-th truncation. -/
+@[expose]
 def LevyTriplet.truncLaw (L : LevyTriplet) (k : ℕ) : Measure ℝ :=
   (gaussianReal (L.drift - ∫ x, truncCompensator x ∂(L.trunc k).jumpMeasure)
       L.gaussianVariance) ∗

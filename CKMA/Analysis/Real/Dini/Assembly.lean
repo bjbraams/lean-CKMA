@@ -35,7 +35,7 @@ comparisons `lower ≤ upper` make the choice unique; the resulting theorem is
   upper-left pattern of `f`.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

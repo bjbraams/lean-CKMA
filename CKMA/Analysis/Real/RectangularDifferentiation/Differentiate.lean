@@ -28,7 +28,7 @@ those of the cutoff product.
   rectangular differentiation; with the above it gives `CKMA.ae_rectanglesDifferentiateAt`.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

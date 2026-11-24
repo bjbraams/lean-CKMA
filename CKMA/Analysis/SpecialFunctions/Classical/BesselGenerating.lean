@@ -21,7 +21,7 @@ converges pointwise and normally on compact subsets of `ℂ × (ℂ \ {0})`.
   `ℂ × (ℂ \ {0})`.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

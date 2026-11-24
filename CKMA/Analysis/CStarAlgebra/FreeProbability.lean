@@ -52,7 +52,7 @@ from TauCeti's exponential bounds on noncrossing Möbius coefficients. Sources: 
 * `CKMA.freeRTransform_add`: analytic R-transform additivity on a common disk of convergence.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -65,20 +65,23 @@ variable {A : Type*} [Ring A] [Algebra ℂ A]
 
 /-- Algebraic freeness of unital subalgebras: nonempty alternating centered words have zero
 expectation. Excluding the empty word is essential for a normalized functional. -/
+@[expose]
 def AreFreeSubalgebras {ι : Type*} (φ : A →ₗ[ℂ] ℂ) (S : ι → Subalgebra ℂ A) : Prop :=
   ∀ n : ℕ, 0 < n → ∀ i : Fin n → ι, ∀ a : Fin n → A,
     (∀ j, a j ∈ S (i j)) → (∀ j, φ (a j) = 0) →
     (∀ j k : Fin n, j.val + 1 = k.val → i j ≠ i k) → φ (List.ofFn a).prod = 0
 
 /-- The scalar moments of a noncommutative variable. -/
+@[expose]
 def noncommutativeMoments (φ : A →ₗ[ℂ] ℂ) (a : A) (n : ℕ) : ℂ := φ (a ^ n)
 
 /-- Moments of the centered variance-one semicircle law, written in the closed Catalan form. -/
+@[expose]
 def semicircleMoment (n : ℕ) : ℂ :=
   if Even n then ((Nat.choose n (n / 2) / (n / 2 + 1) : ℕ) : ℂ) else 0
 
 /-- A normalized positive functional in the star-algebra setting. -/
-@[deprecated "no statement uses this predicate" (since := "2026-11-15")]
+@[expose, deprecated "no statement uses this predicate" (since := "2026-11-15")]
 def IsPositiveNoncommutativeState {B : Type*} [Ring B] [StarRing B] [Algebra ℂ B]
     (φ : B →ₗ[ℂ] ℂ) : Prop :=
   φ 1 = 1 ∧ ∀ a : B, ∃ r : ℝ, 0 ≤ r ∧ φ (star a * a) = (r : ℂ)
@@ -147,11 +150,13 @@ theorem free_central_limit {B : Type*} [Ring B] [Algebra ℂ B]
   simp only [Nat.cast_add, Nat.cast_one]
 
 /-- The finite composition coefficient of the kth power of a scalar moment series. -/
+@[expose]
 def momentCompositionCoefficient (m : ℕ → ℂ) (k n : ℕ) : ℂ :=
   ∑ a : Fin k → Fin (n + 1), if (∑ j, (a j).val) = n then ∏ j, m (a j).val else 0
 
 /-- Free cumulants defined by the triangular moment recursion obtained by distinguishing
 the block containing the first point of a noncrossing partition. No existence theorem is used. -/
+@[expose]
 def freeCumulants (m : ℕ → ℂ) (n : ℕ) : ℂ := by
   classical
   exact Nat.strongRecOn n (fun k previous ↦ if hk : k = 0 then 0 else
@@ -160,6 +165,7 @@ def freeCumulants (m : ℕ → ℂ) (n : ℕ) : ℂ := by
 
 /-- The R-transform represented by its convergent cumulant series near zero. Its analytic
 convergence is a theorem for bounded variables; totalized sums outside that region are not used. -/
+@[expose]
 def freeRTransform (φ : A →ₗ[ℂ] ℂ) (a : A) (z : ℂ) : ℂ :=
   ∑' n, freeCumulants (noncommutativeMoments φ a) (n + 1) * z ^ n
 

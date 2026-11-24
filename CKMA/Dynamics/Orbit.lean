@@ -28,11 +28,12 @@ This interface is independent of the complex-analytic polynomial applications.
 * `CKMA.hasBoundedOrbit_iff_exists_norm_le`: norm characterization in a normed additive group.
 -/
 
-@[expose] public section
+public section
 
 namespace CKMA
 
 /-- The forward iterate range is bounded in the ambient bornology. -/
+@[expose]
 def HasBoundedOrbit {X : Type*} [Bornology X] (f : X → X) (x : X) : Prop :=
   Bornology.IsBounded (Set.range (fun n : ℕ ↦ (f^[n]) x))
 

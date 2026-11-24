@@ -9,8 +9,13 @@ public import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
 public import Mathlib.MeasureTheory.Function.AbsolutelyContinuous
 
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.LebesgueDifferentiationThm
-import TauCeti.Analysis.SpecialFunctions.Beta
+import TauCeti.Analysis.SpecialFunctions.Beta.Basic
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.AbsolutelyContinuousFun
+import Mathlib.Analysis.Complex.Tietze
+import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
+import Mathlib.MeasureTheory.Integral.DominatedConvergence
+import Mathlib.Topology.Algebra.Order.Floor
+import Mathlib.Topology.MetricSpace.Contracting
 
 /-!
 # Volterra equations and fractional integrals
@@ -20,7 +25,11 @@ continuous triangular kernel, with arbitrary complex coupling. Real Riemann–Li
 carry the Gamma normalization; positive-order semigroup and inverse statements are a.e. identities
 on the open interval. The range criterion uses an absolutely continuous representative vanishing
 at the left endpoint. The semigroup identity uses
-`TauCeti.integral_rpow_mul_one_sub_rpow`. Sources: GAPS 25.18 and 25.23.
+`TauCeti.integral_rpow_mul_one_sub_rpow`. Solvability of the second-kind Volterra equation is the
+fixed point of a map with a contracting iterate. The kernel is extended by
+`ContinuousMap.exists_restrict_eq`. The norm of the iterate is at most
+`(‖c‖ MT)^n / n!` by `integral_pow`, and the fixed point is
+`ContractingWith.isFixedPt_fixedPoint_iterate`. Sources: GAPS 25.18 and 25.23.
 
 ## Main definitions
 
@@ -38,7 +47,7 @@ at the left endpoint. The semigroup identity uses
   Abel range characterization and inversion formula for `I^α` on `L¹(0, T)` for `0 < α < 1`.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -49,20 +58,253 @@ open MeasureTheory Filter Topology intervalIntegral Real Set
 open scoped ENNReal
 
 /-- The scalar Volterra integral of a kernel and a function. -/
+@[expose]
 def volterraIntegral (k : ℝ → ℝ → ℂ) (u : ℝ → ℂ) (t : ℝ) : ℂ :=
   ∫ s in (0 : ℝ)..t, k t s * u s
 
+/-- The triangle `0 ≤ s ≤ t ≤ T` on which a Volterra kernel is controlled. -/
+private def volterraTriangle (T : ℝ) : Set (ℝ × ℝ) :=
+  {p | 0 ≤ p.2 ∧ p.2 ≤ p.1 ∧ p.1 ≤ T}
+
+/-- The Volterra triangle is closed. -/
+private lemma isClosed_volterraTriangle (T : ℝ) : IsClosed (volterraTriangle T) := by
+  have heq : volterraTriangle T =
+      ({p : ℝ × ℝ | 0 ≤ p.2} ∩ {p | p.2 ≤ p.1}) ∩ {p | p.1 ≤ T} := by
+    ext p
+    simp [volterraTriangle, and_assoc]
+  rw [heq]
+  exact ((isClosed_le continuous_const continuous_snd).inter
+    (isClosed_le continuous_snd continuous_fst)).inter
+    (isClosed_le continuous_fst continuous_const)
+
+/-- The triangle is a closed subset of the square `Icc 0 T × Icc 0 T`. -/
+private lemma isCompact_volterraTriangle (T : ℝ) : IsCompact (volterraTriangle T) := by
+  refine ((isCompact_Icc (a := (0 : ℝ)) (b := T)).prod
+      (isCompact_Icc (a := (0 : ℝ)) (b := T))).of_isClosed_subset
+    (isClosed_volterraTriangle T) ?_
+  intro p hp
+  exact ⟨⟨hp.1.trans hp.2.1, hp.2.2⟩, ⟨hp.1, hp.2.1.trans hp.2.2⟩⟩
+
+/-- A continuous triangular kernel extends to a continuous function on the plane. -/
+private lemma exists_continuous_volterraKernel {T : ℝ} (k : ℝ → ℝ → ℂ)
+    (hk : ContinuousOn (fun p : ℝ × ℝ ↦ k p.1 p.2) (volterraTriangle T)) :
+    ∃ g : C(ℝ × ℝ, ℂ), ∀ p ∈ volterraTriangle T, g p = k p.1 p.2 := by
+  let f : C(volterraTriangle T, ℂ) :=
+    ⟨fun p ↦ k p.1.1 p.1.2, hk.comp_continuous continuous_subtype_val fun p ↦ p.2⟩
+  obtain ⟨g, hg⟩ := f.exists_restrict_eq (isClosed_volterraTriangle T)
+  refine ⟨g, fun p hp ↦ ?_⟩
+  have h : g p = f ⟨p, hp⟩ := by
+    simpa [ContinuousMap.restrict_apply] using
+      congrArg (fun φ : C(volterraTriangle T, ℂ) ↦ φ ⟨p, hp⟩) hg
+  simpa [f] using h
+
+/-- Continuous image of the compact triangle supplies a finite kernel bound. -/
+private lemma exists_volterraBound {T : ℝ} (hT : 0 ≤ T) (k : ℝ → ℝ → ℂ)
+    (hk : ContinuousOn (fun p : ℝ × ℝ ↦ k p.1 p.2) (volterraTriangle T)) :
+    ∃ M : ℝ, 0 ≤ M ∧ ∀ p ∈ volterraTriangle T, ‖k p.1 p.2‖ ≤ M := by
+  have hne : (volterraTriangle T).Nonempty := ⟨(0, 0), by simp [volterraTriangle, hT]⟩
+  obtain ⟨p, -, hmax⟩ := (isCompact_volterraTriangle T).exists_isMaxOn hne
+    (continuous_norm.comp_continuousOn hk)
+  exact ⟨‖k p.1 p.2‖, norm_nonneg _, fun q hq ↦ hmax hq⟩
+
+/-- Extension of a continuous path by the value on the projected endpoint. -/
+private def volterraProj {T : ℝ} (hT : 0 ≤ T) (u : C(Icc (0 : ℝ) T, ℂ)) (s : ℝ) : ℂ :=
+  u (projIcc 0 T hT s)
+
+/-- The piecewise extension used in the integral equation, equal to the path on `[0, T]`. -/
+private def volterraExt {T : ℝ} (u : C(Icc (0 : ℝ) T, ℂ)) (s : ℝ) : ℂ :=
+  if hs : s ∈ Icc (0 : ℝ) T then u ⟨s, hs⟩ else 0
+
+/-- On `[0, T]` the piecewise extension and the projected extension agree. -/
+private lemma volterraExt_eq_proj {T : ℝ} (hT : 0 ≤ T) (u : C(Icc (0 : ℝ) T, ℂ))
+    {s : ℝ} (hs : s ∈ Icc (0 : ℝ) T) :
+    volterraExt u s = volterraProj hT u s := by
+  simp [volterraExt, volterraProj, hs, projIcc_of_mem]
+
 /-- **25.18**: a continuous triangular kernel gives a unique continuous solution at every
-complex coupling. The series and data-dependence clauses are separate targets. -/
+complex coupling. The series and data-dependence clauses are separate targets. For `T < 0`
+the interval `Icc 0 T` is empty, so the statement is vacuous. -/
 theorem existsUnique_volterra {T : ℝ} (k : ℝ → ℝ → ℂ)
     (hk : ContinuousOn (fun p : ℝ × ℝ ↦ k p.1 p.2)
       {p | 0 ≤ p.2 ∧ p.2 ≤ p.1 ∧ p.1 ≤ T}) (c : ℂ) (f : C(Set.Icc 0 T, ℂ)) :
     ∃! u : C(Set.Icc 0 T, ℂ), ∀ t : Set.Icc 0 T,
       u t = f t + c * volterraIntegral k
         (fun s ↦ if hs : s ∈ Set.Icc 0 T then u ⟨s, hs⟩ else 0) t.1 := by
-  sorry
+  have htri : ContinuousOn (fun p : ℝ × ℝ ↦ k p.1 p.2) (volterraTriangle T) := by
+    simpa [volterraTriangle] using hk
+  by_cases hT : 0 ≤ T
+  · obtain ⟨g, hg⟩ := exists_continuous_volterraKernel k htri
+    obtain ⟨M, hM0, hM⟩ := exists_volterraBound hT k htri
+    have hproj (u : C(Icc (0 : ℝ) T, ℂ)) : Continuous (volterraProj hT u) :=
+      u.continuous.comp continuous_projIcc
+    have hcont (u : C(Icc (0 : ℝ) T, ℂ)) :
+        Continuous fun t : ℝ ↦ ∫ s in (0 : ℝ)..t, g (t, s) * volterraProj hT u s := by
+      let F : ℝ → ℝ → ℂ := fun t s ↦ g (t, s) * volterraProj hT u s
+      have hF : Continuous F.uncurry := by
+        change Continuous fun p : ℝ × ℝ ↦ g p * volterraProj hT u p.2
+        exact g.continuous.mul ((hproj u).comp continuous_snd)
+      exact continuous_parametric_intervalIntegral_of_continuous hF continuous_id
+    let K : C(Icc (0 : ℝ) T, ℂ) → C(Icc (0 : ℝ) T, ℂ) := fun u ↦
+      ⟨fun t ↦ ∫ s in (0 : ℝ)..(t : ℝ), g ((t : ℝ), s) * volterraProj hT u s,
+        (hcont u).comp continuous_subtype_val⟩
+    have hKint (u : C(Icc (0 : ℝ) T, ℂ)) (t : Icc (0 : ℝ) T) :
+        K u t = volterraIntegral k (volterraExt u) t.1 := by
+      refine intervalIntegral.integral_congr fun s hs ↦ ?_
+      rw [uIcc_of_le t.2.1] at hs
+      have hsT : s ∈ Icc (0 : ℝ) T := ⟨hs.1, hs.2.trans t.2.2⟩
+      have hmem : ((t : ℝ), s) ∈ volterraTriangle T := ⟨hs.1, hs.2, t.2.2⟩
+      simp [volterraExt_eq_proj hT u hsT, hg _ hmem]
+    have hKsmul (a : ℂ) (u : C(Icc (0 : ℝ) T, ℂ)) : K (a • u) = a • K u := by
+      ext t
+      dsimp [K]
+      have hint : (fun s ↦ g ((t : ℝ), s) * volterraProj hT (a • u) s) =
+          fun s ↦ a • (g ((t : ℝ), s) * volterraProj hT u s) := by
+        funext s
+        simp [volterraProj, ContinuousMap.smul_apply, mul_left_comm]
+      rw [hint, intervalIntegral.integral_smul, smul_eq_mul]
+    have hKsub (u v : C(Icc (0 : ℝ) T, ℂ)) : K (u - v) = K u - K v := by
+      ext t
+      have hu : IntervalIntegrable (fun s ↦ g ((t : ℝ), s) * volterraProj hT u s) volume 0 t :=
+        (g.continuous.comp (continuous_const.prodMk continuous_id)).mul
+          (hproj u) |>.intervalIntegrable _ _
+      have hv : IntervalIntegrable (fun s ↦ g ((t : ℝ), s) * volterraProj hT v s) volume 0 t :=
+        (g.continuous.comp (continuous_const.prodMk continuous_id)).mul
+          (hproj v) |>.intervalIntegrable _ _
+      dsimp [K]
+      rw [← intervalIntegral.integral_sub hu hv]
+      refine intervalIntegral.integral_congr fun s _ ↦ ?_
+      simp [volterraProj, ContinuousMap.sub_apply, mul_sub]
+    let Φ : C(Icc (0 : ℝ) T, ℂ) → C(Icc (0 : ℝ) T, ℂ) := fun u ↦ f + c • K u
+    have hΦsub (u v : C(Icc (0 : ℝ) T, ℂ)) : Φ u - Φ v = c • K (u - v) := by
+      simp [Φ, hKsub, smul_sub]
+    have hiter (n : ℕ) (u v : C(Icc (0 : ℝ) T, ℂ)) :
+        Φ^[n] u - Φ^[n] v = c ^ n • K^[n] (u - v) := by
+      induction n with
+      | zero => simp
+      | succ n ih =>
+        calc
+          Φ^[n + 1] u - Φ^[n + 1] v = Φ (Φ^[n] u) - Φ (Φ^[n] v) := by
+            simp [Function.iterate_succ_apply']
+          _ = c • K (Φ^[n] u - Φ^[n] v) := hΦsub _ _
+          _ = c • K (c ^ n • K^[n] (u - v)) := by rw [ih]
+          _ = c • (c ^ n • K^[n + 1] (u - v)) := by
+            rw [hKsmul, Function.iterate_succ_apply']
+          _ = c ^ (n + 1) • K^[n + 1] (u - v) := by
+            rw [smul_smul, ← pow_succ']
+    have hbound (n : ℕ) (w : C(Icc (0 : ℝ) T, ℂ)) (t : Icc (0 : ℝ) T) :
+        ‖(K^[n] w) t‖ ≤ ‖w‖ * M ^ n * (t : ℝ) ^ n / Nat.factorial n := by
+      induction n generalizing t with
+      | zero =>
+        simpa using ContinuousMap.norm_coe_le_norm w t
+      | succ n ih =>
+        rw [Function.iterate_succ_apply']
+        let φ : ℝ → ℂ := fun s ↦ g ((t : ℝ), s) * volterraProj hT (K^[n] w) s
+        let ψ : ℝ → ℝ := fun s ↦ ‖w‖ * M ^ (n + 1) * s ^ n / Nat.factorial n
+        have hφ : Continuous φ :=
+          (g.continuous.comp (continuous_const.prodMk continuous_id)).mul
+            (hproj (K^[n] w))
+        have hψ : Continuous ψ := by
+          unfold ψ
+          fun_prop
+        have hint : ‖∫ s in (0 : ℝ)..(t : ℝ), φ s‖ ≤ ∫ s in (0 : ℝ)..(t : ℝ), ‖φ s‖ :=
+          intervalIntegral.norm_integral_le_integral_norm t.2.1
+        have hmono : ∫ s in (0 : ℝ)..(t : ℝ), ‖φ s‖ ≤ ∫ s in (0 : ℝ)..(t : ℝ), ψ s := by
+          refine intervalIntegral.integral_mono_on t.2.1 (hφ.norm.intervalIntegrable 0 t)
+            (hψ.intervalIntegrable 0 ↑t) fun s hs ↦ ?_
+          have hsT : s ∈ Icc (0 : ℝ) T := ⟨hs.1, hs.2.trans t.2.2⟩
+          have hmem : ((t : ℝ), s) ∈ volterraTriangle T := ⟨hs.1, hs.2, t.2.2⟩
+          have hproj_eq : volterraProj hT (K^[n] w) s = (K^[n] w) ⟨s, hsT⟩ := by
+            simp [volterraProj, projIcc_of_mem hT hsT]
+          dsimp [φ]
+          rw [hproj_eq, norm_mul, hg _ hmem]
+          have hkn : ‖k (t : ℝ) s‖ ≤ M := hM _ hmem
+          have hpt := ih ⟨s, hsT⟩
+          calc
+            ‖k (t : ℝ) s‖ * ‖(K^[n] w) ⟨s, hsT⟩‖
+                ≤ M * (‖w‖ * M ^ n * s ^ n / Nat.factorial n) :=
+                  mul_le_mul hkn hpt (norm_nonneg _) hM0
+            _ = ψ s := by
+              unfold ψ
+              ring
+        have hψint : ∫ s in (0 : ℝ)..(t : ℝ), ψ s =
+            ‖w‖ * M ^ (n + 1) * (t : ℝ) ^ (n + 1) / Nat.factorial (n + 1) := by
+          have hψeq : ψ = fun s ↦
+              (‖w‖ * M ^ (n + 1) / ↑(Nat.factorial n)) * s ^ n := by
+            funext s
+            unfold ψ
+            ring
+          rw [hψeq, intervalIntegral.integral_const_mul, integral_pow n,
+            zero_pow (Nat.succ_ne_zero n), sub_zero, div_mul_div_comm,
+            Nat.factorial_succ, Nat.cast_mul]
+          congr 1
+          rw [mul_comm, ← Nat.cast_add_one]
+        calc
+          ‖(K (K^[n] w)) t‖ = ‖∫ s in (0 : ℝ)..(t : ℝ), φ s‖ := by
+            simp [K, φ, ContinuousMap.coe_mk]
+          _ ≤ ∫ s in (0 : ℝ)..(t : ℝ), ψ s := hint.trans hmono
+          _ = ‖w‖ * M ^ (n + 1) * (t : ℝ) ^ (n + 1) / Nat.factorial (n + 1) := hψint
+    have hdist (n : ℕ) (u v : C(Icc (0 : ℝ) T, ℂ)) :
+        dist (Φ^[n] u) (Φ^[n] v) ≤
+          (‖c‖ * M * T) ^ n / Nat.factorial n * dist u v := by
+      rw [ContinuousMap.dist_le (by positivity)]
+      intro t
+      rw [dist_eq_norm, ← ContinuousMap.sub_apply, hiter, ContinuousMap.smul_apply,
+        norm_smul, norm_pow]
+      have ht : (t : ℝ) ^ n ≤ T ^ n := pow_le_pow_left₀ t.2.1 t.2.2 n
+      calc
+        ‖c‖ ^ n * ‖(K^[n] (u - v)) t‖
+            ≤ ‖c‖ ^ n * (‖u - v‖ * M ^ n * (t : ℝ) ^ n / Nat.factorial n) := by
+              gcongr
+              exact hbound n (u - v) t
+        _ ≤ ‖c‖ ^ n * (‖u - v‖ * M ^ n * T ^ n / Nat.factorial n) := by
+              gcongr
+        _ = (‖c‖ * M * T) ^ n / Nat.factorial n * ‖u - v‖ := by ring
+        _ = (‖c‖ * M * T) ^ n / Nat.factorial n * dist u v := by rw [dist_eq_norm]
+    obtain ⟨n, hn⟩ := (FloorSemiring.tendsto_pow_div_factorial_atTop (‖c‖ * M * T)).eventually
+      (gt_mem_nhds zero_lt_one) |>.exists
+    have hr0 : 0 ≤ (‖c‖ * M * T) ^ n / Nat.factorial n := by
+      have := hM0
+      positivity
+    set r : ℝ := (‖c‖ * M * T) ^ n / Nat.factorial n
+    let C : NNReal := Real.toNNReal r
+    have hC : C < 1 := by
+      rw [Real.toNNReal_lt_iff_lt_coe hr0, NNReal.coe_one]
+      exact hn
+    have : Nonempty (C(Icc (0 : ℝ) T, ℂ)) := ⟨0⟩
+    have hcontr : ContractingWith C (Φ^[n]) :=
+      ⟨hC, LipschitzWith.of_dist_le' fun u v ↦ hdist n u v⟩
+    let u := hcontr.fixedPoint (Φ^[n])
+    have huΦ : Function.IsFixedPt Φ u := hcontr.isFixedPt_fixedPoint_iterate
+    have hpoint (w : C(Icc (0 : ℝ) T, ℂ)) (hw : Φ w = w) (t : Icc (0 : ℝ) T) :
+        w t = f t + c * volterraIntegral k (volterraExt w) t.1 := by
+      have hwt : w t = Φ w t := by simp [hw]
+      simp only [Φ, ContinuousMap.add_apply, ContinuousMap.smul_apply, smul_eq_mul] at hwt
+      rw [hwt, hKint]
+    refine existsUnique_of_exists_of_unique ⟨u, hpoint u huΦ⟩ ?_
+    intro v w hv hw
+    have hvΦ : Function.IsFixedPt Φ v := by
+      unfold Function.IsFixedPt
+      ext t
+      rw [hv t]
+      simp only [Φ, ContinuousMap.add_apply, ContinuousMap.smul_apply, smul_eq_mul, hKint]
+      rfl
+    have hwΦ : Function.IsFixedPt Φ w := by
+      unfold Function.IsFixedPt
+      ext t
+      rw [hw t]
+      simp only [Φ, ContinuousMap.add_apply, ContinuousMap.smul_apply, smul_eq_mul, hKint]
+      rfl
+    exact (hcontr.eq_or_edist_eq_top_of_fixedPoints
+      (Function.IsFixedPt.iterate hvΦ n) (Function.IsFixedPt.iterate hwΦ n)).resolve_right
+      (edist_ne_top _ _)
+  · have hempty : IsEmpty (Icc (0 : ℝ) T) :=
+      ⟨fun t ↦ hT (t.2.1.trans t.2.2)⟩
+    refine ExistsUnique.intro 0 (fun t ↦ hempty.elim t) (fun _ _ ↦ ?_)
+    ext t
+    exact hempty.elim t
 
 /-- Riemann–Liouville fractional integration, with the Gamma normalization. -/
+@[expose]
 def fractionalIntegral (α : ℝ) (u : ℝ → ℝ) (t : ℝ) : ℝ :=
   (Real.Gamma α)⁻¹ * ∫ s in (0 : ℝ)..t, (t - s) ^ (α - 1) * u s
 

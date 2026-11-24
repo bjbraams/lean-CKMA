@@ -29,7 +29,7 @@ continuous on the sewing triangle.
 * `CKMA.Sewing.continuousOn_sewnIncrement`: `sewnIncrement` is continuous on `sewingTriangle a b`.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -51,39 +51,47 @@ structure OrderedIntervalPartition (a b : ℝ) where
   node_last : node (Fin.last size) = b
 
 /-- The maximal partition width. -/
+@[expose]
 def OrderedIntervalPartition.mesh {a b : ℝ} (π : OrderedIntervalPartition a b) : ℝ≥0 :=
   Finset.univ.sup (fun i : Fin π.size ↦ (π.node i.succ - π.node i.castSucc).toNNReal)
 
 /-- The sum of two-parameter increments along a partition. -/
+@[expose]
 def OrderedIntervalPartition.incrementSum {a b : ℝ} {E : Type*} [AddCommMonoid E]
     (π : OrderedIntervalPartition a b) (A : ℝ → ℝ → E) : E :=
   ∑ i : Fin π.size, A (π.node i.castSucc) (π.node i.succ)
 
 /-- Convergence of all ordered partition sums as their mesh tends to zero. -/
+@[expose]
 def PartitionSumsConverge {E : Type*} [NormedAddCommGroup E]
     (A : ℝ → ℝ → E) (a b : ℝ) (z : E) : Prop :=
   ∀ ε : ℝ, 0 < ε → ∃ δ : ℝ, 0 < δ ∧ ∀ π : OrderedIntervalPartition a b,
     (π.mesh : ℝ) < δ → ‖π.incrementSum A - z‖ < ε
 
 /-- Geometric sewing constant, finite and positive for exponents strictly greater than one. -/
+@[expose]
 def sewingConstant (γ : ℝ) : ℝ := (1 - (2 : ℝ) ^ (1 - γ))⁻¹
 
 /-- A continuous interval path is normalized at the left endpoint. -/
+@[expose]
 def IsLeftNormalized {E : Type*} [TopologicalSpace E] [Zero E] {a b : ℝ}
     (I : C(Set.Icc a b, E)) : Prop := ∀ x : Set.Icc a b, x.val = a → I x = 0
 
 /-- A path's additive increments approximate a given increment field to order `γ`. -/
+@[expose]
 def HasSewingRemainder {E : Type*} [NormedAddCommGroup E] {a b : ℝ}
     (A : ℝ → ℝ → E) (I : C(Set.Icc a b, E)) (γ C : ℝ) : Prop :=
   ∀ s t : Set.Icc a b, s.val ≤ t.val →
     ‖(I t - I s) - A s.val t.val‖ ≤ C * |t.val - s.val| ^ γ
 
 /-- The path's increments are limits of all partition sums on each subinterval. -/
+@[expose]
 def HasPartitionSumLimit {E : Type*} [NormedAddCommGroup E] {a b : ℝ}
     (A : ℝ → ℝ → E) (I : C(Set.Icc a b, E)) : Prop :=
   ∀ s t : Set.Icc a b, s.val ≤ t.val → PartitionSumsConverge A s.val t.val (I t - I s)
 
 /-- Closed triangle `a ≤ s ≤ t ≤ b` on which an increment field is sewn. -/
+@[expose]
 def sewingTriangle (a b : ℝ) : Set (ℝ × ℝ) :=
   {p | a ≤ p.1 ∧ p.1 ≤ p.2 ∧ p.2 ≤ b}
 
@@ -92,14 +100,17 @@ namespace Sewing
 open Finset Filter Topology
 
 /-- Level-`n` dyadic node `s + (t - s) · k / 2^n`. -/
+@[expose]
 def dyadicNode (s t : ℝ) (n k : ℕ) : ℝ :=
   s + (t - s) * ((k : ℝ) / (2 : ℝ) ^ n)
 
 /-- Sum of increments of `A` on the level-`n` dyadic partition of `[s, t]`. -/
+@[expose]
 def dyadicIncrement {E : Type*} [AddCommMonoid E] (A : ℝ → ℝ → E) (s t : ℝ) (n : ℕ) : E :=
   ∑ k ∈ range (2 ^ n), A (dyadicNode s t n k) (dyadicNode s t n (k + 1))
 
 /-- The dyadic sewing limit `A(s, t) + ∑ (S_{n+1} - S_n)`. -/
+@[expose]
 noncomputable def sewnIncrement {E : Type*} [NormedAddCommGroup E]
     (A : ℝ → ℝ → E) (s t : ℝ) : E :=
   A s t + ∑' n : ℕ, (dyadicIncrement A s t (n + 1) - dyadicIncrement A s t n)

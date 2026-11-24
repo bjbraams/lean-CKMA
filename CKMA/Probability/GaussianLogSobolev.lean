@@ -17,9 +17,9 @@ import TauCeti.MeasureTheory.Integral.Pi
 /-!
 # Gaussian entropy and the log-Sobolev inequality (07.17)
 
-`nonnegativeFunctionEntropy` uses Mathlib's `klFun` to express entropy relative to the
-mean of an integrable nonnegative function on a probability space. Its zero-mean
-convention is explicit. `gaussian_logSobolev` bounds the entropy of a square by its
+`nonnegativeFunctionEntropy` is `ENNReal.ofReal (∫ h) * ∫⁻ klFun (h / ∫ h)`, with no
+integrability hypothesis; the Bochner integral of a non-integrable function is `0`.
+`gaussian_logSobolev` bounds the entropy of a square by its
 gradient energy for a finite-dimensional real Gaussian law.
 
 The theorem supplies the L² and gradient integrability conditions needed by the raw
@@ -32,8 +32,8 @@ given by an orthonormal basis, as in TauCeti's proof of the Gaussian Poincaré i
 
 ## Main definitions
 
-* `CKMA.nonnegativeFunctionEntropy` (in `GaussianLogSobolev.OneDimLSI`): Extended entropy of a
-  nonnegative function over a probability measure using `InformationTheory.klFun`.
+* `CKMA.nonnegativeFunctionEntropy` (in `GaussianLogSobolev.OneDimLSI`): extended entropy
+  `ENNReal.ofReal (∫ h) * ∫⁻ klFun (h / ∫ h)`, with no integrability hypothesis.
 
 ## Main results
 

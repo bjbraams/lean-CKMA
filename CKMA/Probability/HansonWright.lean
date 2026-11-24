@@ -36,7 +36,7 @@ and positive threshold and scale hypotheses specify the meaningful concentration
 * `CKMA.hanson_wright`: Hanson–Wright concentration inequality with a universal constant.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -50,15 +50,18 @@ universe u
 variable {n : ℕ}
 
 /-- The squared Frobenius norm of a real matrix, given by its entries. -/
+@[expose]
 def realMatrixFrobeniusSq (A : Matrix (Fin n) (Fin n) ℝ) : ℝ :=
   ∑ i, ∑ j, (A i j) ^ 2
 
 /-- Euclidean operator norm, Mathlib's scoped `Matrix.Norms.L2Operator` norm, as distinct
 from the entrywise matrix norm. -/
+@[expose]
 def realMatrixOperatorNorm (A : Matrix (Fin n) (Fin n) ℝ) : ℝ :=
   ‖A‖
 
 /-- The real quadratic form sampled at a coordinate family. -/
+@[expose]
 def sampledQuadraticForm {Ω : Type*} (A : Matrix (Fin n) (Fin n) ℝ) (X : Fin n → Ω → ℝ)
     (ω : Ω) : ℝ :=
   ∑ i, ∑ j, A i j * X i ω * X j ω

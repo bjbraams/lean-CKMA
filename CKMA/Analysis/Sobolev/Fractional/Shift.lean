@@ -31,7 +31,7 @@ as an integral over the increment `h = y - x`. On the diagonal both the extended
 the real quotient are zero, so the two conventions agree everywhere.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -41,17 +41,6 @@ open MeasureTheory
 open scoped ENNReal
 
 variable {d : ℕ}
-
-/-- Lebesgue measure on Euclidean space is σ-finite, by exhaustion with closed balls. -/
-instance sigmaFinite_volume_euclideanSpace (d : ℕ) :
-    SigmaFinite (volume : Measure (EuclideanSpace ℝ (Fin d))) := by
-  refine ⟨⟨{
-    set := fun n => Metric.closedBall (0 : EuclideanSpace ℝ (Fin d)) n
-    set_mem := fun _ => Set.mem_univ _
-    finite := fun n =>
-      (isCompact_closedBall (0 : EuclideanSpace ℝ (Fin d)) (n : ℝ)).measure_lt_top
-    spanning := Metric.iUnion_closedBall_nat (0 : EuclideanSpace ℝ (Fin d))
-  }⟩⟩
 
 private lemma measurable_translateDiff_sq {u : EuclideanSpace ℝ (Fin d) → ℂ}
     (hu : StronglyMeasurable u) :

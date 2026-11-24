@@ -32,7 +32,7 @@ Sources: Boyd–Vandenberghe, *Convex Optimization*, §§5.5 and 5.9; GAPS 12.40
   convex.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

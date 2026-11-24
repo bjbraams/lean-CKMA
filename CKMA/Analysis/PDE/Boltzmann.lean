@@ -29,11 +29,12 @@ Source: GAPS 34.70.
 
 ## Main results
 
+* `CKMA.hardSphereEntropyProduction_nonneg`: nonnegativity for strictly positive densities.
 * `CKMA.hardSphere_hTheorem` (**34.70**): Boltzmann's H identity relating the logarithmic
   collision test to entropy production, together with nonnegativity of the entropy production.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -44,34 +45,59 @@ open scoped ENNReal
 
 /-- Uniform angular probability obtained by radial projection of normalized unit-ball volume.
 The pole is a null set; assigning it direction zero does not change the angular measure. -/
+@[expose]
 def hardSphereAngularMeasure : Measure (EuclideanRealSpace 3) :=
   ((volume (Metric.ball (0 : EuclideanRealSpace 3) 1))⁻¹ : ℝ≥0∞) •
     (volume.restrict (Metric.ball (0 : EuclideanRealSpace 3) 1)).map (fun x ↦ ‖x‖⁻¹ • x)
 
 /-- Post-collision velocity, with the scattering direction in the first or second output. -/
+@[expose]
 def postCollisionVelocity (v w σ : EuclideanRealSpace 3) (first : Bool) : EuclideanRealSpace 3 :=
   (1 / 2 : ℝ) • (v + w) + (if first then ‖v - w‖ / 2 else -(‖v - w‖ / 2)) • σ
 
 /-- Pre-collision product of a one-particle density. -/
+@[expose]
 def collisionPreProduct (f : EuclideanRealSpace 3 → ℝ) (v w : EuclideanRealSpace 3) : ℝ := f v * f w
 
 /-- Post-collision product of the same density. -/
+@[expose]
 def collisionPostProduct (f : EuclideanRealSpace 3 → ℝ) (v w σ : EuclideanRealSpace 3) : ℝ :=
   f (postCollisionVelocity v w σ true) * f (postCollisionVelocity v w σ false)
 
 /-- The hard-sphere collision operator with probability-normalized angular measure. -/
+@[expose]
 def hardSphereCollisionOperator (f : EuclideanRealSpace 3 → ℝ) (v : EuclideanRealSpace 3) : ℝ :=
   ∫ w, ∫ σ, ‖v - w‖ * (collisionPostProduct f v w σ - collisionPreProduct f v w)
     ∂hardSphereAngularMeasure
 
 /-- Nonnegative collision entropy production, with the conventional factor `1/4`. -/
+@[expose]
 def hardSphereEntropyProduction (f : EuclideanRealSpace 3 → ℝ) : ℝ :=
   (1 / 4 : ℝ) * ∫ v, ∫ w, ∫ σ,
     ‖v - w‖ * (collisionPreProduct f v w - collisionPostProduct f v w σ) *
       (Real.log (collisionPreProduct f v w) - Real.log (collisionPostProduct f v w σ))
     ∂hardSphereAngularMeasure
 
+/-- The hard-sphere entropy production is nonnegative for strictly positive densities. -/
+theorem hardSphereEntropyProduction_nonneg (f : EuclideanRealSpace 3 → ℝ)
+    (hpos : ∀ v, 0 < f v) : 0 ≤ hardSphereEntropyProduction f := by
+  rw [hardSphereEntropyProduction]
+  refine mul_nonneg (by positivity)
+    (integral_nonneg fun v ↦ integral_nonneg fun w ↦ integral_nonneg fun σ ↦ ?_)
+  let p := collisionPreProduct f v w
+  let q := collisionPostProduct f v w σ
+  have hp : 0 < p := mul_pos (hpos v) (hpos w)
+  have hq : 0 < q := mul_pos (hpos _) (hpos _)
+  rw [mul_assoc]
+  refine mul_nonneg (norm_nonneg _) ?_
+  by_cases hpq : p ≤ q
+  · exact mul_nonneg_of_nonpos_of_nonpos (sub_nonpos.mpr hpq)
+      (sub_nonpos.mpr (Real.log_le_log hp hpq))
+  · exact mul_nonneg (sub_nonneg.mpr (le_of_not_ge hpq))
+      (sub_nonneg.mpr (Real.log_le_log hq (le_of_not_ge hpq)))
+
 /-- All four velocity evaluations appearing in the collision entropy symmetrization. -/
+@[expose]
 def collisionEvaluation (i : Fin 4)
     (z : EuclideanRealSpace 3 × EuclideanRealSpace 3 × EuclideanRealSpace 3) : EuclideanRealSpace 3
       :=
@@ -79,6 +105,7 @@ def collisionEvaluation (i : Fin 4)
     postCollisionVelocity z.1 z.2.1 z.2.2 (i.val = 2)
 
 /-- Explicit absolute-integrability conditions justifying Fubini and the four logarithmic tests. -/
+@[expose]
 def HasIntegrableCollisionEntropy (f : EuclideanRealSpace 3 → ℝ) : Prop :=
   ∀ i : Fin 4, Integrable (fun z : EuclideanRealSpace 3 × EuclideanRealSpace 3 × EuclideanRealSpace
     3 ↦
@@ -93,6 +120,7 @@ theorem hardSphere_hTheorem (f : EuclideanRealSpace 3 → ℝ) (hf : Measurable 
     (hpos : ∀ v, 0 < f v) (hint : HasIntegrableCollisionEntropy f) :
     (∫ v, hardSphereCollisionOperator f v * Real.log (f v)) = -hardSphereEntropyProduction f ∧
       0 ≤ hardSphereEntropyProduction f := by
+  refine ⟨?_, hardSphereEntropyProduction_nonneg f hpos⟩
   sorry
 
 end CKMA

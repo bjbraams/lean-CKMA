@@ -35,7 +35,7 @@ invariant limit.
   `birkhoffLimit`.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -52,10 +52,8 @@ variable {T : Ω → Ω} {f : Ω → ℝ}
 /-- A positive-length Birkhoff average of a constant function is that constant. -/
 private lemma birkhoffAverage_const (n : ℕ) (hn : n ≠ 0) (c : ℝ) (ω : Ω) :
     birkhoffAverage ℝ T (fun _ : Ω => c) n ω = c := by
-  unfold birkhoffAverage birkhoffSum
-  simp only [smul_eq_mul, Finset.sum_const, Finset.card_range]
-  have hn0 : (n : ℝ) ≠ 0 := by exact_mod_cast hn
-  rw [nsmul_eq_mul, ← mul_assoc, inv_mul_cancel₀ hn0, one_mul]
+  simpa using congr_fun
+    (_root_.birkhoffAverage_const (R := ℝ) T c (n := n) (hn := by exact_mod_cast hn)) ω
 
 /-- Subtracting a constant subtracts that constant from a positive-length average. -/
 private lemma birkhoffAverage_sub_const {f : Ω → ℝ} (n : ℕ) (hn : n ≠ 0) (c : ℝ) (ω : Ω) :
@@ -137,29 +135,32 @@ section Measurable
 
 variable [MeasurableSpace Ω] {T : Ω → Ω} {f : Ω → ℝ}
 
-/-- Each Birkhoff average of a measurable observable is measurable. -/
+/-- Each Birkhoff average of a measurable observable is measurable.
+Prefer `measurable_birkhoffAverage`, which takes the length implicitly. -/
+@[deprecated "use `measurable_birkhoffAverage`" (since := "2026-11-21")]
 lemma measurable_birkhoffAverage (hT : Measurable T) (hf : Measurable f) (n : ℕ) :
-    Measurable (birkhoffAverage ℝ T f n) := by
-  unfold birkhoffAverage
-  simp only [smul_eq_mul]
-  exact ((measurable_const : Measurable fun (_ : Ω) => (n : ℝ)⁻¹).mul
-    (measurable_birkhoffSum hT hf n))
+    Measurable (birkhoffAverage ℝ T f n) :=
+  _root_.measurable_birkhoffAverage hT hf
 
 /-- The extended limsup of the averages is measurable. -/
 private lemma measurable_birkhoffLimsup (hT : Measurable T) (hf : Measurable f) :
     Measurable (birkhoffLimsup T f) := by
   unfold birkhoffLimsup
   refine Measurable.limsup fun n => ?_
-  exact continuous_coe_real_ereal.measurable.comp (measurable_birkhoffAverage hT hf n)
+  exact continuous_coe_real_ereal.measurable.comp
+    (_root_.measurable_birkhoffAverage (n := n) hT hf)
 
 /-- The extended liminf of the averages is measurable. -/
 private lemma measurable_birkhoffLiminf (hT : Measurable T) (hf : Measurable f) :
     Measurable (birkhoffLiminf T f) := by
   unfold birkhoffLiminf
   refine Measurable.liminf fun n => ?_
-  exact continuous_coe_real_ereal.measurable.comp (measurable_birkhoffAverage hT hf n)
+  exact continuous_coe_real_ereal.measurable.comp
+    (_root_.measurable_birkhoffAverage (n := n) hT hf)
 
-/-- Pointwise finite part of the extended limsup of the averages. -/
+/-- Pointwise finite part of the extended limsup of the averages.
+`EReal.toReal` sends both `⊤` and `⊥` to `0`. -/
+@[expose]
 def birkhoffLimit (T : Ω → Ω) (f : Ω → ℝ) (ω : Ω) : ℝ :=
   (birkhoffLimsup T f ω).toReal
 
@@ -192,6 +193,7 @@ lemma measurable_invariants_birkhoffLimit (hT : Measurable T) (hf : Measurable f
     funext fun ω => birkhoffLimit_comp (T := T) (f := f) ω
 
 /-- Upcrossing set where the liminf lies below `p` and the limsup lies above `q`. -/
+@[expose]
 def birkhoffSeparated (T : Ω → Ω) (f : Ω → ℝ) (p q : ℝ) : Set Ω :=
   {ω | birkhoffLiminf T f ω < p ∧ (q : EReal) < birkhoffLimsup T f ω}
 
@@ -229,7 +231,7 @@ section Null
 variable [MeasurableSpace Ω] {μ : Measure Ω} {T : Ω → Ω} {f : Ω → ℝ}
 
 /-- Separated finite liminf and limsup occur only on a null set. -/
-lemma measure_birkhoffSeparated_eq_zero [IsProbabilityMeasure μ] {T : Ω → Ω}
+lemma measure_birkhoffSeparated_eq_zero [IsFiniteMeasure μ] {T : Ω → Ω}
     (hT : MeasurePreserving T μ μ) {f : Ω → ℝ} (hf : Integrable f μ) (hf_meas : Measurable f)
     {p q : ℝ} (hpq : p < q) : μ (birkhoffSeparated T f p q) = 0 := by
   set E := birkhoffSeparated T f p q
@@ -256,7 +258,7 @@ lemma measure_birkhoffSeparated_eq_zero [IsProbabilityMeasure μ] {T : Ω → Ω
   exact (measureReal_eq_zero_iff).mp hzero
 
 /-- The set where the limsup is infinite is null. -/
-private lemma measure_birkhoffLimsup_top_eq_zero [IsProbabilityMeasure μ] {T : Ω → Ω}
+private lemma measure_birkhoffLimsup_top_eq_zero [IsFiniteMeasure μ] {T : Ω → Ω}
     (hT : MeasurePreserving T μ μ) {f : Ω → ℝ} (hf : Integrable f μ) (hf_meas : Measurable f) :
     μ {ω | birkhoffLimsup T f ω = ⊤} = 0 := by
   set S := {ω | birkhoffLimsup T f ω = ⊤}
@@ -302,7 +304,7 @@ private lemma measure_birkhoffLimsup_top_eq_zero [IsProbabilityMeasure μ] {T : 
   exact (measureReal_eq_zero_iff).mp (le_antisymm hnonpos measureReal_nonneg)
 
 /-- The set where the liminf is infinite is null. -/
-private lemma measure_birkhoffLiminf_bot_eq_zero [IsProbabilityMeasure μ] {T : Ω → Ω}
+private lemma measure_birkhoffLiminf_bot_eq_zero [IsFiniteMeasure μ] {T : Ω → Ω}
     (hT : MeasurePreserving T μ μ) {f : Ω → ℝ} (hf : Integrable f μ) (hf_meas : Measurable f) :
     μ {ω | birkhoffLiminf T f ω = ⊥} = 0 := by
   have hset : {ω | birkhoffLiminf T f ω = ⊥} = {ω | birkhoffLimsup T (-f) ω = ⊤} := by
@@ -317,7 +319,7 @@ private lemma measure_birkhoffLiminf_bot_eq_zero [IsProbabilityMeasure μ] {T : 
   exact measure_birkhoffLimsup_top_eq_zero hT hf.neg hf_meas.neg
 
 /-- Outside a null set the averages converge to the finite invariant limit. -/
-lemma birkhoffAverage_ae_tendsto_birkhoffLimit [IsProbabilityMeasure μ] {T : Ω → Ω}
+lemma birkhoffAverage_ae_tendsto_birkhoffLimit [IsFiniteMeasure μ] {T : Ω → Ω}
     (hT : MeasurePreserving T μ μ) {f : Ω → ℝ} (hf : Integrable f μ) (hf_meas : Measurable f) :
     ∀ᵐ ω ∂μ, Tendsto (fun n => birkhoffAverage ℝ T f n ω) atTop (𝓝 (birkhoffLimit T f ω)) := by
   let bad : Set Ω := ⋃ r : {r : ℚ × ℚ // (r.1 : ℝ) < r.2},

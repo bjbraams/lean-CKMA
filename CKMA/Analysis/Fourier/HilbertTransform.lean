@@ -30,7 +30,7 @@ Source: GAPS 27.35.
 * `CKMA.hilbertPrincipalValue_weakType`: weak `(1, 1)` estimate for `hilbertPrincipalValue`.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -41,10 +41,12 @@ open scoped ENNReal FourierTransform
 
 /-- The symmetric small-distance truncation of the Hilbert transform.
 For positive epsilon the tail integral is absolutely integrable on Lp, 1<=p<infinity. -/
+@[expose]
 def truncatedHilbertTransform (ε : ℝ) (f : ℝ → ℂ) (x : ℝ) : ℂ :=
   (Real.pi : ℂ)⁻¹ * ∫ y in {y : ℝ | ε < |x - y|}, f y / (x - y : ℂ)
 
 /-- The totalized principal-value limit; convergence is supplied separately. -/
+@[expose]
 def hilbertPrincipalValue (f : ℝ → ℂ) (x : ℝ) : ℂ :=
   Filter.limUnder (𝓝[>] (0 : ℝ)) (fun ε ↦ truncatedHilbertTransform ε f x)
 

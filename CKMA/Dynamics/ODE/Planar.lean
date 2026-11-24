@@ -5,7 +5,7 @@ Authors: CKMA contributors
 -/
 module
 
-public import CKMA.Dynamics.Flow
+public import CKMA.Dynamics.Flow.Basic
 public import CKMA.Dynamics.ODE.Planar.Bendixson
 public import Mathlib.Analysis.InnerProductSpace.PiL2
 public import Mathlib.Dynamics.OmegaLimit
@@ -17,7 +17,7 @@ import CKMA.Dynamics.ODE.Planar.Basic
 
 `poincare_bendixson` identifies a compactly trapped planar orbit's omega-limit set with a
 whole periodic orbit when that limit set contains no equilibrium. The generator is C¹
-and is related to the existing global flow through `FlowHasGenerator`.
+and is related to the existing global flow through `HasFlowGenerator`.
 
 The plane is the real Euclidean space on `Fin 2`; all differential and omega-limit
 conventions come from Mathlib and the common `CKMA.Dynamics.Flow` interface.
@@ -27,7 +27,7 @@ conventions come from Mathlib and the common `CKMA.Dynamics.Flow` interface.
 * `CKMA.poincare_bendixson`: the Poincaré–Bendixson theorem on `EuclideanSpace ℝ (Fin 2)`.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -40,7 +40,7 @@ The compact forward absorbing set supplies nonemptiness, and the conclusion iden
 all points of the omega-limit set, not just one periodic point. -/
 theorem poincare_bendixson (φ : Flow ℝ (EuclideanSpace ℝ (Fin 2)))
     (F : EuclideanSpace ℝ (Fin 2) → EuclideanSpace ℝ (Fin 2)) (hF : ContDiff ℝ 1 F)
-    (hgen : FlowHasGenerator φ F) (x : EuclideanSpace ℝ (Fin 2))
+    (hgen : HasFlowGenerator φ F) (x : EuclideanSpace ℝ (Fin 2))
     (K : Set (EuclideanSpace ℝ (Fin 2))) (hK : IsCompact K)
     (hstay : ∀ t : ℝ, 0 ≤ t → φ t x ∈ K)
     (hrest : ∀ y ∈ omegaLimit atTop φ {x}, F y ≠ 0) :
@@ -50,7 +50,7 @@ theorem poincare_bendixson (φ : Flow ℝ (EuclideanSpace ℝ (Fin 2)))
   let ψ : Flow ℝ ℂ := conjFlow e φ
   let G : ℂ → ℂ := fun z ↦ e (F (e.symm z))
   have hG : ContDiff ℝ 1 G := contDiff_conjGenerator hF
-  have hgenψ : FlowHasGenerator ψ G := flowHasGenerator_conjFlow hgen
+  have hgenψ : HasFlowGenerator ψ G := hasFlowGenerator_conjFlow hgen
   have hKimg : IsCompact (e '' K) := hK.image e.continuous_toFun
   have hstay' : ∀ t : ℝ, 0 ≤ t → ψ t (e x) ∈ e '' K := by
     intro t ht

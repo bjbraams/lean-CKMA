@@ -31,7 +31,7 @@ Source: GAPS 50.45.
 * `CKMA.exists_borelLaplace_sum`: Borel–Laplace summation on a sector of opening `π + β`.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -41,10 +41,12 @@ open MeasureTheory Filter Topology
 open scoped BigOperators
 
 /-- The formal Borel transform as a scalar series, indexed from the coefficient of `z¹`. -/
+@[expose]
 def borelTransformSeries (a : ℕ → ℂ) (ξ : ℂ) : ℂ :=
   ∑' n : ℕ, a (n + 1) * ξ ^ n / (n.factorial : ℂ)
 
 /-- Directional Laplace summation along the ray of angle `θ`, with its complex line element. -/
+@[expose]
 def directionalBorelLaplaceSum (a₀ : ℂ) (b : ℂ → ℂ) (θ : ℝ) (z : ℂ) : ℂ :=
   a₀ + Complex.exp ((θ : ℂ) * Complex.I) *
     ∫ t in Set.Ioi (0 : ℝ),
@@ -52,6 +54,7 @@ def directionalBorelLaplaceSum (a₀ : ℂ) (b : ℂ → ℂ) (θ : ℝ) (z : �
         b (Complex.exp ((θ : ℂ) * Complex.I) * t)
 
 /-- Gevrey-one remainder estimates, uniform on every closed proper subsector. -/
+@[expose]
 def HasSectorialGevreyOneExpansion (f : ℂ → ℂ) (a : ℕ → ℂ) (θ ω : ℝ) : Prop :=
   ∀ η : ℝ, 0 < η → η < ω → ∃ C A r : ℝ, 0 < C ∧ 0 < A ∧ 0 < r ∧
     ∀ (N : ℕ) (z : ℂ), z ∈ closedComplexSector θ η → ‖z‖ < r →
@@ -59,6 +62,7 @@ def HasSectorialGevreyOneExpansion (f : ℂ → ℂ) (a : ℕ → ℂ) (θ ω : 
         C * A ^ N * (N.factorial : ℝ) * ‖z‖ ^ N
 
 /-- Analytic Borel continuation with exponential growth and the prescribed convergent germ. -/
+@[expose]
 def HasBorelContinuation (a : ℕ → ℂ) (b : ℂ → ℂ) (θ β : ℝ) : Prop :=
   (∃ r : ℝ, 0 < r ∧ DifferentiableOn ℂ b (complexSector θ β ∪ Metric.ball 0 r) ∧
     ∀ ξ : ℂ, ‖ξ‖ < r → HasSum (fun n : ℕ ↦ a (n + 1) * ξ ^ n / (n.factorial : ℂ)) (b ξ)) ∧

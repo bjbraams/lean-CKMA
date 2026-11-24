@@ -36,7 +36,7 @@ Sources: GAPS 47.20, 47.21 and 47.23.
   polynomials.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -46,21 +46,26 @@ open MeasureTheory
 open scoped BigOperators ENNReal
 
 /-- The unnormalized measure of one period, for angular frequencies `exp(ikx)`. -/
+@[expose]
 def trigonometricPeriodMeasure : Measure ℝ := volume.restrict (Set.Icc (-Real.pi) Real.pi)
 
 /-- A trigonometric polynomial of degree at most `n`, with arbitrary complex coefficients. -/
+@[expose]
 def trigonometricPolynomial (n : ℕ) (a : ℤ → ℂ) (x : ℝ) : ℂ :=
   ∑ k ∈ Finset.Icc (-(n : ℤ)) n, a k * Complex.exp (Complex.I * k * x)
 
 /-- The first forward translation difference. -/
+@[expose]
 def translationDifference (h : ℝ) (f : ℝ → ℂ) (x : ℝ) : ℂ := f (x + h) - f x
 
 /-- The order-`r` translation modulus in `Lᵖ` on one period, allowing infinite values. -/
+@[expose]
 def periodicSmoothnessModulus (r : ℕ) (f : ℝ → ℂ) (t : ℝ) (p : ℝ≥0∞) : ℝ≥0∞ :=
   ⨆ (h : ℝ) (_hh : |h| ≤ t),
     eLpNorm (((translationDifference h)^[r]) f) p trigonometricPeriodMeasure
 
 /-- Best trigonometric approximation error in the period `Lᵖ` seminorm. -/
+@[expose]
 def bestTrigonometricError (f : ℝ → ℂ) (n : ℕ) (p : ℝ≥0∞) : ℝ≥0∞ :=
   ⨅ a : ℤ → ℂ, eLpNorm (fun x ↦ f x - trigonometricPolynomial n a x)
     p trigonometricPeriodMeasure

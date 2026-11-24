@@ -15,9 +15,8 @@ import Mathlib.Tactic
 /-!
 # Kingman's subadditive ergodic theorem
 
-The normalized integrals converge by Fekete's lemma. Under a linear pointwise lower bound the
-liminf is identified by the Avila–Bochi orbit estimate, and Birkhoff's theorem along multiples
-controls the limsup. Truncation removes the lower bound, and Scheffé's lemma gives L¹ convergence.
+The normalized integrals converge by Fekete's lemma. The extended-liminf algebra below is the
+scalar input to the pointwise argument; the orbit estimate and the truncation are elsewhere.
 
 ## Main definitions
 
@@ -30,7 +29,7 @@ controls the limsup. Truncation removes the lower bound, and Scheffé's lemma gi
   infimum.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -44,6 +43,7 @@ variable {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} {T : Ω → Ω}
 attribute [local instance] Classical.propDecidable
 
 /-- Integral of each positive length, with the unused length zero set to `0`. -/
+@[expose]
 def kingmanIntegral (f : ℕ → Ω → ℝ) (μ : Measure Ω) (n : ℕ) : ℝ :=
   if n = 0 then 0 else ∫ ω, f n ω ∂μ
 
@@ -147,6 +147,23 @@ lemma tendsto_kingmanIntegral_div (hT : MeasurePreserving T μ μ) {f : ℕ → 
   refine hshift.congr fun n => ?_
   rw [kingmanIntegral_div (Nat.succ_pos n), Nat.cast_succ]
 
+/-- A scale at most `1 / 2` with `ε * a ≤ δ`, for the real ε-squeeze. -/
+private lemma exists_eps_squeeze {a δ : ℝ} (ha : 0 ≤ a) (hδ : 0 < δ) :
+    ∃ ε : ℝ, 0 < ε ∧ ε < 1 ∧ ε * a ≤ δ := by
+  refine ⟨min (1 / 2) (δ / (a + 1)), ?_, ?_, ?_⟩
+  · positivity
+  · have : min (1 / 2) (δ / (a + 1)) ≤ 1 / 2 := min_le_left _ _
+    linarith
+  · have hle : min (1 / 2) (δ / (a + 1)) ≤ δ / (a + 1) := min_le_right _ _
+    have hmul : min (1 / 2) (δ / (a + 1)) * a ≤ δ / (a + 1) * a :=
+      mul_le_mul_of_nonneg_right hle ha
+    have hfrac : δ / (a + 1) * a ≤ δ := by
+      rw [div_mul_eq_mul_div]
+      have hden : (0 : ℝ) < a + 1 := by linarith
+      rw [div_le_iff₀ hden]
+      nlinarith
+    exact hmul.trans hfrac
+
 /-- A coefficient tending to `1` preserves liminf for a nonnegative sequence. -/
 private lemma liminf_mul_tendsto_one_nonneg {w c : ℕ → ℝ} (hw : ∀ n, 0 ≤ w n)
     (hc : Tendsto c atTop (𝓝 (1 : ℝ))) (hc_pos : ∀ᶠ n in atTop, 0 < c n) :
@@ -230,38 +247,12 @@ private lemma liminf_mul_tendsto_one_nonneg {w c : ℕ → ℝ} (hw : ∀ n, 0 �
       exact ⟨EReal.coe_le_coe_iff.mp hlo, EReal.coe_le_coe_iff.mp hhi⟩
     have hupper : Lc.toReal ≤ a := by
       refine le_of_forall_pos_le_add fun δ hδ => ?_
-      let ε : ℝ := min (1 / 2) (δ / (a + 1))
-      have hε0 : 0 < ε := by positivity
-      have hε1 : ε < 1 := by
-        have : ε ≤ 1 / 2 := min_le_left _ _
-        linarith
-      have hεa : ε * a ≤ δ := by
-        have hle : ε ≤ δ / (a + 1) := min_le_right _ _
-        have hmul : ε * a ≤ δ / (a + 1) * a := mul_le_mul_of_nonneg_right hle ha0
-        have hfrac : δ / (a + 1) * a ≤ δ := by
-          rw [div_mul_eq_mul_div]
-          have hden : (0 : ℝ) < a + 1 := by linarith
-          rw [div_le_iff₀ hden]
-          nlinarith
-        exact hmul.trans hfrac
+      obtain ⟨ε, hε0, hε1, hεa⟩ := exists_eps_squeeze ha0 hδ
       have := (hbdd ε hε0 hε1).2
       linarith
     have hlower : a ≤ Lc.toReal := by
       refine le_of_forall_pos_le_add fun δ hδ => ?_
-      let ε : ℝ := min (1 / 2) (δ / (a + 1))
-      have hε0 : 0 < ε := by positivity
-      have hε1 : ε < 1 := by
-        have : ε ≤ 1 / 2 := min_le_left _ _
-        linarith
-      have hεa : ε * a ≤ δ := by
-        have hle : ε ≤ δ / (a + 1) := min_le_right _ _
-        have hmul : ε * a ≤ δ / (a + 1) * a := mul_le_mul_of_nonneg_right hle ha0
-        have hfrac : δ / (a + 1) * a ≤ δ := by
-          rw [div_mul_eq_mul_div]
-          have hden : (0 : ℝ) < a + 1 := by linarith
-          rw [div_le_iff₀ hden]
-          nlinarith
-        exact hmul.trans hfrac
+      obtain ⟨ε, hε0, hε1, hεa⟩ := exists_eps_squeeze ha0 hδ
       have := (hbdd ε hε0 hε1).1
       linarith
     have hclose : Lc.toReal = a := le_antisymm hupper hlower

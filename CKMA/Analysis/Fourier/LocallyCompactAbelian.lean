@@ -33,7 +33,7 @@ Sources: GAPS 28.24 and 28.29.
   second-countable locally compact abelian groups (**28.29**).
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -52,6 +52,7 @@ theorem exists_pontryaginDual_equiv :
   sorry
 
 /-- The Fourier integral on a locally compact abelian group at a continuous unitary character. -/
+@[expose]
 def groupFourierIntegral [MeasurableSpace G] (μ : Measure G) (f : G → ℂ)
     (χ : PontryaginDual G) : ℂ := ∫ x, f x * conj (χ x : ℂ) ∂μ
 

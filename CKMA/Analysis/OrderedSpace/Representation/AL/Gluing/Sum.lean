@@ -29,7 +29,7 @@ vector meets only countably many bands, and the norm series forces the rest to v
   `L¹(μ)`.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -47,20 +47,25 @@ variable (hE : ∀ x y : E, 0 ≤ x → 0 ≤ y → ‖x + y‖ = ‖x‖ + ‖y
   [Fact (1 ≤ (1 : ENNReal))]
 
 /-- Carrier of one band in the disjoint union. -/
+@[expose]
 abbrev BandFiber (i : BandIndex (E := E)) : Type u :=
   (bandComponent hE (bandIndex_nonneg i)).X
 
+@[expose]
 instance (i : BandIndex (E := E)) : MeasurableSpace (BandFiber hE i) :=
   (bandComponent hE (bandIndex_nonneg i)).mSpace
 
 /-- Disjoint union of the band carriers. -/
+@[expose]
 abbrev ALCarrier : Type u := Σ i : BandIndex (E := E), BandFiber hE i
 
 /-- Measure of one band. -/
+@[expose]
 def bandMeasure (i : BandIndex (E := E)) : Measure (BandFiber hE i) :=
   (bandComponent hE (bandIndex_nonneg i)).μ
 
 /-- Inclusion of one fiber into the disjoint union. -/
+@[expose]
 def bandIncl (i : BandIndex (E := E)) : BandFiber hE i → ALCarrier hE :=
   Sigma.mk i
 
@@ -97,6 +102,7 @@ private theorem bandIncl_measurableEmbedding (i : BandIndex (E := E)) :
       exact MeasurableSet.empty
 
 /-- Sum of the pushed-forward band measures. -/
+@[expose]
 def alMeasure : Measure (ALCarrier hE) :=
   Measure.sum fun i => (bandMeasure hE i).map (bandIncl hE i)
 
@@ -117,6 +123,7 @@ theorem ae_eq_alCarrier {f g : ALCarrier hE → ℝ} (hf : Measurable f) (hg : M
   simpa [Function.comp_apply, ne_eq] using ae_iff.mp (h i)
 
 /-- The band projection, packaged as a vector of the closed band. -/
+@[expose]
 def toBandₗ (i : BandIndex (E := E)) : E →ₗ[ℝ] ClosedPrincipalBand i.vec where
   toFun x := ⟨indexProjection hE i.mem_family x,
     bandProjection_mem_closure hE (bandIndex_nonneg i) x⟩
@@ -141,11 +148,13 @@ private theorem toBand_sup (i : BandIndex (E := E)) (x y : E) :
   exact bandProjection_sup hE (bandIndex_nonneg i) x y
 
 /-- Chosen L¹ representation of one closed band. -/
+@[expose]
 def componentRep (i : BandIndex (E := E)) :
     ClosedPrincipalBand i.vec ≃ₗᵢ[ℝ] Lp ℝ 1 (bandMeasure hE i) :=
   (bandComponent hE (bandIndex_nonneg i)).rep
 
 /-- Pointwise gluing of the band representatives. -/
+@[expose]
 def glueFn (x : E) : ALCarrier hE → ℝ :=
   fun z => (componentRep hE z.fst (toBandₗ hE z.fst x) : BandFiber hE z.fst → ℝ) z.snd
 
@@ -197,6 +206,7 @@ theorem memLp_glueFn (x : E) : MemLp (glueFn hE x) 1 (alMeasure hE) := by
   exact ENNReal.ofReal_lt_top
 
 /-- Lattice isometry data, as a linear map into the summed L¹ space. -/
+@[expose]
 def alRepₗ : E →ₗ[ℝ] Lp ℝ 1 (alMeasure hE) where
   toFun x := (memLp_glueFn hE x).toLp (glueFn hE x)
   map_add' x y := by
@@ -246,6 +256,7 @@ theorem norm_alRepₗ (x : E) : ‖alRepₗ hE x‖ = ‖x‖ := by
   rw [Lp.norm_toLp, eLpNorm_glueFn, ENNReal.toReal_ofReal (norm_nonneg x)]
 
 /-- The representation as a linear isometry. -/
+@[expose]
 def alRepₗᵢ : E →ₗᵢ[ℝ] Lp ℝ 1 (alMeasure hE) where
   toLinearMap := alRepₗ hE
   norm_map' := norm_alRepₗ hE
@@ -304,6 +315,7 @@ theorem memLp_slice (ψ : Lp ℝ 1 (alMeasure hE)) (i : BandIndex (E := E)) :
   exact (bandIncl_measurableEmbedding hE i).memLp_map_measure_iff.mp hμ
 
 /-- Band component of an L¹ function, read through the fiber representation. -/
+@[expose]
 def alSlice (ψ : Lp ℝ 1 (alMeasure hE)) (i : BandIndex (E := E)) : ClosedPrincipalBand i.vec :=
   (componentRep hE i).symm ((memLp_slice hE ψ i).toLp
     ((ψ : ALCarrier hE → ℝ) ∘ bandIncl hE i))
@@ -421,6 +433,7 @@ theorem alRepₗ_surjective : Function.Surjective (alRepₗ hE) := by
   simpa [alRepₗ] using hEq
 
 /-- Lattice isometry of an AL-space onto the summed L¹ space. -/
+@[expose]
 def alRep : E ≃ₗᵢ[ℝ] Lp ℝ 1 (alMeasure hE) :=
   LinearIsometryEquiv.ofSurjective (alRepₗᵢ hE) (alRepₗ_surjective hE)
 

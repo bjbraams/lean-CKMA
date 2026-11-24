@@ -6,6 +6,7 @@ Authors: CKMA contributors
 module
 
 public import CKMA.Analysis.Semigroup.Inhomogeneous
+public import CKMA.Analysis.Semigroup.TrotterKato
 public import TauCeti.Topology.Algebra.Module.LinearPMap.Resolvent.Basic
 public import TauCeti.Analysis.Semigroups.GrowthBound
 public import Mathlib.Topology.Algebra.Module.LinearPMap
@@ -22,16 +23,9 @@ import Mathlib.Topology.Algebra.ConstMulAction
 # Inhomogeneous evolution and semigroup approximation
 
 Variation-of-constants trajectories and their integrated and classical generator
-equations. Trotter–Kato relates strong resolvent convergence to uniform strong convergence
-on bounded time intervals under a common growth bound. Chernoff products are stable
-families tangent to the generator on an actual core. Generators, resolvents and core
-domains reuse TauCeti's semigroup modules; integration uses Mathlib.
-Sources: GAPS 24.13, 24.17 and 24.18.
-
-## Main definitions
-
-* `CKMA.SemigroupsConvergeUniformlyOnCompacts`: uniform strong convergence of semigroups on
-  bounded nonnegative time intervals.
+equations. Chernoff products are stable families tangent to the generator on an actual core.
+Generators and core domains reuse TauCeti's semigroup modules. Integration uses Mathlib.
+Sources: GAPS 24.13 and 24.18.
 
 ## Main results
 
@@ -39,11 +33,10 @@ Sources: GAPS 24.13, 24.17 and 24.18.
   integrated solution for `L¹` forcing.
 * `CKMA.variation_of_constants_classical`: classical differentiability for domain initial data and
   `C¹` forcing.
-* `CKMA.trotter_kato` (**24.17**): Trotter–Kato approximation theorem.
 * `CKMA.chernoff_product` (**24.18**): Chernoff product formula.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -1189,22 +1182,6 @@ theorem variation_of_constants_classical (S : StronglyContinuousSemigroup X) {T 
       rw [hAφpack]; exact hφeq
     refine ⟨hmem, htraj.congr_deriv ?_⟩
     rw [hgen, hAφ, add_assoc, sub_add_cancel]
-
-/-- Uniform strong convergence on every bounded nonnegative time interval. -/
-def SemigroupsConvergeUniformlyOnCompacts
-    (S : ℕ → StronglyContinuousSemigroup X) (T : StronglyContinuousSemigroup X) : Prop :=
-  ∀ x : X, ∀ R : ℝ≥0, ∀ ε : ℝ, 0 < ε → ∀ᶠ n in atTop,
-    ∀ t : ℝ≥0, t ≤ R → ‖S n t x - T t x‖ < ε
-
-/-- **24.17**, Trotter–Kato: one sufficiently large real resolvent parameter characterizes
-uniform-on-bounded-time strong semigroup convergence under a common exponential bound. -/
-theorem trotter_kato (S : ℕ → StronglyContinuousSemigroup X)
-    (T : StronglyContinuousSemigroup X) {ω M : ℝ}
-    (hS : ∀ n, (S n).HasGrowthBound ω M) (hT : T.HasGrowthBound ω M)
-    {r : ℝ} (hr : ω < r) :
-    (∀ x : X, Tendsto (fun n ↦ (S n).generator.resolvent r x) atTop
-      (𝓝 (T.generator.resolvent r x))) ↔ SemigroupsConvergeUniformlyOnCompacts S T := by
-  sorry
 
 /-- **24.18**, Chernoff: a stable strongly continuous product family tangent to a generator
 on an actual core converges uniformly over bounded nonnegative time intervals. -/

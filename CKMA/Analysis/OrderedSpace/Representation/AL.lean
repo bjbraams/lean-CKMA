@@ -5,7 +5,7 @@ Authors: CKMA contributors
 -/
 module
 
-public import CKMA.Analysis.OrderedSpace.Bands
+public import CKMA.Analysis.OrderedSpace.Representation.AL.OrderUnit
 public import Mathlib.MeasureTheory.Function.LpOrder
 public import Mathlib.MeasureTheory.Function.LpSpace.ContinuousFunctions
 public import Mathlib.Topology.ContinuousMap.CompactlySupported
@@ -14,31 +14,32 @@ import Mathlib.MeasureTheory.Function.ContinuousMapDense
 import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Real
 
 /-!
-# Kakutani representation of an AL-space
+# Kakutani representation of an AL-space with a weak unit
 
-An AL-space is Archimedean and sequentially order complete. The principal ideal of a positive
-vector, renormed by the order-unit gauge, is a complete AM-space with that vector as unit, so
-the AM representation supplies a compact carrier. The Riesz–Markov measure of the AL-norm
-functional makes evaluation into `L¹` an isometry for the original norm, and a weak unit makes
-the ideal dense. A maximal disjoint family reduces the general case to weak units of the
-closed principal bands, glued by the sum of the pushed-forward measures.
+An AL-space has additive norm on the positive cone. The AL-norm functional extends that norm.
+Truncations by a weak unit converge, and the principal ideal of a weak unit is dense.
+That ideal, renormed by the order-unit gauge, is built in
+`CKMA.Analysis.OrderedSpace.Representation.AL.OrderUnit` and is an AM-space with the weak unit
+as order unit. The Riesz–Markov measure of the AL-norm functional makes the inclusion of the
+ideal into `L¹` an isometry for the original norm.
 Sources: GAPS 19.29; Aliprantis–Burkinshaw, Theorem 4.27; Schaefer, Theorem II.8.5.
 
 ## Main definitions
 
-* `CKMA.alNormFunctional`: linear functional extending the norm on the positive cone of an AL-space.
-* `CKMA.OrderUnitSpace`: principal order ideal of a positive vector equipped with the order-unit
-  gauge norm.
+* `CKMA.alNormFunctional`: linear functional extending the norm on the positive cone of an
+  AL-space.
 
 ## Main results
 
+* `CKMA.exists_tendsto_of_monotone_of_norm_add_eq`: monotone completeness from the AL identity.
+* `CKMA.norm_sum_of_pairwise_latticeDisjoint`: the norm adds on pairwise disjoint finite sums.
 * `CKMA.tendsto_trunc_of_weakUnit`: truncations against a weak unit converge in norm.
 * `CKMA.denseRange_orderUnit`: the principal ideal of a weak unit is norm-dense.
-* `CKMA.exists_al_representation_of_weakUnit`: Kakutani representation of an AL-space with a weak
-  unit as `L¹(μ)`.
+* `CKMA.exists_al_representation_of_weakUnit`: an AL-space with a weak unit is lattice isometric
+  to a real `L¹` space.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -51,30 +52,6 @@ universe u
 
 variable {E : Type u} [NormedAddCommGroup E] [NormedSpace ℝ E] [Lattice E]
   [IsOrderedAddMonoid E] [IsOrderedModule ℝ E] [HasSolidNorm E]
-
-/-- A normed Riesz space satisfies the Archimedean axiom. -/
-private theorem archimedean_of_norm {x y : E} (h : ∀ n : ℕ, (n : ℝ) • x ≤ y) : x ≤ 0 := by
-  have hpos : ∀ n : ℕ, (n : ℝ) • x⁺ ≤ y⁺ := by
-    intro n
-    rw [← posPart_smul_of_nonneg (Nat.cast_nonneg n)]
-    exact sup_le_sup_right (h n) 0
-  have hnorm : ∀ n : ℕ, (n : ℝ) * ‖x⁺‖ ≤ ‖y⁺‖ := by
-    intro n
-    have habs : |(n : ℝ) • x⁺| ≤ |y⁺| := by
-      rw [abs_of_nonneg (smul_nonneg (Nat.cast_nonneg n) (posPart_nonneg x)),
-        abs_of_nonneg (posPart_nonneg y)]
-      exact hpos n
-    have hle := norm_le_norm_of_abs_le_abs habs
-    rwa [norm_smul, Real.norm_eq_abs, abs_of_nonneg (Nat.cast_nonneg n)] at hle
-  have hz : ‖x⁺‖ = 0 := by
-    by_contra hne
-    have hpos' : 0 < ‖x⁺‖ := lt_of_le_of_ne (norm_nonneg _) (Ne.symm hne)
-    obtain ⟨n, hn⟩ := exists_nat_gt (‖y⁺‖ / ‖x⁺‖)
-    have hlt : ‖y⁺‖ < (n : ℝ) * ‖x⁺‖ := by
-      rwa [div_lt_iff₀ hpos'] at hn
-    exact not_lt.mpr (hnorm n) hlt
-  rw [norm_eq_zero] at hz
-  exact posPart_eq_zero.mp hz
 
 omit [NormedSpace ℝ E] [IsOrderedModule ℝ E] [HasSolidNorm E] in
 /-- Sequential monotone completeness of an AL-space: in a complete normed lattice whose norm
@@ -111,6 +88,7 @@ theorem exists_tendsto_of_monotone_of_norm_add_eq
 alias al_isKB := exists_tendsto_of_monotone_of_norm_add_eq
 
 /-- The additive norm of an AL-space, extended from the positive cone. -/
+@[expose]
 def alNormFunctional (hE : ∀ x y : E, 0 ≤ x → 0 ≤ y → ‖x + y‖ = ‖x‖ + ‖y‖) :
     E →ₗ[ℝ] ℝ :=
   coneAdditiveLinearMap (fun x => ‖x‖)
@@ -302,228 +280,6 @@ theorem norm_trunc_remainder_le {u x : E} (hu : 0 ≤ u) (hx : 0 ≤ x) {n : ℕ
   have hn0 : (0 : ℝ) < n := by exact_mod_cast (Nat.succ_le_iff.mp hn)
   rwa [le_div_iff₀ hn0, mul_comm]
 
-/-- The set of admissible gauge scalars. -/
-private def gaugeSet (u x : E) : Set ℝ := {c : ℝ | 0 ≤ c ∧ |x| ≤ c • u}
-
-omit [IsOrderedAddMonoid E] [IsOrderedModule ℝ E] [HasSolidNorm E] in
-/-- The gauge set of an ideal element is nonempty and bounded below by zero. -/
-private theorem gaugeSet_nonempty {u x : E} (hx : x ∈ principalOrderIdeal u) :
-    (gaugeSet u x).Nonempty := by
-  obtain ⟨c, hc, hx⟩ := hx
-  exact ⟨c, hc, hx⟩
-
-omit [IsOrderedAddMonoid E] [IsOrderedModule ℝ E] [HasSolidNorm E] in
-/-- Every gauge scalar is nonnegative. -/
-private theorem bddBelow_gaugeSet (u x : E) : BddBelow (gaugeSet u x) :=
-  ⟨0, fun _ hc => hc.1⟩
-
-omit [IsOrderedAddMonoid E] [IsOrderedModule ℝ E] [HasSolidNorm E] in
-/-- The order-unit gauge of an ideal element is nonnegative. -/
-theorem gauge_nonneg {u x : E} (hx : x ∈ principalOrderIdeal u) :
-    0 ≤ orderUnitGauge u x := by
-  unfold orderUnitGauge
-  exact le_csInf (gaugeSet_nonempty hx) fun _ hc => hc.1
-
-omit [IsOrderedAddMonoid E] [IsOrderedModule ℝ E] [HasSolidNorm E] in
-/-- An admissible scalar dominates the gauge. -/
-private theorem gauge_le_of_mem {u x : E} {c : ℝ} (hc : c ∈ gaugeSet u x) :
-    orderUnitGauge u x ≤ c := by
-  unfold orderUnitGauge
-  exact csInf_le (bddBelow_gaugeSet u x) hc
-
-/-- Archimedean attainment: the absolute value is bounded by the gauge multiple. -/
-theorem abs_le_gauge_smul {u x : E} (hu : 0 ≤ u) (hx : x ∈ principalOrderIdeal u) :
-    |x| ≤ orderUnitGauge u x • u := by
-  set p : ℝ := orderUnitGauge u x
-  have hp : 0 ≤ p := gauge_nonneg hx
-  let z : E := (|x| - p • u)⁺
-  have hz0 : 0 ≤ z := posPart_nonneg _
-  have hzε : ∀ ε : ℝ, 0 < ε → z ≤ ε • u := by
-    intro ε hε
-    have hnot : ¬ ∀ c ∈ gaugeSet u x, p + ε ≤ c := by
-      intro hall
-      have hle : p + ε ≤ p := le_csInf (gaugeSet_nonempty hx) hall
-      linarith
-    push Not at hnot
-    obtain ⟨c, hc, hclt⟩ := hnot
-    have habs : |x| ≤ c • u := hc.2
-    have hcε : c • u ≤ (p + ε) • u :=
-      smul_le_smul_of_nonneg_right (le_of_lt hclt) hu
-    have hdiff : |x| - p • u ≤ ε • u := by
-      have hsum : c • u ≤ p • u + ε • u := by
-        rw [← add_smul]
-        exact hcε
-      exact (sub_le_sub_right (habs.trans hsum) (p • u)).trans_eq (by abel)
-    have hpos : (|x| - p • u)⁺ ≤ ε • u := by
-      exact sup_le hdiff (smul_nonneg hε.le hu)
-    simpa [z] using hpos
-  have harch : ∀ n : ℕ, (n : ℝ) • z ≤ u := by
-    intro n
-    cases n with
-    | zero => simp [hu]
-    | succ n =>
-      have hε : (0 : ℝ) < 1 / ((n + 1 : ℕ) : ℝ) :=
-        one_div_pos.mpr (by exact_mod_cast Nat.succ_pos n)
-      have hz := hzε _ hε
-      have hmul := smul_le_smul_of_nonneg_left hz
-        (Nat.cast_nonneg (α := ℝ) (n + 1))
-      have hcoe : ((n + 1 : ℕ) : ℝ) * (1 / ((n + 1 : ℕ) : ℝ)) = 1 := by
-        rw [mul_one_div]
-        exact div_self (Nat.cast_ne_zero.mpr (Nat.succ_ne_zero n))
-      rw [smul_smul, hcoe, one_smul] at hmul
-      exact hmul
-  have hzle : z ≤ 0 := archimedean_of_norm harch
-  have hz : z = 0 := le_antisymm hzle hz0
-  exact sub_nonpos.mp (posPart_eq_zero.mp (by simpa [z] using hz))
-
-/-- Membership in the gauge set is equivalent to dominating the gauge, for ideal elements. -/
-theorem gauge_le_iff {u x : E} (hu : 0 ≤ u) (hx : x ∈ principalOrderIdeal u) {c : ℝ}
-    (hc : 0 ≤ c) : orderUnitGauge u x ≤ c ↔ |x| ≤ c • u := by
-  constructor
-  · intro hle
-    exact (abs_le_gauge_smul hu hx).trans (smul_le_smul_of_nonneg_right hle hu)
-  · intro habs
-    exact gauge_le_of_mem ⟨hc, habs⟩
-
-/-- The gauge is absolutely homogeneous on the principal ideal. -/
-private theorem gauge_smul {u x : E} (hu : 0 ≤ u) (hx : x ∈ principalOrderIdeal u) (c : ℝ) :
-    orderUnitGauge u (c • x) = |c| * orderUnitGauge u x := by
-  have hx' : c • x ∈ principalOrderIdeal u := by
-    obtain ⟨d, hd, hxd⟩ := hx
-    refine ⟨|c| * d, mul_nonneg (abs_nonneg c) hd, ?_⟩
-    calc |c • x| = |c| • |x| := abs_smul c x
-      _ ≤ |c| • (d • u) := smul_le_smul_of_nonneg_left hxd (abs_nonneg c)
-      _ = (|c| * d) • u := by rw [mul_smul]
-  have hp : 0 ≤ orderUnitGauge u x := gauge_nonneg hx
-  have hq : 0 ≤ orderUnitGauge u (c • x) := gauge_nonneg hx'
-  apply le_antisymm
-  · have habs : |c • x| ≤ (|c| * orderUnitGauge u x) • u := by
-      calc |c • x| = |c| • |x| := abs_smul c x
-        _ ≤ |c| • (orderUnitGauge u x • u) :=
-            smul_le_smul_of_nonneg_left (abs_le_gauge_smul hu hx) (abs_nonneg c)
-        _ = (|c| * orderUnitGauge u x) • u := by rw [mul_smul]
-    exact (gauge_le_iff hu hx' (mul_nonneg (abs_nonneg c) hp)).2 habs
-  · rcases eq_or_ne c 0 with rfl | hc
-    · simpa using hq
-    · have habs : |x| ≤ (|c|⁻¹ * orderUnitGauge u (c • x)) • u := by
-        have hback : x = c⁻¹ • c • x := by
-          rw [← mul_smul, inv_mul_cancel₀ hc, one_smul]
-        calc |x| = |c⁻¹ • c • x| := by rw [← hback]
-          _ = |c|⁻¹ • |c • x| := by rw [abs_smul, abs_inv]
-          _ ≤ |c|⁻¹ • (orderUnitGauge u (c • x) • u) :=
-              smul_le_smul_of_nonneg_left (abs_le_gauge_smul hu hx') (inv_nonneg.mpr (abs_nonneg c))
-          _ = (|c|⁻¹ * orderUnitGauge u (c • x)) • u := by rw [mul_smul]
-      have hp' : orderUnitGauge u x ≤ |c|⁻¹ * orderUnitGauge u (c • x) :=
-        (gauge_le_iff hu hx (mul_nonneg (inv_nonneg.mpr (abs_nonneg c)) hq)).2 habs
-      have hmul := mul_le_mul_of_nonneg_left hp' (abs_nonneg c)
-      rwa [← mul_assoc, mul_inv_cancel₀ (abs_ne_zero.mpr hc), one_mul] at hmul
-
-/-- The gauge is subadditive on the principal ideal. -/
-private theorem gauge_add {u x y : E} (hu : 0 ≤ u) (hx : x ∈ principalOrderIdeal u)
-    (hy : y ∈ principalOrderIdeal u) :
-    orderUnitGauge u (x + y) ≤ orderUnitGauge u x + orderUnitGauge u y := by
-  have hxy : x + y ∈ principalOrderIdeal u := by
-    obtain ⟨c, hc, hxc⟩ := hx
-    obtain ⟨d, hd, hyd⟩ := hy
-    refine ⟨c + d, add_nonneg hc hd, ?_⟩
-    calc |x + y| ≤ |x| + |y| := abs_add_le x y
-      _ ≤ c • u + d • u := add_le_add hxc hyd
-      _ = (c + d) • u := by rw [add_smul]
-  have habs : |x + y| ≤ (orderUnitGauge u x + orderUnitGauge u y) • u := by
-    calc |x + y| ≤ |x| + |y| := abs_add_le x y
-      _ ≤ orderUnitGauge u x • u + orderUnitGauge u y • u :=
-          add_le_add (abs_le_gauge_smul hu hx) (abs_le_gauge_smul hu hy)
-      _ = (orderUnitGauge u x + orderUnitGauge u y) • u := by rw [add_smul]
-  exact (gauge_le_iff hu hxy (add_nonneg (gauge_nonneg hx) (gauge_nonneg hy))).2 habs
-
-omit [NormedSpace ℝ E] [IsOrderedModule ℝ E] [HasSolidNorm E] in
-/-- The absolute value of a supremum is dominated by the supremum of the absolute values. -/
-private theorem abs_sup_le_sup_abs (x y : E) : |x ⊔ y| ≤ |x| ⊔ |y| := by
-  refine sup_le ?_ ?_
-  · exact sup_le_sup (le_abs_self x) (le_abs_self y)
-  · rw [neg_sup]
-    exact inf_le_left.trans ((neg_le_abs x).trans le_sup_left)
-
-omit [NormedSpace ℝ E] [IsOrderedModule ℝ E] [HasSolidNorm E] in
-/-- The absolute value of an infimum is dominated by the supremum of the absolute values. -/
-private theorem abs_inf_le_sup_abs (x y : E) : |x ⊓ y| ≤ |x| ⊔ |y| := by
-  rw [show x ⊓ y = -(-x ⊔ -y) by rw [← neg_inf, neg_neg], abs_neg]
-  exact (abs_sup_le_sup_abs (-x) (-y)).trans (by simp [abs_neg])
-
-omit [HasSolidNorm E] in
-/-- Nonnegative scaling preserves a principal ideal. -/
-theorem principalOrderIdeal_smul {u : E} {c : ℝ} {x : E} (hx : x ∈ principalOrderIdeal u) :
-    c • x ∈ principalOrderIdeal u := by
-  obtain ⟨d, hd, hxd⟩ := hx
-  refine ⟨|c| * d, mul_nonneg (abs_nonneg c) hd, ?_⟩
-  calc |c • x| = |c| • |x| := abs_smul c x
-    _ ≤ |c| • (d • u) := smul_le_smul_of_nonneg_left hxd (abs_nonneg c)
-    _ = (|c| * d) • u := by rw [mul_smul]
-
-omit [IsOrderedAddMonoid E] [IsOrderedModule ℝ E] [HasSolidNorm E] in
-/-- Negation preserves a principal ideal. -/
-theorem principalOrderIdeal_neg {u x : E} (hx : x ∈ principalOrderIdeal u) :
-    -x ∈ principalOrderIdeal u := by
-  obtain ⟨c, hc, hxc⟩ := hx
-  exact ⟨c, hc, by simpa [abs_neg] using hxc⟩
-
-omit [IsOrderedModule ℝ E] [HasSolidNorm E] in
-/-- Addition preserves a principal ideal. -/
-theorem principalOrderIdeal_add {u x y : E} (hx : x ∈ principalOrderIdeal u)
-    (hy : y ∈ principalOrderIdeal u) : x + y ∈ principalOrderIdeal u := by
-  obtain ⟨c, hc, hxc⟩ := hx
-  obtain ⟨d, hd, hyd⟩ := hy
-  refine ⟨c + d, add_nonneg hc hd, ?_⟩
-  calc |x + y| ≤ |x| + |y| := abs_add_le x y
-    _ ≤ c • u + d • u := add_le_add hxc hyd
-    _ = (c + d) • u := by rw [add_smul]
-
-omit [IsOrderedModule ℝ E] [HasSolidNorm E] in
-/-- Subtraction preserves a principal ideal. -/
-theorem principalOrderIdeal_sub {u x y : E} (hx : x ∈ principalOrderIdeal u)
-    (hy : y ∈ principalOrderIdeal u) : x - y ∈ principalOrderIdeal u := by
-  simpa [sub_eq_add_neg] using principalOrderIdeal_add hx (principalOrderIdeal_neg hy)
-
-omit [HasSolidNorm E] in
-/-- Natural scaling preserves a principal ideal. -/
-theorem principalOrderIdeal_nsmul {u : E} {n : ℕ} {x : E} (hx : x ∈ principalOrderIdeal u) :
-    n • x ∈ principalOrderIdeal u := by
-  rw [← Nat.cast_smul_eq_nsmul ℝ]
-  exact principalOrderIdeal_smul hx
-
-omit [HasSolidNorm E] in
-/-- Integer scaling preserves a principal ideal. -/
-theorem principalOrderIdeal_zsmul {u : E} {n : ℤ} {x : E} (hx : x ∈ principalOrderIdeal u) :
-    n • x ∈ principalOrderIdeal u := by
-  rw [← Int.cast_smul_eq_zsmul ℝ]
-  exact principalOrderIdeal_smul hx
-
-omit [IsOrderedModule ℝ E] [HasSolidNorm E] in
-/-- A principal ideal is closed under binary suprema. -/
-theorem principalOrderIdeal_sup {u x y : E} (hx : x ∈ principalOrderIdeal u)
-    (hy : y ∈ principalOrderIdeal u) : x ⊔ y ∈ principalOrderIdeal u := by
-  obtain ⟨c, hc, hxc⟩ := hx
-  obtain ⟨d, hd, hyd⟩ := hy
-  refine ⟨c + d, add_nonneg hc hd, ?_⟩
-  calc |x ⊔ y| ≤ |x| ⊔ |y| := abs_sup_le_sup_abs x y
-    _ ≤ |x| + |y| :=
-        sup_le (le_add_of_nonneg_right (abs_nonneg _)) (le_add_of_nonneg_left (abs_nonneg _))
-    _ ≤ c • u + d • u := add_le_add hxc hyd
-    _ = (c + d) • u := by rw [add_smul]
-
-omit [IsOrderedModule ℝ E] [HasSolidNorm E] in
-/-- A principal ideal is closed under binary infima. -/
-theorem principalOrderIdeal_inf {u x y : E} (hx : x ∈ principalOrderIdeal u)
-    (hy : y ∈ principalOrderIdeal u) : x ⊓ y ∈ principalOrderIdeal u := by
-  obtain ⟨c, hc, hxc⟩ := hx
-  obtain ⟨d, hd, hyd⟩ := hy
-  refine ⟨c + d, add_nonneg hc hd, ?_⟩
-  calc |x ⊓ y| ≤ |x| ⊔ |y| := abs_inf_le_sup_abs x y
-    _ ≤ |x| + |y| :=
-        sup_le (le_add_of_nonneg_right (abs_nonneg _)) (le_add_of_nonneg_left (abs_nonneg _))
-    _ ≤ c • u + d • u := add_le_add hxc hyd
-    _ = (c + d) • u := by rw [add_smul]
-
 /-- Truncations of a positive vector by a weak unit converge to the vector. -/
 theorem tendsto_trunc_of_weakUnit
     (hE : ∀ x y : E, 0 ≤ x → 0 ≤ y → ‖x + y‖ = ‖x‖ + ‖y‖) [CompleteSpace E]
@@ -572,291 +328,6 @@ theorem tendsto_trunc_of_weakUnit
     rw [LatticeDisjoint, abs_of_nonneg (sub_nonneg.mpr hyx), abs_of_nonneg hu, hinf]
   have hz : x - y = 0 := by simpa using hweak hdisj
   simpa [sub_eq_zero.mp hz] using hy
-
-/-- The principal ideal of `u`, as a fresh type carrying the order-unit gauge norm. -/
-@[ext]
-structure OrderUnitSpace (u : E) where
-  /-- Underlying vector of the ideal element. -/
-  toVec : E
-  /-- Witness that the vector lies in the principal ideal. -/
-  mem_ideal : toVec ∈ principalOrderIdeal u
-
-namespace OrderUnitSpace
-
-variable {u : E}
-
-omit [IsOrderedAddMonoid E] [IsOrderedModule ℝ E] [HasSolidNorm E] in
-/-- The underlying-vector map is injective. -/
-theorem toVec_injective : Function.Injective (toVec : OrderUnitSpace u → E) :=
-  fun _ _ h => OrderUnitSpace.ext h
-
-instance : Zero (OrderUnitSpace u) where
-  zero := ⟨0, ⟨0, le_rfl, by simp⟩⟩
-
-instance : Add (OrderUnitSpace u) where
-  add x y := ⟨x.toVec + y.toVec, principalOrderIdeal_add x.mem_ideal y.mem_ideal⟩
-
-instance : Neg (OrderUnitSpace u) where
-  neg x := ⟨-x.toVec, principalOrderIdeal_neg x.mem_ideal⟩
-
-instance : Sub (OrderUnitSpace u) where
-  sub x y := ⟨x.toVec - y.toVec, principalOrderIdeal_sub x.mem_ideal y.mem_ideal⟩
-
-instance : SMul ℕ (OrderUnitSpace u) where
-  smul n x := ⟨n • x.toVec, principalOrderIdeal_nsmul x.mem_ideal⟩
-
-instance : SMul ℤ (OrderUnitSpace u) where
-  smul n x := ⟨n • x.toVec, principalOrderIdeal_zsmul x.mem_ideal⟩
-
-instance : SMul ℝ (OrderUnitSpace u) where
-  smul c x := ⟨c • x.toVec, principalOrderIdeal_smul x.mem_ideal⟩
-
-omit [IsOrderedModule ℝ E] [HasSolidNorm E] in
-@[simp] theorem toVec_zero : (0 : OrderUnitSpace u).toVec = 0 := rfl
-
-omit [IsOrderedModule ℝ E] [HasSolidNorm E] in
-@[simp] theorem toVec_add (x y : OrderUnitSpace u) : (x + y).toVec = x.toVec + y.toVec := rfl
-
-omit [IsOrderedAddMonoid E] [IsOrderedModule ℝ E] [HasSolidNorm E] in
-@[simp] theorem toVec_neg (x : OrderUnitSpace u) : (-x).toVec = -x.toVec := rfl
-
-omit [IsOrderedModule ℝ E] [HasSolidNorm E] in
-@[simp] theorem toVec_sub (x y : OrderUnitSpace u) : (x - y).toVec = x.toVec - y.toVec := rfl
-
-omit [HasSolidNorm E] in
-@[simp] theorem toVec_nsmul (n : ℕ) (x : OrderUnitSpace u) : (n • x).toVec = n • x.toVec := rfl
-
-omit [HasSolidNorm E] in
-@[simp] theorem toVec_zsmul (n : ℤ) (x : OrderUnitSpace u) : (n • x).toVec = n • x.toVec := rfl
-
-omit [HasSolidNorm E] in
-@[simp] theorem toVec_smul (c : ℝ) (x : OrderUnitSpace u) : (c • x).toVec = c • x.toVec := rfl
-
-instance : AddCommGroup (OrderUnitSpace u) :=
-  Function.Injective.addCommGroup toVec toVec_injective rfl (fun _ _ => rfl) (fun _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
-
-/-- The underlying vector, as an additive monoid homomorphism. -/
-def toVecAddMonoidHom : OrderUnitSpace u →+ E where
-  toFun := toVec
-  map_zero' := rfl
-  map_add' := fun _ _ => rfl
-
-instance : Module ℝ (OrderUnitSpace u) :=
-  Function.Injective.module ℝ toVecAddMonoidHom toVec_injective fun _ _ => rfl
-
-/-- Inclusion of the principal ideal into the ambient space. -/
-def toVecₗ : OrderUnitSpace u →ₗ[ℝ] E where
-  toFun := toVec
-  map_add' := fun _ _ => rfl
-  map_smul' := fun _ _ => rfl
-
-omit [HasSolidNorm E] in
-@[simp] theorem toVecₗ_apply (x : OrderUnitSpace u) : toVecₗ x = x.toVec := rfl
-
-instance : PartialOrder (OrderUnitSpace u) where
-  le x y := x.toVec ≤ y.toVec
-  le_refl := fun _ => le_rfl
-  le_trans := fun _ _ _ => le_trans
-  le_antisymm := fun _ _ hxy hyx => OrderUnitSpace.ext (le_antisymm hxy hyx)
-
-instance : Lattice (OrderUnitSpace u) where
-  sup x y := ⟨x.toVec ⊔ y.toVec, principalOrderIdeal_sup x.mem_ideal y.mem_ideal⟩
-  le_sup_left := fun _ _ => le_sup_left
-  le_sup_right := fun _ _ => le_sup_right
-  sup_le := fun _ _ _ hxz hyz => sup_le hxz hyz
-  inf x y := ⟨x.toVec ⊓ y.toVec, principalOrderIdeal_inf x.mem_ideal y.mem_ideal⟩
-  inf_le_left := fun _ _ => inf_le_left
-  inf_le_right := fun _ _ => inf_le_right
-  le_inf := fun _ _ _ hxy hxz => le_inf hxy hxz
-
-omit [IsOrderedModule ℝ E] [HasSolidNorm E] in
-@[simp] theorem toVec_sup (x y : OrderUnitSpace u) : (x ⊔ y).toVec = x.toVec ⊔ y.toVec := rfl
-
-omit [IsOrderedModule ℝ E] [HasSolidNorm E] in
-@[simp] theorem toVec_inf (x y : OrderUnitSpace u) : (x ⊓ y).toVec = x.toVec ⊓ y.toVec := rfl
-
-omit [HasSolidNorm E] in
-@[simp] theorem toVec_abs (x : OrderUnitSpace u) : |x|.toVec = |x.toVec| := by
-  simp [abs]
-
-instance : IsOrderedAddMonoid (OrderUnitSpace u) where
-  add_le_add_left a b hab c := by
-    change (a + c).toVec ≤ (b + c).toVec
-    rw [toVec_add, toVec_add]
-    exact add_le_add_left (show a.toVec ≤ b.toVec from hab) c.toVec
-
-instance : IsOrderedModule ℝ (OrderUnitSpace u) where
-  smul_le_smul_of_nonneg_left a ha b₁ b₂ hb := by
-    change (a • b₁).toVec ≤ (a • b₂).toVec
-    rw [toVec_smul, toVec_smul]
-    exact smul_le_smul_of_nonneg_left (show b₁.toVec ≤ b₂.toVec from hb) ha
-  smul_le_smul_of_nonneg_right b hb a₁ a₂ ha := by
-    change (a₁ • b).toVec ≤ (a₂ • b).toVec
-    rw [toVec_smul, toVec_smul]
-    exact smul_le_smul_of_nonneg_right (show a₁ ≤ a₂ from ha)
-      (show (0 : E) ≤ b.toVec from hb)
-
-variable [Fact (0 ≤ u)]
-
-/-- The order unit, as an element of its principal ideal. -/
-def unit : OrderUnitSpace u :=
-  ⟨u, ⟨1, zero_le_one, by rw [abs_of_nonneg (Fact.out : 0 ≤ u), one_smul]⟩⟩
-
-omit [IsOrderedModule ℝ E] [HasSolidNorm E] in
-@[simp] theorem toVec_unit : (unit : OrderUnitSpace u).toVec = u := rfl
-
-instance : Norm (OrderUnitSpace u) where
-  norm x := orderUnitGauge u x.toVec
-
-/-- The gauge satisfies the normed-space axioms on the principal ideal. -/
-theorem core : NormedSpace.Core ℝ (OrderUnitSpace u) where
-  norm_nonneg x := gauge_nonneg x.mem_ideal
-  norm_smul c x := by
-    simpa [norm, Real.norm_eq_abs] using gauge_smul (Fact.out : 0 ≤ u) x.mem_ideal c
-  norm_triangle x y := gauge_add (Fact.out : 0 ≤ u) x.mem_ideal y.mem_ideal
-  norm_eq_zero_iff x := by
-    constructor
-    · intro h
-      have hgauge := abs_le_gauge_smul (Fact.out : 0 ≤ u) x.mem_ideal
-      rw [show orderUnitGauge u x.toVec = ‖x‖ by rfl, h, zero_smul] at hgauge
-      have hz : |x.toVec| = 0 := le_antisymm hgauge (abs_nonneg _)
-      have hle : x.toVec ≤ 0 := by
-        rw [← hz, abs]
-        exact le_sup_left
-      have hge : 0 ≤ x.toVec := by
-        have hneg : -x.toVec ≤ 0 := by
-          rw [← hz, abs]
-          exact le_sup_right
-        exact neg_nonpos.mp hneg
-      exact OrderUnitSpace.ext (le_antisymm hle hge)
-    · rintro rfl
-      apply le_antisymm
-      · exact gauge_le_of_mem ⟨le_rfl, by simp⟩
-      · exact gauge_nonneg ⟨0, le_rfl, by simp⟩
-
-instance : NormedAddCommGroup (OrderUnitSpace u) := NormedAddCommGroup.ofCore core
-
-instance : NormedSpace ℝ (OrderUnitSpace u) := NormedSpace.ofCore core
-
-instance : HasSolidNorm (OrderUnitSpace u) where
-  solid x y hxy := by
-    have hxy' : |x.toVec| ≤ |y.toVec| := by
-      change |x|.toVec ≤ |y|.toVec at hxy
-      simpa [toVec_abs] using hxy
-    exact (gauge_le_iff (Fact.out : 0 ≤ u) x.mem_ideal (gauge_nonneg y.mem_ideal)).2
-      (hxy'.trans (abs_le_gauge_smul (Fact.out : 0 ≤ u) y.mem_ideal))
-
-/-- The gauge metric on a principal ideal of a Banach lattice is complete. -/
-instance [CompleteSpace E] : CompleteSpace (OrderUnitSpace u) := by
-  refine complete_of_cauchySeq_tendsto fun s hs => ?_
-  have hu : 0 ≤ u := Fact.out
-  have hmul : ∀ z : OrderUnitSpace u, ‖z.toVec‖ ≤ ‖z‖ * ‖u‖ := by
-    intro z
-    have hle : ‖z.toVec‖ ≤ ‖‖z‖ • u‖ := by
-      apply norm_le_norm_of_abs_le_abs
-      rw [abs_of_nonneg (smul_nonneg (norm_nonneg _) hu)]
-      simpa [norm] using abs_le_gauge_smul hu z.mem_ideal
-    rwa [norm_smul, Real.norm_eq_abs, abs_of_nonneg (norm_nonneg _)] at hle
-  have hE : CauchySeq fun n => (s n).toVec := by
-    rw [Metric.cauchySeq_iff] at hs ⊢
-    intro ε hε
-    obtain ⟨N, hN⟩ := hs (ε / (‖u‖ + 1)) (by positivity)
-    refine ⟨N, fun m hm n hn => ?_⟩
-    have hdist : dist (s m) (s n) < ε / (‖u‖ + 1) := hN m hm n hn
-    have hle : dist (s m).toVec (s n).toVec ≤ dist (s m) (s n) * ‖u‖ := by
-      rw [dist_eq_norm, dist_eq_norm]
-      exact hmul (s m - s n)
-    have hcmp : (ε / (‖u‖ + 1)) * ‖u‖ ≤ ε := by
-      calc (ε / (‖u‖ + 1)) * ‖u‖ ≤ (ε / (‖u‖ + 1)) * (‖u‖ + 1) :=
-            mul_le_mul_of_nonneg_left (le_add_of_nonneg_right zero_le_one) (by positivity)
-        _ = ε := by rw [div_mul_cancel₀ _ (by positivity)]
-    by_cases hu0 : ‖u‖ = 0
-    · have hzero : dist (s m).toVec (s n).toVec ≤ 0 := by simpa [hu0] using hle
-      exact (le_antisymm hzero (dist_nonneg)).trans_lt hε
-    · exact (hle.trans_lt (mul_lt_mul_of_pos_right hdist
-        (lt_of_le_of_ne (norm_nonneg _) (Ne.symm hu0)))).trans_le hcmp
-  obtain ⟨y, hy⟩ := cauchySeq_tendsto_of_complete hE
-  rw [Metric.cauchySeq_iff] at hs
-  have hclose : ∀ ε : ℝ, 0 < ε → ∃ N, ∀ m, N ≤ m → |(s m).toVec - y| ≤ ε • u := by
-    intro ε hε
-    obtain ⟨N, hN⟩ := hs ε hε
-    refine ⟨N, fun m hm => ?_⟩
-    have htail : ∀ n, N ≤ n → (s n).toVec ∈ Icc ((s m).toVec - ε • u) ((s m).toVec + ε • u) := by
-      intro n hn
-      have hdist : dist (s m) (s n) < ε := hN m hm n hn
-      have hgauge : ‖s m - s n‖ < ε := by rwa [dist_eq_norm] at hdist
-      have habs : |(s m).toVec - (s n).toVec| ≤ ‖s m - s n‖ • u :=
-        abs_le_gauge_smul hu (s m - s n).mem_ideal
-      have hle : |(s m).toVec - (s n).toVec| ≤ ε • u :=
-        habs.trans (smul_le_smul_of_nonneg_right (le_of_lt hgauge) hu)
-      rw [abs_le'] at hle
-      constructor
-      · rw [sub_le_iff_le_add]
-        exact (sub_le_iff_le_add').mp hle.1
-      · simp only [neg_sub] at hle
-        exact (sub_le_iff_le_add').mp hle.2
-    have hyI := isClosed_Icc.mem_of_tendsto hy
-      (eventually_atTop.2 ⟨N, fun n hn => htail n hn⟩)
-    rw [mem_Icc] at hyI
-    rw [abs_le']
-    constructor
-    · rw [sub_le_iff_le_add']
-      exact (sub_le_iff_le_add).mp hyI.1
-    · simp only [neg_sub]
-      rw [sub_le_iff_le_add']
-      exact hyI.2
-  have hyideal : y ∈ principalOrderIdeal u := by
-    obtain ⟨N, hN⟩ := hclose 1 zero_lt_one
-    have hdiff : (s N).toVec - y ∈ principalOrderIdeal u :=
-      ⟨1, zero_le_one, by simpa [one_smul] using hN N le_rfl⟩
-    have hyeq : y = (s N).toVec - ((s N).toVec - y) := by abel
-    rw [hyeq]
-    exact principalOrderIdeal_sub (s N).mem_ideal hdiff
-  refine ⟨⟨y, hyideal⟩, ?_⟩
-  rw [Metric.tendsto_atTop]
-  intro ε hε
-  obtain ⟨N, hN⟩ := hclose (ε / 2) (half_pos hε)
-  refine ⟨N, fun m hm => ?_⟩
-  rw [dist_eq_norm]
-  have hgauge : orderUnitGauge u ((s m).toVec - y) ≤ ε / 2 :=
-    (gauge_le_iff hu (principalOrderIdeal_sub (s m).mem_ideal hyideal) (half_pos hε).le).2
-      (hN m hm)
-  change orderUnitGauge u ((s m - ⟨y, hyideal⟩).toVec) < ε
-  exact hgauge.trans_lt (half_lt_self hε)
-
-/-- The closed gauge ball is the order interval of the unit. -/
-private theorem ball_eq_Icc : closedBall (0 : OrderUnitSpace u) 1 = Icc (-unit) unit := by
-  ext x
-  rw [mem_closedBall_iff_norm, sub_zero]
-  change orderUnitGauge u x.toVec ≤ 1 ↔ -unit ≤ x ∧ x ≤ unit
-  rw [gauge_le_iff (Fact.out : 0 ≤ u) x.mem_ideal zero_le_one, one_smul, abs_le']
-  constructor
-  · intro h
-    refine ⟨?_, ?_⟩
-    · change (-unit).toVec ≤ x.toVec
-      rw [toVec_neg, toVec_unit]
-      exact (neg_le_neg h.2).trans_eq (by simp)
-    · change x.toVec ≤ unit.toVec
-      rw [toVec_unit]
-      exact h.1
-  · intro h
-    refine ⟨?_, ?_⟩
-    · have hx : x.toVec ≤ unit.toVec := h.2
-      rwa [toVec_unit] at hx
-    · change -x.toVec ≤ u
-      have hx : (-unit).toVec ≤ x.toVec := h.1
-      rw [toVec_neg, toVec_unit] at hx
-      exact (neg_le_neg hx).trans_eq (by simp)
-
-omit [IsOrderedModule ℝ E] [HasSolidNorm E] in
-/-- The order unit is positive. -/
-theorem unit_nonneg : 0 ≤ (unit : OrderUnitSpace u) := by
-  change (0 : OrderUnitSpace u).toVec ≤ unit.toVec
-  rw [toVec_zero, toVec_unit]
-  exact Fact.out
-
-end OrderUnitSpace
 
 /-- A weak unit's principal ideal is dense for the ambient norm. -/
 theorem denseRange_orderUnit
@@ -1025,5 +496,6 @@ theorem exists_al_representation_of_weakUnit
   refine ⟨(K : Type u), inferInstance, μ, LinearIsometryEquiv.ofSurjective T hsurj, ?_⟩
   intro a b
   simpa [LinearIsometryEquiv.coe_ofSurjective] using hTsup a b
+
 
 end CKMA

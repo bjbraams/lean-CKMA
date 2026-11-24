@@ -28,7 +28,7 @@ The Dini derivative definitions and `CKMA.HasDiniType` are re-exported from
   functions.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

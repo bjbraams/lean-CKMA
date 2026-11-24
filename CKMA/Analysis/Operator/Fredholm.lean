@@ -45,7 +45,7 @@ Sources: GAPS 21.11 and 21.16.
 * `CKMA.mem_spectrum_sdiff_essentialSpectrum_iff`: discrete spectrum of a self-adjoint operator.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -110,6 +110,7 @@ variable {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜
 
 /-- The Fredholm essential spectrum. Other notions of essential spectrum need not agree
 for non-self-adjoint operators. -/
+@[expose]
 def essentialSpectrum (T : E →L[𝕜] E) : Set 𝕜 :=
   {z | ¬ IsFredholm (T - z • (1 : E →L[𝕜] E))}
 
@@ -132,6 +133,7 @@ theorem essentialSpectrum_add_compact (T K : E →L[𝕜] E) (hK : IsCompactOper
   exact not_congr hf
 
 /-- An isolated point of a subset of a topological space. -/
+@[expose]
 def IsIsolatedIn {X : Type*} [TopologicalSpace X] (x : X) (s : Set X) : Prop :=
   x ∈ s ∧ ∀ᶠ y in 𝓝 x, y ∈ s → y = x
 

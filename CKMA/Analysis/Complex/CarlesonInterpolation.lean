@@ -35,7 +35,7 @@ Sources: GAPS 42.20, 42.24, 42.26 and 42.27.
 * `CKMA.disk_corona`: Carleson's corona theorem on the unit disk.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -45,11 +45,13 @@ open MeasureTheory
 open scoped BigOperators ENNReal ComplexConjugate ComplexOrder
 
 /-- A Carleson box above an angular arc of normalized length `ℓ`. -/
+@[expose]
 def carlesonBox (θ ℓ : ℝ) : Set ℂ :=
   {z | ∃ r t : ℝ, 1 - ℓ < r ∧ r < 1 ∧ θ ≤ t ∧ t ≤ θ + 2 * Real.pi * ℓ ∧
     z = (r : ℂ) * unitCirclePoint t}
 
 /-- The Carleson box bound, retaining the measure on the disk as part of its intended support. -/
+@[expose]
 def IsDiskCarlesonMeasure (μ : Measure ℂ) : Prop :=
   IsFiniteMeasure μ ∧ μ complexUnitDiskᶜ = 0 ∧ ∃ C : ℝ, 0 < C ∧ ∀ θ ℓ : ℝ, 0 < ℓ → ℓ ≤ 1 →
     μ (carlesonBox θ ℓ) ≤ ENNReal.ofReal (C * ℓ)
@@ -61,14 +63,17 @@ theorem carleson_embedding_iff (μ : Measure ℂ) {p : ℝ} (hp : 0 < p) :
   sorry
 
 /-- Pseudohyperbolic distance on the unit disk. -/
+@[expose]
 def pseudohyperbolicDistance (z w : ℂ) : ℝ := ‖(z - w) / (1 - conj w * z)‖
 
 /-- Infinite separation product as an infimum of finite products, so no infinite-product
 junk value can accidentally certify interpolation. -/
+@[expose]
 def diskSeparationProduct (a : ℕ → ℂ) (j : ℕ) : ℝ :=
   ⨅ F : Finset ℕ, ∏ k ∈ F.erase j, pseudohyperbolicDistance (a j) (a k)
 
 /-- Interpolation of every uniformly bounded scalar sequence, with a common function bound. -/
+@[expose]
 def IsHardyInterpolatingSequence (a : ℕ → ℂ) : Prop :=
   (∀ n, a n ∈ complexUnitDisk) ∧ Function.Injective a ∧ ∃ C : ℝ, 0 < C ∧ ∀ b : ℕ → ℂ, (∀ n, ‖b n‖ ≤
     1) →
@@ -82,6 +87,7 @@ theorem carleson_interpolation_iff (a : ℕ → ℂ) (ha : ∀ n, a n ∈ comple
   sorry
 
 /-- The finite Nevanlinna–Pick matrix. -/
+@[expose]
 def pickMatrix {n : ℕ} (z w : Fin n → ℂ) : Matrix (Fin n) (Fin n) ℂ :=
   fun i j ↦ (1 - w i * conj (w j)) / (1 - z i * conj (z j))
 

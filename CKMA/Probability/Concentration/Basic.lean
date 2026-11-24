@@ -38,7 +38,7 @@ Basic predicates and equivalence estimates for sub-Gaussian real random variable
   a sub-Gaussian MGF bound gives Gaussian tails and an admissible psi-two scale.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -50,19 +50,23 @@ open MeasureTheory ProbabilityTheory
 variable {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω}
 
 /-- The exponential square condition defining an admissible positive sub-Gaussian scale. -/
+@[expose]
 def HasPsiTwoBound (X : Ω → ℝ) (μ : Measure Ω) (K : ℝ) : Prop :=
   0 < K ∧ (∫⁻ ω, ENNReal.ofReal (Real.exp ((X ω / K) ^ 2)) ∂μ) ≤ 2
 
 /-- The sub-Gaussian Luxemburg gauge, with value `∞` if there is no admissible scale. -/
+@[expose]
 def psiTwoGauge (X : Ω → ℝ) (μ : Measure Ω) : ℝ≥0∞ :=
   sInf {s | ∃ K : ℝ, s = ENNReal.ofReal K ∧ HasPsiTwoBound X μ K}
 
 /-- Gaussian two-sided tails at scale `K`. -/
+@[expose]
 def HasGaussianTail (X : Ω → ℝ) (μ : Measure Ω) (K : ℝ) : Prop :=
   0 < K ∧ ∀ t : ℝ, 0 ≤ t →
     μ {ω | t < |X ω|} ≤ ENNReal.ofReal (2 * Real.exp (-((t / K) ^ 2)))
 
 /-- Square-root growth of all real moments of order at least one. -/
+@[expose]
 def HasGaussianMoments (X : Ω → ℝ) (μ : Measure Ω) (K : ℝ) : Prop :=
   0 < K ∧ ∀ p : ℝ, 1 ≤ p →
     eLpNorm X (ENNReal.ofReal p) μ ≤ ENNReal.ofReal (K * Real.sqrt p)

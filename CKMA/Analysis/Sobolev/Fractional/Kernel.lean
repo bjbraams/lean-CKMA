@@ -26,7 +26,7 @@ reduce its integral to a positive finite multiple of `‖ξ‖^{2s}`.
   every `ξ`.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

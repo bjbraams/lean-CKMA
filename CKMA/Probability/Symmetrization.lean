@@ -34,7 +34,7 @@ avoids a zero-sample mean convention.
   class with an integrable envelope (**07.33**).
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -47,6 +47,7 @@ open scoped BigOperators
 
 /-- A measurable sign with the symmetric law on `{-1, 1}`, TauCeti's
 `TauCeti.Probability.rademacherMeasure`. -/
+@[expose]
 def IsRademacher {Ω : Type*} [MeasurableSpace Ω] (ε : Ω → ℝ) (μ : Measure Ω) : Prop :=
   Measurable ε ∧ μ.map ε = rademacherMeasure
 

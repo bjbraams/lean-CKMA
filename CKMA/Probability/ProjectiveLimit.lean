@@ -31,7 +31,7 @@ with empty intersection depend on countably many coordinates, where
   (**06.1**).
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

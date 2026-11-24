@@ -117,7 +117,7 @@ theorem ae_tendsto_sum_sub_integral_of_summable_variance [IsProbabilityMeasure �
       fun ω ↦ ?_).trans ?_
     · rw [Real.norm_eq_abs]
       nlinarith [sq_nonneg (|f n ω| - 1), sq_abs (f n ω)]
-    · rw [eLpNorm_one_eq_lintegral_enorm, ← ofReal_integral_norm_eq_lintegral_enorm hsqi]
+    · rw [eLpNorm_one_eq_lintegral_eNorm, ← ofReal_integral_norm_eq_lintegral_eNorm hsqi]
       refine (ENNReal.ofReal_le_ofReal ?_ : _ ≤ ENNReal.ofReal ((1 + V) / 2))
       have hnn : ∀ ω, ‖(1 + f n ω ^ 2) / 2‖ = (1 + f n ω ^ 2) / 2 := fun ω ↦
         Real.norm_of_nonneg (by positivity)
@@ -127,7 +127,9 @@ theorem ae_tendsto_sum_sub_integral_of_summable_variance [IsProbabilityMeasure �
       simp only [integral_const, probReal_univ, smul_eq_mul, mul_one]
       linarith [hsq n]
       exact hsqi.aestronglyMeasurable
-  filter_upwards [hmart.submartingale.ae_tendsto_limitProcess hbdd] with ω hω
+  have hsup : ⨆ n, eLpNorm (f n) 1 μ < ⊤ :=
+    lt_of_le_of_lt (iSup_le hbdd) ENNReal.coe_lt_top
+  filter_upwards [hmart.submartingale.ae_tendsto_limitProcess hsup] with ω hω
   refine ⟨ℱ.limitProcess f μ ω, (tendsto_add_atTop_iff_nat 1).1 ?_⟩
   simpa [hf, hZ, Finset.sum_apply] using hω
 

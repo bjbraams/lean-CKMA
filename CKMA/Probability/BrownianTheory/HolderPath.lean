@@ -32,7 +32,7 @@ time, and is locally Hölder for every exponent strictly below one half.
   continuous Hölder modification.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -68,6 +68,7 @@ private lemma snap_of_nonneg (hB : IsPreBrownianReal B μ) (ω : Ω) {x : ℝ} (
   simp [snap, hx]
 
 /-- Dyadic floor of a nonnegative time, as a nonnegative time. -/
+@[expose]
 def floorTime (n : ℕ) (t : ℝ≥0) : ℝ≥0 :=
   ⟨dyadicFloorReal n (t : ℝ), dyadicFloorReal_nonneg n t⟩
 
@@ -76,6 +77,7 @@ private lemma coe_floorTime (n : ℕ) (t : ℝ≥0) :
     (floorTime n t : ℝ) = dyadicFloorReal n (t : ℝ) := rfl
 
 /-- Measurable version evaluated at the dyadic floor. -/
+@[expose]
 def approx (hB : IsPreBrownianReal B μ) (n : ℕ) (t : ℝ≥0) (ω : Ω) : ℝ :=
   version hB (floorTime n t) ω
 
@@ -327,6 +329,7 @@ private lemma hasDyadic_snap (hB : IsPreBrownianReal B μ) {ω : Ω} (hω : ω �
 
 open scoped Classical in
 /-- Limit of the dyadic floors, and zero off the good set. -/
+@[expose]
 def holderPath (hB : IsPreBrownianReal B μ) (t : ℝ≥0) (ω : Ω) : ℝ :=
   if ω ∈ good hB then limUnder atTop (fun n => approx hB n t ω) else 0
 

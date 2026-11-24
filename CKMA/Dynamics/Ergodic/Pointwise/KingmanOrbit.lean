@@ -28,7 +28,7 @@ the deterministic step in Avila and Bochi's proof of the liminf estimate.
 * `CKMA.kingman_orbit_bound`: the deterministic Avila–Bochi orbit bound.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -39,16 +39,19 @@ open Finset
 attribute [local instance] Classical.propDecidable
 
 /-- A length in `1, …, k` on which the cocycle lies strictly below the target slope. -/
+@[expose]
 def IsKingmanWindow (u : ℕ → ℕ → ℝ) (slope : ℝ) (k i : ℕ) : Prop :=
   ∃ j, 0 < j ∧ j ≤ k ∧ u i j < (j : ℝ) * slope
 
 @[deprecated (since := "2026-11-15")] alias kingmanWindow := IsKingmanWindow
 
 /-- The comparison function: the target slope on a successful window, otherwise one step. -/
+@[expose]
 def kingmanPsi (u : ℕ → ℕ → ℝ) (slope : ℝ) (k i : ℕ) : ℝ :=
   if IsKingmanWindow u slope k i then slope else u i 1
 
 /-- The tail majorant, at least both the comparison function and the one-step increment. -/
+@[expose]
 def kingmanMx (u : ℕ → ℕ → ℝ) (slope : ℝ) (k i : ℕ) : ℝ :=
   max (kingmanPsi u slope k i) (u i 1)
 

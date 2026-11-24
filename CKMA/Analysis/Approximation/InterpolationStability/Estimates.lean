@@ -35,7 +35,7 @@ bound on the Lebesgue constant.
   estimates on `(0, π / 2]`.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -308,15 +308,18 @@ lemma lebesgueFunction_neg {n : ℕ} (hn : 1 ≤ n) (t : ℝ) :
   simp
 
 /-- Sign of an off-node angle relative to a node angle. -/
+@[expose]
 def chebyshevAngleSign (n : ℕ) (θ : ℝ) (i : Fin (n + 1)) : ℝ :=
   if chebyshevNodeAngle n i < θ then 1 else -1
 
 /-- Cotangent main term in the angular formula for a cardinal polynomial. -/
+@[expose]
 def chebyshevLebesgueMain (n : ℕ) (θ : ℝ) (i : Fin (n + 1)) : ℝ :=
   |sin ((n : ℝ) * θ)| / (2 * (n : ℝ) * chebyshevExtremalWeight n i) *
     cot (|θ - chebyshevNodeAngle n i| / 2)
 
 /-- Cotangent correction in the angular formula for a cardinal polynomial. -/
+@[expose]
 def chebyshevLebesgueCorr (n : ℕ) (θ : ℝ) (i : Fin (n + 1)) : ℝ :=
   |sin ((n : ℝ) * θ)| / (2 * (n : ℝ) * chebyshevExtremalWeight n i) *
     chebyshevAngleSign n θ i * cot ((θ + chebyshevNodeAngle n i) / 2)

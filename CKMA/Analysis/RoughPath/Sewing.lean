@@ -33,7 +33,7 @@ Sources: GAPS 09.21 and 09.22.
   variation.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

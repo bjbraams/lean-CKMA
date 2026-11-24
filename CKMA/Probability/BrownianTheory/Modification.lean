@@ -31,7 +31,7 @@ exponent is locally Hölder, and the dyadic floors converge to a continuous modi
 * `CKMA.Brownian.ae_mem_good`: almost every sample path belongs to `good`.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -46,6 +46,7 @@ variable {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsProbabilityMeasu
 namespace Brownian
 
 /-- Exponent `(k + 1) / (2 (k + 2))`, strictly between `0` and `1 / 2`. -/
+@[expose]
 def subHalf (k : ℕ) : ℝ := ((k + 1 : ℕ) : ℝ) / (2 * ((k + 2 : ℕ) : ℝ))
 
 /-- Moment order `2 (k + 3)`, paired with `subHalf k`. -/
@@ -104,6 +105,7 @@ lemma exists_subHalf_ge {α : ℝ} (hα : α < 1 / 2) :
     linarith
 
 /-- Measurable version of one time marginal. -/
+@[expose]
 def version (hB : IsPreBrownianReal B μ) (t : ℝ≥0) : Ω → ℝ :=
   (hB.aemeasurable t).mk (B t)
 
@@ -126,6 +128,7 @@ lemma version_isPreBrownian (hB : IsPreBrownianReal B μ) :
   IsPreBrownianReal.congr hB (version_ae_eq hB)
 
 /-- Dyadic time `j + i / 2 ^ n`. -/
+@[expose]
 def dyadicNN (j n i : ℕ) : ℝ≥0 :=
   ⟨(j : ℝ) + (i : ℝ) / 2 ^ n, by positivity⟩
 
@@ -140,15 +143,18 @@ private lemma dyadicNN_sub (j n i : ℕ) :
   ring
 
 /-- A dyadic increment is too large for the Hölder scale. -/
+@[expose]
 def badInc (hB : IsPreBrownianReal B μ) (k j n i : ℕ) : Set Ω :=
   {ω | ((1 : ℝ) / 2 ^ n) ^ subHalf k ≤
     |version hB (dyadicNN j n (i + 1)) ω - version hB (dyadicNN j n i) ω|}
 
 /-- Some dyadic increment of level `n` on the interval starting at `j` is too large. -/
+@[expose]
 def levelBad (hB : IsPreBrownianReal B μ) (k j n : ℕ) : Set Ω :=
   ⋃ i ∈ range (2 ^ n), badInc hB k j n i
 
 /-- Paths whose dyadic increments are eventually Hölder at every scale and location. -/
+@[expose]
 def good (hB : IsPreBrownianReal B μ) : Set Ω :=
   {ω | ∀ k j : ℕ, ∀ᶠ n in atTop, ω ∉ levelBad hB k j n}
 

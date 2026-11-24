@@ -29,14 +29,14 @@ half-scaled growth of order `n` with the growth of order `n + 1`.
 
 ## Main results
 
-* `CKMA.oneDimMaximalENN_weakType`, `oneDimMaximal_weakType`: weak-type `(1, 1)` inequality
-  with constant `5` for the one-dimensional uncentered maximal function.
+* `CKMA.oneDimMaximalENN_weakType`: weak-type `(1, 1)` inequality with constant `5` for the
+  one-dimensional uncentered maximal function. The real-valued reduction is internal.
 * `CKMA.strongMaximal_weakType_one`: the strong maximal operator on `ℝ¹` is of weak type `(1, 1)`.
 * `CKMA.strongMaximalGrowth_scaled_kernel`: kernel inequality bounding half the growth of order
   `n` at `2u` plus its logarithmic integral by a multiple of the growth of order `n + 1` at `u`.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -55,32 +55,39 @@ structure OpenRectangle (d : ℕ) where
   lower_lt_upper : ∀ j, lower j < upper j
 
 /-- The underlying open set of a rectangle. -/
+@[expose]
 def OpenRectangle.carrier {d : ℕ} (R : OpenRectangle d) : Set (Fin d → ℝ) :=
   {x | ∀ j, R.lower j < x j ∧ x j < R.upper j}
 
 /-- Sum of side lengths, an equivalent fixed-dimensional measure of shrinking rectangles. -/
+@[expose]
 def OpenRectangle.totalWidth {d : ℕ} (R : OpenRectangle d) : ℝ :=
   ∑ j, (R.upper j - R.lower j)
 
 /-- Signed average on a rectangle; used when local integrability is assumed. -/
+@[expose]
 def OpenRectangle.average {d : ℕ} (R : OpenRectangle d) (f : (Fin d → ℝ) → ℝ) : ℝ :=
   (volume R.carrier).toReal⁻¹ * ∫ y in R.carrier, f y
 
 /-- The positive strong maximal operator, retaining infinite local integrals. -/
+@[expose]
 def strongMaximalFunction {d : ℕ} (f : (Fin d → ℝ) → ℝ) (x : Fin d → ℝ) : ℝ≥0∞ :=
   ⨆ (R : OpenRectangle d) (_hx : x ∈ R.carrier),
     (∫⁻ y in R.carrier, ENNReal.ofReal |f y|) / volume R.carrier
 
 /-- The endpoint Orlicz growth `u(1+log⁺u)^(d-1)` for nonnegative `u`. -/
+@[expose]
 def strongMaximalGrowth (d : ℕ) (u : ℝ) : ℝ :=
   u * (1 + max 0 (Real.log u)) ^ (d - 1)
 
 /-- Local endpoint integrability, expressed on all compact subsets. -/
+@[expose]
 def IsLocallyLLog (d : ℕ) (f : (Fin d → ℝ) → ℝ) : Prop :=
   ∀ K : Set (Fin d → ℝ), IsCompact K →
     IntegrableOn (fun x ↦ strongMaximalGrowth d |f x|) K
 
 /-- All rectangles containing the point, with unrestricted eccentricity, recover its value. -/
+@[expose]
 def RectanglesDifferentiateAt {d : ℕ} (f : (Fin d → ℝ) → ℝ) (x : Fin d → ℝ) : Prop :=
   ∀ ε : ℝ, 0 < ε → ∃ δ : ℝ, 0 < δ ∧ ∀ R : OpenRectangle d,
     x ∈ R.carrier → R.totalWidth < δ → |R.average f - f x| < ε
@@ -97,9 +104,11 @@ structure OpenInterval where
 namespace OpenInterval
 
 /-- The underlying open interval. -/
+@[expose]
 def carrier (I : OpenInterval) : Set ℝ := Ioo I.left I.right
 
 /-- Euclidean length. -/
+@[expose]
 def length (I : OpenInterval) : ℝ := I.right - I.left
 
 /-- The length is positive. -/
@@ -112,10 +121,12 @@ private theorem carrier_nonempty (I : OpenInterval) : I.carrier.Nonempty :=
 end OpenInterval
 
 /-- Extended average of a nonnegative function over an open interval. -/
+@[expose]
 def intervalAverage (g : ℝ → ℝ≥0∞) (I : OpenInterval) : ℝ≥0∞ :=
   (∫⁻ t in I.carrier, g t) / ENNReal.ofReal I.length
 
 /-- The uncentered maximal function of a function with values in the extended nonnegative reals. -/
+@[expose]
 def oneDimMaximalENN (φ : ℝ → ℝ≥0∞) (x : ℝ) : ℝ≥0∞ :=
   ⨆ I : OpenInterval, ⨆ (_ : x ∈ I.carrier), intervalAverage φ I
 
@@ -135,9 +146,11 @@ structure RatInterval where
 namespace RatInterval
 
 /-- The underlying open interval. -/
+@[expose]
 def carrier (I : RatInterval) : Set ℝ := Ioo (I.left : ℝ) (I.right : ℝ)
 
 /-- Euclidean length. -/
+@[expose]
 def length (I : RatInterval) : ℝ := (I.right : ℝ) - (I.left : ℝ)
 
 /-- The length is positive. -/
@@ -149,11 +162,13 @@ private theorem carrier_nonempty (I : RatInterval) : I.carrier.Nonempty :=
   nonempty_Ioo.2 (by exact_mod_cast I.left_lt_right)
 
 /-- The rational-endpoint intervals are a countable family. -/
+@[expose]
 instance : Countable RatInterval :=
   Function.Injective.countable (f := fun I : RatInterval ↦ (I.left, I.right))
     (fun I J h ↦ by cases I; cases J; aesop)
 
 /-- View a rational interval as an open interval. -/
+@[expose]
 def toOpen (I : RatInterval) : OpenInterval where
   left := I.left
   right := I.right
@@ -168,6 +183,7 @@ theorem length_toOpen (I : RatInterval) : I.toOpen.length = I.length := rfl
 end RatInterval
 
 /-- Extended average over a rational-endpoint interval. -/
+@[expose]
 def ratIntervalAverage (g : ℝ → ℝ≥0∞) (I : RatInterval) : ℝ≥0∞ :=
   intervalAverage g I.toOpen
 
@@ -276,6 +292,7 @@ theorem exists_ratInterval_of_average_gt (g : ℝ → ℝ≥0∞)
     RatInterval.length_toOpen] using hdiv
 
 /-- Constant in the one-dimensional uncentered weak-type bound proved below. -/
+@[expose]
 def oneDimWeakConstant : ℝ := 5
 
 /-- The uncentered maximal function on `ℝ` is weak type `(1, 1)` with constant `5`. -/
@@ -556,6 +573,7 @@ theorem strongMaximal_weakType_one (f : (Fin 1 → ℝ) → ℝ) {a : ℝ} (ha :
   exact oneDimMaximal_weakType g ha
 
 /-- The coefficient produced by comparing `log(4u)` with `(1 + log 4)(1 + log⁺ u)`. -/
+@[expose]
 def strongMaximalIterationFactor (n : ℕ) : ℝ := 2 * (1 + Real.log 4) ^ n
 
 /-- The iteration factor is positive. -/

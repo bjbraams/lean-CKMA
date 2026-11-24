@@ -27,7 +27,7 @@ the triangle, and approximated by every ordered partition at rate `mesh ^ (γ - 
 * `CKMA.Sewing.partitionLimit_unique`: uniqueness of partition-sum limits.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -43,10 +43,12 @@ variable {E : Type*} [NormedAddCommGroup E] [CompleteSpace E] {a b γ C : ℝ}
 variable {A : ℝ → ℝ → E}
 
 /-- Node of the uniform `k`-partition of `[s, t]`. -/
+@[expose]
 def equalNode (s t : ℝ) (k i : ℕ) : ℝ :=
   s + (t - s) * ((i : ℝ) / (k : ℝ))
 
 /-- Sum of an increment field on the uniform `k`-partition. -/
+@[expose]
 def equalSewn {E : Type*} [AddCommMonoid E] (Z : ℝ → ℝ → E) (s t : ℝ) (k : ℕ) : E :=
   ∑ i ∈ range k, Z (equalNode s t k i) (equalNode s t k (i + 1))
 
@@ -692,6 +694,7 @@ lemma norm_partition_sub (hab : a ≤ b) (hγ : 1 < γ) (hC : 0 ≤ C)
   rw [← Finset.mul_sum, hsumΔ]
 
 /-- Uniform partition into `n` equal steps. -/
+@[expose]
 def uniformPartition {s t : ℝ} (hst : s ≤ t) (n : ℕ) (hn : 0 < n) :
     OrderedIntervalPartition s t where
   size := n

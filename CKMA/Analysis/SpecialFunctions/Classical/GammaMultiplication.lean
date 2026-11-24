@@ -24,7 +24,7 @@ reciprocal Gamma product.
   (**49.6**).
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

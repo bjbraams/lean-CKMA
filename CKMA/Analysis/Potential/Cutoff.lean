@@ -27,11 +27,12 @@ and open neighbourhoods use Mathlib.
   inclusion.
 -/
 
-@[expose] public section
+public section
 
 namespace CKMA
 
 /-- Smooth compactly supported cutoff functions at least one on a neighbourhood of `K`. -/
+@[expose]
 def IsCapacityAdmissible {d : ℕ} (K : Set (EuclideanSpace ℝ (Fin d)))
     (φ : EuclideanSpace ℝ (Fin d) → ℝ) : Prop :=
   ContDiff ℝ (↑(⊤ : ℕ∞)) φ ∧ HasCompactSupport φ ∧

@@ -15,7 +15,7 @@ public import TauCeti.Probability.Process.Filtration.AmbientNullAugmentation
 
 import TauCeti.Probability.Process.StoppingApproximation
 import TauCeti.Probability.BrownianMotion.RightContinuity
-import CKMA.Probability.ProjectiveLimit
+import CKMA.Probability.ProjectiveLimit.Basic
 
 /-!
 # Brownian laws, modifications, strong Markov and reflection (08.1, 08.3, 08.4)
@@ -61,7 +61,7 @@ The target statements correspond to the indicated entries of `GAPS.md`.
   in `BrownianTheory.Reflection.Bound`).
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -98,6 +98,7 @@ theorem exists_holder_brownianModification {Ω : Type*} [MeasurableSpace Ω]
   exact ⟨C, hBr, hmod, hH⟩
 
 /-- The shifted process after a finite-valued stopping time. -/
+@[expose]
 def brownianShift {Ω : Type*} (B : ℝ≥0 → Ω → ℝ) (T : Ω → ℝ≥0)
     (t : ℝ≥0) (ω : Ω) : ℝ := B (T ω + t) ω - B (T ω) ω
 
@@ -360,7 +361,7 @@ private lemma indep_shift_augmented (hm : ∀ t, Measurable (B t)) {μ : Measure
   intro t₁ t₂ ht₁ ht₂
   obtain ⟨-, t₃, ht₃, h₂₃⟩ :=
     (Filtration.measurableSet_ambientNullAugmentation_iff _ μ s t₂).1 ht₂
-  rw [measure_congr (EventuallyEqSet.inter EventuallyEq.rfl h₂₃), measure_congr h₂₃]
+  rw [measure_congr ((EventuallyEqSet.refl (ae μ) t₁).inter h₂₃), measure_congr h₂₃]
   exact h t₁ t₃ ht₁ ht₃
 
 /-- **08.3**, completed right-continuous augmentation: let `𝒢` be the right-continuous natural

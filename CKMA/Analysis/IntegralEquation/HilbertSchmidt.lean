@@ -31,7 +31,7 @@ energy is TauCeti's existing construction.
   kernel and whose adjoint has the conjugate-transposed kernel.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -43,6 +43,7 @@ open scoped ENNReal
 variable {𝕜 X : Type*} [RCLike 𝕜] [MeasurableSpace X] (μ : Measure X) [SigmaFinite μ]
 
 /-- An operator has kernel `k` when its `L²` action is given by the integral formula a.e. -/
+@[expose]
 def HasIntegralKernel (T : Lp 𝕜 2 μ →L[𝕜] Lp 𝕜 2 μ) (k : X × X → 𝕜) : Prop :=
   ∀ f : Lp 𝕜 2 μ, (fun x ↦ T f x) =ᵐ[μ] fun x ↦ ∫ y, k (x, y) * f y ∂μ
 

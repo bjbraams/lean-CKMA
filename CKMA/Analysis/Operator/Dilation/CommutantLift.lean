@@ -32,7 +32,7 @@ The norm-preserving commuting lift built from `CKMA.commutantLiftCLM` is
 `CKMA.commutant_lifting`, in `CKMA.Analysis.Operator.Dilation`.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -48,6 +48,7 @@ variable {H K : Type u}
     [NormedAddCommGroup K] [InnerProductSpace ℂ K] [CompleteSpace K]
 
 /-- Partial sum of the commutant lifting series. -/
+@[expose]
 def commutantPartial (T X : H →L[ℂ] H) (hXT : Commute X T)
     (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K)
     (hcoin : ∀ y : K, J.toContinuousLinearMap.adjoint (V y) =
@@ -222,6 +223,7 @@ theorem cauchySeq_commutantPartial (T X : H →L[ℂ] H) (hXT : Commute X T)
     exact hstep hn hnm
 
 /-- Pointwise limit of the lifting series. -/
+@[expose]
 def commutantLiftAt (T X : H →L[ℂ] H) (hXT : Commute X T)
     (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K)
     (hcoin : ∀ y : K, J.toContinuousLinearMap.adjoint (V y) =
@@ -283,6 +285,7 @@ theorem norm_commutantLiftAt_le (T X : H →L[ℂ] H) (hXT : Commute X T)
     norm_commutantPartial_le T X hXT J V hcoin n y
 
 /-- Linear map underlying the commutant lift. -/
+@[expose]
 def commutantLiftLinearMap (T X : H →L[ℂ] H) (hXT : Commute X T)
     (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K)
     (hcoin : ∀ y : K, J.toContinuousLinearMap.adjoint (V y) =
@@ -292,6 +295,7 @@ def commutantLiftLinearMap (T X : H →L[ℂ] H) (hXT : Commute X T)
   map_smul' := commutantLiftAt_smul T X hXT J V hcoin
 
 /-- Continuous commutant lift, with operator norm at most `‖X‖`. -/
+@[expose]
 def commutantLiftCLM (T X : H →L[ℂ] H) (hXT : Commute X T)
     (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K)
     (hcoin : ∀ y : K, J.toContinuousLinearMap.adjoint (V y) =

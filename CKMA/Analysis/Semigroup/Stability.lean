@@ -33,7 +33,7 @@ Sources: GAPS 24.39 and 24.40.
   theorem on reflexive Banach spaces (**24.40**).
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -47,14 +47,17 @@ section Real
 variable {X : Type*} [NormedAddCommGroup X] [NormedSpace ℝ X]
 
 /-- Uniform boundedness of a semigroup on the entire nonnegative half-line. -/
+@[expose]
 def IsBoundedSemigroup (S : StronglyContinuousSemigroup X) : Prop :=
   ∃ M : ℝ, ∀ t : ℝ≥0, ‖S t‖ ≤ M
 
 /-- Exponential decay in operator norm. -/
+@[expose]
 def IsExponentiallyStableSemigroup (S : StronglyContinuousSemigroup X) : Prop :=
   ∃ ε M : ℝ, 0 < ε ∧ ∀ t : ℝ≥0, ‖S t‖ ≤ M * Real.exp (-ε * t)
 
 /-- Strong stability means decay of every orbit, without an operator-norm convergence assertion. -/
+@[expose]
 def IsStronglyStableSemigroup (S : StronglyContinuousSemigroup X) : Prop :=
   ∀ x : X, Tendsto (fun t : ℝ≥0 ↦ S t x) atTop (𝓝 0)
 
@@ -63,6 +66,7 @@ end Real
 variable {X : Type*} [NormedAddCommGroup X] [NormedSpace ℂ X] [CompleteSpace X]
 
 /-- A concrete eigenvector condition including the partial operator's domain. -/
+@[expose]
 def HasPartialOperatorEigenvalue (A : X →ₗ.[ℂ] X) (z : ℂ) : Prop :=
   ∃ x : A.domain, (x : X) ≠ 0 ∧ A x = z • (x : X)
 

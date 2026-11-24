@@ -422,7 +422,7 @@ private theorem inverse_one_sub_family (ψ : n → X →L[ℂ] ℂ) (w : n → X
   rw [hC, fredholmCorrection_smul]
 
 /-- An index-zero Fredholm operator differs from a unit by a finite-rank correction. -/
-private theorem exists_rankOne_add_isUnit {T : X →L[ℂ] X} (hT : IsFredholm T)
+private theorem exists_finiteRank_add_isUnit {T : X →L[ℂ] X} (hT : IsFredholm T)
     (hind : T.index = 0) :
     ∃ n : ℕ, ∃ ψ : Fin n → X →L[ℂ] ℂ, ∃ w : Fin n → X,
       IsUnit (T + fredholmFamily ψ w) := by
@@ -549,7 +549,7 @@ private theorem exists_meromorphic_factor {U : Set ℂ} (hU : IsOpen U)
         (d z ≠ 0 → Ring.inverse (1 - K z) = (d z)⁻¹ • N z) := by
   have hFred : IsFredholm (1 - K a) := TauCeti.isFredholm_one_sub (hc a ha)
   have hindex : (1 - K a).index = 0 := index_one_sub_eq_zero (hc a ha)
-  obtain ⟨n, ψ, w, hunit0⟩ := exists_rankOne_add_isUnit hFred hindex
+  obtain ⟨n, ψ, w, hunit0⟩ := exists_finiteRank_add_isUnit hFred hindex
   let F0 : X →L[ℂ] X := fredholmFamily ψ w
   let B : ℂ → X →L[ℂ] X := fun z ↦ 1 - K z + F0
   have hBa : IsUnit (B a) := by simpa [B, F0] using hunit0

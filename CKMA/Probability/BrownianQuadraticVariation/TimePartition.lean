@@ -38,7 +38,7 @@ sums.
 * `CKMA.TimePartition.mesh_uniform_le`: the uniform partition has mesh at most `T / (n + 1)`.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -60,11 +60,13 @@ structure TimePartition (T : ℝ≥0) where
   node_last : node (Fin.last size) = T
 
 /-- Largest time increment of a finite partition. -/
+@[expose]
 def TimePartition.mesh {T : ℝ≥0} (π : TimePartition T) : ℝ≥0 :=
   Finset.univ.sup fun i : Fin π.size ↦ π.node i.succ - π.node i.castSucc
 
 /-- Quadratic covariation using completed partition intervals up to time `t`.
 It is constant between adjacent nodes, as in the argument of `GAPS_EASY.md`. -/
+@[expose]
 def TimePartition.covariation {Ω : Type*} {T : ℝ≥0} (π : TimePartition T)
     (B C : ℝ≥0 → Ω → ℝ) (t : ℝ≥0) (ω : Ω) : ℝ :=
   ∑ i : Fin π.size, if π.node i.succ ≤ t then
@@ -76,6 +78,7 @@ namespace TimePartition
 variable {T : ℝ≥0} (π : TimePartition T)
 
 /-- Number of partition intervals completed by time `t`. -/
+@[expose]
 def completedCount (t : ℝ≥0) : ℕ :=
   (Finset.univ.filter fun i : Fin π.size ↦ π.node i.succ ≤ t).card
 
@@ -86,6 +89,7 @@ lemma completedCount_le_size (t : ℝ≥0) : π.completedCount t ≤ π.size := 
       fun i : Fin π.size ↦ π.node i.succ ≤ t
 
 /-- Right endpoint of the last interval completed by time `t`. -/
+@[expose]
 def covered (t : ℝ≥0) : ℝ≥0 :=
   π.node ⟨π.completedCount t, Nat.lt_succ_of_le (π.completedCount_le_size t)⟩
 
@@ -121,6 +125,7 @@ lemma completed_iff_val_lt (t : ℝ≥0) (i : Fin π.size) :
     omega
 
 /-- Real length of one partition increment. -/
+@[expose]
 def increment (i : Fin π.size) : ℝ :=
   ((π.node i.succ - π.node i.castSucc : ℝ≥0) : ℝ)
 
@@ -284,6 +289,7 @@ lemma abs_sub_covered_le_mesh {t : ℝ≥0} (ht : t ≤ T) :
       exact hdiff
 
 /-- The uniform partition of `[0,T]` into `n + 1` intervals of length `T / (n + 1)`. -/
+@[expose]
 def uniform (T : ℝ≥0) (n : ℕ) : TimePartition T where
   size := n + 1
   node k := T * (k.val : ℝ≥0) / ((n : ℝ≥0) + 1)
@@ -296,9 +302,11 @@ def uniform (T : ℝ≥0) (n : ℕ) : TimePartition T where
     simp only [Fin.val_last, Nat.cast_add, Nat.cast_one]
     rw [mul_div_assoc, div_self (by positivity), mul_one]
 
+/-- The uniform partition of `[0, T]` has `n + 1` intervals. -/
 @[simp]
 lemma uniform_size (T : ℝ≥0) (n : ℕ) : (uniform T n).size = n + 1 := rfl
 
+/-- Node `k` of the uniform partition is `T * k / (n + 1)`. -/
 @[simp]
 lemma uniform_node (T : ℝ≥0) (n : ℕ) (k : Fin ((uniform T n).size + 1)) :
     (uniform T n).node k = T * (k.val : ℝ≥0) / ((n : ℝ≥0) + 1) := rfl

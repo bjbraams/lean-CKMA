@@ -25,7 +25,7 @@ Chapter I, Section 1.
 * `CKMA.coe_woldUnitaryEquiv`: action of `woldUnitaryEquiv` agrees with `V`.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -59,11 +59,13 @@ theorem isClosed_woldUnitarySubspace (V : H →ₗᵢ[ℂ] H) :
   exact (V ^ n).antilipschitzWith.isClosed_range (V ^ n).isometry.uniformContinuous
 
 /-- The unitary part is a Hilbert space. -/
+@[expose]
 instance completeSpace_woldUnitarySubspace (V : H →ₗᵢ[ℂ] H) :
     CompleteSpace (woldUnitarySubspace V) :=
   (isClosed_woldUnitarySubspace V).completeSpace_coe
 
 /-- The isometry, restricted to its unitary part. -/
+@[expose]
 def woldUnitaryRestrictCLM (V : H →ₗᵢ[ℂ] H) :
     woldUnitarySubspace V →L[ℂ] woldUnitarySubspace V :=
   V.toContinuousLinearMap.restrict fun u hu => by
@@ -77,6 +79,7 @@ theorem coe_woldUnitaryRestrictCLM (V : H →ₗᵢ[ℂ] H) (u : woldUnitarySubs
   rw [woldUnitaryRestrictCLM, coe_restrict_apply, LinearIsometry.coe_toContinuousLinearMap]
 
 /-- The restricted isometry preserves norms. -/
+@[expose]
 def woldUnitaryIsometry (V : H →ₗᵢ[ℂ] H) :
     woldUnitarySubspace V →ₗᵢ[ℂ] woldUnitarySubspace V where
   toLinearMap := (woldUnitaryRestrictCLM V).toLinearMap
@@ -107,6 +110,7 @@ theorem woldUnitaryIsometry_surjective (V : H →ₗᵢ[ℂ] H) :
   exact hVv
 
 /-- The isometry is unitary on its unitary part. -/
+@[expose]
 def woldUnitaryEquiv (V : H →ₗᵢ[ℂ] H) :
     woldUnitarySubspace V ≃ₗᵢ[ℂ] woldUnitarySubspace V :=
   LinearIsometryEquiv.ofSurjective (woldUnitaryIsometry V) (woldUnitaryIsometry_surjective V)

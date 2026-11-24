@@ -30,7 +30,7 @@ additive and continuous on the sewing triangle.
 * `CKMA.YoungLoeve.YoungData.youngLimit_add`: `youngLimit` is additive on every subinterval.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -103,6 +103,7 @@ private lemma gridNode_last {s t : ℝ} {k : ℕ} (hk : 0 < k) : gridNode s t k 
 
 variable (D) in
 /-- Sum of Young increments on the uniform `k`-grid. -/
+@[expose]
 def youngGrid (s t : ℝ) (k : ℕ) : F :=
   equalSewn (youngIncrement D.X D.Y) s t k
 
@@ -385,6 +386,7 @@ variable [CompleteSpace F]
 
 variable (D) in
 /-- Limit of the uniform Young sums. -/
+@[expose]
 def youngLimit (s t : ℝ) : F :=
   limUnder atTop (fun k => D.youngGrid s t (k + 1))
 

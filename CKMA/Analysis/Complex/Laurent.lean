@@ -39,7 +39,7 @@ Normal summability is the predicate from `CKMA.Analysis.Complex.Basic`.
 * `CKMA.eq_laurentCoefficient`: uniqueness of Laurent coefficients.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -49,9 +49,11 @@ open Filter Topology Metric Complex
 open scoped Real
 
 /-- The open annulus with finite real inner and outer radii. -/
+@[expose]
 def complexAnnulus (a : ℂ) (r R : ℝ) : Set ℂ := {z | r < ‖z - a‖ ∧ ‖z - a‖ < R}
 
 /-- Laurent coefficient computed on the positively oriented circle of radius `ρ`. -/
+@[expose]
 def laurentCoefficient (f : ℂ → ℂ) (a : ℂ) (ρ : ℝ) (n : ℤ) : ℂ :=
   (2 * Real.pi * Complex.I)⁻¹ * ∮ z in C(a, ρ), (z - a) ^ (-n - 1) * f z
 

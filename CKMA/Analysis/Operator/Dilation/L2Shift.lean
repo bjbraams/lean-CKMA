@@ -29,7 +29,7 @@ and the inserted vector is orthogonal to the shifted sequence.
   sum of the squared norms.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -42,6 +42,7 @@ universe u
 variable {H : Type u} [NormedAddCommGroup H] [InnerProductSpace ℂ H]
 
 /-- Right shift of a sequence, with a zero inserted at index `0`. -/
+@[expose]
 def l2ShiftRightFun (f : ℕ → H) (n : ℕ) : H :=
   if n = 0 then 0 else f (n - 1)
 
@@ -72,6 +73,7 @@ theorem summable_norm_sq_l2ShiftRightFun (f : lp (fun _ : ℕ => H) 2) :
     htail
 
 /-- The right shift of an `ℓ²` sequence, as an element of `ℓ²`. -/
+@[expose]
 def l2ShiftRightElem (f : lp (fun _ : ℕ => H) 2) : lp (fun _ : ℕ => H) 2 :=
   ⟨l2ShiftRightFun (f : ℕ → H),
     memℓp_gen (by
@@ -97,6 +99,7 @@ theorem l2ShiftRightElem_smul (c : ℂ) (f : lp (fun _ : ℕ => H) 2) :
   simp [l2ShiftRightElem_apply, l2ShiftRightFun, lp.coeFn_smul]
 
 /-- The right shift as a linear map on `ℓ²(ℕ, H)`. -/
+@[expose]
 def l2ShiftRightLinear : lp (fun _ : ℕ => H) 2 →ₗ[ℂ] lp (fun _ : ℕ => H) 2 where
   toFun := l2ShiftRightElem
   map_add' := l2ShiftRightElem_add
@@ -143,6 +146,7 @@ theorem norm_l2ShiftRightElem (f : lp (fun _ : ℕ => H) 2) :
   simp [l2ShiftRightElem_apply, l2ShiftRightFun_zero]
 
 /-- The right shift as a continuous linear map on `ℓ²(ℕ, H)`. -/
+@[expose]
 def l2ShiftRight : lp (fun _ : ℕ => H) 2 →L[ℂ] lp (fun _ : ℕ => H) 2 :=
   l2ShiftRightLinear.mkContinuous 1 fun f => by
     rw [one_mul]
@@ -154,6 +158,7 @@ private theorem l2ShiftRight_apply (f : lp (fun _ : ℕ => H) 2) :
   rfl
 
 /-- Insert a vector as the sequence supported at index zero. -/
+@[expose]
 def l2InsertZero : H →L[ℂ] lp (fun _ : ℕ => H) 2 :=
   lp.singleContinuousLinearMap ℂ (fun _ : ℕ => H) 2 0
 

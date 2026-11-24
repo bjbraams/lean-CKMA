@@ -57,7 +57,7 @@ sums. Cross variation reduces to quadratic variation by polarization.
 * `CKMA.brownian_quadraticCovariation`: `[Bⁱ, Bʲ]_t = δᵢⱼ t` almost surely.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -529,6 +529,7 @@ variable {Ω : Type*} [MeasurableSpace Ω]
 /-- `A` is a quadratic covariation process of `X` and `Y` under `μ`: for every horizon `T` and
 every sequence of deterministic partitions of `[0, T]` with mesh tending to zero, the
 completed-interval covariation sums converge to `A` in probability, uniformly on `[0, T]`. -/
+@[expose]
 def IsQuadraticCovariation (X Y : ℝ≥0 → Ω → ℝ) (μ : Measure Ω) (A : ℝ≥0 → Ω → ℝ) : Prop :=
   ∀ (T : ℝ≥0) (π : ℕ → TimePartition T), Tendsto (fun n ↦ (π n).mesh) atTop (𝓝 0) →
     ∀ ε : ℝ, 0 < ε → Tendsto (fun n ↦ μ {ω | ∃ t ≤ T,
@@ -587,6 +588,7 @@ open Classical in
 /-- The quadratic covariation bracket `[X, Y]`: a chosen quadratic covariation process when one
 exists, and `0` otherwise. By `IsQuadraticCovariation.ae_eq` it is determined almost surely at
 each time. -/
+@[expose]
 def quadraticCovariation (X Y : ℝ≥0 → Ω → ℝ) (μ : Measure Ω) : ℝ≥0 → Ω → ℝ :=
   if h : ∃ A, IsQuadraticCovariation X Y μ A then h.choose else 0
 

@@ -44,7 +44,7 @@ bound on the normalized expectations.
 * `CKMA.kingman_subadditive_of_ergodic`: Kingman's theorem for ergodic transformations.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -56,6 +56,7 @@ open scoped ENNReal BigOperators
 variable {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω}
 
 /-- The finite maximal-positive Birkhoff-sum set used by the maximal ergodic lemma. -/
+@[expose]
 def maximalErgodicSet (T : Ω → Ω) (f : Ω → ℝ) (N : ℕ) : Set Ω :=
   {ω | ∃ n : ℕ, 0 < n ∧ n ≤ N ∧ 0 < birkhoffSum T f n ω}
 
@@ -66,8 +67,8 @@ theorem maximal_ergodic {T : Ω → Ω}
   simpa [maximalErgodicSet] using integral_nonneg_maximalErgodicSet hT hf N
 
 /-- **10.5**, Birkhoff's pointwise theorem with the invariant conditional-expectation limit.
-The result needs no standard-Borel restriction on the probability space. -/
-theorem birkhoff_pointwise [IsProbabilityMeasure μ] {T : Ω → Ω}
+The result needs no standard-Borel restriction on the finite measure space. -/
+theorem birkhoff_pointwise [IsFiniteMeasure μ] {T : Ω → Ω}
     (hT : MeasurePreserving T μ μ) {f : Ω → ℝ} (hf : Integrable f μ) :
     ∀ᵐ ω ∂μ, Tendsto (fun n : ℕ ↦ birkhoffAverage ℝ T f n ω) atTop
       (𝓝 ((μ[f | MeasurableSpace.invariants T]) ω)) :=
@@ -107,6 +108,7 @@ alias birkhoffAverage_ae_tendsto_integral_of_ergodic := birkhoff_pointwise_of_er
 
 /-- Subadditivity along a transformation, on positive lengths; no artificial value for `f₀`
 is imposed. Almost-everywhere inequalities are used in each pair of lengths. -/
+@[expose]
 def IsSubadditiveProcess (T : Ω → Ω) (f : ℕ → Ω → ℝ) (μ : Measure Ω) : Prop :=
   ∀ n m : ℕ, 0 < n → 0 < m → ∀ᵐ ω ∂μ,
     f (n + m) ω ≤ f n ω + f m ((T^[n]) ω)

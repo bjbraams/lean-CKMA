@@ -39,7 +39,7 @@ measure set, with the number of returns and averaging convention explicit.
   positive-liminf form (**10.48**).
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -51,10 +51,12 @@ open scoped ENNReal
 variable {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω}
 
 /-- Aperiodicity modulo the measure: every positive iterate has an a.e. empty fixed-point set. -/
+@[expose]
 def IsAperiodicModMeasure (T : Ω → Ω) (μ : Measure Ω) : Prop :=
   ∀ n : ℕ, 0 < n → μ {ω | (T^[n]) ω = ω} = 0
 
 /-- Levels of a measurable Rokhlin tower of finite height. -/
+@[expose]
 def towerLevel (T : Ω → Ω) (B : Set Ω) (i : ℕ) : Set Ω := (T^[i]) '' B
 
 section Rokhlin
@@ -832,10 +834,12 @@ theorem rokhlin_tower [StandardBorelSpace Ω] [IsProbabilityMeasure μ]
     exact tsub_pos_iff_lt.mpr (lt_min_iff.mp hCc).2
 
 /-- The intersection measuring an arithmetic progression of `k+1` return times. -/
+@[expose]
 def multipleRecurrenceSet (T : Ω → Ω) (A : Set Ω) (k n : ℕ) : Set Ω :=
   ⋂ j ∈ Finset.range (k + 1), (T^[j * n]) ⁻¹' A
 
 /-- Finite averages of real masses of arithmetic-progression intersections. -/
+@[expose]
 def multipleRecurrenceAverage (T : Ω → Ω) (A : Set Ω) (μ : Measure Ω)
     (k N : ℕ) : ℝ :=
   (N : ℝ)⁻¹ * ∑ n ∈ Finset.range N, (μ (multipleRecurrenceSet T A k (n + 1))).toReal

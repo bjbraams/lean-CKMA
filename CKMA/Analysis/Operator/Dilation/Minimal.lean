@@ -5,7 +5,7 @@ Authors: CKMA contributors
 -/
 module
 
-public import CKMA.Analysis.InnerProductSpace.HilbertModel
+public import CKMA.Analysis.InnerProductSpace.Basic
 public import Mathlib.Analysis.InnerProductSpace.Adjoint
 public import Mathlib.Analysis.CStarAlgebra.Classes
 
@@ -34,7 +34,7 @@ minimal part.
 * `CKMA.exists_minimalIsometricDilation_data`: existence of a minimal isometric dilation.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -50,6 +50,7 @@ variable {H K : Type u}
     [NormedAddCommGroup K] [InnerProductSpace ℂ K]
 
 /-- The forward orbit of the embedded copy of `H` under an isometry of `K`. -/
+@[expose]
 def isometricDilationOrbit (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K) : Set K :=
   {y : K | ∃ n : ℕ, ∃ x : H, y = (V.toContinuousLinearMap ^ n) (J x)}
 
@@ -63,6 +64,7 @@ private theorem isometricDilationOrbit_mapsTo (J : H →ₗᵢ[ℂ] K) (V : K �
   exact (continuousLinearMap_pow_succ'_apply V.toContinuousLinearMap n (J x)).symm
 
 /-- The closed span of the forward orbit. -/
+@[expose]
 def isometricDilationSpace (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K) : Submodule ℂ K :=
   (span ℂ (isometricDilationOrbit J V)).topologicalClosure
 
@@ -94,6 +96,7 @@ theorem isometricDilationSpace_mapsTo (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[
   exact hcl hx
 
 /-- Schäffer's isometry, or any isometry, restricted to the closed forward orbit. -/
+@[expose]
 def isometricDilationRestrictCLM (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K) :
     isometricDilationSpace J V →L[ℂ] isometricDilationSpace J V :=
   V.toContinuousLinearMap.restrict fun x hx => by
@@ -101,6 +104,7 @@ def isometricDilationRestrictCLM (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] 
     exact isometricDilationSpace_mapsTo J V hx
 
 /-- The restricted operator as a linear isometry of the closed forward orbit. -/
+@[expose]
 def isometricDilationIsometry (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K) :
     isometricDilationSpace J V →ₗᵢ[ℂ] isometricDilationSpace J V where
   toLinearMap := (isometricDilationRestrictCLM J V).toLinearMap
@@ -115,6 +119,7 @@ private theorem isometricDilationIsometry_apply (J : H →ₗᵢ[ℂ] K) (V : K 
   rfl
 
 /-- The original space, viewed inside the closed forward orbit. -/
+@[expose]
 def isometricDilationEmbedCLM (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K) :
     H →L[ℂ] isometricDilationSpace J V :=
   J.toContinuousLinearMap.codRestrict (isometricDilationSpace J V) fun x => by
@@ -122,6 +127,7 @@ def isometricDilationEmbedCLM (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K) 
     exact mem_isometricDilationSpace_embed J V x
 
 /-- The embedding of the original space into the closed forward orbit. -/
+@[expose]
 def isometricDilationEmbed (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K) :
     H →ₗᵢ[ℂ] isometricDilationSpace J V where
   toLinearMap := (isometricDilationEmbedCLM J V).toLinearMap
@@ -164,6 +170,7 @@ private theorem coe_isometricDilationIsometry_pow (J : H →ₗᵢ[ℂ] K) (V : 
 variable [CompleteSpace H] [CompleteSpace K]
 
 /-- The closed forward orbit is a Hilbert space. -/
+@[expose]
 instance completeSpace_isometricDilationSpace (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K) :
     CompleteSpace (isometricDilationSpace J V) :=
   topologicalClosure.completeSpace (span ℂ (isometricDilationOrbit J V))

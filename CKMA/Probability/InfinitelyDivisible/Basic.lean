@@ -23,7 +23,7 @@ with its characteristic exponent using the truncation `x * 1_{|x| ≤ 1}`.
 * `CKMA.LevyTriplet`: Lévy triplet with characteristic exponent `CKMA.LevyTriplet.exponent`.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -33,16 +33,19 @@ open MeasureTheory
 open scoped BigOperators NNReal ENNReal MeasureTheory
 
 /-- The additive convolution power, with the point mass at zero as zeroth power. -/
+@[expose]
 def convolutionPower (μ : Measure ℝ) : ℕ → Measure ℝ
   | 0 => Measure.dirac 0
   | n + 1 => (convolutionPower μ n).conv μ
 
 /-- Infinite divisibility of a real probability law by probability convolution roots. -/
+@[expose]
 def IsInfinitelyDivisible (μ : Measure ℝ) : Prop :=
   IsProbabilityMeasure μ ∧ ∀ n : ℕ, 0 < n →
     ∃ ν : Measure ℝ, IsProbabilityMeasure ν ∧ convolutionPower ν n = μ
 
 /-- A Levy measure has no atom at zero and integrates the standard quadratic truncation. -/
+@[expose]
 def IsLevyMeasure (ν : Measure ℝ) : Prop :=
   ν {0} = 0 ∧ (∫⁻ x, ENNReal.ofReal (min 1 (x ^ 2)) ∂ν) < ∞
 
@@ -59,6 +62,7 @@ structure LevyTriplet where
   isLevyMeasure : IsLevyMeasure jumpMeasure
 
 /-- The characteristic exponent in the Levy–Khintchine formula. -/
+@[expose]
 def LevyTriplet.exponent (L : LevyTriplet) (t : ℝ) : ℂ :=
   Complex.I * L.drift * t - (L.gaussianVariance : ℂ) * (t : ℂ) ^ 2 / 2 +
     ∫ x, Complex.exp (Complex.I * t * x) - 1 -

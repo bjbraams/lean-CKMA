@@ -43,7 +43,7 @@ normalizations are explicit at the theorem interfaces.
 The implication theorems are in `Concentration.Basic`.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

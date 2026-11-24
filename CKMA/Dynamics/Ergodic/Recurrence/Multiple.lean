@@ -35,7 +35,7 @@ averaging applies to every longer progression.
   dense sets yields a positive liminf of the `L`-fold return averages of a positive-measure set.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

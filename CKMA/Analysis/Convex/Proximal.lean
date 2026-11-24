@@ -41,7 +41,7 @@ sequence Cauchy. Source: GAPS 12.32.
   lower semicontinuous convex functions on a real Hilbert space (GAPS 12.32).
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -53,15 +53,18 @@ open Filter
 variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
 
 /-- Moreau's quadratic objective, with the extended-real value of `f` retained. -/
+@[expose]
 def proximalObjective (γ : ℝ) (f : H → EReal) (x y : H) : EReal :=
   f y + (‖x - y‖ ^ 2 / (2 * γ) : ℝ)
 
 /-- A finite minimizer of the proximal objective. -/
+@[expose]
 def IsProximalPoint (γ : ℝ) (f : H → EReal) (x p : H) : Prop :=
   f p ≠ ⊥ ∧ f p ≠ ⊤ ∧ ∀ y, proximalObjective γ f x p ≤ proximalObjective γ f x y
 
 /-- The proximal map, totalized by zero when no proximal point exists.
 For proper l.s.c. convex functions and positive scales the fallback is never used. -/
+@[expose]
 def proximalMap (γ : ℝ) (f : H → EReal) (x : H) : H := by
   classical
   exact if h : ∃ p, IsProximalPoint γ f x p then Classical.choose h else 0

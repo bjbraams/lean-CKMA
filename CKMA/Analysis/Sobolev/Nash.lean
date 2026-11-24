@@ -11,6 +11,7 @@ import TauCeti.Analysis.Sobolev.WeakDeriv.TemperedDistribution
 import TauCeti.Analysis.Distribution.TemperedDistribution.Lp
 import Mathlib.Analysis.Fourier.LpSpace
 import Mathlib.MeasureTheory.Measure.Lebesgue.VolumeOfBalls
+import TauCeti.MeasureTheory.Function.Lp.Norm
 
 /-!
 # Nash inequality
@@ -29,7 +30,7 @@ Source: GAPS 14.40. The critical unboundedness statement is in `CKMA.Analysis.So
   `‖u‖₂^{2+4/d} ≤ C ‖∇u‖₂² ‖u‖₁^{4/d}`, on `ℝ^d` for `d > 0` (**14.40**).
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -82,26 +83,12 @@ private theorem volume_real_ball_zero (d : ℕ) (hd : 0 < d) {R : ℝ} (hR : 0 �
     simpa [nashVolumeFactor] using (nashVolumeFactor_pos d hd).le
   rw [ENNReal.toReal_ofReal hfac, nashVolumeFactor, mul_comm]
 
-/-- Squared `L²` norm as the integral of the squared pointwise norm. -/
+/-- Squared `L²` norm as the integral of the squared pointwise norm.
+This is TauCeti's `MeasureTheory.Lp.integral_norm_sq_eq_norm_sq`. -/
 private theorem integral_norm_sq_eq_sq_norm {α F : Type*} [MeasurableSpace α]
     [NormedAddCommGroup F] {μ : Measure α} (f : Lp F 2 μ) :
-    ∫ x, ‖f x‖ ^ 2 ∂μ = ‖f‖ ^ 2 := by
-  have hlp : lpNorm (f : α → F) 2 μ =
-      (∫ x, ‖f x‖ ^ (2 : ℝ) ∂μ) ^ (2 : ℝ)⁻¹ := by
-    rw [lpNorm_eq_integral_norm_rpow_toReal (by norm_num : (2 : ℝ≥0∞) ≠ 0)
-      (by norm_num : (2 : ℝ≥0∞) ≠ ∞) (Lp.aestronglyMeasurable f)]
-    simp only [ENNReal.toReal_ofNat]
-  simp_rw [Real.rpow_two] at hlp
-  have hI : 0 ≤ ∫ x, ‖f x‖ ^ 2 ∂μ := integral_nonneg fun _ => sq_nonneg _
-  have hsq : ‖f‖ ^ 2 = ∫ x, ‖f x‖ ^ 2 ∂μ := by
-    calc ‖f‖ ^ 2
-        = (lpNorm (f : α → F) 2 μ) ^ (2 : ℝ) := by
-          rw [Lp.norm_def, toReal_eLpNorm, ← Real.rpow_two]
-        _ = ((∫ x, ‖f x‖ ^ 2 ∂μ) ^ (2 : ℝ)⁻¹) ^ (2 : ℝ) := by rw [hlp]
-        _ = (∫ x, ‖f x‖ ^ 2 ∂μ) ^ ((2 : ℝ)⁻¹ * 2) := by rw [← Real.rpow_mul hI]
-        _ = ∫ x, ‖f x‖ ^ 2 ∂μ := by
-          rw [show ((2 : ℝ)⁻¹) * 2 = 1 by norm_num, Real.rpow_one]
-  exact hsq.symm
+    ∫ x, ‖f x‖ ^ 2 ∂μ = ‖f‖ ^ 2 :=
+  Lp.integral_norm_sq_eq_norm_sq f
 
 /-- The distributional Fourier transform of an `L¹` function pairs as the integral transform. -/
 private theorem fourier_lp_apply {E F : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]

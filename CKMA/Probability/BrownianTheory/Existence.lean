@@ -31,7 +31,7 @@ whose coordinate process is Brownian.
   the pushed-forward law. `CKMA.exists_brownianMeasure` (**08.1**) combines these.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -43,6 +43,7 @@ open scoped NNReal
 namespace Brownian
 
 /-- Coordinate projections of a process indexed by nonnegative time. -/
+@[expose]
 def coordinatePreBrownian (t : ℝ≥0) (ω : ℝ≥0 → ℝ) : ℝ := ω t
 
 /-- The coordinate process of the Brownian projective limit is pre-Brownian. -/
@@ -55,6 +56,7 @@ lemma coordinatePreBrownian_isPreBrownian (μ : Measure (ℝ≥0 → ℝ))
   }
 
 /-- The continuous modification, packaged as a continuous path. -/
+@[expose]
 def holderToPath {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsProbabilityMeasure μ]
     {B : ℝ≥0 → Ω → ℝ} (hB : IsPreBrownianReal B μ) (ω : Ω) : C(ℝ≥0, ℝ) :=
   ⟨fun t => holderPath hB t ω, continuous_holderPath hB ω⟩
@@ -68,6 +70,7 @@ private lemma measurable_holderToPath {Ω : Type*} [MeasurableSpace Ω] {μ : Me
   simpa [holderToPath] using measurable_holderPath hB t
 
 /-- Law of the continuous modification pushed forward to path space. -/
+@[expose]
 def wienerOfPreBrownian {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω}
     [IsProbabilityMeasure μ] {B : ℝ≥0 → Ω → ℝ} (hB : IsPreBrownianReal B μ) :
     Measure C(ℝ≥0, ℝ) :=

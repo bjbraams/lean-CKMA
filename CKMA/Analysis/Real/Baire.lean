@@ -31,7 +31,7 @@ Source: GAPS 05.7.
   differentiable normed-space-valued function is of Baire class one.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -42,6 +42,7 @@ open Filter Topology
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
 
 /-- A function of Baire class one on a set is a pointwise limit of continuous functions there. -/
+@[expose]
 def IsBaireOneOn (f : X → Y) (s : Set X) : Prop :=
   ∃ g : ℕ → X → Y, (∀ n, ContinuousOn (g n) s) ∧
     ∀ x ∈ s, Tendsto (fun n ↦ g n x) atTop (𝓝 (f x))

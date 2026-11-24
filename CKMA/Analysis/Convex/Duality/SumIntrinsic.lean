@@ -37,7 +37,7 @@ not used. Source: Rockafellar, *Convex Analysis*, Theorem 23.8; GAPS 12.21.
   relative-interior qualification (GAPS 12.21).
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -104,14 +104,17 @@ private lemma convex_epigraph_add {f g : E → EReal} (hf : ∀ y, f y ≠ ⊥) 
 private def subspaceIndicator (W : Submodule ℝ E) : E → EReal :=
   ((W : Set E)ᶜ).indicator fun _ => ⊤
 
+/-- On `W`, the subspace indicator is `0`. -/
 private lemma subspaceIndicator_of_mem {W : Submodule ℝ E} {a : E} (ha : a ∈ W) :
     subspaceIndicator W a = 0 :=
   indicator_of_notMem (show a ∉ ((W : Set E)ᶜ) from fun h => h ha) _
 
+/-- Off `W`, the subspace indicator is `⊤`. -/
 private lemma subspaceIndicator_of_notMem {W : Submodule ℝ E} {a : E} (ha : a ∉ W) :
     subspaceIndicator W a = ⊤ :=
   indicator_of_mem ha _
 
+/-- The subspace indicator never takes the value `⊥`. -/
 private lemma subspaceIndicator_ne_bot (W : Submodule ℝ E) (a : E) :
     subspaceIndicator W a ≠ ⊥ := by
   by_cases ha : a ∈ W
@@ -120,6 +123,7 @@ private lemma subspaceIndicator_ne_bot (W : Submodule ℝ E) (a : E) :
   · rw [subspaceIndicator_of_notMem ha]
     exact top_ne_bot
 
+/-- The epigraph of the subspace indicator is convex. -/
 private lemma convex_epigraph_subspaceIndicator (W : Submodule ℝ E) :
     Convex ℝ {p : E × ℝ | subspaceIndicator W p.1 ≤ p.2} := by
   have hmem : ∀ {a : E} {r : ℝ}, subspaceIndicator W a ≤ r → a ∈ W ∧ 0 ≤ r := by

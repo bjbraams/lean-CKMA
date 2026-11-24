@@ -38,7 +38,7 @@ regular zero. The initial step length is controlled by a norm bound. Source: GAP
 * `CKMA.newton_quadratic`: Local quadratic convergence near a regular zero.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -50,15 +50,18 @@ open scoped NNReal
 variable {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 /-- The majorant root, including the affine `L=0` limit. -/
+@[expose]
 def kantorovichRadius (L η : ℝ) : ℝ :=
   if L = 0 then η else (1 - Real.sqrt (1 - 2 * L * η)) / L
 
 /-- One Newton step, using Mathlib's totalized operator inverse. Results assert invertibility
 on the relevant region; the definition does not invent an inverse when one is unavailable. -/
+@[expose]
 def newtonStep (F : E → E) (x : E) : E := x - (fderiv 𝕜 F x).inverse (F x)
 
 /-- Newton iterates starting at `x₀`, indexed with the initial guess at zero.
 The scalar is supplied explicitly because it does not appear in the iteration type. -/
+@[expose]
 def newtonIterate (F : E → E) (x₀ : E) (n : ℕ) : E := (newtonStep (𝕜 := 𝕜) F)^[n] x₀
 
 /-- The zeroth iterate is the initial point. -/

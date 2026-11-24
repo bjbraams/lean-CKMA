@@ -32,7 +32,7 @@ Sources: GAPS 44.38 and 44.49. Weak differentials reuse TauCeti's Sobolev API.
 * `CKMA.astala_disk_area`: Astala's area distortion theorem for quasiconformal disk maps.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -42,13 +42,16 @@ open MeasureTheory
 open scoped ENNReal
 
 /-- The `z`-derivative of a real-linear complex differential. -/
+@[expose]
 def wirtingerZ (U : ℂ →L[ℝ] ℂ) : ℂ := (U 1 - Complex.I * U Complex.I) / 2
 
 /-- The conjugate-coordinate derivative of a real-linear complex differential. -/
+@[expose]
 def wirtingerBar (U : ℂ →L[ℝ] ℂ) : ℂ := (U 1 + Complex.I * U Complex.I) / 2
 
 /-- A specified weak differential lies locally in the first-order square-integrable Sobolev class.
   -/
+@[expose]
 def IsWeakW12FieldOn (f : ℂ → ℂ) (U : ℂ → ℂ →L[ℝ] ℂ)
     (Ω : TopologicalSpace.Opens ℂ) : Prop :=
   TauCeti.HasWeakFDerivOn volume Ω f U ∧
@@ -56,12 +59,14 @@ def IsWeakW12FieldOn (f : ℂ → ℂ) (U : ℂ → ℂ →L[ℝ] ℂ)
       MemLp f 2 (volume.restrict K) ∧ MemLp U 2 (volume.restrict K)
 
 /-- The weak Beltrami equation, including the required local Sobolev regularity. -/
+@[expose]
 def IsBeltramiSolutionOn (μ f : ℂ → ℂ) (Ω : TopologicalSpace.Opens ℂ) : Prop :=
   ∃ U : ℂ → ℂ →L[ℝ] ℂ, IsWeakW12FieldOn f U Ω ∧
     ∀ᵐ z ∂volume.restrict (Ω : Set ℂ), wirtingerBar (U z) = μ z * wirtingerZ (U z)
 
 /-- Quasiconformality of a plane homeomorphism on an open subset, in the analytic convention.
 The homeomorphism is part of the argument type, so constant PDE solutions cannot qualify. -/
+@[expose]
 def IsQuasiconformalOn (K : ℝ) (f : ℂ ≃ₜ ℂ) (Ω : TopologicalSpace.Opens ℂ) : Prop :=
   1 ≤ K ∧ ∃ U : ℂ → ℂ →L[ℝ] ℂ, IsWeakW12FieldOn f U Ω ∧
     ∀ᵐ z ∂volume.restrict (Ω : Set ℂ),

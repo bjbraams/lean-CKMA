@@ -8,6 +8,13 @@ module
 public import CKMA.Analysis.PDE.Euclidean
 public import TauCeti.Analysis.Sobolev.W1p.Basic
 
+import Mathlib.Analysis.InnerProductSpace.Adjoint
+import Mathlib.Analysis.InnerProductSpace.LaxMilgram
+import TauCeti.Analysis.Semigroups.CauchyProblem.Inhomogeneous
+import TauCeti.Analysis.Semigroups.Dissipative.Hilbert
+import TauCeti.Analysis.Semigroups.Generation.BoundedPerturbation
+import TauCeti.Analysis.Sobolev.W1p.ClosedOperator
+
 import Mathlib.Analysis.Calculus.MeanValue
 import Mathlib.Analysis.InnerProductSpace.Calculus
 import Mathlib.MeasureTheory.Function.L1Space.Integrable
@@ -22,7 +29,8 @@ Forced waves with position in TauCeti's first-order Sobolev space and velocity i
 Solutions are continuous energy-space curves on a compact time interval, with a strong
 position derivative and an integrated weak velocity equation. Initial and forcing data
 agreeing on a backward cone give spatial almost-everywhere agreement in its later balls.
-Sources: GAPS 32.50 and 32.52. Compact curves and Bochner integrals use Mathlib.
+Sources: GAPS 32.50 and 32.52. Existence uses Mathlib's Lax–Milgram theorem for the
+wave resolvent and TauCeti's semigroup generation, bounded perturbation and Duhamel theorems.
 
 ## Main definitions
 
@@ -38,25 +46,29 @@ Sources: GAPS 32.50 and 32.52. Compact curves and Bochner integrals use Mathlib.
 * `CKMA.wave_finitePropagation` (**32.52**): finite speed of propagation on backward light cones.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
 namespace CKMA
 
 open MeasureTheory TauCeti Filter Metric Set TopologicalSpace
+open TauCeti.Semigroups
 open scoped InnerProductSpace Interval Distributions
 
 /-- The actual first-order real Sobolev space on all of Euclidean space. -/
+@[expose]
 abbrev WavePositionSpace (d : ℕ) := TauCeti.W1p (volume : Measure (EuclideanRealSpace d)) ⊤ 2
 
 /-- The scalar velocity space of finite-energy waves. -/
+@[expose]
 abbrev WaveVelocitySpace (d : ℕ) :=
   Lp ℝ 2 ((volume : Measure (EuclideanRealSpace d)).restrict
     ((⊤ : TopologicalSpace.Opens (EuclideanRealSpace d)) : Set (EuclideanRealSpace d)))
 
 /-- Extend a curve off its time interval by zero. Interior derivative assertions do not depend
 on the chosen extension, and uniqueness below is on the actual compact time interval. -/
+@[expose]
 def intervalCurveExtend {F : Type*} [Zero F] (T : ℝ) (u : Set.Icc (0 : ℝ) T → F) (t : ℝ) : F := by
   classical
   exact if ht : t ∈ Set.Icc (0 : ℝ) T then u ⟨t, ht⟩ else 0
@@ -64,6 +76,7 @@ def intervalCurveExtend {F : Type*} [Zero F] (T : ℝ) (u : Set.Icc (0 : ℝ) T 
 /-- Weak energy solution using continuous `H¹` and `L²` curves, their actual Sobolev gradients,
 and an integrated velocity equation. The integral identity excludes singular-in-time
 continuous curves with zero derivative almost everywhere. -/
+@[expose]
 def IsWaveEnergySolution {d : ℕ} (c T : ℝ) (u₀ : WavePositionSpace d)
     (v₀ : WaveVelocitySpace d) (f : ℝ → WaveVelocitySpace d)
     (uv : C(Set.Icc (0 : ℝ) T, WavePositionSpace d) ×
@@ -247,24 +260,25 @@ private theorem waveResidualCLM_apply {d : ℕ} {T : ℝ} (hT : 0 ≤ T) (c : �
   rw [gradientAccumCLM_apply]
 
 set_option maxHeartbeats 1000000 in
-/-- The integrated weak form, tested on a smooth compactly supported function, is zero. -/
-private theorem wave_test_scalar_zero {d : ℕ} {c T : ℝ} (hT : 0 ≤ T)
-    (u₀ : WavePositionSpace d) (v₀ : WaveVelocitySpace d) {f : ℝ → WaveVelocitySpace d}
+/-- The scalar residual is zero exactly when the integrated test equation holds. -/
+private theorem wave_test_scalar_zero_iff {d : ℕ} {c T : ℝ} (hT : 0 ≤ T)
+    (v₀ : WaveVelocitySpace d) {f : ℝ → WaveVelocitySpace d}
     (hf : IntegrableOn f (Set.Icc (0 : ℝ) T))
     (uv : C(Set.Icc (0 : ℝ) T, WavePositionSpace d) ×
       C(Set.Icc (0 : ℝ) T, WaveVelocitySpace d))
-    (huv : IsWaveEnergySolution c T u₀ v₀ f uv) (t : Set.Icc (0 : ℝ) T) (φ : 𝓓(⊤, ℝ)) :
+    (t : Set.Icc (0 : ℝ) T) (φ : 𝓓(⊤, ℝ)) :
     ⟪uv.2 t, W1p.value (W1p.ofTestFunctionₗ volume ⊤ 2 φ)⟫_ℝ -
         ⟪v₀, W1p.value (W1p.ofTestFunctionₗ volume ⊤ 2 φ)⟫_ℝ -
         ⟪∫ s in (0 : ℝ)..t.1, f s,
           W1p.value (W1p.ofTestFunctionₗ volume ⊤ 2 φ)⟫_ℝ +
         c ^ 2 * ⟪∫ s in (0 : ℝ)..t.1, W1p.gradient (clampedPosition hT uv.1 s),
-          W1p.gradient (W1p.ofTestFunctionₗ volume ⊤ 2 φ)⟫_ℝ = 0 := by
+          W1p.gradient (W1p.ofTestFunctionₗ volume ⊤ 2 φ)⟫_ℝ = 0 ↔
+      (∫ x, (uv.2 t) x * (φ : EuclideanRealSpace d → ℝ) x) =
+        (∫ x, v₀ x * (φ : EuclideanRealSpace d → ℝ) x) +
+          ∫ s in (0 : ℝ)..t.1, (∫ x, f s x * (φ : EuclideanRealSpace d → ℝ) x) -
+            c ^ 2 * ∫ x, ⟪W1p.gradient (intervalCurveExtend T uv.1 s) x,
+              gradient (φ : EuclideanRealSpace d → ℝ) x⟫_ℝ := by
   set w : WavePositionSpace d := W1p.ofTestFunctionₗ volume ⊤ 2 φ with hw
-  have hψ : IsCompactSmoothTestOn Set.univ (φ : EuclideanRealSpace d → ℝ) :=
-    ⟨φ.contDiff, φ.hasCompactSupport, by
-      simpa only [Opens.coe_top] using φ.tsupport_subset⟩
-  have hpred := huv.2.2 (φ : EuclideanRealSpace d → ℝ) hψ t
   have hvel := integral_velocity_mul_test (uv.2 t) φ
   have hv0 := integral_velocity_mul_test v₀ φ
   have hforce_pt : ∀ s, ∫ x, f s x * (φ : EuclideanRealSpace d → ℝ) x =
@@ -342,30 +356,12 @@ private theorem wave_test_scalar_zero {d : ℕ} {c T : ℝ} (hT : 0 ≤ T)
     rw [← (innerSL ℝ (W1p.gradient w)).intervalIntegral_comp_comm hintGrad]
     refine intervalIntegral.integral_congr fun _ _ => ?_
     rw [innerSL_apply_apply, real_inner_comm]
-  have hsub : (∫ x, (uv.2 t) x * (φ : EuclideanRealSpace d → ℝ) x) -
-      ∫ x, v₀ x * (φ : EuclideanRealSpace d → ℝ) x =
-      ∫ s in (0 : ℝ)..t.1, Fs s - c ^ 2 * Gs s := by
-    rw [hpred, add_sub_cancel_left]
-  calc ⟪uv.2 t, W1p.value w⟫_ℝ - ⟪v₀, W1p.value w⟫_ℝ -
-          ⟪∫ s in (0 : ℝ)..t.1, f s, W1p.value w⟫_ℝ +
-          c ^ 2 * ⟪∫ s in (0 : ℝ)..t.1, W1p.gradient (clampedPosition hT uv.1 s),
-            W1p.gradient w⟫_ℝ
-      = (∫ x, (uv.2 t) x * (φ : EuclideanRealSpace d → ℝ) x) -
-          (∫ x, v₀ x * (φ : EuclideanRealSpace d → ℝ) x) -
-          (∫ s in (0 : ℝ)..t.1, ⟪f s, W1p.value w⟫_ℝ) +
-          c ^ 2 * ∫ s in (0 : ℝ)..t.1, Gi s := by
-        rw [← hinnerF]
-        rw [← hinnerG]
-        rw [hw]
-        rw [← hvel]
-        rw [← hv0]
-      _ = (∫ s in (0 : ℝ)..t.1, Fs s - c ^ 2 * Gs s) -
-          (∫ s in (0 : ℝ)..t.1, ⟪f s, W1p.value w⟫_ℝ) +
-          c ^ 2 * ∫ s in (0 : ℝ)..t.1, Gi s := by
-        rw [hsub]
-      _ = 0 := by
-        rw [hsplit]
-        ring
+  -- Use the named scalar integrands in the interval-integral identity.
+  change _ ↔ (∫ x, (uv.2 t) x * (φ : EuclideanRealSpace d → ℝ) x) =
+    (∫ x, v₀ x * (φ : EuclideanRealSpace d → ℝ) x) + ∫ s in (0 : ℝ)..t.1, Fs s - c ^ 2 * Gs s
+  rw [← hw] at hvel hv0
+  rw [hinnerF, hinnerG, ← hvel, ← hv0, hsplit]
+  constructor <;> intro h <;> linarith
 
 /-- The residual of an energy solution vanishes on every compactly supported smooth test. -/
 private theorem waveResidualCLM_ofTestFunction {d : ℕ} {c T : ℝ} (hT : 0 ≤ T)
@@ -376,7 +372,9 @@ private theorem waveResidualCLM_ofTestFunction {d : ℕ} {c T : ℝ} (hT : 0 ≤
     (huv : IsWaveEnergySolution c T u₀ v₀ f uv) (t : Set.Icc (0 : ℝ) T) (φ : 𝓓(⊤, ℝ)) :
     waveResidualCLM hT c v₀ f uv t (W1p.ofTestFunctionₗ volume ⊤ 2 φ) = 0 := by
   rw [waveResidualCLM_apply]
-  exact wave_test_scalar_zero hT u₀ v₀ hf uv huv t φ
+  have hψ : IsCompactSmoothTestOn Set.univ (φ : EuclideanRealSpace d → ℝ) :=
+    ⟨φ.contDiff, φ.hasCompactSupport, by simpa only [Opens.coe_top] using φ.tsupport_subset⟩
+  exact (wave_test_scalar_zero_iff hT v₀ hf uv t φ).2 (huv.2.2 _ hψ t)
 
 /-- The residual of an energy solution vanishes on every finite-energy position. -/
 private theorem waveResidualCLM_eq_zero {d : ℕ} {c T : ℝ} (hT : 0 ≤ T)
@@ -703,15 +701,317 @@ private theorem waveEnergySolution_unique {d : ℕ} {c T : ℝ} (hT : 0 < T)
     exact sub_eq_zero.mp hzero
   exact Prod.ext hpos (waveEnergySolution_velocity_eq hT u₀ v₀ f uv wv huv hwv hpos)
 
-set_option warn.sorry false in
+section WaveSkew
+
+variable {V H : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [CompleteSpace V]
+  [NormedAddCommGroup H] [InnerProductSpace ℝ H] [CompleteSpace H]
+
+/-- The wave phase space uses the Hilbert product of position and velocity. -/
+private abbrev WavePhase (V H : Type*) := WithLp 2 (V × H)
+
+variable (J : V →L[ℝ] H)
+
+/-- The graph of the skew wave block for the inhomogeneous Sobolev inner product. -/
+private def waveSkewGraph : Submodule ℝ (WavePhase V H × WavePhase V H) where
+  carrier := {p | J p.2.fst = p.1.snd ∧
+    ∀ z : V, ⟪p.2.snd, J z⟫_ℝ = -⟪p.1.fst, z⟫_ℝ}
+  zero_mem' := by simp
+  add_mem' := by
+    intro p q hp hq
+    obtain ⟨hp₁, hp₂⟩ := hp
+    obtain ⟨hq₁, hq₂⟩ := hq
+    refine ⟨?_, fun z => ?_⟩
+    · simp only [Prod.fst_add, Prod.snd_add, WithLp.add_fst, WithLp.add_snd, map_add, hp₁, hq₁]
+    · simp only [Prod.fst_add, Prod.snd_add, WithLp.add_fst, WithLp.add_snd, inner_add_left,
+        hp₂ z, hq₂ z, neg_add]
+  smul_mem' := by
+    intro a p hp
+    obtain ⟨hp₁, hp₂⟩ := hp
+    refine ⟨?_, fun z => ?_⟩
+    · simp only [Prod.smul_fst, Prod.smul_snd, WithLp.smul_fst, WithLp.smul_snd, map_smul, hp₁]
+    · simp only [Prod.smul_fst, Prod.smul_snd, WithLp.smul_fst, WithLp.smul_snd,
+        real_inner_smul_left, hp₂ z, mul_neg]
+
+/-- The skew wave block on the product of the inhomogeneous Sobolev space and L². -/
+private def waveSkew : WavePhase V H →ₗ.[ℝ] WavePhase V H :=
+  (waveSkewGraph J).toLinearPMap
+
+omit [CompleteSpace V] [CompleteSpace H] in
+/-- The two component equations characterize membership in the skew wave graph. -/
+private theorem mem_waveSkew_graph_iff (hJ : Function.Injective J) (hdense : DenseRange J)
+    {x y : WavePhase V H} :
+    (x, y) ∈ (waveSkew J).graph ↔ J y.fst = x.snd ∧
+      ∀ z : V, ⟪y.snd, J z⟫_ℝ = -⟪x.fst, z⟫_ℝ := by
+  rw [waveSkew, Submodule.toLinearPMap_graph_eq]
+  · rfl
+  · rintro ⟨x, y⟩ ⟨hy₁, hy₂⟩ rfl
+    have hy₁' : y.fst = 0 := hJ (by simpa only [map_zero, WithLp.zero_snd] using hy₁)
+    have hy₂' : y.snd = 0 := hdense.eq_zero_of_inner_left ℝ (by
+      simpa only [WithLp.zero_fst, inner_zero_left, neg_zero] using hy₂)
+    exact (WithLp.equiv 2 _).injective (Prod.ext hy₁' hy₂')
+
+omit [CompleteSpace V] [CompleteSpace H] in
+/-- The skew wave generator has vanishing real quadratic form. -/
+private theorem inner_waveSkew_self (hJ : Function.Injective J) (hdense : DenseRange J)
+    (x : (waveSkew J).domain) :
+    ⟪waveSkew J x, (x : WavePhase V H)⟫_ℝ = 0 := by
+  obtain ⟨hx, hy⟩ := (mem_waveSkew_graph_iff J hJ hdense).1 ((waveSkew J).mem_graph x)
+  have hpair := hy ((waveSkew J x).fst)
+  rw [hx, real_inner_comm (waveSkew J x).fst] at hpair
+  simp only [WithLp.fst, WithLp.snd] at hpair
+  simp only [WithLp.prod_inner_apply, hpair, add_neg_cancel]
+
+/-- The coercive operator for the unit resolvent of the skew wave block. -/
+private def waveResolventOp : V →L[ℝ] V :=
+  1 + J.adjoint.comp J
+
+/-- The resolvent operator is coercive by positivity of the L² value pairing. -/
+private theorem waveResolventOp_coercive :
+    IsCoercive ((innerSL ℝ).comp (waveResolventOp J)) := by
+  refine ⟨1, zero_lt_one, fun z => ?_⟩
+  rw [ContinuousLinearMap.comp_apply, innerSL_apply_apply, waveResolventOp,
+    add_apply, one_apply_eq_self, ContinuousLinearMap.comp_apply,
+    inner_add_left, ContinuousLinearMap.adjoint_inner_left, real_inner_self_eq_norm_sq,
+    real_inner_self_eq_norm_sq]
+  nlinarith [sq_nonneg ‖J z‖]
+
+/-- Lax–Milgram gives the unit resolvent of the skew wave block. -/
+private theorem waveSkew_surjective (hJ : Function.Injective J) (hdense : DenseRange J) :
+    Function.Surjective fun x : (waveSkew J).domain => (x : WavePhase V H) - waveSkew J x := by
+  intro y
+  let w := (waveResolventOp_coercive J).continuousLinearEquivOfBilin.symm
+    (J.adjoint y.snd - y.fst)
+  have hw (z : V) :
+      ⟪J w - y.snd, J z⟫_ℝ = -⟪y.fst + w, z⟫_ℝ := by
+    have heq := (waveResolventOp_coercive J).continuousLinearEquivOfBilin_apply w z
+    have hE : (waveResolventOp_coercive J).continuousLinearEquivOfBilin w =
+        J.adjoint y.snd - y.fst :=
+      (waveResolventOp_coercive J).continuousLinearEquivOfBilin.apply_symm_apply _
+    rw [hE, ContinuousLinearMap.comp_apply, innerSL_apply_apply, waveResolventOp,
+      add_apply, one_apply_eq_self, ContinuousLinearMap.comp_apply,
+      inner_add_left, inner_sub_left, ContinuousLinearMap.adjoint_inner_left,
+      ContinuousLinearMap.adjoint_inner_left] at heq
+    rw [inner_sub_left, inner_add_left]
+    linarith
+  let x : WavePhase V H := WithLp.toLp 2 (y.fst + w, J w)
+  let z : WavePhase V H := WithLp.toLp 2 (w, J w - y.snd)
+  have hg : (x, z) ∈ (waveSkew J).graph := (mem_waveSkew_graph_iff J hJ hdense).mpr ⟨rfl, hw⟩
+  obtain ⟨u, hu₁, hu₂⟩ := (LinearPMap.mem_graph_iff _).mp hg
+  refine ⟨u, ?_⟩
+  dsimp only
+  rw [hu₁, hu₂]
+  apply (WithLp.equiv 2 _).injective
+  exact Prod.ext (by simp [x, z]) (by simp [x, z])
+
+/-- The skew wave block has dense domain by its vanishing quadratic form and unit resolvent. -/
+private theorem waveSkew_dense (hJ : Function.Injective J) (hdense : DenseRange J) :
+    Dense ((waveSkew J).domain : Set (WavePhase V H)) := by
+  rw [dense_iff_closure_eq, ← Submodule.topologicalClosure_coe,
+    ← Submodule.orthogonal_orthogonal_eq_closure]
+  suffices ((waveSkew J).domain)ᗮ = ⊥ by
+    rw [this, Submodule.bot_orthogonal_eq_top, Submodule.top_coe]
+  refine le_antisymm (fun y hy => ?_) bot_le
+  obtain ⟨x, hx⟩ := waveSkew_surjective J hJ hdense y
+  have hinner := Submodule.inner_right_of_mem_orthogonal x.property hy
+  have horth := inner_waveSkew_self J hJ hdense x
+  rw [real_inner_comm] at horth
+  rw [← hx, inner_sub_right, horth, sub_zero, inner_self_eq_zero] at hinner
+  have hx0 : x = 0 := Subtype.ext hinner
+  exact (Submodule.mem_bot ℝ).mpr (by simpa [hx0] using hx.symm)
+
+/-- Positive multiples of the skew wave block are maximally dissipative. -/
+private theorem waveSkew_isMDissipative (hJ : Function.Injective J) (hdense : DenseRange J)
+    {c : ℝ} (hc : 0 < c) :
+    IsMDissipative (c • waveSkew J) := by
+  have hdis : IsDissipative (waveSkew J) := (isDissipative_iff_real_inner_nonpos _).2
+    fun x => (inner_waveSkew_self J hJ hdense x).le
+  apply (hdis.smul hc.le).isMDissipative hc
+  intro y
+  obtain ⟨x, hx⟩ := waveSkew_surjective J hJ hdense (c⁻¹ • y)
+  refine ⟨x, ?_⟩
+  have he : c • ((x : WavePhase V H) - waveSkew J x) = y :=
+    (congrArg (c • ·) hx).trans (smul_inv_smul₀ hc.ne' _)
+  simpa only [smul_sub, LinearPMap.smul_apply] using he
+
+/-- The velocity inclusion in the Hilbert product. -/
+private def wavePhaseInr : H →L[ℝ] WavePhase V H :=
+  (WithLp.prodContinuousLinearEquiv 2 ℝ V H).symm.toContinuousLinearMap.comp
+    (LinearIsometry.inr ℝ V H).toContinuousLinearMap
+
+omit [CompleteSpace V] [CompleteSpace H] in
+/-- The velocity inclusion has zero position and the given velocity. -/
+private theorem wavePhaseInr_apply (v : H) :
+    (wavePhaseInr : H →L[ℝ] WavePhase V H) v = WithLp.toLp 2 (0, v) := rfl
+
+/-- The mass correction cancels the value term in the inhomogeneous Sobolev inner product. -/
+private def waveMassCorrection (c : ℝ) : WavePhase V H →L[ℝ] WavePhase V H :=
+  c • (wavePhaseInr.comp (J.comp (WithLp.fstL 2 ℝ V H)))
+
+/-- The Hilbert product trajectory satisfies its two integrated component equations. -/
+private theorem exists_wavePhaseTrajectory (hJ : Function.Injective J) (hdense : DenseRange J)
+    {c : ℝ} (hc : 0 < c) (x₀ : WavePhase V H) {f : ℝ → H} (hf : Integrable f) :
+    ∃ Q : C(ℝ, WavePhase V H), Q 0 = x₀ ∧
+      ∀ t : ℝ, 0 ≤ t →
+        J (Q t).fst = J x₀.fst + c • (∫ s in Ioc 0 t, (Q s).snd) ∧
+        ∀ w : V,
+          ⟪(Q t).snd, J w⟫_ℝ = ⟪x₀.snd, J w⟫_ℝ + ⟪∫ s in Ioc 0 t, f s, J w⟫_ℝ +
+            c * (⟪J (∫ s in Ioc 0 t, (Q s).fst), J w⟫_ℝ -
+              ⟪∫ s in Ioc 0 t, (Q s).fst, w⟫_ℝ) := by
+  let B := waveMassCorrection J c
+  have hD : Dense ((c • waveSkew J).domain : Set (WavePhase V H)) := by
+    rw [LinearPMap.smul_domain]
+    exact waveSkew_dense J hJ hdense
+  obtain ⟨S, hgen, _⟩ :=
+    (waveSkew_isMDissipative J hJ hdense hc).exists_stronglyContinuousSemigroup_generator_eq_vadd
+      hD B
+  let L : H →L[ℝ] WavePhase V H := wavePhaseInr
+  let F : ℝ → WavePhase V H := fun t => L (f t)
+  have hF : Integrable F := L.integrable_comp hf
+  let q : ℝ → WavePhase V H := fun t => S.realOperator t x₀ + S.duhamel F t
+  have hq := S.isForcedMildSolution_realOperator_add_duhamel
+    hF.integrableOn.locallyIntegrableOn x₀
+  let Q : C(ℝ, WavePhase V H) :=
+    ⟨fun t => q (max 0 t), hq.continuousOn.comp_continuous
+      (continuous_const.max continuous_id) (fun t => Set.mem_Ici.2 (le_max_left (0 : ℝ) t))⟩
+  have hQ : IsForcedMildSolution S.generator F x₀ Q :=
+    hq.congr fun t ht => congrArg q (max_eq_right ht).symm
+  rw [hgen] at hQ
+  refine ⟨Q, hQ.apply_zero, fun t ht => ?_⟩
+  let z : (waveSkew J).domain := ⟨_, hQ.integral_mem_domain ht⟩
+  have hz : B (z : WavePhase V H) + c • waveSkew J z =
+      Q t - x₀ - ∫ s in Ioc 0 t, F s := hQ.map_integral_eq_sub ht
+  obtain ⟨hpos, hvel⟩ := (mem_waveSkew_graph_iff J hJ hdense).1 ((waveSkew J).mem_graph z)
+  have hint : IntegrableOn Q (Ioc 0 t) := (Q.continuous.intervalIntegrable 0 t).1
+  have hfst : (z : WavePhase V H).fst = ∫ s in Ioc 0 t, (Q s).fst :=
+    ((WithLp.fstL 2 ℝ V H).integral_comp_comm hint).symm
+  have hsnd : (z : WavePhase V H).snd = ∫ s in Ioc 0 t, (Q s).snd :=
+    ((WithLp.sndL 2 ℝ V H).integral_comp_comm hint).symm
+  have hFint : (∫ s in Ioc 0 t, F s) = WithLp.toLp 2 (0, ∫ s in Ioc 0 t, f s) := by
+    exact (L.integral_comp_comm hf.integrableOn).trans (wavePhaseInr_apply _)
+  have hB : B z = WithLp.toLp 2 (0, c • J (z : WavePhase V H).fst) := by
+    dsimp only [B]
+    rw [waveMassCorrection, smul_apply, ContinuousLinearMap.comp_apply,
+      ContinuousLinearMap.comp_apply, WithLp.fstL_apply, wavePhaseInr_apply]
+    exact (WithLp.equiv 2 _).injective (Prod.ext (smul_zero c) rfl)
+  constructor
+  · have h := congrArg (fun a : WavePhase V H => J a.fst) hz
+    simp only [hB, hFint, WithLp.add_fst, WithLp.sub_fst, WithLp.smul_fst, WithLp.toLp_fst,
+      zero_add, sub_zero, map_smul, map_sub, hpos, hsnd] at h
+    exact (sub_eq_iff_eq_add.mp h.symm).trans (add_comm _ _)
+  · intro w
+    have h := congrArg (fun a : WavePhase V H => ⟪a.snd, J w⟫_ℝ) hz
+    simp only [hB, hFint, WithLp.add_snd, WithLp.sub_snd, WithLp.smul_snd, WithLp.toLp_snd,
+      inner_add_left, inner_sub_left, real_inner_smul_left, hvel, hfst] at h
+    linarith
+
+end WaveSkew
+
+
+/-- The Sobolev value map is injective and has dense range in the velocity space. -/
+private theorem wave_valueL_injective_dense (d : ℕ) :
+    Function.Injective (W1p.valueL : WavePositionSpace d →L[ℝ] WaveVelocitySpace d) ∧
+      DenseRange (W1p.valueL : WavePositionSpace d →L[ℝ] WaveVelocitySpace d) := by
+  refine ⟨fun _ _ h => W1p.ext_value (by simpa only [W1p.valueL_apply] using h), ?_⟩
+  have h := dense_domain_weakGradientPMap (mu := (volume : Measure (EuclideanRealSpace d)))
+    (Omega := ⊤)
+  refine h.mono ?_
+  intro f hf
+  obtain ⟨u, hu⟩ := mem_domain_weakGradientPMap_iff.mp hf
+  exact ⟨u, (W1p.valueL_apply u).trans hu⟩
+
+/-- The Sobolev inner product splits into the value and gradient pairings. -/
+private theorem wave_inner_position {d : ℕ} (u w : WavePositionSpace d) :
+    ⟪u, w⟫_ℝ = ⟪W1p.valueL u, W1p.valueL w⟫_ℝ + ⟪W1p.gradientL u, W1p.gradientL w⟫_ℝ := by
+  simp only [real_inner_eq_norm_mul_self_add_norm_mul_self_sub_norm_sub_mul_self_div_two,
+    ← sq, W1p.norm_sq_eq_norm_value_sq_add_norm_gradient_sq, W1p.valueL_apply,
+    W1p.gradientL_apply, W1p.value_sub, W1p.gradient_sub]
+  ring
+
+set_option maxHeartbeats 1400000 in
+/-- Integrable forcing produces an energy solution via the perturbed skew wave semigroup. -/
+private theorem exists_waveEnergySolution {d : ℕ} {c T : ℝ} (hc : 0 < c) (hT : 0 < T)
+    (u₀ : WavePositionSpace d) (v₀ : WaveVelocitySpace d) {f : ℝ → WaveVelocitySpace d}
+    (hf : IntegrableOn f (Set.Icc (0 : ℝ) T)) :
+    ∃ uv, IsWaveEnergySolution c T u₀ v₀ f uv := by
+  let F := (Icc (0 : ℝ) T).indicator f
+  have hF : Integrable F := (integrable_indicator_iff measurableSet_Icc).2 hf
+  let J : WavePositionSpace d →L[ℝ] WaveVelocitySpace d := W1p.valueL
+  obtain ⟨hJ, hJdense⟩ := wave_valueL_injective_dense d
+  obtain ⟨Q, hQ0, hQ⟩ := exists_wavePhaseTrajectory J hJ hJdense hc
+    (WithLp.toLp 2 (c • u₀, v₀)) hF
+  let u : ℝ → WavePositionSpace d := fun s => c⁻¹ • (Q s).fst
+  let v : ℝ → WaveVelocitySpace d := fun s => (Q s).snd
+  have hq₁ : Continuous (fun s : ℝ => (Q s).fst) :=
+    (WithLp.continuous_fst 2 _ _).comp Q.continuous
+  have hucont : Continuous u := hq₁.const_smul c⁻¹
+  have hvcont : Continuous v := (WithLp.continuous_snd 2 _ _).comp Q.continuous
+  let up : C(Icc (0 : ℝ) T, WavePositionSpace d) :=
+    ⟨fun t => u t.1, hucont.comp continuous_subtype_val⟩
+  let vp : C(Icc (0 : ℝ) T, WaveVelocitySpace d) :=
+    ⟨fun t => v t.1, hvcont.comp continuous_subtype_val⟩
+  refine ⟨(up, vp), ?_, ?_, ?_⟩
+  · intro t ht
+    simp only [up, vp, ContinuousMap.coe_mk, u, v, ht, hQ0, WithLp.toLp_fst, WithLp.toLp_snd,
+      inv_smul_smul₀ hc.ne', and_self]
+  · intro t ht
+    have hD := ((hvcont.integral_hasStrictDerivAt 0 t).hasDerivAt.const_add (W1p.value u₀))
+    refine hD.congr_of_eventuallyEq ?_
+    filter_upwards [Ioo_mem_nhds ht.1 ht.2] with s hs
+    have hsT : s ∈ Icc (0 : ℝ) T := ⟨hs.1.le, hs.2.le⟩
+    rw [intervalCurveExtend_of_mem _ hsT]
+    have h₁ : J (Q s).fst = c • J u₀ + c • (∫ τ in Ioc 0 s, v τ) := by
+      simpa only [WithLp.toLp_fst, map_smul, v] using (hQ s hs.1.le).1
+    have h₂ : J (u s) = J u₀ + ∫ τ in Ioc 0 s, v τ := by
+      dsimp only [u]
+      rw [map_smul, h₁, smul_add, inv_smul_smul₀ hc.ne', inv_smul_smul₀ hc.ne']
+    simpa only [← intervalIntegral.integral_of_le hs.1.le, up, ContinuousMap.coe_mk,
+      J, W1p.valueL_apply] using h₂
+  · intro ψ hψ t
+    let φ : 𝓓(⊤, ℝ) := ⟨ψ, hψ.1, hψ.2.1, by simp⟩
+    have hintf : (∫ s in Ioc 0 t.1, F s) = ∫ s in (0 : ℝ)..t.1, f s := by
+      rw [intervalIntegral.integral_of_le t.2.1]
+      apply setIntegral_congr_fun measurableSet_Ioc
+      intro s hs
+      have hsT : s ∈ Icc (0 : ℝ) T := ⟨hs.1.le, hs.2.trans t.2.2⟩
+      exact Set.indicator_of_mem hsT f
+    let G := W1p.gradientL (mu := (volume : Measure (EuclideanRealSpace d))) (Omega := ⊤) (p := 2)
+    have hGrad :
+        (∫ s in (0 : ℝ)..t.1, W1p.gradient (clampedPosition hT.le up s)) =
+          c⁻¹ • G (∫ s in Ioc 0 t.1, (Q s).fst) := by
+      have hcongr : (∫ s in (0 : ℝ)..t.1, W1p.gradient (clampedPosition hT.le up s)) =
+          ∫ s in (0 : ℝ)..t.1, c⁻¹ • G ((Q s).fst) := by
+        refine intervalIntegral.integral_congr ?_
+        rw [uIcc_of_le t.2.1]
+        intro s hs
+        have hsT : s ∈ Icc (0 : ℝ) T := ⟨hs.1, hs.2.trans t.2.2⟩
+        dsimp only
+        rw [clampedPosition_of_mem hT.le up hsT, ← W1p.gradientL_apply]
+        exact G.map_smul c⁻¹ ((Q s).fst)
+      rw [hcongr, intervalIntegral.integral_smul,
+        G.intervalIntegral_comp_comm (hq₁.intervalIntegrable 0 t.1),
+        intervalIntegral.integral_of_le t.2.1]
+    let w : WavePositionSpace d := W1p.ofTestFunctionₗ volume ⊤ 2 φ
+    have h₂ := (hQ t.1 t.2.1).2 w
+    simp only [WithLp.toLp_snd, hintf, wave_inner_position] at h₂
+    have hpair :
+        ⟪v t.1, W1p.value w⟫_ℝ - ⟪v₀, W1p.value w⟫_ℝ -
+            ⟪∫ s in (0 : ℝ)..t.1, f s, W1p.value w⟫_ℝ +
+            c ^ 2 * ⟪∫ s in (0 : ℝ)..t.1, W1p.gradient (clampedPosition hT.le up s),
+              W1p.gradient w⟫_ℝ = 0 := by
+      rw [hGrad, real_inner_smul_left, ← W1p.gradientL_apply w]
+      have hc' : c ^ 2 * c⁻¹ = c := by field_simp
+      rw [← mul_assoc, hc']
+      simp only [v, W1p.valueL_apply, J, G] at h₂ ⊢
+      linarith
+    exact (wave_test_scalar_zero_iff hT.le v₀ hf (up, vp) t φ).1 hpair
+
 /-- **32.50**: existence and uniqueness of the finite-energy forced wave on a compact time interval.
   -/
 theorem existsUnique_waveEnergySolution {d : ℕ} {c T : ℝ} (hc : 0 < c) (hT : 0 < T)
     (u₀ : WavePositionSpace d) (v₀ : WaveVelocitySpace d) (f : ℝ → WaveVelocitySpace d)
     (hf : IntegrableOn f (Set.Icc (0 : ℝ) T)) :
     ∃! uv, IsWaveEnergySolution c T u₀ v₀ f uv := by
-  have _ : 0 < c := hc
-  obtain ⟨uv, huv⟩ : ∃ uv, IsWaveEnergySolution c T u₀ v₀ f uv := sorry
+  obtain ⟨uv, huv⟩ := exists_waveEnergySolution hc hT u₀ v₀ hf
   refine ⟨uv, huv, ?_⟩
   intro wv hwv
   exact waveEnergySolution_unique hT u₀ v₀ hf wv uv hwv huv

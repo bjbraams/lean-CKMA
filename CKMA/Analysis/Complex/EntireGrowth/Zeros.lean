@@ -31,9 +31,14 @@ open Classical Filter Function Metric Set
 open scoped BigOperators Topology
 
 /-- The zeros of an entire function, each repeated by its multiplicity. -/
-abbrev zeroAtom (g : ℂ → ℂ) :=
+@[expose]
+abbrev ZeroAtom (g : ℂ → ℂ) :=
   Σ ρ : {z : ℂ // z ∈ (MeromorphicOn.divisor g Set.univ).support},
     Fin ((MeromorphicOn.divisor g Set.univ (ρ : ℂ)).toNat)
+
+/-- Deprecated name for `ZeroAtom`. -/
+@[deprecated (since := "2026-11-21")]
+alias zeroAtom := ZeroAtom
 
 /-- The support of the divisor of an entire function is a countable set of isolated zeros. -/
 theorem countable_divisor_support {g : ℂ → ℂ} (hg : Differentiable ℂ g) :
@@ -77,20 +82,22 @@ theorem zero_not_mem_divisor_support {g : ℂ → ℂ} (hg : Differentiable ℂ 
   exact hz (by simpa [Function.mem_support] using hd)
 
 /-- The atoms of an entire function form a countable set. -/
-theorem countable_zeroAtom {g : ℂ → ℂ} (hg : Differentiable ℂ g) : Countable (zeroAtom g) := by
+theorem countable_zeroAtom {g : ℂ → ℂ} (hg : Differentiable ℂ g) : Countable (ZeroAtom g) := by
   have : Countable {z : ℂ // z ∈ (MeromorphicOn.divisor g Set.univ).support} :=
     (countable_divisor_support hg).to_subtype
   infer_instance
 
 /-- An injective encoding of the zeros, repeated by multiplicity, together with the proof. -/
+@[expose]
 def zeroEncoding {g : ℂ → ℂ} (hg : Differentiable ℂ g) :
-    {f : zeroAtom g → ℕ // Injective f} :=
+    {f : ZeroAtom g → ℕ // Injective f} :=
   letI := countable_zeroAtom hg
-  ⟨Classical.choose (Countable.exists_injective_nat (zeroAtom g)),
-    Classical.choose_spec (Countable.exists_injective_nat (zeroAtom g))⟩
+  ⟨Classical.choose (Countable.exists_injective_nat (ZeroAtom g)),
+    Classical.choose_spec (Countable.exists_injective_nat (ZeroAtom g))⟩
 
 /-- An injective encoding of the zeros, repeated by multiplicity. -/
-def zeroEncode {g : ℂ → ℂ} (hg : Differentiable ℂ g) : zeroAtom g → ℕ :=
+@[expose]
+def zeroEncode {g : ℂ → ℂ} (hg : Differentiable ℂ g) : ZeroAtom g → ℕ :=
   (zeroEncoding hg).1
 
 /-- The encoding of zeros is injective. -/
@@ -99,20 +106,21 @@ theorem zeroEncode_injective {g : ℂ → ℂ} (hg : Differentiable ℂ g) :
   (zeroEncoding hg).2
 
 /-- The `Option`-valued list of zeros. `none` fills the unused indices. -/
+@[expose]
 def enumeratedZero {g : ℂ → ℂ} (hg : Differentiable ℂ g) (n : ℕ) : Option ℂ :=
-  if h : ∃ a : zeroAtom g, zeroEncode hg a = n then some (Classical.choose h).1 else none
+  if h : ∃ a : ZeroAtom g, zeroEncode hg a = n then some (Classical.choose h).1 else none
 
 /-- Every atom appears at its encoded index. -/
-theorem enumeratedZero_zeroEncode {g : ℂ → ℂ} (hg : Differentiable ℂ g) (a : zeroAtom g) :
+theorem enumeratedZero_zeroEncode {g : ℂ → ℂ} (hg : Differentiable ℂ g) (a : ZeroAtom g) :
     enumeratedZero hg (zeroEncode hg a) = some (a.1 : ℂ) := by
-  have h : ∃ b : zeroAtom g, zeroEncode hg b = zeroEncode hg a := ⟨a, rfl⟩
+  have h : ∃ b : ZeroAtom g, zeroEncode hg b = zeroEncode hg a := ⟨a, rfl⟩
   rw [enumeratedZero, dite_eq_left h, zeroEncode_injective hg (Classical.choose_spec h)]
 
 /-- A listed value comes from a unique atom. -/
 theorem exists_zeroAtom_of_enumeratedZero {g : ℂ → ℂ} (hg : Differentiable ℂ g) {n : ℕ} {w : ℂ}
     (hw : enumeratedZero hg n = some w) :
-    ∃ a : zeroAtom g, zeroEncode hg a = n ∧ (a.1 : ℂ) = w := by
-  by_cases h : ∃ a : zeroAtom g, zeroEncode hg a = n
+    ∃ a : ZeroAtom g, zeroEncode hg a = n ∧ (a.1 : ℂ) = w := by
+  by_cases h : ∃ a : ZeroAtom g, zeroEncode hg a = n
   · rw [enumeratedZero, dite_eq_left h] at hw
     exact ⟨Classical.choose h, Classical.choose_spec h, Option.some_injective _ hw⟩
   · rw [enumeratedZero, dite_eq_right h] at hw
@@ -126,19 +134,19 @@ theorem enumeratedZero_ne_zero {g : ℂ → ℂ} (hg : Differentiable ℂ g) (hg
   exact zero_not_mem_divisor_support hg hg0 (hw0 ▸ ha ▸ a.1.2)
 
 /-- The reciprocal powers of the enumerated zeros are the atom weights pushed along the encoding. -/
-theorem summable_enumeratedZero_rpow {g : ℂ → ℂ} (hg : Differentiable ℂ g) (hg0 : g 0 ≠ 0)
+theorem summable_enumeratedZero_rpow {g : ℂ → ℂ} (hg : Differentiable ℂ g)
     {ρ q : ℝ} (hord : TauCeti.OrderLE g ρ) (hq : ρ < q) :
     Summable fun n ↦ match enumeratedZero hg n with
       | none => (0 : ℝ)
       | some w => ‖w‖ ^ (-q) := by
   classical
   let d := MeromorphicOn.divisor g Set.univ
-  have hTau := hord.summable_divisor_mul_norm_rpow hg hg0 hq
-  have hAtom : Summable fun a : zeroAtom g ↦ ‖(a.1 : ℂ)‖ ^ (-q) := by
+  have hTau := hord.summable_divisor_mul_norm_rpow hg hq
+  have hAtom : Summable fun a : ZeroAtom g ↦ ‖(a.1 : ℂ)‖ ^ (-q) := by
     rw [summable_sigma_of_nonneg (fun a ↦ Real.rpow_nonneg (norm_nonneg _) _)]
     refine ⟨fun _ ↦ Summable.of_finite, ?_⟩
     refine hTau.congr fun ρ ↦ ?_
-    have hfun : (fun k : Fin (d (ρ : ℂ)).toNat ↦ ‖((⟨ρ, k⟩ : zeroAtom g).1 : ℂ)‖ ^ (-q)) =
+    have hfun : (fun k : Fin (d (ρ : ℂ)).toNat ↦ ‖((⟨ρ, k⟩ : ZeroAtom g).1 : ℂ)‖ ^ (-q)) =
         fun _ ↦ ‖(ρ : ℂ)‖ ^ (-q) := by
       funext k
       rfl
@@ -157,7 +165,7 @@ theorem summable_enumeratedZero_rpow {g : ℂ → ℂ} (hg : Differentiable ℂ 
     simp [weight, e, Equiv.ofInjective, enumeratedZero_zeroEncode]
   · refine (summable_zero :
         Summable (fun _ : ↑(Set.range (zeroEncode hg))ᶜ ↦ (0 : ℝ))).congr fun n ↦ ?_
-    have hn : ¬∃ a : zeroAtom g, zeroEncode hg a = n.1 := by
+    have hn : ¬∃ a : ZeroAtom g, zeroEncode hg a = n.1 := by
       simpa [Set.range] using n.2
     have hnone : enumeratedZero hg n.1 = none := by
       rw [enumeratedZero, dite_eq_right hn]

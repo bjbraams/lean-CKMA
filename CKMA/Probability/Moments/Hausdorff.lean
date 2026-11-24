@@ -40,7 +40,7 @@ the Weierstrass approximation theorem on `[0,1]`.
   (**48.34**).
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -50,6 +50,7 @@ open MeasureTheory Filter Topology
 open scoped BigOperators BoundedContinuousFunction ENNReal NNReal
 
 /-- The forward difference of a real sequence, Mathlib's `fwdDiff` with step `1`. -/
+@[expose]
 def forwardDifference (s : ℕ → ℝ) : ℕ → ℝ := fwdDiff 1 s
 
 /-- The forward difference at `n` is `s (n + 1) - s n`. -/
@@ -58,14 +59,17 @@ theorem forwardDifference_apply (s : ℕ → ℝ) (n : ℕ) :
   rfl
 
 /-- Discrete complete monotonicity with the forward-difference sign convention. -/
+@[expose]
 def IsCompletelyMonotoneSequence (s : ℕ → ℝ) : Prop :=
   ∀ n k : ℕ, 0 ≤ (-1 : ℝ) ^ k * ((forwardDifference^[k]) s) n
 
 /-- Bernstein weights in the constructive Hausdorff approximation. -/
+@[expose]
 def hausdorffWeight (s : ℕ → ℝ) (N k : ℕ) : ℝ :=
   (N.choose k : ℝ) * ((-1 : ℝ) ^ (N - k) * ((forwardDifference^[N - k]) s) k)
 
 /-- The finite discrete measure approximating a Hausdorff moment law. -/
+@[expose]
 def hausdorffApproximant (s : ℕ → ℝ) (N : ℕ) : Measure ℝ :=
   ∑ k ∈ Finset.range (N + 1), ENNReal.ofReal (hausdorffWeight s N k) •
     Measure.dirac ((k : ℝ) / N)
@@ -90,6 +94,7 @@ theorem IsCompletelyMonotoneSequence.antitone {s : ℕ → ℝ}
   linarith
 
 /-- A finite measure concentrated on `[0,1]` represents all the moments of `s`. -/
+@[expose]
 def RepresentsHausdorffMoments (μ : Measure ℝ) (s : ℕ → ℝ) : Prop :=
   IsFiniteMeasure μ ∧ μ (Set.Icc (0 : ℝ) 1)ᶜ = 0 ∧ ∀ n : ℕ, ∫ x, x ^ n ∂μ = s n
 

@@ -28,7 +28,7 @@ Ornstein–Uhlenbeck semigroup decreases at the rate of the Fisher information.
   Fisher information for smooth positive functions with bounded derivatives.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -500,6 +500,7 @@ lemma tendsto_ouSemigroup_zero {f : ℝ → ℝ} {x : ℝ} (hf : Continuous f)
   exact (hf.tendsto x).comp harg
 
 /-- The integral `∫ P_t f log P_t f dγ` of `f` along the Ornstein–Uhlenbeck semigroup. -/
+@[expose]
 def ouEntropy (f : ℝ → ℝ) (t : ℝ) : ℝ :=
   ∫ x, ouSemigroup t f x * Real.log (ouSemigroup t f x) ∂gaussianReal 0 1
 

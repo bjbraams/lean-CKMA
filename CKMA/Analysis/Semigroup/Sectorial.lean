@@ -37,7 +37,7 @@ Sources: GAPS 24.20, 24.23 and 24.35.
   eventually norm-continuous semigroups (**24.35**).
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -49,14 +49,17 @@ open scoped NNReal
 variable {X : Type*} [NormedAddCommGroup X] [NormedSpace ℂ X] [CompleteSpace X]
 
 /-- The open punctured sector around the positive real axis. -/
+@[expose]
 def operatorSector (θ : ℝ) : Set ℂ := {z | z ≠ 0 ∧ |Complex.arg z| < θ}
 
 /-- Closed sectors include their vertex; this matters for the spectrum of a noninvertible operator.
   -/
+@[expose]
 def closedOperatorSector (θ : ℝ) : Set ℂ := insert 0 {z | |Complex.arg z| ≤ θ}
 
 /-- Sectoriality for a closed densely defined complex partial linear operator.
 The resolvent estimate is required outside each strictly larger closed sector. -/
+@[expose]
 def IsSectorialOperator (B : X →ₗ.[ℂ] X) (θ : ℝ) : Prop :=
   0 ≤ θ ∧ θ < Real.pi ∧ B.IsClosed ∧ Dense (B.domain : Set X) ∧
     B.spectrum ⊆ closedOperatorSector θ ∧
@@ -65,6 +68,7 @@ def IsSectorialOperator (B : X →ₗ.[ℂ] X) (θ : ℝ) : Prop :=
 
 /-- A bounded holomorphic semigroup extension, expressed using an actual operator-valued map.
 Its limit at zero is strong and is tested on every strictly smaller sector. -/
+@[expose]
 def HasBoundedAnalyticSemigroupExtension (S : StronglyContinuousSemigroup X)
     (hS : S.IsComplexLinear) (θ : ℝ) : Prop :=
   0 < θ ∧ θ ≤ Real.pi / 2 ∧ ∃ F : ℂ → X →L[ℂ] X,
@@ -86,10 +90,12 @@ theorem sectorial_iff_analytic_generation (B : X →ₗ.[ℂ] X) :
 
 /-- The Balakrishnan integrand, written with a bounded resolvent so no unproved domain
 membership is needed in its definition. Here `R(-t,B)=-(t+B)^(-1)`. -/
+@[expose]
 def balakrishnanIntegrand (B : X →ₗ.[ℂ] X) (α : ℝ) (x : X) (t : ℝ) : X :=
   t ^ (α - 1) • (x + (t : ℂ) • B.resolvent (-(t : ℂ)) x)
 
 /-- The Balakrishnan expression on the initial generator domain, with its sine normalization. -/
+@[expose]
 def balakrishnanIntegral (B : X →ₗ.[ℂ] X) (α : ℝ) (x : X) : X :=
   (Real.sin (Real.pi * α) / Real.pi) • ∫ t in Set.Ioi (0 : ℝ), balakrishnanIntegrand B α x t
 
@@ -103,6 +109,7 @@ theorem balakrishnan_fractionalPower {B : X →ₗ.[ℂ] X} {θ α : ℝ}
   sorry
 
 /-- Eventual continuity in operator norm, rather than only strong continuity of orbits. -/
+@[expose]
 def IsEventuallyNormContinuousSemigroup (S : StronglyContinuousSemigroup X) : Prop :=
   ∃ t₀ : ℝ, 0 ≤ t₀ ∧ ContinuousOn S.realOperator (Set.Ioi t₀)
 

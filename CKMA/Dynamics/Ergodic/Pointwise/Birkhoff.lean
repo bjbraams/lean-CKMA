@@ -35,7 +35,7 @@ integrable case follows by truncation.
   `CKMA.birkhoff_pointwise_of_ergodic` treats the ergodic case, in `Dynamics.Ergodic.Pointwise`.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -46,6 +46,7 @@ open Set MeasureTheory Filter Topology
 variable {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} {T : Ω → Ω} {f : Ω → ℝ}
 
 /-- Truncation of a real observable to `[-M, M]`. -/
+@[expose]
 def birkhoffTruncate (M : ℝ) (f : Ω → ℝ) : Ω → ℝ :=
   fun ω => max (-M) (min (f ω) M)
 
@@ -124,7 +125,8 @@ private lemma integral_birkhoffSum (hT : MeasurePreserving T μ μ) (hf : Integr
   | zero =>
     simp [birkhoffSum_zero, integral_zero]
   | succ n ih =>
-    have hsum : Integrable (birkhoffSum T f n) μ := integrable_birkhoffSum hT hf n
+    have hsum : Integrable (birkhoffSum T f n) μ :=
+      _root_.integrable_birkhoffSum (n := n) hT hf
     have hcomp : Integrable (birkhoffSum T f n ∘ T) μ :=
       hT.integrable_comp_of_integrable hsum
     rw [birkhoffSum_succ', integral_add' hf hcomp]
@@ -231,7 +233,7 @@ private lemma abs_birkhoffLimit_le_of_abs_le {M : ℝ} (hM : 0 ≤ M) (hf : ∀ 
 end
 
 /-- For a bounded measurable observable the Birkhoff limit is the conditional expectation. -/
-private lemma birkhoffLimit_ae_eq_condExp_of_bounded [IsProbabilityMeasure μ]
+private lemma birkhoffLimit_ae_eq_condExp_of_bounded [IsFiniteMeasure μ]
     (hT : MeasurePreserving T μ μ) (hf : Integrable f μ) (hf_meas : Measurable f)
     {M : ℝ} (hM : 0 ≤ M) (hbound : ∀ ω, |f ω| ≤ M) :
     birkhoffLimit T f =ᵐ[μ] μ[f | MeasurableSpace.invariants T] := by
@@ -251,7 +253,7 @@ private lemma birkhoffLimit_ae_eq_condExp_of_bounded [IsProbabilityMeasure μ]
       have hdom := tendsto_integral_of_dominated_convergence (μ := μ)
         (F := fun n => s.indicator (fun ω => birkhoffAverage ℝ T f n ω))
         (f := s.indicator (birkhoffLimit T f)) (bound := fun _ => M)
-        (fun n => ((measurable_birkhoffAverage hT.measurable hf_meas n).indicator
+        (fun n => ((_root_.measurable_birkhoffAverage (n := n) hT.measurable hf_meas).indicator
           hs.1).aestronglyMeasurable)
         (integrable_const M)
         (fun n => Eventually.of_forall fun ω => by
@@ -285,7 +287,7 @@ private lemma birkhoffLimit_ae_eq_condExp_of_bounded [IsProbabilityMeasure μ]
       |>.aestronglyMeasurable)
 
 /-- A nonnegative Birkhoff limit is integrable, and its integral is at most that of `f`. -/
-private lemma birkhoffLimit_integrable_le_of_nonneg [IsProbabilityMeasure μ]
+private lemma birkhoffLimit_integrable_le_of_nonneg [IsFiniteMeasure μ]
     (hT : MeasurePreserving T μ μ) (hf : Integrable f μ) (hf_meas : Measurable f)
     (hf0 : ∀ ω, 0 ≤ f ω) :
     Integrable (birkhoffLimit T f) μ ∧
@@ -323,13 +325,13 @@ private lemma birkhoffLimit_integrable_le_of_nonneg [IsProbabilityMeasure μ]
   have hfatou := lintegral_liminf_le (μ := μ) (u := atTop)
     (f := fun n ω => ENNReal.ofReal (birkhoffAverage ℝ T f n ω))
     (fun n => ENNReal.continuous_ofReal.measurable.comp
-      (measurable_birkhoffAverage hT.measurable hf_meas n))
+      (_root_.measurable_birkhoffAverage (n := n) hT.measurable hf_meas))
   have hI : ∀ n, 0 < n →
       ∫⁻ ω, ENNReal.ofReal (birkhoffAverage ℝ T f n ω) ∂μ =
         ENNReal.ofReal (∫ ω, f ω ∂μ) := by
     intro n hn
     have hint : Integrable (birkhoffAverage ℝ T f n) μ :=
-      (integrable_birkhoffSum hT hf n).smul ((n : ℝ)⁻¹)
+      (_root_.integrable_birkhoffSum (n := n) hT hf).smul ((n : ℝ)⁻¹)
     rw [← ofReal_integral_eq_lintegral_ofReal hint
         (Eventually.of_forall (birkhoffAverage_nonneg hf0 n)),
       integral_birkhoffAverage hT hf hn]
@@ -356,7 +358,7 @@ private lemma birkhoffLimit_integrable_le_of_nonneg [IsProbabilityMeasure μ]
   exact ⟨hφ_int, (ENNReal.ofReal_le_ofReal_iff (integral_nonneg hf0)).1 hlin⟩
 
 /-- The distance between Birkhoff limits is controlled by the limit of the absolute difference. -/
-private lemma abs_birkhoffLimit_sub_le_ae [IsProbabilityMeasure μ] (hT : MeasurePreserving T μ μ)
+private lemma abs_birkhoffLimit_sub_le_ae [IsFiniteMeasure μ] (hT : MeasurePreserving T μ μ)
     {g : Ω → ℝ} (hf : Integrable f μ) (hg : Integrable g μ) (hf_meas : Measurable f)
     (hg_meas : Measurable g) :
     (fun ω => |birkhoffLimit T f ω - birkhoffLimit T g ω|) ≤ᵐ[μ]
@@ -380,7 +382,7 @@ private lemma abs_birkhoffLimit_sub_le_ae [IsProbabilityMeasure μ] (hT : Measur
         simp [Pi.sub_apply]
 
 /-- Integrals of distances between Birkhoff limits contract like the observables. -/
-private lemma integral_abs_birkhoffLimit_sub_le [IsProbabilityMeasure μ]
+private lemma integral_abs_birkhoffLimit_sub_le [IsFiniteMeasure μ]
     (hT : MeasurePreserving T μ μ)
     {g : Ω → ℝ} (hf : Integrable f μ) (hg : Integrable g μ) (hf_meas : Measurable f)
     (hg_meas : Measurable g) :
@@ -426,7 +428,7 @@ private lemma tendsto_integral_abs_sub_birkhoffTruncate (hf : Integrable f μ)
   simpa [integral_zero] using hdom
 
 /-- For a measurable integrable observable the Birkhoff limit is the conditional expectation. -/
-private lemma birkhoffLimit_ae_eq_condExp_of_measurable [IsProbabilityMeasure μ]
+private lemma birkhoffLimit_ae_eq_condExp_of_measurable [IsFiniteMeasure μ]
     (hT : MeasurePreserving T μ μ) (hf : Integrable f μ) (hf_meas : Measurable f) :
     birkhoffLimit T f =ᵐ[μ] μ[f | MeasurableSpace.invariants T] := by
   let fM : ℕ → Ω → ℝ := fun M => birkhoffTruncate (M : ℝ) f
@@ -547,7 +549,7 @@ private lemma birkhoffLimit_ae_eq_condExp_of_measurable [IsProbabilityMeasure μ
   exact sub_eq_zero.mp (abs_eq_zero.mp hω)
 
 /-- Birkhoff averages converge almost everywhere to the invariant conditional expectation. -/
-lemma birkhoffAverage_ae_tendsto_condExp [IsProbabilityMeasure μ]
+lemma birkhoffAverage_ae_tendsto_condExp [IsFiniteMeasure μ]
     (hT : MeasurePreserving T μ μ) (hf : Integrable f μ) :
     ∀ᵐ ω ∂μ, Tendsto (fun n : ℕ => birkhoffAverage ℝ T f n ω) atTop
       (𝓝 ((μ[f | MeasurableSpace.invariants T]) ω)) := by

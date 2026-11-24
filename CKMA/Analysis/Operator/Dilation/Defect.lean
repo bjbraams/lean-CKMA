@@ -29,7 +29,7 @@ norm computation behind Schäffer's isometric dilation.
 * `CKMA.norm_sq_add_norm_sq_defectOperator`: Pythagorean identity `‖T x‖² + ‖D_T x‖² = ‖x‖²`.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -53,7 +53,11 @@ theorem contraction_one_sub_star_mul_self_nonneg (T : H →L[ℂ] H) (hT : ‖T�
     0 ≤ (1 - star T * T : H →L[ℂ] H) :=
   sub_nonneg.mpr (star_mul_self_le_one_of_norm_le_one T hT)
 
-/-- The defect operator `√(1 - T* T)` of an operator on a Hilbert space. -/
+/-- The defect operator `CFC.sqrt (1 - star T * T)`.
+
+`CFC.sqrt` is `0` when its argument is not nonnegative. For `‖T‖ ≤ 1`,
+`defectOperator_mul_self` is the square identity. -/
+@[expose]
 def defectOperator (T : H →L[ℂ] H) : H →L[ℂ] H :=
   CFC.sqrt (1 - star T * T)
 

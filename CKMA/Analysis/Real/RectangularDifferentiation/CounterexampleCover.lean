@@ -36,7 +36,7 @@ integrable function is the sum of the corresponding rectangular spikes.
   function and the integral of one spike.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -46,6 +46,7 @@ open scoped ENNReal NNReal BigOperators
 namespace CKMA.Bohr
 
 /-- The translate of the strip union `badPlane k` by `v`. -/
+@[expose]
 def shiftHit (k : ℕ) (v : Fin 2 → ℝ) : Set (Fin 2 → ℝ) :=
   {x | x - v ∈ badPlane k}
 
@@ -249,6 +250,7 @@ private lemma volume_planeCover_gt (k : ℕ) (v : Fin (copyCount k) → Fin 2 �
   exact (hlt.trans hmid).trans_le hge
 
 /-- The first two coordinate axes. -/
+@[expose]
 def planeEquiv (d : ℕ) (hd : 2 ≤ d) : Fin 2 ≃ {i : Fin d // i.val ≤ 1} where
   toFun i := ⟨⟨i.val, lt_of_lt_of_le i.isLt hd⟩, Nat.lt_succ_iff.mp i.isLt⟩
   invFun z := ⟨z.1.val, Nat.lt_succ_iff.mpr z.2⟩
@@ -256,6 +258,7 @@ def planeEquiv (d : ℕ) (hd : 2 ≤ d) : Fin 2 ≃ {i : Fin d // i.val ≤ 1} w
   right_inv z := by ext; rfl
 
 /-- The axes beyond the Bohr plane, shifted down by two. -/
+@[expose]
 def extraEquiv (d : ℕ) (hd : 2 ≤ d) : Fin (d - 2) ≃ {i : Fin d // ¬ i.val ≤ 1} where
   toFun j := ⟨⟨j.val + 2, by
     have h := Nat.add_lt_add_right j.isLt 2
@@ -274,6 +277,7 @@ def extraEquiv (d : ℕ) (hd : 2 ≤ d) : Fin (d - 2) ≃ {i : Fin d // ¬ i.val
     exact Nat.sub_add_cancel hge
 
 /-- Coordinates split into the Bohr plane and the remaining axes. -/
+@[expose]
 def splitEquiv (d : ℕ) (hd : 2 ≤ d) :
     (Fin d → ℝ) ≃ᵐ (Fin 2 → ℝ) × (Fin (d - 2) → ℝ) :=
   (MeasurableEquiv.piEquivPiSubtypeProd (fun _ : Fin d => ℝ) (fun i => i.val ≤ 1)).trans
@@ -302,6 +306,7 @@ private lemma volume_unitCube (d : ℕ) : volume (unitCube d) = 1 := by
   simp
 
 /-- Chosen translates at stage `k`. -/
+@[expose]
 def chosenShifts (k : ℕ) : Fin (copyCount k) → Fin 2 → ℝ :=
   Classical.choose (exists_almost_cover k)
 
@@ -313,6 +318,7 @@ private lemma chosenShifts_spec (k : ℕ) :
   Classical.choose_spec (exists_almost_cover k)
 
 /-- Points of the inner square that meet some chosen strip. -/
+@[expose]
 def planeCover (k : ℕ) : Set (Fin 2 → ℝ) :=
   innerPlane k ∩ ⋃ i, shiftHit k (chosenShifts k i)
 
@@ -330,6 +336,7 @@ private lemma measurableSet_planeCover (k : ℕ) : MeasurableSet (planeCover k) 
   exact hI.inter (MeasurableSet.iUnion fun i => measurableSet_shiftHit k (chosenShifts k i))
 
 /-- Extra window in which a witnessing side of length `extraSide` stays inside `(0, 1)`. -/
+@[expose]
 def extraSet (d k : ℕ) : Set (Fin (d - 2) → ℝ) :=
   univ.pi fun _ => Ioo (extraSide d k / 2) (1 - extraSide d k / 2)
 
@@ -380,6 +387,7 @@ private lemma extraSet_subset_unitCube (d k : ℕ) : extraSet d k ⊆ unitCube (
   exact ⟨by linarith, by linarith⟩
 
 /-- Stage `k` inside the unit cube: covered plane points with an inner extra window. -/
+@[expose]
 def stageSet (d k : ℕ) (hd : 2 ≤ d) : Set (Fin d → ℝ) :=
   (splitEquiv d hd) ⁻¹' (planeCover k ×ˢ extraSet d k)
 
@@ -417,6 +425,7 @@ private lemma volume_stageSet_gt (d k : ℕ) (hd : 2 ≤ d) :
   exact (hprod ▸ hle).trans_lt hlt
 
 /-- Points that meet some stage at index `n` or later. -/
+@[expose]
 def tailSet (d n : ℕ) (hd : 2 ≤ d) : Set (Fin d → ℝ) :=
   ⋃ k ∈ Set.Ici n, stageSet d k hd
 
@@ -478,6 +487,7 @@ private lemma volume_tailSet_lt_top (d n : ℕ) (hd : 2 ≤ d) : volume (tailSet
   exact ENNReal.one_lt_top
 
 /-- Points that lie in infinitely many tails. -/
+@[expose]
 def limsupSet (d : ℕ) (hd : 2 ≤ d) : Set (Fin d → ℝ) :=
   ⋂ n, tailSet d n hd
 
@@ -597,6 +607,7 @@ lemma stageMass_le (k : ℕ) :
   exact hstep.trans <| hstep2.trans_eq (stageTerm_eq k)
 
 /-- Corner spike of one translated picture. -/
+@[expose]
 def spikeRect (d : ℕ) (_hd : 2 ≤ d) (k : ℕ) (v : Fin 2 → ℝ) : OpenRectangle d where
   lower i := if h : i.val ≤ 1 then v ⟨i.val, Nat.lt_succ_iff.mpr h⟩ else 0
   upper i := if h : i.val ≤ 1 then v ⟨i.val, Nat.lt_succ_iff.mpr h⟩ + stageScale k else 1
@@ -638,21 +649,26 @@ private lemma volume_real_spike (d : ℕ) (hd : 2 ≤ d) (k : ℕ) (v : Fin 2 �
   rw [hplane, hextra, mul_one]
 
 /-- Height of the corner spike at stage `k`. -/
+@[expose]
 def spikeHeight (k : ℕ) : ℝ := stageHeight k * stageCount k
 
 /-- Indicator of one corner spike. -/
+@[expose]
 def spike (d : ℕ) (hd : 2 ≤ d) (k : ℕ) (v : Fin 2 → ℝ) (x : Fin d → ℝ) : ℝ :=
   (spikeRect d hd k v).carrier.indicator (fun _ => spikeHeight k) x
 
 /-- Nonnegative extended spike. -/
+@[expose]
 def spikeENN (d : ℕ) (hd : 2 ≤ d) (k : ℕ) (v : Fin 2 → ℝ) (x : Fin d → ℝ) : ℝ≥0∞ :=
   ENNReal.ofReal (spike d hd k v x)
 
 /-- Sum of every corner spike. -/
+@[expose]
 def spikeSum (d : ℕ) (hd : 2 ≤ d) (x : Fin d → ℝ) : ℝ≥0∞ :=
   ∑' p : Σ k, Fin (copyCount k), spikeENN d hd p.1 (chosenShifts p.1 p.2) x
 
 /-- The Saks function, finite part of the spike sum. -/
+@[expose]
 def saks (d : ℕ) (hd : 2 ≤ d) : (Fin d → ℝ) → ℝ := fun x => (spikeSum d hd x).toReal
 
 /-- Each spike indicator is measurable. -/

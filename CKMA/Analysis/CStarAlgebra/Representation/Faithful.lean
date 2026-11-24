@@ -43,7 +43,7 @@ range.
   `CKMA.Analysis.CStarAlgebra.Representation`.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -138,6 +138,7 @@ theorem exists_state_normSq [CStarAlgebra A] [Nontrivial A] [PartialOrder A]
   exact Complex.ofReal_pow ‖b‖ 2
 
 /-- Chosen state sending `star b * b` to `‖b‖ ^ 2`. -/
+@[expose]
 def stateNormSq [CStarAlgebra A] [Nontrivial A] [PartialOrder A] [StarOrderedRing A] (b : A) :
     A →ₚ[ℂ] ℂ :=
   Classical.choose (exists_state_normSq (A := A) b)
@@ -199,6 +200,7 @@ variable {ι : Type*} {E : ι → Type*} [∀ i, NormedAddCommGroup (E i)]
 variable [∀ i, CompleteSpace (E i)]
 
 /-- The diagonal non-unital star representation on an `ℓ²` sum. -/
+@[expose]
 def lpDiagonal [NonUnitalCStarAlgebra A] (pi : ∀ i, A →⋆ₙₐ[ℂ] (E i →L[ℂ] E i)) :
     A →⋆ₙₐ[ℂ] (lp E 2 →L[ℂ] lp E 2) where
   toFun a :=

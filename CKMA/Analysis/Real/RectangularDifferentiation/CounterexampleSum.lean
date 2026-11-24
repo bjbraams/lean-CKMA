@@ -30,7 +30,7 @@ zero, so rectangular differentiation fails on a set of positive measure.
   `CKMA.exists_integrable_not_rectangularlyDifferentiable` (**05.31**, negative part).
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

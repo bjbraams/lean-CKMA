@@ -37,7 +37,7 @@ Sources: GAPS 34.54 and 34.55. Weak derivatives use TauCeti; L² and integration
   Leray–Hopf velocity curve in dimension two.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -47,19 +47,24 @@ open MeasureTheory
 open scoped NNReal ENNReal InnerProductSpace
 
 /-- Square-integrable velocity fields with their actual Hilbert-space structure. -/
+@[expose]
 abbrev VelocityLTwo (d : ℕ) := Lp (EuclideanRealSpace d) 2 (volume : Measure (EuclideanRealSpace d))
 
 /-- Distributional incompressibility, tested by gradients of compactly supported smooth scalars. -/
+@[expose]
 def IsDivergenceFreeField {d : ℕ} (u : EuclideanRealSpace d → EuclideanRealSpace d) : Prop :=
   ∀ φ : EuclideanRealSpace d → ℝ, IsCompactSmoothTestOn Set.univ φ →
     ∫ x, ⟪u x, gradient φ x⟫_ℝ = 0
 
 /-- Weak continuity of a nonnegative-time velocity curve, using the Hilbert dual pairing. -/
+@[expose]
 def IsWeaklyContinuousVelocity {d : ℕ} (u : ℝ≥0 → VelocityLTwo d) : Prop :=
   ∀ v : VelocityLTwo d, Continuous (fun t ↦ ⟪u t, v⟫_ℝ)
 
 /-- The unforced viscous weak momentum equation, tested against divergence-free smooth
-spacetime fields. Two spatial integrations by parts put the viscosity on the test field. -/
+spacetime fields. Two spatial integrations by parts put the viscosity on the test field.
+Each identity is a Bochner integral, so a non-integrable integrand has integral `0`. -/
+@[expose]
 def SatisfiesWeakNavierStokes {d : ℕ} (ν : ℝ) (u₀ : VelocityLTwo d)
     (u : ℝ≥0 → VelocityLTwo d) : Prop :=
   ∀ φ : ℝ × EuclideanRealSpace d → EuclideanRealSpace d,
@@ -72,6 +77,7 @@ def SatisfiesWeakNavierStokes {d : ℕ} (ν : ℝ) (u₀ : VelocityLTwo d)
       (∫ x, ⟪u₀ x, φ (0, x)⟫_ℝ) = 0
 
 /-- The viscous dissipation associated with a candidate spatial weak derivative. -/
+@[expose]
 def viscousDissipation {d : ℕ}
     (G : ℝ≥0 → EuclideanRealSpace d → EuclideanRealSpace d →L[ℝ] EuclideanRealSpace d)
     (t : ℝ) : ℝ := ∫ x, vectorGradientEnergy (G t.toNNReal x)
@@ -80,6 +86,7 @@ def viscousDissipation {d : ℕ}
 local finite dissipation, the weak equation, and the strong energy inequality for a.e.
 starting time as well as time zero. Curves are indexed by `ℝ≥0`, so uniqueness does not
 accidentally constrain arbitrary negative-time extensions. -/
+@[expose]
 def IsLerayHopfSolution {d : ℕ} (ν : ℝ) (u₀ : VelocityLTwo d) (u : ℝ≥0 → VelocityLTwo d)
     (G : ℝ≥0 → EuclideanRealSpace d → EuclideanRealSpace d →L[ℝ] EuclideanRealSpace d) : Prop :=
   u 0 = u₀ ∧ IsWeaklyContinuousVelocity u ∧

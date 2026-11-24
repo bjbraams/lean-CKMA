@@ -27,7 +27,7 @@ characteristic function is the exponential of `∫ (exp(I t x) - 1)`.
   `exp (∫ x, (exp (I * t * x) - 1) ∂ν)`.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -71,6 +71,7 @@ private lemma eq_zero_of_measure_real_univ_eq_zero {α : Type*} [MeasurableSpace
 namespace InfinitelyDivisible
 
 /-- Poisson weight `exp(-c) cⁿ / n!`, as an extended nonnegative real. -/
+@[expose]
 def poissonWeight (c : ℝ) (n : ℕ) : ℝ≥0∞ :=
   ENNReal.ofReal (Real.exp (-c) * c ^ n / (n)!)
 
@@ -96,6 +97,7 @@ private lemma poissonWeight_tsum {c : ℝ} (hc : 0 ≤ c) : ∑' n, poissonWeigh
 
 /-- The normalized jump law of a finite intensity, with a Dirac mass at zero when the intensity
 vanishes. -/
+@[expose]
 def normalizedJump (lam : Measure ℝ) : Measure ℝ :=
   let c := lam.real Set.univ
   if c = 0 then Measure.dirac 0 else (ENNReal.ofReal c)⁻¹ • lam
@@ -123,6 +125,7 @@ end InfinitelyDivisible
 open InfinitelyDivisible
 
 /-- The compound Poisson law of a finite intensity on `ℝ`. -/
+@[expose]
 def compoundPoisson (lam : Measure ℝ) [IsFiniteMeasure lam] : Measure ℝ :=
   Measure.sum fun n : ℕ =>
     poissonWeight (lam.real Set.univ) n • convolutionPower (normalizedJump lam) n

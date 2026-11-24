@@ -1921,4 +1921,6 @@ is `bernoulliFun_eval_one`.
 
 **Library results.** `bernoulliFun`, `hasDerivAt_bernoulliFun`,
 `periodizedBernoulli`, `bernoulliFun_eval_one` in
-`Mathlib/NumberTheory/ZetaValues.lean`.
+`Mathlib/NumberTheory/ZetaValues.lean`. The summed identity is
+`TauCeti.sum_Icc_eq_eulerMaclaurin_of_hasDerivAt`; odd Bernoulli numbers
+from `B₃` onward vanish.

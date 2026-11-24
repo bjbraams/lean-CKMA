@@ -36,7 +36,7 @@ height and approximating in `L¹`.
   differentiation for measurable functions with `strongMaximalGrowth d |f|` integrable.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

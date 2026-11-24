@@ -28,7 +28,7 @@ is periodic, and connectedness identifies the whole limit set with the orbit.
 * `CKMA.poincare_bendixson_complex`: the Poincaré–Bendixson theorem for a `C¹` flow on `ℂ`.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -40,7 +40,7 @@ open Filter Metric Set Topology
 If the orbit meets the open segment at `t1` and later meets the forward subsegment at
 `t2`, then after `t2` it does not meet the open segment from `a` to that second
 crossing. -/
-theorem transverse_monotone {φ : Flow ℝ ℂ} {F : ℂ → ℂ} (hgen : FlowHasGenerator φ F)
+theorem transverse_monotone {φ : Flow ℝ ℂ} {F : ℂ → ℂ} (hgen : HasFlowGenerator φ F)
     {a b : ℂ} (htr : IsTransverseSegment F a b) {x : ℂ} {t1 t2 : ℝ} (ht : t1 ≤ t2)
     (hx1 : φ t1 x ∈ openSegment ℝ a b) (hx2 : φ t2 x ∈ openSegment ℝ (φ t1 x) b)
     {t : ℝ} (ht' : t2 < t) : φ t x ∉ openSegment ℝ a (φ t2 x) := by
@@ -48,7 +48,7 @@ theorem transverse_monotone {φ : Flow ℝ ℂ} {F : ℂ → ℂ} (hgen : FlowHa
 
 /-- An orbit clustering at an interior segment point crosses the segment at arbitrarily
 large times, with the crossing kept inside a prescribed distance of that point. -/
-private theorem exists_late_crossing {φ : Flow ℝ ℂ} {F : ℂ → ℂ} (hgen : FlowHasGenerator φ F)
+private theorem exists_late_crossing {φ : Flow ℝ ℂ} {F : ℂ → ℂ} (hgen : HasFlowGenerator φ F)
     {a b : ℂ} (htr : IsTransverseSegment F a b) {p : ℂ} (hp : p ∈ openSegment ℝ a b)
     {x : ℂ} (hcluster : MapClusterPt p atTop fun t ↦ φ t x) {ε : ℝ} (hε : 0 < ε)
     (T : ℝ) : ∃ t : ℝ, T < t ∧ dist (φ t x) p < ε ∧ φ t x ∈ openSegment ℝ a b := by
@@ -103,7 +103,7 @@ private theorem mem_openSegment_of_near {a b u v q : ℂ} (hab : a ≠ b)
 
 /-- An omega-limit set meets an open transverse segment in at most one point. -/
 private theorem eq_of_mem_omegaLimit_of_mem_openSegment {φ : Flow ℝ ℂ} {F : ℂ → ℂ}
-    (hgen : FlowHasGenerator φ F) {a b : ℂ} (htr : IsTransverseSegment F a b)
+    (hgen : HasFlowGenerator φ F) {a b : ℂ} (htr : IsTransverseSegment F a b)
     {x u v : ℂ} (hu : u ∈ omegaLimit atTop φ {x}) (huab : u ∈ openSegment ℝ a b)
     (hv : v ∈ omegaLimit atTop φ {x}) (hvab : v ∈ openSegment ℝ a b)
     (hvb : v ∈ openSegment ℝ u b) : False := by
@@ -153,7 +153,7 @@ private theorem eq_of_mem_omegaLimit_of_mem_openSegment {φ : Flow ℝ ℂ} {F :
 
 /-- The omega-limit set meets an open transverse segment in exactly one point. -/
 theorem omega_openSegment_singleton {φ : Flow ℝ ℂ} {F : ℂ → ℂ}
-    (hgen : FlowHasGenerator φ F) {a b : ℂ} (htr : IsTransverseSegment F a b)
+    (hgen : HasFlowGenerator φ F) {a b : ℂ} (htr : IsTransverseSegment F a b)
     {x u : ℂ} (hu : u ∈ omegaLimit atTop φ {x}) (huab : u ∈ openSegment ℝ a b) :
     omegaLimit atTop φ {x} ∩ openSegment ℝ a b = {u} := by
   ext v
@@ -187,7 +187,7 @@ theorem omega_openSegment_singleton {φ : Flow ℝ ℂ} {F : ℂ → ℂ}
 /-- A periodic orbit contained in a critical-point-free compact omega-limit set is
 the whole omega-limit set. -/
 private theorem periodic_orbit_eq_omega {φ : Flow ℝ ℂ} {F : ℂ → ℂ} (hF : ContDiff ℝ 1 F)
-    (hgen : FlowHasGenerator φ F) {x : ℂ} {K : Set ℂ} (hK : IsCompact K)
+    (hgen : HasFlowGenerator φ F) {x : ℂ} {K : Set ℂ} (hK : IsCompact K)
     (hstay : ∀ t : ℝ, 0 ≤ t → φ t x ∈ K)
     (hrest : ∀ y ∈ omegaLimit atTop φ {x}, F y ≠ 0) {y : ℂ} {T : ℝ}
     (hT0 : 0 < T) (hT : φ T y = y) (hy : y ∈ omegaLimit atTop φ {x}) :
@@ -268,7 +268,7 @@ private theorem periodic_orbit_eq_omega {φ : Flow ℝ ℂ} {F : ℂ → ℂ} (h
 /-- On the complex plane, a compactly trapped orbit with no equilibrium in its
 omega-limit set has that limit set equal to one periodic orbit. -/
 theorem poincare_bendixson_complex (φ : Flow ℝ ℂ) (F : ℂ → ℂ) (hF : ContDiff ℝ 1 F)
-    (hgen : FlowHasGenerator φ F) (x : ℂ) (K : Set ℂ) (hK : IsCompact K)
+    (hgen : HasFlowGenerator φ F) (x : ℂ) (K : Set ℂ) (hK : IsCompact K)
     (hstay : ∀ t : ℝ, 0 ≤ t → φ t x ∈ K)
     (hrest : ∀ y ∈ omegaLimit atTop φ {x}, F y ≠ 0) :
     ∃ y : ℂ, ∃ T : ℝ, 0 < T ∧ φ T y = y ∧

@@ -30,7 +30,7 @@ used for the blocks in the commutant lifting iteration.
 * `CKMA.contractionFactor_comp`: factorization identity ` (contractionFactor ...).comp A = B`.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -113,6 +113,7 @@ theorem exists_contraction_factor (L : Submodule ℂ F) [CompleteSpace L]
     exact congrArg Subtype.val happly
 
 /-- The contraction factor of a dominated map through `A`. -/
+@[expose]
 def contractionFactor (L : Submodule ℂ F) [CompleteSpace L]
     (A : E →L[ℂ] F) (B : E →L[ℂ] L) (hAB : ∀ x : E, ‖B x‖ ≤ ‖A x‖) : F →L[ℂ] L :=
   Classical.choose (exists_contraction_factor L A B hAB)

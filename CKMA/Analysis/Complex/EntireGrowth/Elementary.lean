@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.SpecialFunctions.Complex.LogBounds
 public import Mathlib.Analysis.Analytic.Order
 public import Mathlib.Analysis.SpecialFunctions.Complex.Log
+public import TauCeti.Analysis.Complex.CanonicalProduct.ElementaryFactor
 
 import Mathlib.Analysis.Complex.CauchyIntegral
 import Mathlib.Analysis.Calculus.Deriv.Add
@@ -18,7 +19,8 @@ import Mathlib.Analysis.Calculus.Deriv.Mul
 
 The estimates that make a canonical product of fixed genus converge, and the simple-zero
 statement used to match multiplicities. The formula agrees definitionally with
-`CKMA.weierstrassElementaryFactor`.
+`CKMA.weierstrassElementaryFactor`, and with TauCeti's `Complex.weierstrassFactor` by
+`weierstrassFactor_eq_complex`.
 -/
 
 public section
@@ -46,6 +48,11 @@ theorem weierstrassSum_def (p : ℕ) (z : ℂ) :
 /-- The elementary factor is the defining product. -/
 theorem weierstrassFactor_def (p : ℕ) (z : ℂ) :
     weierstrassFactor p z = (1 - z) * exp (weierstrassSum p z) := rfl
+
+/-- The elementary factor equals TauCeti's `Complex.weierstrassFactor`. -/
+theorem weierstrassFactor_eq_complex (p : ℕ) (z : ℂ) :
+    weierstrassFactor p z = _root_.Complex.weierstrassFactor p z := by
+  rw [weierstrassFactor, weierstrassSum, Complex.weierstrassFactor_eq_mul_exp_sum]
 
 /-- The exponential sum vanishes at the origin. -/
 @[simp]

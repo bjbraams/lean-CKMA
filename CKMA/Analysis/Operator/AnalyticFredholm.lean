@@ -38,7 +38,7 @@ clause.
 * `CKMA.analytic_simple_eigenpair`: analytic continuation of a simple eigenpair.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -49,17 +49,20 @@ open Filter Topology ContinuousLinearMap Metric
 variable {X : Type*} [NormedAddCommGroup X] [NormedSpace ℂ X] [CompleteSpace X]
 
 /-- The noninvertibility set of a compact Fredholm family inside its parameter domain. -/
+@[expose]
 def fredholmExceptionalSet (K : ℂ → X →L[ℂ] X) (U : Set ℂ) : Set ℂ :=
   {z ∈ U | ¬ IsUnit (1 - K z)}
 
 /-- A finite-order analytic regularization of the totalized inverse. Order zero is allowed,
 so this weaker condition also includes removable singularities and regular points. -/
+@[expose]
 def HasFiniteOrderInverseRegularization (K : ℂ → X →L[ℂ] X) (a : ℂ) : Prop :=
   ∃ m : ℕ, ∃ F : ℂ → X →L[ℂ] X, AnalyticAt ℂ F a ∧
     ∀ᶠ z in 𝓝[≠] a, (z - a) ^ m • Ring.inverse (1 - K z) = F z
 
 /-- A genuine inverse pole: the family is invertible on a punctured neighborhood and a
 positive-order regularization is analytic with nonzero value at the base point. -/
+@[expose]
 def HasOperatorInversePole (K : ℂ → X →L[ℂ] X) (a : ℂ) : Prop :=
   ∃ m : ℕ, 0 < m ∧ ∃ F : ℂ → X →L[ℂ] X, AnalyticAt ℂ F a ∧ F a ≠ 0 ∧
     (∀ᶠ z in 𝓝[≠] a, IsUnit (1 - K z)) ∧
@@ -237,6 +240,7 @@ private theorem simpleEigenPartial_isInvertible (A0 : X →L[ℂ] X) (z₀ : ℂ
 
 /-- Algebraic simplicity in a concrete reduced-resolvent form.
 Geometric multiplicity one alone is insufficient: a Jordan block would permit branching. -/
+@[expose]
 def IsSimpleSpectralEigenpair (A : X →L[ℂ] X) (z : ℂ) (u : X) : Prop :=
   ∃ φ : X →L[ℂ] ℂ, φ u = 1 ∧ A u = z • u ∧ ∃ R : X →L[ℂ] X,
     (A - z • (1 : X →L[ℂ] X)) * R = 1 - φ.smulRight u ∧

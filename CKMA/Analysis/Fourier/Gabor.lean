@@ -30,7 +30,7 @@ Sources: GAPS 29.46 and 29.51. The frequency moment uses Mathlib's L² Fourier u
 * `CKMA.balian_low`: Balian–Low uncertainty obstruction for Gabor Riesz bases (**29.51**).
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -40,6 +40,7 @@ open MeasureTheory FourierTransform
 open scoped FourierTransform
 
 /-- Rectangular time-frequency translates, at Mathlib's exp(2 pi i omega t) modulation. -/
+@[expose]
 def gaborAtom (g : ℝ → ℂ) (a b : ℝ) (p : ℤ × ℤ) (t : ℝ) : ℂ :=
   Complex.exp (2 * Real.pi * Complex.I * b * p.2 * t) * g (t - a * p.1)
 

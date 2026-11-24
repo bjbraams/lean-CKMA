@@ -33,7 +33,7 @@ All declarations are in the namespace `CKMA.InfinitelyDivisible`.
   `secondDiff L.exponent h`.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -43,6 +43,7 @@ open MeasureTheory Complex Filter Topology Set ENNReal
 open scoped NNReal ENNReal
 
 /-- The second symmetric difference of `f` at step `h`. -/
+@[expose]
 def secondDiff (f : ℝ → ℂ) (h t : ℝ) : ℂ :=
   f (t + h) + f (t - h) - 2 * f t
 
@@ -163,6 +164,7 @@ lemma secondDiff_exponent (L : LevyTriplet) (h t : ℝ) :
   simp_rw [secondDiff_levyIntegrand]
 
 /-- The weight `4 sin(h x / 2)²`. -/
+@[expose]
 def sineWeight (h x : ℝ) : ℝ :=
   4 * Real.sin (h * x / 2) ^ 2
 
@@ -207,6 +209,7 @@ private lemma integrable_sineWeight {ν : Measure ℝ} (hν : IsLevyMeasure ν) 
   exact sineWeight_le h x
 
 /-- The sine weight as an extended-nonnegative density. -/
+@[expose]
 def sineDensity (h : ℝ) : ℝ → ℝ≥0∞ :=
   fun x => ENNReal.ofReal (sineWeight h x)
 
@@ -215,6 +218,7 @@ private lemma measurable_sineDensity (h : ℝ) : Measurable (sineDensity h) :=
   ENNReal.measurable_ofReal.comp (continuous_sineWeight h).measurable
 
 /-- The set where `sin(h x / 2)` does not vanish. -/
+@[expose]
 def sineSet (h : ℝ) : Set ℝ :=
   {x | Real.sin (h * x / 2) ≠ 0}
 
@@ -241,6 +245,7 @@ private lemma sineDensity_ne_zero {h x : ℝ} (hx : x ∈ sineSet h) : sineDensi
   simpa [sineWeight] using mul_pos (by norm_num : (0 : ℝ) < 4) hsin
 
 /-- The finite measure `a h² δ_0` plus the sine-weighted jump measure. -/
+@[expose]
 def sineMeasure (L : LevyTriplet) (h : ℝ) : Measure ℝ :=
   ENNReal.ofReal ((L.gaussianVariance : ℝ) * h ^ 2) • Measure.dirac 0 +
     L.jumpMeasure.withDensity (sineDensity h)

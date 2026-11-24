@@ -25,7 +25,7 @@ logarithmic kernel turns that distribution into the endpoint growth of order `n 
   dimensions `d ≥ 1`.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

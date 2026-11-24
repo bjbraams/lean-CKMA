@@ -39,7 +39,7 @@ It also develops the Cesàro-averaged phase kernel `cesaroPhase` used in Wiener'
   `purePointOperatorSubspace A` have no point masses.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -51,6 +51,7 @@ open scoped InnerProductSpace ComplexConjugate
 variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
 
 /-- The closed subspace spanned by the real eigenvectors of `A`. -/
+@[expose]
 def purePointOperatorSubspace (A : H →L[ℂ] H) : Submodule ℂ H :=
   (Submodule.span ℂ {x : H | ∃ a : ℝ, A x = (a : ℂ) • x}).topologicalClosure
 
@@ -76,6 +77,7 @@ private lemma sq_sub_eq_ofReal_norm_sq {z lam : ℂ} (hz : z.im = 0) (hlam : lam
     Real.norm_eq_abs, sq_abs]
 
 /-- Lorentz symbol `ε² / (‖z - λ‖² + ε²)`. Division by zero is the Lean totalization. -/
+@[expose]
 def eigenLorentzFun (lam : ℂ) (eps : ℝ) : ℂ → ℂ :=
   fun z => ↑(eps ^ 2 / (‖z - lam‖ ^ 2 + eps ^ 2))
 
@@ -112,6 +114,7 @@ private lemma eigenLorentz_symbol_id {lam z : ℂ} (hlam : lam.im = 0) (hz : z.i
   ring
 
 /-- Lorentz approximant, as a continuous functional calculus. -/
+@[expose]
 def eigenLorentz (A : H →L[ℂ] H) (lam : ℂ) (eps : ℝ) : H →L[ℂ] H :=
   cfc (eigenLorentzFun lam eps) A
 
@@ -339,6 +342,7 @@ theorem tendsto_eigenLorentz_apply (A : H →L[ℂ] H) (hA : IsSelfAdjoint A) {l
 namespace RAGE
 
 /-- The phase `exp(-i t z)` in the bounded evolution. -/
+@[expose]
 def evolutionPhase (t : ℝ) (z : ℂ) : ℂ :=
   Complex.exp ((-(t : ℂ) * Complex.I) * z)
 
@@ -355,6 +359,7 @@ lemma norm_evolutionPhase_of_im_eq_zero (t : ℝ) {w : ℂ} (hw : w.im = 0) :
   rw [hre, Real.exp_zero]
 
 /-- Cesàro kernel of the phase, `(1/T) ∫_0^T exp(-i t w) dt`. -/
+@[expose]
 def cesaroPhase (T : ℝ) (w : ℂ) : ℂ :=
   T⁻¹ * ∫ t in (0 : ℝ)..T, evolutionPhase t w
 

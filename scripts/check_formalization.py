@@ -18,6 +18,7 @@ ROOT = Path(__file__).resolve().parents[1]
 INDEX = ROOT / 'formalization.json'
 DECL = re.compile(
     r'^(private )?(noncomputable )?(theorem|lemma|def|abbrev|structure) ([\w.\']+)')
+ADMISSION = re.compile(r"(?<![\w.'])(?:sorry|admit)(?![\w.'])")
 STANDARD_AXIOMS = {'propext', 'Classical.choice', 'Quot.sound'}
 
 
@@ -109,7 +110,11 @@ def inventory():
         matches = declaration_names(code)
         if matches:
             assert 'namespace CKMA' in source, f'Missing namespace: {path}'
-            assert '_root_' not in source, f'Unexpected root declaration: {path}'
+            for line in source.splitlines():
+                head = line.split('--', 1)[0]
+                assert not re.search(
+                    r'\b(?:theorem|lemma|def|abbrev|structure|instance|inductive|class)\s+_root_\b',
+                    head), f'Unexpected root declaration: {path}'
         for i, (start, match_end, kind, full_name, private) in enumerate(matches):
             end = matches[i + 1][0] if i + 1 < len(matches) else len(source)
             if private:
@@ -119,7 +124,7 @@ def inventory():
                 'kind': kind,
                 'module': '.'.join(path.relative_to(ROOT).with_suffix('').parts),
                 'line': source.count('\n', 0, start) + 1,
-                'direct_sorry': bool(re.search(r'^\s*sorry\s*$', code[match_end:end], re.M)),
+                'direct_sorry': bool(ADMISSION.search(code, match_end, end)),
             })
     return result
 
