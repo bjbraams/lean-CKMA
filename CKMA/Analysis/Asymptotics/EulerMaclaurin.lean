@@ -11,19 +11,22 @@ import TauCeti.Analysis.Asymptotics.Sum.EulerMaclaurin
 /-!
 # Euler–Maclaurin summation with periodic remainder
 
-The inclusive sum over integer endpoints is expressed as an interval integral,
-half-endpoint values, Bernoulli derivative corrections and an exact signed periodic
-Bernoulli remainder. The order is positive, and the remainder involves the derivative
-of order twice that order.
+For integers `m ≤ n`, an order `p ≥ 1` and `f : ℝ → E` of class `C^{2p}` on `[m, n]`, with
+values in a real Banach space `E`,
+`∑_{k=m}^n f(k) = ∫_m^n f + (f(m) + f(n))/2
+  + ∑_{r=1}^p B_{2r}/(2r)! (f^{(2r-1)}(n) - f^{(2r-1)}(m)) + R_p`,
+where `R_p = -(2p)!⁻¹ ∫_m^n B_{2p}({x}) f^{(2p)}(x) dx`, `{x}` is the fractional part and
+`B_{2p}({x})` is the periodic Bernoulli function `bernoulliFun (2 * p) (Int.fract x)`. The
+derivatives are taken within `[m, n]`; for `f` of class `C^{2p}` on a neighbourhood of `[m, n]`
+they agree with `iteratedDeriv` on `[m, n]` (`iteratedDerivWithin_eq_iteratedDeriv`).
 
-Source: GAPS 50.23. Bernoulli functions and numbers reuse Mathlib's zeta-value API.
-`CKMA.euler_maclaurin` is the scalar even-order case of
-`TauCeti.sum_Icc_eq_eulerMaclaurin_of_hasDerivAt`, rewritten with Mathlib's
-`periodizedBernoulli` on the circle and with global `iteratedDeriv`.
+Source: GAPS 50.23. The formula is derived from TauCeti's even-order
+`TauCeti.sum_Icc_eq_eulerMaclaurin`, whose remainder
+`∫_m^n (B_{2p} - B_{2p}({x}))/(2p)! f^{(2p)}(x) dx` contains the `r = p` boundary term.
 
 ## Main definitions
 
-* `CKMA.eulerMaclaurinRemainder`: signed periodic Bernoulli remainder in Euler–Maclaurin summation.
+* `CKMA.eulerMaclaurinRemainder`: the remainder `R_p` above.
 
 ## Main results
 
@@ -37,94 +40,73 @@ noncomputable section
 namespace CKMA
 
 open Finset intervalIntegral MeasureTheory
-open scoped BigOperators Nat
+open scoped Nat
 
-/-- The circle-valued periodic Bernoulli function agrees with `bernoulliFun` of the fractional
-part. -/
-private lemma periodizedBernoulli_eq_bernoulliFun_fract (k : ℕ) (x : ℝ) :
-    periodizedBernoulli k (x : AddCircle (1 : ℝ)) = bernoulliFun k (Int.fract x) := by
-  rw [← AddCircle.coe_fract x, periodizedBernoulli]
-  exact AddCircle.liftIco_coe_apply
-    ⟨Int.fract_nonneg x, by simpa [zero_add] using Int.fract_lt_one x⟩
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
-/-- The signed Euler–Maclaurin remainder for the convention used in `GAPS_EASY.md`. -/
+/-- The Euler–Maclaurin remainder of order `p` on `[a, b]`,
+`-(2p)!⁻¹ ∫_a^b B_{2p}({x}) f^{(2p)}(x) dx`, with the derivative taken within `[a, b]`. -/
 @[expose]
-def eulerMaclaurinRemainder (p : ℕ) (f : ℝ → ℝ) (a b : ℝ) : ℝ :=
-  -((2 * p).factorial : ℝ)⁻¹ * ∫ x in a..b,
-    periodizedBernoulli (2 * p) (x : AddCircle (1 : ℝ)) * iteratedDeriv (2 * p) f x
+def eulerMaclaurinRemainder (p : ℕ) (f : ℝ → E) (a b : ℝ) : E :=
+  -((2 * p)! : ℝ)⁻¹ • ∫ x in a..b,
+    bernoulliFun (2 * p) (Int.fract x) • iteratedDerivWithin (2 * p) f (Set.Icc a b) x
 
-/-- **50.23**: inclusive integer-endpoint Euler–Maclaurin with its exact periodic remainder.
-Equal endpoints are included: both sides reduce to `f m`. The displayed remainder convention
-requires `p ≥ 1`; the `p=0` formula is different. -/
-theorem euler_maclaurin {m n : ℤ} (hmn : m ≤ n) {p : ℕ} (hp : 0 < p)
-    (f : ℝ → ℝ) (hf : ContDiff ℝ (2 * p) f) :
-    (∑ k ∈ Finset.Icc m n, f k) = (∫ x in (m : ℝ)..n, f x) + (f m + f n) / 2 +
-      (∑ r ∈ Finset.range p, ((bernoulli (2 * (r + 1)) : ℚ) : ℝ) /
-        (2 * (r + 1)).factorial *
-        (iteratedDeriv (2 * r + 1) f n - iteratedDeriv (2 * r + 1) f m)) +
+/-- The defining formula of `CKMA.eulerMaclaurinRemainder`. -/
+theorem eulerMaclaurinRemainder_def (p : ℕ) (f : ℝ → E) (a b : ℝ) :
+    eulerMaclaurinRemainder p f a b = -((2 * p)! : ℝ)⁻¹ • ∫ x in a..b,
+      bernoulliFun (2 * p) (Int.fract x) • iteratedDerivWithin (2 * p) f (Set.Icc a b) x :=
+  rfl
+
+variable [CompleteSpace E]
+
+/-- **50.23**: inclusive integer-endpoint Euler–Maclaurin with its exact periodic remainder,
+for `p ≥ 1` and `f` of class `C^{2p}` on `[m, n]`. Equal endpoints are included: both sides
+reduce to `f m`. -/
+theorem euler_maclaurin {m n : ℤ} (hmn : m ≤ n) {p : ℕ} (hp : 0 < p) {f : ℝ → E}
+    (hf : ContDiffOn ℝ (2 * p : ℕ) f (Set.Icc (m : ℝ) n)) :
+    ∑ k ∈ Icc m n, f k = (∫ x in (m : ℝ)..n, f x) + (2 : ℝ)⁻¹ • (f m + f n) +
+      ∑ r ∈ Icc 1 p, (bernoulli (2 * r) / (2 * r)! : ℝ) •
+        (iteratedDerivWithin (2 * r - 1) f (Set.Icc m n) n -
+          iteratedDerivWithin (2 * r - 1) f (Set.Icc m n) m) +
       eulerMaclaurinRemainder p f m n := by
-  set g : ℕ → ℝ → ℝ := fun i ↦ iteratedDeriv i f
-  have hcont : ∀ i < 2 * p, ContinuousOn (g i) (Set.Icc (m : ℝ) n) := by
-    intro i hi
-    exact (hf.continuous_iteratedDeriv i (by exact_mod_cast hi.le)).continuousOn
-  have hderiv : ∀ i < 2 * p, ∀ x ∈ Set.Ioo (m : ℝ) n,
-      HasDerivAt (g i) (g (i + 1) x) x := by
-    intro i hi x _
-    have hd := ((hf.differentiable_iteratedDeriv i (by exact_mod_cast hi)) x).hasDerivAt
-    simpa [g, iteratedDeriv_succ] using hd
-  have hint : IntervalIntegrable (g (2 * p)) volume (m : ℝ) n :=
-    (hf.continuous_iteratedDeriv (2 * p) le_rfl).intervalIntegrable _ _
-  have hEM := TauCeti.sum_Icc_eq_eulerMaclaurin_of_hasDerivAt (g := g) hmn (k := 2 * p)
-    (by omega) hcont hderiv hint
-  -- Odd Bernoulli numbers from `B₃` onward vanish, so only the even corrections remain.
-  have hsum :
-      (∑ s ∈ Icc 2 (2 * p), (bernoulli s / s ! : ℝ) * (g (s - 1) n - g (s - 1) m)) =
-        ∑ r ∈ range p, ((bernoulli (2 * (r + 1)) : ℚ) : ℝ) / (2 * (r + 1)).factorial *
-          (iteratedDeriv (2 * r + 1) f n - iteratedDeriv (2 * r + 1) f m) := by
-    let F : ℕ → ℝ := fun s ↦
-      (bernoulli s / s ! : ℝ) * (g (s - 1) n - g (s - 1) m)
-    have hF : ∀ s ∈ Icc 2 (2 * p), Odd s → F s = 0 := by
-      intro s hs ho
-      have hlt : 1 < s := by
-        have h2 : 2 ≤ s := (mem_Icc.mp hs).1
-        omega
-      simp [F, bernoulli_eq_zero_of_odd ho hlt]
-    have hfilter : ∑ s ∈ Icc 2 (2 * p), F s = ∑ s ∈ (Icc 2 (2 * p)).filter Even, F s := by
-      symm
-      refine sum_filter_of_ne ?_
-      intro s hs hne
-      by_contra hod
-      exact hne (hF s hs (Nat.not_even_iff_odd.mp hod))
-    rw [hfilter]
-    have himage : (range p).image (fun r ↦ 2 * (r + 1)) = (Icc 2 (2 * p)).filter Even := by
-      ext s
-      simp only [mem_image, mem_range, mem_filter, mem_Icc]
-      constructor
-      · rintro ⟨r, hr, rfl⟩
-        exact ⟨⟨by omega, by omega⟩, even_two_mul (r + 1)⟩
-      · rintro ⟨⟨h2, hp⟩, he⟩
-        obtain ⟨t, ht⟩ := even_iff_exists_two_mul.mp he
-        refine ⟨t - 1, ?_, ?_⟩
-        · omega
-        · omega
-    have hinj : Set.InjOn (fun r ↦ 2 * (r + 1)) (range p) := by
-      intro r _ q _ h
-      exact Nat.add_right_cancel (mul_right_injective₀ two_ne_zero h)
-    rw [← himage, sum_image hinj]
-    refine sum_congr rfl fun r _ ↦ ?_
-    have hidx : 2 * (r + 1) - 1 = 2 * r + 1 := by omega
-    simp only [F, g, hidx]
-  have hintg : ∫ x in (m : ℝ)..n, bernoulliFun (2 * p) (Int.fract x) * g (2 * p) x =
-      ∫ x in (m : ℝ)..n,
-        periodizedBernoulli (2 * p) (x : AddCircle (1 : ℝ)) * iteratedDeriv (2 * p) f x := by
-    refine integral_congr fun x _ ↦ ?_
-    rw [periodizedBernoulli_eq_bernoulliFun_fract]
-  simp only [smul_eq_mul] at hEM
-  rw [hsum, hintg] at hEM
-  simp only [g, iteratedDeriv_zero] at hEM
-  rw [hEM]
-  simp only [pow_mul, neg_one_sq, one_pow, div_eq_mul_inv, one_mul]
-  rw [eulerMaclaurinRemainder]
-  ring
+  rcases hmn.lt_or_eq with hlt | rfl
+  swap
+  · simp only [Icc_self, sum_singleton, integral_same, sub_self, smul_zero, sum_const_zero,
+      eulerMaclaurinRemainder, zero_add, add_zero, smul_add, ← add_smul]
+    norm_num
+  set g : ℕ → ℝ → E := fun i ↦ iteratedDerivWithin i f (Set.Icc (m : ℝ) n) with hg
+  have hle : (m : ℝ) ≤ n := by exact_mod_cast hmn
+  have hU : UniqueDiffOn ℝ (Set.Icc (m : ℝ) n) := uniqueDiffOn_Icc (by exact_mod_cast hlt)
+  have hcont (i : ℕ) (hi : i ≤ 2 * p) : ContinuousOn (g i) (Set.Icc (m : ℝ) n) :=
+    hf.continuousOn_iteratedDerivWithin (by exact_mod_cast hi) hU
+  have hint : IntervalIntegrable (g (2 * p)) volume m n :=
+    (hcont _ le_rfl).intervalIntegrable_of_Icc hle
+  -- The `r = p` boundary term is `∫_m^n f^{(2p)} = f^{(2p-1)}(n) - f^{(2p-1)}(m)`.
+  have hderiv (x : ℝ) (hx : x ∈ Set.Ioo (m : ℝ) n) :
+      HasDerivAt (g (2 * p - 1)) (g (2 * p) x) x := by
+    have hx' : Set.Icc (m : ℝ) n ∈ nhds x := Icc_mem_nhds hx.1 hx.2
+    have hd := hf.differentiableOn_iteratedDerivWithin (m := 2 * p - 1)
+      (by exact_mod_cast (by omega : 2 * p - 1 < 2 * p)) hU x (Set.Ioo_subset_Icc_self hx)
+    have h2 : 2 * p = 2 * p - 1 + 1 := by omega
+    rw [h2]
+    simp only [hg, iteratedDerivWithin_succ, derivWithin_of_mem_nhds hx']
+    exact (hd.differentiableAt hx').hasDerivAt
+  have hFTC : ∫ x in (m : ℝ)..n, g (2 * p) x = g (2 * p - 1) n - g (2 * p - 1) m :=
+    integral_eq_sub_of_hasDerivAt_of_le hle (hcont _ (by omega)) hderiv hint
+  have hR : ∫ x in (m : ℝ)..n,
+        ((bernoulli (2 * p) - bernoulliFun (2 * p) (Int.fract x)) / (2 * p)!) • g (2 * p) x =
+      (bernoulli (2 * p) / (2 * p)! : ℝ) • (∫ x in (m : ℝ)..n, g (2 * p) x) +
+        eulerMaclaurinRemainder p f m n := by
+    have h₁ : IntervalIntegrable (fun x ↦ (bernoulli (2 * p) / (2 * p)! : ℝ) • g (2 * p) x)
+        volume m n := hint.smul _
+    have h₂ : IntervalIntegrable (fun x ↦ -((2 * p)! : ℝ)⁻¹ •
+        bernoulliFun (2 * p) (Int.fract x) • g (2 * p) x) volume m n :=
+      (hint.bernoulliFun_fract_smul _).smul _
+    rw [eulerMaclaurinRemainder, ← intervalIntegral.integral_smul,
+      ← intervalIntegral.integral_smul, ← intervalIntegral.integral_add h₁ h₂]
+    exact integral_congr fun x _ ↦ by module
+  rw [TauCeti.sum_Icc_eq_eulerMaclaurin hmn hp hf, ← Finset.Ico_add_one_right_eq_Icc,
+    sum_Ico_succ_top hp, hR, hFTC, smul_add]
+  abel
 
 end CKMA

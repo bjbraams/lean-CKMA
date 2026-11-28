@@ -8,8 +8,12 @@ module
 public import Mathlib.Basic.Real.Basic
 public import Mathlib.Order.Interval.Finset.Nat
 
-import Mathlib.Tactic
 import Mathlib.Combinatorics.Additive.Corner.Roth
+import Mathlib.Tactic.Basify
+import Mathlib.Tactic.ENatToNat
+import Mathlib.Tactic.IntervalCases
+import Mathlib.Tactic.Monotonicity.Lemmas
+import Mathlib.Tactic.ReduceModChar
 
 /-!
 # Varnavides window counting for arithmetic progressions
@@ -27,8 +31,10 @@ arithmetic progressions in dense subsets of `{0, …, N - 1}` from Roth's theore
 ## Main results
 
 * `CKMA.exists_pos_mul_sq_le_progressionCount`: for `L ≥ 3`, positive-density subsets of long
-  intervals contain quadratically many `L`-term progressions. The case `L = 3` is proved from
-  Roth's theorem; the case `L ≥ 4` is stated with `sorry`.
+  intervals contain quadratically many `L`-term progressions. The case `L = 3` follows from
+  Roth's theorem, the case `L ≥ 4` from
+  `CKMA.exists_pos_mul_sq_le_progressionCount_of_four_le` (Szemerédi's theorem with Varnavides
+  averaging).
 -/
 
 public section
@@ -47,10 +53,21 @@ attribute [local instance] Classical.propDecidable
 def apParams (L N : ℕ) : Finset (ℕ × ℕ) :=
   (range N ×ˢ range N).filter fun p => 0 < p.2 ∧ p.1 + (L - 1) * p.2 < N
 
+/-- Membership in `apParams`. -/
+lemma mem_apParams_iff {L N : ℕ} {p : ℕ × ℕ} :
+    p ∈ apParams L N ↔ p.1 < N ∧ p.2 < N ∧ 0 < p.2 ∧ p.1 + (L - 1) * p.2 < N := by
+  simp [apParams, and_assoc]
+
 /-- Nontrivial `L`-term progressions lying in `S` and in `{0, …, N - 1}`. -/
 @[expose]
 def progressionCount (L N : ℕ) (S : Finset ℕ) : ℕ :=
   ((apParams L N).filter fun p => ∀ j ∈ range L, p.1 + j * p.2 ∈ S).card
+
+/-- Defining equation of `progressionCount`. -/
+lemma progressionCount_def (L N : ℕ) (S : Finset ℕ) :
+    progressionCount L N S =
+      ((apParams L N).filter fun p => ∀ j ∈ range L, p.1 + j * p.2 ∈ S).card :=
+  rfl
 
 /-- A subset of an initial interval denser than its Roth number contains a 3-term progression. -/
 private lemma exists_threeAP_of_gt_roth {M : ℕ} {B : Finset ℕ}
@@ -107,10 +124,20 @@ private lemma exists_roth_scale {ε : ℝ} (hε : 0 < ε) :
 def windowParams (M N R : ℕ) : Finset (ℕ × ℕ) :=
   (range N ×ˢ Icc 1 R).filter fun p => p.1 + (M - 1) * p.2 < N
 
+/-- Membership in `windowParams`. -/
+theorem mem_windowParams {M N R : ℕ} {p : ℕ × ℕ} :
+    p ∈ windowParams M N R ↔ p.1 < N ∧ 1 ≤ p.2 ∧ p.2 ≤ R ∧ p.1 + (M - 1) * p.2 < N := by
+  simp [windowParams, and_assoc]
+
 /-- Indices at which a window meets `S`. -/
 @[expose]
 def windowHits (S : Finset ℕ) (M : ℕ) (p : ℕ × ℕ) : Finset ℕ :=
   (range M).filter fun i => p.1 + i * p.2 ∈ S
+
+/-- Membership in `windowHits`. -/
+lemma mem_windowHits_iff {S : Finset ℕ} {M : ℕ} {p : ℕ × ℕ} {i : ℕ} :
+    i ∈ windowHits S M p ↔ i < M ∧ p.1 + i * p.2 ∈ S := by
+  simp [windowHits]
 
 /-- The starts of one fixed step, as pairs. -/
 private def windowSlice (M N s : ℕ) : Finset (ℕ × ℕ) :=
@@ -726,9 +753,9 @@ private lemma numerous_progression_three {δ : ℝ} (hδ : 0 < δ) :
     _ ≤ _ := div_le_div_of_nonneg_right hG (by positivity)
     _ ≤ _ := hdiv
 
-/-- Every positive-density subset of a long interval contains quadratically many
-nontrivial arithmetic progressions of length `L ≥ 4`. -/
-private theorem numerous_progression_long {L : ℕ} (hL : 4 ≤ L) {δ : ℝ} (hδ : 0 < δ) :
+/-- **Szemerédi–Varnavides** for `L ≥ 4`: every positive-density subset of a long interval
+contains quadratically many nontrivial arithmetic progressions of length `L`. -/
+theorem exists_pos_mul_sq_le_progressionCount_of_four_le {L : ℕ} (hL : 4 ≤ L) {δ : ℝ} (hδ : 0 < δ) :
     ∃ c : ℝ, 0 < c ∧ ∃ N0 : ℕ, ∀ N, N0 ≤ N → ∀ S : Finset ℕ,
       S ⊆ range N → δ * (N : ℝ) ≤ (S.card : ℝ) →
       c * (N : ℝ) ^ 2 ≤ (progressionCount L N S : ℝ) := by
@@ -742,6 +769,6 @@ theorem exists_pos_mul_sq_le_progressionCount {L : ℕ} (hL : 3 ≤ L) {δ : ℝ
       c * (N : ℝ) ^ 2 ≤ (progressionCount L N S : ℝ) := by
   rcases eq_or_lt_of_le hL with rfl | hL
   · exact numerous_progression_three hδ
-  · exact numerous_progression_long hL hδ
+  · exact exists_pos_mul_sq_le_progressionCount_of_four_le hL hδ
 
 end CKMA

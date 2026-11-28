@@ -6,8 +6,6 @@ Authors: CKMA contributors
 module
 
 public import Mathlib.Analysis.InnerProductSpace.Basic
-public import Mathlib.Analysis.Normed.Module.DoubleDual
-public import CKMA.Analysis.Nonlinear.Monotone.Variational
 
 import CKMA.Analysis.Nonlinear.FixedPoint
 import Mathlib.Analysis.InnerProductSpace.Continuous
@@ -17,31 +15,21 @@ import TauCeti.Analysis.Convex.Uniform.Basic
 import TauCeti.Analysis.Normed.Module.Dual.Reflexive.WeakCompact
 
 /-!
-# Monotone graphs, resolvents, and variational inequalities
+# Monotone graphs and resolvents in Hilbert space
 
-Hilbert-space graph monotonicity gives resolvent uniqueness at nonnegative scales; Minty's
-range criterion and existence use strictly positive scales. The normal cone includes its
-base-point constraint.
-
-For maps into a real Banach dual, monotonicity, hemicontinuity, boundedness on bounded sets,
-and coercivity are expressed directly in the dual pairing. Reflexivity uses surjectivity of
-the canonical bidual inclusion. Variational inequalities have separate bounded-domain and
-coercive unbounded-domain existence statements. Those arguments are in
-`CKMA.Analysis.Nonlinear.Monotone.Variational`. Sources: GAPS 35.32, 35.40, and 35.45.
+Monotonicity of a graph `A ⊆ H × H` gives single-valued resolvent fibers at nonnegative scales.
+Minty's theorem characterizes maximal monotonicity by nonemptiness of every resolvent fiber at
+a positive scale: the finite-intersection property of the slices
+`{y | 0 ≤ ⟪y - v, x - y - a u⟫}`, `(v, u) ∈ A`, comes from the Brouwer simplex lemma
+`CKMA.exists_forall_nonneg_of_sum_mul_nonneg`, and the slices are closed balls, hence weakly
+compact. The normal cone includes its base-point constraint. Source: GAPS 35.32.
 
 ## Main definitions
 
 * `CKMA.IsMonotoneGraph`: Monotonicity of a Hilbert-space graph.
 * `CKMA.IsMaximalMonotoneGraph`: Maximal monotonicity of a Hilbert-space graph.
 * `CKMA.monotoneResolventFiber`: Resolvent fiber `{y | ∃ u, (y, u) ∈ A ∧ x = y + a • u}`.
-* `CKMA.normalConeGraph`: Normal-cone graph of a convex set.
-* `CKMA.IsMonotoneDualMap`: Monotonicity for a map into the continuous dual.
-* `CKMA.IsStrictlyMonotoneDualMap`: Strict monotonicity in the dual pairing.
-* `CKMA.IsHemicontinuousDualMap`: Hemicontinuity along line segments.
-* `CKMA.MapsBoundedSetsToBoundedSets`: Boundedness on bounded sets.
-* `CKMA.IsCoerciveDualMap`: Coercivity in the dual pairing at infinity.
-* `CKMA.SolvesVariationalInequality`: Solution predicate for a variational inequality on `C`.
-* `CKMA.IsCoerciveOnAt`: Coercivity relative to a feasible point of a constraint set.
+* `CKMA.normalConeGraph`: Normal-cone graph of a set.
 
 ## Main results
 
@@ -51,13 +39,7 @@ coercive unbounded-domain existence statements. Those arguments are in
   (**35.32**).
 * `CKMA.IsMaximalMonotoneGraph.existsUnique_resolvent`: Existence and uniqueness of the resolvent
   at positive scale.
-* `CKMA.IsMonotoneDualMap.surjective`: Browder–Minty surjectivity for monotone operators on
-  reflexive Banach spaces (**35.40**).
-* `CKMA.IsStrictlyMonotoneDualMap.injective`: Injectivity of strictly monotone dual maps.
-* `CKMA.exists_solution_variationalInequality`: Bounded-domain variational inequality existence
-  (**35.45**).
-* `CKMA.exists_solution_variationalInequality_of_coercive`: Unbounded-domain coercive variational
-  inequality existence.
+* `CKMA.isMonotoneGraph_normalConeGraph`: the normal-cone graph of any set is monotone.
 -/
 
 public section
@@ -83,14 +65,40 @@ def IsMonotoneGraph (A : Set (H × H)) : Prop :=
 def IsMaximalMonotoneGraph (A : Set (H × H)) : Prop :=
   IsMonotoneGraph A ∧ ∀ B, IsMonotoneGraph B → A ⊆ B → B ⊆ A
 
-/-- A resolvent fiber: `y` belongs when `x ∈ y + a A(y)`.
-This relation has a concrete body even before the existence theorem is proved. -/
+/-- A resolvent fiber: `y` belongs when `x ∈ y + a A(y)`. -/
 @[expose]
 def monotoneResolventFiber (A : Set (H × H)) (a : ℝ) (x : H) : Set H :=
   {y | ∃ u, (y, u) ∈ A ∧ x = y + a • u}
 
-/-- Monotonicity alone makes a nonnegative-scale resolvent fiber single-valued.
-This uniqueness statement does not depend on Minty's existence theorem. -/
+/-- Defining property of `IsMonotoneGraph`. -/
+theorem isMonotoneGraph_iff {A : Set (H × H)} :
+    IsMonotoneGraph A ↔ ∀ p ∈ A, ∀ q ∈ A, 0 ≤ ⟪p.1 - q.1, p.2 - q.2⟫_ℝ := Iff.rfl
+
+/-- Defining property of `IsMaximalMonotoneGraph`. -/
+theorem isMaximalMonotoneGraph_iff {A : Set (H × H)} :
+    IsMaximalMonotoneGraph A ↔
+      IsMonotoneGraph A ∧ ∀ B, IsMonotoneGraph B → A ⊆ B → B ⊆ A := Iff.rfl
+
+/-- Membership in a resolvent fiber. -/
+theorem mem_monotoneResolventFiber {A : Set (H × H)} {a : ℝ} {x y : H} :
+    y ∈ monotoneResolventFiber A a x ↔ ∃ u, (y, u) ∈ A ∧ x = y + a • u := Iff.rfl
+
+/-- A subset of a monotone graph is monotone. -/
+theorem IsMonotoneGraph.mono {A B : Set (H × H)} (hB : IsMonotoneGraph B) (hAB : A ⊆ B) :
+    IsMonotoneGraph A :=
+  fun p hp q hq ↦ hB p (hAB hp) q (hAB hq)
+
+/-- A maximal monotone graph is monotone. -/
+theorem IsMaximalMonotoneGraph.isMonotoneGraph {A : Set (H × H)}
+    (hA : IsMaximalMonotoneGraph A) : IsMonotoneGraph A :=
+  hA.1
+
+/-- A monotone enlargement of a maximal monotone graph is contained in it. -/
+theorem IsMaximalMonotoneGraph.subset_of_isMonotoneGraph {A B : Set (H × H)}
+    (hA : IsMaximalMonotoneGraph A) (hB : IsMonotoneGraph B) (hAB : A ⊆ B) : B ⊆ A :=
+  hA.2 B hB hAB
+
+/-- Monotonicity alone makes a nonnegative-scale resolvent fiber single-valued. -/
 theorem IsMonotoneGraph.resolventFiber_subsingleton {A : Set (H × H)}
     (hA : IsMonotoneGraph A) {a : ℝ} (ha : 0 ≤ a) (x : H) :
     (monotoneResolventFiber A a x).Subsingleton := by
@@ -229,13 +237,6 @@ private theorem inner_nonneg_iff_mem_closedBall {v c y : H} :
   · intro hle
     nlinarith [hexpand, hinner, hle]
 
-/-- **Brouwer's theorem** in coordinates: every continuous self-map of a nonempty compact convex
-set `K ⊆ Fin n → ℝ` has a fixed point. -/
-private theorem exists_fixedPoint_of_isCompact_of_convex {n : ℕ} {K : Set (Fin n → ℝ)}
-    (hne : K.Nonempty) (hcomp : IsCompact K) (hconv : Convex ℝ K) (T : K → K)
-    (hT : Continuous T) : ∃ s, T s = s :=
-  exists_fixedPoint_brouwer hne hcomp hconv T hT
-
 /-- For convex weights `w` and points `p i` of a monotone graph, the weighted gaps at the
 barycenter `b = ∑ k, w k • (p k).1` are nonnegative on average when `0 ≤ a`:
 `0 ≤ ∑ i, w i * ⟪b - (p i).1, x - b - a • (p i).2⟫`. -/
@@ -275,104 +276,21 @@ private theorem sum_mul_inner_barycenter_nonneg {A : Set (H × H)} (hA : IsMonot
   rw [hsplit]
   exact mul_nonneg ha hmono
 
-set_option linter.deprecated false in
-/-- Finitely many monotone slices meet: a simplex map fixes a convex combination in every slice. -/
+/-- Finitely many monotone slices meet: by the simplex lemma, some convex combination of the
+base points lies in every slice. -/
 private theorem exists_common_monotoneSlice {A : Set (H × H)} (hA : IsMonotoneGraph A) {a : ℝ}
-    (ha : 0 < a) {n : ℕ} (hn : 0 < n) (p : Fin n → H × H) (hp : ∀ i, p i ∈ A) (x : H) :
+    (ha : 0 ≤ a) {n : ℕ} (hn : 0 < n) (p : Fin n → H × H) (hp : ∀ i, p i ∈ A) (x : H) :
     ∃ y, ∀ i, 0 ≤ ⟪y - (p i).1, x - y - a • (p i).2⟫_ℝ := by
-  let Simplex := stdSimplex ℝ (Fin n)
-  let bary (weight : Fin n → ℝ) : H := ∑ i, weight i • (p i).1
-  let gap (weight : Fin n → ℝ) (i : Fin n) : ℝ :=
-    ⟪bary weight - (p i).1, x - bary weight - a • (p i).2⟫_ℝ
-  let slack (weight : Fin n → ℝ) (i : Fin n) : ℝ := max 0 (-gap weight i)
-  let total (weight : Fin n → ℝ) : ℝ := ∑ i, (weight i + slack weight i)
-  have htotal (s : Simplex) : 1 ≤ total s := by
-    have hsum : ∑ i, (s : Fin n → ℝ) i = 1 := s.2.2
-    have hslack : ∀ i, 0 ≤ slack s i := fun i => le_max_left _ _
-    calc
-      1 = ∑ i, (s : Fin n → ℝ) i := hsum.symm
-      _ ≤ ∑ i, ((s : Fin n → ℝ) i + slack s i) := by
-        gcongr with i
-        exact le_add_of_nonneg_right (hslack i)
-      _ = total s := rfl
-  -- The self-map of the simplex adding the slack and renormalizing.
-  let next (s : Simplex) : Fin n → ℝ :=
-    fun i => ((s : Fin n → ℝ) i + slack s i) / total s
-  have hnext (s : Simplex) : next s ∈ Simplex := by
-    refine ⟨fun i => div_nonneg (add_nonneg (s.2.1 i) (le_max_left _ _))
-        (le_trans zero_le_one (htotal s)), ?_⟩
-    have hden : total s ≠ 0 := by linarith [htotal s]
-    rw [← Finset.sum_div]
-    exact div_self hden
-  let T : Simplex → Simplex := fun s => ⟨next s, hnext s⟩
-  have hcoord (i : Fin n) : Continuous fun s : Simplex => (s : Fin n → ℝ) i :=
-    (continuous_apply i).comp continuous_subtype_val
-  have hbary : Continuous fun s : Simplex => bary (s : Fin n → ℝ) := by
-    unfold bary
-    exact continuous_finsetSum Finset.univ fun i _ => (hcoord i).smul continuous_const
-  have hgapC (i : Fin n) : Continuous fun s : Simplex => gap (s : Fin n → ℝ) i := by
-    unfold gap
-    exact (hbary.sub continuous_const).inner
-      ((continuous_const.sub hbary).sub continuous_const)
-  have hslackC (i : Fin n) : Continuous fun s : Simplex => slack (s : Fin n → ℝ) i := by
-    unfold slack
-    exact continuous_const.max (hgapC i).neg
-  have hdenC : Continuous fun s : Simplex => total (s : Fin n → ℝ) := by
-    unfold total
-    exact continuous_finsetSum Finset.univ fun i _ => (hcoord i).add (hslackC i)
-  have hT : Continuous T := by
-    refine Continuous.subtype_mk ?_ hnext
-    exact continuous_pi fun i =>
-      ((hcoord i).add (hslackC i)).div₀ hdenC fun s => by linarith [htotal s]
-  obtain ⟨s, hs⟩ := exists_fixedPoint_of_isCompact_of_convex
-    ⟨Pi.single ⟨0, hn⟩ 1, single_mem_stdSimplex _ _⟩ (isCompact_stdSimplex ℝ (Fin n))
-    (convex_stdSimplex ℝ (Fin n)) T hT
-  have hfix : next s = (s : Fin n → ℝ) := congrArg Subtype.val hs
-  let w : Fin n → ℝ := s
-  have hweight : ∑ i, w i = 1 := s.2.2
-  have hden : total s ≠ 0 := by linarith [htotal s]
-  have hslack_eq (i : Fin n) : slack s i = w i * (total s - 1) := by
-    have hi : (w i + slack s i) / total s = w i := by
-      simpa [next, w] using congrFun hfix i
-    rw [div_eq_iff hden] at hi
-    linarith
-  -- At the fixed point no slack is added, since otherwise the averaged gap would be negative.
-  have hσ : total s = 1 := by
-    by_contra hneσ
-    have hgt : 1 < total s := lt_of_le_of_ne (htotal s) (Ne.symm hneσ)
-    have hneg (i : Fin n) (hwi : 0 < w i) : gap s i < 0 := by
-      have hpos : 0 < slack s i := by
-        rw [hslack_eq i]
-        nlinarith
-      by_contra hng
-      have : slack s i = 0 := by
-        unfold slack
-        exact max_eq_left (neg_nonpos.mpr (not_lt.mp hng))
-      linarith
-    have hsign (i : Fin n) : w i * gap s i ≤ 0 := by
-      by_cases hzi : w i = 0
-      · simp [hzi]
-      · have hwi : 0 < w i := lt_of_le_of_ne (s.2.1 i) (fun h => hzi h.symm)
-        exact (mul_neg_of_pos_of_neg hwi (hneg i hwi)).le
-    obtain ⟨i0, hi0⟩ : ∃ i, 0 < w i := by
-      by_contra hall
-      have hzero : ∀ i, w i = 0 := by
-        intro i
-        exact le_antisymm (le_of_not_gt (fun hpos => hall ⟨i, hpos⟩)) (s.2.1 i)
-      have : ∑ i, w i = 0 := Finset.sum_eq_zero fun i _ => hzero i
-      linarith [hweight, this]
-    have hsumθ : ∑ i, w i * gap s i < 0 := by
-      have hlt := Finset.sum_lt_sum (fun i _ => hsign i)
-        ⟨i0, Finset.mem_univ _, mul_neg_of_pos_of_neg hi0 (hneg i0 hi0)⟩
-      simpa [Finset.sum_const_zero] using hlt
-    have hnn : 0 ≤ ∑ i, w i * gap s i :=
-      sum_mul_inner_barycenter_nonneg hA ha.le p hp x (w := w) s.2.1 hweight
-    linarith
-  refine ⟨bary w, fun i => ?_⟩
-  have hzero : slack s i = 0 := by rw [hslack_eq i, hσ, sub_self, mul_zero]
-  have hmax : max 0 (-gap s i) = 0 := by simpa [slack] using hzero
-  have hgap0 : -gap s i ≤ 0 := (max_eq_left_iff).mp hmax
-  simpa [gap, w] using (neg_nonpos.mp hgap0)
+  have : Nonempty (Fin n) := ⟨⟨0, hn⟩⟩
+  let bary (w : Fin n → ℝ) : H := ∑ k, w k • (p k).1
+  have hbary : Continuous bary :=
+    continuous_finsetSum _ fun k _ ↦ (continuous_apply k).smul continuous_const
+  obtain ⟨w, -, -, hw⟩ := exists_forall_nonneg_of_sum_mul_nonneg
+    (g := fun w i ↦ ⟪bary w - (p i).1, x - bary w - a • (p i).2⟫_ℝ)
+    (continuous_pi fun i ↦ (hbary.sub continuous_const).inner
+      ((continuous_const.sub hbary).sub continuous_const))
+    fun w hw0 hw1 ↦ sum_mul_inner_barycenter_nonneg hA ha p hp x hw0 hw1
+  exact ⟨bary w, hw⟩
 
 /-- **35.32**: Minty's characterization at each positive scale. -/
 theorem isMaximalMonotoneGraph_iff_range [CompleteSpace H]
@@ -420,7 +338,7 @@ theorem isMaximalMonotoneGraph_iff_range [CompleteSpace H]
         · exact (by simp [qfin, h])
         · exact (by simpa [qfin, h] using hq0)
       obtain ⟨y, hy⟩ :=
-        exists_common_monotoneSlice hA ha (Nat.succ_pos u.card) qfin hqfin x
+        exists_common_monotoneSlice hA ha.le (Nat.succ_pos u.card) qfin hqfin x
       refine ⟨toWeakSpace ℝ H y, ?_, ?_⟩
       · have hlast : qfin (Fin.last u.card) = q0 := by
           simp [qfin, Fin.val_last]
@@ -463,30 +381,12 @@ theorem isMaximalMonotoneGraph_iff_range [CompleteSpace H]
     abel
   · intro hrange
     refine ⟨hA, fun B hB hAB z hz => ?_⟩
-    obtain ⟨y, hy⟩ := hrange (z.1 + a • z.2)
-    obtain ⟨u, huA, hxu⟩ := hy
-    have hboth : (z.1, z.2) ∈ B ∧ (y, u) ∈ B := ⟨hz, hAB huA⟩
-    have hmono := hB (z.1, z.2) hboth.1 (y, u) hboth.2
-    have hlinear : a • (z.2 - u) = y - z.1 := by
-      calc
-        a • (z.2 - u) = (z.1 + a • z.2) - (y + a • u) - (z.1 - y) := by module
-        _ = y - z.1 := by rw [← hxu]; abel
-    have hscaled : 0 ≤ ⟪z.1 - y, a • (z.2 - u)⟫_ℝ := by
-      simpa only [inner_smul_right, smul_eq_mul] using mul_nonneg ha.le hmono
-    rw [hlinear] at hscaled
-    have hneg : ⟪z.1 - y, y - z.1⟫_ℝ = -(‖z.1 - y‖ ^ 2) := by
-      rw [show y - z.1 = -(z.1 - y) by abel, inner_neg_right, real_inner_self_eq_norm_sq]
-    rw [hneg] at hscaled
-    have hzero : z.1 = y := by
-      have : ‖z.1 - y‖ = 0 := by nlinarith [sq_nonneg ‖z.1 - y‖]
-      exact sub_eq_zero.mp (norm_eq_zero.mp this)
-    have hu_eq : z.2 = u := by
-      have : a • (z.2 - u) = 0 := by simpa [hzero] using hlinear
-      have hsub : z.2 - u = 0 := (smul_eq_zero.mp this).resolve_left ha.ne'
-      exact sub_eq_zero.mp hsub
-    have hzpair : z = (y, u) := Prod.ext hzero hu_eq
-    rw [hzpair]
-    exact huA
+    obtain ⟨y, u, huA, hxu⟩ := hrange (z.1 + a • z.2)
+    have hzy : z.1 = y := hB.resolventFiber_subsingleton ha.le (z.1 + a • z.2)
+      ⟨z.2, hz, rfl⟩ ⟨u, hAB huA, hxu⟩
+    have hzu : z.2 = u :=
+      smul_right_injective H ha.ne' (by rw [hzy] at hxu; exact add_left_cancel hxu)
+    rwa [show z = (y, u) from Prod.ext hzy hzu]
 
 /-- Once a maximal monotone graph is given, every positive-scale resolvent fiber is a singleton. -/
 theorem IsMaximalMonotoneGraph.existsUnique_resolvent [CompleteSpace H]
@@ -495,10 +395,24 @@ theorem IsMaximalMonotoneGraph.existsUnique_resolvent [CompleteSpace H]
   obtain ⟨y, hy⟩ := (isMaximalMonotoneGraph_iff_range hA.1 ha).mp hA x
   exact ⟨y, hy, fun z hz ↦ hA.1.resolventFiber_subsingleton ha.le x hz hy⟩
 
-/-- The normal-cone graph of a convex set. Membership includes the base-point constraint. -/
+/-- The normal-cone graph of a set. Membership includes the base-point constraint. -/
 @[expose]
 def normalConeGraph (C : Set H) : Set (H × H) :=
   {p | p.1 ∈ C ∧ ∀ y ∈ C, ⟪p.2, y - p.1⟫_ℝ ≤ 0}
+
+/-- Membership in the normal-cone graph. -/
+theorem mem_normalConeGraph {C : Set H} {p : H × H} :
+    p ∈ normalConeGraph C ↔ p.1 ∈ C ∧ ∀ y ∈ C, ⟪p.2, y - p.1⟫_ℝ ≤ 0 := Iff.rfl
+
+/-- The normal-cone graph of any set is monotone. -/
+theorem isMonotoneGraph_normalConeGraph (C : Set H) : IsMonotoneGraph (normalConeGraph C) := by
+  rintro ⟨x, u⟩ ⟨hx, hu⟩ ⟨y, v⟩ ⟨hy, hv⟩
+  have h1 := hu y hy
+  have h2 := hv x hx
+  have : ⟪x - y, u - v⟫_ℝ = -⟪u, y - x⟫_ℝ - ⟪v, x - y⟫_ℝ := by
+    rw [inner_sub_right, real_inner_comm, real_inner_comm v, ← inner_neg_right, neg_sub]
+  rw [this]
+  linarith
 
 end Hilbert
 

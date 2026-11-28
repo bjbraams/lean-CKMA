@@ -5,13 +5,12 @@ Authors: CKMA contributors
 -/
 module
 
-public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
+public import CKMA.Analysis.Complex.Basic
 public import Mathlib.Analysis.Complex.CauchyIntegral
 public import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
 public import Mathlib.Analysis.SpecialFunctions.PolarCoord
 
-import Mathlib.Analysis.SpecialFunctions.Gamma.Beta
-import Mathlib.Dynamics.Ergodic.MeasurePreserving
+import TauCeti.Analysis.SpecialFunctions.Beta.Basic
 
 /-!
 # Polar reduction for weighted Bergman integrals
@@ -29,8 +28,8 @@ orthogonal projection.
 * `CKMA.intervalIntegral_circle_taylorCoeff`: circular means equal Taylor coefficients.
 * `CKMA.integral_radial_monomial_weight`: the radial factor in the monomial norm.
 
-The Beta identity uses Mathlib's `Complex.betaIntegral` and
-`Complex.Gamma_mul_Gamma_eq_betaIntegral`. The circular mean uses
+The Beta identity is TauCeti's `TauCeti.integral_rpow_mul_one_sub_rpow` together with Mathlib's
+`ProbabilityTheory.beta`. The Taylor coefficient is `CKMA.taylorCoefficient`. The circular mean uses
 `DifferentiableOn.circleIntegral_one_div_sub_center_pow_smul`. The radial substitution
 uses `MeasureTheory.integral_comp_rpow_Ioi_of_pos`.
 -/
@@ -50,49 +49,21 @@ open scoped ENNReal ComplexConjugate InnerProductSpace
 lemma integral_pow_mul_one_sub_rpow {α : ℝ} (hα : -1 < α) (n : ℕ) :
     (∫ x in (0 : ℝ)..1, x ^ n * (1 - x) ^ α) =
       Real.Gamma (α + 1) * n.factorial / Real.Gamma (n + α + 2) := by
-  have hα1 : 0 < α + 1 := by linarith
-  have hsn : 0 < ((n + 1 : ℕ) : ℂ).re := by
-    rw [Complex.natCast_re]
-    positivity
-  have htn : 0 < ((α + 1 : ℝ) : ℂ).re := by
-    rw [Complex.ofReal_re]
-    exact hα1
-  have hnat : ((n + 1 : ℕ) : ℂ) = (n : ℂ) + 1 := by
-    rw [Nat.cast_add, Nat.cast_one]
-  have hsum : (n : ℂ) + 1 + ((α + 1 : ℝ) : ℂ) = ((n + α + 2 : ℝ) : ℂ) := by
-    push_cast
-    ring
-  have hbeta : Complex.betaIntegral ((n + 1 : ℕ) : ℂ) ((α + 1 : ℝ) : ℂ) =
-      Complex.ofReal (∫ x in (0 : ℝ)..1, x ^ n * (1 - x) ^ α) := by
-    rw [Complex.betaIntegral]
-    refine (integral_congr_Ioo_of_le (by norm_num : (0 : ℝ) ≤ 1) fun x hx => ?_).trans
-      intervalIntegral.integral_ofReal
-    rw [mem_Ioo] at hx
-    have hx0 : 0 ≤ x := hx.1.le
-    have hx1 : 0 ≤ 1 - x := sub_nonneg.mpr hx.2.le
-    have hn : ((n + 1 : ℕ) : ℂ) - 1 = (n : ℂ) := by rw [hnat]; ring
-    have hαc : ((α + 1 : ℝ) : ℂ) - 1 = (α : ℂ) := by
-      rw [Complex.ofReal_add, Complex.ofReal_one]; ring
-    rw [hn, hαc, ← Complex.ofReal_natCast, ← Complex.ofReal_cpow hx0 n, rpow_natCast,
-      ← Complex.ofReal_one, ← Complex.ofReal_sub, ← Complex.ofReal_cpow hx1 α,
-      ← Complex.ofReal_mul]
-  have hG := Complex.Gamma_mul_Gamma_eq_betaIntegral hsn htn
-  rw [hbeta, hnat, Complex.Gamma_nat_eq_factorial, hsum, Complex.Gamma_ofReal,
-    Complex.Gamma_ofReal] at hG
-  have hpos : Real.Gamma (n + α + 2) ≠ 0 :=
-    (Real.Gamma_pos_of_pos (by linarith [(Nat.cast_nonneg n : 0 ≤ (n : ℝ))])).ne'
-  have hI : Real.Gamma (n + α + 2) * (∫ x in (0 : ℝ)..1, x ^ n * (1 - x) ^ α) =
-      (n.factorial : ℝ) * Real.Gamma (α + 1) := by
-    apply Complex.ofReal_injective
-    rw [Complex.ofReal_mul, Complex.ofReal_mul, Complex.ofReal_natCast]
-    exact hG.symm
-  rw [mul_comm, ← eq_div_iff hpos, mul_comm (n.factorial : ℝ)] at hI
-  exact hI
+  have h := TauCeti.integral_rpow_mul_one_sub_rpow (a := (n : ℝ) + 1) (b := α + 1)
+    (by positivity) (by linarith)
+  simp only [add_sub_cancel_right, Real.rpow_natCast] at h
+  rw [h, ProbabilityTheory.beta, Real.Gamma_nat_eq_factorial,
+    show (n : ℝ) + 1 + (α + 1) = n + α + 2 by ring, mul_comm (n.factorial : ℝ)]
 
 /-- Square of the weighted `L²` norm of `z ↦ z ^ n`. -/
 @[expose]
 def bergmanMonomialNormSq (α : ℝ) (n : ℕ) : ℝ :=
   Real.Gamma (α + 2) * n.factorial / Real.Gamma (n + α + 2)
+
+/-- The monomial weight is `Γ(α + 2) n! / Γ(n + α + 2)`. -/
+theorem bergmanMonomialNormSq_def (α : ℝ) (n : ℕ) :
+    bergmanMonomialNormSq α n = Real.Gamma (α + 2) * n.factorial / Real.Gamma (n + α + 2) :=
+  rfl
 
 /-- The monomial weight `cₙ` is positive for `α > -1`. -/
 lemma bergmanMonomialNormSq_pos {α : ℝ} (hα : -1 < α) (n : ℕ) :
@@ -189,17 +160,12 @@ lemma conj_pow_mul_pow_polar (n m : ℕ) (r θ : ℝ) :
           Complex.exp ((((m : ℤ) - (n : ℤ)) : ℂ) * (θ : ℂ) * I) := by
         rw [← pow_add, hexp]
 
-/-- Taylor coefficient of `f` at the origin, `(iteratedDeriv n f 0) / n!`. -/
-@[expose]
-def bergmanTaylorCoeff (f : ℂ → ℂ) (n : ℕ) : ℂ :=
-  (n.factorial : ℂ)⁻¹ * iteratedDeriv n f 0
-
 /-- On each circle of radius `r ∈ (0, 1)`, the Fourier coefficient of a holomorphic function is
 its Taylor coefficient. -/
 lemma intervalIntegral_circle_taylorCoeff {f : ℂ → ℂ}
     (hf : DifferentiableOn ℂ f (Metric.ball 0 1)) {r : ℝ} (hr0 : 0 < r) (hr1 : r < 1) (n : ℕ) :
     ∫ θ in (-π)..π, Complex.exp (-(n : ℂ) * (θ : ℂ) * I) * f (circleMap 0 r θ) =
-      2 * π * bergmanTaylorCoeff f n * (r : ℂ) ^ n := by
+      2 * π * taylorCoefficient f n * (r : ℂ) ^ n := by
   set g : ℝ → ℂ := fun θ =>
     Complex.exp (-(n : ℂ) * (θ : ℂ) * I) * f (circleMap 0 r θ)
   have hpi : Complex.exp (2 * π * I) = 1 := by
@@ -283,7 +249,7 @@ lemma intervalIntegral_circle_taylorCoeff {f : ℂ → ℂ}
       (I * ((r : ℂ) ^ n)⁻¹)⁻¹ *
         ((2 * π * I / (n.factorial : ℂ)) * iteratedDeriv n f 0) :=
     (eq_inv_mul_iff_mul_eq₀ hcne).2 hcauchy
-  rw [hshift, hIang, bergmanTaylorCoeff]
+  rw [hshift, hIang, taylorCoefficient_def]
   have hcinv : (I * ((r : ℂ) ^ n)⁻¹)⁻¹ = (r : ℂ) ^ n * I⁻¹ := by
     rw [mul_inv_rev, inv_inv]
   rw [hcinv]
@@ -386,36 +352,5 @@ lemma integral_radial_monomial_weight {α : ℝ} (hα : -1 < α) (n : ℕ) :
     c * Real.Gamma (α + 1) * π = c * π * Real.Gamma (α + 1) := by ring
     _ = (α + 1) * Real.Gamma (α + 1) := by rw [hcπ]
     _ = Real.Gamma (α + 2) := hnum
-
-/-- Polar coordinates centred at the origin agree with `circleMap`. -/
-lemma polarCoord_symm_eq_circleMap (r θ : ℝ) :
-    Complex.polarCoord.symm (r, θ) = circleMap 0 r θ := by
-  rw [Complex.polarCoord_symm_apply, circleMap_zero, Complex.ofReal_cos, Complex.ofReal_sin,
-    ← Complex.exp_mul_I]
-
-/-- Pull an integrable density on `ℂ` back to polar coordinates, including the Jacobian factor. -/
-lemma integrableOn_smul_polarCoord {g : ℂ → ℂ} (hg : Integrable g volume) :
-    IntegrableOn (fun p : ℝ × ℝ => p.1 • g (Complex.polarCoord.symm p)) polarCoord.target := by
-  have hpres :=
-    MeasurePreserving.symm measurableEquivRealProd volume_preserving_equiv_real_prod
-  have hge : Integrable (g ∘ measurableEquivRealProd.symm) volume :=
-    hpres.integrable_comp_of_integrable hg
-  have hsource : IntegrableOn (g ∘ measurableEquivRealProd.symm)
-      (polarCoord.symm '' polarCoord.target) volume := by
-    rw [polarCoord.symm_image_target_eq_source]
-    exact hge.integrableOn
-  have hjac := (integrableOn_image_iff_integrableOn_abs_det_fderiv_smul (μ := volume)
-      (f := polarCoord.symm) (f' := fderivPolarCoordSymm) (s := polarCoord.target)
-      polarCoord.open_target.measurableSet
-      (fun p _ => (hasFDerivAt_polarCoord_symm p).hasFDerivWithinAt) polarCoord.symm.injOn
-      (g ∘ measurableEquivRealProd.symm)).1 hsource
-  refine hjac.congr_fun ?_ polarCoord.open_target.measurableSet
-  intro p hp
-  dsimp only
-  rw [Function.comp_apply]
-  rw [measurableEquivRealProd_symm_polarCoord_symm_apply, det_fderivPolarCoordSymm]
-  rw [polarCoord_target, mem_prod] at hp
-  rw [abs_of_pos hp.1]
-
 
 end CKMA

@@ -6,13 +6,22 @@ Authors: CKMA contributors
 module
 
 public import Mathlib.Analysis.SpecialFunctions.RegularizedHypergeometric
+public import TauCeti.Analysis.SpecialFunctions.OrdinaryHypergeometric
 
 /-!
-# Gauss's Hypergeometric Differential Equation
+# Gauss's hypergeometric differential equation
 
 The hypergeometric series solves Gauss's equation in the unit disk and is the unique normalized
-analytic solution germ at the origin; the three singular points `0`, `1`, and `∞` are regular
-singular, as witnessed by analytic rational germs in local and reciprocal coordinates.
+analytic solution germ at the origin; the regularized function `F(a, b; c; z) / Γ(c)` solves the
+same equation for every `c`. The three singular points `0`, `1`, and `∞` are regular singular, as
+witnessed by analytic rational germs in local and reciprocal coordinates.
+
+The basic computation is `CKMA.hasSum_gaussDifferentialExpression`: inside the disc of a scalar
+power series `∑ Cₙ zⁿ`, Gauss's expression is the series with coefficients
+`(n + 1) (c + n) Cₙ₊₁ - (a + n) (b + n) Cₙ`. It uses TauCeti's termwise differentiation
+`HasFPowerSeriesOnBall.deriv_ofScalars` and `HasFPowerSeriesOnBall.hasSum_mul_deriv_ofScalars`.
+The equation for the ordinary series is TauCeti's
+`TauCeti.ordinaryHypergeometric_gaussEquation_of_norm_lt_one`.
 
 ## Main definitions
 
@@ -23,8 +32,13 @@ singular, as witnessed by analytic rational germs in local and reciprocal coordi
 
 ## Main results
 
+* `CKMA.hasSum_gaussDifferentialExpression`: Gauss's expression of a scalar power series.
+* `CKMA.gaussDifferentialExpression_eq_zero_of_coeff`: the coefficient recurrence implies Gauss's
+  equation inside the disc of convergence.
+* `CKMA.regularizedGaussHGFunSeries_coeff_recurrence`: the recurrence of the regularized
+  coefficients, for every `c`.
 * `CKMA.gauss_regularized_hypergeometric_ode`: the regularized Gauss hypergeometric function
-  satisfies Gauss's equation in the unit disk.
+  satisfies Gauss's equation in the unit disk, for all parameters.
 * `CKMA.gauss_hypergeometric_ode`: the ordinary hypergeometric series solves Gauss's equation in
   the unit disk (**49.13**).
 * `CKMA.gauss_hypergeometric_unique`: uniqueness of the normalized analytic solution germ at `0`.
@@ -38,296 +52,162 @@ noncomputable section
 
 namespace CKMA
 
-open Filter Topology
+open Filter Topology FormalMultilinearSeries
 open scoped BigOperators ENNReal NNReal
 
-/-- Gauss's hypergeometric differential expression. -/
+section GaussExpression
+
+variable {𝕂 : Type*} [NontriviallyNormedField 𝕂]
+
+/-- Gauss's hypergeometric differential expression
+`z (1 - z) y'' + (c - (a + b + 1) z) y' - a b y`. -/
 @[expose]
-def gaussDifferentialExpression (a b c : ℂ) (y : ℂ → ℂ) (z : ℂ) : ℂ :=
+def gaussDifferentialExpression (a b c : 𝕂) (y : 𝕂 → 𝕂) (z : 𝕂) : 𝕂 :=
   z * (1 - z) * deriv (deriv y) z + (c - (a + b + 1) * z) * deriv y z - a * b * y z
 
-/-- Termwise differentiation of a scalar power series inside its convergence ball. -/
-private theorem hasSum_deriv_of_powerSeries {f : ℂ → ℂ} {p : FormalMultilinearSeries ℂ ℂ ℂ}
-    {r : ℝ≥0∞} (h : HasFPowerSeriesOnBall f p 0 r) {z : ℂ}
-    (hz : (‖z‖₊ : ℝ≥0∞) < r) :
-    HasSum (fun n : ℕ ↦ ((n : ℂ) + 1) * p.coeff (n + 1) * z ^ n) (deriv f z) := by
-  have hh := (ContinuousLinearMap.apply ℂ ℂ (1 : ℂ)).hasSum
-    (h.fderiv.hasSum (y := z) (by simpa [edist_eq_enorm_sub, enorm_eq_nnnorm] using hz))
-  simpa only [FormalMultilinearSeries.apply_eq_pow_smul_coeff,
-    ContinuousLinearMap.apply_apply, map_smul,
-    FormalMultilinearSeries.derivSeries_coeff_one, smul_eq_mul, Nat.cast_add,
-    Nat.cast_one, nsmul_eq_mul, add_zero, zero_add, mul_assoc, mul_comm, mul_left_comm,
-    deriv] using hh
+/-- Unfolding lemma for `gaussDifferentialExpression`. -/
+theorem gaussDifferentialExpression_def (a b c : 𝕂) (y : 𝕂 → 𝕂) (z : 𝕂) :
+    gaussDifferentialExpression a b c y z =
+      z * (1 - z) * deriv (deriv y) z + (c - (a + b + 1) * z) * deriv y z - a * b * y z :=
+  rfl
 
-/-- The second derivative of a scalar power series is its twice differentiated sum. -/
-private theorem hasSum_second_deriv_of_powerSeries {f : ℂ → ℂ} {p : FormalMultilinearSeries ℂ ℂ ℂ}
-    {r : ℝ≥0∞} (h : HasFPowerSeriesOnBall f p 0 r) {z : ℂ}
-    (hz : (‖z‖₊ : ℝ≥0∞) < r) :
-    HasSum (fun n : ℕ ↦ ((n : ℂ) + 1) * ((n : ℂ) + 2) * p.coeff (n + 2) * z ^ n)
-      (deriv (deriv f) z) := by
-  let q := (ContinuousLinearMap.apply ℂ ℂ (1 : ℂ)).compFormalMultilinearSeries p.derivSeries
-  have hd : HasFPowerSeriesOnBall (deriv f) q 0 r :=
-    (ContinuousLinearMap.apply ℂ ℂ (1 : ℂ)).comp_hasFPowerSeriesOnBall h.fderiv
-  have hq (n : ℕ) : q.coeff n = ((n : ℂ) + 1) * p.coeff (n + 1) := by
-    change p.derivSeries.coeff n 1 = _
-    simp only [FormalMultilinearSeries.derivSeries_coeff_one, nsmul_eq_mul,
-      Nat.cast_add, Nat.cast_one]
-  convert hasSum_deriv_of_powerSeries hd hz using 1
+/-- Every scalar formal multilinear series is the scalar series of its coefficients. -/
+theorem ofScalars_coeff_self (p : FormalMultilinearSeries 𝕂 𝕂 𝕂) :
+    ofScalars 𝕂 p.coeff = p := by
   ext n
-  rw [hq]
-  push_cast
-  ring
+  rw [ofScalars_apply_eq, one_pow, smul_eq_mul, mul_one]
+  rfl
 
-/-- Multiplying a power series by its variable shifts the weighted coefficients. -/
-private theorem hasSum_mul_pow_of_succ {d : ℕ → ℂ} {v : ℂ} (z : ℂ)
-    (h : HasSum (fun n : ℕ ↦ ((n : ℂ) + 1) * d (n + 1) * z ^ n) v) :
-    HasSum (fun n : ℕ ↦ (n : ℂ) * d n * z ^ n) (z * v) := by
-  rw [← hasSum_nat_add_iff' 1]
-  convert h.mul_left z using 1
+variable [CompleteSpace 𝕂]
+
+/-- Inside the disc of a scalar power series `y = ∑ Cₙ zⁿ`, Gauss's expression is the series with
+coefficients `(n + 1) (c + n) Cₙ₊₁ - (a + n) (b + n) Cₙ`. -/
+theorem hasSum_gaussDifferentialExpression {y : 𝕂 → 𝕂} {C : ℕ → 𝕂} {r : ℝ≥0∞}
+    (hy : HasFPowerSeriesOnBall y (ofScalars 𝕂 C) 0 r) (a b c : 𝕂) {z : 𝕂} (hz : ‖z‖ₑ < r) :
+    HasSum (fun n : ℕ ↦ (((n : 𝕂) + 1) * (c + n) * C (n + 1) - (a + n) * (b + n) * C n) * z ^ n)
+      (gaussDifferentialExpression a b c y z) := by
+  have hy' := hy.deriv_ofScalars
+  have hzb : z ∈ Metric.eball (0 : 𝕂) r := mem_eball_zero_iff.mpr hz
+  have h0 : HasSum (fun n : ℕ ↦ C n * z ^ n) (y z) := by
+    simpa [ofScalars_apply_eq, mul_comm] using hy.hasSum hzb
+  have h1 : HasSum (fun n : ℕ ↦ (n + 1) * C (n + 1) * z ^ n) (deriv y z) := by
+    simpa [ofScalars_apply_eq, mul_comm] using hy'.hasSum hzb
+  have h2 := hy.hasSum_mul_deriv_ofScalars hz
+  have h3 := hy'.hasSum_mul_deriv_ofScalars hz
+  have h4 : HasSum (fun n : ℕ ↦ ((n : 𝕂) - 1) * n * C n * z ^ n)
+      (z * (z * deriv (deriv y) z)) := by
+    refine (hasSum_nat_add_iff' 1).mp ?_
+    simpa [pow_succ, mul_comm, mul_left_comm, mul_assoc] using h3.mul_left z
+  have hsum := (h3.add (h1.mul_left c)).sub ((h4.add (h2.mul_left (a + b + 1))).add
+    (h0.mul_left (a * b)))
+  rw [gaussDifferentialExpression_def]
+  convert hsum using 1
   · ext n
-    simp only [Nat.cast_add, Nat.cast_one, pow_succ]
     ring
-  · simp
+  · ring
 
-/-- A coefficient identity supplies the hypothesis of the weighted shift. -/
-private theorem hasSum_mul_pow_of_succ_of_congr {a d : ℕ → ℂ} {v z : ℂ}
-    (h : HasSum (fun n : ℕ ↦ a n * z ^ n) v)
-    (ha : ∀ n, a n = ((n : ℂ) + 1) * d (n + 1)) :
-    HasSum (fun n : ℕ ↦ (n : ℂ) * d n * z ^ n) (z * v) := by
-  have hpre : HasSum (fun n : ℕ ↦ ((n : ℂ) + 1) * d (n + 1) * z ^ n) v := by
-    convert h using 1
-    ext n
-    rw [ha n]
-  exact hasSum_mul_pow_of_succ z hpre
+/-- If the coefficients of a scalar power series obey Gauss's recurrence
+`(n + 1) (c + n) Cₙ₊₁ = (a + n) (b + n) Cₙ`, its sum solves Gauss's equation inside the disc. -/
+theorem gaussDifferentialExpression_eq_zero_of_coeff {y : 𝕂 → 𝕂} {C : ℕ → 𝕂} {r : ℝ≥0∞}
+    (hy : HasFPowerSeriesOnBall y (ofScalars 𝕂 C) 0 r) {a b c : 𝕂}
+    (hC : ∀ n : ℕ, ((n : 𝕂) + 1) * (c + n) * C (n + 1) = (a + n) * (b + n) * C n)
+    {z : 𝕂} (hz : ‖z‖ₑ < r) :
+    gaussDifferentialExpression a b c y z = 0 := by
+  have h := hasSum_gaussDifferentialExpression hy a b c hz
+  simp only [hC, sub_self, zero_mul] at h
+  exact h.unique hasSum_zero
 
-/-- The regularized Gauss series and its first two derivatives converge in the unit disk. -/
-private theorem hasSum_regularizedGaussHGFun_derivs (a b c : ℂ) {z : ℂ} (hz : ‖z‖ < 1) :
-    let p := Complex.regularizedGaussHGFunSeries a b c
-    HasSum (fun n : ℕ ↦ p.coeff n * z ^ n) (Complex.regularizedGaussHGFun a b c z) ∧
-    HasSum (fun n : ℕ ↦ ((n : ℂ) + 1) * p.coeff (n + 1) * z ^ n)
-      (deriv (Complex.regularizedGaussHGFun a b c) z) ∧
-    HasSum (fun n : ℕ ↦ ((n : ℂ) + 1) * ((n : ℂ) + 2) * p.coeff (n + 2) * z ^ n)
-      (deriv (deriv (Complex.regularizedGaussHGFun a b c)) z) := by
-  intro p
-  have hr : 1 ≤ p.radius := Complex.radius_regularizedGaussHGFunSeries_ge_one a b c
-  have hp := p.hasFPowerSeriesOnBall (lt_of_lt_of_le zero_lt_one hr)
-  have hz' : (‖z‖₊ : ℝ≥0∞) < p.radius :=
-    (by exact_mod_cast hz : (‖z‖₊ : ℝ≥0∞) < 1).trans_le hr
-  refine ⟨?_, hasSum_deriv_of_powerSeries hp hz', hasSum_second_deriv_of_powerSeries hp hz'⟩
-  convert hp.hasSum (y := z) (by simpa [edist_eq_enorm_sub, enorm_eq_nnnorm] using hz') using 1
-  · ext n
-    simp [mul_comm]
-  · simp [Complex.regularizedGaussHGFun, p]
+/-- Conversely, the Taylor coefficients of an analytic solution of Gauss's equation near `0` obey
+Gauss's recurrence. -/
+theorem coeff_recurrence_of_gaussDifferentialExpression {y : 𝕂 → 𝕂}
+    {p : FormalMultilinearSeries 𝕂 𝕂 𝕂} {r : ℝ≥0∞} (hp : HasFPowerSeriesOnBall y p 0 r)
+    {a b c : 𝕂} (hode : ∀ᶠ z in 𝓝 (0 : 𝕂), gaussDifferentialExpression a b c y z = 0) (n : ℕ) :
+    ((n : 𝕂) + 1) * (c + n) * p.coeff (n + 1) = (a + n) * (b + n) * p.coeff n := by
+  rw [← ofScalars_coeff_self p] at hp
+  have hser : HasFPowerSeriesAt (0 : 𝕂 → 𝕂) (ofScalars 𝕂 fun n : ℕ ↦
+      ((n : 𝕂) + 1) * (c + n) * p.coeff (n + 1) - (a + n) * (b + n) * p.coeff n) 0 := by
+    rw [hasFPowerSeriesAt_iff]
+    filter_upwards [hode, Metric.eball_mem_nhds (0 : 𝕂) hp.r_pos] with z hodez hz
+    have h := hasSum_gaussDifferentialExpression hp a b c (mem_eball_zero_iff.mp hz)
+    rw [hodez] at h
+    simpa [coeff_ofScalars, mul_comm] using h
+  have h := congr_arg (fun q : FormalMultilinearSeries 𝕂 𝕂 𝕂 ↦ q.coeff n) hser.eq_zero
+  rw [coeff_ofScalars] at h
+  exact sub_eq_zero.mp (h.trans rfl)
 
-/-- The Gauss coefficient recurrence at a nonpolar denominator parameter. -/
-private theorem regularizedGaussHGFunSeries_coeff_recurrence (a b c : ℂ)
-    (hc : ∀ n : ℕ, c ≠ -(n : ℂ)) (n : ℕ) :
+end GaussExpression
+
+/-- The Gauss coefficient recurrence `(n + 1) (c + n) C̃ₙ₊₁ = (a + n) (b + n) C̃ₙ` of the
+regularized coefficients `C̃ₙ = (a)ₙ (b)ₙ / (n! Γ(c + n))`, for every `c`. When `c + n = 0`, both
+sides vanish, by Mathlib's convention `Γ(0) = 0`. -/
+theorem regularizedGaussHGFunSeries_coeff_recurrence (a b c : ℂ) (n : ℕ) :
     ((n : ℂ) + 1) * (c + n) *
         (Complex.regularizedGaussHGFunSeries a b c).coeff (n + 1) =
       (a + n) * (b + n) * (Complex.regularizedGaussHGFunSeries a b c).coeff n := by
-  have hh := Complex.regularizedHGFunCoeff_add_one (a := {a, b}) (b := {c})
-    (n := n) (by simpa using hc n)
-  have hn : (n : ℂ) + 1 ≠ 0 := by exact_mod_cast Nat.succ_ne_zero n
-  have hcn : c + (n : ℂ) ≠ 0 := by simpa [eq_neg_iff_add_eq_zero] using hc n
-  have hh' : (Complex.regularizedGaussHGFunSeries a b c).coeff (n + 1) =
-      (Complex.regularizedGaussHGFunSeries a b c).coeff n *
-        ((a + n) * (b + n) / ((c + n) * ((n : ℂ) + 1))) := by
-    simpa [Complex.regularizedGaussHGFunSeries] using hh
-  rw [hh']
-  field_simp
+  simp only [Complex.coeff_regularizedGaussHGFunSeries]
+  by_cases hcn : c + n = 0
+  · simp [hcn]
+  · rw [Nat.cast_add_one, ← add_assoc, Complex.Gamma_add_one _ hcn, ascPochhammer_succ_eval,
+      ascPochhammer_succ_eval, Nat.factorial_succ]
+    push_cast
+    field_simp
 
-/-- The regularized Gauss hypergeometric function satisfies Gauss's equation in the unit disk. -/
-theorem gauss_regularized_hypergeometric_ode (a b c : ℂ) (hc : ∀ n : ℕ, c ≠ -(n : ℂ))
-    {z : ℂ} (hz : ‖z‖ < 1) :
+/-- The regularized Gauss hypergeometric function `F(a, b; c; z) / Γ(c)` satisfies Gauss's
+equation in the unit disk, for all parameters `a`, `b`, `c`. -/
+theorem gauss_regularized_hypergeometric_ode (a b c : ℂ) {z : ℂ} (hz : ‖z‖ < 1) :
     gaussDifferentialExpression a b c (Complex.regularizedGaussHGFun a b c) z = 0 := by
-  let d := (Complex.regularizedGaussHGFunSeries a b c).coeff
-  let y := Complex.regularizedGaussHGFun a b c
-  obtain ⟨h0, h1, h2⟩ := hasSum_regularizedGaussHGFun_derivs a b c hz
-  have he1 := hasSum_mul_pow_of_succ z h1
-  have he2 : HasSum (fun n : ℕ ↦ (n : ℂ) * ((n : ℂ) + 1) * d (n + 1) * z ^ n)
-      (z * deriv (deriv y) z) := by
-    convert hasSum_mul_pow_of_succ_of_congr
-        (d := fun n ↦ ((n : ℂ) + 1) * d (n + 1)) h2 (fun n ↦ by push_cast; ring) using 1
-    ext n
-    ring
-  have he22 : HasSum (fun n : ℕ ↦ (n : ℂ) * ((n : ℂ) - 1) * d n * z ^ n)
-      (z * (z * deriv (deriv y) z)) := by
-    convert hasSum_mul_pow_of_succ_of_congr
-        (d := fun n ↦ ((n : ℂ) - 1) * d n) he2 (fun n ↦ by push_cast; ring) using 1
-    ext n
-    ring
+  have hr : 1 ≤ (Complex.regularizedGaussHGFunSeries a b c).radius :=
+    Complex.radius_regularizedGaussHGFunSeries_ge_one a b c
+  have hp : HasFPowerSeriesOnBall (Complex.regularizedGaussHGFun a b c)
+      (ofScalars ℂ (Complex.regularizedGaussHGFunSeries a b c).coeff) 0
+      (Complex.regularizedGaussHGFunSeries a b c).radius := by
+    rw [ofScalars_coeff_self]
+    exact (Complex.regularizedGaussHGFunSeries a b c).hasFPowerSeriesOnBall
+      (lt_of_lt_of_le zero_lt_one hr)
+  refine gaussDifferentialExpression_eq_zero_of_coeff hp
+    (regularizedGaussHGFunSeries_coeff_recurrence a b c) ?_
+  exact (by rw [← ofReal_norm]; exact ENNReal.ofReal_lt_one.mpr hz : ‖z‖ₑ < 1).trans_le hr
 
-  have ha := he2.add (h1.mul_left c)
-  have hb := (he22.add (he1.mul_left (a + b + 1))).add (h0.mul_left (a * b))
-  have ht :
-      (fun n : ℕ ↦ (n : ℂ) * ((n : ℂ) + 1) * d (n + 1) * z ^ n +
-        c * (((n : ℂ) + 1) * d (n + 1) * z ^ n)) =
-      (fun n : ℕ ↦ (n : ℂ) * ((n : ℂ) - 1) * d n * z ^ n +
-        (a + b + 1) * ((n : ℂ) * d n * z ^ n) + (a * b) * (d n * z ^ n)) := by
-    funext n
-    have hh := regularizedGaussHGFunSeries_coeff_recurrence a b c hc n
-    dsimp [d]
-    linear_combination (z ^ n) * hh
-  change HasSum _ _ at hb
-  rw [← ht] at hb
-  have heq := ha.unique hb
-  dsimp [gaussDifferentialExpression]
-  dsimp [y] at heq
-  linear_combination heq
+section Ordinary
 
-/-- **49.13**: the hypergeometric series solves Gauss's equation in the unit disk.
-The denominator parameter must avoid the nonpositive integers. -/
-theorem gauss_hypergeometric_ode (a b c : ℂ) (hc : ∀ n : ℕ, c ≠ -(n : ℂ))
-    {z : ℂ} (hz : ‖z‖ < 1) :
-    gaussDifferentialExpression a b c (ordinaryHypergeometric a b c) z = 0 := by
-  have he : ordinaryHypergeometric a b c =
-      fun w ↦ Complex.Gamma c * Complex.regularizedGaussHGFun a b c w := by
-    funext w
-    have hh := Complex.ordinaryHypergeometric_div_Gamma_eq (a := a) (b := b) (z := w) hc
-    exact (div_eq_iff (Complex.Gamma_ne_zero hc)).mp hh |>.trans (mul_comm _ _)
-  rw [he]
-  have hh := gauss_regularized_hypergeometric_ode a b c hc hz
-  simp only [gaussDifferentialExpression, deriv_const_mul_field', deriv_const_mul_field] at *
-  linear_combination Complex.Gamma c * hh
+variable {𝕂 : Type*} [RCLike 𝕂]
 
-/-- A scalar series that sums to zero near the origin has all coefficients zero. -/
-private theorem coeff_eq_zero_of_hasSum_zero_nhds {e : ℕ → ℂ}
-    (h : ∀ᶠ z in 𝓝 (0 : ℂ), HasSum (fun n : ℕ ↦ e n * z ^ n) 0) (n : ℕ) : e n = 0 := by
-  let p : FormalMultilinearSeries ℂ ℂ ℂ := .ofScalars ℂ e
-  have hp : HasFPowerSeriesAt (0 : ℂ → ℂ) p 0 := by
-    rw [hasFPowerSeriesAt_iff]
-    filter_upwards [h] with z hz
-    convert hz using 1
-    ext k
-    simp [p, FormalMultilinearSeries.coeff_ofScalars, smul_eq_mul, mul_comm]
-  have hcoeff : p.coeff n = e n := by simp [p, FormalMultilinearSeries.coeff_ofScalars]
-  rw [← hcoeff]
-  exact FormalMultilinearSeries.coeff_eq_zero.mpr (congr_fun hp.eq_zero n)
+/-- **49.13**: the hypergeometric series solves Gauss's equation in the unit disk, when the
+denominator parameter `c` avoids the nonpositive integers. This is TauCeti's
+`TauCeti.ordinaryHypergeometric_gaussEquation_of_norm_lt_one`. -/
+theorem gauss_hypergeometric_ode (a b c : 𝕂) (hc : ∀ k : ℕ, (k : 𝕂) ≠ -c)
+    {z : 𝕂} (hz : ‖z‖ < 1) :
+    gaussDifferentialExpression a b c (ordinaryHypergeometric a b c) z = 0 :=
+  TauCeti.ordinaryHypergeometric_gaussEquation_of_norm_lt_one a b c hc hz
 
-/-- Inside its disk, Gauss's expression is the series of the coefficient discrepancies. -/
-private theorem hasSum_gaussDifferentialExpression_coeff {y : ℂ → ℂ}
-    {p : FormalMultilinearSeries ℂ ℂ ℂ} {r : ℝ≥0∞} (hp : HasFPowerSeriesOnBall y p 0 r)
-    (a b c : ℂ) {z : ℂ} (hz : (‖z‖₊ : ℝ≥0∞) < r) :
-    HasSum (fun n : ℕ ↦ (((n : ℂ) + 1) * (c + n) * p.coeff (n + 1) -
-        (a + n) * (b + n) * p.coeff n) * z ^ n) (gaussDifferentialExpression a b c y z) := by
-  let d := p.coeff
-  have h0 : HasSum (fun n : ℕ ↦ d n * z ^ n) (y z) := by
-    convert hp.hasSum (by simpa [Metric.mem_eball, edist_eq_enorm_sub, enorm_eq_nnnorm] using hz)
-      using 1
-    · ext n
-      simp [d, mul_comm]
-    · simp
-  have h1 := hasSum_deriv_of_powerSeries hp hz
-  have h2 := hasSum_second_deriv_of_powerSeries hp hz
-  have he1 := hasSum_mul_pow_of_succ z h1
-  have he2 : HasSum (fun n : ℕ ↦ (n : ℂ) * ((n : ℂ) + 1) * d (n + 1) * z ^ n)
-      (z * deriv (deriv y) z) := by
-    convert hasSum_mul_pow_of_succ_of_congr
-        (d := fun n ↦ ((n : ℂ) + 1) * d (n + 1)) h2 (fun n ↦ by push_cast; ring) using 1
-    ext n
-    ring
-  have he22 : HasSum (fun n : ℕ ↦ (n : ℂ) * ((n : ℂ) - 1) * d n * z ^ n)
-      (z * (z * deriv (deriv y) z)) := by
-    convert hasSum_mul_pow_of_succ_of_congr
-        (d := fun n ↦ ((n : ℂ) - 1) * d n) he2 (fun n ↦ by push_cast; ring) using 1
-    ext n
-    ring
-  have hH := (((he2.sub he22).add (h1.mul_left c)).sub (he1.mul_left (a + b + 1))).sub
-    (h0.mul_left (a * b))
-  have hval :
-      ((z * deriv (deriv y) z - z * (z * deriv (deriv y) z)) + c * deriv y z) -
-        (a + b + 1) * (z * deriv y z) - (a * b) * y z =
-      gaussDifferentialExpression a b c y z := by
-    dsimp [gaussDifferentialExpression]
-    ring
-  rw [hval] at hH
-  convert hH using 1
-  ext n
-  ring
-
-/-- Taylor coefficients of an analytic solution of Gauss's equation obey its recurrence. -/
-private theorem gauss_powerSeries_coeff_recurrence (a b c : ℂ) {y : ℂ → ℂ}
-    {p : FormalMultilinearSeries ℂ ℂ ℂ} {r : ℝ≥0∞} (hp : HasFPowerSeriesOnBall y p 0 r)
-    (hode : ∀ᶠ z in 𝓝 (0 : ℂ), gaussDifferentialExpression a b c y z = 0) (n : ℕ) :
-    ((n : ℂ) + 1) * (c + n) * p.coeff (n + 1) = (a + n) * (b + n) * p.coeff n := by
-  have hdisk : ∀ᶠ z in 𝓝 (0 : ℂ), (‖z‖₊ : ℝ≥0∞) < r :=
-    eventually_of_mem (Metric.eball_mem_nhds (0 : ℂ) hp.r_pos) fun z hz ↦ by
-      simpa [Metric.mem_eball, edist_eq_enorm_sub, enorm_eq_nnnorm, sub_zero] using hz
-  have hsum0 : ∀ᶠ z in 𝓝 (0 : ℂ), HasSum (fun n : ℕ ↦ (((n : ℂ) + 1) * (c + n) *
-      p.coeff (n + 1) - (a + n) * (b + n) * p.coeff n) * z ^ n) 0 := by
-    filter_upwards [hode, hdisk] with z hodez hz
-    simpa [hodez] using hasSum_gaussDifferentialExpression_coeff hp a b c hz
-  exact sub_eq_zero.mp (coeff_eq_zero_of_hasSum_zero_nhds hsum0 n)
-
-/-- The ordinary series is the Gamma multiple of the regularized series, so its constant term is
-one. -/
-private theorem ordinaryHypergeometricSeries_coeff_zero (a b c : ℂ)
-    (hc : ∀ n : ℕ, c ≠ -(n : ℂ)) :
-    (ordinaryHypergeometricSeries ℂ a b c).coeff 0 = 1 := by
-  have hreg : (Complex.regularizedGaussHGFunSeries a b c).coeff 0 = (Complex.Gamma c)⁻¹ := by
-    simp [Complex.coeff_regularizedGaussHGFunSeries, ascPochhammer_zero, Polynomial.eval_one,
-      Nat.factorial_zero, Nat.cast_one, one_div]
-  have hg : Complex.Gamma c ≠ 0 := Complex.Gamma_ne_zero hc
-  have hscale : (ordinaryHypergeometricSeries ℂ a b c).coeff 0 =
-      Complex.Gamma c * (Complex.regularizedGaussHGFunSeries a b c).coeff 0 := by
-    rw [← Complex.Gamma_inv_mul_ordinaryHypergeometricSeries_eq (a := a) (b := b) hc (n := 0),
-      ← mul_assoc, mul_inv_cancel₀ hg, one_mul]
-  rw [hscale, hreg, mul_inv_cancel₀ hg]
-
-/-- Ordinary coefficients are the Gamma multiple of the regularized coefficients, so they obey the
-same recurrence. -/
-private theorem ordinaryHypergeometricSeries_coeff_recurrence (a b c : ℂ)
-    (hc : ∀ n : ℕ, c ≠ -(n : ℂ)) (n : ℕ) :
-    ((n : ℂ) + 1) * (c + n) * (ordinaryHypergeometricSeries ℂ a b c).coeff (n + 1) =
-      (a + n) * (b + n) * (ordinaryHypergeometricSeries ℂ a b c).coeff n := by
-  have hreg := regularizedGaussHGFunSeries_coeff_recurrence a b c hc n
-  have hg : Complex.Gamma c ≠ 0 := Complex.Gamma_ne_zero hc
-  have hscale (k : ℕ) : (ordinaryHypergeometricSeries ℂ a b c).coeff k =
-      Complex.Gamma c * (Complex.regularizedGaussHGFunSeries a b c).coeff k := by
-    rw [← Complex.Gamma_inv_mul_ordinaryHypergeometricSeries_eq (a := a) (b := b) hc (n := k),
-      ← mul_assoc, mul_inv_cancel₀ hg, one_mul]
-  rw [hscale n, hscale (n + 1)]
-  calc
-    ((n : ℂ) + 1) * (c + n) * (Complex.Gamma c *
-          (Complex.regularizedGaussHGFunSeries a b c).coeff (n + 1)) =
-        Complex.Gamma c * (((n : ℂ) + 1) * (c + n) *
-          (Complex.regularizedGaussHGFunSeries a b c).coeff (n + 1)) := by ring
-    _ = Complex.Gamma c * ((a + n) * (b + n) *
-          (Complex.regularizedGaussHGFunSeries a b c).coeff n) := by rw [hreg]
-    _ = (a + n) * (b + n) * (Complex.Gamma c *
-          (Complex.regularizedGaussHGFunSeries a b c).coeff n) := by ring
-
-/-- Normalization at zero determines the analytic solution germ, for a regular denominator
-  parameter. -/
-theorem gauss_hypergeometric_unique (a b c : ℂ) (hc : ∀ n : ℕ, c ≠ -(n : ℂ))
-    {y : ℂ → ℂ} (hy : AnalyticAt ℂ y 0) (hy0 : y 0 = 1)
-    (hode : ∀ᶠ z in 𝓝 (0 : ℂ), gaussDifferentialExpression a b c y z = 0) :
-    y =ᶠ[𝓝 (0 : ℂ)] ordinaryHypergeometric a b c := by
-  obtain ⟨p, hp⟩ := hy
-  obtain ⟨r, hp⟩ := hp
-  have hd0 : p.coeff 0 = 1 := (hp.coeff_zero (1 : Fin 0 → ℂ)).trans hy0
-  have hcoeff : ∀ n, p.coeff n = (ordinaryHypergeometricSeries ℂ a b c).coeff n := by
+/-- Normalization at zero determines the analytic solution germ of Gauss's equation, when the
+denominator parameter `c` avoids the nonpositive integers. -/
+theorem gauss_hypergeometric_unique (a b c : 𝕂) (hc : ∀ k : ℕ, (k : 𝕂) ≠ -c)
+    {y : 𝕂 → 𝕂} (hy : AnalyticAt 𝕂 y 0) (hy0 : y 0 = 1)
+    (hode : ∀ᶠ z in 𝓝 (0 : 𝕂), gaussDifferentialExpression a b c y z = 0) :
+    y =ᶠ[𝓝 (0 : 𝕂)] ordinaryHypergeometric a b c := by
+  obtain ⟨p, r, hp⟩ := hy
+  have hcoeff : ∀ n, p.coeff n = ordinaryHypergeometricCoefficient a b c n := by
     intro n
     induction n with
-    | zero => rw [hd0, ordinaryHypergeometricSeries_coeff_zero a b c hc]
+    | zero =>
+      rw [show p.coeff 0 = y 0 from hp.coeff_zero (1 : Fin 0 → 𝕂), hy0]
+      simp [ordinaryHypergeometricCoefficient]
     | succ n ih =>
-      have hn : (n : ℂ) + 1 ≠ 0 := by exact_mod_cast Nat.succ_ne_zero n
-      have hcn : c + (n : ℂ) ≠ 0 := by simpa [eq_neg_iff_add_eq_zero] using hc n
+      have hn : (n : 𝕂) + 1 ≠ 0 := by exact_mod_cast Nat.succ_ne_zero n
+      have hcn : c + (n : 𝕂) ≠ 0 := fun h ↦ hc n (eq_neg_of_add_eq_zero_right h)
       apply mul_left_cancel₀ (mul_ne_zero hn hcn)
-      calc
-        ((n : ℂ) + 1) * (c + n) * p.coeff (n + 1) = (a + n) * (b + n) * p.coeff n :=
-          gauss_powerSeries_coeff_recurrence a b c hp hode n
-        _ = (a + n) * (b + n) * (ordinaryHypergeometricSeries ℂ a b c).coeff n := by rw [ih]
-        _ = ((n : ℂ) + 1) * (c + n) * (ordinaryHypergeometricSeries ℂ a b c).coeff (n + 1) :=
-          (ordinaryHypergeometricSeries_coeff_recurrence a b c hc n).symm
-  have hpeq : p = ordinaryHypergeometricSeries ℂ a b c := by
-    ext n
-    rw [← FormalMultilinearSeries.mkPiRing_coeff_eq p,
-      ← FormalMultilinearSeries.mkPiRing_coeff_eq (ordinaryHypergeometricSeries ℂ a b c),
-      hcoeff n]
-  filter_upwards [Metric.eball_mem_nhds (0 : ℂ) hp.r_pos] with z hz
+      rw [coeff_recurrence_of_gaussDifferentialExpression hp hode n, ih,
+        TauCeti.ordinaryHypergeometricCoefficient_add_one]
+      field_simp
+  have hpeq : p = ordinaryHypergeometricSeries 𝕂 a b c := by
+    rw [← ofScalars_coeff_self p, ordinaryHypergeometricSeries]
+    exact congr_arg _ (funext hcoeff)
+  filter_upwards [Metric.eball_mem_nhds (0 : 𝕂) hp.r_pos] with z hz
   have hyz : y z = p.sum z := by simpa using hp.sum hz
   rw [hyz, ordinaryHypergeometric, hpeq]
+
+end Ordinary
 
 /-- The regular-singular criterion for `y'' + P y' + Q y = 0`, allowing removable singularities.
 Punctured equalities avoid false continuity claims for totalized rational functions at their poles.
@@ -338,10 +218,25 @@ def IsRegularSingularAt (P Q : ℂ → ℂ) (a : ℂ) : Prop :=
     (∀ᶠ z in 𝓝[≠] a, p z = (z - a) * P z) ∧
     (∀ᶠ z in 𝓝[≠] a, q z = (z - a) ^ 2 * Q z)
 
+/-- Characterization of `IsRegularSingularAt` by analytic germs `p`, `q` with
+`p = (z - a) P` and `q = (z - a)² Q` on a punctured neighbourhood of `a`. -/
+theorem isRegularSingularAt_iff {P Q : ℂ → ℂ} {a : ℂ} :
+    IsRegularSingularAt P Q a ↔ ∃ p q : ℂ → ℂ, AnalyticAt ℂ p a ∧ AnalyticAt ℂ q a ∧
+      (∀ᶠ z in 𝓝[≠] a, p z = (z - a) * P z) ∧
+      (∀ᶠ z in 𝓝[≠] a, q z = (z - a) ^ 2 * Q z) :=
+  Iff.rfl
+
 /-- The regular-singular criterion at infinity, after the coordinate change `z = 1/w`. -/
 @[expose]
 def IsRegularSingularAtInfinity (P Q : ℂ → ℂ) : Prop :=
   IsRegularSingularAt (fun w ↦ 2 / w - P w⁻¹ / w ^ 2) (fun w ↦ Q w⁻¹ / w ^ 4) 0
+
+/-- `IsRegularSingularAtInfinity P Q` is the regular-singular criterion at `0` for the equation
+transformed by `z = 1/w`. -/
+theorem isRegularSingularAtInfinity_iff {P Q : ℂ → ℂ} :
+    IsRegularSingularAtInfinity P Q ↔
+      IsRegularSingularAt (fun w ↦ 2 / w - P w⁻¹ / w ^ 2) (fun w ↦ Q w⁻¹ / w ^ 4) 0 :=
+  Iff.rfl
 
 /-- All three Gauss points are regular singular (possibly ordinary in degenerate cases). -/
 theorem gauss_isRegularSingularAt (a b c : ℂ) :

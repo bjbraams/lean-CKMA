@@ -13,8 +13,9 @@ import CKMA.Probability.InfinitelyDivisible.Law
 /-!
 # Infinite divisibility and Lévy–Khintchine triplets (06.51)
 
-The definitions are in `CKMA.Probability.InfinitelyDivisible.Basic`: `convolutionPower` and
-`IsInfinitelyDivisible` use positive convolution roots of a real probability law,
+The definitions are in `CKMA.Probability.InfinitelyDivisible.Basic`: `IsInfinitelyDivisible`
+asks for probability convolution roots (TauCeti's `MeasureTheory.Measure.convolutionPower`) of
+every positive order,
 `IsLevyMeasure` records the zero atom and integrability of the truncated quadratic jump size,
 and `LevyTriplet` packages Gaussian variance, drift and jump measure, with its characteristic
 exponent using the truncation `x * 1_{|x| ≤ 1}`.

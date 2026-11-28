@@ -9,6 +9,7 @@ public import TauCeti.Analysis.Convex.Subdifferential
 public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 import Mathlib.Analysis.Convex.Continuous
 import Mathlib.Analysis.LocallyConvex.Separation
+import TauCeti.Analysis.Convex.EffectiveDomain
 
 /-!
 # Subgradients from a nonempty epigraph interior
@@ -24,9 +25,11 @@ Nonlinear Optimization*, Theorem 4.1.6; GAPS 12.21 and 12.39.
 
 ## Main results
 
+* `CKMA.exists_boundedAbove_of_continuousAt`: an extended-real function continuous at a point
+  where it is `< ⊤` is bounded above nearby.
 * `CKMA.exists_mem_subdifferential_of_boundedAbove`: subgradient existence from local upper
   boundedness of a convex extended-real function.
-* `CKMA.ConvexOn.convex_epigraph_coe`: convexity of the `EReal` epigraph of a real convex
+* `convex_epigraph_coe_of_convexOn`: convexity of the `EReal` epigraph of a real convex
   function.
 * `CKMA.exists_mem_subdifferential_of_convexOn`: subgradient existence for finite-dimensional
   real convex functions.
@@ -41,19 +44,19 @@ namespace CKMA
 open scoped Pointwise Topology
 open Set ContinuousLinearMap
 
-variable {E : Type*} [NormedAddCommGroup E]
-
-/-- A function continuous and finite at a point is bounded above on a neighborhood. -/
-theorem exists_boundedAbove_of_continuousAt {f : E → EReal} {x : E}
-    (hcont : ContinuousAt f x) (htop : f x ≠ ⊤) (hbot : f x ≠ ⊥) :
+/-- A function continuous at a point where it is `< ⊤` is bounded above on a neighborhood;
+the value `⊥` is allowed. -/
+theorem exists_boundedAbove_of_continuousAt {X : Type*} [TopologicalSpace X] {f : X → EReal}
+    {x : X} (hcont : ContinuousAt f x) (htop : f x ≠ ⊤) :
     ∃ U ∈ 𝓝 x, ∃ M : ℝ, ∀ y ∈ U, f y ≤ (M : EReal) := by
-  set r : ℝ := (f x).toReal
-  have hr : f x = (r : EReal) := (EReal.coe_toReal htop hbot).symm
-  have hnhds : Iio ((r + 1 : ℝ) : EReal) ∈ 𝓝 (f x) := by
-    rw [hr]
-    exact Iio_mem_nhds (EReal.coe_lt_coe_iff.mpr (lt_add_one r))
-  obtain ⟨U, hU, hUle⟩ := (hcont.eventually hnhds).exists_mem
-  exact ⟨U, hU, r + 1, fun y hy => (hUle y hy).le⟩
+  obtain ⟨M, hM⟩ : ∃ M : ℝ, f x < M := by
+    induction h : f x using EReal.rec with
+    | bot => exact ⟨0, EReal.bot_lt_coe 0⟩
+    | coe r => exact ⟨r + 1, by exact_mod_cast (lt_add_one r)⟩
+    | top => exact absurd h htop
+  exact ⟨_, hcont (Iio_mem_nhds hM), M, fun y hy => le_of_lt hy⟩
+
+variable {E : Type*} [NormedAddCommGroup E]
 
 variable [NormedSpace ℝ E]
 
@@ -148,15 +151,11 @@ theorem exists_mem_subdifferential_of_boundedAbove {f : E → EReal}
   simp only [LinearMap.flip_apply, topDualPairing_apply, happ]
   linarith
 
-/-- A real-valued function has convex epigraph after coercion to `EReal`. -/
-theorem ConvexOn.convex_epigraph_coe {f : E → ℝ} (hf : ConvexOn ℝ Set.univ f) :
+/-- A real-valued function convex on `univ` has convex epigraph after coercion to `EReal`; this
+is TauCeti's `convexOn_iff_convex_epigraph_ite` at `Ω = univ`. -/
+theorem convex_epigraph_coe_of_convexOn {f : E → ℝ} (hf : ConvexOn ℝ Set.univ f) :
     Convex ℝ {p : E × ℝ | (f p.1 : EReal) ≤ p.2} := by
-  have hset : {p : E × ℝ | (f p.1 : EReal) ≤ p.2} =
-      {p : E × ℝ | f p.1 ≤ p.2} := by
-    ext p
-    simp [EReal.coe_le_coe_iff]
-  rw [hset]
-  simpa using hf.convex_epigraph
+  simpa using (TauCeti.convexOn_iff_convex_epigraph_ite (Ω := Set.univ) (u := f)).1 hf
 
 /-- Every point of a finite-dimensional real convex function has a subgradient. -/
 theorem exists_mem_subdifferential_of_convexOn [FiniteDimensional ℝ E] {f : E → ℝ}
@@ -168,10 +167,9 @@ theorem exists_mem_subdifferential_of_convexOn [FiniteDimensional ℝ E] {f : E 
     continuousOn_univ.mp (hf.continuousOn isOpen_univ)
   have hE : Continuous fun y : E => (f y : EReal) :=
     continuous_coe_real_ereal.comp hcont
-  have hconv : Convex ℝ {p : E × ℝ | (f p.1 : EReal) ≤ p.2} := ConvexOn.convex_epigraph_coe hf
+  have hconv : Convex ℝ {p : E × ℝ | (f p.1 : EReal) ≤ p.2} := convex_epigraph_coe_of_convexOn hf
   have hbot : ∀ y : E, (f y : EReal) ≠ ⊥ := fun _ => EReal.coe_ne_bot _
-  obtain ⟨U, hU, M, hM⟩ :=
-    exists_boundedAbove_of_continuousAt hE.continuousAt (EReal.coe_ne_top _) (hbot x)
+  obtain ⟨U, hU, M, hM⟩ := exists_boundedAbove_of_continuousAt hE.continuousAt (EReal.coe_ne_top _)
   exact exists_mem_subdifferential_of_boundedAbove hconv hbot (EReal.coe_ne_top _)
     ⟨U, hU, M, hM⟩
 

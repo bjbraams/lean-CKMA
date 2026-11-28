@@ -9,12 +9,13 @@ public import Mathlib.Dynamics.BirkhoffSum.Average
 public import Mathlib.Dynamics.Ergodic.Ergodic
 public import Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic
 public import Mathlib.MeasureTheory.MeasurableSpace.Invariants
-public import CKMA.Dynamics.Ergodic.Pointwise.KingmanFull
+public import CKMA.Dynamics.Ergodic.Pointwise.Kingman.Defs
 
 import Mathlib.Dynamics.Ergodic.Function
 import CKMA.Dynamics.Ergodic.Pointwise.Maximal
 import CKMA.Dynamics.Ergodic.Pointwise.Birkhoff
-import CKMA.Dynamics.Ergodic.Pointwise.KingmanClosure
+import CKMA.Dynamics.Ergodic.Pointwise.Kingman.MeasurableProcess
+import CKMA.Dynamics.Ergodic.Pointwise.Kingman.Truncation
 
 /-!
 # Pointwise and subadditive ergodic theorems (10.5, 10.7)
@@ -24,15 +25,16 @@ Birkhoff's theorem uses conditional expectation onto the invariant sigma-algebra
 a scalar-mean specialization for ergodic probability-preserving transformations.
 
 `IsSubadditiveProcess` imposes almost-everywhere inequalities at positive lengths, leaving
-the length-zero value unconstrained. Kingman's targets give an invariant integrable
+the length-zero value unconstrained. Kingman's theorem gives an invariant integrable
 limit, pointwise and L¹ convergence, and the infimum formula for its mean under a lower
 bound on the normalized expectations.
 
 ## Main definitions
 
 * `CKMA.maximalErgodicSet`: the finite maximal-positive Birkhoff-sum set.
-* `CKMA.IsSubadditiveProcess`: subadditivity of a sequence of observables along `T`.
-* `CKMA.subadditiveMeanRate` (from `Pointwise.KingmanFull`): the infimum of normalized
+* `CKMA.IsSubadditiveProcess` (from `Pointwise.Kingman.Defs`): subadditivity of a sequence of
+  observables along `T`.
+* `CKMA.subadditiveMeanRate` (from `Pointwise.Kingman.Defs`): the infimum of normalized
   positive-length expectations.
 
 ## Main results
@@ -59,6 +61,11 @@ variable {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω}
 @[expose]
 def maximalErgodicSet (T : Ω → Ω) (f : Ω → ℝ) (N : ℕ) : Set Ω :=
   {ω | ∃ n : ℕ, 0 < n ∧ n ≤ N ∧ 0 < birkhoffSum T f n ω}
+
+omit [MeasurableSpace Ω] in
+/-- Membership in `maximalErgodicSet`. -/
+lemma mem_maximalErgodicSet_iff {T : Ω → Ω} {f : Ω → ℝ} {N : ℕ} {ω : Ω} :
+    ω ∈ maximalErgodicSet T f N ↔ ∃ n : ℕ, 0 < n ∧ n ≤ N ∧ 0 < birkhoffSum T f n ω := Iff.rfl
 
 /-- **10.5**, the maximal ergodic inequality on a measure-preserving system. -/
 theorem maximal_ergodic {T : Ω → Ω}
@@ -103,16 +110,6 @@ theorem birkhoff_pointwise_of_ergodic [IsProbabilityMeasure μ] {T : Ω → Ω}
     rw [hcval, ← hint, hconst]
   simpa [hval] using hω
 
-@[deprecated (since := "2026-11-15")]
-alias birkhoffAverage_ae_tendsto_integral_of_ergodic := birkhoff_pointwise_of_ergodic
-
-/-- Subadditivity along a transformation, on positive lengths; no artificial value for `f₀`
-is imposed. Almost-everywhere inequalities are used in each pair of lengths. -/
-@[expose]
-def IsSubadditiveProcess (T : Ω → Ω) (f : ℕ → Ω → ℝ) (μ : Measure Ω) : Prop :=
-  ∀ n m : ℕ, 0 < n → 0 < m → ∀ᵐ ω ∂μ,
-    f (n + m) ω ≤ f n ω + f m ((T^[n]) ω)
-
 /-- **10.7**, Kingman's theorem: an invariant integrable limit, pointwise and L1 convergence,
 and the Fekete infimum formula for its expectation. -/
 theorem kingman_subadditive [IsProbabilityMeasure μ] {T : Ω → Ω}
@@ -125,31 +122,29 @@ theorem kingman_subadditive [IsProbabilityMeasure μ] {T : Ω → Ω}
       Tendsto (fun n : ℕ ↦ eLpNorm (fun ω ↦ (n + 1 : ℝ)⁻¹ * f (n + 1) ω - g ω) 1 μ)
         atTop (𝓝 0) ∧
       (∫ ω, g ω ∂μ) = subadditiveMeanRate f μ := by
-  have hf_int : ∀ n : ℕ, 0 < n → Integrable (kingmanMk hf n) μ :=
-    fun n hn => integrable_kingmanMk hf hn
-  have hf_meas : ∀ n : ℕ, 0 < n → Measurable (kingmanMk hf n) :=
-    fun n hn => measurable_kingmanMk hf hn
+  have hf_int : ∀ n : ℕ, 0 < n → Integrable (kingmanRep hf n) μ :=
+    fun n hn => integrable_kingmanRep hf hn
+  have hf_meas : ∀ n : ℕ, 0 < n → Measurable (kingmanRep hf n) :=
+    fun n hn => measurable_kingmanRep hf hn
   have hlower' : ∃ c : ℝ, ∀ n : ℕ, 0 < n →
-      c ≤ (n : ℝ)⁻¹ * ∫ ω, kingmanMk hf n ω ∂μ := by
+      c ≤ (n : ℝ)⁻¹ * ∫ ω, kingmanRep hf n ω ∂μ := by
     obtain ⟨c, hc⟩ := hlower
     refine ⟨c, fun n hn => ?_⟩
-    rw [kingmanMk_integral hf hn]
+    rw [kingmanRep_integral hf hn]
     exact hc n hn
   obtain ⟨g, hg_int, hinv, hconv, hL1, hint⟩ := kingman_of_measurable hT hf_int hf_meas
-    (kingmanMk_subadditive hT hf hsub) hlower'
+    (isSubadditiveProcess_kingmanRep hT hf hsub) hlower'
   refine ⟨g, hg_int, hinv, ?_, ?_, ?_⟩
-  · have hae : ∀ᵐ ω ∂μ, ∀ n : ℕ, f (n + 1) ω = kingmanMk hf (n + 1) ω :=
-      (ae_all_iff).2 fun n => kingmanMk_ae hf (Nat.succ_pos n)
+  · have hae : ∀ᵐ ω ∂μ, ∀ n : ℕ, f (n + 1) ω = kingmanRep hf (n + 1) ω :=
+      (ae_all_iff).2 fun n => kingmanRep_ae hf (Nat.succ_pos n)
     filter_upwards [hconv, hae] with ω hω hpt
     exact hω.congr fun n => by rw [hpt n]
   · refine hL1.congr fun n => ?_
     refine eLpNorm_congr_ae ?_
-    filter_upwards [kingmanMk_ae hf (Nat.succ_pos n)] with ω hω
+    filter_upwards [kingmanRep_ae hf (Nat.succ_pos n)] with ω hω
     rw [hω]
-  · rw [← kingmanMk_fekete hf]
+  · rw [← subadditiveMeanRate_kingmanRep hf]
     exact hint
-
-@[deprecated (since := "2026-11-15")] alias kingman_of_integrable := kingman_subadditive
 
 /-- The subadditive ergodic limit is constant and equal to the infimum mean rate. -/
 theorem kingman_subadditive_of_ergodic [IsProbabilityMeasure μ] {T : Ω → Ω}
@@ -171,8 +166,5 @@ theorem kingman_subadditive_of_ergodic [IsProbabilityMeasure μ] {T : Ω → Ω}
     exact heq.symm.trans hint
   filter_upwards [hconv, hc] with ω hω hωc
   simpa [hωc, hcL] using hω
-
-@[deprecated (since := "2026-11-15")]
-alias kingman_ae_tendsto_of_ergodic := kingman_subadditive_of_ergodic
 
 end CKMA

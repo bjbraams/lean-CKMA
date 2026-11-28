@@ -42,9 +42,7 @@ namespace CKMA
 open scoped InnerProductSpace
 open ContinuousLinearMap
 
-universe u
-
-variable {H K : Type u}
+variable {H K : Type*}
     [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
     [NormedAddCommGroup K] [InnerProductSpace ℂ K] [CompleteSpace K]
 
@@ -52,6 +50,11 @@ variable {H K : Type u}
 @[expose]
 def coextensionCompress (X : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K) : K →L[ℂ] H :=
   X.comp J.toContinuousLinearMap.adjoint
+
+/-- `coextensionCompress X J` applies `X` after `J*`. -/
+theorem coextensionCompress_apply (X : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K) (y : K) :
+    coextensionCompress X J y = X (J.toContinuousLinearMap.adjoint y) :=
+  rfl
 
 /-- Co-invariance and commutation give `T X₀ = X₀ V`. -/
 private theorem coextensionCompress_intertwine (T X : H →L[ℂ] H) (hXT : Commute X T)
@@ -130,13 +133,13 @@ private theorem re_inner_smul_one (c : ℝ) (y : K) :
     _ = c * ‖y‖ ^ 2 := RCLike.ofReal_re _
 
 /-- Real quadratic form of `A* A`. -/
-private theorem re_inner_adjoint_comp_self {E : Type u} [NormedAddCommGroup E]
+private theorem re_inner_adjoint_comp_self {E : Type*} [NormedAddCommGroup E]
     [InnerProductSpace ℂ E] [CompleteSpace E] (A : K →L[ℂ] E) (y : K) :
     RCLike.re ⟪(A.adjoint.comp A) y, y⟫_ℂ = ‖A y‖ ^ 2 :=
   (apply_norm_sq_eq_inner_adjoint_left A y).symm
 
 /-- `A* A` is self-adjoint. -/
-private theorem isSelfAdjoint_adjoint_comp_self {E : Type u} [NormedAddCommGroup E]
+private theorem isSelfAdjoint_adjoint_comp_self {E : Type*} [NormedAddCommGroup E]
     [InnerProductSpace ℂ E] [CompleteSpace E] (A : K →L[ℂ] E) :
     IsSelfAdjoint (A.adjoint.comp A) := by
   rw [isSelfAdjoint_iff', adjoint_comp, adjoint_adjoint]
@@ -152,6 +155,12 @@ private theorem isSelfAdjoint_smul_one_real (c : ℝ) :
 def commutantRemainder (X : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K) (gram : K →L[ℂ] K) : K →L[ℂ] K :=
   Complex.ofReal (‖X‖ ^ 2) • (1 : K →L[ℂ] K) -
     (coextensionCompress X J).adjoint.comp (coextensionCompress X J) - gram
+
+/-- `commutantRemainder X J gram = ‖X‖² - X₀* X₀ - gram`. -/
+theorem commutantRemainder_def (X : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K) (gram : K →L[ℂ] K) :
+    commutantRemainder X J gram = Complex.ofReal (‖X‖ ^ 2) • (1 : K →L[ℂ] K) -
+      (coextensionCompress X J).adjoint.comp (coextensionCompress X J) - gram :=
+  rfl
 
 /-- Real quadratic form of the commutant remainder. -/
 theorem re_inner_commutantRemainder (X : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K) (gram : K →L[ℂ] K)
@@ -194,6 +203,11 @@ theorem commutantRemainder_nonneg (X : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K) {
 @[expose]
 def remainderSqrt (X : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K) (gram : K →L[ℂ] K) : K →L[ℂ] K :=
   CFC.sqrt (commutantRemainder X J gram)
+
+/-- `remainderSqrt X J gram` is `CFC.sqrt` of the commutant remainder. -/
+theorem remainderSqrt_def (X : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K) (gram : K →L[ℂ] K) :
+    remainderSqrt X J gram = CFC.sqrt (commutantRemainder X J gram) :=
+  rfl
 
 /-- Squared norm of the remainder square root. -/
 theorem norm_sq_remainderSqrt (X : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K) (gram : K →L[ℂ] K)
@@ -263,6 +277,15 @@ def commutantBlock (T X : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K) (V : K →ₗ�
       (commutantPrev_norm_le T X J V s)).comp
     (remainderSqrt X J s.gram)
 
+/-- `commutantBlock` factors the previous block through the remainder square root. -/
+theorem commutantBlock_def (T X : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K)
+    (s : CommutantLiftState T X J V) :
+    commutantBlock T X J V s =
+      (contractionFactor (dilationDefectSpace T J V)
+        ((remainderSqrt X J s.gram).comp V.toContinuousLinearMap) s.prev
+        (commutantPrev_norm_le T X J V s)).comp (remainderSqrt X J s.gram) :=
+  rfl
+
 /-- Each block reproduces the previous block on the range of `V`. -/
 theorem commutantBlock_comp (T X : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K)
     (s : CommutantLiftState T X J V) :
@@ -307,6 +330,14 @@ def commutantSuccGram (T X : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K) (V : K →�
   s.gram + star ((dilationDefectSpace T J V).subtypeL.comp (commutantBlock T X J V s)) *
     ((dilationDefectSpace T J V).subtypeL.comp (commutantBlock T X J V s))
 
+/-- `commutantSuccGram` adds `B* B` for the new block `B` to the Gram operator. -/
+theorem commutantSuccGram_def (T X : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K)
+    (s : CommutantLiftState T X J V) :
+    commutantSuccGram T X J V s =
+      s.gram + star ((dilationDefectSpace T J V).subtypeL.comp (commutantBlock T X J V s)) *
+        ((dilationDefectSpace T J V).subtypeL.comp (commutantBlock T X J V s)) :=
+  rfl
+
 /-- Real quadratic form after appending one block. -/
 theorem re_inner_succGram (T X : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K)
     (s : CommutantLiftState T X J V) (y : K) :
@@ -344,6 +375,20 @@ def commutantLiftSucc (T X : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K) (V : K →�
       simpa [comp_apply] using congrArg norm hcomp
     rw [hprev]
     linarith [s.shift y]
+
+/-- The Gram operator of the next state. -/
+@[simp]
+theorem commutantLiftSucc_gram (T X : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K)
+    (s : CommutantLiftState T X J V) :
+    (commutantLiftSucc T X J V s).gram = commutantSuccGram T X J V s :=
+  rfl
+
+/-- The previous block of the next state is the new block. -/
+@[simp]
+theorem commutantLiftSucc_prev (T X : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K)
+    (s : CommutantLiftState T X J V) :
+    (commutantLiftSucc T X J V s).prev = commutantBlock T X J V s :=
+  rfl
 
 /-- The defect of the compression, viewed in the defect space. -/
 @[expose]
@@ -390,6 +435,24 @@ def commutantLiftBase (T X : H →L[ℂ] H) (hXT : Commute X T)
     rw [hnorm, hD]
     ring
 
+/-- The initial state has Gram operator zero. -/
+@[simp]
+theorem commutantLiftBase_gram (T X : H →L[ℂ] H) (hXT : Commute X T)
+    (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K)
+    (hcoin : ∀ y : K, J.toContinuousLinearMap.adjoint (V y) =
+      T (J.toContinuousLinearMap.adjoint y)) :
+    (commutantLiftBase T X hXT J V hcoin).gram = 0 :=
+  rfl
+
+/-- The initial previous block is the defect of the compression. -/
+@[simp]
+theorem commutantLiftBase_prev (T X : H →L[ℂ] H) (hXT : Commute X T)
+    (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K)
+    (hcoin : ∀ y : K, J.toContinuousLinearMap.adjoint (V y) =
+      T (J.toContinuousLinearMap.adjoint y)) :
+    (commutantLiftBase T X hXT J V hcoin).prev = commutantBasePrev T X J V :=
+  rfl
+
 /-- The block iteration. -/
 @[expose]
 def commutantLiftState (T X : H →L[ℂ] H) (hXT : Commute X T)
@@ -399,6 +462,25 @@ def commutantLiftState (T X : H →L[ℂ] H) (hXT : Commute X T)
   | 0 => commutantLiftBase T X hXT J V hcoin
   | n + 1 => commutantLiftSucc T X J V (commutantLiftState T X hXT J V hcoin n)
 
+/-- The block iteration starts at `commutantLiftBase`. -/
+@[simp]
+theorem commutantLiftState_zero (T X : H →L[ℂ] H) (hXT : Commute X T)
+    (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K)
+    (hcoin : ∀ y : K, J.toContinuousLinearMap.adjoint (V y) =
+      T (J.toContinuousLinearMap.adjoint y)) :
+    commutantLiftState T X hXT J V hcoin 0 = commutantLiftBase T X hXT J V hcoin :=
+  rfl
+
+/-- Each step of the block iteration appends one block. -/
+@[simp]
+theorem commutantLiftState_succ (T X : H →L[ℂ] H) (hXT : Commute X T)
+    (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K)
+    (hcoin : ∀ y : K, J.toContinuousLinearMap.adjoint (V y) =
+      T (J.toContinuousLinearMap.adjoint y)) (n : ℕ) :
+    commutantLiftState T X hXT J V hcoin (n + 1) =
+      commutantLiftSucc T X J V (commutantLiftState T X hXT J V hcoin n) :=
+  rfl
+
 /-- The block attached to the `n`th state. -/
 @[expose]
 def commutantLiftBlock (T X : H →L[ℂ] H) (hXT : Commute X T)
@@ -406,6 +488,15 @@ def commutantLiftBlock (T X : H →L[ℂ] H) (hXT : Commute X T)
     (hcoin : ∀ y : K, J.toContinuousLinearMap.adjoint (V y) =
       T (J.toContinuousLinearMap.adjoint y)) (n : ℕ) : K →L[ℂ] dilationDefectSpace T J V :=
   commutantBlock T X J V (commutantLiftState T X hXT J V hcoin n)
+
+/-- `commutantLiftBlock n` is the block of the `n`th state. -/
+theorem commutantLiftBlock_def (T X : H →L[ℂ] H) (hXT : Commute X T)
+    (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K)
+    (hcoin : ∀ y : K, J.toContinuousLinearMap.adjoint (V y) =
+      T (J.toContinuousLinearMap.adjoint y)) (n : ℕ) :
+    commutantLiftBlock T X hXT J V hcoin n =
+      commutantBlock T X J V (commutantLiftState T X hXT J V hcoin n) :=
+  rfl
 
 /-- Successive blocks satisfy `Bₙ₊₁ V = Bₙ`. -/
 theorem commutantLiftBlock_succ_comp (T X : H →L[ℂ] H) (hXT : Commute X T)

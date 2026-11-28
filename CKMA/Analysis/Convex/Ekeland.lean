@@ -28,7 +28,8 @@ Source: GAPS 12.45.
 
 ## Main results
 
-* `CKMA.exists_isEkelandPoint`: Ekeland's variational principle on complete metric spaces (12.45).
+* `CKMA.exists_isEkelandPoint`: Ekeland's variational principle on complete metric spaces
+  (**12.45**).
 -/
 
 public section
@@ -44,8 +45,19 @@ open Set
 def IsEkelandPoint {X : Type*} [MetricSpace X] (f : X → EReal) (a : ℝ) (x : X) : Prop :=
   f x ≠ ⊥ ∧ f x ≠ ⊤ ∧ ∀ y, y ≠ x → f x - (a * dist y x : ℝ) < f y
 
+/-- Defining property of `IsEkelandPoint`. -/
+theorem isEkelandPoint_iff {X : Type*} [MetricSpace X] {f : X → EReal} {a : ℝ} {x : X} :
+    IsEkelandPoint f a x ↔ f x ≠ ⊥ ∧ f x ≠ ⊤ ∧ ∀ y, y ≠ x → f x - (a * dist y x : ℝ) < f y :=
+  Iff.rfl
+
+/-- At an Ekeland point the penalized value is strictly below every other value. -/
+theorem IsEkelandPoint.sub_lt {X : Type*} [MetricSpace X] {f : X → EReal} {a : ℝ} {x : X}
+    (h : IsEkelandPoint f a x) {y : X} (hy : y ≠ x) : f x - (a * dist y x : ℝ) < f y :=
+  h.2.2 y hy
+
 /-- **12.45**: Ekeland's variational principle with explicit positive error and distance scales.
-Properness, a finite initial value and a real lower bound prevent arithmetic with `-∞`. -/
+The real lower bound and the finite initial value make the function proper, so no arithmetic
+with `-∞` occurs. -/
 theorem exists_isEkelandPoint {X : Type*} [MetricSpace X] [CompleteSpace X]
     (f : X → EReal) (hl : LowerSemicontinuous f)
     (hbelow : ∃ b : ℝ, ∀ x, (b : EReal) ≤ f x)
@@ -102,6 +114,5 @@ theorem exists_isEkelandPoint {X : Type*} [MetricSpace X] [CompleteSpace X]
     calc
       _ ≤ f z := by simpa only [sub_zero] using EReal.sub_le_sub (le_refl (f z)) ha
       _ ≤ f x₀ := z.property
-
 
 end CKMA

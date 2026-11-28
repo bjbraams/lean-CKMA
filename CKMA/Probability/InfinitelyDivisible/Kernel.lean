@@ -44,6 +44,11 @@ open scoped NNReal ENNReal BoundedContinuousFunction
 @[expose]
 def quadTrunc (x : ℝ) : ℝ := min 1 (x ^ 2)
 
+/-- Defining formula of `quadTrunc`. -/
+lemma quadTrunc_def (x : ℝ) :
+    quadTrunc x = min 1 (x ^ 2) :=
+  rfl
+
 /-- The quadratic weight is nonnegative. -/
 lemma quadTrunc_nonneg (x : ℝ) : 0 ≤ quadTrunc x :=
   le_min (by norm_num) (sq_nonneg x)
@@ -72,6 +77,11 @@ private lemma quadTrunc_eq_sq_of_abs_le_one {x : ℝ} (hx : |x| ≤ 1) : quadTru
 /-- Continuous cutoff, equal to `x` on `[-1/2, 1/2]` and equal to `0` for `|x| ≥ 1`. -/
 @[expose]
 def contTrunc (x : ℝ) : ℝ := x * max 0 (min 1 (2 - 2 * |x|))
+
+/-- Defining formula of `contTrunc`. -/
+lemma contTrunc_def (x : ℝ) :
+    contTrunc x = x * max 0 (min 1 (2 - 2 * |x|)) :=
+  rfl
 
 /-- The continuous cutoff is continuous. -/
 @[fun_prop]
@@ -122,10 +132,20 @@ private lemma abs_sub_contTrunc_le_of_abs_le_one {x : ℝ} (hx : |x| ≤ 1) :
 def contIntegrand (t x : ℝ) : ℂ :=
   exp (I * ↑t * ↑x) - 1 - I * ↑t * ↑(contTrunc x)
 
+/-- Defining formula of `contIntegrand`. -/
+lemma contIntegrand_def (t x : ℝ) :
+    contIntegrand t x = exp (I * ↑t * ↑x) - 1 - I * ↑t * ↑(contTrunc x) :=
+  rfl
+
 /-- Lévy kernel for the continuous cutoff, with value `-t² / 2` at the origin. -/
 @[expose]
 def levyKernel (t x : ℝ) : ℂ :=
   if x = 0 then -((t : ℂ) ^ 2) / 2 else contIntegrand t x / ↑(quadTrunc x)
+
+/-- Defining formula of `levyKernel`. -/
+lemma levyKernel_def (t x : ℝ) :
+    levyKernel t x = if x = 0 then -((t : ℂ) ^ 2) / 2 else contIntegrand t x / ↑(quadTrunc x) :=
+  rfl
 
 /-- Second-order Taylor remainder of the complex exponential. -/
 private lemma norm_exp_sub_taylor2_le (y : ℂ) :
@@ -379,6 +399,11 @@ lemma norm_levyKernel_le (t x : ℝ) :
 def levyKernelBound (t : ℝ) : ℝ :=
   8 * (t ^ 2 + 1) * Real.exp |t| + 2
 
+/-- Defining formula of `levyKernelBound`. -/
+lemma levyKernelBound_def (t : ℝ) :
+    levyKernelBound t = 8 * (t ^ 2 + 1) * Real.exp |t| + 2 :=
+  rfl
+
 /-- The Lévy kernel as a bounded continuous function. -/
 @[expose]
 def levyKernelBdd (t : ℝ) : ℝ →ᵇ ℂ :=
@@ -448,6 +473,11 @@ private lemma integral_contIntegrand {ν : Measure ℝ} [IsProbabilityMeasure ν
 def quadWeighted (n : ℕ) (ν : Measure ℝ) : Measure ℝ :=
   (n : ℝ≥0∞) • ν.withDensity (fun x => ENNReal.ofReal (quadTrunc x))
 
+/-- Defining formula of `quadWeighted`. -/
+lemma quadWeighted_def (n : ℕ) (ν : Measure ℝ) :
+    quadWeighted n ν = (n : ℝ≥0∞) • ν.withDensity (fun x => ENNReal.ofReal (quadTrunc x)) :=
+  rfl
+
 /-- Quadratic weighting preserves finiteness. -/
 lemma isFiniteMeasure_quadWeighted {ν : Measure ℝ} [IsFiniteMeasure ν] (n : ℕ) :
     IsFiniteMeasure (quadWeighted n ν) := by
@@ -459,7 +489,7 @@ lemma isFiniteMeasure_quadWeighted {ν : Measure ℝ} [IsFiniteMeasure ν] (n : 
       (ENNReal.ofReal_le_ofReal (quadTrunc_le_one x)).trans_eq (by simp)
     exact (lintegral_mono hle).trans_lt (by simp [measure_lt_top])
   exact ⟨by
-    rw [Measure.smul_apply]
+    rw [smul_apply]
     exact ENNReal.mul_lt_top (ENNReal.natCast_lt_top n) hden⟩
 
 /-- The real drift carried by the continuous cutoff. -/
@@ -467,9 +497,13 @@ lemma isFiniteMeasure_quadWeighted {ν : Measure ℝ} [IsFiniteMeasure ν] (n : 
 def contDrift (n : ℕ) (ν : Measure ℝ) : ℝ :=
   (n : ℝ) * ∫ x, contTrunc x ∂ν
 
+/-- Defining formula of `contDrift`. -/
+lemma contDrift_def (n : ℕ) (ν : Measure ℝ) :
+    contDrift n ν = (n : ℝ) * ∫ x, contTrunc x ∂ν :=
+  rfl
+
 /-- The kernel integral against the weighted law is `n` times the compensator. -/
-private lemma integral_levyKernel_quadWeighted {ν : Measure ℝ} [IsProbabilityMeasure ν] (n : ℕ)
-    (t : ℝ) :
+private lemma integral_levyKernel_quadWeighted {ν : Measure ℝ} (n : ℕ) (t : ℝ) :
     ∫ x, levyKernel t x ∂quadWeighted n ν =
       (n : ℂ) * ∫ x, contIntegrand t x ∂ν := by
   have hf : Measurable fun x => ENNReal.ofReal (quadTrunc x) := by fun_prop

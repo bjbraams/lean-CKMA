@@ -7,22 +7,10 @@ module
 
 public import Mathlib.Analysis.Complex.Circle
 
-import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Algebra.Module.Defs
-import Mathlib.Algebra.Ring.MinimalAxioms
 import Mathlib.Analysis.CStarAlgebra.GelfandDuality
-import Mathlib.Analysis.Normed.Algebra.Spectrum
-import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.Analysis.Normed.Lp.lpSpace
 import Mathlib.Analysis.Normed.Ring.InfiniteSum
-import Mathlib.Topology.Algebra.InfiniteSum.Constructions
-import Mathlib.Topology.Algebra.InfiniteSum.Module
-import Mathlib.Analysis.Normed.Group.InfiniteSum
-import Mathlib.Topology.Algebra.InfiniteSum.Order
-import Mathlib.Topology.Algebra.InfiniteSum.Ring
-import Mathlib.Topology.Maps.Basic
-import Mathlib.Topology.MetricSpace.Isometry
-import Mathlib.Topology.UniformSpace.UniformEmbedding
+import Mathlib.Algebra.Ring.MinimalAxioms
 
 /-!
 # Absolutely convergent bilateral Fourier series
@@ -48,7 +36,10 @@ density of finitely supported sequences (`lp.hasSum_single`) and the bound
 
 ## Main results
 
-* `CKMA.HasAbsolutelyConvergentFourierSeries.inv`: Wiener's `1/f` lemma on the unit circle.
+* `CKMA.hasAbsolutelyConvergentFourierSeries_iff`: defining lemma, with `CKMA.wienerSeries_def`
+  and `CKMA.wienerConvolution_def`.
+* `CKMA.HasAbsolutelyConvergentFourierSeries.inv`: Wiener's `1/f` lemma on the unit circle
+  (**20.40**).
 -/
 
 public section
@@ -74,6 +65,26 @@ def HasAbsolutelyConvergentFourierSeries (f : Circle → ℂ) : Prop :=
 @[expose]
 def wienerConvolution (a b : ℤ → ℂ) (n : ℤ) : ℂ := ∑' k, a k * b (n - k)
 
+/-- Defining equation of `wienerSeries`. -/
+theorem wienerSeries_def (a : ℤ → ℂ) (z : Circle) :
+    wienerSeries a z = ∑' n, a n * (z : ℂ) ^ n :=
+  rfl
+
+/-- Defining property of `HasAbsolutelyConvergentFourierSeries`. -/
+theorem hasAbsolutelyConvergentFourierSeries_iff {f : Circle → ℂ} :
+    HasAbsolutelyConvergentFourierSeries f ↔
+      ∃ a : ℤ → ℂ, Summable (fun n ↦ ‖a n‖) ∧ f = wienerSeries a :=
+  Iff.rfl
+
+/-- A bilateral Fourier series with summable coefficient norms is absolutely convergent. -/
+theorem hasAbsolutelyConvergentFourierSeries_wienerSeries {a : ℤ → ℂ}
+    (ha : Summable fun n ↦ ‖a n‖) : HasAbsolutelyConvergentFourierSeries (wienerSeries a) :=
+  ⟨a, ha, rfl⟩
+
+/-- Defining equation of `wienerConvolution`. -/
+theorem wienerConvolution_def (a b : ℤ → ℂ) (n : ℤ) :
+    wienerConvolution a b n = ∑' k, a k * b (n - k) :=
+  rfl
 
 private lemma hp_one : 0 < (1 : ENNReal).toReal := by
   rw [ENNReal.toReal_one]
@@ -655,8 +666,12 @@ private lemma wienerSeries_one (z : Circle) : wienerSeries (⇑(1 : WienerAlgebr
     rw [apply_one, ite_eq_right hn, zero_mul]
   rw [tsum_eq_single 0 hzero, apply_one, ite_eq_left rfl, one_mul, zpow_zero]
 
-private lemma inv_aux {f : Circle → ℂ} (hf : HasAbsolutelyConvergentFourierSeries f)
-    (hzero : ∀ z, f z ≠ 0) :
+/-- **20.40**, Wiener's `1/f` lemma: if `f` has an absolutely convergent bilateral Fourier series
+on the unit circle and vanishes nowhere there, then `1/f` also has one. The coefficients of `1/f`
+are those of the inverse of `f` in the Wiener algebra, which is a unit because every character of
+that algebra is evaluation at a point of the circle. -/
+theorem HasAbsolutelyConvergentFourierSeries.inv {f : Circle → ℂ}
+    (hf : HasAbsolutelyConvergentFourierSeries f) (hzero : ∀ z, f z ≠ 0) :
     HasAbsolutelyConvergentFourierSeries (fun z ↦ (f z)⁻¹) := by
   obtain ⟨a, ha, rfl⟩ := hf
   let A : WienerAlgebra := ⟨⟨a, memℓp_of_summable ha⟩⟩
@@ -682,10 +697,5 @@ private lemma inv_aux {f : Circle → ℂ} (hf : HasAbsolutelyConvergentFourierS
       rw [hmul, mul_one]
     _ = wienerSeries (⇑B) z := by
       rw [← mul_assoc, inv_mul_cancel₀ (hzero z), one_mul]
-
-theorem HasAbsolutelyConvergentFourierSeries.inv {f : Circle → ℂ}
-    (hf : HasAbsolutelyConvergentFourierSeries f) (hzero : ∀ z, f z ≠ 0) :
-    HasAbsolutelyConvergentFourierSeries (fun z ↦ (f z)⁻¹) :=
-  inv_aux hf hzero
 
 end CKMA

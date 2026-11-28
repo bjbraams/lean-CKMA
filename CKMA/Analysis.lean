@@ -5,12 +5,10 @@ Authors: CKMA contributors
 -/
 module
 
-
-
-
 public import CKMA.Analysis.Approximation.CompressedSensing
 public import CKMA.Analysis.Approximation.InterpolationStability
 public import CKMA.Analysis.Approximation.InterpolationStability.Basic
+public import CKMA.Analysis.Approximation.InterpolationStability.ElementaryBounds
 public import CKMA.Analysis.Approximation.InterpolationStability.Estimates
 public import CKMA.Analysis.Approximation.InterpolationStability.Lower
 public import CKMA.Analysis.Approximation.InterpolationStability.Upper
@@ -22,27 +20,31 @@ public import CKMA.Analysis.Approximation.Trigonometric
 public import CKMA.Analysis.Asymptotics.BorelLaplace
 public import CKMA.Analysis.Asymptotics.EulerMaclaurin
 public import CKMA.Analysis.Asymptotics.Expansions
-public import CKMA.Analysis.BanachAlgebra.Factorization
+public import CKMA.Analysis.BanachAlgebra.CohenHewitt
+public import CKMA.Analysis.BanachAlgebra.GleasonKahaneZelazko
+public import CKMA.Analysis.BanachAlgebra.ShilovBoundary
 public import CKMA.Analysis.BanachAlgebra.Wiener
+public import CKMA.Analysis.BanachAlgebra.WienerTauberian
 public import CKMA.Analysis.BanachSpace.Geometry
 public import CKMA.Analysis.BanachSpace.Pietsch
 public import CKMA.Analysis.BanachSpace.Renorming
 public import CKMA.Analysis.BoundedVariation.Compactness
-public import CKMA.Analysis.CStarAlgebra.FreeProbability
 public import CKMA.Analysis.CStarAlgebra.OperatorClosures
 public import CKMA.Analysis.CStarAlgebra.OperatorClosures.Bicommutant
 public import CKMA.Analysis.CStarAlgebra.OperatorClosures.Kaplansky
 public import CKMA.Analysis.CStarAlgebra.Representation
-public import CKMA.Analysis.CStarAlgebra.Representation.Faithful
 public import CKMA.Analysis.Complex.Basic
 public import CKMA.Analysis.Complex.Bergman
+public import CKMA.Analysis.Complex.Bergman.Monomial
 public import CKMA.Analysis.Complex.Bergman.Polar
 public import CKMA.Analysis.Complex.CarlesonInterpolation
 public import CKMA.Analysis.Complex.EntireGrowth
 public import CKMA.Analysis.Complex.EntireGrowth.Elementary
 public import CKMA.Analysis.Complex.EntireGrowth.Factor
+public import CKMA.Analysis.Complex.EntireGrowth.LowerBound
 public import CKMA.Analysis.Complex.EntireGrowth.Product
 public import CKMA.Analysis.Complex.EntireGrowth.Removal
+public import CKMA.Analysis.Complex.EntireGrowth.ZeroCount
 public import CKMA.Analysis.Complex.EntireGrowth.Zeros
 public import CKMA.Analysis.Complex.Fock
 public import CKMA.Analysis.Complex.Hardy
@@ -86,26 +88,25 @@ public import CKMA.Analysis.Fourier.WeightedMaximal.Sufficiency
 public import CKMA.Analysis.FunctionalAnalysis.Basic
 public import CKMA.Analysis.FunctionalAnalysis.WeakCompactness
 public import CKMA.Analysis.GeometricMeasure.Dimension
+public import CKMA.Analysis.Inequalities.Basic
 public import CKMA.Analysis.Inequalities.Carleman
-public import CKMA.Analysis.Inequalities.ClassicalSequences
-public import CKMA.Analysis.Inequalities.ClassicalSequences.NewtonMaclaurin
+public import CKMA.Analysis.Inequalities.Hardy
 public import CKMA.Analysis.Inequalities.Hilbert
 public import CKMA.Analysis.Inequalities.Hilbert.Kernel
+public import CKMA.Analysis.Inequalities.NewtonMaclaurin
 public import CKMA.Analysis.InnerProductSpace.Basic
 public import CKMA.Analysis.InnerProductSpace.Frame
 public import CKMA.Analysis.InnerProductSpace.HilbertModel
 public import CKMA.Analysis.InnerProductSpace.L2FunctionFamilies
+public import CKMA.Analysis.InnerProductSpace.LpTwo
 public import CKMA.Analysis.InnerProductSpace.MatrixInequalities
-public import CKMA.Analysis.IntegralEquation.Basic
 public import CKMA.Analysis.IntegralEquation.CollectiveCompactness
+public import CKMA.Analysis.IntegralEquation.FractionalIntegral
 public import CKMA.Analysis.IntegralEquation.HilbertSchmidt
 public import CKMA.Analysis.IntegralEquation.Mercer
-public import CKMA.Analysis.Interpolation.Basic
+public import CKMA.Analysis.IntegralEquation.Volterra
 public import CKMA.Analysis.Interpolation.Bounds
-public import CKMA.Analysis.Interpolation.Bounds.Complex
-public import CKMA.Analysis.Interpolation.Bounds.Real
 public import CKMA.Analysis.LocallyConvex.Bipolar
-public import CKMA.Analysis.Measure.LpDuality
 public import CKMA.Analysis.Microlocal.Symbols
 public import CKMA.Analysis.Nonlinear.FixedPoint
 public import CKMA.Analysis.Nonlinear.Monotone
@@ -138,6 +139,7 @@ public import CKMA.Analysis.Operator.SpectralDynamics
 public import CKMA.Analysis.Operator.SpectralDynamics.Lorentz
 public import CKMA.Analysis.Operator.TraceIdeals
 public import CKMA.Analysis.OrderedSpace.Bands
+public import CKMA.Analysis.OrderedSpace.Bands.Basic
 public import CKMA.Analysis.OrderedSpace.Bands.Freudenthal
 public import CKMA.Analysis.OrderedSpace.Bands.Lattice
 public import CKMA.Analysis.OrderedSpace.Bands.Projection
@@ -150,6 +152,7 @@ public import CKMA.Analysis.OrderedSpace.Representation.AL.OrderUnit
 public import CKMA.Analysis.OrderedSpace.Representation.AM
 public import CKMA.Analysis.OrderedSpace.Representation.AM.Norm
 public import CKMA.Analysis.OrderedSpace.Representation.AM.State
+public import CKMA.Analysis.OrderedSpace.Representation.Basic
 public import CKMA.Analysis.OrthogonalPolynomial.Basic
 public import CKMA.Analysis.OrthogonalPolynomial.MomentExistence
 public import CKMA.Analysis.PDE.Basic
@@ -157,10 +160,13 @@ public import CKMA.Analysis.PDE.Boltzmann
 public import CKMA.Analysis.PDE.EllipticEstimates
 public import CKMA.Analysis.PDE.Entropy
 public import CKMA.Analysis.PDE.Euclidean
+public import CKMA.Analysis.PDE.HolderGauge
 public import CKMA.Analysis.PDE.NavierStokes
 public import CKMA.Analysis.PDE.Schrodinger
 public import CKMA.Analysis.PDE.Viscosity
 public import CKMA.Analysis.PDE.Wave
+public import CKMA.Analysis.PDE.Wave.Basic
+public import CKMA.Analysis.PDE.Wave.Generator
 public import CKMA.Analysis.Potential.Basic
 public import CKMA.Analysis.Potential.Capacity
 public import CKMA.Analysis.Potential.Cutoff
@@ -173,8 +179,8 @@ public import CKMA.Analysis.Real.Dini.Covering
 public import CKMA.Analysis.Real.Dini.FiniteGap
 public import CKMA.Analysis.Real.Dini.Infinite
 public import CKMA.Analysis.Real.Dini.Pattern
-public import CKMA.Analysis.Real.Dini.RisingSun
 public import CKMA.Analysis.Real.Dini.Young
+public import CKMA.Analysis.Real.IntervalIntegral
 public import CKMA.Analysis.Real.Kirszbraun
 public import CKMA.Analysis.Real.RectangularDifferentiation
 public import CKMA.Analysis.Real.RectangularDifferentiation.Approximate
@@ -186,7 +192,9 @@ public import CKMA.Analysis.Real.RectangularDifferentiation.Differentiate
 public import CKMA.Analysis.Real.RectangularDifferentiation.Endpoint
 public import CKMA.Analysis.Real.RectangularDifferentiation.Iteration
 public import CKMA.Analysis.Real.RectangularDifferentiation.Step
+public import CKMA.Analysis.Real.RisingSun
 public import CKMA.Analysis.RoughPath.Sewing
+public import CKMA.Analysis.RoughPath.Sewing.Basic
 public import CKMA.Analysis.RoughPath.Sewing.Construction
 public import CKMA.Analysis.RoughPath.Sewing.Dyadic
 public import CKMA.Analysis.RoughPath.Sewing.Variation
@@ -197,6 +205,7 @@ public import CKMA.Analysis.Semigroup.Accretive
 public import CKMA.Analysis.Semigroup.Accretive.Estimates
 public import CKMA.Analysis.Semigroup.Approximation
 public import CKMA.Analysis.Semigroup.Inhomogeneous
+public import CKMA.Analysis.Semigroup.Inhomogeneous.Classical
 public import CKMA.Analysis.Semigroup.Sectorial
 public import CKMA.Analysis.Semigroup.Stability
 public import CKMA.Analysis.Semigroup.TrotterKato
@@ -222,9 +231,13 @@ public import CKMA.Analysis.Variational.MountainPass
 /-!
 # Analysis
 
-This entry module re-exports the analysis development: functional and operator analysis,
-convexity and approximation, Fourier and complex analysis, measure and differentiation,
-Sobolev spaces, potential theory, differential equations and variational methods.
+This entry module re-exports the analysis development: real analysis and classical
+inequalities, bounded variation, asymptotic expansions and interpolation of operators;
+functional and operator analysis, Banach and C⋆-algebras, Banach-space geometry and Hilbert
+spaces; ordered spaces, convexity, variational and nonlinear methods, approximation;
+Fourier, microlocal and complex analysis, special functions and orthogonal polynomials;
+Sobolev spaces, partial differential equations and potential theory; operator semigroups,
+integral equations, ordinary differential equations, rough paths and Young integration.
 
 The implementation modules specify their scalar fields, measure normalizations and
 representative conventions. Their theorem families follow mathematical subjects rather

@@ -64,9 +64,9 @@ the power and quasi-arithmetic means are internal.
 * **8. Kantorovich inequality.** If $0<m\leq x_i\leq M$, then
   $$(\sum_iw_ix_i)(\sum_iw_i/x_i)\leq\frac{(M+m)^2}{4Mm}.$$
 * **9. Newton and Maclaurin inequalities.** If $e_k$ is the $k$th elementary
-  symmetric polynomial of nonnegative $x_1,\ldots,x_n$ and
-  $E_k=e_k/\binom nk$, then $E_k^2\geq E_{k-1}E_{k+1}$ for $1\leq k<n$;
-  Newton's inequalities hold for arbitrary real $x_i$. For nonnegative $x_i$,
+  symmetric polynomial of real $x_1,\ldots,x_n$ and
+  $E_k=e_k/\binom nk$, then $E_k^2\geq E_{k-1}E_{k+1}$ for $1\leq k<n$
+  (Newton). For nonnegative $x_i$,
   consequently $E_1\geq E_2^{1/2}\geq\cdots\geq E_n^{1/n}$ (Maclaurin).
 * **10. Comparison of quasi-arithmetic means.** For continuous strictly
   increasing generators $\phi,\psi$, put
@@ -158,7 +158,8 @@ being pointwise larger than the other.
   convex combination of permutation matrices; those matrices are precisely
   the extreme points of the doubly stochastic polytope.
 * **24. Karamata's inequality.** If $x\prec y$ and $\phi$ is convex on an
-  interval containing their entries, then $\sum_i\phi(x_i)\leq\sum_i\phi(y_i)$.
+  interval containing the entries of $y$ (it then contains those of $x$),
+  then $\sum_i\phi(x_i)\leq\sum_i\phi(y_i)$.
   For strictly convex $\phi$, equality requires $x$ and $y$ to be permutations.
 * **71. Weak majorization (Tomić–Weyl).** For real $x,y\in\mathbb R^n$,
   $x\prec_wy$ (decreasing partial sums of $x$ bounded by those of $y$) holds

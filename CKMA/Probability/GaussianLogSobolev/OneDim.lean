@@ -6,8 +6,10 @@ Authors: CKMA contributors
 module
 
 public import Mathlib.Probability.Distributions.Gaussian.Real
+public import TauCeti.Probability.Distributions.Gaussian.Mehler
 
 import CKMA.Probability.GaussianLogSobolev.IntegrationByParts
+import TauCeti.Probability.Distributions.Gaussian.Moments
 import Mathlib.Analysis.Calculus.ParametricIntegral
 import Mathlib.Analysis.SpecialFunctions.Sqrt
 
@@ -27,6 +29,8 @@ integration-by-parts identity relating the generator action on `log u` to the Fi
 
 ## Main results
 
+* `CKMA.ouSemigroup_eq_mehler`: `ouSemigroup` is TauCeti's `TauCeti.Probability.mehler`; the
+  invariance, boundedness and law statements below are derived from TauCeti's Mehler API.
 * `CKMA.integral_ouSemigroup`: Invariance of the standard Gaussian measure under `ouSemigroup`.
 * `CKMA.deriv_ouSemigroup_space`: Commutation relation `∂_x (P_t f) = e^{-t} P_t (f')`.
 * `CKMA.deriv_ouSemigroup_eq_generator`: Generator equation `∂_t u = ∂_{xx} u - x ∂_x u`.
@@ -39,6 +43,8 @@ noncomputable section
 
 namespace CKMA
 
+open TauCeti.Probability (integrable_abs_gaussianReal)
+
 open GaussianLogSobolev
 open MeasureTheory ProbabilityTheory Set
 open scoped NNReal ENNReal Real RealInnerProductSpace
@@ -47,9 +53,17 @@ open scoped NNReal ENNReal Real RealInnerProductSpace
 @[expose]
 def ouScale (t : ℝ) : ℝ := Real.exp (-t)
 
+/-- Defining formula of `ouScale`. -/
+lemma ouScale_def (t : ℝ) : ouScale t = Real.exp (-t) :=
+  rfl
+
 /-- Mehler width `√(1 - e^{-2t})` of the Ornstein–Uhlenbeck semigroup. -/
 @[expose]
 def ouStdev (t : ℝ) : ℝ := Real.sqrt (1 - Real.exp (-(2 * t)))
+
+/-- Defining formula of `ouStdev`. -/
+lemma ouStdev_def (t : ℝ) : ouStdev t = Real.sqrt (1 - Real.exp (-(2 * t))) :=
+  rfl
 
 /-- Square of the Mehler scale. -/
 lemma ouScale_sq (t : ℝ) : ouScale t ^ 2 = Real.exp (-(2 * t)) := by
@@ -111,70 +125,35 @@ lemma hasDerivAt_ouStdev {t : ℝ} (ht : 0 < t) :
 def ouSemigroup (t : ℝ) (f : ℝ → ℝ) (x : ℝ) : ℝ :=
   ∫ y, f (ouScale t * x + ouStdev t * y) ∂gaussianReal 0 1
 
-/-- The Mehler kernel preserves the standard Gaussian. -/
-lemma hasLaw_ouMehler {t : ℝ} (ht : 0 ≤ t) :
-    HasLaw (fun p : ℝ × ℝ => ouScale t * p.1 + ouStdev t * p.2) (gaussianReal 0 1)
-      ((gaussianReal 0 1).prod (gaussianReal 0 1)) := by
-  let γ : Measure ℝ := gaussianReal 0 1
-  have hX : HasLaw Prod.fst γ (γ.prod γ) := measurePreserving_fst.hasLaw
-  have hY : HasLaw Prod.snd γ (γ.prod γ) := measurePreserving_snd.hasLaw
-  have hi : IndepFun Prod.fst Prod.snd (γ.prod γ) := by
-    simpa using indepFun_prod (μ := γ) (ν := γ) (X := id) (Y := id)
-      measurable_id measurable_id
-  have hXs := gaussianReal_const_mul hX (ouScale t)
-  have hYs := gaussianReal_const_mul hY (ouStdev t)
-  have hi' : IndepFun (fun p : ℝ × ℝ => ouScale t * p.1)
-      (fun p : ℝ × ℝ => ouStdev t * p.2) (γ.prod γ) := by
-    simpa [Function.comp_def] using
-      hi.comp (measurable_const_mul (ouScale t)) (measurable_const_mul (ouStdev t))
-  have hmap := gaussianReal_add_gaussianReal_of_indepFun hi' hXs hYs
-  simp only [mul_zero, add_zero, mul_one] at hmap
-  have hvar : NNReal.mk (ouScale t ^ 2) (sq_nonneg _) +
-      NNReal.mk (ouStdev t ^ 2) (sq_nonneg _) = 1 := by
-    apply NNReal.coe_injective
-    simpa [NNReal.coe_add, NNReal.coe_mk, NNReal.coe_one] using
-      ouScale_sq_add_ouStdev_sq ht
-  rw [hvar] at hmap
-  have hfun : (fun p : ℝ × ℝ => ouScale t * p.1) + (fun p => ouStdev t * p.2) =
-      fun p => ouScale t * p.1 + ouStdev t * p.2 := rfl
-  rw [hfun] at hmap
-  exact ⟨by fun_prop, hmap⟩
+/-- Defining formula of `ouSemigroup`. -/
+lemma ouSemigroup_def (t : ℝ) (f : ℝ → ℝ) (x : ℝ) :
+    ouSemigroup t f x = ∫ y, f (ouScale t * x + ouStdev t * y) ∂gaussianReal 0 1 :=
+  rfl
 
-/-- The Ornstein–Uhlenbeck semigroup preserves integrals of bounded continuous functions. -/
+/-- The Ornstein–Uhlenbeck semigroup is TauCeti's Mehler averaging
+`TauCeti.Probability.mehler`. -/
+lemma ouSemigroup_eq_mehler (t : ℝ) (f : ℝ → ℝ) (x : ℝ) :
+    ouSemigroup t f x = TauCeti.Probability.mehler t f x := by
+  simp only [ouSemigroup, ouScale, ouStdev, TauCeti.Probability.mehler_def, neg_mul]
+
+/-- The Mehler kernel preserves the standard Gaussian (TauCeti's
+`TauCeti.Probability.gaussianReal_map_mehler`). -/
+lemma hasLaw_ouScale_mul_add_ouStdev_mul {t : ℝ} (ht : 0 ≤ t) :
+    HasLaw (fun p : ℝ × ℝ => ouScale t * p.1 + ouStdev t * p.2) (gaussianReal 0 1)
+      ((gaussianReal 0 1).prod (gaussianReal 0 1)) :=
+  ⟨by fun_prop, by
+    simpa only [ouScale, ouStdev, neg_mul] using
+      TauCeti.Probability.gaussianReal_map_mehler t ht⟩
+
+/-- The Ornstein–Uhlenbeck semigroup preserves integrals of bounded continuous functions
+(TauCeti's `TauCeti.Probability.integral_mehler`). -/
 lemma integral_ouSemigroup {f : ℝ → ℝ} {t : ℝ} (ht : 0 ≤ t) (hf : Continuous f)
     (hM : ∃ M, ∀ x, |f x| ≤ M) :
     ∫ x, ouSemigroup t f x ∂gaussianReal 0 1 = ∫ x, f x ∂gaussianReal 0 1 := by
   obtain ⟨M, hM⟩ := hM
-  let γ : Measure ℝ := gaussianReal 0 1
-  let F : ℝ × ℝ → ℝ := fun p => f (ouScale t * p.1 + ouStdev t * p.2)
-  have hF_int : Integrable F (γ.prod γ) := by
-    refine integrable_of_abs_le (by fun_prop) (M := M) ?_
-    intro p
-    exact hM _
-  have hlaw := hasLaw_ouMehler (t := t) ht
-  have hint : ∫ p, F p ∂γ.prod γ = ∫ x, f x ∂γ := by
-    dsimp only [γ] at hlaw ⊢
-    have hfmap : AEStronglyMeasurable f
-        (((gaussianReal 0 1).prod (gaussianReal 0 1)).map
-          (fun p => ouScale t * p.1 + ouStdev t * p.2)) := by
-      rw [hlaw.map_eq]
-      exact hf.aestronglyMeasurable
-    have hcomp : F = f ∘ fun p => ouScale t * p.1 + ouStdev t * p.2 := rfl
-    rw [hcomp]
-    simp only [Function.comp_def]
-    rw [← integral_map hlaw.aemeasurable hfmap, hlaw.map_eq]
-  calc ∫ x, ouSemigroup t f x ∂γ
-      = ∫ x, ∫ y, F (x, y) ∂γ ∂γ := by simp [ouSemigroup, F, γ]
-    _ = ∫ p, F p ∂γ.prod γ := (integral_prod F hF_int).symm
-    _ = ∫ x, f x ∂γ := hint
-
-/-- The identity is integrable for the standard Gaussian. -/
-private lemma integrable_id_gaussianReal : Integrable id (gaussianReal 0 1) :=
-  memLp_one_iff_integrable.mp (memLp_id_gaussianReal (μ := 0) (v := 1) 1)
-
-/-- Absolute value is integrable for the standard Gaussian. -/
-lemma integrable_abs_gaussianReal : Integrable (fun x : ℝ => |x|) (gaussianReal 0 1) := by
-  simpa [Real.norm_eq_abs] using integrable_id_gaussianReal.norm
+  simp_rw [ouSemigroup_eq_mehler]
+  exact TauCeti.Probability.integral_mehler t ht
+    (.of_bound hf.aestronglyMeasurable M (ae_of_all _ hM))
 
 /-- Spatial derivative of the Mehler argument. -/
 private lemma hasDerivAt_mehler_space (t y z : ℝ) :
@@ -309,7 +288,7 @@ lemma hasDerivAt_ouSemigroup_time {f : ℝ → ℝ} {t x : ℝ} (ht : 0 < t) (hf
     exact mul_le_mul ((hB _).trans (le_abs_self B)) hinner (abs_nonneg _) (abs_nonneg B)
   have hbound_int : Integrable bound γ := by
     have hsum : Integrable (fun y => |B| * |x| + (|B| * C) * |y|) γ :=
-      (integrable_const _).add (integrable_abs_gaussianReal.const_mul (|B| * C))
+      (integrable_const _).add ((integrable_abs_gaussianReal 0 1).const_mul (|B| * C))
     refine hsum.congr (Filter.Eventually.of_forall fun y => ?_)
     simp only [bound]
     ring
@@ -365,7 +344,7 @@ lemma continuous_ouSemigroup {f : ℝ → ℝ} {t : ℝ} (hf : Continuous f)
   exact hcont
 
 /-- Constant lower bounds pass to the Ornstein–Uhlenbeck semigroup. -/
-lemma ouSemigroup_lower {f : ℝ → ℝ} {t x δ : ℝ} (hf : Continuous f)
+lemma le_ouSemigroup {f : ℝ → ℝ} {t x δ : ℝ} (hf : Continuous f)
     (hM : ∃ M, ∀ y, |f y| ≤ M) (hδ : ∀ y, δ ≤ f y) : δ ≤ ouSemigroup t f x := by
   obtain ⟨M, hM⟩ := hM
   let γ : Measure ℝ := gaussianReal 0 1
@@ -404,7 +383,7 @@ lemma contDiff_one_deriv_of_two {f : ℝ → ℝ} (hf : ContDiff ℝ 2 f) :
 end GaussianLogSobolev
 
 /-- Second space derivative of the Ornstein–Uhlenbeck semigroup. -/
-lemma deriv_ouSemigroup_space₂ {f : ℝ → ℝ} {t x : ℝ} (hf : ContDiff ℝ 2 f)
+lemma deriv_deriv_ouSemigroup_space {f : ℝ → ℝ} {t x : ℝ} (hf : ContDiff ℝ 2 f)
     (hB : ∃ B, ∀ y, |deriv f y| ≤ B) (hB2 : ∃ B, ∀ y, |deriv (deriv f) y| ≤ B)
     (hM : ∃ M, ∀ y, |f y| ≤ M) :
     deriv (deriv (ouSemigroup t f)) x =
@@ -455,7 +434,7 @@ lemma deriv_ouSemigroup_eq_generator {f : ℝ → ℝ} {t x : ℝ} (ht : 0 < t)
   have hψ_int : Integrable ψ γ :=
     integrable_of_abs_le hψ_diff.continuous.aestronglyMeasurable (M := B) (fun y => hB _)
   have hyψ_int : Integrable (fun y => y * ψ y) γ := by
-    refine Integrable.mono' (integrable_abs_gaussianReal.const_mul (|B| + 1))
+    refine Integrable.mono' ((integrable_abs_gaussianReal 0 1).const_mul (|B| + 1))
       ((continuous_id.mul hψ_diff.continuous).aestronglyMeasurable) ?_
     filter_upwards with y
     rw [Real.norm_eq_abs, abs_mul]
@@ -488,7 +467,7 @@ lemma deriv_ouSemigroup_eq_generator {f : ℝ → ℝ} {t x : ℝ} (ht : 0 < t)
       α ^ 2 * ∫ y, deriv (deriv f) (α * x + σ * y) ∂γ := by
     field_simp [hσne]
   have hspace := deriv_ouSemigroup_space (t := t) (x := x) hf1 ⟨B, hB⟩ ⟨M, hM⟩
-  have hspace2 := deriv_ouSemigroup_space₂ (t := t) (x := x) hf ⟨B, hB⟩ ⟨B2, hB2⟩ ⟨M, hM⟩
+  have hspace2 := deriv_deriv_ouSemigroup_space (t := t) (x := x) hf ⟨B, hB⟩ ⟨B2, hB2⟩ ⟨M, hM⟩
   have hfirst : deriv (ouSemigroup t f) x = α * ∫ y, ψ y ∂γ := by
     rw [hspace]
     simp [ouSemigroup, α, σ, ψ, γ]
@@ -499,51 +478,8 @@ lemma deriv_ouSemigroup_eq_generator {f : ℝ → ℝ} {t x : ℝ} (ht : 0 < t)
   rw [htime', hcoeff, hfirst, hsecond]
   ring
 
-namespace GaussianLogSobolev
-
-/-- Cauchy–Schwarz for bounded continuous functions against the standard Gaussian. -/
-lemma sq_integral_mul_le_integral_sq_mul_integral_sq {a b : ℝ → ℝ} {A B : ℝ}
-    (ha : Continuous a) (hb : Continuous b) (hA : ∀ x, |a x| ≤ A) (hB : ∀ x, |b x| ≤ B) :
-    (∫ x, a x * b x ∂gaussianReal 0 1) ^ 2 ≤
-      (∫ x, a x ^ 2 ∂gaussianReal 0 1) * (∫ x, b x ^ 2 ∂gaussianReal 0 1) := by
-  let γ : Measure ℝ := gaussianReal 0 1
-  have haLp : MemLp a 2 γ := MemLp.of_bound ha.aestronglyMeasurable (|A| + 1)
-    (ae_of_all _ fun x => by
-      rw [Real.norm_eq_abs]
-      exact (hA x).trans ((le_abs_self A).trans (le_add_of_nonneg_right zero_le_one)))
-  have hbLp : MemLp b 2 γ := MemLp.of_bound hb.aestronglyMeasurable (|B| + 1)
-    (ae_of_all _ fun x => by
-      rw [Real.norm_eq_abs]
-      exact (hB x).trans ((le_abs_self B).trans (le_add_of_nonneg_right zero_le_one)))
-  let aL := haLp.toLp a
-  let bL := hbLp.toLp b
-  have hab : ⟪aL, bL⟫ = ∫ x, a x * b x ∂γ := by
-    rw [L2.inner_def]
-    refine integral_congr_ae ?_
-    filter_upwards [haLp.coeFn_toLp, hbLp.coeFn_toLp] with x hae hbe
-    simp [aL, bL, hae, hbe]
-    ring
-  have ha2 : ⟪aL, aL⟫ = ∫ x, a x ^ 2 ∂γ := by
-    rw [L2.inner_def]
-    refine integral_congr_ae ?_
-    filter_upwards [haLp.coeFn_toLp] with x hae
-    simp [aL, hae, sq]
-  have hb2 : ⟪bL, bL⟫ = ∫ x, b x ^ 2 ∂γ := by
-    rw [L2.inner_def]
-    refine integral_congr_ae ?_
-    filter_upwards [hbLp.coeFn_toLp] with x hbe
-    simp [bL, hbe, sq]
-  have hcs := abs_real_inner_le_norm aL bL
-  have hineq : ⟪aL, bL⟫ ^ 2 ≤ (‖aL‖ * ‖bL‖) ^ 2 :=
-    sq_le_sq' (neg_le_of_abs_le hcs) (le_of_abs_le hcs)
-  rw [hab, mul_pow, ← real_inner_self_eq_norm_sq aL, ← real_inner_self_eq_norm_sq bL, ha2,
-    hb2] at hineq
-  simpa [γ] using hineq
-
-end GaussianLogSobolev
-
 /-- Constant upper bounds pass to the Ornstein–Uhlenbeck semigroup. -/
-lemma ouSemigroup_upper {f : ℝ → ℝ} {t x M : ℝ} (hf : Continuous f)
+lemma ouSemigroup_le {f : ℝ → ℝ} {t x M : ℝ} (hf : Continuous f)
     (hbd : ∃ C, ∀ y, |f y| ≤ C) (hM : ∀ y, f y ≤ M) : ouSemigroup t f x ≤ M := by
   obtain ⟨C, hC⟩ := hbd
   let γ : Measure ℝ := gaussianReal 0 1
@@ -566,7 +502,7 @@ lemma hasDerivAt_ouSemigroup_mul_log {f : ℝ → ℝ} {t x δ : ℝ} (ht : 0 < 
   have hU0 := hasDerivAt_ouSemigroup_time (x := x) ht hf hB hM
   have hU := hU0.congr_deriv hU0.deriv.symm
   have hpos : 0 < ouSemigroup t f x :=
-    lt_of_lt_of_le hδ (ouSemigroup_lower hf.continuous hM hδf)
+    lt_of_lt_of_le hδ (le_ouSemigroup hf.continuous hM hδf)
   have hlog := hU.log hpos.ne'
   refine (hU.mul hlog).congr_deriv ?_
   field_simp [hpos.ne']
@@ -606,15 +542,12 @@ private lemma abs_mehler_velocity_le {s t0 x y : ℝ} (ht0 : 0 < t0) (hs : t0 �
     mul_le_mul_of_nonneg_right hquot (abs_nonneg y)
   linarith
 
-/-- Absolute values are preserved by the Ornstein–Uhlenbeck semigroup. -/
-lemma abs_ouSemigroup_le {f : ℝ → ℝ} {t x M : ℝ} (hf : Continuous f) (hM : ∀ y, |f y| ≤ M) :
+/-- Absolute values are preserved by the Ornstein–Uhlenbeck semigroup (TauCeti's
+`TauCeti.Probability.norm_mehler_le`). -/
+lemma abs_ouSemigroup_le {f : ℝ → ℝ} {t x M : ℝ} (hM : ∀ y, |f y| ≤ M) :
     |ouSemigroup t f x| ≤ M := by
-  have hup : ouSemigroup t f x ≤ M :=
-    ouSemigroup_upper hf ⟨M, hM⟩ (fun y => (le_abs_self (f y)).trans (hM y))
-  have hlow : -M ≤ ouSemigroup t f x := by
-    have hδ : ∀ y, -M ≤ f y := fun y => (neg_le_neg (hM y)).trans (neg_abs_le (f y))
-    exact ouSemigroup_lower hf ⟨M, hM⟩ hδ
-  exact abs_le.mpr ⟨hlow, hup⟩
+  simpa only [ouSemigroup_eq_mehler, Real.norm_eq_abs] using
+    TauCeti.Probability.norm_mehler_le t (f := f) hM x
 
 /-- The time derivative of the Ornstein–Uhlenbeck semigroup grows at most linearly. -/
 lemma abs_deriv_ouSemigroup_time_le {f : ℝ → ℝ} {s x t0 B : ℝ} (ht0 : 0 < t0) (hs : t0 ≤ s)
@@ -635,7 +568,7 @@ lemma abs_deriv_ouSemigroup_time_le {f : ℝ → ℝ} {s x t0 B : ℝ} (ht0 : 0 
     simpa [C] using abs_mehler_velocity_le (x := x) (y := y) ht0 hs
   have hdom : Integrable (fun y => |B| * (|x| + C * |y|)) γ := by
     have hsum : Integrable (fun y => |B| * |x| + (|B| * C) * |y|) γ :=
-      (integrable_const _).add (integrable_abs_gaussianReal.const_mul (|B| * C))
+      (integrable_const _).add ((integrable_abs_gaussianReal 0 1).const_mul (|B| * C))
     exact hsum.congr (Filter.Eventually.of_forall fun y => by ring)
   have hmeas : AEStronglyMeasurable integrand γ := by
     have hcont : Continuous integrand :=
@@ -655,7 +588,7 @@ lemma abs_deriv_ouSemigroup_time_le {f : ℝ → ℝ} {s x t0 B : ℝ} (ht0 : 0 
     have hfun : (fun y => |B| * (|x| + C * |y|)) =
         fun y => |B| * |x| + (|B| * C) * |y| := by
       funext y; ring
-    rw [hfun, integral_add (integrable_const _) (integrable_abs_gaussianReal.const_mul _),
+    rw [hfun, integral_add (integrable_const _) ((integrable_abs_gaussianReal 0 1).const_mul _),
       integral_const, integral_const_mul]
     simp [probReal_univ, smul_eq_mul, γ]
   rw [hformula]
@@ -670,9 +603,9 @@ lemma abs_deriv_ouSemigroup_time_le {f : ℝ → ℝ} {s x t0 B : ℝ} (ht0 : 0 
 lemma abs_log_ouSemigroup_le {f : ℝ → ℝ} {s x δ M : ℝ} (hf : Continuous f) (hδ : 0 < δ)
     (hδf : ∀ y, δ ≤ f y) (hM : ∀ y, |f y| ≤ M) :
     |Real.log (ouSemigroup s f x)| ≤ max |Real.log δ| |Real.log M| := by
-  have hlow : δ ≤ ouSemigroup s f x := ouSemigroup_lower hf ⟨M, hM⟩ hδf
+  have hlow : δ ≤ ouSemigroup s f x := le_ouSemigroup hf ⟨M, hM⟩ hδf
   have hu_le : ouSemigroup s f x ≤ M :=
-    ouSemigroup_upper hf ⟨M, hM⟩ (fun y => (le_abs_self (f y)).trans (hM y))
+    ouSemigroup_le hf ⟨M, hM⟩ (fun y => (le_abs_self (f y)).trans (hM y))
   have hle1 := Real.log_le_log hδ hlow
   have hle2 := Real.log_le_log (hδ.trans_le hlow) hu_le
   refine abs_le.mpr ⟨?_, ?_⟩
@@ -695,7 +628,7 @@ lemma continuous_deriv_deriv_ouSemigroup_space {f : ℝ → ℝ} {t : ℝ} (hf :
     Continuous (deriv (deriv (ouSemigroup t f))) := by
   have hrew : deriv (deriv (ouSemigroup t f)) =
       fun x => ouScale t ^ 2 * ouSemigroup t (deriv (deriv f)) x :=
-    funext fun x => deriv_ouSemigroup_space₂ hf hB hB2 hM
+    funext fun x => deriv_deriv_ouSemigroup_space hf hB hB2 hM
   rw [hrew]
   exact continuous_const.mul
     (continuous_ouSemigroup (contDiff_one_deriv_of_two hf).2.continuous_deriv_one hB2)
@@ -717,11 +650,11 @@ lemma continuous_deriv_ouSemigroup_time {f : ℝ → ℝ} {t : ℝ} (ht : 0 < t)
 /-- A power of the Mehler scale times the semigroup of a function bounded by `B` is bounded
 by `B`. -/
 private lemma abs_ouScale_pow_mul_ouSemigroup_le {g : ℝ → ℝ} {t x B : ℝ} (ht : 0 ≤ t)
-    (hg : Continuous g) (hB : ∀ y, |g y| ≤ B) (k : ℕ) :
+    (hB : ∀ y, |g y| ≤ B) (k : ℕ) :
     |ouScale t ^ k * ouSemigroup t g x| ≤ B := by
   rw [abs_mul, abs_of_nonneg (pow_nonneg (ouScale_nonneg t) k)]
   have hα : ouScale t ^ k ≤ 1 := pow_le_one₀ (ouScale_nonneg t) (ouScale_le_one ht)
-  exact (mul_le_mul hα (abs_ouSemigroup_le hg hB) (abs_nonneg _) zero_le_one).trans_eq
+  exact (mul_le_mul hα (abs_ouSemigroup_le hB) (abs_nonneg _) zero_le_one).trans_eq
     (one_mul B)
 
 /-- Derivative of the product of the space derivative of the semigroup with the logarithm of
@@ -734,7 +667,7 @@ private lemma hasDerivAt_deriv_ouSemigroup_mul_log {f : ℝ → ℝ} {t x δ : �
       (deriv (deriv (ouSemigroup t f)) x * Real.log (ouSemigroup t f x) +
         (deriv (ouSemigroup t f) x) ^ 2 / ouSemigroup t f x) x := by
   obtain ⟨hf1, hf'1⟩ := contDiff_one_deriv_of_two hf
-  have hpos : 0 < ouSemigroup t f x := hδ.trans_le (ouSemigroup_lower hf.continuous hM hδf)
+  have hpos : 0 < ouSemigroup t f x := hδ.trans_le (le_ouSemigroup hf.continuous hM hδf)
   have hdu (z : ℝ) : deriv (ouSemigroup t f) z = ouScale t * ouSemigroup t (deriv f) z :=
     deriv_ouSemigroup_space hf1 hB hM
   have huAt : HasDerivAt (ouSemigroup t f) (deriv (ouSemigroup t f) x) x :=
@@ -743,7 +676,7 @@ private lemma hasDerivAt_deriv_ouSemigroup_mul_log {f : ℝ → ℝ} {t x δ : �
   have hduAt : HasDerivAt (deriv (ouSemigroup t f)) (deriv (deriv (ouSemigroup t f)) x) x :=
     ((hspace.const_mul (ouScale t)).congr_of_eventuallyEq
       (Filter.EventuallyEq.of_eq (funext hdu))).congr_deriv (by
-        rw [deriv_ouSemigroup_space₂ hf hB hB2 hM]
+        rw [deriv_deriv_ouSemigroup_space hf hB hB2 hM]
         ring)
   refine (hduAt.mul (huAt.log hpos.ne')).congr_deriv ?_
   field_simp [hpos.ne']
@@ -761,7 +694,7 @@ private lemma abs_sq_div_le {a b B δ : ℝ} (hδ : 0 < δ) (ha : |a| ≤ B) (hb
 standard Gaussian. -/
 private lemma integrable_id_mul_of_abs_le {ψ : ℝ → ℝ} {C : ℝ} (hψ : Continuous ψ)
     (hC : ∀ x, |ψ x| ≤ C) : Integrable (fun x => x * ψ x) (gaussianReal 0 1) := by
-  refine Integrable.mono' (integrable_abs_gaussianReal.const_mul C)
+  refine Integrable.mono' ((integrable_abs_gaussianReal 0 1).const_mul C)
     (continuous_id.mul hψ).aestronglyMeasurable ?_
   filter_upwards with x
   rw [Real.norm_eq_abs, abs_mul]
@@ -782,17 +715,17 @@ lemma integral_generator_mul_log {f : ℝ → ℝ} {t δ : ℝ} (ht : 0 < t) (hf
   let u : ℝ → ℝ := ouSemigroup t f
   have hB0 : 0 ≤ B := le_trans (abs_nonneg _) (hB 0)
   have hB20 : 0 ≤ B2 := le_trans (abs_nonneg _) (hB2 0)
-  have hlow : ∀ x, δ ≤ u x := fun x => ouSemigroup_lower hf.continuous ⟨M, hM⟩ hδf
+  have hlow : ∀ x, δ ≤ u x := fun x => le_ouSemigroup hf.continuous ⟨M, hM⟩ hδf
   have hpos : ∀ x, 0 < u x := fun x => hδ.trans_le (hlow x)
   have hgen : ∀ x, deriv (fun s => ouSemigroup s f x) t =
       deriv (deriv u) x - x * deriv u x := fun x =>
     deriv_ouSemigroup_eq_generator (x := x) ht hf ⟨B, hB⟩ ⟨B2, hB2⟩ ⟨M, hM⟩
   have hdu_bdd : ∀ x, |deriv u x| ≤ B := fun x => by
     rw [deriv_ouSemigroup_space hf1 ⟨B, hB⟩ ⟨M, hM⟩, ← pow_one (ouScale t)]
-    exact abs_ouScale_pow_mul_ouSemigroup_le ht.le hf1.continuous_deriv_one hB 1
+    exact abs_ouScale_pow_mul_ouSemigroup_le ht.le hB 1
   have hdu2_bdd : ∀ x, |deriv (deriv u) x| ≤ B2 := fun x => by
-    rw [deriv_ouSemigroup_space₂ hf ⟨B, hB⟩ ⟨B2, hB2⟩ ⟨M, hM⟩]
-    exact abs_ouScale_pow_mul_ouSemigroup_le ht.le hf'1.continuous_deriv_one hB2 2
+    rw [deriv_deriv_ouSemigroup_space hf ⟨B, hB⟩ ⟨B2, hB2⟩ ⟨M, hM⟩]
+    exact abs_ouScale_pow_mul_ouSemigroup_le ht.le hB2 2
   let L : ℝ := max |Real.log δ| |Real.log M|
   have hL : ∀ x, |Real.log (u x)| ≤ L := fun x =>
     abs_log_ouSemigroup_le hf.continuous hδ hδf hM

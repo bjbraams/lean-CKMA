@@ -6,6 +6,7 @@ Authors: CKMA contributors
 module
 
 public import Mathlib.Analysis.Normed.Operator.Basic
+public import Mathlib.Analysis.Normed.Operator.Compact.Basic
 public import Mathlib.Analysis.RCLike.Basic
 
 import Mathlib.Analysis.Normed.Operator.Banach
@@ -15,21 +16,29 @@ import Mathlib.Analysis.Normed.Operator.Compact.FredholmAlternative
 /-!
 # Collectively compact approximation
 
-Collectively compact operator approximations combine strong convergence with compact closure of
-the union of unit-ball images. The scalar field is real or complex. The statements control
-inverses of `1 - Kₙ` and convergence of solutions.
-Source: GAPS 25.47.
+A family of bounded operators `K i` on a normed space is collectively compact when the union of
+the images of the closed unit ball has compact closure. If `K n → T` strongly on a Banach space
+over `ℝ` or `ℂ`, the sequence is collectively compact and `1 - T` is injective, then `1 - K n`
+is eventually invertible with uniformly bounded inverses, and the solutions of
+`u n - K n (u n) = f n` converge to the solution of `u₀ - T u₀ = f₀` whenever `f n → f₀`.
+Since `T` is compact (a strong limit of a collectively compact sequence), injectivity of `1 - T`
+already makes it invertible by the Fredholm alternative. Source: GAPS 25.47.
 
 ## Main definitions
 
-* `CKMA.IsCollectivelyCompact`: collective compactness of a sequence of bounded linear operators.
+* `CKMA.IsCollectivelyCompact`: collective compactness of a family of bounded linear operators.
 
 ## Main results
 
-* `CKMA.collectivelyCompact_eventually_inverse` (**25.47**): eventual invertibility of `1 - K n`
-  with uniformly bounded inverses when `1 - T` is invertible.
-* `CKMA.collectivelyCompact_solution_tendsto`: convergence of solutions for convergent right-hand
-  sides under collectively compact approximation.
+* `CKMA.IsCollectivelyCompact.isCompactOperator`: each member of a collectively compact family is
+  compact.
+* `CKMA.IsCollectivelyCompact.eventually_isInvertible_one_sub` (**25.47**): eventual
+  invertibility of `1 - K n` with uniformly bounded inverses when `1 - T` is injective.
+* `CKMA.IsCollectivelyCompact.tendsto_of_sub_apply_eq`: convergence of the approximate solutions.
+
+## References
+
+* R. Kress, *Linear Integral Equations*, 3rd ed., Springer, 2014.
 -/
 
 public section
@@ -38,21 +47,28 @@ namespace CKMA
 
 open ContinuousLinearEquiv Filter Metric Module End Set Topology
 
-variable {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] [CompleteSpace E]
+variable {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
-/-- Collective compactness of a sequence of operators. -/
+/-- A family of operators `K i` is collectively compact when the union of the images of the
+closed unit ball has compact closure. -/
 @[expose]
-def IsCollectivelyCompact (K : ℕ → E →L[𝕜] E) : Prop :=
-  IsCompact (closure (⋃ n, K n '' Metric.closedBall 0 1))
+def IsCollectivelyCompact {ι : Type*} (K : ι → E →L[𝕜] E) : Prop :=
+  IsCompact (closure (⋃ i, K i '' Metric.closedBall 0 1))
 
-omit [CompleteSpace E] in
-/-- Each operator of a collectively compact sequence is compact. -/
-private theorem isCompactOperator_of_isCollectivelyCompact {K : ℕ → E →L[𝕜] E}
-    (hc : IsCollectivelyCompact K) (n : ℕ) : IsCompactOperator (K n) := by
-  rw [isCompactOperator_iff_exists_mem_nhds_isCompact_closure_image (⇑(K n))]
+/-- Defining property of `IsCollectivelyCompact`. -/
+theorem isCollectivelyCompact_iff {ι : Type*} {K : ι → E →L[𝕜] E} :
+    IsCollectivelyCompact K ↔ IsCompact (closure (⋃ i, K i '' Metric.closedBall 0 1)) :=
+  Iff.rfl
+
+/-- Each member of a collectively compact family is a compact operator. -/
+theorem IsCollectivelyCompact.isCompactOperator {ι : Type*} {K : ι → E →L[𝕜] E}
+    (hc : IsCollectivelyCompact K) (i : ι) : IsCompactOperator (K i) := by
+  rw [isCompactOperator_iff_exists_mem_nhds_isCompact_closure_image (⇑(K i))]
   refine ⟨closedBall (0 : E) 1, closedBall_mem_nhds 0 zero_lt_one, ?_⟩
   refine hc.of_isClosed_subset isClosed_closure ?_
-  exact closure_mono <| subset_iUnion (fun m ↦ (K m) '' closedBall (0 : E) 1) n
+  exact closure_mono <| subset_iUnion (fun j ↦ (K j) '' closedBall (0 : E) 1) i
+
+variable [CompleteSpace E]
 
 /-- Strongly convergent operators on a Banach space are uniformly bounded. -/
 private theorem exists_norm_le_of_strong_tendsto {K : ℕ → E →L[𝕜] E} {T : E →L[𝕜] E}
@@ -67,6 +83,32 @@ private theorem exists_norm_le_of_strong_tendsto {K : ℕ → E →L[𝕜] E} {T
   obtain ⟨C, hC⟩ := banach_steinhaus hpt
   exact ⟨max C 0, le_max_right _ _, fun n ↦ (hC n).trans (le_max_left _ _)⟩
 
+omit [CompleteSpace E] in
+/-- If `1 - K n` is not eventually bounded below, there are unit vectors `x k` and indices
+`n k ≥ k` with `‖(1 - K (n k)) (x k)‖ < 1 / (k + 1)`. -/
+private theorem exists_unit_of_not_eventually_norm_ge (K : ℕ → E →L[𝕜] E)
+    (H : ¬ ∃ c > 0, ∀ᶠ n in atTop, ∀ x, c * ‖x‖ ≤ ‖(1 - K n) x‖) (k : ℕ) :
+    ∃ n : ℕ, ∃ x : E, k ≤ n ∧ ‖x‖ = 1 ∧ ‖(1 - K n) x‖ < (1 : ℝ) / ((k : ℝ) + 1) := by
+  have hc : 0 < (1 : ℝ) / ((k : ℝ) + 1) := by positivity
+  have hnot : ¬ ∀ᶠ n in atTop, ∀ x, (1 : ℝ) / ((k : ℝ) + 1) * ‖x‖ ≤ ‖(1 - K n) x‖ :=
+    fun hall ↦ H ⟨_, hc, hall⟩
+  rw [not_eventually] at hnot
+  obtain ⟨n, hkn, hn⟩ := frequently_atTop.mp hnot k
+  push Not at hn
+  obtain ⟨x, hx⟩ := hn
+  have hx0 : x ≠ 0 := by
+    rintro rfl
+    simp at hx
+  have hpos : 0 < ‖x‖ := norm_pos_iff.mpr hx0
+  refine ⟨n, (‖x‖⁻¹ : 𝕜) • x, hkn, ?_, ?_⟩
+  · rw [norm_smul, norm_inv, RCLike.norm_of_nonneg (norm_nonneg _), inv_mul_cancel₀ hpos.ne']
+  · rw [ContinuousLinearMap.map_smul, norm_smul, norm_inv, RCLike.norm_of_nonneg (norm_nonneg _)]
+    calc
+      ‖x‖⁻¹ * ‖(1 - K n) x‖ < ‖x‖⁻¹ * ((1 : ℝ) / ((k : ℝ) + 1) * ‖x‖) :=
+        mul_lt_mul_of_pos_left hx (inv_pos.mpr hpos)
+      _ = (1 : ℝ) / ((k : ℝ) + 1) := by
+        rw [mul_left_comm, inv_mul_cancel₀ hpos.ne', mul_one]
+
 /-- A collectively compact strong approximation of an injective `1 - T` is eventually
 bounded below. -/
 private theorem exists_eventually_norm_ge (K : ℕ → E →L[𝕜] E) (T : E →L[𝕜] E)
@@ -74,38 +116,7 @@ private theorem exists_eventually_norm_ge (K : ℕ → E →L[𝕜] E) (T : E �
     (hinj : Function.Injective (⇑(1 - T))) :
     ∃ c > 0, ∀ᶠ n in atTop, ∀ x, c * ‖x‖ ≤ ‖(1 - K n) x‖ := by
   by_contra H
-  have H' : ∀ c : ℝ, 0 < c → ∃ᶠ n in atTop, ∃ x : E, ‖(1 - K n) x‖ < c * ‖x‖ := by
-    intro c hc
-    have hnot : ¬ ∀ᶠ n in atTop, ∀ x, c * ‖x‖ ≤ ‖(1 - K n) x‖ := by
-      intro hall
-      exact H ⟨c, hc, hall⟩
-    rw [not_eventually] at hnot
-    exact hnot.mono fun _n hn ↦ by
-      push Not at hn
-      exact hn
-  have hex : ∀ k : ℕ, ∃ n : ℕ, ∃ x : E, k ≤ n ∧ ‖x‖ = 1 ∧
-      ‖(1 - K n) x‖ < (1 : ℝ) / ((k : ℝ) + 1) := by
-    intro k
-    have hc : 0 < (1 : ℝ) / ((k : ℝ) + 1) := by positivity
-    obtain ⟨n, hkn, hx⟩ := (frequently_atTop.mp (H' _ hc)) k
-    obtain ⟨x, hx⟩ := hx
-    have hx0 : x ≠ 0 := by
-      rintro rfl
-      simp at hx
-    refine ⟨n, (‖x‖⁻¹ : 𝕜) • x, hkn, ?_, ?_⟩
-    · rw [norm_smul, norm_inv, RCLike.norm_of_nonneg (norm_nonneg _),
-        inv_mul_cancel₀ (norm_ne_zero_iff.mpr hx0)]
-    · have hpos : 0 < ‖x‖⁻¹ := inv_pos.mpr (norm_pos_iff.mpr hx0)
-      calc
-        ‖(1 - K n) ((‖x‖⁻¹ : 𝕜) • x)‖
-            = ‖x‖⁻¹ * ‖(1 - K n) x‖ := by
-              rw [ContinuousLinearMap.map_smul, norm_smul, norm_inv,
-                RCLike.norm_of_nonneg (norm_nonneg _)]
-          _ < ‖x‖⁻¹ * ((1 : ℝ) / ((k : ℝ) + 1) * ‖x‖) :=
-              mul_lt_mul_of_pos_left hx hpos
-          _ = (1 : ℝ) / ((k : ℝ) + 1) := by
-              rw [mul_left_comm, inv_mul_cancel₀ (norm_ne_zero_iff.mpr hx0), mul_one]
-  choose n x hkn hxnorm hxlt using hex
+  choose n x hkn hxnorm hxlt using exists_unit_of_not_eventually_norm_ge K H
   obtain ⟨M, -, hM⟩ := exists_norm_le_of_strong_tendsto hconv
   have hmem : ∀ k, K (n k) (x k) ∈ closure (⋃ m, K m '' closedBall (0 : E) 1) := by
     intro k
@@ -154,22 +165,18 @@ private theorem exists_eventually_norm_ge (K : ℕ → E →L[𝕜] E) (T : E �
   have hy0 : y = 0 := hinj (hyT.trans (ZeroHomClass.map_zero (1 - T)).symm)
   exact one_ne_zero (hynorm.symm.trans (by simp [hy0]))
 
-/-- **25.47**: strong collectively compact approximations have uniformly bounded inverses
-near an invertible limit. The equivalences witness both bijectivity and bounded inverses. -/
-theorem collectivelyCompact_eventually_inverse (K : ℕ → E →L[𝕜] E) (T : E →L[𝕜] E)
-    (hc : IsCollectivelyCompact K) (hconv : ∀ x, Tendsto (fun n ↦ K n x) atTop (𝓝 (T x)))
-    (S : E ≃L[𝕜] E) (hS : S.toContinuousLinearMap = 1 - T) :
+/-- **25.47**, collectively compact approximation: if `K n → T` strongly, `(K n)` is
+collectively compact and `1 - T` is injective, then `1 - K n` is eventually invertible, with
+inverses bounded by a common constant. -/
+theorem IsCollectivelyCompact.eventually_isInvertible_one_sub {K : ℕ → E →L[𝕜] E}
+    (hc : IsCollectivelyCompact K) {T : E →L[𝕜] E}
+    (hconv : ∀ x, Tendsto (fun n ↦ K n x) atTop (𝓝 (T x)))
+    (hinj : Function.Injective (⇑(1 - T))) :
     ∃ C : ℝ, ∀ᶠ n in atTop, ∃ Sₙ : E ≃L[𝕜] E,
       Sₙ.toContinuousLinearMap = 1 - K n ∧ ‖Sₙ.symm.toContinuousLinearMap‖ ≤ C := by
-  have hinj : Function.Injective (⇑(1 - T)) := by
-    have hEq : (1 - T : E →L[𝕜] E) = S := by
-      rw [← hS]
-    rw [hEq]
-    exact S.injective
   obtain ⟨c, hc0, hlower⟩ := exists_eventually_norm_ge K T hc hconv hinj
   refine ⟨c⁻¹, ?_⟩
   filter_upwards [hlower] with n hn
-  have hcomp : IsCompactOperator (K n) := isCompactOperator_of_isCollectivelyCompact hc n
   have hnot : ¬ HasEigenvalue (K n : E →ₗ[𝕜] E) (1 : 𝕜) := by
     intro heig
     obtain ⟨v, hv⟩ := heig.exists_hasEigenvector
@@ -180,7 +187,8 @@ theorem collectivelyCompact_eventually_inverse (K : ℕ → E →L[𝕜] E) (T :
     rw [hzero, norm_zero] at this
     exact (not_lt_of_ge this) (mul_pos hc0 (norm_pos_iff.mpr hv.2))
   have hres : (1 : 𝕜) ∈ resolventSet 𝕜 (K n) :=
-    (hcomp.hasEigenvalue_or_mem_resolventSet (one_ne_zero : (1 : 𝕜) ≠ 0)).resolve_left hnot
+    ((hc.isCompactOperator n).hasEigenvalue_or_mem_resolventSet
+      (one_ne_zero : (1 : 𝕜) ≠ 0)).resolve_left hnot
   have hunit : IsUnit (1 - K n) := by
     simpa [Algebra.algebraMap_eq_smul_one, one_smul] using spectrum.mem_resolventSet_iff.mp hres
   have hbij : Function.Bijective (⇑(1 - K n)) :=
@@ -188,73 +196,44 @@ theorem collectivelyCompact_eventually_inverse (K : ℕ → E →L[𝕜] E) (T :
   have hker : (1 - K n).ker = ⊥ := LinearMap.ker_eq_bot.mpr hbij.1
   have hrange : (1 - K n).range = ⊤ := LinearMap.range_eq_top.mpr hbij.2
   let Sₙ := ofBijective (1 - K n) hker hrange
-  refine ⟨Sₙ, ?_, ?_⟩
-  · exact coe_ofBijective (1 - K n) hker hrange
-  · refine ContinuousLinearMap.opNorm_le_bound _ (inv_nonneg.mpr hc0.le) fun y ↦ ?_
-    rw [le_inv_mul_iff₀ hc0]
-    have hlow := hn (Sₙ.symm y)
-    have happ : (1 - K n) (Sₙ.symm y) = y := Sₙ.apply_symm_apply y
-    calc
-      c * ‖Sₙ.symm.toContinuousLinearMap y‖ = c * ‖Sₙ.symm y‖ := by
-        simp [coe_apply]
-      _ ≤ ‖(1 - K n) (Sₙ.symm y)‖ := hlow
-      _ = ‖y‖ := by rw [happ]
+  refine ⟨Sₙ, coe_ofBijective (1 - K n) hker hrange, ?_⟩
+  refine ContinuousLinearMap.opNorm_le_bound _ (inv_nonneg.mpr hc0.le) fun y ↦ ?_
+  rw [le_inv_mul_iff₀ hc0]
+  calc
+    c * ‖Sₙ.symm.toContinuousLinearMap y‖ = c * ‖Sₙ.symm y‖ := by simp [coe_apply]
+    _ ≤ ‖(1 - K n) (Sₙ.symm y)‖ := hn (Sₙ.symm y)
+    _ = ‖y‖ := by rw [show (1 - K n) (Sₙ.symm y) = y from Sₙ.apply_symm_apply y]
 
-/-- Solutions for convergent right-hand sides converge under collectively compact approximation. -/
-theorem collectivelyCompact_solution_tendsto (K : ℕ → E →L[𝕜] E) (T : E →L[𝕜] E)
-    (hc : IsCollectivelyCompact K) (hconv : ∀ x, Tendsto (fun n ↦ K n x) atTop (𝓝 (T x)))
-    (S : E ≃L[𝕜] E) (hS : S.toContinuousLinearMap = 1 - T)
-    (f u : ℕ → E) (f₀ : E) (hf : Tendsto f atTop (𝓝 f₀))
+/-- Under collectively compact strong approximation `K n → T` with `1 - T` injective, solutions
+of `u n - K n (u n) = f n` converge to the solution `u₀` of `u₀ - T u₀ = f₀` whenever
+`f n → f₀`. -/
+theorem IsCollectivelyCompact.tendsto_of_sub_apply_eq {K : ℕ → E →L[𝕜] E}
+    (hc : IsCollectivelyCompact K) {T : E →L[𝕜] E}
+    (hconv : ∀ x, Tendsto (fun n ↦ K n x) atTop (𝓝 (T x)))
+    (hinj : Function.Injective (⇑(1 - T))) {f u : ℕ → E} {f₀ u₀ : E}
+    (hu₀ : u₀ - T u₀ = f₀) (hf : Tendsto f atTop (𝓝 f₀))
     (hu : ∀ᶠ n in atTop, u n - K n (u n) = f n) :
-    Tendsto u atTop (𝓝 (S.symm f₀)) := by
-  obtain ⟨C, hC⟩ := collectivelyCompact_eventually_inverse K T hc hconv S hS
+    Tendsto u atTop (𝓝 u₀) := by
+  obtain ⟨C, hC⟩ := hc.eventually_isInvertible_one_sub hconv hinj
   rw [tendsto_iff_norm_sub_tendsto_zero]
-  apply squeeze_zero'
-  · exact Eventually.of_forall fun _ ↦ norm_nonneg _
+  have hres : ∀ n, (1 - K n) (u n - u₀) = (u n - K n (u n)) - f₀ + (K n - T) u₀ := by
+    intro n
+    rw [← hu₀]
+    simp only [sub_apply, one_apply_eq_self, ContinuousLinearMap.map_sub]
+    abel
+  refine squeeze_zero' (Eventually.of_forall fun _ ↦ norm_nonneg _) ?_
+    (g := fun n ↦ C * ‖f n - f₀ + (K n - T) u₀‖) ?_
   · filter_upwards [hC, hu] with n hn hu_n
     obtain ⟨Sₙ, hSₙ, hnorm⟩ := hn
-    have hx₀ : (1 - T) (S.symm f₀) = f₀ := by
-      rw [← hS]
-      simp [coe_apply]
-    have hu' : (1 - K n) (u n) = f n := by
-      simpa [sub_apply, one_apply_eq_self] using hu_n
-    have hId : u n - S.symm f₀ =
-        Sₙ.symm (f n - f₀ + (K n - T) (S.symm f₀)) := by
-      rw [eq_comm, Sₙ.symm_apply_eq]
-      calc
-        f n - f₀ + (K n - T) (S.symm f₀)
-            = (1 - K n) (u n) - (1 - T) (S.symm f₀) + (K n - T) (S.symm f₀) := by
-              rw [hu', hx₀]
-          _ = (1 - K n) (u n) -
-                ((1 - T) (S.symm f₀) - (K n - T) (S.symm f₀)) := by abel
-          _ = (1 - K n) (u n) - (1 - K n) (S.symm f₀) := by
-              congr 1
-              simp only [sub_apply, one_apply_eq_self]
-              abel
-          _ = (1 - K n) (u n - S.symm f₀) := by
-              rw [← ContinuousLinearMap.map_sub]
-          _ = Sₙ (u n - S.symm f₀) := by
-              rw [← hSₙ]
-              simp [coe_apply]
-    calc
-      ‖u n - S.symm f₀‖
-          = ‖Sₙ.symm (f n - f₀ + (K n - T) (S.symm f₀))‖ := by rw [hId]
-        _ = ‖Sₙ.symm.toContinuousLinearMap
-              (f n - f₀ + (K n - T) (S.symm f₀))‖ := by simp [coe_apply]
-        _ ≤ ‖Sₙ.symm.toContinuousLinearMap‖ *
-              ‖f n - f₀ + (K n - T) (S.symm f₀)‖ :=
-            ContinuousLinearMap.le_opNorm _ _
-        _ ≤ C * ‖f n - f₀ + (K n - T) (S.symm f₀)‖ :=
-            mul_le_mul_of_nonneg_right hnorm (norm_nonneg _)
-  · have hf0 : Tendsto (fun n ↦ f n - f₀) atTop (𝓝 (0 : E)) := by
-      simpa [sub_self] using hf.sub (tendsto_const_nhds (x := f₀))
-    have hK : Tendsto (fun n ↦ (K n - T) (S.symm f₀)) atTop (𝓝 0) := by
-      have h := (hconv (S.symm f₀)).sub (tendsto_const_nhds (x := T (S.symm f₀)))
-      simp only [sub_self] at h
-      simpa [sub_apply] using h
-    have hadd : Tendsto (fun n ↦ f n - f₀ + (K n - T) (S.symm f₀)) atTop (𝓝 0) := by
-      simpa [add_zero] using hf0.add hK
-    have hnorm := (tendsto_zero_iff_norm_tendsto_zero).mp hadd
-    simpa [mul_zero] using (tendsto_const_nhds (x := C)).mul hnorm
+    have hId : u n - u₀ = Sₙ.symm.toContinuousLinearMap (f n - f₀ + (K n - T) u₀) := by
+      rw [← hu_n, ← hres, coe_coe, ← hSₙ, coe_coe, symm_apply_apply]
+    rw [hId]
+    exact (ContinuousLinearMap.le_opNorm _ _).trans
+      (mul_le_mul_of_nonneg_right hnorm (norm_nonneg _))
+  · have hK : Tendsto (fun n ↦ (K n - T) u₀) atTop (𝓝 0) := by
+      simpa [sub_apply] using (hconv u₀).sub_const (T u₀)
+    have hadd : Tendsto (fun n ↦ f n - f₀ + (K n - T) u₀) atTop (𝓝 0) := by
+      simpa using (hf.sub_const f₀).add hK
+    simpa using (tendsto_const_nhds (x := C)).mul (tendsto_zero_iff_norm_tendsto_zero.mp hadd)
 
 end CKMA

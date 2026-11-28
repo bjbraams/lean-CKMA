@@ -23,6 +23,7 @@ and open neighbourhoods use Mathlib.
 
 ## Main results
 
+* `CKMA.isCapacityAdmissible_iff`: the defining characterization.
 * `CKMA.IsCapacityAdmissible.mono`: monotonicity of capacity admissibility with respect to set
   inclusion.
 -/
@@ -37,6 +38,14 @@ def IsCapacityAdmissible {d : ℕ} (K : Set (EuclideanSpace ℝ (Fin d)))
     (φ : EuclideanSpace ℝ (Fin d) → ℝ) : Prop :=
   ContDiff ℝ (↑(⊤ : ℕ∞)) φ ∧ HasCompactSupport φ ∧
     ∃ U, IsOpen U ∧ K ⊆ U ∧ ∀ x ∈ U, 1 ≤ φ x
+
+/-- Characterization of `IsCapacityAdmissible`: smooth, compactly supported, and at least one on
+an open neighbourhood of `K`. -/
+theorem isCapacityAdmissible_iff {d : ℕ} {K : Set (EuclideanSpace ℝ (Fin d))}
+    {φ : EuclideanSpace ℝ (Fin d) → ℝ} :
+    IsCapacityAdmissible K φ ↔ ContDiff ℝ (↑(⊤ : ℕ∞)) φ ∧ HasCompactSupport φ ∧
+      ∃ U, IsOpen U ∧ K ⊆ U ∧ ∀ x ∈ U, 1 ≤ φ x :=
+  Iff.rfl
 
 /-- Admissibility for a larger set implies admissibility for a smaller one. -/
 theorem IsCapacityAdmissible.mono {d : ℕ} {K L : Set (EuclideanSpace ℝ (Fin d))}

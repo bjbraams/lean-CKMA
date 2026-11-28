@@ -9,20 +9,24 @@ module
 public import Mathlib.MeasureTheory.Measure.Haar.OfBasis
 public import Mathlib.MeasureTheory.Function.LpSeminorm.Defs
 
+import CKMA.Analysis.Inequalities.Basic
 import CKMA.Analysis.Inequalities.Hilbert.Kernel
 import Mathlib.Analysis.PSeries
+import TauCeti.Analysis.SpecialFunctions.Pow.Integral
 
 /-!
 # Hilbert integral and sequence inequalities
 
 Hilbert's bilinear inequality on the positive half-line and its sequence analogue,
-with conjugate exponents and constant `pi / sin (pi / p)`. The discrete denominator
-`m+n+2` corresponds to positive integers `m+1,n+1`. Nonnegative integrals and sums
-preserve infinite values; the input norms use Mathlib's `MemLp` and `eLpNorm`.
+with conjugate exponents `p` and `q = p / (p - 1)` and constant `π / sin (π / p)`. The discrete
+denominator `m + n + 2` corresponds to the positive integers `m + 1, n + 1`. Both sides are
+extended nonnegative integrals or sums, so infinite values are allowed: the functions need only
+be nonnegative and a.e. strongly measurable, and the norms are Mathlib's `eLpNorm`.
 
-The constant is the Beta integral `Beta(b, 1 - b)`, computed with the kernel estimates in
-`CKMA.Analysis.Inequalities.Hilbert.Kernel`. The bilinear bound is Hölder's inequality in
-`ENNReal`, and the sequence bound compares the decreasing kernel with that integral.
+The constant is the Beta integral `B(1 / p, 1 - 1 / p) = Γ(1 / p) Γ(1 - 1 / p) = π / sin (π / p)`,
+computed with the kernel estimates in `CKMA.Analysis.Inequalities.Hilbert.Kernel`. The bilinear
+bound is Hölder's inequality in `ENNReal`, and the sequence bound compares the decreasing kernel
+with that integral.
 
 The constant is optimal in both forms. The test functions `x ^ (-1 / p)` and `y ^ (-1 / q)`
 truncated to `(1, N)` (respectively the sequences `(m + 1) ^ (-1 / p)` and `(n + 1) ^ (-1 / q)`
@@ -38,14 +42,17 @@ Source: GAPS 11.37.
 ## Main results
 
 * `CKMA.hilbert_integral` (**11.37**): Hilbert's integral inequality on `(0, ∞)` for nonnegative
-  functions, with nonnegative extended integrals.
-* `CKMA.hilbert_tsum` (**11.37**): the discrete Hilbert inequality for sequences in `ℓ^p` and
-  `ℓ^q`.
+  a.e. strongly measurable functions, with nonnegative extended integrals.
+* `CKMA.hilbert_tsum` (**11.37**): the discrete Hilbert inequality for nonnegative sequences.
 * `CKMA.hilbertConstant_le_of_hilbert_integral_le`,
   `CKMA.hilbertConstant_le_of_hilbert_tsum_le` (**11.37**): any admissible constant is at least
   `π / sin (π / p)`.
 * `CKMA.isLeast_hilbertConstant_integral`, `CKMA.isLeast_hilbertConstant_tsum` (**11.37**):
   `π / sin (π / p)` is the least admissible constant in each form.
+
+The tools for the optimality proofs (sum–integral comparisons, `∫_1^N dx / x = log N` and the
+affine limiting bound) are in `CKMA.Analysis.Inequalities.Basic`; the power integrals are
+TauCeti's `TauCeti.lintegral_ofReal_rpow_Ioo` and `TauCeti.lintegral_ofReal_rpow_Ioi_of_lt`.
 -/
 
 public section
@@ -62,24 +69,24 @@ so the value is `0`; the inequalities assume `1 < p`. -/
 @[expose]
 def hilbertConstant (p : ℝ) : ℝ := Real.pi / Real.sin (Real.pi / p)
 
+/-- Defining equation of `hilbertConstant`. -/
+lemma hilbertConstant_def (p : ℝ) : hilbertConstant p = Real.pi / Real.sin (Real.pi / p) := rfl
+
 /-- Left Schur factor `f(x) (x / y) ^ (1 / (p q)) / (x + y) ^ (1 / p)`. -/
 private def hilbertLeft (p q : ℝ) (f : ℝ → ℝ) (x y : ℝ) : ℝ :=
-  if 0 < x ∧ 0 < y then
-    f x * rpowPos (1 / (p * q)) (x / y) / rpowPos (1 / p) (x + y)
-  else 0
+  if 0 < x ∧ 0 < y then f x * (x / y) ^ (1 / (p * q)) / (x + y) ^ (1 / p) else 0
 
 /-- Right Schur factor `g(y) (y / x) ^ (1 / (p q)) / (x + y) ^ (1 / q)`. -/
 private def hilbertRight (p q : ℝ) (g : ℝ → ℝ) (x y : ℝ) : ℝ :=
-  if 0 < x ∧ 0 < y then
-    g y * rpowPos (1 / (p * q)) (y / x) / rpowPos (1 / q) (x + y)
-  else 0
+  if 0 < x ∧ 0 < y then g y * (y / x) ^ (1 / (p * q)) / (x + y) ^ (1 / q) else 0
 
 /-- The left factor is nonnegative when `f` is. -/
 private lemma hilbertLeft_nonneg {p q : ℝ} {f : ℝ → ℝ} {x y : ℝ} (hf : 0 ≤ f x) :
     0 ≤ hilbertLeft p q f x y := by
   unfold hilbertLeft
   split_ifs with h
-  · exact div_nonneg (mul_nonneg hf (rpowPos_nonneg _ _)) (rpowPos_pos (by linarith [h.1, h.2])).le
+  · exact div_nonneg (mul_nonneg hf (Real.rpow_nonneg (div_pos h.1 h.2).le _))
+      (Real.rpow_nonneg (add_pos h.1 h.2).le _)
   · exact le_rfl
 
 /-- The right factor is nonnegative when `g` is. -/
@@ -87,24 +94,21 @@ private lemma hilbertRight_nonneg {p q : ℝ} {g : ℝ → ℝ} {x y : ℝ} (hg 
     0 ≤ hilbertRight p q g x y := by
   unfold hilbertRight
   split_ifs with h
-  · exact div_nonneg (mul_nonneg hg (rpowPos_nonneg _ _)) (rpowPos_pos (by linarith [h.1, h.2])).le
+  · exact div_nonneg (mul_nonneg hg (Real.rpow_nonneg (div_pos h.2 h.1).le _))
+      (Real.rpow_nonneg (add_pos h.1 h.2).le _)
   · exact le_rfl
 
 /-- Real form of the left factor on the positive quadrant. -/
 private lemma hilbertLeft_eq {p q x y fx : ℝ} (hx : 0 < x) (hy : 0 < y) :
     hilbertLeft p q (fun _ => fx) x y =
       fx * (x / y) ^ (1 / (p * q)) / (x + y) ^ (1 / p) := by
-  have hxy : 0 < x / y := div_pos hx hy
-  have hs : 0 < x + y := add_pos hx hy
-  rw [hilbertLeft, ite_eq_left ⟨hx, hy⟩, rpowPos_eq hxy, rpowPos_eq hs]
+  rw [hilbertLeft, ite_eq_left ⟨hx, hy⟩]
 
 /-- Real form of the right factor on the positive quadrant. -/
 private lemma hilbertRight_eq {p q x y gy : ℝ} (hx : 0 < x) (hy : 0 < y) :
     hilbertRight p q (fun _ => gy) x y =
       gy * (y / x) ^ (1 / (p * q)) / (x + y) ^ (1 / q) := by
-  have hyx : 0 < y / x := div_pos hy hx
-  have hs : 0 < x + y := add_pos hx hy
-  rw [hilbertRight, ite_eq_left ⟨hx, hy⟩, rpowPos_eq hyx, rpowPos_eq hs]
+  rw [hilbertRight, ite_eq_left ⟨hx, hy⟩]
 
 /-- The two Schur factors multiply back to the Hilbert kernel. -/
 private lemma hilbertFactor_mul {p q : ℝ} (hpq : p.HolderConjugate q) {x y fx gy : ℝ}
@@ -142,7 +146,7 @@ private lemma hilbertLeft_pow {p q : ℝ} (hpq : p.HolderConjugate q) {x y fx : 
       fx ^ p * hilbertKernel x q⁻¹ y := by
   have hs : 0 < x + y := add_pos hx hy
   have hxy : 0 ≤ x / y := (div_pos hx hy).le
-  rw [hilbertLeft_eq hx hy, hilbertKernel_eq hx hy]
+  rw [hilbertLeft_eq hx hy, hilbertKernel_of_pos hy]
   have hbase : 0 ≤ fx * (x / y) ^ (1 / (p * q)) :=
     mul_nonneg hfx (Real.rpow_nonneg hxy _)
   have hc : 0 ≤ (x + y) ^ (1 / p) := Real.rpow_nonneg hs.le _
@@ -160,7 +164,7 @@ private lemma hilbertRight_pow {p q : ℝ} (hpq : p.HolderConjugate q) {x y gy :
       gy ^ q * hilbertKernel y p⁻¹ x := by
   have hs : 0 < x + y := add_pos hx hy
   have hyx : 0 ≤ y / x := (div_pos hy hx).le
-  rw [hilbertRight_eq hx hy, hilbertKernel_eq hy hx]
+  rw [hilbertRight_eq hx hy, hilbertKernel_of_pos hx]
   have hbase : 0 ≤ gy * (y / x) ^ (1 / (p * q)) :=
     mul_nonneg hgy (Real.rpow_nonneg hyx _)
   have hc : 0 ≤ (x + y) ^ (1 / q) := Real.rpow_nonneg hs.le _
@@ -208,9 +212,8 @@ private lemma measurable_hilbertLeft {p q : ℝ} {f : ℝ → ℝ} (hf : Measura
       simp
     rw [hs]
     exact measurableSet_Ioi.prod measurableSet_Ioi
-  · exact (((hf.comp measurable_fst).mul ((measurable_rpowPos _).comp
-      (measurable_fst.div measurable_snd))).div
-      ((measurable_rpowPos _).comp (measurable_fst.add measurable_snd)))
+  · exact (((hf.comp measurable_fst).mul ((measurable_fst.div measurable_snd).pow_const _)).div
+      ((measurable_fst.add measurable_snd).pow_const _))
 
 /-- The right factor is jointly measurable when `g` is measurable. -/
 private lemma measurable_hilbertRight {p q : ℝ} {g : ℝ → ℝ} (hg : Measurable g) :
@@ -222,9 +225,8 @@ private lemma measurable_hilbertRight {p q : ℝ} {g : ℝ → ℝ} (hg : Measur
       simp
     rw [hs]
     exact measurableSet_Ioi.prod measurableSet_Ioi
-  · exact (((hg.comp measurable_snd).mul ((measurable_rpowPos _).comp
-      (measurable_snd.div measurable_fst))).div
-      ((measurable_rpowPos _).comp (measurable_fst.add measurable_snd)))
+  · exact (((hg.comp measurable_snd).mul ((measurable_snd.div measurable_fst).pow_const _)).div
+      ((measurable_fst.add measurable_snd).pow_const _))
 
 /-- The nonnegative integrand `f(x) g(y) / (x + y)` is jointly measurable. -/
 private lemma measurable_hilbert_integrand {f g : ℝ → ℝ}
@@ -235,7 +237,7 @@ private lemma measurable_hilbert_integrand {f g : ℝ → ℝ}
       (measurable_fst.add measurable_snd)
 
 /-- Hilbert's constant is positive for `p > 1`. -/
-private lemma hilbertConstant_pos {p : ℝ} (hp : 1 < p) : 0 < hilbertConstant p := by
+lemma hilbertConstant_pos {p : ℝ} (hp : 1 < p) : 0 < hilbertConstant p := by
   unfold hilbertConstant
   refine div_pos Real.pi_pos (Real.sin_pos_of_pos_of_lt_pi ?_ ?_)
   · exact div_pos Real.pi_pos (by linarith)
@@ -293,11 +295,11 @@ private lemma lintegral_ofReal_rpow_eq_eLpNorm_rpow {α : Type*} [MeasurableSpac
     ∫⁻ x, ENNReal.ofReal (f x) ^ p ∂μ = eLpNorm f (ENNReal.ofReal p) μ ^ p := by
   have hp0 : 0 ≤ p := zero_le_one.trans hp.le
   have hppos : 0 < p := lt_trans zero_lt_one hp
-  rw [eLpNorm_eq_lintegral_rpow_enorm_toReal (ENNReal.ofReal_pos.mpr hppos).ne'
+  rw [eLpNorm_eq_lintegral_rpow_eNorm_toReal (ENNReal.ofReal_pos.mpr hppos).ne'
       ENNReal.ofReal_ne_top hf, ENNReal.toReal_ofReal hp0]
   rw [show (1 / p : ℝ) = p⁻¹ from (inv_eq_one_div p).symm, ENNReal.rpow_inv_rpow hppos.ne']
   refine lintegral_congr fun x => ?_
-  rw [Real.enorm_eq_ofReal (hf0 x)]
+  rw [Real.eNorm_eq_ofReal (hf0 x)]
 
 /-- Product of the normalized Schur integrals. -/
 private lemma holder_schur_mul {c n m : ℝ≥0∞} {p q : ℝ}
@@ -324,102 +326,72 @@ private lemma lintegral_schur_pow {ν : Measure ℝ} {φ : ℝ → ℝ} {r : ℝ
   rw [lintegral_congr_ae hinner, lintegral_mul_const' _ _ hct,
     lintegral_ofReal_rpow_eq_eLpNorm_rpow hr hφ0 hφ, mul_comm]
 
-/-- **11.37**: Hilbert's integral inequality for nonnegative functions on the positive half-line.
-The nonnegative integral avoids the totalized Bochner integral for infinite bilinear forms. -/
-theorem hilbert_integral {p : ℝ} (hp : 1 < p) {f g : ℝ → ℝ}
-    (hf0 : ∀ᵐ x ∂volume.restrict (Set.Ioi 0), 0 ≤ f x)
-    (hg0 : ∀ᵐ x ∂volume.restrict (Set.Ioi 0), 0 ≤ g x)
-    (hf : MemLp f (ENNReal.ofReal p) (volume.restrict (Set.Ioi 0)))
-    (hg : MemLp g (ENNReal.ofReal (p / (p - 1))) (volume.restrict (Set.Ioi 0))) :
+/-- Hilbert's integral inequality for measurable functions that are nonnegative everywhere. -/
+private lemma hilbert_integral_of_measurable {p : ℝ} (hp : 1 < p) {f g : ℝ → ℝ}
+    (hfm : Measurable f) (hgm : Measurable g) (hf0 : ∀ x, 0 ≤ f x) (hg0 : ∀ x, 0 ≤ g x) :
     (∫⁻ x in Set.Ioi (0 : ℝ), ∫⁻ y in Set.Ioi (0 : ℝ),
       ENNReal.ofReal (f x * g y / (x + y))) ≤
       ENNReal.ofReal (hilbertConstant p) *
         eLpNorm f (ENNReal.ofReal p) (volume.restrict (Set.Ioi 0)) *
         eLpNorm g (ENNReal.ofReal (p / (p - 1))) (volume.restrict (Set.Ioi 0)) := by
   let ν : Measure ℝ := volume.restrict (Set.Ioi 0)
-  have hf_ae : AEMeasurable f ν := hf.aemeasurable
-  have hg_ae : AEMeasurable g ν := hg.aemeasurable
-  let f2 : ℝ → ℝ := fun x => max (hf_ae.mk f x) 0
-  let g2 : ℝ → ℝ := fun x => max (hg_ae.mk g x) 0
-  have hf2m : Measurable f2 := (hf_ae.measurable_mk).max measurable_const
-  have hg2m : Measurable g2 := (hg_ae.measurable_mk).max measurable_const
-  have hf2nn : ∀ x, 0 ≤ f2 x := fun x => le_max_right _ _
-  have hg2nn : ∀ x, 0 ≤ g2 x := fun x => le_max_right _ _
-  have hf2ae : f2 =ᵐ[ν] f := by
-    filter_upwards [hf_ae.ae_eq_mk, hf0] with x hx hx0
-    simp only [f2]
-    rw [← hx, max_eq_left hx0]
-  have hg2ae : g2 =ᵐ[ν] g := by
-    filter_upwards [hg_ae.ae_eq_mk, hg0] with x hx hx0
-    simp only [g2]
-    rw [← hx, max_eq_left hx0]
-  have hint : ∫⁻ x in Set.Ioi (0 : ℝ), ∫⁻ y in Set.Ioi (0 : ℝ),
-      ENNReal.ofReal (f x * g y / (x + y)) =
-      ∫⁻ x in Set.Ioi (0 : ℝ), ∫⁻ y in Set.Ioi (0 : ℝ),
-        ENNReal.ofReal (f2 x * g2 y / (x + y)) := by
-    refine lintegral_congr_ae ?_
-    filter_upwards [hf2ae] with x hx
-    refine lintegral_congr_ae ?_
-    filter_upwards [hg2ae] with y hy
-    rw [hx, hy]
-  rw [hint, eLpNorm_congr_ae hf2ae.symm, eLpNorm_congr_ae hg2ae.symm]
   let q : ℝ := Real.conjExponent p
   have hpq : p.HolderConjugate q := Real.HolderConjugate.conjExponent hp
-  let F : ℝ × ℝ → ℝ≥0∞ := fun z => ENNReal.ofReal (hilbertLeft p q f2 z.1 z.2)
-  let G : ℝ × ℝ → ℝ≥0∞ := fun z => ENNReal.ofReal (hilbertRight p q g2 z.1 z.2)
-  have hF : Measurable F := ENNReal.measurable_ofReal.comp (measurable_hilbertLeft hf2m)
-  have hG : Measurable G := ENNReal.measurable_ofReal.comp (measurable_hilbertRight hg2m)
+  let F : ℝ × ℝ → ℝ≥0∞ := fun z => ENNReal.ofReal (hilbertLeft p q f z.1 z.2)
+  let G : ℝ × ℝ → ℝ≥0∞ := fun z => ENNReal.ofReal (hilbertRight p q g z.1 z.2)
+  have hF : Measurable F := ENNReal.measurable_ofReal.comp (measurable_hilbertLeft hfm)
+  have hG : Measurable G := ENNReal.measurable_ofReal.comp (measurable_hilbertRight hgm)
   have hprod : ∫⁻ z, (F * G) z ∂(ν.prod ν) =
       ∫⁻ x in Set.Ioi (0 : ℝ), ∫⁻ y in Set.Ioi (0 : ℝ),
-        ENNReal.ofReal (f2 x * g2 y / (x + y)) := by
+        ENNReal.ofReal (f x * g y / (x + y)) := by
     rw [lintegral_prod _ (hF.mul hG).aemeasurable]
     refine lintegral_congr_ae ?_
     filter_upwards [ae_restrict_mem measurableSet_Ioi] with x hx
     refine lintegral_congr_ae ?_
     filter_upwards [ae_restrict_mem measurableSet_Ioi] with y hy
-    have hL : hilbertLeft p q f2 x y = hilbertLeft p q (fun _ => f2 x) x y := by
+    have hL : hilbertLeft p q f x y = hilbertLeft p q (fun _ => f x) x y := by
       unfold hilbertLeft
       rfl
-    have hR : hilbertRight p q g2 x y = hilbertRight p q (fun _ => g2 y) x y := by
+    have hR : hilbertRight p q g x y = hilbertRight p q (fun _ => g y) x y := by
       unfold hilbertRight
       rfl
     rw [Pi.mul_apply]
     dsimp only [F, G]
     rw [hL, hR]
-    exact ofReal_hilbertFactor_mul hpq hx hy (hf2nn x)
+    exact ofReal_hilbertFactor_mul hpq hx hy (hf0 x)
   have hc0 : ENNReal.ofReal (hilbertConstant p) ≠ 0 :=
     (ENNReal.ofReal_pos.mpr (hilbertConstant_pos hp)).ne'
   have hct : ENNReal.ofReal (hilbertConstant p) ≠ ∞ := ENNReal.ofReal_ne_top
   have hFp : ∫⁻ z, F z ^ p ∂(ν.prod ν) =
       ENNReal.ofReal (hilbertConstant p) *
-        eLpNorm f2 (ENNReal.ofReal p) ν ^ p := by
+        eLpNorm f (ENNReal.ofReal p) ν ^ p := by
     rw [lintegral_prod _ (hF.pow_const p).aemeasurable]
-    refine lintegral_schur_pow hp hf2nn
-      (hf2m.aestronglyMeasurable.mono_measure Measure.restrict_le_self) hct ?_
+    refine lintegral_schur_pow hp hf0
+      (hfm.aestronglyMeasurable.mono_measure Measure.restrict_le_self) hct ?_
     filter_upwards [ae_restrict_mem measurableSet_Ioi] with x hx
     have hpoint : ∫⁻ y, F (x, y) ^ p ∂ν =
-        ∫⁻ y, ENNReal.ofReal (hilbertLeft p q (fun _ => f2 x) x y) ^ p ∂ν := by
+        ∫⁻ y, ENNReal.ofReal (hilbertLeft p q (fun _ => f x) x y) ^ p ∂ν := by
       refine lintegral_congr fun y => ?_
       simp only [F]
       unfold hilbertLeft
       rfl
     rw [hpoint]
-    exact lintegral_hilbertLeft_pow hpq hx (hf2nn x)
+    exact lintegral_hilbertLeft_pow hpq hx (hf0 x)
   have hGq : ∫⁻ z, G z ^ q ∂(ν.prod ν) =
       ENNReal.ofReal (hilbertConstant p) *
-        eLpNorm g2 (ENNReal.ofReal q) ν ^ q := by
+        eLpNorm g (ENNReal.ofReal q) ν ^ q := by
     rw [lintegral_prod_symm (fun z => G z ^ q) (hG.pow_const q).aemeasurable]
-    refine lintegral_schur_pow hpq.symm.lt hg2nn
-      (hg2m.aestronglyMeasurable.mono_measure Measure.restrict_le_self) hct ?_
+    refine lintegral_schur_pow hpq.symm.lt hg0
+      (hgm.aestronglyMeasurable.mono_measure Measure.restrict_le_self) hct ?_
     filter_upwards [ae_restrict_mem measurableSet_Ioi] with y hy
     have hpoint : ∫⁻ x, G (x, y) ^ q ∂ν =
-        ∫⁻ x, ENNReal.ofReal (hilbertRight p q (fun _ => g2 y) x y) ^ q ∂ν := by
+        ∫⁻ x, ENNReal.ofReal (hilbertRight p q (fun _ => g y) x y) ^ q ∂ν := by
       refine lintegral_congr fun x => ?_
       simp only [G]
       unfold hilbertRight
       rfl
     rw [hpoint]
-    exact lintegral_hilbertRight_pow hpq hy (hg2nn y)
+    exact lintegral_hilbertRight_pow hpq hy (hg0 y)
   have hHolder := ENNReal.lintegral_mul_le_Lp_mul_Lq (ν.prod ν) hpq
     hF.aemeasurable hG.aemeasurable
   rw [hprod] at hHolder
@@ -433,6 +405,45 @@ theorem hilbert_integral {p : ℝ} (hp : 1 < p) {f g : ℝ → ℝ}
     rfl
   rw [hqexp]
 
+/-- **11.37**: Hilbert's integral inequality for nonnegative a.e. strongly measurable functions on
+the positive half-line. Both sides are extended nonnegative quantities, so no integrability is
+assumed: if a norm on the right is infinite, the bound is trivial. -/
+theorem hilbert_integral {p : ℝ} (hp : 1 < p) {f g : ℝ → ℝ}
+    (hf0 : ∀ᵐ x ∂volume.restrict (Set.Ioi 0), 0 ≤ f x)
+    (hg0 : ∀ᵐ x ∂volume.restrict (Set.Ioi 0), 0 ≤ g x)
+    (hf : AEStronglyMeasurable f (volume.restrict (Set.Ioi 0)))
+    (hg : AEStronglyMeasurable g (volume.restrict (Set.Ioi 0))) :
+    (∫⁻ x in Set.Ioi (0 : ℝ), ∫⁻ y in Set.Ioi (0 : ℝ),
+      ENNReal.ofReal (f x * g y / (x + y))) ≤
+      ENNReal.ofReal (hilbertConstant p) *
+        eLpNorm f (ENNReal.ofReal p) (volume.restrict (Set.Ioi 0)) *
+        eLpNorm g (ENNReal.ofReal (p / (p - 1))) (volume.restrict (Set.Ioi 0)) := by
+  have hf_ae := hf.aemeasurable
+  have hg_ae := hg.aemeasurable
+  let f2 : ℝ → ℝ := fun x => max (hf_ae.mk f x) 0
+  let g2 : ℝ → ℝ := fun x => max (hg_ae.mk g x) 0
+  have hf2ae : f2 =ᵐ[volume.restrict (Set.Ioi 0)] f := by
+    filter_upwards [hf_ae.ae_eq_mk, hf0] with x hx hx0
+    simp only [f2]
+    rw [← hx, max_eq_left hx0]
+  have hg2ae : g2 =ᵐ[volume.restrict (Set.Ioi 0)] g := by
+    filter_upwards [hg_ae.ae_eq_mk, hg0] with x hx hx0
+    simp only [g2]
+    rw [← hx, max_eq_left hx0]
+  have hint : ∫⁻ x in Set.Ioi (0 : ℝ), ∫⁻ y in Set.Ioi (0 : ℝ),
+      ENNReal.ofReal (f x * g y / (x + y)) =
+      ∫⁻ x in Set.Ioi (0 : ℝ), ∫⁻ y in Set.Ioi (0 : ℝ),
+        ENNReal.ofReal (f2 x * g2 y / (x + y)) := by
+    refine lintegral_congr_ae ?_
+    filter_upwards [hf2ae] with x hx
+    refine lintegral_congr_ae ?_
+    filter_upwards [hg2ae] with y hy
+    rw [hx, hy]
+  rw [hint, eLpNorm_congr_ae hf2ae.symm, eLpNorm_congr_ae hg2ae.symm]
+  exact hilbert_integral_of_measurable hp (hf_ae.measurable_mk.max measurable_const)
+    (hg_ae.measurable_mk.max measurable_const) (fun x => le_max_right _ _)
+    (fun x => le_max_right _ _)
+
 /-- Positive-integer samples of the kernel are at most Hilbert's constant. -/
 private lemma tsum_hilbertKernel_le_hilbertConstant {p : ℝ} {k α : ℝ}
     (hk : 0 < k) (hα0 : 0 < α) (hα1 : α < 1)
@@ -443,11 +454,22 @@ private lemma tsum_hilbertKernel_le_hilbertConstant {p : ℝ} {k α : ℝ}
   unfold hilbertConstant
   rw [hsin]
 
-/-- The discrete Hilbert inequality; indices `m,n : ℕ` represent the positive integers `m+1,n+1`. -/
+/-- Discrete Schur row bound: if each row sum `∑' n, F m n` is at most `φ m ^ r * c`, the double
+sum is at most `c * ‖φ‖_r ^ r` in counting measure. -/
+private lemma tsum_tsum_le_mul_eLpNorm_rpow {F : ℕ → ℕ → ℝ≥0∞} {φ : ℕ → ℝ} {r : ℝ}
+    {c : ℝ≥0∞} (hr : 1 < r) (hφ0 : ∀ n, 0 ≤ φ n)
+    (hrow : ∀ m, ∑' n, F m n ≤ ENNReal.ofReal (φ m) ^ r * c) :
+    ∑' m, ∑' n, F m n ≤ c * eLpNorm φ (ENNReal.ofReal r) Measure.count ^ r := by
+  refine (tsum_le_tsum hrow).trans_eq ?_
+  rw [ENNReal.tsum_mul_right, ← lintegral_count,
+    lintegral_ofReal_rpow_eq_eLpNorm_rpow hr hφ0 Measurable.of_discrete.aestronglyMeasurable,
+    mul_comm]
+
+/-- **11.37**: the discrete Hilbert inequality for nonnegative sequences; the indices `m, n : ℕ`
+represent the positive integers `m + 1, n + 1`. Both sides are extended nonnegative sums, so no
+summability is assumed. -/
 theorem hilbert_tsum {p : ℝ} (hp : 1 < p) {a b : ℕ → ℝ}
-    (ha0 : ∀ n, 0 ≤ a n) (hb0 : ∀ n, 0 ≤ b n)
-    (ha : MemLp a (ENNReal.ofReal p) Measure.count)
-    (hb : MemLp b (ENNReal.ofReal (p / (p - 1))) Measure.count) :
+    (ha0 : ∀ n, 0 ≤ a n) (hb0 : ∀ n, 0 ≤ b n) :
     (∑' m, ∑' n, ENNReal.ofReal (a m * b n / (m + n + 2 : ℝ))) ≤
       ENNReal.ofReal (hilbertConstant p) * eLpNorm a (ENNReal.ofReal p) Measure.count *
         eLpNorm b (ENNReal.ofReal (p / (p - 1))) Measure.count := by
@@ -458,10 +480,7 @@ theorem hilbert_tsum {p : ℝ} (hp : 1 < p) {a b : ℕ → ℝ}
     add_pos_of_nonneg_of_pos (Nat.cast_nonneg n) zero_lt_one
   have hcast : ∀ m n : ℕ, ι m + ι n = (m + n + 2 : ℝ) := fun m n => by
     simp only [ι]
-    calc
-      (m : ℝ) + 1 + ((n : ℝ) + 1) = (m : ℝ) + (n : ℝ) + (1 + 1) := add_add_add_comm _ _ _ _
-      _ = ((m + n : ℕ) : ℝ) + 2 := by rw [← Nat.cast_add, one_add_one_eq_two]
-      _ = (m + n + 2 : ℝ) := by rw [← Nat.cast_add]
+    ring
   let μ : Measure (ℕ × ℕ) := Measure.count.prod Measure.count
   let F : ℕ × ℕ → ℝ≥0∞ := fun z =>
     ENNReal.ofReal (hilbertLeft p q (fun _ => a z.1) (ι z.1) (ι z.2))
@@ -492,35 +511,23 @@ theorem hilbert_tsum {p : ℝ} (hp : 1 < p) {a b : ℕ → ℝ}
         eLpNorm a (ENNReal.ofReal p) Measure.count ^ p := by
     rw [lintegral_prod _ (hF.pow_const p).aemeasurable]
     simp_rw [lintegral_count]
-    have hinner : ∀ m, ∑' n, F (m, n) ^ p ≤
-        ENNReal.ofReal (a m) ^ p * ENNReal.ofReal (hilbertConstant p) := by
-      intro m
-      have hpoint : ∀ n, F (m, n) ^ p =
-          ENNReal.ofReal (a m) ^ p *
-            ENNReal.ofReal (hilbertKernel (ι m) q⁻¹ (ι n)) := fun n => by
-        simpa [F] using ofReal_hilbertLeft_pow hpq (hpos m) (hpos n) (ha0 m)
-      simp_rw [hpoint, ENNReal.tsum_mul_left]
-      exact mul_le_mul_right (hLeft m) _
-    refine (ENNReal.tsum_le_tsum hinner).trans_eq ?_
-    rw [ENNReal.tsum_mul_right, ← lintegral_count,
-      lintegral_ofReal_rpow_eq_eLpNorm_rpow hp ha0 ha.aestronglyMeasurable, mul_comm]
+    refine tsum_tsum_le_mul_eLpNorm_rpow hp ha0 fun m => ?_
+    have hpoint : ∀ n, F (m, n) ^ p =
+        ENNReal.ofReal (a m) ^ p * ENNReal.ofReal (hilbertKernel (ι m) q⁻¹ (ι n)) := fun n => by
+      simpa [F] using ofReal_hilbertLeft_pow hpq (hpos m) (hpos n) (ha0 m)
+    simp_rw [hpoint, ENNReal.tsum_mul_left]
+    exact mul_le_mul_right (hLeft m) _
   have hGq : ∫⁻ z, G z ^ q ∂μ ≤
       ENNReal.ofReal (hilbertConstant p) *
         eLpNorm b (ENNReal.ofReal q) Measure.count ^ q := by
     rw [lintegral_prod_symm (fun z => G z ^ q) (hG.pow_const q).aemeasurable]
     simp_rw [lintegral_count]
-    have hinner : ∀ n, ∑' m, G (m, n) ^ q ≤
-        ENNReal.ofReal (b n) ^ q * ENNReal.ofReal (hilbertConstant p) := by
-      intro n
-      have hpoint : ∀ m, G (m, n) ^ q =
-          ENNReal.ofReal (b n) ^ q *
-            ENNReal.ofReal (hilbertKernel (ι n) p⁻¹ (ι m)) := fun m => by
-        simpa [G] using ofReal_hilbertRight_pow hpq (hpos m) (hpos n) (hb0 n)
-      simp_rw [hpoint, ENNReal.tsum_mul_left]
-      exact mul_le_mul_right (hRight n) _
-    refine (ENNReal.tsum_le_tsum hinner).trans_eq ?_
-    rw [ENNReal.tsum_mul_right, ← lintegral_count,
-      lintegral_ofReal_rpow_eq_eLpNorm_rpow hpq.symm.lt hb0 hb.aestronglyMeasurable, mul_comm]
+    refine tsum_tsum_le_mul_eLpNorm_rpow hpq.symm.lt hb0 fun n => ?_
+    have hpoint : ∀ m, G (m, n) ^ q =
+        ENNReal.ofReal (b n) ^ q * ENNReal.ofReal (hilbertKernel (ι n) p⁻¹ (ι m)) := fun m => by
+      simpa [G] using ofReal_hilbertRight_pow hpq (hpos m) (hpos n) (hb0 n)
+    simp_rw [hpoint, ENNReal.tsum_mul_left]
+    exact mul_le_mul_right (hRight n) _
   have hHolder := ENNReal.lintegral_mul_le_Lp_mul_Lq μ hpq hF.aemeasurable hG.aemeasurable
   rw [hprod] at hHolder
   refine hHolder.trans ?_
@@ -641,16 +648,17 @@ private lemma hilbert_integral_lower {a N : ℝ} (ha0 : 0 < a) (ha1 : a < 1) (hN
       ENNReal.ofReal (-1 / (a - 1)) * ENNReal.ofReal (1 - a)⁻¹ := by
     rw [lintegral_mul_const' _ _ ENNReal.ofReal_ne_top]
     refine mul_le_mul_left ((lintegral_mono_set Ioo_subset_Ioi_self).trans_eq ?_) _
-    rw [lintegral_Ioi_rpow (by linarith) one_pos, Real.one_rpow, show a - 2 + 1 = a - 1 by ring]
+    rw [TauCeti.lintegral_ofReal_rpow_Ioi_of_lt (by linarith) one_pos, Real.one_rpow,
+      show a - 2 + 1 = a - 1 by ring]
   have hE2 : ∫⁻ x in Ioo 1 N, ENNReal.ofReal (x ^ (a - 1)) * ENNReal.ofReal c ≤
       ENNReal.ofReal (1 / (a * a)) := by
     rw [lintegral_mul_const' _ _ ENNReal.ofReal_ne_top]
     calc (∫⁻ x in Ioo 1 N, ENNReal.ofReal (x ^ (a - 1))) * ENNReal.ofReal c
-        ≤ (∫⁻ x in Ioc 0 N, ENNReal.ofReal (x ^ (a - 1))) * ENNReal.ofReal c :=
-          mul_le_mul_left (lintegral_mono_set (show Ioo (1 : ℝ) N ⊆ Ioc 0 N from
-            fun x hx => ⟨zero_lt_one.trans hx.1, hx.2.le⟩)) _
+        ≤ (∫⁻ x in Ioo 0 N, ENNReal.ofReal (x ^ (a - 1))) * ENNReal.ofReal c :=
+          mul_le_mul_left (lintegral_mono_set (Ioo_subset_Ioo_left zero_le_one)) _
       _ = ENNReal.ofReal (1 / (a * a)) := by
-          rw [lintegral_Ioc_rpow (by linarith) hN0, show a - 1 + 1 = a by ring,
+          rw [TauCeti.lintegral_ofReal_rpow_Ioo (by linarith) hN0.le,
+            show a - 1 + 1 = a by ring,
             ← ENNReal.ofReal_mul (by positivity), hc, Real.rpow_neg hN0.le]
           congr 1
           field_simp
@@ -708,13 +716,13 @@ theorem hilbertConstant_le_of_hilbert_integral_le {p : ℝ} (hp : 1 < p) {C : �
   set a : ℝ := 1 - p⁻¹
   set q : ℝ := p / (p - 1)
   rw [hilbertConstant_eq_conj]
-  refine le_of_forall_nat_le_mul_le (d := ENNReal.ofReal (-1 / (a - 1)) *
+  refine le_of_forall_nat_le_mul_le_mul_add (d := ENNReal.ofReal (-1 / (a - 1)) *
       ENNReal.ofReal (1 - a)⁻¹ + ENNReal.ofReal (1 / (a * a)))
     (by finiteness) fun n => ?_
   set N : ℝ := Real.exp (n + 1) with hN
   have hN1 : 1 < N := Real.one_lt_exp_iff.mpr (by positivity)
   have hL : ∫⁻ x in Ioo 1 N, ENNReal.ofReal x⁻¹ = ENNReal.ofReal (n + 1) := by
-    rw [lintegral_Ioo_inv hN1, hN, Real.log_exp]
+    rw [lintegral_ofReal_inv_Ioo_one hN1, hN, Real.log_exp]
   set L := ∫⁻ x in Ioo 1 N, ENNReal.ofReal x⁻¹ with hLdef
   have hL0 : L ≠ 0 := by rw [hL]; exact (ENNReal.ofReal_pos.mpr (by positivity)).ne'
   have hLt : L ≠ ⊤ := by rw [hL]; exact ENNReal.ofReal_ne_top
@@ -810,7 +818,8 @@ private lemma hilbert_tsum_lower {a : ℝ} (ha0 : 0 < a) (ha1 : a < 1) (N : ℕ)
           mul_le_mul_left ((sum_le_lintegral_Ioc_of_antitoneOn hanti N).trans
             (lintegral_mono_set (Ioc_subset_Ioc_right (by linarith)))) _
       _ = ENNReal.ofReal (1 / (a * a)) := by
-          rw [lintegral_Ioc_rpow (by linarith) hM0, show a - 1 + 1 = a by ring,
+          rw [← setLIntegral_congr Ioo_ae_eq_Ioc,
+            TauCeti.lintegral_ofReal_rpow_Ioo (by linarith) hM0.le, show a - 1 + 1 = a by ring,
             ← ENNReal.ofReal_mul (by positivity), hc, Real.rpow_neg hM0.le]
           congr 1
           field_simp
@@ -852,8 +861,9 @@ theorem hilbertConstant_le_of_hilbert_tsum_le {p : ℝ} (hp : 1 < p) {C : ℝ≥
       (Real.summable_nat_rpow.mpr (show a - 2 < -1 by linarith))
     exact_mod_cast h
   rw [hilbertConstant_eq_conj]
-  refine le_of_forall_nat_le_mul_le (d := (∑' m : ℕ, ENNReal.ofReal (((m : ℝ) + 1) ^ (a - 2))) *
-      ENNReal.ofReal (1 - a)⁻¹ + ENNReal.ofReal (1 / (a * a))) ?_ fun n => ?_
+  refine le_of_forall_nat_le_mul_le_mul_add
+    (d := (∑' m : ℕ, ENNReal.ofReal (((m : ℝ) + 1) ^ (a - 2))) * ENNReal.ofReal (1 - a)⁻¹ +
+      ENNReal.ofReal (1 / (a * a))) ?_ fun n => ?_
   · rw [← ENNReal.ofReal_tsum_of_nonneg (fun m => by positivity) hsum]
     finiteness
   obtain ⟨N, hN⟩ := (Filter.tendsto_atTop.mp Real.tendsto_sum_range_one_div_nat_succ_atTop
@@ -884,26 +894,25 @@ theorem hilbertConstant_le_of_hilbert_tsum_le {p : ℝ} (hp : 1 < p) {C : ℝ≥
 theorem isLeast_hilbertConstant_integral {p : ℝ} (hp : 1 < p) :
     IsLeast {C : ℝ≥0∞ | ∀ f g : ℝ → ℝ,
       (∀ᵐ x ∂volume.restrict (Ioi 0), 0 ≤ f x) → (∀ᵐ x ∂volume.restrict (Ioi 0), 0 ≤ g x) →
-      MemLp f (ENNReal.ofReal p) (volume.restrict (Ioi 0)) →
-      MemLp g (ENNReal.ofReal (p / (p - 1))) (volume.restrict (Ioi 0)) →
+      AEStronglyMeasurable f (volume.restrict (Ioi 0)) →
+      AEStronglyMeasurable g (volume.restrict (Ioi 0)) →
       (∫⁻ x in Ioi (0 : ℝ), ∫⁻ y in Ioi (0 : ℝ), ENNReal.ofReal (f x * g y / (x + y))) ≤
         C * eLpNorm f (ENNReal.ofReal p) (volume.restrict (Ioi 0)) *
           eLpNorm g (ENNReal.ofReal (p / (p - 1))) (volume.restrict (Ioi 0))}
       (ENNReal.ofReal (hilbertConstant p)) :=
   ⟨fun _ _ hf0 hg0 hf hg => hilbert_integral hp hf0 hg0 hf hg,
     fun _ hC => hilbertConstant_le_of_hilbert_integral_le hp fun f g hf0 hg0 hf hg =>
-      hC f g (ae_of_all _ hf0) (ae_of_all _ hg0) hf hg⟩
+      hC f g (ae_of_all _ hf0) (ae_of_all _ hg0) hf.aestronglyMeasurable
+        hg.aestronglyMeasurable⟩
 
 /-- **11.37**: `π / sin (π / p)` is the least constant in the discrete Hilbert inequality. -/
 theorem isLeast_hilbertConstant_tsum {p : ℝ} (hp : 1 < p) :
     IsLeast {C : ℝ≥0∞ | ∀ u v : ℕ → ℝ, (∀ n, 0 ≤ u n) → (∀ n, 0 ≤ v n) →
-      MemLp u (ENNReal.ofReal p) Measure.count →
-      MemLp v (ENNReal.ofReal (p / (p - 1))) Measure.count →
       (∑' m, ∑' n, ENNReal.ofReal (u m * v n / (m + n + 2 : ℝ))) ≤
         C * eLpNorm u (ENNReal.ofReal p) Measure.count *
           eLpNorm v (ENNReal.ofReal (p / (p - 1))) Measure.count}
       (ENNReal.ofReal (hilbertConstant p)) :=
-  ⟨fun _ _ hu0 hv0 hu hv => hilbert_tsum hp hu0 hv0 hu hv,
-    fun _ hC => hilbertConstant_le_of_hilbert_tsum_le hp hC⟩
+  ⟨fun _ _ hu0 hv0 => hilbert_tsum hp hu0 hv0,
+    fun _ hC => hilbertConstant_le_of_hilbert_tsum_le hp fun u v hu0 hv0 _ _ => hC u v hu0 hv0⟩
 
 end CKMA

@@ -13,22 +13,34 @@ import TauCeti.MeasureTheory.Integral.Prod
 /-!
 # Square-integrable kernels and Hilbert–Schmidt operators
 
-A real or complex L2 kernel on a sigma-finite measure space defines an operator on L2 through
-an a.e. integral identity. A supplied, possibly non-countably indexed Hilbert basis records its
-exact Hilbert–Schmidt energy without a separability assumption. The adjoint kernel is obtained by
-transposing the variables and applying the scalar star. Source: GAPS 25.3; the Hilbert–Schmidt
-energy is TauCeti's existing construction.
+A real or complex kernel `k ∈ L²(μ ⊗ μ)` on a σ-finite measure space defines a bounded
+operator on `L²(μ)` through the a.e. identity `T f (x) = ∫ y, k (x, y) * f y ∂μ`. For every
+Hilbert basis of `L²(μ)`, countable or not, its Hilbert–Schmidt energy (TauCeti's
+`ContinuousLinearMap.hilbertSchmidtEnergy`) is `‖k‖₂ ^ 2`, and its adjoint is the integral
+operator of `(x, y) ↦ star (k (y, x))`. Source: GAPS 25.3.
 
 ## Main definitions
 
 * `CKMA.HasIntegralKernel`: predicate stating that a bounded operator on `L²(μ)` is given almost
   everywhere by integration against a kernel `k : X × X → 𝕜`.
+* `CKMA.integralOperator`: the bounded integral operator on `L²(μ)` of a kernel in
+  `L²(μ ⊗ μ)`.
 
 ## Main results
 
-* `CKMA.existsUnique_integralOperator` (**25.3**): an `L²(μ ⊗ μ)` kernel defines a unique bounded
-  integral operator on `L²(μ)` whose Hilbert–Schmidt energy equals the squared `L²` norm of the
-  kernel and whose adjoint has the conjugate-transposed kernel.
+* `CKMA.HasIntegralKernel.unique`: an operator is determined by its kernel.
+* `CKMA.hasIntegralKernel_integralOperator`, `CKMA.norm_integralOperator_le`: the integral
+  operator acts by its kernel and has norm at most the `L²` norm of the kernel.
+* `CKMA.hilbertSchmidtEnergy_integralOperator`: its Hilbert–Schmidt energy, for any Hilbert basis,
+  is the squared `L²` norm of the kernel.
+* `CKMA.adjoint_integralOperator`: its adjoint is the integral operator of the starred transpose
+  kernel.
+* `CKMA.existsUnique_integralOperator` (**25.3**): summary of the above as a unique existence
+  statement.
+
+## References
+
+* R. Kress, *Linear Integral Equations*, 3rd ed., Springer, 2014.
 -/
 
 public section
@@ -50,6 +62,19 @@ def HasIntegralKernel (T : Lp 𝕜 2 μ →L[𝕜] Lp 𝕜 2 μ) (k : X × X →
 section
 
 variable {μ}
+
+omit [SigmaFinite μ] in
+/-- Defining property of `HasIntegralKernel`. -/
+theorem hasIntegralKernel_iff {T : Lp 𝕜 2 μ →L[𝕜] Lp 𝕜 2 μ} {k : X × X → 𝕜} :
+    HasIntegralKernel μ T k ↔
+      ∀ f : Lp 𝕜 2 μ, (fun x ↦ T f x) =ᵐ[μ] fun x ↦ ∫ y, k (x, y) * f y ∂μ :=
+  Iff.rfl
+
+omit [SigmaFinite μ] in
+/-- A bounded operator on `L²(μ)` is determined by its kernel. -/
+theorem HasIntegralKernel.unique {T₁ T₂ : Lp 𝕜 2 μ →L[𝕜] Lp 𝕜 2 μ} {k : X × X → 𝕜}
+    (h₁ : HasIntegralKernel μ T₁ k) (h₂ : HasIntegralKernel μ T₂ k) : T₁ = T₂ :=
+  ContinuousLinearMap.ext fun f ↦ Lp.ext ((h₁ f).trans (h₂ f).symm)
 
 omit [SigmaFinite μ] in
 /-- The pointwise product `(x, y) ↦ f x * g y` of two `L²(μ)` functions lies in `L²(μ ⊗ μ)`. -/
@@ -262,6 +287,7 @@ private theorem inner_prodMul_eq_zero_of_forall_basis {ι : Type*}
     simpa [prodMulL_apply, innerSL_apply_apply] using DFunLike.congr_fun (step i) G
   simpa [prodMulL_apply, innerSL_apply_apply] using DFunLike.congr_fun hzero F
 
+omit [SigmaFinite μ] in
 /-- Orthogonality to every elementary tensor kills integrals over finite-measure rectangles. -/
 private theorem setIntegral_prod_eq_zero_of_forall_inner {h : Lp 𝕜 2 (μ.prod μ)}
     (hz : ∀ (F G : Lp 𝕜 2 μ), inner 𝕜 (prodMul F G) h = 0) {A : Set X} (hA : MeasurableSet A)
@@ -371,7 +397,7 @@ private theorem hilbertBasisProd_apply {ι : Type*} (b : HilbertBasis ι 𝕜 (L
 private theorem ae_memLp_section {k : X × X → 𝕜} (hk : MemLp k 2 (μ.prod μ)) :
     ∀ᵐ x ∂μ, MemLp (fun y ↦ k (x, y)) 2 μ := by
   have hmeas : AEMeasurable (fun p : X × X ↦ ‖k p‖ₑ ^ 2) (μ.prod μ) :=
-    hk.aestronglyMeasurable.enorm.pow_const 2
+    hk.aestronglyMeasurable.eNorm.pow_const 2
   have hsq : (eLpNorm k 2 (μ.prod μ)) ^ 2 = ∫⁻ p, ‖k p‖ₑ ^ 2 ∂(μ.prod μ) := by
     have hpow := eLpNorm_nnreal_pow_eq_lintegral (μ := μ.prod μ) (f := k) (p := 2) (by norm_num)
       hk.aestronglyMeasurable
@@ -423,10 +449,10 @@ private theorem eLpNorm_integralKernel_sq_le {k : X × X → 𝕜} (hk : MemLp k
       (f := (f : X → 𝕜)) (p := (2 : ℝ≥0∞)) (q := 2) (r := 1) zero_lt_one
     rw [hsmul] at hholder
     calc
-      ‖F x‖ₑ ≤ ∫⁻ y, ‖k (x, y) * f y‖ₑ ∂μ := enorm_integral_le_lintegral_enorm _
-      _ ≤ eLpNorm (fun y ↦ k (x, y) * f y) 1 μ := lintegral_enorm_le_eLpNorm_one
+      ‖F x‖ₑ ≤ ∫⁻ y, ‖k (x, y) * f y‖ₑ ∂μ := eNorm_integral_le_lintegral_eNorm _
+      _ ≤ eLpNorm (fun y ↦ k (x, y) * f y) 1 μ := lintegral_eNorm_le_eLpNorm_one
       _ ≤ eLpNorm (fun y ↦ k (x, y)) 2 μ * eLpNorm (⇑f) 2 μ := hholder
-      _ = eLpNorm (fun y ↦ k (x, y)) 2 μ * ‖f‖ₑ := by rw [← Lp.enorm_def]
+      _ = eLpNorm (fun y ↦ k (x, y)) 2 μ * ‖f‖ₑ := by rw [← Lp.eNorm_def]
   have hsec : ∀ᵐ x ∂μ, eLpNorm (fun y ↦ k (x, y)) 2 μ ^ 2 = ∫⁻ y, ‖k (x, y)‖ₑ ^ 2 ∂μ := by
     filter_upwards [ae_memLp_section hk] with x hx
     have hreal := eLpNorm_nnreal_pow_eq_lintegral (μ := μ) (f := fun y ↦ k (x, y)) (p := 2)
@@ -441,7 +467,7 @@ private theorem eLpNorm_integralKernel_sq_le {k : X × X → 𝕜} (hk : MemLp k
       _ = eLpNorm (fun y ↦ k (x, y)) 2 μ ^ 2 * ‖f‖ₑ ^ 2 := by rw [mul_pow]
       _ = (∫⁻ y, ‖k (x, y)‖ₑ ^ 2 ∂μ) * ‖f‖ₑ ^ 2 := by rw [hx]
   have hmeas : AEMeasurable (fun p : X × X ↦ ‖k p‖ₑ ^ 2) (μ.prod μ) :=
-    hk.aestronglyMeasurable.enorm.pow_const 2
+    hk.aestronglyMeasurable.eNorm.pow_const 2
   have hkpow : (eLpNorm k 2 (μ.prod μ)) ^ 2 = ∫⁻ p, ‖k p‖ₑ ^ 2 ∂(μ.prod μ) := by
     have hreal := eLpNorm_nnreal_pow_eq_lintegral (μ := μ.prod μ) (f := k) (p := 2) (by norm_num)
       hk.aestronglyMeasurable
@@ -482,10 +508,11 @@ private theorem norm_toLp_integralKernel_le {k : X × X → 𝕜} (hk : MemLp k 
     rw [← ENNReal.pow_le_pow_left_iff (by decide : 2 ≠ 0)]
     simpa [mul_pow] using eLpNorm_integralKernel_sq_le hk f
   refine (ENNReal.toReal_mono (ENNReal.mul_ne_top hk.ne (by simp)) hle).trans ?_
-  rw [ENNReal.toReal_mul, Lp.enorm_def, Lp.norm_def]
+  rw [ENNReal.toReal_mul, Lp.eNorm_def, Lp.norm_def]
 
-/-- The bounded integral operator on `L²` induced by an `L²` kernel. -/
-private noncomputable def integralKernelCLM {k : X × X → 𝕜} (hk : MemLp k 2 (μ.prod μ)) :
+/-- The bounded integral operator `f ↦ (x ↦ ∫ y, k (x, y) * f y ∂μ)` on `L²(μ)` induced by a
+kernel `k ∈ L²(μ ⊗ μ)`. -/
+noncomputable def integralOperator {k : X × X → 𝕜} (hk : MemLp k 2 (μ.prod μ)) :
     Lp 𝕜 2 μ →L[𝕜] Lp 𝕜 2 μ :=
   LinearMap.mkContinuous
     ({ toFun := fun f ↦ (memLp_integralKernel hk f).toLp fun x ↦ ∫ y, k (x, y) * f y ∂μ
@@ -518,11 +545,22 @@ private noncomputable def integralKernelCLM {k : X × X → 𝕜} (hk : MemLp k 
     (eLpNorm k 2 (μ.prod μ)).toReal (norm_toLp_integralKernel_le hk)
 
 /-- The integral operator acts by the kernel formula almost everywhere. -/
-private theorem hasIntegralKernel_integralKernelCLM {k : X × X → 𝕜} (hk : MemLp k 2 (μ.prod μ)) :
-    HasIntegralKernel μ (integralKernelCLM hk) k := by
+theorem hasIntegralKernel_integralOperator {k : X × X → 𝕜} (hk : MemLp k 2 (μ.prod μ)) :
+    HasIntegralKernel μ (integralOperator hk) k := by
   intro f
-  simpa [integralKernelCLM] using MemLp.coeFn_toLp (memLp_integralKernel hk f)
+  simpa [integralOperator] using MemLp.coeFn_toLp (memLp_integralKernel hk f)
 
+/-- Defining formula of `integralOperator`, almost everywhere. -/
+theorem coeFn_integralOperator {k : X × X → 𝕜} (hk : MemLp k 2 (μ.prod μ)) (f : Lp 𝕜 2 μ) :
+    ⇑(integralOperator hk f) =ᵐ[μ] fun x ↦ ∫ y, k (x, y) * f y ∂μ :=
+  hasIntegralKernel_integralOperator hk f
+
+/-- The operator norm of the integral operator is at most the `L²` norm of its kernel. -/
+theorem norm_integralOperator_le {k : X × X → 𝕜} (hk : MemLp k 2 (μ.prod μ)) :
+    ‖integralOperator hk‖ ≤ (eLpNorm k 2 (μ.prod μ)).toReal :=
+  LinearMap.mkContinuous_norm_le _ ENNReal.toReal_nonneg _
+
+omit [SigmaFinite μ] in
 /-- The integrand of an `L²` matrix coefficient against the kernel is integrable on the product. -/
 private theorem integrable_conj_kernel {k : X × X → 𝕜} (hk : MemLp k 2 (μ.prod μ))
     (f g : Lp 𝕜 2 μ) :
@@ -541,18 +579,18 @@ private theorem integrable_conj_kernel {k : X × X → 𝕜} (hk : MemLp k 2 (μ
 
 /-- The `L²` inner product against the integral operator is the absolutely convergent double
 integral of the kernel. -/
-private theorem inner_integralKernel_eq {k : X × X → 𝕜} (hk : MemLp k 2 (μ.prod μ))
+theorem inner_integralOperator {k : X × X → 𝕜} (hk : MemLp k 2 (μ.prod μ))
     (f g : Lp 𝕜 2 μ) :
-    inner 𝕜 g (integralKernelCLM hk f) =
+    inner 𝕜 g (integralOperator hk f) =
       ∫ p : X × X, star (g p.1) * k p * f p.2 ∂(μ.prod μ) := by
   rw [L2.inner_def]
   calc
-    ∫ x, inner 𝕜 (g x) (integralKernelCLM hk f x) ∂μ
-        = ∫ x, star (g x) * integralKernelCLM hk f x ∂μ := by
+    ∫ x, inner 𝕜 (g x) (integralOperator hk f x) ∂μ
+        = ∫ x, star (g x) * integralOperator hk f x ∂μ := by
           refine integral_congr_ae (.of_forall fun _ ↦ mul_comm _ _)
     _ = ∫ x, star (g x) * ∫ y, k (x, y) * f y ∂μ ∂μ := by
           refine integral_congr_ae ?_
-          filter_upwards [hasIntegralKernel_integralKernelCLM hk f] with x hx
+          filter_upwards [hasIntegralKernel_integralOperator hk f] with x hx
           rw [hx]
     _ = ∫ x, ∫ y, star (g x) * k (x, y) * f y ∂μ ∂μ := by
           refine integral_congr_ae (.of_forall fun x ↦ ?_)
@@ -560,6 +598,7 @@ private theorem inner_integralKernel_eq {k : X × X → 𝕜} (hk : MemLp k 2 (�
     _ = ∫ p, star (g p.1) * k p * f p.2 ∂(μ.prod μ) :=
           (integral_prod _ (integrable_conj_kernel hk f g)).symm
 
+omit [SigmaFinite μ] in
 /-- The inner product of a tensor `F ⊗ star G` against the kernel is the same double integral. -/
 private theorem inner_prodMul_star_toLp {k : X × X → 𝕜} (hk : MemLp k 2 (μ.prod μ))
     (F G : Lp 𝕜 2 μ) :
@@ -577,26 +616,26 @@ private theorem inner_prodMul_star_toLp {k : X × X → 𝕜} (hk : MemLp k 2 (�
 basis. -/
 private theorem inner_basis_apply_eq {k : X × X → 𝕜} (hk : MemLp k 2 (μ.prod μ)) {ι : Type*}
     (b : HilbertBasis ι 𝕜 (Lp 𝕜 2 μ)) (i j : ι) :
-    inner 𝕜 (b j) (integralKernelCLM hk (b i)) =
+    inner 𝕜 (b j) (integralOperator hk (b i)) =
       inner 𝕜 (prodMul (b j) (star (b i))) (hk.toLp k) := by
-  rw [inner_integralKernel_eq, inner_prodMul_star_toLp]
+  rw [inner_integralOperator, inner_prodMul_star_toLp]
 
 /-- The integral operator has Hilbert–Schmidt energy equal to the squared `L²` norm of the
 kernel. -/
-private theorem hilbertSchmidtEnergy_integralKernel {k : X × X → 𝕜} (hk : MemLp k 2 (μ.prod μ))
+theorem hilbertSchmidtEnergy_integralOperator {k : X × X → 𝕜} (hk : MemLp k 2 (μ.prod μ))
     {ι : Type*} (b : HilbertBasis ι 𝕜 (Lp 𝕜 2 μ)) :
-    (integralKernelCLM hk).hilbertSchmidtEnergy b = (eLpNorm k 2 (μ.prod μ)) ^ 2 := by
-  rw [hilbertSchmidtEnergy_eq_tsum_tsum (integralKernelCLM hk) b b, ENNReal.tsum_comm]
+    (integralOperator hk).hilbertSchmidtEnergy b = (eLpNorm k 2 (μ.prod μ)) ^ 2 := by
+  rw [hilbertSchmidtEnergy_eq_tsum_tsum (integralOperator hk) b b, tsum_comm]
   simp_rw [inner_basis_apply_eq hk b]
   have hP := (hilbertBasisProd b).tsum_enorm_sq_inner (hk.toLp k)
   simp_rw [hilbertBasisProd_apply] at hP
-  have hsum := (ENNReal.tsum_prod' (f := fun ij : ι × ι ↦
+  have hsum := (tsum_prod' (f := fun ij : ι × ι ↦
     ‖inner 𝕜 (prodMul (b ij.1) (star (b ij.2))) (hk.toLp k)‖ₑ ^ 2)).symm
   rw [hsum]
-  exact hP.trans (congrArg (· ^ 2) (Lp.enorm_toLp hk))
+  exact hP.trans (congrArg (· ^ 2) (Lp.eNorm_toLp hk))
 
 /-- The starred transpose of an `L²` kernel remains `L²` for the product measure. -/
-private theorem memLp_adjointKernel {k : X × X → 𝕜} (hk : MemLp k 2 (μ.prod μ)) :
+theorem memLp_star_swap {k : X × X → 𝕜} (hk : MemLp k 2 (μ.prod μ)) :
     MemLp (fun p : X × X ↦ star (k (p.2, p.1))) 2 (μ.prod μ) := by
   simpa [Pi.star_def, Function.comp_def, Prod.swap] using
     (hk.comp_measurePreserving Measure.measurePreserving_swap).star
@@ -605,16 +644,16 @@ private theorem memLp_adjointKernel {k : X × X → 𝕜} (hk : MemLp k 2 (μ.pr
 integral, with the variables in the opposite order. -/
 private theorem inner_adjointKernel_eq {k : X × X → 𝕜} (hk : MemLp k 2 (μ.prod μ))
     (f g : Lp 𝕜 2 μ) :
-    inner 𝕜 (integralKernelCLM (memLp_adjointKernel hk) g) f =
+    inner 𝕜 (integralOperator (memLp_star_swap hk) g) f =
       ∫ p : X × X, star (g p.1) * k p * f p.2 ∂(μ.prod μ) := by
   rw [L2.inner_def]
   calc
-    ∫ y, inner 𝕜 (integralKernelCLM (memLp_adjointKernel hk) g y) (f y) ∂μ
-        = ∫ y, star (integralKernelCLM (memLp_adjointKernel hk) g y) * f y ∂μ := by
+    ∫ y, inner 𝕜 (integralOperator (memLp_star_swap hk) g y) (f y) ∂μ
+        = ∫ y, star (integralOperator (memLp_star_swap hk) g y) * f y ∂μ := by
           refine integral_congr_ae (.of_forall fun _ ↦ mul_comm _ _)
     _ = ∫ y, (∫ x, star (g x) * k (x, y) ∂μ) * f y ∂μ := by
           refine integral_congr_ae ?_
-          filter_upwards [hasIntegralKernel_integralKernelCLM (memLp_adjointKernel hk) g]
+          filter_upwards [hasIntegralKernel_integralOperator (memLp_star_swap hk) g]
             with y hy
           rw [hy, RCLike.star_def, ← integral_conj]
           refine congrArg (fun z : 𝕜 ↦ z * f y) ?_
@@ -628,16 +667,19 @@ private theorem inner_adjointKernel_eq {k : X × X → 𝕜} (hk : MemLp k 2 (μ
     _ = ∫ p, star (g p.1) * k p * f p.2 ∂(μ.prod μ) :=
           (integral_prod_symm _ (integrable_conj_kernel hk f g)).symm
 
-/-- The adjoint of the integral operator is the integral operator of the starred transpose. -/
-private theorem hasIntegralKernel_adjoint {k : X × X → 𝕜} (hk : MemLp k 2 (μ.prod μ)) :
-    HasIntegralKernel μ (integralKernelCLM hk).adjoint (fun p ↦ star (k (p.2, p.1))) := by
-  have hEq : integralKernelCLM (memLp_adjointKernel hk) = (integralKernelCLM hk).adjoint := by
-    refine ContinuousLinearMap.ext fun g ↦ ?_
-    refine ext_inner_right 𝕜 fun f ↦ ?_
-    rw [ContinuousLinearMap.adjoint_inner_left]
-    exact (inner_adjointKernel_eq hk f g).trans (inner_integralKernel_eq hk f g).symm
-  rw [← hEq]
-  exact hasIntegralKernel_integralKernelCLM (memLp_adjointKernel hk)
+/-- The adjoint of the integral operator is the integral operator of the starred transpose
+kernel `(x, y) ↦ star (k (y, x))`. -/
+theorem adjoint_integralOperator {k : X × X → 𝕜} (hk : MemLp k 2 (μ.prod μ)) :
+    (integralOperator hk).adjoint = integralOperator (memLp_star_swap hk) := by
+  refine ContinuousLinearMap.ext fun g ↦ ext_inner_right 𝕜 fun f ↦ ?_
+  rw [ContinuousLinearMap.adjoint_inner_left]
+  exact (inner_integralOperator hk f g).trans (inner_adjointKernel_eq hk f g).symm
+
+/-- The adjoint of the integral operator has the starred transpose kernel. -/
+theorem hasIntegralKernel_adjoint_integralOperator {k : X × X → 𝕜} (hk : MemLp k 2 (μ.prod μ)) :
+    HasIntegralKernel μ (integralOperator hk).adjoint (fun p ↦ star (k (p.2, p.1))) := by
+  rw [adjoint_integralOperator]
+  exact hasIntegralKernel_integralOperator (memLp_star_swap hk)
 
 end
 
@@ -650,10 +692,9 @@ theorem existsUnique_integralOperator {k : X × X → 𝕜} (hk : MemLp k 2 (μ.
       T.hilbertSchmidtEnergy b = (eLpNorm k 2 (μ.prod μ)) ^ 2 ∧
       HasIntegralKernel μ T.adjoint (fun p ↦ star (k (p.2, p.1))) := by
   refine existsUnique_of_exists_of_unique ?_ ?_
-  · exact ⟨integralKernelCLM hk, hasIntegralKernel_integralKernelCLM hk,
-      hilbertSchmidtEnergy_integralKernel hk b, hasIntegralKernel_adjoint hk⟩
+  · exact ⟨integralOperator hk, hasIntegralKernel_integralOperator hk,
+      hilbertSchmidtEnergy_integralOperator hk b, hasIntegralKernel_adjoint_integralOperator hk⟩
   · rintro T₁ T₂ ⟨hT₁, -, -⟩ ⟨hT₂, -, -⟩
-    refine ContinuousLinearMap.ext fun f ↦ ?_
-    exact Lp.ext ((hT₁ f).trans (hT₂ f).symm)
+    exact hT₁.unique hT₂
 
 end CKMA

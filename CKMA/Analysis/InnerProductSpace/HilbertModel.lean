@@ -48,13 +48,9 @@ attribute [instance] HilbertSpaceModel.normedAddCommGroup HilbertSpaceModel.inne
   HilbertSpaceModel.completeSpace
 
 /-- A real Hilbert-space model with an explicitly chosen carrier universe. -/
-@[expose]
 abbrev RealHilbertSpace := HilbertSpaceModel.{u} ℝ
 
-@[deprecated (since := "2026-11-15")] alias RealHilbertModel := RealHilbertSpace
-
 /-- A complex Hilbert-space model with an explicitly chosen carrier universe. -/
-@[expose]
 abbrev ComplexHilbertSpace := HilbertSpaceModel.{u} ℂ
 
 end CKMA

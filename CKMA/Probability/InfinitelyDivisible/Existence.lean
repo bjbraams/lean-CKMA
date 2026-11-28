@@ -56,7 +56,7 @@ private lemma tendsto_natCast_mul_charFun_sub_one {μ : Measure ℝ} [IsProbabil
   rw [Function.comp_apply, charFun_positiveRoot]
 
 /-- The root increment splits into a kernel integral and a continuous drift. -/
-private lemma charFun_sub_one_eq_kernel {μ : Measure ℝ} [IsProbabilityMeasure μ]
+private lemma charFun_sub_one_eq_kernel {μ : Measure ℝ}
     (h : IsInfinitelyDivisible μ) (n : ℕ) (t : ℝ) :
     ((n + 1 : ℕ) : ℂ) * (charFun (positiveRoot h n) t - 1) =
       ∫ x, levyKernel t x ∂(idRootMeasure h n : Measure ℝ) +
@@ -65,7 +65,7 @@ private lemma charFun_sub_one_eq_kernel {μ : Measure ℝ} [IsProbabilityMeasure
     natCast_mul_charFun_sub_one_eq (ν := positiveRoot h n) (n + 1) t
 
 /-- Kernel integrals pass to the weak limit of the weighted roots. -/
-private lemma tendsto_integral_levyKernel {μ : Measure ℝ} [IsProbabilityMeasure μ]
+private lemma tendsto_integral_levyKernel {μ : Measure ℝ}
     (h : IsInfinitelyDivisible μ) {u : Ultrafilter ℕ} {ρ : FiniteMeasure ℝ}
     (htend : Tendsto (idRootMeasure h) (u : Filter ℕ) (𝓝 ρ)) (t : ℝ) :
     Tendsto (fun n => ∫ x, levyKernel t x ∂(idRootMeasure h n : Measure ℝ))

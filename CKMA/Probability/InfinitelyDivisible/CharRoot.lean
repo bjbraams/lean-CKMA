@@ -72,7 +72,7 @@ lemma isProbabilityMeasure_convolutionRoot {μ : Measure ℝ} (h : IsInfinitelyD
 
 /-- The chosen root convolves to the original law. -/
 lemma convolutionPower_convolutionRoot {μ : Measure ℝ} (h : IsInfinitelyDivisible μ)
-    {n : ℕ} (hn : 0 < n) : convolutionPower (convolutionRoot h n hn) n = μ :=
+    {n : ℕ} (hn : 0 < n) : (convolutionRoot h n hn).convolutionPower n = μ :=
   (Classical.choose_spec (h.2 n hn)).2
 
 /-- The law of a root symmetrized by an independent copy of its reflection. -/
@@ -93,14 +93,14 @@ private lemma isProbabilityMeasure_symmetrizedRoot {μ : Measure ℝ} (h : IsInf
     infer_instance
 
 /-- The characteristic function of a symmetrized root is the squared modulus of the root. -/
-private lemma charFun_symmetrizedRoot {μ : Measure ℝ} [IsProbabilityMeasure μ]
+private lemma charFun_symmetrizedRoot {μ : Measure ℝ}
     (h : IsInfinitelyDivisible μ) {n : ℕ} (hn : 0 < n) (t : ℝ) :
     charFun (symmetrizedRoot h n) t =
       (‖charFun μ t‖ ^ (2 / (n : ℝ)) : ℝ) := by
   have hν : IsProbabilityMeasure (convolutionRoot h n hn) :=
     isProbabilityMeasure_convolutionRoot h hn
   have hpow : charFun (convolutionRoot h n hn) t ^ n = charFun μ t := by
-    rw [← charFun_convolutionPower, convolutionPower_convolutionRoot h hn]
+    rw [← Measure.charFun_convolutionPower, convolutionPower_convolutionRoot h hn]
   have hnorm : ‖charFun (convolutionRoot h n hn) t‖ ^ n = ‖charFun μ t‖ := by
     rw [← norm_pow, hpow]
   have hn0 : (n : ℝ) ≠ 0 := by exact_mod_cast hn.ne'
@@ -133,7 +133,7 @@ private lemma tendsto_rpow_two_div (r : ℝ) (hr : 0 < r) :
   exact hexp.congr fun _ => rfl
 
 /-- Symmetrized roots converge pointwise to the indicator of the non-vanishing set. -/
-private lemma tendsto_charFun_symmetrizedRoot {μ : Measure ℝ} [IsProbabilityMeasure μ]
+private lemma tendsto_charFun_symmetrizedRoot {μ : Measure ℝ}
     (h : IsInfinitelyDivisible μ) (t : ℝ) :
     Tendsto (fun n => charFun (symmetrizedRoot h n) t) atTop
       (𝓝 (if charFun μ t = 0 then 0 else 1)) := by
@@ -362,7 +362,7 @@ lemma charFun_convolutionRoot {μ : Measure ℝ} [IsProbabilityMeasure μ]
   have hθpow : ∀ s, θ s ^ n = 1 := by
     intro s
     have hpow : charFun (convolutionRoot h n hn) s ^ n = charFun μ s := by
-      rw [← charFun_convolutionPower, convolutionPower_convolutionRoot h hn]
+      rw [← Measure.charFun_convolutionPower, convolutionPower_convolutionRoot h hn]
     have harg : charExponent h s + (n : ℂ) * -(charExponent h s / (n : ℂ)) = 0 := by
       rw [mul_neg, ← sub_eq_add_neg, mul_div_cancel₀ _ hnC, sub_self]
     simp only [θ]

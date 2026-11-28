@@ -21,14 +21,8 @@ that null set each opposite pair of Dini derivatives is either a common finite v
 comparisons `lower ≤ upper` make the choice unique; the resulting theorem is
 `CKMA.ae_existsUnique_diniType`. Source: GAPS 05.10.
 
-## Main definitions
-
-* `exceptional`: the union of the five exceptional sets where opposite-pair Dini
-  patterns fail.
-
 ## Main results
 
-* `volume_exceptional`: `exceptional f` has Lebesgue measure zero.
 * `CKMA.Dini.ae_oppositePair`: almost every point has matching or opposite-infinite upper-right
   and lower-left Dini derivatives.
 * `CKMA.Dini.opposite_of_neg`: the opposite-pair pattern of `-f` gives the lower-right and
@@ -50,31 +44,11 @@ private def exceptional (f : ℝ → ℝ) : Set ℝ :=
       (infiniteUp f ∪ (infiniteDown f ∪ finiteStrict f)))
 
 /-- The exceptional set is a union of five null sets. -/
-private theorem volume_exceptional (f : ℝ → ℝ) : volume (exceptional f) = 0 := by
-  have h1 := volume_lt_upperRight_lowerLeft f
-  have h2 := volume_lt_upperLeft_lowerRight f
-  have h3 := volume_infiniteUp f
-  have h4 := volume_infiniteDown f
-  have h5 := volume_finiteStrict f
-  refine le_antisymm ?_ bot_le
-  calc volume (exceptional f)
-      ≤ volume {x | upperRightDiniDerivative f x < lowerLeftDiniDerivative f x} +
-          volume ({x | upperLeftDiniDerivative f x < lowerRightDiniDerivative f x} ∪
-            (infiniteUp f ∪ (infiniteDown f ∪ finiteStrict f))) :=
-        measure_union_le _ _
-    _ ≤ volume {x | upperRightDiniDerivative f x < lowerLeftDiniDerivative f x} +
-          (volume {x | upperLeftDiniDerivative f x < lowerRightDiniDerivative f x} +
-            volume (infiniteUp f ∪ (infiniteDown f ∪ finiteStrict f))) :=
-        add_le_add_right (measure_union_le _ _) _
-    _ ≤ volume {x | upperRightDiniDerivative f x < lowerLeftDiniDerivative f x} +
-          (volume {x | upperLeftDiniDerivative f x < lowerRightDiniDerivative f x} +
-            (volume (infiniteUp f) + volume (infiniteDown f ∪ finiteStrict f))) :=
-        add_le_add_right (add_le_add_right (measure_union_le _ _) _) _
-    _ ≤ volume {x | upperRightDiniDerivative f x < lowerLeftDiniDerivative f x} +
-          (volume {x | upperLeftDiniDerivative f x < lowerRightDiniDerivative f x} +
-            (volume (infiniteUp f) + (volume (infiniteDown f) + volume (finiteStrict f)))) :=
-        add_le_add_right (add_le_add_right (add_le_add_right (measure_union_le _ _) _) _) _
-    _ = 0 := by simp [h1, h2, h3, h4, h5]
+private theorem volume_exceptional (f : ℝ → ℝ) : volume (exceptional f) = 0 :=
+  measure_union_null (volume_lt_upperRight_lowerLeft f) <|
+    measure_union_null (volume_lt_upperLeft_lowerRight f) <|
+      measure_union_null (volume_infiniteUp f) <|
+        measure_union_null (volume_infiniteDown f) (volume_finiteStrict f)
 
 /-- Almost every point has matching upper-right and lower-left Dini derivatives. -/
 theorem ae_oppositePair (f : ℝ → ℝ) :
@@ -82,31 +56,8 @@ theorem ae_oppositePair (f : ℝ → ℝ) :
       (∃ a : ℝ, upperRightDiniDerivative f x = a ∧ lowerLeftDiniDerivative f x = a) ∨
         upperRightDiniDerivative f x = ⊤ ∧ lowerLeftDiniDerivative f x = ⊥ := by
   refine ((measure_eq_zero_iff_ae_notMem).1 (volume_exceptional f)).mono fun x hx => ?_
-  have hYL : ¬ upperRightDiniDerivative f x < lowerLeftDiniDerivative f x := by
-    intro h
-    exact hx (Or.inl h)
-  have hx1 : x ∉ {x | upperLeftDiniDerivative f x < lowerRightDiniDerivative f x} ∪
-      (infiniteUp f ∪ (infiniteDown f ∪ finiteStrict f)) := by
-    intro h
-    exact hx (Or.inr h)
-  have hYR : ¬ upperLeftDiniDerivative f x < lowerRightDiniDerivative f x := by
-    intro h
-    exact hx1 (Or.inl h)
-  have hx2 : x ∉ infiniteUp f ∪ (infiniteDown f ∪ finiteStrict f) := by
-    intro h
-    exact hx1 (Or.inr h)
-  have hUp : x ∉ infiniteUp f := by
-    intro h
-    exact hx2 (Or.inl h)
-  have hx3 : x ∉ infiniteDown f ∪ finiteStrict f := by
-    intro h
-    exact hx2 (Or.inr h)
-  have hDown : x ∉ infiniteDown f := by
-    intro h
-    exact hx3 (Or.inl h)
-  have hFin : x ∉ finiteStrict f := by
-    intro h
-    exact hx3 (Or.inr h)
+  simp only [exceptional, mem_union, mem_ofPred_eq, not_or] at hx
+  obtain ⟨hYL, -, hUp, hDown, hFin⟩ := hx
   have hle : lowerLeftDiniDerivative f x ≤ upperRightDiniDerivative f x := le_of_not_gt hYL
   by_cases htop : upperRightDiniDerivative f x = ⊤
   · have hbot : lowerLeftDiniDerivative f x = ⊥ := by
@@ -125,7 +76,6 @@ theorem ae_oppositePair (f : ℝ → ℝ) :
       have : ⊤ ≤ upperRightDiniDerivative f x := by simpa [h] using hle
       exact htop (top_le_iff.mp this)
     have hcoeU := EReal.coe_toReal htop hURbot
-    have hcoeL := EReal.coe_toReal hLLtop hbot
     have hlt : ¬ lowerLeftDiniDerivative f x < upperRightDiniDerivative f x := by
       intro h
       exact hFin (mem_finiteStrict_of_lt htop hURbot hLLtop hbot h)
@@ -154,12 +104,3 @@ lemma opposite_of_neg (f : ℝ → ℝ) {x : ℝ}
   · exact Or.inr ⟨EReal.neg_eq_bot_iff.mp haL, EReal.neg_eq_top_iff.mp haR⟩
 
 end CKMA.Dini
-
-namespace CKMA
-
-@[deprecated (since := "2026-11-15")]
-alias ae_oppositePair := Dini.ae_oppositePair
-@[deprecated (since := "2026-11-15")]
-alias opposite_of_neg := Dini.opposite_of_neg
-
-end CKMA

@@ -15,7 +15,14 @@ import TauCeti.Probability.CentralLimitTheorem.Lindeberg
 import CKMA.Probability.LimitTheorems.ThreeSeries
 
 /-!
-# Feller's converse to the Lindeberg–Feller theorem
+# The Lindeberg–Feller theorem and Feller's converse (06.34)
+
+For a row-independent triangular array `X n i`, `i : ι n`, of centred square-integrable real
+random variables with positive row second-moment sums, Lindeberg's condition
+(`CKMA.HasLindebergCondition`) implies that the normalized row sums
+(`CKMA.normalizedArraySum`) converge in distribution to the standard Gaussian law; this is
+TauCeti's `ProbabilityTheory.HasLaw.tendstoInDistribution_sum_of_lindeberg` after rescaling the
+rows. Under Feller's condition (`CKMA.HasFellerCondition`) the converse holds.
 
 Let `Y n i`, `i : ι n`, be a row-independent triangular array of centred square-integrable real
 random variables whose second moments sum to `1` in every row. If no single second moment
@@ -28,8 +35,17 @@ characteristic functions of a row at a fixed frequency `t`, Feller's condition m
 Hence `∑ᵢ E[1 - cos (t Yᵢ)] → t² / 2`, and the elementary bound
 `y² 1{ε ≤ |y|} ≤ t² y² / 2 - (1 - cos (t y))` for `t² = 2 + 4 / ε²` gives the Lindeberg sum.
 
+## Main definitions
+
+* `CKMA.arrayRowVariance`: the sum of the uncentered second moments of one row.
+* `CKMA.HasLindebergCondition`, `CKMA.HasFellerCondition`: Lindeberg's and Feller's conditions.
+* `CKMA.normalizedArraySum`: row sum divided by the square root of the row second-moment sum.
+
 ## Main results
 
+* `CKMA.lindeberg_feller`: Lindeberg–Feller central limit theorem (**06.34**).
+* `CKMA.lindeberg_feller_iff`: under Feller's condition, Lindeberg's condition is equivalent to
+  the central limit theorem.
 * `CKMA.tendsto_sum_integral_cos_sub_one_of_feller`: the real parts of `φᵢ - 1` sum to `-t²/2`.
 * `CKMA.lindeberg_of_feller_of_tendstoInDistribution`: Feller's theorem for normalized rows.
 * `CKMA.lindeberg_of_feller_of_tendstoInDistribution_div_sqrt`: the same statement for an
@@ -262,5 +278,138 @@ theorem lindeberg_of_feller_of_tendstoInDistribution_div_sqrt {X : ∀ n, ι n �
       exact absurd h1.le h2
     all_goals simp only [mul_zero, le_refl]
     positivity
+
+/-- The sum of the uncentered second moments of one row.
+This is the row variance when every entry is centered. -/
+@[expose]
+def arrayRowVariance {Ω : Type*} [MeasurableSpace Ω] {ι : ℕ → Type*} [∀ n, Fintype (ι n)]
+    (X : ∀ n, ι n → Ω → ℝ) (μ : Measure Ω) (n : ℕ) : ℝ :=
+  ∑ i, ∫ ω, (X n i ω) ^ 2 ∂μ
+
+/-- Defining formula of `arrayRowVariance`. -/
+lemma arrayRowVariance_def {Ω : Type*} [MeasurableSpace Ω] {ι : ℕ → Type*}
+    [∀ n, Fintype (ι n)] (X : ∀ n, ι n → Ω → ℝ) (μ : Measure Ω) (n : ℕ) :
+    arrayRowVariance X μ n = ∑ i, ∫ ω, (X n i ω) ^ 2 ∂μ :=
+  rfl
+
+/-- Lindeberg's negligible large-increment condition, normalized by the row second-moment sum. -/
+@[expose]
+def HasLindebergCondition {Ω : Type*} [MeasurableSpace Ω] {ι : ℕ → Type*} [∀ n, Fintype (ι n)]
+    (X : ∀ n, ι n → Ω → ℝ) (μ : Measure Ω) : Prop :=
+  ∀ ε : ℝ, 0 < ε → Tendsto (fun n ↦ (arrayRowVariance X μ n)⁻¹ *
+    ∑ i, ∫ ω, if ε * Real.sqrt (arrayRowVariance X μ n) < |X n i ω|
+      then (X n i ω) ^ 2 else 0 ∂μ) atTop (𝓝 0)
+
+/-- Defining property of `HasLindebergCondition`. -/
+lemma hasLindebergCondition_iff {Ω : Type*} [MeasurableSpace Ω] {ι : ℕ → Type*}
+    [∀ n, Fintype (ι n)] {X : ∀ n, ι n → Ω → ℝ} {μ : Measure Ω} :
+    HasLindebergCondition X μ ↔ ∀ ε : ℝ, 0 < ε → Tendsto (fun n ↦ (arrayRowVariance X μ n)⁻¹ *
+      ∑ i, ∫ ω, if ε * Real.sqrt (arrayRowVariance X μ n) < |X n i ω|
+        then (X n i ω) ^ 2 else 0 ∂μ) atTop (𝓝 0) :=
+  Iff.rfl
+
+/-- No individual second moment contributes a positive fraction of the row second-moment sum. -/
+@[expose]
+def HasFellerCondition {Ω : Type*} [MeasurableSpace Ω] {ι : ℕ → Type*} [∀ n, Fintype (ι n)]
+    (X : ∀ n, ι n → Ω → ℝ) (μ : Measure Ω) : Prop :=
+  ∀ ε : ℝ, 0 < ε → ∀ᶠ n in atTop, ∀ i,
+    (∫ ω, (X n i ω) ^ 2 ∂μ) / arrayRowVariance X μ n < ε
+
+/-- Defining property of `HasFellerCondition`. -/
+lemma hasFellerCondition_iff {Ω : Type*} [MeasurableSpace Ω] {ι : ℕ → Type*}
+    [∀ n, Fintype (ι n)] {X : ∀ n, ι n → Ω → ℝ} {μ : Measure Ω} :
+    HasFellerCondition X μ ↔ ∀ ε : ℝ, 0 < ε → ∀ᶠ n in atTop, ∀ i,
+      (∫ ω, (X n i ω) ^ 2 ∂μ) / arrayRowVariance X μ n < ε :=
+  Iff.rfl
+
+/-- Row sum normalized by the square root of the row second-moment sum.
+The sum is centered when the separate centering hypothesis of the limit theorems holds. -/
+@[expose]
+def normalizedArraySum {Ω : Type*} [MeasurableSpace Ω] {ι : ℕ → Type*} [∀ n, Fintype (ι n)]
+    (X : ∀ n, ι n → Ω → ℝ) (μ : Measure Ω) (n : ℕ) (ω : Ω) : ℝ :=
+  (∑ i, X n i ω) / Real.sqrt (arrayRowVariance X μ n)
+
+/-- Defining formula of `normalizedArraySum`. -/
+lemma normalizedArraySum_def {Ω : Type*} [MeasurableSpace Ω] {ι : ℕ → Type*}
+    [∀ n, Fintype (ι n)] (X : ∀ n, ι n → Ω → ℝ) (μ : Measure Ω) (n : ℕ) (ω : Ω) :
+    normalizedArraySum X μ n ω = (∑ i, X n i ω) / Real.sqrt (arrayRowVariance X μ n) :=
+  rfl
+
+/-- **06.34**: the Lindeberg condition implies the central limit theorem for row-independent
+arrays. The proof rescales each row and applies TauCeti's
+`ProbabilityTheory.HasLaw.tendstoInDistribution_sum_of_lindeberg`. -/
+theorem lindeberg_feller {Ω : Type*} [MeasurableSpace Ω] (μ : Measure Ω)
+    [IsProbabilityMeasure μ] {ι : ℕ → Type*} [∀ n, Fintype (ι n)]
+    (X : ∀ n, ι n → Ω → ℝ)
+    (hi : ∀ n, iIndepFun (X n) μ)
+    (hLp : ∀ n i, MemLp (X n i) 2 μ) (hc : ∀ n i, ∫ ω, X n i ω ∂μ = 0)
+    (hv : ∀ n, 0 < arrayRowVariance X μ n) (hL : HasLindebergCondition X μ) :
+    TendstoInDistribution (normalizedArraySum X μ) atTop id (fun _ ↦ μ) (gaussianReal 0 1) := by
+  obtain ⟨v, hvv⟩ : ∃ v : ℕ → ℝ, v = arrayRowVariance X μ := ⟨_, rfl⟩
+  rw [← hvv] at hv
+  have hs n : 0 < Real.sqrt (v n) := Real.sqrt_pos.2 (hv n)
+  have hsq n : Real.sqrt (v n) ^ 2 = v n := Real.sq_sqrt (hv n).le
+  obtain ⟨Y, hY⟩ : ∃ Y : ∀ n, ι n → Ω → ℝ,
+      Y = fun n i ω ↦ X n i ω / Real.sqrt (v n) := ⟨_, rfl⟩
+  have hYL2 n i : MemLp (Y n i) 2 μ := by
+    simpa only [hY, div_eq_mul_inv] using (hLp n i).mul_const (Real.sqrt (v n))⁻¹
+  have hY0 n i : ∫ ω, Y n i ω ∂μ = 0 := by simp only [hY, integral_div, hc, zero_div]
+  have hind n : iIndepFun (Y n) μ := by
+    rw [hY]
+    exact (hi n).comp (fun _ x ↦ x / Real.sqrt (v n)) fun _ ↦ measurable_id.div_const _
+  have hvar : ∀ᶠ n in atTop, ∑ i, Var[Y n i; μ] = 1 := by
+    refine Filter.Eventually.of_forall fun n ↦ ?_
+    rw [Finset.sum_congr rfl fun i _ ↦
+      variance_of_integral_eq_zero (hYL2 n i).aestronglyMeasurable.aemeasurable (hY0 n i)]
+    simp only [hY, div_pow, hsq, integral_div]
+    rw [← Finset.sum_div, div_eq_one_iff_eq (hv n).ne', hvv, arrayRowVariance]
+  have hlind : ∀ ε > 0, Tendsto (fun n ↦ ∑ i,
+      ∫ ω, {ω | ε ≤ |Y n i ω|}.indicator (fun ω ↦ Y n i ω ^ 2) ω ∂μ) atTop (𝓝 0) := by
+    intro ε hε
+    have hL' := hL (ε / 2) (half_pos hε)
+    rw [← hvv] at hL'
+    refine squeeze_zero (fun n ↦ ?_) (fun n ↦ ?_) hL'
+    · exact Finset.sum_nonneg fun i _ ↦
+        integral_nonneg fun ω ↦ Set.indicator_nonneg (fun _ _ ↦ sq_nonneg _) _
+    rw [Finset.mul_sum]
+    refine Finset.sum_le_sum fun i _ ↦ ?_
+    rw [← integral_const_mul]
+    have hφ : Measurable fun x : ℝ ↦ if ε / 2 * Real.sqrt (v n) < |x| then x ^ 2 else 0 :=
+      Measurable.ite (measurableSet_lt measurable_const continuous_abs.measurable)
+        (measurable_id.pow_const 2) measurable_const
+    refine integral_mono_of_nonneg
+      (ae_of_all _ fun ω ↦ Set.indicator_nonneg (fun _ _ ↦ sq_nonneg _) _)
+      (((hLp n i).integrable_sq.mono
+        (hφ.comp_aemeasurable (hLp n i).aestronglyMeasurable.aemeasurable).aestronglyMeasurable
+        (ae_of_all _ fun ω ↦ ?_)).const_mul _) (ae_of_all _ fun ω ↦ ?_)
+    · dsimp only [Function.comp_apply]
+      split_ifs <;> simp [sq_nonneg]
+    · simp only [Set.indicator_apply, Set.mem_ofPred_eq, hY]
+      have hεs := mul_pos hε (hs n)
+      split_ifs with h1 h2
+      · rw [div_pow, hsq, div_eq_inv_mul]
+      · rw [abs_div, abs_of_pos (hs n), le_div_iff₀ (hs n)] at h1
+        exact absurd (by linarith) h2
+      · exact mul_nonneg (inv_nonneg.2 (hv n).le) (sq_nonneg _)
+      · simp
+  have hsum : normalizedArraySum X μ = fun n ω ↦ ∑ i, Y n i ω := by
+    funext n ω
+    simp only [normalizedArraySum, hY, Finset.sum_div, hvv]
+  rw [hsum]
+  exact HasLaw.tendstoInDistribution_sum_of_lindeberg (Ω := fun _ ↦ Ω) (P := fun _ ↦ μ)
+    HasLaw.id hind hYL2 hY0 hvar hlind
+
+/-- Under Feller's infinitesimality condition, normal convergence also implies Lindeberg's
+  condition. -/
+theorem lindeberg_feller_iff {Ω : Type*} [MeasurableSpace Ω] (μ : Measure Ω)
+    [IsProbabilityMeasure μ] {ι : ℕ → Type*} [∀ n, Fintype (ι n)]
+    (X : ∀ n, ι n → Ω → ℝ)
+    (hi : ∀ n, iIndepFun (X n) μ)
+    (hLp : ∀ n i, MemLp (X n i) 2 μ) (hc : ∀ n i, ∫ ω, X n i ω ∂μ = 0)
+    (hv : ∀ n, 0 < arrayRowVariance X μ n) (hF : HasFellerCondition X μ) :
+    HasLindebergCondition X μ ↔
+      TendstoInDistribution (normalizedArraySum X μ) atTop id (fun _ ↦ μ) (gaussianReal 0 1) :=
+  ⟨lindeberg_feller μ X hi hLp hc hv,
+    lindeberg_of_feller_of_tendstoInDistribution_div_sqrt hi hLp hc hv hF⟩
 
 end CKMA

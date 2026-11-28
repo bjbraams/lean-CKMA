@@ -63,10 +63,6 @@ private lemma lt_two_mul_largestPowerOfTwoLe {m : ℕ} (hm : 0 < m) :
 private def twoAdicPow (a : ℕ) : ℕ :=
   if a = 0 then 0 else 2 ^ multiplicity 2 a
 
-/-- The highest power of two dividing a positive integer divides that integer. -/
-private lemma twoAdicPow_dvd {a : ℕ} (ha : a ≠ 0) : twoAdicPow a ∣ a := by
-  simpa [twoAdicPow, ha] using pow_multiplicity_dvd 2 a
-
 /-- The highest power of two dividing a positive integer is itself a power of two. -/
 private lemma twoAdicPow_eq_pow {a : ℕ} (ha : a ≠ 0) :
     twoAdicPow a = 2 ^ multiplicity 2 a := by
@@ -117,7 +113,7 @@ private lemma greedyStep_dvd {a b : ℕ} (h : a < b) : greedyStep a b ∣ a := b
         min (2 ^ multiplicity 2 a) (2 ^ (b - a).log2) := by
       simp [greedyStep, ha, twoAdicPow_eq_pow ha, largestPowerOfTwoLe_of_pos hpos]
     have hpow : 2 ^ multiplicity 2 a ∣ a := by
-      simpa [twoAdicPow_eq_pow ha] using twoAdicPow_dvd ha
+      exact pow_multiplicity_dvd 2 a
     rw [hstep, min_two_pow]
     exact (Nat.pow_dvd_pow 2 (Nat.min_le_left _ _)).trans hpow
 
@@ -398,6 +394,9 @@ private lemma count_greedyJumps_le_two (a b q : ℕ) : (greedyJumps a b).count (
 @[expose]
 def dyadicHolderFactor (α : ℝ) : ℝ :=
   2 / (1 - (2 : ℝ) ^ (-α))
+
+/-- Defining equation of `dyadicHolderFactor`. -/
+theorem dyadicHolderFactor_def (α : ℝ) : dyadicHolderFactor α = 2 / (1 - (2 : ℝ) ^ (-α)) := rfl
 
 /-- The dyadic Hölder factor is positive for a positive exponent. -/
 lemma dyadicHolderFactor_pos {α : ℝ} (hα : 0 < α) : 0 < dyadicHolderFactor α := by

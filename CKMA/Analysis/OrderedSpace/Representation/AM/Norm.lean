@@ -5,11 +5,12 @@ Authors: CKMA contributors
 -/
 module
 
-public import CKMA.Analysis.OrderedSpace.Representation.AM.State
+public import CKMA.Analysis.OrderedSpace.Representation.Basic
 public import Mathlib.Topology.Category.CompHaus.Basic
 public import Mathlib.Topology.ContinuousMap.Compact
 public import Mathlib.Topology.ContinuousMap.Ordered
 
+import CKMA.Analysis.OrderedSpace.Representation.AM.State
 import Mathlib.Algebra.Order.Module.Basic
 import Mathlib.Analysis.Convex.KreinMilman
 import Mathlib.Topology.ContinuousMap.StoneWeierstrass
@@ -25,8 +26,8 @@ The argument follows Schaefer, *Banach Lattices and Positive Operators*, Theorem
 
 ## Main results
 
-* `CKMA.exists_am_representation`: Kakutani representation of an AM Banach lattice with unit
-  (**19.27**).
+* `CKMA.exists_amSpace_representation`: Kakutani representation of an AM Banach lattice with
+  unit (**19.27**).
 -/
 
 public section
@@ -278,11 +279,13 @@ private theorem exists_am_representation_of_eq_zero (he : e = 0) :
   · intro x y
     exact hsubC.elim _ _
 
-include he0 hball in
-/-- **19.27**. An AM space with unit is lattice isometric to `C(K, ℝ)`. -/
-theorem exists_am_representation [CompleteSpace E] :
+/-- **19.27**, Kakutani: an AM Banach lattice with unit is lattice isometric to the space of
+continuous real functions on a compact Hausdorff space, with the unit represented by the
+constant one. The zero space is represented by the empty carrier. -/
+theorem exists_amSpace_representation [CompleteSpace E] (hunit : IsAMSpaceUnit e) :
     ∃ K : CompHaus.{u}, ∃ U : E ≃ₗᵢ[ℝ] C(K, ℝ),
       U e = 1 ∧ ∀ x y, U (x ⊔ y) = U x ⊔ U y := by
+  obtain ⟨he0, hball⟩ := hunit
   by_cases he : e = 0
   · exact exists_am_representation_of_eq_zero hball he
   have hcomp : IsCompact (amLatticeHomSet e) := isCompact_amLatticeHomSet he0 hball he
@@ -355,6 +358,5 @@ theorem exists_am_representation [CompleteSpace E] :
   · intro x y
     ext φ
     simp [U, L, evalC, heval_sup]
-
 
 end CKMA

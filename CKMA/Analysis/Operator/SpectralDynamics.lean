@@ -38,12 +38,13 @@ Sources: GAPS 22.38 and 22.63.
 
 ## Main results
 
-* `CKMA.birman_schwinger_kernel_equiv`: Birman–Schwinger eigenvalue/multiplicity equivalence for
-  `H₀` with nonnegative quadratic form and energy shift `E > 0` (**22.38**).
-* `CKMA.rage_continuous`: RAGE theorem characterizing `purePointOperatorSubspace A` orthogonal
-  complement by vanishing compactly observed Cesàro means (**22.63**).
-* `CKMA.rage_purePoint`: RAGE theorem characterizing `purePointOperatorSubspace A` by precompact
-  unitary orbits.
+* `CKMA.nonempty_linearEquiv_ker_birmanSchwinger`: Birman–Schwinger eigenvalue/multiplicity
+  equivalence for `H₀` with nonnegative quadratic form and energy shift `E > 0` (**22.38**).
+* `CKMA.mem_orthogonal_purePointOperatorSubspace_iff_tendsto`: RAGE theorem characterizing the
+  orthogonal complement of `purePointOperatorSubspace A` by vanishing compactly observed Cesàro
+  means (**22.63**).
+* `CKMA.mem_purePointOperatorSubspace_iff_isCompact_closure_range`: RAGE theorem characterizing
+  `purePointOperatorSubspace A` by precompact unitary orbits.
 -/
 
 public section
@@ -52,7 +53,7 @@ noncomputable section
 
 namespace CKMA
 
-open Filter Topology MeasureTheory RAGE
+open Filter Topology MeasureTheory
 open scoped InnerProductSpace ComplexConjugate Pointwise
 
 /-- The Birman–Schwinger kernel transport for a supplied invertible bounded operator.
@@ -97,19 +98,35 @@ def birmanSchwingerKernelEquiv {𝕜 X : Type*} [NontriviallyNormedField 𝕜]
     ((Module.End.eigenspaceCompEquiv f g isUnit_one).trans
       (LinearEquiv.ofEq _ _ hright.symm))
 
+/-- The Birman–Schwinger kernel transport sends `x` to `W x`. -/
+theorem coe_birmanSchwingerKernelEquiv_apply {𝕜 X : Type*} [NontriviallyNormedField 𝕜]
+    [NormedAddCommGroup X] [NormedSpace 𝕜 X] (A W : X →L[𝕜] X) (hA : IsUnit A)
+    (x : LinearMap.ker ((A - W * W).toLinearMap)) :
+    (birmanSchwingerKernelEquiv A W hA x : X) = W x := by
+  simp only [birmanSchwingerKernelEquiv, LinearEquiv.trans_apply, LinearEquiv.coe_ofEq_apply,
+    Module.End.coe_eigenspaceCompEquiv_apply]
+  rfl
+
 variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
 
 /-- Birman–Schwinger operator `W (H₀ + E)⁻¹ W` for an arbitrary bounded operator `W`; in
-`birman_schwinger_kernel_equiv`, `W` is a square root of the potential `W * W`.
+`nonempty_linearEquiv_ker_birmanSchwinger`, `W` is a square root of the potential `W * W`.
 Totalized ring inversion is used in the definition; the theorem's hypotheses force invertibility. -/
 @[expose]
 def birmanSchwingerOperator (H₀ W : H →L[ℂ] H) (E : ℝ) : H →L[ℂ] H :=
   W * Ring.inverse (H₀ + (E : ℂ) • (1 : H →L[ℂ] H)) * W
 
-/-- **22.38**, the bounded-operator eigenvalue/multiplicity clause. The conclusion is an
-actual linear equivalence of eigenspaces, stronger than equality of finite dimensions.
-Compactness and self-adjointness of the factor `W` are unnecessary for this algebraic clause. -/
-theorem birman_schwinger_kernel_equiv (H₀ W : H →L[ℂ] H)
+omit [CompleteSpace H] in
+/-- The defining formula of `birmanSchwingerOperator`. -/
+theorem birmanSchwingerOperator_def (H₀ W : H →L[ℂ] H) (E : ℝ) :
+    birmanSchwingerOperator H₀ W E = W * Ring.inverse (H₀ + (E : ℂ) • (1 : H →L[ℂ] H)) * W :=
+  rfl
+
+/-- **22.38**, the bounded-operator Birman–Schwinger principle: for `H₀` with nonnegative
+quadratic form and `E > 0`, the kernel of `H₀ - W² + E` is linearly equivalent to the kernel of
+`1 - W (H₀ + E)⁻¹ W`. A linear equivalence is stronger than equality of finite dimensions.
+Compactness and self-adjointness of the factor `W` are not needed. -/
+theorem nonempty_linearEquiv_ker_birmanSchwinger (H₀ W : H →L[ℂ] H)
     (hpos : ∀ x : H, 0 ≤ (⟪x, H₀ x⟫_ℂ).re) {E : ℝ} (hE : 0 < E) :
     Nonempty (LinearMap.ker ((H₀ - W * W + (E : ℂ) • (1 : H →L[ℂ] H)).toLinearMap) ≃ₗ[ℂ]
       LinearMap.ker ((1 - birmanSchwingerOperator H₀ W E).toLinearMap)) := by
@@ -139,6 +156,11 @@ theorem birman_schwinger_kernel_equiv (H₀ W : H →L[ℂ] H)
 @[expose]
 def boundedSpectralEvolution (A : H →L[ℂ] H) (t : ℝ) : H →L[ℂ] H :=
   NormedSpace.exp ((-(t : ℂ) * Complex.I) • A)
+
+/-- The defining formula of `boundedSpectralEvolution`. -/
+theorem boundedSpectralEvolution_def (A : H →L[ℂ] H) (t : ℝ) :
+    boundedSpectralEvolution A t = NormedSpace.exp ((-(t : ℂ) * Complex.I) • A) :=
+  rfl
 
 /-- A real multiple of `-I` is skew-adjoint in `ℂ`. -/
 private lemma neg_I_mul_ofReal_mem_skewAdjoint (t : ℝ) :
@@ -430,12 +452,36 @@ private lemma tendsto_cesaro_normSq_inner (A : H →L[ℂ] H)
   filter_upwards [eventually_gt_atTop 0] with T hT
   exact (cesaro_normSq_inner_eq_re A hA ξ hT).symm
 
-/-- The squared modulus of an evolution matrix element depends continuously on time. -/
-private lemma continuous_normSq_inner_evolution (A : H →L[ℂ] H) (x y : H) :
-    Continuous fun t : ℝ => ‖⟪y, boundedSpectralEvolution A t x⟫_ℂ‖ ^ 2 := by
+/-- The orbit `t ↦ U(t) x` of the bounded evolution is continuous. -/
+private lemma continuous_boundedSpectralEvolution_apply (A : H →L[ℂ] H) (x : H) :
+    Continuous fun t : ℝ => boundedSpectralEvolution A t x := by
   let +nondep : NormedAlgebra ℚ (H →L[ℂ] H) := .restrictScalars ℚ ℂ _
   unfold boundedSpectralEvolution
   fun_prop
+
+/-- The squared modulus of an evolution matrix element depends continuously on time. -/
+private lemma continuous_normSq_inner_evolution (A : H →L[ℂ] H) (x y : H) :
+    Continuous fun t : ℝ => ‖⟪y, boundedSpectralEvolution A t x⟫_ℂ‖ ^ 2 :=
+  (continuous_const.inner (continuous_boundedSpectralEvolution_apply A x)).norm.pow 2
+
+/-- A Cesàro mean of a nonnegative function is nonnegative. -/
+private lemma cesaro_nonneg {f : ℝ → ℝ} {T : ℝ} (hT : 0 ≤ T) (hf : ∀ s, 0 ≤ f s) :
+    0 ≤ T⁻¹ * ∫ s in (0 : ℝ)..T, f s :=
+  mul_nonneg (inv_nonneg.mpr hT) (intervalIntegral.integral_nonneg hT fun s _ ↦ hf s)
+
+/-- A pointwise bound `f ≤ 2 g + c` passes to Cesàro means. -/
+private lemma cesaro_le_two_mul_add {f g : ℝ → ℝ} (hf : Continuous f) (hg : Continuous g)
+    {c T : ℝ} (hT : 0 < T) (h : ∀ s, f s ≤ 2 * g s + c) :
+    T⁻¹ * ∫ s in (0 : ℝ)..T, f s ≤ 2 * (T⁻¹ * ∫ s in (0 : ℝ)..T, g s) + c := by
+  have hg2 : IntervalIntegrable (fun s ↦ 2 * g s) MeasureTheory.volume 0 T :=
+    (continuous_const.mul hg).intervalIntegrable 0 T
+  have hint := intervalIntegral.integral_mono hT.le (hf.intervalIntegrable 0 T)
+    (hg2.add (continuous_const.intervalIntegrable 0 T)) h
+  rw [intervalIntegral.integral_add hg2 (continuous_const.intervalIntegrable 0 T),
+    intervalIntegral.integral_const_mul, intervalIntegral.integral_const, sub_zero,
+    smul_eq_mul] at hint
+  have hmul := mul_le_mul_of_nonneg_left hint (inv_nonneg.mpr hT.le)
+  simpa [mul_add, mul_left_comm, mul_assoc, hT.ne'] using hmul
 
 /-- Each polarization coefficient has modulus one quarter. -/
 private lemma norm_polCoeff (j : Fin 4) : ‖polCoeff j‖ = (4 : ℝ)⁻¹ := by
@@ -587,6 +633,7 @@ private lemma tendsto_cesaro_normSq_inner_right (A : H →L[ℂ] H) (hA : IsSelf
   simp_rw [heq]
   exact tendsto_cesaro_normSq_inner_both A hA hx hy
 
+omit [CompleteSpace H] in
 /-- Squared norm of a finite-rank orthogonal projection, expanded in an orthonormal basis. -/
 private lemma normSq_starProjection_eq_sum {F : Submodule ℂ H} [FiniteDimensional ℂ F]
     [CompleteSpace F] (z : H) :
@@ -614,7 +661,7 @@ private lemma tendsto_cesaro_normSq_of_isCompact_closure_range (A : H →L[ℂ] 
   obtain ⟨t, -, ht, hcover⟩ := hK.finite_cover_balls hδ
   let F := Submodule.span ℂ t
   let : FiniteDimensional ℂ F := FiniteDimensional.span_of_finite ℂ ht
-  let : CompleteSpace F := FiniteDimensional.complete ℂ F
+  let : CompleteSpace F := FiniteDimensional.completeSpace ℂ F
   have hdist (y : H) (hy : y ∈ K) : ‖y - F.starProjection y‖ < δ := by
     have hycover := hcover hy
     simp only [Set.mem_iUnion, Metric.mem_ball] at hycover
@@ -641,12 +688,12 @@ private lemma tendsto_cesaro_normSq_of_isCompact_closure_range (A : H →L[ℂ] 
       _ ≤ 2 * (a ^ 2 + δ ^ 2) :=
         mul_le_mul_of_nonneg_left (add_le_add_right hb2 _) (by norm_num)
       _ = 2 * a ^ 2 + 2 * δ ^ 2 := by ring
+  have hU := continuous_boundedSpectralEvolution_apply A x
+  have hLU : Continuous fun s : ℝ => L (boundedSpectralEvolution A s x) := L.continuous.comp hU
   let b := stdOrthonormalBasis ℂ F
   have hcont (i) : Continuous fun s : ℝ =>
-      ‖⟪(b i : H), L (boundedSpectralEvolution A s x)⟫_ℂ‖ ^ 2 := by
-    let +nondep : NormedAlgebra ℚ (H →L[ℂ] H) := .restrictScalars ℚ ℂ _
-    unfold boundedSpectralEvolution
-    fun_prop
+      ‖⟪(b i : H), L (boundedSpectralEvolution A s x)⟫_ℂ‖ ^ 2 :=
+    (continuous_const.inner hLU).norm.pow 2
   have hfun : (fun T : ℝ => T⁻¹ * ∫ s in (0 : ℝ)..T,
       ‖F.starProjection (L (boundedSpectralEvolution A s x))‖ ^ 2) =
       fun T : ℝ => ∑ i, T⁻¹ * ∫ s in (0 : ℝ)..T,
@@ -665,59 +712,16 @@ private lemma tendsto_cesaro_normSq_of_isCompact_closure_range (A : H →L[ℂ] 
     simpa using tendsto_finsetSum Finset.univ fun i _ => hinner i
   obtain ⟨T0, hT0⟩ := Metric.tendsto_atTop.1 hQ (eps / 4) (by positivity)
   refine ⟨max T0 1, fun T hT => ?_⟩
-  have hT0le : T0 ≤ T := (max_le_iff.mp hT).1
   have hTpos : 0 < T := lt_of_lt_of_le zero_lt_one (max_le_iff.mp hT).2
-  have hnnQ : 0 ≤ T⁻¹ * ∫ s in (0 : ℝ)..T,
-      ‖F.starProjection (L (boundedSpectralEvolution A s x))‖ ^ 2 := by
-    refine mul_nonneg (inv_nonneg.mpr hTpos.le) ?_
-    refine intervalIntegral.integral_nonneg hTpos.le ?_
-    intro _ _
-    exact sq_nonneg _
-  have hQlt : T⁻¹ * ∫ s in (0 : ℝ)..T,
-      ‖F.starProjection (L (boundedSpectralEvolution A s x))‖ ^ 2 < eps / 4 := by
-    have hdistQ := hT0 T hT0le
-    rw [dist_zero_right, Real.norm_eq_abs, abs_of_nonneg hnnQ] at hdistQ
-    exact hdistQ
-  have hf : IntervalIntegrable
-      (fun s : ℝ => ‖L (boundedSpectralEvolution A s x)‖ ^ 2) volume 0 T :=
-    (by
-      let +nondep : NormedAlgebra ℚ (H →L[ℂ] H) := .restrictScalars ℚ ℂ _
-      unfold boundedSpectralEvolution
-      fun_prop : Continuous fun s : ℝ => ‖L (boundedSpectralEvolution A s x)‖ ^ 2)
-        |>.intervalIntegrable 0 T
-  have hg : IntervalIntegrable (fun s : ℝ =>
-      2 * ‖F.starProjection (L (boundedSpectralEvolution A s x))‖ ^ 2 + 2 * δ ^ 2) volume 0 T := by
-    refine IntervalIntegrable.add ?_ (continuous_const.intervalIntegrable 0 T)
-    refine IntervalIntegrable.const_mul ?_ _
-    refine Continuous.intervalIntegrable ?_ 0 T
-    let +nondep : NormedAlgebra ℚ (H →L[ℂ] H) := .restrictScalars ℚ ℂ _
-    unfold boundedSpectralEvolution
-    fun_prop
-  have hint := intervalIntegral.integral_mono (by positivity) hf hg hpoint
-  rw [intervalIntegral.integral_add
-      (by
-        refine IntervalIntegrable.const_mul ?_ _
-        refine Continuous.intervalIntegrable ?_ 0 T
-        let +nondep : NormedAlgebra ℚ (H →L[ℂ] H) := .restrictScalars ℚ ℂ _
-        unfold boundedSpectralEvolution
-        fun_prop)
-      (continuous_const.intervalIntegrable 0 T),
-    intervalIntegral.integral_const_mul, intervalIntegral.integral_const, sub_zero,
-    smul_eq_mul] at hint
-  have hTinv : 0 ≤ T⁻¹ := inv_nonneg.mpr hTpos.le
-  have havg : T⁻¹ * ∫ s in (0 : ℝ)..T, ‖L (boundedSpectralEvolution A s x)‖ ^ 2 ≤
-      2 * (T⁻¹ * ∫ s in (0 : ℝ)..T,
-        ‖F.starProjection (L (boundedSpectralEvolution A s x))‖ ^ 2) + 2 * δ ^ 2 := by
-    have hmul := mul_le_mul_of_nonneg_left hint hTinv
-    simpa [mul_add, mul_left_comm, mul_assoc, hTpos.ne'] using hmul
-  have hnnLHS : 0 ≤ T⁻¹ * ∫ s in (0 : ℝ)..T, ‖L (boundedSpectralEvolution A s x)‖ ^ 2 :=
-    mul_nonneg (inv_nonneg.mpr hTpos.le)
-      (intervalIntegral.integral_nonneg hTpos.le fun _ _ => sq_nonneg _)
-  rw [dist_zero_right, Real.norm_eq_abs, abs_of_nonneg hnnLHS]
+  have hQlt := hT0 T (max_le_iff.mp hT).1
+  rw [dist_zero_right, Real.norm_eq_abs,
+    abs_of_nonneg (cesaro_nonneg hTpos.le fun _ ↦ sq_nonneg _)] at hQlt ⊢
   calc
     T⁻¹ * ∫ s in (0 : ℝ)..T, ‖L (boundedSpectralEvolution A s x)‖ ^ 2
       ≤ 2 * (T⁻¹ * ∫ s in (0 : ℝ)..T,
-          ‖F.starProjection (L (boundedSpectralEvolution A s x))‖ ^ 2) + 2 * δ ^ 2 := havg
+          ‖F.starProjection (L (boundedSpectralEvolution A s x))‖ ^ 2) + 2 * δ ^ 2 :=
+        cesaro_le_two_mul_add (hLU.norm.pow 2)
+          ((F.starProjection.continuous.comp hLU).norm.pow 2) hTpos hpoint
     _ < 2 * (eps / 4) + eps / 2 := by
       rw [hδsq]
       gcongr
@@ -825,9 +829,11 @@ private lemma purePoint_le_precompactOrbit (A : H →L[ℂ] H) (hA : IsSelfAdjoi
     rw [Metric.mem_ball]
     exact (dist_triangle _ _ _).trans_lt (by linarith)
 
-/-- **22.63**, RAGE for a bounded self-adjoint generator: continuous vectors are exactly
-those whose compactly observed time-averaged energy escapes. -/
-theorem rage_continuous (A : H →L[ℂ] H) (hA : IsSelfAdjoint A) (x : H) :
+/-- **22.63**, the RAGE theorem for a bounded self-adjoint generator, continuous part: the vectors
+orthogonal to the pure-point subspace are exactly those whose compactly observed time-averaged
+energy tends to zero. -/
+theorem mem_orthogonal_purePointOperatorSubspace_iff_tendsto (A : H →L[ℂ] H) (hA : IsSelfAdjoint A)
+    (x : H) :
     x ∈ (purePointOperatorSubspace A).orthogonal ↔
       ∀ C : H →L[ℂ] H, IsCompactOperator C → Tendsto
         (fun T : ℝ ↦ T⁻¹ * ∫ t in (0 : ℝ)..T, ‖C (boundedSpectralEvolution A t x)‖ ^ 2)
@@ -902,8 +908,10 @@ theorem rage_continuous (A : H →L[ℂ] H) (hA : IsSelfAdjoint A) (x : H) :
     have hzero := tendsto_nhds_unique (havg C hC) hlim
     exact (pow_ne_zero 2 (norm_ne_zero_iff.mpr hu_inner)).symm hzero
 
-/-- The pure-point RAGE criterion uses relative compactness of the full unitary orbit. -/
-theorem rage_purePoint (A : H →L[ℂ] H) (hA : IsSelfAdjoint A) (x : H) :
+/-- **22.63**, the RAGE theorem, pure-point part: a vector lies in the pure-point subspace iff
+its full unitary orbit is relatively compact. -/
+theorem mem_purePointOperatorSubspace_iff_isCompact_closure_range (A : H →L[ℂ] H)
+    (hA : IsSelfAdjoint A) (x : H) :
     x ∈ purePointOperatorSubspace A ↔
       IsCompact (closure (Set.range (fun t : ℝ ↦ boundedSpectralEvolution A t x))) := by
   constructor

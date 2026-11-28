@@ -25,6 +25,8 @@ weak compactness in normed spaces over `RCLike` scalars.
 
 ## Main results
 
+* `CKMA.weaklyTendsto_iff`, `CKMA.weaklyConverges_iff`, `CKMA.isRelativelyWeaklyCompact_iff`,
+  `CKMA.isWeaklyCauchy_iff`: defining equivalences.
 * `CKMA.weaklyTendsto_iff_tendsto`: equivalence of `WeaklyTendsto` and convergence in
   `WeakSpace 𝕜 E`.
 * `CKMA.weaklyConverges_iff_tendsto`: sequential specialization of `weaklyTendsto_iff_tendsto`.
@@ -47,6 +49,11 @@ def WeaklyTendsto (𝕜 : Type*) [RCLike 𝕜] {α E : Type*} [NormedAddCommGrou
     [NormedSpace 𝕜 E] (u : α → E) (l : Filter α) (x : E) : Prop :=
   ∀ ℓ : E →L[𝕜] 𝕜, Tendsto (fun a ↦ ℓ (u a)) l (𝓝 (ℓ x))
 
+/-- Unfolding `WeaklyTendsto`. -/
+theorem weaklyTendsto_iff {α : Type*} {u : α → E} {l : Filter α} {x : E} :
+    WeaklyTendsto 𝕜 u l x ↔ ∀ ℓ : E →L[𝕜] 𝕜, Tendsto (fun a ↦ ℓ (u a)) l (𝓝 (ℓ x)) :=
+  Iff.rfl
+
 /-- Scalar weak convergence is convergence in Mathlib's weak-space topology. -/
 theorem weaklyTendsto_iff_tendsto {α : Type*} (u : α → E) (l : Filter α) (x : E) :
     WeaklyTendsto 𝕜 u l x ↔
@@ -62,6 +69,11 @@ def WeaklyConverges (𝕜 : Type*) [RCLike 𝕜] {E : Type*} [NormedAddCommGroup
     [NormedSpace 𝕜 E] (u : ℕ → E) (x : E) : Prop :=
   WeaklyTendsto 𝕜 u atTop x
 
+/-- Unfolding `WeaklyConverges`. -/
+theorem weaklyConverges_iff {u : ℕ → E} {x : E} :
+    WeaklyConverges 𝕜 u x ↔ WeaklyTendsto 𝕜 u atTop x :=
+  Iff.rfl
+
 /-- Sequence weak convergence is convergence of the sequence viewed in `WeakSpace`. -/
 theorem weaklyConverges_iff_tendsto (u : ℕ → E) (x : E) :
     WeaklyConverges 𝕜 u x ↔
@@ -74,11 +86,21 @@ def IsRelativelyWeaklyCompact (𝕜 : Type*) [RCLike 𝕜] {E : Type*}
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] (s : Set E) : Prop :=
   IsCompact (closure (toWeakSpace 𝕜 E '' s))
 
+/-- Unfolding `IsRelativelyWeaklyCompact`. -/
+theorem isRelativelyWeaklyCompact_iff {s : Set E} :
+    IsRelativelyWeaklyCompact 𝕜 s ↔ IsCompact (closure (toWeakSpace 𝕜 E '' s)) :=
+  Iff.rfl
+
 /-- A sequence is weakly Cauchy when all of its continuous scalar images are Cauchy. -/
 @[expose]
 def IsWeaklyCauchy (𝕜 : Type*) [RCLike 𝕜] {E : Type*} [NormedAddCommGroup E]
     [NormedSpace 𝕜 E] (u : ℕ → E) : Prop :=
   ∀ ℓ : E →L[𝕜] 𝕜, CauchySeq (fun n ↦ ℓ (u n))
+
+/-- Unfolding `IsWeaklyCauchy`. -/
+theorem isWeaklyCauchy_iff {u : ℕ → E} :
+    IsWeaklyCauchy 𝕜 u ↔ ∀ ℓ : E →L[𝕜] 𝕜, CauchySeq (fun n ↦ ℓ (u n)) :=
+  Iff.rfl
 
 /-- Weak convergence implies the weak Cauchy property. -/
 theorem WeaklyConverges.isWeaklyCauchy {u : ℕ → E} {x : E}

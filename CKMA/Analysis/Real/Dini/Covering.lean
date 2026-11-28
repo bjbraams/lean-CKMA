@@ -19,16 +19,18 @@ The estimate is the telescope used by Hanson for the Denjoy–Young–Saks theor
 intervals contribute the steep slope and the complementary gaps contribute the left slope.
 The sets need not be measurable. Source: GAPS 05.10.
 
-## Main definitions
-
-* `steepRight`: pairs in `(a, b]` based at `E` with right slope steeper than `k`.
-
 ## Main results
 
-* `finset_packing_lower`: telescoping lower bound for finite disjoint steep intervals.
 * `CKMA.Dini.slopePacking_volume_le`: outer-measure bound from a left slope and steep right cover.
 * `CKMA.Dini.volume_eq_zero_of_arbitrarily_steep`: vanishing outer measure when arbitrarily steep
   right increments are available.
+
+## Implementation notes
+
+The private set `steepRight f E k a b` consists of the pairs `(x, y)` with `x ∈ E`,
+`a < x < y ≤ b` and slope above `k`. Vitali's covering theorem selects a countable disjoint
+subfamily covering `E ∩ (a, b)` up to a null set, and the private lemma `finset_packing_lower`
+telescopes every finite subfamily against the left slope bound.
 -/
 
 public section
@@ -59,20 +61,6 @@ private lemma disjoint_Icc_right_lt {p q : ℝ × ℝ} (hp : p.1 < p.2) (hq : q.
     refine ⟨?_, left_mem_Icc.2 hq.le⟩
     exact ⟨hlt.le, hge⟩
   exact (not_disjoint_iff_nonempty_inter.2 ⟨q.1, hinter⟩) hdis
-
-/-- Summing a nonnegative real function past a real threshold below its extended sum. -/
-private lemma exists_finset_sum_gt {ι : Type*} (φ : ι → ℝ) (hφ : ∀ i, 0 ≤ φ i)
-    (hσ : ∑' i, ENNReal.ofReal (φ i) ≠ ⊤) {s : ℝ} (hs0 : 0 ≤ s)
-    (hs : s < (∑' i, ENNReal.ofReal (φ i)).toReal) :
-    ∃ t : Finset ι, s < ∑ i ∈ t, φ i := by
-  have hpos : 0 < (∑' i, ENNReal.ofReal (φ i)).toReal := hs0.trans_lt hs
-  have hlt : ENNReal.ofReal s < ∑' i, ENNReal.ofReal (φ i) := by
-    rw [← ENNReal.ofReal_toReal hσ]
-    exact (ENNReal.ofReal_lt_ofReal_iff hpos).2 hs
-  rw [ENNReal.tsum_eq_iSup_sum] at hlt
-  obtain ⟨t, ht⟩ := lt_iSup_iff.mp hlt
-  rw [← ENNReal.ofReal_sum_of_nonneg (fun i _ => hφ i)] at ht
-  exact ⟨t, ((ENNReal.ofReal_lt_ofReal_iff').1 ht).1⟩
 
 /-- Inductive telescoping lower bound for finite disjoint steep intervals. -/
 private lemma finset_packing_lower_aux (f : ℝ → ℝ) (E : Set ℝ) (c k δ fin : ℝ)
@@ -146,40 +134,27 @@ private theorem finset_packing_lower (f : ℝ → ℝ) (E : Set ℝ) {c k δ a f
 private def steepRight (f : ℝ → ℝ) (E : Set ℝ) (k a b : ℝ) : Set (ℝ × ℝ) :=
   {p | p.1 ∈ E ∧ a < p.1 ∧ p.1 < p.2 ∧ p.2 ≤ b ∧ k < (f p.2 - f p.1) / (p.2 - p.1)}
 
-/-- Outer measure of `E` on a short interval, from a left slope and a steep right cover. -/
-theorem slopePacking_volume_le (f : ℝ → ℝ) (E : Set ℝ) {c k δ a b : ℝ} (hkc : c < k)
-    (hab : a < b) (hlen : b - a < δ) (hb : b ∈ E)
-    (hleft : ∀ x ∈ E, ∀ u, x - δ < u → u < x → c < (f x - f u) / (x - u))
+/-- A countable disjoint family of steep right intervals covers `E ∩ (a, b)` up to a null set, so
+the outer measure of `E ∩ (a, b)` is at most the total length of the family. -/
+private lemma exists_steepRight_cover (f : ℝ → ℝ) (E : Set ℝ) {k a b : ℝ}
     (hfine : ∀ x ∈ E ∩ Ioo a b, ∀ ε > 0, ∃ y, x < y ∧ y ≤ b ∧ y - x < ε ∧
       k < (f y - f x) / (y - x)) :
-    (k - c) * (volume (E ∩ Ioo a b)).toReal ≤ (f b - f a) - c * (b - a) := by
-  classical
-  have : DecidableEq (ℝ × ℝ) := Classical.decEq _
-  let t := steepRight f E k a b
-  let B : ℝ × ℝ → Set ℝ := fun p => Icc p.1 p.2
-  let s := E ∩ Ioo a b
-  have hμ : ∀ p ∈ t, volume (closedBall p.1 (3 * (p.2 - p.1))) ≤
-      (6 : ℝ≥0) * volume (B p) := by
-    intro p hp
-    rcases hp with ⟨-, -, hplt, -, -⟩
-    have hr0 : 0 ≤ p.2 - p.1 := sub_nonneg.2 hplt.le
-    rw [Real.closedBall_eq_Icc, Real.volume_Icc, Real.volume_Icc]
-    have hlen6 : (p.1 + 3 * (p.2 - p.1)) - (p.1 - 3 * (p.2 - p.1)) =
-        6 * (p.2 - p.1) := by ring
-    rw [hlen6, ENNReal.ofReal_mul (by norm_num : (0 : ℝ) ≤ 6)]
-    have h6 : ENNReal.ofReal (6 : ℝ) = (6 : ℝ≥0) := by
-      simp
-    rw [h6]
+    ∃ u ⊆ steepRight f E k a b, PairwiseDisjoint u (fun p => Icc p.1 p.2) ∧
+      volume (E ∩ Ioo a b) ≤ ∑' p : u, ENNReal.ofReal (p.1.2 - p.1.1) := by
+  have hμ : ∀ p ∈ steepRight f E k a b, volume (closedBall p.1 (3 * (p.2 - p.1))) ≤
+      (6 : ℝ≥0) * volume (Icc p.1 p.2) := by
+    intro p _
+    rw [Real.closedBall_eq_Icc, Real.volume_Icc, Real.volume_Icc,
+      show (p.1 + 3 * (p.2 - p.1)) - (p.1 - 3 * (p.2 - p.1)) = 6 * (p.2 - p.1) by ring,
+      ENNReal.ofReal_mul (by norm_num : (0 : ℝ) ≤ 6)]
+    simp
   obtain ⟨u, hut, hucount, hudisj, hcover⟩ :=
-    Vitali.exists_disjoint_covering_ae (μ := volume) s t (C := 6)
-      (r := fun p => p.2 - p.1) (c := fun p => p.1) B
-      (fun p hp => by
+    Vitali.exists_disjoint_covering_ae (μ := volume) (E ∩ Ioo a b) (steepRight f E k a b)
+      (C := 6) (r := fun p => p.2 - p.1) (c := fun p => p.1) (fun p => Icc p.1 p.2)
+      (fun p hp z hz => by
         rcases hp with ⟨-, -, hplt, -, -⟩
         rw [Real.closedBall_eq_Icc]
-        intro z hz
-        refine ⟨?_, ?_⟩
-        · linarith [hz.1, hplt.le]
-        · linarith [hz.2])
+        exact ⟨by linarith [hz.1, hplt.le], by linarith [hz.2]⟩)
       hμ
       (fun p hp => by
         rcases hp with ⟨-, -, hplt, -, -⟩
@@ -188,86 +163,51 @@ theorem slopePacking_volume_le (f : ℝ → ℝ) (E : Set ℝ) {c k δ a b : ℝ
       (fun _ _ => isClosed_Icc)
       (fun x hx ε hε => by
         obtain ⟨y, hyx, hyb, hylen, hyslope⟩ := hfine x hx ε hε
-        refine ⟨(x, y), ?_, hylen.le, rfl⟩
-        exact ⟨hx.1, hx.2.1, hyx, hyb, hyslope⟩)
-  have hunion : volume (⋃ p ∈ u, B p) = ∑' p : u, ENNReal.ofReal (p.1.2 - p.1.1) := by
-    rw [measure_biUnion hucount hudisj (fun _ _ => measurableSet_Icc)]
-    refine tsum_congr fun p => ?_
-    rw [Real.volume_Icc]
-  have hsubU : ⋃ p ∈ u, B p ⊆ Icc a b := by
-    intro z hz
-    simp only [mem_iUnion] at hz
-    obtain ⟨p, hp, hzI⟩ := hz
-    rcases hut hp with ⟨-, hpa, -, hpb, -⟩
-    exact ⟨hpa.le.trans hzI.1, hzI.2.trans hpb⟩
-  have hτfin : ∑' p : u, ENNReal.ofReal (p.1.2 - p.1.1) ≠ ⊤ := by
-    rw [← hunion]
-    exact ne_top_of_le_ne_top ENNReal.ofReal_ne_top
-      ((measure_mono hsubU).trans_eq Real.volume_Icc)
-  have hle : volume s ≤ ∑' p : u, ENNReal.ofReal (p.1.2 - p.1.1) := by
-    have hcover' : s ⊆ (s \ ⋃ p ∈ u, B p) ∪ ⋃ p ∈ u, B p := by
-      intro z hz
-      by_cases hzu : z ∈ ⋃ p ∈ u, B p
-      · exact Or.inr hzu
-      · exact Or.inl ⟨hz, hzu⟩
-    calc volume s
-        ≤ volume ((s \ ⋃ p ∈ u, B p) ∪ ⋃ p ∈ u, B p) := measure_mono hcover'
-      _ ≤ volume (s \ ⋃ p ∈ u, B p) + volume (⋃ p ∈ u, B p) := measure_union_le _ _
-      _ = volume (⋃ p ∈ u, B p) := by rw [hcover, zero_add]
-      _ = ∑' p : u, ENNReal.ofReal (p.1.2 - p.1.1) := hunion
-  set σ : ℝ := (volume s).toReal
-  set RHS : ℝ := (f b - f a) - c * (b - a)
-  have hgapb : c * (b - a) < f b - f a :=
-    mul_lt_of_lt_slope hab (hleft b hb a (by linarith) hab)
-  have hRHS : 0 < RHS := by linarith
-  have hσle : σ ≤ (∑' p : u, ENNReal.ofReal (p.1.2 - p.1.1)).toReal :=
-    ENNReal.toReal_mono hτfin hle
-  apply le_of_forall_pos_le_add
-  intro ε hε
-  by_cases hσ0 : σ = 0
-  · rw [hσ0, mul_zero]
-    linarith
-  · have hσpos : 0 < σ := lt_of_le_of_ne ENNReal.toReal_nonneg (Ne.symm hσ0)
-    let ε' : ℝ := min (σ / 2) (ε / (k - c))
-    have hε'pos : 0 < ε' := lt_min (half_pos hσpos) (div_pos hε (sub_pos.2 hkc))
-    have hbelow : 0 ≤ σ - ε' := by
-      have : ε' ≤ σ / 2 := min_le_left _ _
-      linarith
-    have hstrict : σ - ε' < (∑' p : u, ENNReal.ofReal (p.1.2 - p.1.1)).toReal := by
-      exact (sub_lt_self σ hε'pos).trans_le hσle
-    obtain ⟨tF, htF⟩ := exists_finset_sum_gt (fun i : u => i.1.2 - i.1.1)
-      (fun i => sub_nonneg.2 (hut i.2).2.2.1.le) hτfin hbelow hstrict
+        exact ⟨(x, y), ⟨hx.1, hx.2.1, hyx, hyb, hyslope⟩, hylen.le, rfl⟩)
+  refine ⟨u, hut, hudisj, (measure_mono_ae (ae_subset.2 hcover)).trans_eq ?_⟩
+  rw [measure_biUnion hucount hudisj (fun _ _ => measurableSet_Icc)]
+  exact tsum_congr fun p => Real.volume_Icc
+
+/-- Outer measure of `E` on a short interval, from a left slope and a steep right cover. -/
+theorem slopePacking_volume_le (f : ℝ → ℝ) (E : Set ℝ) {c k δ a b : ℝ} (hkc : c < k)
+    (hab : a < b) (hlen : b - a < δ) (hb : b ∈ E)
+    (hleft : ∀ x ∈ E, ∀ u, x - δ < u → u < x → c < (f x - f u) / (x - u))
+    (hfine : ∀ x ∈ E ∩ Ioo a b, ∀ ε > 0, ∃ y, x < y ∧ y ≤ b ∧ y - x < ε ∧
+      k < (f y - f x) / (y - x)) :
+    (k - c) * (volume (E ∩ Ioo a b)).toReal ≤ (f b - f a) - c * (b - a) := by
+  classical
+  obtain ⟨u, hut, hudisj, hle⟩ := exists_steepRight_cover f E hfine
+  have hkc' : 0 < k - c := sub_pos.2 hkc
+  have hRHS : 0 ≤ ((f b - f a) - c * (b - a)) / (k - c) :=
+    div_nonneg (by linarith [mul_lt_of_lt_slope hab (hleft b hb a (by linarith) hab)]) hkc'.le
+  -- Each finite subfamily packs into `(a, b]` by the telescoping bound.
+  have hsum : ∀ tF : Finset u,
+      ∑ i ∈ tF, (i.1.2 - i.1.1) ≤ ((f b - f a) - c * (b - a)) / (k - c) := by
+    intro tF
     let e : u ↪ ℝ × ℝ := ⟨Subtype.val, Subtype.val_injective⟩
-    let sP : Finset (ℝ × ℝ) := tF.map e
-    have hdisjP : PairwiseDisjoint (sP : Set (ℝ × ℝ)) (fun p => Icc p.1 p.2) := by
-      intro p hp q hq hpq
-      obtain ⟨ip, hip, rfl⟩ := Finset.mem_map.mp hp
-      obtain ⟨iq, hiq, rfl⟩ := Finset.mem_map.mp hq
-      have hine : (ip : ℝ × ℝ) ≠ iq := hpq
-      exact hudisj.disjoint_of_ne ip.2 iq.2 hine
-    have hmemP : ∀ p ∈ sP, p.1 ∈ E ∧ a < p.1 ∧ p.1 < p.2 ∧ p.2 ≤ b := by
-      intro p hp
-      obtain ⟨ip, -, rfl⟩ := Finset.mem_map.mp hp
-      rcases hut ip.2 with ⟨hpE, hpa, hplt, hpb, -⟩
-      exact ⟨hpE, hpa, hplt, hpb⟩
-    have hsteepP : ∀ p ∈ sP, k < (f p.2 - f p.1) / (p.2 - p.1) := by
-      intro p hp
-      obtain ⟨ip, -, rfl⟩ := Finset.mem_map.mp hp
-      exact (hut ip.2).2.2.2.2
-    have hpack := finset_packing_lower f E hleft hab hlen hb sP hdisjP hmemP hsteepP
-    have hlenP : σ - ε' < ∑ p ∈ sP, (p.2 - p.1) := by
-      rw [Finset.sum_map]
-      exact htF
-    have hmul : (k - c) * (σ - ε') < RHS := by
-      have hlt : (k - c) * (σ - ε') < (k - c) * ∑ p ∈ sP, (p.2 - p.1) :=
-        mul_lt_mul_of_pos_left hlenP (sub_pos.2 hkc)
-      linarith
-    have hε'le : (k - c) * ε' ≤ ε := by
-      have hle' : ε' ≤ ε / (k - c) := min_le_right _ _
-      have hkpos : 0 < k - c := sub_pos.2 hkc
-      calc (k - c) * ε' ≤ (k - c) * (ε / (k - c)) := mul_le_mul_of_nonneg_left hle' hkpos.le
-        _ = ε := by field_simp
+    have hpack := finset_packing_lower f E hleft hab hlen hb (tF.map e)
+      (fun p hp q hq hpq => by
+        obtain ⟨ip, -, rfl⟩ := Finset.mem_map.mp hp
+        obtain ⟨iq, -, rfl⟩ := Finset.mem_map.mp hq
+        exact hudisj.disjoint_of_ne ip.2 iq.2 hpq)
+      (fun p hp => by
+        obtain ⟨ip, -, rfl⟩ := Finset.mem_map.mp hp
+        rcases hut ip.2 with ⟨hpE, hpa, hplt, hpb, -⟩
+        exact ⟨hpE, hpa, hplt, hpb⟩)
+      (fun p hp => by
+        obtain ⟨ip, -, rfl⟩ := Finset.mem_map.mp hp
+        exact (hut ip.2).2.2.2.2)
+    simp only [Finset.sum_map, e, Function.Embedding.coeFn_mk] at hpack
+    rw [le_div_iff₀ hkc']
     linarith
+  have htsum : ∑' p : u, ENNReal.ofReal (p.1.2 - p.1.1) ≤
+      ENNReal.ofReal (((f b - f a) - c * (b - a)) / (k - c)) := by
+    rw [tsum_eq_iSup_sum]
+    refine iSup_le fun tF => ?_
+    rw [← ENNReal.ofReal_sum_of_nonneg fun i _ => sub_nonneg.2 (hut i.2).2.2.1.le]
+    exact ENNReal.ofReal_le_ofReal (hsum tF)
+  rw [← le_div_iff₀' hkc']
+  exact ENNReal.toReal_le_of_le_ofReal hRHS (hle.trans htsum)
 
 /-- If right increments of every height are available, the outer measure on `(a, b)` vanishes. -/
 theorem volume_eq_zero_of_arbitrarily_steep (f : ℝ → ℝ) (E : Set ℝ) {c δ a b : ℝ}
@@ -289,7 +229,6 @@ theorem volume_eq_zero_of_arbitrarily_steep (f : ℝ → ℝ) (E : Set ℝ) {c �
     obtain ⟨n, hn⟩ := exists_nat_gt (RHS / σ)
     have hn1 : RHS / σ < (n : ℝ) + 1 := by linarith
     have : RHS < ((n : ℝ) + 1) * σ := by
-      have hnpos : 0 < (n : ℝ) + 1 := by positivity
       calc RHS = (RHS / σ) * σ := by field_simp
         _ < ((n : ℝ) + 1) * σ := mul_lt_mul_of_pos_right hn1 hσpos
     linarith [hbound n]
@@ -303,12 +242,3 @@ theorem volume_eq_zero_of_arbitrarily_steep (f : ℝ → ℝ) (E : Set ℝ) {c �
   · exact absurd htop hvolfin
 
 end CKMA.Dini
-
-namespace CKMA
-
-@[deprecated (since := "2026-11-15")]
-alias slopePacking_volume_le := Dini.slopePacking_volume_le
-@[deprecated (since := "2026-11-15")]
-alias volume_eq_zero_of_arbitrarily_steep := Dini.volume_eq_zero_of_arbitrarily_steep
-
-end CKMA

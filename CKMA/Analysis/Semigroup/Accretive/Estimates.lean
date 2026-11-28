@@ -29,15 +29,22 @@ feed the Crandall–Liggett semigroup constructed in
 
 ## Main results
 
-* `CKMA.accretiveResolvent_lipschitz`: the nonlinear resolvent is a contraction at positive
+* `CKMA.accretiveResolvent_spec`, `CKMA.accretiveResolvent_eq_iff`: the resolvent value at a
+  positive scale is the unique `y` with `x = y + t • u`, `(y, u) ∈ G`.
+* `CKMA.lipschitzWith_accretiveResolvent`: the nonlinear resolvent is a contraction at positive
   scales.
-* `CKMA.accretiveEulerProduct_lipschitz`: every Euler product is a contraction.
+* `CKMA.lipschitzWith_accretiveEulerProduct`: every Euler product is a contraction.
 * `CKMA.norm_accretiveEulerProduct_sub`, `CKMA.norm_accretiveEulerProduct_time`: Euler products
   move by at most time times a graph slope, and are Lipschitz in time.
 * `CKMA.norm_accretiveEulerProduct_cross`: Crandall–Liggett square-root comparison estimate
   between equal-time Euler products of different step numbers.
-* `CKMA.accretiveEulerProduct_cauchy_domain`: Cauchy convergence of Euler products from points
+* `CKMA.cauchySeq_accretiveEulerProduct`: Cauchy convergence of Euler products from points
   of the graph domain.
+
+## References
+
+* [M. G. Crandall and T. M. Liggett, *Generation of semi-groups of nonlinear transformations on
+  general Banach spaces*][CrandallLiggett1971]
 -/
 
 public section
@@ -49,18 +56,19 @@ namespace CKMA
 open Filter Finset Function Topology
 open scoped NNReal BigOperators
 
-variable {X : Type*} [NormedAddCommGroup X] [NormedSpace ℝ X] [CompleteSpace X]
+variable {X : Type*} [NormedAddCommGroup X] [NormedSpace ℝ X]
 
 /-- The domain of a possibly multivalued operator graph. -/
 @[expose]
 def accretiveGraphDomain (G : Set (X × X)) : Set X := {x | ∃ u, (x, u) ∈ G}
 
-/-- Accretivity of a graph in a real Banach space, stated by the resolvent norm inequality. -/
+/-- Accretivity of a graph in a real normed space, stated by the resolvent norm inequality
+`‖x - y‖ ≤ ‖x - y + t • (u - v)‖` for `(x, u), (y, v) ∈ G` and `t > 0`. -/
 @[expose]
 def IsAccretiveGraph (G : Set (X × X)) : Prop :=
   ∀ p ∈ G, ∀ q ∈ G, ∀ t : ℝ, 0 < t → ‖p.1 - q.1‖ ≤ ‖p.1 - q.1 + t • (p.2 - q.2)‖
 
-/-- Maximal accretivity includes surjectivity of every positive resolvent. -/
+/-- Maximal accretivity: accretivity together with surjectivity of `I + t G` for every `t > 0`. -/
 @[expose]
 def IsMAccretiveGraph (G : Set (X × X)) : Prop :=
   IsAccretiveGraph G ∧ ∀ t : ℝ, 0 < t → ∀ x : X, ∃ y u : X, (y, u) ∈ G ∧ x = y + t • u
@@ -78,39 +86,52 @@ def accretiveResolvent (G : Set (X × X)) (t : ℝ) (x : X) : X := by
 def accretiveEulerProduct (G : Set (X × X)) (t : ℝ≥0) (n : ℕ) (x : X) : X :=
   (accretiveResolvent G ((t : ℝ) / (n + 1 : ℝ)))^[n + 1] x
 
-omit [CompleteSpace X] in
+omit [NormedAddCommGroup X] [NormedSpace ℝ X] in
+/-- Membership in the domain of a graph. -/
+theorem mem_accretiveGraphDomain {G : Set (X × X)} {x : X} :
+    x ∈ accretiveGraphDomain G ↔ ∃ u, (x, u) ∈ G :=
+  Iff.rfl
+
+omit [NormedAddCommGroup X] [NormedSpace ℝ X] in
+/-- The first component of a point of the graph lies in its domain. -/
+theorem mem_accretiveGraphDomain_of_mem {G : Set (X × X)} {x u : X} (h : (x, u) ∈ G) :
+    x ∈ accretiveGraphDomain G :=
+  ⟨u, h⟩
+
+/-- Unfolding accretivity of a graph. -/
+theorem isAccretiveGraph_iff {G : Set (X × X)} :
+    IsAccretiveGraph G ↔
+      ∀ p ∈ G, ∀ q ∈ G, ∀ t : ℝ, 0 < t → ‖p.1 - q.1‖ ≤ ‖p.1 - q.1 + t • (p.2 - q.2)‖ :=
+  Iff.rfl
+
+/-- Unfolding maximal accretivity of a graph. -/
+theorem isMAccretiveGraph_iff {G : Set (X × X)} :
+    IsMAccretiveGraph G ↔
+      IsAccretiveGraph G ∧ ∀ t : ℝ, 0 < t → ∀ x : X, ∃ y u : X, (y, u) ∈ G ∧ x = y + t • u :=
+  Iff.rfl
+
+/-- An m-accretive graph is accretive. -/
+theorem IsMAccretiveGraph.isAccretiveGraph {G : Set (X × X)} (hG : IsMAccretiveGraph G) :
+    IsAccretiveGraph G :=
+  hG.1
+
+/-- For an m-accretive graph, every point is `y + t • u` with `(y, u)` in the graph, `t > 0`. -/
+theorem IsMAccretiveGraph.exists_preimage {G : Set (X × X)} (hG : IsMAccretiveGraph G) {t : ℝ}
+    (ht : 0 < t) (x : X) : ∃ y u : X, (y, u) ∈ G ∧ x = y + t • u :=
+  hG.2 t ht x
+
+/-- The Euler product is the `n + 1`-fold iterate of the resolvent at scale `t / (n + 1)`. -/
+theorem accretiveEulerProduct_def (G : Set (X × X)) (t : ℝ≥0) (n : ℕ) (x : X) :
+    accretiveEulerProduct G t n x = (accretiveResolvent G ((t : ℝ) / (n + 1 : ℝ)))^[n + 1] x :=
+  rfl
+
 /-- The zero-scale totalization is the identity. -/
 theorem accretiveResolvent_zero (G : Set (X × X)) (x : X) : accretiveResolvent G 0 x = x := by
   classical
   simp [accretiveResolvent]
 
-omit [CompleteSpace X] in
-/-- The resolvent of an m-accretive graph is a contraction at every positive scale. -/
-theorem accretiveResolvent_lipschitz {G : Set (X × X)} (hG : IsMAccretiveGraph G)
-    {t : ℝ} (ht : 0 < t) : LipschitzWith 1 (accretiveResolvent G t) := by
-  classical
-  have hr (x : X) : ∃ u, (accretiveResolvent G t x, u) ∈ G ∧
-      x = accretiveResolvent G t x + t • u := by
-    have hx := hG.2 t ht x
-    simpa only [accretiveResolvent, ht.ne', ite_false, dite_eq_left hx] using
-      Classical.choose_spec hx
-  rw [lipschitzWith_iff_dist_le_mul]
-  intro x y
-  simp only [NNReal.coe_one, one_mul, dist_eq_norm]
-  obtain ⟨u, hu, hx⟩ := hr x
-  obtain ⟨v, hv, hy⟩ := hr y
-  have h := hG.1 _ hu _ hv t ht
-  calc ‖accretiveResolvent G t x - accretiveResolvent G t y‖ ≤
-      ‖accretiveResolvent G t x - accretiveResolvent G t y + t • (u - v)‖ := h
-    _ = ‖x - y‖ := by
-      congr 1
-      calc accretiveResolvent G t x - accretiveResolvent G t y + t • (u-v) =
-          (accretiveResolvent G t x + t • u) - (accretiveResolvent G t y + t • v) := by module
-        _ = x-y := by rw [← hx, ← hy]
-
-omit [CompleteSpace X] in
 /-- A positive resolvent value is witnessed by a graph slope. -/
-private lemma accretiveResolvent_spec {G : Set (X × X)} (hG : IsMAccretiveGraph G) {t : ℝ}
+theorem accretiveResolvent_spec {G : Set (X × X)} (hG : IsMAccretiveGraph G) {t : ℝ}
     (ht : 0 < t) (x : X) :
     ∃ u, (accretiveResolvent G t x, u) ∈ G ∧ x = accretiveResolvent G t x + t • u := by
   classical
@@ -118,7 +139,20 @@ private lemma accretiveResolvent_spec {G : Set (X × X)} (hG : IsMAccretiveGraph
   simpa only [accretiveResolvent, ht.ne', ite_false, dite_eq_left hx] using
     Classical.choose_spec hx
 
-omit [CompleteSpace X] in
+/-- The resolvent of an m-accretive graph is a contraction at every positive scale. -/
+theorem lipschitzWith_accretiveResolvent {G : Set (X × X)} (hG : IsMAccretiveGraph G)
+    {t : ℝ} (ht : 0 < t) : LipschitzWith 1 (accretiveResolvent G t) := by
+  refine LipschitzWith.of_dist_le_mul fun x y => ?_
+  simp only [NNReal.coe_one, one_mul, dist_eq_norm]
+  obtain ⟨u, hu, hx⟩ := accretiveResolvent_spec hG ht x
+  obtain ⟨v, hv, hy⟩ := accretiveResolvent_spec hG ht y
+  calc ‖accretiveResolvent G t x - accretiveResolvent G t y‖ ≤
+      ‖accretiveResolvent G t x - accretiveResolvent G t y + t • (u - v)‖ := hG.1 _ hu _ hv t ht
+    _ = ‖(accretiveResolvent G t x + t • u) - (accretiveResolvent G t y + t • v)‖ := by
+      congr 1
+      module
+    _ = ‖x - y‖ := by rw [← hx, ← hy]
+
 /-- Accretivity makes the positive resolvent preimage unique. -/
 private lemma accretiveResolvent_unique {G : Set (X × X)} (hG : IsMAccretiveGraph G) {t : ℝ}
     (ht : 0 < t) {x y y' u u' : X} (hy : (y, u) ∈ G) (hx : x = y + t • u) (hy' : (y', u') ∈ G)
@@ -129,7 +163,15 @@ private lemma accretiveResolvent_unique {G : Set (X × X)} (hG : IsMAccretiveGra
   have : ‖y - y'‖ ≤ 0 := by simpa [hsub] using hle
   exact sub_eq_zero.mp (norm_le_zero_iff.mp this)
 
-omit [CompleteSpace X] in
+/-- For an m-accretive graph and `t > 0`, `accretiveResolvent G t x` is the unique `y` with
+`x = y + t • u` for some `(y, u) ∈ G`. -/
+theorem accretiveResolvent_eq_iff {G : Set (X × X)} (hG : IsMAccretiveGraph G) {t : ℝ}
+    (ht : 0 < t) {x y : X} :
+    accretiveResolvent G t x = y ↔ ∃ u, (y, u) ∈ G ∧ x = y + t • u := by
+  obtain ⟨v, hv, hx⟩ := accretiveResolvent_spec hG ht x
+  refine ⟨fun h => h ▸ ⟨v, hv, hx⟩, fun ⟨u, hu, hxu⟩ => ?_⟩
+  exact accretiveResolvent_unique hG ht hv hx hu hxu
+
 /-- Moving one resolvent step costs at most the scale times a graph slope at the input. -/
 private lemma norm_sub_accretiveResolvent_le {G : Set (X × X)} (hG : IsMAccretiveGraph G) {t : ℝ}
     (ht : 0 < t) {x u : X} (hx : (x, u) ∈ G) :
@@ -145,14 +187,12 @@ private lemma norm_sub_accretiveResolvent_le {G : Set (X × X)} (hG : IsMAccreti
           _ = t • u := by rw [hzero, zero_add]
     _ = t * ‖u‖ := by simp [norm_smul, abs_of_pos ht]
 
-omit [CompleteSpace X] in
 /-- Every positive resolvent value lies in the graph domain. -/
 private lemma accretiveResolvent_mem_domain {G : Set (X × X)} (hG : IsMAccretiveGraph G) {t : ℝ}
     (ht : 0 < t) (x : X) : accretiveResolvent G t x ∈ accretiveGraphDomain G := by
   obtain ⟨u, hu, _⟩ := accretiveResolvent_spec hG ht x
   exact ⟨u, hu⟩
 
-omit [CompleteSpace X] in
 /-- Iterates of a positive resolvent stay within `n` steps of a graph point. -/
 private lemma norm_accretiveResolvent_iterate_sub_le {G : Set (X × X)} (hG : IsMAccretiveGraph G)
     {t : ℝ} (ht : 0 < t) {x u : X} (hx : (x, u) ∈ G) (n : ℕ) :
@@ -162,7 +202,7 @@ private lemma norm_accretiveResolvent_iterate_sub_le {G : Set (X × X)} (hG : Is
   | succ n ih =>
       have hstep : ‖(accretiveResolvent G t)^[n + 1] x - (accretiveResolvent G t)^[n] x‖ ≤
           ‖accretiveResolvent G t x - x‖ := by
-        have hLip := ((accretiveResolvent_lipschitz hG ht).iterate n).dist_le_mul
+        have hLip := ((lipschitzWith_accretiveResolvent hG ht).iterate n).dist_le_mul
           (accretiveResolvent G t x) x
         simpa [dist_eq_norm, iterate_succ_apply, NNReal.coe_pow, NNReal.coe_one, one_pow, one_mul]
           using hLip
@@ -183,7 +223,6 @@ private lemma norm_accretiveResolvent_iterate_sub_le {G : Set (X × X)} (hG : Is
             rw [Nat.cast_succ]
             ring
 
-omit [CompleteSpace X] in
 /-- The resolvent identity: a coarser step is one finer step on a convex combination. -/
 private lemma accretiveResolvent_formula {G : Set (X × X)} (hG : IsMAccretiveGraph G) {h k : ℝ}
     (hh : 0 < h) (hk : 0 < k) (x : X) :
@@ -205,7 +244,6 @@ private lemma accretiveResolvent_formula {G : Set (X × X)} (hG : IsMAccretiveGr
   obtain ⟨v', hv', hx'⟩ := accretiveResolvent_spec hG hh ((h / k) • x + ((k - h) / k) • y)
   exact accretiveResolvent_unique hG hh hv' hx' hv (by rw [← hcomb])
 
-omit [CompleteSpace X] in
 /-- One peeling step for resolvent iterates, at the finer positive scale. -/
 private lemma accretiveResolvent_iterate_recur {G : Set (X × X)} (hG : IsMAccretiveGraph G)
     {h k : ℝ} (hh : 0 < h) (hk : 0 < k) (hhk : h ≤ k) {n m : ℕ} (hn : 0 < n) (hm : 0 < m)
@@ -242,7 +280,7 @@ private lemma accretiveResolvent_iterate_recur {G : Set (X × X)} (hG : IsMAccre
   have hpq : p + q = 1 := by simp [p, q]
   have hLip : ‖J h z - J h (p • a + q • b)‖ ≤ ‖z - (p • a + q • b)‖ := by
     simpa [dist_eq_norm, p, q, a, b, z] using
-      (accretiveResolvent_lipschitz hG hh).dist_le_mul z (p • a + q • b)
+      (lipschitzWith_accretiveResolvent hG hh).dist_le_mul z (p • a + q • b)
   refine hLip.trans ?_
   have hsplit : z - (p • a + q • b) = p • (z - a) + q • (z - b) := by
     calc z - (p • a + q • b) = (p + q) • z - (p • a + q • b) := by rw [hpq, one_smul]
@@ -253,7 +291,6 @@ private lemma accretiveResolvent_iterate_recur {G : Set (X × X)} (hG : IsMAccre
     _ = |p| * ‖z - a‖ + |q| * ‖z - b‖ := by simp [norm_smul]
     _ = p * ‖z - a‖ + q * ‖z - b‖ := by simp [abs_of_pos hpos, abs_of_nonneg hq]
 
-omit [CompleteSpace X] in
 /-- Two resolvent values satisfy the convex-combination form of accretivity. -/
 private lemma norm_accretiveResolvent_convex {G : Set (X × X)} (hG : IsMAccretiveGraph G)
     {lam mu : ℝ} (hl : 0 < lam) (hm : 0 < mu) (x w : X) :
@@ -290,7 +327,6 @@ private lemma norm_accretiveResolvent_convex {G : Set (X × X)} (hG : IsMAccreti
     _ = |a| * ‖x - z‖ + |b| * ‖y - w‖ := by simp [norm_smul]
     _ = a * ‖x - z‖ + b * ‖y - w‖ := by simp [abs_of_nonneg ha, abs_of_nonneg hb]
 
-omit [CompleteSpace X] in
 /-- An iterate of a positive resolvent carries a graph slope no larger than the input slope. -/
 lemma accretiveResolvent_iterate_slope {G : Set (X × X)} (hG : IsMAccretiveGraph G)
     {t : ℝ} (ht : 0 < t) {x u : X} (hx : (x, u) ∈ G) {n : ℕ} (hn : 0 < n) :
@@ -304,7 +340,7 @@ lemma accretiveResolvent_iterate_slope {G : Set (X × X)} (hG : IsMAccretiveGrap
   obtain ⟨v, hv, heq⟩ := accretiveResolvent_spec hG ht ((J t)^[n - 1] x)
   have hmem : ((J t)^[n] x, v) ∈ G := by simpa [hidx] using hv
   have hstep : ‖(J t)^[n] x - (J t)^[n - 1] x‖ ≤ ‖J t x - x‖ := by
-    have hLip := ((accretiveResolvent_lipschitz hG ht).iterate (n - 1)).dist_le_mul (J t x) x
+    have hLip := ((lipschitzWith_accretiveResolvent hG ht).iterate (n - 1)).dist_le_mul (J t x) x
     have hpow : (J t)^[n] x = (J t)^[(n - 1) + 1] x := by rw [hn']
     simpa [hpow, dist_eq_norm, iterate_succ_apply, NNReal.coe_pow, NNReal.coe_one, one_pow,
       one_mul] using hLip
@@ -323,7 +359,6 @@ lemma accretiveResolvent_iterate_slope {G : Set (X × X)} (hG : IsMAccretiveGrap
     exact (mul_le_mul_iff_right₀ ht).mp htmul
   exact ⟨v, hmem, hnorm, heq'⟩
 
-omit [CompleteSpace X] in
 /-- Resolvents of one graph point at two scales differ by at most the scale gap. -/
 private lemma norm_accretiveResolvent_scale_le {G : Set (X × X)} (hG : IsMAccretiveGraph G)
     {lam mu : ℝ} (hl : 0 < lam) (hm : 0 < mu) (hlm : lam ≤ mu) {z v : X} (hz : (z, v) ∈ G) :
@@ -338,7 +373,7 @@ private lemma norm_accretiveResolvent_scale_le {G : Set (X × X)} (hG : IsMAccre
   have hLip : ‖J lam z - J mu z‖ ≤ ‖z - (a • z + b • J mu z)‖ := by
     conv_lhs => rw [hform]
     simpa [dist_eq_norm] using
-      (accretiveResolvent_lipschitz hG hl).dist_le_mul z (a • z + b • J mu z)
+      (lipschitzWith_accretiveResolvent hG hl).dist_le_mul z (a • z + b • J mu z)
   have hsplit : z - (a • z + b • J mu z) = b • (z - J mu z) := by
     calc z - (a • z + b • J mu z)
         = (a + b) • z - (a • z + b • J mu z) := by rw [hab, one_smul]
@@ -351,7 +386,6 @@ private lemma norm_accretiveResolvent_scale_le {G : Set (X × X)} (hG : IsMAccre
         exact norm_sub_accretiveResolvent_le hG hm hz
     _ = (mu - lam) * ‖v‖ := by unfold b; field_simp
 
-omit [CompleteSpace X] in
 /-- Equal iteration counts at two scales differ by the total scale gap times a slope. -/
 private lemma norm_accretiveResolvent_iterate_same_count {G : Set (X × X)}
     (hG : IsMAccretiveGraph G) {lam mu : ℝ} (hl : 0 < lam) (hm : 0 < mu) (hlm : lam ≤ mu)
@@ -370,7 +404,7 @@ private lemma norm_accretiveResolvent_iterate_same_count {G : Set (X × X)}
             obtain ⟨v, hv, hvn, _⟩ := accretiveResolvent_iterate_slope hG hm hx (Nat.succ_pos n)
             exact ⟨v, by simpa [y] using hv, hvn⟩
       have hLip : ‖(J lam)^[n + 1] x - J lam y‖ ≤ ‖(J lam)^[n] x - y‖ := by
-        have hdist := (accretiveResolvent_lipschitz hG hl).dist_le_mul ((J lam)^[n] x) y
+        have hdist := (lipschitzWith_accretiveResolvent hG hl).dist_le_mul ((J lam)^[n] x) y
         simpa [dist_eq_norm, iterate_succ_apply', NNReal.coe_one, one_mul] using hdist
       have hscale : ‖J lam y - (J mu)^[n + 1] x‖ ≤ (mu - lam) * ‖v‖ := by
         simpa [iterate_succ_apply', y] using norm_accretiveResolvent_scale_le hG hl hm hlm hv
@@ -391,13 +425,11 @@ private lemma norm_accretiveResolvent_iterate_same_count {G : Set (X × X)}
 private def resolventStepSq (h k : ℝ) (n m : ℕ) : ℝ :=
   ((n : ℝ) * h - (m : ℝ) * k) ^ 2 + (n : ℝ) * h ^ 2 + (m : ℝ) * k ^ 2
 
-omit [CompleteSpace X] in
 /-- The squared scale is a sum of squares, hence nonnegative. -/
 private lemma resolventStepSq_nonneg (h k : ℝ) (n m : ℕ) : 0 ≤ resolventStepSq h k n m := by
   unfold resolventStepSq
   positivity
 
-omit [CompleteSpace X] in
 /-- One convex step does not increase the Crandall–Liggett square-root scale. -/
 private lemma resolventStepSq_sqrt_step {h k : ℝ} (hh : 0 < h) (hk : 0 < k) (hhk : h ≤ k)
     {n m : ℕ} (hn : 0 < n) (hm : 0 < m) :
@@ -431,7 +463,6 @@ private lemma resolventStepSq_sqrt_step {h k : ℝ} (hh : 0 < h) (hk : 0 < k) (h
   have hnn : 0 ≤ p * A + q * B := by positivity
   exact (Real.le_sqrt hnn (resolventStepSq_nonneg _ _ _ _)).2 hsum
 
-omit [CompleteSpace X] in
 /-- Iterates from one graph point obey the Crandall–Liggett square-root bound. -/
 private lemma norm_accretiveResolvent_iterate_cross {G : Set (X × X)} (hG : IsMAccretiveGraph G)
     {h k : ℝ} (hh : 0 < h) (hk : 0 < k) (hhk : h ≤ k) {x u : X} (hx : (x, u) ∈ G) (n m : ℕ) :
@@ -488,16 +519,14 @@ private lemma norm_accretiveResolvent_iterate_cross {G : Set (X × X)} (hG : IsM
                 simpa [h1, h2] using
                   resolventStepSq_sqrt_step hh hk hhk (Nat.succ_pos n) (Nat.succ_pos m)
 
-omit [CompleteSpace X] in
 /-- At time zero every Euler product is the identity. -/
 lemma accretiveEulerProduct_zero (G : Set (X × X)) (n : ℕ) (x : X) :
     accretiveEulerProduct G 0 n x = x := by
   simp only [accretiveEulerProduct, NNReal.coe_zero, zero_div]
   exact iterate_fixed (accretiveResolvent_zero G x) (n + 1)
 
-omit [CompleteSpace X] in
 /-- Every Euler product is a contraction. -/
-lemma accretiveEulerProduct_lipschitz {G : Set (X × X)} (hG : IsMAccretiveGraph G)
+lemma lipschitzWith_accretiveEulerProduct {G : Set (X × X)} (hG : IsMAccretiveGraph G)
     (t : ℝ≥0) (n : ℕ) : LipschitzWith 1 (accretiveEulerProduct G t n) := by
   by_cases ht : (t : ℝ) = 0
   · have hid : accretiveEulerProduct G t n = id := by
@@ -512,9 +541,8 @@ lemma accretiveEulerProduct_lipschitz {G : Set (X × X)} (hG : IsMAccretiveGraph
         (accretiveResolvent G ((t : ℝ) / (↑n + 1)))^[n + 1] := by
       ext x
       rfl
-    simpa [hfun, one_pow] using (accretiveResolvent_lipschitz hG hpos).iterate (n + 1)
+    simpa [hfun, one_pow] using (lipschitzWith_accretiveResolvent hG hpos).iterate (n + 1)
 
-omit [CompleteSpace X] in
 /-- An Euler product stays within time times a graph slope of its initial value. -/
 lemma norm_accretiveEulerProduct_sub {G : Set (X × X)} (hG : IsMAccretiveGraph G)
     {x u : X} (hx : (x, u) ∈ G) (n : ℕ) (t : ℝ≥0) :
@@ -533,7 +561,6 @@ lemma norm_accretiveEulerProduct_sub {G : Set (X × X)} (hG : IsMAccretiveGraph 
       _ ≤ ↑(n + 1) * ((t : ℝ) / (↑n + 1)) * ‖u‖ := hle
       _ = (t : ℝ) * ‖u‖ := by rw [hcoe]
 
-omit [CompleteSpace X] in
 /-- Equal-time Euler products from a graph point approach one another at a square-root rate. -/
 lemma norm_accretiveEulerProduct_cross {G : Set (X × X)} (hG : IsMAccretiveGraph G)
     {x u : X} (hx : (x, u) ∈ G) {a b : ℕ} (hab : b ≤ a) (t : ℝ≥0) :
@@ -579,7 +606,6 @@ lemma norm_accretiveEulerProduct_cross {G : Set (X × X)} (hG : IsMAccretiveGrap
           rw [mul_right_comm]
           simp [N, M]
 
-omit [CompleteSpace X] in
 /-- Euler products at two times differ by at most the time gap times a graph slope. -/
 lemma norm_accretiveEulerProduct_time {G : Set (X × X)} (hG : IsMAccretiveGraph G)
     {x u : X} (hx : (x, u) ∈ G) (n : ℕ) (s t : ℝ≥0) :
@@ -631,7 +657,6 @@ lemma norm_accretiveEulerProduct_time {G : Set (X × X)} (hG : IsMAccretiveGraph
           _ = ((s : ℝ) - (t : ℝ)) * ‖u‖ := by rw [hgap]
           _ = |(s : ℝ) - (t : ℝ)| * ‖u‖ := by rw [abs_of_nonneg (sub_nonneg.mpr hts)]
 
-omit [CompleteSpace X] in
 /-- A positive-time Euler product lands in the graph domain. -/
 lemma accretiveEulerProduct_mem_domain {G : Set (X × X)} (hG : IsMAccretiveGraph G)
     {t : ℝ≥0} (ht : 0 < (t : ℝ)) (n : ℕ) (x : X) :
@@ -644,9 +669,8 @@ lemma accretiveEulerProduct_mem_domain {G : Set (X × X)} (hG : IsMAccretiveGrap
   rw [hstep]
   exact accretiveResolvent_mem_domain hG hpos _
 
-omit [CompleteSpace X] in
 /-- Euler products from a graph point form a Cauchy sequence. -/
-lemma accretiveEulerProduct_cauchy_domain {G : Set (X × X)} (hG : IsMAccretiveGraph G)
+lemma cauchySeq_accretiveEulerProduct {G : Set (X × X)} (hG : IsMAccretiveGraph G)
     {x u : X} (hx : (x, u) ∈ G) (t : ℝ≥0) :
     CauchySeq (fun n => accretiveEulerProduct G t n x) := by
   rw [Metric.cauchySeq_iff]

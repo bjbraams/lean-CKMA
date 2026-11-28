@@ -82,9 +82,6 @@ theorem exists_analyticAt_eventually_eq_mul {f : ℂ → ℂ} (hf : AnalyticAt �
     exact hmul.symm.trans (Filter.EventuallyEq.deriv_eq hfeq).symm
   exact ⟨p, hp, hp0, hfeq⟩
 
-@[deprecated (since := "2026-11-15")]
-alias exists_linear_factor := exists_analyticAt_eventually_eq_mul
-
 /-- Contraction, invariance, and quadratic remainder on a small disk about an attracting point. -/
 private theorem exists_attracting_disk {f : ℂ → ℂ} (hf : AnalyticAt ℂ f 0) (hf0 : f 0 = 0)
     (hc : deriv f 0 ≠ 0) (hlt : ‖deriv f 0‖ < 1) :
@@ -484,8 +481,5 @@ theorem koenigsCoordinate_eventuallyEq_of_analyticAt {f φ ψ : ℂ → ℂ} {c 
     have hnorm : ‖c‖ ^ (m - 1) = 1 := by
       rw [← norm_pow, hpow, norm_one]
     exact absurd ((pow_eq_one_iff_of_nonneg (norm_nonneg _) (by omega : m - 1 ≠ 0)).1 hnorm) hunit
-
-@[deprecated (since := "2026-11-15")]
-alias koenigsCoordinate_eventuallyEq_of := koenigsCoordinate_eventuallyEq_of_analyticAt
 
 end CKMA

@@ -46,9 +46,15 @@ open Filter Metric Set Topology
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
+omit [NormedSpace ℝ E] in
 /-- Derivative of `V` along the vector field. -/
 @[expose]
 def lyapunovDerivative (F : E → E) (V : E → ℝ) (x : E) : ℝ := fderiv ℝ V x (F x)
+
+/-- The defining formula of `lyapunovDerivative`. -/
+theorem lyapunovDerivative_def (F : E → E) (V : E → ℝ) (x : E) :
+    lyapunovDerivative F V x = fderiv ℝ V x (F x) :=
+  rfl
 
 /-- Chain rule for `V` along an orbit while the state lies in the ball of differentiability. -/
 private theorem hasDerivAt_comp_lyapunov_ball {ϕ : Flow ℝ E} {F : E → E} {V : E → ℝ} {x₀ x : E}
@@ -151,6 +157,7 @@ private theorem tendsto_atTop_of_antitoneOn_Ici {f : ℝ → ℝ} (hf : Antitone
     have hineq : (⨅ s, g s) ≤ g t := ciInf_le hg_bdd t
     rwa [show g t = f t from ite_eq_left ht] at hineq
 
+omit [NormedSpace ℝ E] in
 /-- First time a continuous orbit, starting inside the sphere, meets that sphere. -/
 private theorem exists_first_exit_time {ϕ : Flow ℝ E} {x x₀ : E} {eps t : ℝ}
     (ht : 0 ≤ t) (hx : dist x x₀ < eps) (hge : eps ≤ dist (ϕ t x) x₀) :

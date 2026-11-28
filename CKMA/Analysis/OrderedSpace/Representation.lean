@@ -7,118 +7,36 @@ module
 
 public import CKMA.Analysis.OrderedSpace.Representation.AL.Gluing.Sum
 public import CKMA.Analysis.OrderedSpace.Representation.AM
-public import Mathlib.Topology.ContinuousMap.Compact
-public import Mathlib.Topology.Category.CompHaus.Basic
-public import Mathlib.Topology.ContinuousMap.Ordered
-public import Mathlib.MeasureTheory.Function.LpOrder
-import CKMA.Analysis.OrderedSpace.Representation.AL
 
 /-!
 # AM and AL Banach lattices and their representations
 
 AM spaces have the maximum norm identity on the positive cone; an AM unit identifies the norm
 unit ball with its order interval. AL spaces have additive norm on the positive cone, and the
-KB property concerns convergence of increasing norm-bounded positive sequences.
+KB property concerns convergence of increasing norm-bounded positive sequences. The predicates
+are defined in `CKMA.Analysis.OrderedSpace.Representation.Basic`.
 
-Kakutani representation identifies AM spaces with continuous real functions on a compact
-Hausdorff carrier and AL spaces with real L1 spaces. Empty compact carriers represent the zero
-space; no sigma-finiteness restriction is imposed on the general AL representation. The AL-to-KB
-implication uses Mathlib's bounded monotone convergence of real sequences and its metric
-Cauchy criterion, with the AL identity converting norm differences into distances.
+Kakutani representation identifies AM spaces with unit with continuous real functions on a
+compact Hausdorff space and AL spaces with real L¹ spaces. The empty compact space represents
+the zero space; no σ-finiteness restriction is imposed on the general AL representation.
 Sources: GAPS 19.27 and 19.29.
 
 ## Main definitions
 
-* `CKMA.CompactHausdorffModel`: compact Hausdorff representation carrier for AM spaces.
-* `CKMA.MeasureSpaceModel`: measure-space representation carrier for AL spaces.
-* `CKMA.IsAMSpace`: Banach lattice with `‖x ⊔ y‖ = max ‖x‖ ‖y‖` on the positive cone.
+* `CKMA.IsAMSpace`: normed lattice with `‖x ⊔ y‖ = max ‖x‖ ‖y‖` on the positive cone.
 * `CKMA.IsAMSpaceUnit`: positive unit whose order interval is the closed norm unit ball.
-* `CKMA.IsALSpace`: Banach lattice with `‖x + y‖ = ‖x‖ + ‖y‖` on the positive cone.
-* `CKMA.IsKBSpace`: Banach lattice with norm convergence of bounded monotone positive sequences.
+* `CKMA.IsALSpace`: normed lattice with `‖x + y‖ = ‖x‖ + ‖y‖` on the positive cone.
+* `CKMA.IsKBSpace`: norm convergence of bounded monotone positive sequences.
+* `CKMA.IsWeakUnit`: positive vector with zero disjoint complement.
 
 ## Main results
 
+* `CKMA.IsAMSpaceUnit.isAMSpace`: an AM unit forces the AM norm identity.
 * `CKMA.exists_amSpace_representation`: Kakutani representation of an AM space with unit as
-  `C(K, ℝ)`.
-* `CKMA.exists_alSpace_representation`: Kakutani representation of an AL space as `L¹(μ)`.
-* `CKMA.IsALSpace.isKBSpace`: every AL space is a KB space.
+  `C(K, ℝ)` (`Representation.AM.Norm`).
+* `CKMA.exists_al_representation_of_weakUnit`: an AL space with a weak unit is an `L¹` space
+  (`Representation.AL`).
+* `CKMA.exists_alSpace_representation`: Kakutani representation of an AL space as `L¹(μ)`
+  (`Representation.AL.Gluing.Sum`).
+* `CKMA.IsALSpace.isKBSpace`: every complete AL space is a KB space (`Representation.AL`).
 -/
-
-public section
-
-noncomputable section
-
-namespace CKMA
-
-open Filter Topology MeasureTheory
-
-universe u
-
-/-- Mathlib's compact Hausdorff carrier, including the empty space for the zero AM space. -/
-@[expose]
-abbrev CompactHausdorffModel := CompHaus.{u}
-
-/-- The underlying carrier of a compact Hausdorff representation space. -/
-@[expose]
-abbrev CompactHausdorffModel.carrier (K : CompactHausdorffModel.{u}) : Type u := K
-
-/-- A measure-space carrier for an AL representation, without an unnecessary sigma-finiteness
-restriction on a general AL space. -/
-structure MeasureSpaceModel where
-  /-- Underlying type. -/
-  carrier : Type u
-  /-- Sigma algebra. -/
-  [measurableSpace : MeasurableSpace carrier]
-  /-- Representing measure. -/
-  measure : Measure carrier
-
-attribute [instance] MeasureSpaceModel.measurableSpace
-
-variable {E : Type u} [NormedAddCommGroup E] [NormedSpace ℝ E]
-    [Lattice E] [IsOrderedAddMonoid E] [IsOrderedModule ℝ E] [HasSolidNorm E]
-
-/-- The maximum norm identity on the positive cone defining an AM space. -/
-@[expose]
-def IsAMSpace (E : Type*) [NormedAddCommGroup E] [Lattice E] : Prop :=
-  ∀ x y : E, 0 ≤ x → 0 ≤ y → ‖x ⊔ y‖ = max ‖x‖ ‖y‖
-
-/-- A positive vector whose order interval equals the closed norm unit ball.
-The AM-space norm identity is the separate predicate `IsAMSpace`. -/
-@[expose]
-def IsAMSpaceUnit (e : E) : Prop :=
-  0 ≤ e ∧ Metric.closedBall (0 : E) 1 = Set.Icc (-e) e
-
-/-- Norm additivity on the positive cone defining an AL space. -/
-@[expose]
-def IsALSpace (E : Type*) [NormedAddCommGroup E] [Lattice E] : Prop :=
-  ∀ x y : E, 0 ≤ x → 0 ≤ y → ‖x + y‖ = ‖x‖ + ‖y‖
-
-/-- The KB property, formulated with norm convergence of increasing bounded positive sequences. -/
-@[expose]
-def IsKBSpace (E : Type*) [NormedAddCommGroup E] [Lattice E] : Prop :=
-  ∀ x : ℕ → E, Monotone x → (∀ n, 0 ≤ x n) →
-    (∃ M : ℝ, ∀ n, ‖x n‖ ≤ M) → ∃ y : E, Tendsto x atTop (𝓝 y)
-
-/-- **19.27**, Kakutani: an AM Banach lattice with unit is lattice isometric to a compact
-Hausdorff continuous-function space, with that unit represented by the constant one. -/
-theorem exists_amSpace_representation [CompleteSpace E] {e : E} (he : IsAMSpaceUnit e) :
-    ∃ K : CompactHausdorffModel.{u}, ∃ U : E ≃ₗᵢ[ℝ] C(K.carrier, ℝ),
-      U e = 1 ∧ ∀ x y, U (x ⊔ y) = U x ⊔ U y := by
-  rcases he with ⟨he0, hball⟩
-  obtain ⟨K, U, hU, hsup⟩ := exists_am_representation (E := E) he0 hball
-  exact ⟨K, U, hU, hsup⟩
-
-/-- **19.29**, Kakutani: an AL Banach lattice is lattice isometric to some real L1 space. -/
-theorem exists_alSpace_representation [CompleteSpace E] (hE : IsALSpace E) :
-    ∃ M : MeasureSpaceModel.{u}, ∃ U : E ≃ₗᵢ[ℝ] Lp ℝ 1 M.measure,
-      ∀ x y, U (x ⊔ y) = U x ⊔ U y := by
-  obtain ⟨X, mX, μ, U, hsup⟩ := exists_al_representation (E := E) hE
-  exact ⟨{ carrier := X, measurableSpace := mX, measure := μ }, U, hsup⟩
-
-omit [NormedSpace ℝ E] [IsOrderedModule ℝ E] [HasSolidNorm E] in
-/-- The monotone-completeness consequence of the AL identity.
-The full net-based order-continuity statement is not part of this interface yet. -/
-theorem IsALSpace.isKBSpace [CompleteSpace E] (hE : IsALSpace E) : IsKBSpace E :=
-  fun _ hx hpos hbound => exists_tendsto_of_monotone_of_norm_add_eq hE hx hpos hbound
-
-end CKMA

@@ -9,6 +9,8 @@ public import CKMA.Probability.BrownianTheory.Reflection.Grid
 
 import CKMA.Probability.BrownianTheory.Reflection.Past
 import CKMA.Probability.BrownianTheory.HolderPath
+import Mathlib.Data.NNRat.Encodable
+import CKMA.Probability.Process.Indistinguishable
 
 /-!
 # Reflection estimates on the dyadic grid
@@ -60,7 +62,7 @@ private lemma le_of_forall_le_add_tendsto_zero {c a : ℝ≥0∞} {o : ℕ → �
 
 /-- Paths that meet level `b` on the level-`n` grid. -/
 private def gridHit (C : ℝ≥0 → Ω → ℝ) (t : ℝ≥0) (b : ℝ) (n : ℕ) : Set Ω :=
-  {ω | ∃ k, k ≤ 2 ^ n ∧ b ≤ C (grid t n k) ω}
+  {ω | ∃ k, k ≤ 2 ^ n ∧ b ≤ C (reflectionGrid t n k) ω}
 
 omit [MeasurableSpace Ω] in
 /-- The grid hitting set is the disjoint union of the first-passage events. -/
@@ -80,6 +82,11 @@ private def strictHit (C : ℝ≥0 → Ω → ℝ) (t : ℝ≥0) (b : ℝ) : Set
 @[expose]
 def endpointSet (C : ℝ≥0 → Ω → ℝ) (t : ℝ≥0) (b : ℝ) : Set Ω :=
   {ω | b ≤ C t ω}
+
+omit [MeasurableSpace Ω] in
+/-- Membership in `endpointSet`. -/
+lemma mem_endpointSet_iff {C : ℝ≥0 → Ω → ℝ} {t : ℝ≥0} {b : ℝ} {ω : Ω} :
+    ω ∈ endpointSet C t b ↔ b ≤ C t ω := Iff.rfl
 
 /-- The endpoint lies strictly below the level. -/
 private def belowSet (C : ℝ≥0 → Ω → ℝ) (t : ℝ≥0) (b : ℝ) : Set Ω :=
@@ -143,15 +150,15 @@ lemma measure_firstGridHitSet_le_two {C : ℝ≥0 → Ω → ℝ} (hC : IsBrowni
       simp [tau, low, endpointSet, belowSet, not_le]
     rw [← hdiff]
     simpa [high] using measure_inter_add_sdiff tau (measurableSet_endpoint hm t b)
-  have hsub : low ⊆ tau ∩ {ω | C t ω ≤ 2 * C (grid t n k) ω - b} := by
+  have hsub : low ⊆ tau ∩ {ω | C t ω ≤ 2 * C (reflectionGrid t n k) ω - b} := by
     intro ω hω
-    have hlevel : b ≤ C (grid t n k) ω := hω.1.2.1
-    have hge : b ≤ 2 * C (grid t n k) ω - b := by linarith
+    have hlevel : b ≤ C (reflectionGrid t n k) ω := hω.1.2.1
+    have hge : b ≤ 2 * C (reflectionGrid t n k) ω - b := by linarith
     exact ⟨hω.1, le_trans (le_of_lt hω.2) hge⟩
   have hreflect := measure_firstGridHitSet_reflect hC hm t b hk
   have hlow : μ low ≤ μ high := by
     calc
-      μ low ≤ μ (tau ∩ {ω | C t ω ≤ 2 * C (grid t n k) ω - b}) := measure_mono hsub
+      μ low ≤ μ (tau ∩ {ω | C t ω ≤ 2 * C (reflectionGrid t n k) ω - b}) := measure_mono hsub
       _ = μ high := by simpa [high, endpointSet, tau] using hreflect.symm
   calc
     μ tau = μ high + μ low := hsplit.symm
@@ -216,15 +223,15 @@ private lemma strictHit_subset_iUnion_tail {C : ℝ≥0 → Ω → ℝ}
   simp only [gridTail, mem_iInter, Set.mem_Ici]
   intro n hn
   have hmesh : gridMesh t n < η := by simpa [Set.mem_Iio] using hN n hn
-  obtain ⟨k, hk, hnear⟩ := exists_grid_near ht n hs
-  have hdist : dist (grid t n k) s < η := by
+  obtain ⟨k, hk, hnear⟩ := exists_reflectionGrid_near ht n hs
+  have hdist : dist (reflectionGrid t n k) s < η := by
     rw [NNReal.dist_eq]
     exact lt_of_le_of_lt hnear hmesh
-  have hval : |C (grid t n k) ω - C s ω| < δ := by
+  have hval : |C (reflectionGrid t n k) ω - C s ω| < δ := by
     rw [← Real.dist_eq]
-    exact hclose (x := grid t n k) hdist
-  have hgt : b < C (grid t n k) ω := by
-    have hlow : C s ω - δ < C (grid t n k) ω := by linarith [abs_lt.mp hval]
+    exact hclose (x := reflectionGrid t n k) hdist
+  have hgt : b < C (reflectionGrid t n k) ω := by
+    have hlow : C s ω - δ < C (reflectionGrid t n k) ω := by linarith [abs_lt.mp hval]
     have hbase : b < C s ω - δ := by
       unfold δ
       linarith
@@ -310,7 +317,7 @@ private lemma two_mul_endpoint_le_aux {C : ℝ≥0 → Ω → ℝ} (hC : IsBrown
   let tau : ℕ → Set Ω := firstGridHitSet C t a n
   let high : ℕ → Set Ω := fun k => tau k ∩ endpointSet C t a
   let low : ℕ → Set Ω := fun k => tau k ∩ belowSet C t a
-  let refl : ℕ → Set Ω := fun k => tau k ∩ {ω | C t ω ≤ 2 * C (grid t n k) ω - a}
+  let refl : ℕ → Set Ω := fun k => tau k ∩ {ω | C t ω ≤ 2 * C (reflectionGrid t n k) ω - a}
   let good : Set Ω := {ω | gridOsc C t n ω ≤ ε}
   have hmeasTau : ∀ k, MeasurableSet (tau k) := fun k => measurableSet_firstGridHitSet hm t a n k
   have hmeasEnd : MeasurableSet (endpointSet C t a) := measurableSet_endpoint hm t a
@@ -510,7 +517,7 @@ private lemma two_mul_endpoint_le_hit {C : ℝ≥0 → Ω → ℝ} (hC : IsBrown
   have hmeas : ∀ m, NullMeasurableSet (bandSet C t a (εm m)) μ :=
     fun m => (measurableSet_band hm t a (εm m)).nullMeasurableSet
   have hlim := tendsto_measure_iInter_atTop hmeas hanti ⟨0, measure_ne_top μ _⟩
-  rw [hinter, measure_eq_endpoint hC ht a] at hlim
+  rw [hinter, measure_setOf_eval_eq_eq_zero hC ht a] at hlim
   exact le_of_forall_le_add_tendsto_zero
     (ENNReal.mul_ne_top (by simp) (measure_ne_top μ _))
     (measure_ne_top μ _)
@@ -558,7 +565,9 @@ theorem brownian_reflection {Ω : Type*} [MeasurableSpace Ω] (μ : Measure Ω)
   obtain ⟨C, hm, hcont, hBr, hmod, _⟩ :=
     exists_continuous_holder_modification hB.toIsPreBrownianReal
   have hident := reflection_continuous hBr hm hcont ha t
-  have hpath := ae_eq_of_continuous_of_nnrat hB.cont hcont fun q => hmod q
+  have hpath : ∀ᵐ ω ∂μ, ∀ t, C t ω = B t ω :=
+    indistinguishable_of_continuous_of_dense (Set.countable_range _) denseRange_coe_nnrat_nnreal
+      (ae_of_all _ hcont) hB.cont (by rintro _ ⟨q, rfl⟩; exact hmod q)
   have hhit : hitSet B t a =ᵐ[μ] hitSet C t a := by
     refine Eventually.set_eq ?_
     filter_upwards [hpath] with ω hω
@@ -577,9 +586,5 @@ theorem brownian_reflection {Ω : Type*} [MeasurableSpace Ω] (μ : Measure Ω)
       _ = 2 * μ (endpointSet C t a) := hident
       _ = 2 * μ (endpointSet B t a) := by rw [measure_congr hend.symm]
   simpa [hitSet, endpointSet] using hgoal
-
-@[deprecated (since := "2026-11-15")] alias reflection_principle := brownian_reflection
-
-@[deprecated (since := "2026-11-15")] alias measure_isTau_le_two := measure_firstGridHitSet_le_two
 
 end CKMA

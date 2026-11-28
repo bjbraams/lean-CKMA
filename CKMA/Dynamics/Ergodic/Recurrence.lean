@@ -8,10 +8,15 @@ module
 public import Mathlib.Dynamics.Ergodic.MeasurePreserving
 public import Mathlib.MeasureTheory.Constructions.Polish.Basic
 
-import Mathlib.Tactic
-import Mathlib.Dynamics.Ergodic.Conservative
-
 import CKMA.Dynamics.Ergodic.Recurrence.Multiple
+import Mathlib.Analysis.Normed.Order.Lattice
+import Mathlib.Combinatorics.Matroid.Basic
+import Mathlib.Dynamics.Ergodic.Conservative
+import Mathlib.Logic.Equiv.PartialEquiv
+import Mathlib.Tactic.Basify
+import Mathlib.Tactic.ENatToNat
+import Mathlib.Tactic.Monotonicity.Lemmas
+import Mathlib.Tactic.ReduceModChar
 
 /-!
 # Rokhlin towers and multiple recurrence (10.9, 10.48)
@@ -55,12 +60,19 @@ variable {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω}
 def IsAperiodicModMeasure (T : Ω → Ω) (μ : Measure Ω) : Prop :=
   ∀ n : ℕ, 0 < n → μ {ω | (T^[n]) ω = ω} = 0
 
+/-- Unfolding of `IsAperiodicModMeasure`. -/
+lemma isAperiodicModMeasure_iff {T : Ω → Ω} :
+    IsAperiodicModMeasure T μ ↔ ∀ n : ℕ, 0 < n → μ {ω | (T^[n]) ω = ω} = 0 := Iff.rfl
+
 /-- Levels of a measurable Rokhlin tower of finite height. -/
 @[expose]
 def towerLevel (T : Ω → Ω) (B : Set Ω) (i : ℕ) : Set Ω := (T^[i]) '' B
 
-section Rokhlin
+omit [MeasurableSpace Ω] in
+/-- Defining equation of `towerLevel`. -/
+lemma towerLevel_def (T : Ω → Ω) (B : Set Ω) (i : ℕ) : towerLevel T B i = (T^[i]) '' B := rfl
 
+section Rokhlin
 
 variable [StandardBorelSpace Ω] [IsProbabilityMeasure μ] (T : Ω ≃ᵐ Ω)
 
@@ -838,11 +850,23 @@ theorem rokhlin_tower [StandardBorelSpace Ω] [IsProbabilityMeasure μ]
 def multipleRecurrenceSet (T : Ω → Ω) (A : Set Ω) (k n : ℕ) : Set Ω :=
   ⋂ j ∈ Finset.range (k + 1), (T^[j * n]) ⁻¹' A
 
+omit [MeasurableSpace Ω] in
+/-- Membership in `multipleRecurrenceSet`. -/
+lemma mem_multipleRecurrenceSet_iff {T : Ω → Ω} {A : Set Ω} {k n : ℕ} {ω : Ω} :
+    ω ∈ multipleRecurrenceSet T A k n ↔ ∀ j ∈ Finset.range (k + 1), (T^[j * n]) ω ∈ A := by
+  simp [multipleRecurrenceSet]
+
 /-- Finite averages of real masses of arithmetic-progression intersections. -/
 @[expose]
 def multipleRecurrenceAverage (T : Ω → Ω) (A : Set Ω) (μ : Measure Ω)
     (k N : ℕ) : ℝ :=
   (N : ℝ)⁻¹ * ∑ n ∈ Finset.range N, (μ (multipleRecurrenceSet T A k (n + 1))).toReal
+
+/-- Defining equation of `multipleRecurrenceAverage`. -/
+lemma multipleRecurrenceAverage_def (T : Ω → Ω) (A : Set Ω) (μ : Measure Ω) (k N : ℕ) :
+    multipleRecurrenceAverage T A μ k N =
+      (N : ℝ)⁻¹ * ∑ n ∈ Finset.range N, (μ (multipleRecurrenceSet T A k (n + 1))).toReal :=
+  rfl
 
 /-- **10.48**, Furstenberg multiple recurrence in positive-liminf form.
 Lengths `k≥2` select the nontrivial gap beyond the mean-ergodic `k=1` case. -/
@@ -853,8 +877,5 @@ theorem furstenberg_multiple_recurrence [IsProbabilityMeasure μ] {T : Ω → Ω
   unfold multipleRecurrenceAverage multipleRecurrenceSet
   exact liminf_pos_of_progressionCount_ge hT hA hpos (by omega) fun _ hδ =>
     exists_pos_mul_sq_le_progressionCount (by omega) hδ
-
-@[deprecated (since := "2026-11-15")]
-alias multiple_recurrence_liminf := furstenberg_multiple_recurrence
 
 end CKMA

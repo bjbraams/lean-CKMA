@@ -441,8 +441,9 @@ noncrossing partitions of $\{1,\ldots,n\}$.
   where $\kappa_\pi$ is the product of cumulants over its blocks.
   Freeness is equivalent to vanishing of mixed cumulants.
 * **65. Free central limit theorem.** For identically distributed free
-  self-adjoint variables of mean zero and variance one, normalized sums
-  converge in moments to the semicircle law
+  variables of mean zero and variance one in a noncommutative probability
+  space (self-adjointness is not needed), the moments of normalized sums
+  converge to those of the semicircle law
   $(2\pi)^{-1}\sqrt{4-x^2}\,1_{[-2,2]}dx$.
 * **66. Semicircular Wick formula.** Moments of a centered semicircular
   family are sums over noncrossing pairings, with products of the specified

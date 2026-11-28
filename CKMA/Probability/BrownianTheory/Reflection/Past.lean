@@ -16,7 +16,7 @@ of a level or by its reflected down-crossing.
 
 ## Main definitions
 
-* `CKMA.Brownian.past`: the path stopped at time `s`.
+* `CKMA.Brownian.pathUpTo`: the path stopped at time `s`.
 * `CKMA.Brownian.firstPassage`: paths whose first grid visit to level `b` is at index `k`.
 
 ## Main results
@@ -40,37 +40,49 @@ namespace Brownian
 
 /-- The path stopped at time `s`. -/
 @[expose]
-def past (C : ℝ≥0 → Ω → ℝ) (s : ℝ≥0) (ω : Ω) : Iic s → ℝ :=
+def pathUpTo (C : ℝ≥0 → Ω → ℝ) (s : ℝ≥0) (ω : Ω) : Iic s → ℝ :=
   fun u => C u ω
 
+omit [MeasurableSpace Ω] in
+/-- Defining equation of `pathUpTo`. -/
+@[simp]
+lemma pathUpTo_apply (C : ℝ≥0 → Ω → ℝ) (s : ℝ≥0) (ω : Ω) (u : Iic s) :
+    pathUpTo C s ω u = C u ω := rfl
+
 /-- The stopped path is measurable when every marginal is measurable. -/
-private lemma measurable_past {C : ℝ≥0 → Ω → ℝ} (hm : ∀ u, Measurable (C u)) (s : ℝ≥0) :
-    Measurable (past C s) :=
+private lemma measurable_pathUpTo {C : ℝ≥0 → Ω → ℝ} (hm : ∀ u, Measurable (C u)) (s : ℝ≥0) :
+    Measurable (pathUpTo C s) :=
   Measurable.of_eval fun u => hm u
 
 /-- Grid time `j` viewed as a time at most grid time `k`. -/
 @[expose]
-def gridCast {t : ℝ≥0} {n : ℕ} {j k : ℕ} (hjk : j ≤ k) : Iic (grid t n k) :=
-  ⟨grid t n j, grid_mono hjk⟩
+def gridCast {t : ℝ≥0} {n : ℕ} {j k : ℕ} (hjk : j ≤ k) : Iic (reflectionGrid t n k) :=
+  ⟨reflectionGrid t n j, reflectionGrid_mono hjk⟩
 
 /-- Casting a grid time does not change its value. -/
-private lemma coe_gridCast {t : ℝ≥0} {n j k : ℕ} (hjk : j ≤ k) :
-    (gridCast (t := t) (n := n) hjk : ℝ≥0) = grid t n j := rfl
+lemma coe_gridCast {t : ℝ≥0} {n j k : ℕ} (hjk : j ≤ k) :
+    (gridCast (t := t) (n := n) hjk : ℝ≥0) = reflectionGrid t n j := rfl
 
 /-- Paths whose first grid visit to level `b` is at index `k`. -/
 @[expose]
-def firstPassage (t : ℝ≥0) (b : ℝ) (n k : ℕ) : Set (Iic (grid t n k) → ℝ) :=
-  {y | b ≤ y ⟨grid t n k, le_rfl⟩ ∧ ∀ j (hj : j < k), y (gridCast (le_of_lt hj)) < b}
+def firstPassage (t : ℝ≥0) (b : ℝ) (n k : ℕ) : Set (Iic (reflectionGrid t n k) → ℝ) :=
+  {y | b ≤ y ⟨reflectionGrid t n k, le_rfl⟩ ∧ ∀ j (hj : j < k), y (gridCast (le_of_lt hj)) < b}
+
+/-- Membership in `firstPassage`. -/
+lemma mem_firstPassage_iff {t : ℝ≥0} {b : ℝ} {n k : ℕ} {y : Iic (reflectionGrid t n k) → ℝ} :
+    y ∈ firstPassage t b n k ↔
+      b ≤ y ⟨reflectionGrid t n k, le_rfl⟩ ∧ ∀ j (hj : j < k), y (gridCast (le_of_lt hj)) < b :=
+  Iff.rfl
 
 /-- The first grid visit is a measurable condition on the stopped path. -/
 private lemma measurableSet_firstPassage (t : ℝ≥0) (b : ℝ) (n k : ℕ) :
     MeasurableSet (firstPassage t b n k) := by
-  let hit : Set (Iic (grid t n k) → ℝ) := {y | b ≤ y ⟨grid t n k, le_rfl⟩}
+  let hit : Set (Iic (reflectionGrid t n k) → ℝ) := {y | b ≤ y ⟨reflectionGrid t n k, le_rfl⟩}
   have hhit : MeasurableSet hit := measurableSet_Ici.preimage (measurable_pi_apply _)
-  let prev : Set (Iic (grid t n k) → ℝ) :=
+  let prev : Set (Iic (reflectionGrid t n k) → ℝ) :=
     {y | ∀ j (hj : j < k), y (gridCast (le_of_lt hj)) < b}
   have hprev : MeasurableSet prev := by
-    let S (j : ℕ) : Set (Iic (grid t n k) → ℝ) :=
+    let S (j : ℕ) : Set (Iic (reflectionGrid t n k) → ℝ) :=
       if hj : j < k then {y | y (gridCast (le_of_lt hj)) < b} else univ
     have hS : ∀ j, MeasurableSet (S j) := by
       intro j
@@ -102,17 +114,17 @@ private lemma measurableSet_firstPassage (t : ℝ≥0) (b : ℝ) (n k : ℕ) :
 omit [MeasurableSpace Ω] in
 /-- On indices inside the grid, the first-visit event is the stopped-path condition. -/
 lemma firstGridHitSet_eq_preimage (C : ℝ≥0 → Ω → ℝ) (t : ℝ≥0) (b : ℝ) {n k : ℕ} (hk : k ≤ 2 ^ n) :
-    firstGridHitSet C t b n k = past C (grid t n k) ⁻¹' firstPassage t b n k := by
+    firstGridHitSet C t b n k = pathUpTo C (reflectionGrid t n k) ⁻¹' firstPassage t b n k := by
   ext ω
   constructor
   · intro h
     refine ⟨?_, fun j hj => ?_⟩
-    · simpa [past] using h.2.1
-    · simpa [past, coe_gridCast] using h.2.2 j hj
+    · simpa [pathUpTo] using h.2.1
+    · simpa [pathUpTo, coe_gridCast] using h.2.2 j hj
   · intro h
     refine ⟨hk, ?_, fun j hj => ?_⟩
-    · simpa [past] using h.1
-    · simpa [past, coe_gridCast] using h.2 j hj
+    · simpa [pathUpTo] using h.1
+    · simpa [pathUpTo, coe_gridCast] using h.2 j hj
 
 /-- Pairs that meet `A` and whose sum reaches level `b`. -/
 private def reflectSet (s : ℝ≥0) (b : ℝ) (A : Set (Iic s → ℝ)) : Set (ℝ × (Iic s → ℝ)) :=
@@ -138,13 +150,13 @@ private lemma measurableSet_reflectSet {s : ℝ≥0} {b : ℝ} {A : Set (Iic s �
 private lemma measure_reflect_past {C : ℝ≥0 → Ω → ℝ} (hC : IsBrownianReal C μ)
     (hm : ∀ u, Measurable (C u)) {s t₀ : ℝ≥0} (hs : s ≤ t₀) {b : ℝ}
     {A : Set (Iic s → ℝ)} (hA : MeasurableSet A) :
-    μ {ω | past C s ω ∈ A ∧ b ≤ C t₀ ω} =
-      μ {ω | past C s ω ∈ A ∧ C t₀ ω ≤ 2 * C s ω - b} := by
-  let Y : Ω → Iic s → ℝ := past C s
+    μ {ω | pathUpTo C s ω ∈ A ∧ b ≤ C t₀ ω} =
+      μ {ω | pathUpTo C s ω ∈ A ∧ C t₀ ω ≤ 2 * C s ω - b} := by
+  let Y : Ω → Iic s → ℝ := pathUpTo C s
   let incr : Ω → ℝ≥0 → ℝ := fun ω u => C (s + u) ω - C s ω
   let F : Ω → ℝ := fun ω => C t₀ ω - C s ω
   let G : Ω → ℝ := fun ω => C s ω - C t₀ ω
-  have hY : Measurable Y := measurable_past hm s
+  have hY : Measurable Y := measurable_pathUpTo hm s
   have hincr : IndepFun incr Y μ := hC.toIsPreBrownianReal.indepFun_shift s
   have hFeval : (fun ω => incr ω (t₀ - s)) =ᵐ[μ] F :=
     Eventually.of_forall fun ω => by
@@ -210,17 +222,17 @@ private lemma measure_reflect_past {C : ℝ≥0 → Ω → ℝ} (hC : IsBrownian
 lemma measure_firstGridHitSet_reflect {C : ℝ≥0 → Ω → ℝ} (hC : IsBrownianReal C μ)
     (hm : ∀ u, Measurable (C u)) (t : ℝ≥0) (b : ℝ) {n k : ℕ} (hk : k ≤ 2 ^ n) :
     μ (firstGridHitSet C t b n k ∩ {ω | b ≤ C t ω}) =
-      μ (firstGridHitSet C t b n k ∩ {ω | C t ω ≤ 2 * C (grid t n k) ω - b}) := by
-  have hs : grid t n k ≤ t := grid_le hk
+      μ (firstGridHitSet C t b n k ∩ {ω | C t ω ≤ 2 * C (reflectionGrid t n k) ω - b}) := by
+  have hs : reflectionGrid t n k ≤ t := reflectionGrid_le hk
   have h := measure_reflect_past hC hm hs (b := b) (measurableSet_firstPassage t b n k)
   have hpre := firstGridHitSet_eq_preimage C t b hk
   have hL : firstGridHitSet C t b n k ∩ {ω | b ≤ C t ω} =
-      {ω | past C (grid t n k) ω ∈ firstPassage t b n k ∧ b ≤ C t ω} := by
+      {ω | pathUpTo C (reflectionGrid t n k) ω ∈ firstPassage t b n k ∧ b ≤ C t ω} := by
     ext ω
     simp [hpre, mem_inter_iff, mem_preimage, mem_ofPred_eq]
-  have hR : firstGridHitSet C t b n k ∩ {ω | C t ω ≤ 2 * C (grid t n k) ω - b} =
-      {ω | past C (grid t n k) ω ∈ firstPassage t b n k ∧
-        C t ω ≤ 2 * C (grid t n k) ω - b} := by
+  have hR : firstGridHitSet C t b n k ∩ {ω | C t ω ≤ 2 * C (reflectionGrid t n k) ω - b} =
+      {ω | pathUpTo C (reflectionGrid t n k) ω ∈ firstPassage t b n k ∧
+        C t ω ≤ 2 * C (reflectionGrid t n k) ω - b} := by
     ext ω
     simp [hpre, mem_inter_iff, mem_preimage, mem_ofPred_eq]
   rw [hL, hR]
@@ -229,8 +241,5 @@ lemma measure_firstGridHitSet_reflect {C : ℝ≥0 → Ω → ℝ} (hC : IsBrown
 end Brownian
 
 open Brownian
-
-@[deprecated (since := "2026-11-15")] alias isTauSet_eq_preimage := firstGridHitSet_eq_preimage
-@[deprecated (since := "2026-11-15")] alias measure_isTau_reflect := measure_firstGridHitSet_reflect
 
 end CKMA

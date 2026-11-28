@@ -5,7 +5,6 @@ Authors: CKMA contributors
 -/
 module
 
-public import CKMA.Dynamics.Flow.Basic
 public import CKMA.Dynamics.ODE.Planar.Bendixson
 public import Mathlib.Analysis.InnerProductSpace.PiL2
 public import Mathlib.Dynamics.OmegaLimit

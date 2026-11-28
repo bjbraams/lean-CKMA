@@ -34,10 +34,16 @@ and its supremum is the Lebesgue constant. Chebyshev extrema are the nodes
 * `CKMA.polynomialInterpolation`: Lagrange polynomial interpolant on `[-1, 1]`.
 * `CKMA.chebyshevExtremalWeight`: endpoint weight `2` and interior weight `1`.
 * `CKMA.chebyshevNodeAngle`: angular coordinate `π i / n` of an extremal node.
-* `CKMA.chebyshevLebesgueSlack`: slack constant in the Chebyshev–Lebesgue asymptotic.
+* `CKMA.chebyshevExtremalNodal`: the nodal polynomial `(1 - X ^ 2) U_{n-1}` of the extrema.
+* `CKMA.chebyshevLebesgueSlack`: the explicit constant in the two-sided Chebyshev–Lebesgue
+  bound.
 
 ## Main results
 
+* `CKMA.lebesgueFunction_def`, `CKMA.interpolationLebesgueConstant_def`,
+  `CKMA.chebyshevExtremalNodes_def`, `CKMA.chebyshevExtremalWeight_def`,
+  `CKMA.chebyshevNodeAngle_def`, `CKMA.chebyshevExtremalNodal_def`,
+  `CKMA.chebyshevLebesgueSlack_def`: defining lemmas.
 * `CKMA.abs_derivative_chebyshevExtremalNodal`: absolute derivative of the nodal polynomial at
   each Chebyshev extremal node.
 * `CKMA.lebesgueFunction_chebyshev_node`: the Lebesgue function equals `1` at each extremal node.
@@ -57,7 +63,6 @@ open scoped BigOperators
 
 /-- Mathlib's Lagrange cardinal polynomial for all supplied nodes.
 Distinctness is a hypothesis of interpolation theorems rather than of this definition. -/
-@[expose]
 abbrev lagrangeCardinalPolynomial {n : ℕ} (x : Fin n → ℝ) (i : Fin n) : ℝ[X] :=
   Lagrange.basis Finset.univ x i
 
@@ -77,7 +82,6 @@ def chebyshevExtremalNodes (n : ℕ) (i : Fin (n + 1)) : ℝ :=
   Real.cos (Real.pi * i.val / n)
 
 /-- The polynomial interpolant at a supplied finite collection of interval nodes. -/
-@[expose]
 abbrev polynomialInterpolation {n : ℕ} (x : Fin n → Set.Icc (-1 : ℝ) 1)
     (f : ApproximationIntervalMap) : ℝ[X] :=
   Lagrange.interpolate Finset.univ (fun j ↦ (x j).1) (fun j ↦ f (x j))
@@ -86,6 +90,26 @@ abbrev polynomialInterpolation {n : ℕ} (x : Fin n → Set.Icc (-1 : ℝ) 1)
 @[expose]
 def chebyshevExtremalWeight (n : ℕ) (i : Fin (n + 1)) : ℝ :=
   if i.val = 0 ∨ i.val = n then 2 else 1
+
+/-- The Lebesgue function is the absolute sum of the cardinal polynomials. -/
+lemma lebesgueFunction_def {n : ℕ} (x : Fin n → ℝ) (t : ℝ) :
+    lebesgueFunction x t = ∑ i : Fin n, |(lagrangeCardinalPolynomial x i).eval t| :=
+  rfl
+
+/-- The Lebesgue constant is the supremum of the Lebesgue function over `[-1, 1]`. -/
+lemma interpolationLebesgueConstant_def {n : ℕ} (x : Fin n → ℝ) :
+    interpolationLebesgueConstant x = sSup (lebesgueFunction x '' Set.Icc (-1 : ℝ) 1) :=
+  rfl
+
+/-- Evaluation of the Chebyshev extremal nodes. -/
+lemma chebyshevExtremalNodes_def (n : ℕ) (i : Fin (n + 1)) :
+    chebyshevExtremalNodes n i = Real.cos (Real.pi * i.val / n) :=
+  rfl
+
+/-- The extremal weight is `2` at the endpoints and `1` otherwise. -/
+lemma chebyshevExtremalWeight_def (n : ℕ) (i : Fin (n + 1)) :
+    chebyshevExtremalWeight n i = if i.val = 0 ∨ i.val = n then 2 else 1 :=
+  rfl
 
 /-- Every extremal weight is at least one. -/
 lemma one_le_chebyshevExtremalWeight (n : ℕ) (i : Fin (n + 1)) :
@@ -103,7 +127,10 @@ lemma chebyshevExtremalWeight_pos (n : ℕ) (i : Fin (n + 1)) :
 def chebyshevNodeAngle (n : ℕ) (i : Fin (n + 1)) : ℝ :=
   π * (i.val : ℝ) / n
 
-@[deprecated (since := "2026-11-15")] alias nodeAngle := chebyshevNodeAngle
+/-- The node angle is `π i / n`. -/
+lemma chebyshevNodeAngle_def (n : ℕ) (i : Fin (n + 1)) :
+    chebyshevNodeAngle n i = π * (i.val : ℝ) / n :=
+  rfl
 
 /-- Extremal nodes are the cosines of equally spaced angles. -/
 lemma chebyshevExtremalNodes_eq_cos (n : ℕ) (i : Fin (n + 1)) :
@@ -118,8 +145,6 @@ lemma chebyshevNodeAngle_mem_Icc {n : ℕ} (hn : n ≠ 0) (i : Fin (n + 1)) :
   have hn0 : (0 : ℝ) < n := by exact_mod_cast Nat.pos_of_ne_zero hn
   rw [div_le_iff₀ hn0]
   simpa [mul_comm, mul_assoc] using mul_le_mul_of_nonneg_left hi pi_pos.le
-
-@[deprecated (since := "2026-11-15")] alias nodeAngle_mem_Icc := chebyshevNodeAngle_mem_Icc
 
 /-- Distinct indices give distinct extremal nodes. -/
 lemma chebyshevExtremalNodes_injective {n : ℕ} (hn : n ≠ 0) :
@@ -145,6 +170,11 @@ private lemma chebyshevIndex_add_one {n : ℕ} (hn : 1 ≤ n) :
 @[expose]
 def chebyshevExtremalNodal (n : ℕ) : ℝ[X] :=
   (1 - X ^ 2) * U ℝ ((n - 1 : ℕ) : ℤ)
+
+/-- The extremal nodal polynomial is `(1 - X ^ 2) U_{n-1}`. -/
+lemma chebyshevExtremalNodal_def (n : ℕ) :
+    chebyshevExtremalNodal n = (1 - X ^ 2) * U ℝ ((n - 1 : ℕ) : ℤ) :=
+  rfl
 
 /-- Trigonometric evaluation of the extremal nodal polynomial. -/
 lemma eval_chebyshevExtremalNodal {n : ℕ} (hn : 1 ≤ n) (θ : ℝ) :
@@ -192,121 +222,122 @@ private lemma derivative_one_sub_X_sq : derivative (1 - X ^ 2 : ℝ[X]) = C (-2)
   rw [derivative_sub, derivative_one, derivative_X_pow]
   simp
 
+/-- Product rule for the extremal nodal polynomial. -/
+private lemma derivative_chebyshevExtremalNodal (n : ℕ) :
+    (chebyshevExtremalNodal n).derivative =
+      derivative (1 - X ^ 2 : ℝ[X]) * U ℝ ((n - 1 : ℕ) : ℤ) +
+        (1 - X ^ 2) * derivative (U ℝ ((n - 1 : ℕ) : ℤ)) := by
+  simp [chebyshevExtremalNodal, derivative_mul]
+
+/-- The derivative of the extremal nodal polynomial at `1` is `-2n`. -/
+private lemma eval_one_derivative_chebyshevExtremalNodal {n : ℕ} (hn : 1 ≤ n) :
+    (chebyshevExtremalNodal n).derivative.eval 1 = -(2 * (n : ℝ)) := by
+  have hcastR : (((n - 1 : ℕ) : ℤ) : ℝ) + 1 = (n : ℝ) := by
+    exact_mod_cast chebyshevIndex_add_one hn
+  rw [derivative_chebyshevExtremalNodal, eval_add, eval_mul, eval_mul,
+    derivative_one_sub_X_sq]
+  have hv : (1 - X ^ 2 : ℝ[X]).eval 1 = 0 := by simp
+  simp only [hv, eval_mul, eval_C, eval_X, U_eval_one, hcastR]
+  ring
+
+/-- The derivative of the extremal nodal polynomial at `-1` has absolute value `2n`. -/
+private lemma abs_eval_neg_one_derivative_chebyshevExtremalNodal {n : ℕ} (hn : 1 ≤ n) :
+    |(chebyshevExtremalNodal n).derivative.eval (-1)| = 2 * (n : ℝ) := by
+  have hcastR : (((n - 1 : ℕ) : ℤ) : ℝ) + 1 = (n : ℝ) := by
+    exact_mod_cast chebyshevIndex_add_one hn
+  have hφ' : (chebyshevExtremalNodal n).derivative.eval (-1) =
+      2 * (((n - 1 : ℕ) : ℤ).negOnePow : ℝ) * (n : ℝ) := by
+    rw [derivative_chebyshevExtremalNodal, eval_add, eval_mul, eval_mul,
+      derivative_one_sub_X_sq]
+    have hv : (1 - X ^ 2 : ℝ[X]).eval (-1) = 0 := by simp
+    simp only [hv, eval_mul, eval_C, eval_X, U_eval_neg_one]
+    rw [hcastR]
+    ring
+  have hsign : |(((n - 1 : ℕ) : ℤ).negOnePow : ℝ)| = 1 := by
+    rcases Int.even_or_odd ((n - 1 : ℕ) : ℤ) with h | h
+    · rw [Int.negOnePow_even _ h]
+      simp
+    · rw [Int.negOnePow_odd _ h]
+      simp
+  rw [hφ', abs_mul, abs_mul, hsign, abs_of_nonneg (by norm_num : (0 : ℝ) ≤ 2),
+    abs_of_nonneg (Nat.cast_nonneg n)]
+  ring
+
+/-- At an interior extremal node the derivative of the nodal polynomial has absolute value
+`n`; the proof differentiates `sin θ * sin (n θ)` in `θ`. -/
+private lemma abs_eval_derivative_chebyshevExtremalNodal_interior {n : ℕ} (hn : 1 ≤ n)
+    {i : Fin (n + 1)} (h0 : i.val ≠ 0) (hnI : i.val ≠ n) :
+    |(chebyshevExtremalNodal n).derivative.eval (cos (chebyshevNodeAngle n i))| = n := by
+  have hn0 : n ≠ 0 := by omega
+  have hnpos : (0 : ℝ) < n := by exact_mod_cast Nat.pos_of_ne_zero hn0
+  have hin : i.val < n := lt_of_le_of_ne (Nat.le_of_lt_succ i.isLt) hnI
+  set θi : ℝ := chebyshevNodeAngle n i with hθi
+  have hθ0 : 0 < θi :=
+    div_pos (mul_pos pi_pos (by exact_mod_cast Nat.pos_of_ne_zero h0)) hnpos
+  have hθπ : θi < π := by
+    rw [hθi, chebyshevNodeAngle, div_lt_iff₀ hnpos]
+    have : (i.val : ℝ) < n := by exact_mod_cast hin
+    nlinarith [pi_pos, this]
+  have hsinθ : 0 < sin θi := sin_pos_of_pos_of_lt_pi hθ0 hθπ
+  set φ : ℝ[X] := chebyshevExtremalNodal n
+  have hchain : HasDerivAt (fun t : ℝ => sin t * sin ((n : ℝ) * t))
+      (φ.derivative.eval (cos θi) * -sin θi) θi := by
+    have hevalFun : (fun t : ℝ => φ.eval (cos t)) = fun t => sin t * sin ((n : ℝ) * t) :=
+      funext fun t => eval_chebyshevExtremalNodal hn t
+    rw [← hevalFun]
+    exact (φ.hasDerivAt (cos θi)).comp θi (hasDerivAt_cos θi)
+  have hlin : HasDerivAt (fun t : ℝ => (n : ℝ) * t) (n : ℝ) θi := by
+    simpa using (hasDerivAt_id θi).const_mul (n : ℝ)
+  have hprod : HasDerivAt (fun t : ℝ => sin t * sin ((n : ℝ) * t))
+      (cos θi * sin ((n : ℝ) * θi) + sin θi * (cos ((n : ℝ) * θi) * (n : ℝ))) θi :=
+    (hasDerivAt_sin θi).mul ((hasDerivAt_sin ((n : ℝ) * θi)).comp θi hlin)
+  have hderEq := hchain.unique hprod
+  have hangle : (n : ℝ) * θi = (i.val : ℝ) * π := by
+    rw [hθi, chebyshevNodeAngle]
+    field_simp
+  rw [hangle, sin_nat_mul_pi, cos_nat_mul_pi, mul_zero, zero_add] at hderEq
+  have hφ' : φ.derivative.eval (cos θi) = -((n : ℝ) * (-1 : ℝ) ^ i.val) := by
+    have hne : -sin θi ≠ 0 := by simp [hsinθ.ne']
+    apply mul_right_cancel₀ hne
+    rw [hderEq]
+    ring
+  rw [hφ', abs_neg, abs_mul, abs_of_nonneg (Nat.cast_nonneg n), abs_pow, abs_neg,
+    abs_one, one_pow, mul_one]
+
 /-- Absolute derivative of the nodal polynomial at each extremal node. -/
 lemma abs_derivative_chebyshevExtremalNodal {n : ℕ} (hn : 1 ≤ n)
     (i : Fin (n + 1)) :
     |(chebyshevExtremalNodal n).derivative.eval (chebyshevExtremalNodes n i)| =
       (n : ℝ) * chebyshevExtremalWeight n i := by
   have hn0 : n ≠ 0 := by omega
-  have hder : (chebyshevExtremalNodal n).derivative =
-      derivative (1 - X ^ 2 : ℝ[X]) * U ℝ ((n - 1 : ℕ) : ℤ) +
-        (1 - X ^ 2) * derivative (U ℝ ((n - 1 : ℕ) : ℤ)) := by
-    simp [chebyshevExtremalNodal, derivative_mul]
-  have hcastR : (((n - 1 : ℕ) : ℤ) : ℝ) + 1 = (n : ℝ) := by
-    exact_mod_cast chebyshevIndex_add_one hn
   by_cases h0 : i.val = 0
   · have ha : chebyshevExtremalNodes n i = 1 := by
       simp [chebyshevExtremalNodes, h0, cos_zero]
-    have hφ' : (chebyshevExtremalNodal n).derivative.eval 1 = -(2 * (n : ℝ)) := by
-      rw [hder, eval_add, eval_mul, eval_mul, derivative_one_sub_X_sq]
-      have hv : (1 - X ^ 2 : ℝ[X]).eval 1 = 0 := by simp
-      simp only [hv, eval_mul, eval_C, eval_X, U_eval_one, hcastR]
-      ring
-    have hw : chebyshevExtremalWeight n i = 2 := by
-      simp [chebyshevExtremalWeight, h0]
-    rw [ha, hφ', hw, abs_neg, abs_mul, abs_of_nonneg (by norm_num : (0 : ℝ) ≤ 2),
-      abs_of_nonneg (Nat.cast_nonneg n)]
+    have hw : chebyshevExtremalWeight n i = 2 := by simp [chebyshevExtremalWeight, h0]
+    rw [ha, eval_one_derivative_chebyshevExtremalNodal hn, hw, abs_neg,
+      abs_of_nonneg (by positivity)]
     ring
-  · by_cases hnI : i.val = n
-    · have ha : chebyshevExtremalNodes n i = -1 := by
-        have hdiv : (n : ℝ) ≠ 0 := by exact_mod_cast hn0
-        simp only [chebyshevExtremalNodes, hnI]
-        rw [mul_div_cancel_right₀ _ hdiv, cos_pi]
-      have hφ' : (chebyshevExtremalNodal n).derivative.eval (-1) =
-          2 * (((n - 1 : ℕ) : ℤ).negOnePow : ℝ) * (n : ℝ) := by
-        rw [hder, eval_add, eval_mul, eval_mul, derivative_one_sub_X_sq]
-        have hv : (1 - X ^ 2 : ℝ[X]).eval (-1) = 0 := by simp
-        simp only [hv, eval_mul, eval_C, eval_X, U_eval_neg_one]
-        rw [hcastR]
-        ring
-      have hsign : |(((n - 1 : ℕ) : ℤ).negOnePow : ℝ)| = 1 := by
-        rcases Int.even_or_odd ((n - 1 : ℕ) : ℤ) with h | h
-        · rw [Int.negOnePow_even _ h]
-          simp
-        · rw [Int.negOnePow_odd _ h]
-          simp
-      have hw : chebyshevExtremalWeight n i = 2 := by
-        simp [chebyshevExtremalWeight, hnI]
-      rw [ha, hφ', hw, abs_mul, abs_mul, hsign, abs_of_nonneg (by norm_num : (0 : ℝ) ≤ 2),
-        abs_of_nonneg (Nat.cast_nonneg n)]
-      ring
-    · have hi0 : 0 < i.val := Nat.pos_of_ne_zero h0
-      have hin : i.val < n := lt_of_le_of_ne (Nat.le_of_lt_succ i.isLt) hnI
-      let θi : ℝ := chebyshevNodeAngle n i
-      have hθ0 : 0 < θi := by
-        unfold θi chebyshevNodeAngle
-        exact div_pos (mul_pos pi_pos (by exact_mod_cast hi0))
-          (by exact_mod_cast Nat.pos_of_ne_zero hn0)
-      have hθπ : θi < π := by
-        unfold θi chebyshevNodeAngle
-        have hnpos : (0 : ℝ) < n := by exact_mod_cast Nat.pos_of_ne_zero hn0
-        rw [div_lt_iff₀ hnpos]
-        have : (i.val : ℝ) < n := by exact_mod_cast hin
-        nlinarith [pi_pos, this]
-      have hsinθ : 0 < sin θi := sin_pos_of_pos_of_lt_pi hθ0 hθπ
-      let φ : ℝ[X] := chebyshevExtremalNodal n
-      have hevalFun : (fun t : ℝ => φ.eval (cos t)) =
-          fun t => sin t * sin ((n : ℝ) * t) := by
-        ext t
-        simpa [φ] using eval_chebyshevExtremalNodal hn t
-      have hchain : HasDerivAt (fun t : ℝ => φ.eval (cos t))
-          (φ.derivative.eval (cos θi) * -sin θi) θi :=
-        (φ.hasDerivAt (cos θi)).comp θi (hasDerivAt_cos θi)
-      have hchain' : HasDerivAt (fun t : ℝ => sin t * sin ((n : ℝ) * t))
-          (φ.derivative.eval (cos θi) * -sin θi) θi := by
-        rw [hevalFun] at hchain
-        exact hchain
-      have hlin : HasDerivAt (fun t : ℝ => (n : ℝ) * t) (n : ℝ) θi := by
-        simpa using (hasDerivAt_id θi).const_mul (n : ℝ)
-      have hinner : HasDerivAt (fun t : ℝ => sin ((n : ℝ) * t))
-          (cos ((n : ℝ) * θi) * (n : ℝ)) θi :=
-        (hasDerivAt_sin ((n : ℝ) * θi)).comp θi hlin
-      have hprod : HasDerivAt (fun t : ℝ => sin t * sin ((n : ℝ) * t))
-          (cos θi * sin ((n : ℝ) * θi) +
-            sin θi * (cos ((n : ℝ) * θi) * (n : ℝ))) θi :=
-        (hasDerivAt_sin θi).mul hinner
-      have hderEq := hchain'.unique hprod
-      have hangle : (n : ℝ) * θi = (i.val : ℝ) * π := by
-        unfold θi chebyshevNodeAngle
-        field_simp
-      have hsinN : sin ((n : ℝ) * θi) = 0 := by
-        rw [hangle, sin_nat_mul_pi]
-      have hcosN : cos ((n : ℝ) * θi) = (-1 : ℝ) ^ i.val := by
-        rw [hangle, cos_nat_mul_pi]
-      rw [hsinN, hcosN] at hderEq
-      have hmul0 : cos θi * (0 : ℝ) = 0 := mul_zero _
-      rw [hmul0, zero_add] at hderEq
-      have hφ' : φ.derivative.eval (cos θi) = -((n : ℝ) * (-1 : ℝ) ^ i.val) := by
-        have hne : -sin θi ≠ 0 := by simp [hsinθ.ne']
-        apply mul_right_cancel₀ hne
-        calc φ.derivative.eval (cos θi) * -sin θi
-            = sin θi * (((-1 : ℝ) ^ i.val) * (n : ℝ)) := hderEq
-          _ = -((n : ℝ) * (-1 : ℝ) ^ i.val) * -sin θi := by ring
-      have habs : |φ.derivative.eval (cos θi)| = (n : ℝ) := by
-        rw [hφ', abs_neg, abs_mul, abs_of_nonneg (Nat.cast_nonneg n), abs_pow, abs_neg,
-          abs_one, one_pow, mul_one]
-      have hw : chebyshevExtremalWeight n i = 1 := by
-        rw [chebyshevExtremalWeight, ite_eq_right]
-        intro h
-        cases h with
-        | inl h => exact h0 h
-        | inr h => exact hnI h
-      simpa [φ, chebyshevExtremalNodes_eq_cos, hw] using habs
+  by_cases hnI : i.val = n
+  · have ha : chebyshevExtremalNodes n i = -1 := by
+      have hdiv : (n : ℝ) ≠ 0 := by exact_mod_cast hn0
+      simp only [chebyshevExtremalNodes, hnI]
+      rw [mul_div_cancel_right₀ _ hdiv, cos_pi]
+    have hw : chebyshevExtremalWeight n i = 2 := by simp [chebyshevExtremalWeight, hnI]
+    rw [ha, abs_eval_neg_one_derivative_chebyshevExtremalNodal hn, hw]
+    ring
+  have hw : chebyshevExtremalWeight n i = 1 := by simp [chebyshevExtremalWeight, h0, hnI]
+  rw [chebyshevExtremalNodes_eq_cos,
+    abs_eval_derivative_chebyshevExtremalNodal_interior hn h0 hnI, hw, mul_one]
 
 /-- Absolute slack large enough for both sides of the Chebyshev–Lebesgue asymptotic. -/
 @[expose]
 def chebyshevLebesgueSlack : ℝ :=
   11 / 4 + 2 / π + π / 8 + log 2 / π
+
+/-- The value of the slack constant. -/
+lemma chebyshevLebesgueSlack_def :
+    chebyshevLebesgueSlack = 11 / 4 + 2 / π + π / 8 + log 2 / π :=
+  rfl
 
 /-- The slack constant is nonnegative. -/
 lemma chebyshevLebesgueSlack_nonneg : 0 ≤ chebyshevLebesgueSlack := by

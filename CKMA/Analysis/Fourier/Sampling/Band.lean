@@ -66,6 +66,22 @@ def normalizedSinc (t : ℝ) : ℝ := Real.sinc (Real.pi * t)
 def shannonTerm (B : ℝ) (f : ℝ → ℂ) (k : ℤ) (t : ℝ) : ℂ :=
   f (k / (2 * B)) * normalizedSinc (2 * B * t - k)
 
+/-- Unfolding the bandlimited representative. -/
+theorem bandlimitedRepresentative_def (B : ℝ) (u : Lp ℂ 2 (volume : Measure ℝ)) (t : ℝ) :
+    bandlimitedRepresentative B u t =
+      ∫ ξ in Set.Icc (-B) B, Complex.exp (2 * Real.pi * Complex.I * t * ξ) * u ξ := rfl
+
+/-- Unfolding the normalized sinc. -/
+theorem normalizedSinc_def (t : ℝ) : normalizedSinc t = Real.sinc (Real.pi * t) := rfl
+
+/-- The normalized sinc is `1` at the origin. -/
+@[simp]
+theorem normalizedSinc_zero : normalizedSinc 0 = 1 := by simp [normalizedSinc]
+
+/-- Unfolding the Shannon summand. -/
+theorem shannonTerm_def (B : ℝ) (f : ℝ → ℂ) (k : ℤ) (t : ℝ) :
+    shannonTerm B f k t = f (k / (2 * B)) * normalizedSinc (2 * B * t - k) := rfl
+
 namespace Shannon
 
 variable {B : ℝ}
@@ -89,6 +105,24 @@ def freqPartial (B : ℝ) (f : ℝ → ℂ) (s : Finset ℤ) (x : ℝ) : ℂ :=
 @[expose]
 def freqBand (B : ℝ) (f : ℝ → ℂ) (s : Finset ℤ) : ℝ → ℂ :=
   bandCutoff B (freqPartial B f s)
+
+/-- Unfolding the band cutoff. -/
+theorem bandCutoff_def (B : ℝ) (u : ℝ → ℂ) : bandCutoff B u = (Set.Icc (-B) B).indicator u :=
+  rfl
+
+/-- Unfolding the sampling character. -/
+theorem samplingCharacter_def (B : ℝ) (k : ℤ) (x : ℝ) :
+    samplingCharacter B k x = Complex.exp (-(2 * Real.pi * Complex.I * (k / (2 * B)) * x)) :=
+  rfl
+
+/-- Unfolding the trigonometric partial sum. -/
+theorem freqPartial_def (B : ℝ) (f : ℝ → ℂ) (s : Finset ℤ) (x : ℝ) :
+    freqPartial B f s x = ∑ k ∈ s, ((2 * B)⁻¹ : ℝ) • f (k / (2 * B)) * samplingCharacter B k x :=
+  rfl
+
+/-- Unfolding the band-limited partial sum. -/
+theorem freqBand_def (B : ℝ) (f : ℝ → ℂ) (s : Finset ℤ) :
+    freqBand B f s = bandCutoff B (freqPartial B f s) := rfl
 
 /-- Each sampling character has modulus one. -/
 lemma norm_samplingCharacter (k : ℤ) (x : ℝ) :

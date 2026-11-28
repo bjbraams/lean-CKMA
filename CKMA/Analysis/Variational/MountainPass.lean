@@ -76,6 +76,27 @@ and every path crosses the positive-energy sphere. -/
 def mountainPassLevel (I : E → ℝ) (e : E) : ℝ :=
   sInf (pathMaxEnergy I '' mountainPassPaths e)
 
+/-- Defining property of `HasPalaisSmaleAt`. -/
+theorem hasPalaisSmaleAt_iff {I : E → ℝ} {c : ℝ} :
+    HasPalaisSmaleAt I c ↔ ∀ u : ℕ → E, Tendsto (fun n ↦ I (u n)) atTop (𝓝 c) →
+      Tendsto (fun n ↦ fderiv ℝ I (u n)) atTop (𝓝 0) →
+      ∃ (φ : ℕ → ℕ) (x : E), StrictMono φ ∧ Tendsto (u ∘ φ) atTop (𝓝 x) := Iff.rfl
+
+omit [NormedSpace ℝ E] in
+/-- Membership in `mountainPassPaths`. -/
+theorem mem_mountainPassPaths {e : E} {γ : C(Set.Icc (0 : ℝ) 1, E)} :
+    γ ∈ mountainPassPaths e ↔ γ ⟨0, by norm_num⟩ = 0 ∧ γ ⟨1, by norm_num⟩ = e := Iff.rfl
+
+omit [NormedSpace ℝ E] in
+/-- Defining equation of `pathMaxEnergy`. -/
+theorem pathMaxEnergy_def (I : E → ℝ) (γ : C(Set.Icc (0 : ℝ) 1, E)) :
+    pathMaxEnergy I γ = sSup (Set.range (fun t ↦ I (γ t))) := rfl
+
+omit [NormedSpace ℝ E] in
+/-- Defining equation of `mountainPassLevel`. -/
+theorem mountainPassLevel_def (I : E → ℝ) (e : E) :
+    mountainPassLevel I e = sInf (pathMaxEnergy I '' mountainPassPaths e) := rfl
+
 omit [NormedSpace ℝ E] in
 /-- A continuous real energy is bounded above along a compact path. -/
 private lemma bddAbove_pathEnergy {I : E → ℝ} (hI : Continuous I) (γ : C(Set.Icc (0 : ℝ) 1, E)) :
@@ -347,7 +368,7 @@ private lemma completeSpace_mountainPassPaths (e : E) [CompleteSpace E] :
 
 /-- A combination with nonnegative weights summing to `1`, of directions that pair with `f`
 above `κ` wherever their weight is positive, also pairs with `f` above `κ`. -/
-private lemma lt_apply_sum_smul {ι : Type*} {s : Finset ι} {f : E →L[ℝ] ℝ} {κ : ℝ}
+theorem lt_apply_sum_smul {ι : Type*} {s : Finset ι} {f : E →L[ℝ] ℝ} {κ : ℝ}
     {a : ι → ℝ} {v : ι → E} (ha : ∀ i ∈ s, 0 ≤ a i) (hsum : ∑ i ∈ s, a i = 1)
     (hpair : ∀ i ∈ s, 0 < a i → κ < f (v i)) :
     κ < f (∑ i ∈ s, a i • v i) := by
@@ -370,7 +391,7 @@ private lemma lt_apply_sum_smul {ι : Type*} {s : Finset ι} {f : E →L[ℝ] �
 
 /-- A combination with nonnegative weights of total at most `1`, of vectors of norm at most
 `θ ≥ 0`, has norm at most `θ`. -/
-private lemma norm_sum_smul_le {ι : Type*} {s : Finset ι} {a : ι → ℝ} {v : ι → E} {θ : ℝ}
+theorem norm_sum_smul_le {ι : Type*} {s : Finset ι} {a : ι → ℝ} {v : ι → E} {θ : ℝ}
     (hθ : 0 ≤ θ) (ha : ∀ i ∈ s, 0 ≤ a i) (hsum : ∑ i ∈ s, a i ≤ 1)
     (hv : ∀ i ∈ s, ‖v i‖ ≤ θ) :
     ‖∑ i ∈ s, a i • v i‖ ≤ θ := by

@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.Calculus.FDeriv.Defs
 public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 public import Mathlib.Topology.Algebra.Module.Spaces.ContinuousLinearMap
+public import Mathlib.Analysis.Normed.Operator.Basic
 import CKMA.Analysis.Convex.Clarke.Representation
 import Mathlib.Analysis.Calculus.Deriv.Comp
 import Mathlib.Analysis.Calculus.Deriv.Mul
@@ -40,10 +41,15 @@ extends a partial functional dominated by it, using Mathlib's Hahn–Banach theo
 * `CKMA.clarkeDirectionalDerivative`: Clarke's generalized directional derivative in `EReal`.
 * `CKMA.clarkeSubdifferential`: the Clarke generalized gradient in the continuous dual.
 * `CKMA.reachableDerivatives`: limits of ordinary derivatives at points approaching `x`.
+* `CKMA.clarkeQuotient`, `CKMA.clarkeStepNhds`: the difference quotient and the positive-step
+  filter in the definition of the directional derivative.
 * `CKMA.clarkeReal`: real-valued limsup of the Clarke difference quotient.
 
 ## Main results
 
+* `CKMA.isClosed_clarkeSubdifferential`, `CKMA.convex_clarkeSubdifferential`,
+  `CKMA.isCompact_clarkeSubdifferential`, `CKMA.norm_le_of_mem_clarkeSubdifferential`: basic
+  properties of the generalized gradient of a locally Lipschitz function.
 * `CKMA.clarkeSubdifferential_representation`: finite-dimensional representation of the Clarke
   subdifferential as the closed convex hull of reachable derivatives (GAPS 12.50).
 * `CKMA.sSup_clarkeSubdifferential_eq`: the support function of the Clarke subdifferential is the
@@ -61,12 +67,35 @@ open scoped NNReal
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
-/-- Clarke's generalized directional derivative, with a joint limit in base point and
-positive step size. Extended reals avoid totalizing an unbounded real limsup. -/
+/-- Difference quotient of `f` at base point `p.1` with positive step `p.2`, in direction `d`. -/
+@[expose]
+def clarkeQuotient (f : E → ℝ) (d : E) (p : E × ℝ) : ℝ :=
+  (f (p.1 + p.2 • d) - f p.1) / p.2
+
+/-- Neighborhoods of `(x, 0)` that retain only strictly positive steps. -/
+@[expose]
+def clarkeStepNhds (x : E) : Filter (E × ℝ) :=
+  𝓝[Set.univ ×ˢ Set.Ioi 0] (x, 0)
+
+/-- Defining equation of `clarkeQuotient`. -/
+theorem clarkeQuotient_def (f : E → ℝ) (d : E) (p : E × ℝ) :
+    clarkeQuotient f d p = (f (p.1 + p.2 • d) - f p.1) / p.2 := rfl
+
+omit [NormedSpace ℝ E] in
+/-- Defining equation of `clarkeStepNhds`. -/
+theorem clarkeStepNhds_def (x : E) : clarkeStepNhds x = 𝓝[Set.univ ×ˢ Set.Ioi 0] (x, 0) := rfl
+
+/-- Clarke's generalized directional derivative: the limsup of the difference quotient
+`clarkeQuotient f d` along `clarkeStepNhds x`, a joint limit in base point and positive step
+size. Extended reals avoid totalizing an unbounded real limsup. -/
 @[expose]
 def clarkeDirectionalDerivative (f : E → ℝ) (x d : E) : EReal :=
-  limsup (fun p : E × ℝ ↦ (((f (p.1 + p.2 • d) - f p.1) / p.2 : ℝ) : EReal))
-    (𝓝[Set.univ ×ˢ Set.Ioi 0] (x, 0))
+  limsup (fun p : E × ℝ ↦ (clarkeQuotient f d p : EReal)) (clarkeStepNhds x)
+
+/-- Defining equation of `clarkeDirectionalDerivative`. -/
+theorem clarkeDirectionalDerivative_def (f : E → ℝ) (x d : E) :
+    clarkeDirectionalDerivative f x d =
+      limsup (fun p : E × ℝ ↦ (clarkeQuotient f d p : EReal)) (clarkeStepNhds x) := rfl
 
 /-- The Clarke generalized gradient in the continuous dual. -/
 @[expose]
@@ -80,15 +109,16 @@ def reachableDerivatives (f : E → ℝ) (x : E) : Set (StrongDual ℝ E) :=
     (∀ n, DifferentiableAt ℝ f (y n)) ∧
     Tendsto (fun n ↦ fderiv ℝ f (y n)) atTop (𝓝 u)}
 
-/-- Difference quotient of `f` at base point `p.1` with positive step `p.2`, in direction `d`. -/
-@[expose]
-def clarkeQuotient (f : E → ℝ) (d : E) (p : E × ℝ) : ℝ :=
-  (f (p.1 + p.2 • d) - f p.1) / p.2
+/-- Membership in the Clarke generalized gradient. -/
+theorem mem_clarkeSubdifferential_iff {f : E → ℝ} {x : E} {u : StrongDual ℝ E} :
+    u ∈ clarkeSubdifferential f x ↔ ∀ d : E, (u d : EReal) ≤ clarkeDirectionalDerivative f x d :=
+  Iff.rfl
 
-/-- Neighborhoods of `(x, 0)` that retain only strictly positive steps. -/
-@[expose]
-def clarkeStepNhds (x : E) : Filter (E × ℝ) :=
-  𝓝[Set.univ ×ˢ Set.Ioi 0] (x, 0)
+/-- Membership in the set of reachable derivatives. -/
+theorem mem_reachableDerivatives_iff {f : E → ℝ} {x : E} {u : StrongDual ℝ E} :
+    u ∈ reachableDerivatives f x ↔ ∃ y : ℕ → E, Tendsto y atTop (𝓝 x) ∧
+      (∀ n, DifferentiableAt ℝ f (y n)) ∧ Tendsto (fun n ↦ fderiv ℝ f (y n)) atTop (𝓝 u) :=
+  Iff.rfl
 
 /-- The positive-step filter is nontrivial: `(x, 0)` lies in the closure of `{t > 0}`. -/
 @[expose]
@@ -248,9 +278,6 @@ private lemma clarkeDirectionalDerivative_mem_Icc {f : E → ℝ} {x : E} {r : �
       (((-((L : ℝ) * ‖d‖) : ℝ) : EReal)) ≤ (clarkeQuotient f d p : EReal) :=
     h.mono fun _ hp ↦ EReal.coe_le_coe (abs_le.mp hp).1
   rw [clarkeDirectionalDerivative]
-  have hfun : (fun p : E × ℝ ↦ (((f (p.1 + p.2 • d) - f p.1) / p.2 : ℝ) : EReal)) =
-      fun p ↦ (clarkeQuotient f d p : EReal) := rfl
-  rw [hfun]
   refine ⟨?_, ?_⟩
   · exact le_limsup_of_frequently_le hge.frequently
   · exact limsup_le_of_le (h := hle)
@@ -260,6 +287,10 @@ quotient is locally bounded. -/
 @[expose]
 def clarkeReal (f : E → ℝ) (x d : E) : ℝ :=
   limsup (clarkeQuotient f d) (clarkeStepNhds x)
+
+/-- Defining equation of `clarkeReal`. -/
+theorem clarkeReal_def (f : E → ℝ) (x d : E) :
+    clarkeReal f x d = limsup (clarkeQuotient f d) (clarkeStepNhds x) := rfl
 
 /-- The Clarke quotient is eventually bounded above by the Lipschitz constant. -/
 private lemma clarkeQuotient_boundedAbove {f : E → ℝ} {x : E} {r : ℝ} (hr : 0 < r) {L : ℝ≥0}
@@ -286,9 +317,6 @@ private lemma clarkeDirectionalDerivative_eq_coe_clarkeReal {f : E → ℝ} {x :
     {L : ℝ≥0} (hf : LipschitzOnWith L f (Metric.ball x r)) (d : E) :
     clarkeDirectionalDerivative f x d = clarkeReal f x d := by
   rw [clarkeDirectionalDerivative, clarkeReal]
-  have hfun : (fun p : E × ℝ ↦ (((f (p.1 + p.2 • d) - f p.1) / p.2 : ℝ) : EReal)) =
-      (fun t : ℝ ↦ (t : EReal)) ∘ clarkeQuotient f d := rfl
-  rw [hfun]
   exact (EReal.coe_strictMono.monotone.map_limsup_of_continuousAt (clarkeQuotient f d)
     continuous_coe_real_ereal.continuousAt (clarkeQuotient_boundedAbove hr hf d)
     (clarkeQuotient_cobounded hr hf d)).symm
@@ -505,7 +533,7 @@ private lemma reachableDerivatives_subset_clarkeSubdifferential
   exact hup
 
 /-- Every Clarke subgradient of a Lipschitz function is bounded by the Lipschitz constant. -/
-private lemma norm_le_of_mem_clarkeSubdifferential
+theorem norm_le_of_mem_clarkeSubdifferential
     {f : E → ℝ} {x : E} {r : ℝ} (hr : 0 < r) {L : ℝ≥0}
     (hf : LipschitzOnWith L f (ball x r)) {u : StrongDual ℝ E}
     (hu : u ∈ clarkeSubdifferential f x) : ‖u‖ ≤ (L : ℝ) := by
@@ -523,7 +551,7 @@ private lemma norm_le_of_mem_clarkeSubdifferential
   linarith
 
 /-- The Clarke subdifferential of a Lipschitz function is closed. -/
-private lemma isClosed_clarkeSubdifferential
+theorem isClosed_clarkeSubdifferential
     {f : E → ℝ} {x : E} {r : ℝ} (hr : 0 < r) {L : ℝ≥0}
     (hf : LipschitzOnWith L f (ball x r)) : IsClosed (clarkeSubdifferential f x) := by
   have hEq : clarkeSubdifferential f x =
@@ -542,7 +570,7 @@ private lemma isClosed_clarkeSubdifferential
     isClosed_Iic.preimage (ContinuousLinearMap.apply ℝ ℝ d).continuous
 
 /-- The Clarke subdifferential of a Lipschitz function is convex. -/
-private lemma convex_clarkeSubdifferential
+theorem convex_clarkeSubdifferential
     {f : E → ℝ} {x : E} {r : ℝ} (hr : 0 < r) {L : ℝ≥0}
     (hf : LipschitzOnWith L f (ball x r)) : Convex ℝ (clarkeSubdifferential f x) := by
   intro u hu v hv a b ha hb hab d
@@ -560,10 +588,9 @@ private lemma convex_clarkeSubdifferential
     _ = clarkeReal f x d := by rw [← add_mul, hab, one_mul]
 
 /-- In finite dimensions the Clarke subdifferential of a Lipschitz function is compact. -/
-private lemma isCompact_clarkeSubdifferential [FiniteDimensional ℝ E]
+theorem isCompact_clarkeSubdifferential [FiniteDimensional ℝ E]
     {f : E → ℝ} {x : E} {r : ℝ} (hr : 0 < r) {L : ℝ≥0}
     (hf : LipschitzOnWith L f (ball x r)) : IsCompact (clarkeSubdifferential f x) := by
-  have : FiniteDimensional ℝ (StrongDual ℝ E) := finiteDimensional_strongDual
   refine (isCompact_closedBall (0 : StrongDual ℝ E) (L : ℝ)).of_isClosed_subset
     (isClosed_clarkeSubdifferential hr hf) ?_
   intro u hu
@@ -631,7 +658,6 @@ private lemma sSup_reachableDerivatives_eq_clarkeReal [FiniteDimensional ℝ E]
         ball_subset_ball ((min_le_left _ _).trans (half_le_self hr.le)) (hy n).1
       have hfy : ∀ n, ‖fderiv ℝ f (y n)‖ ≤ (L : ℝ) := fun n =>
         norm_fderiv_le_of_lipschitzOn ℝ (isOpen_ball.mem_nhds (hball n)) hf
-      have : FiniteDimensional ℝ (StrongDual ℝ E) := finiteDimensional_strongDual
       obtain ⟨u, -, φ, hφ, hφtend⟩ :=
         (isCompact_closedBall (0 : StrongDual ℝ E) (L : ℝ)).tendsto_subseq fun n => by
           simpa [mem_closedBall, dist_zero_right] using hfy n

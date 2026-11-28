@@ -7,23 +7,25 @@ module
 
 public import CKMA.Analysis.Approximation.InterpolationStability.Basic
 
+import CKMA.Analysis.Approximation.InterpolationStability.ElementaryBounds
 import Mathlib.NumberTheory.Harmonic.Bounds
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Bounds
 
 /-!
 # Chebyshev-extrema nodal estimates
 
-Trigonometric bounds, the nodal polynomial, and the endpoint correction for the
-Lebesgue function of the Chebyshev extrema. These estimates feed the logarithmic
-bound on the Lebesgue constant.
+The nodal polynomial, the angular formula for the cardinal polynomials, and the endpoint
+correction for the Lebesgue function of the Chebyshev extrema. The elementary real bounds used
+here are in `CKMA.Analysis.Approximation.InterpolationStability.ElementaryBounds`. These
+estimates feed the logarithmic bound on the Lebesgue constant.
 
 ## Main definitions
 
 * `CKMA.chebyshevAngleSign`: sign of an off-node angle relative to a node angle.
 * `CKMA.chebyshevLebesgueMain`: cotangent main term in the angular formula for a cardinal
   polynomial.
-* `CKMA.chebyshevLebesgueCorr`: cotangent correction term in the angular formula for a cardinal
-  polynomial.
+* `CKMA.chebyshevLebesgueCorrection`: cotangent correction term in the angular formula for a
+  cardinal polynomial.
 
 ## Main results
 
@@ -31,8 +33,10 @@ bound on the Lebesgue constant.
   correction terms.
 * `CKMA.sum_chebyshevLebesgueMain_le`: sum of the cotangent main terms compared with
   `(2 / π) log (n + 1)`.
-* `CKMA.chebyshevLebesgueCorr_zero_le`, `CKMA.chebyshevLebesgueCorr_last_le`: endpoint correction
-  estimates on `(0, π / 2]`.
+* `CKMA.chebyshevAngleSign_def`, `CKMA.chebyshevLebesgueMain_def`,
+  `CKMA.chebyshevLebesgueCorrection_def`: defining lemmas.
+* `CKMA.chebyshevLebesgueCorrection_zero_le`, `CKMA.chebyshevLebesgueCorrection_last_le`:
+  endpoint correction estimates on `(0, π / 2]`.
 -/
 
 public section
@@ -43,82 +47,6 @@ namespace CKMA
 
 open Polynomial Real Polynomial.Chebyshev Finset Lagrange
 open scoped BigOperators
-
-/-- Absolute value of a multiple-angle sine is at most the multiple of the sine. -/
-private lemma abs_sin_nat_mul (n : ℕ) (x : ℝ) : |sin ((n : ℝ) * x)| ≤ n * |sin x| := by
-  induction n with
-  | zero => simp
-  | succ n ih =>
-    have hstep : sin (((n + 1 : ℕ) : ℝ) * x) =
-        sin ((n : ℝ) * x) * cos x + cos ((n : ℝ) * x) * sin x := by
-      rw [Nat.cast_add, Nat.cast_one, add_mul, one_mul, sin_add]
-    rw [hstep]
-    calc |sin ((n : ℝ) * x) * cos x + cos ((n : ℝ) * x) * sin x|
-        ≤ |sin ((n : ℝ) * x) * cos x| + |cos ((n : ℝ) * x) * sin x| := abs_add_le _ _
-      _ = |sin ((n : ℝ) * x)| * |cos x| + |cos ((n : ℝ) * x)| * |sin x| := by
-          rw [abs_mul, abs_mul]
-      _ ≤ |sin ((n : ℝ) * x)| * 1 + 1 * |sin x| := by
-          gcongr
-          · exact abs_cos_le_one x
-          · exact abs_cos_le_one ((n : ℝ) * x)
-      _ ≤ (n : ℝ) * |sin x| + |sin x| := by
-          rw [one_mul, mul_one]; exact add_le_add ih le_rfl
-      _ = (n + 1 : ℕ) * |sin x| := by push_cast; ring
-
-/-- On `(0, π/2)`, the cotangent lies under the reciprocal. -/
-private lemma cot_le_inv_of_mem_Ioo_pi_div_two {u : ℝ} (hu : u ∈ Set.Ioo 0 (π / 2)) :
-    cot u ≤ 1 / u := by
-  have hu0 : 0 < u := hu.1
-  have huπ : u < π / 2 := hu.2
-  have hsin : 0 < sin u := sin_pos_of_pos_of_lt_pi hu0 (huπ.trans (by linarith [pi_pos]))
-  have hcos : 0 < cos u := cos_pos_of_mem_Ioo ⟨by linarith, huπ⟩
-  have htan : u ≤ tan u := le_tan hu0.le huπ
-  have hucos : u * cos u ≤ sin u := by
-    rw [tan_eq_sin_div_cos, le_div_iff₀ hcos] at htan
-    simpa [mul_comm] using htan
-  rw [cot_eq_cos_div_sin, div_le_div_iff₀ hsin hu0]
-  simpa [mul_comm] using hucos
-
-/-- Odd-denominator reciprocals dominate a logarithm by telescoping. -/
-lemma sum_odd_reciprocal_ge_log (t : ℕ) :
-    (1 / 2) * log (2 * (t : ℝ) + 3) ≤
-      ∑ k ∈ range (t + 1), (1 : ℝ) / (2 * (k : ℝ) + 1) := by
-  have hterm (k : ℕ) :
-      (1 / 2) * (log (2 * ((k + 1 : ℕ) : ℝ) + 1) - log (2 * (k : ℝ) + 1)) ≤
-        (1 : ℝ) / (2 * (k : ℝ) + 1) := by
-    have hk : 2 * ((k + 1 : ℕ) : ℝ) + 1 = 2 * (k : ℝ) + 3 := by
-      push_cast
-      ring
-    rw [hk]
-    have hden : 0 < 2 * (k : ℝ) + 1 := by positivity
-    have hnum : 0 < 2 * (k : ℝ) + 3 := by positivity
-    have hratio : 0 < (2 * (k : ℝ) + 3) / (2 * (k : ℝ) + 1) := div_pos hnum hden
-    have hlog : log ((2 * (k : ℝ) + 3) / (2 * (k : ℝ) + 1)) ≤
-        (2 * (k : ℝ) + 3) / (2 * (k : ℝ) + 1) - 1 := log_le_sub_one_of_pos hratio
-    have hsub : (2 * (k : ℝ) + 3) / (2 * (k : ℝ) + 1) - 1 =
-        2 / (2 * (k : ℝ) + 1) := by
-      rw [div_sub_one hden.ne']
-      congr 1
-      ring
-    rw [log_div hnum.ne' hden.ne', hsub] at hlog
-    have hmul := mul_le_mul_of_nonneg_left hlog (by norm_num : (0 : ℝ) ≤ 1 / 2)
-    calc (1 / 2) * (log (2 * (k : ℝ) + 3) - log (2 * (k : ℝ) + 1))
-        ≤ (1 / 2) * (2 / (2 * (k : ℝ) + 1)) := hmul
-      _ = 1 / (2 * (k : ℝ) + 1) := by ring
-  have htele :
-      ∑ k ∈ range (t + 1),
-          (1 / 2) * (log (2 * ((k + 1 : ℕ) : ℝ) + 1) - log (2 * (k : ℝ) + 1)) =
-        (1 / 2) * log (2 * (t : ℝ) + 3) := by
-    rw [← Finset.mul_sum, sum_range_sub (fun k : ℕ => log (2 * (k : ℝ) + 1)) (t + 1)]
-    have hlast : log (2 * ((t + 1 : ℕ) : ℝ) + 1) = log (2 * (t : ℝ) + 3) := by
-      congr 1
-      push_cast
-      ring
-    rw [hlast]
-    have hzero : log (2 * ((0 : ℕ) : ℝ) + 1) = 0 := by
-      norm_num [log_one]
-    rw [hzero, sub_zero]
-  exact (le_of_eq htele.symm).trans (Finset.sum_le_sum fun k _ => hterm k)
 
 /-- The nodal polynomial vanishes at every extremal node. -/
 private lemma isRoot_chebyshevExtremalNodal {n : ℕ} (hn : 1 ≤ n) (i : Fin (n + 1)) :
@@ -320,9 +248,28 @@ def chebyshevLebesgueMain (n : ℕ) (θ : ℝ) (i : Fin (n + 1)) : ℝ :=
 
 /-- Cotangent correction in the angular formula for a cardinal polynomial. -/
 @[expose]
-def chebyshevLebesgueCorr (n : ℕ) (θ : ℝ) (i : Fin (n + 1)) : ℝ :=
+def chebyshevLebesgueCorrection (n : ℕ) (θ : ℝ) (i : Fin (n + 1)) : ℝ :=
   |sin ((n : ℝ) * θ)| / (2 * (n : ℝ) * chebyshevExtremalWeight n i) *
     chebyshevAngleSign n θ i * cot ((θ + chebyshevNodeAngle n i) / 2)
+
+/-- The angle sign is `1` when the node angle lies to the left of `θ`, and `-1` otherwise. -/
+lemma chebyshevAngleSign_def (n : ℕ) (θ : ℝ) (i : Fin (n + 1)) :
+    chebyshevAngleSign n θ i = if chebyshevNodeAngle n i < θ then 1 else -1 :=
+  rfl
+
+/-- The cotangent main term. -/
+lemma chebyshevLebesgueMain_def (n : ℕ) (θ : ℝ) (i : Fin (n + 1)) :
+    chebyshevLebesgueMain n θ i =
+      |sin ((n : ℝ) * θ)| / (2 * (n : ℝ) * chebyshevExtremalWeight n i) *
+        cot (|θ - chebyshevNodeAngle n i| / 2) :=
+  rfl
+
+/-- The cotangent correction term. -/
+lemma chebyshevLebesgueCorrection_def (n : ℕ) (θ : ℝ) (i : Fin (n + 1)) :
+    chebyshevLebesgueCorrection n θ i =
+      |sin ((n : ℝ) * θ)| / (2 * (n : ℝ) * chebyshevExtremalWeight n i) *
+        chebyshevAngleSign n θ i * cot ((θ + chebyshevNodeAngle n i) / 2) :=
+  rfl
 
 /-- Cosine difference in product form. -/
 private lemma abs_cos_sub_cos (θ φ : ℝ) :
@@ -401,7 +348,7 @@ private lemma sin_div_gap {θ φ : ℝ} (hθ : θ ∈ Set.Ioo 0 π) (hφ : φ �
 private lemma abs_cardinal_eq_main_add_corr {n : ℕ} (hn : 1 ≤ n) {θ : ℝ}
     (hθ : θ ∈ Set.Ioo 0 π) (hnode : ∀ i, θ ≠ chebyshevNodeAngle n i) (i : Fin (n + 1)) :
     |(lagrangeCardinalPolynomial (chebyshevExtremalNodes n) i).eval (cos θ)| =
-      chebyshevLebesgueMain n θ i + chebyshevLebesgueCorr n θ i := by
+      chebyshevLebesgueMain n θ i + chebyshevLebesgueCorrection n θ i := by
   have hn0 : n ≠ 0 := by omega
   have hφmem : chebyshevNodeAngle n i ∈ Set.Icc 0 π := chebyshevNodeAngle_mem_Icc hn0 i
   have hne : θ ≠ chebyshevNodeAngle n i := hnode i
@@ -427,7 +374,7 @@ private lemma abs_cardinal_eq_main_add_corr {n : ℕ} (hn : 1 ≤ n) {θ : ℝ}
   have hsplit := sin_div_gap hθ hφmem hne
   rw [habs, heval, hder, chebyshevExtremalNodes_eq_cos, hdiff, abs_of_pos hsinθ]
   rw [abs_sin_div_two_abs (θ - chebyshevNodeAngle n i), abs_of_pos hsinu, abs_of_pos hsinavg]
-  unfold chebyshevLebesgueMain chebyshevLebesgueCorr chebyshevAngleSign
+  unfold chebyshevLebesgueMain chebyshevLebesgueCorrection chebyshevAngleSign
   have hcomm : sin θ / (sin ((θ + chebyshevNodeAngle n i) / 2) *
       sin (|θ - chebyshevNodeAngle n i| / 2)) =
       cot (|θ - chebyshevNodeAngle n i| / 2) +
@@ -453,38 +400,6 @@ private lemma abs_cardinal_eq_main_add_corr {n : ℕ} (hn : 1 ≤ n) {θ : ℝ}
         (|sin ((n : ℝ) * θ)| / (2 * (n : ℝ) * chebyshevExtremalWeight n i) *
           (if chebyshevNodeAngle n i < θ then (1 : ℝ) else -1)) *
           cot ((θ + chebyshevNodeAngle n i) / 2) := by ring
-
-/-- On `(0, π/2)`, cotangent lies above `1/u - u/2`. -/
-lemma one_div_sub_div_two_le_cot {u : ℝ} (hu : u ∈ Set.Ioo 0 (π / 2)) :
-    1 / u - u / 2 ≤ cot u := by
-  have hu0 : 0 < u := hu.1
-  have hsin : 0 < sin u :=
-    sin_pos_of_pos_of_lt_pi hu0 (hu.2.trans (by linarith [pi_pos]))
-  have hcos : 0 < cos u := by
-    refine cos_pos_of_mem_Ioo ⟨?_, hu.2⟩
-    exact (by linarith [pi_pos] : -(π / 2) < 0).trans hu0
-  have hsinle : sin u ≤ u := sin_le hu0.le
-  have hcosle : 1 - u ^ 2 / 2 ≤ cos u := one_sub_sq_div_two_le_cos
-  have hquot : cos u / u ≤ cos u / sin u := by
-    have hmul : cos u * sin u ≤ cos u * u :=
-      mul_le_mul_of_nonneg_left hsinle hcos.le
-    exact (div_le_div_iff₀ hu0 hsin).mpr hmul
-  have hlower : (1 - u ^ 2 / 2) / u ≤ cos u / u :=
-    div_le_div_of_nonneg_right hcosle hu0.le
-  have hlin : (1 - u ^ 2 / 2) / u = 1 / u - u / 2 := by
-    field_simp
-  rw [cot_eq_cos_div_sin, ← hlin]
-  exact hlower.trans hquot
-
-@[deprecated (since := "2026-11-15")] alias cot_ge_inv_sub := one_div_sub_div_two_le_cot
-
-/-- Harmonic numbers increase with the upper index. -/
-private lemma harmonic_mono {a b : ℕ} (h : a ≤ b) : (harmonic a : ℝ) ≤ harmonic b := by
-  have hsub : range a ⊆ range b := Finset.range_subset_range.mpr h
-  have hsum : harmonic a ≤ harmonic b :=
-    Finset.sum_le_sum_of_subset_of_nonneg hsub fun i _ _ =>
-      inv_nonneg.mpr (Nat.cast_nonneg (i + 1))
-  exact_mod_cast hsum
 
 /-- Single-term upper bound for the cotangent main term. -/
 private lemma chebyshevLebesgueMain_le_sin_div {n : ℕ} (hn : 1 ≤ n) {θ : ℝ}
@@ -521,7 +436,7 @@ private lemma chebyshevLebesgueMain_le_sin_div {n : ℕ} (hn : 1 ≤ n) {θ : �
       π * |(i.val : ℝ) - ν| / (2 * n) := by
     rw [hgap]
     ring
-  have hcot := cot_le_inv_of_mem_Ioo_pi_div_two hu
+  have hcot := cot_le_one_div hu
   have hfac : 0 ≤ |sin ((n : ℝ) * θ)| /
       (2 * (n : ℝ) * chebyshevExtremalWeight n i) := by
     positivity
@@ -595,6 +510,90 @@ private lemma sum_sin_div_right_le_harmonic (l : ℕ) {frac : ℝ} (hfrac_lt : f
       _ = (harmonic l : ℝ) / π := by rw [div_eq_mul_inv]
   exact hle.trans (le_of_eq hH)
 
+/-- Harmonic bound for the sum of `sin (π frac) / (π |j - ν|)` over `j ≤ n`, where
+`ν = m + frac` with `m < n` and `0 < frac < 1`. -/
+private lemma sum_sin_div_abs_sub_le {n m : ℕ} {ν : ℝ} (hm_nat : m < n)
+    (hm_lt_one : ν < (m : ℝ) + 1) (hfrac_pos : 0 < ν - m) :
+    ∑ j ∈ range (n + 1), sin (π * (ν - m)) / (π * |(j : ℝ) - ν|) ≤
+      2 + 2 * (1 + log (n : ℝ)) / π := by
+  set frac : ℝ := ν - m with hfrac
+  have hfrac_nonneg : 0 ≤ frac := hfrac_pos.le
+  have hfrac_lt : frac < 1 := by rw [hfrac]; linarith
+  have hsplit := Finset.sum_range_add
+    (fun j => sin (π * frac) / (π * |(j : ℝ) - ν|)) (m + 1) (n - m)
+  have hcount : m + 1 + (n - m) = n + 1 := by omega
+  have hdistL (j : ℕ) (hj : j ≤ m) :
+      |(j : ℝ) - ν| = ((m - j : ℕ) : ℝ) + frac := by
+    have hjν : (j : ℝ) ≤ ν := by
+      have : (j : ℝ) ≤ m := by exact_mod_cast hj
+      linarith
+    rw [abs_of_nonpos (sub_nonpos.mpr hjν), Nat.cast_sub hj]
+    rw [hfrac]
+    ring
+  have hdistR (k : ℕ) :
+      |((m + 1 + k : ℕ) : ℝ) - ν| = (k : ℝ) + 1 - frac := by
+    have hlt : ν < ((m + 1 + k : ℕ) : ℝ) := by push_cast; linarith
+    rw [abs_of_nonneg (sub_nonneg.mpr hlt.le)]
+    rw [hfrac]
+    push_cast
+    ring
+  have hleftEq : ∑ j ∈ range (m + 1), sin (π * frac) / (π * |(j : ℝ) - ν|) =
+      ∑ j ∈ range (m + 1), sin (π * frac) / (π * ((j : ℝ) + frac)) := by
+    have hrew : ∑ j ∈ range (m + 1), sin (π * frac) / (π * |(j : ℝ) - ν|) =
+        ∑ j ∈ range (m + 1),
+          sin (π * frac) / (π * (((m - j : ℕ) : ℝ) + frac)) := by
+      refine Finset.sum_congr rfl fun j hj => ?_
+      rw [hdistL j (Nat.lt_succ_iff.mp (Finset.mem_range.mp hj))]
+    rw [hrew, ← Finset.sum_range_reflect
+      (fun j => sin (π * frac) / (π * ((j : ℝ) + frac))) (m + 1)]
+    refine Finset.sum_congr rfl fun j hj => ?_
+    have hidx : m + 1 - 1 - j = m - j := by have := Finset.mem_range.mp hj; omega
+    rw [hidx]
+  have hrightEq : ∑ k ∈ range (n - m),
+        sin (π * frac) / (π * |((m + 1 + k : ℕ) : ℝ) - ν|) =
+      ∑ k ∈ range (n - m), sin (π * frac) / (π * ((k : ℝ) + 1 - frac)) := by
+    refine Finset.sum_congr rfl fun k _ => ?_
+    rw [hdistR k]
+  have hzeroL : sin (π * frac) / (π * frac) ≤ 1 := by
+    rw [div_le_one (mul_pos pi_pos hfrac_pos)]
+    exact sin_le (mul_nonneg pi_pos.le hfrac_nonneg)
+  have honeSub : 0 < 1 - frac := by linarith
+  have hsinSymm : sin (π * frac) = sin (π * (1 - frac)) := by
+    rw [show π * (1 - frac) = π - π * frac by ring, sin_pi_sub]
+  have hzeroR : sin (π * frac) / (π * (1 - frac)) ≤ 1 := by
+    rw [hsinSymm, div_le_one (mul_pos pi_pos honeSub)]
+    exact sin_le (mul_nonneg pi_pos.le honeSub.le)
+  have hleftBound : ∑ j ∈ range (m + 1), sin (π * frac) / (π * ((j : ℝ) + frac)) ≤
+      (harmonic m : ℝ) / π + 1 := by
+    rw [Finset.sum_range_succ' (fun j => sin (π * frac) / (π * ((j : ℝ) + frac))) m]
+    simp only [Nat.cast_zero, zero_add]
+    exact add_le_add (sum_sin_div_left_le_harmonic m hfrac_nonneg) hzeroL
+  have hrightBound : ∑ k ∈ range (n - m),
+        sin (π * frac) / (π * ((k : ℝ) + 1 - frac)) ≤
+      (harmonic (n - m - 1) : ℝ) / π + 1 := by
+    have hlen : n - m = (n - m - 1) + 1 := by omega
+    rw [hlen, Finset.sum_range_succ'
+      (fun k => sin (π * frac) / (π * ((k : ℝ) + 1 - frac))) (n - m - 1)]
+    simp only [Nat.cast_zero, zero_add]
+    exact add_le_add (sum_sin_div_right_le_harmonic (n - m - 1) hfrac_lt) hzeroR
+  have hHm : (harmonic m : ℝ) ≤ 1 + log (n : ℝ) :=
+    (Rat.cast_le.mpr (harmonic_mono (Nat.le_of_lt hm_nat))).trans (harmonic_le_one_add_log n)
+  have hHr : (harmonic (n - m - 1) : ℝ) ≤ 1 + log (n : ℝ) :=
+    (Rat.cast_le.mpr (harmonic_mono (by omega : n - m - 1 ≤ n))).trans (harmonic_le_one_add_log n)
+  rw [hcount] at hsplit
+  rw [hsplit, hleftEq, hrightEq]
+  calc
+        (∑ j ∈ range (m + 1), sin (π * frac) / (π * ((j : ℝ) + frac))) +
+          ∑ k ∈ range (n - m), sin (π * frac) / (π * ((k : ℝ) + 1 - frac))
+          ≤ ((harmonic m : ℝ) / π + 1) + ((harmonic (n - m - 1) : ℝ) / π + 1) :=
+            add_le_add hleftBound hrightBound
+      _ = 2 + ((harmonic m : ℝ) + harmonic (n - m - 1)) / π := by ring
+      _ ≤ 2 + 2 * (1 + log (n : ℝ)) / π := by
+          have hHsum : (harmonic m : ℝ) + harmonic (n - m - 1) ≤
+              2 * (1 + log (n : ℝ)) := by linarith
+          have hdiv := div_le_div_of_nonneg_right hHsum pi_pos.le
+          linarith
+
 /-- Sum of the cotangent main terms, compared with `(2/π) log(n+1)`. -/
 lemma sum_chebyshevLebesgueMain_le {n : ℕ} (hn : 1 ≤ n) {θ : ℝ}
     (hθ : θ ∈ Set.Ioo 0 π) (hnode : ∀ i, θ ≠ chebyshevNodeAngle n i) :
@@ -642,84 +641,11 @@ lemma sum_chebyshevLebesgueMain_le {n : ℕ} (hn : 1 ≤ n) {θ : ℝ}
       ∑ j ∈ range (n + 1), |sin ((n : ℝ) * θ)| / (π * |(j : ℝ) - ν|) :=
     Fin.sum_univ_eq_sum_range (fun j => |sin ((n : ℝ) * θ)| / (π * |(j : ℝ) - ν|)) (n + 1)
   rw [hsin_abs] at hsum1 hrange
-  have hsplit := Finset.sum_range_add
-    (fun j => sin (π * frac) / (π * |(j : ℝ) - ν|)) (m + 1) (n - m)
-  have hcount : m + 1 + (n - m) = n + 1 := by omega
-  have hdistL (j : ℕ) (hj : j ≤ m) :
-      |(j : ℝ) - ν| = ((m - j : ℕ) : ℝ) + frac := by
-    have hjν : (j : ℝ) ≤ ν := by
-      have : (j : ℝ) ≤ m := by exact_mod_cast hj
-      linarith
-    rw [abs_of_nonpos (sub_nonpos.mpr hjν), Nat.cast_sub hj]
-    unfold frac
-    ring
-  have hdistR (k : ℕ) :
-      |((m + 1 + k : ℕ) : ℝ) - ν| = (k : ℝ) + 1 - frac := by
-    have hlt : ν < ((m + 1 + k : ℕ) : ℝ) := by push_cast; linarith
-    rw [abs_of_nonneg (sub_nonneg.mpr hlt.le)]
-    unfold frac
-    push_cast
-    ring
-  have hleftEq : ∑ j ∈ range (m + 1), sin (π * frac) / (π * |(j : ℝ) - ν|) =
-      ∑ j ∈ range (m + 1), sin (π * frac) / (π * ((j : ℝ) + frac)) := by
-    have hrew : ∑ j ∈ range (m + 1), sin (π * frac) / (π * |(j : ℝ) - ν|) =
-        ∑ j ∈ range (m + 1),
-          sin (π * frac) / (π * (((m - j : ℕ) : ℝ) + frac)) := by
-      refine Finset.sum_congr rfl fun j hj => ?_
-      rw [hdistL j (Nat.lt_succ_iff.mp (Finset.mem_range.mp hj))]
-    rw [hrew, ← Finset.sum_range_reflect
-      (fun j => sin (π * frac) / (π * ((j : ℝ) + frac))) (m + 1)]
-    refine Finset.sum_congr rfl fun j hj => ?_
-    have hidx : m + 1 - 1 - j = m - j := by have := Finset.mem_range.mp hj; omega
-    rw [hidx]
-  have hrightEq : ∑ k ∈ range (n - m),
-        sin (π * frac) / (π * |((m + 1 + k : ℕ) : ℝ) - ν|) =
-      ∑ k ∈ range (n - m), sin (π * frac) / (π * ((k : ℝ) + 1 - frac)) := by
-    refine Finset.sum_congr rfl fun k _ => ?_
-    rw [hdistR k]
-  have hzeroL : sin (π * frac) / (π * frac) ≤ 1 := by
-    rw [div_le_one (mul_pos pi_pos hfrac_pos)]
-    exact sin_le (mul_nonneg pi_pos.le hfrac_nonneg)
-  have honeSub : 0 < 1 - frac := by linarith
-  have hsinSymm : sin (π * frac) = sin (π * (1 - frac)) := by
-    rw [show π * (1 - frac) = π - π * frac by ring, sin_pi_sub]
-  have hzeroR : sin (π * frac) / (π * (1 - frac)) ≤ 1 := by
-    rw [hsinSymm, div_le_one (mul_pos pi_pos honeSub)]
-    exact sin_le (mul_nonneg pi_pos.le honeSub.le)
-  have hleftBound : ∑ j ∈ range (m + 1), sin (π * frac) / (π * ((j : ℝ) + frac)) ≤
-      (harmonic m : ℝ) / π + 1 := by
-    rw [Finset.sum_range_succ' (fun j => sin (π * frac) / (π * ((j : ℝ) + frac))) m]
-    simp only [Nat.cast_zero, zero_add]
-    exact add_le_add (sum_sin_div_left_le_harmonic m hfrac_nonneg) hzeroL
-  have hrightBound : ∑ k ∈ range (n - m),
-        sin (π * frac) / (π * ((k : ℝ) + 1 - frac)) ≤
-      (harmonic (n - m - 1) : ℝ) / π + 1 := by
-    have hlen : n - m = (n - m - 1) + 1 := by omega
-    rw [hlen, Finset.sum_range_succ'
-      (fun k => sin (π * frac) / (π * ((k : ℝ) + 1 - frac))) (n - m - 1)]
-    simp only [Nat.cast_zero, zero_add]
-    exact add_le_add (sum_sin_div_right_le_harmonic (n - m - 1) hfrac_lt) hzeroR
-  have hHm : (harmonic m : ℝ) ≤ 1 + log (n : ℝ) :=
-    (harmonic_mono (Nat.le_of_lt hm_nat)).trans (harmonic_le_one_add_log n)
-  have hHr : (harmonic (n - m - 1) : ℝ) ≤ 1 + log (n : ℝ) :=
-    (harmonic_mono (by omega : n - m - 1 ≤ n)).trans (harmonic_le_one_add_log n)
+  have hsumR : ∑ j ∈ range (n + 1), sin (π * frac) / (π * |(j : ℝ) - ν|) ≤
+      2 + 2 * (1 + log (n : ℝ)) / π :=
+    sum_sin_div_abs_sub_le hm_nat hm_lt_one hfrac_pos
   have hlog : log (n : ℝ) ≤ log ((n : ℝ) + 1) :=
     (log_le_log_iff hn0 (by positivity)).mpr (by linarith)
-  have hsumR : ∑ j ∈ range (n + 1), sin (π * frac) / (π * |(j : ℝ) - ν|) ≤
-      2 + 2 * (1 + log (n : ℝ)) / π := by
-    rw [hcount] at hsplit
-    rw [hsplit, hleftEq, hrightEq]
-    calc
-        (∑ j ∈ range (m + 1), sin (π * frac) / (π * ((j : ℝ) + frac))) +
-          ∑ k ∈ range (n - m), sin (π * frac) / (π * ((k : ℝ) + 1 - frac))
-          ≤ ((harmonic m : ℝ) / π + 1) + ((harmonic (n - m - 1) : ℝ) / π + 1) :=
-            add_le_add hleftBound hrightBound
-      _ = 2 + ((harmonic m : ℝ) + harmonic (n - m - 1)) / π := by ring
-      _ ≤ 2 + 2 * (1 + log (n : ℝ)) / π := by
-          have hHsum : (harmonic m : ℝ) + harmonic (n - m - 1) ≤
-              2 * (1 + log (n : ℝ)) := by linarith
-          have hdiv := div_le_div_of_nonneg_right hHsum pi_pos.le
-          linarith
   have hlogMul : (2 / π) * log (n : ℝ) ≤ (2 / π) * log ((n : ℝ) + 1) :=
     mul_le_mul_of_nonneg_left hlog (by positivity)
   calc ∑ i, chebyshevLebesgueMain n θ i
@@ -728,24 +654,6 @@ lemma sum_chebyshevLebesgueMain_le {n : ℕ} (hn : 1 ≤ n) {θ : ℝ}
     _ ≤ 2 + 2 * (1 + log (n : ℝ)) / π := hsumR
     _ = 2 + 2 / π + (2 / π) * log (n : ℝ) := by ring
     _ ≤ (2 / π) * log ((n : ℝ) + 1) + 2 + 2 / π := by linarith [hlogMul]
-
-/-- Cotangent decreases on `(0, π)`. -/
-lemma antitoneOn_cot : AntitoneOn cot (Set.Ioo 0 π) := by
-  intro x hx y hy hxy
-  have hsx : 0 < sin x := sin_pos_of_pos_of_lt_pi hx.1 hx.2
-  have hsy : 0 < sin y := sin_pos_of_pos_of_lt_pi hy.1 hy.2
-  rw [cot_eq_cos_div_sin, cot_eq_cos_div_sin, div_le_div_iff₀ hsy hsx]
-  have hsin : sin (x - y) ≤ 0 := by
-    rcases hxy.eq_or_lt with h | h
-    · rw [h, sub_self, sin_zero]
-    · exact (sin_neg_of_neg_of_neg_pi_lt (by linarith) (by linarith [hx.1, hy.2])).le
-  have hsub : cos y * sin x - cos x * sin y = sin (x - y) := by
-    rw [sin_sub]
-    ring
-  rw [← sub_nonpos, hsub]
-  exact hsin
-
-@[deprecated (since := "2026-11-15")] alias cot_antitone_Ioo := antitoneOn_cot
 
 /-- Interior extremal weights equal one. -/
 lemma chebyshevExtremalWeight_of_interior {n : ℕ} {i : Fin (n + 1)}
@@ -765,9 +673,9 @@ lemma chebyshevAngleSign_of_not_lt {n : ℕ} {θ : ℝ} {i : Fin (n + 1)}
   simp [chebyshevAngleSign, h]
 
 /-- Left-endpoint correction on `(0, π/2]`. -/
-lemma chebyshevLebesgueCorr_zero_le {n : ℕ} (hn : 1 ≤ n) {θ : ℝ}
+lemma chebyshevLebesgueCorrection_zero_le {n : ℕ} (hn : 1 ≤ n) {θ : ℝ}
     (hθ : θ ∈ Set.Ioc 0 (π / 2)) :
-    chebyshevLebesgueCorr n θ ⟨0, by omega⟩ ≤ 1 / 2 := by
+    chebyshevLebesgueCorrection n θ ⟨0, by omega⟩ ≤ 1 / 2 := by
   have hθ0 : 0 < θ := hθ.1
   have hθ2 : θ ≤ π / 2 := hθ.2
   let i0 : Fin (n + 1) := ⟨0, by omega⟩
@@ -786,14 +694,14 @@ lemma chebyshevLebesgueCorr_zero_le {n : ℕ} (hn : 1 ≤ n) {θ : ℝ}
   have hdouble : sin θ = 2 * sin (θ / 2) * cos (θ / 2) := by
     have h := sin_two_mul (θ / 2)
     rwa [show 2 * (θ / 2) = θ by ring] at h
-  have hmul := abs_sin_nat_mul n θ
+  have hmul := abs_sin_nat_mul_le n θ
   have hnpos : (0 : ℝ) < n := by exact_mod_cast (by omega : 0 < n)
   have hbound : |sin ((n : ℝ) * θ)| ≤ (n : ℝ) * (2 * sin (θ / 2) * cos (θ / 2)) := by
     calc |sin ((n : ℝ) * θ)|
         ≤ (n : ℝ) * |sin θ| := hmul
       _ = (n : ℝ) * sin θ := by rw [abs_of_pos hsinθ]
       _ = (n : ℝ) * (2 * sin (θ / 2) * cos (θ / 2)) := by rw [hdouble]
-  unfold chebyshevLebesgueCorr
+  unfold chebyshevLebesgueCorrection
   rw [hsign, hw, hφ, add_zero, mul_one, cot_eq_cos_div_sin]
   have hden : (2 : ℝ) * n * 2 = 4 * n := by ring
   rw [hden]
@@ -815,9 +723,9 @@ lemma chebyshevLebesgueCorr_zero_le {n : ℕ} (hn : 1 ≤ n) {θ : ℝ}
   exact (div_le_div_of_nonneg_right hcosle (by norm_num : (0 : ℝ) ≤ 2)).trans (by norm_num)
 
 /-- Right-endpoint correction on `(0, π/2]`. -/
-lemma chebyshevLebesgueCorr_last_le {n : ℕ} (hn : 1 ≤ n) {θ : ℝ}
+lemma chebyshevLebesgueCorrection_last_le {n : ℕ} (hn : 1 ≤ n) {θ : ℝ}
     (hθ : θ ∈ Set.Ioc 0 (π / 2)) :
-    chebyshevLebesgueCorr n θ ⟨n, by omega⟩ ≤ π / 8 := by
+    chebyshevLebesgueCorrection n θ ⟨n, by omega⟩ ≤ π / 8 := by
   have hθ0 : 0 < θ := hθ.1
   have hθ2 : θ ≤ π / 2 := hθ.2
   let iN : Fin (n + 1) := ⟨n, by omega⟩
@@ -839,7 +747,7 @@ lemma chebyshevLebesgueCorr_last_le {n : ℕ} (hn : 1 ≤ n) {θ : ℝ}
       sin_pi_div_two]
     field_simp [hcos.ne']
     ring
-  unfold chebyshevLebesgueCorr
+  unfold chebyshevLebesgueCorrection
   rw [hsign, hw, hφ, hcot]
   have habs : |sin ((n : ℝ) * θ)| ≤ (n : ℝ) * θ := by
     calc |sin ((n : ℝ) * θ)|
@@ -879,7 +787,7 @@ lemma chebyshevLebesgueCorr_last_le {n : ℕ} (hn : 1 ≤ n) {θ : ℝ}
 lemma lebesgueFunction_cos_eq {n : ℕ} (hn : 1 ≤ n) {θ : ℝ}
     (hθ : θ ∈ Set.Ioo 0 π) (hnode : ∀ i, θ ≠ chebyshevNodeAngle n i) :
     lebesgueFunction (chebyshevExtremalNodes n) (cos θ) =
-      (∑ i, chebyshevLebesgueMain n θ i) + ∑ i, chebyshevLebesgueCorr n θ i := by
+      (∑ i, chebyshevLebesgueMain n θ i) + ∑ i, chebyshevLebesgueCorrection n θ i := by
   unfold lebesgueFunction
   rw [← Finset.sum_add_distrib]
   exact Finset.sum_congr rfl fun i _ => abs_cardinal_eq_main_add_corr hn hθ hnode i

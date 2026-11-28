@@ -30,11 +30,16 @@ right derivative, and the upper right derivative is finite. Source: GAPS 05.10.
 
 ## Main results
 
-* `finiteGap_volume_le`: outer-measure bound by the gap ratio on short intervals.
-* `volume_finiteGap_eq_zero`: each `finiteGap` set has Lebesgue measure zero.
 * `CKMA.Dini.volume_finiteStrict`: `finiteStrict f` has Lebesgue measure zero.
 * `CKMA.Dini.mem_finiteStrict_of_lt`: any finite strict inequality between lower left and upper
   right Dini derivatives lies in `finiteStrict f`.
+
+## Implementation notes
+
+The private lemma `finiteGap_volume_le` bounds the outer measure of `finiteGap f p r s q n` on a
+short interval with both endpoints in the set by the fraction `(p - q) / ((p - q) + (r - s))`
+of its length, from the packing of `f` and of its reflection. Lebesgue's density theorem then
+makes each `finiteGap` set null.
 -/
 
 public section
@@ -70,13 +75,6 @@ private lemma volume_preimage_reflect (c : ℝ) (s : Set ℝ) :
     simp [Function.comp, sub_eq_add_neg]
   rw [hcomp, preimage_comp, Measure.measure_preimage_neg, measure_preimage_add]
 
-/-- An open interval is invariant under reflection through its centre. -/
-private lemma preimage_reflect_Ioo (a b : ℝ) :
-    (fun x => a + b - x) ⁻¹' Ioo a b = Ioo a b := by
-  ext x
-  simp only [mem_preimage, mem_Ioo]
-  constructor <;> intro hx <;> constructor <;> linarith
-
 /-- Reflection through the centre preserves the outer measure of a set inside `(a, b)`. -/
 private lemma volume_reflect_inter {E : Set ℝ} {a b : ℝ} :
     volume ({x | a + b - x ∈ E} ∩ Ioo a b) = volume (E ∩ Ioo a b) := by
@@ -102,6 +100,76 @@ def finiteGap (f : ℝ → ℝ) (p r s q : ℚ) (n : ℕ) : Set ℝ :=
     ((r : ℝ) : EReal) < upperRightDiniDerivative f x ∧
     lowerLeftDiniDerivative f x < ((s : ℝ) : EReal)}
 
+/-- Membership in `finiteGap f p r s q n`. -/
+lemma mem_finiteGap_iff {f : ℝ → ℝ} {p r s q : ℚ} {n : ℕ} {x : ℝ} :
+    x ∈ finiteGap f p r s q n ↔
+      (∀ h, 0 < h → h ≤ (1 : ℝ) / (n + 1) → (f (x + h) - f x) / h < (p : ℝ)) ∧
+      (∀ h, -(1 : ℝ) / (n + 1) ≤ h → h < 0 → (q : ℝ) < (f (x + h) - f x) / h) ∧
+      ((r : ℝ) : EReal) < upperRightDiniDerivative f x ∧
+      lowerLeftDiniDerivative f x < ((s : ℝ) : EReal) :=
+  Iff.rfl
+
+/-- The direct packing: steep right increments above `r` against left slopes above `q`, with
+the right endpoint in `finiteGap`. -/
+private lemma finiteGap_pack_right (f : ℝ → ℝ) {p r s q : ℚ} {n : ℕ} {a b : ℝ}
+    (hqr : (q : ℝ) < r) (hab : a < b) (hlen : b - a < (1 : ℝ) / (n + 1))
+    (hb : b ∈ finiteGap f p r s q n) :
+    ((r : ℝ) - q) * (volume (finiteGap f p r s q n ∩ Ioo a b)).toReal ≤
+      (f b - f a) - q * (b - a) := by
+  refine slopePacking_volume_le f _ hqr hab hlen hb ?_ ?_
+  · intro x hx u hu hux
+    have hge : -(1 : ℝ) / (n + 1) ≤ u - x := by
+      rw [neg_div]
+      linarith
+    have hs := hx.2.1 (u - x) hge (by linarith)
+    rwa [add_sub_cancel, ← neg_div_neg_eq, neg_sub, neg_sub] at hs
+  · intro x hx ε hε
+    obtain ⟨h, hh0, hhε, hhs⟩ := exists_right_slope_gt f x r (min ε (b - x)) hx.1.2.2.1
+      (lt_min hε (sub_pos.2 hx.2.2))
+    refine ⟨x + h, by linarith, ?_, ?_, ?_⟩
+    · linarith [min_le_right ε (b - x)]
+    · rw [add_sub_cancel_left]
+      exact hhε.trans_le (min_le_left _ _)
+    · rwa [add_sub_cancel_left]
+
+/-- The reflected packing: the packing for `t ↦ f (a + b - t)`, with the left endpoint in
+`finiteGap`. -/
+private lemma finiteGap_pack_left (f : ℝ → ℝ) {p r s q : ℚ} {n : ℕ} {a b : ℝ}
+    (hsp : (s : ℝ) < p) (hab : a < b) (hlen : b - a < (1 : ℝ) / (n + 1))
+    (ha : a ∈ finiteGap f p r s q n) :
+    ((p : ℝ) - s) * (volume (finiteGap f p r s q n ∩ Ioo a b)).toReal ≤
+      (f a - f b) + p * (b - a) := by
+  set E := finiteGap f p r s q n
+  let g : ℝ → ℝ := fun t => f (a + b - t)
+  have hleft' : ∀ x ∈ {t | a + b - t ∈ E}, ∀ u, x - (1 : ℝ) / (n + 1) < u → u < x →
+      -(p : ℝ) < (g x - g u) / (x - u) := by
+    intro x hx u hu hux
+    have hs := (show a + b - x ∈ E from hx).1 (x - u) (by linarith) (by linarith)
+    rw [show (a + b - x) + (x - u) = a + b - u by ring] at hs
+    rw [show (g x - g u) / (x - u) = -((f (a + b - u) - f (a + b - x)) / (x - u)) by
+      rw [← neg_div, neg_sub]]
+    exact neg_lt_neg hs
+  have hfine' : ∀ x ∈ {t | a + b - t ∈ E} ∩ Ioo a b, ∀ ε > 0, ∃ y, x < y ∧ y ≤ b ∧
+      y - x < ε ∧ -(s : ℝ) < (g y - g x) / (y - x) := by
+    intro x hx ε hε
+    obtain ⟨h, hhε, hh0, hhs⟩ := exists_left_slope_lt f (a + b - x) (s : ℝ) (-min ε (b - x))
+      (show a + b - x ∈ E from hx.1).2.2.2 (neg_lt_zero.2 (lt_min hε (sub_pos.2 hx.2.2)))
+    have hden : (x - h) - x = -h := by ring
+    refine ⟨x - h, by linarith, ?_, ?_, ?_⟩
+    · linarith [min_le_right ε (b - x)]
+    · rw [hden]
+      linarith [min_le_left ε (b - x)]
+    · have hquot : (g (x - h) - g x) / ((x - h) - x) =
+          -((f ((a + b - x) + h) - f (a + b - x)) / h) := by
+        simp only [g]
+        rw [hden, show a + b - (x - h) = (a + b - x) + h by ring, div_neg]
+      rw [hquot]
+      exact neg_lt_neg hhs
+  have hpack := slopePacking_volume_le g {t | a + b - t ∈ E} (neg_lt_neg hsp) hab hlen
+    (show a + b - b ∈ E by simpa using ha) hleft' hfine'
+  rw [volume_reflect_inter, show g b - g a = f a - f b by simp [g]] at hpack
+  linarith
+
 /-- Both endpoints in `finiteGap` give an outer-measure bound by the gap ratio. -/
 private lemma finiteGap_volume_le (f : ℝ → ℝ) {p r s q : ℚ} {n : ℕ} {a b : ℝ}
     (hqr : (q : ℝ) < r) (hsp : (s : ℝ) < p)
@@ -109,240 +177,40 @@ private lemma finiteGap_volume_le (f : ℝ → ℝ) {p r s q : ℚ} {n : ℕ} {a
     (ha : a ∈ finiteGap f p r s q n) (hb : b ∈ finiteGap f p r s q n) :
     (volume (finiteGap f p r s q n ∩ Ioo a b)).toReal ≤
       ((p - q) / ((p - q) + (r - s))) * (b - a) := by
-  set E := finiteGap f p r s q n
-  set δ : ℝ := (1 : ℝ) / (n + 1)
-  let g : ℝ → ℝ := fun t => f (a + b - t)
-  let E' : Set ℝ := {t | a + b - t ∈ E}
-  have hleft : ∀ x ∈ E, ∀ u, x - δ < u → u < x →
-      (q : ℝ) < (f x - f u) / (x - u) := by
-    intro x hx u hu hux
-    have hge : -(1 : ℝ) / (n + 1) ≤ u - x := by
-      have hsub : -((1 : ℝ) / (n + 1)) < u - x := by linarith
-      rw [← neg_div ((n : ℝ) + 1) (1 : ℝ)] at hsub
-      exact hsub.le
-    have hs := hx.2.1 (u - x) hge (by linarith)
-    have hadd : x + (u - x) = u := by
-      rw [add_comm]
-      exact sub_add_cancel u x
-    rw [hadd, ← differenceQuotient_rev f x u] at hs
-    exact hs
-  have hfine : ∀ x ∈ E ∩ Ioo a b, ∀ ε > 0, ∃ y, x < y ∧ y ≤ b ∧ y - x < ε ∧
-      (r : ℝ) < (f y - f x) / (y - x) := by
-    intro x hx ε hε
-    have hxlt : x < b := hx.2.2
-    have htop : ((r : ℝ) : EReal) < upperRightDiniDerivative f x := hx.1.2.2.1
-    have hε' : 0 < min ε (b - x) := lt_min hε (sub_pos.2 hxlt)
-    obtain ⟨h, hh0, hhε, hhs⟩ :=
-      exists_right_slope_gt f x r (min ε (b - x)) htop hε'
-    have hh : x + h - x = h := by ring
-    refine ⟨x + h, by linarith, ?_, ?_, ?_⟩
-    · have : h < b - x := lt_of_lt_of_le hhε (min_le_right _ _)
-      linarith
-    · rw [hh]
-      exact lt_of_lt_of_le hhε (min_le_left _ _)
-    · rw [hh]
-      exact hhs
-  have hpack := slopePacking_volume_le f E hqr hab hlen hb hleft hfine
-  have hleft' : ∀ x ∈ E', ∀ u, x - δ < u → u < x →
-      -(p : ℝ) < (g x - g u) / (x - u) := by
-    intro x hx u hu hux
-    have hyE : a + b - x ∈ E := hx
-    have hs := hyE.1 (x - u) (by linarith) (by linarith)
-    have hadd : (a + b - x) + (x - u) = a + b - u := by ring
-    rw [hadd] at hs
-    have hid : (g x - g u) / (x - u) =
-        -((f (a + b - u) - f (a + b - x)) / (x - u)) := by
-      have hg : g x - g u = f (a + b - x) - f (a + b - u) := by simp [g]
-      rw [hg, ← neg_sub (f (a + b - u)) (f (a + b - x)), neg_div]
-    rw [hid]
-    exact neg_lt_neg hs
-  have hfine' : ∀ x ∈ E' ∩ Ioo a b, ∀ ε > 0, ∃ y, x < y ∧ y ≤ b ∧ y - x < ε ∧
-      -(s : ℝ) < (g y - g x) / (y - x) := by
-    intro x hx ε hε
-    have hyE : a + b - x ∈ E := hx.1
-    have hyx : x < b := hx.2.2
-    have hLL : lowerLeftDiniDerivative f (a + b - x) < ((s : ℝ) : EReal) :=
-      hyE.2.2.2
-    set ε' : ℝ := -min ε (b - x)
-    have hε' : ε' < 0 := neg_lt_zero.2 (lt_min hε (sub_pos.2 hyx))
-    obtain ⟨h, hhε, hh0, hhs⟩ :=
-      exists_left_slope_lt f (a + b - x) (s : ℝ) ε' hLL hε'
-    have hden : (x - h) - x = -h := by ring
-    refine ⟨x - h, by linarith, ?_, ?_, ?_⟩
-    · have : -h < b - x := by
-        have : -h < min ε (b - x) := by linarith [hhε]
-        exact this.trans_le (min_le_right _ _)
-      linarith
-    · rw [hden]
-      have : -h < ε := by
-        have : -h < min ε (b - x) := by linarith [hhε]
-        exact this.trans_le (min_le_left _ _)
-      linarith
-    · have hquot : (g (x - h) - g x) / ((x - h) - x) =
-          -((f ((a + b - x) + h) - f (a + b - x)) / h) := by
-        rw [hden]
-        simp only [g]
-        have harg : a + b - (x - h) = (a + b - x) + h := by ring
-        rw [harg, div_neg]
-      rw [hquot]
-      exact neg_lt_neg hhs
-  have hb' : b ∈ E' := by
-    change a + b - b ∈ E
-    simpa using ha
-  have hkc : -(p : ℝ) < -(s : ℝ) := neg_lt_neg hsp
-  have hpack' := slopePacking_volume_le g E' hkc hab hlen hb' hleft' hfine'
-  have hvol := volume_reflect_inter (E := E) (a := a) (b := b)
-  set σ : ℝ := (volume (E ∩ Ioo a b)).toReal
-  have hσ : (volume (E' ∩ Ioo a b)).toReal = σ := by
-    rw [hvol]
-  rw [hσ] at hpack'
-  have hsum : ((r : ℝ) - q + (p - s)) * σ ≤ (p - q) * (b - a) := by
-    have hg : g b - g a = f a - f b := by simp [g]
-    rw [hg] at hpack'
-    nlinarith [hpack, hpack']
-  have hden : 0 < (p - q) + ((r : ℝ) - s) := by linarith
-  have hcoef : (r : ℝ) - q + (p - s) = (p - q) + (r - s) := by ring
-  rw [hcoef] at hsum
-  have hsum' : σ * ((p - q) + ((r : ℝ) - s)) ≤ (p - q) * (b - a) := by
-    rw [mul_comm]
-    exact hsum
-  have hdiv : σ ≤ (p - q) * (b - a) / ((p - q) + (r - s)) :=
-    (le_div_iff₀ hden).2 hsum'
-  have hmul : (p - q) * (b - a) / ((p - q) + (r - s)) =
-      ((p - q) / ((p - q) + (r - s))) * (b - a) := by
-    ring
-  rw [hmul] at hdiv
-  exact hdiv
+  have h1 := finiteGap_pack_right f hqr hab hlen hb
+  have h2 := finiteGap_pack_left f hsp hab hlen ha
+  rw [div_mul_eq_mul_div, le_div_iff₀ (by linarith)]
+  linarith
 
 /-- Short intervals with an endpoint ratio bound have small outer measure up to the right end. -/
 private lemma volume_Icc_le_of_endpoint_ratio {E : Set ℝ} {δ ρ y x : ℝ}
-    (hρ : 0 ≤ ρ) (hyx : y < x) (hlen : x - y < δ) (hx : x ∈ E)
+    (hρ : 0 ≤ ρ) (hlen : x - y < δ) (hx : x ∈ E)
     (hbound : ∀ a b, a ∈ E → b ∈ E → a < b → b - a < δ →
       (volume (E ∩ Ioo a b)).toReal ≤ ρ * (b - a)) :
     volume (E ∩ Icc y x) ≤ ENNReal.ofReal (ρ * (x - y)) := by
-  have hpair : volume ({y, x} : Set ℝ) = 0 := by
-    refine le_antisymm ?_ bot_le
-    calc volume ({y, x} : Set ℝ)
-        ≤ volume (({y} : Set ℝ) ∪ {x}) := measure_mono fun z hz => by
-          simp only [mem_insert_iff, mem_singleton_iff] at hz
-          rcases hz with rfl | rfl <;> simp
-      _ ≤ volume ({y} : Set ℝ) + volume ({x} : Set ℝ) := measure_union_le _ _
-      _ = 0 := by simp [measure_singleton]
-  have hsub : E ∩ Icc y x ⊆ (E ∩ Ioo y x) ∪ {y, x} := by
-    intro z hz
-    rcases lt_trichotomy y z with hlt | rfl | hgt
-    · rcases lt_trichotomy z x with hzx | rfl | hxz
-      · exact Or.inl ⟨hz.1, hlt, hzx⟩
-      · exact Or.inr (by simp)
-      · linarith [hz.2.2]
-    · exact Or.inr (by simp)
-    · linarith [hz.2.1]
-  have hle : volume (E ∩ Icc y x) ≤ volume (E ∩ Ioo y x) :=
-    calc volume (E ∩ Icc y x)
-        ≤ volume ((E ∩ Ioo y x) ∪ {y, x}) := measure_mono hsub
-      _ ≤ volume (E ∩ Ioo y x) + volume ({y, x} : Set ℝ) := measure_union_le _ _
-      _ = volume (E ∩ Ioo y x) := by rw [hpair, add_zero]
+  rw [← measure_congr (EventuallyEqSet.inter (by rfl : E =ᵐ[volume] E) Ioo_ae_eq_Icc)]
   set S := E ∩ Ioo y x
-  by_cases hS : S.Nonempty
-  · have hBdd : BddBelow S := ⟨y, fun z hz => hz.2.1.le⟩
-    set α := sInf S
-    have hαy : y ≤ α := le_csInf hS fun z hz => hz.2.1.le
-    have hαx : α < x := by
-      obtain ⟨z, hz⟩ := hS
-      exact lt_of_le_of_lt (csInf_le hBdd hz) hz.2.2
-    choose a ha using fun n : ℕ =>
-      exists_lt_of_csInf_lt hS
-        (lt_add_of_pos_right α (by positivity : (0 : ℝ) < 1 / ((n : ℝ) + 1)))
-    let c : ℕ → ℝ := fun n => Nat.recOn n (a 0) fun k prev => min prev (a (k + 1))
-    have hc0 : c 0 = a 0 := rfl
-    have hsucc : ∀ n, c (n + 1) = min (c n) (a (n + 1)) := fun _ => rfl
-    have hcS : ∀ n, c n ∈ S := by
-      intro n
-      induction n with
-      | zero =>
-        rw [hc0]
-        exact (ha 0).1
-      | succ n ih =>
-        rw [hsucc]
-        rcases le_total (c n) (a (n + 1)) with hle' | hle'
-        · rw [min_eq_left hle']; exact ih
-        · rw [min_eq_right hle']; exact (ha (n + 1)).1
-    have hαc : ∀ n, α ≤ c n := by
-      intro n
-      induction n with
-      | zero =>
-        rw [hc0]
-        exact csInf_le hBdd (ha 0).1
-      | succ n ih =>
-        rw [hsucc]
-        exact le_min ih (csInf_le hBdd (ha (n + 1)).1)
-    have hcle : ∀ n, c n ≤ a n := by
-      intro n
-      induction n with
-      | zero => rw [hc0]
-      | succ n _ =>
-        rw [hsucc]
-        exact min_le_right _ _
-    have hmono : Monotone fun n => E ∩ Ioo (c n) x := by
-      refine monotone_nat_of_le_succ fun n z hz => ?_
-      have hc : c (n + 1) ≤ c n := by
-        rw [hsucc]
-        exact min_le_left _ _
-      exact ⟨hz.1, lt_of_le_of_lt hc hz.2.1, hz.2.2⟩
-    have hcover : ⋃ n, E ∩ Ioo (c n) x = E ∩ Ioo α x := by
-      apply Subset.antisymm
-      · intro z hz
-        simp only [mem_iUnion] at hz
-        obtain ⟨n, hz⟩ := hz
-        exact ⟨hz.1, lt_of_le_of_lt (hαc n) hz.2.1, hz.2.2⟩
-      · intro z hz
-        have hpos : 0 < z - α := sub_pos.2 hz.2.1
-        obtain ⟨n, hn⟩ := exists_nat_gt (1 / (z - α))
-        have hn0 : (0 : ℝ) < n := (one_div_pos.2 hpos).trans hn
-        have hfrac : (1 : ℝ) / (n + 1) < z - α := by
-          have h1 : (1 : ℝ) / (n + 1) < 1 / n := by
-            rw [one_div_lt_one_div (by linarith) hn0]
-            linarith
-          exact h1.trans ((one_div_lt hpos hn0).1 hn)
-        have hcn : c n < z := by
-          have han : a n < α + 1 / ((n : ℝ) + 1) := (ha n).2
-          have : c n ≤ a n := hcle n
-          linarith
-        exact mem_iUnion.2 ⟨n, hz.1, hcn, hz.2.2⟩
-    have hslice : ∀ n, volume (E ∩ Ioo (c n) x) ≤ ENNReal.ofReal (ρ * (x - α)) := by
-      intro n
-      have hcx : c n < x := (hcS n).2.2
-      have hlenn : x - c n < δ := by
-        have : y < c n := (hcS n).2.1
-        linarith
-      have htr := hbound (c n) x (hcS n).1 hx hcx hlenn
-      have hfin : volume (E ∩ Ioo (c n) x) ≠ ⊤ :=
-        ne_top_of_le_ne_top ENNReal.ofReal_ne_top
-          ((measure_mono (inter_subset_right : E ∩ Ioo (c n) x ⊆ Ioo (c n) x)).trans_eq
-            Real.volume_Ioo)
-      have hvol : volume (E ∩ Ioo (c n) x) ≤ ENNReal.ofReal (ρ * (x - c n)) := by
-        rw [← ENNReal.ofReal_toReal hfin]
-        exact ENNReal.ofReal_le_ofReal htr
-      exact hvol.trans (ENNReal.ofReal_le_ofReal
-        (mul_le_mul_of_nonneg_left (by linarith [hαc n]) hρ))
-    have hU : volume (E ∩ Ioo α x) ≤ ENNReal.ofReal (ρ * (x - α)) := by
-      rw [← hcover, hmono.measure_iUnion]
-      exact iSup_le hslice
-    have hSsub : S ⊆ (E ∩ Ioo α x) ∪ {α} := by
-      intro z hz
-      rcases eq_or_lt_of_le (csInf_le hBdd hz) with rfl | hlt
-      · exact Or.inr rfl
-      · exact Or.inl ⟨hz.1, hlt, hz.2.2⟩
-    have hSvol : volume S ≤ ENNReal.ofReal (ρ * (x - α)) := by
-      calc volume S
-          ≤ volume ((E ∩ Ioo α x) ∪ {α}) := measure_mono hSsub
-        _ ≤ volume (E ∩ Ioo α x) + volume ({α} : Set ℝ) := measure_union_le _ _
-        _ ≤ ENNReal.ofReal (ρ * (x - α)) := by simp [hU, measure_singleton]
-    exact hle.trans (hSvol.trans (ENNReal.ofReal_le_ofReal
-      (mul_le_mul_of_nonneg_left (by linarith [hαy]) hρ)))
-  · have hempty : S = ∅ := not_nonempty_iff_eq_empty.mp hS
-    have hzero : volume (E ∩ Icc y x) = 0 := by simpa [S, hempty] using hle
-    exact hzero.trans_le bot_le
+  rcases S.eq_empty_or_nonempty with hS | hS
+  · rw [hS, measure_empty]
+    exact zero_le
+  have hBdd : BddBelow S := ⟨y, fun z hz => hz.2.1.le⟩
+  refine ENNReal.le_of_forall_pos_le_add fun ε hε _ => ?_
+  -- Points of `S` left of `z` lie in `[inf S, z]`, an interval of length below `ε`.
+  obtain ⟨z, hzS, hz⟩ := exists_lt_of_csInf_lt hS
+    (lt_add_of_pos_right (sInf S) (NNReal.coe_pos.2 hε))
+  have hsub : S ⊆ Icc (sInf S) z ∪ (E ∩ Ioo z x) := fun w hw =>
+    (le_or_gt w z).imp (fun hwz => ⟨csInf_le hBdd hw, hwz⟩) fun hzw => ⟨hw.1, hzw, hw.2.2⟩
+  have hfin : volume (E ∩ Ioo z x) ≠ ⊤ := ne_top_of_le_ne_top ENNReal.ofReal_ne_top
+    ((measure_mono inter_subset_right).trans_eq Real.volume_Ioo)
+  have hright : volume (E ∩ Ioo z x) ≤ ENNReal.ofReal (ρ * (x - y)) := by
+    rw [← ENNReal.ofReal_toReal hfin]
+    exact ENNReal.ofReal_le_ofReal ((hbound z x hzS.1 hx hzS.2.2 (by linarith [hzS.2.1])).trans
+      (mul_le_mul_of_nonneg_left (by linarith [hzS.2.1]) hρ))
+  have hleft : volume (Icc (sInf S) z) ≤ ε := Real.volume_Icc.trans_le
+    (ENNReal.ofReal_le_of_le_toReal (by rw [ENNReal.coe_toReal]; linarith))
+  calc volume S ≤ volume (Icc (sInf S) z) + volume (E ∩ Ioo z x) :=
+        (measure_mono hsub).trans (measure_union_le _ _)
+    _ ≤ ENNReal.ofReal (ρ * (x - y)) + ε := by rw [add_comm]; exact add_le_add hright hleft
 
 /-- A uniform positive-density failure on the left forces the outer measure to vanish. -/
 private lemma volume_eq_zero_of_short_ratio {E : Set ℝ} {δ ρ : ℝ}
@@ -386,7 +254,7 @@ private lemma volume_eq_zero_of_short_ratio {E : Set ℝ} {δ ρ : ℝ}
       have hmul := (ENNReal.lt_div_iff_mul_lt (Or.inl hne0) (Or.inl hnetop)).1 hyθ
       rw [hvolI, ← ENNReal.ofReal_mul (lt_of_le_of_lt hρ hθρ).le] at hmul
       exact hmul
-    have hupper := volume_Icc_le_of_endpoint_ratio hρ hyU hlen hx hbound
+    have hupper := volume_Icc_le_of_endpoint_ratio hρ hlen hx hbound
     have hcmp : ENNReal.ofReal (ρ * (x - y)) < ENNReal.ofReal (θ * (x - y)) :=
       (ENNReal.ofReal_lt_ofReal_iff (mul_pos (lt_of_le_of_lt hρ hθρ) hpos)).2
         (mul_lt_mul_of_pos_right hθρ hpos)
@@ -419,6 +287,12 @@ derivative, witnessed by rational bounds. -/
 def finiteStrict (f : ℝ → ℝ) : Set ℝ :=
   ⋃ p : ℚ, ⋃ r : ℚ, ⋃ s : ℚ, ⋃ q : ℚ, ⋃ n : ℕ,
     {x | (q : ℝ) < s ∧ (s : ℝ) < r ∧ (r : ℝ) < p ∧ x ∈ finiteGap f p r s q n}
+
+/-- Membership in `finiteStrict f`. -/
+lemma mem_finiteStrict_iff {f : ℝ → ℝ} {x : ℝ} :
+    x ∈ finiteStrict f ↔ ∃ p r s q : ℚ, ∃ n : ℕ,
+      (q : ℝ) < s ∧ (s : ℝ) < r ∧ (r : ℝ) < p ∧ x ∈ finiteGap f p r s q n := by
+  simp only [finiteStrict, mem_iUnion, mem_ofPred_eq]
 
 /-- The finite strict gap between the lower left and upper right derivatives is null. -/
 theorem volume_finiteStrict (f : ℝ → ℝ) : volume (finiteStrict f) = 0 := by
@@ -472,14 +346,7 @@ lemma mem_finiteStrict_of_lt {f : ℝ → ℝ} {x : ℝ}
   rw [eventually_iff] at hR hL
   obtain ⟨εR, hεR, hsubR⟩ := (mem_nhdsGT_iff_exists_Ioo_subset (a := (0 : ℝ))).1 hR
   obtain ⟨εL, hεL, hsubL⟩ := (mem_nhdsLT_iff_exists_Ioo_subset (a := (0 : ℝ))).1 hL
-  have hmin : 0 < min εR (-εL) := lt_min hεR (neg_pos.2 hεL)
-  obtain ⟨n, hn⟩ := exists_nat_gt (1 / min εR (-εL))
-  have hn0 : 0 < (n : ℝ) := (one_div_pos.2 hmin).trans hn
-  have hδ : (1 : ℝ) / (n + 1) < min εR (-εL) := by
-    have hstep : (1 : ℝ) / (n + 1) < 1 / n := by
-      rw [one_div_lt_one_div (by linarith : (0 : ℝ) < (n : ℝ) + 1) hn0]
-      linarith
-    exact hstep.trans ((one_div_lt hmin hn0).1 hn)
+  obtain ⟨n, hδ⟩ := exists_nat_one_div_lt (lt_min hεR (neg_pos.2 hεL))
   have hxGap : x ∈ finiteGap f p r s q n := by
     refine ⟨?_, ?_, ?_, ?_⟩
     · intro h hh0 hhδ
@@ -506,18 +373,6 @@ lemma mem_finiteStrict_of_lt {f : ℝ → ℝ} {x : ℝ}
   have hqs : (q : ℝ) < s := hqL.trans hsL
   have hsr : (s : ℝ) < r := hrL
   have hrp : (r : ℝ) < p := hrU.trans hpU
-  refine mem_iUnion.2 ⟨p, mem_iUnion.2 ⟨r, mem_iUnion.2 ⟨s, mem_iUnion.2 ⟨q,
-    mem_iUnion.2 ⟨n, ⟨hqs, hsr, hrp, hxGap⟩⟩⟩⟩⟩⟩
+  exact mem_finiteStrict_iff.2 ⟨p, r, s, q, n, hqs, hsr, hrp, hxGap⟩
 
 end CKMA.Dini
-
-namespace CKMA
-
-@[deprecated (since := "2026-11-15")]
-alias finiteStrict := Dini.finiteStrict
-@[deprecated (since := "2026-11-15")]
-alias volume_finiteStrict := Dini.volume_finiteStrict
-@[deprecated (since := "2026-11-15")]
-alias mem_finiteStrict_of_lt := Dini.mem_finiteStrict_of_lt
-
-end CKMA

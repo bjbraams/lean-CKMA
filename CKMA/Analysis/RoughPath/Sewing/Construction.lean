@@ -16,15 +16,17 @@ the triangle, and approximated by every ordered partition at rate `mesh ^ (γ - 
 
 ## Main definitions
 
-* `CKMA.Sewing.equalNode`, `CKMA.Sewing.equalSewn`: uniform grid nodes and uniform increment sums.
-* `CKMA.Sewing.uniformPartition`: uniform ordered partition into `n` equal steps.
+* `CKMA.Sewing.equalSewn`: increment sums along the uniform grid `CKMA.Sewing.equalNode`.
 
 ## Main results
 
 * `CKMA.Sewing.sewnIncrement_add`: `sewnIncrement` is additive on every subinterval of `[a, b]`.
 * `CKMA.Sewing.norm_partition_sub`: partition sums approach `sewnIncrement` at rate
   `mesh ^ (γ - 1)`.
-* `CKMA.Sewing.partitionLimit_unique`: uniqueness of partition-sum limits.
+
+## References
+
+* [P. K. Friz and M. Hairer, *A Course on Rough Paths*][frizhairer2020]
 -/
 
 public section
@@ -42,48 +44,15 @@ open Finset Filter Topology
 variable {E : Type*} [NormedAddCommGroup E] [CompleteSpace E] {a b γ C : ℝ}
 variable {A : ℝ → ℝ → E}
 
-/-- Node of the uniform `k`-partition of `[s, t]`. -/
-@[expose]
-def equalNode (s t : ℝ) (k i : ℕ) : ℝ :=
-  s + (t - s) * ((i : ℝ) / (k : ℝ))
-
 /-- Sum of an increment field on the uniform `k`-partition. -/
 @[expose]
 def equalSewn {E : Type*} [AddCommMonoid E] (Z : ℝ → ℝ → E) (s t : ℝ) (k : ℕ) : E :=
   ∑ i ∈ range k, Z (equalNode s t k i) (equalNode s t k (i + 1))
 
-/-- The first uniform node is the left endpoint. -/
-lemma equalNode_zero (s t : ℝ) (k : ℕ) : equalNode s t k 0 = s := by
-  simp [equalNode]
-
-/-- The last uniform node is the right endpoint. -/
-lemma equalNode_last (s t : ℝ) {k : ℕ} (hk : 0 < k) : equalNode s t k k = t := by
-  unfold equalNode
-  rw [div_self (by exact_mod_cast (Nat.ne_of_gt hk) : (k : ℝ) ≠ 0), mul_one]
-  abel
-
-/-- Uniform nodes increase with the index. -/
-lemma equalNode_mono {s t : ℝ} (hst : s ≤ t) (k : ℕ) {i j : ℕ} (hij : i ≤ j) :
-    equalNode s t k i ≤ equalNode s t k j := by
-  unfold equalNode
-  have hc : 0 ≤ t - s := sub_nonneg.mpr hst
-  refine add_le_add_right (mul_le_mul_of_nonneg_left ?_ hc) _
-  exact div_le_div_of_nonneg_right (Nat.cast_le.mpr hij) (Nat.cast_nonneg _)
-
-/-- Uniform nodes up to index `k` stay inside `[s, t]`. -/
-lemma equalNode_mem {s t : ℝ} (hst : s ≤ t) {k : ℕ} (hk : 0 < k) {i : ℕ} (hi : i ≤ k) :
-    s ≤ equalNode s t k i ∧ equalNode s t k i ≤ t := by
-  constructor
-  · simpa [equalNode_zero] using equalNode_mono hst k (Nat.zero_le i)
-  · simpa [equalNode_last s t hk] using equalNode_mono hst k hi
-
-/-- Consecutive uniform nodes differ by `(t - s) / k`. -/
-lemma equalNode_sub (s t : ℝ) (k i : ℕ) :
-    equalNode s t k (i + 1) - equalNode s t k i = (t - s) / k := by
-  unfold equalNode
-  rw [add_sub_add_left_eq_sub, ← mul_sub, div_sub_div_same]
-  rw [show ((i + 1 : ℕ) : ℝ) - (i : ℝ) = 1 by simp [Nat.cast_add]]
-  rw [mul_one_div]
+/-- Defining equation of `equalSewn`. -/
+lemma equalSewn_def {E : Type*} [AddCommMonoid E] (Z : ℝ → ℝ → E) (s t : ℝ) (k : ℕ) :
+    equalSewn Z s t k = ∑ i ∈ range k, Z (equalNode s t k i) (equalNode s t k (i + 1)) :=
+  rfl
 
 /-- Even nodes of the doubled grid repeat the coarse grid. -/
 private lemma equalNode_even (s t : ℝ) (k i : ℕ) :
@@ -692,84 +661,6 @@ lemma norm_partition_sub (hab : a ≤ b) (hγ : 1 < γ) (hC : 0 ≤ C)
       Finset.sum_congr rfl fun i _ => hterm i
     exact (hsame.trans hsumg).trans hId
   rw [← Finset.mul_sum, hsumΔ]
-
-/-- Uniform partition into `n` equal steps. -/
-@[expose]
-def uniformPartition {s t : ℝ} (hst : s ≤ t) (n : ℕ) (hn : 0 < n) :
-    OrderedIntervalPartition s t where
-  size := n
-  node := fun i => equalNode s t n (i : ℕ)
-  monotone_node := fun i j hij =>
-    equalNode_mono hst n (Fin.le_iff_val_le_val.mp hij)
-  node_zero := by simp [equalNode_zero]
-  node_last := by simpa [Fin.val_last] using equalNode_last s t hn
-
-/-- The mesh of a uniform partition is the common step length. -/
-private lemma uniformPartition_mesh {s t : ℝ} (hst : s ≤ t) {n : ℕ} (hn : 0 < n) :
-    ((uniformPartition hst n hn).mesh : ℝ) = (t - s) / n := by
-  have hΔ : ∀ i : Fin n,
-      (uniformPartition hst n hn).node i.succ -
-        (uniformPartition hst n hn).node i.castSucc = (t - s) / (n : ℝ) := by
-    intro i
-    simp only [uniformPartition]
-    rw [Fin.val_succ, Fin.val_castSucc]
-    exact equalNode_sub s t n (i : ℕ)
-  unfold OrderedIntervalPartition.mesh
-  set c := Real.toNNReal ((t - s) / (n : ℝ))
-  have hfun : ∀ i : Fin n,
-      ((uniformPartition hst n hn).node i.succ -
-        (uniformPartition hst n hn).node i.castSucc).toNNReal = c := by
-    intro i
-    rw [hΔ i]
-  have hne : (Finset.univ : Finset (Fin n)).Nonempty := ⟨⟨0, hn⟩, Finset.mem_univ _⟩
-  have hsup : (Finset.univ.sup fun i : Fin n =>
-      ((uniformPartition hst n hn).node i.succ -
-        (uniformPartition hst n hn).node i.castSucc).toNNReal) = c := by
-    refine Eq.trans (Finset.sup_congr rfl fun i _ => hfun i) ?_
-    exact Finset.sup_const (α := ℝ≥0) hne c
-  exact (congrArg (fun x : ℝ≥0 => (x : ℝ)) hsup).trans (by
-    rw [Real.coe_toNNReal',
-      max_eq_left (div_nonneg (sub_nonneg.mpr hst) (Nat.cast_nonneg _))])
-
-/-- Every positive width is realized by some ordered partition. -/
-private lemma exists_mesh_lt {s t : ℝ} (hst : s ≤ t) {δ : ℝ} (hδ : 0 < δ) :
-    ∃ π : OrderedIntervalPartition s t, (π.mesh : ℝ) < δ := by
-  let n := Nat.floor ((t - s) / δ) + 1
-  have hn : 0 < n := Nat.succ_pos _
-  refine ⟨uniformPartition hst n hn, ?_⟩
-  rw [uniformPartition_mesh hst hn]
-  have hden : (0 : ℝ) < n := Nat.cast_pos.mpr hn
-  rw [div_lt_iff₀ hden]
-  have hfloor : (t - s) / δ < n := by
-    simpa [n, Nat.cast_add, Nat.cast_one] using Nat.lt_floor_add_one ((t - s) / δ)
-  calc
-    t - s = ((t - s) / δ) * δ := by field_simp
-    _ < (n : ℝ) * δ := mul_lt_mul_of_pos_right hfloor hδ
-    _ = δ * n := by ring
-
-omit [CompleteSpace E] in
-/-- Two partition-sum limits on the same interval agree. -/
-lemma partitionLimit_unique {s t : ℝ} (hst : s ≤ t) {z₁ z₂ : E}
-    (h₁ : PartitionSumsConverge A s t z₁) (h₂ : PartitionSumsConverge A s t z₂) :
-    z₁ = z₂ := by
-  by_contra hne
-  have hpos : 0 < ‖z₁ - z₂‖ := norm_pos_iff.mpr (sub_ne_zero.mpr hne)
-  obtain ⟨δ₁, hδ₁, hclose₁⟩ := h₁ (‖z₁ - z₂‖ / 2) (half_pos hpos)
-  obtain ⟨δ₂, hδ₂, hclose₂⟩ := h₂ (‖z₁ - z₂‖ / 2) (half_pos hpos)
-  have hδ : 0 < min δ₁ δ₂ := lt_min hδ₁ hδ₂
-  obtain ⟨π, hmesh⟩ := exists_mesh_lt hst hδ
-  have h1 := hclose₁ π (lt_of_lt_of_le hmesh (min_le_left _ _))
-  have h2 := hclose₂ π (lt_of_lt_of_le hmesh (min_le_right _ _))
-  have hlt : ‖z₁ - z₂‖ < ‖z₁ - z₂‖ := by
-    calc
-      ‖z₁ - z₂‖ = ‖(z₁ - π.incrementSum A) + (π.incrementSum A - z₂)‖ := by
-        congr 1
-        abel
-      _ ≤ ‖z₁ - π.incrementSum A‖ + ‖π.incrementSum A - z₂‖ := norm_add_le _ _
-      _ = ‖π.incrementSum A - z₁‖ + ‖π.incrementSum A - z₂‖ := by rw [norm_sub_rev]
-      _ < ‖z₁ - z₂‖ / 2 + ‖z₁ - z₂‖ / 2 := add_lt_add h1 h2
-      _ = ‖z₁ - z₂‖ := by ring
-  exact lt_irrefl _ hlt
 
 end Sewing
 

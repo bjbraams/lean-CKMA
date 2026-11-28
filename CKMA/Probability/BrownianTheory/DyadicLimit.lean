@@ -38,7 +38,7 @@ namespace Brownian
 private lemma two_mesh_sum (n : ℕ) :
     (1 : ℝ) / 2 ^ n + 1 / 2 ^ (n + 1) = (3 / 2) * (2 : ℝ) ^ (-(n : ℝ)) := by
   have h2 : (2 : ℝ) ≠ 0 := by norm_num
-  rw [one_div_two_pow_eq_rpow, one_div_two_pow_eq_rpow]
+  rw [one_div_pow_eq_rpow_neg zero_le_two, one_div_pow_eq_rpow_neg zero_le_two]
   have hsucc : (-((n + 1 : ℕ) : ℝ)) = -(n : ℝ) + -1 := by push_cast; ring
   rw [hsucc, Real.rpow_add (by norm_num : (0 : ℝ) < 2), Real.rpow_neg_one]
   field_simp

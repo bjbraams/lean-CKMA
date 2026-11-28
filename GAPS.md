@@ -366,7 +366,8 @@ The relative entropy is $D(\nu\|\mu)=\int\log(d\nu/d\mu)\,d\nu$ for $\nu\ll\mu$,
   when $\nu\ll\mu$, and $+\infty$ otherwise.
 
 * **06.62. Varadhan's integral lemma.** If $X_n$ satisfies a large deviation
-  principle with good rate $I$, then for bounded continuous $f$,
+  principle with rate function $I$, then for bounded continuous $f$
+  (goodness of $I$ is not needed for bounded $f$),
   $$\lim_n n^{-1}\log\mathbb E e^{nf(X_n)}=\sup_x(f(x)-I(x)).$$
 
 ## 07. Concentration, high-dimensional probability, and empirical processes
@@ -1033,9 +1034,10 @@ A function is **convex** if
 $\phi((1-t)x+ty)\leq(1-t)\phi(x)+t\phi(y)$ for $0\leq t\leq1$.
 
 * **11.9. Newton and Maclaurin inequalities.** If $e_k$ is the $k$th elementary
-  symmetric polynomial of nonnegative $x_1,\ldots,x_n$ and
-  $E_k=e_k/\binom nk$, then $E_k^2\geq E_{k-1}E_{k+1}$ for $1\leq k<n$.
-  Consequently $E_1\geq E_2^{1/2}\geq\cdots\geq E_n^{1/n}$.
+  symmetric polynomial of real $x_1,\ldots,x_n$ and
+  $E_k=e_k/\binom nk$, then $E_k^2\geq E_{k-1}E_{k+1}$ for $1\leq k<n$
+  (Newton). For nonnegative $x_i$, consequently
+  $E_1\geq E_2^{1/2}\geq\cdots\geq E_n^{1/n}$ (Maclaurin).
 
 ### Majorization, convex order, and entropy
 
@@ -1051,7 +1053,8 @@ row and column sum one.
   above all the construction of $D$ from $x\prec y$.
 
 * **11.24. Karamata's inequality.** If $x\prec y$ and $\phi$ is convex on an
-  interval containing their entries, then $\sum_i\phi(x_i)\leq\sum_i\phi(y_i)$.
+  interval containing the entries of $y$ (it then contains those of $x$),
+  then $\sum_i\phi(x_i)\leq\sum_i\phi(y_i)$.
   For strictly convex $\phi$, equality requires $x$ and $y$ to be permutations.
   TauCeti proves the inequality when $x=Dy$ with $D$ doubly stochastic; missing
   are the partial-sum hypothesis (which reduces to 11.22) and the equality case.
@@ -1107,9 +1110,9 @@ finite-dimensional qualification when ordinary interior is empty.
 The **indicator** $\delta_C$ is zero on $C$ and infinity outside;
 the **support function** is $h_C(u)=\sup_{x\in C}\langle u,x\rangle$.
 
-* **12.21. Subdifferential sum rule.** For proper lower semicontinuous convex
-  functions on a Banach space, if one is continuous at a point of their common
-  domain, then $\partial(f+g)(x)=\partial f(x)+\partial g(x)$.
+* **12.21. Subdifferential sum rule.** For proper convex functions on a normed
+  space (neither lower semicontinuity nor completeness is needed), if one is
+  continuous at a point of their common domain, then $\partial(f+g)(x)=\partial f(x)+\partial g(x)$.
   In finite dimensions, intersecting relative interiors is a standard
   alternative qualification.
 
@@ -1136,8 +1139,9 @@ $J_{\gamma A}=(I+\gamma A)^{-1}$.
 
 ### Duality and optimality conditions
 
-* **12.39. Fenchel–Rockafellar duality.** For proper closed convex $f,g$ on
-  Banach spaces and bounded linear $A$, assume $f(x_0)<\infty$ and $g$ is
+* **12.39. Fenchel–Rockafellar duality.** For proper convex $f,g$ on normed
+  spaces and bounded linear $A$ (closedness and completeness are not
+  needed), assume $f(x_0)<\infty$ and $g$ is
   continuous at $Ax_0$. If the primal value is finite, then
   $$\inf_x\{f(x)+g(Ax)\}
     =\max_u\{-f^*(-A^*u)-g^*(u)\}.$$
@@ -1415,7 +1419,7 @@ space is **reflexive** if $J$ is onto. Compactness below is topological
 compactness, which must be distinguished from sequential compactness until
 the relevant theorem is invoked.
 
-* **15.28. Eberlein–Šmulian theorem.** A subset of a Banach space is relatively
+* **15.28. Eberlein–Šmulian theorem.** A subset of a normed space is relatively
   weakly compact exactly when every sequence in it has a weakly convergent
   subsequence with limit in the ambient space. In particular, bounded
   sequences in reflexive spaces have weakly convergent subsequences.
@@ -1596,7 +1600,7 @@ $\sum_n|f(x_n)|<\infty$ for every $f\in X^*$. A sequence is **weakly
 Cauchy** if every scalar sequence $f(x_n)$ is Cauchy. These conditions do
 not themselves assert convergence to a vector of $X$.
 
-* **17.21. Rosenthal $\ell^1$ theorem.** Every bounded sequence in a Banach
+* **17.21. Rosenthal $\ell^1$ theorem.** Every bounded sequence in a normed
   space has either a weakly Cauchy subsequence or a subsequence equivalent
   to the standard basis of $\ell^1$.
 
@@ -1627,7 +1631,7 @@ distortion at most $1+\varepsilon$, for every $\varepsilon>0$.
 * **17.38. Kwapień theorem.** A Banach space is isomorphic to a Hilbert space
   exactly when it has both type two and cotype two.
 
-* **17.39. Dvoretzky theorem.** Every infinite-dimensional Banach space
+* **17.39. Dvoretzky theorem.** Every infinite-dimensional normed space
   contains, for every $n$ and $\varepsilon>0$, an $n$-dimensional subspace
   with Banach–Mazur distance at most $1+\varepsilon$ from $\ell_2^n$.
   Equivalently, $\ell^2$ is finitely representable in every such space.
@@ -2348,8 +2352,9 @@ noncrossing partitions of $\{1,\ldots,n\}$.
 The scalar **free cumulants** of a law are determined by $\varphi(a^n)=\sum_{\pi\in NC(n)}\prod_{B\in\pi}\kappa_{|B|}$. Free additive convolution $\mu\boxplus\nu$ is the distribution of a sum of freely independent self-adjoint variables with laws $\mu,\nu$.
 
 * **23.65. Free central limit theorem.** For identically distributed free
-  self-adjoint variables of mean zero and variance one, normalized sums
-  converge in moments to the semicircle law
+  variables of mean zero and variance one in a noncommutative probability
+  space (self-adjointness is not needed), the moments of normalized sums
+  converge to those of the semicircle law
   $(2\pi)^{-1}\sqrt{4-x^2}\,1_{[-2,2]}dx$.
 
 * **23.68. R-transform linearization.** For a compactly supported law,
@@ -2390,8 +2395,9 @@ formula and need not be differentiable.
   real $\lambda$ is equivalent to $T_n(t)x\to T(t)x$ uniformly on
   bounded time intervals.
 
-* **24.18. Chernoff product formula.** Let $F(0)=I$, $F$ be strongly
-  continuous, and $\|F(t)^n\|\leq Me^{\omega nt}$. If
+* **24.18. Chernoff product formula.** Let $F:[0,\infty)\to\mathcal L(X)$
+  satisfy $F(0)=I$ and $\|F(t)^n\|\leq Me^{\omega nt}$ (strong continuity
+  of $F$ is not needed). If
   $F'(0)x=Ax$ on a core of a generator $A$, then
   $F(t/n)^nx\to T(t)x$ uniformly on bounded time intervals.
 
@@ -3849,7 +3855,8 @@ $|Du|(\Omega)=\sup\{\int u\mathop{\mathrm{div}}\phi:
 
 * **37.30. Coarea for BV.** For scalar $u$,
   $|Du|(\Omega)=\int_{\mathbb R}P(\{u>t\};\Omega)dt$.
-  Almost every superlevel set therefore has finite perimeter.
+  When $|Du|(\Omega)<\infty$, almost every superlevel set therefore has
+  finite perimeter in $\Omega$.
 
 ### Sets of finite perimeter and geometric minimization
 
@@ -4354,8 +4361,9 @@ and $T(r,f)=m(r,f)+N(r,\infty;f)$. For finite $a$, use the zeros of $f-a$ to def
   $$
   Reduced counting makes ramification part of the inequality.
 
-* **41.48. Five-value theorem.** If two nonconstant meromorphic
-  functions on $\mathbb C$ have the same preimage sets for five
+* **41.48. Five-value theorem.** If two meromorphic functions on
+  $\mathbb C$, at least one of them nonconstant, have the same
+  preimage sets for five
   distinct spherical values, ignoring multiplicity, they are identical.
 
 ### Normality, rescaling, and uniqueness sets

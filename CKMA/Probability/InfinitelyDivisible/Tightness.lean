@@ -52,6 +52,11 @@ open scoped NNReal ENNReal
 @[expose]
 def sincComparison : ℝ := 3 * Real.pi ^ 2 / 2
 
+/-- Defining formula of `sincComparison`. -/
+lemma sincComparison_def :
+    sincComparison = 3 * Real.pi ^ 2 / 2 :=
+  rfl
+
 /-- The constant `3 π² / 2` is positive. -/
 private lemma sincComparison_pos : 0 < sincComparison := by
   unfold sincComparison
@@ -172,6 +177,11 @@ private lemma quadTrunc_le_sincComparison_mul (x : ℝ) :
 @[expose]
 def exponentModulus (r : ℝ) : ℝ := r * (1 + r * Real.exp r)
 
+/-- Defining formula of `exponentModulus`. -/
+lemma exponentModulus_def (r : ℝ) :
+    exponentModulus r = r * (1 + r * Real.exp r) :=
+  rfl
+
 /-- The exponential-increment modulus is continuous. -/
 private lemma continuous_exponentModulus : Continuous exponentModulus := by
   unfold exponentModulus
@@ -213,6 +223,12 @@ def charExponentMax {μ : Measure ℝ} [IsProbabilityMeasure μ]
     (h : IsInfinitelyDivisible μ) (δ : ℝ) : ℝ :=
   ‖charExponent h (charExponentArg h δ)‖
 
+/-- Defining formula of `charExponentMax`. -/
+lemma charExponentMax_def {μ : Measure ℝ} [IsProbabilityMeasure μ] (h : IsInfinitelyDivisible μ)
+    (δ : ℝ) :
+    charExponentMax h δ = ‖charExponent h (charExponentArg h δ)‖ :=
+  rfl
+
 /-- The maximizer lies in `[-|δ|, |δ|]`. -/
 private lemma abs_charExponentArg_le {μ : Measure ℝ} [IsProbabilityMeasure μ]
     (h : IsInfinitelyDivisible μ) (δ : ℝ) : |charExponentArg h δ| ≤ |δ| := by
@@ -251,13 +267,16 @@ private lemma tendsto_charExponentMax_inv {μ : Measure ℝ} [IsProbabilityMeasu
 
 /-- The convolution root of order `n + 1`. -/
 @[expose]
-def positiveRoot {μ : Measure ℝ} [IsProbabilityMeasure μ]
-    (h : IsInfinitelyDivisible μ) (n : ℕ) : Measure ℝ :=
+def positiveRoot {μ : Measure ℝ} (h : IsInfinitelyDivisible μ) (n : ℕ) : Measure ℝ :=
   convolutionRoot h (n + 1) (Nat.succ_pos n)
 
+/-- Defining formula of `positiveRoot`. -/
+lemma positiveRoot_def {μ : Measure ℝ} (h : IsInfinitelyDivisible μ) (n : ℕ) :
+    positiveRoot h n = convolutionRoot h (n + 1) (Nat.succ_pos n) :=
+  rfl
+
 /-- Each positive convolution root is a probability measure. -/
-@[expose]
-instance isProbabilityMeasure_positiveRoot {μ : Measure ℝ} [IsProbabilityMeasure μ]
+instance isProbabilityMeasure_positiveRoot {μ : Measure ℝ}
     (h : IsInfinitelyDivisible μ) (n : ℕ) :
     IsProbabilityMeasure (positiveRoot h n) :=
   isProbabilityMeasure_convolutionRoot h (Nat.succ_pos n)
@@ -497,7 +516,7 @@ private lemma quadWeighted_univ_le {μ : Measure ℝ} [IsProbabilityMeasure μ]
     (h : IsInfinitelyDivisible μ) (n : ℕ) :
     quadWeighted (n + 1) (positiveRoot h n) univ ≤
       ENNReal.ofReal (sincComparison * exponentModulus (charExponentMax h 1)) := by
-  rw [quadWeighted, Measure.smul_apply, withDensity_apply _ MeasurableSet.univ,
+  rw [quadWeighted, smul_apply, withDensity_apply _ MeasurableSet.univ,
     Measure.restrict_univ,
     ← ofReal_integral_eq_lintegral_ofReal integrable_quadTrunc_prob
       (ae_of_all _ quadTrunc_nonneg), smul_eq_mul]
@@ -529,6 +548,11 @@ private lemma quadTrunc_eq_one_of_one_le_abs {x : ℝ} (hx : 1 ≤ |x|) : quadTr
 /-- Compact interval of radius `n + 1`, increasing in `n`. -/
 @[expose]
 def tailSet (n : ℕ) : Set ℝ := Icc (-(n + 1 : ℝ)) (n + 1 : ℝ)
+
+/-- Defining formula of `tailSet`. -/
+lemma tailSet_def (n : ℕ) :
+    tailSet n = Icc (-(n + 1 : ℝ)) (n + 1 : ℝ) :=
+  rfl
 
 /-- The tail intervals increase with the index. -/
 private lemma monotone_tailSet : Monotone tailSet := by
@@ -576,12 +600,23 @@ private lemma quadTrunc_le_of_notMem_tailSet {k : ℕ} {x : ℝ} (hx : x ∉ tai
 def idMass {μ : Measure ℝ} [IsProbabilityMeasure μ] (h : IsInfinitelyDivisible μ) : ℝ≥0 :=
   Real.toNNReal (sincComparison * exponentModulus (charExponentMax h 1))
 
+/-- Defining formula of `idMass`. -/
+lemma idMass_def {μ : Measure ℝ} [IsProbabilityMeasure μ] (h : IsInfinitelyDivisible μ) :
+    idMass h = Real.toNNReal (sincComparison * exponentModulus (charExponentMax h 1)) :=
+  rfl
+
 /-- Tail bound outside `[-k-1, k+1]`, independent of the root order. -/
 @[expose]
 def idTail {μ : Measure ℝ} [IsProbabilityMeasure μ] (h : IsInfinitelyDivisible μ)
     (k : ℕ) : ℝ≥0 :=
   Real.toNNReal (sincComparison *
     exponentModulus (charExponentMax h (1 / (k + 1 : ℝ))))
+
+/-- Defining formula of `idTail`. -/
+lemma idTail_def {μ : Measure ℝ} [IsProbabilityMeasure μ] (h : IsInfinitelyDivisible μ) (k : ℕ) :
+    idTail h k = Real.toNNReal
+      (sincComparison * exponentModulus (charExponentMax h (1 / (k + 1 : ℝ)))) :=
+  rfl
 
 /-- The uniform tail bounds tend to zero. -/
 private lemma tendsto_idTail {μ : Measure ℝ} [IsProbabilityMeasure μ]
@@ -646,7 +681,7 @@ private lemma quadWeighted_tail_le {μ : Measure ℝ} [IsProbabilityMeasure μ]
       ENNReal.ofReal (sincComparison * exponentModulus (charExponentMax h δ) /
         ((n : ℝ) + 1)) :=
     hmono.trans hfull
-  rw [quadWeighted, Measure.smul_apply, withDensity_apply _ hs, smul_eq_mul]
+  rw [quadWeighted, smul_apply, withDensity_apply _ hs, smul_eq_mul]
   have hcast : ((n + 1 : ℕ) : ℝ≥0∞) = ENNReal.ofReal ((n : ℝ) + 1) := by
     rw [← ENNReal.ofReal_natCast (n + 1)]
     congr 1
@@ -672,9 +707,16 @@ private lemma quadWeighted_tail_le {μ : Measure ℝ} [IsProbabilityMeasure μ]
 
 /-- Quadratically weighted positive root, packaged as a finite measure. -/
 @[expose]
-def idRootMeasure {μ : Measure ℝ} [IsProbabilityMeasure μ]
+def idRootMeasure {μ : Measure ℝ}
     (h : IsInfinitelyDivisible μ) (n : ℕ) : FiniteMeasure ℝ :=
   ⟨quadWeighted (n + 1) (positiveRoot h n), isFiniteMeasure_quadWeighted (n + 1)⟩
+
+/-- Defining formula of `idRootMeasure`. -/
+lemma idRootMeasure_def {μ : Measure ℝ} (h : IsInfinitelyDivisible μ)
+    (n : ℕ) :
+    idRootMeasure h n =
+      ⟨quadWeighted (n + 1) (positiveRoot h n), isFiniteMeasure_quadWeighted (n + 1)⟩ :=
+  rfl
 
 /-- Every weighted root lies in the Prokhorov set of mass `idMass` and tails `idTail`. -/
 lemma idRootMeasure_mem {μ : Measure ℝ} [IsProbabilityMeasure μ]

@@ -6,8 +6,9 @@ Authors: CKMA contributors
 module
 
 public import CKMA.Analysis.Real.Dini.Basic
-public import CKMA.Analysis.Real.Dini.Assembly
+public import Mathlib.MeasureTheory.Measure.Haar.OfBasis
 
+import CKMA.Analysis.Real.Dini.Assembly
 import CKMA.Analysis.Real.Dini.Pattern
 
 /-!
@@ -19,7 +20,7 @@ Denjoy–Young–Saks assigns one of four mutually exclusive derivative patterns
 everywhere to an arbitrary finite real function, without measurability assumptions.
 Limits and extended-real operations use Mathlib. Source: GAPS 05.10.
 
-The Dini derivative definitions and `CKMA.HasDiniType` are re-exported from
+The Dini derivatives, `CKMA.DiniType` and `CKMA.HasDiniType` are defined in
 `CKMA.Analysis.Real.Dini.Basic`.
 
 ## Main results
@@ -39,11 +40,8 @@ open MeasureTheory
 /-- **05.10**: any finite real function has exactly one Dini type at almost every point.
 No measurability or continuity assumption on the function is imposed. -/
 theorem ae_existsUnique_diniType (f : ℝ → ℝ) :
-    ∀ᵐ x ∂volume, ∃! i : Fin 4, HasDiniType f x i := by
+    ∀ᵐ x ∂volume, ∃! t : DiniType, HasDiniType f x t := by
   filter_upwards [Dini.ae_oppositePair f, Dini.ae_oppositePair (-f)] with x hx hx'
   exact Dini.existsUnique_diniType_of_patterns f x hx (Dini.opposite_of_neg f hx')
-
-@[deprecated (since := "2026-11-15")]
-alias ae_diniType := ae_existsUnique_diniType
 
 end CKMA

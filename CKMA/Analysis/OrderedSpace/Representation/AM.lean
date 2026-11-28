@@ -5,8 +5,8 @@ Authors: CKMA contributors
 -/
 module
 
-public import CKMA.Analysis.OrderedSpace.Representation.AM.State
 public import CKMA.Analysis.OrderedSpace.Representation.AM.Norm
+public import CKMA.Analysis.OrderedSpace.Representation.AM.State
 
 /-!
 # Kakutani representation of an AM space with unit
@@ -32,5 +32,7 @@ Theorem II.7.4.
   lattice homomorphisms.
 * `CKMA.isCompact_amLatticeHomSet`: the normalized lattice homomorphisms form a weak-star
   compact set.
-* `CKMA.exists_am_representation`: Kakutani representation of an AM Banach lattice with unit.
+* `CKMA.IsAMSpaceUnit.isAMSpace`: an AM unit forces the AM norm identity.
+* `CKMA.exists_amSpace_representation`: Kakutani representation of an AM Banach lattice with
+  unit.
 -/

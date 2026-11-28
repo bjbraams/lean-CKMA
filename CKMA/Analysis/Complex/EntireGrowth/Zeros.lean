@@ -19,6 +19,19 @@ the sequence when there are only finitely many zeros.
 
 The summability statement is the exponent-of-convergence input of Hadamard factorization. It is
 the pushforward, along the encoding, of `TauCeti.OrderLE.summable_divisor_mul_norm_rpow`.
+
+## Main definitions
+
+* `CKMA.ZeroAtom`: the zeros of `g` repeated by multiplicity.
+* `CKMA.zeroEncode`: an injective encoding of `CKMA.ZeroAtom g` into `ℕ`.
+* `CKMA.enumeratedZero`: the `Option`-valued list of zeros.
+
+## Main results
+
+* `CKMA.countable_divisor_support`: the zero set of an entire function is countable.
+* `CKMA.enumeratedZero_ne_zero`: no listed zero is the origin when `g 0 ≠ 0`.
+* `CKMA.summable_enumeratedZero_rpow`: `∑ ‖w‖ ^ (-q)` converges for `q` above the order.
+* `CKMA.enumeratedZero_ncard`: each zero is listed as often as its multiplicity.
 -/
 
 public section
@@ -30,15 +43,11 @@ namespace CKMA
 open Classical Filter Function Metric Set
 open scoped BigOperators Topology
 
-/-- The zeros of an entire function, each repeated by its multiplicity. -/
-@[expose]
+/-- The zeros of an entire function, each repeated by its multiplicity: a point of the support
+of the divisor together with an index below its multiplicity. -/
 abbrev ZeroAtom (g : ℂ → ℂ) :=
   Σ ρ : {z : ℂ // z ∈ (MeromorphicOn.divisor g Set.univ).support},
     Fin ((MeromorphicOn.divisor g Set.univ (ρ : ℂ)).toNat)
-
-/-- Deprecated name for `ZeroAtom`. -/
-@[deprecated (since := "2026-11-21")]
-alias zeroAtom := ZeroAtom
 
 /-- The support of the divisor of an entire function is a countable set of isolated zeros. -/
 theorem countable_divisor_support {g : ℂ → ℂ} (hg : Differentiable ℂ g) :
@@ -87,28 +96,33 @@ theorem countable_zeroAtom {g : ℂ → ℂ} (hg : Differentiable ℂ g) : Count
     (countable_divisor_support hg).to_subtype
   infer_instance
 
-/-- An injective encoding of the zeros, repeated by multiplicity, together with the proof. -/
-@[expose]
-def zeroEncoding {g : ℂ → ℂ} (hg : Differentiable ℂ g) :
-    {f : ZeroAtom g → ℕ // Injective f} :=
-  letI := countable_zeroAtom hg
-  ⟨Classical.choose (Countable.exists_injective_nat (ZeroAtom g)),
-    Classical.choose_spec (Countable.exists_injective_nat (ZeroAtom g))⟩
-
-/-- An injective encoding of the zeros, repeated by multiplicity. -/
-@[expose]
+/-- An injective encoding of the zeros, repeated by multiplicity, chosen by countability. -/
 def zeroEncode {g : ℂ → ℂ} (hg : Differentiable ℂ g) : ZeroAtom g → ℕ :=
-  (zeroEncoding hg).1
+  letI := countable_zeroAtom hg
+  Classical.choose (Countable.exists_injective_nat (ZeroAtom g))
 
 /-- The encoding of zeros is injective. -/
 theorem zeroEncode_injective {g : ℂ → ℂ} (hg : Differentiable ℂ g) :
     Injective (zeroEncode hg) :=
-  (zeroEncoding hg).2
+  letI := countable_zeroAtom hg
+  Classical.choose_spec (Countable.exists_injective_nat (ZeroAtom g))
 
 /-- The `Option`-valued list of zeros. `none` fills the unused indices. -/
 @[expose]
 def enumeratedZero {g : ℂ → ℂ} (hg : Differentiable ℂ g) (n : ℕ) : Option ℂ :=
   if h : ∃ a : ZeroAtom g, zeroEncode hg a = n then some (Classical.choose h).1 else none
+
+/-- The list of zeros at an index in the range of the encoding is the zero encoded there, and
+`none` elsewhere. -/
+theorem enumeratedZero_def {g : ℂ → ℂ} (hg : Differentiable ℂ g) (n : ℕ) :
+    enumeratedZero hg n = if h : ∃ a : ZeroAtom g, zeroEncode hg a = n then
+      some ((Classical.choose h).1 : ℂ) else none :=
+  rfl
+
+/-- An index outside the range of the encoding carries no zero. -/
+theorem enumeratedZero_eq_none {g : ℂ → ℂ} (hg : Differentiable ℂ g) {n : ℕ}
+    (hn : n ∉ Set.range (zeroEncode hg)) : enumeratedZero hg n = none := by
+  rw [enumeratedZero, dite_eq_right (by simpa [Set.range] using hn)]
 
 /-- Every atom appears at its encoded index. -/
 theorem enumeratedZero_zeroEncode {g : ℂ → ℂ} (hg : Differentiable ℂ g) (a : ZeroAtom g) :

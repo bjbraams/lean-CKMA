@@ -19,8 +19,9 @@ points are regular singular, as witnessed by analytic rational germs in local an
 reciprocal coordinates. The bilateral integer-order Bessel generating series
 converges normally away from its auxiliary variable's origin.
 
-Gauss's equation follows from Mathlib's regularized coefficient recurrence and
-formal derivative-series API, then its Gamma-scaling identity gives the ordinary version.
+Gauss multiplication and Gauss's equation for the ordinary series are TauCeti's
+`Complex.prod_Gamma_add_div` and `TauCeti.ordinaryHypergeometric_gaussEquation_of_norm_lt_one`;
+the regularized equation holds for every denominator parameter.
 
 ## Main definitions
 
@@ -31,16 +32,18 @@ formal derivative-series API, then its Gamma-scaling identity gives the ordinary
 
 ## Main results
 
-* `CKMA.gamma_multiplication`: Gauss's multiplication formula at all nonpolar complex parameters
+* `CKMA.gamma_multiplication`: Gauss's multiplication formula for every complex parameter
   (**49.6**).
+* `CKMA.gauss_regularized_hypergeometric_ode`: the regularized function solves Gauss's equation in
+  the unit disk for all parameters.
 * `CKMA.gauss_hypergeometric_ode`: the ordinary hypergeometric series solves Gauss's equation in
   the unit disk (**49.13**).
 * `CKMA.gauss_hypergeometric_unique`: uniqueness of the normalized analytic solution germ at `0`.
 * `CKMA.gauss_isRegularSingularAt`: `0`, `1`, and `∞` are regular singular points of Gauss's
   equation.
 * `CKMA.hasSum_bessel_generating`: the bilateral Bessel generating series identity (**49.30**).
-* `CKMA.normallySummableOn_bessel_generating`: normal convergence on compact subsets of
+* `CKMA.normallySummableOn_besselJ_mul_zpow`: normal convergence on compact subsets of
   `ℂ × (ℂ \ {0})`.
 
-Sources: GAPS 49.6, 49.13 and 49.30. Special functions and branches reuse Mathlib.
+Sources: GAPS 49.6, 49.13 and 49.30. Special functions and branches reuse Mathlib and TauCeti.
 -/

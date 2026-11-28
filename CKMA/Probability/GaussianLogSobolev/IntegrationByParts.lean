@@ -7,18 +7,22 @@ module
 
 public import Mathlib.Probability.Distributions.Gaussian.Real
 
+import TauCeti.Probability.Distributions.Gaussian.IntegrationByParts
+import TauCeti.Probability.Distributions.Gaussian.Moments
+
 /-!
 # One-dimensional Gaussian integration by parts
 
-The standard normal density satisfies `ρ' = -x ρ`. For a `C¹` integrand with bounded value and
-derivative, the boundary terms vanish and `∫ x ψ ∂γ = ∫ ψ' ∂γ`.
+For a `C¹` integrand with bounded value and derivative, `∫ x ψ ∂γ = ∫ ψ' ∂γ` under the standard
+Gaussian `γ`. This is the bounded case of TauCeti's Stein identity
+`TauCeti.Probability.integral_mul_eq_integral_deriv_gaussianReal`.
 
 ## Main results
 
 * `CKMA.integral_id_mul_eq_integral_deriv_gaussianReal`: Gaussian integration by parts
   `∫ x ψ ∂γ = ∫ ψ' ∂γ`.
-* `CKMA.GaussianLogSobolev.integrable_of_abs_le`: Integrability of bounded a.e. strongly
-  measurable functions on finite measure spaces.
+* `CKMA.GaussianLogSobolev.integrable_of_abs_le`: Mathlib's `Integrable.of_bound` with the
+  bound stated as `|f x| ≤ M`.
 -/
 
 public section
@@ -30,131 +34,22 @@ namespace CKMA
 open MeasureTheory ProbabilityTheory Set
 open scoped NNReal ENNReal Real
 
-/-- Explicit formula for the standard normal density. -/
-private lemma gaussianPDFReal_zero_one_apply (t : ℝ) :
-    gaussianPDFReal 0 1 t = (√(2 * π))⁻¹ * Real.exp (-(t ^ 2) / 2) := by
-  unfold gaussianPDFReal
-  rw [sub_zero]
-  have hcoe : ((1 : NNReal) : ℝ) = 1 := NNReal.coe_one
-  simp only [hcoe, mul_one]
-
-/-- The standard normal density has logarithmic derivative `-x`. -/
-private lemma hasDerivAt_gaussianPDFReal_zero_one (x : ℝ) :
-    HasDerivAt (gaussianPDFReal 0 1) (-x * gaussianPDFReal 0 1 x) x := by
-  set c : ℝ := (√(2 * π))⁻¹
-  have hinner : HasDerivAt (fun t : ℝ => -(t ^ 2) / 2) (-x) x := by
-    have hpow : HasDerivAt (fun t : ℝ => t ^ 2) ((2 : ℕ) * x ^ (2 - 1)) x :=
-      hasDerivAt_pow 2 x
-    refine hpow.neg.div_const (2 : ℝ) |>.congr_deriv ?_
-    simp only [Nat.cast_ofNat]
-    ring
-  have hexp : HasDerivAt (fun t => Real.exp (-(t ^ 2) / 2))
-      (Real.exp (-(x ^ 2) / 2) * -x) x := hinner.exp
-  have hmul : HasDerivAt (fun t => c * Real.exp (-(t ^ 2) / 2))
-      (c * (Real.exp (-(x ^ 2) / 2) * -x)) x :=
-    ((hasDerivAt_const x c).mul hexp).congr_deriv (by ring)
-  have hfun : gaussianPDFReal 0 1 = fun t => c * Real.exp (-(t ^ 2) / 2) := by
-    funext t
-    simpa [c] using gaussianPDFReal_zero_one_apply t
-  rw [hfun]
-  refine hmul.congr_deriv ?_
-  ring
-
-/-- Gaussian integration by parts: `∫ x ψ ∂γ = ∫ ψ' ∂γ` for a bounded `C¹` integrand. -/
+/-- Gaussian integration by parts: `∫ x ψ ∂γ = ∫ ψ' ∂γ` for a bounded `C¹` integrand with
+bounded derivative. This is TauCeti's
+`TauCeti.Probability.integral_mul_eq_integral_deriv_gaussianReal`, whose integrability hypotheses
+follow from the bounds. -/
 lemma integral_id_mul_eq_integral_deriv_gaussianReal {ψ : ℝ → ℝ}
     (hψ : Differentiable ℝ ψ) (hψ' : Continuous (deriv ψ))
     (hψ_bdd : ∃ C, ∀ x, |ψ x| ≤ C) (hψ'_bdd : ∃ C, ∀ x, |deriv ψ x| ≤ C) :
     ∫ x, x * ψ x ∂gaussianReal 0 1 = ∫ x, deriv ψ x ∂gaussianReal 0 1 := by
   obtain ⟨C, hC⟩ := hψ_bdd
   obtain ⟨C', hC'⟩ := hψ'_bdd
-  set ρ : ℝ → ℝ := gaussianPDFReal 0 1
-  have hρ_nonneg : ∀ x, 0 ≤ ρ x := gaussianPDFReal_nonneg 0 1
-  have hρ_int : Integrable ρ volume := integrable_gaussianPDFReal 0 1
-  have hxρ_int : Integrable (fun x => |x| * ρ x) volume := by
-    have hid0 : Integrable id (gaussianReal 0 1) :=
-      memLp_one_iff_integrable.mp (memLp_id_gaussianReal (μ := 0) (v := 1) 1)
-    have hid : Integrable (fun x : ℝ => |x|) (gaussianReal 0 1) := by
-      simpa [Real.norm_eq_abs] using hid0.norm
-    have hone : (1 : NNReal) ≠ 0 := one_ne_zero
-    rw [gaussianReal_of_var_ne_zero (0 : ℝ) hone] at hid
-    have hsmul :=
-      (integrable_withDensity_iff_integrable_smul' (measurable_gaussianPDF 0 1)
-        (ae_of_all _ fun _ => gaussianPDF_lt_top)).mp hid
-    simpa [ρ, gaussianPDF, ENNReal.toReal_ofReal, hρ_nonneg, mul_comm] using hsmul
-  let F : ℝ → ℝ := fun x => ψ x * ρ x
-  let F' : ℝ → ℝ := fun x => (deriv ψ x - x * ψ x) * ρ x
-  have hψ_diff : Differentiable ℝ ψ := hψ
-  have hF_deriv : ∀ x, HasDerivAt F (F' x) x := by
-    intro x
-    have hψx : HasDerivAt ψ (deriv ψ x) x := (hψ_diff x).hasDerivAt
-    have hρx : HasDerivAt ρ (-x * ρ x) x := hasDerivAt_gaussianPDFReal_zero_one x
-    convert hψx.mul hρx using 1
-    simp only [F']
-    ring
-  have hF_meas : AEStronglyMeasurable F volume :=
-    hψ_diff.continuous.aestronglyMeasurable.mul
-      (stronglyMeasurable_gaussianPDFReal 0 1).aestronglyMeasurable
-  have hF_int : Integrable F volume := by
-    refine Integrable.mono' (hρ_int.const_mul (|C| + 1)) hF_meas ?_
-    filter_upwards with x
-    rw [Real.norm_eq_abs, abs_mul, abs_of_nonneg (hρ_nonneg x)]
-    exact mul_le_mul_of_nonneg_right
-      ((hC x).trans <| (le_abs_self C).trans (le_add_of_nonneg_right zero_le_one))
-      (hρ_nonneg x)
-  have hderiv_meas : AEStronglyMeasurable (fun x => deriv ψ x) volume :=
-    hψ'.aestronglyMeasurable
-  have hψρ_int : Integrable (fun x => deriv ψ x * ρ x) volume := by
-    refine Integrable.mono' (hρ_int.const_mul (|C'| + 1))
-      (hderiv_meas.mul (stronglyMeasurable_gaussianPDFReal 0 1).aestronglyMeasurable) ?_
-    filter_upwards with x
-    rw [Real.norm_eq_abs, abs_mul, abs_of_nonneg (hρ_nonneg x)]
-    exact mul_le_mul_of_nonneg_right
-      ((hC' x).trans <| (le_abs_self C').trans (le_add_of_nonneg_right zero_le_one))
-      (hρ_nonneg x)
-  have hxψρ_int : Integrable (fun x => x * ψ x * ρ x) volume := by
-    refine Integrable.mono' (hxρ_int.const_mul (|C| + 1)) ?_ ?_
-    · exact ((continuous_id.mul hψ_diff.continuous).aestronglyMeasurable.mul
-        (stronglyMeasurable_gaussianPDFReal 0 1).aestronglyMeasurable)
-    · filter_upwards with x
-      rw [Real.norm_eq_abs, abs_mul, abs_mul, abs_of_nonneg (hρ_nonneg x)]
-      calc |x| * |ψ x| * ρ x ≤ |x| * (|C| + 1) * ρ x := by
-            refine mul_le_mul_of_nonneg_right ?_ (hρ_nonneg x)
-            refine mul_le_mul_of_nonneg_left ?_ (abs_nonneg x)
-            exact (hC x).trans <| (le_abs_self C).trans (le_add_of_nonneg_right zero_le_one)
-        _ = (|C| + 1) * (|x| * ρ x) := by ring
-  have hF'_int : Integrable F' volume := by
-    have hsub : Integrable (fun x => deriv ψ x * ρ x - x * ψ x * ρ x) volume :=
-      hψρ_int.sub hxψρ_int
-    convert hsub using 1
-    funext x
-    simp only [F']
-    ring
-  have hzero : ∫ x, F' x = 0 :=
-    integral_eq_zero_of_hasDerivAt_of_integrable hF_deriv hF'_int hF_int
-  have hsplit : ∫ x, deriv ψ x * ρ x - x * ψ x * ρ x = 0 := by
-    convert hzero using 2
-    funext x
-    simp only [F']
-    ring
-  have hsub_eq :
-      (∫ x, deriv ψ x * ρ x) - (∫ x, x * ψ x * ρ x) = 0 := by
-    rw [← integral_sub hψρ_int hxψρ_int]
-    convert hsplit using 1
-  have hEq : (∫ x, deriv ψ x * ρ x) = (∫ x, x * ψ x * ρ x) := sub_eq_zero.mp hsub_eq
-  have hγ_deriv : ∫ x, deriv ψ x ∂gaussianReal 0 1 = ∫ x, ρ x * deriv ψ x := by
-    simpa [ρ, mul_comm] using
-      integral_gaussianReal_eq_integral_smul (E := ℝ) (μ := 0) (v := 1)
-        (f := fun x => deriv ψ x) one_ne_zero
-  have hγ_id : ∫ x, x * ψ x ∂gaussianReal 0 1 = ∫ x, ρ x * (x * ψ x) := by
-    simpa [ρ, mul_comm] using
-      integral_gaussianReal_eq_integral_smul (E := ℝ) (μ := 0) (v := 1)
-        (f := fun x => x * ψ x) one_ne_zero
-  calc ∫ x, x * ψ x ∂gaussianReal 0 1
-      = ∫ x, ρ x * (x * ψ x) := hγ_id
-    _ = ∫ x, x * ψ x * ρ x := by simp [mul_comm, mul_assoc]
-    _ = ∫ x, deriv ψ x * ρ x := hEq.symm
-    _ = ∫ x, ρ x * deriv ψ x := by simp [mul_comm]
-    _ = ∫ x, deriv ψ x ∂gaussianReal 0 1 := hγ_deriv.symm
+  refine TauCeti.Probability.integral_mul_eq_integral_deriv_gaussianReal ψ hψ ?_
+    (.of_bound hψ'.aestronglyMeasurable C' (ae_of_all _ hC'))
+  refine ((TauCeti.Probability.integrable_abs_gaussianReal 0 1).const_mul C).mono'
+    (continuous_id.mul hψ.continuous).aestronglyMeasurable (ae_of_all _ fun x ↦ ?_)
+  rw [norm_mul, Real.norm_eq_abs, Real.norm_eq_abs, mul_comm C]
+  exact mul_le_mul_of_nonneg_left (hC x) (abs_nonneg x)
 
 namespace GaussianLogSobolev
 

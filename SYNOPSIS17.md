@@ -131,7 +131,7 @@ not themselves assert convergence to a vector of $X$.
 * **20. Schur property of $\ell^1$.** Weakly convergent sequences in
   $\ell^1$ converge in norm. Consequently weakly compact subsets of
   $\ell^1$ are norm compact.
-* **21. Rosenthal $\ell^1$ theorem.** Every bounded sequence in a Banach
+* **21. Rosenthal $\ell^1$ theorem.** Every bounded sequence in a normed
   space has either a weakly Cauchy subsequence or a subsequence equivalent
   to the standard basis of $\ell^1$.
 * **22. James distortion theorem.** If $X$ contains a subspace isomorphic
@@ -248,7 +248,7 @@ distortion at most $1+\varepsilon$, for every $\varepsilon>0$.
   that $x\mapsto h^{-1/p}Tx$ is bounded from $X$ into $L^q(h\,d\mu)$; thus
   $T$ factors through $L^q$ after a change of density. For $q=r<2$ the
   conclusion can fail.
-* **39. Dvoretzky theorem.** Every infinite-dimensional Banach space
+* **39. Dvoretzky theorem.** Every infinite-dimensional normed space
   contains, for every $n$ and $\varepsilon>0$, an $n$-dimensional subspace
   with Banach–Mazur distance at most $1+\varepsilon$ from $\ell_2^n$.
   Equivalently, $\ell^2$ is finitely representable in every such space.

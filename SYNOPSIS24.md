@@ -103,8 +103,9 @@ formula and need not be differentiable.
   $R(\lambda,A_n)x\to R(\lambda,A)x$ for one sufficiently large
   real $\lambda$ is equivalent to $T_n(t)x\to T(t)x$ uniformly on
   bounded time intervals.
-* **18. Chernoff product formula.** Let $F(0)=I$, $F$ be strongly
-  continuous, and $\|F(t)^n\|\leq Me^{\omega nt}$. If
+* **18. Chernoff product formula.** Let $F:[0,\infty)\to\mathcal L(X)$
+  satisfy $F(0)=I$ and $\|F(t)^n\|\leq Me^{\omega nt}$ (strong continuity
+  of $F$ is not needed). If
   $F'(0)x=Ax$ on a core of a generator $A$ (a subspace of $D(A)$ dense
   for the graph norm), then
   $F(t/n)^nx\to T(t)x$ uniformly on bounded time intervals.

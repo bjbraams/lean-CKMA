@@ -17,7 +17,7 @@ converges pointwise and normally on compact subsets of `ℂ × (ℂ \ {0})`.
 ## Main results
 
 * `CKMA.hasSum_bessel_generating`: the bilateral Bessel generating series identity (**49.30**).
-* `CKMA.normallySummableOn_bessel_generating`: normal convergence on compact subsets of
+* `CKMA.normallySummableOn_besselJ_mul_zpow`: normal convergence on compact subsets of
   `ℂ × (ℂ \ {0})`.
 -/
 
@@ -310,7 +310,7 @@ theorem hasSum_bessel_generating (z : ℂ) {t : ℂ} (ht : t ≠ 0) :
     · rw [hnm, Int.cast_neg, besselJ_neg_int, zpow_natCast, Int.cast_natCast]
 
 /-- Normal convergence on compact sets in `(z,t)` away from `t=0`, including uniformity in `z`. -/
-theorem normallySummableOn_bessel_generating :
+theorem normallySummableOn_besselJ_mul_zpow :
     NormallySummableOn (fun n : ℤ ↦ fun p : ℂ × ℂ ↦
       Complex.besselJ (n : ℂ) p.1 * p.2 ^ n) {p | p.2 ≠ 0} := by
   intro K hK hKs

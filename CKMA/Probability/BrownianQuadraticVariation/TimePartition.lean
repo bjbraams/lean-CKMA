@@ -28,6 +28,8 @@ sums.
 * `CKMA.TimePartition.completedCount`: number of partition intervals completed by time `t`.
 * `CKMA.TimePartition.covered`: right endpoint of the last interval completed by time `t`.
 * `CKMA.TimePartition.increment`: real length of one partition increment.
+* `CKMA.TimePartition.nodeSeq`: the nodes as a sequence indexed by `ℕ`, constant after the last
+  node.
 * `CKMA.TimePartition.uniform`: the uniform partition of `[0, T]` into `n + 1` intervals.
 
 ## Main results
@@ -64,14 +66,25 @@ structure TimePartition (T : ℝ≥0) where
 def TimePartition.mesh {T : ℝ≥0} (π : TimePartition T) : ℝ≥0 :=
   Finset.univ.sup fun i : Fin π.size ↦ π.node i.succ - π.node i.castSucc
 
+/-- Defining equation of `TimePartition.mesh`. -/
+theorem TimePartition.mesh_def {T : ℝ≥0} (π : TimePartition T) :
+    π.mesh = Finset.univ.sup fun i : Fin π.size ↦ π.node i.succ - π.node i.castSucc := rfl
+
 /-- Quadratic covariation using completed partition intervals up to time `t`.
-It is constant between adjacent nodes, as in the argument of `GAPS_EASY.md`. -/
+It is constant between adjacent nodes. -/
 @[expose]
 def TimePartition.covariation {Ω : Type*} {T : ℝ≥0} (π : TimePartition T)
     (B C : ℝ≥0 → Ω → ℝ) (t : ℝ≥0) (ω : Ω) : ℝ :=
   ∑ i : Fin π.size, if π.node i.succ ≤ t then
     (B (π.node i.succ) ω - B (π.node i.castSucc) ω) *
     (C (π.node i.succ) ω - C (π.node i.castSucc) ω) else 0
+
+/-- Defining equation of `TimePartition.covariation`. -/
+theorem TimePartition.covariation_def {Ω : Type*} {T : ℝ≥0} (π : TimePartition T)
+    (B C : ℝ≥0 → Ω → ℝ) (t : ℝ≥0) (ω : Ω) :
+    π.covariation B C t ω = ∑ i : Fin π.size, if π.node i.succ ≤ t then
+      (B (π.node i.succ) ω - B (π.node i.castSucc) ω) *
+      (C (π.node i.succ) ω - C (π.node i.castSucc) ω) else 0 := rfl
 
 namespace TimePartition
 
@@ -81,6 +94,10 @@ variable {T : ℝ≥0} (π : TimePartition T)
 @[expose]
 def completedCount (t : ℝ≥0) : ℕ :=
   (Finset.univ.filter fun i : Fin π.size ↦ π.node i.succ ≤ t).card
+
+/-- Defining equation of `completedCount`. -/
+theorem completedCount_def (t : ℝ≥0) :
+    π.completedCount t = (Finset.univ.filter fun i : Fin π.size ↦ π.node i.succ ≤ t).card := rfl
 
 /-- The completed-count index is at most the number of increments. -/
 lemma completedCount_le_size (t : ℝ≥0) : π.completedCount t ≤ π.size := by
@@ -92,6 +109,11 @@ lemma completedCount_le_size (t : ℝ≥0) : π.completedCount t ≤ π.size := 
 @[expose]
 def covered (t : ℝ≥0) : ℝ≥0 :=
   π.node ⟨π.completedCount t, Nat.lt_succ_of_le (π.completedCount_le_size t)⟩
+
+/-- Defining equation of `covered`. -/
+theorem covered_def (t : ℝ≥0) :
+    π.covered t = π.node ⟨π.completedCount t, Nat.lt_succ_of_le (π.completedCount_le_size t)⟩ :=
+  rfl
 
 /-- Completed intervals form an initial segment of the partition. -/
 lemma completed_iff_val_lt (t : ℝ≥0) (i : Fin π.size) :
@@ -109,7 +131,7 @@ lemma completed_iff_val_lt (t : ℝ≥0) (i : Fin π.size) :
     have hcard : (Finset.Iic i).card ≤ π.completedCount t := by
       simpa only [completedCount] using Finset.card_le_card hsub
     have hic : (Finset.Iic i).card = i.val + 1 := by
-      simpa using Fin.card_Iic i
+      simp
     omega
   · intro hi
     by_contra hnot
@@ -121,7 +143,7 @@ lemma completed_iff_val_lt (t : ℝ≥0) (i : Fin π.size) :
       exact hnot (hdown i j (le_of_not_gt hge) hj.2)
     have hcard : π.completedCount t ≤ i.val := by
       refine le_trans (Finset.card_le_card hsub) ?_
-      simpa using Fin.card_Iio i
+      simp
     omega
 
 /-- Real length of one partition increment. -/
@@ -164,15 +186,15 @@ lemma sum_increment_initial :
         · exact Or.inl (by apply Fin.ext; simpa [j] using heq)
       · intro hi
         rcases hi with hEq | hlt
-        · simp [hEq, j]
+        · simp [hEq]
         · omega
     rw [hsplit, Finset.sum_insert hnot, ih hmle, increment]
     have hsucc : j.succ = ⟨m + 1, Nat.lt_succ_of_le hm⟩ := by
       apply Fin.ext
-      simp only [Fin.val_succ, Fin.val_mk, j]
+      simp only [Fin.val_succ, j]
     have hcast : j.castSucc = ⟨m, Nat.lt_succ_of_le hmle⟩ := by
       apply Fin.ext
-      simp only [Fin.val_castSucc, Fin.val_mk, j]
+      simp only [Fin.val_castSucc, j]
     rw [hsucc, hcast]
     have hle : π.node ⟨m, Nat.lt_succ_of_le hmle⟩ ≤
         π.node ⟨m + 1, Nat.lt_succ_of_le hm⟩ :=
@@ -184,7 +206,7 @@ lemma sum_increment_initial :
 lemma sum_increment : ∑ i : Fin π.size, π.increment i = (T : ℝ) := by
   have h := π.sum_increment_initial π.size le_rfl
   have hfilter : Finset.univ.filter (fun i : Fin π.size ↦ i.val < π.size) = Finset.univ := by
-    ext i; simp [i.isLt]
+    ext i; simp
   have hlast : (⟨π.size, Nat.lt_succ_self π.size⟩ : Fin (π.size + 1)) = Fin.last π.size := by
     ext; simp [Fin.val_last]
   simpa [hfilter, hlast, π.node_last] using h
@@ -195,6 +217,23 @@ lemma increment_le_mesh (i : Fin π.size) : π.increment i ≤ π.mesh := by
     (NNReal.coe_le_coe.mpr
       (Finset.le_sup (f := fun j : Fin π.size ↦ π.node j.succ - π.node j.castSucc)
         (Finset.mem_univ i)))
+
+/-- The nodes of a partition as a sequence, constant after the last node. -/
+@[expose]
+def nodeSeq (i : ℕ) : ℝ≥0 := π.node ⟨min i π.size, Nat.lt_succ_of_le (min_le_right _ _)⟩
+
+/-- Defining equation of `nodeSeq`. -/
+lemma nodeSeq_def (i : ℕ) :
+    π.nodeSeq i = π.node ⟨min i π.size, Nat.lt_succ_of_le (min_le_right _ _)⟩ := rfl
+
+/-- Below the number of intervals, `nodeSeq` is the node. -/
+lemma nodeSeq_of_le {i : ℕ} (hi : i ≤ π.size) :
+    π.nodeSeq i = π.node ⟨i, Nat.lt_succ_of_le hi⟩ := by
+  simp only [nodeSeq, min_eq_left hi]
+
+/-- `nodeSeq` is monotone. -/
+lemma monotone_nodeSeq : Monotone π.nodeSeq := fun _ _ hij ↦
+  π.monotone_node (Fin.mk_le_mk.2 (min_le_min_right _ hij))
 
 /-- On `[0,T]`, time differs from the covered node by at most the mesh. -/
 lemma abs_sub_covered_le_mesh {t : ℝ≥0} (ht : t ≤ T) :
@@ -215,7 +254,7 @@ lemma abs_sub_covered_le_mesh {t : ℝ≥0} (ht : t ≤ T) :
       have hnot : ¬ π.node i0.succ ≤ t := by
         intro hle
         have hlt := (π.completed_iff_val_lt t i0).1 hle
-        simp [h0, i0, Fin.val_mk] at hlt
+        simp [h0, i0] at hlt
       have htlt : (t : ℝ) < π.node i0.succ := NNReal.coe_lt_coe.mpr (not_le.mp hnot)
       have hstep : (π.node i0.succ : ℝ) ≤ π.mesh := by
         have hinc := π.increment_le_mesh i0
@@ -236,7 +275,7 @@ lemma abs_sub_covered_le_mesh {t : ℝ≥0} (ht : t ≤ T) :
         simp [covered, hlast, hidx, π.node_last]
       have hsize : 0 < π.size := Nat.pos_of_ne_zero (fun hzero ↦ h0 (hlast.trans hzero))
       let i : Fin π.size := ⟨π.size - 1, Nat.sub_lt hsize (by decide)⟩
-      have hi : i.val = π.size - 1 := by simp [i, Fin.val_mk]
+      have hi : i.val = π.size - 1 := by simp [i]
       have hval : i.val < π.completedCount t := by
         rw [hi, hlast]
         omega
@@ -253,8 +292,8 @@ lemma abs_sub_covered_le_mesh {t : ℝ≥0} (ht : t ≤ T) :
       have hklt : π.completedCount t < π.size := lt_of_le_of_ne hk hlast
       let ileft : Fin π.size := ⟨π.completedCount t - 1, by omega⟩
       let iright : Fin π.size := ⟨π.completedCount t, hklt⟩
-      have hleftVal : ileft.val = π.completedCount t - 1 := by simp [ileft, Fin.val_mk]
-      have hrightVal : iright.val = π.completedCount t := by simp [iright, Fin.val_mk]
+      have hleftVal : ileft.val = π.completedCount t - 1 := by simp [ileft]
+      have hrightVal : iright.val = π.completedCount t := by simp [iright]
       have hleft : π.node ileft.succ ≤ t :=
         (π.completed_iff_val_lt t ileft).2 (by omega)
       have hright : ¬ π.node iright.succ ≤ t := by
@@ -265,12 +304,12 @@ lemma abs_sub_covered_le_mesh {t : ℝ≥0} (ht : t ≤ T) :
       have hcovL : π.covered t = π.node ileft.succ := by
         apply congrArg π.node
         apply Fin.ext
-        simp only [covered, Fin.val_mk, Fin.val_succ, hleftVal]
+        simp only [Fin.val_succ, hleftVal]
         omega
       have hcovR : π.covered t = π.node iright.castSucc := by
         apply congrArg π.node
         apply Fin.ext
-        simp only [covered, Fin.val_mk, Fin.val_castSucc, hrightVal]
+        simp only [Fin.val_castSucc, hrightVal]
       have hs_le_t : (π.covered t : ℝ) ≤ t := by
         rw [hcovL]
         exact NNReal.coe_le_coe.mpr hleft
@@ -318,8 +357,6 @@ lemma mesh_uniform_le (T : ℝ≥0) (n : ℕ) : (uniform T n).mesh ≤ T / ((n :
   rw [← add_div]
   congr 1
   ring
-
-@[deprecated (since := "2026-11-15")] alias abs_t_sub_covered_le_mesh := abs_sub_covered_le_mesh
 
 end TimePartition
 

@@ -17,14 +17,10 @@ times themselves, so the same bound passes to every uniform limit of the floors.
 ## Main definitions
 
 * `CKMA.Brownian.HasDyadicIncrements`: dyadic increment bound on one integer interval.
-* `CKMA.Brownian.holderConstFrom`: Hölder constant dominating `1` and all increment ratios below
-  level `N`.
 * `CKMA.Brownian.dyadicFloorReal`: left dyadic floor of a nonnegative real at mesh `2 ^ (-n)`.
 
 ## Main results
 
-* `CKMA.Brownian.hasDyadicIncrements_of_eventually`: eventual unit increment bounds yield a finite
-  dyadic Hölder constant.
 * `CKMA.Brownian.abs_sub_dyadicFloor_le`: values at dyadic floors obey the Hölder bound of the
   increments.
 * `CKMA.Brownian.abs_sub_dyadicFloor_levels`: values at dyadic floors of two meshes obey the
@@ -48,85 +44,15 @@ def HasDyadicIncrements (f : ℝ → ℝ) (α K : ℝ) (j : ℕ) : Prop :=
     |f (↑j + (↑i + 1) / 2 ^ n) - f (↑j + (↑i : ℝ) / 2 ^ n)| ≤
       K * ((1 : ℝ) / 2 ^ n) ^ α
 
-/-- Absolute size of one dyadic increment, scaled by the mesh to the power `α`. -/
-@[expose]
-def incrementRatio (f : ℝ → ℝ) (α : ℝ) (j n i : ℕ) : ℝ :=
-  |f (↑j + (↑i + 1) / 2 ^ n) - f (↑j + (↑i : ℝ) / 2 ^ n)| * (2 : ℝ) ^ (α * ↑n)
+/-- Unfolding `HasDyadicIncrements`. -/
+theorem hasDyadicIncrements_iff {f : ℝ → ℝ} {α K : ℝ} {j : ℕ} :
+    HasDyadicIncrements f α K j ↔ ∀ n, ∀ i : ℕ, i < 2 ^ n →
+      |f (↑j + (↑i + 1) / 2 ^ n) - f (↑j + (↑i : ℝ) / 2 ^ n)| ≤ K * ((1 : ℝ) / 2 ^ n) ^ α :=
+  Iff.rfl
 
-/-- Ratios of the increments of level strictly less than `N` on the interval starting at `j`. -/
-@[expose]
-def ratioList (f : ℝ → ℝ) (α : ℝ) (j N : ℕ) : List ℝ :=
-  (List.range N).flatMap fun n =>
-    (List.range (2 ^ n)).map fun i => incrementRatio f α j n i
-
-/-- A constant dominating `1` and every increment ratio of level less than `N`. -/
-@[expose]
-def holderConstFrom (f : ℝ → ℝ) (α : ℝ) (j N : ℕ) : ℝ :=
-  (ratioList f α j N).foldr max 1
-
-/-- Every entry of a list is at most the maximum against a fixed seed. -/
-private lemma le_foldr_max {l : List ℝ} {a x : ℝ} (hx : x ∈ l) : x ≤ l.foldr max a := by
-  induction l with
-  | nil => simp at hx
-  | cons y ys ih =>
-    rw [List.foldr_cons]
-    simp only [List.mem_cons] at hx
-    rcases hx with rfl | hx
-    · exact le_max_left _ _
-    · exact (ih hx).trans (le_max_right _ _)
-
-/-- The seed of a maximum is at most the maximum. -/
-private lemma le_foldr_max_self {l : List ℝ} {a : ℝ} : a ≤ l.foldr max a := by
-  induction l with
-  | nil => simp
-  | cons _ ys ih =>
-    rw [List.foldr_cons]
-    exact ih.trans (le_max_right _ _)
-
-/-- The constant built from increment ratios is at least `1`. -/
-private lemma one_le_holderConstFrom (f : ℝ → ℝ) (α : ℝ) (j N : ℕ) : 1 ≤ holderConstFrom f α j N :=
-  le_foldr_max_self
-
-/-- The constant built from increment ratios is nonnegative. -/
-lemma holderConstFrom_nonneg (f : ℝ → ℝ) (α : ℝ) (j N : ℕ) : 0 ≤ holderConstFrom f α j N :=
-  le_trans (by norm_num) (one_le_holderConstFrom f α j N)
-
-/-- An early increment ratio appears in the list used to build the constant. -/
-private lemma mem_ratioList {f : ℝ → ℝ} {α : ℝ} {j N n i : ℕ} (hn : n < N) (hi : i < 2 ^ n) :
-    incrementRatio f α j n i ∈ ratioList f α j N := by
-  refine List.mem_flatMap.2 ⟨n, List.mem_range.2 hn, ?_⟩
-  exact List.mem_map.2 ⟨i, List.mem_range.2 hi, rfl⟩
-
-/-- `(1 / 2 ^ n)` is the real power `2 ^ (-n)`. -/
-lemma one_div_two_pow_eq_rpow (n : ℕ) : (1 : ℝ) / 2 ^ n = (2 : ℝ) ^ (-(n : ℝ)) := by
-  rw [one_div, ← Real.rpow_natCast, ← Real.rpow_neg (by norm_num : (0 : ℝ) ≤ 2)]
-
-/-- Eventual unit increment bounds produce a finite dyadic Hölder constant. -/
-lemma hasDyadicIncrements_of_eventually {f : ℝ → ℝ} {α : ℝ} {j N : ℕ}
-    (hN : ∀ n, N ≤ n → ∀ i : ℕ, i < 2 ^ n →
-      |f (↑j + (↑i + 1) / 2 ^ n) - f (↑j + (↑i : ℝ) / 2 ^ n)| ≤ ((1 : ℝ) / 2 ^ n) ^ α) :
-    HasDyadicIncrements f α (holderConstFrom f α j N) j := by
-  intro n i hi
-  have hK : 1 ≤ holderConstFrom f α j N := one_le_holderConstFrom f α j N
-  by_cases hn : n < N
-  · have hratio : incrementRatio f α j n i ≤ holderConstFrom f α j N :=
-      le_foldr_max (mem_ratioList hn hi)
-    have hpow : 0 < (2 : ℝ) ^ (α * ↑n) := Real.rpow_pos_of_pos (by norm_num) _
-    have hΔ : |f (↑j + (↑i + 1) / 2 ^ n) - f (↑j + (↑i : ℝ) / 2 ^ n)| ≤
-        holderConstFrom f α j N / (2 : ℝ) ^ (α * ↑n) :=
-      (le_div_iff₀ hpow).2 hratio
-    calc
-      |f (↑j + (↑i + 1) / 2 ^ n) - f (↑j + (↑i : ℝ) / 2 ^ n)| ≤
-          holderConstFrom f α j N / (2 : ℝ) ^ (α * ↑n) := hΔ
-      _ = holderConstFrom f α j N * (2 : ℝ) ^ (-(α * ↑n)) := by
-        rw [div_eq_mul_inv, ← Real.rpow_neg (by positivity)]
-      _ = holderConstFrom f α j N * ((1 : ℝ) / 2 ^ n) ^ α := by
-        rw [one_div_two_pow_eq_rpow, ← Real.rpow_mul (by norm_num : (0 : ℝ) ≤ 2), neg_mul,
-          mul_comm (n : ℝ) α]
-  · have hn' : N ≤ n := by omega
-    exact (hN n hn' i hi).trans <| by
-      nth_rw 1 [← one_mul (((1 : ℝ) / 2 ^ n) ^ α)]
-      exact mul_le_mul_of_nonneg_right hK (Real.rpow_nonneg (by positivity) _)
+/-- For `0 ≤ x`, `1 / x ^ n` is the real power `x ^ (-n)`. -/
+lemma one_div_pow_eq_rpow_neg {x : ℝ} (hx : 0 ≤ x) (n : ℕ) : 1 / x ^ n = x ^ (-(n : ℝ)) := by
+  rw [one_div, ← Real.rpow_natCast, ← Real.rpow_neg hx]
 
 /-- Dividing an integer decomposition `m * 2 ^ L + k` recovers the integer and the remainder. -/
 private lemma natCast_div_mul_add (m k L : ℕ) :
@@ -258,6 +184,10 @@ private lemma abs_sub_on_units {f : ℝ → ℝ} {α : ℝ} {K : ℕ → ℝ} {N
 @[expose]
 def dyadicFloorReal (n : ℕ) (t : ℝ) : ℝ :=
   (Nat.floor (t * 2 ^ n) : ℝ) / 2 ^ n
+
+/-- Defining equation of `dyadicFloorReal`. -/
+theorem dyadicFloorReal_def (n : ℕ) (t : ℝ) :
+    dyadicFloorReal n t = (Nat.floor (t * 2 ^ n) : ℝ) / 2 ^ n := rfl
 
 /-- The dyadic floor is nonnegative. -/
 lemma dyadicFloorReal_nonneg (n : ℕ) (t : ℝ) : 0 ≤ dyadicFloorReal n t := by

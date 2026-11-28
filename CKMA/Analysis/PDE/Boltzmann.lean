@@ -46,40 +46,91 @@ open scoped ENNReal
 /-- Uniform angular probability obtained by radial projection of normalized unit-ball volume.
 The pole is a null set; assigning it direction zero does not change the angular measure. -/
 @[expose]
-def hardSphereAngularMeasure : Measure (EuclideanRealSpace 3) :=
-  ((volume (Metric.ball (0 : EuclideanRealSpace 3) 1))⁻¹ : ℝ≥0∞) •
-    (volume.restrict (Metric.ball (0 : EuclideanRealSpace 3) 1)).map (fun x ↦ ‖x‖⁻¹ • x)
+def hardSphereAngularMeasure : Measure (EuclideanSpace ℝ (Fin 3)) :=
+  ((volume (Metric.ball (0 : EuclideanSpace ℝ (Fin 3)) 1))⁻¹ : ℝ≥0∞) •
+    (volume.restrict (Metric.ball (0 : EuclideanSpace ℝ (Fin 3)) 1)).map (fun x ↦ ‖x‖⁻¹ • x)
+
+/-- Unfolding the angular measure. -/
+theorem hardSphereAngularMeasure_def :
+    hardSphereAngularMeasure =
+      ((volume (Metric.ball (0 : EuclideanSpace ℝ (Fin 3)) 1))⁻¹ : ℝ≥0∞) •
+        (volume.restrict (Metric.ball (0 : EuclideanSpace ℝ (Fin 3)) 1)).map
+          (fun x ↦ ‖x‖⁻¹ • x) := rfl
 
 /-- Post-collision velocity, with the scattering direction in the first or second output. -/
 @[expose]
-def postCollisionVelocity (v w σ : EuclideanRealSpace 3) (first : Bool) : EuclideanRealSpace 3 :=
+def postCollisionVelocity (v w σ : EuclideanSpace ℝ (Fin 3)) (first : Bool) :
+    EuclideanSpace ℝ (Fin 3) :=
   (1 / 2 : ℝ) • (v + w) + (if first then ‖v - w‖ / 2 else -(‖v - w‖ / 2)) • σ
+
+/-- The first post-collision velocity `(v + w) / 2 + |v - w| σ / 2`. -/
+theorem postCollisionVelocity_true (v w σ : EuclideanSpace ℝ (Fin 3)) :
+    postCollisionVelocity v w σ true = (1 / 2 : ℝ) • (v + w) + (‖v - w‖ / 2) • σ := by
+  simp [postCollisionVelocity]
+
+/-- The second post-collision velocity `(v + w) / 2 - |v - w| σ / 2`. -/
+theorem postCollisionVelocity_false (v w σ : EuclideanSpace ℝ (Fin 3)) :
+    postCollisionVelocity v w σ false = (1 / 2 : ℝ) • (v + w) - (‖v - w‖ / 2) • σ := by
+  simp [postCollisionVelocity, neg_smul, sub_eq_add_neg]
+
+/-- Elastic collisions conserve momentum. -/
+theorem postCollisionVelocity_add (v w σ : EuclideanSpace ℝ (Fin 3)) :
+    postCollisionVelocity v w σ true + postCollisionVelocity v w σ false = v + w := by
+  rw [postCollisionVelocity_true, postCollisionVelocity_false, add_add_sub_cancel, ← add_smul]
+  norm_num
 
 /-- Pre-collision product of a one-particle density. -/
 @[expose]
-def collisionPreProduct (f : EuclideanRealSpace 3 → ℝ) (v w : EuclideanRealSpace 3) : ℝ := f v * f w
+def collisionPreProduct (f : EuclideanSpace ℝ (Fin 3) → ℝ) (v w : EuclideanSpace ℝ (Fin 3)) : ℝ :=
+  f v * f w
+
+/-- Unfolding the pre-collision product. -/
+theorem collisionPreProduct_def (f : EuclideanSpace ℝ (Fin 3) → ℝ)
+    (v w : EuclideanSpace ℝ (Fin 3)) : collisionPreProduct f v w = f v * f w := rfl
 
 /-- Post-collision product of the same density. -/
 @[expose]
-def collisionPostProduct (f : EuclideanRealSpace 3 → ℝ) (v w σ : EuclideanRealSpace 3) : ℝ :=
+def collisionPostProduct (f : EuclideanSpace ℝ (Fin 3) → ℝ) (v w σ : EuclideanSpace ℝ (Fin 3)) :
+    ℝ :=
   f (postCollisionVelocity v w σ true) * f (postCollisionVelocity v w σ false)
+
+/-- Unfolding the post-collision product. -/
+theorem collisionPostProduct_def (f : EuclideanSpace ℝ (Fin 3) → ℝ)
+    (v w σ : EuclideanSpace ℝ (Fin 3)) :
+    collisionPostProduct f v w σ =
+      f (postCollisionVelocity v w σ true) * f (postCollisionVelocity v w σ false) := rfl
 
 /-- The hard-sphere collision operator with probability-normalized angular measure. -/
 @[expose]
-def hardSphereCollisionOperator (f : EuclideanRealSpace 3 → ℝ) (v : EuclideanRealSpace 3) : ℝ :=
+def hardSphereCollisionOperator (f : EuclideanSpace ℝ (Fin 3) → ℝ)
+    (v : EuclideanSpace ℝ (Fin 3)) : ℝ :=
   ∫ w, ∫ σ, ‖v - w‖ * (collisionPostProduct f v w σ - collisionPreProduct f v w)
     ∂hardSphereAngularMeasure
 
+/-- Unfolding the collision operator. -/
+theorem hardSphereCollisionOperator_def (f : EuclideanSpace ℝ (Fin 3) → ℝ)
+    (v : EuclideanSpace ℝ (Fin 3)) :
+    hardSphereCollisionOperator f v =
+      ∫ w, ∫ σ, ‖v - w‖ * (collisionPostProduct f v w σ - collisionPreProduct f v w)
+        ∂hardSphereAngularMeasure := rfl
+
 /-- Nonnegative collision entropy production, with the conventional factor `1/4`. -/
 @[expose]
-def hardSphereEntropyProduction (f : EuclideanRealSpace 3 → ℝ) : ℝ :=
+def hardSphereEntropyProduction (f : EuclideanSpace ℝ (Fin 3) → ℝ) : ℝ :=
   (1 / 4 : ℝ) * ∫ v, ∫ w, ∫ σ,
     ‖v - w‖ * (collisionPreProduct f v w - collisionPostProduct f v w σ) *
       (Real.log (collisionPreProduct f v w) - Real.log (collisionPostProduct f v w σ))
     ∂hardSphereAngularMeasure
 
+/-- Unfolding the entropy production. -/
+theorem hardSphereEntropyProduction_def (f : EuclideanSpace ℝ (Fin 3) → ℝ) :
+    hardSphereEntropyProduction f = (1 / 4 : ℝ) * ∫ v, ∫ w, ∫ σ,
+      ‖v - w‖ * (collisionPreProduct f v w - collisionPostProduct f v w σ) *
+        (Real.log (collisionPreProduct f v w) - Real.log (collisionPostProduct f v w σ))
+      ∂hardSphereAngularMeasure := rfl
+
 /-- The hard-sphere entropy production is nonnegative for strictly positive densities. -/
-theorem hardSphereEntropyProduction_nonneg (f : EuclideanRealSpace 3 → ℝ)
+theorem hardSphereEntropyProduction_nonneg (f : EuclideanSpace ℝ (Fin 3) → ℝ)
     (hpos : ∀ v, 0 < f v) : 0 ≤ hardSphereEntropyProduction f := by
   rw [hardSphereEntropyProduction]
   refine mul_nonneg (by positivity)
@@ -99,24 +150,42 @@ theorem hardSphereEntropyProduction_nonneg (f : EuclideanRealSpace 3 → ℝ)
 /-- All four velocity evaluations appearing in the collision entropy symmetrization. -/
 @[expose]
 def collisionEvaluation (i : Fin 4)
-    (z : EuclideanRealSpace 3 × EuclideanRealSpace 3 × EuclideanRealSpace 3) : EuclideanRealSpace 3
-      :=
+    (z : EuclideanSpace ℝ (Fin 3) × EuclideanSpace ℝ (Fin 3) × EuclideanSpace ℝ (Fin 3)) :
+    EuclideanSpace ℝ (Fin 3) :=
   if i.val = 0 then z.1 else if i.val = 1 then z.2.1 else
     postCollisionVelocity z.1 z.2.1 z.2.2 (i.val = 2)
 
+/-- Unfolding the four collision evaluations. -/
+theorem collisionEvaluation_def (i : Fin 4)
+    (z : EuclideanSpace ℝ (Fin 3) × EuclideanSpace ℝ (Fin 3) × EuclideanSpace ℝ (Fin 3)) :
+    collisionEvaluation i z = if i.val = 0 then z.1 else if i.val = 1 then z.2.1 else
+      postCollisionVelocity z.1 z.2.1 z.2.2 (i.val = 2) := rfl
+
 /-- Explicit absolute-integrability conditions justifying Fubini and the four logarithmic tests. -/
 @[expose]
-def HasIntegrableCollisionEntropy (f : EuclideanRealSpace 3 → ℝ) : Prop :=
-  ∀ i : Fin 4, Integrable (fun z : EuclideanRealSpace 3 × EuclideanRealSpace 3 × EuclideanRealSpace
-    3 ↦
+def HasIntegrableCollisionEntropy (f : EuclideanSpace ℝ (Fin 3) → ℝ) : Prop :=
+  ∀ i : Fin 4, Integrable
+    (fun z : EuclideanSpace ℝ (Fin 3) × EuclideanSpace ℝ (Fin 3) × EuclideanSpace ℝ (Fin 3) ↦
     ‖z.1 - z.2.1‖ * (collisionPostProduct f z.1 z.2.1 z.2.2 - collisionPreProduct f z.1 z.2.1) *
       Real.log (f (collisionEvaluation i z)))
-    ((volume : Measure (EuclideanRealSpace 3)).prod (volume.prod hardSphereAngularMeasure))
+    ((volume : Measure (EuclideanSpace ℝ (Fin 3))).prod (volume.prod hardSphereAngularMeasure))
 
-/-- **34.70**, the collisional H identity and entropy dissipation.
-The transport part of the spatially inhomogeneous theorem is a separate interface.
-Strict positivity avoids interpreting `0 log 0` in this first classical formulation. -/
-theorem hardSphere_hTheorem (f : EuclideanRealSpace 3 → ℝ) (hf : Measurable f)
+/-- Unfolding the integrability hypothesis of the H identity. -/
+theorem hasIntegrableCollisionEntropy_iff {f : EuclideanSpace ℝ (Fin 3) → ℝ} :
+    HasIntegrableCollisionEntropy f ↔ ∀ i : Fin 4, Integrable
+      (fun z : EuclideanSpace ℝ (Fin 3) × EuclideanSpace ℝ (Fin 3) × EuclideanSpace ℝ (Fin 3) ↦
+        ‖z.1 - z.2.1‖ *
+          (collisionPostProduct f z.1 z.2.1 z.2.2 - collisionPreProduct f z.1 z.2.1) *
+          Real.log (f (collisionEvaluation i z)))
+      ((volume : Measure (EuclideanSpace ℝ (Fin 3))).prod
+        (volume.prod hardSphereAngularMeasure)) :=
+  Iff.rfl
+
+/-- **34.70**, the collisional H identity and entropy dissipation for the spatially homogeneous
+hard-sphere operator: `∫ Q(f, f) log f = -D(f)` and `D(f) ≥ 0`, for a measurable strictly
+positive density whose four logarithmic collision tests are integrable. Strict positivity
+avoids the convention `0 log 0`. -/
+theorem hardSphere_hTheorem (f : EuclideanSpace ℝ (Fin 3) → ℝ) (hf : Measurable f)
     (hpos : ∀ v, 0 < f v) (hint : HasIntegrableCollisionEntropy f) :
     (∫ v, hardSphereCollisionOperator f v * Real.log (f v)) = -hardSphereEntropyProduction f ∧
       0 ≤ hardSphereEntropyProduction f := by

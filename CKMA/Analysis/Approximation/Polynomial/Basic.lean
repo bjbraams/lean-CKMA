@@ -14,6 +14,10 @@ public import Mathlib.Topology.Algebra.Polynomial
 This file sets up the uniform approximation of continuous real functions on `[-1, 1]` by
 polynomials of bounded degree, and the coefficient parametrization of such polynomials.
 
+The interval is fixed to `[-1, 1]`. Results on a compact interval `[a, b]` with `a < b` follow by
+the affine change of variables `x ↦ (2x - a - b) / (b - a)`, which preserves the degree of a
+polynomial and the supremum norm of a residual.
+
 ## Main definitions
 
 * `CKMA.ApproximationIntervalMap`: continuous real functions on `[-1, 1]`.
@@ -28,6 +32,9 @@ polynomials of bounded degree, and the coefficient parametrization of such polyn
 * `CKMA.coeff_polynomialOfCoeffs`, `CKMA.natDegree_polynomialOfCoeffs_le`,
   `CKMA.polynomialOfCoeffs_of_natDegree_le`, `CKMA.polynomialOfCoeffs_eq_zero_iff`: the
   coefficient parametrization is a bijection onto polynomials of degree at most `n`.
+* `CKMA.polynomialOnApproximationInterval_apply`, `CKMA.bestPolynomialError_def`,
+  `CKMA.isBestPolynomialApproximation_iff`, `CKMA.hasPolynomialAlternation_iff`,
+  `CKMA.polynomialOfCoeffs_def`: defining lemmas.
 * `CKMA.eq_zero_of_polynomialOnApproximationInterval_eq_zero`: a polynomial of degree at most
   `n` vanishing on `[-1, 1]` is zero.
 -/
@@ -41,7 +48,6 @@ namespace CKMA
 open Polynomial
 
 /-- Real continuous functions on the standard nondegenerate compact interval. -/
-@[expose]
 abbrev ApproximationIntervalMap := C(Set.Icc (-1 : ℝ) 1, ℝ)
 
 /-- A polynomial restricted to the standard approximation interval. -/
@@ -71,6 +77,37 @@ def HasPolynomialAlternation (f : ApproximationIntervalMap) (p : ℝ[X]) (n : �
 @[expose]
 def polynomialOfCoeffs (n : ℕ) (c : Fin (n + 1) → ℝ) : ℝ[X] :=
   ∑ i, monomial i.val (c i)
+
+/-- Evaluation of a restricted polynomial. -/
+@[simp]
+lemma polynomialOnApproximationInterval_apply (p : ℝ[X]) (x : Set.Icc (-1 : ℝ) 1) :
+    polynomialOnApproximationInterval p x = p.eval x.1 :=
+  rfl
+
+/-- The best error is the infimum of the residual norms over polynomials of degree at most
+`n`. -/
+lemma bestPolynomialError_def (f : ApproximationIntervalMap) (n : ℕ) :
+    bestPolynomialError f n =
+      sInf {r | ∃ p : ℝ[X], p.natDegree ≤ n ∧ r = ‖f - polynomialOnApproximationInterval p‖} :=
+  rfl
+
+/-- Characterization of a best uniform polynomial approximant. -/
+lemma isBestPolynomialApproximation_iff {f : ApproximationIntervalMap} {n : ℕ} {p : ℝ[X]} :
+    IsBestPolynomialApproximation f n p ↔ p.natDegree ≤ n ∧ ∀ q : ℝ[X], q.natDegree ≤ n →
+      ‖f - polynomialOnApproximationInterval p‖ ≤ ‖f - polynomialOnApproximationInterval q‖ :=
+  Iff.rfl
+
+/-- Characterization of alternation of the uniform residual. -/
+lemma hasPolynomialAlternation_iff {f : ApproximationIntervalMap} {p : ℝ[X]} {n : ℕ} :
+    HasPolynomialAlternation f p n ↔ ∃ x : Fin (n + 2) → Set.Icc (-1 : ℝ) 1,
+      StrictMono (fun i ↦ (x i).1) ∧ ∃ σ : ℝ, |σ| = 1 ∧ ∀ i,
+        f (x i) - p.eval (x i).1 = σ * (-1) ^ i.val * ‖f - polynomialOnApproximationInterval p‖ :=
+  Iff.rfl
+
+/-- The coefficient polynomial is the sum of its monomials. -/
+lemma polynomialOfCoeffs_def (n : ℕ) (c : Fin (n + 1) → ℝ) :
+    polynomialOfCoeffs n c = ∑ i, monomial i.val (c i) :=
+  rfl
 
 /-- Each stored coefficient is recovered from `polynomialOfCoeffs`. -/
 lemma coeff_polynomialOfCoeffs (n : ℕ) (c : Fin (n + 1) → ℝ) (i : Fin (n + 1)) :
@@ -137,7 +174,7 @@ private lemma coefficientTestPoint_injective (n : ℕ) :
   intro i j hij
   unfold coefficientTestPoint at hij
   have hden : ((n : ℝ) + 1) ≠ 0 := by positivity
-  have hval : (i.val : ℝ) = j.val := (div_left_inj' hden).mp hij
+  have hval : (i.val : ℝ) = j.val := (div_left_inj₀ hden).mp hij
   exact Fin.ext (Nat.cast_injective hval)
 
 /-- A polynomial of degree at most `n` that vanishes on `[-1,1]` is zero. -/

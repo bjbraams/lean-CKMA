@@ -179,7 +179,8 @@ $|Du|(\Omega)=\sup\{\int u\mathop{\mathrm{div}}\phi:
   The normalization $F(0)=0$ ensures $F(u)\in L^1$.
 * **30. Coarea for BV.** For scalar $u$,
   $|Du|(\Omega)=\int_{\mathbb R}P(\{u>t\};\Omega)dt$.
-  Almost every superlevel set therefore has finite perimeter.
+  When $|Du|(\Omega)<\infty$, almost every superlevel set therefore has
+  finite perimeter in $\Omega$.
 * **31. BV Sobolev inequality.** For $n\geq2$ and
   $u\in BV(\mathbb R^n)$,
   $\|u\|_{n/(n-1)}\leq C_n|Du|(\mathbb R^n)$; by the coarea formula

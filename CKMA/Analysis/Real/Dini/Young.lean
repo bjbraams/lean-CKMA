@@ -18,19 +18,19 @@ countable, and likewise with the two sides exchanged. Both sets are Lebesgue nul
 argument uses only the strict limsup and liminf inequalities, so the function is an arbitrary
 map `ℝ → ℝ`. Source: GAPS 05.10.
 
-## Main definitions
-
-* `uniformCross`: points where short right slopes lie below `p` and short left slopes
-  lie above `p`.
-
 ## Main results
 
-* `countable_lt_upperRight_lowerLeft`,
-  `countable_lt_upperLeft_lowerRight`: countability of strict opposite-side Dini
-  inequalities.
+* `CKMA.Dini.upperRightDiniDerivative_neg`, `CKMA.Dini.lowerLeftDiniDerivative_neg`: negation
+  of the function exchanges upper and lower Dini derivatives on the same side, up to sign.
 * `CKMA.Dini.volume_lt_upperRight_lowerLeft`,
   `CKMA.Dini.volume_lt_upperLeft_lowerRight`: Lebesgue nullity of strict opposite-side Dini
   inequalities.
+
+## Implementation notes
+
+The private sets `uniformCross f p n` collect the points where right slopes of length at most
+`1 / (n + 1)` lie below `p` and left slopes of that length lie above `p`. Each is
+`1 / (n + 1)`-separated, hence countable, and they cover both strict inequality sets.
 -/
 
 public section
@@ -58,7 +58,6 @@ private lemma uniformCross_separated (f : ℝ → ℝ) (p : ℚ) (n : ℕ) :
     (uniformCross f p n).Pairwise (fun x y => (1 : ℝ) / (n + 1) < |x - y|) := by
   intro x hx y hy hxy
   set δ : ℝ := (1 : ℝ) / (n + 1)
-  have hδ : 0 < δ := by positivity
   by_contra hnear
   have hley : |y - x| ≤ δ := by
     rw [abs_sub_comm]
@@ -82,7 +81,8 @@ private lemma uniformCross_separated (f : ℝ → ℝ) (p : ℚ) (n : ℕ) :
       rw [add_comm]
       exact sub_add_cancel x y
     rw [haddL] at hrawL
-    linarith [differenceQuotient_rev f x y]
+    linarith [show (f x - f y) / (x - y) = (f y - f x) / (y - x) by
+      rw [← neg_sub (f y) (f x), ← neg_sub y x, neg_div_neg_eq]]
   · have hpos : 0 < x - y := sub_pos.2 hyx
     have hlen : x - y ≤ δ := by
       have habs : |x - y| ≤ δ := by
@@ -104,7 +104,8 @@ private lemma uniformCross_separated (f : ℝ → ℝ) (p : ℚ) (n : ℕ) :
       rw [add_comm]
       exact sub_add_cancel y x
     rw [haddL] at hrawL
-    linarith [differenceQuotient_rev f y x]
+    linarith [show (f y - f x) / (y - x) = (f x - f y) / (x - y) by
+      rw [← neg_sub (f x) (f y), ← neg_sub x y, neg_div_neg_eq]]
 
 /-- A separated subset of `ℝ` is countable. -/
 private lemma countable_of_separated {s : Set ℝ} {δ : ℝ} (hδ : 0 < δ)
@@ -237,8 +238,7 @@ private theorem countable_lt_upperRight_lowerLeft (f : ℝ → ℝ) :
 private theorem countable_lt_upperLeft_lowerRight (f : ℝ → ℝ) :
     {x | upperLeftDiniDerivative f x < lowerRightDiniDerivative f x}.Countable :=
   (countable_lt_upperRight_lowerLeft (-f)).mono fun x hx => by
-    change upperRightDiniDerivative (-f) x < lowerLeftDiniDerivative (-f) x
-    rw [upperRightDiniDerivative_neg, lowerLeftDiniDerivative_neg]
+    rw [mem_ofPred_eq, upperRightDiniDerivative_neg, lowerLeftDiniDerivative_neg]
     exact EReal.neg_lt_neg_iff.2 hx
 
 /-- The strict inequality between the upper right and lower left derivatives is null. -/
@@ -252,16 +252,3 @@ theorem volume_lt_upperLeft_lowerRight (f : ℝ → ℝ) :
   (countable_lt_upperLeft_lowerRight f).measure_zero volume
 
 end CKMA.Dini
-
-namespace CKMA
-
-@[deprecated (since := "2026-11-15")]
-alias upperRightDiniDerivative_neg := Dini.upperRightDiniDerivative_neg
-@[deprecated (since := "2026-11-15")]
-alias lowerLeftDiniDerivative_neg := Dini.lowerLeftDiniDerivative_neg
-@[deprecated (since := "2026-11-15")]
-alias volume_lt_upperRight_lowerLeft := Dini.volume_lt_upperRight_lowerLeft
-@[deprecated (since := "2026-11-15")]
-alias volume_lt_upperLeft_lowerRight := Dini.volume_lt_upperLeft_lowerRight
-
-end CKMA

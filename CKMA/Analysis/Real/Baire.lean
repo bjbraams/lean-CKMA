@@ -25,6 +25,7 @@ Source: GAPS 05.7.
 
 ## Main results
 
+* `CKMA.isBaireOneOn_iff`: the defining property.
 * `CKMA.IsBaireOneOn.mono`: restriction of a Baire class one function.
 * `CKMA.ContinuousOn.isBaireOneOn`: continuous functions are of Baire class one.
 * `CKMA.DifferentiableOn.isBaireOneOn_deriv`: the derivative on an open set in `ℝ` of a
@@ -46,6 +47,12 @@ variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
 def IsBaireOneOn (f : X → Y) (s : Set X) : Prop :=
   ∃ g : ℕ → X → Y, (∀ n, ContinuousOn (g n) s) ∧
     ∀ x ∈ s, Tendsto (fun n ↦ g n x) atTop (𝓝 (f x))
+
+/-- The defining property: `f` is a pointwise limit on `s` of functions continuous on `s`. -/
+theorem isBaireOneOn_iff {f : X → Y} {s : Set X} :
+    IsBaireOneOn f s ↔ ∃ g : ℕ → X → Y, (∀ n, ContinuousOn (g n) s) ∧
+      ∀ x ∈ s, Tendsto (fun n ↦ g n x) atTop (𝓝 (f x)) :=
+  Iff.rfl
 
 /-- Restricting a Baire class one function preserves its class. -/
 theorem IsBaireOneOn.mono {f : X → Y} {s t : Set X}

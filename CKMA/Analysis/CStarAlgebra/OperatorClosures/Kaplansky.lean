@@ -9,13 +9,11 @@ public import CKMA.Analysis.CStarAlgebra.OperatorClosures.Bicommutant
 
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.NonUnital
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Range
-import Mathlib.Analysis.InnerProductSpace.PiL2
-import Mathlib.Analysis.Normed.Lp.PiLp
-import Mathlib.Topology.Algebra.Module.Spaces.PointwiseConvergenceCLM
 import TauCeti.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Kaplansky
 import TauCeti.Analysis.CStarAlgebra.Representation.Nondegenerate
 import TauCeti.Analysis.VonNeumannAlgebra.Bicommutant
 import TauCeti.Analysis.InnerProductSpace.Amplification
+import TauCeti.Analysis.InnerProductSpace.PiL2
 
 /-!
 # Kaplansky density for nondegenerate operator algebras
@@ -31,7 +29,9 @@ The self-adjoint strong closure is TauCeti's
 function, its difference identity, and the norm bound are `TauCeti.kaplanskyFun`,
 `TauCeti.cfc_kaplanskyFun_sub_cfc_kaplanskyFun`, and `TauCeti.norm_cfc_kaplanskyFun_le`.
 Nondegeneracy along an increasing approximate unit is
-`NonUnitalStarAlgHom.isNondegenerate_iff_tendsto`. These TauCeti modules are imported
+`NonUnitalStarAlgHom.isNondegenerate_iff_tendsto`. Matrix entries of operators on the Hilbert sum
+of two copies of `H` are TauCeti's `ContinuousLinearMap.piLpEntry`, with its product, adjoint,
+extensionality and norm lemmas. These TauCeti modules are imported
 directly: the arguments are operator-algebraic and do not factor through another CKMA
 section's `Basic` file.
 
@@ -414,40 +414,12 @@ theorem kaplansky_density_selfAdjoint (A : NonUnitalStarSubalgebra ℂ (H →L[�
 -- Notation, rather than an abbreviation: an abbreviation is not unfolded during typeclass search.
 local notation "twoCopy" => PiLp 2 (fun _ : Fin 2 => H)
 
-section
-
-omit [CompleteSpace H]
-
-/-- The inner product against a vector supported on one summand is the corresponding component. -/
-private theorem inner_piLp_single_left (i : Fin 2) (h : H) (w : twoCopy) :
-    ⟪PiLp.single 2 i h, w⟫_ℂ = ⟪h, w i⟫_ℂ := by
-  rw [PiLp.inner_apply, Fin.sum_univ_two]
-  by_cases hi : i = 0
-  · subst hi
-    simp [inner_zero_left]
-  · have hi1 : i = 1 := Fin.eq_one_of_ne_zero i hi
-    subst hi1
-    simp [inner_zero_left]
-
-/-- The inner product of a vector against one supported on a single summand. -/
-private theorem inner_piLp_single_right (j : Fin 2) (h : H) (w : twoCopy) :
-    ⟪w, PiLp.single 2 j h⟫_ℂ = ⟪w j, h⟫_ℂ := by
-  rw [PiLp.inner_apply, Fin.sum_univ_two]
-  by_cases hj : j = 0
-  · subst hj
-    simp [inner_zero_right]
-  · have hj1 : j = 1 := Fin.eq_one_of_ne_zero j hj
-    subst hj1
-    simp [inner_zero_right]
-
-end
-
 /-- The adjoint of a coordinate projection inserts a vector into that summand. -/
 private theorem adjoint_proj_apply (i : Fin 2) (z : H) :
     (PiLp.proj (𝕜 := ℂ) 2 (fun _ : Fin 2 => H) i).adjoint z =
       PiLp.single (β := fun _ : Fin 2 => H) 2 i z := by
   refine ext_inner_left ℂ fun w => ?_
-  rw [ContinuousLinearMap.adjoint_inner_right, PiLp.proj_apply, ← inner_piLp_single_right]
+  rw [ContinuousLinearMap.adjoint_inner_right, PiLp.proj_apply, ← PiLp.inner_single_right]
 
 /-- The operator on the Hilbert sum sending the `j`-th summand into the `i`-th summand by `a`. -/
 private def corner (i j : Fin 2) (a : H →L[ℂ] H) : twoCopy →L[ℂ] twoCopy :=
@@ -485,12 +457,6 @@ section
 
 omit [CompleteSpace H]
 
-/-- The zero operator has zero matrix entries. -/
-@[simp] private theorem piLpEntry_zero (i j : Fin 2) :
-    (0 : twoCopy →L[ℂ] twoCopy).piLpEntry i j = 0 := by
-  ext
-  simp [piLpEntry_apply]
-
 /-- Matrix entries are additive. -/
 private theorem piLpEntry_add (S T : twoCopy →L[ℂ] twoCopy) (i j : Fin 2) :
     (S + T).piLpEntry i j = S.piLpEntry i j + T.piLpEntry i j := by
@@ -504,47 +470,6 @@ private theorem piLpEntry_smul (c : ℂ) (T : twoCopy →L[ℂ] twoCopy) (i j : 
   simp [piLpEntry_apply, smul_apply]
 
 end
-
-section
-
-omit [CompleteSpace H]
-
-/-- The matrix entries of a product are the row-column products of the entries. -/
-private theorem piLpEntry_mul (S T : twoCopy →L[ℂ] twoCopy) (i k : Fin 2) :
-    (S * T).piLpEntry i k = ∑ j : Fin 2, S.piLpEntry i j * T.piLpEntry j k := by
-  ext h
-  rw [piLpEntry_apply, mul_apply_eq_comp, apply_eq_sum_piLpEntry]
-  have hsum : (∑ j : Fin 2, S.piLpEntry i j * T.piLpEntry j k) h =
-      ∑ j : Fin 2, (S.piLpEntry i j * T.piLpEntry j k) h := by
-    let φ : (H →L[ℂ] H) →+ H → H := FunLike.coeAddMonoidHom (H →L[ℂ] H) H H
-    have hφ := congr_fun (map_sum φ
-      (fun j : Fin 2 => S.piLpEntry i j * T.piLpEntry j k) Finset.univ) h
-    rw [FunLike.coeAddMonoidHom_apply] at hφ
-    rw [Finset.sum_apply] at hφ
-    exact hφ
-  rw [hsum]
-  refine Finset.sum_congr rfl fun j _ => ?_
-  rw [mul_apply_eq_comp, ← piLpEntry_apply]
-
-end
-
-/-- Starring an operator on the Hilbert sum transposes and stars its matrix entries. -/
-private theorem piLpEntry_star (T : twoCopy →L[ℂ] twoCopy) (i j : Fin 2) :
-    (star T).piLpEntry i j = star (T.piLpEntry j i) := by
-  ext ξ
-  refine ext_inner_left ℂ fun h => ?_
-  calc ⟪h, (star T).piLpEntry i j ξ⟫_ℂ
-      = ⟪h, (ContinuousLinearMap.adjoint T (PiLp.single 2 j ξ)) i⟫_ℂ := by
-        rw [ContinuousLinearMap.star_eq_adjoint, piLpEntry_apply]
-    _ = ⟪PiLp.single 2 i h, ContinuousLinearMap.adjoint T (PiLp.single 2 j ξ)⟫_ℂ := by
-        rw [← inner_piLp_single_left]
-    _ = ⟪T (PiLp.single 2 i h), PiLp.single 2 j ξ⟫_ℂ :=
-        ContinuousLinearMap.adjoint_inner_right _ _ _
-    _ = ⟪(T (PiLp.single 2 i h)) j, ξ⟫_ℂ := inner_piLp_single_right _ _ _
-    _ = ⟪T.piLpEntry j i h, ξ⟫_ℂ := by rw [piLpEntry_apply]
-    _ = ⟪h, ContinuousLinearMap.adjoint (T.piLpEntry j i) ξ⟫_ℂ := by
-        rw [← ContinuousLinearMap.adjoint_inner_right]
-    _ = ⟪h, star (T.piLpEntry j i) ξ⟫_ℂ := by rw [← ContinuousLinearMap.star_eq_adjoint]
 
 /-- Operators on two copies of `H` whose four corners lie in `A`. -/
 private def matrixTwo (A : NonUnitalStarSubalgebra ℂ (H →L[ℂ] H)) :
@@ -638,19 +563,6 @@ private theorem piLpEntry_mul_corner (R : twoCopy →L[ℂ] twoCopy) (a : H →L
     have hzero : PiLp.single (β := fun _ : Fin 2 => H) 2 i (0 : H) = 0 :=
       (PiLp.single_eq_zero_iff 2 i).mpr rfl
     rw [hzero, map_zero, PiLp.zero_apply, ite_eq_right hk, zero_apply]
-
-section
-
-omit [CompleteSpace H]
-
-/-- Two operators on the Hilbert sum with the same matrix entries are equal. -/
-private theorem ext_piLpEntry {S T : twoCopy →L[ℂ] twoCopy}
-    (h : ∀ i j, S.piLpEntry i j = T.piLpEntry i j) : S = T := by
-  ext w i
-  rw [apply_eq_sum_piLpEntry, apply_eq_sum_piLpEntry]
-  exact Finset.sum_congr rfl fun j _ => by rw [h]
-
-end
 
 /-- The commutant of `matrixTwo A` consists of the diagonal amplifications of the commutant of
 `A`. Nondegeneracy kills the off-diagonal entries. -/
@@ -886,29 +798,6 @@ private theorem matrixTwo_nondegenerate (A : NonUnitalStarSubalgebra ℂ (H →L
   · exact Submodule.add_mem _ (singleCLM_mem_span_matrixTwo A 0 hz0)
       (singleCLM_mem_span_matrixTwo A 1 hz1)
 
-section
-
-omit [CompleteSpace H]
-
-/-- A matrix entry of an operator is bounded by the operator norm. -/
-private theorem norm_piLpEntry_le {M : twoCopy →L[ℂ] twoCopy} {C : ℝ} (hC : 0 ≤ C)
-    (hM : ‖M‖ ≤ C) (i j : Fin 2) : ‖M.piLpEntry i j‖ ≤ C := by
-  refine opNorm_le_bound (M.piLpEntry i j) hC fun y => ?_
-  let s : twoCopy := PiLp.single (β := fun _ : Fin 2 => H) 2 j y
-  have happly : M.piLpEntry i j y = (M s) i := by
-    rw [piLpEntry_apply]
-  rw [happly]
-  have hcomp : ‖(M s) i‖ ≤ ‖M s‖ := PiLp.norm_apply_le _ _
-  have hop : ‖M s‖ ≤ ‖M‖ * ‖s‖ := M.le_opNorm s
-  have hnorm : ‖s‖ = ‖y‖ :=
-    PiLp.norm_single (p := 2) (β := fun _ : Fin 2 => H) j y
-  have hscale : ‖M‖ * ‖s‖ ≤ C * ‖y‖ := by
-    rw [hnorm]
-    exact mul_le_mul_of_nonneg_right hM (norm_nonneg _)
-  exact hcomp.trans (hop.trans hscale)
-
-end
-
 /-- **23.22**, Kaplansky density for a possibly nonunital, nondegenerately represented
 star algebra of operators; norm closedness is not needed. Nondegeneracy is stated by density
 of the linear action span. -/
@@ -926,7 +815,7 @@ theorem kaplansky_density (A : NonUnitalStarSubalgebra ℂ (H →L[ℂ] H))
     (matrixTwo_nondegenerate A hd) (offDiagonal T) hmem hnorm (offDiagonal_isSelfAdjoint T) n
     (fun i => PiLp.single 2 0 (x i)) ε hε
   obtain ⟨hMA, hMnorm, -⟩ := hM
-  refine ⟨M.piLpEntry 1 0, ⟨hMA 1 0, norm_piLpEntry_le zero_le_one hMnorm 1 0⟩, fun i => ?_⟩
+  refine ⟨M.piLpEntry 1 0, ⟨hMA 1 0, (norm_piLpEntry_le M 1 0).trans hMnorm⟩, fun i => ?_⟩
   have heq : ((M - offDiagonal T) (PiLp.single 2 0 (x i))) 1 =
       (M.piLpEntry 1 0 - T) (x i) := by
     rw [sub_apply, PiLp.sub_apply]

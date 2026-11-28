@@ -38,25 +38,8 @@ normalizations are explicit at the theorem interfaces.
 * `CKMA.HasGaussianMoments.hasPsiTwoBound`: moment growth implies exponential square control.
 * `CKMA.HasPsiTwoBound.hasSubgaussianMGF`: centered exponential square control implies
   sub-Gaussian MGF.
-* `CKMA.johnson_lindenstrauss`: Johnson–Lindenstrauss finite-set dimension reduction.
+* `CKMA.johnson_lindenstrauss`: Johnson–Lindenstrauss finite-set dimension reduction
+  (in `Concentration.JohnsonLindenstrauss`).
 
 The implication theorems are in `Concentration.Basic`.
 -/
-
-public section
-
-noncomputable section
-
-namespace CKMA
-
-/-- **07.47**: Johnson–Lindenstrauss, with a constant uniform in dimensions and points.
-The `max N 1` convention includes the empty configuration. -/
-theorem johnson_lindenstrauss : ∃ C : ℝ, 0 < C ∧
-    ∀ (d N : ℕ) (x : Fin N → EuclideanSpace ℝ (Fin d)) (ε : ℝ), 0 < ε → ε < 1 →
-    ∃ (m : ℕ) (T : EuclideanSpace ℝ (Fin d) →ₗ[ℝ] EuclideanSpace ℝ (Fin m)),
-      (m : ℝ) ≤ C * ε⁻¹ ^ 2 * Real.log (2 * (max N 1 : ℕ)) ∧
-      ∀ i j, (1 - ε) * ‖x i - x j‖ ^ 2 ≤ ‖T (x i - x j)‖ ^ 2 ∧
-        ‖T (x i - x j)‖ ^ 2 ≤ (1 + ε) * ‖x i - x j‖ ^ 2 :=
-  ⟨64, by norm_num, johnson_lindenstrauss_explicit⟩
-
-end CKMA

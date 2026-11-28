@@ -5,9 +5,12 @@ Authors: CKMA contributors
 -/
 module
 
-public import Mathlib.Analysis.CStarAlgebra.Classes
-public import Mathlib.Analysis.Normed.Operator.Extend
-public import CKMA.Analysis.CStarAlgebra.Representation.Faithful
+public import Mathlib.Analysis.CStarAlgebra.ContinuousLinearMap
+public import CKMA.Analysis.InnerProductSpace.HilbertModel
+
+import Mathlib.Analysis.CStarAlgebra.Hom
+import Mathlib.Analysis.Normed.Operator.Extend
+import TauCeti.Analysis.CStarAlgebra.Representation.GNS
 
 /-!
 # Cyclic C-star representations and faithful operator representations
@@ -17,8 +20,11 @@ subspace. A represented functional has the form `a ↦ ⟪Ω, π(a)Ω⟫`, with 
 linear in its second variable. Cyclic realizations of one functional are compared by a unique
 unitary preserving their cyclic vectors and intertwining the actions.
 
-The faithful representation statement includes nonunital C-star algebras and norm-closed image.
-Its Hilbert carrier is allowed in a larger universe for the sum over states.
+The faithful representation statement includes nonunital C-star algebras and norm-closed image,
+with the Hilbert carrier in the universe of the algebra. It is derived from TauCeti's
+Gelfand–Naimark theorem `TauCeti.CStarAlgebra.exists_faithful_nondegenerate_representation`
+(the Hilbert sum of the GNS representations of all positive functionals) and Mathlib's
+`NonUnitalStarAlgHom.norm_map`.
 Sources: GAPS 23.9 and 23.10.
 
 ## Main definitions
@@ -29,9 +35,10 @@ Sources: GAPS 23.9 and 23.10.
 
 ## Main results
 
+* `CKMA.isCyclicVector_iff`, `CKMA.realizesFunctional_iff`: defining lemmas.
 * `CKMA.inner_cyclicOrbit_star_mul`: inner product of orbit vectors realizing a functional.
-* `CKMA.existsUnique_cyclicRepresentation_equiv`: uniqueness of the unitary intertwiner between
-  cyclic realizations of the same functional (**23.9**).
+* `CKMA.existsUnique_linearIsometryEquiv_of_realizesFunctional`: uniqueness of the unitary
+  intertwiner between cyclic realizations of the same functional (**23.9**).
 * `CKMA.exists_isometric_representation`: Gelfand–Naimark isometric representation theorem
   (**23.10**).
 -/
@@ -62,6 +69,16 @@ variable. -/
 @[expose]
 def RealizesFunctional (π : A →⋆ₙₐ[ℂ] (H →L[ℂ] H)) (Ω : H) (φ : A → ℂ) : Prop :=
   ∀ a, φ a = ⟪Ω, π a Ω⟫_ℂ
+
+/-- Defining property of `IsCyclicVector`: the orbit map `a ↦ π a Ω` has dense range. -/
+theorem isCyclicVector_iff (π : A →⋆ₙₐ[ℂ] (H →L[ℂ] H)) (Ω : H) :
+    IsCyclicVector π Ω ↔ DenseRange (fun a ↦ π a Ω) :=
+  Iff.rfl
+
+/-- Defining property of `RealizesFunctional`: `φ a = ⟪Ω, π a Ω⟫` for every `a`. -/
+theorem realizesFunctional_iff (π : A →⋆ₙₐ[ℂ] (H →L[ℂ] H)) (Ω : H) (φ : A → ℂ) :
+    RealizesFunctional π Ω φ ↔ ∀ a, φ a = ⟪Ω, π a Ω⟫_ℂ :=
+  Iff.rfl
 
 /-- The linear orbit map `a ↦ π a Ω`. -/
 @[expose]
@@ -223,9 +240,9 @@ private theorem cyclicRepresentation_unique {π : A →⋆ₙₐ[ℂ] (H →L[�
   exact congr_fun hagree x
 
 /-- **23.9**, uniqueness clause: two cyclic realizations of the same functional have a unique
-unitary intertwiner preserving their cyclic vectors. Existence for nonunital algebras is
-separate. -/
-theorem existsUnique_cyclicRepresentation_equiv
+unitary intertwiner preserving their cyclic vectors. The statement compares two given
+realizations; it does not assert that a cyclic realization exists. -/
+theorem existsUnique_linearIsometryEquiv_of_realizesFunctional
     (π : A →⋆ₙₐ[ℂ] (H →L[ℂ] H)) (ρ : A →⋆ₙₐ[ℂ] (K →L[ℂ] K))
     (Ω : H) (Ω' : K) (hπ : IsCyclicVector π Ω) (hρ : IsCyclicVector ρ Ω')
     (φ : A → ℂ) (hφπ : RealizesFunctional π Ω φ) (hφρ : RealizesFunctional ρ Ω' φ) :
@@ -245,30 +262,18 @@ theorem existsUnique_cyclicRepresentation_equiv
       (fun a x => cyclicRepresentation_intertwining hπ U
         (cyclicRepresentationEquiv_apply π ρ Ω Ω' hπ hρ φ hφπ hφρ) a x)
 
-/-- **23.10**: a C*-algebra, including a nonunital one, has an isometric operator representation
-with closed image. The larger universe permits the Hilbert sum over all states. -/
+/-- **23.10**, Gelfand–Naimark: a C*-algebra, including a nonunital one, has an isometric
+operator representation with closed image, on a Hilbert space in the universe of the algebra.
+The injective representation is TauCeti's
+`TauCeti.CStarAlgebra.exists_faithful_nondegenerate_representation`; an injective ⋆-homomorphism
+of C*-algebras is isometric by Mathlib's `NonUnitalStarAlgHom.norm_map`. -/
 theorem exists_isometric_representation (A : Type u) [NonUnitalCStarAlgebra A] :
-    ∃ H : ComplexHilbertSpace.{u + 1},
+    ∃ H : ComplexHilbertSpace.{u},
       ∃ π : A →⋆ₙₐ[ℂ] (H.carrier →L[ℂ] H.carrier), Isometry π ∧ IsClosed (Set.range π) := by
-  let B := Unitization ℂ A
-  let : PartialOrder B := CStarAlgebra.spectralOrder B
-  have : StarOrderedRing B := CStarAlgebra.spectralOrderedRing B
-  have : Nontrivial B := NormOneClass.nontrivial
-  obtain ⟨H, pi, hIso, _⟩ := exists_isometric_representation_unital (A := B)
-  let rho : A →⋆ₙₐ[ℂ] (H.carrier →L[ℂ] H.carrier) :=
-    pi.comp (Unitization.inrNonUnitalStarAlgHom ℂ A)
-  have hnorm : ∀ a : A, ‖rho a‖ = ‖a‖ := by
-    intro a
-    have hpi : ‖pi (a : B)‖ = ‖(a : B)‖ := by
-      simpa [dist_eq_norm, map_zero pi, sub_zero] using hIso.dist_eq (a : B) 0
-    have hr : rho a = pi (a : B) := by
-      simp only [rho, NonUnitalStarAlgHom.comp_apply]
-      rw [Unitization.inrNonUnitalStarAlgHom_apply]
-    rw [hr, hpi, Unitization.norm_inr]
-  have hrho : Isometry rho := AddMonoidHomClass.isometry_of_norm rho hnorm
-  exact ⟨H, rho, hrho, hrho.isClosedEmbedding.isClosed_range⟩
-
-@[deprecated (since := "2026-11-15")]
-alias exists_isometric_representation_gns := exists_isometric_representation
+  obtain ⟨H, _, _, _, π, hπ, -⟩ :=
+    TauCeti.CStarAlgebra.exists_faithful_nondegenerate_representation A
+  have hiso : Isometry π :=
+    AddMonoidHomClass.isometry_of_norm π (NonUnitalStarAlgHom.norm_map π hπ)
+  exact ⟨⟨H⟩, π, hiso, hiso.isClosedEmbedding.isClosed_range⟩
 
 end CKMA

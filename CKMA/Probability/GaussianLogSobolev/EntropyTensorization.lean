@@ -5,7 +5,7 @@ Authors: CKMA contributors
 -/
 module
 
-public import CKMA.Probability.GaussianLogSobolev.OneDimLSI
+public import CKMA.Probability.GaussianLogSobolev.Basic
 public import Mathlib.MeasureTheory.Constructions.Pi
 import Mathlib.MeasureTheory.Integral.Prod
 
@@ -25,9 +25,6 @@ number of coordinates, as in TauCeti's proof of the Efron–Stein inequality.
 
 ## Main results
 
-* `CKMA.nonnegativeFunctionEntropy_eq_lintegral`: the entropy as one lower integral.
-* `CKMA.nonnegativeFunctionEntropy_comp_measurePreserving`: invariance under measure-preserving
-  embeddings.
 * `CKMA.measurable_nonnegativeFunctionEntropy_slice`: measurability of slice entropies.
 * `CKMA.nonnegativeFunctionEntropy_prod_le`: subadditivity on a product of two probability
   spaces.
@@ -52,23 +49,6 @@ open scoped ENNReal
 section Basic
 
 variable {X : Type*} [MeasurableSpace X]
-
-/-- For a function of nonnegative mean, the entropy is the lower integral of the perspective
-`m * klFun (h x / m)` of `klFun` at the mean `m`. -/
-theorem nonnegativeFunctionEntropy_eq_lintegral {μ : Measure X} {h : X → ℝ}
-    (hm : 0 ≤ ∫ x, h x ∂μ) :
-    nonnegativeFunctionEntropy μ h =
-      ∫⁻ x, ENNReal.ofReal ((∫ y, h y ∂μ) * klFun (h x / ∫ y, h y ∂μ)) ∂μ := by
-  rw [nonnegativeFunctionEntropy, ← lintegral_const_mul' _ _ ENNReal.ofReal_ne_top]
-  simp_rw [ENNReal.ofReal_mul hm]
-
-/-- The entropy is invariant under composition with a measure-preserving embedding. -/
-theorem nonnegativeFunctionEntropy_comp_measurePreserving {Y : Type*} [MeasurableSpace Y]
-    {μ : Measure X} {ν : Measure Y} {f : X → Y} (hf : MeasurePreserving f μ ν)
-    (he : MeasurableEmbedding f) (h : Y → ℝ) :
-    nonnegativeFunctionEntropy μ (fun x ↦ h (f x)) = nonnegativeFunctionEntropy ν h := by
-  simp only [nonnegativeFunctionEntropy, hf.integral_comp he]
-  rw [hf.lintegral_comp_emb he (fun y ↦ ENNReal.ofReal (klFun (h y / ∫ z, h z ∂ν)))]
 
 /-- The entropy of the slices `y ↦ h (x, y)` of a measurable function depends measurably
 on `x`. -/

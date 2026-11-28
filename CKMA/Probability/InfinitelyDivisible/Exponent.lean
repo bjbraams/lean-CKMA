@@ -47,6 +47,11 @@ open scoped BigOperators NNReal ENNReal Real
 def levyIntegrand (t x : ℝ) : ℂ :=
   exp (I * t * x) - 1 - (if |x| ≤ 1 then I * t * x else 0)
 
+/-- Defining formula of `levyIntegrand`. -/
+lemma levyIntegrand_def (t x : ℝ) :
+    levyIntegrand t x = exp (I * t * x) - 1 - (if |x| ≤ 1 then I * t * x else 0) :=
+  rfl
+
 /-- The exponent is the Gaussian part plus the integral of `levyIntegrand`. -/
 lemma LevyTriplet.exponent_eq_levyIntegrand (L : LevyTriplet) (t : ℝ) :
     L.exponent t =
@@ -361,7 +366,7 @@ lemma LevyTriplet.exponent_neg (L : LevyTriplet) (t : ℝ) :
 lemma isLevyMeasure_inv_nsmul {ν : Measure ℝ} (hν : IsLevyMeasure ν) {n : ℕ} (hn : 0 < n) :
     IsLevyMeasure ((n : ℝ≥0∞)⁻¹ • ν) := by
   refine ⟨?_, ?_⟩
-  · simp [Measure.smul_apply, hν.1]
+  · simp [hν.1]
   · rw [lintegral_smul_measure]
     refine ENNReal.mul_lt_top ?_ hν.2
     rw [ENNReal.inv_lt_top]

@@ -54,6 +54,9 @@ def transverseSide (a b z : ℂ) : ℝ :=
 def lineParam (a b z : ℂ) : ℝ :=
   ((z - a) / (b - a)).re
 
+/-- Defining equation of `lineParam`. -/
+theorem lineParam_def (a b z : ℂ) : lineParam a b z = ((z - a) / (b - a)).re := rfl
+
 /-- A segment meets `F` transversely when `F` has positive height derivative along it. -/
 structure IsTransverseSegment (F : ℂ → ℂ) (a b : ℂ) : Prop where
   /-- The endpoints of a transverse segment are distinct. -/

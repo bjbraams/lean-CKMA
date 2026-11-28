@@ -19,6 +19,11 @@ import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 averages. Positive rational radii decrease to any positive real radius, and a weight that
 vanishes on spheres identifies the limiting average with the real-radius average. Each
 fixed-radius average is measurable in the centre, so the maximal function is measurable.
+
+## Main results
+
+* `CKMA.measurable_maximalFunction_withDensity`: the centred maximal function of a weighted
+  Lebesgue measure whose weight vanishes on spheres is measurable.
 -/
 
 public section
@@ -35,8 +40,7 @@ variable {d : ℕ}
 local notation "E" => EuclideanSpace ℝ (Fin d)
 
 /-- A positive rational, used as a countable family of ball radii. -/
-@[expose]
-abbrev PosRat := {q : ℚ // 0 < (q : ℝ)}
+private abbrev PosRat := {q : ℚ // 0 < (q : ℝ)}
 
 /-- A rational strictly between two reals. -/
 private def ratBetween (a b : ℝ) (h : a < b) : ℚ :=
@@ -343,7 +347,7 @@ theorem measurable_maximalFunction_withDensity
   let η : Measure E := volume.withDensity ρ
   let h' : E → ℝ≥0∞ := hh.mk h
   have hnorm : ∀ᵐ y ∂η, ‖h y‖ₑ = ‖h' y‖ₑ :=
-    hh.ae_eq_mk.mono fun y hy => congrArg enorm hy
+    hh.ae_eq_mk.mono fun y hy => congrArg eNorm hy
   have heq : ∀ x, TauCeti.maximalFunction η h x = TauCeti.maximalFunction η h' x :=
     fun x => TauCeti.maximalFunction_congr_ae hnorm
   have hfun : (fun x => TauCeti.maximalFunction (volume.withDensity ρ) h x) =

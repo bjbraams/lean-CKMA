@@ -5,17 +5,15 @@ Authors: CKMA contributors
 -/
 module
 
-public import Mathlib.MeasureTheory.MeasurableSpace.Invariants
 public import Mathlib.Dynamics.BirkhoffSum.Average
 public import Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic
+public import Mathlib.MeasureTheory.MeasurableSpace.Invariants
 
 import CKMA.Dynamics.Ergodic.Pointwise.BirkhoffLimit
 import CKMA.Dynamics.Ergodic.Pointwise.Maximal
 import Mathlib.Dynamics.BirkhoffSum.QuasiMeasurePreserving
-import Mathlib.MeasureTheory.Integral.DominatedConvergence
 import Mathlib.MeasureTheory.Function.ConditionalExpectation.Real
-
-import Mathlib.Tactic
+import Mathlib.MeasureTheory.Integral.DominatedConvergence
 
 /-!
 # Birkhoff's pointwise ergodic theorem
@@ -49,6 +47,11 @@ variable {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} {T : Ω → Ω} {f 
 @[expose]
 def birkhoffTruncate (M : ℝ) (f : Ω → ℝ) : Ω → ℝ :=
   fun ω => max (-M) (min (f ω) M)
+
+omit [MeasurableSpace Ω] in
+/-- Defining equation of `birkhoffTruncate`. -/
+lemma birkhoffTruncate_apply (M : ℝ) (f : Ω → ℝ) (ω : Ω) :
+    birkhoffTruncate M f ω = max (-M) (min (f ω) M) := rfl
 
 /-- Truncation preserves measurability. -/
 private lemma measurable_birkhoffTruncate {M : ℝ} (hf : Measurable f) :
@@ -130,9 +133,8 @@ private lemma integral_birkhoffSum (hT : MeasurePreserving T μ μ) (hf : Integr
     have hcomp : Integrable (birkhoffSum T f n ∘ T) μ :=
       hT.integrable_comp_of_integrable hsum
     rw [birkhoffSum_succ', integral_add' hf hcomp]
-    have hshift : ∫ a, (birkhoffSum T f n ∘ T) a ∂μ = ∫ a, birkhoffSum T f n a ∂μ := by
-      change ∫ a, birkhoffSum T f n (T a) ∂μ = _
-      exact integral_comp_measurePreserving hT hsum
+    have hshift : ∫ a, (birkhoffSum T f n ∘ T) a ∂μ = ∫ a, birkhoffSum T f n a ∂μ :=
+      integral_comp_measurePreserving hT hsum.aestronglyMeasurable
     rw [hshift, ih]
     have hcast : ((n + 1 : ℕ) : ℝ) = (n : ℝ) + 1 := by
       simp [Nat.cast_add, Nat.cast_one]
@@ -247,7 +249,7 @@ private lemma birkhoffLimit_ae_eq_condExp_of_bounded [IsFiniteMeasure μ]
       ∫ ω in s, birkhoffLimit T f ω ∂μ = ∫ ω in s, f ω ∂μ := by
     intro s hs _
     rw [MeasurableSpace.measurableSet_invariants] at hs
-    have hconv := birkhoffAverage_ae_tendsto_birkhoffLimit hT hf hf_meas
+    have hconv := birkhoffAverage_ae_tendsto_birkhoffLimit hT hf
     have htend : Tendsto (fun n => ∫ ω in s, birkhoffAverage ℝ T f n ω ∂μ) atTop
         (𝓝 (∫ ω in s, birkhoffLimit T f ω ∂μ)) := by
       have hdom := tendsto_integral_of_dominated_convergence (μ := μ)
@@ -316,7 +318,7 @@ private lemma birkhoffLimit_integrable_le_of_nonneg [IsFiniteMeasure μ]
             (u := fun n => Real.toEReal (birkhoffAverage ℝ T f n ω)))
     unfold birkhoffLimit
     exact EReal.toReal_nonneg hlow
-  have hconv := birkhoffAverage_ae_tendsto_birkhoffLimit hT hf hf_meas
+  have hconv := birkhoffAverage_ae_tendsto_birkhoffLimit hT hf
   have hlim :
       (fun ω => liminf (fun n => ENNReal.ofReal (birkhoffAverage ℝ T f n ω)) atTop) =ᵐ[μ]
         fun ω => ENNReal.ofReal (birkhoffLimit T f ω) := by
@@ -359,16 +361,13 @@ private lemma birkhoffLimit_integrable_le_of_nonneg [IsFiniteMeasure μ]
 
 /-- The distance between Birkhoff limits is controlled by the limit of the absolute difference. -/
 private lemma abs_birkhoffLimit_sub_le_ae [IsFiniteMeasure μ] (hT : MeasurePreserving T μ μ)
-    {g : Ω → ℝ} (hf : Integrable f μ) (hg : Integrable g μ) (hf_meas : Measurable f)
-    (hg_meas : Measurable g) :
+    {g : Ω → ℝ} (hf : Integrable f μ) (hg : Integrable g μ) :
     (fun ω => |birkhoffLimit T f ω - birkhoffLimit T g ω|) ≤ᵐ[μ]
       birkhoffLimit T (fun ω => |f ω - g ω|) := by
-  have hdiff_meas : Measurable (fun ω => |f ω - g ω|) :=
-    continuous_abs.measurable.comp (hf_meas.sub hg_meas)
   have hdiff_int : Integrable (fun ω => |f ω - g ω|) μ := (hf.sub hg).abs
-  filter_upwards [birkhoffAverage_ae_tendsto_birkhoffLimit hT hf hf_meas,
-      birkhoffAverage_ae_tendsto_birkhoffLimit hT hg hg_meas,
-      birkhoffAverage_ae_tendsto_birkhoffLimit hT hdiff_int hdiff_meas] with ω hωf hωg hωa
+  filter_upwards [birkhoffAverage_ae_tendsto_birkhoffLimit hT hf,
+      birkhoffAverage_ae_tendsto_birkhoffLimit hT hg,
+      birkhoffAverage_ae_tendsto_birkhoffLimit hT hdiff_int] with ω hωf hωg hωa
   refine le_of_tendsto_of_tendsto' ((hωf.sub hωg).abs) hωa fun n => ?_
   have hsub : birkhoffAverage ℝ T (f - g) n ω =
       birkhoffAverage ℝ T f n ω - birkhoffAverage ℝ T g n ω :=
@@ -395,7 +394,7 @@ private lemma integral_abs_birkhoffLimit_sub_le [IsFiniteMeasure μ]
   have hleft_meas : Measurable (fun ω => |birkhoffLimit T f ω - birkhoffLimit T g ω|) :=
     continuous_abs.measurable.comp ((measurable_birkhoffLimit hT.measurable hf_meas).sub
       (measurable_birkhoffLimit hT.measurable hg_meas))
-  have hle := abs_birkhoffLimit_sub_le_ae hT hf hg hf_meas hg_meas
+  have hle := abs_birkhoffLimit_sub_le_ae hT hf hg
   have hleft : Integrable (fun ω => |birkhoffLimit T f ω - birkhoffLimit T g ω|) μ :=
     hφ.1.mono' hleft_meas.aestronglyMeasurable
       (hle.mono fun ω hω => by simpa [Real.norm_eq_abs] using hω)
@@ -449,7 +448,7 @@ private lemma birkhoffLimit_ae_eq_condExp_of_measurable [IsFiniteMeasure μ]
       have hle := abs_birkhoffLimit_le_of_abs_le (T := T) (f := z) le_rfl hbound ω
       exact abs_eq_zero.mp (le_antisymm hle (abs_nonneg _))
     have hz_int : Integrable z μ := integrable_zero Ω ℝ μ
-    have hle := abs_birkhoffLimit_sub_le_ae hT hf hz_int hf_meas measurable_const
+    have hle := abs_birkhoffLimit_sub_le_ae hT hf hz_int
     have hbound := (birkhoffLimit_integrable_le_of_nonneg hT hf.abs habs_meas
       (fun _ => abs_nonneg _)).1
     refine hbound.mono' (measurable_birkhoffLimit hT.measurable hf_meas).aestronglyMeasurable ?_
@@ -557,7 +556,7 @@ lemma birkhoffAverage_ae_tendsto_condExp [IsFiniteMeasure μ]
   have hfg : f =ᵐ[μ] g := hf.aestronglyMeasurable.ae_eq_mk
   have hg_meas : Measurable g := hf.aestronglyMeasurable.measurable_mk
   have hg_int : Integrable g μ := hf.congr hfg
-  have hlim := birkhoffAverage_ae_tendsto_birkhoffLimit hT hg_int hg_meas
+  have hlim := birkhoffAverage_ae_tendsto_birkhoffLimit hT hg_int
   have heq := birkhoffLimit_ae_eq_condExp_of_measurable hT hg_int hg_meas
   have hcond := (condExp_congr_ae (m := MeasurableSpace.invariants T) hfg).symm
   have havg : ∀ᵐ ω ∂μ, ∀ n, birkhoffAverage ℝ T f n ω = birkhoffAverage ℝ T g n ω :=

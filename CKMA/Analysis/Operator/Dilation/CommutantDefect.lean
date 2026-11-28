@@ -39,18 +39,9 @@ namespace CKMA
 open scoped InnerProductSpace
 open ContinuousLinearMap Submodule
 
-universe u
-
-variable {H K : Type u}
+variable {H K : Type*}
     [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
     [NormedAddCommGroup K] [InnerProductSpace ℂ K] [CompleteSpace K]
-
-/-- The adjoint of an isometric embedding is a left inverse. -/
-theorem embed_adjoint_leftInverse (J : H →ₗᵢ[ℂ] K) (x : H) :
-    J.toContinuousLinearMap.adjoint (J x) = x := by
-  have hs := congrArg (fun A : H →L[ℂ] H => A x) J.adjoint_comp_self
-  rw [comp_apply, one_apply_eq_self] at hs
-  exact hs
 
 /-- Co-invariance passes to the adjoint as `V* J = J T*`. -/
 private theorem adjoint_coinvariant (T : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K)
@@ -82,8 +73,8 @@ private theorem dilationDefect_adjoint_apply (T : H →L[ℂ] H) (J : H →ₗ�
     (hcoin : ∀ y : K, J.toContinuousLinearMap.adjoint (V y) =
       T (J.toContinuousLinearMap.adjoint y)) (x : H) :
     J.toContinuousLinearMap.adjoint (dilationDefect T J V x) = 0 := by
-  rw [dilationDefect_apply, map_sub, hcoin, embed_adjoint_leftInverse,
-    embed_adjoint_leftInverse, sub_self]
+  rw [dilationDefect_apply, map_sub, hcoin, linearIsometry_adjoint_apply_self,
+    linearIsometry_adjoint_apply_self, sub_self]
 
 /-- The coextension defect takes values in the orthogonal of the embedded copy. -/
 private theorem dilationDefect_mem_orthogonal (T : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K)
@@ -103,7 +94,7 @@ private theorem adjoint_dilationDefect (T : H →L[ℂ] H) (J : H →ₗᵢ[ℂ]
       T (J.toContinuousLinearMap.adjoint y)) (y : H) :
     V.toContinuousLinearMap.adjoint (dilationDefect T J V y) =
       J ((1 - T.adjoint.comp T) y) := by
-  rw [dilationDefect_apply, map_sub, adjoint_isometry_apply]
+  rw [dilationDefect_apply, map_sub, linearIsometry_adjoint_apply_self]
   have hJ : V.toContinuousLinearMap.adjoint (J (T y)) = J (T.adjoint (T y)) := by
     have happly := congrArg (fun A : H →L[ℂ] K => A (T y))
       (adjoint_coinvariant T J V hcoin)
@@ -126,7 +117,7 @@ private theorem dilationDefect_pow_mem_orthogonal (T : H →L[ℂ] H) (J : H →
     rw [mem_orthogonal]
     intro u hu
     obtain ⟨z, rfl⟩ := hu
-    rw [continuousLinearMap_pow_succ'_apply]
+    rw [pow_succ', mul_apply_eq_comp]
     simp only [LinearIsometry.coe_toLinearMap]
     rw [← adjoint_inner_left V.toContinuousLinearMap
       ((V.toContinuousLinearMap ^ n) (dilationDefect T J V x)) (J z)]
@@ -171,7 +162,7 @@ private theorem inner_dilationDefect_pow_eq_zero (T : H →L[ℂ] H) (J : H →�
   have hadd : n = m + (n - m) := (Nat.add_sub_of_le hle).symm
   rw [hadd, linearIsometry_inner_pow_add_apply_pow_apply]
   obtain ⟨j, hj⟩ := Nat.exists_eq_succ_of_ne_zero (Nat.ne_of_gt hk)
-  rw [hj, continuousLinearMap_pow_succ'_apply]
+  rw [hj, pow_succ', mul_apply_eq_comp]
   rw [← adjoint_inner_right V.toContinuousLinearMap
     ((V.toContinuousLinearMap ^ j) (dilationDefect T J V y)) (dilationDefect T J V x)]
   rw [adjoint_dilationDefect T J V hcoin]
@@ -183,6 +174,13 @@ private theorem inner_dilationDefect_pow_eq_zero (T : H →L[ℂ] H) (J : H →�
 @[expose]
 def dilationDefectSpace (T : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K) : Submodule ℂ K :=
   (LinearMap.range (dilationDefect T J V).toLinearMap).topologicalClosure
+
+omit [CompleteSpace H] [CompleteSpace K] in
+/-- `dilationDefectSpace` is the closure of the range of the defect. -/
+theorem dilationDefectSpace_def (T : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K) :
+    dilationDefectSpace T J V =
+      (LinearMap.range (dilationDefect T J V).toLinearMap).topologicalClosure :=
+  rfl
 
 omit [CompleteSpace H] [CompleteSpace K] in
 /-- Each defect vector lies in the closed defect space. -/

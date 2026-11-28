@@ -7,8 +7,10 @@ module
 
 public import Mathlib.Probability.Distributions.Gaussian.Multivariate
 public import Mathlib.Analysis.Normed.Lp.MeasurableSpace
-public import CKMA.Probability.GaussianLogSobolev.OneDimLSI
+public import CKMA.Probability.GaussianLogSobolev.Basic
 import CKMA.Probability.GaussianLogSobolev.EntropyTensorization
+import CKMA.Probability.GaussianLogSobolev.OneDimLSI
+public import TauCeti.Probability.Concentration.Poincare.LogSobolev
 import Mathlib.Analysis.Calculus.ContDiff.WithLp
 import TauCeti.Analysis.Calculus.FDeriv.Pi.Lp
 import TauCeti.Analysis.Calculus.Gradient
@@ -32,14 +34,18 @@ given by an orthonormal basis, as in TauCeti's proof of the Gaussian Poincaré i
 
 ## Main definitions
 
-* `CKMA.nonnegativeFunctionEntropy` (in `GaussianLogSobolev.OneDimLSI`): extended entropy
-  `ENNReal.ofReal (∫ h) * ∫⁻ klFun (h / ∫ h)`, with no integrability hypothesis.
+* `CKMA.nonnegativeFunctionEntropy` (in `GaussianLogSobolev.Basic`): extended entropy
+  `ENNReal.ofReal (∫ h) * ∫⁻ klFun (h / ∫ h)`, with no integrability hypothesis; for probability
+  measures and integrable `h`, `h log h` it is `ENNReal.ofReal` of TauCeti's
+  `MeasureTheory.Measure.entropy` (`CKMA.nonnegativeFunctionEntropy_eq_ofReal_entropy`).
 
 ## Main results
 
 * `CKMA.gaussian_logSobolev_piLp`: the inequality for the product of standard Gaussians on a
   finite Hilbert product `PiLp 2 (fun _ : ι ↦ ℝ)`.
 * `CKMA.gaussian_logSobolev`: Gaussian logarithmic Sobolev inequality with sharp constant `2`.
+* `CKMA.logSobolevInequality_stdGaussian`: the standard Gaussian satisfies TauCeti's
+  `MeasureTheory.Measure.LogSobolevInequality` with constant `1`.
 -/
 
 public section
@@ -136,5 +142,21 @@ theorem gaussian_logSobolev {E : Type*} [NormedAddCommGroup E] [InnerProductSpac
   rw [← nonnegativeFunctionEntropy_comp_measurePreserving hmp hemb,
     ← hmp.lintegral_comp_emb hemb]
   simpa only [hnorm] using key
+
+/-- The standard Gaussian on a finite-dimensional real inner product space satisfies TauCeti's
+logarithmic Sobolev inequality `MeasureTheory.Measure.LogSobolevInequality` with constant `1`.
+This is `gaussian_logSobolev` read through `nonnegativeFunctionEntropy_eq_ofReal_entropy`. -/
+theorem logSobolevInequality_stdGaussian (E : Type*) [NormedAddCommGroup E]
+    [InnerProductSpace ℝ E] [FiniteDimensional ℝ E] [MeasurableSpace E] [BorelSpace E] :
+    (stdGaussian E).LogSobolevInequality 1 := by
+  rw [Measure.LogSobolevInequality_def]
+  intro f hf hdf hf2 hf2log
+  have key := gaussian_logSobolev f hf
+    ((memLp_two_iff_integrable_sq hf.continuous.aestronglyMeasurable).2 hf2)
+  rw [nonnegativeFunctionEntropy_eq_ofReal_entropy (fun _ ↦ sq_nonneg _) hf2 hf2log,
+    ← ofReal_integral_eq_lintegral_ofReal hdf.integrable_sq (ae_of_all _ fun _ ↦ sq_nonneg _),
+    ← ENNReal.ofReal_ofNat 2, ← ENNReal.ofReal_mul (by norm_num),
+    ENNReal.ofReal_le_ofReal_iff (by positivity)] at key
+  simpa only [mul_one] using key
 
 end CKMA

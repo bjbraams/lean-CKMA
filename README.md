@@ -30,8 +30,9 @@ lives in the [CKMA](CKMA) source directory, assembled by [CKMA.lean](CKMA.lean).
   current declarations with their axiom dependencies.
 
 The coverage and gap assessments are historical comparisons based on library source
-inspection. The local formalization now starts 242 of the 603 selected gaps, including the 59
-short-derivation entries, with substantial admitted proofs and explicit partial scopes. Its
+inspection. The local formalization starts 238 of the 603 selected gaps, including 56 of the 59
+short-derivation entries, with substantial admitted proofs and explicit partial scopes; four
+further entries are theorems of the pinned TauCeti. Its
 compiled and audited status is recorded separately in `FORMALIZATION.md`; it does
 not retrospectively change the library coverage inventories.
 

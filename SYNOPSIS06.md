@@ -445,7 +445,8 @@ when $\nu=\mu$.
   when $\nu\ll\mu$, and $+\infty$ otherwise.
 
 * **62. Varadhan's integral lemma.** If $X_n$ satisfies a large deviation
-  principle with good rate $I$, then for bounded continuous $f$,
+  principle with rate function $I$, then for bounded continuous $f$
+  (goodness of $I$ is not needed for bounded $f$),
   $$\lim_n n^{-1}\log\mathbb E e^{nf(X_n)}=\sup_x(f(x)-I(x)).$$
 
 * **63. Contraction principle.** If $X_n$ satisfies a large deviation principle

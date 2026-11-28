@@ -36,9 +36,7 @@ noncomputable section
 
 namespace CKMA
 
-universe u
-
-variable {E F : Type u}
+variable {E F : Type*}
     [NormedAddCommGroup E] [NormedSpace ℂ E]
     [NormedAddCommGroup F] [InnerProductSpace ℂ F] [CompleteSpace F]
 

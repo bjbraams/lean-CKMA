@@ -5,31 +5,37 @@ Authors: CKMA contributors
 -/
 module
 
-public import CKMA.Analysis.RoughPath.Sewing.Dyadic
+public import CKMA.Analysis.RoughPath.Sewing.Basic
+public import Mathlib.Topology.EMetricSpace.BoundedVariation
 import Mathlib.Analysis.MeanInequalities
 import Mathlib.Analysis.PSeries
 
 /-!
-# Young–Loeve estimate for finite variation
+# Superadditivity of `p`-variation and of Young controls
 
-Partition sums of a Young increment are controlled by `p`- and `q`-variation.
-Superadditivity of the control `ω(s,t) = V_p(X;s,t)^{1/p} V_q(Y;s,t)^{1/q}` is
-recorded through every second node. Deletion, reflection, and continuity of
-finite variation are in `VariationEstimate`.
+Monotonicity and superadditivity of the `p`th power variation `CKMA.pathVariationPower`, node
+sequences of partitions, and deletion of a node. Superadditivity of the Young control
+`ω(s,t) = V_p(X;s,t)^{1/p} V_q(Y;s,t)^{1/q}` is recorded through every second node.
+Reflection and continuity of finite variation are in `VariationEstimate`.
 
 ## Main definitions
 
-* `CKMA.pathVariationPower`: the `p`th power variation in `ℝ≥0∞`.
-* `CKMA.YoungLoeve.variationReal`: real `p`-variation power on a subinterval.
+* `CKMA.nodeSeq`, `CKMA.stepSum`, `CKMA.dropNode`: a partition as a monotone sequence, step sums
+  along a sequence, and deletion of a node.
 * `CKMA.YoungLoeve.youngCtrl`: weighted product control `V_p(X)^α V_q(Y)^β`.
 * `CKMA.YoungLoeve.youngModulus`: Young modulus `V_p(X)^{1/p} V_q(Y)^{1/q}`.
 
 ## Main results
 
-* `CKMA.YoungLoeve.pathVariationPower_superadd`: superadditivity of `p`-variation power.
+* `CKMA.pathVariationPower_superadd`: superadditivity of `p`-variation power.
+* `CKMA.pathVariationPower_one_le_eVariationOn`: comparison with Mathlib's `eVariationOn`.
 * `CKMA.YoungLoeve.youngCtrl_superadd`: superadditivity of the weighted Young control.
 * `CKMA.YoungLoeve.sum_youngCtrl_two_mul_le`: superadditivity along every second node of a
   monotone sequence.
+
+## References
+
+* [P. K. Friz and M. Hairer, *A Course on Rough Paths*][frizhairer2020]
 -/
 
 public section
@@ -41,37 +47,7 @@ namespace CKMA
 open scoped BigOperators NNReal ENNReal
 open Finset Filter Topology Metric
 
-namespace YoungLoeve
-
 variable {E : Type*} [SeminormedAddCommGroup E]
-
-/-- Sum of `p`th powers of increments along one ordered partition. -/
-@[expose]
-def variationSum (p : ℝ) (X : ℝ → E) {a b : ℝ}
-    (π : OrderedIntervalPartition a b) : ℝ≥0∞ :=
-  ∑ i : Fin π.size, ENNReal.ofReal (‖X (π.node i.succ) - X (π.node i.castSucc)‖ ^ p)
-
-end YoungLoeve
-
-/-- The `p`th power variation, retaining infinite variation: the supremum of
-`YoungLoeve.variationSum` over ordered partitions. -/
-@[expose]
-def pathVariationPower {E : Type*} [SeminormedAddCommGroup E]
-    (p : ℝ) (X : ℝ → E) (a b : ℝ) : ℝ≥0∞ :=
-  ⨆ π : OrderedIntervalPartition a b, YoungLoeve.variationSum p X π
-
-namespace YoungLoeve
-
-variable {E : Type*} [SeminormedAddCommGroup E]
-
-/-- The `p`th power variation is the supremum of `variationSum` over ordered partitions. -/
-lemma pathVariationPower_eq_iSup (p : ℝ) (X : ℝ → E) (a b : ℝ) :
-    pathVariationPower p X a b = ⨆ π : OrderedIntervalPartition a b, variationSum p X π := rfl
-
-/-- Real `p`-variation power on a subinterval, or zero when the power is infinite. -/
-@[expose]
-def variationReal (p : ℝ) (X : ℝ → E) (s t : ℝ) : ℝ :=
-  (pathVariationPower p X s t).toReal
 
 /-- The one-point partition of a degenerate interval. -/
 private def pointPartition (s : ℝ) : OrderedIntervalPartition s s where
@@ -140,6 +116,11 @@ lemma variationReal_point {p : ℝ} (hp : 0 < p) (X : ℝ → E) (s : ℝ) :
 def nodeSeq {a b : ℝ} (π : OrderedIntervalPartition a b) (i : ℕ) : ℝ :=
   π.node ⟨min i π.size, by omega⟩
 
+/-- Defining equation of `nodeSeq`. -/
+lemma nodeSeq_def {a b : ℝ} (π : OrderedIntervalPartition a b) (i : ℕ) :
+    nodeSeq π i = π.node ⟨min i π.size, by omega⟩ :=
+  rfl
+
 /-- For `i ≤ π.size`, `nodeSeq π i` agrees with `π.node ⟨i, _⟩`. -/
 lemma nodeSeq_of_le {a b : ℝ} (π : OrderedIntervalPartition a b) {i : ℕ} (hi : i ≤ π.size) :
     nodeSeq π i = π.node ⟨i, by omega⟩ := by
@@ -173,6 +154,11 @@ lemma monotone_nodeSeq {a b : ℝ} (π : OrderedIntervalPartition a b) : Monoton
 def stepSum {F : Type*} [AddCommMonoid F] (A : ℝ → ℝ → F) (c : ℕ → ℝ) (n : ℕ) : F :=
   ∑ i ∈ range n, A (c i) (c (i + 1))
 
+/-- Defining equation of `stepSum`. -/
+lemma stepSum_def {F : Type*} [AddCommMonoid F] (A : ℝ → ℝ → F) (c : ℕ → ℝ) (n : ℕ) :
+    stepSum A c n = ∑ i ∈ range n, A (c i) (c (i + 1)) :=
+  rfl
+
 /-- Rewriting `variationSum` as a sum over `range π.size` along `nodeSeq π`. -/
 lemma variationSum_eq_stepSum (p : ℝ) (X : ℝ → E) {a b : ℝ}
     (π : OrderedIntervalPartition a b) :
@@ -192,32 +178,6 @@ lemma variationSum_eq_stepSum (p : ℝ) (X : ℝ → E) {a b : ℝ}
   rw [Finset.sum_congr rfl fun i _ => hterm i]
   exact Fin.sum_univ_eq_sum_range
     (fun i => ENNReal.ofReal (‖X (nodeSeq π (i + 1)) - X (nodeSeq π i)‖ ^ p)) π.size
-
-/-- Least index at which a sequence exceeds a threshold. -/
-lemma exists_least_index_gt (n : ℕ) (c : ℕ → ℝ) (t : ℝ) (h : ∃ i ≤ n, t < c i) :
-    ∃ i ≤ n, t < c i ∧ ∀ j < i, c j ≤ t := by
-  induction n generalizing c with
-  | zero =>
-    obtain ⟨i, hi, hlt⟩ := h
-    have hi0 : i = 0 := Nat.le_zero.mp hi
-    subst hi0
-    exact ⟨0, le_rfl, hlt, fun j hj => absurd hj (Nat.not_lt_zero _)⟩
-  | succ n ih =>
-    by_cases h0 : t < c 0
-    · exact ⟨0, Nat.zero_le _, h0, fun j hj => absurd hj (Nat.not_lt_zero _)⟩
-    · have htail : ∃ i ≤ n, t < c (i + 1) := by
-        obtain ⟨i, hi, hlt⟩ := h
-        have hi0 : 0 < i := by
-          have hne : i ≠ 0 := fun hz => h0 (by simpa [hz] using hlt)
-          omega
-        exact ⟨i - 1, by omega, by simpa [Nat.sub_add_cancel hi0] using hlt⟩
-      obtain ⟨i, hi, hlt, hmin⟩ := ih (fun i => c (i + 1)) htail
-      refine ⟨i + 1, by omega, hlt, ?_⟩
-      intro j hj
-      cases j with
-      | zero => exact not_lt.mp h0
-      | succ j =>
-        exact hmin j (by omega)
 
 /-- Join two ordered partitions at a common endpoint. -/
 private def concatPart {s u t : ℝ} (π₁ : OrderedIntervalPartition s u)
@@ -347,11 +307,10 @@ private lemma oneStep_le {s t : ℝ} (hst : s ≤ t) (p : ℝ) (X : ℝ → E) :
   simp
 
 /-- Monotonicity of real `p`-variation power on subintervals when the outer variation is finite. -/
-lemma variationReal_mono {a b c d : ℝ} (hca : c ≤ a) (hab : a ≤ b) (hbd : b ≤ d)
+lemma variationReal_mono {a b c d : ℝ} (hca : c ≤ a) (hbd : b ≤ d)
     {p : ℝ} {X : ℝ → E} (hfin : pathVariationPower p X c d ≠ ∞) :
-    variationReal p X a b ≤ variationReal p X c d := by
-  have _ := hab
-  exact ENNReal.toReal_mono hfin (pathVariationPower_mono hca hbd p X)
+    variationReal p X a b ≤ variationReal p X c d :=
+  ENNReal.toReal_mono hfin (pathVariationPower_mono hca hbd p X)
 
 /-- Superadditivity of real `p`-variation power when the total variation is finite. -/
 lemma variationReal_superadd {s u t : ℝ} (hsu : s ≤ u) (hut : u ≤ t) {p : ℝ} {X : ℝ → E}
@@ -392,53 +351,30 @@ lemma norm_le_variationReal {s t : ℝ} (hst : s ≤ t) {p : ℝ} {X : ℝ → E
   have h := Real.rpow_le_rpow hbase hpow (inv_nonneg.mpr hp.le)
   simpa [Real.rpow_rpow_inv (norm_nonneg _) (ne_of_gt hp)] using h
 
-/-- Weighted splitting of a product of powers, the superadditivity step for controls. -/
-private lemma young_split_le {α β x₁ x₂ y₁ y₂ : ℝ} (hα : 0 < α) (hβ : 0 < β) (hαβ : α + β = 1)
-    (hx₁ : 0 ≤ x₁) (hx₂ : 0 ≤ x₂) (hy₁ : 0 ≤ y₁) (hy₂ : 0 ≤ y₂) :
-    x₁ ^ α * y₁ ^ β + x₂ ^ α * y₂ ^ β ≤ (x₁ + x₂) ^ α * (y₁ + y₂) ^ β := by
-  have hx : 0 ≤ x₁ + x₂ := add_nonneg hx₁ hx₂
-  have hy : 0 ≤ y₁ + y₂ := add_nonneg hy₁ hy₂
-  rcases hx.eq_or_lt with hx0 | hsx
-  · have hx₁0 : x₁ = 0 := by linarith
-    have hx₂0 : x₂ = 0 := by linarith
-    rw [hx₁0, hx₂0, zero_add, Real.zero_rpow (ne_of_gt hα), zero_mul, zero_mul, add_zero]
-    simp only [zero_mul]
-    exact le_rfl
-  · rcases hy.eq_or_lt with hy0 | hsy
-    · have hy₁0 : y₁ = 0 := by linarith
-      have hy₂0 : y₂ = 0 := by linarith
-      rw [hy₁0, hy₂0, zero_add, Real.zero_rpow (ne_of_gt hβ), mul_zero, mul_zero, add_zero]
-      simp only [mul_zero]
-      exact le_rfl
-    · let sx := x₁ + x₂
-      let sy := y₁ + y₂
-      have hg1 := Real.geom_mean_le_arith_mean2_weighted hα.le hβ.le
-        (div_nonneg hx₁ hsx.le) (div_nonneg hy₁ hsy.le) hαβ
-      have hg2 := Real.geom_mean_le_arith_mean2_weighted hα.le hβ.le
-        (div_nonneg hx₂ hsx.le) (div_nonneg hy₂ hsy.le) hαβ
-      have hgeom : (x₁ / sx) ^ α * (y₁ / sy) ^ β + (x₂ / sx) ^ α * (y₂ / sy) ^ β ≤ 1 := by
-        have hadd := add_le_add hg1 hg2
-        have hre : α * (x₁ / sx) + β * (y₁ / sy) + (α * (x₂ / sx) + β * (y₂ / sy)) =
-            α * ((x₁ + x₂) / sx) + β * ((y₁ + y₂) / sy) := by ring
-        rw [hre] at hadd
-        simpa [sx, sy, div_self hsx.ne', div_self hsy.ne', mul_one, hαβ] using hadd
-      have hden : 0 < sx ^ α * sy ^ β :=
-        mul_pos (Real.rpow_pos_of_pos hsx α) (Real.rpow_pos_of_pos hsy β)
-      have hquot₁ : (x₁ / sx) ^ α * (y₁ / sy) ^ β =
-          (x₁ ^ α * y₁ ^ β) / (sx ^ α * sy ^ β) := by
-        rw [Real.div_rpow hx₁ hsx.le, Real.div_rpow hy₁ hsy.le, div_mul_div_comm]
-      have hquot₂ : (x₂ / sx) ^ α * (y₂ / sy) ^ β =
-          (x₂ ^ α * y₂ ^ β) / (sx ^ α * sy ^ β) := by
-        rw [Real.div_rpow hx₂ hsx.le, Real.div_rpow hy₂ hsy.le, div_mul_div_comm]
-      have hfrac : (x₁ ^ α * y₁ ^ β + x₂ ^ α * y₂ ^ β) / (sx ^ α * sy ^ β) ≤ 1 := by
-        rw [add_div]
-        simpa [hquot₁, hquot₂] using hgeom
-      exact (div_le_one hden).mp hfrac
+/-- The `1`-variation power on `[a, b]` is at most Mathlib's `eVariationOn X (Set.Icc a b)`. -/
+lemma pathVariationPower_one_le_eVariationOn (X : ℝ → E) (a b : ℝ) :
+    pathVariationPower 1 X a b ≤ eVariationOn X (Set.Icc a b) := by
+  refine iSup_le fun π => ?_
+  rw [variationSum_eq_stepSum]
+  have hmem : ∀ i, nodeSeq π i ∈ Set.Icc a b := fun i => by
+    rw [nodeSeq_def]
+    have h0 := π.monotone_node (Fin.zero_le ⟨min i π.size, by omega⟩)
+    have h1 := π.monotone_node (Fin.le_last ⟨min i π.size, by omega⟩)
+    rw [π.node_zero] at h0
+    rw [π.node_last] at h1
+    exact ⟨h0, h1⟩
+  refine (Finset.sum_congr rfl fun i _ => ?_).trans_le
+    (eVariationOn.sum_le (monotone_nodeSeq π) hmem)
+  rw [Real.rpow_one, eDist_eq_eNorm_sub, ofReal_norm]
 
 /-- Delete interior index `j` from a node sequence. -/
 @[expose]
 def dropNode (c : ℕ → ℝ) (j : ℕ) : ℕ → ℝ :=
   fun i => if i < j then c i else c (i + 1)
+
+/-- Defining equation of `dropNode`. -/
+lemma dropNode_def (c : ℕ → ℝ) (j i : ℕ) : dropNode c j i = if i < j then c i else c (i + 1) :=
+  rfl
 
 /-- Below `j`, `dropNode c j` agrees with `c`. -/
 lemma dropNode_of_lt (c : ℕ → ℝ) {i j : ℕ} (hi : i < j) : dropNode c j i = c i := by
@@ -504,15 +440,69 @@ lemma stepSum_drop {F : Type*} [AddCommGroup F] (A : ℝ → ℝ → F) (c : ℕ
   rw [hold, hnew, htwo, hone, hleft, htail]
   abel
 
+namespace YoungLoeve
+
+/-- Weighted splitting of a product of powers, the superadditivity step for controls. -/
+private lemma young_split_le {α β x₁ x₂ y₁ y₂ : ℝ} (hα : 0 < α) (hβ : 0 < β) (hαβ : α + β = 1)
+    (hx₁ : 0 ≤ x₁) (hx₂ : 0 ≤ x₂) (hy₁ : 0 ≤ y₁) (hy₂ : 0 ≤ y₂) :
+    x₁ ^ α * y₁ ^ β + x₂ ^ α * y₂ ^ β ≤ (x₁ + x₂) ^ α * (y₁ + y₂) ^ β := by
+  have hx : 0 ≤ x₁ + x₂ := add_nonneg hx₁ hx₂
+  have hy : 0 ≤ y₁ + y₂ := add_nonneg hy₁ hy₂
+  rcases hx.eq_or_lt with hx0 | hsx
+  · have hx₁0 : x₁ = 0 := by linarith
+    have hx₂0 : x₂ = 0 := by linarith
+    rw [hx₁0, hx₂0, zero_add, Real.zero_rpow (ne_of_gt hα), zero_mul, zero_mul, add_zero]
+    simp only [zero_mul]
+    exact le_rfl
+  · rcases hy.eq_or_lt with hy0 | hsy
+    · have hy₁0 : y₁ = 0 := by linarith
+      have hy₂0 : y₂ = 0 := by linarith
+      rw [hy₁0, hy₂0, zero_add, Real.zero_rpow (ne_of_gt hβ), mul_zero, mul_zero, add_zero]
+      simp only [mul_zero]
+      exact le_rfl
+    · let sx := x₁ + x₂
+      let sy := y₁ + y₂
+      have hg1 := Real.geom_mean_le_arith_mean2_weighted hα.le hβ.le
+        (div_nonneg hx₁ hsx.le) (div_nonneg hy₁ hsy.le) hαβ
+      have hg2 := Real.geom_mean_le_arith_mean2_weighted hα.le hβ.le
+        (div_nonneg hx₂ hsx.le) (div_nonneg hy₂ hsy.le) hαβ
+      have hgeom : (x₁ / sx) ^ α * (y₁ / sy) ^ β + (x₂ / sx) ^ α * (y₂ / sy) ^ β ≤ 1 := by
+        have hadd := add_le_add hg1 hg2
+        have hre : α * (x₁ / sx) + β * (y₁ / sy) + (α * (x₂ / sx) + β * (y₂ / sy)) =
+            α * ((x₁ + x₂) / sx) + β * ((y₁ + y₂) / sy) := by ring
+        rw [hre] at hadd
+        simpa [sx, sy, div_self hsx.ne', div_self hsy.ne', mul_one, hαβ] using hadd
+      have hden : 0 < sx ^ α * sy ^ β :=
+        mul_pos (Real.rpow_pos_of_pos hsx α) (Real.rpow_pos_of_pos hsy β)
+      have hquot₁ : (x₁ / sx) ^ α * (y₁ / sy) ^ β =
+          (x₁ ^ α * y₁ ^ β) / (sx ^ α * sy ^ β) := by
+        rw [Real.div_rpow hx₁ hsx.le, Real.div_rpow hy₁ hsy.le, div_mul_div_comm]
+      have hquot₂ : (x₂ / sx) ^ α * (y₂ / sy) ^ β =
+          (x₂ ^ α * y₂ ^ β) / (sx ^ α * sy ^ β) := by
+        rw [Real.div_rpow hx₂ hsx.le, Real.div_rpow hy₂ hsy.le, div_mul_div_comm]
+      have hfrac : (x₁ ^ α * y₁ ^ β + x₂ ^ α * y₂ ^ β) / (sx ^ α * sy ^ β) ≤ 1 := by
+        rw [add_div]
+        simpa [hquot₁, hquot₂] using hgeom
+      exact (div_le_one hden).mp hfrac
+
 /-- Partial sums of the point-removal series `(2 / k) ^ θ`. -/
 @[expose]
 def youngPartial (θ : ℝ) (n : ℕ) : ℝ :=
   ∑ k ∈ range n, (2 / ((k + 1) : ℝ)) ^ θ
 
+/-- Defining equation of `youngPartial`. -/
+lemma youngPartial_def (θ : ℝ) (n : ℕ) :
+    youngPartial θ n = ∑ k ∈ range n, (2 / ((k + 1) : ℝ)) ^ θ :=
+  rfl
+
 /-- Sum of the point-removal series, finite for `θ > 1`. -/
 @[expose]
 def youngLoose (θ : ℝ) : ℝ :=
   ∑' k : ℕ, (2 / ((k + 1) : ℝ)) ^ θ
+
+/-- Defining equation of `youngLoose`. -/
+lemma youngLoose_def (θ : ℝ) : youngLoose θ = ∑' k : ℕ, (2 / ((k + 1) : ℝ)) ^ θ :=
+  rfl
 
 /-- One-step recurrence for `youngPartial`. -/
 private lemma youngPartial_succ (θ : ℝ) (n : ℕ) :
@@ -560,30 +550,26 @@ lemma youngPartial_step {θ : ℝ} {n : ℕ} (hn : 0 < n) :
       youngPartial_succ θ (n - 1)
     _ = youngPartial θ (n - 1) + (2 / (n : ℝ)) ^ θ := by rw [hcast]
 
-/-- Sum of positive terms exceeds the constant on a nonempty index set. -/
-lemma sum_gt_card_mul {s : Finset ℕ} {f : ℕ → ℝ} {c : ℝ} (hf : ∀ i ∈ s, c < f i)
-    (hne : s.Nonempty) : (s.card : ℝ) * c < ∑ i ∈ s, f i := by
-  have hlt := Finset.sum_lt_sum (s := s) (f := fun _ => c) (g := f)
-    (fun i hi => (hf i hi).le) ?_
-  · simpa [Finset.sum_const, nsmul_eq_mul] using hlt
-  · obtain ⟨i, hi⟩ := hne
-    exact ⟨i, hi, hf i hi⟩
-
-/-- Real variation is nonnegative. -/
-lemma variationReal_nonneg (p : ℝ) (X : ℝ → E) (s t : ℝ) : 0 ≤ variationReal p X s t :=
-  ENNReal.toReal_nonneg
-
 /-- Complementary Young exponent `p⁻¹ + q⁻¹`. -/
 @[expose]
 def youngTheta (p q : ℝ) : ℝ := p⁻¹ + q⁻¹
+
+/-- Defining equation of `youngTheta`. -/
+lemma youngTheta_def (p q : ℝ) : youngTheta p q = p⁻¹ + q⁻¹ := rfl
 
 /-- Weight of `p`-variation in the product control. -/
 @[expose]
 def youngAlpha (p q : ℝ) : ℝ := p⁻¹ / youngTheta p q
 
+/-- Defining equation of `youngAlpha`. -/
+lemma youngAlpha_def (p q : ℝ) : youngAlpha p q = p⁻¹ / youngTheta p q := rfl
+
 /-- Weight of `q`-variation in the product control. -/
 @[expose]
 def youngBeta (p q : ℝ) : ℝ := q⁻¹ / youngTheta p q
+
+/-- Defining equation of `youngBeta`. -/
+lemma youngBeta_def (p q : ℝ) : youngBeta p q = q⁻¹ / youngTheta p q := rfl
 
 /-- Positivity of `youngTheta p q` when `1 < p⁻¹ + q⁻¹`. -/
 lemma youngTheta_pos {p q : ℝ} (hpq : 1 < p⁻¹ + q⁻¹) : 0 < youngTheta p q :=
@@ -612,11 +598,24 @@ def youngCtrl (p q : ℝ) (X : ℝ → E) {G : Type*} [SeminormedAddCommGroup G]
     (Y : ℝ → G) (s t : ℝ) : ℝ :=
   variationReal p X s t ^ youngAlpha p q * variationReal q Y s t ^ youngBeta p q
 
+/-- Defining equation of `youngCtrl`. -/
+lemma youngCtrl_def (p q : ℝ) (X : ℝ → E) {G : Type*} [SeminormedAddCommGroup G]
+    (Y : ℝ → G) (s t : ℝ) :
+    youngCtrl p q X Y s t =
+      variationReal p X s t ^ youngAlpha p q * variationReal q Y s t ^ youngBeta p q :=
+  rfl
+
 /-- The Young modulus `v_X ^ (1/p) · v_Y ^ (1/q)`. -/
 @[expose]
 def youngModulus (p q : ℝ) (X : ℝ → E) {G : Type*} [SeminormedAddCommGroup G]
     (Y : ℝ → G) (s t : ℝ) : ℝ :=
   variationReal p X s t ^ p⁻¹ * variationReal q Y s t ^ q⁻¹
+
+/-- Defining equation of `youngModulus`. -/
+lemma youngModulus_def (p q : ℝ) (X : ℝ → E) {G : Type*} [SeminormedAddCommGroup G]
+    (Y : ℝ → G) (s t : ℝ) :
+    youngModulus p q X Y s t = variationReal p X s t ^ p⁻¹ * variationReal q Y s t ^ q⁻¹ :=
+  rfl
 
 /-- The weighted product control `youngCtrl` is nonnegative. -/
 lemma youngCtrl_nonneg {p q : ℝ} (X : ℝ → E) {G : Type*} [SeminormedAddCommGroup G]
@@ -674,7 +673,7 @@ lemma youngCtrl_superadd {s u t : ℝ} (hsu : s ≤ u) (hut : u ≤ t) {p q : �
   exact hsplit.trans hmul
 
 /-- Monotonicity of `youngCtrl` under subinterval inclusion. -/
-lemma youngCtrl_mono {c a b d : ℝ} (hca : c ≤ a) (hab : a ≤ b) (hbd : b ≤ d) {p q : ℝ}
+lemma youngCtrl_mono {c a b d : ℝ} (hca : c ≤ a) (hbd : b ≤ d) {p q : ℝ}
     (hp : 1 ≤ p) (hq : 1 ≤ q) (hpq : 1 < p⁻¹ + q⁻¹) (X : ℝ → E)
     {G : Type*} [SeminormedAddCommGroup G] (Y : ℝ → G)
     (hX : pathVariationPower p X c d ≠ ∞) (hY : pathVariationPower q Y c d ≠ ∞) :
@@ -683,9 +682,9 @@ lemma youngCtrl_mono {c a b d : ℝ} (hca : c ≤ a) (hab : a ≤ b) (hbd : b �
   have hβ := youngBeta_pos hq hpq
   exact mul_le_mul
     (Real.rpow_le_rpow (variationReal_nonneg p X a b)
-      (variationReal_mono hca hab hbd hX) hα.le)
+      (variationReal_mono hca hbd hX) hα.le)
     (Real.rpow_le_rpow (variationReal_nonneg q Y a b)
-      (variationReal_mono hca hab hbd hY) hβ.le)
+      (variationReal_mono hca hbd hY) hβ.le)
     (Real.rpow_nonneg (variationReal_nonneg q Y a b) _)
     (Real.rpow_nonneg (variationReal_nonneg p X c d) _)
 
@@ -716,8 +715,6 @@ lemma sum_youngCtrl_two_mul_le {p q : ℝ} (hp : 1 ≤ p) (hq : 1 ≤ q) (hpq : 
     have hidx : 2 * n + 2 = 2 * (n + 1) := by omega
     rw [← hidx] at hsuper
     exact (add_le_add (ih c hc hX' hY') le_rfl).trans hsuper
-
-@[deprecated (since := "2026-11-15")] alias ctrl_chain := sum_youngCtrl_two_mul_le
 
 end YoungLoeve
 

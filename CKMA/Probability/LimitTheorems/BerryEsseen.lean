@@ -26,16 +26,22 @@ The proof is Stein's method with the concentration-inequality argument of Chen a
 2011, Sections 3.4.1 and 3.5). The Stein solution and its pointwise bounds are in
 `CKMA.Probability.LimitTheorems.SteinSolution`. The constant `40` is not optimal.
 
+## Main definitions
+
+* `CKMA.kolmogorovDistance`: supremum distance between real distribution functions.
+
 ## Main results
 
 * `CKMA.integral_abs_mul_integral_sq_le`, `CKMA.integral_sq_pow_three_le`: Lyapunov-type
   moment inequalities `E|X| E X² ≤ E|X|³` and `(E X²)³ ≤ (E|X|³)²`.
-* `CKMA.measureReal_abs_sum_sub_le`: the concentration inequality
+* `CKMA.measureReal_abs_sum_sub_le_four_mul_add`: the concentration inequality
   `P(|W - z| ≤ r) ≤ 4 r + 8 γ` for sums with second-moment sum between `1/2` and `1`.
 * `CKMA.abs_measureReal_sum_le_sub_cdf_le`: the Berry–Esseen bound
   `|P(W ≤ z) - Φ z| ≤ 40 γ`.
 * `CKMA.abs_measureReal_sum_div_le_sub_cdf_le`: the identically distributed case
   `|P(S_n / (σ √n) ≤ x) - Φ x| ≤ 40 E|X|³ / (σ³ √n)`.
+* `CKMA.berry_esseen`: the Berry–Esseen theorem for `CKMA.kolmogorovDistance`, with the
+  constant `100` (**06.36**).
 -/
 
 public section
@@ -198,8 +204,9 @@ variable [IsProbabilityMeasure μ]
 /-- For independent `X` and `Y` and a nonnegative weight `g`, the bound
 `P(|Y - z| ≤ r) ≤ a r + b` for all `r ≥ 0` gives
 `E[g(X) 1{|Y - z| ≤ |X|}] ≤ E[g(X) (a |X| + b)]`. -/
-theorem integral_mul_ite_abs_sub_le_le {X Y : Ω → ℝ} (hX : Measurable X) (hY : Measurable Y)
-    (hXY : IndepFun X Y μ) {g : ℝ → ℝ} (hg : Measurable g) (hg0 : ∀ x, 0 ≤ g x)
+theorem integral_mul_ite_le_integral_mul_of_indepFun {X Y : Ω → ℝ} (hX : Measurable X)
+    (hY : Measurable Y) (hXY : IndepFun X Y μ) {g : ℝ → ℝ} (hg : Measurable g)
+    (hg0 : ∀ x, 0 ≤ g x)
     (hgi : Integrable (fun ω ↦ g (X ω)) μ) (hgi' : Integrable (fun ω ↦ g (X ω) * |X ω|) μ)
     {z a b : ℝ} (hab : ∀ r, 0 ≤ r → μ.real {ω | |Y ω - z| ≤ r} ≤ a * r + b) :
     ∫ ω, g (X ω) * (if |Y ω - z| ≤ |X ω| then 1 else 0) ∂μ ≤
@@ -356,8 +363,9 @@ private lemma integral_abs_sub_integral_le (hmeas : ∀ i, Measurable (ξ i))
 /-- **Concentration inequality** for sums of independent centered variables whose second
 moments sum to a value between `1 / 2` and `1`: if `γ > 0` bounds the sum of the third
 absolute moments, then `P(|S - z| ≤ r) ≤ 4 r + 8 γ` for every `r ≥ 0`. -/
-theorem measureReal_abs_sum_sub_le (hmeas : ∀ i, Measurable (ξ i)) (hind : iIndepFun ξ μ)
-    (J : Finset ι) (hL3 : ∀ j ∈ J, MemLp (ξ j) 3 μ) (hc : ∀ j ∈ J, ∫ ω, ξ j ω ∂μ = 0)
+theorem measureReal_abs_sum_sub_le_four_mul_add (hmeas : ∀ i, Measurable (ξ i))
+    (hind : iIndepFun ξ μ) (J : Finset ι) (hL3 : ∀ j ∈ J, MemLp (ξ j) 3 μ)
+    (hc : ∀ j ∈ J, ∫ ω, ξ j ω ∂μ = 0)
     (hB : 1 / 2 ≤ ∑ j ∈ J, ∫ ω, ξ j ω ^ 2 ∂μ) (hB1 : ∑ j ∈ J, ∫ ω, ξ j ω ^ 2 ∂μ ≤ 1)
     {γ : ℝ} (hγ : 0 < γ) (hγJ : ∑ j ∈ J, ∫ ω, |ξ j ω| ^ 3 ∂μ ≤ γ) (z : ℝ) {r : ℝ}
     (hr : 0 ≤ r) : μ.real {ω | |∑ j ∈ J, ξ j ω - z| ≤ r} ≤ 4 * r + 8 * γ := by
@@ -558,7 +566,8 @@ private lemma stein_step {X Y : Ω → ℝ} (hX : Measurable X) (hY : Measurable
   -- the two concentration terms
   have hC1 : ∫ ω, (if |Y ω - z| ≤ |X ω| then (1 : ℝ) else 0) ∂μ ≤
       4 * ∫ ω, |X ω| ∂μ + 8 * γ := by
-    have := integral_mul_ite_abs_sub_le_le hX hY hXY (g := fun _ ↦ 1) measurable_const
+    have := integral_mul_ite_le_integral_mul_of_indepFun hX hY hXY (g := fun _ ↦ 1)
+      measurable_const
       (fun _ ↦ zero_le_one) (integrable_const 1) (by simpa using hX1.abs) hconc
     simp only [one_mul] at this
     rwa [integral_add (hX1.abs.const_mul 4) (integrable_const _), integral_const_mul,
@@ -566,8 +575,8 @@ private lemma stein_step {X Y : Ω → ℝ} (hX : Measurable X) (hY : Measurable
   have hC2 : ∫ ω, X ω ^ 2 * (if |Y ω - z| ≤ |X ω| then (1 : ℝ) else 0) ∂μ ≤
       4 * ∫ ω, |X ω| ^ 3 ∂μ + 8 * γ * ∫ ω, X ω ^ 2 ∂μ := by
     have hsq (ω : Ω) : X ω ^ 2 * |X ω| = |X ω| ^ 3 := by rw [← sq_abs]; ring
-    have := integral_mul_ite_abs_sub_le_le hX hY hXY (g := fun x ↦ x ^ 2) (by fun_prop)
-      (fun x ↦ sq_nonneg x) hX2 (by simpa only [hsq] using hX3') hconc
+    have := integral_mul_ite_le_integral_mul_of_indepFun hX hY hXY (g := fun x ↦ x ^ 2)
+      (by fun_prop) (fun x ↦ sq_nonneg x) hX2 (by simpa only [hsq] using hX3') hconc
     have e : (fun ω ↦ X ω ^ 2 * (4 * |X ω| + 8 * γ)) =
         fun ω ↦ 4 * |X ω| ^ 3 + 8 * γ * X ω ^ 2 := by
       ext ω; rw [← hsq]; ring
@@ -714,7 +723,7 @@ theorem abs_measureReal_sum_le_sub_cdf_le (hmeas : ∀ i, Measurable (ξ i))
       linarith [ha0 i]
     exact stein_step (z := z) (γ := γ) (hmeas i) (hVm i) (indepFun_sum_erase hmeas hind s i)
       (hL3 i hi) (hVL2.integrable one_le_two) hEV fun r hr ↦
-        measureReal_abs_sum_sub_le hmeas hind (s.erase i) hL3' hc'
+        measureReal_abs_sum_sub_le_four_mul_add hmeas hind (s.erase i) hL3' hc'
           (by rw [hB]; linarith [hsmall i hi]) (by rw [hB]; linarith [ha0 i]) hγpos hγJ z hr
   -- the Stein identity
   have hI : Integrable (fun ω ↦ if W ω ≤ z then (1 : ℝ) else 0) μ :=
@@ -855,5 +864,40 @@ theorem abs_measureReal_sum_div_le_sub_cdf_le (X : ℕ → Ω → ℝ) (hm : ∀
   field_simp
 
 end BerryEsseen
+
+/-- Supremum of differences of the real CDFs. On probability measures this is the
+Kolmogorov distance; the raw formula also accepts arbitrary measures. -/
+@[expose]
+def kolmogorovDistance (μ ν : Measure ℝ) : ℝ :=
+  sSup (Set.range (fun x ↦ |cdf μ x - cdf ν x|))
+
+/-- Defining formula of `kolmogorovDistance`. -/
+lemma kolmogorovDistance_def (μ ν : Measure ℝ) :
+    kolmogorovDistance μ ν = sSup (Set.range (fun x ↦ |cdf μ x - cdf ν x|)) :=
+  rfl
+
+/-- **06.36**: Berry–Esseen with an explicit, deliberately nonoptimal universal constant `100`.
+The pointwise bound `abs_measureReal_sum_div_le_sub_cdf_le` gives the constant `40`. -/
+theorem berry_esseen {Ω : Type*} [MeasurableSpace Ω] (μ : Measure Ω)
+    [IsProbabilityMeasure μ] (X : ℕ → Ω → ℝ) (hm : ∀ n, Measurable (X n))
+    (hi : iIndepFun X μ) (hid : ∀ n, IdentDistrib (X n) (X 0) μ μ)
+    (hLp : MemLp (X 0) 3 μ) (hc : ∫ ω, X 0 ω ∂μ = 0)
+    {σ : ℝ} (hσ : 0 < σ) (hv : variance (X 0) μ = σ ^ 2)
+    {n : ℕ} (hn : 0 < n) :
+    kolmogorovDistance
+      (μ.map (fun ω ↦ (∑ j ∈ Finset.range n, X j ω) / (σ * Real.sqrt n)))
+      (gaussianReal 0 1) ≤
+      100 * (∫ ω, |X 0 ω| ^ 3 ∂μ) / (σ ^ 3 * Real.sqrt n) := by
+  have hW : Measurable fun ω ↦ (∑ j ∈ Finset.range n, X j ω) / (σ * Real.sqrt n) :=
+    (Finset.measurable_sum _ fun j _ ↦ hm j).div_const _
+  have hρ : 0 ≤ ∫ ω, |X 0 ω| ^ 3 ∂μ := integral_nonneg fun _ ↦ by positivity
+  have hd : 0 < σ ^ 3 * Real.sqrt n := by
+    have : 0 < Real.sqrt n := Real.sqrt_pos.2 (Nat.cast_pos.2 hn)
+    positivity
+  refine csSup_le (Set.range_nonempty _) (Set.forall_mem_range.2 fun x ↦ ?_)
+  rw [cdf_eq_real (μ.map _), map_measureReal_apply hW measurableSet_Iic]
+  refine (abs_measureReal_sum_div_le_sub_cdf_le X hm hi hid hLp hc hσ hv hn x).trans ?_
+  gcongr
+  norm_num
 
 end CKMA

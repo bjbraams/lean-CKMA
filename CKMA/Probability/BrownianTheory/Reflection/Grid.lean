@@ -7,26 +7,21 @@ module
 
 public import Mathlib.Probability.BrownianMotion.Basic
 
-import Mathlib.Data.NNRat.Encodable
-
 /-!
 # Dyadic grid for the reflection principle
 
-Nonnegative rationals are dense, so continuous modifications that agree on them agree at every
-time. The reflection argument then uses the uniform mesh `t / 2 ^ n` and the largest consecutive
-increment on that mesh.
+The reflection argument uses the uniform mesh `t / 2 ^ n` on `[0, t]` and the largest
+consecutive increment on that mesh.
 
 ## Main definitions
 
-* `CKMA.Brownian.grid`: uniform dyadic grid `t * k / 2 ^ n` on `[0, t]`.
+* `CKMA.Brownian.reflectionGrid`: uniform dyadic grid `t * k / 2 ^ n` on `[0, t]`.
 * `CKMA.Brownian.gridOsc`: largest consecutive increment on the dyadic grid of `[0, t]`.
 * `CKMA.Brownian.firstGridHitSet`: event that the first grid visit to level `b` occurs at index
   `k`.
 
 ## Main results
 
-* `CKMA.Brownian.ae_eq_of_continuous_of_nnrat`: continuous modifications that agree on
-  nonnegative rationals agree everywhere almost surely.
 * `CKMA.Brownian.tendsto_gridOsc`: grid oscillation of a continuous path tends to zero as
   `n → ∞`.
 -/
@@ -44,93 +39,57 @@ variable {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsProbabilityMeasu
 
 namespace Brownian
 
-/-- Nonnegative rationals are dense in nonnegative time. -/
-private lemma denseRange_coe_nnrat : DenseRange (fun q : ℚ≥0 => (q : ℝ≥0)) := by
-  intro x
-  rw [mem_closure_range_iff]
-  intro ε hε
-  by_cases hx : x = 0
-  · refine ⟨0, ?_⟩
-    simpa [hx, dist_self] using hε
-  have hx0 : (0 : ℝ) < (x : ℝ) := by exact_mod_cast pos_iff_ne_zero.mpr hx
-  have hlt : max 0 ((x : ℝ) - ε) < (x : ℝ) := max_lt hx0 (sub_lt_self (x : ℝ) hε)
-  obtain ⟨q, hqlo, hqx⟩ := exists_rat_btwn hlt
-  have hq0r : (0 : ℝ) ≤ (q : ℝ) :=
-    le_trans (le_max_left (0 : ℝ) ((x : ℝ) - ε)) hqlo.le
-  have hq0 : 0 ≤ q := by exact_mod_cast hq0r
-  refine ⟨q.toNNRat, ?_⟩
-  rw [NNReal.dist_eq]
-  have hcoe : ((q.toNNRat : ℝ≥0) : ℝ) = (q : ℝ) := by
-    change (q.toNNRat : ℝ) = (q : ℝ)
-    exact_mod_cast Rat.coe_toNNRat q hq0
-  rw [hcoe, abs_of_nonneg (sub_nonneg.2 hqx.le)]
-  have hlo : (x : ℝ) - ε < (q : ℝ) :=
-    lt_of_le_of_lt (le_max_right (0 : ℝ) ((x : ℝ) - ε)) hqlo
-  linarith
-
-omit [IsProbabilityMeasure μ] in
-/-- Continuous paths that agree almost surely on the nonnegative rationals agree at every time. -/
-lemma ae_eq_of_continuous_of_nnrat {B C : ℝ≥0 → Ω → ℝ}
-    (hB : ∀ᵐ ω ∂μ, Continuous (fun t => B t ω))
-    (hC : ∀ ω, Continuous (fun t => C t ω))
-    (hQ : ∀ q : ℚ≥0, C q =ᵐ[μ] B q) :
-    ∀ᵐ ω ∂μ, ∀ t, C t ω = B t ω := by
-  have hcount : ∀ᵐ ω ∂μ, ∀ q : ℚ≥0, C q ω = B q ω := (ae_all_iff).2 hQ
-  filter_upwards [hcount, hB] with ω hω hcontB
-  have hfun : (fun t => C t ω) = fun t => B t ω :=
-    Continuous.ext_on denseRange_coe_nnrat (hC ω) hcontB <| by
-      intro u hu
-      rcases hu with ⟨q, rfl⟩
-      exact hω q
-  intro t
-  exact congrFun hfun t
-
 /-- Dyadic time `k * t / 2 ^ n`. -/
 @[expose]
-def grid (t : ℝ≥0) (n k : ℕ) : ℝ≥0 :=
+def reflectionGrid (t : ℝ≥0) (n k : ℕ) : ℝ≥0 :=
   ⟨(k : ℝ) * (t : ℝ) / 2 ^ n, by positivity⟩
 
-/-- Real value of a grid time. -/
-private lemma coe_grid (t : ℝ≥0) (n k : ℕ) : (grid t n k : ℝ) = (k : ℝ) * (t : ℝ) / 2 ^ n := rfl
+/-- Real value of a grid time, the defining equation of `reflectionGrid`. -/
+lemma coe_reflectionGrid (t : ℝ≥0) (n k : ℕ) :
+    (reflectionGrid t n k : ℝ) = (k : ℝ) * (t : ℝ) / 2 ^ n := rfl
 
 /-- The first grid time is zero. -/
-private lemma grid_zero (t : ℝ≥0) (n : ℕ) : grid t n 0 = 0 := by
+private lemma reflectionGrid_zero (t : ℝ≥0) (n : ℕ) : reflectionGrid t n 0 = 0 := by
   apply NNReal.eq
-  simp [coe_grid]
+  simp [coe_reflectionGrid]
 
 /-- Every grid time is zero when the horizon is zero. -/
-private lemma grid_of_time_zero (n k : ℕ) : grid 0 n k = 0 := by
+private lemma reflectionGrid_of_time_zero (n k : ℕ) : reflectionGrid 0 n k = 0 := by
   apply NNReal.eq
-  simp [coe_grid]
+  simp [coe_reflectionGrid]
 
 /-- The last grid time is the horizon. -/
-private lemma grid_last (t : ℝ≥0) (n : ℕ) : grid t n (2 ^ n) = t := by
+private lemma reflectionGrid_last (t : ℝ≥0) (n : ℕ) : reflectionGrid t n (2 ^ n) = t := by
   apply NNReal.eq
-  rw [coe_grid, Nat.cast_pow, Nat.cast_ofNat]
+  rw [coe_reflectionGrid, Nat.cast_pow, Nat.cast_ofNat]
   exact mul_div_cancel_left₀ (t : ℝ) (by positivity : (2 : ℝ) ^ n ≠ 0)
 
 /-- Grid times increase with the index. -/
-lemma grid_mono {t : ℝ≥0} {n k m : ℕ} (hkm : k ≤ m) : grid t n k ≤ grid t n m := by
-  rw [← NNReal.coe_le_coe, coe_grid, coe_grid]
+lemma reflectionGrid_mono {t : ℝ≥0} {n k m : ℕ} (hkm : k ≤ m) :
+    reflectionGrid t n k ≤ reflectionGrid t n m := by
+  rw [← NNReal.coe_le_coe, coe_reflectionGrid, coe_reflectionGrid]
   exact div_le_div_of_nonneg_right
     (mul_le_mul_of_nonneg_right (by exact_mod_cast hkm) (NNReal.coe_nonneg t))
     (by positivity)
 
 /-- Grid times up to the last index stay within the horizon. -/
-lemma grid_le {t : ℝ≥0} {n k : ℕ} (hk : k ≤ 2 ^ n) : grid t n k ≤ t := by
+lemma reflectionGrid_le {t : ℝ≥0} {n k : ℕ} (hk : k ≤ 2 ^ n) : reflectionGrid t n k ≤ t := by
   calc
-    grid t n k ≤ grid t n (2 ^ n) := grid_mono hk
-    _ = t := grid_last t n
+    reflectionGrid t n k ≤ reflectionGrid t n (2 ^ n) := reflectionGrid_mono hk
+    _ = t := reflectionGrid_last t n
 
 /-- Consecutive grid times differ by one mesh. -/
-private lemma grid_sub (t : ℝ≥0) (n k : ℕ) :
-    (grid t n (k + 1) : ℝ) - grid t n k = (t : ℝ) / 2 ^ n := by
-  rw [coe_grid, coe_grid, Nat.cast_add, Nat.cast_one]
+private lemma reflectionGrid_sub (t : ℝ≥0) (n k : ℕ) :
+    (reflectionGrid t n (k + 1) : ℝ) - reflectionGrid t n k = (t : ℝ) / 2 ^ n := by
+  rw [coe_reflectionGrid, coe_reflectionGrid, Nat.cast_add, Nat.cast_one]
   ring
 
 /-- Mesh of the level-`n` grid. -/
 @[expose]
 def gridMesh (t : ℝ≥0) (n : ℕ) : ℝ := (t : ℝ) / 2 ^ n
+
+/-- Defining equation of `gridMesh`. -/
+lemma gridMesh_def (t : ℝ≥0) (n : ℕ) : gridMesh t n = (t : ℝ) / 2 ^ n := rfl
 
 /-- The mesh is nonnegative. -/
 private lemma gridMesh_nonneg (t : ℝ≥0) (n : ℕ) : 0 ≤ gridMesh t n := by
@@ -149,8 +108,8 @@ lemma tendsto_gridMesh (t : ℝ≥0) : Tendsto (gridMesh t) atTop (𝓝 0) := by
     _ = gridMesh t n := by rw [gridMesh, div_eq_mul_inv]
 
 /-- Every time in the horizon lies within one mesh of some grid time. -/
-lemma exists_grid_near {t : ℝ≥0} (ht : 0 < t) (n : ℕ) {s : ℝ≥0} (hs : s ≤ t) :
-    ∃ k, k ≤ 2 ^ n ∧ |(grid t n k : ℝ) - (s : ℝ)| ≤ gridMesh t n := by
+lemma exists_reflectionGrid_near {t : ℝ≥0} (ht : 0 < t) (n : ℕ) {s : ℝ≥0} (hs : s ≤ t) :
+    ∃ k, k ≤ 2 ^ n ∧ |(reflectionGrid t n k : ℝ) - (s : ℝ)| ≤ gridMesh t n := by
   have ht0 : (0 : ℝ) < t := by exact_mod_cast ht
   set x : ℝ := (s : ℝ) * (2 : ℝ) ^ n / (t : ℝ)
   have hx0 : 0 ≤ x := by positivity
@@ -175,23 +134,24 @@ lemma exists_grid_near {t : ℝ≥0} (ht : 0 < t) (n : ℕ) {s : ℝ≥0} (hs : 
         simpa [mul_comm] using hdiv
       exact mul_right_cancel₀ (by positivity) hmul
     have hst : s = t := NNReal.eq hsx
-    rw [hkpow, grid_last, hst, sub_self, abs_zero]
+    rw [hkpow, reflectionGrid_last, hst, sub_self, abs_zero]
     exact gridMesh_nonneg t n
   · have hklt : k < 2 ^ n := lt_of_le_of_ne hk hkpow
-    have hgrid_le : (grid t n k : ℝ) ≤ s := by
-      rw [coe_grid, div_le_iff₀ (by positivity : (0 : ℝ) < (2 : ℝ) ^ n)]
+    have hgrid_le : (reflectionGrid t n k : ℝ) ≤ s := by
+      rw [coe_reflectionGrid, div_le_iff₀ (by positivity : (0 : ℝ) < (2 : ℝ) ^ n)]
       rw [le_div_iff₀ ht0] at hfloor
       simpa [mul_comm] using hfloor
-    have hlt : (s : ℝ) < grid t n (k + 1) := by
-      rw [coe_grid, lt_div_iff₀ (by positivity : (0 : ℝ) < (2 : ℝ) ^ n)]
+    have hlt : (s : ℝ) < reflectionGrid t n (k + 1) := by
+      rw [coe_reflectionGrid, lt_div_iff₀ (by positivity : (0 : ℝ) < (2 : ℝ) ^ n)]
       have hxlt : (s : ℝ) * (2 : ℝ) ^ n / (t : ℝ) < (k : ℝ) + 1 := by
         simpa [x] using (Nat.lt_floor_add_one x)
       rw [div_lt_iff₀ ht0] at hxlt
       simpa [Nat.cast_add, Nat.cast_one, mul_comm] using hxlt
     refine ⟨k, hklt.le, ?_⟩
     rw [abs_sub_comm, abs_of_nonneg (sub_nonneg.2 hgrid_le)]
-    have hmesh : (s : ℝ) - grid t n k < gridMesh t n := by
-      have hsub : (grid t n (k + 1) : ℝ) - grid t n k = gridMesh t n := grid_sub t n k
+    have hmesh : (s : ℝ) - reflectionGrid t n k < gridMesh t n := by
+      have hsub : (reflectionGrid t n (k + 1) : ℝ) - reflectionGrid t n k = gridMesh t n :=
+        reflectionGrid_sub t n k
       linarith
     exact hmesh.le
 
@@ -203,7 +163,13 @@ lemma gridRange_nonempty (n : ℕ) : (Finset.range (2 ^ n)).Nonempty :=
 @[expose]
 def gridOsc (C : ℝ≥0 → Ω → ℝ) (t : ℝ≥0) (n : ℕ) (ω : Ω) : ℝ :=
   (Finset.range (2 ^ n)).sup' (gridRange_nonempty n) fun k =>
-    |C (grid t n (k + 1)) ω - C (grid t n k) ω|
+    |C (reflectionGrid t n (k + 1)) ω - C (reflectionGrid t n k) ω|
+
+omit [MeasurableSpace Ω] in
+/-- Defining equation of `gridOsc`. -/
+lemma gridOsc_def (C : ℝ≥0 → Ω → ℝ) (t : ℝ≥0) (n : ℕ) (ω : Ω) :
+    gridOsc C t n ω = (Finset.range (2 ^ n)).sup' (gridRange_nonempty n) fun k =>
+      |C (reflectionGrid t n (k + 1)) ω - C (reflectionGrid t n k) ω| := rfl
 
 omit [MeasurableSpace Ω] in
 /-- Grid oscillation is nonnegative. -/
@@ -218,17 +184,17 @@ private lemma gridOsc_eq_zero_of_time (C : ℝ≥0 → Ω → ℝ) (t : ℝ≥0)
     gridOsc C t n ω = 0 := by
   rw [gridOsc]
   exact Finset.sup'_eq_of_forall (gridRange_nonempty n)
-    (fun k => |C (grid t n (k + 1)) ω - C (grid t n k) ω|)
-    (fun k hk => by simp [ht, grid_of_time_zero, sub_self, abs_zero])
+    (fun k => |C (reflectionGrid t n (k + 1)) ω - C (reflectionGrid t n k) ω|)
+    (fun k hk => by simp [ht, reflectionGrid_of_time_zero, sub_self, abs_zero])
 
 /-- Each grid oscillation is measurable. -/
 lemma measurable_gridOsc {C : ℝ≥0 → Ω → ℝ} (hm : ∀ u, Measurable (C u)) (t : ℝ≥0) (n : ℕ) :
     Measurable (fun ω => gridOsc C t n ω) := by
   unfold gridOsc
   simp_rw [← Finset.sup'_apply (gridRange_nonempty n)
-    (fun k ω => |C (grid t n (k + 1)) ω - C (grid t n k) ω|)]
+    (fun k ω => |C (reflectionGrid t n (k + 1)) ω - C (reflectionGrid t n k) ω|)]
   exact Finset.measurable_sup' (gridRange_nonempty n) fun k hk =>
-    ((hm (grid t n (k + 1))).sub (hm (grid t n k))).norm
+    ((hm (reflectionGrid t n (k + 1))).sub (hm (reflectionGrid t n k))).norm
 
 omit [MeasurableSpace Ω] in
 /-- Grid oscillation of a continuous path tends to zero. -/
@@ -260,10 +226,11 @@ lemma tendsto_gridOsc {C : ℝ≥0 → Ω → ℝ} (hcont : ∀ ω, Continuous (
   refine Finset.sup'_le (gridRange_nonempty n) _ fun k hk => ?_
   have hmesh : gridMesh t n < δ := hN n hn
   have hklt : k < 2 ^ n := Finset.mem_range.mp hk
-  have hkI : grid t n k ∈ Icc 0 t := ⟨bot_le, grid_le hklt.le⟩
-  have hkI1 : grid t n (k + 1) ∈ Icc 0 t := ⟨bot_le, grid_le (Nat.succ_le_of_lt hklt)⟩
-  have hle : dist (grid t n k) (grid t n (k + 1)) ≤ δ := by
-    rw [NNReal.dist_eq, abs_sub_comm, grid_sub, abs_of_nonneg (by positivity), ← gridMesh]
+  have hkI : reflectionGrid t n k ∈ Icc 0 t := ⟨bot_le, reflectionGrid_le hklt.le⟩
+  have hkI1 : reflectionGrid t n (k + 1) ∈ Icc 0 t :=
+    ⟨bot_le, reflectionGrid_le (Nat.succ_le_of_lt hklt)⟩
+  have hle : dist (reflectionGrid t n k) (reflectionGrid t n (k + 1)) ≤ δ := by
+    rw [NNReal.dist_eq, abs_sub_comm, reflectionGrid_sub, abs_of_nonneg (by positivity), ← gridMesh]
     exact hmesh.le
   have hval := hclose _ hkI _ hkI1 hle
   rw [Real.dist_eq, abs_sub_comm] at hval
@@ -272,23 +239,30 @@ lemma tendsto_gridOsc {C : ℝ≥0 → Ω → ℝ} (hcont : ∀ ω, Continuous (
 /-- Paths whose first visit to level `b` on the dyadic grid of `[0, t]` occurs at index `k`. -/
 @[expose]
 def firstGridHitSet (C : ℝ≥0 → Ω → ℝ) (t : ℝ≥0) (b : ℝ) (n k : ℕ) : Set Ω :=
-  {ω | k ≤ 2 ^ n ∧ b ≤ C (grid t n k) ω ∧ ∀ j, j < k → C (grid t n j) ω < b}
+  {ω | k ≤ 2 ^ n ∧ b ≤ C (reflectionGrid t n k) ω ∧ ∀ j, j < k → C (reflectionGrid t n j) ω < b}
+
+omit [MeasurableSpace Ω] in
+/-- Membership in `firstGridHitSet`. -/
+lemma mem_firstGridHitSet_iff {C : ℝ≥0 → Ω → ℝ} {t : ℝ≥0} {b : ℝ} {n k : ℕ} {ω : Ω} :
+    ω ∈ firstGridHitSet C t b n k ↔ k ≤ 2 ^ n ∧ b ≤ C (reflectionGrid t n k) ω ∧
+      ∀ j, j < k → C (reflectionGrid t n j) ω < b := Iff.rfl
 
 /-- Each first-passage grid event is measurable. -/
 lemma measurableSet_firstGridHitSet {C : ℝ≥0 → Ω → ℝ} (hm : ∀ u, Measurable (C u))
     (t : ℝ≥0) (b : ℝ) (n k : ℕ) : MeasurableSet (firstGridHitSet C t b n k) := by
   by_cases hk : k ≤ 2 ^ n
-  · have hhit : MeasurableSet {ω | b ≤ C (grid t n k) ω} :=
+  · have hhit : MeasurableSet {ω | b ≤ C (reflectionGrid t n k) ω} :=
       measurableSet_Ici.preimage (hm _)
-    have hprev : MeasurableSet {ω | ∀ j, j < k → C (grid t n j) ω < b} := by
-      have hfin : MeasurableSet (⋂ j ∈ Finset.range k, {ω | C (grid t n j) ω < b}) :=
+    have hprev : MeasurableSet {ω | ∀ j, j < k → C (reflectionGrid t n j) ω < b} := by
+      have hfin : MeasurableSet (⋂ j ∈ Finset.range k, {ω | C (reflectionGrid t n j) ω < b}) :=
         MeasurableSet.biInter (Set.to_countable _) fun j hj =>
           measurableSet_Iio.preimage (hm _)
       convert hfin using 1
       ext ω
       simp only [mem_ofPred_eq, mem_iInter, Finset.mem_range]
     have hset : firstGridHitSet C t b n k =
-        {ω | b ≤ C (grid t n k) ω} ∩ {ω | ∀ j, j < k → C (grid t n j) ω < b} := by
+        {ω | b ≤ C (reflectionGrid t n k) ω} ∩
+          {ω | ∀ j, j < k → C (reflectionGrid t n j) ω < b} := by
       ext ω
       simp [firstGridHitSet, hk]
     rw [hset]
@@ -313,7 +287,7 @@ omit [MeasurableSpace Ω] in
 /-- The first-passage events partition the grid hitting set. -/
 lemma iUnion_firstGridHitSet {C : ℝ≥0 → Ω → ℝ} (t : ℝ≥0) (b : ℝ) (n : ℕ) :
     ⋃ k ∈ Finset.range (2 ^ n + 1), firstGridHitSet C t b n k =
-      {ω | ∃ k, k ≤ 2 ^ n ∧ b ≤ C (grid t n k) ω} := by
+      {ω | ∃ k, k ≤ 2 ^ n ∧ b ≤ C (reflectionGrid t n k) ω} := by
   ext ω
   constructor
   · intro hω
@@ -321,7 +295,7 @@ lemma iUnion_firstGridHitSet {C : ℝ≥0 → Ω → ℝ} (t : ℝ≥0) (b : ℝ
     rcases hω with ⟨k, hk, htau⟩
     exact ⟨k, Nat.lt_succ_iff.mp (Finset.mem_range.mp hk), htau.2.1⟩
   · rintro ⟨k, hk, hhit⟩
-    have hex : ∃ j, j ≤ 2 ^ n ∧ b ≤ C (grid t n j) ω := ⟨k, hk, hhit⟩
+    have hex : ∃ j, j ≤ 2 ^ n ∧ b ≤ C (reflectionGrid t n j) ω := ⟨k, hk, hhit⟩
     let j := Nat.find hex
     have hj := Nat.find_spec hex
     rw [mem_iUnion₂]
@@ -335,7 +309,7 @@ lemma measure_firstGridHitSet_zero {C : ℝ≥0 → Ω → ℝ} (hC : IsBrownian
     (t : ℝ≥0) {b : ℝ} (hb : 0 < b) (n : ℕ) : μ (firstGridHitSet C t b n 0) = 0 := by
   have hsub : firstGridHitSet C t b n 0 ⊆ {ω | b ≤ C 0 ω} := by
     intro ω hω
-    simpa [grid_zero] using hω.2.1
+    simpa [reflectionGrid_zero] using hω.2.1
   refine measure_mono_null hsub ?_
   have hsub' : {ω | b ≤ C 0 ω} ⊆ {ω | C 0 ω ≠ 0} := by
     intro ω hω hzero
@@ -345,21 +319,21 @@ lemma measure_firstGridHitSet_zero {C : ℝ≥0 → Ω → ℝ} (hC : IsBrownian
 omit [MeasurableSpace Ω] in
 /-- The endpoint belongs to the grid hitting set. -/
 lemma endpoint_subset_gridHit {C : ℝ≥0 → Ω → ℝ} (t : ℝ≥0) (b : ℝ) (n : ℕ) :
-    {ω | b ≤ C t ω} ⊆ {ω | ∃ k, k ≤ 2 ^ n ∧ b ≤ C (grid t n k) ω} := by
+    {ω | b ≤ C t ω} ⊆ {ω | ∃ k, k ≤ 2 ^ n ∧ b ≤ C (reflectionGrid t n k) ω} := by
   intro ω hω
-  exact ⟨2 ^ n, le_rfl, by simpa [grid_last] using hω⟩
+  exact ⟨2 ^ n, le_rfl, by simpa [reflectionGrid_last] using hω⟩
 
 omit [MeasurableSpace Ω] in
 /-- A grid hit is a hit of the continuous path on the horizon. -/
 lemma gridHit_subset_hit {C : ℝ≥0 → Ω → ℝ} (t : ℝ≥0) (b : ℝ) (n : ℕ) :
-    {ω | ∃ k, k ≤ 2 ^ n ∧ b ≤ C (grid t n k) ω} ⊆ {ω | ∃ s, s ≤ t ∧ b ≤ C s ω} := by
+    {ω | ∃ k, k ≤ 2 ^ n ∧ b ≤ C (reflectionGrid t n k) ω} ⊆ {ω | ∃ s, s ≤ t ∧ b ≤ C s ω} := by
   intro ω ⟨k, hk, hω⟩
-  exact ⟨grid t n k, grid_le hk, hω⟩
+  exact ⟨reflectionGrid t n k, reflectionGrid_le hk, hω⟩
 
 omit [IsProbabilityMeasure μ] in
 /-- A centered Gaussian at a positive time has no atom. -/
-lemma measure_eq_endpoint {C : ℝ≥0 → Ω → ℝ} (hC : IsBrownianReal C μ) {t : ℝ≥0} (ht : 0 < t)
-    (b : ℝ) : μ {ω | C t ω = b} = 0 := by
+lemma measure_setOf_eval_eq_eq_zero {C : ℝ≥0 → Ω → ℝ} (hC : IsBrownianReal C μ) {t : ℝ≥0}
+    (ht : 0 < t) (b : ℝ) : μ {ω | C t ω = b} = 0 := by
   have hlaw := hC.hasLaw_eval t
   have hnull : NullSingletonClass (gaussianReal (0 : ℝ) t) :=
     nullSingletonClass_gaussianReal (ne_of_gt ht)
@@ -373,35 +347,28 @@ omit [MeasurableSpace Ω] in
 /-- On the first grid hit, a small oscillation keeps the overshoot below `2ε`. -/
 lemma overshoot_lt {C : ℝ≥0 → Ω → ℝ} {t : ℝ≥0} {b ε : ℝ} {n k : ℕ} {ω : Ω}
     (hk0 : 1 ≤ k) (hk : k ≤ 2 ^ n) (htau : ω ∈ firstGridHitSet C t b n k)
-    (hosc : gridOsc C t n ω ≤ ε) (hend : C t ω ≤ 2 * C (grid t n k) ω - b) :
+    (hosc : gridOsc C t n ω ≤ ε) (hend : C t ω ≤ 2 * C (reflectionGrid t n k) ω - b) :
     C t ω < b + 2 * ε := by
   have hkpos : 0 < k := Nat.succ_le_iff.mp hk0
   have hprevlt : k - 1 < k := Nat.sub_lt hkpos (by decide : 0 < 1)
-  have hprev : C (grid t n (k - 1)) ω < b := htau.2.2 (k - 1) hprevlt
+  have hprev : C (reflectionGrid t n (k - 1)) ω < b := htau.2.2 (k - 1) hprevlt
   have hmem : k - 1 ∈ Finset.range (2 ^ n) :=
     Finset.mem_range.mpr (lt_of_lt_of_le hprevlt hk)
   have hidx : k - 1 + 1 = k := Nat.sub_add_cancel hk0
-  have hinc : |C (grid t n k) ω - C (grid t n (k - 1)) ω| ≤ gridOsc C t n ω := by
+  have hinc :
+      |C (reflectionGrid t n k) ω - C (reflectionGrid t n (k - 1)) ω| ≤ gridOsc C t n ω := by
     rw [gridOsc]
-    have hfun : |C (grid t n k) ω - C (grid t n (k - 1)) ω| =
-        |C (grid t n (k - 1 + 1)) ω - C (grid t n (k - 1)) ω| := by rw [hidx]
+    have hfun : |C (reflectionGrid t n k) ω - C (reflectionGrid t n (k - 1)) ω| =
+        |C (reflectionGrid t n (k - 1 + 1)) ω - C (reflectionGrid t n (k - 1)) ω| := by rw [hidx]
     rw [hfun]
     exact (Finset.le_sup'_iff (gridRange_nonempty n)).2 ⟨k - 1, hmem, le_rfl⟩
-  have hstep : C (grid t n k) ω < b + ε := by
-    have habs := le_abs_self (C (grid t n k) ω - C (grid t n (k - 1)) ω)
-    have hsum : C (grid t n (k - 1)) ω + gridOsc C t n ω < b + ε :=
+  have hstep : C (reflectionGrid t n k) ω < b + ε := by
+    have habs := le_abs_self (C (reflectionGrid t n k) ω - C (reflectionGrid t n (k - 1)) ω)
+    have hsum : C (reflectionGrid t n (k - 1)) ω + gridOsc C t n ω < b + ε :=
       add_lt_add_of_lt_of_le hprev hosc
     linarith
   linarith
 
 end Brownian
-
-open Brownian
-
-@[deprecated (since := "2026-11-15")] alias isTauSet := firstGridHitSet
-@[deprecated (since := "2026-11-15")] alias measurableSet_isTauSet := measurableSet_firstGridHitSet
-@[deprecated (since := "2026-11-15")] alias disjoint_isTauSet := disjoint_firstGridHitSet
-@[deprecated (since := "2026-11-15")] alias iUnion_isTauSet := iUnion_firstGridHitSet
-@[deprecated (since := "2026-11-15")] alias measure_isTauSet_zero := measure_firstGridHitSet_zero
 
 end CKMA

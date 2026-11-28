@@ -44,17 +44,30 @@ open scoped FourierTransform
 def gaborAtom (g : ℝ → ℂ) (a b : ℝ) (p : ℤ × ℤ) (t : ℝ) : ℂ :=
   Complex.exp (2 * Real.pi * Complex.I * b * p.2 * t) * g (t - a * p.1)
 
-/-- **29.46**, the one-dimensional rectangular single-window frame density obstruction. -/
+/-- Unfolding the Gabor atom. -/
+theorem gaborAtom_def (g : ℝ → ℂ) (a b : ℝ) (p : ℤ × ℤ) (t : ℝ) :
+    gaborAtom g a b p t = Complex.exp (2 * Real.pi * Complex.I * b * p.2 * t) * g (t - a * p.1) :=
+  rfl
+
+/-- The pointwise modulus of a Gabor atom is that of the translated window. -/
+theorem norm_gaborAtom (g : ℝ → ℂ) (a b : ℝ) (p : ℤ × ℤ) (t : ℝ) :
+    ‖gaborAtom g a b p t‖ = ‖g (t - a * p.1)‖ := by
+  rw [gaborAtom, norm_mul, Complex.norm_exp]
+  simp
+
+/-- **29.46**, the frame density bound: if the rectangular Gabor system of `g` with lattice
+`aℤ × bℤ` is a frame for `L²(ℝ)`, then `a * b ≤ 1`. -/
 theorem gabor_frame_density {a b : ℝ} (ha : 0 < a) (hb : 0 < b)
     {g : ℝ → ℂ} (hframe : IsL2FrameFamily volume (gaborAtom g a b)) : a * b ≤ 1 := by
   sorry
 
-/-- A rectangular Gabor Riesz sequence has the reverse density inequality. -/
+/-- A rectangular Gabor Riesz sequence has the reverse density bound `1 ≤ a * b`. -/
 theorem gabor_rieszSequence_density {a b : ℝ} (ha : 0 < a) (hb : 0 < b)
     {g : ℝ → ℂ} (hriesz : IsL2RieszSequence volume (gaborAtom g a b)) : 1 ≤ a * b := by
   sorry
 
-/-- A Gabor Riesz basis has critical density. This corollary depends on the density targets. -/
+/-- A Gabor Riesz basis has critical density `a * b = 1`; it combines the frame and
+Riesz-sequence density bounds. -/
 theorem gabor_rieszBasis_density {a b : ℝ} (ha : 0 < a) (hb : 0 < b)
     {g : ℝ → ℂ} (h : IsL2RieszBasis volume (gaborAtom g a b)) : a * b = 1 :=
   le_antisymm (gabor_frame_density ha hb h.isL2FrameFamily)

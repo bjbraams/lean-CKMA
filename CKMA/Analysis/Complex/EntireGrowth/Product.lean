@@ -21,6 +21,20 @@ determines an entire canonical product of genus `p`. The product converges unifo
 sets, and its analytic order at a point is the number of listed slopes equal to that point.
 The genus-one case is in TauCeti; the argument here keeps an arbitrary genus and an explicit
 `ℕ`-enumeration, padding a finite zero list by `none`.
+
+## Main definitions
+
+* `CKMA.slopeWeight`: the weight `‖w‖ ^ (-(p + 1))` of a listed slope.
+* `CKMA.genusFactor`: the genus-`p` factor `Complex.weierstrassFactor p (z / w)` of a listed slope.
+
+## Main results
+
+* `CKMA.eventually_norm_genusFactor_sub_one_le`: on `‖z‖ ≤ R`, all but finitely many factors
+  satisfy `‖E_p(z / w) - 1‖ ≤ R ^ (p + 1) ‖w‖ ^ (-(p + 1))`.
+* `CKMA.multipliable_genusFactor`, `CKMA.hasProdUniformlyOn_genusFactor`,
+  `CKMA.tendstoUniformlyOn_genusFactor_range`: pointwise and compactly uniform convergence.
+* `CKMA.differentiable_tprod_genusFactor`: the canonical product is entire.
+* `CKMA.analyticOrderAt_tprod_genusFactor`: its order at `z` is the number of slopes equal to `z`.
 -/
 
 public section
@@ -52,18 +66,14 @@ theorem slopeWeight_some {p : ℕ} {a : ι → Option ℂ} {i : ι} {w : ℂ} (h
     slopeWeight p a i = ‖w‖ ^ (-((p : ℝ) + 1)) := by
   simp [slopeWeight, ha]
 
-/-- A genus-`p` factor on an arbitrary index. On `ℕ` it agrees with `optionFactor`.
-A zero slope makes `z / w = 0`, and the elementary factor at `0` equals `1`. -/
+/-- The genus-`p` factor `E_p(z / w)` of a listed slope `w`, on an arbitrary index; a padding
+entry contributes `1`. A zero slope makes `z / w = 0`, and the elementary factor at `0` equals
+`1`. -/
 @[expose]
 def genusFactor (p : ℕ) (a : ι → Option ℂ) (i : ι) (z : ℂ) : ℂ :=
   match a i with
   | none => 1
   | some w => weierstrassFactor p (z / w)
-
-/-- On `ℕ`, the general factor is the factor used by the elementary estimates. -/
-theorem genusFactor_eq_optionFactor (p : ℕ) (a : ℕ → Option ℂ) (n : ℕ) (z : ℂ) :
-    genusFactor p a n z = optionFactor p a n z := by
-  rfl
 
 /-- A missing slope contributes the constant factor one. -/
 theorem genusFactor_none {p : ℕ} {a : ι → Option ℂ} {i : ι} {z : ℂ} (ha : a i = none) :
@@ -88,7 +98,7 @@ theorem genusFactor_zero (p : ℕ) (a : ι → Option ℂ) (i : ι) : genusFacto
   unfold genusFactor
   split
   · rfl
-  · simp [weierstrassFactor_zero]
+  · simp
 
 /-- The factor vanishes only at its listed slope. -/
 theorem genusFactor_eq_zero_iff {p : ℕ} {a : ι → Option ℂ} {i : ι} {z : ℂ}
@@ -106,7 +116,7 @@ theorem genusFactor_eq_zero_iff {p : ℕ} {a : ι → Option ℂ} {i : ι} {z : 
     rw [genusFactor_some ha]
     constructor
     · intro h
-      have hzw : z / w = 1 := weierstrassFactor_eq_zero_iff.mp h
+      have hzw : z / w = 1 := (weierstrassFactor_eq_zero_iff p).mp h
       rw [div_eq_iff hw0, one_mul] at hzw
       rw [← hzw]
     · intro hz
@@ -130,48 +140,39 @@ include hne
 /-- On a disk of radius `R`, all but finitely many factors are `1 + O((R / ‖w‖) ^ (p + 1))`. -/
 theorem eventually_norm_genusFactor_sub_one_le {R : ℝ} (hR : 0 < R) :
     ∀ᶠ i in cofinite, ∀ z : ℂ, ‖z‖ ≤ R →
-      ‖genusFactor p a i z - 1‖ ≤ 4 * R ^ (p + 1) * slopeWeight p a i := by
-  have hq : (0 : ℝ) < (p : ℝ) + 1 := by positivity
-  have hthresh : 0 < (2 * R) ^ (-((p : ℝ) + 1)) := Real.rpow_pos_of_pos (by linarith) _
+      ‖genusFactor p a i z - 1‖ ≤ R ^ (p + 1) * slopeWeight p a i := by
+  have hthresh : 0 < R ^ (-((p : ℝ) + 1)) := Real.rpow_pos_of_pos hR _
   filter_upwards [eventually_slopeWeight_lt p a hsum hthresh] with i hi z hz
   cases ha : a i with
   | none =>
     rw [genusFactor_none ha, slopeWeight_none ha]
     simp
   | some w =>
-    have hw0 : w ≠ 0 := hne i w ha
-    have hwpos : 0 < ‖w‖ := norm_pos_iff.mpr hw0
-    have hwlarge : 2 * R < ‖w‖ := by
-      by_contra hle
-      have hle' : ‖w‖ ≤ 2 * R := le_of_not_gt hle
-      have hpow : (2 * R) ^ (-((p : ℝ) + 1)) ≤ ‖w‖ ^ (-((p : ℝ) + 1)) :=
-        Real.rpow_le_rpow_of_nonpos hwpos hle' (by linarith)
+    have hwpos : 0 < ‖w‖ := norm_pos_iff.mpr (hne i w ha)
+    have hwlarge : R ≤ ‖w‖ := by
+      by_contra hlt
+      have hpow : R ^ (-((p : ℝ) + 1)) ≤ ‖w‖ ^ (-((p : ℝ) + 1)) :=
+        Real.rpow_le_rpow_of_nonpos hwpos (le_of_not_ge hlt) (by linarith)
       rw [slopeWeight_some ha] at hi
       linarith
-    have hdiv : (R / ‖w‖) ^ (p + 1) = R ^ (p + 1) * ‖w‖ ^ (-((p : ℝ) + 1)) := by
-      have hnat := (Real.rpow_natCast ‖w‖ (p + 1)).symm
-      have hneg := (Real.rpow_neg (norm_nonneg w) ((p + 1 : ℕ) : ℝ)).symm
-      have hcast : ((p + 1 : ℕ) : ℝ) = (p : ℝ) + 1 := by simp [Nat.cast_add, Nat.cast_one]
-      rw [div_pow, div_eq_mul_inv, hnat, hneg, hcast]
-    have hfac := norm_optionFactor_sub_one_of_large (p := p)
-      (a := fun _ : ℕ => a i) (n := 0) (z := z) (w := w) (R := R) (by simp [ha]) hR hz
-      hwlarge.le
-    calc
-      ‖genusFactor p a i z - 1‖ = ‖weierstrassFactor p (z / w) - 1‖ := by
-        rw [genusFactor_some ha]
-      _ ≤ 4 * (R / ‖w‖) ^ (p + 1) := by
-        rw [optionFactor_some (show (fun _ : ℕ => a i) 0 = some w from ha)] at hfac
-        exact hfac
-      _ = 4 * (R ^ (p + 1) * ‖w‖ ^ (-((p : ℝ) + 1))) := by rw [hdiv]
-      _ = 4 * R ^ (p + 1) * slopeWeight p a i := by
-        rw [slopeWeight_some ha]
-        ring
+    have hdiv : ‖z / w‖ ≤ R / ‖w‖ := by
+      rw [norm_div]
+      exact div_le_div_of_nonneg_right hz hwpos.le
+    have hone : ‖z / w‖ ≤ 1 := hdiv.trans ((div_le_one hwpos).2 hwlarge)
+    have hrpow : (R / ‖w‖) ^ (p + 1) = R ^ (p + 1) * ‖w‖ ^ (-((p : ℝ) + 1)) := by
+      rw [div_pow, div_eq_mul_inv, ← Real.rpow_natCast ‖w‖ (p + 1),
+        ← Real.rpow_neg (norm_nonneg w)]
+      push_cast
+      rfl
+    rw [genusFactor_some ha, slopeWeight_some ha, ← hrpow]
+    exact (norm_weierstrassFactor_sub_one_le p hone).trans
+      (pow_le_pow_left₀ (norm_nonneg _) hdiv _)
 
 /-- The deviations from one are absolutely summable at each point. -/
 theorem summable_norm_genusFactor_sub_one (z : ℂ) :
     Summable fun i ↦ ‖genusFactor p a i z - 1‖ := by
   have hR : 0 < ‖z‖ + 1 := by positivity
-  have hu : Summable fun i ↦ 4 * (‖z‖ + 1) ^ (p + 1) * slopeWeight p a i :=
+  have hu : Summable fun i ↦ (‖z‖ + 1) ^ (p + 1) * slopeWeight p a i :=
     hsum.mul_left _
   refine hu.of_norm_bounded_eventually ?_
   filter_upwards [eventually_norm_genusFactor_sub_one_le p a hsum hne hR] with i hi
@@ -204,9 +205,9 @@ theorem hasProdUniformlyOn_genusFactor {K : Set ℂ} (hK : IsCompact K) :
   obtain ⟨M, hM⟩ := hK.exists_bound_of_continuousOn continuous_id.continuousOn
   let R : ℝ := max M 1
   have hR : 0 < R := by dsimp [R]; positivity
-  have hu : Summable fun i ↦ 4 * R ^ (p + 1) * slopeWeight p a i := hsum.mul_left _
+  have hu : Summable fun i ↦ R ^ (p + 1) * slopeWeight p a i := hsum.mul_left _
   have hbound : ∀ᶠ i in cofinite, ∀ z ∈ K, ‖genusFactor p a i z - 1‖ ≤
-      4 * R ^ (p + 1) * slopeWeight p a i := by
+      R ^ (p + 1) * slopeWeight p a i := by
     filter_upwards [eventually_norm_genusFactor_sub_one_le p a hsum hne hR] with i hi z hz
     exact hi z ((hM z hz).trans (le_max_left _ _))
   have hcts : ∀ i, ContinuousOn (fun z ↦ genusFactor p a i z - 1) K := by
@@ -294,7 +295,7 @@ theorem analyticOrderAt_genusFactor_of_some {i : ι} {z : ℂ}
     ext w
     rw [genusFactor_some hi]
   rw [hfun]
-  exact analyticOrderAt_weierstrassFactor_div hz0 rfl
+  exact analyticOrderAt_weierstrassFactor_div p hz0
 
 include hne
 

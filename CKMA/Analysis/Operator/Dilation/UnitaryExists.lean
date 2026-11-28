@@ -6,7 +6,8 @@ Authors: CKMA contributors
 module
 
 public import CKMA.Analysis.Operator.Dilation.WoldExtend
-public import CKMA.Analysis.InnerProductSpace.Basic
+public import CKMA.Analysis.InnerProductSpace.HilbertModel
+public import CKMA.Analysis.Operator.Dilation.UnitaryUnique
 public import Mathlib.Analysis.CStarAlgebra.Classes
 
 import CKMA.Analysis.Operator.Dilation.Minimal
@@ -24,7 +25,7 @@ Sz.-Nagy–Foiaş–Bercovici–Kérchy.
 
 * `CKMA.minimalUnitary_of_minimalIsometric`: density of the bilateral orbit from density of the
   forward isometric orbit.
-* `CKMA.exists_minimalUnitaryPowerDilation_data`: existence of a minimal unitary power dilation.
+* `CKMA.exists_minimalUnitaryPowerDilation`: Sz.-Nagy's minimal unitary power dilation theorem.
 -/
 
 public section
@@ -38,7 +39,7 @@ open ContinuousLinearMap Submodule
 
 universe u
 
-variable {E : Type u} [NormedAddCommGroup E] [InnerProductSpace ℂ E]
+variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℂ E]
 
 /-- A continuous linear functional that vanishes on a densely spanning set vanishes everywhere. -/
 private theorem apply_eq_zero_of_closure_span_eq_top (f : E →L[ℂ] ℂ) {s : Set E}
@@ -48,16 +49,7 @@ private theorem apply_eq_zero_of_closure_span_eq_top (f : E →L[ℂ] ℂ) {s : 
     exact mem_top
   exact eqOn_closure_span (g := 0) (fun w hw ↦ hf w hw) hz
 
-/-- Iterates of a linear isometric equivalence agree with its monoid powers. -/
-private theorem linearIsometryEquiv_iterate_apply_eq_pow_apply (e : E ≃ₗᵢ[ℂ] E) (n : ℕ) (x : E) :
-    (e^[n]) x = (e ^ n) x := by
-  induction n with
-  | zero => simp [Function.iterate_zero, pow_zero, LinearIsometryEquiv.coe_one]
-  | succ n ih =>
-    rw [Function.iterate_succ_apply', ih, pow_succ', LinearIsometryEquiv.coe_mul,
-      Function.comp_apply]
-
-variable {H K : Type u}
+variable {H : Type u} {K : Type*}
     [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
     [NormedAddCommGroup K] [InnerProductSpace ℂ K] [CompleteSpace K]
 
@@ -74,13 +66,6 @@ private theorem adjoint_isometry_pow (T : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K
     rw [pow_succ', LinearIsometry.mul_def, LinearIsometry.coe_comp, Function.comp_apply, hcoin,
       ih, pow_succ', mul_apply_eq_comp]
 
-/-- The adjoint of an isometric embedding is a left inverse. -/
-private theorem adjoint_isometry_leftInverse (J : H →ₗᵢ[ℂ] K) (x : H) :
-    J.toContinuousLinearMap.adjoint (J x) = x := by
-  have hs := congrArg (fun A : H →L[ℂ] H => A x) J.adjoint_comp_self
-  rw [ContinuousLinearMap.comp_apply, one_apply_eq_self] at hs
-  exact hs
-
 omit [CompleteSpace H] in
 /-- Shifting a forward orbit by the bilateral unitary stays on the embedded two-sided orbit. -/
 private theorem woldExtension_shift_orbit (J0 : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K) (k : ℤ) (n : ℕ)
@@ -89,7 +74,7 @@ private theorem woldExtension_shift_orbit (J0 : H →ₗᵢ[ℂ] K) (V : K →�
         ((V.toContinuousLinearMap ^ n) (J0 x))) =
       (woldBilateralEquiv V ^ (k + (n : ℤ))) ((woldExtensionIncl V).comp J0 x) := by
   have hpow : (V ^ n) (J0 x) = (V.toContinuousLinearMap ^ n) (J0 x) :=
-    isometry_pow_apply V n (J0 x)
+    linearIsometry_pow_apply V n (J0 x)
   rw [← hpow]
   have hstep : woldExtensionIncl V ((V ^ n) (J0 x)) =
       (woldBilateralEquiv V ^ n) (woldExtensionIncl V (J0 x)) :=
@@ -157,22 +142,20 @@ theorem minimalUnitary_of_minimalIsometric (J0 : H →ₗᵢ[ℂ] K) (V : K →�
       exact hself)
   exact (orthogonal_eq_bot_iff (K := N)).mp horth
 
-/-- A contraction has a minimal unitary power dilation, obtained by extending its minimal
-isometric dilation. -/
-theorem exists_minimalUnitaryPowerDilation_data (T : H →L[ℂ] H) (hT : ‖T‖ ≤ 1) :
-    ∃ M : HilbertSpaceModel.{u} ℂ, ∃ J : H →ₗᵢ[ℂ] M.carrier,
-      ∃ U : M.carrier ≃ₗᵢ[ℂ] M.carrier,
-        (∀ n : ℕ, ∀ x : H, J.toContinuousLinearMap.adjoint ((U^[n]) (J x)) = (T ^ n) x) ∧
-        (span ℂ {y : M.carrier | ∃ k : ℤ, ∃ x : H, y = (U ^ k) (J x)}).topologicalClosure = ⊤ := by
-  obtain ⟨M0, J0, V, hcoin, hmin⟩ := exists_minimalIsometricDilation_data T hT
+/-- **21.30**: every contraction has a minimal unitary power dilation, obtained by extending its
+minimal isometric dilation. -/
+theorem exists_minimalUnitaryPowerDilation (T : H →L[ℂ] H) (hT : ‖T‖ ≤ 1) :
+    ∃ M : ComplexHilbertSpace.{u}, ∃ J : H →ₗᵢ[ℂ] M.carrier,
+      ∃ U : M.carrier ≃ₗᵢ[ℂ] M.carrier, IsMinimalUnitaryPowerDilation T J U := by
+  obtain ⟨M0, J0, V, hcoin, hmin⟩ := exists_minimalIsometricDilation T hT
   let L := lp (woldSummandInt V) 2
   let ι : M0.carrier →ₗᵢ[ℂ] L := woldExtensionIncl V
   let U : L ≃ₗᵢ[ℂ] L := woldBilateralEquiv V
   let J : H →ₗᵢ[ℂ] L := ι.comp J0
-  refine ⟨{ carrier := L }, J, U, ?_, ?_⟩
+  refine ⟨{ carrier := L }, J, U, (isMinimalUnitaryPowerDilation_iff _ _ _).2 ⟨?_, ?_⟩⟩
   · intro n x
     have hiter : (U^[n]) (J x) = (U ^ n) (J x) :=
-      linearIsometryEquiv_iterate_apply_eq_pow_apply U n (J x)
+      (linearIsometryEquiv_pow_apply U n (J x)).symm
     have horbit : (U ^ n) (J x) = ι ((V ^ n) (J0 x)) := by
       have hJ : J x = ι (J0 x) := by
         simp [J, ι, LinearIsometry.coe_comp]
@@ -189,8 +172,8 @@ theorem exists_minimalUnitaryPowerDilation_data (T : H →L[ℂ] H) (hT : ‖T�
       rw [hcomp, adjoint_comp]
     rw [hadj, ContinuousLinearMap.comp_apply]
     have hι : ι.toContinuousLinearMap.adjoint (ι ((V ^ n) (J0 x))) = (V ^ n) (J0 x) :=
-      adjoint_isometry_leftInverse ι ((V ^ n) (J0 x))
-    rw [hι, adjoint_isometry_pow T J0 V hcoin n (J0 x), adjoint_isometry_leftInverse J0 x]
+      linearIsometry_adjoint_apply_self ι ((V ^ n) (J0 x))
+    rw [hι, adjoint_isometry_pow T J0 V hcoin n (J0 x), linearIsometry_adjoint_apply_self J0 x]
   · exact minimalUnitary_of_minimalIsometric J0 V hmin
 
 end CKMA

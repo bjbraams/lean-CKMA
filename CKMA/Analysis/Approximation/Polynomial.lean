@@ -40,7 +40,9 @@ Mathlib's `Polynomial.Chebyshev.abs_iterate_derivative_T_real_le` and `T_derivat
   criterion.
 * `CKMA.polynomial_markov`: Markov's sharp first-derivative inequality.
 * `CKMA.muntz_szasz`: Müntz–Szász theorem.
+* `CKMA.polynomial_markov_sharp`: the Markov constant `n²` is attained.
 * `CKMA.newman_rational_approximation`: Newman's rational approximation rate for `|x|`.
+* `CKMA.absoluteValue_polynomial_approximation`: the polynomial rate `1 / n` for `|x|`.
 -/
 
 public section
@@ -136,8 +138,8 @@ theorem existsUnique_isBestPolynomialApproximation (f : ApproximationIntervalMap
   obtain ⟨p, hp⟩ := exists_isBestPolynomialApproximation f n
   exact ⟨p, hp, fun q hq => (eq_of_isBestPolynomialApproximation f n p q hp hq).symm⟩
 
-/-- **47.6**: Chebyshev's alternation criterion on `[-1,1]`.
-The generalized Haar-space criterion is a separate target. -/
+/-- **47.6**: Chebyshev's alternation criterion on `[-1,1]`: a polynomial of degree at most `n`
+is a best uniform approximant exactly when its residual alternates at `n + 2` points. -/
 theorem isBestPolynomialApproximation_iff_hasPolynomialAlternation (f : ApproximationIntervalMap)
     (n : ℕ) (p : ℝ[X]) (hp : p.natDegree ≤ n) :
     IsBestPolynomialApproximation f n p ↔ HasPolynomialAlternation f p n := by
@@ -230,13 +232,26 @@ def muntzSpan (a : ℕ → ℝ) (ha : ∀ n, 0 ≤ a n) :
     Submodule ℝ C(Set.Icc (0 : ℝ) 1, ℝ) :=
   Submodule.span ℝ (insert 1 (Set.range (fun n ↦ muntzMonomial (a n) (ha n))))
 
-/-- **47.13**: Müntz–Szász for strictly increasing positive exponents tending to infinity.
-Nonsummability of the positive reciprocal sequence expresses divergence to `+∞`. -/
-theorem muntz_szasz (a : ℕ → ℝ) (ha0 : 0 < a 0) (hmono : StrictMono a)
-    (hlim : Tendsto a atTop atTop) :
+/-- **47.13**: Müntz–Szász for strictly increasing positive exponents: the span of `1` and the
+powers `x ^ a n` is dense in `C([0, 1])` exactly when `∑ 1 / a n` diverges. A bounded exponent
+sequence has divergent reciprocal sum and dense span (it has a finite positive accumulation
+point), so no growth hypothesis on `a` is needed. -/
+theorem muntz_szasz (a : ℕ → ℝ) (ha0 : 0 < a 0) (hmono : StrictMono a) :
     Dense (muntzSpan a (fun n ↦ (ha0.trans_le (hmono.monotone (Nat.zero_le n))).le) :
       Set C(Set.Icc (0 : ℝ) 1, ℝ)) ↔ ¬ Summable (fun n ↦ (a n)⁻¹) := by
   sorry
+
+/-- Evaluation of a Müntz monomial. -/
+@[simp]
+lemma muntzMonomial_apply (a : ℝ) (ha : 0 ≤ a) (x : Set.Icc (0 : ℝ) 1) :
+    muntzMonomial a ha x = x.1 ^ a :=
+  rfl
+
+/-- The Müntz span is the span of `1` and the prescribed powers. -/
+lemma muntzSpan_def (a : ℕ → ℝ) (ha : ∀ n, 0 ≤ a n) :
+    muntzSpan a ha =
+      Submodule.span ℝ (insert 1 (Set.range (fun n ↦ muntzMonomial (a n) (ha n)))) :=
+  rfl
 
 /-- A rational function on the interval whose denominator has no interval zeros. -/
 @[expose]
@@ -252,10 +267,31 @@ def bestRationalError (f : ApproximationIntervalMap) (n : ℕ) : ℝ :=
   sInf {r | ∃ (p q : ℝ[X]) (hq : ∀ x : Set.Icc (-1 : ℝ) 1, q.eval x.1 ≠ 0),
     p.natDegree ≤ n ∧ q.natDegree ≤ n ∧ r = ‖f - rationalOnApproximationInterval p q hq‖}
 
+/-- Evaluation of a rational function on the interval. -/
+@[simp]
+lemma rationalOnApproximationInterval_apply (p q : ℝ[X])
+    (hq : ∀ x : Set.Icc (-1 : ℝ) 1, q.eval x.1 ≠ 0) (x : Set.Icc (-1 : ℝ) 1) :
+    rationalOnApproximationInterval p q hq x = p.eval x.1 / q.eval x.1 :=
+  rfl
+
+/-- The best rational error is the infimum of the residual norms over pole-free rational
+functions of type `(n, n)`. -/
+lemma bestRationalError_def (f : ApproximationIntervalMap) (n : ℕ) :
+    bestRationalError f n =
+      sInf {r | ∃ (p q : ℝ[X]) (hq : ∀ x : Set.Icc (-1 : ℝ) 1, q.eval x.1 ≠ 0),
+        p.natDegree ≤ n ∧ q.natDegree ≤ n ∧ r = ‖f - rationalOnApproximationInterval p q hq‖} :=
+  rfl
+
 /-- The cusp function used in Newman's theorem. -/
 @[expose]
 def absoluteValueOnApproximationInterval : ApproximationIntervalMap :=
   ⟨fun x ↦ |x.1|, continuous_subtype_val.abs⟩
+
+/-- Evaluation of the cusp function. -/
+@[simp]
+lemma absoluteValueOnApproximationInterval_apply (x : Set.Icc (-1 : ℝ) 1) :
+    absoluteValueOnApproximationInterval x = |x.1| :=
+  rfl
 
 /-- **47.40**: root-exponential two-sided rational approximation rates for `|x|`. -/
 theorem newman_rational_approximation : ∃ c₁ c₂ c₃ c₄ : ℝ,

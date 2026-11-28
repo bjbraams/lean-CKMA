@@ -452,8 +452,4 @@ theorem exists_lintegral_fourierChar_sub_one_sq_div_rpow {d : ℕ} (hd : 0 < d) 
       simp [w, smul_smul, mul_inv_cancel₀ ht.ne', one_smul]
     rw [hξeq, lintegral_phase_smul ht, lintegral_phase_unit hd hs hs1 hw]
     rw [← ENNReal.ofReal_mul' (fourierConst_pos hd hs hs1).le, mul_comm]
-
-@[deprecated (since := "2026-11-15")]
-alias phase_kernel_integral := exists_lintegral_fourierChar_sub_one_sq_div_rpow
-
 end CKMA

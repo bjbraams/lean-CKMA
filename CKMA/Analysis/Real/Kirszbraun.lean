@@ -22,6 +22,14 @@ are Mathlib's. Source: GAPS 05.33.
 * `CKMA.exists_lipschitz_extension_hilbert` (**05.33**): Kirszbraun's Lipschitz extension
   theorem for maps from a subset of a real inner-product space into a complete real
   inner-product space.
+* `CKMA.LipschitzOnWith.extend_innerProductSpace`: the same theorem for a map `f : H → K` that
+  is Lipschitz on a set, in the form of Mathlib's `LipschitzOnWith.extend_real`.
+
+## Implementation notes
+
+The finite case is a minimax argument for the largest excess of a point over finitely many
+balls. The finite-intersection property of closed balls in a complete space gives one new
+value, and Zorn's lemma over Lipschitz relations `G ⊆ H × K` gives the extension.
 -/
 
 public section
@@ -429,7 +437,7 @@ finite-dimensional span of the centres, onto which projection does not increase 
 private lemma exists_forall_maxExcess_le : ∃ z₀ : K, ∀ z, maxExcess y r z₀ ≤ maxExcess y r z := by
   let V : Submodule ℝ K := Submodule.span ℝ (range y)
   have : FiniteDimensional ℝ V := FiniteDimensional.span_of_finite ℝ (finite_range y)
-  have : CompleteSpace V := FiniteDimensional.complete ℝ V
+  have : CompleteSpace V := FiniteDimensional.completeSpace ℝ V
   have hyV : ∀ i, y i ∈ V := fun i => Submodule.subset_span (mem_range_self i)
   let i0 : ι := Classical.arbitrary ι
   let base : ℝ := maxExcess y r 0
@@ -643,6 +651,73 @@ private lemma exists_lipschitz_value
   have hqi := hq ⟨i, hi⟩
   rwa [dist_comm] at hqi
 
+section Graph
+
+variable {H K : Type*} [NormedAddCommGroup H] [NormedAddCommGroup K]
+
+/-- A relation `G ⊆ H × K` whose pairs satisfy the Lipschitz bound with constant `L`. -/
+private def IsLipschitzGraph (L : ℝ≥0) (G : Set (H × K)) : Prop :=
+  ∀ ⦃x y : H⦄ ⦃a b : K⦄, (x, a) ∈ G → (y, b) ∈ G → dist a b ≤ (L : ℝ) * dist x y
+
+/-- A Lipschitz relation is single-valued. -/
+private lemma IsLipschitzGraph.eq {L : ℝ≥0} {G : Set (H × K)} (hG : IsLipschitzGraph L G)
+    {x : H} {a b : K} (ha : (x, a) ∈ G) (hb : (x, b) ∈ G) : a = b := by
+  have hle := hG ha hb
+  rw [dist_self, mul_zero] at hle
+  exact dist_le_zero.1 hle
+
+/-- One-point step: a Lipschitz relation into a complete space extends to any new point. -/
+private lemma IsLipschitzGraph.exists_insert [InnerProductSpace ℝ H] [InnerProductSpace ℝ K]
+    [CompleteSpace K] {L : ℝ≥0} {G : Set (H × K)}
+    (hG : IsLipschitzGraph L G) (x₀ : H) : ∃ y₀ : K, IsLipschitzGraph L (insert (x₀, y₀) G) := by
+  classical
+  let t : Set H := {x | ∃ y : K, (x, y) ∈ G}
+  let g : t → K := fun x => Classical.choose x.2
+  have hgG : ∀ x : t, ((x : H), g x) ∈ G := fun x => Classical.choose_spec x.2
+  have hg : LipschitzWith L g := LipschitzWith.of_dist_le_mul fun u v => hG (hgG u) (hgG v)
+  obtain ⟨y₀, hy₀⟩ := exists_lipschitz_value g hg x₀
+  -- A pair of `G` is a pair of the graph of `g`.
+  have hval : ∀ {x : H} {a : K}, (x, a) ∈ G → dist y₀ a ≤ (L : ℝ) * dist x x₀ :=
+    fun {x a} hx => hG.eq (hgG ⟨x, a, hx⟩) hx ▸ hy₀ ⟨x, a, hx⟩
+  refine ⟨y₀, fun x y a b hx hy => ?_⟩
+  rcases mem_insert_iff.1 hx with hx' | hx' <;> rcases mem_insert_iff.1 hy with hy' | hy'
+  · obtain ⟨rfl, rfl⟩ := Prod.ext_iff.1 hx'
+    obtain ⟨rfl, rfl⟩ := Prod.ext_iff.1 hy'
+    simp
+  · obtain ⟨rfl, rfl⟩ := Prod.ext_iff.1 hx'
+    simpa only [dist_comm] using hval hy'
+  · obtain ⟨rfl, rfl⟩ := Prod.ext_iff.1 hy'
+    simpa only [dist_comm] using hval hx'
+  · exact hG hx' hy'
+
+/-- Zorn step: a Lipschitz relation into a complete space is contained in a total one. -/
+private lemma IsLipschitzGraph.exists_total [InnerProductSpace ℝ H] [InnerProductSpace ℝ K]
+    [CompleteSpace K] {L : ℝ≥0} {G₀ : Set (H × K)}
+    (hG₀ : IsLipschitzGraph L G₀) :
+    ∃ G, G₀ ⊆ G ∧ IsLipschitzGraph L G ∧ ∀ x : H, ∃ y : K, (x, y) ∈ G := by
+  obtain ⟨G, hG₀G, hmax⟩ := zorn_subset_nonempty {G | IsLipschitzGraph L G}
+    (fun c hc hchain _ => by
+      refine ⟨⋃₀ c, fun x y a b hx hy => ?_, fun t ht => subset_sUnion_of_mem ht⟩
+      obtain ⟨G1, hG1, hx1⟩ := hx
+      obtain ⟨G2, hG2, hy2⟩ := hy
+      rcases hchain.total hG1 hG2 with h12 | h21
+      · exact hc hG2 (h12 hx1) hy2
+      · exact hc hG1 hx1 (h21 hy2))
+    G₀ hG₀
+  refine ⟨G, hG₀G, hmax.1, fun x₀ => ?_⟩
+  obtain ⟨y₀, hy₀⟩ := hmax.1.exists_insert x₀
+  exact ⟨y₀, hmax.mem_of_prop_insert hy₀⟩
+
+/-- A total Lipschitz relation is the graph of a Lipschitz map. -/
+private lemma IsLipschitzGraph.exists_lipschitzWith {L : ℝ≥0} {G : Set (H × K)}
+    (hG : IsLipschitzGraph L G) (htotal : ∀ x : H, ∃ y : K, (x, y) ∈ G) :
+    ∃ g : H → K, LipschitzWith L g ∧ ∀ ⦃x : H⦄ ⦃y : K⦄, (x, y) ∈ G → g x = y := by
+  choose g hg using htotal
+  exact ⟨g, LipschitzWith.of_dist_le_mul fun x y => hG (hg x) (hg y),
+    fun x _ hxy => hG.eq (hg x) hxy⟩
+
+end Graph
+
 /-- **05.33**: a Lipschitz map on any subset of a real inner-product space extends with
 exactly the same bound into a complete real Hilbert target. The subset may be empty;
 the domain need not be complete. -/
@@ -651,97 +726,24 @@ theorem exists_lipschitz_extension_hilbert {H K : Type*}
     [NormedAddCommGroup K] [InnerProductSpace ℝ K] [CompleteSpace K]
     (s : Set H) (f : s → K) {L : ℝ≥0} (hf : LipschitzWith L f) :
     ∃ g : H → K, LipschitzWith L g ∧ ∀ x : s, g x = f x := by
-  classical
-  let S : Set (Set (H × K)) := {G |
-    (∀ x : s, ((x : H), f x) ∈ G) ∧
-      ∀ ⦃x y : H⦄ ⦃a b : K⦄, (x, a) ∈ G → (y, b) ∈ G → dist a b ≤ (L : ℝ) * dist x y}
-  let G0 : Set (H × K) := {p | ∃ x : s, p = ((x : H), f x)}
-  have hG0 : G0 ∈ S := by
-    refine ⟨fun x => ⟨x, rfl⟩, ?_⟩
-    intro x y a b hx hy
-    obtain ⟨u, hu⟩ := hx
-    injection hu with hxu hau
-    obtain ⟨v, hv⟩ := hy
-    injection hv with hyv hbv
-    have hlip := hf.dist_le_mul u v
-    have hdist_sub : dist (u : H) (v : H) = dist u v := rfl
-    calc
-      dist a b = dist (f u) (f v) := by rw [hau, hbv]
-      _ ≤ (L : ℝ) * dist u v := by exact_mod_cast hlip
-      _ = (L : ℝ) * dist x y := by rw [hxu, hyv, hdist_sub]
-  obtain ⟨G, -, hmax⟩ := zorn_subset_nonempty S
-    (fun c hc hchain hne => by
-      refine ⟨⋃₀ c, ?_, fun t ht => subset_sUnion_of_mem ht⟩
-      refine ⟨?_, ?_⟩
-      · intro x
-        obtain ⟨G1, hG1⟩ := hne
-        exact ⟨G1, hG1, (hc hG1).1 x⟩
-      · intro x y a b hx hy
-        obtain ⟨G1, hG1, hx1⟩ := hx
-        obtain ⟨G2, hG2, hy2⟩ := hy
-        by_cases hEq : G1 = G2
-        · exact (hc hG1).2 (by simpa [hEq] using hx1) (by simpa [hEq] using hy2)
-        · rcases hchain hG1 hG2 hEq with h12 | h21
-          · exact (hc hG2).2 (h12 hx1) hy2
-          · exact (hc hG1).2 hx1 (h21 hy2))
-    G0 hG0
-  have hG : G ∈ S := hmax.1
-  have htotal : ∀ x : H, ∃ y : K, (x, y) ∈ G := by
-    intro x₀
-    by_cases hx₀ : ∃ y : K, (x₀, y) ∈ G
-    · exact hx₀
-    · let t : Set H := {x | ∃ y : K, (x, y) ∈ G}
-      have hx₀t : x₀ ∉ t := hx₀
-      let g : t → K := fun x => Classical.choose x.2
-      have hg : LipschitzWith L g := by
-        apply LipschitzWith.of_dist_le_mul
-        intro u v
-        have hu := Classical.choose_spec u.2
-        have hv := Classical.choose_spec v.2
-        have hle := hG.2 hu hv
-        exact_mod_cast hle
-      obtain ⟨y₀, hy₀⟩ := exists_lipschitz_value g hg x₀
-      have hunique : ∀ {x : H} {a b : K}, (x, a) ∈ G → (x, b) ∈ G → a = b := by
-        intro x a b ha hb
-        have hle : dist a b ≤ (L : ℝ) * dist x x := hG.2 ha hb
-        simp only [dist_self, mul_zero] at hle
-        exact dist_eq_zero.mp (le_antisymm hle dist_nonneg)
-      have hinsert : insert (x₀, y₀) G ∈ S := by
-        refine ⟨fun x => subset_insert _ _ (hG.1 x), ?_⟩
-        intro x y a b hx hy
-        rw [mem_insert_iff] at hx hy
-        rcases hx with hx | hx
-        · rcases hy with hy | hy
-          · obtain ⟨rfl, rfl⟩ := Prod.ext_iff.mp hx
-            obtain ⟨rfl, rfl⟩ := Prod.ext_iff.mp hy
-            simp
-          · obtain ⟨rfl, rfl⟩ := Prod.ext_iff.mp hx
-            have hy_t : y ∈ t := ⟨b, hy⟩
-            have hb : b = g ⟨y, hy_t⟩ :=
-              hunique hy (Classical.choose_spec (⟨b, hy⟩ : ∃ z, (y, z) ∈ G))
-            have hball := hy₀ ⟨y, hy_t⟩
-            simpa [hb, dist_comm] using hball
-        · rcases hy with hy | hy
-          · obtain ⟨rfl, rfl⟩ := Prod.ext_iff.mp hy
-            have hx_t : x ∈ t := ⟨a, hx⟩
-            have ha : a = g ⟨x, hx_t⟩ :=
-              hunique hx (Classical.choose_spec (⟨a, hx⟩ : ∃ z, (x, z) ∈ G))
-            have hball := hy₀ ⟨x, hx_t⟩
-            simpa [ha, dist_comm] using hball
-          · exact hG.2 hx hy
-      exact ⟨y₀, hmax.mem_of_prop_insert hinsert⟩
-  let g : H → K := fun x => Classical.choose (htotal x)
-  refine ⟨g, ?_, ?_⟩
-  · apply LipschitzWith.of_dist_le_mul
-    intro x y
-    have hx := Classical.choose_spec (htotal x)
-    have hy := Classical.choose_spec (htotal y)
-    exact_mod_cast hG.2 hx hy
-  · intro x
-    have hfx : ((x : H), f x) ∈ G := hG.1 x
-    have hgx : ((x : H), g (x : H)) ∈ G := Classical.choose_spec (htotal (x : H))
-    have hle : dist (g (x : H)) (f x) ≤ (L : ℝ) * dist (x : H) (x : H) := hG.2 hgx hfx
-    simp only [dist_self, mul_zero] at hle
-    exact dist_eq_zero.mp (le_antisymm hle dist_nonneg)
+  have hG₀ : IsLipschitzGraph L {p : H × K | ∃ x : s, p = ((x : H), f x)} := by
+    intro x y a b ⟨u, hu⟩ ⟨v, hv⟩
+    obtain ⟨rfl, rfl⟩ := Prod.ext_iff.1 hu
+    obtain ⟨rfl, rfl⟩ := Prod.ext_iff.1 hv
+    exact hf.dist_le_mul u v
+  obtain ⟨G, hG₀G, hG, htotal⟩ := hG₀.exists_total
+  obtain ⟨g, hg, hgG⟩ := hG.exists_lipschitzWith htotal
+  exact ⟨g, hg, fun x => hgG (hG₀G ⟨x, rfl⟩)⟩
+
+/-- **Kirszbraun's theorem**: a map from a real inner-product space into a complete real
+inner-product space that is `L`-Lipschitz on a set `s` agrees on `s` with an `L`-Lipschitz map
+defined everywhere. -/
+theorem LipschitzOnWith.extend_innerProductSpace {H K : Type*}
+    [NormedAddCommGroup H] [InnerProductSpace ℝ H]
+    [NormedAddCommGroup K] [InnerProductSpace ℝ K] [CompleteSpace K]
+    {s : Set H} {f : H → K} {L : ℝ≥0} (hf : LipschitzOnWith L f s) :
+    ∃ g : H → K, LipschitzWith L g ∧ Set.EqOn f g s := by
+  obtain ⟨g, hg, hgf⟩ := exists_lipschitz_extension_hilbert s (fun x : s => f x) hf.to_restrict
+  exact ⟨g, hg, fun x hx => (hgf ⟨x, hx⟩).symm⟩
 
 end CKMA

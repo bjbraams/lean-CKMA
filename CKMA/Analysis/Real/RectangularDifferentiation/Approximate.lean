@@ -7,7 +7,6 @@ module
 
 public import CKMA.Analysis.Real.RectangularDifferentiation.Base
 
-import Mathlib.Analysis.SpecialFunctions.Log.PosLog
 import Mathlib.MeasureTheory.Function.ContinuousMapDense
 import Mathlib.MeasureTheory.Integral.DominatedConvergence
 import CKMA.Analysis.Real.RectangularDifferentiation.Step
@@ -20,20 +19,22 @@ Continuous compactly supported functions are differentiated by every axis-parall
 The strong maximal inequality then passes to the global class `L(log⁺L)^{d-1}` by truncating in
 height and approximating in `L¹`.
 
-## Main definitions
-
-* `heightClamp`: truncation `max (-N) (min t N)` of a real value at height `N`.
-* `rectangleOscillation`: points at which, at every scale, some rectangle average misses
-  the value by at least `ε`.
-
 ## Main results
 
-* `rectanglesDifferentiateAt_of_hasCompactSupport`: rectangular differentiation at every
-  point for continuous compactly supported functions.
-* `volume_rectangleOscillation_eq_zero`: the rectangular oscillation set of a function with
-  globally integrable endpoint growth is null.
+* `CKMA.strongMaximalGrowth_zero`, `CKMA.strongMaximalGrowth_mono`: the growth vanishes at zero
+  and is monotone on `[0, ∞)`.
+* `CKMA.OpenRectangle.dist_lt_totalWidth`: two points of a rectangle are closer, in the sup
+  metric, than its total width.
 * `CKMA.ae_rectanglesDifferentiateAt_of_integrable_growth`: almost-everywhere rectangular
   differentiation for measurable functions with `strongMaximalGrowth d |f|` integrable.
+
+## Implementation notes
+
+Continuous compactly supported functions are rectangularly differentiable at every point. A
+function of the class is clamped at a height `N`, the clamped part is approximated in `L¹` by a
+continuous compactly supported function, and the endpoint bound `CKMA.strongMaximal_endpoint`
+controls the remainders. Hence for every `ε > 0` the set of points at which, at every scale,
+some rectangle average misses the value by at least `ε` is null.
 -/
 
 public section
@@ -47,71 +48,41 @@ open scoped ENNReal NNReal Topology
 
 /-- The endpoint growth vanishes at zero. -/
 theorem strongMaximalGrowth_zero (d : ℕ) : strongMaximalGrowth d 0 = 0 := by
-  simp [strongMaximalGrowth, Real.log_zero]
+  simp [strongMaximalGrowth_def]
 
 /-- The endpoint growth is monotone on the nonnegative reals. -/
 theorem strongMaximalGrowth_mono {d : ℕ} {u v : ℝ} (hu : 0 ≤ u) (huv : u ≤ v) :
     strongMaximalGrowth d u ≤ strongMaximalGrowth d v := by
-  have hv : 0 ≤ v := le_trans hu huv
-  have hlog : max 0 (Real.log u) ≤ max 0 (Real.log v) :=
-    Real.posLog_le_posLog (by linarith) huv
-  have hbase : 0 ≤ 1 + max 0 (Real.log u) := by
-    linarith [le_max_left (0 : ℝ) (Real.log u)]
-  unfold strongMaximalGrowth
+  have hlog : Real.posLog u ≤ Real.posLog v := Real.posLog_le_posLog (by linarith) huv
+  have hbase : 0 ≤ 1 + Real.posLog u := add_nonneg zero_le_one Real.posLog_nonneg
+  simp only [strongMaximalGrowth_def]
   calc
-    u * (1 + max 0 (Real.log u)) ^ (d - 1) ≤
-        v * (1 + max 0 (Real.log u)) ^ (d - 1) :=
+    u * (1 + Real.posLog u) ^ (d - 1) ≤ v * (1 + Real.posLog u) ^ (d - 1) :=
       mul_le_mul_of_nonneg_right huv (pow_nonneg hbase _)
-    _ ≤ v * (1 + max 0 (Real.log v)) ^ (d - 1) :=
-      mul_le_mul_of_nonneg_left (pow_le_pow_left₀ hbase (by linarith) _) hv
+    _ ≤ v * (1 + Real.posLog v) ^ (d - 1) :=
+      mul_le_mul_of_nonneg_left (pow_le_pow_left₀ hbase (by linarith) _) (hu.trans huv)
 
 /-- A bound on the argument gives a linear bound of the same growth order. -/
 private theorem strongMaximalGrowth_le_mul_of_le {d : ℕ} {u M : ℝ} (hu : 0 ≤ u) (huM : u ≤ M) :
-    strongMaximalGrowth d u ≤ (1 + max 0 (Real.log M)) ^ (d - 1) * u := by
-  have hlog : max 0 (Real.log u) ≤ max 0 (Real.log M) :=
-    Real.posLog_le_posLog (by linarith) huM
-  have hbase : 0 ≤ 1 + max 0 (Real.log u) := by
-    linarith [le_max_left (0 : ℝ) (Real.log u)]
-  unfold strongMaximalGrowth
-  calc
-    u * (1 + max 0 (Real.log u)) ^ (d - 1) ≤
-        u * (1 + max 0 (Real.log M)) ^ (d - 1) :=
-      mul_le_mul_of_nonneg_left (pow_le_pow_left₀ hbase (by linarith) _) hu
-    _ = (1 + max 0 (Real.log M)) ^ (d - 1) * u := by ring
+    strongMaximalGrowth d u ≤ (1 + Real.posLog M) ^ (d - 1) * u := by
+  have hlog : Real.posLog u ≤ Real.posLog M := Real.posLog_le_posLog (by linarith) huM
+  have hbase : 0 ≤ 1 + Real.posLog u := add_nonneg zero_le_one Real.posLog_nonneg
+  rw [strongMaximalGrowth_def, mul_comm]
+  exact mul_le_mul_of_nonneg_right (pow_le_pow_left₀ hbase (by linarith) _) hu
 
 /-- Scaling the argument of the endpoint growth preserves the order. -/
 private theorem strongMaximalGrowth_mul_le {d : ℕ} {c u : ℝ} (hc : 0 < c) (hu : 0 ≤ u) :
     strongMaximalGrowth d (c * u) ≤
       c * (1 + |Real.log c|) ^ (d - 1) * strongMaximalGrowth d u := by
-  by_cases hu0 : u = 0
-  · simp [hu0, strongMaximalGrowth_zero]
-  · have hu' : 0 < u := lt_of_le_of_ne hu (Ne.symm hu0)
-    have hlogle : max 0 (Real.log (c * u)) ≤ |Real.log c| + max 0 (Real.log u) := by
-      rw [Real.log_mul hc.ne' hu'.ne']
-      exact max_le (add_nonneg (abs_nonneg _) (le_max_left _ _))
-        (add_le_add (le_abs_self _) (le_max_right (0 : ℝ) (Real.log u)))
-    have hprod : 1 + max 0 (Real.log (c * u)) ≤
-        (1 + |Real.log c|) * (1 + max 0 (Real.log u)) := by
-      have hA : 0 ≤ |Real.log c| := abs_nonneg _
-      have hB : 0 ≤ max 0 (Real.log u) := le_max_left _ _
-      calc
-        1 + max 0 (Real.log (c * u)) ≤ 1 + |Real.log c| + max 0 (Real.log u) := by
-          linarith [hlogle]
-        _ ≤ 1 + |Real.log c| + max 0 (Real.log u) + |Real.log c| * max 0 (Real.log u) := by
-          linarith [mul_nonneg hA hB]
-        _ = (1 + |Real.log c|) * (1 + max 0 (Real.log u)) := by ring
-    have hbase : 0 ≤ 1 + max 0 (Real.log (c * u)) := by
-      linarith [le_max_left (0 : ℝ) (Real.log (c * u))]
-    have hcu : 0 ≤ c * u := mul_nonneg hc.le hu
-    unfold strongMaximalGrowth
-    calc
-      c * u * (1 + max 0 (Real.log (c * u))) ^ (d - 1) ≤
-          c * u * ((1 + |Real.log c|) * (1 + max 0 (Real.log u))) ^ (d - 1) :=
-        mul_le_mul_of_nonneg_left (pow_le_pow_left₀ hbase hprod _) hcu
-      _ = c * (1 + |Real.log c|) ^ (d - 1) *
-          (u * (1 + max 0 (Real.log u)) ^ (d - 1)) := by
-        rw [mul_pow]
-        ring
+  simp only [strongMaximalGrowth_def]
+  calc
+    c * u * (1 + Real.posLog (c * u)) ^ (d - 1) ≤
+        c * u * ((1 + |Real.log c|) * (1 + Real.posLog u)) ^ (d - 1) :=
+      mul_le_mul_of_nonneg_left (pow_le_pow_left₀ (add_nonneg zero_le_one Real.posLog_nonneg)
+        (one_add_posLog_mul_le c u) _) (mul_nonneg hc.le hu)
+    _ = c * (1 + |Real.log c|) ^ (d - 1) * (u * (1 + Real.posLog u) ^ (d - 1)) := by
+      rw [mul_pow]
+      ring
 
 /-- Dividing by a positive constant preserves the growth order. -/
 private theorem strongMaximalGrowth_div_const_le {d : ℕ} {a u : ℝ} (ha : 0 < a) (hu : 0 ≤ u) :
@@ -350,11 +321,9 @@ private theorem exists_continuous_growth_small {d : ℕ} {N : ℝ} (hN : 0 ≤ N
     ∃ h : (Fin d → ℝ) → ℝ, Continuous h ∧ HasCompactSupport h ∧
       Integrable (fun x ↦ strongMaximalGrowth d |f x - h x|) ∧
       (∫ x, strongMaximalGrowth d |f x - h x|) ≤ δ := by
-  set growthCoeff : ℝ := (1 + max 0 (Real.log (2 * N))) ^ (d - 1)
-  have hcoeff : 0 < growthCoeff := by
-    have hone : (0 : ℝ) < 1 + max 0 (Real.log (2 * N)) := by
-      linarith [le_max_left (0 : ℝ) (Real.log (2 * N))]
-    exact pow_pos hone _
+  set growthCoeff : ℝ := (1 + Real.posLog (2 * N)) ^ (d - 1)
+  have hcoeff : 0 < growthCoeff :=
+    pow_pos (add_pos_of_pos_of_nonneg one_pos Real.posLog_nonneg) _
   obtain ⟨g, hgsupp, hgL1, hgcont, hgint⟩ :=
     hf.exists_hasCompactSupport_integral_sub_le (div_pos hδ hcoeff)
   let h : (Fin d → ℝ) → ℝ := fun x ↦ heightClamp N (g x)
@@ -600,7 +569,7 @@ private theorem volume_rectangleOscillation_eq_zero {d : ℕ} (hd : 1 ≤ d) {f 
   rw [zero_add, ← ENNReal.ofReal_coe_nnreal]
   have hη : (0 : ℝ) < η' := hη'
   generalize (η' : ℝ) = η at hη ⊢
-  obtain ⟨C, hC, hmax⟩ := strongMaximal_orlicz hd
+  obtain ⟨C, hC, hmax⟩ := strongMaximal_endpoint d
   set a : ℝ := ε / 5
   have ha : 0 < a := by
     unfold a
@@ -719,12 +688,6 @@ theorem ae_rectanglesDifferentiateAt_of_integrable_growth {d : ℕ} (hd : 1 ≤ 
     intro δ hδ
     obtain ⟨R, hxR, hwidth, hbig⟩ := hx δ hδ
     exact ⟨R, hxR, hwidth, hn.le.trans hbig⟩
-  refine measure_mono_null hsub ?_
-  suffices hzero :
-      ∑' n : ℕ, volume (rectangleOscillation f (1 / (n + 1 : ℝ))) = 0 by
-    exact le_antisymm ((measure_iUnion_le _).trans hzero.le) bot_le
-  rw [ENNReal.tsum_eq_zero]
-  intro n
-  exact hosc n
+  exact measure_mono_null hsub (measure_iUnion_null hosc)
 
 end CKMA

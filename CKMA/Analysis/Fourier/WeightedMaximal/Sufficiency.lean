@@ -7,8 +7,9 @@ module
 
 public import CKMA.Analysis.Fourier.WeightedMaximal.Doubling
 public import CKMA.Analysis.Fourier.WeightedMaximal.MeasurableMaximal
-public import TauCeti.MeasureTheory.Covering.Vitali
-public import TauCeti.MeasureTheory.Integral.Marcinkiewicz.Basic
+
+import TauCeti.MeasureTheory.Covering.Vitali
+import TauCeti.MeasureTheory.Integral.Marcinkiewicz.Basic
 
 import Mathlib.Analysis.Normed.Group.Real
 
@@ -22,6 +23,20 @@ unweighted maximal function of `f` onto these two operators.
 
 Source: GAPS 27.44. The comparison follows Lerner, Proc. Amer. Math. Soc. 136 (2008), with the
 outer exponent `1/(p-1)` required by the ball form of the `A_p` characteristic.
+
+## Main definitions
+
+* `CKMA.ApWeight.weakConst`, `CKMA.ApWeight.dualWeakConst`: weak-`(1,1)` constants of the weight
+  and of its dual.
+* `CKMA.ApWeight.dualMeasureMk`: Lebesgue measure weighted by the measurable dual representative.
+
+## Main results
+
+* `CKMA.ApWeight.mul_measure_maximalFunction_weight`,
+  `CKMA.ApWeight.mul_measure_maximalFunction_dual`: weak-`(1,1)` bounds of the centred maximal
+  operator on the weight and dual measures.
+* `CKMA.ApWeight.lintegral_rpow_maximal_weight`, `CKMA.ApWeight.lintegral_rpow_maximal_dual`:
+  strong-type `(q,q)` bounds on the same measures, by Marcinkiewicz interpolation.
 -/
 
 public section
@@ -41,34 +56,46 @@ namespace ApWeight
 
 variable {p : ℝ}
 
-/-- Weak-`(1,1)` constant `W.A * ENNReal.ofReal ((5 : ℝ) ^ d) ^ p` of the weight.
+/-- Weak-`(1,1)` constant `W.bound * ENNReal.ofReal ((5 : ℝ) ^ d) ^ p` of the weight.
 The Vitali factor `(5 : ℝ) ^ d` is raised to the outer power `p`. -/
 @[expose]
 def weakConst (W : ApWeight (d := d) p) : ℝ≥0∞ :=
-  W.A * ENNReal.ofReal ((5 : ℝ) ^ d) ^ p
+  W.bound * ENNReal.ofReal ((5 : ℝ) ^ d) ^ p
+
+/-- Unfolding the weak-`(1,1)` constant. -/
+lemma weakConst_def (W : ApWeight (d := d) p) :
+    W.weakConst = W.bound * ENNReal.ofReal ((5 : ℝ) ^ d) ^ p := rfl
 
 /-- Weak-`(1,1)` constant of the dual weight. -/
 @[expose]
 def dualWeakConst (W : ApWeight (d := d) p) : ℝ≥0∞ :=
-  W.A ^ (p - 1)⁻¹ * ENNReal.ofReal ((5 : ℝ) ^ d) ^ W.conj
+  W.bound ^ (p - 1)⁻¹ * ENNReal.ofReal ((5 : ℝ) ^ d) ^ W.conj
+
+/-- Unfolding the dual weak-`(1,1)` constant. -/
+lemma dualWeakConst_def (W : ApWeight (d := d) p) :
+    W.dualWeakConst = W.bound ^ (p - 1)⁻¹ * ENNReal.ofReal ((5 : ℝ) ^ d) ^ W.conj := rfl
 
 /-- The weight weak constant is finite. -/
 lemma weakConst_ne_top (W : ApWeight (d := d) p) : W.weakConst ≠ ∞ := by
   unfold weakConst
-  exact mul_ne_top W.A_ne_top (rpow_ne_top_of_nonneg W.p_pos.le ENNReal.ofReal_ne_top)
+  exact mul_ne_top W.bound_ne_top (rpow_ne_top_of_nonneg W.p_pos.le ENNReal.ofReal_ne_top)
 
 /-- The dual weak constant is finite. -/
 lemma dualWeakConst_ne_top (W : ApWeight (d := d) p) : W.dualWeakConst ≠ ∞ := by
   unfold dualWeakConst
-  have hA : 0 < W.A := pos_iff_ne_zero.mpr W.A_ne_zero
+  have hA : 0 < W.bound := pos_iff_ne_zero.mpr W.bound_ne_zero
   have hfive : 0 < ENNReal.ofReal ((5 : ℝ) ^ d) := ENNReal.ofReal_pos.mpr (by positivity)
-  exact mul_ne_top (rpow_ne_top_of_nonneg' hA W.A_ne_top)
+  exact mul_ne_top (rpow_ne_top_of_nonneg' hA W.bound_ne_top)
     (rpow_ne_top_of_nonneg' hfive ENNReal.ofReal_ne_top)
 
 /-- Lebesgue measure weighted by the measurable dual representative. -/
 @[expose]
 def dualMeasureMk (W : ApWeight (d := d) p) : Measure E :=
   volume.withDensity W.dualMk
+
+/-- Unfolding the dual measure built from the measurable representative. -/
+lemma dualMeasureMk_def (W : ApWeight (d := d) p) :
+    W.dualMeasureMk = volume.withDensity W.dualMk := rfl
 
 /-- The measurable dual representative defines the same measure as `dualDensity`. -/
 lemma dualMeasure_eq_mk (W : ApWeight (d := d) p) :
@@ -127,7 +154,7 @@ private lemma mul_measure_maximal_of_doubling {ρ : E → ℝ≥0∞} {D : ℝ�
           rw [setLAverage_eq] at hlt
           exact (ENNReal.mul_lt_of_lt_div hlt).le
         have hclosed : ν (closedBall x (4 * r)) ≤ D * ν (ball x r) :=
-          (measure_mono (closedBall_subset_concentric_five hrI.1)).trans (hdouble x r hrI.1)
+          (measure_mono (closedBall_subset_ball (by linarith [hrI.1]))).trans (hdouble x r hrI.1)
         calc s * ν (closedBall x (4 * r))
             ≤ s * (D * ν (ball x r)) := mul_le_mul_right hclosed s
           _ = D * (s * ν (ball x r)) := by rw [← mul_assoc, mul_comm s, mul_assoc]
@@ -174,6 +201,10 @@ lemma mul_measure_maximalFunction_dual (W : ApWeight (d := d) p) (g : E → ℝ�
 @[expose]
 def marcFactor (t : ℝ) (D : ℝ≥0∞) : ℝ≥0∞ :=
   ENNReal.ofReal (t * (1 / 2) ^ (1 - t) / (t - 1)) * (ENNReal.ofReal (1 / 2)⁻¹ * D)
+
+/-- Unfolding the Marcinkiewicz factor. -/
+lemma marcFactor_def (t : ℝ) (D : ℝ≥0∞) : marcFactor t D =
+    ENNReal.ofReal (t * (1 / 2) ^ (1 - t) / (t - 1)) * (ENNReal.ofReal (1 / 2)⁻¹ * D) := rfl
 
 /-- The centred maximal operator is strong type `(t,t)` on a doubling weighted measure. -/
 private lemma lintegral_rpow_maximal_of_doubling {ρ : E → ℝ≥0∞} {D : ℝ≥0∞} {t : ℝ}

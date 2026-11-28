@@ -5,8 +5,9 @@ Authors: CKMA contributors
 -/
 module
 
-public import TauCeti.Analysis.InnerProductSpace.UnitarilyInvariantSeminorm.Basic
+public import TauCeti.Analysis.InnerProductSpace.UnitarilyInvariantSeminorm.Frobenius
 
+import TauCeti.Analysis.InnerProductSpace.CourantFischer
 import TauCeti.Analysis.InnerProductSpace.FanDominance
 import Mathlib.Analysis.Convex.Birkhoff
 import TauCeti.Analysis.OperatorIdeal.ApproximationNumber.EckartYoung
@@ -14,33 +15,35 @@ import TauCeti.Analysis.OperatorIdeal.ApproximationNumber.EckartYoung
 /-!
 # Hermitian eigenvalues, singular values, and low-rank approximation
 
-Sorted Hermitian eigenvalues are indexed from zero. Compression and rank perturbation statements
-use the corresponding index shifts; Weyl's additive bound uses the output index `i+j`.
-Hoffman–Wielandt is formulated in supplied orthonormal eigenbases, allowing repeated eigenvalues.
-The eigenvalue matching is the one picked out of the doubly stochastic matrix of squared eigenbasis
-overlaps by Birkhoff's theorem.
+Sorted Hermitian eigenvalues are Mathlib's `LinearMap.IsSymmetric.eigenvalues`, indexed from
+zero in decreasing order. Compression and rank perturbation statements use the corresponding index
+shifts; Weyl's additive bound holds for every output index `k ≥ i + j`. Hoffman–Wielandt is
+formulated in supplied orthonormal eigenbases, allowing repeated eigenvalues. The eigenvalue
+matching is the one picked out of the doubly stochastic matrix of squared eigenbasis overlaps by
+Birkhoff's theorem.
 
-Frobenius energy and SVD truncation use TauCeti's canonical singular-value data. The low-rank
-statements include all unitarily invariant seminorms, the Frobenius tail, and the operator-norm
-tail, with zero-padding beyond the available rank. Sources: GAPS 13.7, 13.8, 13.10, 13.13, and
-13.18.
+Frobenius energy is TauCeti's `TauCeti.UnitarilyInvariantSeminorm.frobenius`, and SVD truncation
+uses TauCeti's canonical singular-value data. The low-rank statements include all unitarily
+invariant seminorms, the Frobenius tail, and the operator-norm tail, with zero-padding beyond the
+available rank. Cauchy interlacing and Weyl's inequality are derived from TauCeti's
+Courant–Fischer API (`TauCeti/Analysis/InnerProductSpace/CourantFischer.lean`). Sources: GAPS 13.7,
+13.8, 13.10, 13.13, and 13.18.
 
 ## Main definitions
 
-* `CKMA.orderedEigenvalues`: decreasing real eigenvalues of a Hermitian endomorphism.
-* `CKMA.frobeniusNormSq`: squared Frobenius norm defined as the sum of squared singular values.
 * `CKMA.hermitianCompression`: compression `V^* A V` along a linear isometric inclusion `V`.
 * `CKMA.svdTruncation`: rank-`k` singular value decomposition truncation.
 
 ## Main results
 
-* `CKMA.cauchy_interlacing`: Cauchy eigenvalue interlacing for a codimension-one compression
+* `CKMA.cauchy_interlacing`: Cauchy eigenvalue interlacing for a compression of any codimension
   (**13.7**).
 * `CKMA.weyl_eigenvalue_add`, `CKMA.eigenvalue_rank_perturbation`: Weyl additive eigenvalue
   inequality and rank-perturbation interlacing (**13.8**).
 * `CKMA.hoffman_wielandt`: Hoffman–Wielandt eigenvalue perturbation inequality (**13.10**).
-* `CKMA.norm_trace_adjoint_comp_le`: von Neumann singular-value trace inequality (**13.13**).
-* `CKMA.svdTruncation_minimizes`, `CKMA.frobeniusNormSq_sub_svdTruncation`,
+* `CKMA.norm_trace_adjoint_comp_le`: von Neumann singular-value trace inequality for maps
+  `E →ₗ[𝕜] F` (**13.13**).
+* `CKMA.svdTruncation_minimizes`, `CKMA.sq_frobenius_sub_svdTruncation`,
   `CKMA.norm_sub_svdTruncation`: Mirsky / Eckart–Young low-rank approximation properties
   (**13.18**).
 -/
@@ -52,26 +55,32 @@ noncomputable section
 namespace CKMA
 
 open Module
+open TauCeti.UnitarilyInvariantSeminorm (frobenius sq_frobenius_apply)
 open scoped BigOperators InnerProductSpace
 
 variable {𝕜 E F : Type*} [RCLike 𝕜]
     [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [FiniteDimensional 𝕜 E]
     [NormedAddCommGroup F] [InnerProductSpace 𝕜 F] [FiniteDimensional 𝕜 F]
 
-/-- The decreasing real eigenvalue list of a Hermitian endomorphism, with zero-based indices. -/
-@[expose]
-def orderedEigenvalues (A : E →ₗ[𝕜] E) (hA : A.IsSymmetric) :
-    Fin (finrank 𝕜 E) → ℝ := hA.eigenvalues rfl
-
-/-- Squared Frobenius norm, expressed intrinsically as the sum of squared singular values. -/
-@[expose]
-def frobeniusNormSq (A : E →ₗ[𝕜] F) : ℝ :=
-  ∑ i : Fin (finrank 𝕜 E), A.singularValues i ^ 2
-
 /-- Compression along a linear isometric inclusion. -/
 @[expose]
 def hermitianCompression (A : E →ₗ[𝕜] E) (V : F →ₗᵢ[𝕜] E) : F →ₗ[𝕜] F :=
   V.toLinearMap.adjoint ∘ₗ A ∘ₗ V.toLinearMap
+
+/-- The compression is `V^* ∘ A ∘ V`. -/
+theorem hermitianCompression_def (A : E →ₗ[𝕜] E) (V : F →ₗᵢ[𝕜] E) :
+    hermitianCompression A V = V.toLinearMap.adjoint ∘ₗ A ∘ₗ V.toLinearMap :=
+  rfl
+
+/-- The compression `V^* A V` evaluated at a vector. -/
+theorem hermitianCompression_apply (A : E →ₗ[𝕜] E) (V : F →ₗᵢ[𝕜] E) (x : F) :
+    hermitianCompression A V x = V.toLinearMap.adjoint (A (V x)) := by
+  simp [hermitianCompression]
+
+/-- The quadratic form of a compression is the quadratic form of `A` pulled back along `V`. -/
+theorem inner_hermitianCompression_apply_self (A : E →ₗ[𝕜] E) (V : F →ₗᵢ[𝕜] E) (x : F) :
+    ⟪hermitianCompression A V x, x⟫_𝕜 = ⟪A (V x), V x⟫_𝕜 := by
+  rw [hermitianCompression_apply, LinearMap.adjoint_inner_left, LinearIsometry.coe_toLinearMap]
 
 /-- Compressing a symmetric operator along an isometry preserves symmetry. -/
 theorem isSymmetric_hermitianCompression (A : E →ₗ[𝕜] E) (hA : A.IsSymmetric)
@@ -81,33 +90,12 @@ theorem isSymmetric_hermitianCompression (A : E →ₗ[𝕜] E) (hA : A.IsSymmet
     LinearMap.adjoint_inner_left, LinearMap.adjoint_inner_right]
   exact hA _ _
 
-/-- Rayleigh quotient of a compression, pulled back along the isometric inclusion. -/
-private lemma re_inner_hermitianCompression (A : E →ₗ[𝕜] E) (V : F →ₗᵢ[𝕜] E) (x : F) :
-    RCLike.re ⟪hermitianCompression A V x, x⟫_𝕜 =
-      RCLike.re ⟪A (V x), V x⟫_𝕜 := by
-  simp only [hermitianCompression, LinearMap.comp_apply, LinearMap.adjoint_inner_left,
-    LinearIsometry.coe_toLinearMap]
-
-/-- A subspace of rank at least `d` contains a subspace of rank exactly `d`. -/
-private lemma exists_submodule_finrank_eq {G : Type*} [NormedAddCommGroup G]
-    [InnerProductSpace 𝕜 G] [FiniteDimensional 𝕜 G] {d : ℕ} {W : Submodule 𝕜 G}
-    (hd : d ≤ finrank 𝕜 W) :
-    ∃ W₀ : Submodule 𝕜 G, W₀ ≤ W ∧ finrank 𝕜 W₀ = d := by
-  obtain ⟨v, hv⟩ := exists_linearIndependent_of_le_finrank hd
-  have hg : LinearIndependent 𝕜 (fun i : Fin d ↦ (W.subtype ∘ v) i) :=
-    hv.map' W.subtype W.ker_subtype
-  refine ⟨Submodule.span 𝕜 (Set.range fun i : Fin d ↦ (W.subtype ∘ v) i), ?_, ?_⟩
-  · rw [Submodule.span_le]
-    rintro _ ⟨i, rfl⟩
-    exact (v i).property
-  · simpa using finrank_span_eq_card hg
-
 /-- The `r`-th decreasing eigenvalue of a symmetric map of rank at most `r` is nonpositive. -/
 private lemma eigenvalues_le_zero_of_finrank_range_le {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric)
     {r : ℕ} (hr : finrank 𝕜 (LinearMap.range T) ≤ r) (hrn : r < finrank 𝕜 E) :
-    orderedEigenvalues T hT ⟨r, hrn⟩ ≤ 0 := by
+    hT.eigenvalues rfl ⟨r, hrn⟩ ≤ 0 := by
   by_contra hpos
-  have hpos' : 0 < orderedEigenvalues T hT ⟨r, hrn⟩ := lt_of_not_ge hpos
+  have hpos' : 0 < hT.eigenvalues rfl ⟨r, hrn⟩ := lt_of_not_ge hpos
   obtain ⟨S, hSdim, hSlow⟩ :=
     hT.exists_submodule_forall_unit_eigenvalue_le_re_inner rfl ⟨r, hrn⟩
   have hinj : Function.Injective (T ∘ₗ S.subtype) := by
@@ -123,158 +111,46 @@ private lemma eigenvalues_le_zero_of_finrank_range_le {T : E →ₗ[𝕜] E} (hT
     have hz0 : T z = 0 := by rw [show z = _ from rfl, map_smul, hxT, smul_zero]
     have hlow := hSlow z hzS hzn
     rw [hz0, inner_zero_left, map_zero] at hlow
-    exact (hpos'.trans_le (by simpa [orderedEigenvalues] using hlow)).false
+    exact (hpos'.trans_le hlow).false
   have hrank : finrank 𝕜 (LinearMap.range (T ∘ₗ S.subtype)) = r + 1 := by
     rw [LinearMap.finrank_range_of_inj hinj, hSdim]
   have hle : finrank 𝕜 (LinearMap.range (T ∘ₗ S.subtype)) ≤ finrank 𝕜 (LinearMap.range T) :=
     Submodule.finrank_mono (LinearMap.range_comp_le_range _ _)
   omega
 
-/-- **13.7**: Cauchy interlacing for a codimension-one compression. -/
+/-- **13.7**: Cauchy interlacing for a compression `V^* A V` along a linear isometry
+`V : F →ₗᵢ[𝕜] E` of any codimension `n - m`, where `n = finrank 𝕜 E` and `m = finrank 𝕜 F`:
+with zero-based decreasing eigenvalues, `λ_{i + (n - m)}(A) ≤ μᵢ ≤ λᵢ(A)`. It is derived from
+TauCeti's `LinearMap.IsSymmetric.eigenvalues_le_eigenvalues_of_isometry` and its primed form. -/
 theorem cauchy_interlacing (A : E →ₗ[𝕜] E) (hA : A.IsSymmetric)
-    (V : F →ₗᵢ[𝕜] E) (hdim : finrank 𝕜 E = finrank 𝕜 F + 1)
-    (i : Fin (finrank 𝕜 F)) (j k : Fin (finrank 𝕜 E))
-    (hj : j.val = i.val) (hk : k.val = i.val + 1) :
-    orderedEigenvalues A hA k ≤ orderedEigenvalues (hermitianCompression A V)
-      (isSymmetric_hermitianCompression A hA V) i ∧
-      orderedEigenvalues (hermitianCompression A V) (isSymmetric_hermitianCompression A hA V) i ≤
-        orderedEigenvalues A hA j := by
-  let hC := isSymmetric_hermitianCompression A hA V
-  let Rng := LinearMap.range V.toLinearMap
-  have hRng : finrank 𝕜 Rng = finrank 𝕜 F := LinearMap.finrank_range_of_inj V.injective
-  constructor
-  · -- `λ_{i+1}(A) ≤ μ_i`: test a codimension-one slice of the Courant–Fischer lower subspace.
-    obtain ⟨S, hSdim, hSlow⟩ :=
-      hA.exists_submodule_forall_unit_eigenvalue_le_re_inner rfl k
-    let meet := S ⊓ Rng
-    let join := S ⊔ Rng
-    have hWinter : (i : ℕ) + 1 ≤ finrank 𝕜 meet := by
-      have hsum : finrank 𝕜 join + finrank 𝕜 meet = finrank 𝕜 S + finrank 𝕜 Rng := by
-        simpa [join, meet] using Submodule.finrank_sup_add_finrank_inf_eq S Rng
-      have hsup : finrank 𝕜 join ≤ finrank 𝕜 E := Submodule.finrank_le _
-      have hS : finrank 𝕜 S = (i : ℕ) + 2 := by
-        rw [hSdim, show (k : ℕ) = (i : ℕ) + 1 by simpa using hk]
-      omega
-    let Winter : Submodule 𝕜 Rng := S.comap Rng.subtype
-    have hWinterDim : finrank 𝕜 Winter = finrank 𝕜 meet := by
-      have himage : Winter.map Rng.subtype = Rng ⊓ S := by
-        simp [Winter, Submodule.map_comap_subtype]
-      rw [← Submodule.finrank_map_subtype_eq Rng Winter, himage, inf_comm]
-    let e := LinearEquiv.ofInjective V.toLinearMap V.injective
-    let WF : Submodule 𝕜 F := Winter.map e.symm.toLinearMap
-    have hWF : (i : ℕ) + 1 ≤ finrank 𝕜 WF := by
-      rw [e.symm.finrank_map_eq, hWinterDim]
-      exact hWinter
-    obtain ⟨W0, hW0le, hW0dim⟩ := exists_submodule_finrank_eq hWF
-    obtain ⟨y, hy, hy1, hyup⟩ :=
-      hC.exists_unit_vector_re_inner_le_eigenvalue rfl i W0 hW0dim
-    have hyWF : y ∈ WF := hW0le hy
-    obtain ⟨z, hz, rfl⟩ := Submodule.mem_map.mp hyWF
-    have hzS : (z : E) ∈ S := by
-      simpa [Winter] using hz
-    have hVy : V (e.symm z) = (z : E) :=
-      LinearEquiv.ofInjective_symm_apply (f := V.toLinearMap) (h := V.injective) z
-    have hzn : ‖(z : E)‖ = 1 := by
-      rw [← hVy, V.norm_map]
-      simpa using hy1
-    have hlow := hSlow (z : E) hzS hzn
-    have hre := re_inner_hermitianCompression A V (e.symm z)
-    have hyup' :
-        RCLike.re ⟪hermitianCompression A V (e.symm z), e.symm z⟫_𝕜 ≤
-          hC.eigenvalues rfl i := by
-      simpa using hyup
-    calc orderedEigenvalues A hA k
-        ≤ RCLike.re ⟪A (z : E), (z : E)⟫_𝕜 := by simpa [orderedEigenvalues] using hlow
-      _ = RCLike.re ⟪hermitianCompression A V (e.symm z), e.symm z⟫_𝕜 := by
-          rw [hre, hVy]
-      _ ≤ orderedEigenvalues (hermitianCompression A V) hC i := by
-          simpa [orderedEigenvalues] using hyup'
-  · -- `μ_i ≤ λ_i`: push the compression's lower subspace forward along `V`.
-    obtain ⟨W, hWdim, hWlow⟩ :=
-      hC.exists_submodule_forall_unit_eigenvalue_le_re_inner rfl i
-    have hinj : Function.Injective (V.toLinearMap ∘ₗ W.subtype) :=
-      V.injective.comp (Submodule.injective_subtype W)
-    have hdimVW : finrank 𝕜 (LinearMap.range (V.toLinearMap ∘ₗ W.subtype)) = (j : ℕ) + 1 := by
-      rw [LinearMap.finrank_range_of_inj hinj, hWdim]
-      simp [show (i : ℕ) = (j : ℕ) by simpa using hj.symm]
-    obtain ⟨x, hx, hx1, hxup⟩ :=
-      hA.exists_unit_vector_re_inner_le_eigenvalue rfl j _ hdimVW
-    obtain ⟨y, hyx⟩ := LinearMap.mem_range.mp hx
-    have hxy : x = V (y : F) := by
-      simpa [LinearMap.comp_apply, LinearIsometry.coe_toLinearMap] using hyx.symm
-    have hy1 : ‖(y : F)‖ = 1 := by simpa [hxy, V.norm_map] using hx1
-    have hlow := hWlow (y : F) y.property hy1
-    have hre := re_inner_hermitianCompression A V (y : F)
-    calc orderedEigenvalues (hermitianCompression A V) hC i
-        ≤ RCLike.re ⟪hermitianCompression A V (y : F), (y : F)⟫_𝕜 := by
-          simpa [orderedEigenvalues] using hlow
-      _ = RCLike.re ⟪A x, x⟫_𝕜 := by rw [hre, hxy]
-      _ ≤ orderedEigenvalues A hA j := by simpa [orderedEigenvalues] using hxup
+    (V : F →ₗᵢ[𝕜] E) (i : Fin (finrank 𝕜 F)) (j k : Fin (finrank 𝕜 E))
+    (hj : j.val = i.val) (hk : k.val = i.val + (finrank 𝕜 E - finrank 𝕜 F)) :
+    hA.eigenvalues rfl k ≤ (isSymmetric_hermitianCompression A hA V).eigenvalues rfl i ∧
+      (isSymmetric_hermitianCompression A hA V).eigenvalues rfl i ≤ hA.eigenvalues rfl j := by
+  have hmn : finrank 𝕜 F ≤ finrank 𝕜 E :=
+    LinearMap.finrank_le_finrank_of_injective (f := V.toLinearMap) V.injective
+  have hST := inner_hermitianCompression_apply_self A V
+  have hC := isSymmetric_hermitianCompression A hA V
+  obtain rfl : k = Fin.cast (Nat.add_sub_of_le hmn) (i.addNat (finrank 𝕜 E - finrank 𝕜 F)) :=
+    Fin.ext (by simp [hk])
+  obtain rfl : j = Fin.castLE hmn i := Fin.ext (by simp [hj])
+  exact ⟨hA.eigenvalues_le_eigenvalues_of_isometry' hC rfl rfl V hST hmn i,
+    hA.eigenvalues_le_eigenvalues_of_isometry hC rfl rfl V hST hmn i⟩
 
-/-- **13.8**: the mixed-index Weyl inequality. Indices start at zero, so the output index is
-`i+j`. -/
+/-- **13.8**: the mixed-index Weyl inequality `λₖ(A + B) ≤ λᵢ(A) + λⱼ(B)` for `i + j ≤ k`.
+Indices start at zero. This is TauCeti's `LinearMap.IsSymmetric.eigenvalues_add_le`. -/
 theorem weyl_eigenvalue_add (A B : E →ₗ[𝕜] E) (hA : A.IsSymmetric)
     (hB : B.IsSymmetric)
-    (i j k : Fin (finrank 𝕜 E)) (hk : k.val = i.val + j.val) :
-    orderedEigenvalues (A + B) (hA.add hB) k ≤ orderedEigenvalues A hA i +
-      orderedEigenvalues B hB j := by
-  let bA := hA.eigenvectorBasis rfl
-  let bB := hB.eigenvectorBasis rfl
-  let VA := bA.spanIndices ↑(Finset.Ici i)
-  let VB := bB.spanIndices ↑(Finset.Ici j)
-  have hVA : finrank 𝕜 VA = finrank 𝕜 E - (i : ℕ) := by
-    simp [VA, OrthonormalBasis.finrank_spanIndices, Fin.card_Ici]
-  have hVB : finrank 𝕜 VB = finrank 𝕜 E - (j : ℕ) := by
-    simp [VB, OrthonormalBasis.finrank_spanIndices, Fin.card_Ici]
-  let W := VA ⊓ VB
-  let join := VA ⊔ VB
-  have hW : finrank 𝕜 E - ((i : ℕ) + (j : ℕ)) ≤ finrank 𝕜 W := by
-    have hsum : finrank 𝕜 join + finrank 𝕜 W = finrank 𝕜 VA + finrank 𝕜 VB := by
-      simpa [join, W] using Submodule.finrank_sup_add_finrank_inf_eq VA VB
-    have hsup : finrank 𝕜 join ≤ finrank 𝕜 E := Submodule.finrank_le _
-    have hi : (i : ℕ) ≤ finrank 𝕜 E := Nat.le_of_lt i.isLt
-    have hj' : (j : ℕ) ≤ finrank 𝕜 E := Nat.le_of_lt j.isLt
-    omega
-  obtain ⟨S, hSdim, hSlow⟩ :=
-    (hA.add hB).exists_submodule_forall_unit_eigenvalue_le_re_inner rfl k
-  have hmeet : S ⊓ W ≠ ⊥ := by
-    refine Submodule.inf_ne_bot_of_finrank_lt ?_
-    have hS : finrank 𝕜 S = (i : ℕ) + (j : ℕ) + 1 := by
-      have hk' : (k : ℕ) = (i : ℕ) + (j : ℕ) := by simpa using hk
-      rw [hSdim, hk']
-    omega
-  obtain ⟨z, hz, hz0⟩ := Submodule.exists_mem_ne_zero_of_ne_bot hmeet
-  obtain ⟨hzS, hzW⟩ := Submodule.mem_inf.mp hz
-  have hz0' : ‖z‖ ≠ 0 := norm_ne_zero_iff.mpr hz0
-  let x : E := ((‖z‖⁻¹ : ℝ) : 𝕜) • z
-  have hnx : ‖x‖ = 1 := by
-    rw [norm_smul, RCLike.norm_ofReal, abs_inv, abs_norm, inv_mul_cancel₀ hz0']
-  have hxS : x ∈ S := S.smul_mem _ hzS
-  have hxW : x ∈ W := W.smul_mem _ hzW
-  obtain ⟨hxVA, hxVB⟩ := Submodule.mem_inf.mp hxW
-  have hlow := hSlow x hxS hnx
-  have hAx : RCLike.re ⟪A x, x⟫_𝕜 ≤ orderedEigenvalues A hA i := by
-    have hbound := hA.re_inner_apply_self_le_of_mem_spanIndices rfl
-      (fun t ht => hA.eigenvalues_antitone rfl (by simpa using ht)) hxVA
-    simpa [orderedEigenvalues, hnx] using hbound
-  have hBx : RCLike.re ⟪B x, x⟫_𝕜 ≤ orderedEigenvalues B hB j := by
-    have hbound := hB.re_inner_apply_self_le_of_mem_spanIndices rfl
-      (fun t ht => hB.eigenvalues_antitone rfl (by simpa using ht)) hxVB
-    simpa [orderedEigenvalues, hnx] using hbound
-  have hadd : RCLike.re ⟪(A + B) x, x⟫_𝕜 =
-      RCLike.re ⟪A x, x⟫_𝕜 + RCLike.re ⟪B x, x⟫_𝕜 := by
-    rw [LinearMap.add_apply, inner_add_left, map_add]
-  calc orderedEigenvalues (A + B) (hA.add hB) k
-      ≤ RCLike.re ⟪(A + B) x, x⟫_𝕜 := by simpa [orderedEigenvalues] using hlow
-    _ ≤ orderedEigenvalues A hA i + orderedEigenvalues B hB j := by
-        rw [hadd]; exact add_le_add hAx hBx
+    (i j k : Fin (finrank 𝕜 E)) (hk : i.val + j.val ≤ k.val) :
+    (hA.add hB).eigenvalues rfl k ≤ hA.eigenvalues rfl i + hB.eigenvalues rfl j :=
+  hA.eigenvalues_add_le hB rfl hk
 
 /-- The corresponding index-shift interlacing bounds for a rank-at-most-`r` perturbation. -/
 theorem eigenvalue_rank_perturbation (A B : E →ₗ[𝕜] E) (hA : A.IsSymmetric)
     (hB : B.IsSymmetric) {r : ℕ} (hr : finrank 𝕜 (LinearMap.range (A - B)) ≤ r)
     (i j : Fin (finrank 𝕜 E)) (hj : j.val = i.val + r) :
-    orderedEigenvalues A hA j ≤ orderedEigenvalues B hB i ∧
-      orderedEigenvalues B hB j ≤ orderedEigenvalues A hA i := by
+    hA.eigenvalues rfl j ≤ hB.eigenvalues rfl i ∧
+      hB.eigenvalues rfl j ≤ hA.eigenvalues rfl i := by
   have hlt : r < finrank 𝕜 E := by
     have := j.isLt
     rw [hj] at this
@@ -299,32 +175,32 @@ theorem eigenvalue_rank_perturbation (A B : E →ₗ[𝕜] E) (hA : A.IsSymmetri
   refine ⟨?_, ?_⟩
   · have hoper : B + (A - B) = A := by
       rw [sub_eq_add_neg, ← add_assoc, add_comm B A, add_assoc, add_neg_cancel, add_zero]
-    have hcong : orderedEigenvalues (B + (A - B)) (hB.add (hA.sub hB)) =
-        orderedEigenvalues A hA := by
-      simpa [orderedEigenvalues] using
+    have hcong : (hB.add (hA.sub hB)).eigenvalues rfl =
+        hA.eigenvalues rfl := by
+      simpa using
         LinearMap.IsSymmetric.eigenvalues_congr hoper (hB.add (hA.sub hB)) hA rfl
-    have hle := weyl_eigenvalue_add B (A - B) hB (hA.sub hB) i t j ht
-    have hnonpos : orderedEigenvalues (A - B) (hA.sub hB) t ≤ 0 :=
+    have hle := weyl_eigenvalue_add B (A - B) hB (hA.sub hB) i t j ht.ge
+    have hnonpos : (hA.sub hB).eigenvalues rfl t ≤ 0 :=
       eigenvalues_le_zero_of_finrank_range_le (hA.sub hB) hr hlt
-    calc orderedEigenvalues A hA j
-        = orderedEigenvalues (B + (A - B)) (hB.add (hA.sub hB)) j := by rw [hcong]
-      _ ≤ orderedEigenvalues B hB i + orderedEigenvalues (A - B) (hA.sub hB) t := hle
-      _ ≤ orderedEigenvalues B hB i := by
-          simpa using add_le_add_left hnonpos (orderedEigenvalues B hB i)
+    calc hA.eigenvalues rfl j
+        = (hB.add (hA.sub hB)).eigenvalues rfl j := by rw [hcong]
+      _ ≤ hB.eigenvalues rfl i + (hA.sub hB).eigenvalues rfl t := hle
+      _ ≤ hB.eigenvalues rfl i := by
+          simpa using add_le_add_left hnonpos (hB.eigenvalues rfl i)
   · have hoper : A + (B - A) = B := by
       rw [sub_eq_add_neg, ← add_assoc, add_comm A B, add_assoc, add_neg_cancel, add_zero]
-    have hcong : orderedEigenvalues (A + (B - A)) (hA.add (hB.sub hA)) =
-        orderedEigenvalues B hB := by
-      simpa [orderedEigenvalues] using
+    have hcong : (hA.add (hB.sub hA)).eigenvalues rfl =
+        hB.eigenvalues rfl := by
+      simpa using
         LinearMap.IsSymmetric.eigenvalues_congr hoper (hA.add (hB.sub hA)) hB rfl
-    have hle := weyl_eigenvalue_add A (B - A) hA (hB.sub hA) i t j ht
-    have hnonpos : orderedEigenvalues (B - A) (hB.sub hA) t ≤ 0 :=
+    have hle := weyl_eigenvalue_add A (B - A) hA (hB.sub hA) i t j ht.ge
+    have hnonpos : (hB.sub hA).eigenvalues rfl t ≤ 0 :=
       eigenvalues_le_zero_of_finrank_range_le (hB.sub hA) hrBA hlt
-    calc orderedEigenvalues B hB j
-        = orderedEigenvalues (A + (B - A)) (hA.add (hB.sub hA)) j := by rw [hcong]
-      _ ≤ orderedEigenvalues A hA i + orderedEigenvalues (B - A) (hB.sub hA) t := hle
-      _ ≤ orderedEigenvalues A hA i := by
-          simpa using add_le_add_left hnonpos (orderedEigenvalues A hA i)
+    calc hB.eigenvalues rfl j
+        = (hA.add (hB.sub hA)).eigenvalues rfl j := by rw [hcong]
+      _ ≤ hA.eigenvalues rfl i + (hB.sub hA).eigenvalues rfl t := hle
+      _ ≤ hA.eigenvalues rfl i := by
+          simpa using add_le_add_left hnonpos (hA.eigenvalues rfl i)
 
 /-- An orthonormal eigenbasis of `B` is an eigenbasis of `B.adjoint`, with conjugate eigenvalues. -/
 private lemma adjoint_apply_of_orthonormal_eigenbasis (B : E →ₗ[𝕜] E)
@@ -370,29 +246,14 @@ private lemma eigenbasisOverlap_mem_doublyStochastic
   · simpa [eigenbasisOverlap, Matrix.of_apply, v.norm_eq_one] using
       u.sum_sq_norm_inner_right (v j)
 
-/-- The squared Frobenius norm is the sum of `‖T eᵢ‖²` on every orthonormal basis. -/
-private lemma sum_norm_apply_sq_eq_frobeniusNormSq (T : E →ₗ[𝕜] E)
-    (b : OrthonormalBasis (Fin (finrank 𝕜 E)) 𝕜 E) :
-    ∑ i, ‖T (b i)‖ ^ 2 = frobeniusNormSq T := by
-  have htrace (e : OrthonormalBasis (Fin (finrank 𝕜 E)) 𝕜 E) :
-      LinearMap.trace 𝕜 E (T.adjoint ∘ₗ T) = ∑ i, (‖T (e i)‖ ^ 2 : 𝕜) := by
-    rw [LinearMap.trace_eq_sum_inner _ e]
-    refine Finset.sum_congr rfl fun i _ ↦ ?_
-    rw [LinearMap.comp_apply, LinearMap.adjoint_inner_right, inner_self_eq_norm_sq_to_K]
-  unfold frobeniusNormSq
-  apply RCLike.ofReal_injective (K := 𝕜)
-  rw [RCLike.ofReal_sum, RCLike.ofReal_sum]
-  simpa [T.norm_apply_rightSingularBasis] using
-    (htrace b).symm.trans (htrace T.rightSingularBasis)
-
 /-- Frobenius energy of `A - B` in a pair of orthonormal eigenbases. The squared overlaps of the
 two bases turn the energy into a doubly stochastic average of the squared eigenvalue gaps. -/
-private lemma frobeniusNormSq_eq_sum_overlap_mul_eigenvalueGap (A B : E →ₗ[𝕜] E)
+private lemma sq_frobenius_sub_eq_sum_overlap_mul_eigenvalueGap (A B : E →ₗ[𝕜] E)
     (u v : OrthonormalBasis (Fin (finrank 𝕜 E)) 𝕜 E) (α β : Fin (finrank 𝕜 E) → 𝕜)
     (hA : ∀ i, A (u i) = α i • u i) (hB : ∀ i, B (v i) = β i • v i) :
-    frobeniusNormSq (A - B) =
+    frobenius 𝕜 E E (A - B) ^ 2 =
       ∑ i, ∑ j, ‖α i - β j‖ ^ 2 * eigenbasisOverlap u v i j := by
-  rw [← sum_norm_apply_sq_eq_frobeniusNormSq (A - B) u]
+  rw [sq_frobenius_apply u (A - B)]
   simp_rw [← v.sum_sq_norm_inner_right]
   refine Finset.sum_congr rfl fun i _ ↦ Finset.sum_congr rfl fun j _ ↦ ?_
   have hadj := adjoint_apply_of_orthonormal_eigenbasis B v β hB j
@@ -411,11 +272,12 @@ theorem hoffman_wielandt (A B : E →ₗ[𝕜] E)
     (α β : Fin (finrank 𝕜 E) → 𝕜)
     (hA : ∀ i, A (u i) = α i • u i) (hB : ∀ i, B (v i) = β i • v i) :
     ∃ σ : Equiv.Perm (Fin (finrank 𝕜 E)),
-      (∑ i, ‖α i - β (σ i)‖ ^ 2) ≤ frobeniusNormSq (A - B) := by
+      (∑ i, ‖α i - β (σ i)‖ ^ 2) ≤ frobenius 𝕜 E E (A - B) ^ 2 := by
   obtain ⟨w, hw0, hwsum, hwM⟩ :=
     exists_eq_sum_perm_of_mem_doublyStochastic (eigenbasisOverlap_mem_doublyStochastic u v)
-  have havg : ∑ σ, w σ * (∑ i, ‖α i - β (σ i)‖ ^ 2) = frobeniusNormSq (A - B) := by
-    rw [frobeniusNormSq_eq_sum_overlap_mul_eigenvalueGap A B u v α β hA hB]
+  have havg :
+      ∑ σ, w σ * (∑ i, ‖α i - β (σ i)‖ ^ 2) = frobenius 𝕜 E E (A - B) ^ 2 := by
+    rw [sq_frobenius_sub_eq_sum_overlap_mul_eigenvalueGap A B u v α β hA hB]
     have hentry (i j) : eigenbasisOverlap u v i j = ∑ σ, w σ * σ.permMatrix ℝ i j := by
       rw [← hwM]
       simp [Matrix.sum_apply, Matrix.smul_apply, smul_eq_mul]
@@ -441,9 +303,10 @@ theorem hoffman_wielandt (A B : E →ₗ[𝕜] E)
       Finset.sum_eq_zero fun σ _ ↦ le_antisymm (hnon σ) (hw0 σ)
     linarith
   obtain ⟨σ₀, hσ₀⟩ := hpos
-  have hlt : frobeniusNormSq (A - B) <
+  have hlt : frobenius 𝕜 E E (A - B) ^ 2 <
       ∑ σ, w σ * (∑ i, ‖α i - β (σ i)‖ ^ 2) := by
-    rw [show frobeniusNormSq (A - B) = ∑ σ, w σ * frobeniusNormSq (A - B) by
+    rw [show frobenius 𝕜 E E (A - B) ^ 2 =
+        ∑ σ, w σ * frobenius 𝕜 E E (A - B) ^ 2 by
       rw [← Finset.sum_mul, hwsum, one_mul]]
     refine Finset.sum_lt_sum ?_ ⟨σ₀, Finset.mem_univ _, ?_⟩
     · intro σ _
@@ -451,24 +314,40 @@ theorem hoffman_wielandt (A B : E →ₗ[𝕜] E)
     · exact mul_lt_mul_of_pos_left (hgt σ₀) hσ₀
   exact lt_irrefl _ (havg.symm ▸ hlt)
 
-/-- **13.13**: the singular-value von Neumann trace inequality. -/
-theorem norm_trace_adjoint_comp_le (A B : E →ₗ[𝕜] E) :
+/-- **13.13**: the singular-value von Neumann trace inequality
+`‖tr (A^* B)‖ ≤ ∑ᵢ σᵢ(A) σᵢ(B)` for maps `A B : E →ₗ[𝕜] F` between finite-dimensional inner
+product spaces. The singular values vanish beyond `min (finrank 𝕜 E) (finrank 𝕜 F)`, so the sum
+may run over the source dimension. -/
+theorem norm_trace_adjoint_comp_le (A B : E →ₗ[𝕜] F) :
     ‖LinearMap.trace 𝕜 E (A.adjoint ∘ₗ B)‖ ≤
       ∑ i : Fin (finrank 𝕜 E), A.singularValues i * B.singularValues i := by
   obtain ⟨w, hw⟩ := A.exists_orthonormalBasis_apply_eq_leftSingularVector
   let v := A.rightSingularBasis
-  have hAv (i : Fin (finrank 𝕜 E)) : A (v i) = ((A.singularValues i : ℝ) : 𝕜) • w i := by
+  let d := min (finrank 𝕜 E) (finrank 𝕜 F)
+  let ιE : Fin d → Fin (finrank 𝕜 E) := Fin.castLE (min_le_left _ _)
+  let ιF : Fin d → Fin (finrank 𝕜 F) := Fin.castLE (min_le_right _ _)
+  have hιE : Function.Injective ιE := Fin.castLE_injective _
+  -- Indices outside `ιE` are at least `finrank 𝕜 F`, where the singular values of `A` vanish.
+  have hout (i : Fin (finrank 𝕜 E)) (hi : i ∉ Set.range ιE) : A.singularValues i = 0 := by
+    refine A.singularValues_of_finrank_le_right ?_
+    by_contra! h
+    exact hi ⟨⟨i, lt_min i.isLt h⟩, rfl⟩
+  have hAv (i : Fin d) : A (v (ιE i)) = ((A.singularValues i : ℝ) : 𝕜) • w (ιF i) := by
     rw [A.apply_rightSingularBasis]
     by_cases hσ : A.singularValues i = 0
-    · simp [hσ]
-    · rw [hw i i rfl hσ]
+    · simp [ιE, hσ]
+    · rw [hw (ιE i) (ιF i) rfl hσ]
+      rfl
   set z := LinearMap.trace 𝕜 E (A.adjoint ∘ₗ B) with hz
-  have htr : z = ∑ i : Fin (finrank 𝕜 E),
-      ((A.singularValues i : ℝ) : 𝕜) * ⟪w i, B (v i)⟫_𝕜 := by
+  have htr : z = ∑ i : Fin d, ((A.singularValues i : ℝ) : 𝕜) * ⟪w (ιF i), B (v (ιE i))⟫_𝕜 := by
     rw [hz, LinearMap.trace_eq_sum_inner _ v]
-    refine Finset.sum_congr rfl fun i _ ↦ ?_
-    rw [LinearMap.comp_apply, LinearMap.adjoint_inner_right, hAv, inner_smul_left,
-      RCLike.conj_ofReal]
+    symm
+    refine Fintype.sum_of_injective ιE hιE _ _ (fun i hi ↦ ?_) (fun i ↦ ?_)
+    · rw [LinearMap.comp_apply, LinearMap.adjoint_inner_right, A.apply_rightSingularBasis,
+        hout i hi]
+      simp
+    · rw [LinearMap.comp_apply, LinearMap.adjoint_inner_right, hAv, inner_smul_left,
+        RCLike.conj_ofReal]
   -- Rotate `B` by a unimodular phase that makes the trace real and nonnegative.
   obtain ⟨c, hc, hcz⟩ : ∃ c : 𝕜, ‖c‖ = 1 ∧ (‖z‖ : 𝕜) = c * z := by
     by_cases hz0 : z = 0
@@ -480,17 +359,22 @@ theorem norm_trace_adjoint_comp_le (A B : E →ₗ[𝕜] E) :
       · rw [div_mul_eq_mul_div, RCLike.conj_mul, ← RCLike.ofReal_pow, RCLike.ofReal_pow, sq,
           mul_div_assoc, div_self hn, mul_one]
   have hcross := (c • B).sum_antitone_mul_re_inner_le_sum_mul_singularValues
-    w v w.orthonormal v.orthonormal (fun i _ ↦ A.singularValues_antitone (Nat.le_succ i))
+    (w ∘ ιF) (v ∘ ιE) (w.orthonormal.comp _ (Fin.castLE_injective _))
+    (v.orthonormal.comp _ hιE) (fun i _ ↦ A.singularValues_antitone (Nat.le_succ i))
     (A.singularValues_nonneg _)
-  have hre : ‖z‖ = ∑ i : Fin (finrank 𝕜 E),
-      A.singularValues i * RCLike.re ⟪w i, (c • B) (v i)⟫_𝕜 := by
+  have hre : ‖z‖ = ∑ i : Fin d,
+      A.singularValues i * RCLike.re ⟪w (ιF i), (c • B) (v (ιE i))⟫_𝕜 := by
     have h := congrArg RCLike.re hcz
     rw [RCLike.ofReal_re] at h
     rw [h, htr, Finset.mul_sum, map_sum]
     refine Finset.sum_congr rfl fun i _ ↦ ?_
     rw [LinearMap.smul_apply, inner_smul_right, ← RCLike.re_ofReal_mul]
     ring_nf
-  rw [hre]
+  have hext : ∑ i : Fin d, A.singularValues i * B.singularValues i =
+      ∑ i : Fin (finrank 𝕜 E), A.singularValues i * B.singularValues i :=
+    Fintype.sum_of_injective ιE hιE _ _ (fun i hi ↦ by rw [hout i hi, zero_mul])
+      (fun _ ↦ rfl)
+  rw [hre, ← hext]
   simpa [hc] using hcross
 
 /-- The rank-`k` SVD truncation, defined using TauCeti's canonical right singular basis. -/
@@ -499,6 +383,14 @@ def svdTruncation (A : E →ₗ[𝕜] F) (k : ℕ) : E →ₗ[𝕜] F :=
   ∑ i : Fin (finrank 𝕜 E), if i.val < k then
     (innerSL 𝕜 (A.rightSingularBasis i)).toLinearMap.smulRight
       (A (A.rightSingularBasis i)) else 0
+
+/-- The SVD truncation is the sum of the rank-one maps `⟪vᵢ, ·⟫ • A vᵢ` over the first `k` right
+singular vectors `vᵢ`. -/
+theorem svdTruncation_def (A : E →ₗ[𝕜] F) (k : ℕ) :
+    svdTruncation A k = ∑ i : Fin (finrank 𝕜 E), if i.val < k then
+      (innerSL 𝕜 (A.rightSingularBasis i)).toLinearMap.smulRight
+        (A (A.rightSingularBasis i)) else 0 :=
+  rfl
 
 /-- Send index `i` to `i + k` when that index stays in range, and otherwise into the head. -/
 private def tailFirstTo (n k : ℕ) : Fin n → Fin n := fun i ↦
@@ -550,7 +442,7 @@ private lemma tailFirst_val_of_le_add {n k : ℕ} (i : Fin n) (h : n ≤ (i : �
 
 /-- `svdTruncation A k` reproduces `A` on the first `k` right singular vectors and vanishes on the
 rest. -/
-private lemma svdTruncation_apply_rightSingularBasis (A : E →ₗ[𝕜] F) (k : ℕ)
+theorem svdTruncation_apply_rightSingularBasis (A : E →ₗ[𝕜] F) (k : ℕ)
     (i : Fin (finrank 𝕜 E)) :
     svdTruncation A k (A.rightSingularBasis i) =
       if i.val < k then A (A.rightSingularBasis i) else 0 := by
@@ -567,7 +459,7 @@ private lemma svdTruncation_apply_rightSingularBasis (A : E →ₗ[𝕜] F) (k :
     · rfl
 
 /-- The SVD tail kills the first `k` right singular vectors and agrees with `A` on the rest. -/
-private lemma sub_svdTruncation_apply_rightSingularBasis (A : E →ₗ[𝕜] F) (k : ℕ)
+theorem sub_svdTruncation_apply_rightSingularBasis (A : E →ₗ[𝕜] F) (k : ℕ)
     (i : Fin (finrank 𝕜 E)) :
     (A - svdTruncation A k) (A.rightSingularBasis i) =
       if i.val < k then 0 else A (A.rightSingularBasis i) := by
@@ -606,7 +498,7 @@ private lemma adjoint_comp_self_sub_svdTruncation_rightSingularBasis (A : E →�
 /-- Singular values of the SVD tail are the singular values of `A`, shifted by `k` and padded by
 zeros. The Gram eigenvalues on the right singular basis vanish on the head, so the sorted list is
 the tail. -/
-private lemma singularValues_sub_svdTruncation (A : E →ₗ[𝕜] F) (k i : ℕ) :
+theorem singularValues_sub_svdTruncation (A : E →ₗ[𝕜] F) (k i : ℕ) :
     (A - svdTruncation A k).singularValues i = A.singularValues (i + k) := by
   let T := A - svdTruncation A k
   let n := finrank 𝕜 E
@@ -679,7 +571,7 @@ private lemma sum_singularValues_sq_shift (A : E →ₗ[𝕜] F) (k : ℕ) :
     omega
 
 /-- The SVD truncation uses at most `k` right singular vectors, so its rank is at most `k`. -/
-private lemma finrank_range_svdTruncation_le (A : E →ₗ[𝕜] F) (k : ℕ) :
+theorem finrank_range_svdTruncation_le (A : E →ₗ[𝕜] F) (k : ℕ) :
     finrank 𝕜 (LinearMap.range (svdTruncation A k)) ≤ k := by
   let n := finrank 𝕜 E
   let v := A.rightSingularBasis
@@ -736,10 +628,10 @@ theorem svdTruncation_minimizes (A : E →ₗ[𝕜] F) (k : ℕ)
   exact hshift j
 
 /-- The squared Frobenius error is the singular-value square tail. -/
-theorem frobeniusNormSq_sub_svdTruncation (A : E →ₗ[𝕜] F) (k : ℕ) :
-    frobeniusNormSq (A - svdTruncation A k) =
+theorem sq_frobenius_sub_svdTruncation (A : E →ₗ[𝕜] F) (k : ℕ) :
+    frobenius 𝕜 E F (A - svdTruncation A k) ^ 2 =
       ∑ i : Fin (finrank 𝕜 E), if k ≤ i.val then A.singularValues i ^ 2 else 0 := by
-  unfold frobeniusNormSq
+  rw [LinearMap.sq_frobenius_apply_eq_sum_sq_singularValues]
   simp_rw [singularValues_sub_svdTruncation]
   exact sum_singularValues_sq_shift A k
 

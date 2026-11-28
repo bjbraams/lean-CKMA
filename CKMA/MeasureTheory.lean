@@ -5,12 +5,11 @@ Authors: CKMA contributors
 -/
 module
 
-public import CKMA.MeasureTheory.Group.Modular
+public import CKMA.MeasureTheory.Function.LpDuality
 
 /-!
-# Haar measure and the modular character
+# Measure theory
 
-This entry module re-exports continuity of the modular character and the inversion
-formula for left Haar measure on locally compact groups. The character is Mathlib's
-normalization, the reciprocal of the frequently used modular function `Δ`.
+This entry module re-exports the measure-theoretic files of CKMA: the representation of
+continuous linear functionals on `Lp` by functions in the conjugate space.
 -/

@@ -31,6 +31,8 @@ Sources: GAPS 48.6 and 48.14.
 
 ## Main results
 
+* `CKMA.HasFiniteMoments.integrable_eval`, `CKMA.HasFiniteMoments.integrable_eval_mul`: finite
+  moments make polynomial evaluations and their products integrable.
 * `CKMA.roots_orthogonalPolynomial` (**48.6**): the roots are real, distinct, simple, and lie in
   the interior of the convex hull of `μ.support`.
 * `CKMA.existsUnique_gaussQuadrature` (**48.14**): existence, uniqueness, positivity, and
@@ -51,6 +53,11 @@ open scoped BigOperators
 @[expose]
 def HasFiniteMoments (μ : Measure ℝ) : Prop := ∀ n : ℕ, Integrable (fun x ↦ x ^ n) μ
 
+/-- `HasFiniteMoments μ` means that every monomial `x ^ n` is `μ`-integrable. -/
+theorem hasFiniteMoments_iff {μ : Measure ℝ} :
+    HasFiniteMoments μ ↔ ∀ n : ℕ, Integrable (fun x ↦ x ^ n) μ :=
+  Iff.rfl
+
 /-- Finite absolute moments include integrability of the constant function one. -/
 theorem HasFiniteMoments.isFiniteMeasure {μ : Measure ℝ} (hm : HasFiniteMoments μ) :
     IsFiniteMeasure μ := by
@@ -64,8 +71,26 @@ Integrability is supplied separately by the moment hypothesis. -/
 def IsOrthogonalPolynomial (μ : Measure ℝ) (p : ℝ[X]) : Prop :=
   p ≠ 0 ∧ ∀ q : ℝ[X], q.natDegree < p.natDegree → ∫ x, p.eval x * q.eval x ∂μ = 0
 
+/-- Characterization of `IsOrthogonalPolynomial` as a nonzero polynomial orthogonal to all
+polynomials of smaller degree. -/
+theorem isOrthogonalPolynomial_iff {μ : Measure ℝ} {p : ℝ[X]} :
+    IsOrthogonalPolynomial μ p ↔
+      p ≠ 0 ∧ ∀ q : ℝ[X], q.natDegree < p.natDegree → ∫ x, p.eval x * q.eval x ∂μ = 0 :=
+  Iff.rfl
+
+/-- An orthogonal polynomial is nonzero. -/
+theorem IsOrthogonalPolynomial.ne_zero {μ : Measure ℝ} {p : ℝ[X]}
+    (hp : IsOrthogonalPolynomial μ p) : p ≠ 0 :=
+  hp.1
+
+/-- An orthogonal polynomial is orthogonal to every polynomial of smaller degree. -/
+theorem IsOrthogonalPolynomial.integral_eval_mul_eq_zero {μ : Measure ℝ} {p : ℝ[X]}
+    (hp : IsOrthogonalPolynomial μ p) {q : ℝ[X]} (hq : q.natDegree < p.natDegree) :
+    ∫ x, p.eval x * q.eval x ∂μ = 0 :=
+  hp.2 q hq
+
 /-- Finite moments make every polynomial evaluation integrable. -/
-private lemma HasFiniteMoments.integrable_eval {μ : Measure ℝ} (hm : HasFiniteMoments μ)
+theorem HasFiniteMoments.integrable_eval {μ : Measure ℝ} (hm : HasFiniteMoments μ)
     (q : ℝ[X]) : Integrable (fun x ↦ q.eval x) μ := by
   have hfun : (fun x ↦ q.eval x) =
       fun x ↦ ∑ i ∈ Finset.range (q.natDegree + 1), q.coeff i * x ^ i := by
@@ -75,7 +100,7 @@ private lemma HasFiniteMoments.integrable_eval {μ : Measure ℝ} (hm : HasFinit
   refine integrable_finsetSum _ fun i _ ↦ (hm i).const_mul (q.coeff i)
 
 /-- Finite moments make a product of polynomial evaluations integrable. -/
-private lemma HasFiniteMoments.integrable_eval_mul {μ : Measure ℝ} (hm : HasFiniteMoments μ)
+theorem HasFiniteMoments.integrable_eval_mul {μ : Measure ℝ} (hm : HasFiniteMoments μ)
     (q r : ℝ[X]) : Integrable (fun x ↦ q.eval x * r.eval x) μ := by
   simpa [eval_mul] using hm.integrable_eval (q * r)
 
@@ -148,88 +173,44 @@ private lemma exists_weakSign_prod_sub {K : Set ℝ} {t : Finset ℝ}
         rw [hmul]
         exact mul_nonneg h2 (neg_nonneg.mpr h1)
 
-/-- Polynomials of degree at most `m` are spanned by a degree-exact family `p 0, …, p m`. -/
-private lemma eq_sum_range_of_natDegree_le (p : ℕ → ℝ[X]) (hd : ∀ j, (p j).natDegree = j)
+/-- Polynomials of degree less than `m` are spanned by a degree-exact family `p 0, …, p (m - 1)`. -/
+private lemma eq_sum_range_of_degree_lt (p : ℕ → ℝ[X]) (hd : ∀ j, (p j).natDegree = j)
     (hne : ∀ j, p j ≠ 0) :
-    ∀ m, ∀ {q : ℝ[X]}, q.natDegree ≤ m →
-      ∃ c : ℕ → ℝ, q = ∑ j ∈ Finset.range (m + 1), C (c j) * p j := by
+    ∀ m : ℕ, ∀ {q : ℝ[X]}, q.degree < m →
+      ∃ c : ℕ → ℝ, q = ∑ j ∈ Finset.range m, C (c j) * p j := by
   intro m
   induction m with
   | zero =>
     intro q hq
-    have hqC : q = C (q.coeff 0) := eq_C_of_natDegree_le_zero hq
-    have hlead : (p 0).leadingCoeff ≠ 0 := leadingCoeff_ne_zero.mpr (hne 0)
-    have hpC : p 0 = C ((p 0).leadingCoeff) := by
-      rw [leadingCoeff, hd 0]
-      exact eq_C_of_natDegree_le_zero (hd 0).le
-    refine ⟨fun _ ↦ q.coeff 0 / (p 0).leadingCoeff, ?_⟩
-    rw [Finset.sum_range_one]
-    conv_lhs => rw [hqC]
-    conv_rhs =>
-      rhs
-      rw [hpC]
-    rw [← C_mul, div_mul_cancel₀ _ hlead]
+    refine ⟨0, ?_⟩
+    rw [Finset.sum_range_zero]
+    ext N
+    simpa using (degree_lt_iff_coeff_zero _ _).1 hq N (Nat.zero_le N)
   | succ m ih =>
     intro q hq
-    by_cases hle : q.natDegree ≤ m
-    · obtain ⟨c, hc⟩ := ih hle
-      let c' : ℕ → ℝ := fun j ↦ if j = m + 1 then 0 else c j
-      refine ⟨c', ?_⟩
-      have hc' : c' (m + 1) = 0 := by
-        dsimp [c']
-        rw [ite_eq_left rfl]
-      have hsum : ∑ j ∈ Finset.range (m + 1), C (c' j) * p j =
-          ∑ j ∈ Finset.range (m + 1), C (c j) * p j := by
-        refine Finset.sum_congr rfl fun j hj ↦ ?_
-        have hj' : j ≠ m + 1 := by
-          rw [Finset.mem_range] at hj
-          omega
-        dsimp [c']
-        rw [ite_eq_right hj']
-      rw [Finset.sum_range_succ, hc', map_zero, zero_mul, add_zero, hsum, hc]
-    · have hdeg : q.natDegree = m + 1 := by omega
-      have hq0 : q ≠ 0 := by
-        intro h
-        simp [h] at hdeg
-      have hlead_p : (p (m + 1)).leadingCoeff ≠ 0 :=
-        leadingCoeff_ne_zero.mpr (hne (m + 1))
-      have hlead_q : q.leadingCoeff ≠ 0 := leadingCoeff_ne_zero.mpr hq0
-      let a : ℝ := q.leadingCoeff / (p (m + 1)).leadingCoeff
-      have ha : a ≠ 0 := div_ne_zero hlead_q hlead_p
-      let u : ℝ[X] := C a * p (m + 1)
-      have hdeg_u : degree u = ↑(m + 1) := by
-        dsimp only [u]
-        rw [degree_C_mul ha, degree_eq_natDegree (hne (m + 1)), hd]
-      have hdeg_q : degree q = ↑(m + 1) := by rw [degree_eq_natDegree hq0, hdeg]
-      have hlead_u : u.leadingCoeff = q.leadingCoeff := by
-        dsimp only [u, a]
-        rw [leadingCoeff_mul, leadingCoeff_C, div_mul_cancel₀ _ hlead_p]
-      have hlt : degree (q - u) < degree q :=
-        degree_sub_lt_left (hdeg_q.trans hdeg_u.symm) hq0 hlead_u.symm
-      let r : ℝ[X] := q - u
-      have hr : r.natDegree ≤ m := by
-        by_cases hr0 : r = 0
-        · simp [hr0]
-        · have hlt' : r.degree < ↑(m + 1) := by simpa [r, hdeg_q] using hlt
-          have : r.natDegree < m + 1 := (natDegree_lt_iff_degree_lt hr0).2 hlt'
-          omega
-      obtain ⟨c, hc⟩ := ih hr
-      let c' : ℕ → ℝ := fun j ↦ if j = m + 1 then a else c j
-      refine ⟨c', ?_⟩
-      have hc' : c' (m + 1) = a := by
-        dsimp [c']
-        rw [ite_eq_left rfl]
-      have hsum : ∑ j ∈ Finset.range (m + 1), C (c' j) * p j =
-          ∑ j ∈ Finset.range (m + 1), C (c j) * p j := by
-        refine Finset.sum_congr rfl fun j hj ↦ ?_
-        have hj' : j ≠ m + 1 := by
-          rw [Finset.mem_range] at hj
-          omega
-        dsimp [c']
-        rw [ite_eq_right hj']
-      rw [Finset.sum_range_succ, hc', hsum, ← hc]
-      dsimp only [r, u]
-      rw [sub_add_cancel]
+    have hlead : (p m).leadingCoeff ≠ 0 := leadingCoeff_ne_zero.mpr (hne m)
+    set a : ℝ := q.coeff m / (p m).leadingCoeff
+    have hr : (q - C a * p m).degree < m := by
+      rw [degree_lt_iff_coeff_zero]
+      intro N hN
+      rw [coeff_sub, coeff_C_mul]
+      rcases hN.lt_or_eq with hN | rfl
+      · rw [(degree_lt_iff_coeff_zero _ _).1 hq N (by exact_mod_cast hN),
+          coeff_eq_zero_of_natDegree_lt (by rw [hd]; exact hN), mul_zero, sub_zero]
+      · have hc : (p m).coeff m = (p m).leadingCoeff := by rw [leadingCoeff, hd m]
+        rw [hc, div_mul_cancel₀ _ hlead, sub_self]
+    obtain ⟨c, hc⟩ := ih hr
+    refine ⟨Function.update c m a, ?_⟩
+    rw [Finset.sum_range_succ, Function.update_self,
+      Finset.sum_congr rfl fun j hj ↦ by rw [Function.update_of_ne (Finset.mem_range.mp hj).ne],
+      ← hc, sub_add_cancel]
+
+/-- Polynomials of degree at most `m` are spanned by a degree-exact family `p 0, …, p m`. -/
+private lemma eq_sum_range_of_natDegree_le (p : ℕ → ℝ[X]) (hd : ∀ j, (p j).natDegree = j)
+    (hne : ∀ j, p j ≠ 0) (m : ℕ) {q : ℝ[X]} (hq : q.natDegree ≤ m) :
+    ∃ c : ℕ → ℝ, q = ∑ j ∈ Finset.range (m + 1), C (c j) * p j :=
+  eq_sum_range_of_degree_lt p hd hne (m + 1)
+    (degree_le_natDegree.trans_lt (by exact_mod_cast Nat.lt_succ_of_le hq))
 
 /-- An orthonormal polynomial is nonzero. -/
 private lemma ne_zero_of_orthonormal {μ : Measure ℝ} (p : ℕ → ℝ[X])
@@ -495,10 +476,21 @@ private lemma exists_quot_rem_natDegree_lt {n : ℕ} (hn : 0 < n) {d r : ℝ[X]}
 def IsQuadratureRule {n : ℕ} (μ : Measure ℝ) (x w : Fin n → ℝ) (degree : ℕ) : Prop :=
   ∀ p : ℝ[X], p.natDegree ≤ degree → ∫ t, p.eval t ∂μ = ∑ j, w j * p.eval (x j)
 
+/-- `IsQuadratureRule μ x w d` means that the rule is exact on all polynomials of degree `≤ d`. -/
+theorem isQuadratureRule_iff {n : ℕ} {μ : Measure ℝ} {x w : Fin n → ℝ} {degree : ℕ} :
+    IsQuadratureRule μ x w degree ↔
+      ∀ p : ℝ[X], p.natDegree ≤ degree → ∫ t, p.eval t ∂μ = ∑ j, w j * p.eval (x j) :=
+  Iff.rfl
+
 /-- The finite Christoffel kernel of an orthonormal polynomial system. -/
 @[expose]
 def christoffelKernel (p : ℕ → ℝ[X]) (n : ℕ) (x y : ℝ) : ℝ :=
   ∑ j ∈ Finset.range n, (p j).eval x * (p j).eval y
+
+/-- Unfolding lemma for `christoffelKernel`. -/
+theorem christoffelKernel_def (p : ℕ → ℝ[X]) (n : ℕ) (x y : ℝ) :
+    christoffelKernel p n x y = ∑ j ∈ Finset.range n, (p j).eval x * (p j).eval y :=
+  rfl
 
 /-- The Lagrange basis at `n` distinct nodes has degree `n - 1`. -/
 private lemma natDegree_lagrangeBasis_univ {n : ℕ} {x : Fin n → ℝ} (hx : Function.Injective x)

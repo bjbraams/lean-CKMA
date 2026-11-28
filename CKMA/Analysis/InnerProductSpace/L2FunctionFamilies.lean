@@ -9,6 +9,7 @@ public import Mathlib.MeasureTheory.Function.L2Space
 public import CKMA.Analysis.InnerProductSpace.Frame
 
 import Mathlib.Algebra.FiniteSupport.Basic
+import CKMA.Analysis.InnerProductSpace.LpTwo
 
 /-!
 # L2 function families, Riesz bounds, and frame bounds
@@ -19,8 +20,11 @@ vanishing integral coefficients against every `L²` vector. Family membership in
 in the Riesz and frame predicates.
 
 The integral coefficients use conjugation on the family element, agreeing with Mathlib's
-second-variable-linear `L²` inner product. Actual function representatives are separated from their
+second-variable-linear `L²` inner product. Function representatives are kept apart from their
 a.e. equivalence classes, and frame energies are extended nonnegative sums over arbitrary indices.
+The coefficient integrals are Bochner integrals; when `f i ∉ L²` such an integral may take the
+junk value `0`, which is why `L²` membership of the family is a separate conjunct of the Riesz and
+frame predicates.
 
 ## Main definitions
 
@@ -36,6 +40,8 @@ a.e. equivalence classes, and frame energies are extended nonnegative sums over 
 * `CKMA.inner_l2FamilyVectors`: integral formula for inner products with `l2FamilyVectors`.
 * `CKMA.isL2FrameFamily_iff_isFrame`: equivalence between `IsL2FrameFamily` and `IsFrame`.
 * `CKMA.IsL2RieszBasis.isL2FrameFamily`: every `L²` Riesz basis is an `L²` frame family.
+* `CKMA.surjective_of_forall_le_norm_of_ker_adjoint_eq_bot`: a bounded-below operator between
+  Hilbert spaces whose adjoint is injective is surjective.
 -/
 
 public section
@@ -55,6 +61,12 @@ def l2FamilyVectors {X ι : Type*} [MeasurableSpace X] {μ : Measure X}
     (f : ι → X → 𝕜) (hf : ∀ i, MemLp (f i) 2 μ) : ι → Lp 𝕜 2 μ :=
   fun i ↦ (hf i).toLp (f i)
 
+/-- The `i`-th canonical vector is the `L²` class of `f i`. -/
+theorem l2FamilyVectors_apply {X ι : Type*} [MeasurableSpace X] {μ : Measure X}
+    (f : ι → X → 𝕜) (hf : ∀ i, MemLp (f i) 2 μ) (i : ι) :
+    l2FamilyVectors f hf i = (hf i).toLp (f i) :=
+  rfl
+
 /-- Integral coefficients of a function family are its Hilbert-space inner products. -/
 theorem inner_l2FamilyVectors {X ι : Type*} [MeasurableSpace X] {μ : Measure X}
     (f : ι → X → 𝕜) (hf : ∀ i, MemLp (f i) 2 μ) (i : ι) (u : Lp 𝕜 2 μ) :
@@ -71,10 +83,20 @@ theorem inner_l2FamilyVectors {X ι : Type*} [MeasurableSpace X] {μ : Measure X
 def l2FunctionCombination {X ι : Type*} (f : ι → X → 𝕜) (c : ι →₀ 𝕜) (x : X) : 𝕜 :=
   c.sum (fun i z ↦ z * f i x)
 
+/-- Unfolding `l2FunctionCombination`. -/
+theorem l2FunctionCombination_apply {X ι : Type*} (f : ι → X → 𝕜) (c : ι →₀ 𝕜) (x : X) :
+    l2FunctionCombination f c x = c.sum (fun i z ↦ z * f i x) :=
+  rfl
+
 /-- Squared coefficient l2 size, as a nonnegative extended real. -/
 @[expose]
 def finiteCoefficientEnergy {ι : Type*} (c : ι →₀ 𝕜) : ℝ≥0∞ :=
   c.sum (fun _ z ↦ ENNReal.ofReal (‖z‖ ^ 2))
+
+/-- Unfolding `finiteCoefficientEnergy`. -/
+theorem finiteCoefficientEnergy_def {ι : Type*} (c : ι →₀ 𝕜) :
+    finiteCoefficientEnergy c = c.sum (fun _ z ↦ ENNReal.ofReal (‖z‖ ^ 2)) :=
+  rfl
 
 /-- An L2 Riesz sequence, specified by uniform lower and upper finite-coefficient bounds. -/
 @[expose]
@@ -84,12 +106,31 @@ def IsL2RieszSequence {X ι : Type*} [MeasurableSpace X]
     ENNReal.ofReal A * finiteCoefficientEnergy c ≤ (eLpNorm (l2FunctionCombination f c) 2 μ) ^ 2 ∧
       (eLpNorm (l2FunctionCombination f c) 2 μ) ^ 2 ≤ ENNReal.ofReal B * finiteCoefficientEnergy c
 
+/-- Unfolding `IsL2RieszSequence`. -/
+theorem isL2RieszSequence_iff {X ι : Type*} [MeasurableSpace X] {μ : Measure X}
+    {f : ι → X → 𝕜} :
+    IsL2RieszSequence μ f ↔ (∀ i, MemLp (f i) 2 μ) ∧ ∃ A B : ℝ, 0 < A ∧ A ≤ B ∧
+      ∀ c : ι →₀ 𝕜, ENNReal.ofReal A * finiteCoefficientEnergy c ≤
+          (eLpNorm (l2FunctionCombination f c) 2 μ) ^ 2 ∧
+        (eLpNorm (l2FunctionCombination f c) 2 μ) ^ 2 ≤
+          ENNReal.ofReal B * finiteCoefficientEnergy c :=
+  Iff.rfl
+
 /-- An orthogonality test on a function family: vanishing coefficients force a zero L2 class.
-Square-integrability of the family itself is supplied separately in the Riesz/frame predicates. -/
+Square-integrability of the family itself is supplied separately in the Riesz/frame predicates.
+The coefficients are Bochner integrals, so for `f i ∉ L²` a coefficient may be the junk value `0`;
+the predicate then becomes harder to satisfy, not vacuous. -/
 @[expose]
 def IsL2CompleteFamily {X ι : Type*} [MeasurableSpace X]
     (μ : Measure X) (f : ι → X → 𝕜) : Prop :=
   ∀ u : Lp 𝕜 2 μ, (∀ i, ∫ x, conj (f i x) * u x ∂μ = 0) → u = 0
+
+/-- Unfolding `IsL2CompleteFamily`. -/
+theorem isL2CompleteFamily_iff {X ι : Type*} [MeasurableSpace X] {μ : Measure X}
+    {f : ι → X → 𝕜} :
+    IsL2CompleteFamily μ f ↔
+      ∀ u : Lp 𝕜 2 μ, (∀ i, ∫ x, conj (f i x) * u x ∂μ = 0) → u = 0 :=
+  Iff.rfl
 
 /-- A Riesz basis is a complete Riesz sequence. -/
 @[expose]
@@ -97,14 +138,20 @@ def IsL2RieszBasis {X ι : Type*} [MeasurableSpace X]
     (μ : Measure X) (f : ι → X → 𝕜) : Prop :=
   IsL2RieszSequence μ f ∧ IsL2CompleteFamily μ f
 
+/-- Unfolding `IsL2RieszBasis`. -/
+theorem isL2RieszBasis_iff {X ι : Type*} [MeasurableSpace X] {μ : Measure X}
+    {f : ι → X → 𝕜} : IsL2RieszBasis μ f ↔ IsL2RieszSequence μ f ∧ IsL2CompleteFamily μ f :=
+  Iff.rfl
+
 /-- A Riesz basis has the finite-coefficient bounds of a Riesz sequence. -/
 theorem IsL2RieszBasis.isL2RieszSequence {X ι : Type*} [MeasurableSpace X]
     {μ : Measure X} {f : ι → X → 𝕜} (hf : IsL2RieszBasis μ f) : IsL2RieszSequence μ f := hf.1
 
-@[deprecated (since := "2026-11-15")]
-alias IsL2RieszBasis.isRieszSequence := IsL2RieszBasis.isL2RieszSequence
+/-- A Riesz basis is complete. -/
+theorem IsL2RieszBasis.isL2CompleteFamily {X ι : Type*} [MeasurableSpace X]
+    {μ : Measure X} {f : ι → X → 𝕜} (hf : IsL2RieszBasis μ f) : IsL2CompleteFamily μ f := hf.2
 
-/-- Frame inequalities for a family of actual measurable L2 representatives. -/
+/-- Frame inequalities for a family of square-integrable function representatives. -/
 @[expose]
 def IsL2FrameFamily {X ι : Type*} [MeasurableSpace X]
     (μ : Measure X) (f : ι → X → 𝕜) : Prop :=
@@ -113,6 +160,16 @@ def IsL2FrameFamily {X ι : Type*} [MeasurableSpace X]
       (∑' i, ENNReal.ofReal (‖∫ x, conj (f i x) * u x ∂μ‖ ^ 2)) ∧
     (∑' i, ENNReal.ofReal (‖∫ x, conj (f i x) * u x ∂μ‖ ^ 2)) ≤
       ENNReal.ofReal (B * ‖u‖ ^ 2)
+
+/-- Unfolding `IsL2FrameFamily`. -/
+theorem isL2FrameFamily_iff {X ι : Type*} [MeasurableSpace X] {μ : Measure X}
+    {f : ι → X → 𝕜} :
+    IsL2FrameFamily μ f ↔ (∀ i, MemLp (f i) 2 μ) ∧ ∃ A B : ℝ, 0 < A ∧ A ≤ B ∧ ∀ u : Lp 𝕜 2 μ,
+      ENNReal.ofReal (A * ‖u‖ ^ 2) ≤
+        (∑' i, ENNReal.ofReal (‖∫ x, conj (f i x) * u x ∂μ‖ ^ 2)) ∧
+      (∑' i, ENNReal.ofReal (‖∫ x, conj (f i x) * u x ∂μ‖ ^ 2)) ≤
+        ENNReal.ofReal (B * ‖u‖ ^ 2) :=
+  Iff.rfl
 
 /-- The representative-based frame inequalities agree with the abstract Hilbert-frame predicate. -/
 theorem isL2FrameFamily_iff_isFrame {X ι : Type*} [MeasurableSpace X] {μ : Measure X}
@@ -237,16 +294,14 @@ private theorem linearCombination_ae_eq_l2FunctionCombination (f : ι → X → 
 /-- Squared `L²` norm, written as an extended real. -/
 private theorem eLpNorm_sq_eq_ofReal_norm_sq (u : Lp 𝕜 2 μ) :
     (eLpNorm u 2 μ) ^ 2 = ENNReal.ofReal (‖u‖ ^ 2) := by
-  rw [← Lp.enorm_def, ← ofReal_norm]
+  rw [← Lp.eNorm_def, ← ofReal_norm]
   exact (ENNReal.ofReal_pow (norm_nonneg u) 2).symm
 
 /-- Coefficient energy of a finite sequence is its squared `ℓ²` norm. -/
 private theorem finiteCoefficientEnergy_eq_ofReal_norm_sq (a : l2FiniteCoeff 𝕜 ι) :
     finiteCoefficientEnergy (l2FiniteToFinsupp a) =
       ENNReal.ofReal (‖(a : lp (fun _ : ι ↦ 𝕜) 2)‖ ^ 2) := by
-  have hrpow := lp.norm_rpow_eq_tsum (by norm_num : 0 < (2 : ℝ≥0∞).toReal)
-    (a : lp (fun _ : ι ↦ 𝕜) 2)
-  simp only [ENNReal.toReal_ofNat, Real.rpow_two] at hrpow
+  have hrpow := lp.norm_sq_eq_tsum (a : lp (fun _ : ι ↦ 𝕜) 2)
   have htsum : ∑' i, ‖(a : lp (fun _ : ι ↦ 𝕜) 2) i‖ ^ 2 =
       ∑ i ∈ (l2FiniteToFinsupp a).support, ‖(a : lp (fun _ : ι ↦ 𝕜) 2) i‖ ^ 2 := by
     rw [tsum_eq_sum]
@@ -289,7 +344,50 @@ private theorem l2FiniteSynthesis_norm_bounds (f : ι → X → 𝕜) (hf : ∀ 
   · have hsq := Real.sqrt_le_sqrt hup'
     rwa [Real.sqrt_mul hB, Real.sqrt_sq (norm_nonneg _), Real.sqrt_sq (norm_nonneg _)] at hsq
 
+/-- The single coefficient vector `lp.single 2 i 1` is finitely supported. -/
+private theorem single_mem_l2FiniteCoeff [DecidableEq ι] (i : ι) :
+    lp.single 2 i (1 : 𝕜) ∈ l2FiniteCoeff 𝕜 ι := by
+  rw [l2FiniteCoeff_mem_iff, Function.HasFiniteSupport, lp.coeFn_single]
+  refine (Set.finite_singleton i).subset ?_
+  intro j
+  simp only [Function.mem_support, Set.mem_singleton_iff, ne_eq]
+  rw [not_imp_comm]
+  intro h
+  exact Pi.single_eq_of_ne (M := fun _ ↦ 𝕜) h (1 : 𝕜)
+
+/-- Finite synthesis sends the `i`-th unit coefficient vector to the `i`-th family vector. -/
+private theorem l2FiniteSynthesisₗ_single [DecidableEq ι] (f : ι → X → 𝕜)
+    (hf : ∀ i, MemLp (f i) 2 μ) (i : ι) :
+    l2FiniteSynthesisₗ f hf ⟨lp.single 2 i (1 : 𝕜), single_mem_l2FiniteCoeff i⟩ =
+      l2FamilyVectors f hf i := by
+  rw [l2FiniteSynthesisₗ_apply, Finsupp.linearCombination_apply, Finsupp.sum_eq_single i]
+  · simp [l2FiniteToFinsupp_apply, one_smul]
+  · intro b hb hbi
+    refine (hb ?_).elim
+    rw [l2FiniteToFinsupp_apply, lp.coeFn_single]
+    exact Pi.single_eq_of_ne (M := fun _ ↦ 𝕜) hbi (1 : 𝕜)
+  · simp
+
 end L2RieszFrame
+
+/-- A bounded-below operator between Hilbert spaces whose adjoint is injective is surjective:
+its range is closed, and its orthogonal complement is the kernel of the adjoint. -/
+theorem surjective_of_forall_le_norm_of_ker_adjoint_eq_bot {E F : Type*}
+    [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [CompleteSpace E]
+    [NormedAddCommGroup F] [InnerProductSpace 𝕜 F] [CompleteSpace F]
+    (T : E →L[𝕜] F) {c : ℝ} (hc : 0 < c) (hlow : ∀ x, c * ‖x‖ ≤ ‖T x‖)
+    (hker : T.adjoint.ker = ⊥) : Function.Surjective T := by
+  let K : NNReal := .mk c⁻¹ (inv_nonneg.mpr hc.le)
+  have hanti : AntilipschitzWith K T :=
+    T.antilipschitz_of_bound fun x ↦ (le_inv_mul_iff₀ hc).2 (hlow x)
+  have hclosed : IsClosed (T.range : Set F) := by
+    rw [LinearMap.coe_range]
+    exact hanti.isClosed_range T.uniformContinuous
+  have htop : T.range.topologicalClosure = ⊤ := by
+    rw [Submodule.topologicalClosure_eq_top_iff, T.orthogonal_range, hker]
+  refine LinearMap.range_eq_top.1 ?_
+  rw [← hclosed.submodule_topologicalClosure_eq]
+  exact htop
 
 /-- Every Riesz basis is a frame in its whole Hilbert space. -/
 theorem IsL2RieszBasis.isL2FrameFamily {X ι : Type*} [MeasurableSpace X]
@@ -301,6 +399,7 @@ theorem IsL2RieszBasis.isL2FrameFamily {X ι : Type*} [MeasurableSpace X]
     (l2FiniteSynthesisₗ f hmem).mkContinuous (Real.sqrt B) fun a ↦ (hnorm a).2
   have hdense : DenseRange (l2FiniteCoeff 𝕜 ι).subtypeL := l2FiniteCoeff_dense
   have huni : IsUniformInducing (l2FiniteCoeff 𝕜 ι).subtypeL := l2FiniteCoeff_isUniformInducing
+  -- `T` is the bounded extension of finite synthesis to all of `ℓ²`.
   let T := S.extend (l2FiniteCoeff 𝕜 ι).subtypeL
   have hlow (x : lp (fun _ : ι ↦ 𝕜) 2) : Real.sqrt A * ‖x‖ ≤ ‖T x‖ := by
     refine hdense.induction_on x ?_ ?_
@@ -309,47 +408,16 @@ theorem IsL2RieszBasis.isL2FrameFamily {X ι : Type*} [MeasurableSpace X]
     · intro a
       rw [ContinuousLinearMap.extend_eq S hdense huni, LinearMap.mkContinuous_apply]
       exact (hnorm a).1
-  let K : NNReal :=
-    .mk ((Real.sqrt A)⁻¹) (inv_nonneg.mpr (Real.sqrt_nonneg A))
-  have hanti : AntilipschitzWith K T :=
-    T.antilipschitz_of_bound fun x ↦ by
-      have hmul : (Real.sqrt A)⁻¹ * ‖T x‖ = K * ‖T x‖ := by
-        simp only [K, NNReal.coe_mk]
-      rw [← hmul]
-      exact (le_inv_mul_iff₀ (Real.sqrt_pos.mpr hA)).2 (hlow x)
-  have hclosed : IsClosed (T.range : Set (Lp 𝕜 2 μ)) := by
-    rw [LinearMap.coe_range]
-    exact hanti.isClosed_range T.uniformContinuous
-  have hsingle (i : ι) : T (lp.single 2 i (1 : 𝕜)) = l2FamilyVectors f hmem i := by
-    have hfin : ((lp.single 2 i (1 : 𝕜) : lp (fun _ : ι ↦ 𝕜) 2) : ι → 𝕜).HasFiniteSupport := by
-      rw [Function.HasFiniteSupport, lp.coeFn_single]
-      refine (Set.finite_singleton i).subset ?_
-      intro j
-      simp only [Function.mem_support, Set.mem_singleton_iff, ne_eq]
-      rw [not_imp_comm]
-      intro h
-      exact Pi.single_eq_of_ne (M := fun _ ↦ 𝕜) h (1 : 𝕜)
-    let a : l2FiniteCoeff 𝕜 ι := ⟨lp.single 2 i (1 : 𝕜), hfin⟩
-    have ha : (l2FiniteCoeff 𝕜 ι).subtypeL a = lp.single 2 i (1 : 𝕜) := by
-      rw [Submodule.subtypeL_apply]
-    rw [← ha, ContinuousLinearMap.extend_eq S hdense huni, LinearMap.mkContinuous_apply,
-      l2FiniteSynthesisₗ_apply, Finsupp.linearCombination_apply]
-    rw [Finsupp.sum_eq_single i]
-    · simp [l2FiniteToFinsupp_apply, a, one_smul]
-    · intro b hb hbi
-      have hzero : l2FiniteToFinsupp a b = 0 := by
-        rw [l2FiniteToFinsupp_apply]
-        rw [show (a : lp (fun _ : ι ↦ 𝕜) 2) = lp.single 2 i (1 : 𝕜) from rfl]
-        rw [lp.coeFn_single]
-        exact Pi.single_eq_of_ne (M := fun _ ↦ 𝕜) hbi (1 : 𝕜)
-      exfalso
-      exact hb hzero
-    · simp
   have hcoord (u : Lp 𝕜 2 μ) (i : ι) :
       (T.adjoint u) i = inner 𝕜 (l2FamilyVectors f hmem i) u := by
+    have hsingle : T (lp.single 2 i (1 : 𝕜)) = l2FamilyVectors f hmem i := by
+      rw [← l2FiniteSynthesisₗ_single f hmem i, ← LinearMap.mkContinuous_apply _ (Real.sqrt B)
+        fun a ↦ (hnorm a).2, ← ContinuousLinearMap.extend_eq S hdense huni]
+      rfl
     have hinner := T.adjoint_inner_right (lp.single 2 i (1 : 𝕜)) u
-    rw [hsingle i, lp.inner_single_left] at hinner
+    rw [hsingle, lp.inner_single_left] at hinner
     simpa [RCLike.inner_apply'] using hinner
+  -- Completeness of the family is injectivity of the analysis operator `T^*`.
   have hker : T.adjoint.ker = ⊥ := by
     rw [LinearMap.ker_eq_bot']
     intro u hu
@@ -360,19 +428,10 @@ theorem IsL2RieszBasis.isL2FrameFamily {X ι : Type*} [MeasurableSpace X]
       congr_arg (fun v : lp (fun _ : ι ↦ 𝕜) 2 ↦ v i) hu
     rw [hzero]
     simp
-  have htop : T.range.topologicalClosure = ⊤ := by
-    rw [Submodule.topologicalClosure_eq_top_iff, T.orthogonal_range, hker]
-  have hrange : T.range = ⊤ := by
-    rw [← hclosed.submodule_topologicalClosure_eq]
-    exact htop
-  have hsurj : Function.Surjective T := (LinearMap.range_eq_top).1 hrange
+  have hsurj := surjective_of_forall_le_norm_of_ker_adjoint_eq_bot T
+    (Real.sqrt_pos.mpr hA) hlow hker
   have hC : IsFrameAnalysis (l2FamilyVectors f hmem) T.adjoint := hcoord
-  have hsurjAdj : Function.Surjective T.adjoint.adjoint := by
-    rw [ContinuousLinearMap.adjoint_adjoint]
-    exact hsurj
-  exact (isL2FrameFamily_iff_isFrame f hmem).2 (hC.isFrame_of_surjective_adjoint hsurjAdj)
-
-@[deprecated (since := "2026-11-15")]
-alias IsL2RieszBasis.isFrameFamily := IsL2RieszBasis.isL2FrameFamily
+  exact (isL2FrameFamily_iff_isFrame f hmem).2
+    (hC.isFrame_of_surjective_adjoint (by rwa [ContinuousLinearMap.adjoint_adjoint]))
 
 end CKMA

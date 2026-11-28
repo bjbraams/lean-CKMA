@@ -1,7 +1,8 @@
 # Revision record for the synopses SYNOPSIS04–SYNOPSIS53
 
 This file records the critical revision of the fifty synopses carried out on 2026-10-18
-and the [second revision](#second-revision-2026-10-19) of 2026-10-19.
+the [second revision](#second-revision-2026-10-19) of 2026-10-19, and the
+[hypothesis review](#hypothesis-review-2026-11-28) of 2026-11-28.
 The synopses themselves contain no remarks about their development; this record
 replaces such remarks.
 
@@ -1367,3 +1368,37 @@ listed in the bibliography or is given as a plain reference.
   bibliography are cited as those books, and the DLMF is cited by section
   number. Links to local copies in `References/` and `ReferencesSuppl/` and
   to the bibliography are unchanged.
+
+## Hypothesis review, 2026-11-28
+
+The Lean formalization of several entries needs fewer hypotheses than the
+synopses stated. Each removal below was checked mathematically. Where the
+reason is not the formalization itself, it is given. No conclusion was
+changed. The same edits were made to the restatements in `GAPS.md`.
+
+- **06.62 Varadhan.** Goodness of the rate function is not needed for bounded
+  continuous $f$: the upper bound covers the space by the finitely many closed
+  sets $f^{-1}[a_j,a_{j+1}]$.
+- **11.9 Newton and Maclaurin.** Newton's inequalities are stated for real
+  $x_i$; nonnegativity is kept for Maclaurin, where it is needed.
+- **11.24 Karamata.** Convexity is needed only on an interval containing the
+  entries of $y$; the entries of $x$ lie in their convex hull.
+- **12.21 Subdifferential sum rule and 12.39 Fenchel–Rockafellar.** With the
+  continuity qualification, both hold for proper convex functions on normed
+  spaces, without lower semicontinuity (closedness) or completeness.
+- **15.28 Eberlein–Šmulian, 17.21 Rosenthal and 17.39 Dvoretzky.** Stated for
+  normed spaces; completeness is not used. Entry 17.38 (Kwapień) is unchanged.
+- **23.65 Free central limit theorem.** Self-adjointness is not needed for
+  convergence of moments; the entry now speaks of moments in a noncommutative
+  probability space.
+- **24.18 Chernoff product formula.** Strong continuity of $F$ is not needed
+  (Engel–Nagel, *A Short Course on Operator Semigroups*, Theorem IV.2.2,
+  p. 149, assumes none, in the bounded case $\omega=0$).
+- **37.30 Coarea for BV.** The consequence that almost every superlevel set has
+  finite perimeter now states its implicit hypothesis $|Du|(\Omega)<\infty$.
+- **41.48 Five-value theorem.** One nonconstant function suffices: if $g$ were
+  constant, $f$ would omit at least four of the five values, contradicting
+  Picard's theorem.
+
+Entries 35.9 (Newton–Kantorovich) and 50.6 (Borel–Ritt) are formalized in a
+narrower form than the synopsis states; the synopsis text is unchanged.

@@ -26,14 +26,14 @@ It also develops the Cesàro-averaged phase kernel `cesaroPhase` used in Wiener'
 * `CKMA.purePointOperatorSubspace`: Closed subspace spanned by the real eigenvectors of `A`.
 * `CKMA.eigenLorentzFun`: Lorentz symbol `z ↦ ε² / (‖z - λ‖² + ε²)`.
 * `CKMA.eigenLorentz`: Lorentz CFC approximant `cfc (eigenLorentzFun lam eps) A`.
-* `CKMA.RAGE.evolutionPhase`: Unitary evolution phase `exp(-i t z)`.
-* `CKMA.RAGE.cesaroPhase`: Cesàro average `T⁻¹ * ∫ t in 0..T, evolutionPhase t w`.
+* `CKMA.evolutionPhase`: Unitary evolution phase `exp(-i t z)`.
+* `CKMA.cesaroPhase`: Cesàro average `T⁻¹ * ∫ t in 0..T, evolutionPhase t w`.
 
 ## Main results
 
 * `CKMA.tendsto_eigenLorentz_apply`: Strong convergence of Lorentz approximants to the eigenspace
   orthogonal projection as `ε → 0`.
-* `CKMA.RAGE.tendsto_cesaroPhase_of_ne_zero`: The Cesàro phase kernel vanishes as `T → ∞` at
+* `CKMA.tendsto_cesaroPhase_of_ne_zero`: The Cesàro phase kernel vanishes as `T → ∞` at
   nonzero real frequencies.
 * `CKMA.diagMeasure_real_singleton_eq_zero`: Diagonal spectral measures of vectors orthogonal to
   `purePointOperatorSubspace A` have no point masses.
@@ -54,6 +54,13 @@ variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteS
 @[expose]
 def purePointOperatorSubspace (A : H →L[ℂ] H) : Submodule ℂ H :=
   (Submodule.span ℂ {x : H | ∃ a : ℝ, A x = (a : ℂ) • x}).topologicalClosure
+
+omit [CompleteSpace H] in
+/-- The defining formula of `purePointOperatorSubspace`. -/
+theorem purePointOperatorSubspace_def (A : H →L[ℂ] H) :
+    purePointOperatorSubspace A =
+      (Submodule.span ℂ {x : H | ∃ a : ℝ, A x = (a : ℂ) • x}).topologicalClosure :=
+  rfl
 
 /-- The real translate `A - λ` of a self-adjoint operator is self-adjoint. -/
 private lemma isSelfAdjoint_sub_smul_one (A : H →L[ℂ] H) (hA : IsSelfAdjoint A) {lam : ℂ}
@@ -80,6 +87,11 @@ private lemma sq_sub_eq_ofReal_norm_sq {z lam : ℂ} (hz : z.im = 0) (hlam : lam
 @[expose]
 def eigenLorentzFun (lam : ℂ) (eps : ℝ) : ℂ → ℂ :=
   fun z => ↑(eps ^ 2 / (‖z - lam‖ ^ 2 + eps ^ 2))
+
+/-- The defining formula of `eigenLorentzFun`. -/
+theorem eigenLorentzFun_apply (lam : ℂ) (eps : ℝ) (z : ℂ) :
+    eigenLorentzFun lam eps z = ↑(eps ^ 2 / (‖z - lam‖ ^ 2 + eps ^ 2)) :=
+  rfl
 
 /-- The Lorentz symbol is continuous for positive width. -/
 private lemma continuous_eigenLorentzFun {lam : ℂ} {eps : ℝ} (heps : 0 < eps) :
@@ -117,6 +129,11 @@ private lemma eigenLorentz_symbol_id {lam z : ℂ} (hlam : lam.im = 0) (hz : z.i
 @[expose]
 def eigenLorentz (A : H →L[ℂ] H) (lam : ℂ) (eps : ℝ) : H →L[ℂ] H :=
   cfc (eigenLorentzFun lam eps) A
+
+/-- The defining formula of `eigenLorentz`. -/
+theorem eigenLorentz_def (A : H →L[ℂ] H) (lam : ℂ) (eps : ℝ) :
+    eigenLorentz A lam eps = cfc (eigenLorentzFun lam eps) A :=
+  rfl
 
 /-- The Lorentz approximant is self-adjoint. -/
 private lemma eigenLorentz_isSelfAdjoint (A : H →L[ℂ] H) (hA : IsSelfAdjoint A) (lam : ℂ)
@@ -339,12 +356,15 @@ theorem tendsto_eigenLorentz_apply (A : H →L[ℂ] H) (hA : IsSelfAdjoint A) {l
       add_lt_add (by simpa [dist_eq_norm] using hdist) htail_lt
     _ = eps := add_halves eps
 
-namespace RAGE
-
 /-- The phase `exp(-i t z)` in the bounded evolution. -/
 @[expose]
 def evolutionPhase (t : ℝ) (z : ℂ) : ℂ :=
   Complex.exp ((-(t : ℂ) * Complex.I) * z)
+
+/-- The defining formula of `evolutionPhase`. -/
+theorem evolutionPhase_def (t : ℝ) (z : ℂ) :
+    evolutionPhase t z = Complex.exp ((-(t : ℂ) * Complex.I) * z) :=
+  rfl
 
 /-- At a real frequency the phase lies on the unit circle. -/
 lemma norm_evolutionPhase_of_im_eq_zero (t : ℝ) {w : ℂ} (hw : w.im = 0) :
@@ -362,6 +382,11 @@ lemma norm_evolutionPhase_of_im_eq_zero (t : ℝ) {w : ℂ} (hw : w.im = 0) :
 @[expose]
 def cesaroPhase (T : ℝ) (w : ℂ) : ℂ :=
   T⁻¹ * ∫ t in (0 : ℝ)..T, evolutionPhase t w
+
+/-- The defining formula of `cesaroPhase`. -/
+theorem cesaroPhase_def (T : ℝ) (w : ℂ) :
+    cesaroPhase T w = T⁻¹ * ∫ t in (0 : ℝ)..T, evolutionPhase t w :=
+  rfl
 
 /-- The Cesàro kernel is a contraction at real frequencies. -/
 lemma norm_cesaroPhase_le {T : ℝ} (hT : 0 < T) {w : ℂ} (hw : w.im = 0) :
@@ -473,8 +498,6 @@ lemma continuous_cesaroPhase (T : ℝ) : Continuous (cesaroPhase T) := by
     (f := fun w t => evolutionPhase t w) (by
       unfold evolutionPhase
       fun_prop) 0 T
-
-end RAGE
 
 /-- The Lorentz symbol takes values in the unit disk. -/
 private lemma eigenLorentzFun_norm_le {lam z : ℂ} {eps : ℝ} (heps : 0 < eps) :

@@ -10,6 +10,7 @@ public import Mathlib.MeasureTheory.Measure.Haar.OfBasis
 
 import CKMA.Analysis.Real.Dini.Covering
 import Mathlib.MeasureTheory.Measure.Haar.Unique
+import Mathlib.Topology.Algebra.Group.Order
 
 /-!
 # Infinite Dini mismatches are null
@@ -21,15 +22,21 @@ to the same statement. Source: GAPS 05.10.
 
 ## Main definitions
 
-* `leftSteep`: points with upper right derivative `⊤` and short left slopes above `q`.
 * `CKMA.Dini.infiniteUp`: points with upper right derivative `⊤` and lower left derivative `≠ ⊥`.
 * `CKMA.Dini.infiniteDown`: points with lower left derivative `⊥` and upper right derivative `≠ ⊤`.
 
 ## Main results
 
-* `volume_leftSteep_eq_zero`: each uniformly left-steep set is null.
+* `CKMA.Dini.exists_right_slope_gt`: right increments steeper than any value below the upper
+  right derivative exist at every scale.
 * `CKMA.Dini.volume_infiniteUp`: `infiniteUp f` has Lebesgue measure zero.
 * `CKMA.Dini.volume_infiniteDown`: `infiniteDown f` has Lebesgue measure zero.
+
+## Implementation notes
+
+The private sets `leftSteep f q n` collect the points with upper right derivative `⊤` whose
+left slopes of length at most `1 / (n + 1)` exceed `q`. Each is null, and countably many cover
+`infiniteUp f`.
 -/
 
 public section
@@ -40,49 +47,6 @@ namespace CKMA.Dini
 
 open Set Filter Topology MeasureTheory
 open scoped ENNReal
-
-/-- Negation sends right punctured neighbourhoods of `0` to left ones. -/
-private lemma map_neg_nhdsGT_zero :
-    map (fun x : ℝ => -x) (𝓝[>] (0 : ℝ)) = 𝓝[<] (0 : ℝ) := by
-  refine le_antisymm ?_ ?_
-  · rw [map_le_iff_le_comap]
-    intro s hs
-    rw [mem_comap] at hs
-    obtain ⟨t, ht, htsub⟩ := hs
-    rw [mem_nhdsLT_iff_exists_Ioo_subset] at ht
-    obtain ⟨ε, hε, hsub⟩ := ht
-    rw [mem_nhdsGT_iff_exists_Ioo_subset]
-    refine ⟨-ε, neg_pos.2 hε, ?_⟩
-    intro x hx
-    exact htsub (hsub ⟨by linarith [hx.2], by linarith [hx.1]⟩)
-  · have hle : map (fun x : ℝ => -x) (𝓝[<] (0 : ℝ)) ≤ 𝓝[>] (0 : ℝ) := by
-      rw [map_le_iff_le_comap]
-      intro s hs
-      rw [mem_comap] at hs
-      obtain ⟨t, ht, htsub⟩ := hs
-      rw [mem_nhdsGT_iff_exists_Ioo_subset] at ht
-      obtain ⟨ε, hε, hsub⟩ := ht
-      rw [mem_nhdsLT_iff_exists_Ioo_subset]
-      refine ⟨-ε, neg_lt_zero.2 hε, ?_⟩
-      intro x hx
-      exact htsub (hsub ⟨by linarith [hx.2], by linarith [hx.1]⟩)
-    have hid : (fun x : ℝ => -x) ∘ (fun x : ℝ => -x) = id := by
-      ext x
-      simp
-    calc 𝓝[<] (0 : ℝ)
-        = map (fun x : ℝ => -x) (map (fun x : ℝ => -x) (𝓝[<] 0)) := by
-          rw [map_map, hid, map_id]
-      _ ≤ map (fun x : ℝ => -x) (𝓝[>] 0) := map_mono hle
-
-/-- Negation sends left punctured neighbourhoods of `0` to right ones. -/
-private lemma map_neg_nhdsLT_zero :
-    map (fun x : ℝ => -x) (𝓝[<] (0 : ℝ)) = 𝓝[>] (0 : ℝ) := by
-  have h := congrArg (map (fun x : ℝ => -x)) map_neg_nhdsGT_zero
-  have hid : (fun x : ℝ => -x) ∘ (fun x : ℝ => -x) = id := by
-    ext x
-    simp
-  rw [map_map, hid, map_id] at h
-  exact h.symm
 
 /-- Difference quotients of `f (-·)` are signed reflected quotients of `f`. -/
 private lemma extendedDifferenceQuotient_comp_neg (f : ℝ → ℝ) (x h : ℝ) :
@@ -108,7 +72,7 @@ private lemma upperRightDiniDerivative_comp_neg (f : ℝ → ℝ) (x : ℝ) :
   have hcomp : (fun h => -q (-h)) = (-q) ∘ Neg.neg := by
     ext h
     simp
-  rw [hcomp, limsup_comp, map_neg_nhdsGT_zero]
+  rw [hcomp, limsup_comp, show map (fun x : ℝ => -x) (𝓝[>] 0) = 𝓝[<] 0 by simp]
   exact EReal.limsup_neg
 
 /-- Reflection swaps the lower left derivative with the signed upper right derivative. -/
@@ -125,7 +89,7 @@ private lemma lowerLeftDiniDerivative_comp_neg (f : ℝ → ℝ) (x : ℝ) :
   have hcomp : (fun h => -q (-h)) = (-q) ∘ Neg.neg := by
     ext h
     simp
-  rw [hcomp, liminf_comp, map_neg_nhdsLT_zero]
+  rw [hcomp, liminf_comp, show map (fun x : ℝ => -x) (𝓝[<] 0) = 𝓝[>] 0 by simp]
   exact EReal.liminf_neg
 
 /-- A right increment steeper than `k` exists at every positive scale above the limsup. -/
@@ -158,7 +122,6 @@ private lemma volume_leftSteep_Ioo (f : ℝ → ℝ) (q : ℚ) (n : ℕ) {a b : 
   · intro x hx u hu hux
     have hlt : u - x < 0 := by linarith
     have hge : -(1 : ℝ) / (n + 1) ≤ u - x := by
-      have hstrict : x - (1 : ℝ) / (n + 1) < u := hu
       have hsub : -((1 : ℝ) / (n + 1)) < u - x := by linarith
       rw [← neg_div ((n : ℝ) + 1) (1 : ℝ)] at hsub
       exact hsub.le
@@ -167,9 +130,8 @@ private lemma volume_leftSteep_Ioo (f : ℝ → ℝ) (q : ℚ) (n : ℕ) {a b : 
       rw [add_comm]
       exact sub_add_cancel u x
     rw [hadd] at hs
-    rw [differenceQuotient_rev f x u]
-    exact hs
-  · intro k hk x hx ε hε
+    rwa [← neg_sub (f u) (f x), ← neg_sub u x, neg_div_neg_eq]
+  · intro k _ x hx ε hε
     have hxlt : x < b := hx.2.2
     have htop : (k : EReal) < upperRightDiniDerivative f x := by
       rw [hx.1.1]
@@ -278,6 +240,11 @@ private lemma volume_leftSteep_eq_zero (f : ℝ → ℝ) (q : ℚ) (n : ℕ) :
 def infiniteUp (f : ℝ → ℝ) : Set ℝ :=
   {x | upperRightDiniDerivative f x = ⊤ ∧ lowerLeftDiniDerivative f x ≠ ⊥}
 
+/-- Membership in `infiniteUp f`. -/
+lemma mem_infiniteUp_iff {f : ℝ → ℝ} {x : ℝ} :
+    x ∈ infiniteUp f ↔ upperRightDiniDerivative f x = ⊤ ∧ lowerLeftDiniDerivative f x ≠ ⊥ :=
+  Iff.rfl
+
 /-- A point of `infiniteUp` lies in some uniformly left-steep set. -/
 private lemma mem_leftSteep_of_infiniteUp {f : ℝ → ℝ} {x : ℝ} (hx : x ∈ infiniteUp f) :
     ∃ q : ℚ, ∃ n : ℕ, x ∈ leftSteep f q n := by
@@ -325,6 +292,11 @@ theorem volume_infiniteUp (f : ℝ → ℝ) : volume (infiniteUp f) = 0 := by
 def infiniteDown (f : ℝ → ℝ) : Set ℝ :=
   {x | lowerLeftDiniDerivative f x = ⊥ ∧ upperRightDiniDerivative f x ≠ ⊤}
 
+/-- Membership in `infiniteDown f`. -/
+lemma mem_infiniteDown_iff {f : ℝ → ℝ} {x : ℝ} :
+    x ∈ infiniteDown f ↔ lowerLeftDiniDerivative f x = ⊥ ∧ upperRightDiniDerivative f x ≠ ⊤ :=
+  Iff.rfl
+
 /-- Reflection identifies the lower-left mismatch with the upper-right mismatch. -/
 private lemma infiniteDown_eq_preimage (f : ℝ → ℝ) :
     infiniteDown f = Neg.neg ⁻¹' infiniteUp (fun t => f (-t)) := by
@@ -352,18 +324,3 @@ theorem volume_infiniteDown (f : ℝ → ℝ) : volume (infiniteDown f) = 0 := b
   exact volume_infiniteUp fun t => f (-t)
 
 end CKMA.Dini
-
-namespace CKMA
-
-@[deprecated (since := "2026-11-15")]
-alias exists_right_slope_gt := Dini.exists_right_slope_gt
-@[deprecated (since := "2026-11-15")]
-alias infiniteUp := Dini.infiniteUp
-@[deprecated (since := "2026-11-15")]
-alias volume_infiniteUp := Dini.volume_infiniteUp
-@[deprecated (since := "2026-11-15")]
-alias infiniteDown := Dini.infiniteDown
-@[deprecated (since := "2026-11-15")]
-alias volume_infiniteDown := Dini.volume_infiniteDown
-
-end CKMA

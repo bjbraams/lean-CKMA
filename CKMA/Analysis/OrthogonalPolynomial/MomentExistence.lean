@@ -55,15 +55,38 @@ open scoped BigOperators ENNReal Matrix
 @[expose]
 def momentFunctional (s : ℕ → ℝ) (p : ℝ[X]) : ℝ := p.sum (fun n c ↦ c * s n)
 
+/-- Unfolding lemma for `momentFunctional`: `L(p) = ∑ₙ pₙ sₙ`. -/
+theorem momentFunctional_def (s : ℕ → ℝ) (p : ℝ[X]) :
+    momentFunctional s p = p.sum (fun n c ↦ c * s n) :=
+  rfl
+
+/-- The moment functional sends the monomial `c Xⁿ` to `c sₙ`. -/
+@[simp]
+theorem momentFunctional_monomial (s : ℕ → ℝ) (n : ℕ) (c : ℝ) :
+    momentFunctional s (monomial n c) = c * s n := by
+  simp [momentFunctional]
+
 /-- A finite shifted Hankel matrix. -/
 @[expose]
 def momentHankelMatrix (s : ℕ → ℝ) (shift n : ℕ) : Matrix (Fin n) (Fin n) ℝ :=
   fun i j ↦ s (i.val + j.val + shift)
 
+/-- The entries of the shifted Hankel matrix are `s (i + j + shift)`. -/
+@[simp]
+theorem momentHankelMatrix_apply (s : ℕ → ℝ) (shift n : ℕ) (i j : Fin n) :
+    momentHankelMatrix s shift n i j = s (i.val + j.val + shift) :=
+  rfl
+
 /-- Positivity of every unshifted finite Hankel matrix. -/
 @[expose]
 def HasPositiveHankelMatrices (s : ℕ → ℝ) : Prop :=
   ∀ n : ℕ, (momentHankelMatrix s 0 n).PosSemidef
+
+/-- `HasPositiveHankelMatrices s` means that every unshifted Hankel matrix is positive
+semidefinite. -/
+theorem hasPositiveHankelMatrices_iff {s : ℕ → ℝ} :
+    HasPositiveHankelMatrices s ↔ ∀ n : ℕ, (momentHankelMatrix s 0 n).PosSemidef :=
+  Iff.rfl
 
 /-- Hankel positivity makes every even moment nonnegative. -/
 theorem HasPositiveHankelMatrices.nonneg_even {s : ℕ → ℝ}
@@ -75,6 +98,11 @@ theorem HasPositiveHankelMatrices.nonneg_even {s : ℕ → ℝ}
 @[expose]
 def RepresentsRealMoments (μ : Measure ℝ) (s : ℕ → ℝ) : Prop :=
   HasFiniteMoments μ ∧ ∀ n : ℕ, ∫ x, x ^ n ∂μ = s n
+
+/-- `RepresentsRealMoments μ s` means that `μ` has finite moments and `∫ xⁿ dμ = sₙ` for all `n`. -/
+theorem representsRealMoments_iff {μ : Measure ℝ} {s : ℕ → ℝ} :
+    RepresentsRealMoments μ s ↔ HasFiniteMoments μ ∧ ∀ n : ℕ, ∫ x, x ^ n ∂μ = s n :=
+  Iff.rfl
 
 /-- **48.32**: Hamburger's existence theorem; zero mass is allowed. -/
 theorem hamburger_moment_iff (s : ℕ → ℝ) :
@@ -134,10 +162,6 @@ theorem hasPositiveHankelMatrices_iff_momentFunctional_mul_self_nonneg
       simpa only [star_trivial, momentFunctional_sum_monomial_mul_self s x] using
         h (∑ i, Polynomial.monomial i.val (x i))
 
-@[deprecated (since := "2026-11-15")]
-alias positiveHankelMatrices_iff_squares :=
-  hasPositiveHankelMatrices_iff_momentFunctional_mul_self_nonneg
-
 /-- The monic Jacobi recurrence with edge coefficients `a n` between sites `n` and `n+1`. -/
 @[expose]
 def jacobiMonicPolynomial (a b : ℕ → ℝ) : ℕ → ℝ[X]
@@ -181,6 +205,18 @@ def HamburgerCarlemanCondition (s : ℕ → ℝ) : Prop :=
 @[expose]
 def StieltjesCarlemanCondition (s : ℕ → ℝ) : Prop :=
   (∑' n : ℕ, (ENNReal.ofReal (s (n + 1))) ^ (-1 / (2 * (n + 1) : ℝ))) = ∞
+
+/-- Unfolding lemma for `HamburgerCarlemanCondition`. -/
+theorem hamburgerCarlemanCondition_iff {s : ℕ → ℝ} :
+    HamburgerCarlemanCondition s ↔
+      (∑' n : ℕ, (ENNReal.ofReal (s (2 * (n + 1)))) ^ (-1 / (2 * (n + 1) : ℝ))) = ∞ :=
+  Iff.rfl
+
+/-- Unfolding lemma for `StieltjesCarlemanCondition`. -/
+theorem stieltjesCarlemanCondition_iff {s : ℕ → ℝ} :
+    StieltjesCarlemanCondition s ↔
+      (∑' n : ℕ, (ENNReal.ofReal (s (n + 1))) ^ (-1 / (2 * (n + 1) : ℝ))) = ∞ :=
+  Iff.rfl
 
 /-- **48.36**: Hamburger Carleman divergence gives uniqueness among all real representing
 measures. -/

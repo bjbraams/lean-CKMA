@@ -7,10 +7,6 @@ module
 
 public import CKMA.Analysis.Real.RectangularDifferentiation.Base
 
-import Mathlib.Analysis.SpecialFunctions.Log.PosLog
-import Mathlib.MeasureTheory.Covering.Besicovitch
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Arctan
-
 /-!
 # Iteration of the strong maximal operator
 
@@ -21,9 +17,12 @@ and one application of the logarithmic iteration kernel.
 
 ## Main definitions
 
-* `CKMA.lastCoordEquiv`, `CKMA.lastCoordSlice`, `CKMA.partialStrongMax`: coordinate splitting,
-  slice function, and strong maximal function on slices.
-* `CKMA.RatRectangle`: open axis-parallel rectangle with rational endpoints.
+* `CKMA.lastCoordEquiv`, `CKMA.lastCoordSlice`, `CKMA.partialStrongMax`: coordinate splitting
+  (Mathlib's `MeasurableEquiv.piFinSuccAbove` at the last index), slice function, and strong
+  maximal function on slices.
+* `CKMA.RatRectangle`, `CKMA.RatRectangle.average`: open axis-parallel rectangles with rational
+  endpoints, a countable family, and extended averages over them.
+* `CKMA.StrongMaximal.sliceRatAverage`: the average of one slice over a rational rectangle.
 
 ## Main results
 
@@ -31,6 +30,8 @@ and one application of the logarithmic iteration kernel.
   the one-dimensional maximal function of `partialStrongMax`.
 * `CKMA.strongMaximal_iteration_scale`: scaled logarithmic kernel estimate for strong maximal
   iteration.
+* `CKMA.partialStrongMax_eq_ratSup`: the slice strong maximal function is a supremum over the
+  countable family of rational rectangles.
 -/
 
 public section
@@ -42,7 +43,8 @@ namespace CKMA
 open MeasureTheory Set
 open scoped BigOperators ENNReal intervalIntegral
 
-/-- Measurable splitting of a tuple into its last coordinate and its initial segment. -/
+/-- Measurable splitting of a tuple into its last coordinate and its initial segment; this is
+`MeasurableEquiv.piFinSuccAbove` at `Fin.last n`. -/
 @[expose]
 def lastCoordEquiv (n : ℕ) : (Fin (n + 1) → ℝ) ≃ᵐ ℝ × (Fin n → ℝ) :=
   MeasurableEquiv.piFinSuccAbove (fun _ : Fin (n + 1) ↦ ℝ) (Fin.last n)
@@ -64,10 +66,20 @@ private theorem lastCoordEquiv_symm_apply (n : ℕ) (y : ℝ) (z : Fin n → ℝ
 def lastCoordSlice {n : ℕ} (f : (Fin (n + 1) → ℝ) → ℝ) (y : ℝ) (z : Fin n → ℝ) : ℝ :=
   f ((lastCoordEquiv n).symm (y, z))
 
+/-- The slice evaluates `f` at the tuple with initial segment `z` and last coordinate `y`. -/
+theorem lastCoordSlice_apply {n : ℕ} (f : (Fin (n + 1) → ℝ) → ℝ) (y : ℝ) (z : Fin n → ℝ) :
+    lastCoordSlice f y z = f (Fin.snoc z y) := by
+  rw [lastCoordSlice, lastCoordEquiv_symm_apply]
+
 /-- The strong maximal function of one slice. -/
 @[expose]
 def partialStrongMax {n : ℕ} (f : (Fin (n + 1) → ℝ) → ℝ) (y : ℝ) (z : Fin n → ℝ) : ℝ≥0∞ :=
   strongMaximalFunction (lastCoordSlice f y) z
+
+/-- Unfolding of `CKMA.partialStrongMax`. -/
+theorem partialStrongMax_def {n : ℕ} (f : (Fin (n + 1) → ℝ) → ℝ) (y : ℝ) (z : Fin n → ℝ) :
+    partialStrongMax f y z = strongMaximalFunction (lastCoordSlice f y) z :=
+  rfl
 
 /-- Slices of a measurable function are measurable. -/
 theorem measurable_lastCoordSlice {n : ℕ} {f : (Fin (n + 1) → ℝ) → ℝ} (hf : Measurable f)
@@ -158,7 +170,7 @@ private theorem lintegral_rectangle_slice {n : ℕ} {g : (Fin (n + 1) → ℝ) �
 theorem strongMaximal_le_partial {n : ℕ} {f : (Fin (n + 1) → ℝ) → ℝ} (hf : Measurable f)
     (x : Fin (n + 1) → ℝ) :
     strongMaximalFunction f x ≤
-      oneDimMaximalENN (fun y ↦ partialStrongMax f y (Fin.init x)) (x (Fin.last n)) := by
+      intervalMaximalFunction (fun y ↦ partialStrongMax f y (Fin.init x)) (x (Fin.last n)) := by
   refine iSup_le fun R ↦ iSup_le fun hxR ↦ ?_
   let g : (Fin (n + 1) → ℝ) → ℝ≥0∞ := fun w ↦ ENNReal.ofReal |f w|
   have hg : Measurable g := by
@@ -212,8 +224,8 @@ theorem strongMaximal_le_partial {n : ℕ} {f : (Fin (n + 1) → ℝ) → ℝ} (
     _ = (∫⁻ y in R.lastSide.carrier, partialStrongMax f y (Fin.init x)) / L := by
         rw [mul_comm L V, ENNReal.mul_div_mul_left _ _ hV0 hVtop]
     _ = intervalAverage (fun y ↦ partialStrongMax f y (Fin.init x)) R.lastSide := hI
-    _ ≤ oneDimMaximalENN (fun y ↦ partialStrongMax f y (Fin.init x)) (x (Fin.last n)) := by
-        unfold oneDimMaximalENN
+    _ ≤ intervalMaximalFunction (fun y ↦ partialStrongMax f y (Fin.init x)) (x (Fin.last n)) := by
+        unfold intervalMaximalFunction
         exact (le_iSup (fun h : x (Fin.last n) ∈ R.lastSide.carrier ↦
             intervalAverage (fun y ↦ partialStrongMax f y (Fin.init x)) R.lastSide) hy).trans
           (le_iSup (fun I : OpenInterval ↦ ⨆ h : x (Fin.last n) ∈ I.carrier,
@@ -399,59 +411,25 @@ theorem strongMaximal_iteration_scale {n : ℕ} (hn : 1 ≤ n) {a v : ℝ} (ha :
 theorem strongMaximalGrowth_smul_le {n : ℕ} {c u : ℝ} (hc : 0 < c) (hu : 0 ≤ u) :
     strongMaximalGrowth n (c * u) ≤
       c * (1 + |Real.log c|) ^ (n - 1) * strongMaximalGrowth (n + 1) u := by
-  by_cases hu0 : u = 0
-  · simp [strongMaximalGrowth, hu0, Real.log_zero]
-  · have hu' : 0 < u := lt_of_le_of_ne hu (Ne.symm hu0)
-    have hlogle : 1 + max 0 (Real.log (c * u)) ≤
-        (1 + |Real.log c|) * (1 + max 0 (Real.log u)) := by
-      by_cases hcu : c * u ≤ 1
-      · have hlog : Real.log (c * u) ≤ 0 := Real.log_nonpos (mul_nonneg hc.le hu) hcu
-        simp only [max_eq_left hlog, add_zero]
-        nlinarith [abs_nonneg (Real.log c), le_max_left (0 : ℝ) (Real.log u)]
-      · have hcu' : 1 < c * u := lt_of_not_ge hcu
-        have hlogeq : Real.log (c * u) = Real.log c + Real.log u :=
-          Real.log_mul hc.ne' hu'.ne'
-        have hposlog : 0 ≤ Real.log (c * u) := Real.log_nonneg hcu'.le
-        rw [hlogeq, max_eq_right (hlogeq ▸ hposlog)]
-        by_cases hlu : Real.log u ≤ 0
-        · rw [max_eq_left hlu, add_zero, mul_one]
-          linarith [le_abs_self (Real.log c)]
-        · rw [max_eq_right (le_of_not_ge hlu)]
-          have habs : Real.log c ≤ |Real.log c| := le_abs_self _
-          have hposu : 0 ≤ Real.log u := le_of_not_ge hlu
-          have hnonneg : 0 ≤ |Real.log c| * Real.log u :=
-            mul_nonneg (abs_nonneg _) hposu
-          calc
-            1 + (Real.log c + Real.log u) ≤ 1 + (|Real.log c| + Real.log u) := by
-              linarith [habs]
-            _ = 1 + |Real.log c| + Real.log u := by ring
-            _ ≤ 1 + |Real.log c| + Real.log u + |Real.log c| * Real.log u := by
-              linarith [hnonneg]
-            _ = (1 + |Real.log c|) * (1 + Real.log u) := by ring
-    have hbase : 0 ≤ 1 + max 0 (Real.log (c * u)) := by
-      linarith [le_max_left (0 : ℝ) (Real.log (c * u))]
-    have hpow := pow_le_pow_left₀ hbase hlogle (n - 1)
-    have hone : (1 : ℝ) ≤ 1 + max 0 (Real.log u) := by
-      linarith [le_max_left (0 : ℝ) (Real.log u)]
-    simp only [strongMaximalGrowth, Nat.add_sub_cancel]
-    calc
-      c * u * (1 + max 0 (Real.log (c * u))) ^ (n - 1) ≤
-          c * u * ((1 + |Real.log c|) * (1 + max 0 (Real.log u))) ^ (n - 1) := by
-        gcongr
-      _ = c * (1 + |Real.log c|) ^ (n - 1) *
-          (u * (1 + max 0 (Real.log u)) ^ (n - 1)) := by
-        rw [mul_pow]
-        ring
-      _ ≤ c * (1 + |Real.log c|) ^ (n - 1) *
-          (u * (1 + max 0 (Real.log u)) ^ n) := by
-        gcongr
-        exact Nat.sub_le n 1
+  have hone : (1 : ℝ) ≤ 1 + Real.posLog u := le_add_of_nonneg_right Real.posLog_nonneg
+  simp only [strongMaximalGrowth_def, Nat.add_sub_cancel]
+  calc
+    c * u * (1 + Real.posLog (c * u)) ^ (n - 1) ≤
+        c * u * ((1 + |Real.log c|) * (1 + Real.posLog u)) ^ (n - 1) :=
+      mul_le_mul_of_nonneg_left (pow_le_pow_left₀ (add_nonneg zero_le_one Real.posLog_nonneg)
+        (one_add_posLog_mul_le c u) _) (mul_nonneg hc.le hu)
+    _ = c * (1 + |Real.log c|) ^ (n - 1) * (u * (1 + Real.posLog u) ^ (n - 1)) := by
+      rw [mul_pow]
+      ring
+    _ ≤ c * (1 + |Real.log c|) ^ (n - 1) * (u * (1 + Real.posLog u) ^ n) := by
+      gcongr
+      exact Nat.sub_le n 1
 
 /-- The endpoint growth is a measurable function of its argument. -/
 theorem measurable_strongMaximalGrowth (n : ℕ) : Measurable (strongMaximalGrowth n) := by
-  unfold strongMaximalGrowth
-  exact (measurable_id.mul ((measurable_const.add
-    ((measurable_const.max Real.measurable_log))).pow_const (n - 1)))
+  simp only [funext (strongMaximalGrowth_def n)]
+  exact measurable_id.mul ((measurable_const.add Real.continuous_posLog.measurable).pow_const
+    (n - 1))
 
 /-- An open axis-parallel rectangle with rational endpoints. -/
 structure RatRectangle (d : ℕ) where
@@ -469,12 +447,26 @@ namespace RatRectangle
 def carrier {d : ℕ} (J : RatRectangle d) : Set (Fin d → ℝ) :=
   {x | ∀ j, (J.lower j : ℝ) < x j ∧ x j < J.upper j}
 
+/-- A point lies in a rational rectangle when each coordinate lies strictly between the
+endpoints. -/
+theorem mem_carrier {d : ℕ} {J : RatRectangle d} {x : Fin d → ℝ} :
+    x ∈ J.carrier ↔ ∀ j, (J.lower j : ℝ) < x j ∧ x j < J.upper j :=
+  Iff.rfl
+
 /-- A rational rectangle viewed as an open rectangle. -/
 @[expose]
 def toOpen {d : ℕ} (J : RatRectangle d) : OpenRectangle d where
   lower := fun j ↦ J.lower j
   upper := fun j ↦ J.upper j
   lower_lt_upper := fun j ↦ by exact_mod_cast J.lower_lt_upper j
+
+/-- The lower corner of the underlying open rectangle. -/
+theorem toOpen_lower {d : ℕ} (J : RatRectangle d) (j : Fin d) : J.toOpen.lower j = J.lower j :=
+  rfl
+
+/-- The upper corner of the underlying open rectangle. -/
+theorem toOpen_upper {d : ℕ} (J : RatRectangle d) (j : Fin d) : J.toOpen.upper j = J.upper j :=
+  rfl
 
 /-- The carrier agrees with the underlying open rectangle. -/
 theorem carrier_toOpen {d : ℕ} (J : RatRectangle d) : J.toOpen.carrier = J.carrier := by
@@ -491,6 +483,11 @@ instance {d : ℕ} : Countable (RatRectangle d) :=
 @[expose]
 def average {d : ℕ} (g : (Fin d → ℝ) → ℝ≥0∞) (J : RatRectangle d) : ℝ≥0∞ :=
   (∫⁻ x in J.carrier, g x) / volume J.carrier
+
+/-- Unfolding of `CKMA.RatRectangle.average`. -/
+theorem average_def {d : ℕ} (g : (Fin d → ℝ) → ℝ≥0∞) (J : RatRectangle d) :
+    J.average g = (∫⁻ x in J.carrier, g x) / volume J.carrier :=
+  rfl
 
 end RatRectangle
 
@@ -515,6 +512,51 @@ private theorem exists_ratRectangle_enlargement_top {d : ℕ}
   refine ⟨J, hsub, ?_⟩
   exact eq_top_iff.2 <| hinf ▸ lintegral_mono_set hsub
 
+/-- For `η > 1`, every rectangle lies in a rational rectangle whose volume is less than `η` times
+the product of its side lengths. -/
+private theorem exists_ratRectangle_superset_volume_lt {d : ℕ} (hd : 0 < d)
+    (R : OpenRectangle d) {η : ℝ} (hη1 : 1 < η) :
+    ∃ J : RatRectangle d, R.carrier ⊆ J.carrier ∧
+      volume J.carrier < ENNReal.ofReal (η * ∏ j, (R.upper j - R.lower j)) := by
+  let s : Fin d → ℝ := fun j ↦ R.upper j - R.lower j
+  have hs : ∀ j, 0 < s j := fun j ↦ sub_pos.2 (R.lower_lt_upper j)
+  have hηpos : 0 < η := zero_lt_one.trans hη1
+  set ρ : ℝ := η ^ (1 / (d : ℝ))
+  have hρ : 1 < ρ := Real.one_lt_rpow hη1 (one_div_pos.2 (Nat.cast_pos.2 hd))
+  have hρd : ρ ^ d = η := by
+    rw [← Real.rpow_natCast, ← Real.rpow_mul hηpos.le, one_div,
+      inv_mul_cancel₀ (Nat.cast_ne_zero.mpr hd.ne'), Real.rpow_one]
+  let δ : Fin d → ℝ := fun j ↦ s j * (ρ - 1) / 2
+  have hδpos : ∀ j, 0 < δ j := fun j ↦ div_pos (mul_pos (hs j) (sub_pos.2 hρ)) two_pos
+  choose lo hlo1 hlo2 using fun j ↦ exists_rat_btwn (sub_lt_self (R.lower j) (hδpos j))
+  choose hi hhi1 hhi2 using fun j ↦ exists_rat_btwn (lt_add_of_pos_right (R.upper j) (hδpos j))
+  have hord : ∀ j, lo j < hi j := fun j ↦ by
+    exact_mod_cast (hlo2 j).trans ((R.lower_lt_upper j).trans (hhi1 j))
+  let J : RatRectangle d := ⟨lo, hi, hord⟩
+  have hsub : R.carrier ⊆ J.carrier := fun x hx j ↦
+    ⟨(hlo2 j).trans (hx j).1, (hx j).2.trans (hhi1 j)⟩
+  let t : Fin d → ℝ := fun j ↦ (hi j : ℝ) - lo j
+  have htpos : ∀ j, 0 < t j := fun j ↦ sub_pos.2 (by exact_mod_cast hord j)
+  have htlt : ∀ j, t j < s j * ρ := fun j ↦ by
+    have h1 := hhi2 j
+    have h2 := hlo1 j
+    have h3 : s j * ρ = s j + 2 * δ j := by simp only [δ]; ring
+    simp only [t, h3]
+    linarith
+  have hQ : ∏ j, t j < η * ∏ j, s j := by
+    calc
+      ∏ j, t j < ∏ j, (s j * ρ) := Finset.prod_lt_prod_of_nonempty₀ (fun j _ ↦ htpos j)
+        (fun j _ ↦ htlt j) ⟨⟨0, hd⟩, Finset.mem_univ _⟩
+      _ = η * ∏ j, s j := by
+        rw [Finset.prod_mul_distrib, Finset.prod_const, Finset.card_univ, Fintype.card_fin,
+          hρd, mul_comm]
+  have hvolJ : volume J.carrier = ENNReal.ofReal (∏ j, t j) := by
+    rw [← J.carrier_toOpen, J.toOpen.volume_carrier]
+    exact (ENNReal.ofReal_prod_of_nonneg fun j _ ↦ (htpos j).le).symm
+  refine ⟨J, hsub, ?_⟩
+  rw [hvolJ, ENNReal.ofReal_lt_ofReal_iff (mul_pos hηpos (Finset.prod_pos fun j _ ↦ hs j))]
+  exact hQ
+
 /-- A finite strict rectangular average survives a small outward rational perturbation. -/
 private theorem exists_ratRectangle_of_average_gt_finite {d : ℕ} (hd : 0 < d)
     (g : (Fin d → ℝ) → ℝ≥0∞) (R : OpenRectangle d) {α : ℝ} (hα : 0 < α)
@@ -522,127 +564,39 @@ private theorem exists_ratRectangle_of_average_gt_finite {d : ℕ} (hd : 0 < d)
     (hfin : ∫⁻ x in R.carrier, g x ≠ ∞) :
     ∃ J : RatRectangle d, R.carrier ⊆ J.carrier ∧
       ENNReal.ofReal α < RatRectangle.average g J := by
-  let s : Fin d → ℝ := fun j ↦ R.upper j - R.lower j
-  have hs : ∀ j, 0 < s j := fun j ↦ sub_pos.2 (R.lower_lt_upper j)
-  let P : ℝ := ∏ j, s j
-  have hP : 0 < P := Finset.prod_pos fun j _ ↦ hs j
+  set P : ℝ := ∏ j, (R.upper j - R.lower j)
+  have hP : 0 < P := Finset.prod_pos fun j _ ↦ sub_pos.2 (R.lower_lt_upper j)
   have hvol : volume R.carrier = ENNReal.ofReal P := by
     rw [R.volume_carrier]
-    exact (ENNReal.ofReal_prod_of_nonneg fun j _ ↦ (hs j).le).symm
-  have hmul : ENNReal.ofReal α * volume R.carrier < ∫⁻ x in R.carrier, g x := by
-    refine (ENNReal.lt_div_iff_mul_lt ?_ ?_).1 havg
-    · exact Or.inl R.volume_carrier_pos.ne'
-    · exact Or.inl R.volume_carrier_lt_top.ne
+    exact (ENNReal.ofReal_prod_of_nonneg fun j _ ↦ (sub_pos.2 (R.lower_lt_upper j)).le).symm
+  have hmul : ENNReal.ofReal α * volume R.carrier < ∫⁻ x in R.carrier, g x :=
+    (ENNReal.lt_div_iff_mul_lt (Or.inl R.volume_carrier_pos.ne')
+      (Or.inl R.volume_carrier_lt_top.ne)).1 havg
   have hprod : ENNReal.ofReal (α * P) < ∫⁻ x in R.carrier, g x := by
     simpa [hvol, ENNReal.ofReal_mul hα.le] using hmul
   set I : ℝ := (∫⁻ x in R.carrier, g x).toReal
-  have hIpos : 0 < I := ENNReal.toReal_pos ((ENNReal.ofReal_pos.2 (mul_pos hα hP)).trans hprod).ne'
-    hfin
+  have hIpos : 0 < I :=
+    ENNReal.toReal_pos ((ENNReal.ofReal_pos.2 (mul_pos hα hP)).trans hprod).ne' hfin
   have hAP : α * P < I := by
     rw [← ENNReal.ofReal_lt_ofReal_iff hIpos, ENNReal.ofReal_toReal hfin]
     exact hprod
-  set ratio : ℝ := I / (α * P)
-  have hratio : 1 < ratio := (one_lt_div (mul_pos hα hP)).2 hAP
-  set η : ℝ := (1 + ratio) / 2
-  have hη1 : 1 < η := by unfold η; linarith
-  have hηr : η < ratio := by unfold η; linarith
-  have hηpos : 0 < η := lt_trans zero_lt_one hη1
-  set ρ : ℝ := η ^ (1 / (d : ℝ))
-  have hρ : 1 < ρ := Real.one_lt_rpow hη1 (one_div_pos.2 (Nat.cast_pos.2 hd))
-  have hρd : ρ ^ d = η := by
-    rw [← Real.rpow_natCast]
-    unfold ρ
-    rw [← Real.rpow_mul hηpos.le, one_div, inv_mul_cancel₀ (Nat.cast_ne_zero.mpr hd.ne'),
-      Real.rpow_one]
-  let δ : Fin d → ℝ := fun j ↦ s j * (ρ - 1) / 2
-  have hδpos : ∀ j, 0 < δ j := fun j ↦ by
-    unfold δ
-    exact div_pos (mul_pos (hs j) (sub_pos.2 hρ)) (by norm_num)
-  have hlo : ∀ j, ∃ q : ℚ, R.lower j - δ j < (q : ℝ) ∧ (q : ℝ) < R.lower j :=
-    fun j ↦ exists_rat_btwn (sub_lt_self _ (hδpos j))
-  choose lo hlo1 hlo2 using hlo
-  have hhi : ∀ j, ∃ q : ℚ, R.upper j < (q : ℝ) ∧ (q : ℝ) < R.upper j + δ j :=
-    fun j ↦ exists_rat_btwn (lt_add_of_pos_right _ (hδpos j))
-  choose hi hhi1 hhi2 using hhi
-  have hord : ∀ j, lo j < hi j := by
-    intro j
-    exact_mod_cast lt_trans (hlo2 j) (lt_trans (R.lower_lt_upper j) (hhi1 j))
-  let J : RatRectangle d := ⟨lo, hi, hord⟩
-  have hsub : R.carrier ⊆ J.carrier := by
-    intro x hx j
-    exact ⟨lt_trans (hlo2 j) (hx j).1, lt_trans (hx j).2 (hhi1 j)⟩
-  let t : Fin d → ℝ := fun j ↦ (hi j : ℝ) - lo j
-  have htlt : ∀ j, t j < s j * ρ := by
-    intro j
-    calc
-      t j = (hi j : ℝ) - lo j := rfl
-      _ < R.upper j + δ j - lo j := by linarith [hhi2 j]
-      _ < R.upper j + δ j - (R.lower j - δ j) := by linarith [hlo1 j]
-      _ = s j + 2 * δ j := by unfold s; ring
-      _ = s j * ρ := by unfold δ; ring
-  have htpos : ∀ j, 0 < t j := fun j ↦ sub_pos.2 (by exact_mod_cast hord j)
-  have hQ : ∏ j, t j < ∏ j, (s j * ρ) := by
-    have hden : 0 < ∏ j, (s j * ρ) :=
-      Finset.prod_pos fun j _ ↦ mul_pos (hs j) (lt_trans zero_lt_one hρ)
-    rw [← div_lt_one hden, ← Finset.prod_div_distrib]
-    let f : Fin d → ℝ := fun j ↦ t j / (s j * ρ)
-    have hterm_pos : ∀ j, 0 < f j := fun j ↦
-      div_pos (htpos j) (mul_pos (hs j) (lt_trans zero_lt_one hρ))
-    have hterm_lt : ∀ j, f j < 1 := fun j ↦ by
-      unfold f
-      rw [div_lt_one (mul_pos (hs j) (lt_trans zero_lt_one hρ))]
-      exact htlt j
-    have hprod_lt : ∀ u : Finset (Fin d), u.Nonempty → ∏ j ∈ u, f j < 1 := by
-      intro u
-      induction u using Finset.induction with
-      | empty => intro hne; exact absurd hne (by simp)
-      | insert a s ha ih =>
-        intro _hne
-        rw [Finset.prod_insert ha]
-        by_cases hsne : s.Nonempty
-        · have hps : ∏ j ∈ s, f j < 1 := ih hsne
-          have hps0 : 0 < ∏ j ∈ s, f j :=
-            Finset.prod_pos fun j hj ↦ hterm_pos j
-          calc
-            f a * ∏ j ∈ s, f j < 1 * ∏ j ∈ s, f j :=
-              mul_lt_mul_of_pos_right (hterm_lt a) hps0
-            _ = ∏ j ∈ s, f j := one_mul _
-            _ < 1 := hps
-        · rw [Finset.not_nonempty_iff_eq_empty.1 hsne, Finset.prod_empty, mul_one]
-          exact hterm_lt a
-    exact hprod_lt Finset.univ ⟨⟨0, hd⟩, Finset.mem_univ _⟩
-  have hprodρ : ∏ j, (s j * ρ) = P * η := by
-    rw [Finset.prod_mul_distrib, Finset.prod_const, Finset.card_univ, Fintype.card_fin, hρd]
-  have hQη : ∏ j, t j < P * η := hQ.trans_eq hprodρ
-  have hαQ : α * ∏ j, t j < I := by
-    have hleft : α * ∏ j, t j < α * (P * η) := mul_lt_mul_of_pos_left hQη hα
-    have hmid : α * (P * η) = α * P * η := by ring
-    have hright : α * P * η < α * P * ratio :=
-      mul_lt_mul_of_pos_left hηr (mul_pos hα hP)
-    have hratioI : α * P * ratio = I := by
-      unfold ratio
-      field_simp [hα.ne', hP.ne']
-    linarith
-  have hvolJ : volume J.carrier = ENNReal.ofReal (∏ j, t j) := by
-    rw [← J.carrier_toOpen, J.toOpen.volume_carrier]
-    have hside : ∀ j, J.toOpen.upper j - J.toOpen.lower j = t j := fun j ↦ by
-      simp [RatRectangle.toOpen, J, t]
-    simp_rw [hside]
-    exact (ENNReal.ofReal_prod_of_nonneg fun j _ ↦ (htpos j).le).symm
-  have hintJ : ∫⁻ x in R.carrier, g x ≤ ∫⁻ x in J.carrier, g x :=
-    lintegral_mono_set hsub
-  have hstrict : ENNReal.ofReal (α * ∏ j, t j) < ∫⁻ x in J.carrier, g x := by
-    refine lt_of_lt_of_le ?_ hintJ
-    rw [← ENNReal.ofReal_toReal hfin]
-    exact (ENNReal.ofReal_lt_ofReal_iff hIpos).2 hαQ
-  have hdiv : ENNReal.ofReal α < RatRectangle.average g J := by
-    refine (ENNReal.lt_div_iff_mul_lt ?_ ?_).2 ?_
-    · exact Or.inl <| by
-        rw [hvolJ]
-        exact (ENNReal.ofReal_pos.2 (Finset.prod_pos fun j _ ↦ htpos j)).ne'
-    · exact Or.inl <| by rw [hvolJ]; exact ENNReal.ofReal_ne_top
-    simpa [RatRectangle.average, hvolJ, ENNReal.ofReal_mul hα.le] using hstrict
-  exact ⟨J, hsub, hdiv⟩
+  have hratio : 1 < I / (α * P) := (one_lt_div (mul_pos hα hP)).2 hAP
+  obtain ⟨η, hη1, hηr⟩ := exists_between hratio
+  have hηI : α * (η * P) < I := by
+    have h := (lt_div_iff₀ (mul_pos hα hP)).1 hηr
+    linarith [show α * (η * P) = η * (α * P) by ring]
+  obtain ⟨J, hsub, hJ⟩ := exists_ratRectangle_superset_volume_lt hd R hη1
+  have hJpos : 0 < volume J.carrier := by
+    rw [← J.carrier_toOpen]
+    exact J.toOpen.volume_carrier_pos
+  refine ⟨J, hsub, (ENNReal.lt_div_iff_mul_lt (Or.inl hJpos.ne') (Or.inl hJ.ne_top)).2 ?_⟩
+  calc
+    ENNReal.ofReal α * volume J.carrier ≤ ENNReal.ofReal α * ENNReal.ofReal (η * P) := by
+      gcongr
+    _ = ENNReal.ofReal (α * (η * P)) := (ENNReal.ofReal_mul hα.le).symm
+    _ < ENNReal.ofReal I := (ENNReal.ofReal_lt_ofReal_iff hIpos).2 hηI
+    _ = ∫⁻ x in R.carrier, g x := ENNReal.ofReal_toReal hfin
+    _ ≤ ∫⁻ x in J.carrier, g x := lintegral_mono_set hsub
 
 /-- A strict rectangular average survives an outward rational perturbation. -/
 private theorem exists_ratRectangle_of_average_gt {d : ℕ} (hd : 0 < d)
@@ -673,36 +627,32 @@ private theorem exists_ratRectangle_of_strongMaximal_gt {d : ℕ} (hd : 0 < d)
     (fun y ↦ ENNReal.ofReal |f y|) R hα havg
   exact ⟨J, hsub hxmem, hJ⟩
 
-/-- The positive part of the logarithm is monotone on the nonnegative reals. -/
-@[deprecated "use `Real.posLog_le_posLog`" (since := "2026-11-15")]
-theorem logPlus_mono {u v : ℝ} (hu : 0 ≤ u) (huv : u ≤ v) :
-    max 0 (Real.log u) ≤ max 0 (Real.log v) :=
-  Real.posLog_le_posLog (by linarith) huv
-
 /-- Dividing the argument by an integer multiplies the growth by at most `1 / k`. -/
 theorem strongMaximalGrowth_div_le {n k : ℕ} (hk : 1 ≤ k) {v : ℝ} (hv : 0 ≤ v) :
     strongMaximalGrowth n (v / k) ≤ (1 / (k : ℝ)) * strongMaximalGrowth n v := by
   have hk0 : (0 : ℝ) < k := Nat.cast_pos.2 (by omega)
-  have hlog : max 0 (Real.log (v / k)) ≤ max 0 (Real.log v) := by
-    by_cases hv0 : v = 0
-    · simp [hv0, Real.log_zero]
-    · exact Real.posLog_le_posLog (by linarith [div_nonneg hv hk0.le]) (by
-        rw [div_le_iff₀ hk0]
-        nlinarith [show (1 : ℝ) ≤ k by exact_mod_cast hk])
-  simp only [strongMaximalGrowth]
-  have hpow := pow_le_pow_left₀ (by linarith [le_max_left (0 : ℝ) (Real.log (v / k))]) hlog (n - 1)
-  have hdiv : v / k * (1 + max 0 (Real.log v)) ^ (n - 1) =
-      (1 / (k : ℝ)) * (v * (1 + max 0 (Real.log v)) ^ (n - 1)) := by
-    field_simp [hk0.ne']
+  have hlog : Real.posLog (v / k) ≤ Real.posLog v :=
+    Real.posLog_le_posLog (by linarith [div_nonneg hv hk0.le])
+      (div_le_self hv (by exact_mod_cast hk))
+  simp only [strongMaximalGrowth_def]
   calc
-    v / k * (1 + max 0 (Real.log (v / k))) ^ (n - 1) ≤
-        v / k * (1 + max 0 (Real.log v)) ^ (n - 1) := by gcongr
-    _ = (1 / (k : ℝ)) * (v * (1 + max 0 (Real.log v)) ^ (n - 1)) := hdiv
+    v / k * (1 + Real.posLog (v / k)) ^ (n - 1) ≤ v / k * (1 + Real.posLog v) ^ (n - 1) :=
+      mul_le_mul_of_nonneg_left (pow_le_pow_left₀ (add_nonneg zero_le_one Real.posLog_nonneg)
+        (add_le_add_right hlog 1) _) (div_nonneg hv hk0.le)
+    _ = (1 / (k : ℝ)) * (v * (1 + Real.posLog v) ^ (n - 1)) := by
+      field_simp [hk0.ne']
+
+namespace StrongMaximal
 
 /-- Extended average of one slice over a rational rectangle. -/
 @[expose]
 def sliceRatAverage {n : ℕ} (f : (Fin (n + 1) → ℝ) → ℝ) (y : ℝ) (J : RatRectangle n) : ℝ≥0∞ :=
   RatRectangle.average (fun z ↦ ENNReal.ofReal |f ((lastCoordEquiv n).symm (y, z))|) J
+
+/-- The slice average is the rational-rectangle average of `|f|` on the slice. -/
+theorem sliceRatAverage_def {n : ℕ} (f : (Fin (n + 1) → ℝ) → ℝ) (y : ℝ) (J : RatRectangle n) :
+    sliceRatAverage f y J = J.average fun z ↦ ENNReal.ofReal |lastCoordSlice f y z| :=
+  rfl
 
 /-- Slice averages over a fixed rational rectangle are measurable in the last coordinate. -/
 theorem measurable_sliceRatAverage {n : ℕ} {f : (Fin (n + 1) → ℝ) → ℝ} (hf : Measurable f)
@@ -731,6 +681,10 @@ theorem measurable_sliceRatAverage {n : ℕ} {f : (Fin (n + 1) → ℝ) → ℝ}
     · simp [phi, hz, Set.indicator]
   rw [hfun]
   exact (hphi.indicator (hs.preimage measurable_snd)).lintegral_prod_right'.mul_const _
+
+end StrongMaximal
+
+open StrongMaximal
 
 /-- The partial maximal function is the supremum of its rational-rectangle averages. -/
 theorem partialStrongMax_eq_ratSup {n : ℕ} (hn : 0 < n) (f : (Fin (n + 1) → ℝ) → ℝ)
@@ -767,15 +721,6 @@ theorem partialStrongMax_eq_ratSup {n : ℕ} (hn : 0 < n) (f : (Fin (n + 1) → 
           volume J.toOpen.carrier) (by simpa [RatRectangle.carrier_toOpen] using hz)).trans
       (le_iSup (fun S : OpenRectangle n ↦ ⨆ h : z ∈ S.carrier,
         (∫⁻ w in S.carrier, ENNReal.ofReal |lastCoordSlice f y w|) / volume S.carrier) J.toOpen)
-
-@[deprecated (since := "2026-11-15")]
-alias coordEquiv := lastCoordEquiv
-@[deprecated (since := "2026-11-15")]
-alias coordEquiv_apply := lastCoordEquiv_apply
-@[deprecated (since := "2026-11-15")]
-alias sliceFunction := lastCoordSlice
-@[deprecated (since := "2026-11-15")]
-alias sliceFunction_measurable := measurable_lastCoordSlice
 
 end CKMA
 

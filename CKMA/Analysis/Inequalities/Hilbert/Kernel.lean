@@ -5,9 +5,13 @@ Authors: CKMA contributors
 -/
 module
 
-public import Mathlib.MeasureTheory.Measure.Haar.OfBasis
-public import Mathlib.Analysis.SpecialFunctions.Gamma.Beta
-public import Mathlib.Analysis.SumIntegralComparisons
+public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
+
+import Mathlib.Analysis.SpecialFunctions.Gamma.Beta
+import Mathlib.Analysis.SumIntegralComparisons
+import TauCeti.Analysis.SpecialFunctions.Pow.Integral
 
 /-!
 # The Hilbert kernel
@@ -21,9 +25,9 @@ integral `Beta(1 - α, α)`, evaluated by the substitution `t = u / (1 - u)` in 
 decreases in `y`, so its samples at positive integers are bounded by the slice integral.
 
 For optimality, the slice integral truncated to `(1, M)` misses at most the explicit tails
-`x ^ (α - 1) / (1 - α)` on `(0, 1]` and `x ^ α M ^ (-α) / α` on `[M, ∞)`. Elementary
-comparisons of antitone functions with their integrals, power integrals, and a limiting
-argument for affine bounds in `ℝ≥0∞` complete the toolkit. Source: GAPS 11.37.
+`x ^ (α - 1) / (1 - α)` on `(0, 1]` and `x ^ α M ^ (-α) / α` on `[M, ∞)`, computed with
+TauCeti's power integrals `TauCeti.lintegral_ofReal_rpow_Ioo` and
+`TauCeti.lintegral_ofReal_rpow_Ioi_of_lt`. Source: GAPS 11.37.
 
 ## Main definitions
 
@@ -44,33 +48,6 @@ namespace CKMA.Hilbert
 
 open MeasureTheory Set intervalIntegral
 open scoped ENNReal
-
-/-- Real power `x ^ c` for `x > 0`, and `0` otherwise. -/
-@[expose]
-def rpowPos (c x : ℝ) : ℝ :=
-  if 0 < x then Real.exp (c * Real.log x) else 0
-
-/-- `rpowPos` agrees with `Real.rpow` on positive bases. -/
-lemma rpowPos_eq {c x : ℝ} (hx : 0 < x) : rpowPos c x = x ^ c := by
-  simp [rpowPos, hx, Real.rpow_def_of_pos hx, mul_comm]
-
-/-- `rpowPos` is nonnegative. -/
-lemma rpowPos_nonneg (c x : ℝ) : 0 ≤ rpowPos c x := by
-  unfold rpowPos
-  split_ifs
-  · exact (Real.exp_pos _).le
-  · exact le_rfl
-
-/-- `rpowPos` is positive on a positive base. -/
-lemma rpowPos_pos {c x : ℝ} (hx : 0 < x) : 0 < rpowPos c x := by
-  simp [rpowPos, hx, Real.exp_pos]
-
-/-- `rpowPos` is measurable in the base. -/
-@[fun_prop]
-lemma measurable_rpowPos (c : ℝ) : Measurable (rpowPos c) := by
-  unfold rpowPos
-  exact Measurable.ite measurableSet_Ioi
-    (Real.measurable_exp.comp (measurable_const.mul Real.measurable_log)) measurable_const
 
 /-- Integrand `u ^ (b - 1) * (1 - u) ^ (-b)` of the Beta reflection identity. -/
 private def betaIntegrand (b u : ℝ) : ℝ :=
@@ -265,7 +242,6 @@ private lemma pi_div_sin_pi_pos {α : ℝ} (hα0 : 0 < α) (hα1 : α < 1) :
 /-- Scaling identity `(x / (x t)) ^ α / (x + x t) * x = t ^ (-α) / (1 + t)`. -/
 private lemma scale_kernel {α x t : ℝ} (hx : 0 < x) (ht : 0 < t) :
     |x| * ((x / (x * t)) ^ α / (x + x * t)) = t ^ (-α) / (1 + t) := by
-  have hxt : 0 < x * t := mul_pos hx ht
   rw [abs_of_pos hx]
   have hdiv : x / (x * t) = t⁻¹ := by field_simp
   have hsum : x + x * t = x * (1 + t) := by ring
@@ -312,38 +288,40 @@ private lemma lintegral_hilbert_slice {α x : ℝ} (hα0 : 0 < α) (hα1 : α < 
 /-- Positive kernel `(k / t) ^ α / (k + t)`, extended by `0` off `(0, ∞)`. -/
 @[expose]
 def hilbertKernel (k α t : ℝ) : ℝ :=
-  if 0 < t then rpowPos α (k / t) / (k + t) else 0
+  if 0 < t then (k / t) ^ α / (k + t) else 0
 
-/-- The kernel is nonnegative. -/
-private lemma hilbertKernel_nonneg (k α t : ℝ) : 0 ≤ hilbertKernel k α t := by
-  unfold hilbertKernel
-  split_ifs with ht
-  · by_cases hkt : 0 < k / t
-    · have hk : 0 < k := by
-        rw [← div_mul_cancel₀ k ht.ne']
-        exact mul_pos hkt ht
-      exact div_nonneg (rpowPos_nonneg _ _) (add_pos hk ht).le
-    · rw [rpowPos, ite_eq_right_iff.mpr fun h => (hkt h).elim, zero_div]
-  · exact le_rfl
+/-- Defining equation of `hilbertKernel`. -/
+lemma hilbertKernel_def (k α t : ℝ) :
+    hilbertKernel k α t = if 0 < t then (k / t) ^ α / (k + t) else 0 := rfl
 
 /-- On `(0, ∞)` the kernel is the real power `(k / t) ^ α / (k + t)`. -/
-lemma hilbertKernel_eq {k α t : ℝ} (hk : 0 < k) (ht : 0 < t) :
+lemma hilbertKernel_of_pos {k α t : ℝ} (ht : 0 < t) :
     hilbertKernel k α t = (k / t) ^ α / (k + t) := by
-  have hdiv : 0 < k / t := div_pos hk ht
-  simp [hilbertKernel, ht, rpowPos_eq (c := α) hdiv]
+  rw [hilbertKernel, ite_eq_left ht]
+
+/-- Off `(0, ∞)` the kernel vanishes. -/
+lemma hilbertKernel_of_nonpos {k α t : ℝ} (ht : t ≤ 0) : hilbertKernel k α t = 0 := by
+  rw [hilbertKernel, ite_eq_right ht.not_gt]
+
+/-- The kernel with a nonnegative first variable is nonnegative. -/
+lemma hilbertKernel_nonneg {k : ℝ} (hk : 0 ≤ k) (α t : ℝ) : 0 ≤ hilbertKernel k α t := by
+  rcases lt_or_ge 0 t with ht | ht
+  · rw [hilbertKernel_of_pos ht]
+    exact div_nonneg (Real.rpow_nonneg (div_nonneg hk ht.le) _) (by linarith)
+  · rw [hilbertKernel_of_nonpos ht]
 
 /-- The kernel is measurable. -/
 private lemma measurable_hilbertKernel (k α : ℝ) : Measurable (hilbertKernel k α) := by
   unfold hilbertKernel
-  refine Measurable.ite measurableSet_Ioi ?_ measurable_const
-  exact ((measurable_rpowPos α).comp (measurable_const.div measurable_id)).div
-    (measurable_const.add measurable_id)
+  exact Measurable.ite measurableSet_Ioi
+    (((measurable_const.div measurable_id).pow_const α).div (measurable_const.add measurable_id))
+    measurable_const
 
 /-- The kernel decreases on `(0, ∞)` for a positive exponent. -/
 lemma hilbertKernel_antitone {k α : ℝ} (hk : 0 < k) (hα : 0 < α) :
     AntitoneOn (hilbertKernel k α) (Ioi (0 : ℝ)) := by
   intro s hs t ht hst
-  rw [hilbertKernel_eq hk hs, hilbertKernel_eq hk ht]
+  rw [hilbertKernel_of_pos hs, hilbertKernel_of_pos ht]
   have hrat : k / t ≤ k / s := div_le_div_of_nonneg_left hk.le hs hst
   have hnum : (k / t) ^ α ≤ (k / s) ^ α :=
     Real.rpow_le_rpow (div_nonneg hk.le ht.le) hrat hα.le
@@ -358,16 +336,16 @@ lemma lintegral_hilbertKernel {k α : ℝ} (hk : 0 < k) (hα0 : 0 < α) (hα1 : 
   refine (setLIntegral_congr_fun measurableSet_Ioi ?_).trans (lintegral_hilbert_slice hα0 hα1 hk)
   intro t ht
   dsimp
-  rw [hilbertKernel_eq hk ht]
+  rw [hilbertKernel_of_pos ht]
 
 /-- The kernel is integrable on `(0, ∞)`. -/
 private lemma integrableOn_hilbertKernel {k α : ℝ} (hk : 0 < k) (hα0 : 0 < α) (hα1 : α < 1) :
     IntegrableOn (hilbertKernel k α) (Ioi (0 : ℝ)) := by
   refine ⟨(measurable_hilbertKernel k α).aestronglyMeasurable.mono_measure
       Measure.restrict_le_self, ?_⟩
-  rw [hasFiniteIntegral_iff_enorm]
+  rw [hasFiniteIntegral_iff_eNorm]
   rw [setLIntegral_congr_fun measurableSet_Ioi
-      (fun t ht => by rw [Real.enorm_eq_ofReal (hilbertKernel_nonneg k α t)])]
+      (fun t _ => by rw [Real.eNorm_eq_ofReal (hilbertKernel_nonneg hk.le α t)])]
   rw [lintegral_hilbertKernel hk hα0 hα1]
   exact ENNReal.ofReal_lt_top
 
@@ -377,11 +355,11 @@ private lemma integral_hilbertKernel {k α : ℝ} (hk : 0 < k) (hα0 : 0 < α) (
       Real.pi / Real.sin (Real.pi * α) := by
   have hint := integrableOn_hilbertKernel hk hα0 hα1
   have hnn : 0 ≤ᵐ[volume.restrict (Ioi (0 : ℝ))] hilbertKernel k α :=
-    ae_of_all _ (hilbertKernel_nonneg k α)
+    ae_of_all _ (hilbertKernel_nonneg hk.le α)
   have hlin := lintegral_hilbertKernel hk hα0 hα1
   rw [← ofReal_integral_eq_lintegral_ofReal hint hnn] at hlin
   exact (ENNReal.ofReal_eq_ofReal_iff
-    (setIntegral_nonneg measurableSet_Ioi fun t _ => hilbertKernel_nonneg k α t)
+    (setIntegral_nonneg measurableSet_Ioi fun t _ => hilbertKernel_nonneg hk.le α t)
     (pi_div_sin_pi_pos hα0 hα1).le).mp hlin
 
 /-- A value at `1` is at most the integral of an antitone function over `(0, 1]`. -/
@@ -391,10 +369,10 @@ private lemma antitone_at_one_le_integral {f : ℝ → ℝ}
   have hconst : IntegrableOn (fun _ : ℝ => f 1) (Ioc (0 : ℝ) 1) :=
     integrableOn_const (by simp)
   have hf : IntegrableOn f (Ioc (0 : ℝ) 1) := hint.mono_set Ioc_subset_Ioi_self
-  have hmono : ∫ t in Ioc (0 : ℝ) 1, f 1 ≤ ∫ t in Ioc (0 : ℝ) 1, f t :=
+  have hmono : ∫ _ in Ioc (0 : ℝ) 1, f 1 ≤ ∫ t in Ioc (0 : ℝ) 1, f t :=
     setIntegral_mono_on hconst hf measurableSet_Ioc fun t ht =>
       hanti ht.1 (by norm_num : (0 : ℝ) < 1) ht.2
-  have hconstInt : ∫ t in Ioc (0 : ℝ) 1, f 1 = f 1 := by
+  have hconstInt : ∫ _ in Ioc (0 : ℝ) 1, f 1 = f 1 := by
     rw [setIntegral_const, Measure.real, Real.volume_Ioc]
     simp
   exact hconstInt.symm.trans_le hmono
@@ -442,42 +420,22 @@ lemma tsum_hilbertKernel_le {k α : ℝ} (hk : 0 < k) (hα0 : 0 < α) (hα1 : α
   have hint := integrableOn_hilbertKernel hk hα0 hα1
   have hanti := hilbertKernel_antitone hk hα0
   have hnn : ∀ t ∈ Ioi (0 : ℝ), 0 ≤ hilbertKernel k α t :=
-    fun _ _ => hilbertKernel_nonneg k α _
+    fun _ _ => hilbertKernel_nonneg hk.le α _
   have hpartial : ∀ N, ∑ i ∈ Finset.range N, hilbertKernel k α (↑i + 1) ≤
       ∫ t in Ioi (0 : ℝ), hilbertKernel k α t :=
     fun N => sum_range_antitone_Ioi_le hanti hint hnn N
   have hterm : ∀ n : ℕ, 0 ≤ hilbertKernel k α (↑n + 1) :=
-    fun _ => hilbertKernel_nonneg k α _
+    fun _ => hilbertKernel_nonneg hk.le α _
   have hsummable : Summable fun n : ℕ => hilbertKernel k α (↑n + 1) :=
     summable_of_sum_range_le hterm hpartial
   rw [← ENNReal.ofReal_tsum_of_nonneg hterm hsummable]
   exact ENNReal.ofReal_le_ofReal
     ((Real.tsum_le_of_sum_range_le hterm hpartial).trans_eq (integral_hilbertKernel hk hα0 hα1))
 
-/-- Lebesgue integral of `y ^ r` over `(0, M]` for `r > -1`. -/
-lemma lintegral_Ioc_rpow {r M : ℝ} (hr : -1 < r) (hM : 0 < M) :
-    ∫⁻ y in Ioc (0 : ℝ) M, ENNReal.ofReal (y ^ r) =
-      ENNReal.ofReal (M ^ (r + 1) / (r + 1)) := by
-  have hint : IntegrableOn (fun y : ℝ => y ^ r) (Ioc 0 M) :=
-    (intervalIntegrable_iff_integrableOn_Ioc_of_le hM.le).mp
-      (intervalIntegral.intervalIntegrable_rpow' hr)
-  rw [← ofReal_integral_eq_lintegral_ofReal hint
-      (ae_restrict_of_forall_mem measurableSet_Ioc fun y hy => Real.rpow_nonneg hy.1.le r),
-    ← intervalIntegral.integral_of_le hM.le, integral_rpow (Or.inl hr),
-    Real.zero_rpow (by linarith), sub_zero]
-
-/-- Lebesgue integral of `y ^ r` over `(M, ∞)` for `r < -1`. -/
-lemma lintegral_Ioi_rpow {r M : ℝ} (hr : r < -1) (hM : 0 < M) :
-    ∫⁻ y in Ioi M, ENNReal.ofReal (y ^ r) = ENNReal.ofReal (-M ^ (r + 1) / (r + 1)) := by
-  rw [← ofReal_integral_eq_lintegral_ofReal (integrableOn_Ioi_rpow_of_lt hr hM)
-      (ae_restrict_of_forall_mem measurableSet_Ioi fun y hy =>
-        Real.rpow_nonneg (hM.trans hy).le r),
-    integral_Ioi_rpow_of_lt hr hM]
-
 /-- Near the origin the kernel is at most `x ^ (a - 1) y ^ (-a)`. -/
 private lemma hilbertKernel_le_left {a x y : ℝ} (hx : 0 < x) (hy : 0 < y) :
     hilbertKernel x a y ≤ x ^ (a - 1) * y ^ (-a) := by
-  rw [hilbertKernel_eq hx hy, Real.div_rpow hx.le hy.le, Real.rpow_sub_one hx.ne',
+  rw [hilbertKernel_of_pos hy, Real.div_rpow hx.le hy.le, Real.rpow_sub_one hx.ne',
     Real.rpow_neg hy.le]
   have h : x ^ a / y ^ a / (x + y) ≤ x ^ a / y ^ a / x :=
     div_le_div_of_nonneg_left (by positivity) hx (by linarith)
@@ -486,7 +444,7 @@ private lemma hilbertKernel_le_left {a x y : ℝ} (hx : 0 < x) (hy : 0 < y) :
 /-- Away from the origin the kernel is at most `x ^ a y ^ (-a - 1)`. -/
 private lemma hilbertKernel_le_right {a x y : ℝ} (hx : 0 < x) (hy : 0 < y) :
     hilbertKernel x a y ≤ x ^ a * y ^ (-a - 1) := by
-  rw [hilbertKernel_eq hx hy, Real.div_rpow hx.le hy.le, Real.rpow_sub_one hy.ne',
+  rw [hilbertKernel_of_pos hy, Real.div_rpow hx.le hy.le, Real.rpow_sub_one hy.ne',
     Real.rpow_neg hy.le]
   have h : x ^ a / y ^ a / (x + y) ≤ x ^ a / y ^ a / y :=
     div_le_div_of_nonneg_left (by positivity) hy (by linarith)
@@ -515,7 +473,8 @@ lemma ofReal_pi_div_sin_le_lintegral_Ioo {a x M : ℝ} (ha0 : 0 < a) (ha1 : a < 
             exact ENNReal.ofReal_le_ofReal (hilbertKernel_le_left hx hy.1)
       _ = ENNReal.ofReal (x ^ (a - 1) / (1 - a)) := by
           rw [lintegral_const_mul' _ _ ENNReal.ofReal_ne_top,
-            lintegral_Ioc_rpow (by linarith) one_pos, Real.one_rpow,
+            ← setLIntegral_congr Ioo_ae_eq_Ioc,
+            TauCeti.lintegral_ofReal_rpow_Ioo (by linarith) zero_le_one, Real.one_rpow,
             ← ENNReal.ofReal_mul (by positivity), neg_add_eq_sub, mul_one_div]
   have hright : ∫⁻ y in Ici M, ENNReal.ofReal (hilbertKernel x a y) ≤
       ENNReal.ofReal (x ^ a * (M ^ (-a) / a)) := by
@@ -527,7 +486,8 @@ lemma ofReal_pi_div_sin_le_lintegral_Ioo {a x M : ℝ} (ha0 : 0 < a) (ha1 : a < 
             exact ENNReal.ofReal_le_ofReal (hilbertKernel_le_right hx (hM.trans hy))
       _ = ENNReal.ofReal (x ^ a * (M ^ (-a) / a)) := by
           rw [lintegral_const_mul' _ _ ENNReal.ofReal_ne_top,
-            lintegral_Ioi_rpow (by linarith) hM, ← ENNReal.ofReal_mul (by positivity),
+            TauCeti.lintegral_ofReal_rpow_Ioi_of_lt (by linarith) hM,
+            ← ENNReal.ofReal_mul (by positivity),
             show -a - 1 + 1 = -a by ring, neg_div_neg_eq]
   calc ∫⁻ y in Ioi (0 : ℝ), ENNReal.ofReal (hilbertKernel x a y)
       ≤ ∫⁻ y in Ioo 1 M ∪ (Ioc 0 1 ∪ Ici M), ENNReal.ofReal (hilbertKernel x a y) :=
@@ -538,7 +498,7 @@ lemma ofReal_pi_div_sin_le_lintegral_Ioo {a x M : ℝ} (ha0 : 0 < a) (ha1 : a < 
 /-- The test integrand factors as `x⁻¹` times the kernel with exponent `a`. -/
 lemma rpow_mul_rpow_div_eq {a x y : ℝ} (hx : 0 < x) (hy : 0 < y) :
     x ^ (a - 1) * y ^ (-a) / (x + y) = x⁻¹ * hilbertKernel x a y := by
-  rw [hilbertKernel_eq hx hy, Real.div_rpow hx.le hy.le, Real.rpow_sub_one hx.ne',
+  rw [hilbertKernel_of_pos hy, Real.div_rpow hx.le hy.le, Real.rpow_sub_one hx.ne',
     Real.rpow_neg hy.le]
   ring
 
@@ -557,75 +517,5 @@ lemma ofReal_inv_mul_tail {a x c : ℝ} (hx : 0 < x) :
   have hinv : 0 ≤ x⁻¹ := inv_nonneg.mpr hx.le
   rw [mul_add, ← ENNReal.ofReal_mul hinv, ← ENNReal.ofReal_mul hinv, h1, h2,
     ENNReal.ofReal_mul (by positivity), ENNReal.ofReal_mul (by positivity)]
-
-/-- Numerical form of the optimality argument: an affine bound `k L ≤ c L + d` along
-unbounded finite `L` forces `k ≤ c`. -/
-lemma le_of_forall_nat_le_mul_le {k c d : ℝ≥0∞} (hd : d ≠ ⊤)
-    (h : ∀ n : ℕ, ∃ L : ℝ≥0∞, (n : ℝ≥0∞) ≤ L ∧ L ≠ ⊤ ∧ k * L ≤ c * L + d) : k ≤ c := by
-  by_contra hlt
-  rw [not_le] at hlt
-  obtain ⟨n, hn⟩ := ENNReal.exists_nat_mul_gt (tsub_pos_of_lt hlt).ne' hd
-  obtain ⟨L, hnL, hLt, hkL⟩ := h n
-  have hsub : (k - c) * L ≤ d := by
-    rw [ENNReal.sub_mul fun _ _ => hLt]
-    exact tsub_le_iff_right.mpr (by rwa [add_comm])
-  exact (hn.trans_le ((mul_le_mul_left hnL _).trans_eq (mul_comm _ _))).not_ge hsub
-
-/-- `∫_1^N dx / x = log N`. -/
-lemma lintegral_Ioo_inv {N : ℝ} (hN : 1 < N) :
-    ∫⁻ x in Ioo 1 N, ENNReal.ofReal x⁻¹ = ENNReal.ofReal (Real.log N) := by
-  have hsub : Icc (1 : ℝ) N ⊆ {0}ᶜ := fun x hx => (zero_lt_one.trans_le hx.1).ne'
-  have hint : IntegrableOn (fun x : ℝ => x⁻¹) (Ioc 1 N) :=
-    ((continuousOn_inv₀.mono hsub).integrableOn_Icc).mono_set Ioc_subset_Icc_self
-  rw [setLIntegral_congr Ioo_ae_eq_Ioc, ← ofReal_integral_eq_lintegral_ofReal hint
-      (ae_restrict_of_forall_mem measurableSet_Ioc fun x hx =>
-        (inv_pos.mpr (zero_lt_one.trans hx.1)).le),
-    ← intervalIntegral.integral_of_le hN.le, integral_inv_of_pos one_pos (one_pos.trans hN),
-    div_one]
-
-/-- An antitone function on `(0, ∞)` has integral over `(1, N + 1)` at most the sum of its
-values at `1, …, N`. -/
-lemma lintegral_Ioo_le_sum_of_antitoneOn {φ : ℝ → ℝ≥0∞} (hφ : AntitoneOn φ (Ioi 0))
-    (N : ℕ) : ∫⁻ y in Ioo 1 ((N : ℝ) + 1), φ y ≤ ∑ n ∈ Finset.range N, φ ((n : ℝ) + 1) := by
-  induction N with
-  | zero => simp
-  | succ N ih =>
-    have hN : (0 : ℝ) ≤ N := N.cast_nonneg
-    have hcover : Ioo 1 (((N + 1 : ℕ) : ℝ) + 1) ⊆
-        Ioo 1 ((N : ℝ) + 1) ∪ Ico ((N : ℝ) + 1) ((N : ℝ) + 1 + 1) := by
-      intro y hy
-      push_cast at hy
-      by_cases h : y < (N : ℝ) + 1
-      · exact Or.inl ⟨hy.1, h⟩
-      · exact Or.inr ⟨le_of_not_gt h, hy.2⟩
-    have hlast : ∫⁻ y in Ico ((N : ℝ) + 1) ((N : ℝ) + 1 + 1), φ y ≤ φ ((N : ℝ) + 1) := by
-      calc ∫⁻ y in Ico ((N : ℝ) + 1) ((N : ℝ) + 1 + 1), φ y
-          ≤ ∫⁻ _ in Ico ((N : ℝ) + 1) ((N : ℝ) + 1 + 1), φ ((N : ℝ) + 1) :=
-            setLIntegral_mono' measurableSet_Ico fun y hy =>
-              hφ (show (0 : ℝ) < N + 1 by positivity)
-                (show (0 : ℝ) < y by linarith [hy.1]) hy.1
-        _ = φ ((N : ℝ) + 1) := by simp [Real.volume_Ico]
-    rw [Finset.sum_range_succ]
-    exact (lintegral_mono_set hcover).trans
-      ((lintegral_union_le _ _ _).trans (add_le_add ih hlast))
-
-/-- The values of an antitone function on `(0, ∞)` at `1, …, N` sum to at most its integral
-over `(0, N]`. -/
-lemma sum_le_lintegral_Ioc_of_antitoneOn {ψ : ℝ → ℝ≥0∞} (hψ : AntitoneOn ψ (Ioi 0))
-    (N : ℕ) : ∑ m ∈ Finset.range N, ψ ((m : ℝ) + 1) ≤ ∫⁻ x in Ioc 0 (N : ℝ), ψ x := by
-  induction N with
-  | zero => simp
-  | succ N ih =>
-    have hN : (0 : ℝ) ≤ N := N.cast_nonneg
-    have hlast : ψ ((N : ℝ) + 1) ≤ ∫⁻ x in Ioc (N : ℝ) ((N : ℝ) + 1), ψ x := by
-      calc ψ ((N : ℝ) + 1) = ∫⁻ _ in Ioc (N : ℝ) ((N : ℝ) + 1), ψ ((N : ℝ) + 1) := by
-            simp [Real.volume_Ioc]
-        _ ≤ _ := setLIntegral_mono' measurableSet_Ioc fun x hx =>
-            hψ (show (0 : ℝ) < x from lt_of_le_of_lt hN hx.1)
-              (show (0 : ℝ) < N + 1 by positivity) hx.2
-    rw [Finset.sum_range_succ, Nat.cast_succ,
-      ← Ioc_union_Ioc_eq_Ioc hN (by linarith : (N : ℝ) ≤ N + 1),
-      lintegral_union measurableSet_Ioc (Ioc_disjoint_Ioc_of_le le_rfl)]
-    exact add_le_add ih hlast
 
 end CKMA.Hilbert

@@ -27,21 +27,22 @@ which includes a uniform L1 bound. Sources: GAPS 15.28, 15.29, 15.33, and 17.23.
 
 ## Main results
 
-* `CKMA.eberlein_smulian`: weak relative compactness is equivalent to weak sequential relative
-  compactness (**15.28**).
+* `CKMA.isRelativelyWeaklyCompact_iff_forall_exists_weaklyConverges` (Eberlein–Šmulian): weak
+  relative compactness is equivalent to weak sequential relative compactness (**15.28**).
 * `CKMA.isCompact_toWeakSpace_image_of_forall_exists_max`: sufficiency, over `ℝ`, of James's
   weak compactness criterion (**15.29**).
 * `CKMA.uniformConvexSpace_lp`: uniform convexity of `Lp 𝕜 p μ` for `1 < p < ∞` (**15.33**).
-* `CKMA.dunford_pettis`: Dunford–Pettis characterization of relative weak compactness in `L¹`
-  (**17.23**).
+* `CKMA.isRelativelyWeaklyCompact_iff_uniformIntegrable` (Dunford–Pettis): characterization of
+  relative weak compactness in `L¹` (**17.23**).
 
 ## Implementation notes
 
-Eberlein–Šmulian, Dunford–Pettis and the uniform convexity of `Lp` are derived from the pinned
-TauCeti results `TauCeti.isCompact_closure_toWeakSpace_iff`,
+Eberlein–Šmulian, Dunford–Pettis and the uniform convexity of `Lp` are catalogue entries: they
+restate the TauCeti results `TauCeti.isCompact_closure_toWeakSpace_iff`,
 `MeasureTheory.Lp.isCompact_closure_toWeakSpace_iff_uniformIntegrable` and
-`MeasureTheory.Lp.uniformConvexSpace`. The sufficiency direction of James's theorem over `ℝ`
-is not available upstream.
+`MeasureTheory.Lp.uniformConvexSpace` in terms of the predicates of
+`CKMA.Analysis.FunctionalAnalysis.Basic`, and add no mathematics. The sufficiency direction of
+James's theorem over `ℝ` is not available upstream.
 -/
 
 public section
@@ -58,7 +59,7 @@ variable {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜
 /-- **15.28**, Eberlein–Šmulian: weak relative compactness is weak sequential relative compactness.
 The subsequence limit is in the ambient normed space, not necessarily in `s`; completeness is not
 needed. -/
-theorem eberlein_smulian (s : Set E) :
+theorem isRelativelyWeaklyCompact_iff_forall_exists_weaklyConverges (s : Set E) :
     IsRelativelyWeaklyCompact 𝕜 s ↔
       ∀ u : ℕ → E, (∀ n, u n ∈ s) →
         ∃ r : ℕ → ℕ, StrictMono r ∧ ∃ x : E, WeaklyConverges 𝕜 (u ∘ r) x := by
@@ -77,8 +78,8 @@ theorem isCompact_toWeakSpace_image_of_forall_exists_max [NormedSpace ℝ E]
     IsCompact (toWeakSpace ℝ E '' s) := by
   sorry
 
-/-- **15.33**: scalar Lp is uniformly convex for every exponent strictly between one and infinity.
-The Hilbert exponent is included in the interface rather than unnecessarily excluded. -/
+/-- **15.33**: scalar Lp is uniformly convex for every exponent strictly between one and infinity,
+the Hilbert exponent `p = 2` included. -/
 theorem uniformConvexSpace_lp {X : Type*} [MeasurableSpace X] (μ : Measure X)
     {p : ℝ≥0∞} [Fact (1 ≤ p)] (hp : 1 < p) (hp_top : p < ∞) :
     UniformConvexSpace (Lp 𝕜 p μ) :=
@@ -86,7 +87,8 @@ theorem uniformConvexSpace_lp {X : Type*} [MeasurableSpace X] (μ : Measure X)
 
 /-- **17.23**, Dunford–Pettis: relative weak compactness of an L1 family on a finite measure
 space is precisely uniform integrability, including the uniform L1 bound in Mathlib's predicate. -/
-theorem dunford_pettis {X : Type*} [MeasurableSpace X] (μ : Measure X) [IsFiniteMeasure μ]
+theorem isRelativelyWeaklyCompact_iff_uniformIntegrable {X : Type*} [MeasurableSpace X]
+    (μ : Measure X) [IsFiniteMeasure μ]
     (s : Set (Lp 𝕜 1 μ)) :
     IsRelativelyWeaklyCompact 𝕜 s ↔
       UniformIntegrable (fun f : s ↦ (f.1 : X → 𝕜)) 1 μ :=

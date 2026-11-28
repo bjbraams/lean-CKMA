@@ -22,8 +22,8 @@ import Mathlib.Topology.MetricSpace.Bounded
 
 A smooth cutoff times `logLog` of the regularized radius `√(‖x - c‖² + t)`. The product rule
 gives an algebraic derivative, with a gradient bound that remains integrable down to `t = 0`.
-Cross-file rewriting uses the defining equations `logLogFDeriv_apply`, `cutoffProfile_apply`
-and `cutoffProfileFDeriv_apply`.
+Cross-file rewriting uses the defining equations `regNorm_def`, `logLogFDeriv_apply`,
+`cutoffProfile_apply` and `cutoffProfileFDeriv_apply`.
 
 ## Main definitions
 
@@ -56,6 +56,10 @@ variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
 @[expose]
 def regNorm (t : ℝ) (c x : E) : ℝ :=
   Real.sqrt (‖x - c‖ ^ 2 + t)
+
+omit [InnerProductSpace ℝ E] in
+/-- Defining equation of `regNorm`. -/
+lemma regNorm_def (t : ℝ) (c x : E) : regNorm t c x = Real.sqrt (‖x - c‖ ^ 2 + t) := rfl
 
 /-- Candidate derivative of `logLog ∘ regNorm`. -/
 @[expose]
@@ -259,7 +263,7 @@ lemma norm_logLogFDeriv {t : ℝ} {c x : E} (hs : 0 < regNorm t c x)
     (regNorm t c x ^ 2 * Real.log (Real.exp 1 / regNorm t c x))).symm
 
 /-- Crude gradient bound `‖D(cutoff)‖ ≤ K / ‖x - c‖`, valid down to `t = 0`. -/
-lemma norm_cutoffProfileFDeriv_le [FiniteDimensional ℝ E] {c : E} (η : ContDiffBump c)
+lemma norm_cutoffProfileFDeriv_le {c : E} (η : ContDiffBump c)
     {M t : ℝ} (hM : ∀ x, ‖fderiv ℝ (η : E → ℝ) x‖ ≤ M) (hM0 : 0 ≤ M) (ht0 : 0 ≤ t)
     (ht1 : t ≤ 1 / 4) (hOut : η.rOut ≤ 1 / 2) (x : E) :
     ‖cutoffProfileFDeriv η t x‖ ≤

@@ -16,6 +16,13 @@ They turn the Fourier form of the Gagliardo energy into a two-sided comparison w
 Bessel potential. No minimization of a continuous function is required: the inequalities are
 read off by splitting `r ≤ 1` and `r ≥ 1`, or by adding the two trivial lower bounds `1` and
 `r ^ (2 * s)`.
+
+## Main results
+
+* `CKMA.one_add_sq_rpow_le_two_rpow_mul`, `CKMA.half_mul_one_add_rpow_le`: the two-sided
+  comparison `(1 + r ^ (2 * s)) / 2 ≤ (1 + r ^ 2) ^ s ≤ 2 ^ s (1 + r ^ (2 * s))`.
+* `CKMA.ofReal_bessel_weight_bounds`: the same comparison multiplied by `n ≥ 0`, in `ℝ≥0∞`.
+* `CKMA.le_and_le_of_weight_bounds`: a two-sided bound for `N + A` passes to `N + K A`.
 -/
 
 public section
@@ -109,7 +116,7 @@ theorem ofReal_bessel_weight_bounds {s r n : ℝ} (hs : 0 ≤ s) (hr : 0 ≤ r) 
           rw [ENNReal.ofReal_add hn hprod]
 
 /-- Pass from a squeeze of `N + A` to a squeeze of `N + K • A`, with positive finite constants. -/
-theorem ennreal_weighted_comparable {K s : ℝ} (hK : 0 < K) {N A B : ENNReal}
+theorem le_and_le_of_weight_bounds {K s : ℝ} (hK : 0 < K) {N A B : ENNReal}
     (hlo : ENNReal.ofReal (1 / 2) * (N + A) ≤ B)
     (hhi : B ≤ ENNReal.ofReal (2 ^ s) * (N + A)) :
     ENNReal.ofReal (1 / (2 * max K 1)) * (N + ENNReal.ofReal K * A) ≤ B ∧

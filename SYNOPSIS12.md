@@ -117,9 +117,10 @@ the **support function** is $h_C(u)=\sup_{x\in C}\langle u,x\rangle$.
   $\nabla f$ is a bijection from $\mathop{\mathrm{int}}\mathop{\mathrm{dom}}f$
   onto $\mathop{\mathrm{int}}\mathop{\mathrm{dom}}f^*$ with inverse $\nabla f^*$,
   and $f^*$ is again of Legendre type.
-* **21. Subdifferential sum rule.** For proper lower semicontinuous convex
-  functions on a Banach space, if one is continuous at a point of their common
-  domain, then $\partial(f+g)(x)=\partial f(x)+\partial g(x)$.
+* **21. Subdifferential sum rule.** For proper convex functions on a normed
+  space (neither lower semicontinuity nor completeness is needed), if one is
+  continuous at a point of their common domain, then
+  $\partial(f+g)(x)=\partial f(x)+\partial g(x)$.
   In finite dimensions, intersecting relative interiors is a standard
   alternative qualification.
 * **22. Linear chain rule.** For bounded linear $A:E\to F$, if $g$ is proper
@@ -203,8 +204,9 @@ nonexpansive maps are SYNOPSIS35, items 32, 38, and 33.
 
 ## Duality and optimality conditions
 
-* **39. Fenchel–Rockafellar duality.** For proper closed convex $f,g$ on
-  Banach spaces and bounded linear $A$, assume $f(x_0)<\infty$ and $g$ is
+* **39. Fenchel–Rockafellar duality.** For proper convex $f,g$ on normed
+  spaces and bounded linear $A$ (closedness and completeness are not
+  needed), assume $f(x_0)<\infty$ and $g$ is
   continuous at $Ax_0$. If the primal value is finite, then
   $$\inf_x\{f(x)+g(Ax)\}
     =\max_u\{-f^*(-A^*u)-g^*(u)\}.$$

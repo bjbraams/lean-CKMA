@@ -25,6 +25,10 @@ theorem is `CKMA.young_variation` in `CKMA.Analysis.RoughPath.Sewing`.
   `sewingConstant (p⁻¹ + q⁻¹)`.
 * `CKMA.YoungLoeve.YoungData.exists_partition_close`: partition sums of small mesh approach
   the Young limit.
+
+## References
+
+* [P. K. Friz and M. Hairer, *A Course on Rough Paths*][frizhairer2020]
 -/
 
 public section
@@ -47,36 +51,36 @@ variable {D : YoungData E F}
 omit [CompleteSpace F] in
 /-- The Young control vanishes on a degenerate interval `[s, s]`. -/
 private lemma youngCtrl_same (s : ℝ) : youngCtrl D.p D.q D.X D.Y s s = 0 := by
-  rw [youngCtrl, variationReal_point (lt_of_lt_of_le zero_lt_one D.hp)
+  rw [youngCtrl, variationReal_point (lt_of_lt_of_le zero_lt_one D.one_le_p)
       D.X s,
-    variationReal_point (lt_of_lt_of_le zero_lt_one D.hq) D.Y s,
-    Real.zero_rpow (youngAlpha_pos D.hp D.hpq).ne',
-    Real.zero_rpow (youngBeta_pos D.hq D.hpq).ne', zero_mul]
+    variationReal_point (lt_of_lt_of_le zero_lt_one D.one_le_q) D.Y s,
+    Real.zero_rpow (youngAlpha_pos D.one_le_p D.one_lt_inv_add_inv).ne',
+    Real.zero_rpow (youngBeta_pos D.one_le_q D.one_lt_inv_add_inv).ne', zero_mul]
 
 omit [CompleteSpace F] in
 /-- The Young control is continuous in its right endpoint on `[s, b]`. -/
 private lemma continuousOn_ctrl_right {s : ℝ} (hs : D.a ≤ s) :
     ContinuousOn (fun r => youngCtrl D.p D.q D.X D.Y s r) (Set.Icc s D.b) := by
   have hXs : ContinuousOn D.X (Set.Icc s D.b) :=
-    D.hX.mono (Set.Icc_subset_Icc hs le_rfl)
+    D.continuousOn_X.mono (Set.Icc_subset_Icc hs le_rfl)
   have hYs : ContinuousOn D.Y (Set.Icc s D.b) :=
-    D.hY.mono (Set.Icc_subset_Icc hs le_rfl)
+    D.continuousOn_Y.mono (Set.Icc_subset_Icc hs le_rfl)
   have hfinX : pathVariationPower D.p D.X s D.b ≠ ∞ :=
-    ne_top_of_le_ne_top D.hVp (pathVariationPower_mono hs le_rfl D.p D.X)
+    ne_top_of_le_ne_top D.pathVariationPower_X_ne_top (pathVariationPower_mono hs le_rfl D.p D.X)
   have hfinY : pathVariationPower D.q D.Y s D.b ≠ ∞ :=
-    ne_top_of_le_ne_top D.hVq
+    ne_top_of_le_ne_top D.pathVariationPower_Y_ne_top
       (pathVariationPower_mono hs le_rfl D.q D.Y)
-  have hvX := (continuousOn_variationReal D.hp D.X hXs hfinX).rpow_const
-    (fun _ _ => Or.inr (youngAlpha_pos D.hp D.hpq).le)
-  have hvY := (continuousOn_variationReal D.hq D.Y hYs hfinY).rpow_const
-    (fun _ _ => Or.inr (youngBeta_pos D.hq D.hpq).le)
+  have hvX := (continuousOn_variationReal D.one_le_p D.X hXs hfinX).rpow_const
+    (fun _ _ => Or.inr (youngAlpha_pos D.one_le_p D.one_lt_inv_add_inv).le)
+  have hvY := (continuousOn_variationReal D.one_le_q D.Y hYs hfinY).rpow_const
+    (fun _ _ => Or.inr (youngBeta_pos D.one_le_q D.one_lt_inv_add_inv).le)
   refine (hvX.mul hvY).congr fun r _ => ?_
   simp [youngCtrl, Pi.mul_apply]
 
 /-- Fixed-point relation for the geometric sewing constant. -/
 private lemma sewingConstant_shift {θ : ℝ} (hθ : 1 < θ) :
     sewingConstant θ * (2 : ℝ) ^ (1 - θ) + 1 = sewingConstant θ := by
-  have hr := Sewing.sewingRatio_mem hθ
+  have hr := sewingRatio_mem hθ
   have hne : (1 : ℝ) - (2 : ℝ) ^ (1 - θ) ≠ 0 := (sub_ne_zero.mpr (ne_of_lt hr.2).symm)
   rw [sewingConstant]
   field_simp [hne]
@@ -92,16 +96,16 @@ private lemma norm_defect_iterate {s t : ℝ} (hs : D.a ≤ s) (hst : s ≤ t) (
   | zero =>
     have hloose := norm_youngLimit_sub hs hst ht
     have hκ : 0 ≤ sewingConstant (youngTheta D.p D.q) :=
-      (Sewing.sewingConstant_pos (by simpa [youngTheta] using D.hpq)).le
+      (sewingConstant_pos (by simpa [youngTheta] using D.one_lt_inv_add_inv)).le
     rw [pow_zero, one_mul]
     exact hloose.trans (le_add_of_nonneg_left
       (mul_nonneg hκ (youngModulus_nonneg D.X D.Y s t)))
   | succ n ih =>
     rcases eq_or_lt_of_le (youngCtrl_nonneg D.X D.Y s t) with hzero | hpos
     · have hmod0 : youngModulus D.p D.q D.X D.Y s t = 0 := by
-        rw [youngModulus_eq_ctrl_pow D.hp D.hq D.hpq
+        rw [youngModulus_eq_ctrl_pow D.one_le_p D.one_le_q D.one_lt_inv_add_inv
             D.X D.Y s t, hzero.symm,
-          Real.zero_rpow (youngTheta_pos D.hpq).ne']
+          Real.zero_rpow (youngTheta_pos D.one_lt_inv_add_inv).ne']
       have hloose := norm_youngLimit_sub hs hst ht
       rw [hmod0, mul_zero] at hloose
       simpa [hmod0, mul_zero, add_zero] using hloose
@@ -117,22 +121,22 @@ private lemma norm_defect_iterate {s t : ℝ} (hs : D.a ≤ s) (hst : s ≤ t) (
       have hsm : youngCtrl D.p D.q D.X D.Y s m =
           youngCtrl D.p D.q D.X D.Y s t / 2 := hfm
       have hfinX : pathVariationPower D.p D.X s t ≠ ∞ :=
-        ne_top_of_le_ne_top D.hVp
+        ne_top_of_le_ne_top D.pathVariationPower_X_ne_top
           (pathVariationPower_mono hs ht D.p D.X)
       have hfinY : pathVariationPower D.q D.Y s t ≠ ∞ :=
-        ne_top_of_le_ne_top D.hVq
+        ne_top_of_le_ne_top D.pathVariationPower_Y_ne_top
           (pathVariationPower_mono hs ht D.q D.Y)
-      have hsuper := youngCtrl_superadd hm.1 hm.2 D.hp D.hq
-        D.hpq D.X D.Y hfinX hfinY
+      have hsuper := youngCtrl_superadd hm.1 hm.2 D.one_le_p D.one_le_q
+        D.one_lt_inv_add_inv D.X D.Y hfinX hfinY
       have hright : youngCtrl D.p D.q D.X D.Y m t ≤
           youngCtrl D.p D.q D.X D.Y s t / 2 := by
         rw [hsm] at hsuper
         linarith
       have hρL : youngModulus D.p D.q D.X D.Y s m =
           (2 : ℝ) ^ (-youngTheta D.p D.q) * youngModulus D.p D.q D.X D.Y s t := by
-        rw [youngModulus_eq_ctrl_pow D.hp D.hq D.hpq
+        rw [youngModulus_eq_ctrl_pow D.one_le_p D.one_le_q D.one_lt_inv_add_inv
             D.X D.Y s m, hsm,
-          youngModulus_eq_ctrl_pow D.hp D.hq D.hpq
+          youngModulus_eq_ctrl_pow D.one_le_p D.one_le_q D.one_lt_inv_add_inv
             D.X D.Y s t,
           Real.div_rpow (youngCtrl_nonneg D.X D.Y s t)
             (by norm_num : (0 : ℝ) ≤ 2),
@@ -140,12 +144,12 @@ private lemma norm_defect_iterate {s t : ℝ} (hs : D.a ≤ s) (hst : s ≤ t) (
         exact mul_comm _ _
       have hρR : youngModulus D.p D.q D.X D.Y m t ≤
           (2 : ℝ) ^ (-youngTheta D.p D.q) * youngModulus D.p D.q D.X D.Y s t := by
-        rw [youngModulus_eq_ctrl_pow D.hp D.hq D.hpq
+        rw [youngModulus_eq_ctrl_pow D.one_le_p D.one_le_q D.one_lt_inv_add_inv
             D.X D.Y m t,
-          youngModulus_eq_ctrl_pow D.hp D.hq D.hpq
+          youngModulus_eq_ctrl_pow D.one_le_p D.one_le_q D.one_lt_inv_add_inv
             D.X D.Y s t]
         have hle := Real.rpow_le_rpow (youngCtrl_nonneg D.X D.Y m t) hright
-          (youngTheta_pos D.hpq).le
+          (youngTheta_pos D.one_lt_inv_add_inv).le
         rw [Real.div_rpow (youngCtrl_nonneg D.X D.Y s t)
             (by norm_num : (0 : ℝ) ≤ 2),
           div_eq_mul_inv, ← Real.rpow_neg (by norm_num : (0 : ℝ) ≤ 2),
@@ -164,7 +168,7 @@ private lemma norm_defect_iterate {s t : ℝ} (hs : D.a ≤ s) (hst : s ≤ t) (
               youngIncrement D.X D.Y s t) := by
         rw [hadd]
         abel
-      have hδ := norm_young_defect hm.1 hm.2 D.hp D.hq
+      have hδ := norm_young_defect hm.1 hm.2 D.one_le_p D.one_le_q
         D.X D.Y hfinX hfinY
       have ihL := ih hs hm.1 (hm.2.trans ht)
       have ihR := ih (hs.trans hm.1) hm.2 ht
@@ -181,7 +185,7 @@ private lemma norm_defect_iterate {s t : ℝ} (hs : D.a ≤ s) (hst : s ≤ t) (
       have hr0 : 0 ≤ r := Real.rpow_nonneg (by norm_num) _
       have hΛ0 : 0 ≤ Λ := youngLoose_nonneg _
       have hκ0 : 0 ≤ κ :=
-        (Sewing.sewingConstant_pos (by simpa [youngTheta] using D.hpq)).le
+        (sewingConstant_pos (by simpa [youngTheta] using D.one_lt_inv_add_inv)).le
       have hcoef : 0 ≤ κ + r ^ n * Λ :=
         add_nonneg hκ0 (mul_nonneg (pow_nonneg hr0 n) hΛ0)
       have hmul := mul_le_mul_of_nonneg_left hsumρ hcoef
@@ -208,7 +212,7 @@ private lemma norm_defect_iterate {s t : ℝ} (hs : D.a ≤ s) (hst : s ≤ t) (
                 youngModulus D.p D.q D.X D.Y m t) + ρ := by
             ring
           _ ≤ (κ + r ^ n * Λ) * (r * ρ) + ρ := add_le_add hmul le_rfl
-      have hsew := sewingConstant_shift (by simpa [youngTheta] using D.hpq)
+      have hsew := sewingConstant_shift (by simpa [youngTheta] using D.one_lt_inv_add_inv)
       have hrκ : κ * r + 1 = κ := by simpa [κ, r, youngTheta] using hsew
       calc
         ‖D.youngLimit s t - youngIncrement D.X D.Y s t‖ ≤
@@ -222,7 +226,7 @@ lemma norm_youngLimit_sharp {s t : ℝ} (hs : D.a ≤ s) (hst : s ≤ t) (ht : t
     ‖D.youngLimit s t - youngIncrement D.X D.Y s t‖ ≤
       sewingConstant (D.p⁻¹ + D.q⁻¹) * (pathVariationPower D.p D.X s t).toReal ^ D.p⁻¹ *
         (pathVariationPower D.q D.Y s t).toReal ^ D.q⁻¹ := by
-  have hr := Sewing.sewingRatio_mem (by simpa [youngTheta] using D.hpq)
+  have hr := sewingRatio_mem (by simpa [youngTheta] using D.one_lt_inv_add_inv)
   have hpow := tendsto_pow_atTop_nhds_zero_of_lt_one hr.1 hr.2
   set ρ : ℝ := youngModulus D.p D.q D.X D.Y s t
   set κ : ℝ := sewingConstant (youngTheta D.p D.q)
@@ -304,11 +308,11 @@ lemma exists_partition_close {s t : ℝ} (hs : D.a ≤ s) (ht : t ≤ D.b) (ε :
     (hε : 0 < ε) :
     ∃ δ : ℝ, 0 < δ ∧ ∀ π : OrderedIntervalPartition s t, (π.mesh : ℝ) < δ →
       ‖π.incrementSum (youngIncrement D.X D.Y) - D.youngLimit s t‖ < ε := by
-  have hθ : 1 < youngTheta D.p D.q := by simpa [youngTheta] using D.hpq
+  have hθ : 1 < youngTheta D.p D.q := by simpa [youngTheta] using D.one_lt_inv_add_inv
   have hθ1 : 0 < youngTheta D.p D.q - 1 := sub_pos.mpr hθ
   set κ : ℝ := sewingConstant (youngTheta D.p D.q)
   set Ω : ℝ := youngCtrl D.p D.q D.X D.Y s t
-  have hκ : 0 ≤ κ := (Sewing.sewingConstant_pos hθ).le
+  have hκ : 0 ≤ κ := (sewingConstant_pos hθ).le
   have hΩ : 0 ≤ Ω := youngCtrl_nonneg D.X D.Y s t
   set C : ℝ := κ * Ω
   set τ : ℝ := ε / (2 * (C + 1))
@@ -326,9 +330,9 @@ lemma exists_partition_close {s t : ℝ} (hs : D.a ≤ s) (ht : t ≤ D.b) (ε :
     have hclear : ε / 2 * (2 * (C + 1)) = ε * (C + 1) := by ring
     rw [hclear]
     linarith [hε]
-  obtain ⟨δ, hδ, hδc⟩ := exists_ctrl_short D.hp D.hq
-    D.hpq D.X D.Y D.hX
-    D.hY D.hVp D.hVq η hη
+  obtain ⟨δ, hδ, hδc⟩ := exists_ctrl_short D.one_le_p D.one_le_q
+    D.one_lt_inv_add_inv D.X D.Y D.continuousOn_X
+    D.continuousOn_Y D.pathVariationPower_X_ne_top D.pathVariationPower_Y_ne_top η hη
   refine ⟨δ, hδ, fun π hmesh => ?_⟩
   rw [youngLimit_nodes hs ht π, OrderedIntervalPartition.incrementSum, ← sum_sub_distrib]
   refine lt_of_le_of_lt ((norm_sum_le _ _).trans ?_) (by linarith : ε / 2 < ε)

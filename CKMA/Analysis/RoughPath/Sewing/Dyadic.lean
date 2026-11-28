@@ -5,20 +5,19 @@ Authors: CKMA contributors
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Pow.Real
+public import CKMA.Analysis.RoughPath.Sewing.Basic
 import Mathlib.Analysis.Normed.Group.FunctionSeries
 
 /-!
 # Dyadic sewing limit and midpoint additivity
 
-Ordered partitions, the sewing constant, and the dyadic primitive used to prove the
-sewing lemma. Increments may repeat nodes. The sewn primitive is midpoint-additive and
-continuous on the sewing triangle.
+The dyadic primitive used to prove the sewing lemma: the limit of the increment sums of `A`
+along the dyadic partitions of `[s, t]`. The sewn primitive is midpoint-additive and continuous
+on the sewing triangle. The dyadic nodes are the uniform nodes `CKMA.Sewing.equalNode` of the
+`2 ^ n`-partition.
 
 ## Main definitions
 
-* `CKMA.OrderedIntervalPartition`: ordered finite partition of `[a, b]`.
-* `CKMA.sewingConstant`: geometric sewing constant `(1 - 2 ^ (1 - γ))⁻¹`.
 * `CKMA.Sewing.dyadicNode`, `CKMA.Sewing.dyadicIncrement`, `CKMA.Sewing.sewnIncrement`:
   dyadic partition nodes, dyadic increment sums, and the dyadic sewing limit.
 
@@ -27,6 +26,10 @@ continuous on the sewing triangle.
 * `CKMA.Sewing.tendsto_dyadicIncrement`: dyadic increment sums converge to `sewnIncrement`.
 * `CKMA.Sewing.norm_sewnIncrement_sub`: remainder bound for `sewnIncrement`.
 * `CKMA.Sewing.continuousOn_sewnIncrement`: `sewnIncrement` is continuous on `sewingTriangle a b`.
+
+## References
+
+* [P. K. Friz and M. Hairer, *A Course on Rough Paths*][frizhairer2020]
 -/
 
 public section
@@ -37,77 +40,34 @@ namespace CKMA
 
 open scoped BigOperators NNReal ENNReal
 
-/-- An ordered finite partition, allowing repeated nodes and the degenerate interval. -/
-structure OrderedIntervalPartition (a b : ℝ) where
-  /-- Number of increments. -/
-  size : ℕ
-  /-- Nodes including both endpoints. -/
-  node : Fin (size + 1) → ℝ
-  /-- Nodes are ordered. -/
-  monotone_node : Monotone node
-  /-- Left endpoint. -/
-  node_zero : node 0 = a
-  /-- Right endpoint. -/
-  node_last : node (Fin.last size) = b
-
-/-- The maximal partition width. -/
-@[expose]
-def OrderedIntervalPartition.mesh {a b : ℝ} (π : OrderedIntervalPartition a b) : ℝ≥0 :=
-  Finset.univ.sup (fun i : Fin π.size ↦ (π.node i.succ - π.node i.castSucc).toNNReal)
-
-/-- The sum of two-parameter increments along a partition. -/
-@[expose]
-def OrderedIntervalPartition.incrementSum {a b : ℝ} {E : Type*} [AddCommMonoid E]
-    (π : OrderedIntervalPartition a b) (A : ℝ → ℝ → E) : E :=
-  ∑ i : Fin π.size, A (π.node i.castSucc) (π.node i.succ)
-
-/-- Convergence of all ordered partition sums as their mesh tends to zero. -/
-@[expose]
-def PartitionSumsConverge {E : Type*} [NormedAddCommGroup E]
-    (A : ℝ → ℝ → E) (a b : ℝ) (z : E) : Prop :=
-  ∀ ε : ℝ, 0 < ε → ∃ δ : ℝ, 0 < δ ∧ ∀ π : OrderedIntervalPartition a b,
-    (π.mesh : ℝ) < δ → ‖π.incrementSum A - z‖ < ε
-
-/-- Geometric sewing constant, finite and positive for exponents strictly greater than one. -/
-@[expose]
-def sewingConstant (γ : ℝ) : ℝ := (1 - (2 : ℝ) ^ (1 - γ))⁻¹
-
-/-- A continuous interval path is normalized at the left endpoint. -/
-@[expose]
-def IsLeftNormalized {E : Type*} [TopologicalSpace E] [Zero E] {a b : ℝ}
-    (I : C(Set.Icc a b, E)) : Prop := ∀ x : Set.Icc a b, x.val = a → I x = 0
-
-/-- A path's additive increments approximate a given increment field to order `γ`. -/
-@[expose]
-def HasSewingRemainder {E : Type*} [NormedAddCommGroup E] {a b : ℝ}
-    (A : ℝ → ℝ → E) (I : C(Set.Icc a b, E)) (γ C : ℝ) : Prop :=
-  ∀ s t : Set.Icc a b, s.val ≤ t.val →
-    ‖(I t - I s) - A s.val t.val‖ ≤ C * |t.val - s.val| ^ γ
-
-/-- The path's increments are limits of all partition sums on each subinterval. -/
-@[expose]
-def HasPartitionSumLimit {E : Type*} [NormedAddCommGroup E] {a b : ℝ}
-    (A : ℝ → ℝ → E) (I : C(Set.Icc a b, E)) : Prop :=
-  ∀ s t : Set.Icc a b, s.val ≤ t.val → PartitionSumsConverge A s.val t.val (I t - I s)
-
-/-- Closed triangle `a ≤ s ≤ t ≤ b` on which an increment field is sewn. -/
-@[expose]
-def sewingTriangle (a b : ℝ) : Set (ℝ × ℝ) :=
-  {p | a ≤ p.1 ∧ p.1 ≤ p.2 ∧ p.2 ≤ b}
-
 namespace Sewing
 
 open Finset Filter Topology
 
-/-- Level-`n` dyadic node `s + (t - s) · k / 2^n`. -/
+/-- Level-`n` dyadic node `s + (t - s) · k / 2^n`, the uniform node of the `2^n`-partition. -/
 @[expose]
 def dyadicNode (s t : ℝ) (n k : ℕ) : ℝ :=
-  s + (t - s) * ((k : ℝ) / (2 : ℝ) ^ n)
+  equalNode s t (2 ^ n) k
+
+/-- `dyadicNode` is the uniform node of the `2^n`-partition. -/
+lemma dyadicNode_eq_equalNode (s t : ℝ) (n k : ℕ) : dyadicNode s t n k = equalNode s t (2 ^ n) k :=
+  rfl
+
+/-- Explicit formula for `dyadicNode`. -/
+lemma dyadicNode_def (s t : ℝ) (n k : ℕ) :
+    dyadicNode s t n k = s + (t - s) * ((k : ℝ) / (2 : ℝ) ^ n) := by
+  rw [dyadicNode_eq_equalNode, equalNode_def, Nat.cast_pow, Nat.cast_ofNat]
 
 /-- Sum of increments of `A` on the level-`n` dyadic partition of `[s, t]`. -/
 @[expose]
 def dyadicIncrement {E : Type*} [AddCommMonoid E] (A : ℝ → ℝ → E) (s t : ℝ) (n : ℕ) : E :=
   ∑ k ∈ range (2 ^ n), A (dyadicNode s t n k) (dyadicNode s t n (k + 1))
+
+/-- Defining equation of `dyadicIncrement`. -/
+lemma dyadicIncrement_def {E : Type*} [AddCommMonoid E] (A : ℝ → ℝ → E) (s t : ℝ) (n : ℕ) :
+    dyadicIncrement A s t n =
+      ∑ k ∈ range (2 ^ n), A (dyadicNode s t n k) (dyadicNode s t n (k + 1)) :=
+  rfl
 
 /-- The dyadic sewing limit `A(s, t) + ∑ (S_{n+1} - S_n)`. -/
 @[expose]
@@ -115,29 +75,30 @@ noncomputable def sewnIncrement {E : Type*} [NormedAddCommGroup E]
     (A : ℝ → ℝ → E) (s t : ℝ) : E :=
   A s t + ∑' n : ℕ, (dyadicIncrement A s t (n + 1) - dyadicIncrement A s t n)
 
+/-- Defining equation of `sewnIncrement`. -/
+lemma sewnIncrement_def {E : Type*} [NormedAddCommGroup E] (A : ℝ → ℝ → E) (s t : ℝ) :
+    sewnIncrement A s t =
+      A s t + ∑' n : ℕ, (dyadicIncrement A s t (n + 1) - dyadicIncrement A s t n) :=
+  rfl
+
 /-- Node at index `0` is the left endpoint. -/
-private lemma dyadicNode_zero (s t : ℝ) (n : ℕ) : dyadicNode s t n 0 = s := by
-  simp [dyadicNode]
+private lemma dyadicNode_zero (s t : ℝ) (n : ℕ) : dyadicNode s t n 0 = s :=
+  equalNode_zero s t _
 
 /-- Node at index `2^n` is the right endpoint. -/
-private lemma dyadicNode_last (s t : ℝ) (n : ℕ) : dyadicNode s t n (2 ^ n) = t := by
-  unfold dyadicNode
-  have hpow : ((2 ^ n : ℕ) : ℝ) = (2 : ℝ) ^ n := by simp
-  rw [hpow, div_self (pow_ne_zero n (by norm_num : (2 : ℝ) ≠ 0)), mul_one]
-  abel
+private lemma dyadicNode_last (s t : ℝ) (n : ℕ) : dyadicNode s t n (2 ^ n) = t :=
+  equalNode_last s t (pow_pos two_pos n)
 
 /-- Consecutive dyadic nodes differ by `(t - s) / 2^n`. -/
 private lemma dyadicNode_sub (s t : ℝ) (n k : ℕ) :
     dyadicNode s t n (k + 1) - dyadicNode s t n k = (t - s) / (2 : ℝ) ^ n := by
-  unfold dyadicNode
-  rw [add_sub_add_left_eq_sub, ← mul_sub, div_sub_div_same]
-  rw [show ((k + 1 : ℕ) : ℝ) - (k : ℝ) = 1 by simp [Nat.cast_add]]
-  rw [mul_one_div]
+  rw [dyadicNode_eq_equalNode, dyadicNode_eq_equalNode, equalNode_sub, Nat.cast_pow,
+    Nat.cast_ofNat]
 
 /-- Doubling the level repeats even nodes. -/
 private lemma dyadicNode_two_mul (s t : ℝ) (n k : ℕ) :
     dyadicNode s t n k = dyadicNode s t (n + 1) (2 * k) := by
-  unfold dyadicNode
+  simp only [dyadicNode_def]
   congr 1
   rw [pow_succ, Nat.cast_mul]
   field_simp
@@ -145,20 +106,13 @@ private lemma dyadicNode_two_mul (s t : ℝ) (n k : ℕ) :
 
 /-- On a nontrivial interval the nodes increase with the index. -/
 private lemma dyadicNode_mono {s t : ℝ} (hst : s ≤ t) (n : ℕ) {k j : ℕ} (hkj : k ≤ j) :
-    dyadicNode s t n k ≤ dyadicNode s t n j := by
-  unfold dyadicNode
-  have hc : 0 ≤ t - s := sub_nonneg.mpr hst
-  have hden : 0 ≤ (2 : ℝ) ^ n := pow_nonneg (by norm_num) _
-  refine add_le_add_right (mul_le_mul_of_nonneg_left ?_ hc) _
-  exact div_le_div_of_nonneg_right (Nat.cast_le.mpr hkj) hden
+    dyadicNode s t n k ≤ dyadicNode s t n j :=
+  equalNode_mono hst _ hkj
 
 /-- Dyadic nodes of `[s, t]` stay inside `[s, t]` up to index `2^n`. -/
 private lemma dyadicNode_mem_interval {s t : ℝ} (hst : s ≤ t) (n : ℕ) {k : ℕ} (hk : k ≤ 2 ^ n) :
-    s ≤ dyadicNode s t n k ∧ dyadicNode s t n k ≤ t := by
-  constructor
-  · simpa [dyadicNode_zero] using dyadicNode_mono hst n (Nat.zero_le k)
-  · have hlast : dyadicNode s t n k ≤ dyadicNode s t n (2 ^ n) := dyadicNode_mono hst n hk
-    simpa [dyadicNode_last] using hlast
+    s ≤ dyadicNode s t n k ∧ dyadicNode s t n k ≤ t :=
+  equalNode_mem hst (pow_pos two_pos n) hk
 
 /-- The level-`0` dyadic sum is the increment itself. -/
 private lemma dyadicIncrement_zero {E : Type*} [AddCommMonoid E] (A : ℝ → ℝ → E) (s t : ℝ) :
@@ -167,22 +121,10 @@ private lemma dyadicIncrement_zero {E : Type*} [AddCommMonoid E] (A : ℝ → �
   simp only [pow_zero, range_one, sum_singleton, dyadicNode_zero]
   exact congrArg (A s) (dyadicNode_last s t 0)
 
-/-- Even-odd splitting of a sum over `range (2 * n)`. -/
-lemma sum_range_two_mul {M : Type*} [AddCommMonoid M] (f : ℕ → M) (n : ℕ) :
-    ∑ k ∈ range (2 * n), f k =
-      ∑ k ∈ range n, f (2 * k) + ∑ k ∈ range n, f (2 * k + 1) := by
-  induction n with
-  | zero => simp
-  | succ n ih =>
-    rw [show 2 * (n + 1) = 2 * n + 2 by omega]
-    rw [sum_range_succ, sum_range_succ, ih]
-    simp only [sum_range_succ]
-    ac_rfl
-
 /-- Left half of the dyadic grid is the dyadic grid of `[s, (s + t) / 2]`. -/
 private lemma dyadicNode_mid_left (s t : ℝ) (n i : ℕ) :
     dyadicNode s ((s + t) / 2) n i = dyadicNode s t (n + 1) i := by
-  unfold dyadicNode
+  simp only [dyadicNode_def]
   have hm : (s + t) / 2 - s = (t - s) / 2 := by ring
   rw [hm]
   field_simp
@@ -191,7 +133,7 @@ private lemma dyadicNode_mid_left (s t : ℝ) (n i : ℕ) :
 /-- Right half of the dyadic grid is the shifted grid of `[(s + t) / 2, t]`. -/
 private lemma dyadicNode_mid_right (s t : ℝ) (n i : ℕ) :
     dyadicNode ((s + t) / 2) t n i = dyadicNode s t (n + 1) (2 ^ n + i) := by
-  unfold dyadicNode
+  simp only [dyadicNode_def]
   have hm : t - (s + t) / 2 = (t - s) / 2 := by ring
   rw [hm, Nat.cast_add, Nat.cast_pow]
   field_simp
@@ -247,30 +189,10 @@ private lemma dyadicIncrement_step_eq {E : Type*} [AddCommGroup E] (A : ℝ → 
   have hidx : (2 * k + 1) + 1 = 2 * k + 2 := by omega
   simp only [g, hidx, sub_add_eq_sub_sub]
 
-/-- Ratio `2^{1 - γ}` lies in `[0, 1)` whenever `γ > 1`. -/
-lemma sewingRatio_mem {γ : ℝ} (hγ : 1 < γ) :
-    0 ≤ (2 : ℝ) ^ (1 - γ) ∧ (2 : ℝ) ^ (1 - γ) < 1 := by
-  refine ⟨Real.rpow_nonneg (by norm_num) _, ?_⟩
-  exact Real.rpow_lt_one_of_one_lt_of_neg (by norm_num) (by linarith)
-
 /-- The sewing constant is the sum of the geometric refinement ratios. -/
 private lemma sewingConstant_eq_tsum {γ : ℝ} (hγ : 1 < γ) :
     sewingConstant γ = ∑' n : ℕ, ((2 : ℝ) ^ (1 - γ)) ^ n := by
   rw [sewingConstant, tsum_geometric_of_lt_one (sewingRatio_mem hγ).1 (sewingRatio_mem hγ).2]
-
-/-- `n · (L / n) ^ γ = L ^ γ · n ^ (1 - γ)` for positive integers. -/
-lemma nat_mul_div_rpow {n : ℕ} (hn : 0 < n) {L γ : ℝ} (hL : 0 ≤ L) (hγ : γ ≠ 0) :
-    (n : ℝ) * (L / (n : ℝ)) ^ γ = L ^ γ * (n : ℝ) ^ (1 - γ) := by
-  have hn0 : (0 : ℝ) < n := Nat.cast_pos.mpr hn
-  rcases hL.eq_or_lt with rfl | hL
-  · simp [zero_div, Real.zero_rpow hγ, mul_zero, zero_mul]
-  · rw [Real.div_rpow hL.le (Nat.cast_nonneg n)]
-    have hsub : (n : ℝ) / (n : ℝ) ^ γ = (n : ℝ) ^ (1 - γ) := by
-      rw [Real.rpow_sub hn0, Real.rpow_one]
-    calc
-      (n : ℝ) * (L ^ γ / (n : ℝ) ^ γ) = (n : ℝ) * L ^ γ / (n : ℝ) ^ γ := by rw [mul_div_assoc]
-      _ = L ^ γ * ((n : ℝ) / (n : ℝ) ^ γ) := by ring
-      _ = L ^ γ * (n : ℝ) ^ (1 - γ) := by rw [hsub]
 
 /-- Scaling identity for one dyadic parent interval. -/
 private lemma dyadic_weight {L γ : ℝ} (hL : 0 ≤ L) (hγ : γ ≠ 0) (n : ℕ) :
@@ -436,7 +358,7 @@ lemma sewnIncrement_same
     sewnIncrement A s s = 0 := by
   have hnode : ∀ n k, dyadicNode s s n k = s := by
     intro n k
-    simp [dyadicNode]
+    simp [dyadicNode_def]
   have hS : ∀ n, dyadicIncrement A s s n = 0 := by
     intro n
     unfold dyadicIncrement
@@ -474,9 +396,8 @@ lemma sewnIncrement_midpoint (hγ : 1 < γ)
 
 /-- Dyadic nodes depend continuously on the endpoints. -/
 private lemma continuous_dyadicNode (n k : ℕ) :
-    Continuous (fun p : ℝ × ℝ => dyadicNode p.1 p.2 n k) := by
-  unfold dyadicNode
-  exact continuous_fst.add ((continuous_snd.sub continuous_fst).mul continuous_const)
+    Continuous (fun p : ℝ × ℝ => dyadicNode p.1 p.2 n k) :=
+  continuous_equalNode _ _
 
 /-- Consecutive dyadic nodes of a triangle point stay inside the triangle. -/
 private lemma dyadicEndpoints_mapsTo {a b : ℝ} (n k : ℕ) (hk : k + 1 ≤ 2 ^ n) :
@@ -562,11 +483,6 @@ lemma continuousOn_sewnIncrement (hab : a ≤ b) (hγ : 1 < γ) (hC : 0 ≤ C)
     rfl
   rw [hsewn]
   exact hcont.add hseries
-
-/-- The sewing constant is positive for exponents greater than one. -/
-lemma sewingConstant_pos (hγ : 1 < γ) : 0 < sewingConstant γ := by
-  rw [sewingConstant]
-  exact inv_pos.mpr (sub_pos.mpr (sewingRatio_mem hγ).2)
 
 omit [CompleteSpace E] in
 /-- A midpoint-additive increment of order greater than one vanishes. -/

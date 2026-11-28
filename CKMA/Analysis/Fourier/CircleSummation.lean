@@ -6,6 +6,7 @@ Authors: CKMA contributors
 module
 
 public import Mathlib.Analysis.Fourier.AddCircle
+public import TauCeti.Analysis.Fourier.Fejer
 
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Bounds
 import Mathlib.MeasureTheory.Measure.Haar.Unique
@@ -14,7 +15,9 @@ import Mathlib.MeasureTheory.Measure.Haar.Unique
 # Fourier summation on the probability circle
 
 Symmetric Fourier partial sums, Fejer means and the Fejer kernel use Mathlib's
-circle characters, Fourier coefficients and normalized Haar measure. Convergence of
+circle characters, Fourier coefficients and normalized Haar measure. The Fejér kernel is
+TauCeti's `TauCeti.fejerKernel` (`TauCeti.Analysis.Fourier.Fejer`) shifted to the indexing of
+the Fejér means, with its nonnegativity, continuity and unit mass. Convergence of
 those means is proved in `CKMA.Analysis.Fourier.CircleConvergence`. The
 Carleson–Hunt interface combines maximal control with almost-everywhere convergence
 of ordinary partial sums for `p > 1`.
@@ -35,7 +38,9 @@ Sources: GAPS 27.17 and 27.22.
 * `CKMA.fejerMean_eq_conv`: convolution representation of the Fejér mean against
   `fejerKernel`.
 * `CKMA.fejerKernel_nonneg` and `CKMA.integral_fejerKernel`: nonnegativity and unit mass of the
-  Fejér kernel.
+  Fejér kernel, from TauCeti.
+* `CKMA.fejerKernelReal_eq`, `CKMA.fejerKernelReal_le_inv_sq`, `CKMA.tendsto_fejerKernel_tail`:
+  the sine-square form of the kernel and its decay away from the origin.
 * `CKMA.carleson_hunt` (**27.22**): `L^p` boundedness of the Carleson maximal operator and almost
   everywhere convergence of symmetric Fourier partial sums for `1 < p`.
 -/
@@ -77,6 +82,30 @@ integral of a non-integrable integrand is `0`, so the predicate can hold for tha
 def IsCircleLebesguePoint (f : AddCircle (1 : ℝ) → ℂ) (x : AddCircle (1 : ℝ)) : Prop :=
   Tendsto (fun r : ℝ ↦ (2 * r)⁻¹ * ∫ t in (-r)..r,
     ‖f (x + (t : AddCircle (1 : ℝ))) - f x‖) (𝓝[>] 0) (𝓝 0)
+
+/-- Unfolding the symmetric partial sum. -/
+theorem fourierPartialSum_def (f : AddCircle (1 : ℝ) → ℂ) (N : ℕ) (x : AddCircle (1 : ℝ)) :
+    fourierPartialSum f N x = ∑ k ∈ Finset.Icc (-(N : ℤ)) (N : ℤ), fourierCoeff f k * fourier k x :=
+  rfl
+
+/-- Unfolding the Fejér mean. -/
+theorem fejerMean_def (f : AddCircle (1 : ℝ) → ℂ) (N : ℕ) (x : AddCircle (1 : ℝ)) :
+    fejerMean f N x = (N + 1 : ℂ)⁻¹ * ∑ n ∈ Finset.range (N + 1), fourierPartialSum f n x := rfl
+
+/-- Unfolding the Carleson maximal function. -/
+theorem carlesonMaximalFunction_def (f : AddCircle (1 : ℝ) → ℂ) (x : AddCircle (1 : ℝ)) :
+    carlesonMaximalFunction f x = ⨆ N : ℕ, ENNReal.ofReal ‖fourierPartialSum f N x‖ := rfl
+
+/-- Each partial sum is bounded by the Carleson maximal function. -/
+theorem ofReal_norm_fourierPartialSum_le (f : AddCircle (1 : ℝ) → ℂ) (N : ℕ)
+    (x : AddCircle (1 : ℝ)) :
+    ENNReal.ofReal ‖fourierPartialSum f N x‖ ≤ carlesonMaximalFunction f x :=
+  le_iSup (fun N : ℕ ↦ ENNReal.ofReal ‖fourierPartialSum f N x‖) N
+
+/-- Unfolding the circle Lebesgue-point predicate. -/
+theorem isCircleLebesguePoint_iff {f : AddCircle (1 : ℝ) → ℂ} {x : AddCircle (1 : ℝ)} :
+    IsCircleLebesguePoint f x ↔ Tendsto (fun r : ℝ ↦ (2 * r)⁻¹ * ∫ t in (-r)..r,
+      ‖f (x + (t : AddCircle (1 : ℝ))) - f x‖) (𝓝[>] 0) (𝓝 0) := Iff.rfl
 
 /-- The zero function has zero symmetric Fourier partial sums. -/
 @[simp]
@@ -289,40 +318,40 @@ private lemma normSq_fourierSum (N : ℕ) (x : 𝕋) :
   norm_cast
   exact card_sub_fiber N ((mem_Icc_iff_natAbs_le N k).1 hk)
 
-/-- The Fejer kernel on the probability circle, as a normalized square of characters. -/
+/-- The Fejér kernel `K_N` on the probability circle, indexed as the kernel of the `N`-th Fejér
+mean: TauCeti's `TauCeti.fejerKernel (N + 1)`, the normalized square of `N + 1` characters. -/
 @[expose]
 def fejerKernel (N : ℕ) (x : 𝕋) : ℝ :=
-  (N + 1 : ℝ)⁻¹ * ‖∑ j ∈ Finset.range (N + 1), fourier (j : ℤ) x‖ ^ 2
+  TauCeti.fejerKernel (N + 1) x
+
+/-- The Fejér kernel as a normalized square of characters. -/
+lemma fejerKernel_eq (N : ℕ) (x : 𝕋) :
+    fejerKernel N x = (N + 1 : ℝ)⁻¹ * ‖∑ j ∈ Finset.range (N + 1), fourier (j : ℤ) x‖ ^ 2 := by
+  rw [fejerKernel, TauCeti.fejerKernel_def, Nat.cast_succ]
 
 /-- The Fejer kernel is a weighted sum of characters. -/
 private lemma fejerKernel_eq_sum (N : ℕ) (x : 𝕋) :
     (fejerKernel N x : ℂ) =
       ∑ k ∈ Finset.Icc (-(N : ℤ)) (N : ℤ),
         (1 - (k.natAbs : ℂ) / (N + 1)) * fourier k x := by
-  unfold fejerKernel
-  rw [Complex.ofReal_mul, Complex.ofReal_pow, normSq_fourierSum, Finset.mul_sum]
+  rw [fejerKernel_eq, Complex.ofReal_mul, Complex.ofReal_pow, normSq_fourierSum, Finset.mul_sum]
   refine Finset.sum_congr rfl fun k hk => ?_
   have hkN : k.natAbs ≤ N := (mem_Icc_iff_natAbs_le N k).1 hk
   rw [Complex.ofReal_inv, ← mul_assoc]
   push_cast
   rw [← div_eq_inv_mul, weight_div N k.natAbs hkN]
 
-/-- The Fejer kernel is nonnegative. -/
-lemma fejerKernel_nonneg (N : ℕ) (x : 𝕋) : 0 ≤ fejerKernel N x := by
-  unfold fejerKernel
-  positivity
+/-- The Fejer kernel is nonnegative (TauCeti's `TauCeti.fejerKernel_nonneg`). -/
+lemma fejerKernel_nonneg (N : ℕ) (x : 𝕋) : 0 ≤ fejerKernel N x :=
+  TauCeti.fejerKernel_nonneg _ _
 
-/-- The Fejer kernel is continuous. -/
-lemma continuous_fejerKernel (N : ℕ) : Continuous (fejerKernel N) := by
-  unfold fejerKernel
-  refine continuous_const.mul ?_
-  exact (continuous_pow 2).comp
-    ((continuous_finsetSum (Finset.range (N + 1))
-      (fun j _ => map_continuous (fourier (j : ℤ)))).norm)
+/-- The Fejer kernel is continuous (TauCeti's `TauCeti.continuous_fejerKernel`). -/
+lemma continuous_fejerKernel (N : ℕ) : Continuous (fejerKernel N) :=
+  TauCeti.continuous_fejerKernel _
 
 /-- The Fejer kernel is even. -/
 lemma fejerKernel_neg (N : ℕ) (x : 𝕋) : fejerKernel N (-x) = fejerKernel N x := by
-  unfold fejerKernel
+  rw [fejerKernel_eq, fejerKernel_eq]
   congr 1
   have hsum : ∑ j ∈ Finset.range (N + 1), fourier (j : ℤ) (-x) =
       conj (∑ j ∈ Finset.range (N + 1), fourier (j : ℤ) x) := by
@@ -333,7 +362,7 @@ lemma fejerKernel_neg (N : ℕ) (x : 𝕋) : fejerKernel N (-x) = fejerKernel N 
 
 /-- The Fejer kernel is bounded by its central value `N + 1`. -/
 lemma fejerKernel_le_succ (N : ℕ) (x : 𝕋) : fejerKernel N x ≤ (N + 1 : ℝ) := by
-  unfold fejerKernel
+  rw [fejerKernel_eq]
   have hsum : ‖∑ j ∈ Finset.range (N + 1), fourier (j : ℤ) x‖ ≤ (N + 1 : ℝ) := by
     calc
       ‖∑ j ∈ Finset.range (N + 1), fourier (j : ℤ) x‖
@@ -373,10 +402,16 @@ def fejerKernelReal (N : ℕ) (t : ℝ) : ℝ :=
   if Real.sin (π * t) = 0 then (N + 1 : ℝ)
   else (N + 1 : ℝ)⁻¹ * (Real.sin (π * (N + 1) * t) / Real.sin (π * t)) ^ 2
 
+/-- Unfolding the sine-square kernel. -/
+lemma fejerKernelReal_def (N : ℕ) (t : ℝ) :
+    fejerKernelReal N t = if Real.sin (π * t) = 0 then (N + 1 : ℝ)
+      else (N + 1 : ℝ)⁻¹ * (Real.sin (π * (N + 1) * t) / Real.sin (π * t)) ^ 2 := rfl
+
 /-- On the line, the character square agrees with the sine-square formula. -/
 lemma fejerKernelReal_eq (N : ℕ) (t : ℝ) :
     fejerKernelReal N t = fejerKernel N (t : 𝕋) := by
-  unfold fejerKernelReal fejerKernel
+  rw [fejerKernel_eq]
+  unfold fejerKernelReal
   by_cases hsin : Real.sin (π * t) = 0
   · rw [ite_eq_left hsin]
     rcases (sin_pi_eq_zero_iff_int t).1 hsin with ⟨n, rfl⟩
@@ -408,7 +443,7 @@ lemma fejerKernelReal_eq (N : ℕ) (t : ℝ) :
       rw [hwI, Complex.norm_exp_I_mul_ofReal_sub_one, Real.norm_eq_abs, abs_mul,
         abs_of_pos (by norm_num : (0 : ℝ) < 2)]
       congr 1
-      ring
+      ring_nf
     have hwpow : w ^ (N + 1) =
         Complex.exp (Complex.I * ↑(2 * π * (N + 1) * t)) := by
       rw [← Complex.exp_nat_mul]
@@ -419,7 +454,7 @@ lemma fejerKernelReal_eq (N : ℕ) (t : ℝ) :
       rw [hwpow, Complex.norm_exp_I_mul_ofReal_sub_one, Real.norm_eq_abs, abs_mul,
         abs_of_pos (by norm_num : (0 : ℝ) < 2)]
       congr 1
-      ring
+      ring_nf
     have hnorm : ‖∑ j ∈ Finset.range (N + 1), fourier (j : ℤ) (t : 𝕋)‖ =
         |Real.sin (π * (N + 1) * t)| / |Real.sin (π * t)| := by
       rw [hsum, norm_div, hnum, hden]
@@ -511,46 +546,22 @@ lemma fejerKernelReal_le_inv_sq {N : ℕ} {t : ℝ} (ht0 : t ≠ 0) (ht : |t| �
       field_simp
       ring
 
-/-- A continuous function on the circle is integrable for probability Haar measure. -/
-@[deprecated "use `Continuous.integrable_of_hasCompactSupport` with \
-`HasCompactSupport.of_compactSpace`" (since := "2026-11-15")]
-lemma integrable_of_continuous {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-    {g : 𝕋 → E} (hg : Continuous g) : Integrable g haar :=
-  hg.integrable_of_hasCompactSupport (HasCompactSupport.of_compactSpace g)
-
-/-- Each character is integrable. -/
-private lemma integrable_fourier (k : ℤ) : Integrable (fun x : 𝕋 => fourier k x) haar :=
-  (map_continuous (fourier k)).integrable_of_hasCompactSupport (.of_compactSpace _)
-
-/-- Character integrals vanish except for the constant character, which has mass one. -/
-private lemma integral_fourier (k : ℤ) :
-    ∫ x : 𝕋, fourier k x ∂haar = if k = 0 then (1 : ℂ) else 0 := by
-  split_ifs with hk
-  · simp [hk, integral_const, Measure.real, measure_univ]
-  · exact integral_eq_zero_of_add_right_eq_neg (μ := haar)
-      (fun x => fourier_add_half_inv_index hk one_pos x)
-
-/-- The Fejer kernel has integral one. -/
-lemma integral_fejerKernel (N : ℕ) : ∫ x, fejerKernel N x ∂haar = 1 := by
-  have hint : ∀ k ∈ Finset.Icc (-(N : ℤ)) (N : ℤ),
-      Integrable (fun x : 𝕋 =>
-        (1 - (k.natAbs : ℂ) / (N + 1)) * fourier k x) haar :=
-    fun k _ => (integrable_fourier k).const_mul _
-  have hcomp : ∫ x, (fejerKernel N x : ℂ) ∂haar = 1 := by
-    simp_rw [fejerKernel_eq_sum, integral_finsetSum _ hint, integral_const_mul, integral_fourier]
-    rw [Finset.sum_eq_single (0 : ℤ)]
-    · simp
-    · intro k hk hk0
-      simp [hk0]
-    · intro h0
-      exact absurd (by simp : (0 : ℤ) ∈ Finset.Icc (-(N : ℤ)) N) h0
-  rw [integral_complex_ofReal] at hcomp
-  exact_mod_cast hcomp
+/-- The Fejer kernel has integral one (TauCeti's `TauCeti.integral_fejerKernel`). -/
+lemma integral_fejerKernel (N : ℕ) : ∫ x, fejerKernel N x ∂haar = 1 :=
+  TauCeti.integral_fejerKernel (N + 1) N.succ_pos
 
 /-- The Fejer kernel is integrable. -/
 lemma integrable_fejerKernel (N : ℕ) : Integrable (fejerKernel N) haar :=
   (continuous_fejerKernel N).integrable_of_hasCompactSupport
     (HasCompactSupport.of_compactSpace _)
+
+/-- The Fejér kernel times an integrable function is integrable, since `0 ≤ K_N ≤ N + 1`. -/
+lemma integrable_fejerKernel_mul {g : 𝕋 → ℂ} (hg : Integrable g haar) (N : ℕ) :
+    Integrable (fun t => (fejerKernel N t : ℂ) * g t) haar :=
+  hg.bdd_mul (Complex.continuous_ofReal.comp (continuous_fejerKernel N)).aestronglyMeasurable
+    (ae_of_all _ fun t => by
+      rw [Complex.norm_real, Real.norm_of_nonneg (fejerKernel_nonneg N t)]
+      exact fejerKernel_le_succ N t)
 
 /-- Lebesgue integral of the nonnegative kernel is one. -/
 lemma lintegral_fejerKernel (N : ℕ) :
@@ -670,18 +681,10 @@ lemma fejerMean_sub_eq_conv {f : 𝕋 → ℂ} (hf : Integrable f haar) (N : ℕ
     exact_mod_cast integral_fejerKernel N
   have hconst : ∫ t, (fejerKernel N t : ℂ) * f x ∂haar = f x := by
     rw [integral_mul_const, hone, one_mul]
-  have hshift : Integrable (fun t : 𝕋 => f (x - t)) haar := hf.comp_sub_left x
-  have hker : AEStronglyMeasurable (fun t : 𝕋 => (fejerKernel N t : ℂ)) haar :=
-    (Complex.continuous_ofReal.comp (continuous_fejerKernel N)).aestronglyMeasurable
-  have hbound : ∀ᵐ t ∂haar, ‖(fejerKernel N t : ℂ)‖ ≤ (N + 1 : ℝ) :=
-    ae_of_all _ fun t => by
-      rw [Complex.norm_real, Real.norm_of_nonneg (fejerKernel_nonneg N t)]
-      exact fejerKernel_le_succ N t
   have hint1 : Integrable (fun t => (fejerKernel N t : ℂ) * f (x - t)) haar :=
-    hshift.bdd_mul hker hbound
+    integrable_fejerKernel_mul (hf.comp_sub_left x) N
   have hint2 : Integrable (fun t => (fejerKernel N t : ℂ) * f x) haar :=
-    ((Complex.continuous_ofReal.comp (continuous_fejerKernel N)).integrable_of_hasCompactSupport
-      (.of_compactSpace _)).mul_const (f x)
+    integrable_fejerKernel_mul (integrable_const (f x)) N
   rw [fejerMean_eq_conv hf N x]
   conv_lhs =>
     arg 2

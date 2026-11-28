@@ -54,10 +54,11 @@ local identifications and proof ingredients include:
 
 ## TauCeti interfaces and proof provenance
 
-The Atkinson proof adapts the kernel/cokernel squeezing argument of the Tau Ceti
-contributors in `TauCeti/Analysis/Fredholm/CompactPerturbation.lean`, using its
-compact-perturbation theorem and the finite-rank compactness API. The proof is
-uniform over real or complex scalars. The arbitrary-pairing bipolar proof transports
+Atkinson's theorem is the Tau Ceti contributors'
+`TauCeti.isFredholm_iff_exists_isCompactOperator_comp_sub_one` in
+`TauCeti/Analysis/Fredholm/CompactPerturbation.lean`, over any complete nontrivially normed
+field; the essential-spectrum results use the same file and the closed-range adjoint theorem in
+`TauCeti/Analysis/Fredholm/Adjoint.lean`. The arbitrary-pairing bipolar proof transports
 `StrongDual.bipolar_eq_closedAbsConvexHull` through Mathlib's
 `LinearMap.dualEmbedding_surjective`. The Kato–Rellich corollary combines TauCeti's
 self-adjointness theorem with the local graph-norm comparison for cores.
@@ -110,8 +111,38 @@ Other imported infrastructure includes:
   `exists_fixedPoint_brouwer` is `TauCeti.brouwerFixedPoint_compactConvex`.
 - The squared `L²` identity used for Nash's inequality is
   `MeasureTheory.Lp.integral_norm_sq_eq_norm_sq`.
-- `weierstrassFactor_eq_complex` identifies the genus-`p` factor with
-  `Complex.weierstrassFactor`.
+- The genus-`p` Weierstrass factors are TauCeti's `Complex.weierstrassFactor`, with the
+  bound `Complex.norm_weierstrassFactor_sub_one_le` and the logarithmic Taylor identity
+  `neg_logTaylor_succ_neg_eq_sum`.
+- Real and complex interpolation use TauCeti's compatible couples, `K`-functional, `K`-method
+  norm and complex-method spaces (`CompatibleCouple` in `TauCeti.Analysis.Normed.Interpolation`).
+  The complex interpolation theorem (26.54) is `CompatibleCouple.ComplexMethodSpace.norm_map_le`.
+- BV functions are TauCeti's `MemBV`, and the coarea formula (37.30) is TauCeti's
+  `totalVariationOn_eq_lintegral_perimeter`.
+- Asymptotic scales and expansions are TauCeti's `Asymptotics.IsAsymptoticScale` and
+  `Asymptotics.HasAsymptoticExpansion`; coefficient uniqueness is
+  `Asymptotics.HasAsymptoticExpansion.unique`.
+- Continuity of the modular character and the inversion identity for regular Haar measures
+  (28.2) are TauCeti's `continuous_modularCharacter` and
+  `MeasureTheory.Measure.inv_eq_withDensity_modularCharacter_of_regular`.
+- Inequality proofs use TauCeti's real-power integrals (`Pow.Integral`) and
+  `Multiset.esymm_cons`; sums of the largest coordinates are TauCeti's `prefixSum`.
+- Cauchy interlacing is TauCeti's `LinearMap.IsSymmetric.eigenvalues_le_eigenvalues_of_isometry`
+  and its primed form; Weyl's inequality is `LinearMap.IsSymmetric.eigenvalues_add_le`; the
+  Frobenius norm is `UnitarilyInvariantSeminorm.frobenius`.
+- Convolution powers are TauCeti's `MeasureTheory.Measure.convolutionPower`, with
+  `Measure.charFun_convolutionPower`. Compound Poisson laws are
+  `TauCeti.Probability.compoundPoissonMeasure`, with `charFun_compoundPoissonMeasure`.
+- Large-deviation principles and good rate functions are TauCeti's
+  `TauCeti.Probability.HasLDP` and `TauCeti.Probability.IsGoodRateFunction`.
+- The Ornstein–Uhlenbeck semigroup is identified with TauCeti's Mehler semigroup
+  `TauCeti.Probability.mehler`, and the Gaussian log-Sobolev inequality is stated through
+  TauCeti's `LogSobolevInequality`. Gaussian integration by parts is
+  `TauCeti.Probability.integral_mul_eq_integral_deriv_gaussianReal`, absolute Gaussian
+  integrability is `TauCeti.Probability.integrable_abs_gaussianReal`, and the integral
+  Cauchy–Schwarz inequality is `TauCeti.sq_integral_mul_le_integral_sq_mul_integral_sq`.
+- Free independence is TauCeti's `IsFreelyIndependent`; finite representability is TauCeti's
+  `FinitelyRepresentable`.
 
 Imported prerequisites are not counted as completed local targets merely because
 their names exist. The axiom audit includes all transitive dependencies. Local
@@ -144,7 +175,6 @@ Other proof ingredients include:
   expansions and Mathlib's positive-semidefinite quadratic-form criteria.
 - The near-best interpolation estimate uses `Lagrange.eq_interpolate`, compact
   suprema and direct comparison with the infimum of polynomial approximation errors.
-- Coefficient uniqueness uses Mathlib's little-o subtraction, congruence and bound APIs.
 - Exponential-square concentration uses Lebesgue Markov and exponential/real-power
   inequalities. AL-space monotone convergence uses real monotone convergence and
   completeness of Cauchy sequences. The general AL representation sums the real L¹
@@ -162,9 +192,8 @@ Other proof ingredients include:
   the space of continuous paths. A straight-line push by a continuous pathwise
   pseudogradient lowers the maximum, and Palais–Smale compactness at the minimax
   level produces a critical point.
-- Gauss multiplication on the positive reals is the Bohr–Mollerup normalization of
-  Mathlib's `gaussMulGamma_eq_Gamma`. The constant comes from the cyclotomic
-  identity for `1 - ζ^k`, and the complex identity is the reciprocal form off the poles.
+- Gauss multiplication is TauCeti's `Complex.prod_Gamma_add_div`, restated as a product over
+  `Fin m`.
 - Hausdorff–Young fails for every exponent above 2. Finitely many spatially separated
   modulated Schwartz bumps have disjoint supports, and the modulations put their
   Fourier mass on disjoint frequency balls, so the norm ratio grows like `N^{1-2/p}`.
@@ -189,8 +218,8 @@ Other proof ingredients include:
 - Johnson–Lindenstrauss is a finite Rademacher projection. Linear forms have a
   sub-Gaussian moment generating function, squares concentrate by a Chernoff bound,
   and a union bound over the pairs leaves a positive-probability matrix.
-- Fejér means are convolution against a positive kernel of mass one that concentrates
-  at the identity. Continuous functions converge uniformly, finite `Lᵖ` follows by
+- Fejér means are convolution against TauCeti's `fejerKernel`, a positive kernel of mass
+  one that concentrates at the identity. Continuous functions converge uniformly, finite `Lᵖ` follows by
   density and contraction, and the same kernel controls every circle Lebesgue point.
 - Rokhlin's lemma takes a nearly maximal measurable tower in a separable measure
   algebra. Aperiodicity supplies a positive-measure refinement of any large
@@ -236,8 +265,8 @@ Other proof ingredients include:
 - Orthogonal roots are separated by a sign-changing factor and vanishing of a
   nonnegative integral. The Gaussian weights are the reciprocal diagonal values of
   the Christoffel kernel, identified through Mathlib's Lagrange basis.
-- Cauchy interlacing, its rank-perturbation shift, and Weyl's inequality use
-  TauCeti's Courant–Fischer bounds on Rayleigh quotients.
+- The rank-perturbation shift of the eigenvalues uses TauCeti's Courant–Fischer bounds on
+  Rayleigh quotients.
 - An L² Riesz basis has bounded synthesis on finitely supported coefficients. The
   extension to `ℓ²` is bounded below, its adjoint is analysis, and completeness makes
   that adjoint bounded below, which is the frame inequality.
@@ -245,12 +274,13 @@ Other proof ingredients include:
   Samples are the coefficients, the basis vectors invert to normalized sincs
   (`Real.sinc (Real.pi * ·)`), and an L² remainder is bounded in sup norm by
   Cauchy–Schwarz on `[-B,B]`.
-- Laurent coefficients are circle integrals. Equality of radii is Cauchy's theorem
-  on the annulus, the expansion is a geometric series for the Cauchy kernel, and
-  uniqueness integrates the monomials termwise.
+- Laurent coefficients, Laurent's theorem and the independence of the circle are TauCeti's
+  `circleLaurentCoeff`, `DifferentiableOn.hasLaurentSeriesOnAnnulus` and
+  `HasLaurentSeriesOnAnnulus.circleLaurentCoeff_eq`. Normal convergence on compact subsets and
+  uniqueness, which integrates the monomials termwise, are local.
 - An analytic solution of Gauss's equation has Taylor coefficients fixed by the
-  hypergeometric recurrence. The ordinary series is `Gamma c` times Mathlib's
-  regularized series, whose constant term is `(Gamma c)⁻¹`.
+  hypergeometric recurrence. The equation for the ordinary series is TauCeti's
+  `ordinaryHypergeometric_gaussEquation_of_norm_lt_one`.
 - The Bessel generating series rearranges the product of two exponential series
   against Mathlib's hypergeometric formula for integer-order `besselJ`, using
   `besselJ_neg_int` for negative orders.
@@ -283,9 +313,9 @@ Other proof ingredients include:
   `ContractingWith.isFixedPt_fixedPoint_iterate` supplies the fixed point. For
   `T < 0` the time interval is empty.
 - The weighted monomial norm on the disk is the Beta integral in polar coordinates.
-  `Complex.betaIntegral` and `Complex.Gamma_mul_Gamma_eq_betaIntegral` identify
-  `∫₀¹ xⁿ (1 - x)^α` for `α > -1`, and `Complex.integral_comp_polarCoord_symm`
-  with `MeasureTheory.integral_comp_rpow_Ioi_of_pos` converts the area integral.
+  TauCeti's `integral_rpow_mul_one_sub_rpow` and Mathlib's `ProbabilityTheory.beta` identify
+  `∫₀¹ xⁿ (1 - x)^α` for `α > -1`; TauCeti's `add_polarCoord_symm_eq_circleMap` and
+  `MeasureTheory.integral_comp_rpow_Ioi_of_pos` convert the area integral.
   `Real.rpow` of a nonpositive base is zero; the radial integral runs over `(0, 1)`.
   Circular Fourier coefficients are Cauchy's formula
   `DifferentiableOn.circleIntegral_one_div_sub_center_pow_smul`. The kernel series
@@ -301,9 +331,9 @@ Other proof ingredients include:
   continuity. Logarithms are applied only to `max 1 ‖·‖`. An attracting periodic
   point is interior to the filled set by local contraction of the return map; the
   degree is not used.
-- Euler–Maclaurin summation with an exact periodic remainder is the scalar
-  even-order case of `TauCeti.sum_Icc_eq_eulerMaclaurin_of_hasDerivAt`, rewritten
-  with Mathlib's `periodizedBernoulli` and `iteratedDeriv`.
+- Euler–Maclaurin summation with an exact periodic remainder, for Banach-valued functions, is
+  derived from TauCeti's even-order `TauCeti.sum_Icc_eq_eulerMaclaurin` by separating the
+  `r = p` boundary term from its remainder.
 - The sharp Markov bound is attained by the Chebyshev polynomial `T ℝ n`, using
   `Polynomial.Chebyshev.abs_iterate_derivative_T_real_le` and `T_derivative_eq_U`.
 - The Mittag–Leffler series `E_{α,β}` is entire by
@@ -326,14 +356,15 @@ Other proof ingredients include:
   radius `1/2` with `TauCeti.PDE.exists_le_mul_rpow_mul_eLpNorm_posPart_add` on
   the ball of radius `(1/2)/(16√d)`, across sixteen steps in `ball 0 1`.
   Measurability of the coefficient is not used.
-- Cohen–Hewitt factorization uses Mathlib's sum-norm unitization
-  `WithLp 1 (Unitization 𝕜 A)`, the Neumann series `Units.oneSub` and
-  `tsum_geometric_le_of_norm_lt_one`, and `cauchySeq_of_le_geometric`. It does
-  not require a regular norm.
+- Cohen–Hewitt factorization, with the norm bound and the closeness estimate, is TauCeti's
+  `ContinuousLinearMap.exists_apply_eq_of_mem_topologicalClosure_span` from
+  `TauCeti/Analysis/Normed/Module/CohenFactorization`. It does not require a regular norm.
 - A compact group is amenable because the normalized Haar integral is a
   left-invariant mean. Left invariance is `MeasureTheory.map_mul_left_eq_self`
   and `Topology.IsClosedEmbedding.integral_map`. Hausdorff separation is not
-  required.
+  required. Closed subgroups are stated with TauCeti's `Amenable`, and
+  `isHaarAmenable_iff_amenable` identifies the Haar-`L∞` predicate with it for regular Haar
+  measures.
 
 The extended-real Ekeland principle reduces to the Tau Ceti contributors' real-valued
 `LowerSemicontinuous.exists_add_mul_dist_le_and_lt_add_mul_dist` in
@@ -357,12 +388,13 @@ analytic inverse-function theorem. Böttcher's coordinate uses `Complex.log` nea
 same locally uniform sum.
 Eckart–Young minimality uses TauCeti's `ContinuousLinearMap.singularValue_add_index_le` and
 `UnitarilyInvariantSeminorm.map_le_of_kyFanSum_le`.
-The real interpolation bound is the K-functional estimate for the dilation-invariant measure
-`dt/t`. The complex bound multiplies an admissible strip function by an entire scalar weight.
+The real interpolation bound is TauCeti's `CompatibleCouple.kMethodENorm_map_le` for positive
+endpoint constants; vanishing constants are reached by an `ε`-limit.
 Hanson–Wright splits the quadratic form into diagonal and off-diagonal sums and uses the
 sub-Gaussian moment generating function from `CKMA.Probability.Concentration`.
-The Gelfand–Naimark representation uses Mathlib's non-unital GNS construction, Hahn–Banach
-extension of states, the `ℓ²` sum, and the isometric inclusion into the unitization.
+The isometric Gelfand–Naimark representation is derived from TauCeti's
+`CStarAlgebra.exists_faithful_nondegenerate_representation`, since an injective ⋆-homomorphism
+of C⋆-algebras is isometric.
 The fractional translation weight is the integrable kernel `|exp(2πi ⟨h, ξ⟩) - 1|² / |h|^{d+2s}`.
 Rotation through `Submodule.reflection` and Haar scaling by `t^{2s}` reduce its integral to a
 positive multiple of `‖ξ‖^{2s}`.
@@ -455,10 +487,15 @@ uniformly closed point-separating subalgebra of `C(K)` on a compact Hausdorff sp
 smallest closed norming boundary, with the supremum convention on the empty carrier.
 
 There is a probability measure on the continuous real paths whose coordinate process is
-Brownian. A pre-Brownian process has a continuous modification that is locally Hölder of
+Brownian; it is a projective limit by Mathlib's `isProjectiveLimit_projectiveLimit`. A
+pre-Brownian process has a continuous modification that is locally Hölder of
 every exponent below one half. For a strictly positive level, the probability that the
 path meets the level by time `t` is twice the probability that the position at time `t`
-is at least that level, including time zero.
+is at least that level, including time zero. The almost-sure dyadic increment bounds come from
+TauCeti's Kolmogorov edge estimate `IsAEKolmogorovProcess.ae_exists_edist_le_mul_pow_rpow` and
+`isKolmogorovProcess_of_hasLaw_sub_gaussianReal`; the dyadic chaining is local. The strong
+Markov property specializes TauCeti's strong Markov theorems in
+`TauCeti.Probability.BrownianMotion.StrongMarkov`.
 
 An isometry of a complex Hilbert space splits into a unitary part and a shift whose
 coefficients lie in the kernel of the adjoint. A contraction has a minimal unitary power
@@ -470,14 +507,17 @@ Quadratic variation of one-dimensional Brownian motion along completed-interval 
 converges to time, uniformly for times up to a fixed horizon: in probability when the mesh
 tends to zero, and almost surely when the meshes are summable. For finitely many independent
 Brownian motions, the covariation converges in probability to time on the diagonal and to
-zero off the diagonal. The estimates are Kolmogorov’s maximal inequality for the centered
-squared increments and Borel–Cantelli for the summable meshes.
+zero off the diagonal. The estimates are TauCeti's Doob maximal inequality for the
+time-centered quadratic sums at the partition nodes
+(`TauCeti.Probability.BrownianMotion.PartitionMaximal`) and Borel–Cantelli for the summable
+meshes.
 
 For integrable forcing on a compact interval, the variation-of-constants trajectory of a
-strongly continuous semigroup is the unique continuous integrated solution. Existence is an
-`L¹` approximation, using that the generator is closed. Uniqueness follows because the
-difference of two integrated solutions has a primitive whose backward orbit has vanishing
-right derivative.
+strongly continuous semigroup is the unique continuous integrated solution. It is built on
+TauCeti's inhomogeneous Cauchy problem (`CauchyProblem.Inhomogeneous`): existence is TauCeti's
+mild solution `isForcedMildSolution_realOperator_add_duhamel` for the forcing extended by zero,
+and uniqueness applies `eqOn_realOperator_sub_add_setIntegral_of_generator_setIntegral_eq` to the
+difference of two solutions.
 
 On a compact interval, two solutions of the same regular Sturm–Liouville equation have
 interlacing zeros when their Wronskian is not identically zero. For two equations with the

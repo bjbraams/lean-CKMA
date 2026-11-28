@@ -28,6 +28,10 @@ additive and continuous on the sewing triangle.
 * `CKMA.YoungLoeve.YoungData.continuousOn_youngLimit`: `youngLimit` is continuous on
   `sewingTriangle D.a D.b`.
 * `CKMA.YoungLoeve.YoungData.youngLimit_add`: `youngLimit` is additive on every subinterval.
+
+## References
+
+* [P. K. Friz and M. Hairer, *A Course on Rough Paths*][frizhairer2020]
 -/
 
 public section
@@ -44,37 +48,39 @@ open Finset Filter Topology Metric Sewing
 variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   [NormedAddCommGroup F] [NormedSpace ℝ F]
 
-/-- Paths, exponents, and finiteness hypotheses for one Young integral. -/
+/-- Paths, exponents, and finiteness hypotheses for one Young integral `∫ Y dX` on `[a, b]`:
+the integrator `X` has finite `p`-variation, the operator-valued integrand `Y` has finite
+`q`-variation, and `1 < p⁻¹ + q⁻¹`. -/
 structure YoungData (E F : Type*) [NormedAddCommGroup E] [NormedSpace ℝ E]
     [NormedAddCommGroup F] [NormedSpace ℝ F] where
   /-- Left endpoint of the interval. -/
   a : ℝ
   /-- Right endpoint of the interval. -/
   b : ℝ
-  /-- Variation exponent of the integrand path. -/
+  /-- Variation exponent of the integrator path `X`. -/
   p : ℝ
-  /-- Variation exponent of the integrator path. -/
+  /-- Variation exponent of the integrand path `Y`. -/
   q : ℝ
   /-- The interval runs from left to right. -/
-  hab : a ≤ b
-  /-- The integrand exponent is at least one. -/
-  hp : 1 ≤ p
+  a_le_b : a ≤ b
   /-- The integrator exponent is at least one. -/
-  hq : 1 ≤ q
+  one_le_p : 1 ≤ p
+  /-- The integrand exponent is at least one. -/
+  one_le_q : 1 ≤ q
   /-- The variation exponents are Young-complementary. -/
-  hpq : 1 < p⁻¹ + q⁻¹
-  /-- Integrand path. -/
-  X : ℝ → E
+  one_lt_inv_add_inv : 1 < p⁻¹ + q⁻¹
   /-- Integrator path. -/
+  X : ℝ → E
+  /-- Operator-valued integrand path. -/
   Y : ℝ → E →L[ℝ] F
-  /-- The integrand path is continuous on `[a, b]`. -/
-  hX : ContinuousOn X (Set.Icc a b)
   /-- The integrator path is continuous on `[a, b]`. -/
-  hY : ContinuousOn Y (Set.Icc a b)
-  /-- The integrand path has finite `p`-variation on `[a, b]`. -/
-  hVp : pathVariationPower p X a b ≠ ∞
-  /-- The integrator path has finite `q`-variation on `[a, b]`. -/
-  hVq : pathVariationPower q Y a b ≠ ∞
+  continuousOn_X : ContinuousOn X (Set.Icc a b)
+  /-- The integrand path is continuous on `[a, b]`. -/
+  continuousOn_Y : ContinuousOn Y (Set.Icc a b)
+  /-- The integrator path has finite `p`-variation on `[a, b]`. -/
+  pathVariationPower_X_ne_top : pathVariationPower p X a b ≠ ∞
+  /-- The integrand path has finite `q`-variation on `[a, b]`. -/
+  pathVariationPower_Y_ne_top : pathVariationPower q Y a b ≠ ∞
 
 /-- The point-removal series is nonnegative. -/
 lemma youngLoose_nonneg (θ : ℝ) : 0 ≤ youngLoose θ :=
@@ -107,6 +113,11 @@ variable (D) in
 def youngGrid (s t : ℝ) (k : ℕ) : F :=
   equalSewn (youngIncrement D.X D.Y) s t k
 
+/-- Defining equation of `youngGrid`. -/
+lemma youngGrid_def (s t : ℝ) (k : ℕ) :
+    D.youngGrid s t k = equalSewn (youngIncrement D.X D.Y) s t k :=
+  rfl
+
 /-- The uniform grid sum equals the step sum along `gridNode`. -/
 private lemma youngGrid_eq_step (s t : ℝ) (k : ℕ) :
     D.youngGrid s t k = stepSum (youngIncrement D.X D.Y) (gridNode s t k) k := by
@@ -124,16 +135,16 @@ private lemma norm_youngGrid_sub {s t : ℝ} (hs : D.a ≤ s) (hst : s ≤ t) (h
   have h0 := gridNode_zero s t k
   have hlast : gridNode s t k k = t := gridNode_last hk
   have hXfin : pathVariationPower D.p D.X s t ≠ ∞ :=
-    ne_top_of_le_ne_top D.hVp (pathVariationPower_mono hs ht D.p D.X)
+    ne_top_of_le_ne_top D.pathVariationPower_X_ne_top (pathVariationPower_mono hs ht D.p D.X)
   have hYfin : pathVariationPower D.q D.Y s t ≠ ∞ :=
-    ne_top_of_le_ne_top D.hVq (pathVariationPower_mono hs ht D.q D.Y)
-  have hbound := young_step_bound D.hp D.hq D.hpq
+    ne_top_of_le_ne_top D.pathVariationPower_Y_ne_top (pathVariationPower_mono hs ht D.q D.Y)
+  have hbound := young_step_bound D.one_le_p D.one_le_q D.one_lt_inv_add_inv
     D.X D.Y k (gridNode s t k)
     (monotone_gridNode hst k) (by simpa [h0, hlast] using hXfin)
     (by simpa [h0, hlast] using hYfin)
   rw [← youngGrid_eq_step s t k, h0, hlast] at hbound
   exact hbound.trans (mul_le_mul_of_nonneg_right
-    (youngPartial_le_loose (by simpa [youngTheta] using D.hpq) (k - 1))
+    (youngPartial_le_loose (by simpa [youngTheta] using D.one_lt_inv_add_inv) (k - 1))
     (youngModulus_nonneg D.X D.Y s t))
 
 /-- Split a rectangular range into consecutive blocks. -/
@@ -186,11 +197,11 @@ lemma youngModulus_le_eta {s t η : ℝ}
     youngModulus D.p D.q D.X D.Y s t ≤
       η ^ (youngTheta D.p D.q - 1) * youngCtrl D.p D.q D.X D.Y s t := by
   have hθ1 : 0 ≤ youngTheta D.p D.q - 1 :=
-    sub_nonneg.mpr (by simpa [youngTheta] using D.hpq.le)
-  rw [youngModulus_eq_ctrl_pow D.hp D.hq D.hpq
+    sub_nonneg.mpr (by simpa [youngTheta] using D.one_lt_inv_add_inv.le)
+  rw [youngModulus_eq_ctrl_pow D.one_le_p D.one_le_q D.one_lt_inv_add_inv
     D.X D.Y s t]
   rcases eq_or_lt_of_le (youngCtrl_nonneg D.X D.Y s t) with h0 | hpos
-  · rw [← h0, Real.zero_rpow (youngTheta_pos D.hpq).ne', mul_zero]
+  · rw [← h0, Real.zero_rpow (youngTheta_pos D.one_lt_inv_add_inv).ne', mul_zero]
   · have hsplit : youngCtrl D.p D.q D.X D.Y s t ^ youngTheta D.p D.q =
         youngCtrl D.p D.q D.X D.Y s t ^ (youngTheta D.p D.q - 1) *
           youngCtrl D.p D.q D.X D.Y s t := by
@@ -216,11 +227,11 @@ lemma ctrl_sum_seq (n : ℕ) (c : ℕ → ℝ) (hc : Monotone c) (h0 : D.a ≤ c
     have hmid : c 0 ≤ c n := hc (Nat.zero_le n)
     have hcn : c n ≤ D.b := hstep.trans hn
     have hfinX : pathVariationPower D.p D.X (c 0) (c (n + 1)) ≠ ∞ :=
-      ne_top_of_le_ne_top D.hVp (pathVariationPower_mono h0 hn D.p D.X)
+      ne_top_of_le_ne_top D.pathVariationPower_X_ne_top (pathVariationPower_mono h0 hn D.p D.X)
     have hfinY : pathVariationPower D.q D.Y (c 0) (c (n + 1)) ≠ ∞ :=
-      ne_top_of_le_ne_top D.hVq (pathVariationPower_mono h0 hn D.q D.Y)
+      ne_top_of_le_ne_top D.pathVariationPower_Y_ne_top (pathVariationPower_mono h0 hn D.q D.Y)
     exact (add_le_add (ih hcn) le_rfl).trans
-      (youngCtrl_superadd hmid hstep D.hp D.hq D.hpq
+      (youngCtrl_superadd hmid hstep D.one_le_p D.one_le_q D.one_lt_inv_add_inv
         D.X D.Y hfinX hfinY)
 
 /-- Refining every block of a short grid changes the Young sum by a small amount. -/
@@ -243,7 +254,7 @@ private lemma norm_youngGrid_mul_sub {s t η : ℝ} (hs : D.a ≤ s) (hst : s �
     rw [hgrid, ← sum_sub_distrib]
   rw [hsum]
   refine (norm_sum_le _ _).trans ?_
-  have hθ : 1 < youngTheta D.p D.q := by simpa [youngTheta] using D.hpq
+  have hθ : 1 < youngTheta D.p D.q := by simpa [youngTheta] using D.one_lt_inv_add_inv
   have hcoef : 0 ≤ youngLoose (youngTheta D.p D.q) * η ^ (youngTheta D.p D.q - 1) :=
     mul_nonneg (youngLoose_nonneg _) (Real.rpow_nonneg hη _)
   have hterm : ∀ i ∈ range k,
@@ -289,7 +300,7 @@ private lemma norm_youngGrid_mul_sub {s t η : ℝ} (hs : D.a ≤ s) (hst : s �
 private lemma exists_youngGrid_cauchy (ε : ℝ) (hε : 0 < ε) :
     ∃ K : ℕ, 0 < K ∧ ∀ s t : ℝ, D.a ≤ s → s ≤ t → t ≤ D.b →
       ∀ k m : ℕ, K ≤ k → K ≤ m → ‖D.youngGrid s t k - D.youngGrid s t m‖ < ε := by
-  have hθ : 1 < youngTheta D.p D.q := by simpa [youngTheta] using D.hpq
+  have hθ : 1 < youngTheta D.p D.q := by simpa [youngTheta] using D.one_lt_inv_add_inv
   have hθ1 : 0 < youngTheta D.p D.q - 1 := sub_pos.mpr hθ
   set Λ : ℝ := youngLoose (youngTheta D.p D.q)
   set Ω : ℝ := youngCtrl D.p D.q D.X D.Y D.a D.b
@@ -313,12 +324,12 @@ private lemma exists_youngGrid_cauchy (ε : ℝ) (hε : 0 < ε) :
     rw [hclear]
     linarith [hε, hC]
   obtain ⟨δ, hδ, hδc⟩ :=
-    exists_ctrl_short D.hp D.hq D.hpq
-      D.X D.Y D.hX D.hY
-      D.hVp D.hVq η hη
+    exists_ctrl_short D.one_le_p D.one_le_q D.one_lt_inv_add_inv
+      D.X D.Y D.continuousOn_X D.continuousOn_Y
+      D.pathVariationPower_X_ne_top D.pathVariationPower_Y_ne_top η hη
   obtain ⟨K, hK⟩ := exists_nat_gt ((D.b - D.a) / δ)
   have hK0 : 0 < K := Nat.cast_pos.mp (lt_of_le_of_lt
-    (div_nonneg (sub_nonneg.mpr D.hab) hδ.le) hK)
+    (div_nonneg (sub_nonneg.mpr D.a_le_b) hδ.le) hK)
   refine ⟨K, hK0, fun s t hs hst ht k m hk hm => ?_⟩
   have hk0 : 0 < k := lt_of_lt_of_le hK0 hk
   have hm0 : 0 < m := lt_of_lt_of_le hK0 hm
@@ -330,7 +341,7 @@ private lemma exists_youngGrid_cauchy (ε : ℝ) (hε : 0 < ε) :
       have hmul : (D.b - D.a) / δ * δ < (K : ℝ) * δ :=
         mul_lt_mul_of_pos_right hK hδ
       simpa [div_mul_cancel₀ _ hδ.ne', mul_comm (K : ℝ) δ] using hmul
-    exact lt_of_le_of_lt (div_le_div_of_nonneg_left (sub_nonneg.mpr D.hab)
+    exact lt_of_le_of_lt (div_le_div_of_nonneg_left (sub_nonneg.mpr D.a_le_b)
       (Nat.cast_pos.mpr hK0) (Nat.cast_le.mpr hn)) hKcast
   have hpiece : ∀ n : ℕ, K ≤ n → ∀ i < n,
       youngCtrl D.p D.q D.X D.Y (equalNode s t n i)
@@ -350,9 +361,9 @@ private lemma exists_youngGrid_cauchy (ε : ℝ) (hε : 0 < ε) :
     exact hδc _ _ (le_trans hs hL.1) (equalNode_mono hst n (Nat.le_succ i))
       (le_trans hR.2 ht) hlt
   have hctrl : youngCtrl D.p D.q D.X D.Y s t ≤ Ω := by
-    simpa [Ω] using youngCtrl_mono hs hst ht D.hp D.hq
-      D.hpq D.X D.Y
-      D.hVp D.hVq
+    simpa [Ω] using youngCtrl_mono hs ht D.one_le_p D.one_le_q
+      D.one_lt_inv_add_inv D.X D.Y
+      D.pathVariationPower_X_ne_top D.pathVariationPower_Y_ne_top
   have hsmall : youngLoose (youngTheta D.p D.q) * η ^ (youngTheta D.p D.q - 1) *
       youngCtrl D.p D.q D.X D.Y s t ≤ ε / 3 := by
     rw [hηpow]
@@ -389,6 +400,12 @@ variable (D) in
 @[expose]
 def youngLimit (s t : ℝ) : F :=
   limUnder atTop (fun k => D.youngGrid s t (k + 1))
+
+omit [CompleteSpace F] in
+/-- Defining equation of `youngLimit`. -/
+lemma youngLimit_def (s t : ℝ) :
+    D.youngLimit s t = limUnder atTop (fun k => D.youngGrid s t (k + 1)) :=
+  rfl
 
 /-- Uniform Young sums converge to `youngLimit` as the grid size tends to infinity. -/
 lemma tendsto_youngGrid {s t : ℝ} (hs : D.a ≤ s) (hst : s ≤ t) (ht : t ≤ D.b) :
@@ -427,33 +444,18 @@ lemma norm_youngLimit_sub {s t : ℝ} (hs : D.a ≤ s) (hst : s ≤ t) (ht : t �
   intro k
   simpa [youngIncrement] using norm_youngGrid_sub hs hst ht (Nat.succ_pos k)
 
-/-- Each uniform grid node depends continuously on the interval endpoints. -/
-private lemma continuous_equalNode (k i : ℕ) :
-    Continuous (fun z : ℝ × ℝ => equalNode z.1 z.2 k i) := by
-  unfold equalNode
-  exact continuous_fst.add (((continuous_snd.sub continuous_fst).mul continuous_const))
-
-omit [CompleteSpace F] in
-/-- Uniform grid nodes map `sewingTriangle a b` into `[a, b]`. -/
-private lemma equalNode_mapsTo {k i : ℕ} (hk : 0 < k) (hi : i ≤ k) :
-    Set.MapsTo (fun z : ℝ × ℝ => equalNode z.1 z.2 k i) (sewingTriangle D.a D.b)
-      (Set.Icc D.a D.b) := by
-  intro z hp
-  have hmem := equalNode_mem hp.2.1 hk hi
-  exact ⟨le_trans hp.1 hmem.1, le_trans hmem.2 hp.2.2⟩
-
 omit [CompleteSpace F] in
 /-- Each piece of a uniform Young sum is continuous on `sewingTriangle a b`. -/
 private lemma continuousOn_youngPiece {k i : ℕ} (hk : 0 < k) (hi : i < k) :
     ContinuousOn (fun z : ℝ × ℝ => youngIncrement D.X D.Y
       (equalNode z.1 z.2 k i) (equalNode z.1 z.2 k (i + 1))) (sewingTriangle D.a D.b) := by
-  have hYc := D.hY.comp (continuous_equalNode k i).continuousOn
-    (equalNode_mapsTo hk (le_of_lt hi))
+  have hYc := D.continuousOn_Y.comp (continuous_equalNode k i).continuousOn
+    (mapsTo_equalNode hk (le_of_lt hi))
   have hsub :=
-    (D.hX.comp (continuous_equalNode k (i + 1)).continuousOn
-      (equalNode_mapsTo hk (Nat.succ_le_of_lt hi))).sub
-      (D.hX.comp (continuous_equalNode k i).continuousOn
-        (equalNode_mapsTo hk (le_of_lt hi)))
+    (D.continuousOn_X.comp (continuous_equalNode k (i + 1)).continuousOn
+      (mapsTo_equalNode hk (Nat.succ_le_of_lt hi))).sub
+      (D.continuousOn_X.comp (continuous_equalNode k i).continuousOn
+        (mapsTo_equalNode hk (le_of_lt hi)))
   simpa [youngIncrement] using hYc.clm_apply hsub
 
 omit [CompleteSpace F] in

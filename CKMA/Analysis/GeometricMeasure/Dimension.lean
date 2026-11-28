@@ -48,6 +48,12 @@ def HasFrostmanBound {E : Type*} [MetricSpace E] [MeasurableSpace E]
     (μ : Measure E) (s C : ℝ) : Prop :=
   ∀ (x : E) (r : ℝ), 0 < r → μ (Metric.ball x r) ≤ ENNReal.ofReal (C * r ^ s)
 
+/-- The defining ball bound of `HasFrostmanBound`. -/
+theorem hasFrostmanBound_iff {E : Type*} [MetricSpace E] [MeasurableSpace E]
+    {μ : Measure E} {s C : ℝ} : HasFrostmanBound μ s C ↔
+      ∀ (x : E) (r : ℝ), 0 < r → μ (Metric.ball x r) ≤ ENNReal.ofReal (C * r ^ s) :=
+  Iff.rfl
+
 /-- **37.4**: positivity of Hausdorff measure on a compact Euclidean set is equivalent to
 an actually supported probability with a finite Frostman constant. At positive exponent this
 positivity is equivalent to positivity of Hausdorff content. -/
@@ -63,6 +69,11 @@ theorem frostman_compact {d : ℕ} {s : ℝ} (hs : 0 < s)
 def planarProjection (θ : ℝ) (x : EuclideanSpace ℝ (Fin 2)) : ℝ :=
   Real.cos θ * x 0 + Real.sin θ * x 1
 
+/-- The coordinate formula of `planarProjection`. -/
+theorem planarProjection_apply (θ : ℝ) (x : EuclideanSpace ℝ (Fin 2)) :
+    planarProjection θ x = Real.cos θ * x 0 + Real.sin θ * x 1 :=
+  rfl
+
 /-- **37.8**, planar Marstrand projection, including positive length above dimension one. -/
 theorem planar_projection_dimension {A : Set (EuclideanSpace ℝ (Fin 2))} (hA : MeasurableSet A) :
     ∀ᵐ θ ∂volume, dimH (planarProjection θ '' A) = min 1 (dimH A) ∧
@@ -74,6 +85,12 @@ theorem planar_projection_dimension {A : Set (EuclideanSpace ℝ (Fin 2))} (hA :
 def IsPurelyOneUnrectifiable (A : Set (EuclideanSpace ℝ (Fin 2))) : Prop :=
   ∀ (L : ℝ≥0) (f : ℝ → EuclideanSpace ℝ (Fin 2)), LipschitzWith L f →
     Measure.hausdorffMeasure 1 (A ∩ Set.range f) = 0
+
+/-- The defining property of `IsPurelyOneUnrectifiable`. -/
+theorem isPurelyOneUnrectifiable_iff {A : Set (EuclideanSpace ℝ (Fin 2))} :
+    IsPurelyOneUnrectifiable A ↔ ∀ (L : ℝ≥0) (f : ℝ → EuclideanSpace ℝ (Fin 2)),
+      LipschitzWith L f → Measure.hausdorffMeasure 1 (A ∩ Set.range f) = 0 :=
+  Iff.rfl
 
 /-- **37.21**, planar Besicovitch–Federer for Borel sets of finite length. -/
 theorem planar_besicovitch_federer {A : Set (EuclideanSpace ℝ (Fin 2))}

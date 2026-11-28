@@ -9,7 +9,7 @@ public import Mathlib.Analysis.Convex.Extreme
 public import Mathlib.Analysis.Normed.Group.AddTorsor
 public import Mathlib.MeasureTheory.Integral.Bochner.Basic
 public import Mathlib.Topology.Algebra.ContinuousAffineMap
-public import Mathlib.Topology.ContinuousMap.CompactlySupported
+import Mathlib.Topology.ContinuousMap.CompactlySupported
 import Mathlib.Analysis.LocallyConvex.SeparatingDual
 import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Real
 
@@ -26,8 +26,8 @@ the Riesz measure of a positive extension is the representing measure.
 
 ## Main results
 
-* `CKMA.exists_choquetMeasure_of_compact`: Choquet representation theorem on compact metrizable
-  convex sets (GAPS 12.9).
+* `CKMA.exists_choquetMeasure`: Choquet representation theorem on compact metrizable
+  convex sets (**12.9**).
 -/
 
 public section
@@ -42,6 +42,7 @@ open scoped CompactlySupported
 variable {V : Type*} [AddCommGroup V] [Module ℝ V] [TopologicalSpace V]
   [IsTopologicalAddGroup V] [ContinuousSMul ℝ V] [LocallyConvexSpace ℝ V] [T2Space V]
 
+omit [IsTopologicalAddGroup V] [ContinuousSMul ℝ V] [LocallyConvexSpace ℝ V] [T2Space V] in
 /-- An affine scalar map preserves convex combinations. -/
 private lemma affine_combo (a : V →ᴬ[ℝ] ℝ) {s t : ℝ} (hst : s + t = 1) (p q : V) :
     a (s • p + t • q) = s * a p + t * a q := by
@@ -57,6 +58,7 @@ private lemma affine_combo (a : V →ᴬ[ℝ] ℝ) {s t : ℝ} (hst : s + t = 1)
   simp only [ContinuousAffineMap.coe_toAffineMap]
   ring
 
+omit [IsTopologicalAddGroup V] [ContinuousSMul ℝ V] [LocallyConvexSpace ℝ V] in
 /-- A singleton compact convex set is represented by the Dirac mass at its point. -/
 private theorem exists_choquet_dirac (K : Set V)
     [TopologicalSpace.MetrizableSpace K] [MeasurableSpace K] [BorelSpace K] (x : K)
@@ -132,9 +134,10 @@ private lemma exists_separatingSeq {K : Set V} [CompactSpace K]
   exact ⟨n, hn⟩
 
 /-- The least upper bound of the absolute values of a continuous linear functional on `K`. -/
-private def supAbs {K : Set V} [CompactSpace K] (ell : StrongDual ℝ V) : ℝ :=
+private def supAbs {K : Set V} (ell : StrongDual ℝ V) : ℝ :=
   sSup (range fun y : K => |ell y.1|)
 
+omit [IsTopologicalAddGroup V] [ContinuousSMul ℝ V] [LocallyConvexSpace ℝ V] [T2Space V] in
 /-- Absolute values on `K` do not exceed `supAbs`. -/
 private lemma abs_le_supAbs {K : Set V} [CompactSpace K] (ell : StrongDual ℝ V) (y : K) :
     |ell y.1| ≤ supAbs (K := K) ell := by
@@ -144,15 +147,17 @@ private lemma abs_le_supAbs {K : Set V} [CompactSpace K] (ell : StrongDual ℝ V
       (ell.continuous.comp (continuous_subtype_val : Continuous (fun z : K => (z : V))))
   exact le_csSup (isCompact_range hcont).bddAbove (mem_range_self (f := f) y)
 
+omit [IsTopologicalAddGroup V] [ContinuousSMul ℝ V] [LocallyConvexSpace ℝ V] [T2Space V] in
 /-- `supAbs` is nonnegative whenever `K` has a point. -/
 private lemma supAbs_nonneg {K : Set V} [CompactSpace K] (ell : StrongDual ℝ V) (y : K) :
     0 ≤ supAbs (K := K) ell :=
   (abs_nonneg _).trans (abs_le_supAbs (K := K) ell y)
 
 /-- The normalizing denominator `1 + supAbs`. -/
-private def denom {K : Set V} [CompactSpace K] (ell : StrongDual ℝ V) : ℝ :=
+private def denom {K : Set V} (ell : StrongDual ℝ V) : ℝ :=
   1 + supAbs (K := K) ell
 
+omit [IsTopologicalAddGroup V] [ContinuousSMul ℝ V] [LocallyConvexSpace ℝ V] [T2Space V] in
 /-- The denominator is positive. -/
 private lemma denom_pos {K : Set V} [CompactSpace K] (ell : StrongDual ℝ V) (y : K) :
     0 < denom (K := K) ell := by
@@ -161,9 +166,10 @@ private lemma denom_pos {K : Set V} [CompactSpace K] (ell : StrongDual ℝ V) (y
   linarith
 
 /-- A continuous linear functional normalized to take values in `[-1, 1]` on `K`. -/
-private def normalized {K : Set V} [CompactSpace K] (ell : StrongDual ℝ V) (y : K) : ℝ :=
+private def normalized {K : Set V} (ell : StrongDual ℝ V) (y : K) : ℝ :=
   ell y.1 / denom (K := K) ell
 
+omit [IsTopologicalAddGroup V] [ContinuousSMul ℝ V] [LocallyConvexSpace ℝ V] [T2Space V] in
 /-- Normalized values have absolute value at most one. -/
 private lemma abs_normalized_le {K : Set V} [CompactSpace K] (ell : StrongDual ℝ V)
     (y : K) : |normalized ell y| ≤ 1 := by
@@ -173,6 +179,7 @@ private lemma abs_normalized_le {K : Set V} [CompactSpace K] (ell : StrongDual �
   dsimp [denom] at h ⊢
   linarith
 
+omit [IsTopologicalAddGroup V] [ContinuousSMul ℝ V] [LocallyConvexSpace ℝ V] [T2Space V] in
 /-- Normalized functionals preserve convex combinations. -/
 private lemma normalized_combo {K : Set V} [CompactSpace K] (ell : StrongDual ℝ V)
     {s t : ℝ} (p q z : K) (hz : z.1 = s • p.1 + t • q.1) :
@@ -185,16 +192,18 @@ private lemma normalized_combo {K : Set V} [CompactSpace K] (ell : StrongDual �
 private def coeff (n : ℕ) : ℝ := ((1 : ℝ) / 2) ^ n
 
 /-- One summand of the strictly convex series. -/
-private def term {K : Set V} [CompactSpace K] (ell : ℕ → StrongDual ℝ V) (n : ℕ)
+private def term {K : Set V} (ell : ℕ → StrongDual ℝ V) (n : ℕ)
     (y : K) : ℝ :=
   coeff n * (normalized (ell n) y) ^ 2
 
+omit [IsTopologicalAddGroup V] [ContinuousSMul ℝ V] [LocallyConvexSpace ℝ V] [T2Space V] in
 /-- Each summand is nonnegative. -/
-private lemma term_nonneg {K : Set V} [CompactSpace K] (ell : ℕ → StrongDual ℝ V)
+private lemma term_nonneg {K : Set V} (ell : ℕ → StrongDual ℝ V)
     (n : ℕ) (y : K) : 0 ≤ term ell n y := by
   dsimp [term, coeff]
   positivity
 
+omit [IsTopologicalAddGroup V] [ContinuousSMul ℝ V] [LocallyConvexSpace ℝ V] [T2Space V] in
 /-- Each summand is bounded by its geometric weight. -/
 private lemma norm_term_le {K : Set V} [CompactSpace K] (ell : ℕ → StrongDual ℝ V)
     (n : ℕ) (y : K) : ‖term ell n y‖ ≤ coeff n := by
@@ -215,19 +224,22 @@ private lemma norm_term_le {K : Set V} [CompactSpace K] (ell : ℕ → StrongDua
 private lemma summable_coeff : Summable coeff :=
   summable_geometric_two
 
+omit [IsTopologicalAddGroup V] [ContinuousSMul ℝ V] [LocallyConvexSpace ℝ V] [T2Space V] in
 /-- Each pointwise series of summands converges. -/
 private lemma summable_term {K : Set V} [CompactSpace K] (ell : ℕ → StrongDual ℝ V)
     (y : K) : Summable fun n => term ell n y :=
   Summable.of_norm_bounded summable_coeff fun n => norm_term_le ell n y
 
+omit [IsTopologicalAddGroup V] [ContinuousSMul ℝ V] [LocallyConvexSpace ℝ V] [T2Space V] in
 /-- Each summand is continuous. -/
-private lemma continuous_term {K : Set V} [CompactSpace K] (ell : ℕ → StrongDual ℝ V)
+private lemma continuous_term {K : Set V} (ell : ℕ → StrongDual ℝ V)
     (n : ℕ) : Continuous fun y : K => term ell n y := by
   have hlin : Continuous fun y : K => (ell n) y.1 :=
     (ell n).continuous.comp continuous_subtype_val
   unfold term normalized
   exact continuous_const.mul ((hlin.div_const (denom (K := K) (ell n))).pow 2)
 
+omit [IsTopologicalAddGroup V] [ContinuousSMul ℝ V] [LocallyConvexSpace ℝ V] [T2Space V] in
 /-- The sum of the series is continuous. -/
 private lemma continuous_series {K : Set V} [CompactSpace K] (ell : ℕ → StrongDual ℝ V) :
     Continuous fun y : K => ∑' n, term ell n y :=
@@ -238,11 +250,13 @@ private lemma continuous_series {K : Set V} [CompactSpace K] (ell : ℕ → Stro
 private def fStrict {K : Set V} [CompactSpace K] (ell : ℕ → StrongDual ℝ V) : C(K, ℝ) :=
   ⟨fun y => ∑' n, term ell n y, continuous_series ell⟩
 
+omit [IsTopologicalAddGroup V] [ContinuousSMul ℝ V] [LocallyConvexSpace ℝ V] [T2Space V] in
 /-- Evaluation of the strictly convex series. -/
 private lemma fStrict_apply {K : Set V} [CompactSpace K] (ell : ℕ → StrongDual ℝ V)
     (y : K) : fStrict ell y = ∑' n, term ell n y :=
   rfl
 
+omit [IsTopologicalAddGroup V] [ContinuousSMul ℝ V] [LocallyConvexSpace ℝ V] [T2Space V] in
 /-- The series is nonnegative. -/
 private lemma fStrict_nonneg {K : Set V} [CompactSpace K] (ell : ℕ → StrongDual ℝ V)
     (y : K) : 0 ≤ fStrict ell y := by
@@ -256,6 +270,7 @@ private lemma sq_defect {s t a b : ℝ} (hst : s + t = 1) :
   rw [ht]
   ring
 
+omit [IsTopologicalAddGroup V] [ContinuousSMul ℝ V] [LocallyConvexSpace ℝ V] [T2Space V] in
 /-- The defect of one summand on a convex combination. -/
 private lemma term_defect {K : Set V} [CompactSpace K] (ell : ℕ → StrongDual ℝ V)
     (n : ℕ) {s t : ℝ} (hst : s + t = 1) (p q z : K)
@@ -269,6 +284,7 @@ private lemma term_defect {K : Set V} [CompactSpace K] (ell : ℕ → StrongDual
   rw [ht]
   ring
 
+omit [IsTopologicalAddGroup V] [ContinuousSMul ℝ V] [LocallyConvexSpace ℝ V] [T2Space V] in
 /-- The series is strictly convex along nontrivial segments that the sequence separates. -/
 private lemma fStrict_strict {K : Set V} [CompactSpace K] (ell : ℕ → StrongDual ℝ V)
     (hell : ∀ ⦃p q : K⦄, p ≠ q → ∃ n, ell n p.1 ≠ ell n q.1)
@@ -311,6 +327,7 @@ private lemma fStrict_strict {K : Set V} [CompactSpace K] (ell : ℕ → StrongD
   have htsum := hhas.tsum_eq
   linarith
 
+omit [IsTopologicalAddGroup V] [ContinuousSMul ℝ V] [LocallyConvexSpace ℝ V] [T2Space V] in
 /-- The series is not the restriction of a continuous affine scalar map. -/
 private lemma fStrict_not_mem_range {K : Set V} [CompactSpace K] (hc : Convex ℝ K)
     (hns : ¬ Subsingleton K) (ell : ℕ → StrongDual ℝ V)
@@ -350,6 +367,8 @@ private def majorants {K : Set V} (g : C(K, ℝ)) : Set (V →ᴬ[ℝ] ℝ) :=
 private def valueAt {K : Set V} (g : C(K, ℝ)) (z : K) : Set ℝ :=
   (fun a => a z.1) '' majorants g
 
+omit [AddCommGroup V] [Module ℝ V] [IsTopologicalAddGroup V] [ContinuousSMul ℝ V]
+  [LocallyConvexSpace ℝ V] [T2Space V] in
 /-- A continuous function on compact `K` is bounded above. -/
 private lemma exists_upper_bound {K : Set V} [CompactSpace K] (g : C(K, ℝ)) :
     ∃ M : ℝ, ∀ y : K, g y ≤ M := by
@@ -359,6 +378,7 @@ private lemma exists_upper_bound {K : Set V} [CompactSpace K] (g : C(K, ℝ)) :
     _ = ‖g y‖ := (Real.norm_eq_abs _).symm
     _ ≤ ‖g‖ := ContinuousMap.norm_coe_le_norm g y
 
+omit [IsTopologicalAddGroup V] [ContinuousSMul ℝ V] [LocallyConvexSpace ℝ V] [T2Space V] in
 /-- Every continuous function on compact `K` admits a constant affine majorant. -/
 private lemma majorants_nonempty {K : Set V} [CompactSpace K] (g : C(K, ℝ)) :
     (majorants g).Nonempty := by
@@ -367,12 +387,14 @@ private lemma majorants_nonempty {K : Set V} [CompactSpace K] (g : C(K, ℝ)) :
   intro y
   simpa [ContinuousAffineMap.coe_const] using hM y
 
+omit [IsTopologicalAddGroup V] [ContinuousSMul ℝ V] [LocallyConvexSpace ℝ V] [T2Space V] in
 /-- The set of majorant values is nonempty. -/
 private lemma valueAt_nonempty {K : Set V} [CompactSpace K] (g : C(K, ℝ)) (z : K) :
     (valueAt g z).Nonempty := by
   obtain ⟨a, ha⟩ := majorants_nonempty g
   exact ⟨a z.1, a, ha, rfl⟩
 
+omit [IsTopologicalAddGroup V] [ContinuousSMul ℝ V] [LocallyConvexSpace ℝ V] [T2Space V] in
 /-- The set of majorant values is bounded below by the function. -/
 private lemma valueAt_bddBelow {K : Set V} (g : C(K, ℝ)) (z : K) :
     BddBelow (valueAt g z) := by
@@ -382,9 +404,10 @@ private lemma valueAt_bddBelow {K : Set V} (g : C(K, ℝ)) (z : K) :
   exact ha z
 
 /-- The concave envelope is the infimum of the affine majorants. -/
-private def envelope {K : Set V} [CompactSpace K] (g : C(K, ℝ)) (z : K) : ℝ :=
+private def envelope {K : Set V} (g : C(K, ℝ)) (z : K) : ℝ :=
   sInf (valueAt g z)
 
+omit [IsTopologicalAddGroup V] [ContinuousSMul ℝ V] [LocallyConvexSpace ℝ V] [T2Space V] in
 /-- A continuous function lies under its envelope. -/
 private lemma le_envelope {K : Set V} [CompactSpace K] (g : C(K, ℝ)) (z : K) :
     g z ≤ envelope g z := by
@@ -393,11 +416,13 @@ private lemma le_envelope {K : Set V} [CompactSpace K] (g : C(K, ℝ)) (z : K) :
   obtain ⟨a, ha, rfl⟩ := hr
   exact ha z
 
+omit [IsTopologicalAddGroup V] [ContinuousSMul ℝ V] [LocallyConvexSpace ℝ V] [T2Space V] in
 /-- Each affine majorant lies over the envelope. -/
-private lemma envelope_le_of_majorant {K : Set V} [CompactSpace K] (g : C(K, ℝ)) (z : K)
+private lemma envelope_le_of_majorant {K : Set V} (g : C(K, ℝ)) (z : K)
     {a : V →ᴬ[ℝ] ℝ} (ha : a ∈ majorants g) : envelope g z ≤ a z.1 :=
   csInf_le (valueAt_bddBelow g z) ⟨a, ha, rfl⟩
 
+omit [IsTopologicalAddGroup V] [ContinuousSMul ℝ V] [LocallyConvexSpace ℝ V] [T2Space V] in
 /-- Some affine majorant nearly attains the envelope. -/
 private lemma exists_majorant_lt {K : Set V} [CompactSpace K] (g : C(K, ℝ)) (z : K)
     {ε : ℝ} (hε : 0 < ε) :
@@ -411,6 +436,7 @@ private lemma exists_majorant_lt {K : Set V} [CompactSpace K] (g : C(K, ℝ)) (z
     exact h a ha
   linarith
 
+omit [IsTopologicalAddGroup V] [ContinuousSMul ℝ V] [LocallyConvexSpace ℝ V] [T2Space V] in
 /-- The envelope is subadditive. -/
 private lemma envelope_add_le {K : Set V} [CompactSpace K] (g h : C(K, ℝ)) (z : K) :
     envelope (g + h) z ≤ envelope g z + envelope h z := by
@@ -427,6 +453,7 @@ private lemma envelope_add_le {K : Set V} [CompactSpace K] (g h : C(K, ℝ)) (z 
     simp [ContinuousAffineMap.add_apply]
   linarith
 
+omit [IsTopologicalAddGroup V] [ContinuousSMul ℝ V] [LocallyConvexSpace ℝ V] [T2Space V] in
 /-- The envelope is positively homogeneous. -/
 private lemma envelope_smul {K : Set V} [CompactSpace K] (g : C(K, ℝ)) (z : K)
     {c : ℝ} (hc : 0 < c) : envelope (c • g) z = c * envelope g z := by
@@ -466,6 +493,7 @@ private lemma envelope_smul {K : Set V} [CompactSpace K] (g : C(K, ℝ)) (z : K)
       rw [← mul_assoc, mul_inv_cancel₀ hc.ne', one_mul]
     linarith
 
+omit [IsTopologicalAddGroup V] [ContinuousSMul ℝ V] [LocallyConvexSpace ℝ V] [T2Space V] in
 /-- On a convex combination, the envelope of the series is concave. -/
 private lemma envelope_concave {K : Set V} [CompactSpace K] (ell : ℕ → StrongDual ℝ V)
     {s t : ℝ} (hs : 0 ≤ s) (ht : 0 ≤ t) (hst : s + t = 1) {p q z : K}
@@ -482,6 +510,7 @@ private lemma envelope_concave {K : Set V} [CompactSpace K] (ell : ℕ → Stron
   have hq := envelope_le_of_majorant (fStrict ell) q ha
   nlinarith
 
+omit [IsTopologicalAddGroup V] [ContinuousSMul ℝ V] [LocallyConvexSpace ℝ V] [T2Space V] in
 /-- A non-extreme point is a point of strict inequality for the series and its envelope. -/
 private lemma fStrict_lt_envelope_of_not_extreme {K : Set V} [CompactSpace K]
     (ell : ℕ → StrongDual ℝ V)
@@ -525,6 +554,7 @@ private def seriesDecomp {K : Set V} [CompactSpace K] (ell : ℕ → StrongDual 
   (LinearMap.range (affRestrictLM K)).subtype.coprod
     (LinearMap.toSpanSingleton ℝ C(K, ℝ) (fStrict ell))
 
+omit [IsTopologicalAddGroup V] [ContinuousSMul ℝ V] [LocallyConvexSpace ℝ V] [T2Space V] in
 /-- Pointwise value of an affine restriction plus a multiple of the series. -/
 private lemma seriesDecomp_apply {K : Set V} [CompactSpace K]
     (ell : ℕ → StrongDual ℝ V)
@@ -533,6 +563,7 @@ private lemma seriesDecomp_apply {K : Set V} [CompactSpace K]
   rw [seriesDecomp, LinearMap.coprod_apply, LinearMap.toSpanSingleton_apply]
   simp [ContinuousMap.add_apply, ContinuousMap.smul_apply, smul_eq_mul]
 
+omit [IsTopologicalAddGroup V] [ContinuousSMul ℝ V] [LocallyConvexSpace ℝ V] [T2Space V] in
 /-- A range element coming from an affine map evaluates as that map. -/
 private lemma range_apply {K : Set V} {a : V →ᴬ[ℝ] ℝ}
     {φ : LinearMap.range (affRestrictLM K)}
@@ -543,6 +574,7 @@ private lemma range_apply {K : Set V} {a : V →ᴬ[ℝ] ℝ}
   rw [hφ] at hcoe
   exact hcoe
 
+omit [IsTopologicalAddGroup V] [ContinuousSMul ℝ V] [LocallyConvexSpace ℝ V] [T2Space V] in
 /-- The decomposition is injective when the series is not affine. -/
 private lemma seriesDecomp_injective {K : Set V} [CompactSpace K] (hc : Convex ℝ K)
     (hns : ¬ Subsingleton K) (ell : ℕ → StrongDual ℝ V)
@@ -595,6 +627,7 @@ private def pairEval {K : Set V} [CompactSpace K] (x0 : K) (ell : ℕ → Strong
       smul_eq_mul, RingHom.id_apply, mul_add]
     ring
 
+omit [IsTopologicalAddGroup V] [ContinuousSMul ℝ V] [LocallyConvexSpace ℝ V] [T2Space V] in
 /-- The barycentric value of a series element does not exceed the envelope. -/
 private lemma pairEval_le_envelope {K : Set V} [CompactSpace K]
     (ell : ℕ → StrongDual ℝ V) (x0 : K)
@@ -671,6 +704,7 @@ private lemma pairEval_le_envelope {K : Set V} [CompactSpace K]
       obtain ⟨b, hb, rfl⟩ := hr
       exact hle_all b hb
 
+omit [IsTopologicalAddGroup V] [ContinuousSMul ℝ V] [LocallyConvexSpace ℝ V] [T2Space V] in
 /-- The envelope is upper semicontinuous. -/
 private lemma envelope_upperSemicontinuous {K : Set V} [CompactSpace K] (g : C(K, ℝ)) :
     UpperSemicontinuous (envelope g) := by
@@ -692,6 +726,7 @@ private lemma envelope_upperSemicontinuous {K : Set V} [CompactSpace K] (g : C(K
   exact isOpen_biUnion fun a _ =>
     isOpen_lt (a.continuous.comp continuous_subtype_val) continuous_const
 
+omit [IsTopologicalAddGroup V] [ContinuousSMul ℝ V] [LocallyConvexSpace ℝ V] [T2Space V] in
 /-- The series is bounded by its supremum norm. -/
 private lemma fStrict_le_norm {K : Set V} [CompactSpace K] (ell : ℕ → StrongDual ℝ V)
     (y : K) : fStrict (K := K) ell y ≤ ‖fStrict (K := K) ell‖ := by
@@ -702,6 +737,7 @@ private lemma fStrict_le_norm {K : Set V} [CompactSpace K] (ell : ℕ → Strong
     _ ≤ ‖fStrict (K := K) ell‖ :=
       ContinuousMap.norm_coe_le_norm (fStrict (K := K) ell) y
 
+omit [IsTopologicalAddGroup V] [ContinuousSMul ℝ V] [LocallyConvexSpace ℝ V] [T2Space V] in
 /-- The envelope of the series is bounded by the supremum norm of the series. -/
 private lemma abs_envelope_le {K : Set V} [CompactSpace K] (ell : ℕ → StrongDual ℝ V)
     (z : K) : |envelope (fStrict (K := K) ell) z| ≤ ‖fStrict (K := K) ell‖ := by
@@ -714,6 +750,7 @@ private lemma abs_envelope_le {K : Set V} [CompactSpace K] (ell : ℕ → Strong
     rw [ContinuousAffineMap.coe_const]
     exact fStrict_le_norm ell y
 
+omit [IsTopologicalAddGroup V] [ContinuousSMul ℝ V] [LocallyConvexSpace ℝ V] [T2Space V] in
 /-- Hahn–Banach extension of the barycentric evaluation. When the separating series is not
 affine, the evaluation at `x0` on affine restrictions plus multiples of the series extends to a
 positive linear functional on `C(K, ℝ)` that evaluates affine maps at `x0` and gives the series
@@ -829,6 +866,7 @@ private lemma exists_measure_integral_eq {K : Set V} [CompactSpace K] [Measurabl
     congr 1
   simpa [hfun] using hri.trans hΛ
 
+omit [IsTopologicalAddGroup V] [ContinuousSMul ℝ V] [LocallyConvexSpace ℝ V] [T2Space V] in
 /-- If a probability measure has barycenter `x0` for every affine map and integrates the series
 to the value of its envelope at `x0`, then it is carried by the set where the series equals its
 envelope. -/
@@ -917,7 +955,7 @@ private theorem exists_choquet_bonsall (K : Set V) (hK : IsCompact K) (hc : Conv
 
 /-- **12.9**: every point of a compact metrizable convex set is the barycenter of a
 probability measure carried by the extreme points. -/
-theorem exists_choquetMeasure_of_compact {V : Type*} [AddCommGroup V] [Module ℝ V]
+theorem exists_choquetMeasure {V : Type*} [AddCommGroup V] [Module ℝ V]
     [TopologicalSpace V] [IsTopologicalAddGroup V] [ContinuousSMul ℝ V]
     [LocallyConvexSpace ℝ V] [T2Space V] (K : Set V) (hK : IsCompact K) (hc : Convex ℝ K)
     [TopologicalSpace.MetrizableSpace K] [MeasurableSpace K] [BorelSpace K] (x : K) :

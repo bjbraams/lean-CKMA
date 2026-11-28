@@ -55,11 +55,6 @@ private lemma ae_differentiableAt_of_lipschitzOn_ball
   filter_upwards [hf.ae_differentiableWithinAt_of_mem (μ := μ)] with y hy hyball
   exact (hy hyball).differentiableAt (isOpen_ball.mem_nhds hyball)
 
-/-- In finite dimensions the strong dual is finite-dimensional. -/
-lemma finiteDimensional_strongDual [FiniteDimensional ℝ E] :
-    FiniteDimensional ℝ (StrongDual ℝ E) :=
-  (LinearMap.toContinuousLinearMap (𝕜 := ℝ) (E := E) (F' := ℝ)).finiteDimensional
-
 /-- In finite dimensions the strong dual has the same dimension as the original space. -/
 private lemma finrank_strongDual [FiniteDimensional ℝ E] :
     finrank ℝ (StrongDual ℝ E) = finrank ℝ E := by
@@ -71,9 +66,6 @@ at a vector. -/
 lemma exists_strongDual_eq_apply [FiniteDimensional ℝ E]
     (φ : StrongDual ℝ (StrongDual ℝ E)) :
     ∃ d : E, ∀ u : StrongDual ℝ E, φ u = u d := by
-  have : FiniteDimensional ℝ (StrongDual ℝ E) := finiteDimensional_strongDual
-  have : FiniteDimensional ℝ (StrongDual ℝ (StrongDual ℝ E)) :=
-    finiteDimensional_strongDual (E := StrongDual ℝ E)
   have hdim : finrank ℝ E = finrank ℝ (StrongDual ℝ (StrongDual ℝ E)) := by
     rw [finrank_strongDual (E := StrongDual ℝ E), finrank_strongDual]
   have hinj : Function.Injective (NormedSpace.inclusionInDoubleDual ℝ E).toLinearMap :=
@@ -162,7 +154,6 @@ theorem exists_tendsto_fderiv_of_lipschitzOn [FiniteDimensional ℝ E]
   have hdiff : ∀ n, DifferentiableAt ℝ f (y n) := fun n => (hy n).2 (hball n)
   have hfy : ∀ n, ‖fderiv ℝ f (y n)‖ ≤ (L : ℝ) := fun n =>
     norm_fderiv_le_of_lipschitzOn ℝ (isOpen_ball.mem_nhds (hball n)) hf
-  have : FiniteDimensional ℝ (StrongDual ℝ E) := finiteDimensional_strongDual
   obtain ⟨u, hu, φ, hφ, hφtend⟩ :=
     (isCompact_closedBall (0 : StrongDual ℝ E) (L : ℝ)).tendsto_subseq fun n => by
       simpa [mem_closedBall, dist_zero_right] using hfy n
@@ -240,7 +231,7 @@ private lemma differenceQuotient_le_of_ae_fderiv_le {f : E → ℝ} {S : Set E} 
         rw [add_sub_add_left_eq_sub, sub_smul]
       _ = |s - u| * ‖v‖ := by rw [norm_smul, Real.norm_eq_abs]
       _ = (‖v‖₊ : ℝ) * ‖s - u‖ := by
-        rw [mul_comm, ← Real.norm_eq_abs, coe_nnnorm]
+        rw [mul_comm, ← Real.norm_eq_abs, coe_nnNorm]
   have hgac : AbsolutelyContinuousOnInterval g 0 t :=
     (hf.comp hpathL hmaps').absolutelyContinuousOnInterval
   have hderiv_le : ∀ᵐ s ∂volume, s ∈ Icc 0 t → deriv g s ≤ α := by

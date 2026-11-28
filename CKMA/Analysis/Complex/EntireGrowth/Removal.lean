@@ -17,6 +17,14 @@ import Mathlib.Analysis.Normed.Group.Bounded
 
 An entire function that is not identically zero has finite vanishing order at `0`. Dividing out
 `z ^ m` leaves an entire function of no greater order, normalized to be nonzero at the origin.
+
+## Main results
+
+* `CKMA.differentiable_iterate_dslope`: iterated divided differences at `0` of an entire function
+  are entire.
+* `CKMA.exists_removedZero`: `f z = z ^ m g z` with `g` entire, `g 0 ≠ 0` and `m` the order of `f`
+  at `0`.
+* `CKMA.orderLE_of_pow_mul`: `g` has order at most that of `f = z ^ m g`.
 -/
 
 public section

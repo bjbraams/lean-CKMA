@@ -57,6 +57,12 @@ have 3,606 numbered entries. Surviving identifiers are unchanged; removed
 identifiers are not reused, and new entries take the next free number in their
 file.
 
+On 2026-11-28, the hypotheses of eleven entries were weakened where the Lean
+formalization showed them unnecessary and a mathematical check confirmed it,
+and entry 37.30 states a hypothesis it had left implicit; no conclusion or
+identifier changed. The changes are recorded in
+[SYNOPSIS-CHANGES.md](SYNOPSIS-CHANGES.md#hypothesis-review-2026-11-28).
+
 * 04. Real analysis, measure, and integration: [SYNOPSIS04.md](SYNOPSIS04.md), 52 numbered entries.
 * 05. Differentiation and the fine structure of real functions: [SYNOPSIS05.md](SYNOPSIS05.md), 50 numbered entries.
 * 06. Probability: measure-theoretic foundations and limit theory: [SYNOPSIS06.md](SYNOPSIS06.md), 79 numbered entries.

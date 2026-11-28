@@ -8,6 +8,7 @@ module
 public import CKMA.Analysis.Operator.Dilation.WoldSum
 
 import CKMA.Analysis.Operator.Dilation.L2Shift
+import CKMA.Analysis.InnerProductSpace.LpTwo
 
 /-!
 # Unitary extension of an isometry
@@ -43,19 +44,17 @@ universe u
 variable {H : Type u} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
 
 /-- Summands of the bilateral extension, indexed by the unitary slot and `ℤ`. -/
-@[expose, reducible] def woldSummandInt (V : H →ₗᵢ[ℂ] H) : Option ℤ → Type u
+abbrev woldSummandInt (V : H →ₗᵢ[ℂ] H) : Option ℤ → Type u
   | none => woldUnitarySubspace V
   | some _ => woldWanderingSubspace V
 
 /-- Each bilateral summand is a normed group. -/
-@[expose]
 instance woldSummandInt.instNormedAddCommGroup (V : H →ₗᵢ[ℂ] H) (i : Option ℤ) :
     NormedAddCommGroup (woldSummandInt V i) :=
   Option.rec (inferInstanceAs (NormedAddCommGroup (woldUnitarySubspace V)))
     (fun _ => inferInstanceAs (NormedAddCommGroup (woldWanderingSubspace V))) i
 
 /-- Each bilateral summand is a complex inner product space. -/
-@[expose]
 instance woldSummandInt.instInnerProductSpace (V : H →ₗᵢ[ℂ] H) (i : Option ℤ) :
     InnerProductSpace ℂ (woldSummandInt V i) :=
   Option.rec (inferInstanceAs (InnerProductSpace ℂ (woldUnitarySubspace V)))
@@ -90,11 +89,11 @@ private theorem woldExtendIndex_injective : Function.Injective woldExtendIndex :
       exact congrArg some h
 
 /-- The unitary slot stays in the unitary slot. -/
-@[simp] private theorem woldExtendIndex_none : woldExtendIndex none = none :=
+@[simp] theorem woldExtendIndex_none : woldExtendIndex none = none :=
   rfl
 
 /-- A nonnegative time is sent to the same integer. -/
-@[simp] private theorem woldExtendIndex_some (n : ℕ) : woldExtendIndex (some n) = some (n : ℤ) :=
+@[simp] theorem woldExtendIndex_some (n : ℕ) : woldExtendIndex (some n) = some (n : ℤ) :=
   rfl
 
 /-- Extend a finitely supported nonnegative coefficient by zero on negative times. -/
@@ -105,17 +104,17 @@ def woldPadFun (V : H →ₗᵢ[ℂ] H) (f : ∀ i, woldSummandNat V i) :
   | some k => if _h : 0 ≤ k then f (some k.toNat) else 0
 
 /-- Padding does not change the unitary coordinate. -/
-private theorem woldPadFun_none (V : H →ₗᵢ[ℂ] H) (f : ∀ i, woldSummandNat V i) :
+theorem woldPadFun_none (V : H →ₗᵢ[ℂ] H) (f : ∀ i, woldSummandNat V i) :
     woldPadFun V f none = f none :=
   rfl
 
 /-- Padding reads a nonnegative time at its integer index. -/
-private theorem woldPadFun_nat (V : H →ₗᵢ[ℂ] H) (f : ∀ i, woldSummandNat V i) (n : ℕ) :
+theorem woldPadFun_nat (V : H →ₗᵢ[ℂ] H) (f : ∀ i, woldSummandNat V i) (n : ℕ) :
     woldPadFun V f (some (n : ℤ)) = f (some n) := by
   simp [woldPadFun, Int.toNat_natCast]
 
 /-- Padding vanishes at a negative time. -/
-private theorem woldPadFun_neg (V : H →ₗᵢ[ℂ] H) (f : ∀ i, woldSummandNat V i) {k : ℤ}
+theorem woldPadFun_neg (V : H →ₗᵢ[ℂ] H) (f : ∀ i, woldSummandNat V i) {k : ℤ}
     (hk : k < 0) : woldPadFun V f (some k) = 0 := by
   simp [woldPadFun, not_le.mpr hk]
 
@@ -136,13 +135,8 @@ theorem summable_norm_sq_woldPadFun (V : H →ₗᵢ[ℂ] H) (f : lp (woldSumman
       dsimp only [Function.comp_apply, woldExtendIndex, φ]
       rw [woldPadFun_nat]
       rfl
-  have hp : 0 < (2 : ENNReal).toReal := by
-    rw [ENNReal.toReal_ofNat]
-    norm_num
-  have hsum : Summable fun j => ‖(f : ∀ i, woldSummandNat V i) j‖ ^ 2 := by
-    have hmem := (memℓp_gen_iff (p := 2) hp).1 (lp.memℓp f)
-    rw [ENNReal.toReal_ofNat] at hmem
-    simpa [Real.rpow_natCast] using hmem
+  have hsum : Summable fun j => ‖(f : ∀ i, woldSummandNat V i) j‖ ^ 2 :=
+    lp.summable_norm_sq f
   have hzero : ∀ x ∉ Set.range woldExtendIndex, φ x = 0 := by
     intro x hx
     cases x with
@@ -165,7 +159,7 @@ def woldPad (V : H →ₗᵢ[ℂ] H) (f : lp (woldSummandNat V) 2) : lp (woldSum
         (summable_norm_sq_woldPadFun V f))⟩
 
 /-- Evaluation of a padded sequence. -/
-private theorem woldPad_apply (V : H →ₗᵢ[ℂ] H) (f : lp (woldSummandNat V) 2) (i : Option ℤ) :
+theorem woldPad_apply (V : H →ₗᵢ[ℂ] H) (f : lp (woldSummandNat V) 2) (i : Option ℤ) :
     woldPad V f i = woldPadFun V f i :=
   rfl
 
@@ -201,11 +195,16 @@ def woldPadLinear (V : H →ₗᵢ[ℂ] H) :
   map_add' := woldPad_add V
   map_smul' := woldPad_smul V
 
+/-- `woldPadLinear V` applies `woldPad V`. -/
+theorem woldPadLinear_apply (V : H →ₗᵢ[ℂ] H) (f : lp (woldSummandNat V) 2) :
+    woldPadLinear V f = woldPad V f :=
+  rfl
+
 /-- Padding preserves the `ℓ²` norm. -/
 theorem norm_woldPad (V : H →ₗᵢ[ℂ] H) (f : lp (woldSummandNat V) 2) :
     ‖woldPad V f‖ = ‖f‖ := by
   rw [← sq_eq_sq₀ (norm_nonneg _) (norm_nonneg _)]
-  rw [lp_norm_sq_eq_tsum (woldPad V f), lp_norm_sq_eq_tsum f]
+  rw [lp.norm_sq_eq_tsum (woldPad V f), lp.norm_sq_eq_tsum f]
   let φ : Option ℤ → ℝ := fun i => ‖woldPadFun V (f : ∀ i, woldSummandNat V i) i‖ ^ 2
   have hcomp : (fun j => φ (woldExtendIndex j)) =
       fun j => ‖(f : ∀ i, woldSummandNat V i) j‖ ^ 2 := by
@@ -248,6 +247,11 @@ def woldPadIsometry (V : H →ₗᵢ[ℂ] H) :
   norm_map' f := by
     simpa [woldPadLinear] using norm_woldPad V f
 
+/-- `woldPadIsometry V` applies `woldPad V`. -/
+theorem woldPadIsometry_apply (V : H →ₗᵢ[ℂ] H) (f : lp (woldSummandNat V) 2) :
+    woldPadIsometry V f = woldPad V f :=
+  rfl
+
 /-- The source index of a bilaterally shifted coordinate. -/
 @[expose]
 def woldSlotSource : Option ℤ ≃ Option ℤ where
@@ -267,10 +271,10 @@ def woldSlotSource : Option ℤ ≃ Option ℤ where
     | some k => simp
 
 /-- The unitary slot is fixed by the source reindexing. -/
-@[simp] private theorem woldSlotSource_none : woldSlotSource none = none := rfl
+@[simp] theorem woldSlotSource_none : woldSlotSource none = none := rfl
 
 /-- A wandering slot is read from the preceding time. -/
-@[simp] private theorem woldSlotSource_some (k : ℤ) : woldSlotSource (some k) = some (k - 1) := rfl
+@[simp] theorem woldSlotSource_some (k : ℤ) : woldSlotSource (some k) = some (k - 1) := rfl
 
 /-- The inverse source map fixes the unitary slot. -/
 @[simp] theorem woldSlotSource_symm_none : woldSlotSource.symm none = none := rfl
@@ -293,6 +297,26 @@ def woldBilateralInvFun (V : H →ₗᵢ[ℂ] H) (f : ∀ i, woldSummandInt V i)
   | none => (woldUnitaryEquiv V).symm (f none)
   | some k => f (some (k + 1))
 
+/-- A bilateral step applies the unitary on the unitary coordinate. -/
+theorem woldBilateralFun_none (V : H →ₗᵢ[ℂ] H) (f : ∀ i, woldSummandInt V i) :
+    woldBilateralFun V f none = woldUnitaryEquiv V (f none) :=
+  rfl
+
+/-- A bilateral step reads a wandering coordinate from the preceding time. -/
+theorem woldBilateralFun_some (V : H →ₗᵢ[ℂ] H) (f : ∀ i, woldSummandInt V i) (k : ℤ) :
+    woldBilateralFun V f (some k) = f (some (k - 1)) :=
+  rfl
+
+/-- The inverse step applies the inverse unitary on the unitary coordinate. -/
+theorem woldBilateralInvFun_none (V : H →ₗᵢ[ℂ] H) (f : ∀ i, woldSummandInt V i) :
+    woldBilateralInvFun V f none = (woldUnitaryEquiv V).symm (f none) :=
+  rfl
+
+/-- The inverse step reads a wandering coordinate from the following time. -/
+theorem woldBilateralInvFun_some (V : H →ₗᵢ[ℂ] H) (f : ∀ i, woldSummandInt V i) (k : ℤ) :
+    woldBilateralInvFun V f (some k) = f (some (k + 1)) :=
+  rfl
+
 /-- A bilateral step preserves squared coordinate norms up to reindexing. -/
 private theorem norm_sq_woldBilateralFun (V : H →ₗᵢ[ℂ] H) (f : ∀ i, woldSummandInt V i)
     (i : Option ℤ) :
@@ -307,13 +331,8 @@ private theorem norm_sq_woldBilateralFun (V : H →ₗᵢ[ℂ] H) (f : ∀ i, wo
 /-- Squared norms stay summable under a bilateral step. -/
 theorem summable_norm_sq_woldBilateralFun (V : H →ₗᵢ[ℂ] H) (f : lp (woldSummandInt V) 2) :
     Summable fun i => ‖woldBilateralFun V (f : ∀ i, woldSummandInt V i) i‖ ^ 2 := by
-  have hp : 0 < (2 : ENNReal).toReal := by
-    rw [ENNReal.toReal_ofNat]
-    norm_num
-  have hsum : Summable fun i => ‖(f : ∀ i, woldSummandInt V i) i‖ ^ 2 := by
-    have hmem := (memℓp_gen_iff (p := 2) hp).1 (lp.memℓp f)
-    rw [ENNReal.toReal_ofNat] at hmem
-    simpa [Real.rpow_natCast] using hmem
+  have hsum : Summable fun i => ‖(f : ∀ i, woldSummandInt V i) i‖ ^ 2 :=
+    lp.summable_norm_sq f
   have hre : Summable fun i =>
       ‖(f : ∀ i, woldSummandInt V i) (woldSlotSource i)‖ ^ 2 :=
     (woldSlotSource.summable_iff
@@ -331,7 +350,7 @@ def woldBilateral (V : H →ₗᵢ[ℂ] H) (f : lp (woldSummandInt V) 2) :
         (summable_norm_sq_woldBilateralFun V f))⟩
 
 /-- Evaluation of one bilateral step. -/
-private theorem woldBilateral_apply (V : H →ₗᵢ[ℂ] H) (f : lp (woldSummandInt V) 2) (i : Option ℤ) :
+theorem woldBilateral_apply (V : H →ₗᵢ[ℂ] H) (f : lp (woldSummandInt V) 2) (i : Option ℤ) :
     woldBilateral V f i = woldBilateralFun V f i :=
   rfl
 
@@ -361,18 +380,18 @@ def woldBilateralLinear (V : H →ₗᵢ[ℂ] H) :
   map_add' := woldBilateral_add V
   map_smul' := woldBilateral_smul V
 
+/-- `woldBilateralLinear V` applies `woldBilateral V`. -/
+theorem woldBilateralLinear_apply (V : H →ₗᵢ[ℂ] H) (f : lp (woldSummandInt V) 2) :
+    woldBilateralLinear V f = woldBilateral V f :=
+  rfl
+
 /-- A bilateral step preserves the `ℓ²` norm. -/
 theorem norm_woldBilateral (V : H →ₗᵢ[ℂ] H) (f : lp (woldSummandInt V) 2) :
     ‖woldBilateral V f‖ = ‖f‖ := by
   rw [← sq_eq_sq₀ (norm_nonneg _) (norm_nonneg _)]
-  rw [lp_norm_sq_eq_tsum (woldBilateral V f), lp_norm_sq_eq_tsum f]
-  have hsum : Summable fun i => ‖(f : ∀ i, woldSummandInt V i) i‖ ^ 2 := by
-    have hp : 0 < (2 : ENNReal).toReal := by
-      rw [ENNReal.toReal_ofNat]
-      norm_num
-    have hmem := (memℓp_gen_iff (p := 2) hp).1 (lp.memℓp f)
-    rw [ENNReal.toReal_ofNat] at hmem
-    simpa [Real.rpow_natCast] using hmem
+  rw [lp.norm_sq_eq_tsum (woldBilateral V f), lp.norm_sq_eq_tsum f]
+  have hsum : Summable fun i => ‖(f : ∀ i, woldSummandInt V i) i‖ ^ 2 :=
+    lp.summable_norm_sq f
   have hs' : HasSum (fun i => ‖(f : ∀ i, woldSummandInt V i) (woldSlotSource i)‖ ^ 2)
       (∑' i, ‖(f : ∀ i, woldSummandInt V i) i‖ ^ 2) :=
     (woldSlotSource.hasSum_iff
@@ -393,19 +412,19 @@ def woldBilateralIsometry (V : H →ₗᵢ[ℂ] H) :
   norm_map' f := by
     simpa [woldBilateralLinear] using norm_woldBilateral V f
 
+/-- `woldBilateralIsometry V` applies `woldBilateral V`. -/
+theorem woldBilateralIsometry_apply (V : H →ₗᵢ[ℂ] H) (f : lp (woldSummandInt V) 2) :
+    woldBilateralIsometry V f = woldBilateral V f :=
+  rfl
+
 /-- The inverse bilateral step, as an `ℓ²` vector. -/
 @[expose]
 def woldBilateralInv (V : H →ₗᵢ[ℂ] H) (f : lp (woldSummandInt V) 2) :
     lp (woldSummandInt V) 2 :=
   ⟨woldBilateralInvFun V f, memℓp_gen (by
     have hsum : Summable fun i => ‖woldBilateralInvFun V (f : ∀ i, _) i‖ ^ 2 := by
-      have hp : 0 < (2 : ENNReal).toReal := by
-        rw [ENNReal.toReal_ofNat]
-        norm_num
-      have hmem := (memℓp_gen_iff (p := 2) hp).1 (lp.memℓp f)
-      rw [ENNReal.toReal_ofNat] at hmem
-      have hbase : Summable fun i => ‖(f : ∀ i, woldSummandInt V i) i‖ ^ 2 := by
-        simpa [Real.rpow_natCast] using hmem
+      have hbase : Summable fun i => ‖(f : ∀ i, woldSummandInt V i) i‖ ^ 2 :=
+        lp.summable_norm_sq f
       have hre : Summable fun i =>
           ‖(f : ∀ i, woldSummandInt V i) (woldSlotSource.symm i)‖ ^ 2 :=
         (woldSlotSource.symm.summable_iff
@@ -425,6 +444,11 @@ def woldBilateralInv (V : H →ₗᵢ[ℂ] H) (f : lp (woldSummandInt V) 2) :
     exact (summable_congr fun i =>
       (Real.rpow_natCast ‖woldBilateralInvFun V (f : ∀ j, woldSummandInt V j) i‖ 2).symm).mp
         hsum)⟩
+
+/-- Evaluation of the inverse bilateral step. -/
+theorem woldBilateralInv_apply (V : H →ₗᵢ[ℂ] H) (f : lp (woldSummandInt V) 2) (i : Option ℤ) :
+    woldBilateralInv V f i = woldBilateralInvFun V f i :=
+  rfl
 
 /-- The inverse step undoes a bilateral step. -/
 private theorem woldBilateralInv_woldBilateral (V : H →ₗᵢ[ℂ] H) (f : lp (woldSummandInt V) 2) :
@@ -496,6 +520,11 @@ def woldBilateralInvLinear (V : H →ₗᵢ[ℂ] H) :
         exact hpt (some (k + 1))
     exact hgoal.trans hsum.symm
 
+/-- `woldBilateralInvLinear V` applies `woldBilateralInv V`. -/
+theorem woldBilateralInvLinear_apply (V : H →ₗᵢ[ℂ] H) (f : lp (woldSummandInt V) 2) :
+    woldBilateralInvLinear V f = woldBilateralInv V f :=
+  rfl
+
 /-- The two bilateral steps are mutual inverses on the nose. -/
 theorem woldBilateralLinear_comp_inv (V : H →ₗᵢ[ℂ] H) :
     (woldBilateralLinear V).comp (woldBilateralInvLinear V) = LinearMap.id := by
@@ -522,7 +551,7 @@ def woldBilateralEquiv (V : H →ₗᵢ[ℂ] H) :
     (woldBilateralLinear_comp_inv V) (woldBilateralInvLinear_comp V)
 
 /-- Evaluation of the bilateral unitary. -/
-private theorem woldBilateralEquiv_apply (V : H →ₗᵢ[ℂ] H) (f : lp (woldSummandInt V) 2) :
+theorem woldBilateralEquiv_apply (V : H →ₗᵢ[ℂ] H) (f : lp (woldSummandInt V) 2) :
     woldBilateralEquiv V f = woldBilateral V f :=
   rfl
 
@@ -690,7 +719,7 @@ private theorem woldSummandIncl_zero (V : H →ₗᵢ[ℂ] H) (a : woldWandering
   rw [woldSummandIncl_some, woldShift_apply, pow_zero, one_apply_eq_self]
 
 /-- The extension inclusion, before the padding step. -/
-private theorem woldExtensionIncl_apply (V : H →ₗᵢ[ℂ] H) (x : H) :
+theorem woldExtensionIncl_apply (V : H →ₗᵢ[ℂ] H) (x : H) :
     woldExtensionIncl V x =
       woldPad V ((wold_isHilbertSum V).linearIsometryEquiv x) := by
   simp [woldExtensionIncl, woldPadIsometry, woldPadLinear, LinearIsometry.coe_comp,
@@ -753,7 +782,7 @@ private theorem woldBilateral_pow_single (V : H →ₗᵢ[ℂ] H) (n : ℕ) (a :
     simpa [Nat.cast_add, Nat.cast_one] using hshift
 
 /-- The inverse bilateral unitary, evaluated on `ℓ²`. -/
-private theorem woldBilateralEquiv_symm_apply (V : H →ₗᵢ[ℂ] H) (f : lp (woldSummandInt V) 2) :
+theorem woldBilateralEquiv_symm_apply (V : H →ₗᵢ[ℂ] H) (f : lp (woldSummandInt V) 2) :
     (woldBilateralEquiv V).symm f = woldBilateralInv V f := by
   simp [woldBilateralEquiv, woldBilateralInvLinear, LinearIsometryEquiv.coe_ofLinearIsometry_symm]
 

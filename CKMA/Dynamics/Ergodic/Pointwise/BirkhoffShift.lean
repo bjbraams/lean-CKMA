@@ -9,7 +9,9 @@ public import Mathlib.Data.EReal.Operations
 public import Mathlib.Order.LiminfLimsup
 public import Mathlib.Dynamics.BirkhoffSum.Average
 
-import Mathlib.Tactic
+import Mathlib.Analysis.Normed.Order.Lattice
+import Mathlib.Order.Filter.AtTopBot.Archimedean
+import Mathlib.Topology.Instances.EReal.Lemmas
 
 /-!
 # Shift invariance of extended Birkhoff limsups
@@ -38,26 +40,6 @@ namespace CKMA
 open Filter Topology
 
 variable {Ω : Type*}
-
-/-- Every extended-real sequence is cobounded above. -/
-@[deprecated "drop the argument: `isBoundedDefault` supplies it" (since := "2026-11-15")]
-lemma ereal_isCoboundedUnder_le {ι : Type*} (l : Filter ι) (u : ι → EReal) :
-    l.IsCoboundedUnder (· ≤ ·) u :=
-  isCobounded_le_of_bot
-
-/-- Every extended-real sequence is bounded above. -/
-@[deprecated "drop the argument: `isBoundedDefault` supplies it" (since := "2026-11-15")]
-lemma ereal_isBoundedUnder_le {ι : Type*} (l : Filter ι) (u : ι → EReal) :
-    l.IsBoundedUnder (· ≤ ·) u :=
-  isBounded_le_of_top
-
-/-- Every extended-real sequence is bounded below. -/
-@[deprecated "drop the argument: `isBoundedDefault` supplies it" (since := "2026-11-15")]
-lemma ereal_isBoundedUnder_ge {ι : Type*} (l : Filter ι) (u : ι → EReal) :
-    l.IsBoundedUnder (· ≥ ·) u :=
-  isBounded_ge_of_bot
-
-@[deprecated (since := "2026-11-15")] alias liminf_add_one := liminf_nat_add
 
 /-- Adding a real null sequence does not change the extended limsup of a real sequence. -/
 private lemma limsup_add_tendsto_zero {u z : ℕ → ℝ} (hz : Tendsto z atTop (𝓝 0)) :
@@ -234,6 +216,9 @@ private lemma birkhoffAverage_succ_comp (n : ℕ) (ω : Ω) :
 @[expose]
 def birkhoffCoeff (n : ℕ) : ℝ := (n + 2 : ℝ) / (n + 1)
 
+/-- Defining equation of `birkhoffCoeff`. -/
+lemma birkhoffCoeff_def (n : ℕ) : birkhoffCoeff n = (n + 2 : ℝ) / (n + 1) := rfl
+
 /-- The coefficient `(n+2)/(n+1)` stays at least `1`. -/
 private lemma one_le_birkhoffCoeff (n : ℕ) : 1 ≤ birkhoffCoeff n := by
   have hn : (0 : ℝ) < n + 1 := by positivity
@@ -266,10 +251,20 @@ private lemma tendsto_birkhoffCoeff : Tendsto birkhoffCoeff atTop (𝓝 1) := by
 def birkhoffLimsup (T : Ω → Ω) (f : Ω → ℝ) (ω : Ω) : EReal :=
   limsup (fun n => Real.toEReal (birkhoffAverage ℝ T f n ω)) atTop
 
+/-- Defining equation of `birkhoffLimsup`. -/
+lemma birkhoffLimsup_def (T : Ω → Ω) (f : Ω → ℝ) (ω : Ω) :
+    birkhoffLimsup T f ω = limsup (fun n => Real.toEReal (birkhoffAverage ℝ T f n ω)) atTop :=
+  rfl
+
 /-- Extended liminf of the Birkhoff averages at `ω`. -/
 @[expose]
 def birkhoffLiminf (T : Ω → Ω) (f : Ω → ℝ) (ω : Ω) : EReal :=
   liminf (fun n => Real.toEReal (birkhoffAverage ℝ T f n ω)) atTop
+
+/-- Defining equation of `birkhoffLiminf`. -/
+lemma birkhoffLiminf_def (T : Ω → Ω) (f : Ω → ℝ) (ω : Ω) :
+    birkhoffLiminf T f ω = liminf (fun n => Real.toEReal (birkhoffAverage ℝ T f n ω)) atTop :=
+  rfl
 
 /-- The extended limsup of the averages is unchanged by one application of `T`. -/
 lemma birkhoffLimsup_comp (ω : Ω) : birkhoffLimsup T f (T ω) = birkhoffLimsup T f ω := by

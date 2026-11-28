@@ -23,6 +23,12 @@ The squared `L²` norm is the integral of the squared pointwise norm. Translatin
 and subtracting the original function multiplies the Mathlib `L²` Fourier transform by the
 character `𝐞 ⟪h, ·⟫ - 1`. The Schwartz case is TauCeti's `fourier_comp_sub_const`; the general case
 follows by density of Schwartz functions in `L²`.
+
+## Main results
+
+* `CKMA.ofReal_norm_sq_eq_lintegral`: `‖u‖₂²` as the lower integral of `‖u x‖²`.
+* `CKMA.lintegral_ofReal_norm_sq_add_eq_fourier`: `∫ |u (x + h) - u x|² dx` equals
+  `∫ |𝐞 ⟪h, ξ⟫ - 1|² |û ξ|² dξ` for `u ∈ L²`.
 -/
 
 public section
@@ -52,7 +58,7 @@ theorem ofReal_norm_sq_eq_lintegral {α E : Type*} [MeasurableSpace α] [NormedA
         ← ENNReal.ofReal_rpow_of_nonneg ENNReal.toReal_nonneg zero_le_two,
         ENNReal.ofReal_toReal hne]
     _ = ((∫⁻ x, ‖f x‖ₑ ^ (2 : ℝ) ∂μ) ^ (1 / (2 : ℝ))) ^ (2 : ℝ) := by
-      rw [eLpNorm_eq_lintegral_rpow_enorm_toReal two_ne_zero ENNReal.ofNat_ne_top
+      rw [eLpNorm_eq_lintegral_rpow_eNorm_toReal two_ne_zero ENNReal.ofNat_ne_top
         (Lp.aestronglyMeasurable f), ENNReal.toReal_ofNat]
     _ = (∫⁻ x, ‖f x‖ₑ ^ (2 : ℝ) ∂μ) ^ ((1 / (2 : ℝ)) * 2) := by
       rw [← ENNReal.rpow_mul]

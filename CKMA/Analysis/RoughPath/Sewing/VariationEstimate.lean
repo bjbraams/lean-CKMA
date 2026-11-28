@@ -6,7 +6,6 @@ Authors: CKMA contributors
 module
 
 public import CKMA.Analysis.RoughPath.Sewing.Variation
-public import Mathlib.Analysis.Normed.Operator.Basic
 import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 import Mathlib.Analysis.Convex.SpecificFunctions.Basic
 
@@ -19,16 +18,21 @@ and short intervals carry an arbitrarily small control.
 
 ## Main definitions
 
-* `CKMA.youngIncrement`: left-point Young increment `Y s (X t - X s)`.
-* `CKMA.YoungLoeve.timeReflect`: time reflection of a path on `[c, d]`.
+* `CKMA.timeReflect`: time reflection of a path on `[c, d]`.
 
 ## Main results
 
 * `CKMA.YoungLoeve.exists_light_ctrl`: existence of an interior node with merged control at most
   twice the average.
 * `CKMA.YoungLoeve.young_step_bound`: loose Young–Loeve bound on partition sums by point deletion.
-* `CKMA.YoungLoeve.variation_almost_subadd`: almost-subadditivity of finite `p`-variation for
+* `CKMA.variation_almost_subadd`: almost-subadditivity of finite `p`-variation for
   continuous paths.
+* `CKMA.continuousOn_variationReal`: finite `p`-variation of a continuous path is continuous in
+  the right endpoint.
+
+## References
+
+* [P. K. Friz and M. Hairer, *A Course on Rough Paths*][frizhairer2020]
 -/
 
 public section
@@ -87,7 +91,7 @@ lemma exists_light_ctrl {n : ℕ} (hn : 2 ≤ n) (c : ℕ → ℝ) (hc : Monoton
     have hsum := sum_youngCtrl_two_mul_le hp hq hpq X Y (n / 2) c hc
       (ne_top_of_le_ne_top hX (pathVariationPower_mono (le_refl _) (hc htail) p X))
       (ne_top_of_le_ne_top hY (pathVariationPower_mono (le_refl _) (hc htail) q Y))
-    exact hsum.trans (youngCtrl_mono (le_refl (c 0)) (hc (by omega : (0 : ℕ) ≤ 2 * (n / 2)))
+    exact hsum.trans (youngCtrl_mono (le_refl (c 0))
       (hc htail) hp hq hpq X Y hX hY)
   have heven_le : ∑ k ∈ range ((n - 1) / 2),
       youngCtrl p q X Y (c (2 * k + 1)) (c (2 * k + 3)) ≤ Ω := by
@@ -105,7 +109,7 @@ lemma exists_light_ctrl {n : ℕ} (hn : 2 ≤ n) (c : ℕ → ℝ) (hc : Monoton
         simpa [c'] using ne_top_of_le_ne_top hY
           (pathVariationPower_mono hleft (hc hend) q Y)
       have hsum := sum_youngCtrl_two_mul_le hp hq hpq X Y ((n - 1) / 2) c' hc' hX' hY'
-      have hwide := youngCtrl_mono hleft (hc (by omega : 1 ≤ 2 * ((n - 1) / 2) + 1))
+      have hwide := youngCtrl_mono hleft
         (hc hend) hp hq hpq X Y hX hY
       simpa [c'] using hsum.trans hwide
   have hcoe : ((n / 2 : ℕ) : ℝ) + (((n - 1) / 2 : ℕ) : ℝ) = ((n - 1 : ℕ) : ℝ) := by
@@ -147,21 +151,6 @@ lemma exists_light_ctrl {n : ℕ} (hn : 2 ≤ n) (c : ℕ → ℝ) (hc : Monoton
     have hsum_le := add_le_add hodd_le heven_le
     linarith
 
-end YoungLoeve
-
-/-- The field of left-point Young increments `Y s (X t - X s)` for an operator-valued
-integrand. -/
-@[expose]
-def youngIncrement {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-    [NormedAddCommGroup F] [NormedSpace ℝ F] (X : ℝ → E) (Y : ℝ → E →L[ℝ] F) (s t : ℝ) : F :=
-  Y s (X t - X s)
-
-namespace YoungLoeve
-
-variable {E : Type*} [SeminormedAddCommGroup E]
-
-@[deprecated (since := "2026-11-15")] alias youngStep := youngIncrement
-
 /-- The three-point defect of `youngIncrement` is bounded by `youngModulus`. -/
 lemma norm_young_defect {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [NormedAddCommGroup F] [NormedSpace ℝ F] {s u t : ℝ} (hsu : s ≤ u) (hut : u ≤ t)
@@ -189,9 +178,9 @@ lemma norm_young_defect {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     exact norm_le_variationReal hsu (lt_of_lt_of_le zero_lt_one hq) hYsu
   have hXle := norm_le_variationReal hut (lt_of_lt_of_le zero_lt_one hp) hXut
   have hYm := Real.rpow_le_rpow (variationReal_nonneg q Y s u)
-    (variationReal_mono (le_refl s) hsu hut hY) (inv_nonneg.mpr (le_trans zero_le_one hq))
+    (variationReal_mono (le_refl s) hut hY) (inv_nonneg.mpr (le_trans zero_le_one hq))
   have hXm := Real.rpow_le_rpow (variationReal_nonneg p X u t)
-    (variationReal_mono hsu hut (le_refl t) hX) (inv_nonneg.mpr (le_trans zero_le_one hp))
+    (variationReal_mono hsu (le_refl t) hX) (inv_nonneg.mpr (le_trans zero_le_one hp))
   calc
     ‖(Y s - Y u) (X t - X u)‖ ≤ ‖Y s - Y u‖ * ‖X t - X u‖ := (Y s - Y u).le_opNorm _
     _ ≤ variationReal q Y s u ^ q⁻¹ * variationReal p X u t ^ p⁻¹ :=
@@ -286,6 +275,12 @@ lemma young_step_bound {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
         _ = youngPartial (youngTheta p q) n * youngModulus p q X Y (c 0) (c (n + 1)) := by
           rw [← youngPartial_step (by omega : 0 < n)]
 
+end YoungLoeve
+
+section Variation
+
+variable {E : Type*} [SeminormedAddCommGroup E]
+
 /-- Tail of an ordered partition, beginning at node `k`. -/
 private def suffixPart {s u : ℝ} (π : OrderedIntervalPartition s u) (k : ℕ) (hk : k ≤ π.size) :
     OrderedIntervalPartition (nodeSeq π k) u where
@@ -347,6 +342,11 @@ private lemma variationSum_take (p : ℝ) (X : ℝ → E) {s u : ℝ} (π : Orde
 @[expose]
 def timeReflect (c d : ℝ) (X : ℝ → E) (u : ℝ) : E :=
   X (c + d - u)
+
+omit [SeminormedAddCommGroup E] in
+/-- Defining equation of `timeReflect`. -/
+lemma timeReflect_apply (c d : ℝ) (X : ℝ → E) (u : ℝ) : timeReflect c d X u = X (c + d - u) :=
+  rfl
 
 /-- The partition read from right to left after time reflection. -/
 private def reflectPart (c d : ℝ) {s t : ℝ} (π : OrderedIntervalPartition s t) :
@@ -591,7 +591,7 @@ private lemma variation_right_boost {a b p : ℝ} (hp : 1 ≤ p) (X : ℝ → E)
   · have htu1 : t < t + δ / 2 := by linarith [hδpos]
     have hu1u : t + δ / 2 ≤ u := by linarith [not_lt.mp hlen]
     exact (hpiece (t + δ / 2) htu1 (hu1u.trans hub) (by linarith [hδpos])).trans
-      (variationReal_mono (le_refl t) htu1.le hu1u
+      (variationReal_mono (le_refl t) hu1u
         (ne_top_of_le_ne_top hfin (pathVariationPower_mono ht hub p X)))
 
 /-- Right variation of a continuous finite-variation path vanishes at the diagonal. -/
@@ -609,7 +609,7 @@ private lemma variation_right_vanish {a b p : ℝ} (hp : 1 ≤ p) (X : ℝ → E
     intro u htu hub
     obtain ⟨v, htv, hvb, _, hvε⟩ := hbad (u - t) (sub_pos.mpr htu)
     have _ := hvb
-    exact hvε.trans (variationReal_mono (le_refl t) htv.le (by linarith : v ≤ u)
+    exact hvε.trans (variationReal_mono (le_refl t) (by linarith : v ≤ u)
       (ne_top_of_le_ne_top hfin (pathVariationPower_mono ht hub p X)))
   have hiter : ∀ n : ℕ, ∀ u, t < u → u ≤ b →
       (7 / 4 : ℝ) ^ n * ε ≤ variationReal p X t u := by
@@ -767,7 +767,7 @@ lemma variation_almost_subadd {a b p : ℝ} (hp : 1 ≤ p) (X : ℝ → E)
         ne_top_of_le_ne_top hfin
           (pathVariationPower_mono (hs.trans (hst.trans hgt.le)) hub p X)
       have hle1 := ENNReal.toReal_mono hfinR (le_iSup (variationSum p X) (suffixPart π j hjle))
-      exact hle1.trans (variationReal_mono hgt.le hnRu (le_refl u)
+      exact hle1.trans (variationReal_mono hgt.le (le_refl u)
         (ne_top_of_le_ne_top hfin (pathVariationPower_mono (le_trans hs hst) hub p X)))
     have hαfin : pathVariationPower p X nL t ≠ ∞ :=
       ne_top_of_le_ne_top hfin (pathVariationPower_mono (hs.trans hsL) (htu.trans hub) p X)
@@ -776,7 +776,7 @@ lemma variation_almost_subadd {a b p : ℝ} (hp : 1 ≤ p) (X : ℝ → E)
     have hαM : α ≤ M := by
       have hle := norm_le_variationReal hnL (lt_of_lt_of_le zero_lt_one hp) hαfin
       have hv : variationReal p X nL t ≤ variationReal p X a b :=
-        variationReal_mono (hs.trans hsL) hnL (htu.trans hub) hfin
+        variationReal_mono (hs.trans hsL) (htu.trans hub) hfin
       exact hle.trans (Real.rpow_le_rpow (variationReal_nonneg p X nL t) hv
         (inv_nonneg.mpr (zero_le_one.trans hp)))
     have hβ : β < ξ := by
@@ -843,7 +843,7 @@ lemma continuousOn_variationReal {a b p : ℝ} (hp : 1 ≤ p) (X : ℝ → E)
       have hv := hR r hrt hr.2 hlenR
       have hsub' := hsub a t r (le_refl a) ht.1 hrt.le hr.2 hlen
       have hmono : variationReal p X a t ≤ variationReal p X a r :=
-        variationReal_mono (le_refl a) ht.1 hrt.le
+        variationReal_mono (le_refl a) hrt.le
           (ne_top_of_le_ne_top hfin (pathVariationPower_mono (le_refl a) hr.2 p X))
       have hdiff : variationReal p X a r - variationReal p X a t < ε := by linarith
       simpa [Real.dist_eq, abs_of_nonneg (sub_nonneg.mpr hmono)] using hdiff
@@ -857,7 +857,7 @@ lemma continuousOn_variationReal {a b p : ℝ} (hp : 1 ≤ p) (X : ℝ → E)
       have hv := hL r hr.1 hrt' hlenL
       have hsub' := hsub a r t (le_refl a) hr.1 hrt'.le ht.2 hlen
       have hmono : variationReal p X a r ≤ variationReal p X a t :=
-        variationReal_mono (le_refl a) hr.1 hrt'.le
+        variationReal_mono (le_refl a) hrt'.le
           (ne_top_of_le_ne_top hfin (pathVariationPower_mono (le_refl a) ht.2 p X))
       have hdiff : variationReal p X a t - variationReal p X a r < ε := by linarith
       simpa [Real.dist_eq, abs_of_nonneg (sub_nonneg.mpr hmono), abs_sub_comm] using hdiff
@@ -880,11 +880,17 @@ private lemma exists_variation_short {a b p : ℝ} (hp : 1 ≤ p) (X : ℝ → E
   have hfin_at : pathVariationPower p X a t ≠ ∞ :=
     ne_top_of_le_ne_top hfin (pathVariationPower_mono (le_refl a) ht p X)
   have hmono : variationReal p X a s ≤ variationReal p X a t :=
-    variationReal_mono (le_refl a) hs hst hfin_at
+    variationReal_mono (le_refl a) hst hfin_at
   have hsuper := variationReal_superadd hs hst hfin_at
   have hdiff : variationReal p X a t - variationReal p X a s < ε := by
     rwa [Real.dist_eq, abs_of_nonneg (sub_nonneg.mpr hmono)] at hclose
   linarith
+
+end Variation
+
+namespace YoungLoeve
+
+variable {E : Type*} [SeminormedAddCommGroup E]
 
 /-- Short intervals carry an arbitrarily small Young control. -/
 lemma exists_ctrl_short {a b p q : ℝ} (hp : 1 ≤ p) (hq : 1 ≤ q) (hpq : 1 < p⁻¹ + q⁻¹)

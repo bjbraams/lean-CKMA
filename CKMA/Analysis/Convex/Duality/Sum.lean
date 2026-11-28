@@ -8,7 +8,6 @@ module
 public import CKMA.Analysis.Convex.Basic
 public import TauCeti.Analysis.Convex.Subdifferential
 import CKMA.Analysis.Convex.Duality.FenchelRockafellar
-import Mathlib.Tactic
 
 /-!
 # The subdifferential sum rule
@@ -124,15 +123,13 @@ private lemma subset_subdifferential_add {f g : E → EReal}
   have hconv : Convex ℝ {p : E × ℝ | fTilt p.1 ≤ p.2} := by
     simpa [fTilt, add_zero] using
       (TauCeti.convex_epigraph_add_affine_iff B (-ξ) (0 : ℝ)).2 hcf
-  have hx_top : fTilt x + g x ≠ ⊤ :=
-    EReal.add_ne_top (htilt_ne_top hfx) hgx
   have hx_bot : fTilt x + g x ≠ ⊥ :=
     EReal.add_ne_bot_iff.mpr ⟨htilt_ne_bot x, hg.1 x⟩
   obtain ⟨u, hu, -⟩ := exists_fenchelDual_maximizer_of_qual
     (ContinuousLinearMap.id ℝ E) hproper hg hconv hcg
     ⟨htilt_ne_top hfin.1, by simpa [id_apply] using hfin.2⟩
     (by simpa [id_apply] using hcont)
-    ⟨by rw [hmarg]; exact hx_bot, by rw [hmarg]; exact hx_top⟩
+    (by rw [hmarg]; exact hx_bot)
   rw [hmarg, comp_id] at hu
   set S := TauCeti.fenchelConjugate B fTilt (-u) with hSdef
   set T := TauCeti.fenchelConjugate B g u with hTdef

@@ -30,9 +30,11 @@ Source: GAPS 45.2.
 ## Main results
 
 * `CKMA.norm_polydiscTaylorCoefficient_le`: Cauchy's estimate for multiindex Taylor coefficients.
-* `CKMA.polydisc_taylor`: normally convergent Taylor expansion on an open polydisc.
-* `CKMA.differentiableOn_of_locallyUniformLimit`: Weierstrass theorem for locally uniform limits
-  of holomorphic maps on an open subset of a complex normed space.
+* `CKMA.hasSum_polydiscTaylorCoefficient`, `CKMA.normallySummableOn_polydiscTaylor`: the Taylor
+  expansion on an open polydisc and its normal convergence.
+* `CKMA.differentiableOn_of_locallyUniformLimit`: Weierstrass theorem for limits, along any
+  nontrivial filter, of holomorphic maps on a subset of a complex normed space that converge
+  uniformly on a ball around each point.
 -/
 
 public section
@@ -49,10 +51,20 @@ open scoped BigOperators
 def polydisc {n : ℕ} (c : Fin n → ℂ) (R : Fin n → ℝ) : Set (Fin n → ℂ) :=
   {z | ∀ j, ‖z j - c j‖ < R j}
 
+/-- A point lies in the open polydisc when each coordinate lies in its open disc. -/
+theorem mem_polydisc {n : ℕ} {c z : Fin n → ℂ} {R : Fin n → ℝ} :
+    z ∈ polydisc c R ↔ ∀ j, ‖z j - c j‖ < R j :=
+  Iff.rfl
+
 /-- A closed polydisc with unequal polyradii. -/
 @[expose]
 def closedPolydisc {n : ℕ} (c : Fin n → ℂ) (R : Fin n → ℝ) : Set (Fin n → ℂ) :=
   {z | ∀ j, ‖z j - c j‖ ≤ R j}
+
+/-- A point lies in the closed polydisc when each coordinate lies in its closed disc. -/
+theorem mem_closedPolydisc {n : ℕ} {c z : Fin n → ℂ} {R : Fin n → ℝ} :
+    z ∈ closedPolydisc c R ↔ ∀ j, ‖z j - c j‖ ≤ R j :=
+  Iff.rfl
 
 /-- Multivariable Cauchy coefficients on the distinguished boundary. -/
 @[expose]
@@ -60,6 +72,13 @@ def polydiscTaylorCoefficient {n : ℕ} (f : (Fin n → ℂ) → ℂ)
     (c : Fin n → ℂ) (R : Fin n → ℝ) (α : Fin n → ℕ) : ℂ :=
   (2 * Real.pi * Complex.I) ^ (-(n : ℤ)) *
     ∯ z in T(c, R), (∏ j, (z j - c j) ^ (-(α j : ℤ) - 1)) * f z
+
+/-- The Taylor coefficient is `(2πi)⁻ⁿ` times the torus integral of `∏ (zⱼ - cⱼ)^(-αⱼ-1) f`. -/
+theorem polydiscTaylorCoefficient_def {n : ℕ} (f : (Fin n → ℂ) → ℂ) (c : Fin n → ℂ)
+    (R : Fin n → ℝ) (α : Fin n → ℕ) : polydiscTaylorCoefficient f c R α =
+      (2 * Real.pi * Complex.I) ^ (-(n : ℤ)) *
+        ∯ z in T(c, R), (∏ j, (z j - c j) ^ (-(α j : ℤ) - 1)) * f z :=
+  rfl
 
 /-- A closed polydisc is the product of the closed discs of the given polyradii. -/
 private lemma closedPolydisc_eq_pi_closedBall {n : ℕ} (c : Fin n → ℂ) (R : Fin n → ℝ) :
@@ -504,7 +523,7 @@ theorem norm_polydiscTaylorCoefficient_le {n : ℕ}
         _ = _ := by rw [inv_mul_cancel₀ hA, one_mul, hcancel]; ring
 
 /-- Cauchy's estimate gives normal convergence of the Taylor series on the open polydisc. -/
-private lemma normallySummableOn_polydiscTaylor {n : ℕ} (f : (Fin n → ℂ) → ℂ)
+theorem normallySummableOn_polydiscTaylor {n : ℕ} (f : (Fin n → ℂ) → ℂ)
     (c : Fin n → ℂ) (R : Fin n → ℝ) (hR : ∀ j, 0 < R j)
     {U : Set (Fin n → ℂ)} (hsub : closedPolydisc c R ⊆ U) (hf : DifferentiableOn ℂ f U) :
     NormallySummableOn (fun α : Fin n → ℕ ↦ fun z ↦
@@ -519,13 +538,9 @@ private lemma normallySummableOn_polydiscTaylor {n : ℕ} (f : (Fin n → ℂ) �
   have htorus : ∀ zeta, (∀ j, ‖zeta j - c j‖ = R j) → ‖f zeta‖ ≤ M := by
     intro zeta hzeta
     exact hM zeta fun j ↦ (hzeta j).le
-  intro K hK hKsub
+  refine NormallySummableOn.of_norm_le fun K hK hKsub ↦ ?_
   rcases K.eq_empty_or_nonempty with rfl | hKne
-  · refine ⟨fun _ ↦ ?_, ?_⟩
-    · rw [image_empty]
-      exact bddAbove_empty
-    · simp only [image_empty, Real.sSup_empty]
-      exact summable_zero
+  · exact ⟨0, summable_zero, fun _ _ hw ↦ hw.elim⟩
   · let term : (Fin n → ℕ) → (Fin n → ℂ) → ℂ := fun α w ↦
       polydiscTaylorCoefficient f c R α * ∏ j, (w j - c j) ^ α j
     let ρ : Fin n → ℝ := fun j ↦ sSup ((fun w ↦ ‖w j - c j‖) '' K)
@@ -575,46 +590,35 @@ private lemma normallySummableOn_polydiscTaylor {n : ℕ} (f : (Fin n → ℂ) �
         _ = M * ((∏ j, (R j)⁻¹ ^ α j) * ∏ j, ρ j ^ α j) := by ring
         _ = M * ∏ j, (ρ j / R j) ^ α j := by rw [hfac]
         _ = majorant α := rfl
-    refine ⟨fun α ↦ ⟨majorant α, fun t ht ↦ ?_⟩, ?_⟩
-    · obtain ⟨w, hw, rfl⟩ := ht
-      exact hle α w hw
-    · refine Summable.of_nonneg_of_le (fun α ↦ ?_) (fun α ↦ ?_) hmajor
-      · obtain ⟨w, hw⟩ := hKne
-        exact (norm_nonneg _).trans (le_csSup ⟨majorant α, fun t ht ↦ by
-          obtain ⟨w', hw', rfl⟩ := ht
-          exact hle α w' hw'⟩
-          (mem_image_of_mem (fun w ↦ ‖term α w‖) hw))
-      · exact csSup_le (hKne.image _) fun t ht ↦ by
-          obtain ⟨w, hw, rfl⟩ := ht
-          exact hle α w hw
+    exact ⟨majorant, hmajor, hle⟩
 
-/-- **45.2**: Taylor expansion on the full open polydisc, with normal convergence. -/
-theorem polydisc_taylor {n : ℕ} (f : (Fin n → ℂ) → ℂ)
+/-- **45.2**: Taylor expansion on the full open polydisc. Normal convergence is
+`normallySummableOn_polydiscTaylor`. -/
+theorem hasSum_polydiscTaylorCoefficient {n : ℕ} (f : (Fin n → ℂ) → ℂ)
     (c : Fin n → ℂ) (R : Fin n → ℝ) (hR : ∀ j, 0 < R j)
     {U : Set (Fin n → ℂ)} (hsub : closedPolydisc c R ⊆ U)
-    (hf : DifferentiableOn ℂ f U) :
-    (∀ z ∈ polydisc c R, HasSum (fun α : Fin n → ℕ ↦
-      polydiscTaylorCoefficient f c R α * ∏ j, (z j - c j) ^ α j) (f z)) ∧
-    NormallySummableOn (fun α : Fin n → ℕ ↦ fun z ↦
-      polydiscTaylorCoefficient f c R α * ∏ j, (z j - c j) ^ α j) (polydisc c R) :=
-  ⟨fun z hz ↦ hasSum_polydiscTaylor_of_mem f c R hR hsub hf hz,
-    normallySummableOn_polydiscTaylor f c R hR hsub hf⟩
+    (hf : DifferentiableOn ℂ f U) {z : Fin n → ℂ} (hz : z ∈ polydisc c R) :
+    HasSum (fun α : Fin n → ℕ ↦
+      polydiscTaylorCoefficient f c R α * ∏ j, (z j - c j) ^ α j) (f z) :=
+  hasSum_polydiscTaylor_of_mem f c R hR hsub hf hz
 
 variable {V E : Type*} [NormedAddCommGroup V] [NormedSpace ℂ V]
   [NormedAddCommGroup E] [NormedSpace ℂ E]
 
-/-- A locally uniform limit of holomorphic maps on a subset of a complex normed space is
-holomorphic. At each point the hypothesis supplies a ball, contained in the set, on which the
-convergence is uniform, and TauCeti's `TendstoUniformlyOn.differentiableOn` applies there. -/
-theorem differentiableOn_of_locallyUniformLimit [CompleteSpace E]
-    {F : ℕ → V → E} {f : V → E} {U : Set V}
-    (hF : ∀ k, DifferentiableOn ℂ (F k) U)
-    (hlim : ∀ z ∈ U, ∃ R > 0, ball z R ⊆ U ∧ TendstoUniformlyOn F f atTop (ball z R)) :
+/-- A limit of holomorphic maps on a subset of a complex normed space, uniform on a ball around
+each point, is holomorphic. The limit is along any nontrivial filter and the maps need only be
+eventually holomorphic. At each point TauCeti's `TendstoUniformlyOn.differentiableOn` applies on
+the ball. The ball hypothesis is not implied by Mathlib's `TendstoLocallyUniformlyOn` on an
+infinite-dimensional space. -/
+theorem differentiableOn_of_locallyUniformLimit [CompleteSpace E] {ι : Type*} {l : Filter ι}
+    [l.NeBot] {F : ι → V → E} {f : V → E} {U : Set V}
+    (hF : ∀ᶠ k in l, DifferentiableOn ℂ (F k) U)
+    (hlim : ∀ z ∈ U, ∃ R > 0, ball z R ⊆ U ∧ TendstoUniformlyOn F f l (ball z R)) :
     DifferentiableOn ℂ f U := by
   intro z hz
   obtain ⟨R, hR, hsub, hunif⟩ := hlim z hz
   have hd : DifferentiableOn ℂ f (ball z R) :=
-    hunif.differentiableOn (Eventually.of_forall fun k => (hF k).mono hsub) isOpen_ball
+    hunif.differentiableOn (hF.mono fun k hk => hk.mono hsub) isOpen_ball
   exact (hd.differentiableAt (ball_mem_nhds z hR)).differentiableWithinAt
 
 end CKMA

@@ -8,7 +8,6 @@ module
 public import Mathlib.MeasureTheory.Integral.Bochner.Basic
 public import Mathlib.Algebra.Group.ForwardDiff
 
-import Mathlib.Tactic
 import Mathlib.Analysis.SpecialFunctions.Choose
 import Mathlib.MeasureTheory.Measure.Prokhorov
 import Mathlib.Topology.ContinuousMap.StoneWeierstrass
@@ -16,7 +15,8 @@ import Mathlib.Topology.ContinuousMap.StoneWeierstrass
 /-!
 # Hausdorff moment sequences (48.34)
 
-Complete monotonicity uses forward differences with the alternating sign convention.
+Complete monotonicity uses Mathlib's forward differences `Δ_[1]` (`fwdDiff 1`) with the
+alternating sign convention.
 `hausdorffWeight` and `hausdorffApproximant` give the Bernstein discrete measures used
 in the moment construction. Supporting lemmas prove nonnegativity of the weights and
 nonnegativity and antitonicity of the original sequence.
@@ -28,7 +28,6 @@ the Weierstrass approximation theorem on `[0,1]`.
 
 ## Main definitions
 
-* `CKMA.forwardDifference`: forward difference of a real sequence, Mathlib's `fwdDiff 1`.
 * `CKMA.IsCompletelyMonotoneSequence`: complete monotonicity of a real sequence.
 * `CKMA.hausdorffWeight`: Bernstein discrete moment weight.
 * `CKMA.hausdorffApproximant`: discrete measure on `[0, 1]` built from Bernstein weights.
@@ -46,33 +45,40 @@ noncomputable section
 
 namespace CKMA
 
-open MeasureTheory Filter Topology
+open MeasureTheory Filter Topology fwdDiff
 open scoped BigOperators BoundedContinuousFunction ENNReal NNReal
-
-/-- The forward difference of a real sequence, Mathlib's `fwdDiff` with step `1`. -/
-@[expose]
-def forwardDifference (s : ℕ → ℝ) : ℕ → ℝ := fwdDiff 1 s
-
-/-- The forward difference at `n` is `s (n + 1) - s n`. -/
-theorem forwardDifference_apply (s : ℕ → ℝ) (n : ℕ) :
-    forwardDifference s n = s (n + 1) - s n :=
-  rfl
 
 /-- Discrete complete monotonicity with the forward-difference sign convention. -/
 @[expose]
 def IsCompletelyMonotoneSequence (s : ℕ → ℝ) : Prop :=
-  ∀ n k : ℕ, 0 ≤ (-1 : ℝ) ^ k * ((forwardDifference^[k]) s) n
+  ∀ n k : ℕ, 0 ≤ (-1 : ℝ) ^ k * ((Δ_[1]^[k]) s) n
+
+/-- Defining property of `IsCompletelyMonotoneSequence`. -/
+lemma isCompletelyMonotoneSequence_iff {s : ℕ → ℝ} :
+    IsCompletelyMonotoneSequence s ↔ ∀ n k : ℕ, 0 ≤ (-1 : ℝ) ^ k * ((Δ_[1]^[k]) s) n :=
+  Iff.rfl
 
 /-- Bernstein weights in the constructive Hausdorff approximation. -/
 @[expose]
 def hausdorffWeight (s : ℕ → ℝ) (N k : ℕ) : ℝ :=
-  (N.choose k : ℝ) * ((-1 : ℝ) ^ (N - k) * ((forwardDifference^[N - k]) s) k)
+  (N.choose k : ℝ) * ((-1 : ℝ) ^ (N - k) * ((Δ_[1]^[N - k]) s) k)
+
+/-- Defining formula of `hausdorffWeight`. -/
+lemma hausdorffWeight_def (s : ℕ → ℝ) (N k : ℕ) :
+    hausdorffWeight s N k = (N.choose k : ℝ) * ((-1 : ℝ) ^ (N - k) * ((Δ_[1]^[N - k]) s) k) :=
+  rfl
 
 /-- The finite discrete measure approximating a Hausdorff moment law. -/
 @[expose]
 def hausdorffApproximant (s : ℕ → ℝ) (N : ℕ) : Measure ℝ :=
   ∑ k ∈ Finset.range (N + 1), ENNReal.ofReal (hausdorffWeight s N k) •
     Measure.dirac ((k : ℝ) / N)
+
+/-- Defining formula of `hausdorffApproximant`. -/
+lemma hausdorffApproximant_def (s : ℕ → ℝ) (N : ℕ) :
+    hausdorffApproximant s N = ∑ k ∈ Finset.range (N + 1),
+      ENNReal.ofReal (hausdorffWeight s N k) • Measure.dirac ((k : ℝ) / N) :=
+  rfl
 
 /-- Complete monotonicity makes every Bernstein weight nonnegative. -/
 theorem IsCompletelyMonotoneSequence.hausdorffWeight_nonneg {s : ℕ → ℝ}
@@ -90,13 +96,24 @@ theorem IsCompletelyMonotoneSequence.antitone {s : ℕ → ℝ}
   apply antitone_nat_of_succ_le
   intro n
   have h := hs n 1
-  simp only [pow_one, Function.iterate_one, forwardDifference_apply] at h
+  simp only [pow_one, Function.iterate_one, fwdDiff] at h
   linarith
 
 /-- A finite measure concentrated on `[0,1]` represents all the moments of `s`. -/
 @[expose]
 def RepresentsHausdorffMoments (μ : Measure ℝ) (s : ℕ → ℝ) : Prop :=
   IsFiniteMeasure μ ∧ μ (Set.Icc (0 : ℝ) 1)ᶜ = 0 ∧ ∀ n : ℕ, ∫ x, x ^ n ∂μ = s n
+
+/-- Defining property of `RepresentsHausdorffMoments`. -/
+lemma representsHausdorffMoments_iff {μ : Measure ℝ} {s : ℕ → ℝ} :
+    RepresentsHausdorffMoments μ s ↔
+      IsFiniteMeasure μ ∧ μ (Set.Icc (0 : ℝ) 1)ᶜ = 0 ∧ ∀ n : ℕ, ∫ x, x ^ n ∂μ = s n :=
+  Iff.rfl
+
+/-- A representing measure has the moments `s`. -/
+lemma RepresentsHausdorffMoments.integral_pow_eq {μ : Measure ℝ} {s : ℕ → ℝ}
+    (h : RepresentsHausdorffMoments μ s) (n : ℕ) : ∫ x, x ^ n ∂μ = s n :=
+  h.2.2 n
 
 /-! ### Binomial arithmetic -/
 
@@ -109,11 +126,11 @@ private lemma neg_one_mul_pow_sub (a j : ℕ) (hj : j ≤ a) :
 
 /-- Iterated forward differences expand by the binomial theorem
 (Mathlib's `fwdDiff_iter_eq_sum_shift`). -/
-private lemma forwardDifference_iterate_eq_sum (s : ℕ → ℝ) (k n : ℕ) :
-    (forwardDifference^[k] s) n =
+private lemma fwdDiff_iterate_eq_sum (s : ℕ → ℝ) (k n : ℕ) :
+    (Δ_[1]^[k] s) n =
       ∑ j ∈ Finset.range (k + 1),
         (k.choose j : ℝ) * (-1 : ℝ) ^ (k - j) * s (n + j) := by
-  rw [show forwardDifference = fwdDiff 1 from rfl, fwdDiff_iter_eq_sum_shift]
+  rw [fwdDiff_iter_eq_sum_shift]
   refine Finset.sum_congr rfl fun j _ => ?_
   simp only [smul_eq_mul, mul_one, zsmul_eq_mul]
   push_cast
@@ -123,32 +140,10 @@ private lemma forwardDifference_iterate_eq_sum (s : ℕ → ℝ) (k n : ℕ) :
 private lemma sum_triangle {M : Type*} [AddCommMonoid M] (N : ℕ) (f : ℕ → ℕ → M) :
     (∑ k ∈ Finset.range (N + 1), ∑ j ∈ Finset.range (N - k + 1), f k j) =
       ∑ m ∈ Finset.range (N + 1), ∑ k ∈ Finset.range (m + 1), f k (m - k) := by
-  induction N with
-  | zero => simp
-  | succ N ih =>
-    rw [Finset.sum_range_succ (fun k => ∑ j ∈ Finset.range ((N + 1) - k + 1), f k j)]
-    have hlast :
-        ∑ j ∈ Finset.range ((N + 1) - (N + 1) + 1), f (N + 1) j = f (N + 1) 0 := by
-      simp
-    rw [hlast]
-    have hinner : ∀ k ∈ Finset.range (N + 1),
-        ∑ j ∈ Finset.range ((N + 1) - k + 1), f k j =
-          ∑ j ∈ Finset.range (N - k + 1), f k j + f k ((N + 1) - k) := by
-      intro k hk
-      have hkN : k ≤ N := Nat.lt_succ_iff.mp (Finset.mem_range.mp hk)
-      have h1 : (N + 1) - k + 1 = (N - k + 1) + 1 := by omega
-      have h2 : N - k + 1 = (N + 1) - k := by omega
-      rw [h1, Finset.sum_range_succ, h2]
-    have hcol :
-        ∑ k ∈ Finset.range (N + 2), f k ((N + 1) - k) =
-          ∑ k ∈ Finset.range (N + 1), f k ((N + 1) - k) + f (N + 1) 0 := by
-      rw [Finset.sum_range_succ]
-      simp
-    rw [Finset.sum_congr rfl hinner, Finset.sum_add_distrib, ih]
-    rw [Finset.sum_range_succ (fun m => ∑ k ∈ Finset.range (m + 1), f k (m - k)) (N + 1),
-      add_assoc]
-    congr 1
-    exact hcol.symm
+  rw [Finset.sum_range_diag_flip]
+  refine Finset.sum_congr rfl fun k hk => ?_
+  rw [Finset.mem_range] at hk
+  rw [show N + 1 - k = N - k + 1 by omega]
 
 /-- A row of Pascal's triangle with alternating signs is `0 ^ m`. -/
 private lemma sum_choose_neg (m : ℕ) :
@@ -243,7 +238,7 @@ private lemma hausdorffWeight_eq_sum (s : ℕ → ℝ) (N k : ℕ) :
       ∑ j ∈ Finset.range (N - k + 1),
         (N.choose k : ℝ) * ((N - k).choose j : ℝ) * (-1 : ℝ) ^ j * s (k + j) := by
   unfold hausdorffWeight
-  rw [forwardDifference_iterate_eq_sum, ← mul_assoc, Finset.mul_sum]
+  rw [fwdDiff_iterate_eq_sum, ← mul_assoc, Finset.mul_sum]
   refine Finset.sum_congr rfl fun j hj => ?_
   have hj' : j ≤ N - k := Nat.lt_succ_iff.mp (Finset.mem_range.mp hj)
   have hsign := neg_one_mul_pow_sub (N - k) j hj'
@@ -447,8 +442,8 @@ private lemma hausdorffApproximant_univ {s : ℕ → ℝ}
     (hs : IsCompletelyMonotoneSequence s) (N : ℕ) :
     hausdorffApproximant s N Set.univ = ENNReal.ofReal (s 0) := by
   unfold hausdorffApproximant
-  rw [Measure.finsetSum_apply]
-  simp_rw [Measure.smul_apply, smul_eq_mul, Measure.dirac_apply_of_mem (Set.mem_univ _), mul_one]
+  rw [sum_apply]
+  simp_rw [smul_apply, smul_eq_mul, Measure.dirac_apply_of_mem (Set.mem_univ _), mul_one]
   rw [← ENNReal.ofReal_sum_of_nonneg (fun k _ => hs.hausdorffWeight_nonneg N k)]
   exact congrArg ENNReal.ofReal (sum_hausdorffWeight s N)
 
@@ -462,10 +457,10 @@ private lemma hausdorffApproximant_finite {s : ℕ → ℝ}
 private lemma hausdorffApproximant_compl (s : ℕ → ℝ) (N : ℕ) :
     hausdorffApproximant s N (Set.Icc (0 : ℝ) 1)ᶜ = 0 := by
   unfold hausdorffApproximant
-  rw [Measure.finsetSum_apply]
+  rw [sum_apply]
   refine Finset.sum_eq_zero fun k hk => ?_
   have hk' : k ≤ N := Nat.lt_succ_iff.mp (Finset.mem_range.mp hk)
-  rw [Measure.smul_apply, Measure.dirac_apply, Set.indicator_of_notMem]
+  rw [smul_apply, Measure.dirac_apply, Set.indicator_of_notMem]
   · simp
   · exact Set.notMem_compl_iff.mpr (div_mem_Icc N k hk')
 
@@ -589,14 +584,14 @@ private lemma integrable_pow_of_represents {μ : Measure ℝ} {s : ℕ → ℝ}
     (pow_le_one₀ (norm_nonneg _) habs_sub)
 
 /-- Forward differences of a represented sequence are moments of `x ^ n * (x - 1) ^ k`. -/
-private lemma forwardDifference_iterate_eq_integral {μ : Measure ℝ} {s : ℕ → ℝ}
+private lemma fwdDiff_iterate_eq_integral {μ : Measure ℝ} {s : ℕ → ℝ}
     (hμ : RepresentsHausdorffMoments μ s) (k n : ℕ) :
-    (forwardDifference^[k] s) n = ∫ x, x ^ n * (x - 1) ^ k ∂μ := by
+    (Δ_[1]^[k] s) n = ∫ x, x ^ n * (x - 1) ^ k ∂μ := by
   induction k generalizing n with
   | zero =>
     simp [hμ.2.2 n]
   | succ k ih =>
-    rw [Function.iterate_succ_apply', forwardDifference_apply, ih (n + 1), ih n]
+    rw [Function.iterate_succ_apply', fwdDiff, ih (n + 1), ih n]
     rw [← integral_sub (integrable_pow_of_represents hμ (n + 1) k)
       (integrable_pow_of_represents hμ n k)]
     refine integral_congr_ae (ae_of_all _ fun x => ?_)
@@ -606,7 +601,7 @@ private lemma forwardDifference_iterate_eq_integral {μ : Measure ℝ} {s : ℕ 
 private lemma isCompletelyMonotoneSequence_of_represents {μ : Measure ℝ} {s : ℕ → ℝ}
     (hμ : RepresentsHausdorffMoments μ s) : IsCompletelyMonotoneSequence s := by
   intro n k
-  rw [forwardDifference_iterate_eq_integral hμ k n, ← integral_const_mul]
+  rw [fwdDiff_iterate_eq_integral hμ k n, ← integral_const_mul]
   have hint :
       ∫ x, (-1 : ℝ) ^ k * (x ^ n * (x - 1) ^ k) ∂μ =
         ∫ x, x ^ n * (1 - x) ^ k ∂μ := by

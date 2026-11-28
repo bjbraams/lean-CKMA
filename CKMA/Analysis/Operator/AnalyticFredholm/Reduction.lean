@@ -5,10 +5,13 @@ Authors: CKMA contributors
 -/
 module
 
-public import Mathlib.Analysis.Calculus.ImplicitContDiff
+public import Mathlib.Analysis.Complex.Basic
 public import Mathlib.Analysis.Normed.Operator.Compact.Basic
-public import Mathlib.Analysis.CStarAlgebra.Classes
+public import Mathlib.Analysis.Analytic.Basic
+public import Mathlib.Analysis.Calculus.FDeriv.Basic
 
+import Mathlib.Analysis.Calculus.ImplicitContDiff
+import Mathlib.Analysis.CStarAlgebra.Classes
 import Mathlib.Algebra.Group.Action.Units
 import Mathlib.Algebra.Module.NatInt
 import Mathlib.Analysis.Analytic.Composition
@@ -46,7 +49,17 @@ finite-rank family. Invertibility of the finite-rank factor is the nonvanishing 
 determinant, and the inverse is a holomorphic numerator over that determinant.
 
 The resulting meromorphic representation, together with connectedness and one invertible value,
-is `CKMA.analyticFredholm_aux`.
+gives the analytic Fredholm theorem.
+
+## Main definitions
+
+* `CKMA.fredholmExceptionalSet`: noninvertibility set of a compact Fredholm family.
+* `CKMA.HasFiniteOrderInverseRegularization`: finite-order analytic regularization of the inverse.
+* `CKMA.HasOperatorInversePole`: genuine finite-order inverse pole.
+
+## Main results
+
+* `CKMA.analytic_fredholm` (**21.15**): the analytic Fredholm theorem.
 -/
 
 public section
@@ -60,36 +73,54 @@ open scoped Matrix
 
 variable {X : Type*} [NormedAddCommGroup X] [NormedSpace ℂ X] [CompleteSpace X]
 
+/-- The noninvertibility set of a compact Fredholm family inside its parameter domain. -/
+@[expose]
+def fredholmExceptionalSet (K : ℂ → X →L[ℂ] X) (U : Set ℂ) : Set ℂ :=
+  {z ∈ U | ¬ IsUnit (1 - K z)}
+
 omit [CompleteSpace X] in
-/-- Evaluation of a finite sum of operators. -/
-private theorem clm_sum_apply {ι : Type*} [DecidableEq ι] (s : Finset ι)
-    (f : ι → X →L[ℂ] X) (x : X) : (∑ i ∈ s, f i) x = ∑ i ∈ s, f i x := by
-  induction s using Finset.induction with
-  | empty => simp
-  | insert i s hi ih => simp [Finset.sum_insert hi, add_apply, ih]
+/-- Membership in the exceptional set. -/
+theorem mem_fredholmExceptionalSet_iff (K : ℂ → X →L[ℂ] X) (U : Set ℂ) (z : ℂ) :
+    z ∈ fredholmExceptionalSet K U ↔ z ∈ U ∧ ¬ IsUnit (1 - K z) :=
+  Iff.rfl
 
-/-- A finite product of analytic scalar functions is analytic. -/
-private theorem analyticAt_finset_prod {ι : Type*} [DecidableEq ι] {s : Finset ι}
-    {f : ι → ℂ → ℂ} {a : ℂ} (hf : ∀ i ∈ s, AnalyticAt ℂ (f i) a) :
-    AnalyticAt ℂ (fun z ↦ ∏ i ∈ s, f i z) a := by
-  induction s using Finset.induction with
-  | empty => simpa using analyticAt_const (v := (1 : ℂ))
-  | insert i s hi ih =>
-    simp only [Finset.prod_insert hi]
-    exact (hf i (Finset.mem_insert_self i s)).mul
-      (ih fun j hj ↦ hf j (Finset.mem_insert_of_mem hj))
+/-- A finite-order analytic regularization of the totalized inverse. Order zero is allowed,
+so this weaker condition also includes removable singularities and regular points. -/
+@[expose]
+def HasFiniteOrderInverseRegularization (K : ℂ → X →L[ℂ] X) (a : ℂ) : Prop :=
+  ∃ m : ℕ, ∃ F : ℂ → X →L[ℂ] X, AnalyticAt ℂ F a ∧
+    ∀ᶠ z in 𝓝[≠] a, (z - a) ^ m • Ring.inverse (1 - K z) = F z
 
-/-- A finite sum of analytic functions is analytic. -/
-private theorem analyticAt_finset_sum {ι : Type*} [DecidableEq ι] {E : Type*}
-    [NormedAddCommGroup E] [NormedSpace ℂ E] {s : Finset ι} {f : ι → ℂ → E} {a : ℂ}
-    (hf : ∀ i ∈ s, AnalyticAt ℂ (f i) a) :
-    AnalyticAt ℂ (fun z ↦ ∑ i ∈ s, f i z) a := by
-  induction s using Finset.induction with
-  | empty => simpa using analyticAt_const (v := (0 : E))
-  | insert i s hi ih =>
-    simp only [Finset.sum_insert hi]
-    exact (hf i (Finset.mem_insert_self i s)).add
-      (ih fun j hj ↦ hf j (Finset.mem_insert_of_mem hj))
+omit [CompleteSpace X] in
+/-- The defining property of `HasFiniteOrderInverseRegularization`. -/
+theorem hasFiniteOrderInverseRegularization_iff (K : ℂ → X →L[ℂ] X) (a : ℂ) :
+    HasFiniteOrderInverseRegularization K a ↔ ∃ m : ℕ, ∃ F : ℂ → X →L[ℂ] X, AnalyticAt ℂ F a ∧
+      ∀ᶠ z in 𝓝[≠] a, (z - a) ^ m • Ring.inverse (1 - K z) = F z :=
+  Iff.rfl
+
+/-- A genuine inverse pole: the family is invertible on a punctured neighborhood and a
+positive-order regularization is analytic with nonzero value at the base point. -/
+@[expose]
+def HasOperatorInversePole (K : ℂ → X →L[ℂ] X) (a : ℂ) : Prop :=
+  ∃ m : ℕ, 0 < m ∧ ∃ F : ℂ → X →L[ℂ] X, AnalyticAt ℂ F a ∧ F a ≠ 0 ∧
+    (∀ᶠ z in 𝓝[≠] a, IsUnit (1 - K z)) ∧
+    ∀ᶠ z in 𝓝[≠] a, (z - a) ^ m • Ring.inverse (1 - K z) = F z
+
+omit [CompleteSpace X] in
+/-- The defining property of `HasOperatorInversePole`. -/
+theorem hasOperatorInversePole_iff (K : ℂ → X →L[ℂ] X) (a : ℂ) :
+    HasOperatorInversePole K a ↔ ∃ m : ℕ, 0 < m ∧ ∃ F : ℂ → X →L[ℂ] X, AnalyticAt ℂ F a ∧
+      F a ≠ 0 ∧ (∀ᶠ z in 𝓝[≠] a, IsUnit (1 - K z)) ∧
+      ∀ᶠ z in 𝓝[≠] a, (z - a) ^ m • Ring.inverse (1 - K z) = F z :=
+  Iff.rfl
+
+omit [CompleteSpace X] in
+/-- Every genuine inverse pole has a finite-order analytic regularization. -/
+theorem HasOperatorInversePole.hasFiniteOrderInverseRegularization
+    {K : ℂ → X →L[ℂ] X} {a : ℂ} (h : HasOperatorInversePole K a) :
+    HasFiniteOrderInverseRegularization K a := by
+  obtain ⟨m, _, F, hF, _, _, heq⟩ := h
+  exact ⟨m, F, hF, heq⟩
 
 /-- The determinant of a matrix of analytic scalar functions is analytic. -/
 private theorem analyticAt_matrix_det {n : Type*} [Fintype n] [DecidableEq n]
@@ -101,9 +132,9 @@ private theorem analyticAt_matrix_det {n : Type*} [Fintype n] [DecidableEq n]
     ext z
     rw [det_apply']
   rw [hfun]
-  refine analyticAt_finset_sum fun σ _ ↦ ?_
+  refine Finset.analyticAt_fun_sum _ fun σ _ ↦ ?_
   exact (analyticAt_const (v := ((Equiv.Perm.sign σ : ℤ) : ℂ))).mul
-    (analyticAt_finset_prod fun i _ ↦ hM (σ i) i)
+    (Finset.analyticAt_fun_prod _ fun i _ ↦ hM (σ i) i)
 
 /-- Each entry of the adjugate of a matrix of analytic functions is analytic. -/
 private theorem analyticAt_adjugate_apply {n : Type*} [Fintype n] [DecidableEq n]
@@ -206,13 +237,13 @@ private theorem fredholmCorrection_smul (ψ : n → X →L[ℂ] ℂ) (w : n → 
   simp [fredholmCorrection, smul_apply, smulRight_apply, Matrix.smul_apply, smul_eq_mul,
     smul_smul, Finset.smul_sum]
 
-omit [CompleteSpace X] in
+omit [CompleteSpace X] [DecidableEq n] in
 /-- The correction operator evaluates as a linear combination against `C *ᵥ v`. -/
 private theorem fredholmCorrection_apply (ψ : n → X →L[ℂ] ℂ) (w : n → X)
     (C : Matrix n n ℂ) (x : X) :
     fredholmCorrection ψ w C x =
       fredholmCombine w (C *ᵥ fun i ↦ ψ i x) := by
-  simp only [fredholmCorrection, fredholmCombine, clm_sum_apply, smul_apply, smulRight_apply,
+  simp only [fredholmCorrection, fredholmCombine, sum_apply, smul_apply, smulRight_apply,
     smul_smul]
   rw [Finset.sum_comm]
   refine Finset.sum_congr rfl fun j _ ↦ ?_
@@ -593,8 +624,7 @@ private theorem exists_meromorphic_factor {U : Set ℂ} (hU : IsOpen U)
           exact hlin.comp_of_eq (hwA j) rfl
         exact hcoeff.smul hrank
       simp only [fredholmCorrection]
-      refine analyticAt_finset_sum fun i _ ↦ ?_
-      exact analyticAt_finset_sum fun j _ ↦ hterm i j
+      exact Finset.analyticAt_fun_sum _ fun i _ ↦ Finset.analyticAt_fun_sum _ fun j _ ↦ hterm i j
     exact hcorr.mul hA
   have hN : AnalyticAt ℂ N a := (hd.smul hA).add hH
   refine ⟨d, N, hd, hN, ?_⟩
@@ -776,124 +806,92 @@ private theorem fredholm_local_alternative {U : Set ℂ} (hU : IsOpen U)
     rcases eventually_iff_exists_mem.mp hEv with ⟨V, hV, hVp⟩
     exact ⟨V, hV, fun z hz ↦ (hVp z hz).1, fun z hz ↦ (hVp z hz).2⟩
 
-/-- **21.15**: unfolded analytic Fredholm theorem. -/
-public theorem analyticFredholm_aux {U : Set ℂ} (hU : IsOpen U) (hconn : IsPreconnected U)
+/-- The exceptional set of a holomorphic compact family `1 - K` that is invertible somewhere on a
+preconnected open set has empty interior. -/
+private theorem interior_fredholmExceptionalSet_eq_empty {U : Set ℂ} (hU : IsOpen U)
+    (hconn : IsPreconnected U) {K : ℂ → X →L[ℂ] X} (hK : DifferentiableOn ℂ K U)
+    (hc : ∀ z ∈ U, IsCompactOperator (K z)) (hunit : ∃ z ∈ U, IsUnit (1 - K z)) :
+    interior (fredholmExceptionalSet K U) = ∅ := by
+  let W : Set ℂ := interior (fredholmExceptionalSet K U)
+  have hcov : U ⊆ W ∪ (closure W)ᶜ := by
+    intro a ha
+    rcases fredholm_local_alternative hU hK hc ha with ⟨V, hV, hVU, hnot⟩ | ⟨V, hV, _, hrest⟩
+    · left
+      rw [mem_interior_iff_mem_nhds]
+      exact mem_of_superset hV fun z hz ↦ ⟨hVU hz, hnot z hz⟩
+    · right
+      rw [Set.mem_compl_iff]
+      intro hcl
+      have hsubV : V ∩ W ⊆ {a} := by
+        intro z hz
+        by_contra hza
+        exact (interior_subset hz.2).2 (hrest z hz.1 hza)
+      by_cases haW : a ∈ W
+      · have hsing : {a} ∈ 𝓝 a :=
+          mem_of_superset (inter_mem hV (isOpen_interior.mem_nhds haW)) hsubV
+        have : a ∈ interior {a} := mem_interior_iff_mem_nhds.mpr hsing
+        simp [interior_singleton a] at this
+      · have hempty : V ∩ W = ∅ := by
+          ext z
+          constructor
+          · intro hz
+            have hza : z = a := hsubV hz
+            exact (haW (by simpa [hza] using hz.2)).elim
+          · intro hz
+            simp at hz
+        exact (mem_closure_iff_nhds.mp hcl V hV).ne_empty hempty
+  obtain ⟨z0, hz0U, hz0u⟩ := hunit
+  have hz0C : z0 ∈ (closure W)ᶜ :=
+    (hcov hz0U).resolve_left fun hz ↦ (interior_subset hz).2 hz0u
+  have hUW : U ∩ W = ∅ := by
+    by_contra hne
+    obtain ⟨z, -, hzW, hzC⟩ := hconn W (closure W)ᶜ isOpen_interior
+      isClosed_closure.isOpen_compl hcov (Set.nonempty_iff_ne_empty.mpr hne)
+      ⟨z0, hz0U, hz0C⟩
+    exact hzC (subset_closure hzW)
+  exact Set.eq_empty_of_subset_empty fun z hz ↦ by
+    simpa [hUW] using (show z ∈ U ∩ W from ⟨(interior_subset hz).1, hz⟩)
+
+/-- **21.15**, the analytic Fredholm theorem: if the family is invertible at one point,
+exceptional points are discrete, the inverse is analytic off them, and every exceptional point
+is a genuine finite-order pole of the inverse. -/
+theorem analytic_fredholm {U : Set ℂ} (hU : IsOpen U) (hconn : IsPreconnected U)
     (K : ℂ → X →L[ℂ] X) (hK : DifferentiableOn ℂ K U)
     (hc : ∀ z ∈ U, IsCompactOperator (K z))
     (hunit : ∃ z ∈ U, IsUnit (1 - K z)) :
-    (∀ a ∈ {z ∈ U | ¬ IsUnit (1 - K z)}, ∃ r : ℝ, 0 < r ∧
-      ∀ z ∈ {z ∈ U | ¬ IsUnit (1 - K z)}, dist z a < r → z = a) ∧
-    DifferentiableOn ℂ (fun z ↦ Ring.inverse (1 - K z))
-      (U \ {z ∈ U | ¬ IsUnit (1 - K z)}) ∧
-    ∀ a ∈ {z ∈ U | ¬ IsUnit (1 - K z)},
-      ∃ m : ℕ, 0 < m ∧ ∃ F : ℂ → X →L[ℂ] X, AnalyticAt ℂ F a ∧ F a ≠ 0 ∧
-        (∀ᶠ z in 𝓝[≠] a, IsUnit (1 - K z)) ∧
-        ∀ᶠ z in 𝓝[≠] a, (z - a) ^ m • Ring.inverse (1 - K z) = F z := by
+    (∀ a ∈ fredholmExceptionalSet K U, ∃ r : ℝ, 0 < r ∧
+      ∀ z ∈ fredholmExceptionalSet K U, dist z a < r → z = a) ∧
+    DifferentiableOn ℂ (fun z ↦ Ring.inverse (1 - K z)) (U \ fredholmExceptionalSet K U) ∧
+    ∀ a ∈ fredholmExceptionalSet K U, HasOperatorInversePole K a := by
+  let S : Set ℂ := fredholmExceptionalSet K U
+  have hdiff : DifferentiableOn ℂ (fun z ↦ Ring.inverse (1 - K z)) (U \ S) :=
+    (((differentiableOn_const _).sub hK).mono Set.sdiff_subset).inverse fun z hz ↦
+      not_not.mp fun hnu ↦ hz.2 ⟨hz.1, hnu⟩
   by_cases hsub : Subsingleton (X →L[ℂ] X)
-  · have hS : {z ∈ U | ¬ IsUnit (1 - K z)} = ∅ := by
-      ext z
-      constructor
-      · rintro ⟨_, hnu⟩
-        exact hnu (isUnit_of_subsingleton _)
-      · intro hz
-        exact hz.elim
-    refine ⟨?_, ?_, ?_⟩
-    · intro a ha
-      rw [hS] at ha
-      exact ha.elim
-    · rw [hS, Set.sdiff_empty]
-      exact ((differentiableOn_const (1 : X →L[ℂ] X)).sub hK).inverse
-        fun z _ ↦ isUnit_of_subsingleton _
-    · intro a ha
-      rw [hS] at ha
-      exact ha.elim
-  · let S : Set ℂ := {z ∈ U | ¬ IsUnit (1 - K z)}
-    let W : Set ℂ := interior S
-    have hloc : ∀ a ∈ U,
-        (∃ V ∈ 𝓝 a, V ⊆ U ∧ ∀ z ∈ V, ¬ IsUnit (1 - K z)) ∨
-          (∃ V ∈ 𝓝 a, V ⊆ U ∧ ∀ z ∈ V, z ≠ a → IsUnit (1 - K z)) :=
-      fun a ha ↦ fredholm_local_alternative hU hK hc ha
-    have hcov : U ⊆ W ∪ (closure W)ᶜ := by
-      intro a ha
-      rcases hloc a ha with ⟨V, hV, hVU, hnot⟩ | ⟨V, hV, _, hrest⟩
-      · left
-        rw [mem_interior_iff_mem_nhds]
-        exact mem_of_superset hV fun z hz ↦ ⟨hVU hz, hnot z hz⟩
-      · right
-        rw [Set.mem_compl_iff]
-        intro hcl
-        have hsubV : V ∩ W ⊆ {a} := by
-          intro z hz
-          by_contra hza
-          exact (interior_subset hz.2).2 (hrest z hz.1 hza)
-        by_cases haW : a ∈ W
-        · have hsing : {a} ∈ 𝓝 a :=
-            mem_of_superset (inter_mem hV (isOpen_interior.mem_nhds haW)) hsubV
-          have : a ∈ interior {a} := mem_interior_iff_mem_nhds.mpr hsing
-          simp [interior_singleton a] at this
-        · have hempty : V ∩ W = ∅ := by
-            ext z
-            constructor
-            · intro hz
-              have hza : z = a := hsubV hz
-              exact (haW (by simpa [hza] using hz.2)).elim
-            · intro hz
-              simp at hz
-          exact (mem_closure_iff_nhds.mp hcl V hV).ne_empty hempty
-    obtain ⟨z0, hz0U, hz0u⟩ := hunit
-    have hz0W : z0 ∉ W := fun hz ↦ (interior_subset hz).2 hz0u
-    have hz0C : z0 ∈ (closure W)ᶜ := by
-      rcases hcov hz0U with h | h
-      · exact (hz0W h).elim
-      · exact h
-    have hUW : U ∩ W = ∅ := by
-      by_contra hne
-      obtain ⟨z, -, hzW, hzC⟩ := hconn W (closure W)ᶜ isOpen_interior
-        isClosed_closure.isOpen_compl hcov (Set.nonempty_iff_ne_empty.mpr hne)
-        ⟨z0, hz0U, hz0C⟩
-      exact hzC (subset_closure hzW)
-    have hWempty : W = ∅ := by
-      apply Set.eq_empty_of_subset_empty
-      intro z hz
-      have : z ∈ U ∩ W := ⟨(interior_subset hz).1, hz⟩
-      simp [hUW] at this
-    have hsecond : ∀ a ∈ U, ∃ V ∈ 𝓝 a, V ⊆ U ∧ ∀ z ∈ V, z ≠ a → IsUnit (1 - K z) := by
-      intro a ha
-      rcases hloc a ha with ⟨V, hV, hVU, hnot⟩ | hok
-      · have haW : a ∈ W := by
-          rw [mem_interior_iff_mem_nhds]
-          exact mem_of_superset hV fun z hz ↦ ⟨hVU hz, hnot z hz⟩
-        simp [hWempty] at haW
-      · exact hok
-    refine ⟨?_, ?_, ?_⟩
-    · intro a haS
-      obtain ⟨V, hV, _, hrest⟩ := hsecond a haS.1
-      obtain ⟨r, hr0, hr⟩ := Metric.mem_nhds_iff.mp hV
-      refine ⟨r, hr0, ?_⟩
-      intro z hzS hdist
-      by_cases hza : z = a
-      · exact hza
-      · exact (hzS.2 (hrest z (hr (Metric.mem_ball.mpr hdist)) hza)).elim
-    · have hdiff : DifferentiableOn ℂ (fun z ↦ 1 - K z) (U \ S) :=
-        ((differentiableOn_const _).sub hK).mono Set.sdiff_subset
-      exact hdiff.inverse fun z hz ↦ by
-        have hnot : ¬ ¬ IsUnit (1 - K z) := fun hnu ↦ hz.2 ⟨hz.1, hnu⟩
-        exact not_not.mp hnot
-    · intro a haS
-      obtain ⟨d, N, hd, hN, hfac⟩ := exists_meromorphic_factor hU hK hc haS.1
-      have hd0 : ¬ ∀ᶠ z in 𝓝 a, d z = 0 := by
-        intro hzero
-        have hEv : ∀ᶠ z in 𝓝 a, z ∈ S := by
-          filter_upwards [hfac, hzero] with z hz hdz
-          exact ⟨hz.1, fun hu ↦ hz.2.1.mp hu hdz⟩
-        have haW : a ∈ W := mem_interior_iff_mem_nhds.mpr (eventually_mem_set.mp hEv)
-        simp [hWempty] at haW
-      have hcont : ContinuousAt K a :=
-        hK.continuousOn.continuousAt (hU.mem_nhds haS.1)
-      have hfac' : ∀ᶠ z in 𝓝 a, (IsUnit (1 - K z) ↔ d z ≠ 0) ∧
-          (d z ≠ 0 → Ring.inverse (1 - K z) = (d z)⁻¹ • N z) := by
-        filter_upwards [hfac] with z hz
-        exact ⟨hz.2.1, hz.2.2⟩
-      exact pole_of_meromorphic hcont hsub hd hN hfac' haS.2 hd0
+  · have hS : S = ∅ := Set.eq_empty_of_forall_notMem fun z hz ↦
+      hz.2 (isUnit_of_subsingleton _)
+    refine ⟨fun a ha ↦ ?_, hdiff, fun a ha ↦ ?_⟩ <;> simp [S, hS] at ha
+  have hW := interior_fredholmExceptionalSet_eq_empty hU hconn hK hc hunit
+  have hW' (a : ℂ) (h : ∀ᶠ z in 𝓝 a, z ∈ S) : False := by
+    have haW : a ∈ interior S := mem_interior_iff_mem_nhds.mpr (eventually_mem_set.mp h)
+    simp [S, hW] at haW
+  refine ⟨fun a haS ↦ ?_, hdiff, fun a haS ↦ ?_⟩
+  · rcases fredholm_local_alternative hU hK hc haS.1 with ⟨V, hV, hVU, hnot⟩ |
+      ⟨V, hV, _, hrest⟩
+    · exact (hW' a (mem_of_superset hV fun z hz ↦ ⟨hVU hz, hnot z hz⟩)).elim
+    obtain ⟨r, hr0, hr⟩ := Metric.mem_nhds_iff.mp hV
+    refine ⟨r, hr0, fun z hzS hdist ↦ ?_⟩
+    by_contra hza
+    exact hzS.2 (hrest z (hr (Metric.mem_ball.mpr hdist)) hza)
+  · obtain ⟨d, N, hd, hN, hfac⟩ := exists_meromorphic_factor hU hK hc haS.1
+    have hd0 : ¬ ∀ᶠ z in 𝓝 a, d z = 0 := fun hzero ↦ hW' a <| by
+      filter_upwards [hfac, hzero] with z hz hdz
+      exact ⟨hz.1, fun hu ↦ hz.2.1.mp hu hdz⟩
+    have hcont : ContinuousAt K a := hK.continuousOn.continuousAt (hU.mem_nhds haS.1)
+    have hfac' : ∀ᶠ z in 𝓝 a, (IsUnit (1 - K z) ↔ d z ≠ 0) ∧
+        (d z ≠ 0 → Ring.inverse (1 - K z) = (d z)⁻¹ • N z) := by
+      filter_upwards [hfac] with z hz
+      exact ⟨hz.2.1, hz.2.2⟩
+    exact pole_of_meromorphic hcont hsub hd hN hfac' haS.2 hd0
 
 end CKMA

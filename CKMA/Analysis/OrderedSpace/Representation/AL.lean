@@ -6,6 +6,7 @@ Authors: CKMA contributors
 module
 
 public import CKMA.Analysis.OrderedSpace.Representation.AL.OrderUnit
+public import CKMA.Analysis.OrderedSpace.Representation.Basic
 public import Mathlib.MeasureTheory.Function.LpOrder
 public import Mathlib.MeasureTheory.Function.LpSpace.ContinuousFunctions
 public import Mathlib.Topology.ContinuousMap.CompactlySupported
@@ -32,6 +33,7 @@ Sources: GAPS 19.29; Aliprantis–Burkinshaw, Theorem 4.27; Schaefer, Theorem II
 ## Main results
 
 * `CKMA.exists_tendsto_of_monotone_of_norm_add_eq`: monotone completeness from the AL identity.
+* `CKMA.IsALSpace.isKBSpace`: every complete AL space is a KB space.
 * `CKMA.norm_sum_of_pairwise_latticeDisjoint`: the norm adds on pairwise disjoint finite sums.
 * `CKMA.tendsto_trunc_of_weakUnit`: truncations against a weak unit converge in norm.
 * `CKMA.denseRange_orderUnit`: the principal ideal of a weak unit is norm-dense.
@@ -57,7 +59,7 @@ omit [NormedSpace ℝ E] [IsOrderedModule ℝ E] [HasSolidNorm E] in
 /-- Sequential monotone completeness of an AL-space: in a complete normed lattice whose norm
 is additive on the positive cone, a monotone, nonnegative, norm-bounded sequence converges. -/
 theorem exists_tendsto_of_monotone_of_norm_add_eq
-    (hE : ∀ x y : E, 0 ≤ x → 0 ≤ y → ‖x + y‖ = ‖x‖ + ‖y‖)
+    (hE : IsALSpace E)
     [CompleteSpace E] {x : ℕ → E} (hx : Monotone x) (hpos : ∀ n, 0 ≤ x n)
     (hbound : ∃ M : ℝ, ∀ n, ‖x n‖ ≤ M) : ∃ y : E, Tendsto x atTop (𝓝 y) := by
   have hsub : ∀ n m, n ≤ m → ‖x m - x n‖ = ‖x m‖ - ‖x n‖ := by
@@ -83,13 +85,14 @@ theorem exists_tendsto_of_monotone_of_norm_add_eq
   rw [heq]
   exact hN n hNn
 
-
-@[deprecated (since := "2026-11-15")]
-alias al_isKB := exists_tendsto_of_monotone_of_norm_add_eq
+omit [NormedSpace ℝ E] [IsOrderedModule ℝ E] [HasSolidNorm E] in
+/-- Every complete AL space is a KB space: increasing norm-bounded positive sequences converge. -/
+theorem IsALSpace.isKBSpace [CompleteSpace E] (hE : IsALSpace E) : IsKBSpace E :=
+  fun _ hx hpos hbound => exists_tendsto_of_monotone_of_norm_add_eq hE hx hpos hbound
 
 /-- The additive norm of an AL-space, extended from the positive cone. -/
 @[expose]
-def alNormFunctional (hE : ∀ x y : E, 0 ≤ x → 0 ≤ y → ‖x + y‖ = ‖x‖ + ‖y‖) :
+def alNormFunctional (hE : IsALSpace E) :
     E →ₗ[ℝ] ℝ :=
   coneAdditiveLinearMap (fun x => ‖x‖)
     (fun x y hx hy => hE x y hx hy)
@@ -99,20 +102,20 @@ def alNormFunctional (hE : ∀ x y : E, 0 ≤ x → 0 ≤ y → ‖x + y‖ = �
 omit [HasSolidNorm E] in
 /-- On the positive cone the AL-norm functional is the ambient norm. -/
 private theorem alNormFunctional_apply_nonneg
-    (hE : ∀ x y : E, 0 ≤ x → 0 ≤ y → ‖x + y‖ = ‖x‖ + ‖y‖)
+    (hE : IsALSpace E)
     {x : E} (hx : 0 ≤ x) : alNormFunctional hE x = ‖x‖ :=
   coneAdditiveLinearMap_apply_of_nonneg _ _ _ hx
 
 /-- The AL-norm functional reproduces the norm on absolute values. -/
 private theorem alNormFunctional_abs
-    (hE : ∀ x y : E, 0 ≤ x → 0 ≤ y → ‖x + y‖ = ‖x‖ + ‖y‖) (x : E) :
+    (hE : IsALSpace E) (x : E) :
     alNormFunctional hE |x| = ‖x‖ := by
   rw [alNormFunctional_apply_nonneg hE (abs_nonneg x), norm_abs_eq_norm]
 
 omit [HasSolidNorm E] in
 /-- The AL-norm functional is monotone. -/
 private theorem alNormFunctional_mono
-    (hE : ∀ x y : E, 0 ≤ x → 0 ≤ y → ‖x + y‖ = ‖x‖ + ‖y‖) :
+    (hE : IsALSpace E) :
     Monotone (alNormFunctional hE) := by
   intro a b hab
   have hdiff : 0 ≤ b - a := sub_nonneg.mpr hab
@@ -208,7 +211,7 @@ theorem latticeDisjoint_sum {ι : Type*} {s : Finset ι} {a : E} {x : ι → E}
 omit [NormedSpace ℝ E] [IsOrderedModule ℝ E] in
 /-- The norm is additive on finite sums of pairwise lattice-disjoint vectors. -/
 theorem norm_sum_of_pairwise_latticeDisjoint
-    (hE : ∀ x y : E, 0 ≤ x → 0 ≤ y → ‖x + y‖ = ‖x‖ + ‖y‖)
+    (hE : IsALSpace E)
     {ι : Type*} {s : Finset ι} {x : ι → E}
     (hdisj : (s : Set ι).Pairwise fun i j => LatticeDisjoint (x i) (x j)) :
     ‖∑ i ∈ s, x i‖ = ∑ i ∈ s, ‖x i‖ := by
@@ -282,9 +285,10 @@ theorem norm_trunc_remainder_le {u x : E} (hu : 0 ≤ u) (hx : 0 ≤ x) {n : ℕ
 
 /-- Truncations of a positive vector by a weak unit converge to the vector. -/
 theorem tendsto_trunc_of_weakUnit
-    (hE : ∀ x y : E, 0 ≤ x → 0 ≤ y → ‖x + y‖ = ‖x‖ + ‖y‖) [CompleteSpace E]
-    {u x : E} (hu : 0 ≤ u) (hx : 0 ≤ x) (hweak : latticeDisjointComplement {u} ⊆ {0}) :
+    (hE : IsALSpace E) [CompleteSpace E]
+    {u x : E} (hweak : IsWeakUnit u) (hx : 0 ≤ x) :
     Tendsto (fun n : ℕ => x ⊓ ((n : ℝ) • u)) atTop (𝓝 x) := by
+  have hu : 0 ≤ u := hweak.nonneg
   have hmono : Monotone fun n : ℕ => x ⊓ ((n : ℝ) • u) := by
     intro n m hnm
     exact inf_le_inf_left x (smul_le_smul_of_nonneg_right (by exact_mod_cast hnm) hu)
@@ -326,18 +330,18 @@ theorem tendsto_trunc_of_weakUnit
     intro v hv
     obtain rfl : v = u := by simpa using hv
     rw [LatticeDisjoint, abs_of_nonneg (sub_nonneg.mpr hyx), abs_of_nonneg hu, hinf]
-  have hz : x - y = 0 := by simpa using hweak hdisj
+  have hz : x - y = 0 := hweak.eq_zero_of_mem hdisj
   simpa [sub_eq_zero.mp hz] using hy
 
 /-- A weak unit's principal ideal is dense for the ambient norm. -/
-theorem denseRange_orderUnit
-    (hE : ∀ x y : E, 0 ≤ x → 0 ≤ y → ‖x + y‖ = ‖x‖ + ‖y‖) [CompleteSpace E] {u : E}
-    (hu : 0 ≤ u) (hweak : latticeDisjointComplement {u} ⊆ {0}) :
+theorem denseRange_orderUnit (hE : IsALSpace E) [CompleteSpace E] {u : E}
+    (hweak : IsWeakUnit u) :
     DenseRange (OrderUnitSpace.toVecₗ (u := u)) := by
+  have hu : 0 ≤ u := hweak.nonneg
   let : Fact (0 ≤ u) := ⟨hu⟩
   intro x
-  have hpos := tendsto_trunc_of_weakUnit hE hu (posPart_nonneg x) hweak
-  have hneg := tendsto_trunc_of_weakUnit hE hu (negPart_nonneg x) hweak
+  have hpos := tendsto_trunc_of_weakUnit hE hweak (posPart_nonneg x)
+  have hneg := tendsto_trunc_of_weakUnit hE hweak (negPart_nonneg x)
   let s : ℕ → OrderUnitSpace u := fun n =>
     ⟨x⁺ ⊓ ((n : ℝ) • u) - (x⁻ ⊓ ((n : ℝ) • u)), by
       apply principalOrderIdeal_sub
@@ -354,19 +358,18 @@ theorem denseRange_orderUnit
   exact mem_closure_of_tendsto hlim
     (Eventually.of_forall fun n => ⟨s n, by simp [OrderUnitSpace.toVecₗ]⟩)
 
-/-- An AL-space with a weak unit is lattice isometric to a real L¹ space. -/
-theorem exists_al_representation_of_weakUnit
-    (hE : ∀ x y : E, 0 ≤ x → 0 ≤ y → ‖x + y‖ = ‖x‖ + ‖y‖) [CompleteSpace E] {u : E}
-    (hu : 0 ≤ u) (hweak : latticeDisjointComplement {u} ⊆ {0}) :
+/-- A complete AL-space with a weak unit is lattice isometric to a real L¹ space. -/
+theorem exists_al_representation_of_weakUnit (hE : IsALSpace E) [CompleteSpace E] {u : E}
+    (hweak : IsWeakUnit u) :
     ∃ (X : Type u) (_ : MeasurableSpace X) (μ : Measure X) (U : E ≃ₗᵢ[ℝ] Lp ℝ 1 μ),
       ∀ x y, U (x ⊔ y) = U x ⊔ U y := by
   classical
-  let : Fact (0 ≤ u) := ⟨hu⟩
+  let : Fact (0 ≤ u) := ⟨hweak.nonneg⟩
   let F := OrderUnitSpace u
   let e0 : F := OrderUnitSpace.unit
   have he0 : 0 ≤ e0 := OrderUnitSpace.unit_nonneg
   have hball : closedBall (0 : F) 1 = Icc (-e0) e0 := OrderUnitSpace.ball_eq_Icc
-  obtain ⟨K, V, -, hsup⟩ := exists_am_representation (E := F) he0 hball
+  obtain ⟨K, V, -, hsup⟩ := exists_amSpace_representation (E := F) ⟨he0, hball⟩
   borelize (K : Type u)
   let ι : F →ₗ[ℝ] E := OrderUnitSpace.toVecₗ
   let lev : C(K, ℝ) →ₗ[ℝ] ℝ :=
@@ -420,7 +423,7 @@ theorem exists_al_representation_of_weakUnit
       (V x).continuous.aestronglyMeasurable
     rw [show fLp x = ContinuousMap.toLp (1 : ENNReal) μ ℝ (V x) by rfl, Lp.norm_def,
       eLpNorm_congr_ae (ContinuousMap.coeFn_toLp (p := (1 : ENNReal)) (μ := μ) (𝕜 := ℝ) (V x)),
-      eLpNorm_one_eq_lintegral_enorm hmeas, ← integral_norm_eq_lintegral_enorm hmeas]
+      eLpNorm_one_eq_lintegral_eNorm hmeas, ← integral_norm_eq_lintegral_eNorm hmeas]
     have habsV : |V x| = V |x| := by
       simpa [abs, map_neg] using (hsup x (-x)).symm
     have hint : ∫ t, ‖(V x) t‖ ∂μ = alNormFunctional hE (ι |x|) := by
@@ -434,7 +437,7 @@ theorem exists_al_representation_of_weakUnit
     rw [hint]
     change (alNormFunctional hE) |x.toVec| = ‖x.toVec‖
     exact alNormFunctional_abs hE x.toVec
-  have hdense : DenseRange ι := denseRange_orderUnit hE hu hweak
+  have hdense : DenseRange ι := denseRange_orderUnit hE hweak
   let T := fLp.extendOfIsometry (e := ι) hdense hnorm
   have hclosed : IsClosed (Set.range (⇑T)) :=
     T.antilipschitzWith.isClosed_range T.lipschitzWith.uniformContinuous
@@ -496,6 +499,5 @@ theorem exists_al_representation_of_weakUnit
   refine ⟨(K : Type u), inferInstance, μ, LinearIsometryEquiv.ofSurjective T hsurj, ?_⟩
   intro a b
   simpa [LinearIsometryEquiv.coe_ofSurjective] using hTsup a b
-
 
 end CKMA

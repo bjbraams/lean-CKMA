@@ -345,8 +345,9 @@ functions the logarithmic derivative estimate improves to $O(\log r)$.
   $f^{(k)}$ assumes every finite nonzero value infinitely often.
   For transcendental entire $f$ and $n\geq1$, $f^nf'$ also takes every
   nonzero value infinitely often (Hayman, Clunie).
-* **48. Five-value theorem.** If two nonconstant meromorphic
-  functions on $\mathbb C$ have the same preimage sets for five
+* **48. Five-value theorem.** If two meromorphic functions on
+  $\mathbb C$, at least one of them nonconstant, have the same
+  preimage sets for five
   distinct spherical values, ignoring multiplicity, they are identical.
 * **49. Four-value theorem.** If distinct nonconstant meromorphic
   functions share four values counting multiplicity, one is a Möbius

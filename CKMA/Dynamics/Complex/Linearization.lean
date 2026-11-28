@@ -47,6 +47,11 @@ def IsKoenigsCoordinate (f : ℂ → ℂ) (c : ℂ) (φ : ℂ → ℂ) : Prop :=
   AnalyticAt ℂ f 0 ∧ f 0 = 0 ∧ AnalyticAt ℂ φ 0 ∧ φ 0 = 0 ∧ deriv φ 0 = 1 ∧
     ∀ᶠ z in 𝓝 (0 : ℂ), φ (f z) = c * φ z
 
+/-- Unfolding of `IsKoenigsCoordinate`. -/
+theorem isKoenigsCoordinate_iff {f : ℂ → ℂ} {c : ℂ} {φ : ℂ → ℂ} :
+    IsKoenigsCoordinate f c φ ↔ AnalyticAt ℂ f 0 ∧ f 0 = 0 ∧ AnalyticAt ℂ φ 0 ∧ φ 0 = 0 ∧
+      deriv φ 0 = 1 ∧ ∀ᶠ z in 𝓝 (0 : ℂ), φ (f z) = c * φ z := Iff.rfl
+
 /-- **46.10**: local analytic linearization at an attracting or repelling nonzero multiplier.
 The derivative-one normalization guarantees a local analytic inverse. -/
 theorem exists_koenigsCoordinate {f : ℂ → ℂ} (hf : AnalyticAt ℂ f 0)
@@ -77,6 +82,11 @@ theorem koenigsCoordinate_eventuallyEq {f φ ψ : ℂ → ℂ} {c : ℂ}
 def IsBoettcherCoordinate (f : ℂ → ℂ) (k : ℕ) (φ : ℂ → ℂ) : Prop :=
   AnalyticAt ℂ f 0 ∧ f 0 = 0 ∧ AnalyticAt ℂ φ 0 ∧ φ 0 = 0 ∧ deriv φ 0 ≠ 0 ∧
     ∀ᶠ z in 𝓝 (0 : ℂ), φ (f z) = φ z ^ k
+
+/-- Unfolding of `IsBoettcherCoordinate`. -/
+theorem isBoettcherCoordinate_iff {f : ℂ → ℂ} {k : ℕ} {φ : ℂ → ℂ} :
+    IsBoettcherCoordinate f k φ ↔ AnalyticAt ℂ f 0 ∧ f 0 = 0 ∧ AnalyticAt ℂ φ 0 ∧ φ 0 = 0 ∧
+      deriv φ 0 ≠ 0 ∧ ∀ᶠ z in 𝓝 (0 : ℂ), φ (f z) = φ z ^ k := Iff.rfl
 
 /-- **46.11**: existence with a prescribed compatible leading coefficient.
 The factorization hypothesis expresses exact order `k`, including its nonzero leading term. -/

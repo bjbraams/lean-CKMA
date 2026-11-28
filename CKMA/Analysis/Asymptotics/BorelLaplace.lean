@@ -28,6 +28,8 @@ Source: GAPS 50.45.
 
 ## Main results
 
+* `CKMA.HasBorelContinuation.eventually_eq_borelTransformSeries`: a Borel continuation agrees
+  with the formal Borel transform near the origin.
 * `CKMA.exists_borelLaplace_sum`: Borel–Laplace summation on a sector of opening `π + β`.
 -/
 
@@ -45,6 +47,11 @@ open scoped BigOperators
 def borelTransformSeries (a : ℕ → ℂ) (ξ : ℂ) : ℂ :=
   ∑' n : ℕ, a (n + 1) * ξ ^ n / (n.factorial : ℂ)
 
+/-- The defining formula of `CKMA.borelTransformSeries`. -/
+theorem borelTransformSeries_def (a : ℕ → ℂ) (ξ : ℂ) :
+    borelTransformSeries a ξ = ∑' n : ℕ, a (n + 1) * ξ ^ n / (n.factorial : ℂ) :=
+  rfl
+
 /-- Directional Laplace summation along the ray of angle `θ`, with its complex line element. -/
 @[expose]
 def directionalBorelLaplaceSum (a₀ : ℂ) (b : ℂ → ℂ) (θ : ℝ) (z : ℂ) : ℂ :=
@@ -52,6 +59,14 @@ def directionalBorelLaplaceSum (a₀ : ℂ) (b : ℂ → ℂ) (θ : ℝ) (z : �
     ∫ t in Set.Ioi (0 : ℝ),
       Complex.exp (-(Complex.exp ((θ : ℂ) * Complex.I) * t) / z) *
         b (Complex.exp ((θ : ℂ) * Complex.I) * t)
+
+/-- The defining formula of `CKMA.directionalBorelLaplaceSum`. -/
+theorem directionalBorelLaplaceSum_def (a₀ : ℂ) (b : ℂ → ℂ) (θ : ℝ) (z : ℂ) :
+    directionalBorelLaplaceSum a₀ b θ z = a₀ + Complex.exp ((θ : ℂ) * Complex.I) *
+      ∫ t in Set.Ioi (0 : ℝ),
+        Complex.exp (-(Complex.exp ((θ : ℂ) * Complex.I) * t) / z) *
+          b (Complex.exp ((θ : ℂ) * Complex.I) * t) :=
+  rfl
 
 /-- Gevrey-one remainder estimates, uniform on every closed proper subsector. -/
 @[expose]
@@ -61,12 +76,38 @@ def HasSectorialGevreyOneExpansion (f : ℂ → ℂ) (a : ℕ → ℂ) (θ ω : 
       ‖f z - ∑ n ∈ Finset.range N, a n * z ^ n‖ ≤
         C * A ^ N * (N.factorial : ℝ) * ‖z‖ ^ N
 
+/-- The defining property of `CKMA.HasSectorialGevreyOneExpansion`. -/
+theorem hasSectorialGevreyOneExpansion_iff {f : ℂ → ℂ} {a : ℕ → ℂ} {θ ω : ℝ} :
+    HasSectorialGevreyOneExpansion f a θ ω ↔
+      ∀ η : ℝ, 0 < η → η < ω → ∃ C A r : ℝ, 0 < C ∧ 0 < A ∧ 0 < r ∧
+        ∀ (N : ℕ) (z : ℂ), z ∈ closedComplexSector θ η → ‖z‖ < r →
+          ‖f z - ∑ n ∈ Finset.range N, a n * z ^ n‖ ≤
+            C * A ^ N * (N.factorial : ℝ) * ‖z‖ ^ N :=
+  Iff.rfl
+
 /-- Analytic Borel continuation with exponential growth and the prescribed convergent germ. -/
 @[expose]
 def HasBorelContinuation (a : ℕ → ℂ) (b : ℂ → ℂ) (θ β : ℝ) : Prop :=
   (∃ r : ℝ, 0 < r ∧ DifferentiableOn ℂ b (complexSector θ β ∪ Metric.ball 0 r) ∧
     ∀ ξ : ℂ, ‖ξ‖ < r → HasSum (fun n : ℕ ↦ a (n + 1) * ξ ^ n / (n.factorial : ℂ)) (b ξ)) ∧
   ∃ C A : ℝ, 0 < C ∧ 0 < A ∧ ∀ ξ ∈ complexSector θ β, ‖b ξ‖ ≤ C * Real.exp (A * ‖ξ‖)
+
+/-- The defining property of `CKMA.HasBorelContinuation`. -/
+theorem hasBorelContinuation_iff {a : ℕ → ℂ} {b : ℂ → ℂ} {θ β : ℝ} :
+    HasBorelContinuation a b θ β ↔
+      (∃ r : ℝ, 0 < r ∧ DifferentiableOn ℂ b (complexSector θ β ∪ Metric.ball 0 r) ∧
+        ∀ ξ : ℂ, ‖ξ‖ < r →
+          HasSum (fun n : ℕ ↦ a (n + 1) * ξ ^ n / (n.factorial : ℂ)) (b ξ)) ∧
+      ∃ C A : ℝ, 0 < C ∧ 0 < A ∧ ∀ ξ ∈ complexSector θ β, ‖b ξ‖ ≤ C * Real.exp (A * ‖ξ‖) :=
+  Iff.rfl
+
+/-- A Borel continuation agrees with the formal Borel transform near the origin. -/
+theorem HasBorelContinuation.eventually_eq_borelTransformSeries {a : ℕ → ℂ} {b : ℂ → ℂ}
+    {θ β : ℝ} (hb : HasBorelContinuation a b θ β) :
+    ∀ᶠ ξ in 𝓝 0, b ξ = borelTransformSeries a ξ := by
+  obtain ⟨⟨r, hr, -, hsum⟩, -⟩ := hb
+  refine Metric.eventually_nhds_iff.mpr ⟨r, hr, fun ξ hξ ↦ (hsum ξ ?_).tsum_eq.symm⟩
+  rwa [dist_zero_right] at hξ
 
 /-- **50.45**: a Borel continuation of opening `β` sums to a function holomorphic on the sector
 of opening `π + β`, with a uniform Gevrey-one expansion on its proper subsectors. On each closed

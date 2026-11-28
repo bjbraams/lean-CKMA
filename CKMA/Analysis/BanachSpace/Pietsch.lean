@@ -18,8 +18,11 @@ Borel probability measure on the dual unit ball. The ball carries the weak-star 
 topology, rather than the operator norm topology; no completeness assumption on the original
 normed spaces is imposed. Source: GAPS 17.54.
 
-The domination bound and its converse use TauCeti's Pietsch theorem, with the
-dual ball identified by its norm inequality and its induced Borel structure.
+The theorem is a catalogue entry: both directions are TauCeti's Pietsch theorems
+`ContinuousLinearMap.exists_isProbabilityMeasure_of_summingENorm_le_ofReal` and
+`ContinuousLinearMap.summingENorm_le_ofReal_of_norm_le_integral`, with the dual ball identified by
+its norm inequality and its induced Borel structure. The hypothesis `0 ≤ C` is that of the TauCeti
+lemmas; for `C < 0` both sides would say `T = 0`.
 
 ## Main definitions
 
@@ -44,7 +47,6 @@ variable {𝕜 E F : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace �
     [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 /-- The dual unit ball with its weak-star subspace topology, not its operator norm topology. -/
-@[expose]
 abbrev WeakStarDualBall (𝕜 E : Type*) [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] :=
   {ℓ : WeakDual 𝕜 E // ‖WeakDual.toStrongDual ℓ‖ ≤ 1}
 

@@ -51,6 +51,11 @@ open scoped BigOperators
 def IsRademacher {Ω : Type*} [MeasurableSpace Ω] (ε : Ω → ℝ) (μ : Measure Ω) : Prop :=
   Measurable ε ∧ μ.map ε = rademacherMeasure
 
+/-- Defining property of `IsRademacher`. -/
+lemma isRademacher_iff {Ω : Type*} [MeasurableSpace Ω] {ε : Ω → ℝ} {μ : Measure Ω} :
+    IsRademacher ε μ ↔ Measurable ε ∧ μ.map ε = rademacherMeasure :=
+  Iff.rfl
+
 /-- Swap the paired coordinates whose sign equals `-1`. -/
 private def pairFlip {E J : Type*} (σ : J → ℝ) (z : J → E × E) :
     J → E × E :=
@@ -122,7 +127,7 @@ private lemma ghostFlip_measurePreserving {E J : Type*} [MeasurableSpace E] [Fin
 
 /-- An integrable real function dominated by the envelope is integrable. -/
 private lemma integrable_of_envelope {E : Type*} [MeasurableSpace E] {P : Measure E}
-    [IsProbabilityMeasure P] {g envelope : E → ℝ} (hg : Measurable g)
+    {g envelope : E → ℝ} (hg : Measurable g)
     (he : Integrable envelope P) (henv0 : ∀ x, 0 ≤ envelope x)
     (hbound : ∀ x, |g x| ≤ envelope x) : Integrable g P := by
   refine he.mono hg.aemeasurable.aestronglyMeasurable (ae_of_all _ fun x => ?_)
@@ -371,7 +376,7 @@ private lemma signedGhostSup_eq_ghostFlip {E ι J : Type*} [Fintype J] {f : ι �
   exact congr_arg iSup (funext fun i => by rw [hterms i])
 
 /-- The sign-dependent swap of the two ghost samples is jointly measurable. -/
-private lemma measurable_ghostFlip_uncurry {E J : Type*} [MeasurableSpace E] [Fintype J] :
+private lemma measurable_ghostFlip_uncurry {E J : Type*} [MeasurableSpace E] :
     Measurable fun z : ((J → E) × (J → E)) × (J → ℝ) => ghostFlip z.2 z.1 := by
   have hset (j : J) : MeasurableSet {z : ((J → E) × (J → E)) × (J → ℝ) | z.2 j = -1} :=
     measurableSet_eq_fun ((measurable_pi_apply j).comp measurable_snd) measurable_const
@@ -582,11 +587,13 @@ private lemma expectedSup_ghost_le_twice_signed {E ι J : Type*} [MeasurableSpac
 an integrable envelope, assuming that the three suprema over the class occurring in the argument
 are measurable functions of the sample points: the centered empirical supremum, the supremum of
 the ghost-sample differences, and the signed supremum. Data and signs live on separate
-probability spaces, and the signed side is integrated over the product. -/
+probability spaces, and the signed side is integrated over the product; `iIndepFun X μ` makes
+`μ` a probability measure. The class is assumed nonempty for the proof; for an empty class both
+sides are `0`. -/
 theorem symmetrization_of_measurable {Ω Ω' E ι J : Type*} [MeasurableSpace Ω]
     [MeasurableSpace Ω'] [MeasurableSpace E] [Nonempty ι] [Fintype J] [Nonempty J]
     (μ : Measure Ω) (ν : Measure Ω') (P : Measure E)
-    [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] [IsProbabilityMeasure P]
+    [IsProbabilityMeasure ν] [IsProbabilityMeasure P]
     (X : J → Ω → E) (ε : J → Ω' → ℝ)
     (hX : ∀ j, Measurable (X j)) (hXi : iIndepFun X μ)
     (hlaw : ∀ j, μ.map (X j) = P) (hε : ∀ j, IsRademacher (ε j) ν)
@@ -644,11 +651,12 @@ theorem symmetrization_of_measurable {Ω Ω' E ι J : Type*} [MeasurableSpace Ω
 
 /-- **07.33**: symmetrization for a nonempty countable class with an integrable envelope.
 The signs are sampled on a separate probability space, so independence from the data is
-explicit. -/
+explicit; `iIndepFun X μ` makes `μ` a probability measure. The class is assumed nonempty for the
+proof; for an empty class both sides are `0`. -/
 theorem symmetrization {Ω Ω' E ι J : Type*} [MeasurableSpace Ω] [MeasurableSpace Ω']
     [MeasurableSpace E] [Countable ι] [Nonempty ι] [Fintype J] [Nonempty J]
     (μ : Measure Ω) (ν : Measure Ω') (P : Measure E)
-    [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] [IsProbabilityMeasure P]
+    [IsProbabilityMeasure ν] [IsProbabilityMeasure P]
     (X : J → Ω → E) (ε : J → Ω' → ℝ)
     (hX : ∀ j, Measurable (X j)) (hXi : iIndepFun X μ)
     (hlaw : ∀ j, μ.map (X j) = P) (hε : ∀ j, IsRademacher (ε j) ν)

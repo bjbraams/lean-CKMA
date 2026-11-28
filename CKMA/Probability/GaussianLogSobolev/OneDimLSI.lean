@@ -5,30 +5,30 @@ Authors: CKMA contributors
 -/
 module
 
-public import Mathlib.InformationTheory.KullbackLeibler.KLFun
+public import CKMA.Probability.GaussianLogSobolev.Basic
 public import Mathlib.Analysis.SpecialFunctions.SmoothTransition
 public import Mathlib.Probability.Distributions.Gaussian.Real
 
-import CKMA.Probability.GaussianLogSobolev.Entropy
+import CKMA.Probability.GaussianLogSobolev.OUEntropy
 import CKMA.Probability.GaussianLogSobolev.IntegrationByParts
 
 /-!
 # One-dimensional Gaussian logarithmic Sobolev inequality
 
-The Ornstein–Uhlenbeck entropy derivative of `Entropy.lean` yields the inequality for smooth
+The Ornstein–Uhlenbeck entropy derivative of `OUEntropy.lean` yields the inequality for smooth
 positive functions with bounded derivatives. Compactly supported squares are reduced to that case
 by adding a positive constant, and a general smooth square-integrable function is recovered by
 smooth cutoffs and Fatou's lemma. The constant is the sharp constant `2` of `gaussianReal 0 1`.
 
 ## Main definitions
 
-* `CKMA.nonnegativeFunctionEntropy`: extended entropy
-  `ENNReal.ofReal (∫ h) * ∫⁻ klFun (h / ∫ h)`, with no integrability hypothesis.
 * `CKMA.oneDimCutoff`: Smooth cutoff equal to `1` on `[-R, R]` and `0` outside `[-R - 1, R + 1]`.
 
 ## Main results
 
-* `CKMA.gaussian_realEntropy_sq_add_le`: Real Gaussian entropy bound for `φ ^ 2 + δ` with compactly
+* `CKMA.nonnegativeFunctionEntropy_gaussianReal_eq_ofReal`: the extended entropy is the real
+  entropy for bounded nonnegative continuous integrands.
+* `CKMA.entropy_gaussianReal_sq_add_le`: Real Gaussian entropy bound for `φ ^ 2 + δ` with compactly
   supported `φ`.
 * `CKMA.gaussian_logSobolev_oneDim`: One-dimensional Gaussian logarithmic Sobolev inequality with
   constant `2`.
@@ -43,16 +43,6 @@ namespace CKMA
 open GaussianLogSobolev
 open MeasureTheory ProbabilityTheory Set Filter InformationTheory
 open scoped NNReal ENNReal Real Topology
-
-/-- Extended entropy `ENNReal.ofReal (∫ h) * ∫⁻ klFun (h / ∫ h)`, with no integrability or
-probability hypothesis. The Bochner integral of a non-integrable function is `0`. Under the
-hypotheses of `nonnegativeFunctionEntropy_eq_ofReal`, this equals
-`ENNReal.ofReal (∫ h log h - (∫ h) log (∫ h))`. -/
-@[expose]
-def nonnegativeFunctionEntropy {E : Type*} [MeasurableSpace E]
-    (μ : Measure E) (h : E → ℝ) : ℝ≥0∞ :=
-  ENNReal.ofReal (∫ x, h x ∂μ) *
-    ∫⁻ x, ENNReal.ofReal (klFun (h x / (∫ y, h y ∂μ))) ∂μ
 
 /-- A nonnegative number at most `M` satisfies `|t log t| ≤ (max M 1) ^ 2`. -/
 private lemma abs_mul_log_le {t M : ℝ} (ht : 0 ≤ t) (hM : t ≤ M) :
@@ -109,9 +99,8 @@ private lemma deriv_eq_zero_of_zero_outside {φ : ℝ → ℝ} {R : ℝ}
       simp [deriv_const']
     rcases lt_or_eq_of_le hx with hlt | heq
     · exact hstrict hlt
-    · have hinv : Tendsto (fun n : ℕ => ((n : ℝ) + 1)⁻¹) atTop (𝓝 0) :=
-        tendsto_inv_atTop_zero.comp
-          (tendsto_atTop_add_const_right atTop (1 : ℝ) tendsto_natCast_atTop_atTop)
+    · have hinv : Tendsto (fun n : ℕ => ((n : ℝ) + 1)⁻¹) atTop (𝓝 0) := by
+        simpa using tendsto_one_div_add_atTop_nhds_zero_nat (𝕜 := ℝ)
       by_cases hx0 : 0 ≤ x
       · have hxR : x = R := by
           rw [abs_of_nonneg hx0] at heq
@@ -178,121 +167,25 @@ private lemma deriv_sq_add {φ : ℝ → ℝ} (hφ : Differentiable ℝ φ) (δ 
   rw [deriv_add_const (f := fun y => φ y ^ 2) δ, hsq]
   simp [pow_one]
 
-/-- Algebraic form of `m * klFun (t / m)`, valid at `t = 0`. -/
-private lemma mul_klFun_div {t m : ℝ} (hm : 0 < m) (ht : 0 ≤ t) :
-    m * klFun (t / m) = t * Real.log t - t * Real.log m + m - t := by
-  rcases ht.eq_or_lt with rfl | ht0
-  · simp [klFun, Real.log_zero, zero_div]
-  · rw [klFun, Real.log_div ht0.ne' hm.ne']
-    have h1 : m * (t / m) = t := mul_div_cancel₀ t hm.ne'
-    have h2 : m * ((t / m) * (Real.log t - Real.log m)) =
-        t * (Real.log t - Real.log m) := by
-      rw [← mul_assoc, h1]
-    calc
-      m * ((t / m) * (Real.log t - Real.log m) + 1 - t / m)
-          = m * ((t / m) * (Real.log t - Real.log m)) + m * 1 - m * (t / m) := by ring
-      _ = t * (Real.log t - Real.log m) + m - t := by rw [h2, h1]; ring
-      _ = t * Real.log t - t * Real.log m + m - t := by ring
-
-/-- Integral form of the entropy identity for a bounded nonnegative continuous function. -/
-private lemma integral_mul_klFun_eq {h : ℝ → ℝ} (hcont : Continuous h) (hnn : ∀ x, 0 ≤ h x)
-    (hbd : ∃ M, ∀ x, h x ≤ M) (hm : 0 < ∫ x, h x ∂gaussianReal 0 1) :
-    (∫ x, h x ∂gaussianReal 0 1) *
-        ∫ x, klFun (h x / ∫ y, h y ∂gaussianReal 0 1) ∂gaussianReal 0 1 =
-      (∫ x, h x * Real.log (h x) ∂gaussianReal 0 1) -
-        (∫ x, h x ∂gaussianReal 0 1) *
-          Real.log (∫ x, h x ∂gaussianReal 0 1) := by
-  let γ : Measure ℝ := gaussianReal 0 1
-  let m : ℝ := ∫ x, h x ∂γ
-  have hm' : 0 < m := by simpa [m, γ] using hm
-  obtain ⟨M, hM⟩ := hbd
-  have hint_h : Integrable h γ :=
-    integrable_of_abs_le hcont.aestronglyMeasurable fun x => by
-      rw [abs_of_nonneg (hnn x)]
-      exact hM x
-  have hint_log : Integrable (fun x => h x * Real.log (h x)) γ :=
-    integrable_of_abs_le (Real.continuous_mul_log.comp hcont).aestronglyMeasurable
-      fun x => abs_mul_log_le (hnn x) (hM x)
-  have hint_lin : Integrable (fun x => h x * Real.log m) γ := hint_h.mul_const _
-  have hint_const : Integrable (fun _ : ℝ => m) γ := integrable_const _
-  have hint_rhs : Integrable (fun x =>
-      h x * Real.log (h x) - h x * Real.log m + m - h x) γ :=
-    ((hint_log.sub hint_lin).add hint_const).sub hint_h
-  have hpt : ∀ x, m * klFun (h x / m) =
-      h x * Real.log (h x) - h x * Real.log m + m - h x :=
-    fun x => mul_klFun_div hm' (hnn x)
-  have hint_mul : Integrable (fun x => m * klFun (h x / m)) γ := by
-    refine hint_rhs.congr ?_
-    filter_upwards with x
-    exact (hpt x).symm
-  have hint_kl : Integrable (fun x => klFun (h x / m)) γ :=
-    (integrable_const_mul_iff (IsUnit.mk0 m hm'.ne')
-      (fun x => klFun (h x / m))).1 hint_mul
-  have hint_eq : ∫ x, m * klFun (h x / m) ∂γ =
-      ∫ x, (h x * Real.log (h x) - h x * Real.log m + m - h x) ∂γ := by
-    refine integral_congr_ae ?_
-    filter_upwards with x
-    exact hpt x
-  have hA : Integrable (fun x => h x * Real.log (h x) - h x * Real.log m) γ :=
-    hint_log.sub hint_lin
-  have hB : Integrable
-      (fun x => h x * Real.log (h x) - h x * Real.log m + m) γ := hA.add hint_const
-  have hsplit : ∫ x, (h x * Real.log (h x) - h x * Real.log m + m - h x) ∂γ =
-      (∫ x, h x * Real.log (h x) ∂γ) - (∫ x, h x * Real.log m ∂γ) +
-        (∫ _x, m ∂γ) - ∫ x, h x ∂γ := by
-    rw [integral_sub hB hint_h, integral_add hA hint_const, integral_sub hint_log hint_lin]
-  rw [integral_const_mul] at hint_eq
-  have hconst : ∫ _x, m ∂γ = m := by simp [integral_const, probReal_univ]
-  have hlin : ∫ x, h x * Real.log m ∂γ = m * Real.log m := by
-    rw [integral_mul_const]
-  have hfin : m * ∫ x, klFun (h x / m) ∂γ =
-      (∫ x, h x * Real.log (h x) ∂γ) - m * Real.log m := by
-    rw [hint_eq, hsplit, hconst, hlin]
-    ring
-  simpa [m, γ, hint_kl] using hfin
-
-/-- The `klFun` entropy equals the real entropy for a bounded positive-mass integrand. -/
-lemma nonnegativeFunctionEntropy_eq_ofReal {h : ℝ → ℝ} (hcont : Continuous h)
-    (hnn : ∀ x, 0 ≤ h x) (hbd : ∃ M, ∀ x, h x ≤ M) (hm : 0 < ∫ x, h x ∂gaussianReal 0 1) :
+/-- The extended entropy under the standard Gaussian equals the real entropy for a bounded
+nonnegative continuous integrand. This is `nonnegativeFunctionEntropy_eq_ofReal_entropy`, with
+the integrability hypotheses supplied by continuity and the bound. -/
+lemma nonnegativeFunctionEntropy_gaussianReal_eq_ofReal {h : ℝ → ℝ} (hcont : Continuous h)
+    (hnn : ∀ x, 0 ≤ h x) (hbd : ∃ M, ∀ x, h x ≤ M) :
     nonnegativeFunctionEntropy (gaussianReal 0 1) h =
       ENNReal.ofReal ((∫ x, h x * Real.log (h x) ∂gaussianReal 0 1) -
         (∫ x, h x ∂gaussianReal 0 1) *
           Real.log (∫ x, h x ∂gaussianReal 0 1)) := by
-  let γ : Measure ℝ := gaussianReal 0 1
-  let m : ℝ := ∫ x, h x ∂γ
-  have hm' : 0 < m := by simpa [m, γ] using hm
-  have hid := integral_mul_klFun_eq hcont hnn hbd hm
   obtain ⟨M, hM⟩ := hbd
-  have hint_h : Integrable h γ :=
-    integrable_of_abs_le hcont.aestronglyMeasurable fun x => by
-      rw [abs_of_nonneg (hnn x)]; exact hM x
-  have hint_log : Integrable (fun x => h x * Real.log (h x)) γ :=
-    integrable_of_abs_le (Real.continuous_mul_log.comp hcont).aestronglyMeasurable
-      fun x => abs_mul_log_le (hnn x) (hM x)
-  have hint_lin : Integrable (fun x => h x * Real.log m) γ := hint_h.mul_const _
-  have hint_const : Integrable (fun _ : ℝ => m) γ := integrable_const _
-  have hint_rhs : Integrable (fun x =>
-      h x * Real.log (h x) - h x * Real.log m + m - h x) γ :=
-    ((hint_log.sub hint_lin).add hint_const).sub hint_h
-  have hpt : ∀ x, m * klFun (h x / m) =
-      h x * Real.log (h x) - h x * Real.log m + m - h x :=
-    fun x => mul_klFun_div hm' (hnn x)
-  have hint_mul : Integrable (fun x => m * klFun (h x / m)) γ := by
-    refine hint_rhs.congr ?_
-    filter_upwards with x
-    exact (hpt x).symm
-  have hint_kl : Integrable (fun x => klFun (h x / m)) γ :=
-    (integrable_const_mul_iff (IsUnit.mk0 m hm'.ne')
-      (fun x => klFun (h x / m))).1 hint_mul
-  have hkl_nn : 0 ≤ᵐ[γ] fun x => klFun (h x / m) :=
-    ae_of_all _ fun x => klFun_nonneg (div_nonneg (hnn x) hm'.le)
-  unfold nonnegativeFunctionEntropy
-  rw [← ofReal_integral_eq_lintegral_ofReal hint_kl hkl_nn]
-  rw [← ENNReal.ofReal_mul hm'.le]
-  exact congrArg ENNReal.ofReal (by simpa [m, γ] using hid)
+  rw [← Measure.entropy_def]
+  exact nonnegativeFunctionEntropy_eq_ofReal_entropy (μ := gaussianReal 0 1) hnn
+    (integrable_of_abs_le hcont.aestronglyMeasurable fun x => by
+      rw [abs_of_nonneg (hnn x)]; exact hM x)
+    (integrable_of_abs_le (Real.continuous_mul_log.comp hcont).aestronglyMeasurable
+      fun x => abs_mul_log_le (hnn x) (hM x))
 
 /-- Real Gaussian entropy of `φ ^ 2 + δ` for smooth compactly supported `φ`. -/
-lemma gaussian_realEntropy_sq_add_le {φ : ℝ → ℝ} {R δ : ℝ}
+lemma entropy_gaussianReal_sq_add_le {φ : ℝ → ℝ} {R δ : ℝ}
     (hφ : ContDiff ℝ (↑(⊤ : ℕ∞)) φ) (h0 : ∀ x, R ≤ |x| → φ x = 0) (hδ : 0 < δ) :
     (∫ x, (φ x ^ 2 + δ) * Real.log (φ x ^ 2 + δ) ∂gaussianReal 0 1) -
         (∫ x, (φ x ^ 2 + δ) ∂gaussianReal 0 1) *
@@ -399,23 +292,18 @@ private lemma nonnegativeFunctionEntropy_sq_add_support_le {φ : ℝ → ℝ} {R
     have hsq : φ x ^ 2 ≤ Bφ ^ 2 :=
       sq_le_sq.mpr (by simpa [abs_of_nonneg hBφ0] using hBφ x)
     linarith
-  have hm : 0 < ∫ x, h x ∂γ := by
-    have hge : ∀ x, δ ≤ h x := fun x => by dsimp [h]; exact le_add_of_nonneg_left (sq_nonneg _)
-    have hint : Integrable h γ :=
-      integrable_of_abs_le hcont.aestronglyMeasurable fun x => by
-        rw [abs_of_nonneg (hnn x)]
-        exact hbd x
-    have hconst : ∫ x, δ ∂γ = δ := by simp [integral_const, probReal_univ]
-    have hmono := integral_mono (integrable_const δ) hint hge
-    rw [hconst] at hmono
-    exact lt_of_lt_of_le hδ hmono
-  rw [nonnegativeFunctionEntropy_eq_ofReal hcont hnn ⟨Bφ ^ 2 + δ, hbd⟩ (by simpa [h, γ] using hm)]
-  exact ENNReal.ofReal_le_ofReal (by simpa [h, γ] using gaussian_realEntropy_sq_add_le hφ h0 hδ)
+  rw [nonnegativeFunctionEntropy_gaussianReal_eq_ofReal hcont hnn ⟨Bφ ^ 2 + δ, hbd⟩]
+  exact ENNReal.ofReal_le_ofReal (by simpa [h, γ] using entropy_gaussianReal_sq_add_le hφ h0 hδ)
 
 /-- Smooth cutoff equal to `1` on `[-R, R]` and to `0` outside `[-R - 1, R + 1]`. -/
 @[expose]
 def oneDimCutoff (R x : ℝ) : ℝ :=
   Real.smoothTransition (R + 1 - x) * Real.smoothTransition (R + 1 + x)
+
+/-- Defining formula of `oneDimCutoff`. -/
+lemma oneDimCutoff_def (R x : ℝ) :
+    oneDimCutoff R x = Real.smoothTransition (R + 1 - x) * Real.smoothTransition (R + 1 + x) :=
+  rfl
 
 /-- The one-dimensional cutoff is smooth. -/
 lemma contDiff_oneDimCutoff (R : ℝ) : ContDiff ℝ (↑(⊤ : ℕ∞)) (oneDimCutoff R) := by
@@ -838,9 +726,7 @@ theorem gaussian_logSobolev_oneDim (φ : ℝ → ℝ) (hφ : ContDiff ℝ (↑(�
         rw [integral_add hint2 (integrable_const _), integral_const, probReal_univ]
         simp
       have hinv : Tendsto (fun n : ℕ => 1 / ((n : ℝ) + 1)) atTop (𝓝 0) :=
-        Tendsto.congr (fun n => (one_div ((n : ℝ) + 1)).symm)
-          (tendsto_inv_atTop_zero.comp
-            (tendsto_atTop_add_const_right atTop (1 : ℝ) tendsto_natCast_atTop_atTop))
+        tendsto_one_div_add_atTop_nhds_zero_nat
       have hsum := (tendsto_const_nhds (x := ∫ x, φ x ^ 2 ∂γ)).add hinv
       rw [add_zero] at hsum
       exact Tendsto.congr (fun n => (hadd n).symm) hsum
@@ -853,10 +739,7 @@ theorem gaussian_logSobolev_oneDim (φ : ℝ → ℝ) (hφ : ContDiff ℝ (↑(�
       (fun x => sq_nonneg _)
       (fun x => by
         have hlim := (tendsto_const_nhds (x := φ x ^ 2)).add
-          (Tendsto.congr (fun n : ℕ => (one_div ((n : ℝ) + 1)).symm)
-            (tendsto_inv_atTop_zero.comp
-              (tendsto_atTop_add_const_right atTop (1 : ℝ)
-                tendsto_natCast_atTop_atTop)))
+          (tendsto_one_div_add_atTop_nhds_zero_nat (𝕜 := ℝ))
         rw [add_zero] at hlim
         exact hlim)
       (by simpa [γ] using htend_mass)

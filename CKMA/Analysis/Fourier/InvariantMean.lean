@@ -6,6 +6,7 @@ Authors: CKMA contributors
 module
 
 public import Mathlib.MeasureTheory.Function.LpSpace.Basic
+public import TauCeti.GroupTheory.Amenable.LocallyCompact
 
 import Mathlib.MeasureTheory.Function.L1Space.Integrable
 import Mathlib.MeasureTheory.Group.Measure
@@ -19,17 +20,22 @@ import TauCeti.MeasureTheory.Function.Lp.Restriction
 /-!
 # Invariant means on Haar L∞ spaces
 
-A positive normalized continuous linear functional is left invariant when translated
-representatives agree almost everywhere. On a compact group the normalized Bochner
-integral against Haar measure is such a mean. Left invariance is Mathlib's
-`MeasureTheory.map_mul_left_eq_self` together with
-`Topology.IsClosedEmbedding.integral_map`: left multiplication is a closed embedding, so
-the argument does not need a second-countable `MeasurableMul` instance. For a locally
-compact abelian group, TauCeti's amenability theorem for the underlying discrete group
-averages the translates of the normalized integral over a compact neighborhood. This
-uses TauCeti's bounded-continuous-function characterization of discrete amenability,
-its `Set.setIntegralLp`, and its continuity theorem for positive functionals on real
-`L∞`. Translation invariance is stated at the level of L∞ equivalence classes.
+A positive normalized continuous linear functional on `L∞(G, μ)` is left invariant when
+translated representatives agree almost everywhere (`CKMA.IsHaarInvariantMean`). For a regular
+Haar measure on a locally compact group, the existence of such a mean is TauCeti's amenability
+`TauCeti.Amenable G` (`CKMA.isHaarAmenable_iff_amenable`, from
+`TauCeti.amenable_iff_exists_lpTop_invariant_of_regular`). Closed subgroups of amenable locally
+compact groups are amenable (**28.58**), stated with TauCeti's class.
+
+The compact and abelian cases hold for every Haar measure, without a regularity assumption. On a
+compact group the normalized Bochner integral is an invariant mean: left invariance is Mathlib's
+`MeasureTheory.map_mul_left_eq_self` together with `Topology.IsClosedEmbedding.integral_map`, so
+the argument needs no second-countable `MeasurableMul` instance. On a locally compact abelian
+group, TauCeti's amenability of the underlying discrete group (`TauCeti.Amenable.of_commGroup`)
+averages the translates of the normalized integral over a compact neighbourhood, using TauCeti's
+`Set.setIntegralLp` and its continuity theorem for positive functionals on real `L∞`
+(`PositiveLinearMap.continuous_lpTop`). In TauCeti's class language these two cases are the
+instances `TauCeti.Amenable.of_compactSpace` and `TauCeti.Amenable.of_commGroup`.
 
 Source: GAPS 28.58.
 
@@ -41,9 +47,13 @@ Source: GAPS 28.58.
 
 ## Main results
 
-* `CKMA.isHaarAmenable_of_compact`: compact groups are amenable (**28.58**).
-* `CKMA.isHaarAmenable_of_commutative`: locally compact abelian groups are amenable.
-* `CKMA.isHaarAmenable_closed_subgroup`: closed subgroups of amenable groups are amenable.
+* `CKMA.isHaarAmenable_iff_amenable`: for a regular Haar measure, `IsHaarAmenable μ` is
+  TauCeti's `Amenable G`.
+* `CKMA.isHaarAmenable_of_compact`: compact groups have invariant means on `L∞` of every Haar
+  measure.
+* `CKMA.isHaarAmenable_of_commutative`: so do locally compact abelian groups.
+* `CKMA.amenable_of_isClosed` (**28.58**): closed subgroups of amenable locally compact groups are
+  amenable.
 -/
 
 public section
@@ -60,9 +70,6 @@ section Group
 variable {G : Type*} [Group G] [TopologicalSpace G] [IsTopologicalGroup G]
     [MeasurableSpace G] [BorelSpace G]
 
-/-- The exponent `∞` satisfies `1 ≤ ∞`, so `Lp E ∞ μ` carries its normed-space structure. -/
-instance : Fact (1 ≤ (∞ : ℝ≥0∞)) := ⟨le_top⟩
-
 /-- A positive normalized left-invariant bounded functional on Haar L-infinity.
 Translation is specified by a.e. representative equality, so no chosen representative is shifted
 as if pointwise equality were intrinsic to the L-infinity class. -/
@@ -76,7 +83,59 @@ def IsHaarInvariantMean (μ : Measure G) (m : Lp ℝ ∞ μ →L[ℝ] ℝ) : Pro
 @[expose]
 def IsHaarAmenable (μ : Measure G) : Prop := ∃ m, IsHaarInvariantMean μ m
 
-/-- **28.58**, compact groups admit invariant means on their Haar L-infinity spaces. -/
+omit [TopologicalSpace G] [IsTopologicalGroup G] [BorelSpace G] in
+/-- Unfolding `IsHaarInvariantMean`. -/
+theorem isHaarInvariantMean_iff {μ : Measure G} {m : Lp ℝ ∞ μ →L[ℝ] ℝ} :
+    IsHaarInvariantMean μ m ↔
+      (∀ f : Lp ℝ ∞ μ, (∀ᵐ x ∂μ, 0 ≤ f x) → 0 ≤ m f) ∧
+        (∀ f : Lp ℝ ∞ μ, (∀ᵐ x ∂μ, f x = 1) → m f = 1) ∧
+        ∀ (g : G) (f h : Lp ℝ ∞ μ), (∀ᵐ x ∂μ, h x = f (g⁻¹ * x)) → m h = m f :=
+  Iff.rfl
+
+omit [TopologicalSpace G] [IsTopologicalGroup G] [BorelSpace G] in
+/-- An invariant mean is nonnegative on a.e. nonnegative classes. -/
+theorem IsHaarInvariantMean.nonneg {μ : Measure G} {m : Lp ℝ ∞ μ →L[ℝ] ℝ}
+    (hm : IsHaarInvariantMean μ m) {f : Lp ℝ ∞ μ} (hf : ∀ᵐ x ∂μ, 0 ≤ f x) : 0 ≤ m f :=
+  hm.1 f hf
+
+omit [TopologicalSpace G] [IsTopologicalGroup G] [BorelSpace G] in
+/-- An invariant mean is normalized. -/
+theorem IsHaarInvariantMean.apply_eq_one {μ : Measure G} {m : Lp ℝ ∞ μ →L[ℝ] ℝ}
+    (hm : IsHaarInvariantMean μ m) {f : Lp ℝ ∞ μ} (hf : ∀ᵐ x ∂μ, f x = 1) : m f = 1 :=
+  hm.2.1 f hf
+
+omit [TopologicalSpace G] [IsTopologicalGroup G] [BorelSpace G] in
+/-- An invariant mean is left invariant. -/
+theorem IsHaarInvariantMean.apply_eq {μ : Measure G} {m : Lp ℝ ∞ μ →L[ℝ] ℝ}
+    (hm : IsHaarInvariantMean μ m) (g : G) {f h : Lp ℝ ∞ μ}
+    (hh : ∀ᵐ x ∂μ, h x = f (g⁻¹ * x)) : m h = m f :=
+  hm.2.2 g f h hh
+
+omit [TopologicalSpace G] [IsTopologicalGroup G] [BorelSpace G] in
+/-- Unfolding `IsHaarAmenable`. -/
+theorem isHaarAmenable_iff {μ : Measure G} : IsHaarAmenable μ ↔ ∃ m, IsHaarInvariantMean μ m :=
+  Iff.rfl
+
+/-- For a regular Haar measure on a locally compact group, an invariant mean on `L∞(G, μ)`
+exists exactly when `G` is amenable in TauCeti's sense. -/
+theorem isHaarAmenable_iff_amenable [LocallyCompactSpace G] (μ : Measure G)
+    [μ.IsHaarMeasure] [μ.Regular] : IsHaarAmenable μ ↔ TauCeti.Amenable G := by
+  rw [TauCeti.amenable_iff_exists_lpTop_invariant_of_regular μ]
+  constructor
+  · rintro ⟨m, hpos, hone, hinv⟩
+    refine ⟨PositiveLinearMap.mk₀ m.toLinearMap fun f hf ↦ hpos f ((Lp.coeFn_nonneg f).2 hf),
+      hone 1 (Lp.coeFn_one (E := ℝ)), fun g φ ↦ hinv g φ _ (Lp.coeFn_leftTranslation g φ)⟩
+  · rintro ⟨M, hM, hinv⟩
+    refine ⟨⟨M.toLinearMap, M.continuous_lpTop⟩, fun f hf ↦ map_nonneg M ((Lp.coeFn_nonneg f).1 hf),
+      fun f hf ↦ ?_, fun g f h hh ↦ ?_⟩
+    · have : f = 1 := Lp.ext (Filter.EventuallyEq.trans hf (Lp.coeFn_one (E := ℝ)).symm)
+      simpa [this] using hM
+    · have : h = Lp.leftTranslation μ ∞ ℝ g f :=
+        Lp.ext (Filter.EventuallyEq.trans hh (Lp.coeFn_leftTranslation g f).symm)
+      simpa [this] using hinv g f
+
+/-- Compact groups admit invariant means on the `L∞` space of every Haar measure: the
+normalized Haar integral. -/
 theorem isHaarAmenable_of_compact [CompactSpace G]
     (μ : Measure G) [Measure.IsHaarMeasure μ] : IsHaarAmenable μ := by
   have hμ : 0 < μ.real Set.univ := by
@@ -120,35 +179,19 @@ theorem isHaarAmenable_of_compact [CompactSpace G]
         mul_le_mul_of_nonneg_left (by rwa [Real.norm_eq_abs] at hint) (inv_nonneg.mpr hμ.le)
       _ = (c * μ.real Set.univ) * ‖f‖ := by ring
       _ = 1 * ‖f‖ := by rw [inv_mul_cancel₀ hμ.ne', one_mul]
-  refine ⟨L.mkContinuous 1 hbound, ?_, ?_, ?_⟩
-  · intro f hf
-    simp only [LinearMap.mkContinuous_apply]
-    have : L f = c * ∫ x, (f : G → ℝ) x ∂μ := rfl
-    rw [this]
+  have hL (f : Lp ℝ ∞ μ) : L.mkContinuous 1 hbound f = c * ∫ x, (f : G → ℝ) x ∂μ := rfl
+  refine ⟨L.mkContinuous 1 hbound, fun f hf ↦ ?_, fun f hf ↦ ?_, fun g f h hh ↦ ?_⟩
+  · rw [hL]
     exact mul_nonneg (inv_nonneg.mpr hμ.le) (integral_nonneg_of_ae hf)
-  · intro f hf
-    simp only [LinearMap.mkContinuous_apply]
-    have : L f = c * ∫ x, (f : G → ℝ) x ∂μ := rfl
-    rw [this]
-    have : ∫ x, (f : G → ℝ) x ∂μ = μ.real Set.univ := by
-      rw [integral_congr_ae hf, integral_const]
-      simp
-    rw [this, inv_mul_cancel₀ hμ.ne']
-  · intro g f h hh
-    simp only [LinearMap.mkContinuous_apply]
-    have hLf : L f = c * ∫ x, (f : G → ℝ) x ∂μ := rfl
-    have hLh : L h = c * ∫ x, (h : G → ℝ) x ∂μ := rfl
-    rw [hLf, hLh]
-    have hmap :=
+  · rw [hL, integral_congr_ae hf, integral_const, smul_eq_mul, mul_one, inv_mul_cancel₀ hμ.ne']
+  · have hmap :=
       (Homeomorph.mulLeft g⁻¹).isClosedEmbedding.integral_map (μ := μ) (f : G → ℝ)
     simp only [Homeomorph.coe_mulLeft] at hmap
-    rw [integral_congr_ae hh, ← hmap, map_mul_left_eq_self μ g⁻¹]
+    rw [hL, hL, integral_congr_ae hh, ← hmap, map_mul_left_eq_self μ g⁻¹]
 
-/-- Closed subgroups inherit amenability, with their own Haar measure. -/
-theorem isHaarAmenable_closed_subgroup [LocallyCompactSpace G] [T2Space G]
-    (μ : Measure G) [Measure.IsHaarMeasure μ] (hG : IsHaarAmenable μ)
-    (H : Subgroup G) (hH : IsClosed (H : Set G))
-    (ν : Measure H) [Measure.IsHaarMeasure ν] : IsHaarAmenable ν := by
+/-- **28.58**: a closed subgroup of an amenable locally compact group is amenable. -/
+theorem amenable_of_isClosed [LocallyCompactSpace G] [TauCeti.Amenable G]
+    (H : Subgroup G) (hH : IsClosed (H : Set G)) : TauCeti.Amenable H := by
   sorry
 
 end Group
@@ -158,8 +201,9 @@ section CommGroup
 variable {G : Type*} [CommGroup G] [TopologicalSpace G] [IsTopologicalGroup G]
     [MeasurableSpace G] [BorelSpace G]
 
-/-- Locally compact abelian groups admit invariant means, including noncompact groups. -/
-theorem isHaarAmenable_of_commutative [LocallyCompactSpace G] [T2Space G]
+/-- Locally compact abelian groups admit invariant means on the `L∞` space of every Haar
+measure. -/
+theorem isHaarAmenable_of_commutative [LocallyCompactSpace G]
     (μ : Measure G) [Measure.IsHaarMeasure μ] : IsHaarAmenable μ := by
   obtain ⟨K, hK, hKmem⟩ := exists_compact_mem_nhds (1 : G)
   have hmass : 0 < μ.real K :=

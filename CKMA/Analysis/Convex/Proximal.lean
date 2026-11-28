@@ -7,14 +7,16 @@ module
 
 public import CKMA.Analysis.Convex.Basic
 public import TauCeti.Analysis.Convex.Subdifferential
+public import TauCeti.Analysis.GradientFlow.MoreauYosida.Basic
 import TauCeti.Analysis.Convex.FenchelMoreau
 
 /-!
 # Proximal points of extended-real convex functions
 
 A proximal point is a finite minimizer of the Moreau quadratic objective on a real Hilbert
-space. Proper lower semicontinuous convex functions have unique proximal points at positive
-scales; the totalized proximal map selects these points whenever they exist.
+space; at positive scale these are the finite points of TauCeti's Moreau–Yosida resolvent.
+Proper lower semicontinuous convex functions have unique proximal points at positive scales;
+the totalized proximal map selects these points whenever they exist.
 
 The minimizer–resolvent bridge uses TauCeti's subdifferential, whose definition itself requires
 a finite base value. Firm nonexpansiveness is stated directly on the proximal graph, independently
@@ -31,6 +33,8 @@ sequence Cauchy. Source: GAPS 12.32.
 
 ## Main results
 
+* `CKMA.isProximalPoint_iff_mem_moreauYosidaResolvent`: at positive scale, proximal points are
+  the finite points of TauCeti's Moreau–Yosida resolvent.
 * `CKMA.isProximalPoint_iff_mem_subdifferential`: subgradient characterization of proximal points.
 * `CKMA.isProximalPoint_proximalMap`: the totalized proximal map selects a proximal point
   whenever one exists.
@@ -68,6 +72,34 @@ For proper l.s.c. convex functions and positive scales the fallback is never use
 def proximalMap (γ : ℝ) (f : H → EReal) (x : H) : H := by
   classical
   exact if h : ∃ p, IsProximalPoint γ f x p then Classical.choose h else 0
+
+omit [InnerProductSpace ℝ H] in
+/-- Defining equation of `proximalObjective`. -/
+theorem proximalObjective_def (γ : ℝ) (f : H → EReal) (x y : H) :
+    proximalObjective γ f x y = f y + (‖x - y‖ ^ 2 / (2 * γ) : ℝ) := rfl
+
+omit [InnerProductSpace ℝ H] in
+/-- Defining property of `IsProximalPoint`. -/
+theorem isProximalPoint_iff {γ : ℝ} {f : H → EReal} {x p : H} :
+    IsProximalPoint γ f x p ↔
+      f p ≠ ⊥ ∧ f p ≠ ⊤ ∧ ∀ y, proximalObjective γ f x p ≤ proximalObjective γ f x y := Iff.rfl
+
+omit [InnerProductSpace ℝ H] in
+/-- At a positive scale `γ`, a proximal point is a finite point of TauCeti's Moreau–Yosida
+resolvent `J_γ x`, the set of minimizers of `y ↦ f y + ‖x - y‖ ^ 2 / (2 γ)`. -/
+theorem isProximalPoint_iff_mem_moreauYosidaResolvent {γ : ℝ} (hγ : 0 < γ) {f : H → EReal}
+    {x p : H} :
+    IsProximalPoint γ f x p ↔
+      p ∈ TauCeti.moreauYosidaResolvent f ⟨γ, hγ.le⟩ x ∧ f p ≠ ⊥ ∧ f p ≠ ⊤ := by
+  set τ : NNReal := ⟨γ, hγ.le⟩
+  have hτ : 0 < τ := hγ
+  have key (y : H) : ((edist x y ^ 2 / (2 * τ) : ENNReal) : EReal) =
+      ((‖x - y‖ ^ 2 / (2 * γ) : ℝ) : EReal) := by
+    rw [TauCeti.coe_edist_sq_div_eq_coe_dist_sq_div hτ, dist_eq_norm]
+    rfl
+  rw [TauCeti.mem_moreauYosidaResolvent_iff_isMinOn, isMinOn_univ_iff]
+  simp only [key, IsProximalPoint, proximalObjective]
+  tauto
 
 omit [InnerProductSpace ℝ H] in
 /-- When a proximal point exists, the totalized map selects one. -/

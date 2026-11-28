@@ -12,7 +12,7 @@ import Mathlib.Analysis.SpecialFunctions.Gaussian.GaussianIntegral
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Series
 
 /-!
-# Rademacher chaos and the Johnson–Lindenstrauss lemma
+# Rademacher chaos and the Johnson–Lindenstrauss lemma (07.47)
 
 Counting averages of Rademacher sign matrices, Laplace transform bounds for squared Rademacher
 projections, and the Johnson–Lindenstrauss finite-set dimension reduction theorem.
@@ -20,7 +20,9 @@ projections, and the Johnson–Lindenstrauss finite-set dimension reduction theo
 ## Main results
 
 * `CKMA.johnson_lindenstrauss_explicit`: explicit dimension reduction bound via scaled Rademacher
-  sign matrices.
+  sign matrices, for points of `EuclideanSpace ℝ (Fin d)` indexed by `Fin N`.
+* `CKMA.johnson_lindenstrauss`: Johnson–Lindenstrauss finite-set dimension reduction for a
+  finite family in a finite-dimensional real inner product space (**07.47**).
 -/
 
 public section
@@ -34,7 +36,6 @@ open MeasureTheory ProbabilityTheory
 
 section JohnsonLindenstrauss
 
-attribute [local instance] Classical.propDecidable
 open Real Matrix WithLp
 
 /-- Every coordinate space of signs is inhabited, including a row of length zero. -/
@@ -89,7 +90,7 @@ private lemma avg_nonneg {α : Type*} [Fintype α] {f : α → ℝ} (hf : ∀ a,
 
 /-- A coordinatewise product averages to the product of the averages. -/
 private lemma avg_prod {ι : Type*} [Fintype ι] [DecidableEq ι] {α : ι → Type*}
-    [∀ i, Fintype (α i)] [∀ i, Nonempty (α i)] (f : ∀ i, α i → ℝ) :
+    [∀ i, Fintype (α i)] (f : ∀ i, α i → ℝ) :
     avg (fun x : ∀ i, α i => ∏ i, f i (x i)) = ∏ i, avg (f i) := by
   simp only [avg]; rw [← Fintype.prod_sum, Fintype.card_pi, Nat.cast_prod]
   exact (Finset.prod_div_distrib
@@ -167,7 +168,7 @@ private lemma rdot_mgf {d : ℕ} (a : Fin d → ℝ) (t : ℝ) :
   rw [hrewrite]
   have hcosh : ∀ j, avg (fun b : Bool => exp (t * sgn b * a j)) = cosh (t * a j) := by
     intro j; unfold avg sgn; rw [Fintype.sum_bool, Fintype.card_bool]
-    simp only [Bool.false_eq_true, ↓reduceIte, cosh_eq]; ring
+    simp only [Bool.false_eq_true, ↓reduceIte, cosh_eq]; ring_nf
   simp_rw [hcosh]
   calc
     ∏ j, cosh (t * a j) ≤ ∏ j, exp ((t * a j) ^ 2 / 2) := by
@@ -262,7 +263,7 @@ private lemma rdot_neg_mgf {d : ℕ} (a : Fin d → ℝ) {ell : ℝ} (hell : 0 �
       1 + (-ell) * (rdot a ε) ^ 2 + (ell ^ 2 / 2) * (rdot a ε) ^ 4 := by
     intro ε
     have hu : -(ell * (rdot a ε) ^ 2) ≤ 0 := neg_nonpos.mpr (mul_nonneg hell (sq_nonneg _))
-    convert exp_le_quadratic_of_nonpos hu using 1 <;> ring
+    convert exp_le_quadratic_of_nonpos hu using 1 <;> ring_nf
   have havg := avg_le hpt
   rw [avg_add, avg_add, avg_mul, avg_mul, avg_const, h2] at havg
   have hcoef : 0 ≤ ell ^ 2 / 2 := by positivity
@@ -736,6 +737,27 @@ lemma johnson_lindenstrauss_explicit :
     have hmax : max N 1 = N := max_eq_left (by omega : (1 : ℕ) ≤ N)
     obtain ⟨m, T, hm, hT⟩ := jl_many_points hN2 x hε0 hε1
     exact ⟨m, T, by simpa [hmax] using hm, hT⟩
+
+/-- **07.47**: Johnson–Lindenstrauss, with a constant uniform in dimensions and points, for a
+finite family of points in a finite-dimensional real inner product space. The `max N 1`
+convention, `N = card ι`, includes the empty configuration. The constant is `64`
+(`johnson_lindenstrauss_explicit`); the general form follows through an orthonormal basis. -/
+theorem johnson_lindenstrauss : ∃ C : ℝ, 0 < C ∧
+    ∀ {ι E : Type*} [Fintype ι] [NormedAddCommGroup E] [InnerProductSpace ℝ E]
+      [FiniteDimensional ℝ E] (x : ι → E) (ε : ℝ), 0 < ε → ε < 1 →
+    ∃ (m : ℕ) (T : E →ₗ[ℝ] EuclideanSpace ℝ (Fin m)),
+      (m : ℝ) ≤ C * ε⁻¹ ^ 2 * Real.log (2 * (max (Fintype.card ι) 1 : ℕ)) ∧
+      ∀ i j, (1 - ε) * ‖x i - x j‖ ^ 2 ≤ ‖T (x i - x j)‖ ^ 2 ∧
+        ‖T (x i - x j)‖ ^ 2 ≤ (1 + ε) * ‖x i - x j‖ ^ 2 := by
+  refine ⟨64, by norm_num, fun {ι E} _ _ _ _ x ε hε0 hε1 ↦ ?_⟩
+  let e := (stdOrthonormalBasis ℝ E).repr
+  let σ := Fintype.equivFin ι
+  obtain ⟨m, T, hm, hT⟩ := johnson_lindenstrauss_explicit _ _
+    (fun k ↦ e (x (σ.symm k))) ε hε0 hε1
+  refine ⟨m, T.comp e.toLinearEquiv.toLinearMap, hm, fun i j ↦ ?_⟩
+  have h := hT (σ i) (σ j)
+  simp only [Equiv.symm_apply_apply, ← map_sub, LinearIsometryEquiv.norm_map] at h
+  simpa using h
 
 end JohnsonLindenstrauss
 

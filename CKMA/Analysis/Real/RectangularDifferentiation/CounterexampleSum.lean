@@ -16,18 +16,20 @@ The rectangular spikes form a measurable integrable function. On the limsup of t
 sets, a witness rectangle has average at least the stage height and total width tending to
 zero, so rectangular differentiation fails on a set of positive measure.
 
-## Main definitions
-
-* `witnessRect`, `interRect`: witnessing rectangle through one strip and its
-  intersection with the corner spike.
+All declarations are in the namespace `CKMA.SaksCounterexample`.
 
 ## Main results
 
-* `CKMA.Bohr.integrable_saks`: the Saks spike sum is integrable.
-* `CKMA.Bohr.not_rectanglesDifferentiateAt_on_limsup`: rectangular differentiation of the Saks
+* `integrable_saks`: the Saks spike sum is integrable.
+* `not_rectanglesDifferentiateAt_on_limsup`: rectangular differentiation of the Saks
   function fails at every point of `limsupSet d hd`.
-* `CKMA.Bohr.volume_limsupSet_ge` and the above give
-  `CKMA.exists_integrable_not_rectangularlyDifferentiable` (**05.31**, negative part).
+* `volume_limsupSet_ge` and the above give
+  `CKMA.exists_integrable_not_ae_rectanglesDifferentiateAt` (**05.31**, negative part).
+
+## Implementation notes
+
+For a point of the limsup set and a stage `k`, the witness rectangle runs through one strip of a
+translated picture; its intersection with the corner spike carries the average.
 -/
 
 public section
@@ -37,7 +39,7 @@ noncomputable section
 open MeasureTheory Set Filter Finset
 open scoped ENNReal NNReal BigOperators
 
-namespace CKMA.Bohr
+namespace CKMA.SaksCounterexample
 
 /-- One stage of chosen spikes has integral `copyCount` times one spike mass. -/
 private lemma lintegral_stage (d : ℕ) (hd : 2 ≤ d) (k : ℕ) :
@@ -75,7 +77,7 @@ private lemma lintegral_spikeSum_eq (d : ℕ) (hd : 2 ≤ d) :
         ENNReal.ofReal (spikeHeight k * stageScale k ^ 2) := by
   unfold spikeSum
   rw [lintegral_tsum]
-  · rw [ENNReal.tsum_sigma']
+  · rw [tsum_sigma']
     exact tsum_congr (lintegral_stage d hd)
   · intro p
     exact (measurable_spike d hd p.1
@@ -85,7 +87,7 @@ private lemma lintegral_spikeSum_eq (d : ℕ) (hd : 2 ≤ d) :
 private lemma lintegral_spikeSum_ne_top (d : ℕ) (hd : 2 ≤ d) : ∫⁻ x, spikeSum d hd x ≠ ∞ := by
   rw [lintegral_spikeSum_eq d hd]
   exact ne_top_of_le_ne_top summable_half_pow_shift.tsum_ofReal_ne_top
-    (ENNReal.tsum_le_tsum stageMass_ennreal_le)
+    (tsum_le_tsum stageMass_ennreal_le)
 
 /-- The Saks function is integrable. -/
 lemma integrable_saks (d : ℕ) (hd : 2 ≤ d) : Integrable (saks d hd) volume :=
@@ -108,7 +110,7 @@ private lemma spike_le_saks (d : ℕ) (hd : 2 ≤ d) (k : ℕ) (i : Fin (copyCou
     exact indicator_nonneg (fun _ _ => by unfold spikeHeight stageHeight; positivity) x
   have hle : spikeENN d hd k (chosenShifts k i) x ≤ spikeSum d hd x := by
     unfold spikeSum
-    exact ENNReal.le_tsum (f := fun p : Σ n, Fin (copyCount n) =>
+    exact le_tsum (f := fun p : Σ n, Fin (copyCount n) =>
       spikeENN d hd p.1 (chosenShifts p.1 p.2) x) ⟨k, i⟩
   have hto := ENNReal.toReal_mono hfin hle
   rw [spikeENN, ENNReal.toReal_ofReal hnn] at hto
@@ -194,16 +196,16 @@ private def witnessRect (d : ℕ) (_hd : 2 ≤ d) (k : ℕ) (v : Fin 2 → ℝ) 
   lower_lt_upper i := by
     by_cases h0 : i.val = 0
     · have hj0 : (0 : ℝ) < (j : ℝ) := by exact_mod_cast (show 0 < j by omega)
-      rw [dif_pos h0, dif_pos h0]
+      rw [dite_eq_left h0, dite_eq_left h0]
       exact lt_add_of_pos_right _ (mul_pos (stageScale_pos k) hj0)
     · by_cases h1 : i.val = 1
       · have hN : (0 : ℝ) < (stageCount k : ℝ) := by
           exact_mod_cast (Nat.two_pow_pos (stageLog k) : 0 < stageCount k)
         have hj0 : (0 : ℝ) < (j : ℝ) := by exact_mod_cast (show 0 < j by omega)
-        rw [dif_neg h0, dif_pos h1, dif_neg h0, dif_pos h1]
+        rw [dite_eq_right h0, dite_eq_left h1, dite_eq_right h0, dite_eq_left h1]
         exact lt_add_of_pos_right _ (div_pos (mul_pos (stageScale_pos k) hN) hj0)
       · have hm : 0 < extraSide d k := extraSide_pos d k (by have := i.isLt; omega)
-        rw [dif_neg h0, dif_neg h1, dif_neg h0, dif_neg h1]
+        rw [dite_eq_right h0, dite_eq_right h1, dite_eq_right h0, dite_eq_right h1]
         linarith
 
 /-- Plane side of the witness parallel to the first axis. -/
@@ -220,7 +222,7 @@ private lemma witness_side_one (d : ℕ) (hd : 2 ≤ d) (k : ℕ) (v : Fin 2 →
       stageScale k * (stageCount k : ℝ) / (j : ℝ) := by
   have h0 : i.val ≠ 0 := by omega
   simp only [witnessRect]
-  rw [dif_neg h0, dif_pos hi, dif_neg h0, dif_pos hi]
+  rw [dite_eq_right h0, dite_eq_left hi, dite_eq_right h0, dite_eq_left hi]
   exact add_sub_cancel_left _ _
 
 /-- Each extra side of the witness has length `extraSide`. -/
@@ -286,13 +288,13 @@ private def interRect (d : ℕ) (_hd : 2 ≤ d) (k : ℕ) (v : Fin 2 → ℝ) (z
       omega⟩ + extraSide d k / 2
   lower_lt_upper i := by
     by_cases h0 : i.val = 0
-    · rw [dif_pos h0, dif_pos h0]
+    · rw [dite_eq_left h0, dite_eq_left h0]
       exact lt_add_of_pos_right _ (stageScale_pos k)
     · by_cases h1 : i.val = 1
-      · rw [dif_neg h0, dif_pos h1, dif_neg h0, dif_pos h1]
+      · rw [dite_eq_right h0, dite_eq_left h1, dite_eq_right h0, dite_eq_left h1]
         exact lt_add_of_pos_right _ (stageScale_pos k)
       · have hm : 0 < extraSide d k := extraSide_pos d k (by have := i.isLt; omega)
-        rw [dif_neg h0, dif_neg h1, dif_neg h0, dif_neg h1]
+        rw [dite_eq_right h0, dite_eq_right h1, dite_eq_right h0, dite_eq_right h1]
         linarith
 
 /-- First plane side of the intersection. -/
@@ -307,7 +309,7 @@ private lemma inter_side_one (d : ℕ) (hd : 2 ≤ d) (k : ℕ) (v : Fin 2 → �
     (interRect d hd k v z).upper i - (interRect d hd k v z).lower i = stageScale k := by
   have h0 : i.val ≠ 0 := by omega
   simp only [interRect]
-  rw [dif_neg h0, dif_pos hi, dif_neg h0, dif_pos hi]
+  rw [dite_eq_right h0, dite_eq_left hi, dite_eq_right h0, dite_eq_left hi]
   exact add_sub_cancel_left _ _
 
 /-- Each extra side of the intersection has length `extraSide`. -/
@@ -448,13 +450,13 @@ private lemma carrier_inter_eq (d : ℕ) (hd : 2 ≤ d) (k : ℕ) (v : Fin 2 →
           simp [h1]
         simp only [hv1] at hs1
         simp only [interRect]
-        rw [dif_neg h0, dif_pos h1, dif_neg h0, dif_pos h1]
+        rw [dite_eq_right h0, dite_eq_left h1, dite_eq_right h0, dite_eq_left h1]
         exact hs1
       · have hwE := hw i
         simp only [witnessRect] at hwE
-        rw [dif_neg h0, dif_neg h1, dif_neg h0, dif_neg h1] at hwE
+        rw [dite_eq_right h0, dite_eq_right h1, dite_eq_right h0, dite_eq_right h1] at hwE
         simp only [interRect]
-        rw [dif_neg h0, dif_neg h1, dif_neg h0, dif_neg h1]
+        rw [dite_eq_right h0, dite_eq_right h1, dite_eq_right h0, dite_eq_right h1]
         exact hwE
   · intro hx
     constructor
@@ -462,26 +464,26 @@ private lemma carrier_inter_eq (d : ℕ) (hd : 2 ≤ d) (k : ℕ) (v : Fin 2 →
       have hxi := hx i
       by_cases h0 : i.val = 0
       · simp only [interRect] at hxi
-        rw [dif_pos h0, dif_pos h0] at hxi
+        rw [dite_eq_left h0, dite_eq_left h0] at hxi
         simp only [witnessRect]
-        rw [dif_pos h0, dif_pos h0]
+        rw [dite_eq_left h0, dite_eq_left h0]
         have hle := add_le_add_left hτj (v 0)
         rw [add_comm (stageScale k) (v 0),
           add_comm (stageScale k * (j : ℝ)) (v 0)] at hle
         exact ⟨hxi.1, lt_of_lt_of_le hxi.2 hle⟩
       · by_cases h1 : i.val = 1
         · simp only [interRect] at hxi
-          rw [dif_neg h0, dif_pos h1, dif_neg h0, dif_pos h1] at hxi
+          rw [dite_eq_right h0, dite_eq_left h1, dite_eq_right h0, dite_eq_left h1] at hxi
           simp only [witnessRect]
-          rw [dif_neg h0, dif_pos h1, dif_neg h0, dif_pos h1]
+          rw [dite_eq_right h0, dite_eq_left h1, dite_eq_right h0, dite_eq_left h1]
           have hle := add_le_add_left hτN (v 1)
           rw [add_comm (stageScale k) (v 1), add_comm
             (stageScale k * (stageCount k : ℝ) / (j : ℝ)) (v 1)] at hle
           exact ⟨hxi.1, lt_of_lt_of_le hxi.2 hle⟩
         · simp only [interRect] at hxi
-          rw [dif_neg h0, dif_neg h1, dif_neg h0, dif_neg h1] at hxi
+          rw [dite_eq_right h0, dite_eq_right h1, dite_eq_right h0, dite_eq_right h1] at hxi
           simp only [witnessRect]
-          rw [dif_neg h0, dif_neg h1, dif_neg h0, dif_neg h1]
+          rw [dite_eq_right h0, dite_eq_right h1, dite_eq_right h0, dite_eq_right h1]
           exact hxi
     · intro i
       have hxi := hx i
@@ -496,7 +498,7 @@ private lemma carrier_inter_eq (d : ℕ) (hd : 2 ≤ d) (k : ℕ) (v : Fin 2 →
       · by_cases h1 : i.val = 1
         · have hi : i.val ≤ 1 := by omega
           simp only [interRect] at hxi
-          rw [dif_neg h0, dif_pos h1, dif_neg h0, dif_pos h1] at hxi
+          rw [dite_eq_right h0, dite_eq_left h1, dite_eq_right h0, dite_eq_left h1] at hxi
           simp only [spikeRect, hi, dite_true]
           have hv1 : (⟨i.val, Nat.lt_succ_iff.mpr hi⟩ : Fin 2) = 1 := by
             apply Fin.ext
@@ -669,4 +671,4 @@ lemma not_rectanglesDifferentiateAt_on_limsup (d : ℕ) (hd : 2 ≤ d) {x : Fin 
     linarith
   linarith [habs, hδ R hxR hδR]
 
-end CKMA.Bohr
+end CKMA.SaksCounterexample

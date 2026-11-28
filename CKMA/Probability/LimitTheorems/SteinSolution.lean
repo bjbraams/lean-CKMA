@@ -103,6 +103,12 @@ function and density. -/
   (cdf (gaussianReal 0 1) (min w z) - cdf (gaussianReal 0 1) w * cdf (gaussianReal 0 1) z) /
     gaussianPDFReal 0 1 w
 
+/-- Defining formula of `steinSolution`. -/
+lemma steinSolution_def (z w : ℝ) : steinSolution z w =
+    (cdf (gaussianReal 0 1) (min w z) - cdf (gaussianReal 0 1) w * cdf (gaussianReal 0 1) z) /
+      gaussianPDFReal 0 1 w :=
+  rfl
+
 /-- The right-hand side `w f_z (w) + 1{w ≤ z} - Φ z` of the Stein equation. It is the derivative
 of `steinSolution z` at every `w ≠ z`. -/
 @[expose] def steinDeriv (z w : ℝ) : ℝ :=
@@ -152,7 +158,7 @@ theorem abs_mul_steinSolution_le_one (z w : ℝ) : |w * steinSolution z w| ≤ 1
     rw [TauCeti.Probability.gaussianPDFReal_zero_neg] at hM
     rw [abs_of_neg hw]
     nlinarith
-  · simp [hφ.le]
+  · simp
   · -- the numerator is at most `Φ z (1 - Φ w) ≤ Φ (-w)`
     have hN : Φ (min w z) - Φ w * Φ z ≤ Φ (-w) := by
       rw [TauCeti.Probability.cdf_gaussianReal_zero_one_neg]

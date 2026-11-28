@@ -322,7 +322,7 @@ private theorem ofRealCLM_compLp_toLp_ae_eq {u : E → ℝ} (hu1 : MemLp u 1 vol
   exact h1.trans h2.symm
 
 /-- The complexification of a real function in `Lᵖ` has the same `Lᵖ` norm. -/
-private theorem toReal_eLpNorm_ofRealCLM_compLp {p : ℝ≥0∞} [Fact (1 ≤ p)] {u : E → ℝ}
+private theorem toReal_eLpNorm_ofRealCLM_compLp {p : ℝ≥0∞} {u : E → ℝ}
     (hu : MemLp u p volume) :
     (eLpNorm (Complex.ofRealCLM.compLp (hu.toLp u) : E → ℂ) p volume).toReal =
       (eLpNorm u p volume).toReal := by
@@ -537,7 +537,7 @@ private theorem integral_le_ball_add_weighted (hd : 0 < d) {f : E → ℝ} {A R 
   let s := Metric.ball (0 : E) R
   have hs : MeasurableSet s := measurableSet_ball
   have hconst : IntegrableOn (fun _ : E => A) s volume :=
-    integrableOn_const (hs := measure_ball_ne_top) (hC := enorm_ne_top)
+    integrableOn_const (hs := measure_ball_ne_top) (hC := eNorm_ne_top)
   have hball : ∫ ξ in s, f ξ ∂volume ≤ (volume : Measure E).real s * A := by
     have hmono : ∫ ξ in s, f ξ ∂volume ≤ ∫ ξ in s, A ∂volume :=
       setIntegral_mono_on (hf := hf.integrableOn) (hg := hconst) hs fun ξ _ => hfA ξ

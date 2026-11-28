@@ -5,16 +5,14 @@ Authors: CKMA contributors
 -/
 module
 
-
 public import CKMA.Probability.BrownianQuadraticVariation
-public import CKMA.Probability.BrownianQuadraticVariation.KolmogorovMaximal
+public import CKMA.Probability.BrownianQuadraticVariation.QuadraticCovariation
 public import CKMA.Probability.BrownianQuadraticVariation.TimePartition
 public import CKMA.Probability.BrownianTheory
 public import CKMA.Probability.BrownianTheory.DyadicHolder
 public import CKMA.Probability.BrownianTheory.DyadicLimit
 public import CKMA.Probability.BrownianTheory.DyadicPath
 public import CKMA.Probability.BrownianTheory.Existence
-public import CKMA.Probability.BrownianTheory.GaussianMoment
 public import CKMA.Probability.BrownianTheory.HolderPath
 public import CKMA.Probability.BrownianTheory.Modification
 public import CKMA.Probability.BrownianTheory.Reflection.Bound
@@ -24,10 +22,12 @@ public import CKMA.Probability.Concentration
 public import CKMA.Probability.Concentration.Basic
 public import CKMA.Probability.Concentration.Bernstein
 public import CKMA.Probability.Concentration.JohnsonLindenstrauss
+public import CKMA.Probability.FreeProbability
 public import CKMA.Probability.GaussianLogSobolev
-public import CKMA.Probability.GaussianLogSobolev.Entropy
+public import CKMA.Probability.GaussianLogSobolev.Basic
 public import CKMA.Probability.GaussianLogSobolev.EntropyTensorization
 public import CKMA.Probability.GaussianLogSobolev.IntegrationByParts
+public import CKMA.Probability.GaussianLogSobolev.OUEntropy
 public import CKMA.Probability.GaussianLogSobolev.OneDim
 public import CKMA.Probability.GaussianLogSobolev.OneDimLSI
 public import CKMA.Probability.HansonWright
@@ -45,24 +45,29 @@ public import CKMA.Probability.InfinitelyDivisible.Tightness
 public import CKMA.Probability.InfinitelyDivisible.Uniqueness
 public import CKMA.Probability.LargeDeviations
 public import CKMA.Probability.LargeDeviations.Basic
+public import CKMA.Probability.LargeDeviations.Cramer
+public import CKMA.Probability.LargeDeviations.CramerLowerBound
+public import CKMA.Probability.LargeDeviations.Sanov
+public import CKMA.Probability.LargeDeviations.Varadhan
 public import CKMA.Probability.LimitTheorems.BerryEsseen
-public import CKMA.Probability.LimitTheorems.CramerLowerBound
 public import CKMA.Probability.LimitTheorems.IndependentSums
-public import CKMA.Probability.LimitTheorems.LargeDeviations
+public import CKMA.Probability.LimitTheorems.IteratedLogarithm
 public import CKMA.Probability.LimitTheorems.LindebergFeller
 public import CKMA.Probability.LimitTheorems.SteinSolution
 public import CKMA.Probability.LimitTheorems.ThreeSeries
+public import CKMA.Probability.Moments.Gaussian
 public import CKMA.Probability.Moments.Hausdorff
+public import CKMA.Probability.Process.Indistinguishable
 public import CKMA.Probability.ProjectiveLimit
-public import CKMA.Probability.ProjectiveLimit.Basic
 public import CKMA.Probability.Symmetrization
 
 /-!
 # Probability and stochastic processes
 
 This entry module re-exports random-series and central-limit interfaces, concentration
-and dimension reduction, large deviations, moment problems, projective limits, and
-Lévy–Khintchine triplets for infinitely divisible real laws.
+and dimension reduction, large deviations, moment problems and Gaussian moments, projective
+limits, Gaussian logarithmic Sobolev inequalities, free probability, and Lévy–Khintchine
+triplets for infinitely divisible real laws.
 Brownian motion is treated through continuous-path laws, modifications, stopping times
 and quadratic variation. Empirical symmetrization uses an explicit independent sign space.
 

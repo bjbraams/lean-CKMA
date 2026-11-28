@@ -42,6 +42,8 @@ open ContinuousLinearMap Submodule
 
 universe u
 
+variable {𝕜 : Type*} [RCLike 𝕜]
+
 variable {E : Type u} [NormedAddCommGroup E]
 
 /-- A constant term at `none` plus a series on `ℕ` is a series on `Option ℕ`. -/
@@ -76,51 +78,49 @@ private theorem hasSum_option (a : E) (g : ℕ → E) (s : E) (hg : HasSum g s) 
   rw [← hfun]
   exact hadd
 
-variable {H : Type u} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
+variable {H : Type u} [NormedAddCommGroup H] [InnerProductSpace 𝕜 H] [CompleteSpace H]
 
 /-- Summands of the Wold decomposition, indexed by the unitary slot and `ℕ`. -/
-@[expose, reducible] def woldSummandNat (V : H →ₗᵢ[ℂ] H) : Option ℕ → Type u
+abbrev woldSummandNat (V : H →ₗᵢ[𝕜] H) : Option ℕ → Type u
   | none => woldUnitarySubspace V
   | some _ => woldWanderingSubspace V
 
 /-- Each Wold summand is a normed group. -/
-@[expose]
-instance woldSummandNat.instNormedAddCommGroup (V : H →ₗᵢ[ℂ] H) (i : Option ℕ) :
+instance woldSummandNat.instNormedAddCommGroup (V : H →ₗᵢ[𝕜] H) (i : Option ℕ) :
     NormedAddCommGroup (woldSummandNat V i) :=
   Option.rec (inferInstanceAs (NormedAddCommGroup (woldUnitarySubspace V)))
     (fun _ => inferInstanceAs (NormedAddCommGroup (woldWanderingSubspace V))) i
 
-/-- Each Wold summand is a complex inner product space. -/
-@[expose]
-instance woldSummandNat.instInnerProductSpace (V : H →ₗᵢ[ℂ] H) (i : Option ℕ) :
-    InnerProductSpace ℂ (woldSummandNat V i) :=
-  Option.rec (inferInstanceAs (InnerProductSpace ℂ (woldUnitarySubspace V)))
-    (fun _ => inferInstanceAs (InnerProductSpace ℂ (woldWanderingSubspace V))) i
+/-- Each Wold summand is an inner product space. -/
+instance woldSummandNat.instInnerProductSpace (V : H →ₗᵢ[𝕜] H) (i : Option ℕ) :
+    InnerProductSpace 𝕜 (woldSummandNat V i) :=
+  Option.rec (inferInstanceAs (InnerProductSpace 𝕜 (woldUnitarySubspace V)))
+    (fun _ => inferInstanceAs (InnerProductSpace 𝕜 (woldWanderingSubspace V))) i
 
 /-- Each Wold summand is complete. -/
 @[expose]
-instance woldSummandNat.instCompleteSpace (V : H →ₗᵢ[ℂ] H) (i : Option ℕ) :
+instance woldSummandNat.instCompleteSpace (V : H →ₗᵢ[𝕜] H) (i : Option ℕ) :
     CompleteSpace (woldSummandNat V i) :=
   Option.rec (inferInstanceAs (CompleteSpace (woldUnitarySubspace V)))
     (fun _ => inferInstanceAs (CompleteSpace (woldWanderingSubspace V))) i
 
 /-- Inclusion of a Wold summand: the unitary part, or the `n`-th wandering shift. -/
-@[expose, reducible] def woldSummandIncl (V : H →ₗᵢ[ℂ] H) : ∀ i, woldSummandNat V i →ₗᵢ[ℂ] H :=
+abbrev woldSummandIncl (V : H →ₗᵢ[𝕜] H) : ∀ i, woldSummandNat V i →ₗᵢ[𝕜] H :=
   Option.rec (woldUnitarySubspace V).subtypeₗᵢ (fun n => woldShift V n)
 
 /-- The unitary inclusion is the subtype inclusion. -/
-theorem woldSummandIncl_none (V : H →ₗᵢ[ℂ] H) (u : woldUnitarySubspace V) :
+theorem woldSummandIncl_none (V : H →ₗᵢ[𝕜] H) (u : woldUnitarySubspace V) :
     woldSummandIncl V none u = u := by
   simp [woldSummandIncl, Submodule.coe_subtypeₗᵢ]
 
 /-- A wandering inclusion is the corresponding shift. -/
-theorem woldSummandIncl_some (V : H →ₗᵢ[ℂ] H) (n : ℕ) (w : woldWanderingSubspace V) :
+theorem woldSummandIncl_some (V : H →ₗᵢ[𝕜] H) (n : ℕ) (w : woldWanderingSubspace V) :
     woldSummandIncl V (some n) w = woldShift V n w := by
   rfl
 
 /-- The Wold summands are pairwise orthogonal. -/
-theorem woldSummand_orthogonal (V : H →ₗᵢ[ℂ] H) :
-    OrthogonalFamily ℂ (woldSummandNat V) (woldSummandIncl V) := by
+theorem woldSummand_orthogonal (V : H →ₗᵢ[𝕜] H) :
+    OrthogonalFamily 𝕜 (woldSummandNat V) (woldSummandIncl V) := by
   intro i j hij v w
   cases i with
   | none =>
@@ -143,7 +143,7 @@ theorem woldSummand_orthogonal (V : H →ₗᵢ[ℂ] H) :
       exact woldShift_inner_eq_zero V m n hmn v w
 
 /-- Every vector is the Hilbert sum of its unitary part and its wandering shifts. -/
-private theorem wold_hasSum_summand (V : H →ₗᵢ[ℂ] H) (x : H) :
+private theorem wold_hasSum_summand (V : H →ₗᵢ[𝕜] H) (x : H) :
     ∃ f : ∀ i, woldSummandNat V i, HasSum (fun i => woldSummandIncl V i (f i)) x := by
   obtain ⟨u, hu, w, hs⟩ := wold_hasSum_decomposition V x
   let f : ∀ i, woldSummandNat V i
@@ -172,8 +172,8 @@ private theorem wold_hasSum_summand (V : H →ₗᵢ[ℂ] H) (x : H) :
   simpa [hval] using hopt
 
 /-- Wold's decomposition realises `H` as the Hilbert sum of its summands. -/
-theorem wold_isHilbertSum (V : H →ₗᵢ[ℂ] H) :
-    IsHilbertSum ℂ (woldSummandNat V) (woldSummandIncl V) := by
+theorem wold_isHilbertSum (V : H →ₗᵢ[𝕜] H) :
+    IsHilbertSum 𝕜 (woldSummandNat V) (woldSummandIncl V) := by
   refine IsHilbertSum.mk (woldSummand_orthogonal V) ?_
   intro x _
   rw [← SetLike.mem_coe, Submodule.topologicalClosure_coe]
@@ -183,31 +183,31 @@ theorem wold_isHilbertSum (V : H →ₗᵢ[ℂ] H) :
   exact mem_iSup_of_mem i (LinearMap.mem_range_self _ (f i))
 
 /-- A summand coefficient is the inner product against that summand. -/
-private theorem inner_woldSummandIncl (V : H →ₗᵢ[ℂ] H) (x : H) (i : Option ℕ)
+private theorem inner_woldSummandIncl (V : H →ₗᵢ[𝕜] H) (x : H) (i : Option ℕ)
     (v : woldSummandNat V i) :
-    ⟪woldSummandIncl V i v, x⟫_ℂ =
-      ⟪v, (wold_isHilbertSum V).linearIsometryEquiv x i⟫_ℂ := by
+    ⟪woldSummandIncl V i v, x⟫_𝕜 =
+      ⟪v, (wold_isHilbertSum V).linearIsometryEquiv x i⟫_𝕜 := by
   let Φ := (wold_isHilbertSum V).linearIsometryEquiv
   let f := Φ x
   have hx : Φ.symm f = x := Φ.symm_apply_apply x
   have hs := (wold_isHilbertSum V).hasSum_linearIsometryEquiv_symm f
-  have hsum : HasSum (fun j => ⟪woldSummandIncl V i v, woldSummandIncl V j (f j)⟫_ℂ)
-      ⟪woldSummandIncl V i v, x⟫_ℂ := by
+  have hsum : HasSum (fun j => ⟪woldSummandIncl V i v, woldSummandIncl V j (f j)⟫_𝕜)
+      ⟪woldSummandIncl V i v, x⟫_𝕜 := by
     rw [← hx]
     simpa [innerSL_apply_apply] using
-      (innerSL ℂ (woldSummandIncl V i v)).hasSum hs
-  have hterm : ∀ j, ⟪woldSummandIncl V i v, woldSummandIncl V j (f j)⟫_ℂ =
-      if j = i then ⟪v, f i⟫_ℂ else 0 := by
+      (innerSL 𝕜 (woldSummandIncl V i v)).hasSum hs
+  have hterm : ∀ j, ⟪woldSummandIncl V i v, woldSummandIncl V j (f j)⟫_𝕜 =
+      if j = i then ⟪v, f i⟫_𝕜 else 0 := by
     intro j
     by_cases hji : j = i
     · rw [ite_eq_left hji, hji]
       exact (woldSummandIncl V i).inner_map_map v (f i)
     · rw [ite_eq_right hji]
       exact woldSummand_orthogonal V (Ne.symm hji) v (f j)
-  have hsingle : HasSum (fun j => ⟪woldSummandIncl V i v, woldSummandIncl V j (f j)⟫_ℂ)
-      ⟪v, f i⟫_ℂ := by
-    have hfun : (fun j => ⟪woldSummandIncl V i v, woldSummandIncl V j (f j)⟫_ℂ) =
-        fun j => if j = i then ⟪v, f i⟫_ℂ else 0 := by
+  have hsingle : HasSum (fun j => ⟪woldSummandIncl V i v, woldSummandIncl V j (f j)⟫_𝕜)
+      ⟪v, f i⟫_𝕜 := by
+    have hfun : (fun j => ⟪woldSummandIncl V i v, woldSummandIncl V j (f j)⟫_𝕜) =
+        fun j => if j = i then ⟪v, f i⟫_𝕜 else 0 := by
       funext j
       exact hterm j
     rw [hfun]
@@ -215,9 +215,9 @@ private theorem inner_woldSummandIncl (V : H →ₗᵢ[ℂ] H) (x : H) (i : Opti
   exact hsum.unique hsingle
 
 /-- `Vx` has no new wandering component at time zero. -/
-theorem wold_coord_zero (V : H →ₗᵢ[ℂ] H) (x : H) :
+theorem wold_coord_zero (V : H →ₗᵢ[𝕜] H) (x : H) :
     (wold_isHilbertSum V).linearIsometryEquiv (V x) (some 0) = 0 := by
-  apply ext_inner_left (𝕜 := ℂ)
+  apply ext_inner_left (𝕜 := 𝕜)
   intro w
   rw [inner_zero_right, ← inner_woldSummandIncl V (V x) (some 0) w]
   rw [woldSummandIncl_some, woldShift_apply]
@@ -231,41 +231,41 @@ theorem wold_coord_zero (V : H →ₗᵢ[ℂ] H) (x : H) :
   rw [hw, inner_zero_left]
 
 /-- Applying the isometry shifts wandering coefficients one step to the right. -/
-theorem wold_coord_succ (V : H →ₗᵢ[ℂ] H) (x : H) (n : ℕ) :
+theorem wold_coord_succ (V : H →ₗᵢ[𝕜] H) (x : H) (n : ℕ) :
     (wold_isHilbertSum V).linearIsometryEquiv (V x) (some (n + 1)) =
       (wold_isHilbertSum V).linearIsometryEquiv x (some n) := by
-  apply ext_inner_left (𝕜 := ℂ)
+  apply ext_inner_left (𝕜 := 𝕜)
   intro w
   rw [← inner_woldSummandIncl V (V x) (some (n + 1)) w,
     ← inner_woldSummandIncl V x (some n) w]
   rw [woldSummandIncl_some, woldSummandIncl_some, woldShift_apply, woldShift_apply]
-  rw [← isometry_pow_apply, ← isometry_pow_apply]
+  rw [← linearIsometry_pow_apply, ← linearIsometry_pow_apply]
   have hpow : (V ^ (n + 1)) (w : H) = V ((V ^ n) (w : H)) := by
     rw [pow_succ', LinearIsometry.mul_def, LinearIsometry.coe_comp, Function.comp_apply]
   rw [hpow]
   exact V.inner_map_map ((V ^ n) (w : H)) x
 
 /-- Applying the isometry acts on the unitary coordinate by the restricted unitary. -/
-theorem wold_coord_unitary (V : H →ₗᵢ[ℂ] H) (x : H) :
+theorem wold_coord_unitary (V : H →ₗᵢ[𝕜] H) (x : H) :
     (wold_isHilbertSum V).linearIsometryEquiv (V x) none =
       woldUnitaryEquiv V ((wold_isHilbertSum V).linearIsometryEquiv x none) := by
-  apply ext_inner_left (𝕜 := ℂ)
+  apply ext_inner_left (𝕜 := 𝕜)
   intro u
-  have hleft : ⟪u, (wold_isHilbertSum V).linearIsometryEquiv (V x) none⟫_ℂ =
-      ⟪(u : H), V x⟫_ℂ := by
+  have hleft : ⟪u, (wold_isHilbertSum V).linearIsometryEquiv (V x) none⟫_𝕜 =
+      ⟪(u : H), V x⟫_𝕜 := by
     rw [← inner_woldSummandIncl V (V x) none u, woldSummandIncl_none]
-  have hmid : ⟪(u : H), V x⟫_ℂ =
-      ⟪((woldUnitaryEquiv V).symm u : H), x⟫_ℂ := by
+  have hmid : ⟪(u : H), V x⟫_𝕜 =
+      ⟪((woldUnitaryEquiv V).symm u : H), x⟫_𝕜 := by
     rw [coe_woldUnitaryEquiv_symm]
     exact (adjoint_inner_left V.toContinuousLinearMap x (u : H)).symm
-  have hright : ⟪((woldUnitaryEquiv V).symm u : H), x⟫_ℂ =
+  have hright : ⟪((woldUnitaryEquiv V).symm u : H), x⟫_𝕜 =
       ⟪(woldUnitaryEquiv V).symm u,
-        (wold_isHilbertSum V).linearIsometryEquiv x none⟫_ℂ := by
+        (wold_isHilbertSum V).linearIsometryEquiv x none⟫_𝕜 := by
     rw [← inner_woldSummandIncl V x none ((woldUnitaryEquiv V).symm u), woldSummandIncl_none]
   have hunit : ⟪(woldUnitaryEquiv V).symm u,
-      (wold_isHilbertSum V).linearIsometryEquiv x none⟫_ℂ =
+      (wold_isHilbertSum V).linearIsometryEquiv x none⟫_𝕜 =
       ⟪u, woldUnitaryEquiv V
-        ((wold_isHilbertSum V).linearIsometryEquiv x none)⟫_ℂ := by
+        ((wold_isHilbertSum V).linearIsometryEquiv x none)⟫_𝕜 := by
     have hmap := (woldUnitaryEquiv V).inner_map_map ((woldUnitaryEquiv V).symm u)
       ((wold_isHilbertSum V).linearIsometryEquiv x none)
     rw [LinearIsometryEquiv.apply_symm_apply] at hmap

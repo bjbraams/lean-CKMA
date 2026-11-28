@@ -7,8 +7,10 @@ module
 
 public import Mathlib.Analysis.Convex.DoublyStochasticMatrix
 public import Mathlib.Data.Fin.Tuple.Sort
+public import TauCeti.Algebra.BigOperators.Finset.PartialSum
 import Mathlib.Algebra.Order.Rearrangement
 import Mathlib.Analysis.Convex.Birkhoff
+import TauCeti.Analysis.Convex.DoublyStochasticMatrix
 
 /-!
 # Majorization, doubly stochastic mixing, and Karamata inequalities
@@ -24,14 +26,17 @@ Sources: GAPS 11.22 and 11.24.
 ## Main definitions
 
 * `CKMA.IsMajorizedBy`: majorization order on `Fin n → ℝ`.
-* `CKMA.sumInitial`: sum of the first `k` coordinates.
-* `CKMA.sumLargest`: sum of the `k` largest coordinates.
+* `CKMA.sumLargest`: sum of the `k` largest coordinates, TauCeti's `prefixSum` of the decreasing
+  rearrangement.
 
 ## Main results
 
+* `CKMA.sum_le_sumLargest`, `CKMA.IsMajorizedBy.sumLargest_le`: subset sums are bounded by the
+  sums of the largest coordinates, and majorization bounds these.
 * `CKMA.isMajorizedBy_iff_exists_doublyStochastic`: Hardy–Littlewood–Pólya characterization of
   majorization via doubly stochastic matrices (GAPS 11.22).
-* `CKMA.IsMajorizedBy.sum_convex_le`: Karamata's inequality (GAPS 11.24).
+* `CKMA.IsMajorizedBy.sum_convex_le`: Karamata's inequality (GAPS 11.24), from TauCeti's
+  `ConvexOn.sum_map_mulVec_le_of_mem_doublyStochastic`.
 * `CKMA.IsMajorizedBy.sum_strictConvex_eq_iff`: equality condition in Karamata's inequality for
   strictly convex functions.
 -/
@@ -56,6 +61,12 @@ def IsMajorizedBy (x y : Fin n → ℝ) : Prop :=
     ∀ s : Finset (Fin n), ∃ t : Finset (Fin n),
       t.card = s.card ∧ (∑ i ∈ s, x i) ≤ ∑ i ∈ t, y i
 
+/-- Defining property of `IsMajorizedBy`. -/
+theorem isMajorizedBy_iff {x y : Fin n → ℝ} :
+    IsMajorizedBy x y ↔ (∑ i, x i) = ∑ i, y i ∧
+      ∀ s : Finset (Fin n), ∃ t : Finset (Fin n),
+        t.card = s.card ∧ (∑ i ∈ s, x i) ≤ ∑ i ∈ t, y i := Iff.rfl
+
 /-- Majorization is reflexive. -/
 theorem IsMajorizedBy.refl (x : Fin n → ℝ) : IsMajorizedBy x x :=
   ⟨rfl, fun s ↦ ⟨s, rfl, le_rfl⟩⟩
@@ -69,20 +80,20 @@ theorem IsMajorizedBy.trans {x y z : Fin n → ℝ}
   obtain ⟨u, hu, htu⟩ := hyz.2 t
   exact ⟨u, hu.trans ht, hst.trans htu⟩
 
-/-- Sum of the coordinates of `f` whose `Fin` indices are among the first `k`. -/
-@[expose]
-def sumInitial (f : Fin n → ℝ) (k : ℕ) : ℝ :=
-  ∑ i ∈ univ.filter fun i : Fin n => (i : ℕ) < k, f i
-
-/-- Sum of `k` coordinates of `x` in the stable decreasing rearrangement. -/
+/-- Sum of the `k` largest coordinates of `x`: the prefix sum of the stable decreasing
+rearrangement. -/
 @[expose]
 def sumLargest (x : Fin n → ℝ) (k : ℕ) : ℝ :=
-  sumInitial (x ∘ Tuple.sortDesc x) k
+  TauCeti.prefixSum k (x ∘ Tuple.sortDesc x)
+
+/-- Defining equation of `sumLargest`. -/
+theorem sumLargest_def (x : Fin n → ℝ) (k : ℕ) :
+    sumLargest x k = TauCeti.prefixSum k (x ∘ Tuple.sortDesc x) := rfl
 
 /-- The initial-segment sum is the corresponding sum over `range k`. -/
-private lemma sumInitial_eq_sum_range (f : Fin n → ℝ) {k : ℕ} (hk : k ≤ n) : sumInitial f k =
-    ∑ i ∈ range k, if h : i < n then f ⟨i, h⟩ else 0 := by
-  unfold sumInitial
+private lemma prefixSum_eq_sum_range (f : Fin n → ℝ) {k : ℕ} (hk : k ≤ n) :
+    TauCeti.prefixSum k f = ∑ i ∈ range k, if h : i < n then f ⟨i, h⟩ else 0 := by
+  rw [TauCeti.prefixSum_def]
   refine sum_bij (fun (i : Fin n) (_ : i ∈ _) => (i : ℕ)) ?_ ?_ ?_ ?_
   · intro i hi
     exact mem_range.mpr (mem_filter.mp hi).2
@@ -93,14 +104,6 @@ private lemma sumInitial_eq_sum_range (f : Fin n → ℝ) {k : ℕ} (hk : k ≤ 
     exact ⟨⟨m, Nat.lt_of_lt_of_le hm' hk⟩, by simp [hm'], rfl⟩
   · intro i _
     simp [i.isLt]
-
-/-- Once `k` meets the length, the initial-segment sum is the total sum. -/
-private lemma sumInitial_eq_sum_of_card_le (f : Fin n → ℝ) {k : ℕ} (hk : n ≤ k) :
-    sumInitial f k = ∑ i, f i := by
-  have hfilter : univ.filter (fun i : Fin n => (i : ℕ) < k) = univ := by
-    ext i
-    simp [Nat.lt_of_lt_of_le i.isLt hk]
-  simp [sumInitial, hfilter]
 
 /-- The initial segment of length `k ≤ n` has `k` indices. -/
 private lemma card_filter_val_lt {k : ℕ} (hk : k ≤ n) :
@@ -116,8 +119,8 @@ private lemma card_filter_val_lt {k : ℕ} (hk : k ≤ n) :
     exact ⟨⟨m, Nat.lt_of_lt_of_le hm' hk⟩, by simp [hm'], rfl⟩
 
 /-- An antitone tuple maximizes initial segments among subsets of the same size. -/
-private lemma sum_le_sumInitial_of_antitone {f : Fin n → ℝ} (hf : Antitone f) (s : Finset (Fin n)) :
-    ∑ i ∈ s, f i ≤ sumInitial f s.card := by
+private lemma sum_le_prefixSum_of_antitone {f : Fin n → ℝ} (hf : Antitone f)
+    (s : Finset (Fin n)) : ∑ i ∈ s, f i ≤ TauCeti.prefixSum s.card f := by
   have hk : s.card ≤ n := by simpa [Fintype.card_fin] using s.card_le_univ
   let e := s.orderEmbOfFin rfl
   have hsum : ∑ i ∈ s, f i = ∑ i : Fin s.card, f (e i) := by
@@ -136,13 +139,13 @@ private lemma sum_le_sumInitial_of_antitone {f : Fin n → ℝ} (hf : Antitone f
     _ ≤ ∑ i : Fin s.card, f ⟨i, Nat.lt_of_lt_of_le i.isLt hk⟩ := by
       refine sum_le_sum fun i _ => hf ?_
       exact Fin.le_iff_val_le_val.mpr (hle i)
-    _ = sumInitial f s.card := by
-      rw [sumInitial_eq_sum_range f hk, ← Fin.sum_univ_eq_sum_range]
+    _ = TauCeti.prefixSum s.card f := by
+      rw [prefixSum_eq_sum_range f hk, ← Fin.sum_univ_eq_sum_range]
       refine sum_congr rfl fun i _ => ?_
       simp [Nat.lt_of_lt_of_le i.isLt hk]
 
-/-- Every coordinate subset sum is at most the decreasing rearrangement of the same length. -/
-private lemma sum_le_sumLargest (x : Fin n → ℝ) (s : Finset (Fin n)) :
+/-- Every coordinate subset sum is at most the sum of the same number of largest coordinates. -/
+theorem sum_le_sumLargest (x : Fin n → ℝ) (s : Finset (Fin n)) :
     ∑ i ∈ s, x i ≤ sumLargest x s.card := by
   let sigma := Tuple.sortDesc x
   let a := x ∘ sigma
@@ -154,22 +157,22 @@ private lemma sum_le_sumLargest (x : Fin n → ℝ) (s : Finset (Fin n)) :
     simp [a, sigma]
   calc
     ∑ i ∈ s, x i = ∑ j ∈ t, a j := hre
-    _ ≤ sumInitial a t.card := sum_le_sumInitial_of_antitone ha t
+    _ ≤ TauCeti.prefixSum t.card a := sum_le_prefixSum_of_antitone ha t
     _ = sumLargest x s.card := by rw [card_map, sumLargest]
 
 /-- Majorization bounds every decreasing partial sum. -/
-private lemma IsMajorizedBy.sumLargest_le {x y : Fin n → ℝ} (hxy : IsMajorizedBy x y) (k : ℕ) :
+theorem IsMajorizedBy.sumLargest_le {x y : Fin n → ℝ} (hxy : IsMajorizedBy x y) (k : ℕ) :
     sumLargest x k ≤ sumLargest y k := by
   rcases Nat.lt_or_ge n k with hk | hk
   · have hn : n ≤ k := hk.le
     have hsum (z : Fin n → ℝ) : sumLargest z k = ∑ i, z i := by
-      rw [sumLargest, sumInitial_eq_sum_of_card_le _ hn]
+      rw [sumLargest, TauCeti.prefixSum_of_le hn]
       simpa using Equiv.sum_comp (Tuple.sortDesc z) z
     rw [hsum x, hsum y, hxy.1]
   · let s := (univ.filter fun i : Fin n => (i : ℕ) < k).map (Tuple.sortDesc x).toEmbedding
     have hs : s.card = k := by rw [card_map, card_filter_val_lt hk]
     have hx : sumLargest x k = ∑ i ∈ s, x i := by
-      rw [sumLargest, sumInitial, sum_map]
+      rw [sumLargest, TauCeti.prefixSum_def, sum_map]
       refine sum_congr rfl fun i _ => ?_
       simp [Function.comp_apply]
     obtain ⟨t, ht, hst⟩ := hxy.2 s
@@ -217,21 +220,21 @@ private lemma exists_dotProduct_comp_perm_eq_sortDesc (c y : Fin n → ℝ) :
   simp [sigma, sc, sy, Function.comp_apply]
 
 /-- Abel summation: an antitone weight favors the tuple with larger initial sums. -/
-private lemma dotProduct_le_of_sumInitial_le {c x y : Fin n → ℝ} (hc : Antitone c)
-    (hsum : ∑ i, x i = ∑ i, y i) (hpart : ∀ k, sumInitial x k ≤ sumInitial y k) :
+private lemma dotProduct_le_of_prefixSum_le {c x y : Fin n → ℝ} (hc : Antitone c)
+    (hsum : ∑ i, x i = ∑ i, y i) (hpart : ∀ k, TauCeti.prefixSum k x ≤ TauCeti.prefixSum k y) :
     dotProduct c x ≤ dotProduct c y := by
   let natOf (f : Fin n → ℝ) : ℕ → ℝ := fun i => if h : i < n then f ⟨i, h⟩ else 0
   let cd : ℕ → ℝ := natOf c
   let gd : ℕ → ℝ := fun i => natOf y i - natOf x i
   have hG (k : ℕ) (hk : k ≤ n) :
-      ∑ i ∈ range k, gd i = sumInitial y k - sumInitial x k := by
-    rw [sumInitial_eq_sum_range y hk, sumInitial_eq_sum_range x hk, ← sum_sub_distrib]
+      ∑ i ∈ range k, gd i = TauCeti.prefixSum k y - TauCeti.prefixSum k x := by
+    rw [prefixSum_eq_sum_range y hk, prefixSum_eq_sum_range x hk, ← sum_sub_distrib]
   have hnonneg (k : ℕ) (hk : k ≤ n) : 0 ≤ ∑ i ∈ range k, gd i := by
     rw [hG k hk]
     exact sub_nonneg.mpr (hpart k)
   have hGn : ∑ i ∈ range n, gd i = 0 := by
-    rw [hG n le_rfl, sumInitial_eq_sum_of_card_le y le_rfl,
-      sumInitial_eq_sum_of_card_le x le_rfl, hsum, sub_self]
+    rw [hG n le_rfl, TauCeti.prefixSum_of_le le_rfl, TauCeti.prefixSum_of_le le_rfl, hsum,
+      sub_self]
   have hdiff : dotProduct c y - dotProduct c x = ∑ i ∈ range n, cd i * gd i := by
     rw [dotProduct, dotProduct, ← sum_sub_distrib]
     simp_rw [← mul_sub]
@@ -267,12 +270,12 @@ private lemma IsMajorizedBy.dotProduct_sortDesc_le {x y c : Fin n → ℝ} (hxy 
       _ = ∑ i, y i := hxy.1
       _ = ∑ i, y' i := by
         simpa [y'] using (Equiv.sum_comp (Tuple.sortDesc y) y).symm
-  have hpart (k : ℕ) : sumInitial x' k ≤ sumInitial y' k := by
+  have hpart (k : ℕ) : TauCeti.prefixSum k x' ≤ TauCeti.prefixSum k y' := by
     simpa [sumLargest, x', y'] using hxy.sumLargest_le k
   calc
     dotProduct c x ≤ dotProduct c' x' := dotProduct_le_dotProduct_sortDesc c x
     _ ≤ dotProduct c' y' :=
-      dotProduct_le_of_sumInitial_le (Tuple.antitone_sortDesc c) hsum hpart
+      dotProduct_le_of_prefixSum_le (Tuple.antitone_sortDesc c) hsum hpart
 
 /-- Majorization puts `x` in the permutohedron of `y`. -/
 private lemma mem_convexHull_range_comp_perm_of_isMajorizedBy {x y : Fin n → ℝ}
@@ -359,24 +362,13 @@ theorem isMajorizedBy_iff_exists_doublyStochastic (x y : Fin n → ℝ) :
   · rintro ⟨D, hD, rfl⟩
     exact isMajorizedBy_of_mem_doublyStochastic hD y
 
-/-- **11.24**, Karamata's inequality on any convex domain containing the coordinates. -/
+/-- **11.24**, Karamata's inequality on any convex domain containing the coordinates of `y`;
+the coordinates of `x` are convex combinations of those of `y`. -/
 theorem IsMajorizedBy.sum_convex_le {x y : Fin n → ℝ} (hxy : IsMajorizedBy x y)
-    {s : Set ℝ} {φ : ℝ → ℝ} (hφ : ConvexOn ℝ s φ)
-    (hx : ∀ i, x i ∈ s) (hy : ∀ i, y i ∈ s) :
+    {s : Set ℝ} {φ : ℝ → ℝ} (hφ : ConvexOn ℝ s φ) (hy : ∀ i, y i ∈ s) :
     (∑ i, φ (x i)) ≤ ∑ i, φ (y i) := by
   obtain ⟨D, hD, rfl⟩ := (isMajorizedBy_iff_exists_doublyStochastic x y).mp hxy
-  refine (And.intro ?_ hx).1
-  calc
-    ∑ i, φ ((D.mulVec y) i) ≤ ∑ i, ∑ j, D i j • φ (y j) := by
-      refine sum_le_sum fun i _ => ?_
-      simpa [mulVec_apply_eq_sum, smul_eq_mul] using
-        hφ.map_sum_le (t := univ) (w := fun j => D i j) (p := y)
-          (fun j _ => nonneg_of_mem_doublyStochastic hD)
-          (sum_row_of_mem_doublyStochastic hD i) (fun j _ => hy j)
-    _ = ∑ j, (∑ i, D i j) • φ (y j) := by
-      rw [sum_comm]
-      refine sum_congr rfl fun _ _ => sum_smul.symm
-    _ = ∑ j, φ (y j) := by simp [sum_col_of_mem_doublyStochastic hD]
+  exact hφ.sum_map_mulVec_le_of_mem_doublyStochastic hD hy
 
 /-- Equal value multiplicities mean that the vectors differ by a permutation. -/
 private lemma exists_perm_of_forall_filter_card_eq {x y : Fin n → ℝ}
@@ -411,11 +403,9 @@ private lemma exists_perm_of_forall_filter_card_eq {x y : Fin n → ℝ}
 /-- Equality for a strictly convex sum forces a permutation. -/
 private lemma IsMajorizedBy.eq_comp_perm_of_sum_strictConvex_eq {x y : Fin n → ℝ}
     (hxy : IsMajorizedBy x y) {s : Set ℝ} {φ : ℝ → ℝ} (hφ : StrictConvexOn ℝ s φ)
-    (hx : ∀ i, x i ∈ s) (hy : ∀ i, y i ∈ s)
-    (hsum : (∑ i, φ (x i)) = ∑ i, φ (y i)) :
+    (hy : ∀ i, y i ∈ s) (hsum : (∑ i, φ (x i)) = ∑ i, φ (y i)) :
     ∃ σ : Equiv.Perm (Fin n), x = y ∘ σ := by
   obtain ⟨D, hD, rfl⟩ := (isMajorizedBy_iff_exists_doublyStochastic x y).mp hxy
-  have hxs : ∀ i, (D.mulVec y) i ∈ s := hx
   have havg (i : Fin n) : (D.mulVec y) i = ∑ j, D i j • y j := by
     simp [mulVec_apply_eq_sum, smul_eq_mul]
   have hle (i : Fin n) : φ ((D.mulVec y) i) ≤ ∑ j, D i j • φ (y j) := by
@@ -472,16 +462,16 @@ private lemma IsMajorizedBy.eq_comp_perm_of_sum_strictConvex_eq {x y : Fin n →
           refine sum_congr rfl fun i hi => ?_
           exact (sum_subset (subset_univ S) fun j _ hj => hTS i j hi hj).symm
     exact (Nat.cast_inj.mp (by rw [hScard, sum_comm, hTcard])).symm
-  exact (And.intro (exists_perm_of_forall_filter_card_eq hcard) hxs).1
+  exact exists_perm_of_forall_filter_card_eq hcard
 
 /-- Equality in strictly convex Karamata holds precisely for permutations. -/
 theorem IsMajorizedBy.sum_strictConvex_eq_iff {x y : Fin n → ℝ}
     (hxy : IsMajorizedBy x y) {s : Set ℝ} {φ : ℝ → ℝ}
-    (hφ : StrictConvexOn ℝ s φ) (hx : ∀ i, x i ∈ s) (hy : ∀ i, y i ∈ s) :
+    (hφ : StrictConvexOn ℝ s φ) (hy : ∀ i, y i ∈ s) :
     (∑ i, φ (x i)) = (∑ i, φ (y i)) ↔
       ∃ σ : Equiv.Perm (Fin n), x = y ∘ σ := by
   constructor
-  · exact hxy.eq_comp_perm_of_sum_strictConvex_eq hφ hx hy
+  · exact hxy.eq_comp_perm_of_sum_strictConvex_eq hφ hy
   · rintro ⟨σ, rfl⟩
     exact Equiv.sum_comp σ fun i => φ (y i)
 

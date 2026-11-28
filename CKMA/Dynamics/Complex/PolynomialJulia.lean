@@ -18,7 +18,7 @@ import Mathlib.Order.Filter.AtTopBot.Tendsto
 import Mathlib.Topology.UniformSpace.UniformApproximation
 
 /-!
-# Polynomial Julia sets, escape rates and entire escape (46)
+# Polynomial Julia sets and escape rates (46)
 
 The filled Julia set consists of bounded forward polynomial orbits, using the general
 bornological `HasBoundedOrbit` interface. Its boundary defines the polynomial Julia set.
@@ -26,9 +26,9 @@ The main targets relate repelling cycles, the logarithmic escape-rate limit and
 connectedness through finite critical orbits for degree at least two. An attracting
 cycle lies in the interior of the filled set for any polynomial.
 
-The quadratic critical-orbit convention defines the Mandelbrot set. The entire-function
-branch defines escaping orbits and states the nonemptiness and unbounded-closure-component
-clauses of Eremenko's theorem. Derivatives and iteration use Mathlib's conventions.
+Derivatives and iteration use Mathlib's conventions. The Mandelbrot set is in
+`CKMA.Dynamics.Complex.Mandelbrot` and escaping sets of entire functions in
+`CKMA.Dynamics.Complex.EscapingSet`.
 
 ## Main definitions
 
@@ -36,9 +36,6 @@ clauses of Eremenko's theorem. Derivatives and iteration use Mathlib's conventio
 * `CKMA.polynomialJuliaSet`: the polynomial Julia set as the boundary of the filled Julia set.
 * `CKMA.repellingComplexPeriodicPoints`: repelling periodic points of a complex map.
 * `CKMA.polynomialEscapeRate`: the logarithmic escape-rate function of a polynomial.
-* `CKMA.quadraticFamily`, `CKMA.mandelbrotSet`: the quadratic family `z² + c` and Mandelbrot set.
-* `CKMA.complexEscapingSet`, `CKMA.IsTranscendentalEntire`: escaping set and transcendental entire
-  predicates.
 
 ## Main results
 
@@ -49,16 +46,13 @@ clauses of Eremenko's theorem. Derivatives and iteration use Mathlib's conventio
 * `CKMA.attractingPeriodicPoint_notMem_polynomialJuliaSet`: an attracting cycle is interior to the
   filled set.
 * `CKMA.polynomial_escapeRate_properties`: existence and properties of the Green escape-rate limit.
+  Its clauses are also stated separately: `CKMA.tendsto_polynomialEscapeRateApproximation`,
+  `CKMA.continuous_polynomialEscapeRate`, `CKMA.polynomialEscapeRate_nonneg`,
+  `CKMA.polynomialEscapeRate_eval` and `CKMA.polynomialEscapeRate_eq_zero_iff`.
 * `CKMA.polynomialFilledJuliaSet_nonempty_isCompact`: the filled set is nonempty and compact for
   degree at least two.
 * `CKMA.isConnected_polynomialFilledJuliaSet_iff`: critical-orbit characterization of connectedness
   (**46.29**).
-* `CKMA.mem_mandelbrotSet_iff`, `CKMA.isCompact_mandelbrotSet`: the radius-two critical-orbit
-  criterion and compactness of the Mandelbrot set.
-* `CKMA.mandelbrot_properties`: compactness, connectedness, escape bound, and Julia-set criterion
-  for the Mandelbrot set (**46.40**).
-* `CKMA.eremenko_escaping`: Eremenko's theorem on the escaping set of a transcendental entire map
-  (**46.58**).
 -/
 
 public section
@@ -74,8 +68,12 @@ open Bornology Filter Function Metric Polynomial Set Topology
 def polynomialFilledJuliaSet (p : ℂ[X]) : Set ℂ :=
   {z | HasBoundedOrbit (fun w ↦ p.eval w) z}
 
+/-- Membership in `polynomialFilledJuliaSet`. -/
+theorem mem_polynomialFilledJuliaSet_iff {p : ℂ[X]} {z : ℂ} :
+    z ∈ polynomialFilledJuliaSet p ↔ HasBoundedOrbit (fun w ↦ p.eval w) z := Iff.rfl
+
 /-- Filled Julia sets are completely invariant under one polynomial step. -/
-theorem mem_polynomialFilledJuliaSet_iff (p : ℂ[X]) (z : ℂ) :
+theorem eval_mem_polynomialFilledJuliaSet_iff (p : ℂ[X]) (z : ℂ) :
     p.eval z ∈ polynomialFilledJuliaSet p ↔ z ∈ polynomialFilledJuliaSet p := by
   change HasBoundedOrbit (fun w ↦ p.eval w) (p.eval z) ↔
     HasBoundedOrbit (fun w ↦ p.eval w) z
@@ -86,10 +84,19 @@ Its equality to the nonnormality Julia set is a separate analytic interface. -/
 @[expose]
 def polynomialJuliaSet (p : ℂ[X]) : Set ℂ := frontier (polynomialFilledJuliaSet p)
 
+/-- Defining equation of `polynomialJuliaSet`. -/
+theorem polynomialJuliaSet_def (p : ℂ[X]) :
+    polynomialJuliaSet p = frontier (polynomialFilledJuliaSet p) := rfl
+
 /-- A periodic point is repelling when its return multiplier has norm greater than one. -/
 @[expose]
 def repellingComplexPeriodicPoints (f : ℂ → ℂ) : Set ℂ :=
   {z | ∃ n : ℕ, 0 < n ∧ (f^[n]) z = z ∧ 1 < ‖deriv (f^[n]) z‖}
+
+/-- Membership in `repellingComplexPeriodicPoints`. -/
+theorem mem_repellingComplexPeriodicPoints_iff {f : ℂ → ℂ} {z : ℂ} :
+    z ∈ repellingComplexPeriodicPoints f ↔
+      ∃ n : ℕ, 0 < n ∧ (f^[n]) z = z ∧ 1 < ‖deriv (f^[n]) z‖ := Iff.rfl
 
 /-- An attracting periodic point lies in the interior of the filled Julia set, hence outside
 the Julia set. The degree of `p` is not required. -/
@@ -178,20 +185,27 @@ theorem attractingPeriodicPoint_notMem_polynomialJuliaSet {p : ℂ[X]} {z : ℂ}
   rw [polynomialJuliaSet, frontier, Set.mem_sdiff] at hzJ
   exact hzJ.2 hint
 
-@[deprecated (since := "2026-11-15")]
-alias attractingPeriodicPoint_not_mem_julia := attractingPeriodicPoint_notMem_polynomialJuliaSet
-
 /-- Polynomial escape-rate approximants with the standard `log⁺` normalization.
 `Real.log` is applied only to `max 1 ‖·‖`, hence only to arguments at least `1`. -/
 @[expose]
 def polynomialEscapeRateApproximation (p : ℂ[X]) (z : ℂ) (n : ℕ) : ℝ :=
   (p.natDegree : ℝ)⁻¹ ^ n * Real.log (max 1 ‖((fun w ↦ p.eval w)^[n]) z‖)
 
-/-- The escape-rate function as a totalized limit. Actual convergence is certified explicitly
-below, so this definition does not hide any admitted choice or convergence theorem. -/
+/-- Defining equation of `polynomialEscapeRateApproximation`. -/
+theorem polynomialEscapeRateApproximation_def (p : ℂ[X]) (z : ℂ) (n : ℕ) :
+    polynomialEscapeRateApproximation p z n =
+      (p.natDegree : ℝ)⁻¹ ^ n * Real.log (max 1 ‖((fun w ↦ p.eval w)^[n]) z‖) := rfl
+
+/-- The escape-rate function as a totalized limit. Convergence of the approximants is proved
+below for `2 ≤ natDegree`; for `natDegree ≤ 1` the value is an unspecified limit. -/
 @[expose]
 def polynomialEscapeRate (p : ℂ[X]) (z : ℂ) : ℝ :=
   Filter.limUnder atTop (polynomialEscapeRateApproximation p z)
+
+/-- Defining equation of `polynomialEscapeRate`. -/
+theorem polynomialEscapeRate_def (p : ℂ[X]) (z : ℂ) :
+    polynomialEscapeRate p z = Filter.limUnder atTop (polynomialEscapeRateApproximation p z) :=
+  rfl
 
 /-- Escape radius and a uniform bound on the one-step defect `log⁺ ‖p(z)‖ - d log⁺ ‖z‖`.
 The radius satisfies `2 / κ ≤ R`. `Real.log` is applied only to arguments at least `1`. -/
@@ -750,6 +764,41 @@ theorem polynomialFilledJuliaSet_nonempty_isCompact {p : ℂ[X]} (hp : 2 ≤ p.n
         |>.eventually_gt_atTop B).exists
     exact (not_le.mpr (lt_of_lt_of_le hn (norm_iterate_ge_mul_two_pow hdouble hgt'.le n))) (hB n)
 
+/-- The escape-rate approximants converge to `polynomialEscapeRate` in degree at least two. -/
+theorem tendsto_polynomialEscapeRateApproximation {p : ℂ[X]} (hp : 2 ≤ p.natDegree) (z : ℂ) :
+    Tendsto (polynomialEscapeRateApproximation p z) atTop (𝓝 (polynomialEscapeRate p z)) :=
+  (polynomial_escapeRate_properties hp).1 z
+
+/-- The escape rate is continuous in degree at least two. -/
+theorem continuous_polynomialEscapeRate {p : ℂ[X]} (hp : 2 ≤ p.natDegree) :
+    Continuous (polynomialEscapeRate p) :=
+  (polynomial_escapeRate_properties hp).2.1
+
+/-- The escape rate is nonnegative in degree at least two. -/
+theorem polynomialEscapeRate_nonneg {p : ℂ[X]} (hp : 2 ≤ p.natDegree) (z : ℂ) :
+    0 ≤ polynomialEscapeRate p z :=
+  (polynomial_escapeRate_properties hp).2.2.1 z
+
+/-- The escape rate multiplies by the degree under one application of `p`. -/
+theorem polynomialEscapeRate_eval {p : ℂ[X]} (hp : 2 ≤ p.natDegree) (z : ℂ) :
+    polynomialEscapeRate p (p.eval z) = p.natDegree * polynomialEscapeRate p z :=
+  (polynomial_escapeRate_properties hp).2.2.2.1 z
+
+/-- The escape rate vanishes exactly on the filled Julia set. -/
+theorem polynomialEscapeRate_eq_zero_iff {p : ℂ[X]} (hp : 2 ≤ p.natDegree) (z : ℂ) :
+    polynomialEscapeRate p z = 0 ↔ z ∈ polynomialFilledJuliaSet p :=
+  (polynomial_escapeRate_properties hp).2.2.2.2 z
+
+/-- The filled Julia set is nonempty in degree at least two. -/
+theorem polynomialFilledJuliaSet_nonempty {p : ℂ[X]} (hp : 2 ≤ p.natDegree) :
+    (polynomialFilledJuliaSet p).Nonempty :=
+  (polynomialFilledJuliaSet_nonempty_isCompact hp).1
+
+/-- The filled Julia set is compact in degree at least two. -/
+theorem isCompact_polynomialFilledJuliaSet {p : ℂ[X]} (hp : 2 ≤ p.natDegree) :
+    IsCompact (polynomialFilledJuliaSet p) :=
+  (polynomialFilledJuliaSet_nonempty_isCompact hp).2
+
 /-- Limits of repelling periodic points lie in the Julia set. -/
 theorem closure_repellingComplexPeriodicPoints_subset {p : ℂ[X]} (hp : 2 ≤ p.natDegree) :
     closure (repellingComplexPeriodicPoints (fun z ↦ p.eval z)) ⊆ polynomialJuliaSet p := by
@@ -782,7 +831,7 @@ theorem closure_repellingComplexPeriodicPoints_subset {p : ℂ[X]} (hp : 2 ≤ p
       | zero => exact hwK
       | succ m ih =>
         rw [iterate_succ_apply']
-        exact (mem_polynomialFilledJuliaSet_iff p _).mpr ih
+        exact (eval_mem_polynomialFilledJuliaSet_iff p _).mpr ih
     rw [← iterate_mul]
     exact hstep (n * k)
   obtain ⟨k, hk⟩ := ((tendsto_pow_atTop_atTop_of_one_lt hrep).eventually_gt_atTop
@@ -795,143 +844,12 @@ theorem closure_repellingComplexPeriodicPoints {p : ℂ[X]} (hp : 2 ≤ p.natDeg
   refine Subset.antisymm (closure_repellingComplexPeriodicPoints_subset hp) ?_
   sorry
 
-@[deprecated (since := "2026-11-15")]
-alias closure_repellingPeriodicPoints := closure_repellingComplexPeriodicPoints
-
 /-- **46.29**: polynomial connectedness is equivalent to boundedness of every finite critical orbit.
   -/
 theorem isConnected_polynomialFilledJuliaSet_iff {p : ℂ[X]} (hp : 2 ≤ p.natDegree) :
     (IsConnected (polynomialFilledJuliaSet p) ↔
       ∀ z : ℂ, p.derivative.eval z = 0 → z ∈ polynomialFilledJuliaSet p) ∧
     (IsConnected (polynomialJuliaSet p) ↔ IsConnected (polynomialFilledJuliaSet p)) := by
-  sorry
-
-@[deprecated (since := "2026-11-15")]
-alias polynomial_julia_connected_iff := isConnected_polynomialFilledJuliaSet_iff
-
-/-- The standard quadratic family. -/
-@[expose]
-def quadraticFamily (c : ℂ) : ℂ[X] := X ^ 2 + C c
-
-/-- The Mandelbrot set is the set of bounded quadratic critical orbits. -/
-@[expose]
-def mandelbrotSet : Set ℂ := {c | HasBoundedOrbit (fun z ↦ z ^ 2 + c) 0}
-
-/-- A bounded quadratic orbit cannot visit a point of norm greater than both `2` and `‖c‖`. -/
-private theorem not_hasBoundedOrbit_quadratic_of_lt {c z : ℂ}
-    (h₂ : 2 < ‖z‖) (hc : ‖c‖ ≤ ‖z‖) :
-    ¬ HasBoundedOrbit (fun w : ℂ ↦ w ^ 2 + c) z := by
-  set f : ℂ → ℂ := fun w ↦ w ^ 2 + c
-  set q := ‖z‖ - 1
-  have hq : 1 < q := by dsimp [q]; linarith
-  have hstep {w : ℂ} (hw : ‖z‖ ≤ ‖w‖) : q * ‖w‖ ≤ ‖f w‖ := by
-    have htri : ‖w‖ ^ 2 ≤ ‖f w‖ + ‖c‖ := by
-      rw [← norm_pow, ← norm_neg c]
-      convert norm_add_le (f w) (-c) using 1
-      simp [f]
-    have hprod := mul_le_mul_of_nonneg_right hw (norm_nonneg w)
-    dsimp only [q]
-    nlinarith [hc.trans hw]
-  have hiter (n : ℕ) : q ^ n * ‖z‖ ≤ ‖(f^[n]) z‖ := by
-    induction n with
-    | zero => simp
-    | succ n ih =>
-      have hzpow : ‖z‖ ≤ q ^ n * ‖z‖ :=
-        le_mul_of_one_le_left (norm_nonneg _) (one_le_pow₀ hq.le)
-      rw [iterate_succ_apply', pow_succ', mul_assoc]
-      exact (mul_le_mul_of_nonneg_left ih (zero_le_one.trans hq.le)).trans
-        (hstep (hzpow.trans ih))
-  intro hbounded
-  obtain ⟨B, hB⟩ := (hasBoundedOrbit_iff_exists_norm_le f z).mp hbounded
-  obtain ⟨n, hn⟩ := ((tendsto_pow_atTop_atTop_of_one_lt hq).atTop_mul_const'
-    (zero_lt_two.trans h₂) |>.eventually_gt_atTop B).exists
-  exact (hn.trans_le (hiter n)).not_ge (hB n)
-
-/-- The critical orbit is bounded exactly when every iterate has norm at most `2`. -/
-theorem mem_mandelbrotSet_iff {c : ℂ} : c ∈ mandelbrotSet ↔
-    ∀ n : ℕ, ‖((fun z : ℂ ↦ z ^ 2 + c)^[n]) 0‖ ≤ 2 := by
-  set f : ℂ → ℂ := fun w ↦ w ^ 2 + c
-  have hf : f 0 = c := by simp [f]
-  constructor
-  · intro h n
-    have hbounded : HasBoundedOrbit f 0 := h
-    have hc : ‖c‖ ≤ 2 := by
-      by_contra! hc
-      have hmap : HasBoundedOrbit f c := by simpa only [← hf] using hbounded.map
-      exact not_hasBoundedOrbit_quadratic_of_lt hc le_rfl hmap
-    by_contra! hn
-    obtain ⟨B, hB⟩ := (hasBoundedOrbit_iff_exists_norm_le f 0).mp hbounded
-    have htail : HasBoundedOrbit f ((f^[n]) 0) :=
-      (hasBoundedOrbit_iff_exists_norm_le _ _).mpr ⟨B, fun k ↦ by
-        rw [← iterate_add_apply]
-        exact hB (k + n)⟩
-    exact not_hasBoundedOrbit_quadratic_of_lt hn (hc.trans hn.le) htail
-  · intro h
-    exact (hasBoundedOrbit_iff_exists_norm_le f 0).mpr ⟨2, h⟩
-
-/-- The Mandelbrot set lies in the closed disc of radius `2`. -/
-theorem mandelbrotSet_subset_closedBall : mandelbrotSet ⊆ Metric.closedBall 0 2 := by
-  intro c hc
-  simpa [mem_closedBall, dist_zero_right, iterate_one] using mem_mandelbrotSet_iff.mp hc 1
-
-/-- The Mandelbrot set is compact. -/
-theorem isCompact_mandelbrotSet : IsCompact mandelbrotSet := by
-  refine (isCompact_closedBall 0 2).of_isClosed_subset ?_ mandelbrotSet_subset_closedBall
-  have hcont (n : ℕ) : Continuous (fun c : ℂ ↦ ((fun z : ℂ ↦ z ^ 2 + c)^[n]) 0) := by
-    induction n with
-    | zero => exact continuous_const
-    | succ n ih =>
-      simp only [iterate_succ_apply']
-      exact (ih.pow 2).add continuous_id
-  have heq : mandelbrotSet = ⋂ n : ℕ,
-      {c : ℂ | ‖((fun z : ℂ ↦ z ^ 2 + c)^[n]) 0‖ ≤ 2} := by
-    ext c
-    simpa only [mem_iInter, mem_ofPred_eq] using (mem_mandelbrotSet_iff (c := c))
-  rw [heq]
-  exact isClosed_iInter fun n ↦ isClosed_le (hcont n).norm continuous_const
-
-/-- **46.40**: Mandelbrot compactness, connectedness, escape bound and the Julia criterion. -/
-theorem mandelbrot_properties : IsCompact mandelbrotSet ∧ IsConnected mandelbrotSet ∧
-    mandelbrotSet ⊆ Metric.closedBall 0 2 ∧
-    ∀ c : ℂ, c ∈ mandelbrotSet ↔ IsConnected (polynomialJuliaSet (quadraticFamily c)) := by
-  refine ⟨isCompact_mandelbrotSet, ?_, mandelbrotSet_subset_closedBall, ?_⟩
-  · sorry
-  · intro c
-    have hdegree : 2 ≤ (quadraticFamily c).natDegree := by
-      simp only [quadraticFamily, Polynomial.natDegree_X_pow_add_C, le_rfl]
-    have hcrit : ∀ z : ℂ, (quadraticFamily c).derivative.eval z = 0 ↔ z = 0 := by
-      intro z
-      rw [quadraticFamily, Polynomial.derivative_add, Polynomial.derivative_C, add_zero,
-        Polynomial.derivative_X_pow, Polynomial.eval_mul, Polynomial.eval_C]
-      simp
-    have heval (z : ℂ) : (quadraticFamily c).eval z = z ^ 2 + c := by
-      simp [quadraticFamily]
-    rw [(isConnected_polynomialFilledJuliaSet_iff hdegree).2,
-      (isConnected_polynomialFilledJuliaSet_iff hdegree).1]
-    constructor
-    · intro hc z hz
-      rw [(hcrit z).mp hz]
-      simpa only [mandelbrotSet, polynomialFilledJuliaSet, mem_ofPred_eq, heval] using hc
-    · intro hc
-      simpa only [mandelbrotSet, polynomialFilledJuliaSet, mem_ofPred_eq, heval]
-        using hc 0 ((hcrit 0).mpr rfl)
-
-/-- The escaping set of a complex map, using divergence of the orbit norm. -/
-@[expose]
-def complexEscapingSet (f : ℂ → ℂ) : Set ℂ :=
-  {z | Tendsto (fun n : ℕ ↦ ‖(f^[n]) z‖) atTop atTop}
-
-/-- Transcendental entire functions are entire and are not polynomial functions. -/
-@[expose]
-def IsTranscendentalEntire (f : ℂ → ℂ) : Prop :=
-  Differentiable ℂ f ∧ ∀ p : ℂ[X], f ≠ fun z ↦ p.eval z
-
-/-- **46.58**, escaping-set clauses: nonemptiness and unbounded components of the closure.
-The equality of its boundary with the nonnormality Julia set remains a separate interface. -/
-theorem eremenko_escaping {f : ℂ → ℂ} (hf : IsTranscendentalEntire f) :
-    (complexEscapingSet f).Nonempty ∧
-      ∀ z ∈ closure (complexEscapingSet f),
-        ¬ Bornology.IsBounded (connectedComponentIn (closure (complexEscapingSet f)) z) := by
   sorry
 
 end CKMA

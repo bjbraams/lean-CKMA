@@ -5,7 +5,7 @@ Authors: CKMA contributors
 -/
 module
 
-public import CKMA.Analysis.InnerProductSpace.Basic
+public import CKMA.Analysis.InnerProductSpace.HilbertModel
 public import Mathlib.Analysis.InnerProductSpace.Adjoint
 public import Mathlib.Analysis.CStarAlgebra.Classes
 
@@ -26,12 +26,13 @@ minimal part.
 * `CKMA.isometricDilationSpace`: closed span of the forward orbit.
 * `CKMA.isometricDilationIsometry`: restriction of the isometry to the closed forward orbit.
 * `CKMA.isometricDilationEmbed`: embedding of `H` into the closed forward orbit.
+* `CKMA.IsMinimalIsometricDilation`: minimal co-invariant isometric dilation of a contraction.
 
 ## Main results
 
 * `CKMA.isometricDilation_coinvariant`: co-invariance on the closed forward orbit.
 * `CKMA.isometricDilation_minimal`: minimality of the closed forward orbit.
-* `CKMA.exists_minimalIsometricDilation_data`: existence of a minimal isometric dilation.
+* `CKMA.exists_minimalIsometricDilation`: existence of a minimal isometric dilation.
 -/
 
 public section
@@ -45,7 +46,7 @@ open ContinuousLinearMap Submodule
 
 universe u
 
-variable {H K : Type u}
+variable {H : Type u} {K : Type*}
     [NormedAddCommGroup H] [InnerProductSpace ℂ H]
     [NormedAddCommGroup K] [InnerProductSpace ℂ K]
 
@@ -54,19 +55,28 @@ variable {H K : Type u}
 def isometricDilationOrbit (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K) : Set K :=
   {y : K | ∃ n : ℕ, ∃ x : H, y = (V.toContinuousLinearMap ^ n) (J x)}
 
+/-- Membership in the forward orbit. -/
+theorem mem_isometricDilationOrbit_iff (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K) {y : K} :
+    y ∈ isometricDilationOrbit J V ↔ ∃ n : ℕ, ∃ x : H, y = (V.toContinuousLinearMap ^ n) (J x) :=
+  Iff.rfl
+
 /-- The isometry preserves the forward orbit. -/
-private theorem isometricDilationOrbit_mapsTo (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K) :
+theorem isometricDilationOrbit_mapsTo (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K) :
     Set.MapsTo (⇑V) (isometricDilationOrbit J V) (isometricDilationOrbit J V) := by
   intro y hy
   rcases hy with ⟨n, x, rfl⟩
   refine ⟨n + 1, x, ?_⟩
-  rw [← LinearIsometry.coe_toContinuousLinearMap V]
-  exact (continuousLinearMap_pow_succ'_apply V.toContinuousLinearMap n (J x)).symm
+  rw [pow_succ', mul_apply_eq_comp, LinearIsometry.coe_toContinuousLinearMap]
 
 /-- The closed span of the forward orbit. -/
 @[expose]
 def isometricDilationSpace (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K) : Submodule ℂ K :=
   (span ℂ (isometricDilationOrbit J V)).topologicalClosure
+
+/-- `isometricDilationSpace J V` is the closure of the span of the forward orbit. -/
+theorem isometricDilationSpace_def (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K) :
+    isometricDilationSpace J V = (span ℂ (isometricDilationOrbit J V)).topologicalClosure :=
+  rfl
 
 /-- The embedded copy of `H` lies in the closed forward orbit. -/
 theorem mem_isometricDilationSpace_embed (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K) (x : H) :
@@ -103,6 +113,11 @@ def isometricDilationRestrictCLM (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] 
     rw [LinearIsometry.coe_toContinuousLinearMap]
     exact isometricDilationSpace_mapsTo J V hx
 
+/-- The restricted operator acts as `V`, read in `K`. -/
+theorem coe_isometricDilationRestrictCLM_apply (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K)
+    (y : isometricDilationSpace J V) : (isometricDilationRestrictCLM J V y : K) = V y :=
+  rfl
+
 /-- The restricted operator as a linear isometry of the closed forward orbit. -/
 @[expose]
 def isometricDilationIsometry (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K) :
@@ -113,7 +128,7 @@ def isometricDilationIsometry (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K) 
     exact V.norm_map (y : K)
 
 /-- Evaluation of the restricted isometry. -/
-private theorem isometricDilationIsometry_apply (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K)
+theorem isometricDilationIsometry_apply (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K)
     (y : isometricDilationSpace J V) :
     isometricDilationIsometry J V y = isometricDilationRestrictCLM J V y :=
   rfl
@@ -126,6 +141,11 @@ def isometricDilationEmbedCLM (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K) 
     rw [LinearIsometry.coe_toContinuousLinearMap]
     exact mem_isometricDilationSpace_embed J V x
 
+/-- The embedding `isometricDilationEmbedCLM` acts as `J`, read in `K`. -/
+theorem coe_isometricDilationEmbedCLM_apply (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K) (x : H) :
+    (isometricDilationEmbedCLM J V x : K) = J x :=
+  rfl
+
 /-- The embedding of the original space into the closed forward orbit. -/
 @[expose]
 def isometricDilationEmbed (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K) :
@@ -136,25 +156,25 @@ def isometricDilationEmbed (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K) :
     exact J.norm_map x
 
 /-- Evaluation of the orbit embedding. -/
-private theorem isometricDilationEmbed_apply (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K) (x : H) :
+theorem isometricDilationEmbed_apply (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K) (x : H) :
     isometricDilationEmbed J V x = isometricDilationEmbedCLM J V x :=
   rfl
 
 /-- The orbit embedding agrees in `K` with the original embedding. -/
-private theorem coe_isometricDilationEmbed (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K) (x : H) :
+theorem coe_isometricDilationEmbed (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K) (x : H) :
     (isometricDilationEmbed J V x : K) = J x := by
   simp [isometricDilationEmbed_apply, isometricDilationEmbedCLM,
     LinearIsometry.coe_toContinuousLinearMap]
 
 /-- One application of the restricted isometry agrees in `K` with the original isometry. -/
-private theorem coe_isometricDilationIsometry (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K)
+theorem coe_isometricDilationIsometry (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K)
     (y : isometricDilationSpace J V) :
     (isometricDilationIsometry J V y : K) = V (y : K) := by
   simp [isometricDilationIsometry_apply, isometricDilationRestrictCLM,
     LinearIsometry.coe_toContinuousLinearMap]
 
 /-- Powers of the restricted isometry agree in `K` with powers of the original isometry. -/
-private theorem coe_isometricDilationIsometry_pow (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K) (n : ℕ)
+theorem coe_isometricDilationIsometry_pow (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K) (n : ℕ)
     (y : isometricDilationSpace J V) :
     (((isometricDilationIsometry J V).toContinuousLinearMap ^ n) y : K) =
       (V.toContinuousLinearMap ^ n) (y : K) := by
@@ -162,7 +182,7 @@ private theorem coe_isometricDilationIsometry_pow (J : H →ₗᵢ[ℂ] K) (V : 
   | zero =>
     simp [pow_zero]
   | succ n ih =>
-    rw [continuousLinearMap_pow_succ'_apply, continuousLinearMap_pow_succ'_apply]
+    rw [pow_succ', mul_apply_eq_comp, pow_succ', mul_apply_eq_comp]
     simp only [LinearIsometry.coe_toContinuousLinearMap, isometricDilationIsometry_apply,
       isometricDilationRestrictCLM]
     rw [ContinuousLinearMap.coe_restrict_apply, ih, LinearIsometry.coe_toContinuousLinearMap]
@@ -176,7 +196,7 @@ instance completeSpace_isometricDilationSpace (J : H →ₗᵢ[ℂ] K) (V : K �
   topologicalClosure.completeSpace (span ℂ (isometricDilationOrbit J V))
 
 /-- The adjoint of the orbit embedding is the original adjoint, read in `K`. -/
-private theorem isometricDilationEmbed_adjoint_apply (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K)
+theorem isometricDilationEmbed_adjoint_apply (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K)
     (y : isometricDilationSpace J V) :
     (isometricDilationEmbed J V).toContinuousLinearMap.adjoint y =
       J.toContinuousLinearMap.adjoint (y : K) := by
@@ -253,23 +273,34 @@ theorem isometricDilation_minimal (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ]
     exact Subtype.ext (inner_self_eq_zero.mp (hcl (SetLike.coe_mem y)))
   exact (orthogonal_eq_bot_iff (K := N)).mp horth
 
-variable (T : H →L[ℂ] H)
+/-- `J` and `V` form a minimal isometric dilation of `T`: the original space is co-invariant,
+`J* V = T J*`, and the forward orbit of `J H` spans a dense subspace of `K`. -/
+@[expose]
+def IsMinimalIsometricDilation (T : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K)
+    (V : K →ₗᵢ[ℂ] K) : Prop :=
+  (∀ y : K, J.toContinuousLinearMap.adjoint (V y) = T (J.toContinuousLinearMap.adjoint y)) ∧
+    (span ℂ {y : K | ∃ n : ℕ, ∃ x : H,
+      y = (V.toContinuousLinearMap ^ n) (J x)}).topologicalClosure = ⊤
 
-/-- A contraction has a minimal isometric dilation on the closed forward orbit of Schäffer's
+/-- Unfolding `IsMinimalIsometricDilation` into co-invariance and minimality. -/
+theorem isMinimalIsometricDilation_iff (T : H →L[ℂ] H) (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K) :
+    IsMinimalIsometricDilation T J V ↔
+      (∀ y : K, J.toContinuousLinearMap.adjoint (V y) = T (J.toContinuousLinearMap.adjoint y)) ∧
+        (span ℂ {y : K | ∃ n : ℕ, ∃ x : H,
+          y = (V.toContinuousLinearMap ^ n) (J x)}).topologicalClosure = ⊤ :=
+  Iff.rfl
+
+/-- Every contraction has a minimal isometric dilation, on the closed forward orbit of Schäffer's
 coextension. -/
-theorem exists_minimalIsometricDilation_data (hT : ‖T‖ ≤ 1) :
-    ∃ M : HilbertSpaceModel.{u} ℂ, ∃ J : H →ₗᵢ[ℂ] M.carrier,
-      ∃ V : M.carrier →ₗᵢ[ℂ] M.carrier,
-        (∀ y : M.carrier, J.toContinuousLinearMap.adjoint (V y) =
-          T (J.toContinuousLinearMap.adjoint y)) ∧
-        (span ℂ {y : M.carrier | ∃ n : ℕ, ∃ x : H,
-          y = (V.toContinuousLinearMap ^ n) (J x)}).topologicalClosure = ⊤ := by
+theorem exists_minimalIsometricDilation (T : H →L[ℂ] H) (hT : ‖T‖ ≤ 1) :
+    ∃ M : ComplexHilbertSpace.{u}, ∃ J : H →ₗᵢ[ℂ] M.carrier,
+      ∃ V : M.carrier →ₗᵢ[ℂ] M.carrier, IsMinimalIsometricDilation T J V := by
   let J0 : H →ₗᵢ[ℂ] SchafferSpace H := schafferEmbed
   let V0 : SchafferSpace H →ₗᵢ[ℂ] SchafferSpace H := schafferIsometry T hT
-  refine ⟨{ carrier := ↥(isometricDilationSpace J0 V0) },
-    isometricDilationEmbed J0 V0, isometricDilationIsometry J0 V0, ?_, ?_⟩
-  · intro y
-    exact isometricDilation_coinvariant T J0 V0 (schaffer_coinvariant T hT) y
-  · exact isometricDilation_minimal J0 V0
+  exact ⟨{ carrier := ↥(isometricDilationSpace J0 V0) },
+    isometricDilationEmbed J0 V0, isometricDilationIsometry J0 V0,
+    (isMinimalIsometricDilation_iff _ _ _).2
+      ⟨isometricDilation_coinvariant T J0 V0 (schaffer_coinvariant T hT),
+        isometricDilation_minimal J0 V0⟩⟩
 
 end CKMA

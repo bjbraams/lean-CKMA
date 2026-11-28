@@ -14,7 +14,7 @@ import Mathlib.MeasureTheory.Integral.Average
 import Mathlib.MeasureTheory.Measure.WithDensity
 
 /-!
-# Sufficiency of the Muckenhoupt condition
+# Lerner's comparison for `A_p` weights
 
 An `A_p` bound makes the centred maximal operator strong type `(p,p)` on the weighted
 measure. The argument compares an unweighted ball average with the centred maximal operator
@@ -23,6 +23,11 @@ invokes the Marcinkiewicz bounds already proved for those two operators.
 
 Source: GAPS 27.44. The comparison follows Lerner, Proc. Amer. Math. Soc. 136 (2008), with
 the outer exponent `1/(p-1)` required by the ball form of the `A_p` characteristic.
+
+## Main results
+
+* `CKMA.exists_weightedMaximal_bound`: an `A_p` ball bound makes the centred maximal operator
+  strong type `(p,p)` on the weighted measure.
 -/
 
 public section
@@ -119,29 +124,37 @@ private lemma enorm_div_pow_mul (W : ApWeight (d := d) p) (a : ℝ≥0∞) (y : 
 /-- Factor coming from the radius-`3` enlargement of the dual measure. -/
 @[expose]
 def enlargeConst (W : ApWeight (d := d) p) : ℝ≥0∞ :=
-  W.A ^ (p - 1)⁻¹ * ENNReal.ofReal ((3 : ℝ) ^ d) ^ W.conj
+  W.bound ^ (p - 1)⁻¹ * ENNReal.ofReal ((3 : ℝ) ^ d) ^ W.conj
+
+/-- Unfolding the enlargement factor. -/
+lemma enlargeConst_def (W : ApWeight (d := d) p) :
+    W.enlargeConst = W.bound ^ (p - 1)⁻¹ * ENNReal.ofReal ((3 : ℝ) ^ d) ^ W.conj := rfl
 
 /-- The enlargement factor is finite. -/
 private lemma enlargeConst_ne_top (W : ApWeight (d := d) p) : W.enlargeConst ≠ ∞ := by
   unfold enlargeConst
-  exact mul_ne_top W.dualA_ne_zero_top.2
+  exact mul_ne_top W.bound_rpow_ne_zero_and_ne_top.2
     (rpow_ne_top_of_nonneg' (ENNReal.ofReal_pos.mpr (by positivity)) ENNReal.ofReal_ne_top)
 
 /-- The enlargement factor is positive. -/
 private lemma enlargeConst_pos (W : ApWeight (d := d) p) : 0 < W.enlargeConst := by
   unfold enlargeConst
-  exact ENNReal.mul_pos W.dualA_ne_zero_top.1
+  exact ENNReal.mul_pos W.bound_rpow_ne_zero_and_ne_top.1
     (ENNReal.rpow_pos (ENNReal.ofReal_pos.mpr (by positivity)) ENNReal.ofReal_ne_top).ne'
 
 /-- Pointwise factor in the comparison of the two centred maximal operators. -/
 @[expose]
 def pointConst (W : ApWeight (d := d) p) : ℝ≥0∞ :=
-  W.A ^ (p - 1)⁻¹ * W.enlargeConst
+  W.bound ^ (p - 1)⁻¹ * W.enlargeConst
+
+/-- Unfolding the pointwise comparison factor. -/
+lemma pointConst_def (W : ApWeight (d := d) p) :
+    W.pointConst = W.bound ^ (p - 1)⁻¹ * W.enlargeConst := rfl
 
 /-- The pointwise factor is finite. -/
 private lemma pointConst_ne_top (W : ApWeight (d := d) p) : W.pointConst ≠ ∞ := by
   unfold pointConst
-  exact mul_ne_top W.dualA_ne_zero_top.2 W.enlargeConst_ne_top
+  exact mul_ne_top W.bound_rpow_ne_zero_and_ne_top.2 W.enlargeConst_ne_top
 
 /-- A characteristic bound `t * u ^ e ≤ A` controls `u` by `A` and `t⁻¹`. -/
 private lemma ratio_le {e : ℝ} {t A u : ℝ≥0∞} (he : 0 < e) (ht0 : t ≠ 0) (hA : A ≠ ∞)
@@ -198,8 +211,9 @@ private lemma div_lintegral_le_enlarge (W : ApWeight (d := d) p) (v : E → ℝ�
   have hthree : 0 < 3 * r := mul_pos (by norm_num : (0 : ℝ) < 3) hr
   have hS0 : σ (ball x r) ≠ 0 := W.dualMk_measure_ne_zero x hr
   have hSTop : σ (ball x r) ≠ ∞ := W.dualMk_measure_ne_top x hr
-  have hsub1 : ball x r ⊆ ball y (2 * r) := ball_subset_double_ball hy
-  have hsub2 : ball y (2 * r) ⊆ ball x (3 * r) := ball_two_subset_ball_three hy
+  have hsub1 : ball x r ⊆ ball y (2 * r) :=
+    ball_subset_ball' (by linarith [mem_ball.mp hy, dist_comm x y])
+  have hsub2 : ball y (2 * r) ⊆ ball x (3 * r) := ball_subset_ball' (by linarith [mem_ball.mp hy])
   have h2Top : σ (ball y (2 * r)) ≠ ∞ :=
     ne_top_of_le_ne_top (W.dualMk_measure_ne_top x hthree) (measure_mono hsub2)
   have hint : ∫⁻ z in ball x r, v z ∂σ ≤ ∫⁻ z in ball y (2 * r), v z ∂σ :=
@@ -235,8 +249,8 @@ private lemma div_lintegral_le_average (W : ApWeight (d := d) p) (v : E → ℝ�
   let β : ℝ≥0∞ := α / W.enlargeConst
   have hD0 : W.enlargeConst ≠ 0 := W.enlargeConst_pos.ne'
   have hDTop : W.enlargeConst ≠ ∞ := W.enlargeConst_ne_top
-  have hV0 : volume (ball x r) ≠ 0 := volume_ball_ne_zero x hr
-  have hVTop : volume (ball x r) ≠ ∞ := volume_ball_ne_top x r
+  have hV0 : volume (ball x r) ≠ 0 := (measure_ball_pos volume x hr).ne'
+  have hVTop : volume (ball x r) ≠ ∞ := measure_ball_lt_top.ne
   have hpt : ∀ y ∈ ball x r, β ^ (p - 1) ≤ φ y ^ (p - 1) := by
     intro y hy
     have hle : α ≤ W.enlargeConst * φ y := W.div_lintegral_le_enlarge v x hr hy
@@ -296,8 +310,8 @@ private lemma average_enorm_le (W : ApWeight (d := d) p) (f : E → ℂ) (x : E)
   let V : ℝ≥0∞ := volume (ball x r)
   let wInt : ℝ≥0∞ := ∫⁻ y in ball x r, weightDensity W.w y ∂volume
   let sInt : ℝ≥0∞ := ∫⁻ y in ball x r, dualDensity p W.w y ∂volume
-  have hV0 : V ≠ 0 := volume_ball_ne_zero x hr
-  have hVTop : V ≠ ∞ := volume_ball_ne_top x r
+  have hV0 : V ≠ 0 := (measure_ball_pos volume x hr).ne'
+  have hVTop : V ≠ ∞ := measure_ball_lt_top.ne
   have hw0 : wInt ≠ 0 := W.weight_ball_ne_zero x hr
   have hwTop : wInt ≠ ∞ := W.weight_ball_ne_top x r
   have hs0 : sInt ≠ 0 := W.dual_ball_ne_zero x hr
@@ -328,12 +342,12 @@ private lemma average_enorm_le (W : ApWeight (d := d) p) (f : E → ℂ) (x : E)
   have hα : (∫⁻ y in ball x r, v y ∂σ) / σ (ball x r) ≤
       W.enlargeConst * ((∫⁻ y in ball x r, φ y ^ (p - 1) ∂volume) / V) ^ (p - 1)⁻¹ :=
     W.div_lintegral_le_average v x hr
-  have hratio : sInt / V ≤ W.A ^ (p - 1)⁻¹ * (V / wInt) ^ (p - 1)⁻¹ := by
+  have hratio : sInt / V ≤ W.bound ^ (p - 1)⁻¹ * (V / wInt) ^ (p - 1)⁻¹ := by
     have ht0 : wInt / V ≠ 0 := (ENNReal.div_ne_zero).2 ⟨hw0, hVTop⟩
-    have hchar : wInt / V * (sInt / V) ^ (p - 1) ≤ W.A := W.ball_le x r hr
+    have hchar : wInt / V * (sInt / V) ^ (p - 1) ≤ W.bound := W.ball_le x r hr
     have hinv : (wInt / V)⁻¹ = V / wInt :=
       ENNReal.inv_div (Or.inr hwTop) (Or.inl hV0)
-    simpa [hinv] using ratio_le W.sub_one_pos ht0 W.A_ne_top hchar
+    simpa [hinv] using ratio_le W.sub_one_pos ht0 W.bound_ne_top hchar
   have havg : (∫⁻ y in ball x r, ψ y ∂ν) / wInt ≤
       TauCeti.maximalFunction ν ψ x := by
     rw [← hWb, ← setLAverage_eq]
@@ -355,7 +369,7 @@ private lemma average_enorm_le (W : ApWeight (d := d) p) (f : E → ℂ) (x : E)
       = ((∫⁻ y in ball x r, v y ∂σ) / σ (ball x r)) * (sInt / V) := by
           rw [hI, hSb, ENNReal.div_mul_div_cancel hs0 hsTop]
     _ ≤ (W.enlargeConst * ((∫⁻ y in ball x r, φ y ^ (p - 1) ∂volume) / V) ^ (p - 1)⁻¹) *
-          (W.A ^ (p - 1)⁻¹ * (V / wInt) ^ (p - 1)⁻¹) :=
+          (W.bound ^ (p - 1)⁻¹ * (V / wInt) ^ (p - 1)⁻¹) :=
         mul_le_mul' hα hratio
     _ = W.pointConst * (((∫⁻ y in ball x r, φ y ^ (p - 1) ∂volume) / V) ^ (p - 1)⁻¹ *
           (V / wInt) ^ (p - 1)⁻¹) := by
@@ -392,7 +406,7 @@ private lemma lintegral_maximal_le (W : ApWeight (d := d) p) {f : E → ℂ}
   let ψ : E → ℝ≥0∞ := fun y => φ y ^ (p - 1) / weightDensity W.w y
   have hvMeas : AEMeasurable v σ := by
     have henorm : AEMeasurable (fun y => ‖f y‖ₑ) σ :=
-      W.aemeasurable_dual_of_weight hf.aemeasurable.enorm
+      W.aemeasurable_dual_of_weight hf.aemeasurable.eNorm
     have hdiv : AEMeasurable ((fun y => ‖f y‖ₑ) / W.dualMk) σ :=
       henorm.div (W.measurable_dualMk.aemeasurable : AEMeasurable W.dualMk σ)
     refine hdiv.congr ?_
@@ -508,7 +522,7 @@ private lemma exists_bound (W : ApWeight (d := d) p) :
     have hpt : ENNReal.ofReal p ≠ ∞ := ENNReal.ofReal_ne_top
     have hnorm : (eLpNorm f (ENNReal.ofReal p) (weightMeasure W.w)) ^ p =
         ∫⁻ x, ‖f x‖ₑ ^ p ∂weightMeasure W.w := by
-      rw [eLpNorm_eq_lintegral_rpow_enorm_toReal hp0 hpt hf.aestronglyMeasurable,
+      rw [eLpNorm_eq_lintegral_rpow_eNorm_toReal hp0 hpt hf.aestronglyMeasurable,
         ENNReal.toReal_ofReal W.p_pos.le, ← ENNReal.rpow_mul, one_div,
         inv_mul_cancel₀ W.p_pos.ne', ENNReal.rpow_one]
     rw [hnorm]
@@ -538,8 +552,8 @@ theorem exists_weightedMaximal_bound {d : ℕ} {p : ℝ} (hp : 1 < p)
       measurable_w := hm
       pos_ae := hpos
       locallyIntegrable_w := hloc
-      A := A
-      A_ne_top := hA
+      bound := A
+      bound_ne_top := hA
       ball_le := hball }
   exact W.exists_bound
 

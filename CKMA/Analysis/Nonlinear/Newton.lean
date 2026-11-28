@@ -19,8 +19,8 @@ The Newton step uses the totalized inverse of the Fréchet derivative. Convergen
 supply invertibility on the relevant iterates rather than assuming the totalized inverse always
 behaves as an inverse.
 
-The Kantorovich radius includes the affine `L=0` limit. The scalar field is real or complex.
-The Semilocal statement uses a normalized derivative Lipschitz bound and differentiability on an
+The Kantorovich radius includes the affine `L = 0` limit. The scalar field is real or complex.
+The semilocal statement uses a normalized derivative Lipschitz bound and differentiability on an
 open neighborhood of the majorant ball; the local statement gives quadratic convergence near a
 regular zero. The initial step length is controlled by a norm bound. Source: GAPS 35.9.
 
@@ -29,12 +29,17 @@ regular zero. The initial step length is controlled by a norm bound. Source: GAP
 * `CKMA.kantorovichRadius`: The majorant root, including the affine `L = 0` limit.
 * `CKMA.newtonStep`: One Newton step using Mathlib's totalized operator inverse.
 * `CKMA.newtonIterate`: Sequence of Newton iterates starting at `x₀`.
+* `CKMA.kantorovichQuadratic`, `CKMA.kantorovichMajorant`: the scalar majorant
+  `(L / 2) t ^ 2 - t + η` and its Newton sequence from `0`.
 
 ## Main results
 
 * `CKMA.newtonIterate_zero`: The zeroth Newton iterate is the starting point.
 * `CKMA.newtonIterate_succ`: Each subsequent iterate applies `newtonStep`.
-* `CKMA.newton_kantorovich`: Semilocal Kantorovich convergence theorem (**35.9**).
+* `CKMA.exists_tendsto_of_norm_sub_le_majorant`: a sequence with steps dominated by the
+  increments of a convergent real sequence converges, with the corresponding error bounds.
+* `CKMA.newton_kantorovich`: Semilocal Kantorovich convergence theorem with the a-priori error
+  bound (**35.9**).
 * `CKMA.newton_quadratic`: Local quadratic convergence near a regular zero.
 -/
 
@@ -74,11 +79,26 @@ theorem newtonIterate_succ (F : E → E) (x₀ : E) (n : ℕ) :
       newtonStep (𝕜 := 𝕜) F (newtonIterate (𝕜 := 𝕜) F x₀ n) := by
   exact Function.iterate_succ_apply' _ _ _
 
-/-- Quadratic Kantorovich majorant `φ(t) = (L / 2) * t ^ 2 - t + η`. -/
-private def kantorovichQuadratic (L η t : ℝ) : ℝ := (L / 2) * t ^ 2 - t + η
+/-- Defining equation of `kantorovichRadius`. -/
+theorem kantorovichRadius_def (L η : ℝ) :
+    kantorovichRadius L η = if L = 0 then η else (1 - Real.sqrt (1 - 2 * L * η)) / L := rfl
 
-/-- Scalar Newton sequence for `kantorovichQuadratic`, starting at `0`. -/
-private def kantorovichMajorant (L η : ℝ) : ℕ → ℝ
+/-- Defining equation of `newtonStep`. -/
+theorem newtonStep_def (F : E → E) (x : E) :
+    newtonStep (𝕜 := 𝕜) F x = x - (fderiv 𝕜 F x).inverse (F x) := rfl
+
+/-- Quadratic Kantorovich majorant `φ(t) = (L / 2) * t ^ 2 - t + η`. -/
+@[expose]
+def kantorovichQuadratic (L η t : ℝ) : ℝ := (L / 2) * t ^ 2 - t + η
+
+/-- Defining equation of `kantorovichQuadratic`. -/
+theorem kantorovichQuadratic_def (L η t : ℝ) :
+    kantorovichQuadratic L η t = (L / 2) * t ^ 2 - t + η := rfl
+
+/-- Scalar Newton sequence for `kantorovichQuadratic`, starting at `0`: the majorant sequence
+of the Kantorovich theorem. -/
+@[expose]
+def kantorovichMajorant (L η : ℝ) : ℕ → ℝ
   | 0 => 0
   | n + 1 =>
       kantorovichMajorant L η n +
@@ -87,10 +107,10 @@ private def kantorovichMajorant (L η : ℝ) : ℕ → ℝ
 
 /-- The majorant sequence begins at zero. -/
 @[simp]
-private lemma kantorovichMajorant_zero (L η : ℝ) : kantorovichMajorant L η 0 = 0 := rfl
+theorem kantorovichMajorant_zero (L η : ℝ) : kantorovichMajorant L η 0 = 0 := rfl
 
 /-- Each later majorant term is one Newton step of the quadratic. -/
-private lemma kantorovichMajorant_succ (L η : ℝ) (n : ℕ) :
+theorem kantorovichMajorant_succ (L η : ℝ) (n : ℕ) :
     kantorovichMajorant L η (n + 1) =
       kantorovichMajorant L η n +
         kantorovichQuadratic L η (kantorovichMajorant L η n) /
@@ -98,7 +118,7 @@ private lemma kantorovichMajorant_succ (L η : ℝ) (n : ℕ) :
   simp [kantorovichMajorant]
 
 /-- The first majorant step equals the initial residual bound. -/
-private lemma kantorovichMajorant_one (L η : ℝ) : kantorovichMajorant L η 1 = η := by
+theorem kantorovichMajorant_one (L η : ℝ) : kantorovichMajorant L η 1 = η := by
   simp [kantorovichMajorant_succ, kantorovichQuadratic]
 
 /-- The discriminant of the Kantorovich quadratic is positive. -/
@@ -356,7 +376,7 @@ private lemma tendsto_kantorovichMajorant {L η : ℝ} (hL : 0 ≤ L) (hη : 0 �
 
 /-- If an endomorphism is within distance less than `1` of the identity, it is invertible and the
 inverse is bounded by the Neumann series. -/
-private lemma isInvertible_of_norm_sub_id_lt [CompleteSpace E] {f : E →L[𝕜] E}
+theorem isInvertible_of_norm_sub_id_lt [CompleteSpace E] {f : E →L[𝕜] E}
     (hf : ‖f - ContinuousLinearMap.id 𝕜 E‖ < 1) :
     f.IsInvertible ∧ ‖f.inverse‖ ≤ (1 - ‖f - ContinuousLinearMap.id 𝕜 E‖)⁻¹ := by
   let t : E →L[𝕜] E := ContinuousLinearMap.id 𝕜 E - f
@@ -588,11 +608,12 @@ private lemma kantorovichMajorant_sq_eq_mul {L η : ℝ} (hL : 0 ≤ L) (hη : 0
   field_simp [hden1.ne']
 
 /-- A sequence whose steps are dominated by the increments of a real sequence `t` converging to
-`ρ` from below converges, and its limit lies within `ρ - t 0` of the starting point. -/
-private lemma exists_tendsto_of_norm_sub_le_majorant [CompleteSpace E] {x : ℕ → E}
+`ρ` from below converges, and its limit lies within `ρ - t n` of the `n`-th term. -/
+theorem exists_tendsto_of_norm_sub_le_majorant {F : Type*} [NormedAddCommGroup F]
+    [CompleteSpace F] {x : ℕ → F}
     {t : ℕ → ℝ} {ρ : ℝ} (hstep : ∀ n, ‖x (n + 1) - x n‖ ≤ t (n + 1) - t n)
     (hle : ∀ n, t n ≤ ρ) (ht : Tendsto t atTop (𝓝 ρ)) :
-    ∃ z, Tendsto x atTop (𝓝 z) ∧ ‖z - x 0‖ ≤ ρ - t 0 := by
+    ∃ z, Tendsto x atTop (𝓝 z) ∧ ∀ n, ‖z - x n‖ ≤ ρ - t n := by
   have htele : ∀ {m n : ℕ}, n ≤ m → ‖x m - x n‖ ≤ t m - t n := by
     intro m n hnm
     induction m with
@@ -615,14 +636,18 @@ private lemma exists_tendsto_of_norm_sub_le_majorant [CompleteSpace E] {x : ℕ 
     · simpa [sub_self] using (tendsto_const_nhds (x := ρ)).sub ht
   obtain ⟨z, hz⟩ := CompleteSpace.complete hcauchy
   have hz : Tendsto x atTop (𝓝 z) := hz
-  refine ⟨z, hz, ?_⟩
-  have hnorm : Tendsto (fun n => ‖x n - x 0‖) atTop (𝓝 ‖z - x 0‖) :=
+  refine ⟨z, hz, fun n ↦ ?_⟩
+  have hnorm : Tendsto (fun m => ‖x m - x n‖) atTop (𝓝 ‖z - x n‖) :=
     (continuous_norm.tendsto _).comp (hz.sub tendsto_const_nhds)
-  exact le_of_tendsto hnorm <| Eventually.of_forall fun n =>
-    (htele (Nat.zero_le n)).trans (by linarith [hle n])
+  exact le_of_tendsto hnorm <| eventually_atTop.2 ⟨n, fun m hm =>
+    (htele hm).trans (by linarith [hle m])⟩
 
 /-- **35.9**: Kantorovich convergence under the normalized derivative Lipschitz bound.
-Differentiability is at all points of an open neighbourhood of the majorant ball. -/
+Differentiability is at all points of an open neighbourhood of the majorant ball. The iterates
+are regular, converge to a zero `z` in the ball of radius `kantorovichRadius L η`, and satisfy
+the a-priori error bound `‖z - xₙ‖ ≤ ρ - tₙ` against the scalar majorant `tₙ`. Only the strict
+case `L * η < 1 / 2` is stated; the classical theorem also covers `L * η = 1 / 2`, with linear
+convergence. -/
 theorem newton_kantorovich [CompleteSpace E] {F : E → E} (x₀ : E) (S : E ≃L[𝕜] E)
     (hS : fderiv 𝕜 F x₀ = S.toContinuousLinearMap)
     {L η r : ℝ} (hL : 0 ≤ L) (hsmall : L * η < 1 / 2)
@@ -634,7 +659,9 @@ theorem newton_kantorovich [CompleteSpace E] {F : E → E} (x₀ : E) (S : E ≃
       ‖S.symm.toContinuousLinearMap.comp (fderiv 𝕜 F x - fderiv 𝕜 F y)‖ ≤ L * ‖x - y‖) :
     ∃ z ∈ Metric.closedBall x₀ (kantorovichRadius L η), F z = 0 ∧
       Tendsto (newtonIterate (𝕜 := 𝕜) F x₀) atTop (𝓝 z) ∧
-      ∀ n, (fderiv 𝕜 F (newtonIterate (𝕜 := 𝕜) F x₀ n)).IsInvertible := by
+      (∀ n, (fderiv 𝕜 F (newtonIterate (𝕜 := 𝕜) F x₀ n)).IsInvertible) ∧
+      ∀ n, ‖z - newtonIterate (𝕜 := 𝕜) F x₀ n‖ ≤
+        kantorovichRadius L η - kantorovichMajorant L η n := by
   have hη : 0 ≤ η := (norm_nonneg _).trans hfirst
   have hr0 : 0 ≤ r := (kantorovichRadius_nonneg hL hη).trans hr
   let t := kantorovichMajorant L η
@@ -689,7 +716,7 @@ theorem newton_kantorovich [CompleteSpace E] {F : E → E} (x₀ : E) (S : E ≃
   obtain ⟨z, htend_x, hz_dist⟩ := exists_tendsto_of_norm_sub_le_majorant
     (fun n => (invar n).2.2.2.2) (fun n => (hbounds n).2.1) htend_t
   have hzρ : z ∈ Metric.closedBall x₀ ρ := by
-    simpa [Metric.mem_closedBall, dist_eq_norm, x, t] using hz_dist
+    simpa [Metric.mem_closedBall, dist_eq_norm, x, t] using hz_dist 0
   have hzU : z ∈ U := hsub (Metric.closedBall_subset_closedBall hr hzρ)
   have hFcont : ContinuousAt F z := hF.continuousOn.continuousAt (hU.mem_nhds hzU)
   -- The limit is a zero: the residuals are squeezed by the vanishing majorant increments.
@@ -711,7 +738,7 @@ theorem newton_kantorovich [CompleteSpace E] {F : E → E} (x₀ : E) (S : E ≃
     have hcomp := ((S : E →L[𝕜] E).continuous.tendsto 0).comp hG0
     simpa [Function.comp_def, map_zero, ContinuousLinearEquiv.apply_symm_apply] using hcomp
   have hFz : F z = 0 := tendsto_nhds_unique (hFcont.tendsto.comp htend_x) hF0
-  exact ⟨z, hzρ, hFz, htend_x, fun n => (invar n).2.1⟩
+  exact ⟨z, hzρ, hFz, htend_x, fun n => (invar n).2.1, hz_dist⟩
 
 /-- One Newton step near a regular zero `z`: if `‖S⁻¹‖ * L * ‖y - z‖ ≤ 1 / 2`, then
 `fderiv F y` is invertible and the error after the step is at most `‖S⁻¹‖ * L * ‖y - z‖ ^ 2`. -/
@@ -724,7 +751,7 @@ private lemma norm_newtonStep_sub_zero_le [CompleteSpace E] {F : E → E} {z : E
     (fderiv 𝕜 F y).IsInvertible ∧
       ‖newtonStep (𝕜 := 𝕜) F y - z‖ ≤ ‖S.symm.toContinuousLinearMap‖ * L * ‖y - z‖ ^ 2 := by
   let _ : NormedSpace ℝ E := NormedSpace.restrictScalars ℝ 𝕜 E
-  set M : ℝ := ‖S.symm.toContinuousLinearMap‖ with hM
+  set M : ℝ := ‖S.symm.toContinuousLinearMap‖
   have hz_ball : z ∈ Metric.ball z r := Metric.mem_ball_self (Metric.pos_of_mem_ball hy)
   have hFdiff : ∀ w ∈ Metric.ball z r, DifferentiableAt 𝕜 F w := fun w hw =>
     (hF w hw).differentiableAt (Metric.isOpen_ball.mem_nhds hw)

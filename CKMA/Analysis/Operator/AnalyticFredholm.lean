@@ -5,11 +5,10 @@ Authors: CKMA contributors
 -/
 module
 
-public import Mathlib.Analysis.Calculus.ImplicitContDiff
-public import Mathlib.Analysis.Normed.Operator.Compact.Basic
-public import Mathlib.Analysis.CStarAlgebra.Classes
 public import CKMA.Analysis.Operator.AnalyticFredholm.Reduction
 
+import Mathlib.Analysis.Calculus.ImplicitContDiff
+import Mathlib.Analysis.CStarAlgebra.Classes
 import Mathlib.Analysis.Normed.Algebra.GelfandRadius
 
 /-!
@@ -25,16 +24,16 @@ resolvent identity. Its analytic continuation supplies an eigenvalue and a nonze
 branch. Sources: GAPS 21.15 and 22.34; finite-rank principal parts are outside the displayed pole
 clause.
 
+The exceptional set, the inverse-pole predicates and the analytic Fredholm theorem
+`CKMA.analytic_fredholm` are in `CKMA.Analysis.Operator.AnalyticFredholm.Reduction`, which this
+module re-exports.
+
 ## Main definitions
 
-* `CKMA.fredholmExceptionalSet`: noninvertibility set of a compact Fredholm family.
-* `CKMA.HasFiniteOrderInverseRegularization`: finite-order analytic regularization of the inverse.
-* `CKMA.HasOperatorInversePole`: genuine finite-order inverse pole.
 * `CKMA.IsSimpleSpectralEigenpair`: algebraically simple eigenpair in reduced-resolvent form.
 
 ## Main results
 
-* `CKMA.analytic_fredholm`: analytic Fredholm theorem.
 * `CKMA.analytic_simple_eigenpair`: analytic continuation of a simple eigenpair.
 -/
 
@@ -47,47 +46,6 @@ namespace CKMA
 open Filter Topology ContinuousLinearMap Metric
 
 variable {X : Type*} [NormedAddCommGroup X] [NormedSpace ℂ X] [CompleteSpace X]
-
-/-- The noninvertibility set of a compact Fredholm family inside its parameter domain. -/
-@[expose]
-def fredholmExceptionalSet (K : ℂ → X →L[ℂ] X) (U : Set ℂ) : Set ℂ :=
-  {z ∈ U | ¬ IsUnit (1 - K z)}
-
-/-- A finite-order analytic regularization of the totalized inverse. Order zero is allowed,
-so this weaker condition also includes removable singularities and regular points. -/
-@[expose]
-def HasFiniteOrderInverseRegularization (K : ℂ → X →L[ℂ] X) (a : ℂ) : Prop :=
-  ∃ m : ℕ, ∃ F : ℂ → X →L[ℂ] X, AnalyticAt ℂ F a ∧
-    ∀ᶠ z in 𝓝[≠] a, (z - a) ^ m • Ring.inverse (1 - K z) = F z
-
-/-- A genuine inverse pole: the family is invertible on a punctured neighborhood and a
-positive-order regularization is analytic with nonzero value at the base point. -/
-@[expose]
-def HasOperatorInversePole (K : ℂ → X →L[ℂ] X) (a : ℂ) : Prop :=
-  ∃ m : ℕ, 0 < m ∧ ∃ F : ℂ → X →L[ℂ] X, AnalyticAt ℂ F a ∧ F a ≠ 0 ∧
-    (∀ᶠ z in 𝓝[≠] a, IsUnit (1 - K z)) ∧
-    ∀ᶠ z in 𝓝[≠] a, (z - a) ^ m • Ring.inverse (1 - K z) = F z
-
-omit [CompleteSpace X] in
-/-- Every genuine inverse pole has a finite-order analytic regularization. -/
-theorem HasOperatorInversePole.hasFiniteOrderInverseRegularization
-    {K : ℂ → X →L[ℂ] X} {a : ℂ} (h : HasOperatorInversePole K a) :
-    HasFiniteOrderInverseRegularization K a := by
-  obtain ⟨m, _, F, hF, _, _, heq⟩ := h
-  exact ⟨m, F, hF, heq⟩
-
-/-- **21.15**: if the family is invertible at one point, exceptional points are discrete,
-the inverse is analytic off them, and every exceptional point has a finite-order pole. -/
-theorem analytic_fredholm {U : Set ℂ} (hU : IsOpen U) (hconn : IsPreconnected U)
-    (K : ℂ → X →L[ℂ] X) (hK : DifferentiableOn ℂ K U)
-    (hc : ∀ z ∈ U, IsCompactOperator (K z))
-    (hunit : ∃ z ∈ U, IsUnit (1 - K z)) :
-    (∀ a ∈ fredholmExceptionalSet K U, ∃ r : ℝ, 0 < r ∧
-      ∀ z ∈ fredholmExceptionalSet K U, dist z a < r → z = a) ∧
-    DifferentiableOn ℂ (fun z ↦ Ring.inverse (1 - K z)) (U \ fredholmExceptionalSet K U) ∧
-    ∀ a ∈ fredholmExceptionalSet K U, HasOperatorInversePole K a := by
-  unfold fredholmExceptionalSet HasOperatorInversePole
-  exact analyticFredholm_aux hU hconn K hK hc hunit
 
 /-- Partial derivative in `(z, u)` of `(φ u - 1, A u - z • u)`. -/
 private def simpleEigenPartial (A0 : X →L[ℂ] X) (z₀ : ℂ) (u₀ : X) (phi : X →L[ℂ] ℂ) :
@@ -238,6 +196,74 @@ private theorem simpleEigenPartial_isInvertible (A0 : X →L[ℂ] X) (z₀ : ℂ
     · simpa [comp_apply, id_apply, happL, happS] using hx
   exact IsInvertible.of_inverse hLS hSL
 
+/-- The eigenpair equations `(φ u - 1, A t u - z • u)` as a map of `(t, z, u)`. -/
+private def simpleEigenMap (A : ℂ → X →L[ℂ] X) (phi : X →L[ℂ] ℂ) (p : ℂ × ℂ × X) : ℂ × X :=
+  (phi p.2.2 - 1, (A p.1) p.2.2 - p.2.1 • p.2.2)
+
+omit [CompleteSpace X] in
+/-- At a simple eigenpair, the partial derivative of `simpleEigenMap` in the eigenpair variables
+is a Banach automorphism. -/
+private theorem fderiv_simpleEigenMap_comp_inr_isInvertible (A : ℂ → X →L[ℂ] X) {z₀ : ℂ}
+    {u₀ : X} (phi : X →L[ℂ] ℂ) (R : X →L[ℂ] X) (hphi : phi u₀ = 1) (hAu : A 0 u₀ = z₀ • u₀)
+    (hLeft : (A 0 - z₀ • (1 : X →L[ℂ] X)) * R = 1 - phi.smulRight u₀)
+    (hRight : R * (A 0 - z₀ • (1 : X →L[ℂ] X)) = 1 - phi.smulRight u₀)
+    (hcd : ContDiffAt ℂ 1 (simpleEigenMap A phi) ((0 : ℂ), (z₀, u₀))) :
+    (fderiv ℂ (simpleEigenMap A phi) ((0 : ℂ), (z₀, u₀)) ∘L inr ℂ ℂ (ℂ × X)).IsInvertible := by
+  have hone : (1 : WithTop ℕ∞) ≠ 0 := by decide
+  let point : ℂ × X := (z₀, u₀)
+  have hphiF : fderiv ℂ (fun y : ℂ × X => phi (y.2) - 1) point = phi.comp (snd ℂ ℂ X) := by
+    rw [fderiv_sub_const]
+    rw [fderiv_fun_comp (f := fun y : ℂ × X => y.2) (g := fun u : X => phi u) (x := point)
+      phi.differentiableAt (differentiableAt_snd (p := point)), phi.fderiv, fderiv_snd]
+  have hOpF : fderiv ℂ (fun y : ℂ × X => (A 0) (y.2)) point = (A 0).comp (snd ℂ ℂ X) := by
+    rw [fderiv_fun_comp (f := fun y : ℂ × X => y.2) (g := fun u : X => (A 0) u) (x := point)
+      (A 0).differentiableAt (differentiableAt_snd (p := point)), (A 0).fderiv, fderiv_snd]
+  have hSmF : fderiv ℂ (fun y : ℂ × X => y.1 • y.2) point =
+      z₀ • snd ℂ ℂ X + (fst ℂ ℂ X).smulRight u₀ := by
+    rw [fderiv_fun_smul (c := fun y : ℂ × X => y.1) (f := fun y : ℂ × X => y.2)
+      (differentiableAt_fst (p := point)) (differentiableAt_snd (p := point))]
+    rw [fderiv_fst, fderiv_snd]
+  have hDer : (A 0).comp (snd ℂ ℂ X) - (z₀ • snd ℂ ℂ X + (fst ℂ ℂ X).smulRight u₀) =
+      ((A 0) - z₀ • (1 : X →L[ℂ] X)).comp (snd ℂ ℂ X) - (fst ℂ ℂ X).smulRight u₀ := by
+    refine ext fun v => ?_
+    simp only [sub_apply, comp_apply, smul_apply, one_apply_eq_self, smulRight_apply,
+      coe_fst', coe_snd', sub_add_eq_sub_sub]
+  have hDop : DifferentiableAt ℂ (fun y : ℂ × X => (A 0) y.2) point :=
+    DifferentiableAt.fun_comp' (f := fun y : ℂ × X => y.2) (g := fun u : X => (A 0) u)
+      (x := point) (A 0).differentiableAt (differentiableAt_snd (p := point))
+  have hDsm : DifferentiableAt ℂ (fun y : ℂ × X => y.1 • y.2) point :=
+    DifferentiableAt.fun_smul (c := fun y : ℂ × X => y.1) (f := fun y : ℂ × X => y.2)
+      (differentiableAt_fst (p := point)) (differentiableAt_snd (p := point))
+  have hvecF : fderiv ℂ (fun y : ℂ × X => (A 0) y.2 - y.1 • y.2) point =
+      ((A 0) - z₀ • (1 : X →L[ℂ] X)).comp (snd ℂ ℂ X) - (fst ℂ ℂ X).smulRight u₀ := by
+    rw [fderiv_fun_sub (f := fun y : ℂ × X => (A 0) y.2) (g := fun y : ℂ × X => y.1 • y.2)
+      (x := point) hDop hDsm, hOpF, hSmF, hDer]
+  have hDphi : DifferentiableAt ℂ (fun y : ℂ × X => phi y.2 - 1) point :=
+    (DifferentiableAt.fun_comp' (f := fun y : ℂ × X => y.2) (g := fun u : X => phi u)
+      (x := point) phi.differentiableAt (differentiableAt_snd (p := point))).sub_const 1
+  have hprod : fderiv ℂ (fun y : ℂ × X => (phi y.2 - 1, (A 0) y.2 - y.1 • y.2)) point =
+      (phi.comp (snd ℂ ℂ X)).prod
+        (((A 0) - z₀ • (1 : X →L[ℂ] X)).comp (snd ℂ ℂ X) -
+          (fst ℂ ℂ X).smulRight u₀) := by
+    rw [DifferentiableAt.fderiv_prodMk (f₁ := fun y : ℂ × X => phi y.2 - 1)
+      (f₂ := fun y : ℂ × X => (A 0) y.2 - y.1 • y.2) hDphi (hDop.sub hDsm), hphiF, hvecF]
+  have hslice : fderiv ℂ (fun y : ℂ × X => simpleEigenMap A phi ((0 : ℂ), y)) point =
+      simpleEigenPartial (A 0) z₀ u₀ phi := by
+    simpa [simpleEigenMap, simpleEigenPartial, point] using hprod
+  have hincl : HasFDerivAt (fun y : ℂ × X => ((0 : ℂ), y)) (inr ℂ ℂ (ℂ × X)) point :=
+    (hasFDerivAt_const (0 : ℂ) point).prodMk (hasFDerivAt_id point)
+  have hchain := (hcd.differentiableAt hone).hasFDerivAt.comp point hincl
+  have hcomp : fderiv ℂ (fun y : ℂ × X => simpleEigenMap A phi ((0 : ℂ), y)) point =
+      fderiv ℂ (simpleEigenMap A phi) ((0 : ℂ), (z₀, u₀)) ∘L inr ℂ ℂ (ℂ × X) := by
+    have hfun : (fun y : ℂ × X => simpleEigenMap A phi ((0 : ℂ), y)) =
+        simpleEigenMap A phi ∘ fun y : ℂ × X => ((0 : ℂ), y) := by
+      funext y
+      rfl
+    rw [hfun]
+    exact hchain.fderiv
+  rw [← hcomp, hslice]
+  exact simpleEigenPartial_isInvertible (A 0) z₀ u₀ phi R hphi hAu hLeft hRight
+
 /-- Algebraic simplicity in a concrete reduced-resolvent form.
 Geometric multiplicity one alone is insufficient: a Jordan block would permit branching. -/
 @[expose]
@@ -246,8 +272,17 @@ def IsSimpleSpectralEigenpair (A : X →L[ℂ] X) (z : ℂ) (u : X) : Prop :=
     (A - z • (1 : X →L[ℂ] X)) * R = 1 - φ.smulRight u ∧
     R * (A - z • (1 : X →L[ℂ] X)) = 1 - φ.smulRight u
 
-/-- **22.34**, the bounded type-(A) simple-eigenvalue clause: an actual analytic eigenvector
-and eigenvalue branch through the specified algebraically simple eigenpair. -/
+omit [CompleteSpace X] in
+/-- The defining property of `IsSimpleSpectralEigenpair`. -/
+theorem isSimpleSpectralEigenpair_iff (A : X →L[ℂ] X) (z : ℂ) (u : X) :
+    IsSimpleSpectralEigenpair A z u ↔ ∃ φ : X →L[ℂ] ℂ, φ u = 1 ∧ A u = z • u ∧
+      ∃ R : X →L[ℂ] X, (A - z • (1 : X →L[ℂ] X)) * R = 1 - φ.smulRight u ∧
+        R * (A - z • (1 : X →L[ℂ] X)) = 1 - φ.smulRight u :=
+  Iff.rfl
+
+/-- **22.34**, the bounded type-(A) simple-eigenvalue clause: an analytic family `A t` with an
+algebraically simple eigenpair `(z₀, u₀)` of `A 0` has a holomorphic eigenvalue branch `z t` and a
+nowhere-vanishing holomorphic eigenvector branch `u t` through it. -/
 theorem analytic_simple_eigenpair (A : ℂ → X →L[ℂ] X) (hA : AnalyticAt ℂ A 0)
     {z₀ : ℂ} {u₀ : X} (hpair : IsSimpleSpectralEigenpair (A 0) z₀ u₀) :
     ∃ r : ℝ, 0 < r ∧ ∃ z : ℂ → ℂ, ∃ u : ℂ → X,
@@ -255,11 +290,10 @@ theorem analytic_simple_eigenpair (A : ℂ → X →L[ℂ] X) (hA : AnalyticAt �
       z 0 = z₀ ∧ u 0 = u₀ ∧
       ∀ t ∈ Metric.ball 0 r, u t ≠ 0 ∧ A t (u t) = z t • u t := by
   obtain ⟨phi, hphi, hAu, R, hLeft, hRight⟩ := hpair
-  let eigen (p : ℂ × ℂ × X) : ℂ × X :=
-    (phi p.2.2 - 1, (A p.1) p.2.2 - p.2.1 • p.2.2)
+  let eigen := simpleEigenMap A phi
   let base : ℂ × ℂ × X := (0, (z₀, u₀))
   have hzero : eigen base = 0 := by
-    simp [eigen, base, hphi, hAu]
+    simp [eigen, simpleEigenMap, base, hphi, hAu]
   have hone : (1 : WithTop ℕ∞) ≠ 0 := by decide
   have hA1 : ContDiffAt ℂ 1 A 0 := hA.contDiffAt
   have hcd : ContDiffAt ℂ 1 eigen base := by
@@ -272,61 +306,8 @@ theorem analytic_simple_eigenpair (A : ℂ → X →L[ℂ] X) (hA : AnalyticAt �
     have hsmul := hz.smul hu
     have hphiC : ContDiffAt ℂ 1 (fun p : ℂ × ℂ × X => phi p.2.2 - 1) base :=
       (phi.contDiff.contDiffAt.comp base hu).sub (contDiffAt_const (c := (1 : ℂ)))
-    simpa [eigen] using hphiC.prodMk (happ.sub hsmul)
-  have hinv : (fderiv ℂ eigen base ∘L inr ℂ ℂ (ℂ × X)).IsInvertible := by
-    let point : ℂ × X := (z₀, u₀)
-    have hphiF : fderiv ℂ (fun y : ℂ × X => phi (y.2) - 1) point = phi.comp (snd ℂ ℂ X) := by
-      rw [fderiv_sub_const]
-      rw [fderiv_fun_comp (f := fun y : ℂ × X => y.2) (g := fun u : X => phi u) (x := point)
-        phi.differentiableAt (differentiableAt_snd (p := point)), phi.fderiv, fderiv_snd]
-    have hOpF : fderiv ℂ (fun y : ℂ × X => (A 0) (y.2)) point = (A 0).comp (snd ℂ ℂ X) := by
-      rw [fderiv_fun_comp (f := fun y : ℂ × X => y.2) (g := fun u : X => (A 0) u) (x := point)
-        (A 0).differentiableAt (differentiableAt_snd (p := point)), (A 0).fderiv, fderiv_snd]
-    have hSmF : fderiv ℂ (fun y : ℂ × X => y.1 • y.2) point =
-        z₀ • snd ℂ ℂ X + (fst ℂ ℂ X).smulRight u₀ := by
-      rw [fderiv_fun_smul (c := fun y : ℂ × X => y.1) (f := fun y : ℂ × X => y.2)
-        (differentiableAt_fst (p := point)) (differentiableAt_snd (p := point))]
-      rw [fderiv_fst, fderiv_snd]
-    have hDer : (A 0).comp (snd ℂ ℂ X) - (z₀ • snd ℂ ℂ X + (fst ℂ ℂ X).smulRight u₀) =
-        ((A 0) - z₀ • (1 : X →L[ℂ] X)).comp (snd ℂ ℂ X) - (fst ℂ ℂ X).smulRight u₀ := by
-      refine ext fun v => ?_
-      simp only [sub_apply, comp_apply, smul_apply, one_apply_eq_self, smulRight_apply,
-        coe_fst', coe_snd', sub_add_eq_sub_sub]
-    have hDop : DifferentiableAt ℂ (fun y : ℂ × X => (A 0) y.2) point :=
-      DifferentiableAt.fun_comp' (f := fun y : ℂ × X => y.2) (g := fun u : X => (A 0) u)
-        (x := point) (A 0).differentiableAt (differentiableAt_snd (p := point))
-    have hDsm : DifferentiableAt ℂ (fun y : ℂ × X => y.1 • y.2) point :=
-      DifferentiableAt.fun_smul (c := fun y : ℂ × X => y.1) (f := fun y : ℂ × X => y.2)
-        (differentiableAt_fst (p := point)) (differentiableAt_snd (p := point))
-    have hvecF : fderiv ℂ (fun y : ℂ × X => (A 0) y.2 - y.1 • y.2) point =
-        ((A 0) - z₀ • (1 : X →L[ℂ] X)).comp (snd ℂ ℂ X) - (fst ℂ ℂ X).smulRight u₀ := by
-      rw [fderiv_fun_sub (f := fun y : ℂ × X => (A 0) y.2) (g := fun y : ℂ × X => y.1 • y.2)
-        (x := point) hDop hDsm, hOpF, hSmF, hDer]
-    have hDphi : DifferentiableAt ℂ (fun y : ℂ × X => phi y.2 - 1) point :=
-      (DifferentiableAt.fun_comp' (f := fun y : ℂ × X => y.2) (g := fun u : X => phi u)
-        (x := point) phi.differentiableAt (differentiableAt_snd (p := point))).sub_const 1
-    have hprod : fderiv ℂ (fun y : ℂ × X => (phi y.2 - 1, (A 0) y.2 - y.1 • y.2)) point =
-        (phi.comp (snd ℂ ℂ X)).prod
-          (((A 0) - z₀ • (1 : X →L[ℂ] X)).comp (snd ℂ ℂ X) -
-            (fst ℂ ℂ X).smulRight u₀) := by
-      rw [DifferentiableAt.fderiv_prodMk (f₁ := fun y : ℂ × X => phi y.2 - 1)
-        (f₂ := fun y : ℂ × X => (A 0) y.2 - y.1 • y.2) hDphi (hDop.sub hDsm), hphiF, hvecF]
-    have hslice : fderiv ℂ (fun y : ℂ × X => eigen ((0 : ℂ), y)) point =
-        simpleEigenPartial (A 0) z₀ u₀ phi := by
-      simpa [eigen, simpleEigenPartial, point] using hprod
-    have hincl : HasFDerivAt (fun y : ℂ × X => ((0 : ℂ), y)) (inr ℂ ℂ (ℂ × X)) point :=
-      (hasFDerivAt_const (0 : ℂ) point).prodMk (hasFDerivAt_id point)
-    have hchain := (hcd.differentiableAt hone).hasFDerivAt.comp point hincl
-    have hcomp : fderiv ℂ (fun y : ℂ × X => eigen ((0 : ℂ), y)) point =
-        fderiv ℂ eigen base ∘L inr ℂ ℂ (ℂ × X) := by
-      have hfun : (fun y : ℂ × X => eigen ((0 : ℂ), y)) =
-          eigen ∘ fun y : ℂ × X => ((0 : ℂ), y) := by
-        funext y
-        rfl
-      rw [hfun]
-      exact hchain.fderiv
-    rw [← hcomp, hslice]
-    exact simpleEigenPartial_isInvertible (A 0) z₀ u₀ phi R hphi hAu hLeft hRight
+    exact hphiC.prodMk (happ.sub hsmul)
+  have hinv := fderiv_simpleEigenMap_comp_inr_isInvertible A phi R hphi hAu hLeft hRight hcd
   let branch := hcd.implicitFunction hone hinv
   have hbranch0 : branch 0 = (z₀, u₀) := hcd.implicitFunction_apply_self hone hinv
   have hevent := hcd.eventually_apply_implicitFunction hone hinv
@@ -350,11 +331,11 @@ theorem analytic_simple_eigenpair (A : ℂ → X →L[ℂ] X) (hA : AnalyticAt �
     rw [hzero] at hf
     have hphi1 : phi (branch t).2 = 1 := by
       have hfst : phi (branch t).2 - 1 = 0 := by
-        simpa [eigen, branch] using congrArg Prod.fst hf
+        simpa [eigen, simpleEigenMap, branch] using congrArg Prod.fst hf
       exact sub_eq_zero.mp hfst
     have heig : A t ((branch t).2) = (branch t).1 • (branch t).2 := by
       have hsub : A t ((branch t).2) - (branch t).1 • (branch t).2 = 0 := by
-        simpa [eigen] using congrArg Prod.snd hf
+        simpa [eigen, simpleEigenMap] using congrArg Prod.snd hf
       exact sub_eq_zero.mp hsub
     refine ⟨?_, heig⟩
     intro hzeroU

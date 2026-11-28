@@ -8,11 +8,10 @@ module
 public import Mathlib.Analysis.Meromorphic.Basic
 public import Mathlib.Algebra.Polynomial.Eval.Defs
 public import Mathlib.Analysis.Complex.Basic
+public import Mathlib.Topology.DiscreteSubset
 import Mathlib.Analysis.Normed.Algebra.Spectrum
 import Mathlib.Topology.Algebra.InfiniteSum.TsumUniformlyOn
-import Mathlib.Topology.Compactness.LocallyCompact
 import Mathlib.Topology.ContinuousMap.Units
-import Mathlib.Topology.DiscreteSubset
 import TauCeti.Analysis.Complex.CanonicalProduct.ElementaryFactor
 import TauCeti.Analysis.Complex.InfiniteProd
 import TauCeti.Analysis.Complex.MittagLeffler
@@ -21,8 +20,9 @@ import TauCeti.Analysis.Complex.Pompeiu.Discretization
 /-!
 # Plane approximation and prescribed analytic data
 
-Open plane sets and relatively locally finite sets support isolated-singularity and
-prescribed-divisor interfaces. Great Picard describes essential singularities.
+Discrete subsets of plane sets, in the sense of Mathlib's `codiscreteWithin`, support the
+prescribed-singularity and prescribed-divisor theorems. Great Picard describes essential
+singularities.
 Runge approximation permits specified poles in bounded complementary components;
 Mergelyan approximation permits compact sets with empty interior. Mittag–Leffler
 principal parts and positive zero divisors are realized by meromorphic and holomorphic
@@ -36,7 +36,8 @@ the prescribed poles, using Mathlib's spectral lemmas about complementary compon
 
 ## Main definitions
 
-* `CKMA.IsLocallyFiniteIn`: relative local finiteness on compact subsets.
+* `CKMA.IsLocallyFiniteIn`: relative local finiteness on compact subsets, equivalent on open sets
+  to `Aᶜ ∈ codiscreteWithin Ω`.
 * `CKMA.HasEssentialSingularityAt`: isolated essential singularity.
 * `CKMA.MeetsBoundedComplementaryComponents`: pole set condition for Runge's theorem.
 * `CKMA.finitePrincipalPart`: polynomial in `(z - a)⁻¹`.
@@ -46,14 +47,16 @@ the prescribed poles, using Mathlib's spectral lemmas about complementary compon
 * `CKMA.IsLocallyFiniteIn.mono`, `CKMA.isLocallyFiniteIn_of_finite`: basic properties of relative
   local finiteness.
 * `CKMA.IsLocallyFiniteIn.countable`: countability of a locally finite set in an open domain.
+* `CKMA.isLocallyFiniteIn_iff_compl_mem_codiscreteWithin`: the comparison with Mathlib's
+  `codiscreteWithin` on open sets.
 * `CKMA.great_picard`: Great Picard theorem for essential singularities.
 * `CKMA.runge_approximation`: Runge's rational approximation theorem.
 * `CKMA.mergelyan_approximation`: Mergelyan's polynomial approximation theorem.
 * `CKMA.exists_mittagLeffler`: Mittag–Leffler theorem on prescribed principal parts.
 * `CKMA.exists_holomorphic_prescribed_zeros`: Weierstrass theorem on prescribed zeros.
 
-The Mittag–Leffler proof uses TauCeti's polynomial principal-part theorem and its
-characterization by punctured-neighborhood agreement with an analytic germ. The prescribed-zero
+The Mittag–Leffler theorem is the polynomial case of TauCeti's
+`TauCeti.exists_meromorphic_prescribed_principal_parts`. The prescribed-zero
 proof uses TauCeti's elementary Weierstrass factors and locally uniform infinite-product theorems.
 -/
 
@@ -66,14 +69,32 @@ namespace CKMA
 open Filter Topology Polynomial
 open scoped BigOperators
 
-/-- A nonempty connected open subset of the complex plane. -/
-@[expose, deprecated "use `IsOpen Ω ∧ IsConnected Ω`" (since := "2026-11-15")]
-def IsPlaneDomain (Ω : Set ℂ) : Prop := Ω.Nonempty ∧ IsOpen Ω ∧ IsPreconnected Ω
-
 /-- Local finiteness relative to an open set, formulated on all compact subsets. -/
 @[expose]
 def IsLocallyFiniteIn (s Ω : Set ℂ) : Prop :=
   ∀ K : Set ℂ, IsCompact K → K ⊆ Ω → (s ∩ K).Finite
+
+/-- Local finiteness asks for finitely many points in every compact subset of `Ω`. -/
+theorem isLocallyFiniteIn_iff {s Ω : Set ℂ} :
+    IsLocallyFiniteIn s Ω ↔ ∀ K : Set ℂ, IsCompact K → K ⊆ Ω → (s ∩ K).Finite :=
+  Iff.rfl
+
+/-- On an open set, local finiteness of `A` is Mathlib's `Aᶜ ∈ codiscreteWithin Ω`. -/
+theorem isLocallyFiniteIn_iff_compl_mem_codiscreteWithin {A Ω : Set ℂ} (hΩ : IsOpen Ω) :
+    IsLocallyFiniteIn A Ω ↔ Aᶜ ∈ codiscreteWithin Ω := by
+  rw [codiscreteWithin_iff_locallyFiniteComplementWithin]
+  constructor
+  · intro hA z hz
+    obtain ⟨K, hK, hzK, hKΩ⟩ := exists_compact_subset hΩ hz
+    refine ⟨K, mem_interior_iff_mem_nhds.mp hzK, (hA K hK hKΩ).subset ?_⟩
+    exact fun _ hz' ↦ ⟨by simpa only [Set.mem_compl_iff, not_not] using hz'.2.2, hz'.1⟩
+  · intro hA K hK hKΩ
+    choose U hU hfin using fun z (hz : z ∈ K) ↦ hA z (hKΩ hz)
+    obtain ⟨t, ht⟩ := hK.elim_nhds_subcover' U hU
+    refine (t.finite_toSet.biUnion fun z _ ↦ hfin z z.2).subset ?_
+    rintro x ⟨hxA, hxK⟩
+    obtain ⟨z, hz, hxz⟩ := Set.mem_iUnion₂.mp (ht hxK)
+    exact Set.mem_iUnion₂.mpr ⟨z, hz, hxz, hKΩ hxK, not_not.mpr hxA⟩
 
 /-- Restricting a locally finite set preserves local finiteness. -/
 theorem IsLocallyFiniteIn.mono {s t Ω : Set ℂ} (hs : IsLocallyFiniteIn s Ω) (ht : t ⊆ s) :
@@ -109,8 +130,15 @@ theorem IsLocallyFiniteIn.countable {A Ω : Set ℂ} (hA : IsLocallyFiniteIn A �
 def HasEssentialSingularityAt (f : ℂ → ℂ) (a : ℂ) (R : ℝ) : Prop :=
   0 < R ∧ DifferentiableOn ℂ f {z | 0 < ‖z - a‖ ∧ ‖z - a‖ < R} ∧ ¬ MeromorphicAt f a
 
+/-- An essential singularity: holomorphy on the punctured disk and no meromorphic germ. -/
+theorem hasEssentialSingularityAt_iff {f : ℂ → ℂ} {a : ℂ} {R : ℝ} :
+    HasEssentialSingularityAt f a R ↔
+      0 < R ∧ DifferentiableOn ℂ f {z | 0 < ‖z - a‖ ∧ ‖z - a‖ < R} ∧ ¬ MeromorphicAt f a :=
+  Iff.rfl
+
 /-- **40.29**, holomorphic Great Picard: all but at most one finite value have infinitely
-many preimages in every punctured neighborhood. The meromorphic two-exception version remains. -/
+many preimages in every punctured neighborhood. Stated for holomorphic `f`; the meromorphic
+version with two exceptional values is not covered. -/
 theorem great_picard {f : ℂ → ℂ} {a : ℂ} {R : ℝ}
     (hf : HasEssentialSingularityAt f a R) :
     ∃ exceptional : ℂ, ∀ w : ℂ, w ≠ exceptional → ∀ r : ℝ, 0 < r → r < R →
@@ -123,6 +151,13 @@ is allowed, which is the same as permitting a pole at infinity. -/
 def MeetsBoundedComplementaryComponents (P K : Set ℂ) : Prop :=
   P ⊆ Kᶜ ∧ ∀ z ∈ Kᶜ, Bornology.IsBounded (connectedComponentIn Kᶜ z) →
     (P ∩ connectedComponentIn Kᶜ z).Nonempty
+
+/-- The pole set lies off `K` and meets every bounded component of `Kᶜ`. -/
+theorem meetsBoundedComplementaryComponents_iff {P K : Set ℂ} :
+    MeetsBoundedComplementaryComponents P K ↔ P ⊆ Kᶜ ∧ ∀ z ∈ Kᶜ,
+      Bornology.IsBounded (connectedComponentIn Kᶜ z) →
+        (P ∩ connectedComponentIn Kᶜ z).Nonempty :=
+  Iff.rfl
 
 /-- **40.60**: Runge approximation when infinity is an allowed pole.
 Every zero of the approximant's denominator lies in the prescribed finite-pole set. -/
@@ -261,28 +296,26 @@ theorem mergelyan_approximation {K : Set ℂ} (hK : IsCompact K)
   sorry
 
 /-- A finite principal part centered at a point, polynomial in the reciprocal coordinate.
-The constant term is required to vanish by the Mittag–Leffler theorem's hypotheses. -/
+A constant term is allowed; it is analytic at the center. -/
 @[expose]
 def finitePrincipalPart (a : ℂ) (p : ℂ[X]) (z : ℂ) : ℂ := p.eval ((z - a)⁻¹)
 
-/-- **40.63**: arbitrary locally finite principal parts on an open subset of the plane are
-realized by one meromorphic function; connectedness is not needed. Equality to the principal
+/-- The principal part evaluates `p` at `(z - a)⁻¹`. -/
+theorem finitePrincipalPart_def (a : ℂ) (p : ℂ[X]) (z : ℂ) :
+    finitePrincipalPart a p z = p.eval ((z - a)⁻¹) :=
+  rfl
+
+/-- **40.63**: arbitrary principal parts on a discrete subset of a plane set are realized by one
+meromorphic function; neither openness nor connectedness is needed. Equality to the principal
 part is modulo an analytic germ. -/
-theorem exists_mittagLeffler {Ω A : Set ℂ} (hΩ : IsOpen Ω) (hAΩ : A ⊆ Ω)
-    (hA : IsLocallyFiniteIn A Ω) (p : A → ℂ[X]) (hp : ∀ a, (p a).coeff 0 = 0) :
+theorem exists_mittagLeffler {Ω A : Set ℂ} (hAΩ : A ⊆ Ω) (hA : Aᶜ ∈ codiscreteWithin Ω)
+    (p : A → ℂ[X]) :
     ∃ f : ℂ → ℂ, MeromorphicOn f Ω ∧ DifferentiableOn ℂ f (Ω \ A) ∧
       ∀ a : A, ∃ g : ℂ → ℂ, AnalyticAt ℂ g a.1 ∧
         ∀ᶠ z in 𝓝[≠] a.1, f z - finitePrincipalPart a.1 (p a) z = g z := by
-  have hdiscrete : Aᶜ ∈ codiscreteWithin Ω := by
-    refine codiscreteWithin_iff_locallyFiniteComplementWithin.mpr fun z hz ↦ ?_
-    obtain ⟨K, hK, hzK, hKΩ⟩ := exists_compact_subset hΩ hz
-    refine ⟨K, mem_interior_iff_mem_nhds.mp hzK, (hA K hK hKΩ).subset ?_⟩
-    exact fun _ hz' ↦ ⟨by simpa only [Set.mem_compl_iff, not_not] using hz'.2.2, hz'.1⟩
-  obtain ⟨f, hf, hdiff, hprincipal⟩ :=
-    TauCeti.exists_meromorphic_principalPart_eq hAΩ hdiscrete p hp
-  have hsing := (TauCeti.hasPrescribedSingularities_eval_inv_sub_iff hΩ hAΩ hdiscrete hp).mpr
-    ⟨hf, hdiff, hprincipal⟩
-  exact ⟨f, hf, hdiff, (TauCeti.hasPrescribedSingularities_iff.mp hsing).2⟩
+  obtain ⟨f, hf, hsing, hdiff⟩ := TauCeti.exists_meromorphic_prescribed_principal_parts hAΩ hA
+    (fun a ↦ finitePrincipalPart a.1 (p a)) fun a ↦ (p a).meromorphicAt_eval_inv_sub a.1
+  exact ⟨f, hf, hdiff, hsing⟩
 
 /-- The distance to the complement used for the plane canonical product, with a positive
 constant for the whole plane. -/
@@ -531,15 +564,16 @@ private theorem analyticOrderAt_weierstrassFactor_comp_pow {w : ℂ → ℂ} {z 
       (Complex.weierstrassFactor p ∘ w) ^ m := rfl
   rw [hp, analyticOrderAt_pow h, horder, nsmul_eq_mul, mul_one]
 
-/-- **40.64**: every locally finite positive zero divisor on an open subset of the plane is
+/-- **40.64**: every positive zero divisor on a discrete subset of an open plane set is
 realized; connectedness is not needed.
 Orders use Mathlib's analytic order, not a separate multiplicity convention. -/
 theorem exists_holomorphic_prescribed_zeros {Ω A : Set ℂ} (hΩ : IsOpen Ω)
-    (hAΩ : A ⊆ Ω) (hA : IsLocallyFiniteIn A Ω) (m : A → ℕ) (hm : ∀ a, 0 < m a) :
+    (hAΩ : A ⊆ Ω) (hA' : Aᶜ ∈ codiscreteWithin Ω) (m : A → ℕ) (hm : ∀ a, 0 < m a) :
     ∃ f : ℂ → ℂ, DifferentiableOn ℂ f Ω ∧
       (∀ z ∈ Ω, f z = 0 ↔ z ∈ A) ∧
       ∀ a : A, analyticOrderAt f a.1 = (m a : ℕ∞) := by
   classical
+  have hA := (isLocallyFiniteIn_iff_compl_mem_codiscreteWithin hΩ).2 hA'
   let : Countable A := (hA.countable hΩ hAΩ).to_subtype
   obtain ⟨ι, hι⟩ := exists_injective_nat A
   obtain ⟨w, hwd, hw₁, hw', hwsmall⟩ := exists_zeroFactorCoordinates hΩ hAΩ hA

@@ -35,13 +35,15 @@ The Browder–Göhde–Kirk statement uses uniform convexity and a nonexpansive 
 bounded convex set; compactness of the map is not required. Sources: GAPS 35.12, 35.13, 35.15, and
 35.21.
 
-The approximation lemmas build a finite-net Schauder projection and call
-`TauCeti.brouwerFixedPoint_compactConvex_finiteSpan`. The closed-convex statement
-`exists_fixedPoint_schauder` is TauCeti's `schauderFixedPoint_closedConvex`, which does not
-require completeness of the ambient space.
+The Brouwer and Schauder statements are adapters of TauCeti's
+`brouwerFixedPoint_compactConvex` and `schauderFixedPoint_closedConvex` to maps of the subtype;
+the latter does not require completeness of the ambient space.
 
 ## Main results
 
+* `CKMA.exists_forall_nonneg_of_sum_mul_nonneg`: a simplex lemma from Brouwer's theorem: a
+  continuous `g` with nonnegative weighted sums `∑ i, w i * g w i` on the simplex has a weight
+  vector at which every `g w i` is nonnegative.
 * `CKMA.exists_fixedPoint_brouwer`: Brouwer's fixed-point theorem on a compact convex subset of a
   finite-dimensional real normed space (**35.12**), derived from TauCeti's
   `TauCeti.brouwerFixedPoint_compactConvex`.
@@ -61,7 +63,6 @@ noncomputable section
 namespace CKMA
 
 open Filter Metric Set Topology Bornology
-open scoped BigOperators
 
 /-- **35.12**: Brouwer's theorem on a compact convex subset of a finite-dimensional real space. -/
 theorem exists_fixedPoint_brouwer {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
@@ -69,223 +70,77 @@ theorem exists_fixedPoint_brouwer {E : Type*} [NormedAddCommGroup E] [NormedSpac
     (hc : Convex ℝ C) (T : C → C) (hT : Continuous T) : ∃ x : C, T x = x :=
   TauCeti.brouwerFixedPoint_compactConvex hC hc hne ⟨T, hT⟩
 
-section SchauderProjection
-
-variable {E : Type*} [NormedAddCommGroup E]
-
-/-- Truncated distance `max (ε - ‖x - y‖, 0)` of `x` from a net point `y`. -/
-@[expose]
-def schauderWeight (ε : ℝ) (y x : E) : ℝ := max (ε - ‖x - y‖) 0
-
-/-- The Schauder weight is nonnegative. -/
-theorem schauderWeight_nonneg (ε : ℝ) (y x : E) : 0 ≤ schauderWeight ε y x :=
-  le_max_right _ _
-
-/-- The Schauder weight is positive exactly on the open ball of radius `ε`. -/
-theorem schauderWeight_pos_iff {ε : ℝ} {y x : E} :
-    0 < schauderWeight ε y x ↔ ‖x - y‖ < ε := by
-  simp only [schauderWeight, lt_max_iff, lt_irrefl, or_false, sub_pos]
-
-/-- A positive Schauder weight does not increase the distance it truncates. -/
-theorem schauderWeight_mul_norm_sub_le (ε : ℝ) (y x : E) :
-    schauderWeight ε y x * ‖y - x‖ ≤ schauderWeight ε y x * ε := by
-  rw [norm_sub_rev]
-  rcases le_total ‖x - y‖ ε with h | h
-  · exact mul_le_mul_of_nonneg_left h (schauderWeight_nonneg ε y x)
-  · rw [schauderWeight, max_eq_right (sub_nonpos.2 h)]
-    simp
-
-/-- The Schauder weight of a fixed net point depends continuously on the base point. -/
-theorem continuous_schauderWeight (ε : ℝ) (y : E) : Continuous (schauderWeight ε y) := by
-  unfold schauderWeight
-  refine Continuous.max ?_ ?_
-  · exact (continuous_const.sub (continuous_id.sub continuous_const).norm)
-  · exact continuous_const
-
-/-- Sum of the Schauder weights of a finite net `t` at `x`. -/
-@[expose]
-def schauderWeightSum (t : Finset E) (ε : ℝ) (x : E) : ℝ :=
-  ∑ y ∈ t, schauderWeight ε y x
-
-/-- The total Schauder weight depends continuously on the base point. -/
-theorem continuous_schauderWeightSum (t : Finset E) (ε : ℝ) :
-    Continuous (schauderWeightSum t ε) := by
-  unfold schauderWeightSum
-  exact continuous_finsetSum t fun y _ ↦ continuous_schauderWeight ε y
-
-/-- The total weight is positive as soon as one net point lies in the open `ε`-ball. -/
-theorem schauderWeightSum_pos_of_mem_ball {t : Finset E} {ε : ℝ} {x : E}
-    (hx : ∃ y ∈ t, ‖x - y‖ < ε) : 0 < schauderWeightSum t ε x := by
-  obtain ⟨y, hy, hlt⟩ := hx
-  refine Finset.sum_pos' (fun z _ ↦ schauderWeight_nonneg ε z x) ⟨y, hy, ?_⟩
-  rwa [schauderWeight_pos_iff]
-
-variable [NormedSpace ℝ E]
-
-/-- Schauder projection of `x` onto the convex hull of the finite net `t` at scale `ε`.
-The value is the junk center of mass `0` when every weight vanishes. -/
-@[expose]
-def schauderProjection (t : Finset E) (ε : ℝ) (x : E) : E :=
-  t.centerMass (fun y ↦ schauderWeight ε y x) id
-
-/-- The Schauder projection is the normalized weighted average of the net. -/
-theorem schauderProjection_apply (t : Finset E) (ε : ℝ) (x : E) :
-    schauderProjection t ε x =
-      (schauderWeightSum t ε x)⁻¹ • ∑ y ∈ t, schauderWeight ε y x • y := by
-  simp [schauderProjection, schauderWeightSum, Finset.centerMass, id_eq]
-
-/-- Where some weight is positive, the projection lands in the convex hull of the net. -/
-theorem schauderProjection_mem_convexHull {t : Finset E} {ε : ℝ} {x : E}
-    (hx : 0 < schauderWeightSum t ε x) :
-    schauderProjection t ε x ∈ convexHull ℝ (t : Set E) := by
-  unfold schauderProjection
-  exact Finset.centerMass_id_mem_convexHull t
-    (fun y _ ↦ schauderWeight_nonneg ε y x) hx
-
-/-- Subtracting `x` from its Schauder projection leaves a normalized combination of
-`y - x`. -/
-theorem schauderProjection_sub {t : Finset E} {ε : ℝ} {x : E}
-    (hx : schauderWeightSum t ε x ≠ 0) :
-    schauderProjection t ε x - x =
-      (schauderWeightSum t ε x)⁻¹ • ∑ y ∈ t, schauderWeight ε y x • (y - x) := by
-  rw [schauderProjection_apply]
-  unfold schauderWeightSum at hx ⊢
-  symm
-  calc
-    (∑ y ∈ t, schauderWeight ε y x)⁻¹ • ∑ y ∈ t, schauderWeight ε y x • (y - x)
-        = (∑ y ∈ t, schauderWeight ε y x)⁻¹ •
-            ∑ y ∈ t, (schauderWeight ε y x • y - schauderWeight ε y x • x) := by
-          simp_rw [smul_sub]
-    _ = (∑ y ∈ t, schauderWeight ε y x)⁻¹ •
-          (∑ y ∈ t, schauderWeight ε y x • y - ∑ y ∈ t, schauderWeight ε y x • x) := by
-          rw [Finset.sum_sub_distrib]
-    _ = (∑ y ∈ t, schauderWeight ε y x)⁻¹ •
-          (∑ y ∈ t, schauderWeight ε y x • y -
-            (∑ y ∈ t, schauderWeight ε y x) • x) := by
-          rw [← Finset.sum_smul]
-    _ = (∑ y ∈ t, schauderWeight ε y x)⁻¹ • ∑ y ∈ t, schauderWeight ε y x • y -
-          (∑ y ∈ t, schauderWeight ε y x)⁻¹ • ((∑ y ∈ t, schauderWeight ε y x) • x) := by
-          rw [smul_sub]
-    _ = (∑ y ∈ t, schauderWeight ε y x)⁻¹ • ∑ y ∈ t, schauderWeight ε y x • y -
-          ((∑ y ∈ t, schauderWeight ε y x)⁻¹ * ∑ y ∈ t, schauderWeight ε y x) • x := by
-          rw [← mul_smul]
-    _ = (∑ y ∈ t, schauderWeight ε y x)⁻¹ • ∑ y ∈ t, schauderWeight ε y x • y - x := by
-          rw [inv_mul_cancel₀ hx, one_smul]
-
-/-- Where some weight is positive, the projection moves `x` by at most `ε`. -/
-theorem dist_schauderProjection_le {t : Finset E} {ε : ℝ} {x : E}
-    (hx : 0 < schauderWeightSum t ε x) : dist (schauderProjection t ε x) x ≤ ε := by
-  rw [dist_eq_norm, schauderProjection_sub hx.ne']
-  unfold schauderWeightSum at hx ⊢
-  set S : ℝ := ∑ y ∈ t, schauderWeight ε y x
-  have hpoint : ∀ y ∈ t, ‖schauderWeight ε y x • (y - x)‖ ≤ schauderWeight ε y x * ε := by
-    intro y _
-    calc
-      ‖schauderWeight ε y x • (y - x)‖ = schauderWeight ε y x * ‖y - x‖ :=
-        norm_smul_of_nonneg (schauderWeight_nonneg ε y x) _
-      _ ≤ schauderWeight ε y x * ε := schauderWeight_mul_norm_sub_le ε y x
-  have hsum : ‖∑ y ∈ t, schauderWeight ε y x • (y - x)‖ ≤ S * ε := by
-    refine (norm_sum_le_of_le t hpoint).trans_eq ?_
-    rw [← Finset.sum_mul]
-  rw [norm_smul_of_nonneg (inv_nonneg.2 hx.le)]
-  calc
-    S⁻¹ * ‖∑ y ∈ t, schauderWeight ε y x • (y - x)‖ ≤ S⁻¹ * (S * ε) :=
-      mul_le_mul_of_nonneg_left hsum (inv_nonneg.2 hx.le)
-    _ = ε := by rw [← mul_assoc, inv_mul_cancel₀ hx.ne', one_mul]
-
-/-- The Schauder projection is continuous at every point of positive total weight. -/
-theorem continuousAt_schauderProjection {t : Finset E} {ε : ℝ} {x : E}
-    (hx : schauderWeightSum t ε x ≠ 0) : ContinuousAt (schauderProjection t ε) x := by
-  have hvec : Continuous fun z : E ↦ ∑ y ∈ t, schauderWeight ε y z • y :=
-    continuous_finsetSum t fun y _ ↦ (continuous_schauderWeight ε y).smul continuous_const
-  have hproj : schauderProjection t ε = fun z ↦
-      (schauderWeightSum t ε z)⁻¹ • ∑ y ∈ t, schauderWeight ε y z • y := by
-    ext z
-    exact schauderProjection_apply t ε z
-  rw [hproj]
-  exact ((continuous_schauderWeightSum t ε).continuousAt.inv₀ hx).smul hvec.continuousAt
-
-end SchauderProjection
-
-/-- At every positive scale, a continuous self-map whose total image is relatively compact
-moves some point of the closed convex domain by at most that scale. -/
-theorem exists_dist_le_schauder {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-    {C : Set E} (hne : C.Nonempty) (hclosed : IsClosed C) (hc : Convex ℝ C) (T : C → C)
-    (hT : Continuous T) (himage : IsCompact (closure (Set.range fun x : C ↦ (T x : E))))
-    {ε : ℝ} (hε : 0 < ε) : ∃ x : C, dist (x : E) (T x : E) ≤ ε := by
-  set K := closure (Set.range fun x : C ↦ (T x : E)) with hK
-  have hK_sub : K ⊆ C := by
-    rw [hK]
-    refine closure_minimal ?_ hclosed
-    rintro _ ⟨x, rfl⟩
-    exact (T x).2
-  have hKne : K.Nonempty := by
-    obtain ⟨x, hx⟩ := hne
-    refine ⟨(T (⟨x, hx⟩ : C) : E), ?_⟩
-    rw [hK]
-    exact subset_closure (mem_range_self (⟨x, hx⟩ : C))
-  obtain ⟨snet, hsnet, hsfin, hcover⟩ :=
-    finite_approx_of_totallyBounded himage.totallyBounded ε hε
-  let t : Finset E := hsfin.toFinset
-  have ht_coe : (t : Set E) = snet := hsfin.coe_toFinset
-  have htK : (t : Set E) ⊆ K := by
-    rw [ht_coe]
-    exact hsnet
-  rw [← ht_coe] at hcover
-  have htne : (t : Set E).Nonempty := by
-    obtain ⟨z, hz⟩ := hKne
-    have hmem : z ∈ ⋃ y ∈ (t : Set E), ball y ε := hcover hz
-    simp only [mem_iUnion₂, mem_ball] at hmem
-    obtain ⟨y, hy, _⟩ := hmem
-    exact ⟨y, hy⟩
-  set Q : Set E := convexHull ℝ (t : Set E) with hQ
-  have hQcompact : IsCompact Q := by
-    rw [hQ]
-    exact t.finite_toSet.isCompact_convexHull ℝ
-  have hQconv : Convex ℝ Q := by
-    rw [hQ]
-    exact convex_convexHull ℝ _
-  have hQne : Q.Nonempty := by
-    rw [hQ]
-    exact htne.convexHull
-  have hfin : FiniteDimensional ℝ (Submodule.span ℝ Q) := by
-    rw [hQ]
-    exact Submodule.finiteDimensional_of_le <| by
-      rw [Submodule.span_le]
-      exact convexHull_min Submodule.subset_span (Submodule.span ℝ (t : Set E)).convex
-  have hQC : Q ⊆ C := by
-    rw [hQ]
-    exact convexHull_min (fun y hy ↦ hK_sub (htK hy)) hc
-  let S : Q → E := fun z ↦ (T (inclusion hQC z) : E)
-  have hScont : Continuous S :=
-    continuous_subtype_val.comp (hT.comp (continuous_inclusion hQC))
-  have hSpos : ∀ z, 0 < schauderWeightSum t ε (S z) := by
-    intro z
-    have hzK : S z ∈ K := by
-      rw [hK]
-      exact subset_closure (mem_range_self (inclusion hQC z))
-    have hmem : S z ∈ ⋃ y ∈ (t : Set E), ball y ε := hcover hzK
-    simp only [mem_iUnion₂, mem_ball] at hmem
-    obtain ⟨y, hy, hdist⟩ := hmem
-    refine schauderWeightSum_pos_of_mem_ball ⟨y, Finset.mem_coe.mp hy, ?_⟩
-    rw [← dist_eq_norm]
-    exact hdist
-  have hSmem : ∀ z, schauderProjection t ε (S z) ∈ Q := by
-    intro z
-    rw [hQ]
-    exact schauderProjection_mem_convexHull (hSpos z)
-  let φ : Q → Q := fun z ↦ ⟨schauderProjection t ε (S z), hSmem z⟩
-  have hφ : Continuous φ :=
-    Continuous.subtype_mk
-      (continuous_iff_continuousAt.mpr fun z ↦
-        (continuousAt_schauderProjection (hSpos z).ne').comp hScont.continuousAt)
-      hSmem
-  obtain ⟨z, hz⟩ :=
-    @TauCeti.brouwerFixedPoint_compactConvex_finiteSpan E _ _ (Submodule.span ℝ Q) hfin Q
-      Submodule.subset_span hQcompact hQconv hQne ⟨φ, hφ⟩
-  refine ⟨inclusion hQC z, ?_⟩
-  rw [← congrArg Subtype.val hz]
-  exact dist_schauderProjection_le (hSpos z)
+/-- **Simplex lemma**, a consequence of Brouwer's theorem: if `g : (ι → ℝ) → ι → ℝ` is continuous
+and `0 ≤ ∑ i, w i * g w i` for every weight vector `w` (nonnegative, summing to one), then some
+weight vector `w` has `0 ≤ g w i` for every `i`. The map adding the negative parts of `g w` to `w`
+and renormalizing has a fixed point, at which those negative parts vanish. -/
+theorem exists_forall_nonneg_of_sum_mul_nonneg {ι : Type*} [Fintype ι] [Nonempty ι]
+    {g : (ι → ℝ) → ι → ℝ} (hg : Continuous g)
+    (hsum : ∀ w : ι → ℝ, (∀ i, 0 ≤ w i) → ∑ i, w i = 1 → 0 ≤ ∑ i, w i * g w i) :
+    ∃ w : ι → ℝ, (∀ i, 0 ≤ w i) ∧ ∑ i, w i = 1 ∧ ∀ i, 0 ≤ g w i := by
+  classical
+  let slack (w : ι → ℝ) (i : ι) : ℝ := max 0 (-g w i)
+  let denom (w : ι → ℝ) : ℝ := 1 + ∑ i, slack w i
+  have hdenom (w : ι → ℝ) : 1 ≤ denom w :=
+    le_add_of_nonneg_right (Finset.sum_nonneg fun _ _ ↦ le_max_left _ _)
+  have hdenom_ne (w : ι → ℝ) : denom w ≠ 0 := by linarith [hdenom w]
+  have hslackC : Continuous slack :=
+    continuous_pi fun i ↦ continuous_const.max ((continuous_apply i).comp hg).neg
+  let T (w : ι → ℝ) (i : ι) : ℝ := (w i + slack w i) / denom w
+  have hT : Continuous T := continuous_pi fun i ↦
+    ((continuous_apply i).add ((continuous_apply i).comp hslackC)).div₀
+      (continuous_const.add (continuous_finsetSum _ fun i _ ↦ (continuous_apply i).comp hslackC))
+      hdenom_ne
+  let S : Set (ι → ℝ) := {w | ∀ i, 0 ≤ w i} ∩ {w | ∑ i, w i = 1}
+  have hSconv : Convex ℝ S := by
+    rintro x ⟨hx0, hx1⟩ y ⟨hy0, hy1⟩ a b ha hb hab
+    refine ⟨fun i ↦ add_nonneg (mul_nonneg ha (hx0 i)) (mul_nonneg hb (hy0 i)), ?_⟩
+    have hx : ∑ i, x i = 1 := hx1
+    have hy : ∑ i, y i = 1 := hy1
+    simp only [Set.mem_ofPred_eq, Pi.add_apply, Pi.smul_apply, smul_eq_mul,
+      Finset.sum_add_distrib, ← Finset.mul_sum, hx, hy, mul_one, hab]
+  have hScpt : IsCompact S := by
+    refine Metric.isCompact_of_isClosed_isBounded ?_ ((Metric.isBounded_Icc (0 : ι → ℝ) 1).subset
+      fun w hw ↦ ⟨fun i ↦ hw.1 i, fun i ↦ (Finset.single_le_sum (fun j _ ↦ hw.1 j)
+        (Finset.mem_univ i)).trans_eq hw.2⟩)
+    refine IsClosed.inter ?_ (isClosed_eq (continuous_finsetSum _ fun i _ ↦ continuous_apply i)
+      continuous_const)
+    simpa only [Set.ofPred_forall] using isClosed_iInter fun i ↦
+      isClosed_le continuous_const (continuous_apply i)
+  have hmaps (w : ι → ℝ) (hw : w ∈ S) : T w ∈ S := by
+    refine ⟨fun i ↦ div_nonneg (add_nonneg (hw.1 i) (le_max_left _ _))
+      (zero_le_one.trans (hdenom w)), ?_⟩
+    simp only [Set.mem_ofPred_eq]
+    rw [← Finset.sum_div, Finset.sum_add_distrib, hw.2, div_self (hdenom_ne w)]
+  have hS0 : Pi.single (Classical.arbitrary ι) 1 ∈ S :=
+    ⟨fun i ↦ by by_cases h : i = Classical.arbitrary ι <;> simp [h], by simp⟩
+  obtain ⟨⟨w, hw⟩, hfix⟩ := TauCeti.brouwerFixedPoint_compactConvex hScpt hSconv ⟨_, hS0⟩
+    ⟨fun w ↦ ⟨T w, hmaps w w.2⟩, (hT.comp continuous_subtype_val).subtype_mk _⟩
+  have hTw : T w = w := congrArg Subtype.val hfix
+  have hslack (i : ι) : slack w i = (denom w - 1) * w i := by
+    have hi := congrFun hTw i
+    rw [div_eq_iff (hdenom_ne w)] at hi
+    linarith
+  -- `slack * g = -slack ^ 2` termwise, while the weighted sum of `g` is nonnegative.
+  have hprod (i : ι) : slack w i * g w i = -slack w i ^ 2 := by
+    rcases le_total 0 (g w i) with hgi | hgi
+    · simp [slack, max_eq_left (neg_nonpos.mpr hgi)]
+    · rw [show slack w i = -g w i from max_eq_right (neg_nonneg.mpr hgi)]
+      ring
+  have hsq : ∑ i, slack w i ^ 2 ≤ 0 := by
+    have h1 : ∑ i, slack w i * g w i = (denom w - 1) * ∑ i, w i * g w i := by
+      rw [Finset.mul_sum]
+      exact Finset.sum_congr rfl fun i _ ↦ by rw [hslack i]; ring
+    have h2 : 0 ≤ (denom w - 1) * ∑ i, w i * g w i :=
+      mul_nonneg (sub_nonneg.mpr (hdenom w)) (hsum w hw.1 hw.2)
+    simp only [hprod, Finset.sum_neg_distrib] at h1
+    linarith
+  refine ⟨w, hw.1, hw.2, fun i ↦ ?_⟩
+  have hi : slack w i ^ 2 = 0 := le_antisymm
+    ((Finset.single_le_sum (fun j _ ↦ sq_nonneg (slack w j)) (Finset.mem_univ i)).trans hsq)
+    (sq_nonneg _)
+  have hi' : max 0 (-g w i) = 0 := pow_eq_zero_iff two_ne_zero |>.mp hi
+  linarith [le_max_right 0 (-g w i)]
 
 /-- **35.13**: Schauder's theorem with relatively compact total image on a closed convex set.
 Boundedness of the domain is not required when the total image is relatively compact.
@@ -299,7 +154,6 @@ theorem exists_fixedPoint_schauder {E : Type*} [NormedAddCommGroup E] [NormedSpa
     TauCeti.schauderFixedPoint_closedConvex hclosed hc hne ⟨T, hT⟩ himage
   exact ⟨x, hx⟩
 
-set_option warn.sorry false in
 /-- **35.15**: Kakutani–Fan–Glicksberg for compact convex subsets of locally convex spaces.
 The multifunction is defined on the ambient space but only its restriction to `C` is constrained. -/
 theorem exists_fixedPoint_kakutani {E : Type*} [AddCommGroup E] [Module ℝ E]

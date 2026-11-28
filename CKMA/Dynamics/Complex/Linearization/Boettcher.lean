@@ -267,9 +267,6 @@ theorem exists_boettcherCoordinate_of_analyticAt {f g : ℂ → ℂ} {k : ℕ} (
   filter_upwards [isOpen_ball.mem_nhds (mem_ball_self hr)] with z hz
   exact mul_mul_exp_eq_pow (by omega) hg₀ hc (hlogB z hz).1 (hFeq z hz) (hstepS z hz)
 
-@[deprecated (since := "2026-11-15")]
-alias exists_boettcher_data := exists_boettcherCoordinate_of_analyticAt
-
 /-- If `φ = z u` and `ψ = z v` near `0` both conjugate `f` to `z ↦ z ^ k`, then the ratio
 `v / u` satisfies `(v / u) ∘ f = (v / u) ^ k` near `0`. -/
 private theorem div_comp_eventuallyEq_pow {f φ ψ u v : ℂ → ℂ} {k : ℕ} (hk : k ≠ 0)

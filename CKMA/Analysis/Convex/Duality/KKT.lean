@@ -12,7 +12,6 @@ import CKMA.Analysis.Convex.Duality.Sum
 import Mathlib.Analysis.Convex.Continuous
 import Mathlib.Analysis.LocallyConvex.Separation
 import Mathlib.Topology.Algebra.Module.FiniteDimension
-import Mathlib.Tactic
 
 /-!
 # Slater's condition and subgradient KKT multipliers
@@ -24,12 +23,18 @@ the positive objective weight, and reads stationarity from the sum rule: the ind
 the affine fiber is the unqualified summand, and the Lagrangian carries the continuity.
 Sources: Boyd–Vandenberghe, *Convex Optimization*, §§5.5 and 5.9; GAPS 12.40.
 
+## Main definitions
+
+* `CKMA.convexFeasibleSet`: feasible set for convex inequalities and affine equalities.
+* `CKMA.HasConvexKKTMultipliers`: subgradient KKT multiplier conditions.
+
 ## Main results
 
-* `CKMA.exists_convexKKTMultipliers_of_slater`: existence of subgradient KKT multipliers under
-  Slater's strict feasibility condition (GAPS 12.40).
-* `CKMA.ConvexOn.finset_sum_mul`: a nonnegative linear combination of convex functions is
-  convex.
+* `CKMA.exists_convexKKTMultipliers`: existence of subgradient KKT multipliers under Slater's
+  strict feasibility condition (**12.40**).
+* `CKMA.HasConvexKKTMultipliers.isMinOn`: sufficiency of the KKT conditions, in any normed
+  space.
+* `convexOn_finset_sum_mul`: a nonnegative linear combination of convex functions is convex.
 -/
 
 public section
@@ -105,7 +110,7 @@ private lemma subdifferential_add_coe [FiniteDimensional ℝ E] {f g : E → ℝ
     rw [EReal.coe_add]
   rw [hfun]
   exact subdifferential_add_eq (proper_coe f) (proper_coe g)
-    (ConvexOn.convex_epigraph_coe hf) (ConvexOn.convex_epigraph_coe hg)
+    (convex_epigraph_coe_of_convexOn hf) (convex_epigraph_coe_of_convexOn hg)
     ⟨EReal.coe_ne_top _, EReal.coe_ne_top _⟩ (continuousAt_coe hg x) x
 
 /-- Positive scaling preserves convex subdifferentials, and the zero multiple is `{0}`. -/
@@ -159,7 +164,7 @@ private lemma subdifferential_const_mul [FiniteDimensional ℝ E] {c : ℝ} (hc 
       linarith
 
 /-- A nonnegative linear combination, over a finset, of functions convex on `t` is convex on `t`. -/
-theorem ConvexOn.finset_sum_mul {ι : Type*} {t : Set E} (ht : Convex ℝ t) (s : Finset ι)
+theorem convexOn_finset_sum_mul {ι : Type*} {t : Set E} (ht : Convex ℝ t) (s : Finset ι)
     (c : ι → ℝ) (hc : ∀ i ∈ s, 0 ≤ c i) (g : ι → E → ℝ) (hg : ∀ i ∈ s, ConvexOn ℝ t (g i)) :
     ConvexOn ℝ t (fun z => ∑ i ∈ s, c i * g i z) := by
   classical
@@ -189,7 +194,7 @@ theorem ConvexOn.finset_sum_mul {ι : Type*} {t : Set E} (ht : Convex ℝ t) (s 
 private lemma convexOn_weighted_sum {ι : Type*} [Fintype ι] (c : ι → ℝ) (hc : ∀ i, 0 ≤ c i)
     (g : ι → E → ℝ) (hg : ∀ i, ConvexOn ℝ Set.univ (g i)) :
     ConvexOn ℝ Set.univ (fun z => ∑ i, c i * g i z) :=
-  ConvexOn.finset_sum_mul convex_univ Finset.univ c (fun i _ => hc i) g (fun i _ => hg i)
+  convexOn_finset_sum_mul convex_univ Finset.univ c (fun i _ => hc i) g (fun i _ => hg i)
 
 /-- A subgradient of a weighted sum over a finset splits into scaled subgradients. -/
 private lemma exists_subdifferential_weighted_sum_finset [FiniteDimensional ℝ E] {ι : Type*}
@@ -226,7 +231,7 @@ private lemma exists_subdifferential_weighted_sum_finset [FiniteDimensional ℝ 
       fun i hi => hg i (Finset.mem_insert_of_mem hi)
     have hf1 : ConvexOn ℝ Set.univ f1 := by
       simpa [f1, smul_eq_mul] using hga.smul hca
-    have hf2 : ConvexOn ℝ Set.univ f2 := ConvexOn.finset_sum_mul convex_univ s c hcs g hgs
+    have hf2 : ConvexOn ℝ Set.univ f2 := convexOn_finset_sum_mul convex_univ s c hcs g hgs
     rw [subdifferential_add_coe hf1 hf2 x] at hw
     obtain ⟨w1, hw1, w2, hw2, hwadd⟩ := Set.mem_add.mp hw
     rw [subdifferential_const_mul hca hga x] at hw1
@@ -627,7 +632,7 @@ private lemma exists_kkt_from_lagrange [FiniteDimensional ℝ E] {m : ℕ}
     rw [hset]
     exact convex_epigraph_indicator (convex_eq_fiber A b)
   have hconv_ell : Convex ℝ {p : E × ℝ | ell p.1 ≤ p.2} := by
-    simpa [ell] using ConvexOn.convex_epigraph_coe hlag_conv
+    simpa [ell] using convex_epigraph_coe_of_convexOn hlag_conv
   have hfin : delta x₀ ≠ ⊤ ∧ ell x₀ ≠ ⊤ := by
     constructor
     · simp [delta, hx₀C]
@@ -696,26 +701,78 @@ private lemma exists_kkt_from_lagrange [FiniteDimensional ℝ E] {m : ℕ}
   rw [← hlag_eq, hy, add_comm]
   exact hsum0
 
-/-- **12.40**: strict feasibility gives subgradient KKT multipliers at a minimizer. -/
-theorem exists_convexKKTMultipliers_of_slater [FiniteDimensional ℝ E] {m : ℕ}
-    {ι : Type*} [Fintype ι] (f : E → ℝ)
-    (g : ι → E → ℝ) (A : E →L[ℝ] (Fin m → ℝ)) (b : Fin m → ℝ)
+/-- Feasibility for finitely many convex inequalities and affine equalities. -/
+@[expose]
+def convexFeasibleSet {m : ℕ} {ι : Type*} (g : ι → E → ℝ)
+    (A : E →L[ℝ] (Fin m → ℝ)) (b : Fin m → ℝ) : Set E :=
+  {x | (∀ i, g i x ≤ 0) ∧ A x = b}
+
+/-- Membership in `convexFeasibleSet`. -/
+theorem mem_convexFeasibleSet {m : ℕ} {ι : Type*} {g : ι → E → ℝ}
+    {A : E →L[ℝ] (Fin m → ℝ)} {b : Fin m → ℝ} {x : E} :
+    x ∈ convexFeasibleSet g A b ↔ (∀ i, g i x ≤ 0) ∧ A x = b := Iff.rfl
+
+/-- Subgradient KKT data for the continuous-dual subdifferential: nonnegative multipliers,
+stationarity and complementary slackness. Feasibility is kept separate. -/
+@[expose]
+def HasConvexKKTMultipliers {m : ℕ} {ι : Type*} [Fintype ι] (f : E → ℝ) (g : ι → E → ℝ)
+    (A : E →L[ℝ] (Fin m → ℝ)) (x : E) : Prop :=
+  ∃ (c : ι → ℝ) (u : StrongDual ℝ E)
+    (v : ι → StrongDual ℝ E) (y : StrongDual ℝ (Fin m → ℝ)),
+    (∀ i, 0 ≤ c i) ∧
+    u ∈ TauCeti.subdifferential (topDualPairing ℝ E).flip (fun z ↦ (f z : EReal)) x ∧
+    (∀ i, v i ∈ TauCeti.subdifferential (topDualPairing ℝ E).flip (fun z ↦ (g i z : EReal)) x) ∧
+    u + (∑ i, c i • v i) + y.comp A = 0 ∧ ∀ i, c i * g i x = 0
+
+/-- Defining property of `HasConvexKKTMultipliers`. -/
+theorem hasConvexKKTMultipliers_iff {m : ℕ} {ι : Type*} [Fintype ι] {f : E → ℝ}
+    {g : ι → E → ℝ} {A : E →L[ℝ] (Fin m → ℝ)} {x : E} :
+    HasConvexKKTMultipliers f g A x ↔ ∃ (c : ι → ℝ) (u : StrongDual ℝ E)
+      (v : ι → StrongDual ℝ E) (y : StrongDual ℝ (Fin m → ℝ)),
+      (∀ i, 0 ≤ c i) ∧
+      u ∈ TauCeti.subdifferential (topDualPairing ℝ E).flip (fun z ↦ (f z : EReal)) x ∧
+      (∀ i, v i ∈ TauCeti.subdifferential (topDualPairing ℝ E).flip (fun z ↦ (g i z : EReal)) x) ∧
+      u + (∑ i, c i • v i) + y.comp A = 0 ∧ ∀ i, c i * g i x = 0 := Iff.rfl
+
+/-- **12.40**: strict feasibility gives subgradient KKT multipliers at every finite-dimensional
+minimizer. The objective and inequality constraints are finite convex functions. -/
+theorem exists_convexKKTMultipliers [FiniteDimensional ℝ E] {m : ℕ} {ι : Type*} [Fintype ι]
+    (f : E → ℝ) (g : ι → E → ℝ) (A : E →L[ℝ] (Fin m → ℝ)) (b : Fin m → ℝ)
     (hf : ConvexOn ℝ Set.univ f) (hg : ∀ i, ConvexOn ℝ Set.univ (g i))
     (hslater : ∃ x₀, A x₀ = b ∧ ∀ i, g i x₀ < 0) {x : E}
-    (hx : (∀ i, g i x ≤ 0) ∧ A x = b)
-    (hmin : ∀ z, (∀ i, g i z ≤ 0) → A z = b → f x ≤ f z) :
-    ∃ (c : ι → ℝ) (u : StrongDual ℝ E) (v : ι → StrongDual ℝ E)
-      (y : StrongDual ℝ (Fin m → ℝ)),
-      (∀ i, 0 ≤ c i) ∧
-      u ∈ TauCeti.subdifferential (topDualPairing ℝ E).flip
-        (fun z => (f z : EReal)) x ∧
-      (∀ i, v i ∈ TauCeti.subdifferential (topDualPairing ℝ E).flip
-        (fun z => (g i z : EReal)) x) ∧
-      u + ∑ i, c i • v i + y.comp A = 0 ∧
-      ∀ i, c i * g i x = 0 := by
-  obtain ⟨c, hc, hcomp, hminL⟩ := exists_kkt_weights f g A b hf hg hslater hx hmin
+    (hx : x ∈ convexFeasibleSet g A b)
+    (hmin : ∀ z ∈ convexFeasibleSet g A b, f x ≤ f z) :
+    HasConvexKKTMultipliers f g A x := by
+  obtain ⟨c, hc, hcomp, hminL⟩ := exists_kkt_weights f g A b hf hg hslater hx
+    fun z hgz hAz ↦ hmin z ⟨hgz, hAz⟩
   obtain ⟨u, v, y, hu, hv, hstat⟩ :=
     exists_kkt_from_lagrange f g A b hf hg hslater hx.2 c hc hminL
   exact ⟨c, u, v, y, hc, hu, hv, hstat, hcomp⟩
+
+/-- KKT conditions are sufficient even without Slater's condition, in any normed space. -/
+theorem HasConvexKKTMultipliers.isMinOn {m : ℕ} {ι : Type*} [Fintype ι]
+    {f : E → ℝ} {g : ι → E → ℝ} {A : E →L[ℝ] (Fin m → ℝ)} {b : Fin m → ℝ}
+    {x : E} (hKKT : HasConvexKKTMultipliers f g A x) (hx : x ∈ convexFeasibleSet g A b) :
+    ∀ z ∈ convexFeasibleSet g A b, f x ≤ f z := by
+  obtain ⟨c, u, v, y, hc, hu, hv, hstat, hcomp⟩ := hKKT
+  intro z hz
+  have hobj := (TauCeti.mem_subdifferential_coe_iff (topDualPairing ℝ E).flip f).mp hu z
+  have hver : ∀ i, c i * v i (z - x) ≤ 0 := by
+    intro i
+    have hsub := (TauCeti.mem_subdifferential_coe_iff (topDualPairing ℝ E).flip (g i)).mp (hv i) z
+    have hscaled := mul_le_mul_of_nonneg_left hsub (hc i)
+    have hfeas := mul_nonpos_of_nonneg_of_nonpos (hc i) (hz.1 i)
+    have hcompl := hcomp i
+    simp only [LinearMap.flip_apply, topDualPairing_apply] at hscaled
+    nlinarith
+  have hsum : (∑ i, c i * v i (z - x)) ≤ 0 :=
+    Finset.sum_nonpos (fun i _ ↦ hver i)
+  have heq : u (z - x) + (∑ i, c i * v i (z - x)) = 0 := by
+    have heval := congrArg (fun ℓ : StrongDual ℝ E ↦ ℓ (z - x)) hstat
+    simp [map_sub, hx.2, hz.2] at heval
+    simp only [map_sub, mul_sub, Finset.sum_sub_distrib]
+    linarith
+  simp only [LinearMap.flip_apply, topDualPairing_apply] at hobj
+  linarith
 
 end CKMA

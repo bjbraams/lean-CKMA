@@ -16,23 +16,25 @@ Translates of the strip union cover a definite fraction of the inner square. The
 higher-dimensional set is the product of that plane set with a thin rectangle, and the
 integrable function is the sum of the corresponding rectangular spikes.
 
+All declarations are in the namespace `CKMA.SaksCounterexample`.
+
 ## Main definitions
 
-* `CKMA.Bohr.shiftHit`: the translate of the strip union `badPlane k` by a vector `v`.
-* `CKMA.Bohr.planeCover`: the part of the inner square covered by the chosen translates.
-* `CKMA.Bohr.stageSet`, `CKMA.Bohr.tailSet`, `CKMA.Bohr.limsupSet`: the stage-`k` sets in the
+* `shiftHit`: the translate of the strip union `badPlane k` by a vector `v`.
+* `planeCover`: the part of the inner square covered by the chosen translates.
+* `stageSet`, `tailSet`, `limsupSet`: the stage-`k` sets in the
   unit cube of `ℝ^d`, their tails, and their limsup.
-* `CKMA.Bohr.spikeRect`, `CKMA.Bohr.spike`: the corner spike rectangle of one translated
+* `spikeRect`, `spike`: the corner spike rectangle of one translated
   picture and the indicator spike of height `spikeHeight k` on it.
-* `CKMA.Bohr.spikeSum`, `CKMA.Bohr.saks`: the extended sum of all spikes and its real part.
+* `spikeSum`, `saks`: the extended sum of all spikes and its real part.
 
 ## Main results
 
-* `CKMA.Bohr.exists_almost_cover`, `volume_planeCover_gt`: finitely many translates
-  cover the inner square up to the factor `exp (-1)`, so the covered part has area `> 1 / 8`.
-* `volume_stageSet_gt`, `CKMA.Bohr.volume_limsupSet_ge`: each stage set has measure
-  greater than `3 / 32`, and the limsup set has measure at least `3 / 32`.
-* `CKMA.Bohr.measurable_saks`, `CKMA.Bohr.lintegral_spikeENN`: measurability of the Saks
+* `exists_almost_cover`: finitely many translates cover the inner square up to the
+  factor `exp (-1)`; hence the covered part `planeCover k` has area greater than `1 / 8`.
+* `volume_limsupSet_ge`: each stage set has measure greater than `3 / 32`, so the
+  limsup set has measure at least `3 / 32`.
+* `measurable_saks`, `lintegral_spikeENN`: measurability of the Saks
   function and the integral of one spike.
 -/
 
@@ -43,7 +45,7 @@ noncomputable section
 open MeasureTheory Set Filter Finset
 open scoped ENNReal NNReal BigOperators
 
-namespace CKMA.Bohr
+namespace CKMA.SaksCounterexample
 
 /-- The translate of the strip union `badPlane k` by `v`. -/
 @[expose]
@@ -257,7 +259,7 @@ def planeEquiv (d : ℕ) (hd : 2 ≤ d) : Fin 2 ≃ {i : Fin d // i.val ≤ 1} w
   left_inv i := by ext; rfl
   right_inv z := by ext; rfl
 
-/-- The axes beyond the Bohr plane, shifted down by two. -/
+/-- The axes beyond the Saks plane, shifted down by two. -/
 @[expose]
 def extraEquiv (d : ℕ) (hd : 2 ≤ d) : Fin (d - 2) ≃ {i : Fin d // ¬ i.val ≤ 1} where
   toFun j := ⟨⟨j.val + 2, by
@@ -276,7 +278,7 @@ def extraEquiv (d : ℕ) (hd : 2 ≤ d) : Fin (d - 2) ≃ {i : Fin d // ¬ i.val
     ext
     exact Nat.sub_add_cancel hge
 
-/-- Coordinates split into the Bohr plane and the remaining axes. -/
+/-- Coordinates split into the Saks plane and the remaining axes. -/
 @[expose]
 def splitEquiv (d : ℕ) (hd : 2 ≤ d) :
     (Fin d → ℝ) ≃ᵐ (Fin 2 → ℝ) × (Fin (d - 2) → ℝ) :=
@@ -502,7 +504,7 @@ lemma volume_limsupSet_ge (d : ℕ) (hd : 2 ≤ d) :
   rw [limsupSet, hanti.measure_iInter hsm hfin]
   exact le_iInf fun n => (volume_tailSet_gt d n hd).le
 
-/-- First component of the coordinate split, on the Bohr plane. -/
+/-- First component of the coordinate split, on the Saks plane. -/
 lemma splitEquiv_fst (d : ℕ) (hd : 2 ≤ d) (x : Fin d → ℝ) (i : Fin 2) :
     (splitEquiv d hd x).1 i = x (planeEquiv d hd i).1 := by
   unfold splitEquiv
@@ -679,7 +681,7 @@ lemma measurable_spike (d : ℕ) (hd : 2 ≤ d) (k : ℕ) (v : Fin 2 → ℝ) :
 /-- The spike sum is measurable. -/
 lemma measurable_spikeSum (d : ℕ) (hd : 2 ≤ d) : Measurable (spikeSum d hd) := by
   unfold spikeSum spikeENN
-  simp_rw [ENNReal.tsum_eq_iSup_sum]
+  simp_rw [tsum_eq_iSup_sum]
   refine Measurable.iSup fun s => Finset.measurable_fun_sum s fun p _ => ?_
   exact (measurable_spike d hd p.1 (chosenShifts p.1 p.2)).ennreal_ofReal
 
@@ -705,17 +707,4 @@ lemma lintegral_spikeENN (d : ℕ) (hd : 2 ≤ d) (k : ℕ) (v : Fin 2 → ℝ) 
       ← measureReal_def, volume_real_spike d hd k v]
   rw [hvol, ← ENNReal.ofReal_mul hnn]
 
-@[deprecated (since := "2026-11-15")]
-alias bump := spike
-@[deprecated (since := "2026-11-15")]
-alias bumpENN := spikeENN
-@[deprecated (since := "2026-11-15")]
-alias raw := spikeSum
-@[deprecated (since := "2026-11-15")]
-alias measurable_bump := measurable_spike
-@[deprecated (since := "2026-11-15")]
-alias measurable_raw := measurable_spikeSum
-@[deprecated (since := "2026-11-15")]
-alias lintegral_bump := lintegral_spikeENN
-
-end CKMA.Bohr
+end CKMA.SaksCounterexample

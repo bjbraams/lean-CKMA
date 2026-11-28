@@ -36,6 +36,12 @@ file. Kaplansky density is in `CKMA.Analysis.CStarAlgebra.OperatorClosures.Kapla
 ## Main results
 
 * `CKMA.mem_boundedOperatorCommutant_iff`: characterization of membership in the commutant.
+* `CKMA.isStrongOperatorApproximable_iff`, `CKMA.isWeakOperatorApproximable_iff`: defining
+  lemmas.
+* `CKMA.IsStrongOperatorApproximable.isWeakOperatorApproximable`: strong approximation implies
+  weak approximation.
+* `CKMA.IsWeakOperatorApproximable.mem_centralizer_centralizer`: a weakly approximable operator
+  lies in the bicommutant.
 * `CKMA.IsWeakOperatorApproximable.of_mem_closure`: WOT closure implies finite-coefficient
   weak-operator approximability.
 * `CKMA.bicommutant_closures`: von Neumann bicommutant theorem (**23.21**).
@@ -53,7 +59,6 @@ open scoped InnerProductSpace
 variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
 
 /-- The bounded-operator commutant of a subset. -/
-@[expose]
 abbrev boundedOperatorCommutant (S : Set (H →L[ℂ] H)) : Set (H →L[ℂ] H) :=
   Set.centralizer S
 
@@ -63,6 +68,12 @@ theorem mem_boundedOperatorCommutant_iff {S : Set (H →L[ℂ] H)} {T : H →L[�
     T ∈ boundedOperatorCommutant S ↔ ∀ A ∈ S, Commute T A := by
   simp only [boundedOperatorCommutant, Set.mem_centralizer_iff]
   exact forall_congr' fun A ↦ forall_congr' fun _ ↦ eq_comm
+
+omit [CompleteSpace H] in
+/-- The commutant of `S` is its centralizer. -/
+theorem boundedOperatorCommutant_eq (S : Set (H →L[ℂ] H)) :
+    boundedOperatorCommutant S = Set.centralizer S :=
+  rfl
 
 /-- Strong-operator approximation on every finite family of vectors. -/
 @[expose]
@@ -76,15 +87,19 @@ def IsWeakOperatorApproximable (S : Set (H →L[ℂ] H)) (T : H →L[ℂ] H) : P
   ∀ n : ℕ, ∀ x y : Fin n → H, ∀ ε : ℝ, 0 < ε →
     ∃ A ∈ S, ∀ i, ‖⟪y i, (A - T) (x i)⟫_ℂ‖ < ε
 
-/-- Mathlib's weak-operator convergence is convergence of all Hilbert matrix coefficients. -/
-@[deprecated "use `ContinuousLinearMapWOT.tendsto_iff_forall_inner_apply_tendsto`"
-  (since := "2026-11-15")]
-theorem tendsto_weakOperator_iff {α : Type*} (u : α → H →L[ℂ] H)
-    (l : Filter α) (T : H →L[ℂ] H) :
-    Tendsto (fun a ↦ ContinuousLinearMapWOT.ofCLM (u a)) l
-      (𝓝 (ContinuousLinearMapWOT.ofCLM T)) ↔
-      ∀ x y, Tendsto (fun a ↦ inner ℂ y (u a x)) l (𝓝 (inner ℂ y (T x))) :=
-  ContinuousLinearMapWOT.tendsto_iff_forall_inner_apply_tendsto
+omit [CompleteSpace H] in
+/-- Defining property of `IsStrongOperatorApproximable`. -/
+theorem isStrongOperatorApproximable_iff {S : Set (H →L[ℂ] H)} {T : H →L[ℂ] H} :
+    IsStrongOperatorApproximable S T ↔ ∀ n : ℕ, ∀ x : Fin n → H, ∀ ε : ℝ, 0 < ε →
+      ∃ A ∈ S, ∀ i, ‖(A - T) (x i)‖ < ε :=
+  Iff.rfl
+
+omit [CompleteSpace H] in
+/-- Defining property of `IsWeakOperatorApproximable`. -/
+theorem isWeakOperatorApproximable_iff {S : Set (H →L[ℂ] H)} {T : H →L[ℂ] H} :
+    IsWeakOperatorApproximable S T ↔ ∀ n : ℕ, ∀ x y : Fin n → H, ∀ ε : ℝ, 0 < ε →
+      ∃ A ∈ S, ∀ i, ‖⟪y i, (A - T) (x i)⟫_ℂ‖ < ε :=
+  Iff.rfl
 
 /-- Membership in the standard weak-operator closure gives the finite-coefficient approximation
 criterion used in the bicommutant and density statements. -/
@@ -117,7 +132,7 @@ section
 omit [CompleteSpace H]
 
 /-- Strong-operator approximation yields weak-operator approximation by Cauchy–Schwarz. -/
-private theorem isWeakOperatorApproximable_of_isStrongOperatorApproximable
+theorem IsStrongOperatorApproximable.isWeakOperatorApproximable
     {S : Set (H →L[ℂ] H)} {T : H →L[ℂ] H} (h : IsStrongOperatorApproximable S T) :
     IsWeakOperatorApproximable S T := by
   intro n x y ε hε
@@ -142,7 +157,7 @@ private theorem isWeakOperatorApproximable_of_isStrongOperatorApproximable
 end
 
 /-- An operator weakly approximated by `S` lies in the bicommutant of `S`. -/
-private theorem mem_centralizer_centralizer_of_isWeakOperatorApproximable
+theorem IsWeakOperatorApproximable.mem_centralizer_centralizer
     {S : Set (H →L[ℂ] H)} {T : H →L[ℂ] H} (hW : IsWeakOperatorApproximable S T) :
     T ∈ boundedOperatorCommutant (boundedOperatorCommutant S) := by
   rw [mem_boundedOperatorCommutant_iff]
@@ -196,8 +211,10 @@ private theorem isStrongOperatorApproximable_of_mem_centralizer_centralizer
   refine ⟨s, hs, fun i => ?_⟩
   simpa [sub_apply, norm_sub_rev] using hsx i
 
-/-- **23.21**, the bicommutant theorem, in explicit neighborhood criteria for both operator
-closures; these are the actual finite-vector definitions of the SOT and WOT closures. -/
+/-- **23.21**, the bicommutant theorem: for a unital star subalgebra `A`, an operator lies in
+the bicommutant of `A` if and only if it is strongly approximable by `A`, and if and only if it
+is weakly approximable by `A`, in the finite-vector neighborhood criteria for the SOT and WOT
+closures. -/
 theorem bicommutant_closures (A : StarSubalgebra ℂ (H →L[ℂ] H)) (T : H →L[ℂ] H) :
     (T ∈ boundedOperatorCommutant (boundedOperatorCommutant (A : Set (H →L[ℂ] H))) ↔
       IsStrongOperatorApproximable (A : Set (H →L[ℂ] H)) T) ∧
@@ -208,14 +225,13 @@ theorem bicommutant_closures (A : StarSubalgebra ℂ (H →L[ℂ] H)) (T : H →
     constructor
     · exact isStrongOperatorApproximable_of_mem_centralizer_centralizer A
     · intro hS
-      exact mem_centralizer_centralizer_of_isWeakOperatorApproximable
-        (isWeakOperatorApproximable_of_isStrongOperatorApproximable hS)
+      exact hS.isWeakOperatorApproximable.mem_centralizer_centralizer
   have hweak : T ∈ boundedOperatorCommutant (boundedOperatorCommutant (A : Set _)) ↔
       IsWeakOperatorApproximable (A : Set _) T := by
     constructor
     · intro hT
-      exact isWeakOperatorApproximable_of_isStrongOperatorApproximable (hstrong.mp hT)
-    · exact mem_centralizer_centralizer_of_isWeakOperatorApproximable
+      exact (hstrong.mp hT).isWeakOperatorApproximable
+    · exact IsWeakOperatorApproximable.mem_centralizer_centralizer
   exact ⟨hstrong, hweak⟩
 
 end CKMA

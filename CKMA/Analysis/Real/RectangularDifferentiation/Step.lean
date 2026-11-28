@@ -19,10 +19,16 @@ logarithmic kernel turns that distribution into the endpoint growth of order `n 
 
 ## Main results
 
-* `strongMaximal_step`: inductive step raising the dimension and logarithmic exponent in the
-  Jessen–Marcinkiewicz–Zygmund inequality.
-* `CKMA.strongMaximal_orlicz`: the global Orlicz weak-type bound for `strongMaximalFunction` in all
-  dimensions `d ≥ 1`.
+* `CKMA.strongMaximal_endpoint`: the Jessen–Marcinkiewicz–Zygmund endpoint weak-type bound
+  `|{M f > a}| ≤ C ∫ Φ_d(|f| / a)` with `Φ_d(u) = u (1 + log⁺ u)^(d-1)`, in every dimension `d`
+  (in dimension `0` with `C = 1`, in dimension `1` with `C = 5`).
+
+## Implementation notes
+
+The proof is by induction on the dimension. The inductive step, from dimension `n` to `n + 1`
+with constant `10 C (2 (1 + log 4)^n)`, combines the truncated slice bound
+`CKMA.strongMaximal_volume_le_truncIntegral` with a layer-cake computation and the kernel
+inequality `CKMA.strongMaximalGrowth_scaled_kernel`.
 -/
 
 public section
@@ -31,7 +37,7 @@ noncomputable section
 
 namespace CKMA
 
-open MeasureTheory Set
+open MeasureTheory Set StrongMaximal
 open scoped ENNReal intervalIntegral
 
 /-- A nonnegative extended number bounded by every positive real is zero. -/
@@ -75,25 +81,16 @@ private theorem strongMaximalGrowth_height_le {n k : ℕ} (hk : 1 ≤ k) {a v : 
     _ = (a / (k : ℝ)) * (1 + |Real.log a|) ^ (n - 1) *
           strongMaximalGrowth (n + 1) (v / a) := by ring
 
-/-- The ratio `2v / t` stays positive and continuous on a compact interval bounded away from zero,
-so the endpoint growth in that ratio is continuous. -/
-private theorem continuousOn_strongMaximalGrowth_ratio {n : ℕ} {v c d : ℝ} (hc : 0 < c)
-    (hv : 0 < v) :
+/-- The ratio `2v / t` is continuous on a compact interval bounded away from zero, so the endpoint
+growth in that ratio is continuous. -/
+private theorem continuousOn_strongMaximalGrowth_ratio {n : ℕ} {v c d : ℝ} (hc : 0 < c) :
     ContinuousOn (fun t ↦ strongMaximalGrowth n (2 * v / t)) (Icc c d) := by
   have hratio : ContinuousOn (fun t : ℝ ↦ 2 * v / t) (Icc c d) :=
     (continuous_const.continuousOn).div continuous_id.continuousOn fun t ht ↦
       (lt_of_lt_of_le hc ht.1).ne'
-  have hlog : ContinuousOn (fun t ↦ Real.log (2 * v / t)) (Icc c d) :=
-    Real.continuousOn_log.comp hratio fun t ht ↦
-      (div_pos (mul_pos (by norm_num : (0 : ℝ) < 2) hv) (lt_of_lt_of_le hc ht.1)).ne'
-  have hmaxSup : ContinuousOn (fun t ↦ (0 : ℝ) ⊔ Real.log (2 * v / t)) (Icc c d) :=
-    continuousOn_const.sup hlog
-  have hmax : ContinuousOn (fun t ↦ max 0 (Real.log (2 * v / t))) (Icc c d) :=
-    hmaxSup.congr fun t _ ↦ by
-      rw [max_def]
-      exact (congr_fun₂ sup_eq_maxDefault (0 : ℝ) (Real.log (2 * v / t))).symm
-  unfold strongMaximalGrowth
-  exact hratio.mul ((continuousOn_const.add hmax).pow _)
+  rw [funext fun t ↦ strongMaximalGrowth_def n (2 * v / t)]
+  exact hratio.mul ((continuousOn_const.add
+    (Real.continuous_posLog.comp_continuousOn hratio)).pow _)
 
 /-- The partial maximal function, replaced by zero at infinity and on the half-height set. -/
 private def truncatedPartialReal {n : ℕ} (f : (Fin (n + 1) → ℝ) → ℝ) (a : ℝ)
@@ -116,92 +113,40 @@ private theorem measurable_truncatedPartialReal {n : ℕ} (hn : 0 < n)
 /-- A finite Orlicz integral of order `n + 1` forces the partial maximal function to be finite
 almost everywhere. -/
 private theorem partialStrongMax_top_null {n : ℕ} (hn : 1 ≤ n) {C : ℝ} (hC : 0 < C)
-    (hIH : ∀ (g : (Fin n → ℝ) → ℝ), Measurable g → ∀ b : ℝ, 0 < b →
-      volume {z | ENNReal.ofReal b < strongMaximalFunction g z} ≤
-        ENNReal.ofReal C *
-          ∫⁻ z, ENNReal.ofReal (strongMaximalGrowth n (|g z| / b)))
+    (hIH : HasStrongMaximalOrliczBound n C)
     {f : (Fin (n + 1) → ℝ) → ℝ} (hf : Measurable f) {a : ℝ} (ha : 0 < a)
     (hI : ∫⁻ x, ENNReal.ofReal (strongMaximalGrowth (n + 1) (|f x| / a)) ≠ ∞) :
     volume {p : ℝ × (Fin n → ℝ) | partialStrongMax f p.1 p.2 = ∞} = 0 := by
-  let N : Set (ℝ × (Fin n → ℝ)) := {p | partialStrongMax f p.1 p.2 = ∞}
-  have hn0 : 0 < n := by omega
-  have hT : Measurable fun p : ℝ × (Fin n → ℝ) ↦ partialStrongMax f p.1 p.2 :=
-    measurable_partialStrongMax hn0 hf
-  have hN : MeasurableSet N := hT (measurableSet_singleton ∞)
   set I : ℝ≥0∞ := ∫⁻ x, ENNReal.ofReal (strongMaximalGrowth (n + 1) (|f x| / a))
-  let M : ℝ := C * a * (1 + |Real.log a|) ^ (n - 1)
-  have hM : 0 < M := by
-    have hpow : 0 < (1 + |Real.log a|) ^ (n - 1) := by positivity
-    positivity
+  set L : ℝ := (1 + |Real.log a|) ^ (n - 1)
   refine eq_zero_of_forall_le_ofReal fun ε hε ↦ ?_
-  obtain ⟨k, hk⟩ := exists_nat_gt (max (1 : ℝ) (M * I.toReal / ε))
-  have hk1 : (1 : ℝ) < k := lt_of_le_of_lt (le_max_left _ _) hk
-  have hkpos : 1 ≤ k := by
-    have : (0 : ℝ) < k := lt_trans zero_lt_one hk1
-    exact Nat.one_le_cast.mp (le_of_lt hk1)
-  have hsub : N ⊆ {p | ENNReal.ofReal (k : ℝ) < partialStrongMax f p.1 p.2} := by
-    intro p hp
-    simp only [mem_ofPred_eq]
-    have hinf : partialStrongMax f p.1 p.2 = ∞ := by simpa [N, mem_ofPred_eq] using hp
-    rw [hinf]
-    exact ENNReal.ofReal_lt_top
-  have hdist := volume_partialStrongMax_gt_le hn hIH hf
-    (show 0 < (k : ℝ) by exact_mod_cast (lt_trans zero_lt_one hk1))
+  obtain ⟨k, hk⟩ := exists_nat_gt (max (1 : ℝ) (C * a * L * I.toReal / ε))
+  have hk1 : (1 : ℝ) < k := (le_max_left _ _).trans_lt hk
+  have hk0 : (0 : ℝ) < k := one_pos.trans hk1
+  have hc : 0 ≤ a / k * L := by positivity
   have hgrow : ∫⁻ x, ENNReal.ofReal (strongMaximalGrowth n (|f x| / k)) ≤
-      ENNReal.ofReal ((a / (k : ℝ)) * (1 + |Real.log a|) ^ (n - 1)) * I := by
-    let c : ℝ := (a / (k : ℝ)) * (1 + |Real.log a|) ^ (n - 1)
-    have hc : 0 ≤ c := by positivity
-    have hpt : ∀ x, ENNReal.ofReal (strongMaximalGrowth n (|f x| / k)) ≤
-        ENNReal.ofReal c * ENNReal.ofReal (strongMaximalGrowth (n + 1) (|f x| / a)) := by
-      intro x
-      have hle := strongMaximalGrowth_height_le (n := n) hkpos ha (abs_nonneg (f x))
-      calc
-        ENNReal.ofReal (strongMaximalGrowth n (|f x| / k)) ≤
-            ENNReal.ofReal (c * strongMaximalGrowth (n + 1) (|f x| / a)) :=
-          ENNReal.ofReal_le_ofReal hle
-        _ = ENNReal.ofReal c *
-            ENNReal.ofReal (strongMaximalGrowth (n + 1) (|f x| / a)) :=
-          ENNReal.ofReal_mul hc
-    calc
-      ∫⁻ x, ENNReal.ofReal (strongMaximalGrowth n (|f x| / k)) ≤
-          ∫⁻ x, ENNReal.ofReal c *
-            ENNReal.ofReal (strongMaximalGrowth (n + 1) (|f x| / a)) :=
-        lintegral_mono hpt
-      _ = ENNReal.ofReal c * I := lintegral_const_mul' _ _ ENNReal.ofReal_ne_top
-  have hcoeff : ENNReal.ofReal C *
-      ENNReal.ofReal ((a / (k : ℝ)) * (1 + |Real.log a|) ^ (n - 1)) =
-        ENNReal.ofReal (M / (k : ℝ)) := by
-    rw [← ENNReal.ofReal_mul hC.le]
-    congr 1
-    simp only [M]
-    ring
-  have hvol : volume N ≤ ENNReal.ofReal (M / (k : ℝ)) * I := by
-    calc
-      volume N ≤ volume {p | ENNReal.ofReal (k : ℝ) < partialStrongMax f p.1 p.2} :=
-        measure_mono hsub
-      _ ≤ ENNReal.ofReal C *
-          ∫⁻ x, ENNReal.ofReal (strongMaximalGrowth n (|f x| / k)) := hdist
-      _ ≤ ENNReal.ofReal C *
-          (ENNReal.ofReal ((a / (k : ℝ)) * (1 + |Real.log a|) ^ (n - 1)) * I) :=
-        mul_le_mul' le_rfl hgrow
-      _ = ENNReal.ofReal (M / (k : ℝ)) * I := by rw [← mul_assoc, hcoeff]
-  set r : ℝ := I.toReal
-  have hIeq : I = ENNReal.ofReal r := (ENNReal.ofReal_toReal hI).symm
-  have hsmall : (M / (k : ℝ)) * r ≤ ε := by
-    have hk0 : (0 : ℝ) < k := lt_trans zero_lt_one hk1
-    have hdiv : M * r / ε < k := lt_of_le_of_lt (le_max_right _ _) hk
-    have hmul : M * r < ε * k := by
-      calc
-        M * r < k * ε := (div_lt_iff₀ hε).mp hdiv
-        _ = ε * k := by rw [mul_comm]
-    have hquot : M * r / k < ε := (div_lt_iff₀ hk0).mpr hmul
-    have hcomm : (M / (k : ℝ)) * r = M * r / k := by ring
-    rw [hcomm]
-    exact le_of_lt hquot
+      ENNReal.ofReal (a / k * L) * I := by
+    rw [← lintegral_const_mul' _ _ ENNReal.ofReal_ne_top]
+    refine lintegral_mono fun x ↦ ?_
+    rw [← ENNReal.ofReal_mul hc]
+    exact ENNReal.ofReal_le_ofReal
+      (strongMaximalGrowth_height_le (Nat.one_le_cast.mp hk1.le) ha (abs_nonneg (f x)))
+  have hsmall : C * (a / k * L) * I.toReal ≤ ε := by
+    have h := (div_lt_iff₀ hε).1 ((le_max_right _ _).trans_lt hk)
+    rw [show C * (a / k * L) * I.toReal = C * a * L * I.toReal / k by ring, div_le_iff₀ hk0]
+    linarith
   calc
-    volume N ≤ ENNReal.ofReal (M / (k : ℝ)) * I := hvol
-    _ = ENNReal.ofReal ((M / (k : ℝ)) * r) := by
-      rw [hIeq, ← ENNReal.ofReal_mul (div_nonneg hM.le (Nat.cast_nonneg k))]
+    _ ≤ volume {p : ℝ × (Fin n → ℝ) | ENNReal.ofReal k < partialStrongMax f p.1 p.2} :=
+      measure_mono fun p hp ↦ by
+        simp only [mem_ofPred_eq] at hp ⊢
+        rw [hp]
+        exact ENNReal.ofReal_lt_top
+    _ ≤ ENNReal.ofReal C * ∫⁻ x, ENNReal.ofReal (strongMaximalGrowth n (|f x| / k)) :=
+      volume_partialStrongMax_gt_le hn hIH hf hk0
+    _ ≤ ENNReal.ofReal C * (ENNReal.ofReal (a / k * L) * I) := by gcongr
+    _ = ENNReal.ofReal (C * (a / k * L) * I.toReal) := by
+      rw [ENNReal.ofReal_mul (mul_nonneg hC.le hc), ENNReal.ofReal_toReal hI,
+        ENNReal.ofReal_mul hC.le, mul_assoc]
     _ ≤ ENNReal.ofReal ε := ENNReal.ofReal_le_ofReal hsmall
 
 /-- Off the null set where a slice maximal function is infinite, truncation does not change the
@@ -267,99 +212,27 @@ private theorem slice_tail_integral_le {n : ℕ} {a v : ℝ} (ha : 0 < a) (hv : 
         ENNReal.ofReal (strongMaximalGrowth n (2 * v / t)) else 0) ≤
       ENNReal.ofReal (if v ≤ a / 4 then 0 else
         ∫ t in (a / 2)..(2 * v), strongMaximalGrowth n (2 * v / t)) := by
-  let φ : ℝ → ℝ≥0∞ := fun t ↦
-    if a / 2 < t ∧ t / 2 < v then ENNReal.ofReal (strongMaximalGrowth n (2 * v / t)) else 0
-  let ψ : ℝ → ℝ≥0∞ := fun t ↦
-    if t / 2 < v then ENNReal.ofReal (strongMaximalGrowth n (2 * v / t)) else 0
-  have hcompl : ∫⁻ t in (Ioi (a / 2))ᶜ, φ t = 0 :=
-    setLIntegral_eq_zero measurableSet_Ioi.compl fun t ht ↦ by
-      have ht' : ¬ a / 2 < t := by simpa [mem_compl_iff, mem_Ioi] using ht
-      simp [φ, ht']
-  have hon : ∫⁻ t in Ioi (a / 2), φ t = ∫⁻ t in Ioi (a / 2), ψ t :=
-    setLIntegral_congr_fun measurableSet_Ioi fun t ht ↦ by
-      have ht' : a / 2 < t := ht
-      by_cases hv' : t / 2 < v
-      · simp [φ, ψ, ht', hv']
-      · simp [φ, ψ, ht', hv']
-  have heq : ∫⁻ t, φ t = ∫⁻ t in Ioi (a / 2), ψ t := by
-    calc
-      ∫⁻ t, φ t = (∫⁻ t in Ioi (a / 2), φ t) + (∫⁻ t in (Ioi (a / 2))ᶜ, φ t) := by
-        symm
-        exact lintegral_add_compl _ measurableSet_Ioi
-      _ = ∫⁻ t in Ioi (a / 2), ψ t := by rw [hcompl, add_zero, hon]
-  rw [heq]
-  by_cases hv4 : v ≤ a / 4
-  · have hzero : ∫⁻ t in Ioi (a / 2), ψ t = 0 :=
-      setLIntegral_eq_zero measurableSet_Ioi fun t ht ↦ by
-        have hnot : ¬ t / 2 < v := by
-          intro hlt
-          have htv : t < 2 * v := by linarith
-          have h2 : 2 * v ≤ a / 2 := by linarith
-          linarith [show a / 2 < t from ht]
-        simp [ψ, hnot]
-    simp [hv4, hzero]
-  · have h2v : a / 2 < 2 * v := by linarith
-    have hsub : Ioo (a / 2) (2 * v) ⊆ Ioi (a / 2) := fun _ ht ↦ ht.1
-    have hon' : ∫⁻ t in Ioo (a / 2) (2 * v), ψ t =
-        ∫⁻ t in Ioo (a / 2) (2 * v), ENNReal.ofReal (strongMaximalGrowth n (2 * v / t)) :=
-      setLIntegral_congr_fun measurableSet_Ioo fun t ht ↦ by
-        have hlt : t / 2 < v := by linarith [ht.2]
-        simp [ψ, hlt]
-    have hoff : ∫⁻ t in Ioi (a / 2) \ Ioo (a / 2) (2 * v), ψ t = 0 :=
-      setLIntegral_eq_zero (measurableSet_Ioi.diff measurableSet_Ioo) fun t ht ↦ by
-        have hnot : ¬ t / 2 < v := by
-          intro hlt
-          exact ht.2 ⟨ht.1, by linarith⟩
-        simp [ψ, hnot]
-    have hsplit := (lintegral_inter_add_sdiff (μ := volume) ψ (Ioi (a / 2))
-      (measurableSet_Ioo (a := a / 2) (b := 2 * v))).symm
-    have hcap : Ioi (a / 2) ∩ Ioo (a / 2) (2 * v) = Ioo (a / 2) (2 * v) :=
-      inter_eq_self_of_subset_right hsub
-    have hIoi : ∫⁻ t in Ioi (a / 2), ψ t =
-        ∫⁻ t in Ioo (a / 2) (2 * v),
-          ENNReal.ofReal (strongMaximalGrowth n (2 * v / t)) := by
-      rw [hsplit, hcap, hon', hoff, add_zero]
-    have hdiff : volume (Ioc (a / 2) (2 * v) \ Ioo (a / 2) (2 * v)) = 0 := by
-      refine measure_mono_null ?_ (by simp : volume ({2 * v} : Set ℝ) = 0)
-      intro t ht
-      have h1 : a / 2 < t := ht.1.1
-      have h2 : t ≤ 2 * v := ht.1.2
-      have h3 : ¬ t < 2 * v := by
-        intro hlt
-        exact ht.2 ⟨h1, hlt⟩
-      exact mem_singleton_of_eq (le_antisymm h2 (le_of_not_gt h3))
-    have hIoc : ∫⁻ t in Ioo (a / 2) (2 * v),
-          ENNReal.ofReal (strongMaximalGrowth n (2 * v / t)) =
-        ∫⁻ t in Ioc (a / 2) (2 * v),
-          ENNReal.ofReal (strongMaximalGrowth n (2 * v / t)) := by
-      have hinc : Ioo (a / 2) (2 * v) ⊆ Ioc (a / 2) (2 * v) :=
-        fun t ht ↦ ⟨ht.1, le_of_lt ht.2⟩
-      have hsplit' := (lintegral_inter_add_sdiff (μ := volume)
-        (fun t ↦ ENNReal.ofReal (strongMaximalGrowth n (2 * v / t)))
-        (Ioc (a / 2) (2 * v)) (measurableSet_Ioo (a := a / 2) (b := 2 * v))).symm
-      have hcap' : Ioc (a / 2) (2 * v) ∩ Ioo (a / 2) (2 * v) = Ioo (a / 2) (2 * v) := by
-        rw [inter_comm, inter_eq_self_of_subset_left hinc]
-      have hzero := setLIntegral_measure_zero (Ioc (a / 2) (2 * v) \ Ioo (a / 2) (2 * v))
-        (fun t ↦ ENNReal.ofReal (strongMaximalGrowth n (2 * v / t))) hdiff
-      rw [hsplit', hcap', hzero, add_zero]
-    have hvpos : 0 < v := by linarith
-    have hcont : ContinuousOn (fun t ↦ strongMaximalGrowth n (2 * v / t))
-        (Icc (a / 2) (2 * v)) :=
-      continuousOn_strongMaximalGrowth_ratio
-        (div_pos ha (by norm_num : (0 : ℝ) < 2)) hvpos
-    have hint : IntegrableOn (fun t ↦ strongMaximalGrowth n (2 * v / t))
-        (Ioc (a / 2) (2 * v)) volume :=
-      (hcont.intervalIntegrable_of_Icc (le_of_lt h2v)).1
-    have hnn : 0 ≤ᵐ[volume.restrict (Ioc (a / 2) (2 * v))]
-        fun t ↦ strongMaximalGrowth n (2 * v / t) :=
-      ae_restrict_of_forall_mem (measurableSet_Ioc (a := a / 2) (b := 2 * v)) fun t ht ↦
-        strongMaximalGrowth_nonneg (div_nonneg
-          (mul_nonneg (by norm_num : (0 : ℝ) ≤ 2) hv)
-          (le_trans (div_nonneg ha.le (by norm_num)) (le_of_lt ht.1)))
-    have hof := ofReal_integral_eq_lintegral_ofReal hint hnn
-    rw [← intervalIntegral.integral_of_le (le_of_lt h2v)] at hof
-    rw [hIoi, hIoc, ← hof]
-    simp [hv4]
+  have hφ : (fun t : ℝ ↦ if a / 2 < t ∧ t / 2 < v then
+      ENNReal.ofReal (strongMaximalGrowth n (2 * v / t)) else 0) =
+      (Ioo (a / 2) (2 * v)).indicator
+        fun t ↦ ENNReal.ofReal (strongMaximalGrowth n (2 * v / t)) := by
+    funext t
+    simp only [indicator_apply, mem_Ioo, show t / 2 < v ↔ t < 2 * v by
+      constructor <;> intro h <;> linarith]
+  rw [hφ, lintegral_indicator measurableSet_Ioo, setLIntegral_congr Ioo_ae_eq_Ioc]
+  split_ifs with hv4
+  · rw [Ioc_eq_empty (by linarith), Measure.restrict_empty, lintegral_zero_measure,
+      ENNReal.ofReal_zero]
+  have h2v : a / 2 < 2 * v := by linarith
+  have hint : IntegrableOn (fun t ↦ strongMaximalGrowth n (2 * v / t))
+      (Ioc (a / 2) (2 * v)) volume :=
+    ((continuousOn_strongMaximalGrowth_ratio (div_pos ha (by norm_num : (0 : ℝ) < 2))
+      ).intervalIntegrable_of_Icc h2v.le).1
+  have hnn : 0 ≤ᵐ[volume.restrict (Ioc (a / 2) (2 * v))]
+      fun t ↦ strongMaximalGrowth n (2 * v / t) :=
+    ae_restrict_of_forall_mem measurableSet_Ioc fun t ht ↦
+      strongMaximalGrowth_nonneg (div_nonneg (by positivity) (by linarith [ht.1]))
+  rw [intervalIntegral.integral_of_le h2v.le, ofReal_integral_eq_lintegral_ofReal hint hnn]
 
 /-- The scaled kernel, written with extended nonnegative values. -/
 private theorem iteration_ofReal_le {n : ℕ} (hn : 1 ≤ n) {a v : ℝ} (ha : 0 < a) (hv : 0 ≤ v) :
@@ -387,10 +260,7 @@ private theorem iteration_ofReal_le {n : ℕ} (hn : 1 ≤ n) {a v : ℝ} (ha : 0
 function exceeds `a / 2`, so the head of its layer-cake integral is controlled by the
 lower-dimensional inequality. -/
 private theorem setLIntegral_Ioc_volume_lt_truncatedPartialReal_le {n : ℕ} (hn : 1 ≤ n) {C : ℝ}
-    (hIH : ∀ (g : (Fin n → ℝ) → ℝ), Measurable g → ∀ b : ℝ, 0 < b →
-      volume {z | ENNReal.ofReal b < strongMaximalFunction g z} ≤
-        ENNReal.ofReal C *
-          ∫⁻ z, ENNReal.ofReal (strongMaximalGrowth n (|g z| / b)))
+    (hIH : HasStrongMaximalOrliczBound n C)
     {f : (Fin (n + 1) → ℝ) → ℝ} (hf : Measurable f) {a : ℝ} (ha : 0 < a) :
     ∫⁻ t in Ioc (0 : ℝ) (a / 2), volume {p | t < truncatedPartialReal f a p} ≤
       ENNReal.ofReal C * ∫⁻ x, ENNReal.ofReal
@@ -445,10 +315,7 @@ private theorem setLIntegral_Ioc_volume_lt_truncatedPartialReal_le {n : ℕ} (hn
 /-- Above height `a / 2`, each level set of the truncated slice maximal function is controlled
 by the lower-dimensional inequality applied to the half-level truncation of `f`. -/
 private theorem volume_lt_truncatedPartialReal_le {n : ℕ} (hn : 1 ≤ n) {C : ℝ}
-    (hIH : ∀ (g : (Fin n → ℝ) → ℝ), Measurable g → ∀ b : ℝ, 0 < b →
-      volume {z | ENNReal.ofReal b < strongMaximalFunction g z} ≤
-        ENNReal.ofReal C *
-          ∫⁻ z, ENNReal.ofReal (strongMaximalGrowth n (|g z| / b)))
+    (hIH : HasStrongMaximalOrliczBound n C)
     {f : (Fin (n + 1) → ℝ) → ℝ} (hf : Measurable f) {a : ℝ} (ha : 0 < a) {t : ℝ}
     (ht : a / 2 < t) :
     volume {p | t < truncatedPartialReal f a p} ≤
@@ -483,16 +350,13 @@ private theorem volume_lt_truncatedPartialReal_le {n : ℕ} (hn : 1 ≤ n) {C : 
         rw [ite_eq_right hx]
       have hnot : ¬ (a / 2 < t ∧ t / 2 < |f x|) := fun h ↦ hx h.2
       rw [hzero, ite_eq_right hnot]
-      simp [strongMaximalGrowth, Real.log_zero, abs_zero]
+      simp [strongMaximalGrowth_def]
 
 /-- The tail of the layer-cake integral of the truncated slice maximal function, above height
 `a / 2`, is controlled by the logarithmic tail kernel. -/
 private theorem setLIntegral_Ioi_volume_lt_truncatedPartialReal_le {n : ℕ} (hn : 1 ≤ n)
     {C : ℝ}
-    (hIH : ∀ (g : (Fin n → ℝ) → ℝ), Measurable g → ∀ b : ℝ, 0 < b →
-      volume {z | ENNReal.ofReal b < strongMaximalFunction g z} ≤
-        ENNReal.ofReal C *
-          ∫⁻ z, ENNReal.ofReal (strongMaximalGrowth n (|g z| / b)))
+    (hIH : HasStrongMaximalOrliczBound n C)
     {f : (Fin (n + 1) → ℝ) → ℝ} (hf : Measurable f) {a : ℝ} (ha : 0 < a) :
     ∫⁻ t in Ioi (a / 2), volume {p | t < truncatedPartialReal f a p} ≤
       ENNReal.ofReal C * ∫⁻ x, ENNReal.ofReal
@@ -585,10 +449,7 @@ private theorem lintegral_head_add_lintegral_tail_le {n : ℕ} (hn : 1 ≤ n)
 /-- The integral of the truncated slice maximal function is bounded by the Orlicz integral of
 order `n + 1`, splitting its layer-cake representation at height `a / 2`. -/
 private theorem lintegral_truncatedPartialReal_le {n : ℕ} (hn : 1 ≤ n) {C : ℝ} (hC : 0 < C)
-    (hIH : ∀ (g : (Fin n → ℝ) → ℝ), Measurable g → ∀ b : ℝ, 0 < b →
-      volume {z | ENNReal.ofReal b < strongMaximalFunction g z} ≤
-        ENNReal.ofReal C *
-          ∫⁻ z, ENNReal.ofReal (strongMaximalGrowth n (|g z| / b)))
+    (hIH : HasStrongMaximalOrliczBound n C)
     {f : (Fin (n + 1) → ℝ) → ℝ} (hf : Measurable f) {a : ℝ} (ha : 0 < a) :
     ∫⁻ p, ENNReal.ofReal (truncatedPartialReal f a p) ≤
       ENNReal.ofReal (C * a * strongMaximalIterationFactor n) *
@@ -641,10 +502,7 @@ private theorem lintegral_truncatedPartialReal_le {n : ℕ} (hn : 1 ≤ n) {C : 
 /-- The distribution inequality in dimension `n + 1`, obtained from dimension `n` by one
 application of the kernel. -/
 private theorem strongMaximal_step {n : ℕ} (hn : 1 ≤ n) {C : ℝ} (hC : 0 < C)
-    (hIH : ∀ (g : (Fin n → ℝ) → ℝ), Measurable g → ∀ b : ℝ, 0 < b →
-      volume {z | ENNReal.ofReal b < strongMaximalFunction g z} ≤
-        ENNReal.ofReal C *
-          ∫⁻ z, ENNReal.ofReal (strongMaximalGrowth n (|g z| / b)))
+    (hIH : HasStrongMaximalOrliczBound n C)
     {f : (Fin (n + 1) → ℝ) → ℝ} (hf : Measurable f) {a : ℝ} (ha : 0 < a) :
     volume {x | ENNReal.ofReal a < strongMaximalFunction f x} ≤
       ENNReal.ofReal (10 * C * strongMaximalIterationFactor n) *
@@ -678,32 +536,52 @@ private theorem strongMaximal_step {n : ℕ} (hn : 1 ≤ n) {C : ℝ} (hC : 0 < 
     rw [← mul_assoc, ← ENNReal.ofReal_mul h10, hconst]
   exact hbound.trans_eq hrew
 
-/-- The strong maximal operator is weak type `L(log⁺L)^{d-1}` in every positive dimension. -/
-theorem strongMaximal_orlicz {d : ℕ} (hd : 1 ≤ d) :
+/-- In dimension zero the strong maximal function is at most `|f|`: the only rectangle is the
+whole space, a single point of volume one. -/
+private theorem strongMaximalFunction_le_of_fin_zero (f : (Fin 0 → ℝ) → ℝ) (x : Fin 0 → ℝ) :
+    strongMaximalFunction f x ≤ ENNReal.ofReal |f x| := by
+  refine iSup₂_le fun R _ ↦ ?_
+  have hc : R.carrier = univ := eq_univ_of_forall fun _ j ↦ j.elim0
+  have hf : (fun y ↦ ENNReal.ofReal |f y|) = fun _ ↦ ENNReal.ofReal |f x| :=
+    funext fun y ↦ by rw [Subsingleton.elim y x]
+  rw [hc, Measure.restrict_univ, hf, lintegral_const]
+  exact ENNReal.div_le_of_le_mul le_rfl
+
+/-- The weak-type bound in dimension zero, with constant `1`. -/
+private theorem strongMaximal_weakType_fin_zero (f : (Fin 0 → ℝ) → ℝ) (hf : Measurable f)
+    {a : ℝ} (ha : 0 < a) :
+    volume {x | ENNReal.ofReal a < strongMaximalFunction f x} ≤
+      ENNReal.ofReal 1 * ∫⁻ x, ENNReal.ofReal (strongMaximalGrowth 0 (|f x| / a)) := by
+  have hg : ∀ u, strongMaximalGrowth 0 u = u := fun u ↦ by simp [strongMaximalGrowth_def]
+  simp only [hg, ENNReal.ofReal_one, one_mul]
+  have hsub : {x | ENNReal.ofReal a < strongMaximalFunction f x} ⊆
+      {x | 1 ≤ ENNReal.ofReal (|f x| / a)} := by
+    intro x hx
+    have h := hx.trans_le (strongMaximalFunction_le_of_fin_zero f x)
+    rw [ENNReal.ofReal_lt_ofReal_iff_of_nonneg ha.le] at h
+    rw [mem_ofPred_eq, ← ENNReal.ofReal_one]
+    exact ENNReal.ofReal_le_ofReal ((one_le_div ha).2 h.le)
+  have hm : AEMeasurable (fun x ↦ ENNReal.ofReal (|f x| / a)) volume :=
+    ((continuous_abs.measurable.comp hf).div_const a).ennreal_ofReal.aemeasurable
+  refine (measure_mono hsub).trans ?_
+  simpa using mul_meas_ge_le_lintegral₀ hm 1
+
+/-- **Jessen–Marcinkiewicz–Zygmund**: the strong maximal operator is of weak type
+`L(log⁺L)^{d-1}` in every dimension `d`. -/
+theorem strongMaximal_endpoint (d : ℕ) :
     ∃ C : ℝ, 0 < C ∧ ∀ (f : (Fin d → ℝ) → ℝ), Measurable f →
       ∀ a : ℝ, 0 < a →
         volume {x | ENNReal.ofReal a < strongMaximalFunction f x} ≤
           ENNReal.ofReal C *
             ∫⁻ x, ENNReal.ofReal (strongMaximalGrowth d (|f x| / a)) := by
-  revert hd
   induction d with
-  | zero =>
-    intro h
-    omega
+  | zero => exact ⟨1, one_pos, fun f hf a ha ↦ strongMaximal_weakType_fin_zero f hf ha⟩
   | succ m ih =>
-    intro hm
-    by_cases hm0 : m = 0
-    · subst hm0
-      refine ⟨oneDimWeakConstant, ?_, ?_⟩
-      · unfold oneDimWeakConstant
-        norm_num
-      · intro f _ a ha
-        exact strongMaximal_weakType_one f ha
-    · have hm1 : 1 ≤ m := by omega
-      obtain ⟨C, hC, hIH⟩ := ih hm1
-      refine ⟨10 * C * strongMaximalIterationFactor m,
-        mul_pos (mul_pos (by norm_num) hC) (strongMaximalIterationFactor_pos m), ?_⟩
-      intro f hf a ha
-      exact strongMaximal_step hm1 hC hIH hf ha
+    rcases Nat.eq_zero_or_pos m with rfl | hm1
+    · exact ⟨5, by norm_num, fun f _ a ha ↦ strongMaximal_weakType_one f ha⟩
+    · obtain ⟨C, hC, hIH⟩ := ih
+      have := strongMaximalIterationFactor_pos m
+      exact ⟨10 * C * strongMaximalIterationFactor m, by positivity,
+        fun f hf a ha ↦ strongMaximal_step hm1 hC hIH hf ha⟩
 
 end CKMA

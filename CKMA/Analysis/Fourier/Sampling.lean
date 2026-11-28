@@ -203,7 +203,7 @@ private lemma shannonSum_eq_fourierInv (u : Lp ℂ 2 (volume : Measure ℝ))
     · simp only [hξ, Set.indicator_of_mem]
       congr 1
       simp only [Complex.ofReal_mul, Complex.ofReal_ofNat]
-      ring
+      ring_nf
     · simp [hξ]
   simp_rw [hmul, integral_indicator measurableSet_Icc, freqPartial, Finset.mul_sum]
   rw [integral_finsetSum]
@@ -265,7 +265,7 @@ private lemma norm_shannon_remainder_le (u : Lp ℂ 2 (volume : Measure ℝ))
           Set.indicator_of_mem hξ]
         congr 1
         · simp only [Complex.ofReal_mul, Complex.ofReal_ofNat]
-          ring
+          ring_nf
       · rw [Pi.sub_apply, Set.indicator_of_notMem hξ, Set.indicator_of_notMem hξ,
           Set.indicator_of_notMem hξ, sub_self, mul_zero]
     rw [integral_congr_ae (ae_of_all volume hsub), integral_indicator measurableSet_Icc]
@@ -428,7 +428,7 @@ theorem shannon_sampling_L2 {B : ℝ} (hB : 0 < B)
           bandlimitedRepresentative B u t) =
         𝓕⁻ (freqBand B (bandlimitedRepresentative B u) s - bandCutoff B (⇑u)) by
       ext t
-      exact hpoint s t, Integrable.eLpNorm_fourierInv_two_eq hf1 hf2]
+      exact hpoint s t, eLpNorm_fourierInv_two_eq_of_integrable hf1 hf2]
   have htail := tendsto_lpNorm_remainder hB u
   have hmem : ∀ s, MemLp (freqBand B (bandlimitedRepresentative B u) s - bandCutoff B (⇑u)) 2 :=
     fun s => (memLp_freqBand _ s).sub (memLp_bandCutoff u)
@@ -517,7 +517,7 @@ theorem shannon_norm_identity {B : ℝ} (hB : 0 < B)
       exact bandlimitedRepresentative_eq_fourierInv u t
     have hmemRep : MemLp (bandlimitedRepresentative B u) 2 volume := by
       change eLpNorm (bandlimitedRepresentative B u) 2 volume < ⊤
-      rw [hrep, Integrable.eLpNorm_fourierInv_two_eq hf1 hf2]
+      rw [hrep, eLpNorm_fourierInv_two_eq_of_integrable hf1 hf2]
       exact hf2
     have hlpRep := lpNorm_eq_integral_norm_rpow_toReal (p := 2) (by simp) (by simp)
       hmemRep.aestronglyMeasurable
@@ -527,7 +527,7 @@ theorem shannon_norm_identity {B : ℝ} (hB : 0 < B)
     simp_rw [Real.rpow_two] at hlpRep hlpCut
     have hsame : lpNorm (bandlimitedRepresentative B u) 2 volume =
         lpNorm (bandCutoff B (⇑u)) 2 volume := by
-      rw [hrep, lpNorm, lpNorm, Integrable.eLpNorm_fourierInv_two_eq hf1 hf2]
+      rw [hrep, lpNorm, lpNorm, eLpNorm_fourierInv_two_eq_of_integrable hf1 hf2]
     have hsq : (∫ t, ‖bandlimitedRepresentative B u t‖ ^ 2) ^ (2 : ℝ)⁻¹ =
         (∫ x, ‖bandCutoff B (⇑u) x‖ ^ 2) ^ (2 : ℝ)⁻¹ := by
       rw [← hlpRep, ← hlpCut, hsame]
@@ -551,7 +551,7 @@ theorem shannon_norm_identity {B : ℝ} (hB : 0 < B)
         ext t
         exact bandlimitedRepresentative_eq_fourierInv u t
       change eLpNorm (bandlimitedRepresentative B u) 2 volume < ⊤
-      rw [hfun, Integrable.eLpNorm_fourierInv_two_eq hf1 hf2]
+      rw [hfun, eLpNorm_fourierInv_two_eq_of_integrable hf1 hf2]
       exact hf2
     simpa [ENNReal.toReal_ofNat, Real.rpow_two] using
       hmem.integrable_norm_rpow (p := 2) (by simp) (by simp)

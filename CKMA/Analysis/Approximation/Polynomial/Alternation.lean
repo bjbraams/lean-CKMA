@@ -95,6 +95,31 @@ private lemma sq_eq_one_of_alternationSign {σ : ℝ} (hσ : |σ| = 1) (i : ℕ)
     (σ * (-1) ^ i) ^ 2 = σ ^ 2 * ((-1) ^ i) ^ 2 := by ring
     _ = 1 := by rw [hσsq, hpow, mul_one]
 
+/-- Values with alternating signs `σ (-1) ^ i` and `σ (-1) ^ (i + 1)` have negative product. -/
+private lemma mul_neg_of_alternationSign {σ A B : ℝ} (hσ : |σ| = 1) {i : ℕ}
+    (hA : σ * (-1) ^ i * A < 0) (hB : σ * (-1) ^ (i + 1) * B < 0) : A * B < 0 := by
+  have hsq : (σ * (-1) ^ i) ^ 2 = 1 := sq_eq_one_of_alternationSign hσ i
+  have hB' : 0 < σ * (-1) ^ i * B := by
+    have : σ * (-1) ^ (i + 1) * B = -(σ * (-1) ^ i * B) := by ring
+    linarith
+  have hAB : A * B = (σ * (-1) ^ i * A) * (σ * (-1) ^ i * B) := by
+    linear_combination (-(A * B)) * hsq
+  rw [hAB]
+  exact mul_neg_of_neg_of_pos hA hB'
+
+/-- Points chosen in the consecutive open gaps of a strictly increasing family are distinct. -/
+private lemma injective_of_mem_Ioo_castSucc_succ {k : ℕ} {x : Fin (k + 1) → ℝ}
+    (hx : StrictMono x) {r : Fin k → ℝ} (hr : ∀ i, r i ∈ Set.Ioo (x i.castSucc) (x i.succ)) :
+    Function.Injective r := by
+  have hlt : ∀ i j : Fin k, i < j → r i < r j := fun i j hij ↦
+    lt_of_lt_of_le (hr i).2 (le_trans (hx.monotone (Fin.succ_le_castSucc_iff.2 hij))
+      (hr j).1.le)
+  intro i j hij
+  by_contra hne
+  rcases lt_or_gt_of_ne hne with h | h
+  · exact lt_irrefl _ (hij ▸ hlt i j h)
+  · exact lt_irrefl _ (hij ▸ hlt j i h)
+
 /-- Equioscillation prevents every strictly better polynomial of degree at most `n`. -/
 lemma isBestPolynomialApproximation_of_hasPolynomialAlternation
     (f : ApproximationIntervalMap) (n : ℕ) (p : ℝ[X]) (hp : p.natDegree ≤ n)
@@ -139,50 +164,13 @@ lemma isBestPolynomialApproximation_of_hasPolynomialAlternation
     have hs' : |s| < E := by simpa [s] using hs
     linarith
   have hprod : ∀ i : Fin (n + 1),
-      d.eval (x i.castSucc).1 * d.eval (x i.succ).1 < 0 := by
-    intro i
-    set ε1 : ℝ := σ * (-1) ^ (i.castSucc).val
-    set ε2 : ℝ := σ * (-1) ^ (i.succ).val
-    have hε2 : ε2 = -ε1 := by
-      simp only [ε1, ε2, Fin.val_succ, Fin.val_castSucc, pow_succ]
-      ring
-    have h1 : ε1 * d.eval (x i.castSucc).1 < 0 := by simpa [ε1] using hnode i.castSucc
-    have h2 : ε2 * d.eval (x i.succ).1 < 0 := by simpa [ε2] using hnode i.succ
-    have hε1sq : ε1 ^ 2 = 1 := sq_eq_one_of_alternationSign hσ (i.castSucc).val
-    set A : ℝ := d.eval (x i.castSucc).1
-    set B : ℝ := d.eval (x i.succ).1
-    have hAB : A * B = (ε1 * A) * (ε1 * B) := by
-      have hmul : ε1 * ε1 = 1 := by simpa [sq] using hε1sq
-      calc
-        A * B = (ε1 * ε1) * (A * B) := by rw [hmul, one_mul]
-        _ = (ε1 * A) * (ε1 * B) := by ring
-    have hBpos : 0 < ε1 * B := by
-      have : ε2 * B = -(ε1 * B) := by rw [hε2]; ring
-      linarith
-    have : (ε1 * A) * (ε1 * B) < 0 := mul_neg_of_neg_of_pos h1 hBpos
-    simpa [hAB] using this
+      d.eval (x i.castSucc).1 * d.eval (x i.succ).1 < 0 := fun i ↦
+    mul_neg_of_alternationSign (i := i.val) hσ (by simpa using hnode i.castSucc)
+      (by simpa using hnode i.succ)
   choose root hroot using fun i : Fin (n + 1) =>
     exists_eval_eq_zero_Ioo (hxmono i.castSucc_lt_succ) d (hprod i)
-  have hinj : Function.Injective root := by
-    intro i j hij
-    by_contra hne
-    rcases lt_or_gt_of_ne hne with hijlt | hjilt
-    · have hle : (x i.succ).1 ≤ (x j.castSucc).1 :=
-        hxmono.monotone (by
-          rw [Fin.le_iff_val_le_val]
-          simp only [Fin.val_succ, Fin.val_castSucc]
-          exact Nat.succ_le_of_lt hijlt)
-      have : root i < root j :=
-        lt_of_lt_of_le (hroot i).1.2 (le_trans hle (hroot j).1.1.le)
-      exact lt_irrefl _ (hij ▸ this)
-    · have hle : (x j.succ).1 ≤ (x i.castSucc).1 :=
-        hxmono.monotone (by
-          rw [Fin.le_iff_val_le_val]
-          simp only [Fin.val_succ, Fin.val_castSucc]
-          exact Nat.succ_le_of_lt hjilt)
-      have : root j < root i :=
-        lt_of_lt_of_le (hroot j).1.2 (le_trans hle (hroot i).1.1.le)
-      exact lt_irrefl _ (hij ▸ this)
+  have hinj : Function.Injective root :=
+    injective_of_mem_Ioo_castSucc_succ hxmono fun i ↦ (hroot i).1
   have hd0 : d = 0 :=
     eq_zero_of_natDegree_lt_card_of_eval_eq_zero d hinj (fun i => (hroot i).2)
       (by simpa [Fintype.card_fin] using Nat.lt_succ_of_le hddeg)

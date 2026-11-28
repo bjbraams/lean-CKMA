@@ -29,6 +29,8 @@ Sources: GAPS 47.20, 47.21 and 47.23.
 
 ## Main results
 
+* `CKMA.trigonometricPolynomial_apply`, `CKMA.periodicSmoothnessModulus_def`,
+  `CKMA.bestTrigonometricError_def`: defining lemmas.
 * `CKMA.bestTrigonometricError_le`: any trigonometric polynomial bounds the best error.
 * `CKMA.jackson_trigonometric`: Jackson's direct theorem for trigonometric approximation.
 * `CKMA.inverse_trigonometric`: inverse theorem for trigonometric approximation.
@@ -70,6 +72,36 @@ def bestTrigonometricError (f : ℝ → ℂ) (n : ℕ) (p : ℝ≥0∞) : ℝ≥
   ⨅ a : ℤ → ℂ, eLpNorm (fun x ↦ f x - trigonometricPolynomial n a x)
     p trigonometricPeriodMeasure
 
+/-- The period measure is Lebesgue measure on `[-π, π]`. -/
+lemma trigonometricPeriodMeasure_def :
+    trigonometricPeriodMeasure = volume.restrict (Set.Icc (-Real.pi) Real.pi) :=
+  rfl
+
+/-- Evaluation of a trigonometric polynomial. -/
+lemma trigonometricPolynomial_apply (n : ℕ) (a : ℤ → ℂ) (x : ℝ) :
+    trigonometricPolynomial n a x =
+      ∑ k ∈ Finset.Icc (-(n : ℤ)) n, a k * Complex.exp (Complex.I * k * x) :=
+  rfl
+
+/-- Evaluation of a translation difference. -/
+@[simp]
+lemma translationDifference_apply (h : ℝ) (f : ℝ → ℂ) (x : ℝ) :
+    translationDifference h f x = f (x + h) - f x :=
+  rfl
+
+/-- The smoothness modulus is the supremum of the `Lᵖ` norms of the iterated differences over
+steps `|h| ≤ t`. -/
+lemma periodicSmoothnessModulus_def (r : ℕ) (f : ℝ → ℂ) (t : ℝ) (p : ℝ≥0∞) :
+    periodicSmoothnessModulus r f t p = ⨆ (h : ℝ) (_hh : |h| ≤ t),
+      eLpNorm (((translationDifference h)^[r]) f) p trigonometricPeriodMeasure :=
+  rfl
+
+/-- The best trigonometric error is the infimum of the residual `Lᵖ` norms. -/
+lemma bestTrigonometricError_def (f : ℝ → ℂ) (n : ℕ) (p : ℝ≥0∞) :
+    bestTrigonometricError f n p = ⨅ a : ℤ → ℂ,
+      eLpNorm (fun x ↦ f x - trigonometricPolynomial n a x) p trigonometricPeriodMeasure :=
+  rfl
+
 /-- A specified trigonometric polynomial bounds the best approximation error. -/
 theorem bestTrigonometricError_le (f : ℝ → ℂ) (n : ℕ) (p : ℝ≥0∞) (a : ℤ → ℂ) :
     bestTrigonometricError f n p ≤ eLpNorm (fun x ↦ f x - trigonometricPolynomial n a x)
@@ -77,8 +109,7 @@ theorem bestTrigonometricError_le (f : ℝ → ℂ) (n : ℕ) (p : ℝ≥0∞) (
   iInf_le _ a
 
 /-- **47.20**: Jackson's direct theorem, with constants uniform over `1 ≤ p ≤ ∞`.
-Continuity is imposed for all exponents in this first interface; extension to general `Lᵖ`
-classes for finite `p` remains. -/
+Stated for continuous `2π`-periodic `f`. -/
 theorem jackson_trigonometric (r : ℕ) :
     ∃ C : ℝ≥0∞, C ≠ ∞ ∧ ∀ (p : ℝ≥0∞), 1 ≤ p →
       ∀ (f : ℝ → ℂ), Continuous f → Function.Periodic f (2 * Real.pi) →
@@ -96,8 +127,10 @@ theorem inverse_trigonometric (r : ℕ) (hr : 0 < r) :
             bestTrigonometricError f k p := by
   sorry
 
-/-- **47.23**: the sharp Bernstein derivative inequality at angular normalization. -/
-theorem bernstein_trigonometric (n r : ℕ) (a : ℤ → ℂ) {p : ℝ≥0∞} (hp : 1 ≤ p) :
+/-- **47.23**: the sharp Bernstein derivative inequality at angular normalization. It holds for
+every exponent: for `1 ≤ p` it is Bernstein's inequality, for `0 < p < 1` it is Arestov's
+theorem, and for `p = 0` both sides vanish. -/
+theorem bernstein_trigonometric (n r : ℕ) (a : ℤ → ℂ) (p : ℝ≥0∞) :
     eLpNorm (iteratedDeriv r (trigonometricPolynomial n a)) p trigonometricPeriodMeasure ≤
       (n : ℝ≥0∞) ^ r * eLpNorm (trigonometricPolynomial n a) p trigonometricPeriodMeasure := by
   sorry

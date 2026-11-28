@@ -54,10 +54,20 @@ variable {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω}
 def HasPsiTwoBound (X : Ω → ℝ) (μ : Measure Ω) (K : ℝ) : Prop :=
   0 < K ∧ (∫⁻ ω, ENNReal.ofReal (Real.exp ((X ω / K) ^ 2)) ∂μ) ≤ 2
 
+/-- Defining property of `HasPsiTwoBound`. -/
+lemma hasPsiTwoBound_iff {X : Ω → ℝ} {K : ℝ} :
+    HasPsiTwoBound X μ K ↔ 0 < K ∧ (∫⁻ ω, ENNReal.ofReal (Real.exp ((X ω / K) ^ 2)) ∂μ) ≤ 2 :=
+  Iff.rfl
+
 /-- The sub-Gaussian Luxemburg gauge, with value `∞` if there is no admissible scale. -/
 @[expose]
 def psiTwoGauge (X : Ω → ℝ) (μ : Measure Ω) : ℝ≥0∞ :=
   sInf {s | ∃ K : ℝ, s = ENNReal.ofReal K ∧ HasPsiTwoBound X μ K}
+
+/-- Defining formula of `psiTwoGauge`. -/
+lemma psiTwoGauge_def (X : Ω → ℝ) (μ : Measure Ω) :
+    psiTwoGauge X μ = sInf {s | ∃ K : ℝ, s = ENNReal.ofReal K ∧ HasPsiTwoBound X μ K} :=
+  rfl
 
 /-- Gaussian two-sided tails at scale `K`. -/
 @[expose]
@@ -65,11 +75,23 @@ def HasGaussianTail (X : Ω → ℝ) (μ : Measure Ω) (K : ℝ) : Prop :=
   0 < K ∧ ∀ t : ℝ, 0 ≤ t →
     μ {ω | t < |X ω|} ≤ ENNReal.ofReal (2 * Real.exp (-((t / K) ^ 2)))
 
+/-- Defining property of `HasGaussianTail`. -/
+lemma hasGaussianTail_iff {X : Ω → ℝ} {K : ℝ} :
+    HasGaussianTail X μ K ↔ 0 < K ∧ ∀ t : ℝ, 0 ≤ t →
+      μ {ω | t < |X ω|} ≤ ENNReal.ofReal (2 * Real.exp (-((t / K) ^ 2))) :=
+  Iff.rfl
+
 /-- Square-root growth of all real moments of order at least one. -/
 @[expose]
 def HasGaussianMoments (X : Ω → ℝ) (μ : Measure Ω) (K : ℝ) : Prop :=
   0 < K ∧ ∀ p : ℝ, 1 ≤ p →
     eLpNorm X (ENNReal.ofReal p) μ ≤ ENNReal.ofReal (K * Real.sqrt p)
+
+/-- Defining property of `HasGaussianMoments`. -/
+lemma hasGaussianMoments_iff {X : Ω → ℝ} {K : ℝ} :
+    HasGaussianMoments X μ K ↔ 0 < K ∧ ∀ p : ℝ, 1 ≤ p →
+      eLpNorm X (ENNReal.ofReal p) μ ≤ ENNReal.ofReal (K * Real.sqrt p) :=
+  Iff.rfl
 
 /-- An admissible scale bounds the Luxemburg gauge. -/
 theorem HasPsiTwoBound.psiTwoGauge_le {X : Ω → ℝ} {K : ℝ}
@@ -92,7 +114,9 @@ theorem HasPsiTwoBound.mono {X : Ω → ℝ} {K L : ℝ} (h : HasPsiTwoBound X �
       refine lintegral_mono fun ω ↦ ENNReal.ofReal_le_ofReal (Real.exp_le_exp.mpr (hdiv ω))
     _ ≤ 2 := h.2
 
-/-- A gauge at most `K` yields an admissible psi-two bound at scale `2K`. -/
+/-- A gauge at most `K` yields an admissible psi-two bound at scale `2K`. This form needs no
+measurability; for a.e.-measurable `X`, `psiTwoGauge_le_ofReal_iff` gives the scale `K`
+itself. -/
 theorem hasPsiTwoBound_of_psiTwoGauge_le {X : Ω → ℝ} {K : ℝ} (hK : 0 < K)
     (h : psiTwoGauge X μ ≤ ENNReal.ofReal K) : HasPsiTwoBound X μ (2 * K) := by
   have hlt : psiTwoGauge X μ < ENNReal.ofReal (2 * K) :=
@@ -105,10 +129,10 @@ theorem hasPsiTwoBound_of_psiTwoGauge_le {X : Ω → ℝ} {K : ℝ} (hK : 0 < K)
 
 /-- **07.6**: exponential square control implies Gaussian tails, without centering. -/
 theorem HasPsiTwoBound.hasGaussianTail
-    {X : Ω → ℝ} (hm : Measurable X) {K : ℝ} (h : HasPsiTwoBound X μ K) :
+    {X : Ω → ℝ} (hm : AEMeasurable X μ) {K : ℝ} (h : HasPsiTwoBound X μ K) :
     HasGaussianTail X μ K := by
   refine ⟨h.1, fun t ht ↦ ?_⟩
-  have hmeas : Measurable (fun ω ↦ ENNReal.ofReal (Real.exp ((X ω / K) ^ 2))) :=
+  have hmeas : AEMeasurable (fun ω ↦ ENNReal.ofReal (Real.exp ((X ω / K) ^ 2))) μ :=
     ((hm.div_const K).pow_const 2).exp.ennreal_ofReal
   have hsub : {ω | t < |X ω|} ⊆
       {ω | ENNReal.ofReal (Real.exp ((t / K) ^ 2)) ≤
@@ -124,7 +148,7 @@ theorem HasPsiTwoBound.hasGaussianTail
         ENNReal.ofReal (Real.exp ((X ω / K) ^ 2))} := measure_mono hsub
     _ ≤ (∫⁻ ω, ENNReal.ofReal (Real.exp ((X ω / K) ^ 2)) ∂μ) /
         ENNReal.ofReal (Real.exp ((t / K) ^ 2)) :=
-      meas_ge_le_lintegral_div hmeas.aemeasurable
+      meas_ge_le_lintegral_div hmeas
         (ENNReal.ofReal_ne_zero_iff.mpr (Real.exp_pos _)) ENNReal.ofReal_ne_top
     _ ≤ 2 / ENNReal.ofReal (Real.exp ((t / K) ^ 2)) := ENNReal.div_le_div_right h.2 _
     _ = ENNReal.ofReal (2 * Real.exp (-((t / K) ^ 2))) := by
@@ -134,11 +158,11 @@ theorem HasPsiTwoBound.hasGaussianTail
 
 /-- Layer cake bounds an exponential moment from a sufficiently fast exponential tail. -/
 private lemma lintegral_exp_le_of_exp_tail [IsProbabilityMeasure μ]
-    {Y : Ω → ℝ} (hm : Measurable Y) (hnonneg : ∀ ω, 0 ≤ Y ω)
+    {Y : Ω → ℝ} (hm : AEMeasurable Y μ) (hnonneg : ∀ ω, 0 ≤ Y ω)
     (htail : ∀ t : ℝ, 0 ≤ t → μ {ω | t < Y ω} ≤ ENNReal.ofReal (2 * Real.exp (-4 * t))) :
     (∫⁻ ω, ENNReal.ofReal (Real.exp (Y ω)) ∂μ) ≤ 2 := by
   have hlayer := lintegral_comp_eq_lintegral_meas_lt_mul μ
-    (Filter.Eventually.of_forall hnonneg) hm.aemeasurable
+    (Filter.Eventually.of_forall hnonneg) hm
     (fun t _ ↦ Real.continuous_exp.intervalIntegrable 0 t)
     (Filter.Eventually.of_forall fun t : ℝ ↦ (Real.exp_pos t).le)
   simp only [integral_exp, Real.exp_zero] at hlayer
@@ -179,7 +203,7 @@ private lemma lintegral_exp_le_of_exp_tail [IsProbabilityMeasure μ]
 
 /-- Gaussian tails give the exponential square condition at twice the scale. -/
 theorem HasGaussianTail.hasPsiTwoBound [IsProbabilityMeasure μ]
-    {X : Ω → ℝ} (hm : Measurable X) {K : ℝ} (h : HasGaussianTail X μ K) :
+    {X : Ω → ℝ} (hm : AEMeasurable X μ) {K : ℝ} (h : HasGaussianTail X μ K) :
     HasPsiTwoBound X μ (2 * K) := by
   refine ⟨mul_pos (by norm_num) h.1, ?_⟩
   apply lintegral_exp_le_of_exp_tail ((hm.div_const (2 * K)).pow_const 2)
@@ -232,7 +256,7 @@ private lemma rpow_le_scaled_exp_sq (r K p : ℝ) (hr : 0 ≤ r) (hK : 0 < K) (h
 /-- Exponential square control implies square-root moment growth, without probability
 normalization. -/
 theorem HasPsiTwoBound.hasGaussianMoments
-    {X : Ω → ℝ} (hm : Measurable X) {K : ℝ} (h : HasPsiTwoBound X μ K) :
+    {X : Ω → ℝ} (hm : AEMeasurable X μ) {K : ℝ} (h : HasPsiTwoBound X μ K) :
     HasGaussianMoments X μ (2 * K) := by
   refine ⟨mul_pos (by norm_num) h.1, fun p hp => ?_⟩
   have hp0 : 0 < p := zero_lt_one.trans_le hp
@@ -245,7 +269,7 @@ theorem HasPsiTwoBound.hasGaussianMoments
         apply lintegral_mono
         intro ω
         dsimp only
-        rw [Real.enorm_eq_ofReal_abs, ENNReal.ofReal_rpow_of_nonneg (abs_nonneg _) hp0.le,
+        rw [Real.eNorm_eq_ofReal_abs, ENNReal.ofReal_rpow_of_nonneg (abs_nonneg _) hp0.le,
           ← ENNReal.ofReal_mul (Real.rpow_nonneg ha.le p)]
         apply ENNReal.ofReal_le_ofReal
         simpa only [div_pow, sq_abs] using rpow_le_scaled_exp_sq |X ω| K p (abs_nonneg _) h.1 hp
@@ -265,7 +289,7 @@ theorem HasPsiTwoBound.hasGaussianMoments
       Real.mul_rpow (by norm_num : (0 : ℝ) ≤ 2) ha.le]
     nlinarith [Real.rpow_nonneg ha.le p,
       mul_le_mul_of_nonneg_right htwo (Real.rpow_nonneg ha.le p)]
-  rw [eLpNorm_eq_lintegral_rpow_enorm_toReal
+  rw [eLpNorm_eq_lintegral_rpow_eNorm_toReal
     (ENNReal.ofReal_ne_zero_iff.2 hp0) ENNReal.ofReal_ne_top hm.aestronglyMeasurable,
     ENNReal.toReal_ofReal hp0.le]
   calc
@@ -274,7 +298,7 @@ theorem HasPsiTwoBound.hasGaussianMoments
     _ = _ := by rw [← ENNReal.rpow_mul]; simp [ne_of_gt hp0]
 
 /-- Real Gaussian moment growth bounds each natural absolute moment. -/
-private lemma lintegral_pow_le_of_gaussianMoments {X : Ω → ℝ} (hm : Measurable X)
+private lemma lintegral_pow_le_of_gaussianMoments {X : Ω → ℝ} (hm : AEMeasurable X μ)
     {K : ℝ} (h : HasGaussianMoments X μ K) {m : ℕ} (hmpos : 0 < m) :
     (∫⁻ ω, ENNReal.ofReal (|X ω| ^ m) ∂μ) ≤
       ENNReal.ofReal ((K * Real.sqrt m) ^ m) := by
@@ -282,8 +306,8 @@ private lemma lintegral_pow_le_of_gaussianMoments {X : Ω → ℝ} (hm : Measura
   have he := ENNReal.rpow_le_rpow (h.2 m (by exact_mod_cast hmpos)) hm0.le
   rw [eLpNorm_eq_eLpNorm' (by simpa using hmpos.ne') ENNReal.ofReal_ne_top
     hm.aestronglyMeasurable, ENNReal.toReal_ofReal hm0.le,
-    ← lintegral_rpow_enorm_eq_rpow_eLpNorm' hm0] at he
-  simpa only [ENNReal.rpow_natCast, Real.enorm_eq_ofReal_abs,
+    ← lintegral_rpow_eNorm_eq_rpow_eLpNorm' hm0] at he
+  simpa only [ENNReal.rpow_natCast, Real.eNorm_eq_ofReal_abs,
     ← ENNReal.ofReal_pow (abs_nonneg _),
     ← ENNReal.ofReal_pow (mul_nonneg h.1.le (Real.sqrt_nonneg _))] using he
 
@@ -303,7 +327,7 @@ private lemma gaussian_moment_exp_coefficient_le (n : ℕ) :
 
 /-- Each integrated exponential coefficient is bounded by a geometric-series coefficient. -/
 private lemma lintegral_exp_coefficient_le_of_gaussianMoments [IsProbabilityMeasure μ]
-    {X : Ω → ℝ} (hm : Measurable X) {K : ℝ} (h : HasGaussianMoments X μ K) (n : ℕ) :
+    {X : Ω → ℝ} (hm : AEMeasurable X μ) {K : ℝ} (h : HasGaussianMoments X μ K) (n : ℕ) :
     (∫⁻ ω, ENNReal.ofReal (((X ω / (4 * K)) ^ 2) ^ n / n.factorial) ∂μ) ≤
       ENNReal.ofReal ((1 / 2 : ℝ) ^ n) := by
   rcases n.eq_zero_or_pos with rfl | hn
@@ -343,7 +367,7 @@ private lemma lintegral_exp_coefficient_le_of_gaussianMoments [IsProbabilityMeas
 
 /-- Moment growth gives exponential square integrability, with a universal change of scale. -/
 theorem HasGaussianMoments.hasPsiTwoBound [IsProbabilityMeasure μ]
-    {X : Ω → ℝ} (hm : Measurable X) {K : ℝ} (h : HasGaussianMoments X μ K) :
+    {X : Ω → ℝ} (hm : AEMeasurable X μ) {K : ℝ} (h : HasGaussianMoments X μ K) :
     HasPsiTwoBound X μ (4 * K) := by
   refine ⟨mul_pos (by norm_num) h.1, ?_⟩
   have hseries (ω : Ω) : ENNReal.ofReal (Real.exp ((X ω / (4 * K)) ^ 2)) =
@@ -351,11 +375,11 @@ theorem HasGaussianMoments.hasPsiTwoBound [IsProbabilityMeasure μ]
     rw [Real.exp_eq_exp_ℝ, NormedSpace.exp_eq_tsum_div]
     exact ENNReal.ofReal_tsum_of_nonneg (fun _ ↦ by positivity)
       (Real.summable_pow_div_factorial _)
-  have hmeas (n : ℕ) : Measurable
-      (fun ω ↦ ENNReal.ofReal (((X ω / (4 * K)) ^ 2) ^ n / n.factorial)) :=
-    Measurable.ennreal_ofReal
+  have hmeas (n : ℕ) : AEMeasurable
+      (fun ω ↦ ENNReal.ofReal (((X ω / (4 * K)) ^ 2) ^ n / n.factorial)) μ :=
+    AEMeasurable.ennreal_ofReal
       ((((hm.div_const (4 * K)).pow_const 2).pow_const n).div_const n.factorial)
-  rw [lintegral_congr hseries, lintegral_tsum (fun n ↦ (hmeas n).aemeasurable)]
+  rw [lintegral_congr hseries, lintegral_tsum hmeas]
   calc
     _ ≤ ∑' n : ℕ, ENNReal.ofReal ((1 / 2 : ℝ) ^ n) :=
       tsum_le_tsum (lintegral_exp_coefficient_le_of_gaussianMoments hm h)
@@ -406,7 +430,7 @@ private lemma exp_mul_le_linear_add_exp_sq (s y : ℝ) :
   linarith
 
 /-- An admissible exponential-square bound gives integrability of its defining exponential. -/
-theorem HasPsiTwoBound.integrable_exp_sq {X : Ω → ℝ} (hm : Measurable X)
+theorem HasPsiTwoBound.integrable_exp_sq {X : Ω → ℝ} (hm : AEMeasurable X μ)
     {K : ℝ} (h : HasPsiTwoBound X μ K) :
     Integrable (fun ω ↦ Real.exp ((X ω / K) ^ 2)) μ := by
   refine ⟨((hm.div_const K).pow_const 2).exp.aestronglyMeasurable, ?_⟩
@@ -414,7 +438,7 @@ theorem HasPsiTwoBound.integrable_exp_sq {X : Ω → ℝ} (hm : Measurable X)
   exact h.2.trans_lt (by norm_num)
 
 /-- An admissible exponential-square bound implies integrability of every linear exponential. -/
-theorem HasPsiTwoBound.integrable_exp_mul {X : Ω → ℝ} (hm : Measurable X)
+theorem HasPsiTwoBound.integrable_exp_mul {X : Ω → ℝ} (hm : AEMeasurable X μ)
     {K : ℝ} (h : HasPsiTwoBound X μ K) (t : ℝ) :
     Integrable (fun ω ↦ Real.exp (t * X ω)) μ := by
   apply ((h.integrable_exp_sq hm).const_mul (Real.exp ((t * K) ^ 2 / 4))).mono'
@@ -442,7 +466,7 @@ private lemma one_add_scaled_exp_sq_le (z : ℝ) (hz : 0 ≤ z) :
 /-- Centered exponential square control implies a sub-Gaussian MGF.
 The numerical constant is deliberately nonoptimal. -/
 theorem HasPsiTwoBound.hasSubgaussianMGF [IsProbabilityMeasure μ]
-    {X : Ω → ℝ} (hm : Measurable X) (hc : ∫ ω, X ω ∂μ = 0)
+    {X : Ω → ℝ} (hm : AEMeasurable X μ) (hc : ∫ ω, X ω ∂μ = 0)
     {K : ℝ} (h : HasPsiTwoBound X μ K) :
     HasSubgaussianMGF X (⟨16 * K ^ 2, by positivity⟩ : ℝ≥0) μ := by
   have hG := h.integrable_exp_sq hm
@@ -563,7 +587,7 @@ theorem hasGaussianTail_of_hasSubgaussianMGF [IsProbabilityMeasure μ]
 /-- **07.6**, MGF to gauge: a sub-Gaussian MGF bound with parameter `c ≤ K ^ 2` gives an
 admissible psi-two scale `2 * √2 * K`. -/
 theorem hasPsiTwoBound_of_hasSubgaussianMGF [IsProbabilityMeasure μ]
-    {X : Ω → ℝ} (hm : Measurable X) {c : ℝ≥0} (h : HasSubgaussianMGF X c μ) {K : ℝ}
+    {X : Ω → ℝ} (hm : AEMeasurable X μ) {c : ℝ≥0} (h : HasSubgaussianMGF X c μ) {K : ℝ}
     (hK : 0 < K) (hcK : (c : ℝ) ≤ K ^ 2) : HasPsiTwoBound X μ (2 * (Real.sqrt 2 * K)) :=
   (hasGaussianTail_of_hasSubgaussianMGF h hK hcK).hasPsiTwoBound hm
 

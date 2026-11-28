@@ -18,7 +18,7 @@ import Mathlib.Analysis.SpecialFunctions.Trigonometric.Bounds
 import Mathlib.MeasureTheory.Measure.LevyConvergence
 
 /-!
-# Kolmogorov's convergence criterion and the three-series theorem
+# Kolmogorov's convergence criterion and the three-series theorem (06.23)
 
 For independent real random variables `Xₙ` and a threshold `A > 0`, the series `∑ Xₙ` converges
 almost surely, as a limit of partial sums in the given order, exactly when
@@ -31,6 +31,14 @@ the second Borel–Cantelli lemma and a characteristic-function argument: for `|
 `|t| A ≤ 1`, `‖φ_Y(t)‖² ≤ 1 - t² Var[Y] / 4`, so a.s. convergence of a series of independent
 truncations bounds the partial sums of their variances.
 
+## Main definitions
+
+* `CKMA.IsOrderedSummable`: convergence of partial sums in their given order, Mathlib's
+  `Summable` along `SummationFilter.conditional ℕ`. It is weaker than unconditional `Summable`
+  for real sequences and is the correct mean-series condition in the three-series theorem.
+* `CKMA.symmetricTruncation`: symmetric truncation of a real random variable at threshold `A`.
+* `CKMA.HasThreeSeries`: the three series conditions of Kolmogorov's criterion.
+
 ## Main results
 
 * `CKMA.ae_tendsto_sum_sub_integral_of_summable_variance`: Kolmogorov's convergence criterion.
@@ -40,6 +48,8 @@ truncations bounds the partial sums of their variances.
 * `CKMA.summable_variance_of_ae_tendsto_sum`: a.s. convergence of a series of uniformly bounded
   independent variables forces summable variances.
 * `CKMA.ae_summable_conditional_iff_threeSeries`: Kolmogorov's three-series theorem.
+* `CKMA.kolmogorov_threeSeries`: the same theorem stated with `CKMA.IsOrderedSummable` (ordered
+  convergence of partial sums) and `CKMA.HasThreeSeries` (**06.23**).
 
 ## References
 
@@ -234,10 +244,9 @@ theorem norm_charFun_map_sq_le_one_sub_variance [IsProbabilityMeasure μ] {Y : �
   rw [Complex.sq_norm, Complex.normSq_apply, hre, him, hvar]
   linarith [sq (∫ ω, Y ω ∂μ)]
 
-/-- If a series of independent random variables bounded by a common constant converges almost
-surely in the given order, then their variances are summable. -/
-theorem summable_variance_of_ae_tendsto_sum [IsProbabilityMeasure μ] {Y : ℕ → Ω → ℝ}
-    (hm : ∀ n, Measurable (Y n)) (hi : iIndepFun Y μ) {A : ℝ} (hA0 : 0 < A)
+/-- `summable_variance_of_ae_tendsto_sum` at a positive bound. -/
+private theorem summable_variance_of_ae_tendsto_sum_of_pos [IsProbabilityMeasure μ]
+    {Y : ℕ → Ω → ℝ} (hm : ∀ n, Measurable (Y n)) (hi : iIndepFun Y μ) {A : ℝ} (hA0 : 0 < A)
     (hA : ∀ n ω, |Y n ω| ≤ A)
     (hc : ∀ᵐ ω ∂μ, ∃ l, Tendsto (fun n ↦ ∑ k ∈ range n, Y k ω) atTop (𝓝 l)) :
     Summable fun n ↦ Var[Y n; μ] := by
@@ -296,6 +305,18 @@ theorem summable_variance_of_ae_tendsto_sum [IsProbabilityMeasure μ] {Y : ℕ �
   refine le_trans ?_ (hN (max n N) (le_max_right _ _))
   exact Finset.sum_le_sum_of_subset_of_nonneg (Finset.range_mono (le_max_left _ _))
     fun k _ _ ↦ variance_nonneg _ _
+
+
+/-- If a series of independent random variables bounded by a common constant converges almost
+surely in the given order, then their variances are summable. A bound `A ≤ 0` forces `Y = 0`. -/
+theorem summable_variance_of_ae_tendsto_sum [IsProbabilityMeasure μ] {Y : ℕ → Ω → ℝ}
+    (hm : ∀ n, Measurable (Y n)) (hi : iIndepFun Y μ) {A : ℝ} (hA : ∀ n ω, |Y n ω| ≤ A)
+    (hc : ∀ᵐ ω ∂μ, ∃ l, Tendsto (fun n ↦ ∑ k ∈ range n, Y k ω) atTop (𝓝 l)) :
+    Summable fun n ↦ Var[Y n; μ] := by
+  rcases le_or_gt A 0 with hA0 | hA0
+  · have hY : ∀ n, Y n = 0 := fun n ↦ funext fun ω ↦ abs_nonpos_iff.1 ((hA n ω).trans hA0)
+    simp [hY]
+  · exact summable_variance_of_ae_tendsto_sum_of_pos hm hi hA0 hA hc
 
 /-- Convergence along `SummationFilter.conditional ℕ` is convergence of the partial sums over
 `Finset.range n`. -/
@@ -381,7 +402,7 @@ theorem ae_summable_conditional_iff_threeSeries [IsProbabilityMeasure μ] (X : �
     have hYc : ∀ᵐ ω ∂μ, ∃ l, Tendsto (fun n ↦ ∑ k ∈ range n, Y k ω) atTop (𝓝 l) := by
       filter_upwards [h, hev] with ω hω hev
       exact exists_tendsto_sum_range_of_eventuallyEq (hev.mono fun n hn ↦ hXY ω n hn) hω
-    have hv := summable_variance_of_ae_tendsto_sum hYm hYi hA hYb hYc
+    have hv := summable_variance_of_ae_tendsto_sum hYm hYi hYb hYc
     have hZ := ae_tendsto_sum_sub_integral_of_summable_variance hYm hYi hYL hv
     obtain ⟨ω, ⟨l₁, hl₁⟩, ⟨l₂, hl₂⟩⟩ := (hYc.and hZ).exists
     refine ⟨h1, ⟨l₁ - l₂, (hl₁.sub hl₂).congr fun n ↦ ?_⟩, hv⟩
@@ -394,5 +415,60 @@ theorem ae_summable_conditional_iff_threeSeries [IsProbabilityMeasure μ] (X : �
       (hω.mono fun n hn ↦ (hXY ω n (not_lt.1 hn)).symm) ⟨l + m, (hl.add hmean).congr fun n ↦ ?_⟩
     rw [← Finset.sum_add_distrib]
     exact Finset.sum_congr rfl fun k _ ↦ by simp [hY]
+
+/-- Convergence of partial sums in their given order.
+This is Mathlib conditional summability. For real sequences it allows conditional
+convergence, unlike unconditional `Summable`. -/
+abbrev IsOrderedSummable {E : Type*} [AddCommMonoid E] [TopologicalSpace E] (a : ℕ → E) : Prop :=
+  Summable a (SummationFilter.conditional ℕ)
+
+/-- Unconditional summability implies ordered summability. -/
+theorem Summable.isOrderedSummable {E : Type*} [TopologicalSpace E] [AddCommMonoid E]
+    {a : ℕ → E} (ha : Summable a) : IsOrderedSummable a :=
+  ha.mono_filter (SummationFilter.conditional ℕ).le_atTop
+
+/-- Symmetric truncation of a real random variable at the threshold `A`. -/
+@[expose]
+def symmetricTruncation {Ω : Type*} (A : ℝ) (X : Ω → ℝ) (ω : Ω) : ℝ :=
+  if |X ω| ≤ A then X ω else 0
+
+/-- Defining formula of `symmetricTruncation`. -/
+lemma symmetricTruncation_apply {Ω : Type*} (A : ℝ) (X : Ω → ℝ) (ω : Ω) :
+    symmetricTruncation A X ω = if |X ω| ≤ A then X ω else 0 :=
+  rfl
+
+/-- The symmetric truncation at a nonnegative threshold is bounded by the threshold. -/
+lemma abs_symmetricTruncation_le {Ω : Type*} {A : ℝ} (hA : 0 ≤ A) (X : Ω → ℝ) (ω : Ω) :
+    |symmetricTruncation A X ω| ≤ A := by
+  rw [symmetricTruncation_apply]
+  split_ifs with h
+  · exact h
+  · simpa using hA
+
+/-- The three conditions in Kolmogorov's theorem; only the mean series may converge
+conditionally. -/
+@[expose]
+def HasThreeSeries {Ω : Type*} [MeasurableSpace Ω]
+    (X : ℕ → Ω → ℝ) (μ : Measure Ω) (A : ℝ) : Prop :=
+  (∑' n, μ {ω | A < |X n ω|}) < ⊤ ∧
+    IsOrderedSummable (fun n ↦ ∫ ω, symmetricTruncation A (X n) ω ∂μ) ∧
+    Summable (fun n ↦ variance (symmetricTruncation A (X n)) μ)
+
+/-- Defining property of `HasThreeSeries`. -/
+lemma hasThreeSeries_iff {Ω : Type*} [MeasurableSpace Ω] {X : ℕ → Ω → ℝ} {μ : Measure Ω}
+    {A : ℝ} :
+    HasThreeSeries X μ A ↔ (∑' n, μ {ω | A < |X n ω|}) < ⊤ ∧
+      IsOrderedSummable (fun n ↦ ∫ ω, symmetricTruncation A (X n) ω ∂μ) ∧
+      Summable (fun n ↦ variance (symmetricTruncation A (X n)) μ) :=
+  Iff.rfl
+
+/-- **06.23**: Kolmogorov's three-series characterization at every fixed positive threshold.
+This is `ae_summable_conditional_iff_threeSeries`, restated with `IsOrderedSummable` and
+`HasThreeSeries`. -/
+theorem kolmogorov_threeSeries {Ω : Type*} [MeasurableSpace Ω] (μ : Measure Ω)
+    [IsProbabilityMeasure μ] (X : ℕ → Ω → ℝ) (hm : ∀ n, Measurable (X n))
+    (hi : iIndepFun X μ) {A : ℝ} (hA : 0 < A) :
+    (∀ᵐ ω ∂μ, IsOrderedSummable (fun n ↦ X n ω)) ↔ HasThreeSeries X μ A :=
+  ae_summable_conditional_iff_threeSeries X hm hi hA
 
 end CKMA

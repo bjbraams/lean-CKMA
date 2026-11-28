@@ -120,7 +120,7 @@ private lemma fderiv_cutoff_ae (n : ℕ) (j : Fin d) (f : Lp ℂ 2 (volume : Mea
     rw [hc, Pi.smul_apply, smul_eq_mul, hcut]
   have hint : Integrable (fun v ↦ (c • ξCut) v) volume :=
     (integrable_congr hcoe).2 ((integrable_freqCutoff n ξLp).smul c)
-  have hae := Integrable.coeFn_fourierInv_toLp hint (Lp.memLp (c • ξCut))
+  have hae := coeFn_fourierInv_toLp_of_integrable hint (Lp.memLp (c • ξCut))
   filter_upwards [hae] with x hx
   rw [hderiv, Real.fourierInv_congr_ae hψ, Real.fourierInv_congr_ae hcoe.symm, ← hx,
     Lp.toLp_coeFn _ (Lp.memLp (c • ξCut))]
@@ -152,7 +152,7 @@ private lemma coord_mul_cutoff_ae (n : ℕ) (j : Fin d) (f : Lp ℂ 2 (volume : 
           (gLp : TemperedDistribution V ℂ) := by rw [hinner]
     rw [← hsmul]
   have hg_ae : g =ᵐ[volume] fun x ↦ gLp x :=
-    (Integrable.coeFn_fourierInv_toLp (integrable_freqCutoff n (𝓕 f))
+    (coeFn_fourierInv_toLp_of_integrable (integrable_freqCutoff n (𝓕 f))
       (memLp_freqBump_mul n (𝓕 f))).symm
   apply ae_eq_of_integral_contDiff_smul_eq
     ((hasTemperateGrowth_coordFun j).1.continuous.mul
@@ -235,7 +235,7 @@ private lemma cutoff_sq_le (n : ℕ) (j : Fin d) (f : Lp ℂ 2 (volume : Measure
   let c : ℂ := -(2 * π * I)
   have hgcont : ContDiff ℝ (⊤ : ℕ∞) g := contDiff_fourierInv_freqCutoff n (𝓕 f)
   have hgae : g =ᵐ[volume] fun x ↦ (𝓕⁻ uLp) x :=
-    (Integrable.coeFn_fourierInv_toLp (integrable_freqCutoff n (𝓕 f))
+    (coeFn_fourierInv_toLp_of_integrable (integrable_freqCutoff n (𝓕 f))
       (memLp_freqBump_mul n (𝓕 f))).symm
   have hgmem : MemLp g 2 volume := (Lp.memLp (𝓕⁻ uLp)).ae_eq hgae.symm
   have hxae := coord_mul_cutoff_ae n j f hx
@@ -248,14 +248,14 @@ private lemma cutoff_sq_le (n : ℕ) (j : Fin d) (f : Lp ℂ 2 (volume : Measure
     rw [show hgmem.toLp g = 𝓕⁻ uLp from
       (MemLp.toLp_congr hgmem (Lp.memLp (𝓕⁻ uLp)) hgae).trans
         (Lp.toLp_coeFn (𝓕⁻ uLp) (Lp.memLp (𝓕⁻ uLp)))]
-    exact Lp.norm_fourierInv_eq uLp
+    exact norm_fourierInv_L2_eq uLp
   have hNx : ‖hxmem.toLp (fun x ↦ coordFun j x * g x)‖ =
       ‖c⁻¹‖ * ‖cutoffDerivLp n j f hx‖ := by
     rw [show hxmem.toLp (fun x ↦ coordFun j x * g x) =
         c⁻¹ • 𝓕⁻ (cutoffDerivLp n j f hx) from
       (MemLp.toLp_congr hxmem (Lp.memLp (c⁻¹ • 𝓕⁻ (cutoffDerivLp n j f hx))) hxae).trans
         (Lp.toLp_coeFn _ (Lp.memLp _))]
-    rw [norm_smul, Lp.norm_fourierInv_eq]
+    rw [norm_smul, norm_fourierInv_L2_eq]
   have hNd : ‖hdmem.toLp (fun x ↦ fderiv ℝ g x (coordVec j))‖ =
       (2 * π) * ‖freqMomentCut n j f hξ‖ := by
     rw [show hdmem.toLp (fun x ↦ fderiv ℝ g x (coordVec j)) =
@@ -263,7 +263,7 @@ private lemma cutoff_sq_le (n : ℕ) (j : Fin d) (f : Lp ℂ 2 (volume : Measure
       (MemLp.toLp_congr hdmem
         (Lp.memLp (𝓕⁻ ((2 * π * I : ℂ) • freqMomentCut n j f hξ))) hdae).trans
         (Lp.toLp_coeFn _ (Lp.memLp _))]
-    rw [Lp.norm_fourierInv_eq, norm_smul, norm_two_pi_I]
+    rw [norm_fourierInv_L2_eq, norm_smul, norm_two_pi_I]
   have hinv : ‖c⁻¹‖ = (2 * π)⁻¹ := by rw [norm_inv, norm_neg, norm_two_pi_I]
   have hbase := integral_norm_sq_le_two_mul_coord j hgcont hgmem hxmem hdmem
   calc ‖uLp‖ ^ 2 = ‖hgmem.toLp g‖ ^ 2 := by rw [hNg]

@@ -8,7 +8,7 @@ module
 public import CKMA.Analysis.Convex.Basic
 public import TauCeti.Analysis.Convex.Conjugate
 import CKMA.Analysis.Convex.Duality.Subdifferential
-import Mathlib.Tactic
+import TauCeti.Analysis.Convex.EffectiveDomain
 
 /-!
 # Fenchel–Rockafellar dual attainment
@@ -23,13 +23,18 @@ objective. Lower semicontinuity and completeness are not used. Source: Borwein�
 ## Main definitions
 
 * `CKMA.marginalValue`: the perturbation value function `y ↦ ⨅ x, f x + g (A x + y)`.
+* `CKMA.fenchelPrimalValue`: primal Fenchel value `⨅ x, f x + g (A x)`.
+* `CKMA.fenchelDualValue`: dual Fenchel objective `-f⋆(-A* u) - g⋆(u)`.
 
 ## Main results
 
 * `CKMA.fenchelConjugate_marginalValue`: Fenchel conjugate of the marginal value function.
 * `CKMA.fenchelDual_le_marginalValue`: weak Fenchel duality inequality.
-* `CKMA.exists_fenchelDual_maximizer_of_qual`: Fenchel–Rockafellar strong duality and dual
-  attainment under a continuity qualification (GAPS 12.39).
+* `CKMA.exists_fenchelDual_maximizer`: Fenchel–Rockafellar strong duality and dual attainment
+  under a continuity qualification (**12.39**); `exists_fenchelDual_maximizer_of_qual` is the
+  same statement for the marginal value.
+
+The convex-combination bound for epigraphs is TauCeti's `le_coe_of_convex_epigraph`.
 -/
 
 public section
@@ -43,16 +48,6 @@ open Set ContinuousLinearMap
 
 variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   [NormedAddCommGroup F] [NormedSpace ℝ F]
-
-/-- A convex real epigraph bounds a convex combination by the combination of the
-real representatives. -/
-private lemma le_coe_of_convex_epigraph {G : Type*} [AddCommMonoid G] [Module ℝ G]
-    {f : G → EReal} (hf : Convex ℝ {p : G × ℝ | f p.1 ≤ p.2})
-    {x y : G} (hx : f x ≠ ⊤) (hy : f y ≠ ⊤) {a b : ℝ}
-    (ha : 0 ≤ a) (hb : 0 ≤ b) (hab : a + b = 1) :
-    f (a • x + b • y) ≤ ((a * (f x).toReal + b * (f y).toReal : ℝ) : EReal) := by
-  simpa using hf (x := (x, (f x).toReal)) (y := (y, (f y).toReal))
-    (EReal.le_coe_toReal hx) (EReal.le_coe_toReal hy) ha hb hab
 
 /-- Subtracting a real twice returns the original extended real. -/
 private lemma sub_coe_sub_cancel (a : ℝ) (x : EReal) :
@@ -112,6 +107,43 @@ private lemma neg_add_eq_of_finite {a b : EReal} (ha_top : a ≠ ⊤) (ha_bot : 
 def marginalValue (f : E → EReal) (g : F → EReal) (A : E →L[ℝ] F) (y : F) : EReal :=
   ⨅ x, f x + g (A x + y)
 
+/-- Defining equation of `marginalValue`. -/
+theorem marginalValue_def (f : E → EReal) (g : F → EReal) (A : E →L[ℝ] F) (y : F) :
+    marginalValue f g A y = ⨅ x, f x + g (A x + y) := rfl
+
+/-- The primal Fenchel value `⨅ x, f x + g (A x)`, in extended reals. -/
+@[expose]
+def fenchelPrimalValue (f : E → EReal) (g : F → EReal) (A : E →L[ℝ] F) : EReal :=
+  ⨅ x, f x + g (A x)
+
+/-- Defining equation of `fenchelPrimalValue`. -/
+theorem fenchelPrimalValue_def (f : E → EReal) (g : F → EReal) (A : E →L[ℝ] F) :
+    fenchelPrimalValue f g A = ⨅ x, f x + g (A x) := rfl
+
+/-- The primal value is the marginal value at `0`. -/
+theorem fenchelPrimalValue_eq_marginalValue (f : E → EReal) (g : F → EReal) (A : E →L[ℝ] F) :
+    fenchelPrimalValue f g A = marginalValue f g A 0 := by
+  simp [fenchelPrimalValue, marginalValue]
+
+/-- The Fenchel dual objective `-f⋆(-A* u) - g⋆(u)`; the sign is on the pulled-back dual
+variable. -/
+@[expose]
+def fenchelDualValue (f : E → EReal) (g : F → EReal) (A : E →L[ℝ] F)
+    (u : StrongDual ℝ F) : EReal :=
+  -TauCeti.fenchelConjugate (topDualPairing ℝ E).flip f ((-u).comp A) -
+    TauCeti.fenchelConjugate (topDualPairing ℝ F).flip g u
+
+/-- Defining equation of `fenchelDualValue`. -/
+theorem fenchelDualValue_def (f : E → EReal) (g : F → EReal) (A : E →L[ℝ] F)
+    (u : StrongDual ℝ F) : fenchelDualValue f g A u =
+      -TauCeti.fenchelConjugate (topDualPairing ℝ E).flip f ((-u).comp A) -
+        TauCeti.fenchelConjugate (topDualPairing ℝ F).flip g u := rfl
+
+/-- At a point where both `f` and `g ∘ A` are finite, the primal value is `< ⊤`. -/
+theorem fenchelPrimalValue_ne_top {f : E → EReal} {g : F → EReal} {A : E →L[ℝ] F} {x₀ : E}
+    (hfin : f x₀ ≠ ⊤ ∧ g (A x₀) ≠ ⊤) : fenchelPrimalValue f g A ≠ ⊤ :=
+  ne_top_of_le_ne_top (EReal.add_ne_top hfin.1 hfin.2) (iInf_le (fun x => f x + g (A x)) x₀)
+
 /-- The marginal of two convex extended-real functions has convex real epigraph. -/
 private theorem convex_epigraph_marginalValue {f : E → EReal} {g : F → EReal}
     (A : E →L[ℝ] F) (hfbot : ∀ x, f x ≠ ⊥) (hgbot : ∀ z, g z ≠ ⊥)
@@ -160,8 +192,8 @@ private theorem convex_epigraph_marginalValue {f : E → EReal} {g : F → EReal
     exact hx2
   set z1 : F := A x1 + y1
   set z2 : F := A x2 + y2
-  have hfmid := le_coe_of_convex_epigraph hcf hf1 hf2 ha hb hab
-  have hgmid := le_coe_of_convex_epigraph hcg hg1 hg2 ha hb hab
+  have hfmid := TauCeti.le_coe_of_convex_epigraph hcf hf1 hf2 ha hb hab
+  have hgmid := TauCeti.le_coe_of_convex_epigraph hcg hg1 hg2 ha hb hab
   set xm : E := a • x1 + b • x2
   set zm : F := a • z1 + b • z2
   have hxm_top : f xm ≠ ⊤ := ne_top_of_le_ne_top (EReal.coe_ne_top _) hfmid
@@ -211,10 +243,9 @@ private theorem convex_epigraph_marginalValue {f : E → EReal} {g : F → EReal
 /-- Continuity of `g` at `A x₀`, with both values finite, bounds the marginal near `0`. -/
 private theorem exists_boundedAbove_marginalValue {f : E → EReal} {g : F → EReal}
     (A : E →L[ℝ] F) {x₀ : E} (hf0 : f x₀ ≠ ⊤) (hg0 : g (A x₀) ≠ ⊤)
-    (hfbot : ∀ x, f x ≠ ⊥) (hgbot : ∀ z, g z ≠ ⊥) (hcont : ContinuousAt g (A x₀)) :
+    (hfbot : ∀ x, f x ≠ ⊥) (hcont : ContinuousAt g (A x₀)) :
     ∃ U ∈ 𝓝 (0 : F), ∃ M : ℝ, ∀ y ∈ U, marginalValue f g A y ≤ (M : EReal) := by
-  obtain ⟨V, hV, N, hN⟩ :=
-    exists_boundedAbove_of_continuousAt hcont hg0 (hgbot (A x₀))
+  obtain ⟨V, hV, N, hN⟩ := exists_boundedAbove_of_continuousAt hcont hg0
   have hmap : Continuous fun y : F => A x₀ + y := continuous_const.add continuous_id
   have hpre : (fun y : F => A x₀ + y) ⁻¹' V ∈ 𝓝 (0 : F) :=
     hmap.continuousAt.preimage_mem_nhds (by simpa using hV)
@@ -339,13 +370,9 @@ private lemma marginal_term_le {f : E → EReal} {g : F → EReal} (A : E →L[�
 
 /-- An extended real that dominates every real number is `⊤`. -/
 private lemma eq_top_of_forall_coe_le {z : EReal}
-    (h : ∀ M : ℝ, (M : EReal) ≤ z) : z = ⊤ := by
-  induction z with
-  | top => rfl
-  | bot => exact (EReal.coe_ne_bot 0 (le_bot_iff.mp (h 0))).elim
-  | coe r =>
-    have h1 : r + 1 ≤ r := EReal.coe_le_coe_iff.mp (h (r + 1))
-    linarith
+    (h : ∀ M : ℝ, (M : EReal) ≤ z) : z = ⊤ :=
+  (EReal.eq_top_iff_forall_lt z).2 fun y ↦
+    (EReal.coe_lt_coe_iff.2 (lt_add_one y)).trans_le (h (y + 1))
 
 /-- A real bounded by every strictly smaller real lies under the extended real. -/
 private lemma le_of_forall_pos_sub_coe_le {z : EReal} {c : ℝ}
@@ -575,13 +602,15 @@ theorem fenchelDual_le_marginalValue {f : E → EReal} {g : F → EReal}
             ← EReal.coe_add, EReal.coe_le_coe_iff]
           linarith
 
-/-- **12.39**: continuity of `g` at a common finite point gives a dual maximizer. -/
+/-- Continuity of `g` at a common finite point gives a dual maximizer, in terms of the marginal
+value at `0`; this is the form of `exists_fenchelDual_maximizer` used by the sum rule. The
+marginal value at `0` is automatically `< ⊤`. -/
 theorem exists_fenchelDual_maximizer_of_qual {f : E → EReal} {g : F → EReal}
     (A : E →L[ℝ] F) (hf : IsProperERealFunction f) (hg : IsProperERealFunction g)
     (hcf : Convex ℝ {p : E × ℝ | f p.1 ≤ p.2})
     (hcg : Convex ℝ {p : F × ℝ | g p.1 ≤ p.2}) {x₀ : E}
     (hfin : f x₀ ≠ ⊤ ∧ g (A x₀) ≠ ⊤) (hcont : ContinuousAt g (A x₀))
-    (hval : marginalValue f g A 0 ≠ ⊥ ∧ marginalValue f g A 0 ≠ ⊤) :
+    (hval_bot : marginalValue f g A 0 ≠ ⊥) :
     ∃ u : StrongDual ℝ F,
       marginalValue f g A 0 =
         -TauCeti.fenchelConjugate (topDualPairing ℝ E).flip f ((-u).comp A) -
@@ -591,13 +620,15 @@ theorem exists_fenchelDual_maximizer_of_qual {f : E → EReal} {g : F → EReal}
               TauCeti.fenchelConjugate (topDualPairing ℝ F).flip g v ≤
             -TauCeti.fenchelConjugate (topDualPairing ℝ E).flip f ((-u).comp A) -
               TauCeti.fenchelConjugate (topDualPairing ℝ F).flip g u := by
+  have hval : marginalValue f g A 0 ≠ ⊥ ∧ marginalValue f g A 0 ≠ ⊤ :=
+    ⟨hval_bot, fenchelPrimalValue_eq_marginalValue f g A ▸ fenchelPrimalValue_ne_top hfin⟩
   have hfbot : ∀ x, f x ≠ ⊥ := hf.1
   have hgbot : ∀ z, g z ≠ ⊥ := hg.1
   obtain ⟨x₁, hx₁⟩ := hf.2
   obtain ⟨z₁, hz₁⟩ := hg.2
   have hconv := convex_epigraph_marginalValue A hfbot hgbot hcf hcg
   have hbd :=
-    exists_boundedAbove_marginalValue A hfin.1 hfin.2 hfbot hgbot hcont
+    exists_boundedAbove_marginalValue A hfin.1 hfin.2 hfbot hcont
   have hne : ∀ y, marginalValue f g A y ≠ ⊥ :=
     fun y => marginalValue_ne_bot A hconv hval.1 hbd y
   obtain ⟨u, hu⟩ := exists_mem_subdifferential_of_boundedAbove hconv hne hval.2 hbd
@@ -641,5 +672,20 @@ theorem exists_fenchelDual_maximizer_of_qual {f : E → EReal} {g : F → EReal}
       fenchelDual_le_marginalValue A hfbot hgbot ⟨x₁, hx₁⟩ ⟨z₁, hz₁⟩ v
     rw [hval_eq] at hv
     simpa only [hstarF, hstarG] using hv
+
+/-- **12.39**: Fenchel–Rockafellar equality and dual attainment. The continuity point of `g`
+belongs to both finite domains, and the primal infimum is `> ⊥` (it is `< ⊤` by `hfin`).
+Primal attainment is not asserted. -/
+theorem exists_fenchelDual_maximizer
+    {f : E → EReal} {g : F → EReal} (A : E →L[ℝ] F)
+    (hf : IsProperERealFunction f) (hg : IsProperERealFunction g)
+    (hcf : Convex ℝ {p : E × ℝ | f p.1 ≤ p.2})
+    (hcg : Convex ℝ {p : F × ℝ | g p.1 ≤ p.2})
+    {x₀ : E} (hfin : f x₀ ≠ ⊤ ∧ g (A x₀) ≠ ⊤) (hcont : ContinuousAt g (A x₀))
+    (hval : fenchelPrimalValue f g A ≠ ⊥) :
+    ∃ u : StrongDual ℝ F, fenchelPrimalValue f g A = fenchelDualValue f g A u ∧
+      ∀ v, fenchelDualValue f g A v ≤ fenchelDualValue f g A u := by
+  rw [fenchelPrimalValue_eq_marginalValue] at hval ⊢
+  exact exists_fenchelDual_maximizer_of_qual A hf hg hcf hcg hfin hcont hval
 
 end CKMA

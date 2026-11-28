@@ -8,6 +8,8 @@ module
 public import Mathlib.Analysis.InnerProductSpace.l2Space
 public import Mathlib.Analysis.InnerProductSpace.Adjoint
 
+import CKMA.Analysis.InnerProductSpace.LpTwo
+
 import Mathlib.Analysis.InnerProductSpace.Positive
 
 /-!
@@ -40,7 +42,7 @@ bounded linear maps.
 
 * `CKMA.IsBesselSequence.exists_analysis`: existence of a bounded analysis operator for a Bessel
   family.
-* `CKMA.isFrame_iff_frameOperatorOfAnalysis_invertible`: frame characterization via invertibility
+* `CKMA.isFrame_iff_isUnit_frameOperatorOfAnalysis`: frame characterization via invertibility
   of the frame operator (**29.2**).
 * `CKMA.isFrame_iff_surjective_adjoint`: frame characterization via surjectivity of synthesis.
 * `CKMA.canonicalDualFrame_reconstruction`: reciprocal bounds and unconditional reconstruction
@@ -84,15 +86,56 @@ def IsFrameAnalysis (f : ι → H) (C : H →L[𝕜] lp (fun _ : ι ↦ 𝕜) 2)
   ∀ x i, C x i = ⟪f i, x⟫_𝕜
 
 omit [CompleteSpace H] in
+/-- The coefficient energy is the extended sum of the squared inner products. -/
+theorem frameEnergy_def (f : ι → H) (x : H) :
+    frameEnergy (𝕜 := 𝕜) f x = ∑' i, ENNReal.ofReal (‖⟪f i, x⟫_𝕜‖ ^ 2) :=
+  rfl
+
+omit [CompleteSpace H] in
+/-- Unfolding `IsBesselSequence`. -/
+theorem isBesselSequence_iff {f : ι → H} {B : ℝ} :
+    IsBesselSequence (𝕜 := 𝕜) f B ↔
+      0 ≤ B ∧ ∀ x, frameEnergy (𝕜 := 𝕜) f x ≤ ENNReal.ofReal (B * ‖x‖ ^ 2) :=
+  Iff.rfl
+
+omit [CompleteSpace H] in
+/-- Unfolding `IsFrameWithBounds`. -/
+theorem isFrameWithBounds_iff {f : ι → H} {A B : ℝ} :
+    IsFrameWithBounds (𝕜 := 𝕜) f A B ↔
+      0 < A ∧ A ≤ B ∧ ∀ x, ENNReal.ofReal (A * ‖x‖ ^ 2) ≤ frameEnergy (𝕜 := 𝕜) f x ∧
+        frameEnergy (𝕜 := 𝕜) f x ≤ ENNReal.ofReal (B * ‖x‖ ^ 2) :=
+  Iff.rfl
+
+omit [CompleteSpace H] in
+/-- A family with frame bounds `A ≤ B` is a Bessel sequence with bound `B`. -/
+theorem IsFrameWithBounds.isBesselSequence {f : ι → H} {A B : ℝ}
+    (hf : IsFrameWithBounds (𝕜 := 𝕜) f A B) : IsBesselSequence (𝕜 := 𝕜) f B :=
+  ⟨hf.1.le.trans hf.2.1, fun x ↦ (hf.2.2 x).2⟩
+
+omit [CompleteSpace H] in
+/-- Unfolding `IsFrame`. -/
+theorem isFrame_iff {f : ι → H} : IsFrame (𝕜 := 𝕜) f ↔ ∃ A B, IsFrameWithBounds (𝕜 := 𝕜) f A B :=
+  Iff.rfl
+
+omit [CompleteSpace H] in
+/-- A family with explicit frame bounds is a frame. -/
+theorem IsFrameWithBounds.isFrame {f : ι → H} {A B : ℝ} (hf : IsFrameWithBounds (𝕜 := 𝕜) f A B) :
+    IsFrame (𝕜 := 𝕜) f :=
+  ⟨A, B, hf⟩
+
+omit [CompleteSpace H] in
+/-- Unfolding `IsFrameAnalysis`. -/
+theorem isFrameAnalysis_iff {f : ι → H} {C : H →L[𝕜] lp (fun _ : ι ↦ 𝕜) 2} :
+    IsFrameAnalysis f C ↔ ∀ x i, C x i = ⟪f i, x⟫_𝕜 :=
+  Iff.rfl
+
+omit [CompleteSpace H] in
 /-- The energy of a family with bounded analysis equals the squared analysis norm. -/
 theorem IsFrameAnalysis.frameEnergy_eq {f : ι → H}
     {C : H →L[𝕜] lp (fun _ : ι ↦ 𝕜) 2} (hC : IsFrameAnalysis f C) (x : H) :
     frameEnergy (𝕜 := 𝕜) f x = ENNReal.ofReal (‖C x‖ ^ 2) := by
-  have hs : Summable (fun i ↦ ‖C x i‖ ^ 2) := by
-    simpa using (lp.memℓp (C x)).summable (by norm_num : 0 < (2 : ℝ≥0∞).toReal)
-  have hn : ‖C x‖ ^ 2 = ∑' i, ‖C x i‖ ^ 2 := by
-    simpa using lp.norm_rpow_eq_tsum (by norm_num : 0 < (2 : ℝ≥0∞).toReal) (C x)
-  rw [hn, ENNReal.ofReal_tsum_of_nonneg (fun _ ↦ sq_nonneg _) hs]
+  rw [lp.norm_sq_eq_tsum, ENNReal.ofReal_tsum_of_nonneg (fun _ ↦ sq_nonneg _)
+    (lp.summable_norm_sq (C x))]
   simp only [frameEnergy, hC x]
 
 omit [CompleteSpace H] in
@@ -152,6 +195,16 @@ theorem IsBesselSequence.exists_analysis {f : ι → H} {B : ℝ} (hf : IsBessel
 @[expose]
 def frameOperatorOfAnalysis (C : H →L[𝕜] lp (fun _ : ι ↦ 𝕜) 2) : H →L[𝕜] H := C.adjoint.comp C
 
+/-- The frame operator is `C^* ∘ C`. -/
+theorem frameOperatorOfAnalysis_def (C : H →L[𝕜] lp (fun _ : ι ↦ 𝕜) 2) :
+    frameOperatorOfAnalysis C = C.adjoint.comp C :=
+  rfl
+
+/-- The frame operator at a vector is synthesis of its analysis coefficients. -/
+theorem frameOperatorOfAnalysis_apply_eq (C : H →L[𝕜] lp (fun _ : ι ↦ 𝕜) 2) (x : H) :
+    frameOperatorOfAnalysis C x = C.adjoint (C x) :=
+  rfl
+
 /-- Applying an invertible representative of the frame operator is synthesis of the analysis. -/
 theorem frameOperatorOfAnalysis_apply
     {C : H →L[𝕜] lp (fun _ : ι ↦ 𝕜) 2}
@@ -185,41 +238,36 @@ theorem IsFrameAnalysis.isFrame_of_surjective_adjoint {f : ι → H}
     have hcancel : ‖x‖ ≤ K * ‖C x‖ := by nlinarith
     exact (inv_mul_le_iff₀ hK).2 hcancel
 
-/-- **29.2**: a Bessel family is a frame precisely when its frame operator is boundedly
-invertible. -/
-theorem isFrame_iff_frameOperatorOfAnalysis_invertible (f : ι → H)
+/-- **29.2**: a family with a bounded analysis operator `C` is a frame precisely when its frame
+operator `C^* C` is invertible. -/
+theorem isFrame_iff_isUnit_frameOperatorOfAnalysis (f : ι → H)
     (C : H →L[𝕜] lp (fun _ : ι ↦ 𝕜) 2) (hC : IsFrameAnalysis f C) :
-    IsFrame (𝕜 := 𝕜) f ↔ ∃ S : H ≃L[𝕜] H, S.toContinuousLinearMap = frameOperatorOfAnalysis C := by
+    IsFrame (𝕜 := 𝕜) f ↔ IsUnit (frameOperatorOfAnalysis C) := by
   constructor
   · intro hf
     obtain ⟨c, hc, hlow⟩ := hC.isFrame_iff_exists_lower_bound.1 hf
-    have hunit : IsUnit (frameOperatorOfAnalysis C) := by
-      apply ContinuousLinearMap.isUnit_of_forall_le_norm_inner_map (frameOperatorOfAnalysis C)
-        (c := ⟨c ^ 2, sq_nonneg c⟩) (by exact_mod_cast sq_pos_of_pos hc)
-      intro x
-      change ‖x‖ ^ 2 * c ^ 2 ≤ ‖⟪C.adjoint (C x), x⟫_𝕜‖
-      rw [C.adjoint_inner_left]
-      simp only [inner_self_eq_norm_sq_to_K, norm_pow, RCLike.norm_ofReal, abs_norm]
-      simpa only [mul_pow, mul_comm] using
-        pow_le_pow_left₀ (mul_nonneg hc.le (norm_nonneg x)) (hlow x) 2
-    obtain ⟨hinj, hsurj⟩ := ContinuousLinearMap.isUnit_iff_bijective.1 hunit
-    exact ⟨ContinuousLinearEquiv.ofBijective (frameOperatorOfAnalysis C)
-      (LinearMap.ker_eq_bot.2 hinj) (LinearMap.range_eq_top.2 hsurj), rfl⟩
-  · rintro ⟨S, hS⟩
+    apply ContinuousLinearMap.isUnit_of_forall_le_norm_inner_map (frameOperatorOfAnalysis C)
+      (c := ⟨c ^ 2, sq_nonneg c⟩) (by exact_mod_cast sq_pos_of_pos hc)
+    intro x
+    rw [frameOperatorOfAnalysis_apply_eq, C.adjoint_inner_left]
+    simp only [inner_self_eq_norm_sq_to_K, norm_pow, RCLike.norm_ofReal, abs_norm]
+    have h : c ^ 2 * ‖x‖ ^ 2 ≤ ‖C x‖ ^ 2 := by
+      simpa only [mul_pow] using pow_le_pow_left₀ (mul_nonneg hc.le (norm_nonneg x)) (hlow x) 2
+    exact (mul_comm _ _).le.trans h
+  · intro hunit
     apply hC.isFrame_of_surjective_adjoint
     intro x
-    refine ⟨C (S.symm x), frameOperatorOfAnalysis_adjoint_symm_apply S hS x⟩
+    obtain ⟨y, hy⟩ := (ContinuousLinearMap.isUnit_iff_bijective.1 hunit).2 x
+    exact ⟨C y, hy⟩
 
 /-- The equivalent synthesis-surjectivity criterion. -/
 theorem isFrame_iff_surjective_adjoint (f : ι → H)
     (C : H →L[𝕜] lp (fun _ : ι ↦ 𝕜) 2) (hC : IsFrameAnalysis f C) :
     IsFrame (𝕜 := 𝕜) f ↔ Function.Surjective C.adjoint := by
-  constructor
-  · intro hf
-    obtain ⟨S, hS⟩ := (isFrame_iff_frameOperatorOfAnalysis_invertible f C hC).1 hf
-    intro x
-    refine ⟨C (S.symm x), frameOperatorOfAnalysis_adjoint_symm_apply S hS x⟩
-  · exact hC.isFrame_of_surjective_adjoint
+  refine ⟨fun hf x ↦ ?_, hC.isFrame_of_surjective_adjoint⟩
+  obtain ⟨y, hy⟩ := (ContinuousLinearMap.isUnit_iff_bijective.1
+    ((isFrame_iff_isUnit_frameOperatorOfAnalysis f C hC).1 hf)).2 x
+  exact ⟨C y, hy⟩
 
 /-- The adjoint of analysis sends a single coefficient to the corresponding frame vector. -/
 theorem IsFrameAnalysis.adjoint_single [DecidableEq ι] {f : ι → H}
@@ -256,6 +304,12 @@ theorem IsFrameAnalysis.norm_le_sqrt {f : ι → H}
 /-- The canonical dual family for a supplied invertible frame operator. -/
 @[expose]
 def canonicalDualFrame (f : ι → H) (S : H ≃L[𝕜] H) : ι → H := fun i ↦ S.symm (f i)
+
+omit [CompleteSpace H] in
+/-- The canonical dual vector is the inverse frame operator applied to the frame vector. -/
+theorem canonicalDualFrame_apply (f : ι → H) (S : H ≃L[𝕜] H) (i : ι) :
+    canonicalDualFrame f S i = S.symm (f i) :=
+  rfl
 
 /-- The analysis of the canonical dual is analysis composed with the inverse frame operator. -/
 theorem IsFrameAnalysis.canonicalDualFrame {f : ι → H}

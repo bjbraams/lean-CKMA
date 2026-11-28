@@ -60,11 +60,21 @@ def fractionalEnergy {d : ℕ} (s : ℝ) (u : EuclideanSpace ℝ (Fin d) → ℂ
   ∫⁻ x, ∫⁻ y, ENNReal.ofReal (‖u x - u y‖ ^ 2) /
     ENNReal.ofReal (‖x - y‖ ^ ((d : ℝ) + 2 * s))
 
+/-- Defining equation of `fractionalEnergy`. -/
+theorem fractionalEnergy_def {d : ℕ} (s : ℝ) (u : EuclideanSpace ℝ (Fin d) → ℂ) :
+    fractionalEnergy s u = ∫⁻ x, ∫⁻ y, ENNReal.ofReal (‖u x - u y‖ ^ 2) /
+      ENNReal.ofReal (‖x - y‖ ^ ((d : ℝ) + 2 * s)) := rfl
+
 /-- The Bessel-potential energy at order `s`, on the Fourier side of `L²`. -/
 @[expose]
 def besselPotentialEnergy {d : ℕ} (s : ℝ)
     (u : Lp ℂ 2 (volume : Measure (EuclideanSpace ℝ (Fin d)))) : ℝ≥0∞ :=
   ∫⁻ ξ, ENNReal.ofReal ((1 + ‖ξ‖ ^ 2) ^ s * ‖(𝓕 u) ξ‖ ^ 2)
+
+/-- Defining equation of `besselPotentialEnergy`. -/
+theorem besselPotentialEnergy_def {d : ℕ} (s : ℝ)
+    (u : Lp ℂ 2 (volume : Measure (EuclideanSpace ℝ (Fin d)))) :
+    besselPotentialEnergy s u = ∫⁻ ξ, ENNReal.ofReal ((1 + ‖ξ‖ ^ 2) ^ s * ‖(𝓕 u) ξ‖ ^ 2) := rfl
 
 /-- Euclidean space indexed by the empty type is a single point. -/
 private lemma euclideanSpace_fin_zero_eq (x y : EuclideanSpace ℝ (Fin 0)) : x = y := by
@@ -361,7 +371,7 @@ private lemma fractional_bessel_bound {d : ℕ} (hd : 0 < d) {s : ℝ} (hs : 0 <
       _ = ENNReal.ofReal (2 ^ s) * ∫⁻ ξ, fSum ξ := hupEq
       _ = ENNReal.ofReal (2 ^ s) * ((∫⁻ ξ, fN ξ) + (∫⁻ ξ, fA ξ)) := by rw [← hsumEq]
       _ = ENNReal.ofReal (2 ^ s) * (ENNReal.ofReal (‖u‖ ^ 2) + A) := by rw [hN', hA']
-  have hcmp := ennreal_weighted_comparable hK hlo hhi
+  have hcmp := le_and_le_of_weight_bounds hK hlo hhi
   rw [← hE] at hcmp
   exact hcmp
 
@@ -405,14 +415,19 @@ theorem fractionalEnergy_ne_top_iff {d : ℕ} {s : ℝ}
       exact (ENNReal.add_ne_top.1 hsum).2
 
 
-/-- Quantitative equivalence of the inhomogeneous fractional and Bessel square energies. -/
-theorem fractional_bessel_energy_comparable {d : ℕ} (hd : 0 < d) {s : ℝ}
+/-- Quantitative equivalence of the inhomogeneous fractional and Bessel square energies. In
+dimension `0` both sides are `‖u‖²` and `c = C = 1`. -/
+theorem fractional_bessel_energy_comparable {d : ℕ} {s : ℝ}
     (hs : 0 < s) (hs1 : s < 1) : ∃ c C : ℝ, 0 < c ∧ 0 < C ∧
       ∀ u : Lp ℂ 2 (volume : Measure (EuclideanSpace ℝ (Fin d))),
         ENNReal.ofReal c * (ENNReal.ofReal (‖u‖ ^ 2) + fractionalEnergy s u) ≤
           besselPotentialEnergy s u ∧
         besselPotentialEnergy s u ≤
-          ENNReal.ofReal C * (ENNReal.ofReal (‖u‖ ^ 2) + fractionalEnergy s u) :=
-  fractional_bessel_bound hd hs hs1
+          ENNReal.ofReal C * (ENNReal.ofReal (‖u‖ ^ 2) + fractionalEnergy s u) := by
+  cases d with
+  | zero =>
+    refine ⟨1, 1, one_pos, one_pos, fun u => ?_⟩
+    simp [fractionalEnergy_eq_zero_dim, besselPotentialEnergy_eq_normSq_zero]
+  | succ n => exact fractional_bessel_bound (Nat.succ_pos n) hs hs1
 
 end CKMA

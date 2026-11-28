@@ -80,6 +80,9 @@ private lemma norm_sq_eq_integral_norm_sq
 def coordVec (j : Fin d) : V :=
   EuclideanSpace.single j 1
 
+/-- `coordVec j` is `EuclideanSpace.single j 1`. -/
+lemma coordVec_def (j : Fin d) : coordVec j = EuclideanSpace.single j 1 := rfl
+
 /-- The `j`-th coordinate of `eⱼ` is `1`. -/
 private lemma coordVec_apply (j : Fin d) : coordVec j j = 1 := by
   simp [coordVec]
@@ -92,6 +95,9 @@ private lemma norm_coordVec (j : Fin d) : ‖coordVec j‖ = 1 := by
 @[expose]
 def coordFun (j : Fin d) : V → ℂ :=
   fun x ↦ (x j : ℂ)
+
+/-- `coordFun j x` is the complexified `j`-th coordinate. -/
+lemma coordFun_apply (j : Fin d) (x : V) : coordFun j x = (x j : ℂ) := rfl
 
 /-- The complex coordinate agrees with the real inner product against `eⱼ`. -/
 lemma coordFun_eq_inner (j : Fin d) (x : V) :
@@ -312,11 +318,21 @@ lemma norm_fourier_coord_eq (j : Fin d) (f : Lp ℂ 2 (volume : Measure V))
 def baseBump : ContDiffBump (0 : V) :=
   ⟨1, 2, zero_lt_one, one_lt_two⟩
 
+/-- The inner radius of the base bump is `1`. -/
+lemma baseBump_rIn : (baseBump : ContDiffBump (0 : V)).rIn = 1 := rfl
+
+/-- The outer radius of the base bump is `2`. -/
+lemma baseBump_rOut : (baseBump : ContDiffBump (0 : V)).rOut = 2 := rfl
+
 /-- Frequency cutoff `φₙ` at scale `n + 1`: the base bump rescaled by `n + 1`, equal to one
 on the ball of radius `n + 1` and supported in the ball of radius `2 (n + 1)`. -/
 @[expose]
 def freqBump (n : ℕ) (x : V) : ℝ :=
   (baseBump : ContDiffBump (0 : V)) (((n : ℝ) + 1)⁻¹ • x)
+
+/-- Unfolding the frequency cutoff. -/
+lemma freqBump_def (n : ℕ) (x : V) :
+    freqBump n x = (baseBump : ContDiffBump (0 : V)) (((n : ℝ) + 1)⁻¹ • x) := rfl
 
 /-- The frequency cutoff is smooth. -/
 private lemma contDiff_freqBump (n : ℕ) :
@@ -518,7 +534,6 @@ private lemma integrable_pow_mul_freqBump (n k : ℕ) (u : Lp ℂ 2 (volume : Me
     abs_of_nonneg hφ.1, abs_of_nonneg (pow_nonneg (norm_nonneg _) _), mul_assoc]
 
 /-- Pointwise product of an `L²` class by the frequency cutoff. -/
-@[expose]
 abbrev freqCutoff (n : ℕ) (u : Lp ℂ 2 (volume : Measure V)) : V → ℂ :=
   fun x ↦ (freqBump n x : ℂ) * u x
 
@@ -600,6 +615,9 @@ lemma fderiv_fourierInv_freqCutoff_coord (n : ℕ) (j : Fin d)
 def freqBumpScaled (n : ℕ) : V → ℂ :=
   fun x ↦ (freqBump n x : ℂ)
 
+/-- Unfolding the complex cutoff. -/
+lemma freqBumpScaled_apply (n : ℕ) (x : V) : freqBumpScaled n x = (freqBump n x : ℂ) := rfl
+
 /-- The complex cutoff has temperate growth. -/
 private lemma freqBumpScaled_hasTemperateGrowth (n : ℕ) :
     Function.HasTemperateGrowth (freqBumpScaled n : V → ℂ) := by
@@ -625,6 +643,10 @@ lemma memLp_top_freqBumpScaled (n : ℕ) :
 @[expose]
 def freqBumpDeriv (n : ℕ) (j : Fin d) : V → ℂ :=
   fun x ↦ (fderiv ℝ (freqBump n) x (coordVec j) : ℂ)
+
+/-- Unfolding the complexified cutoff derivative. -/
+lemma freqBumpDeriv_apply (n : ℕ) (j : Fin d) (x : V) :
+    freqBumpDeriv n j x = (fderiv ℝ (freqBump n) x (coordVec j) : ℂ) := rfl
 
 /-- The complexified cutoff derivative is the chain-rule derivative of `φₙ`. -/
 private lemma freqBumpDeriv_eq_fderiv (n : ℕ) (j : Fin d) (x : V) :

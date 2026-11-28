@@ -6,13 +6,13 @@ Authors: CKMA contributors
 module
 
 public import Mathlib.Analysis.InnerProductSpace.Adjoint
-public import Mathlib.Topology.Algebra.Module.Equiv.Submodule
 public import Mathlib.Analysis.Normed.Operator.Fredholm.Basic
 public import Mathlib.Analysis.Normed.Operator.Compact.Basic
-public import Mathlib.Analysis.CStarAlgebra.Classes
+public import TauCeti.Analysis.Fredholm.CompactPerturbation
 
+import Mathlib.Topology.Algebra.Module.Equiv.Submodule
+import Mathlib.Analysis.CStarAlgebra.Classes
 import TauCeti.Analysis.Fredholm.Adjoint
-import TauCeti.Analysis.Fredholm.CompactPerturbation
 import TauCeti.Analysis.Normed.Operator.Compact.Finite.Rank
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Basic
 import Mathlib.Analysis.CStarAlgebra.ContinuousLinearMap
@@ -21,8 +21,7 @@ import Mathlib.Analysis.CStarAlgebra.ContinuousLinearMap
 # Atkinson's theorem and the Fredholm essential spectrum
 
 For real or complex Banach spaces, a Fredholm operator has a bounded inverse modulo compact
-remainders, and conversely. The proof uses TauCeti's compact-perturbation theorem and the
-kernel/cokernel squeezing argument of the Tau Ceti contributors in
+remainders, and conversely; this is TauCeti's Atkinson theorem in
 `TauCeti.Analysis.Fredholm.CompactPerturbation`.
 
 For endomorphisms the Fredholm essential spectrum is invariant under compact perturbations.
@@ -38,8 +37,9 @@ Sources: GAPS 21.11 and 21.16.
 
 ## Main results
 
-* `CKMA.isFredholm_iff_exists_compact_remainders`: Atkinson's characterization of Fredholm
-  operators.
+* Atkinson's characterization of Fredholm operators (**21.11**) is TauCeti's
+  `TauCeti.isFredholm_iff_exists_isCompactOperator_comp_sub_one`, over any complete nontrivially
+  normed field.
 * `CKMA.essentialSpectrum_add_compact`: stability of the Fredholm essential spectrum under
   compact perturbations.
 * `CKMA.mem_spectrum_sdiff_essentialSpectrum_iff`: discrete spectrum of a self-adjoint operator.
@@ -53,59 +53,6 @@ namespace CKMA
 
 open ContinuousLinearMap Filter Topology
 
-section Atkinson
-
-variable {𝕜 E F : Type*} [RCLike 𝕜]
-    [NormedAddCommGroup E] [NormedSpace 𝕜 E] [CompleteSpace E]
-    [NormedAddCommGroup F] [NormedSpace 𝕜 F] [CompleteSpace F]
-
-/-- **21.11**, Atkinson's theorem for operators between real or complex Banach spaces.
-The proof adapts the kernel/cokernel squeezing argument of the Tau Ceti contributors in
-`TauCeti.Analysis.Fredholm.CompactPerturbation`, using its proved compact-perturbation theorem. -/
-theorem isFredholm_iff_exists_compact_remainders (T : E →L[𝕜] F) :
-    IsFredholm T ↔ ∃ S : F →L[𝕜] E,
-      IsCompactOperator (S.comp T - 1 : E →L[𝕜] E) ∧
-      IsCompactOperator (T.comp S - 1 : F →L[𝕜] F) := by
-  constructor
-  · intro hT
-    obtain ⟨S, hS⟩ := hT.exists_isQuasiInverse
-    refine ⟨S, ?_, ?_⟩
-    · apply LinearMap.HasFiniteRange.isCompactOperator
-      simpa only [ContinuousLinearMap.toLinearMap_sub, ContinuousLinearMap.toLinearMap_comp,
-        ContinuousLinearMap.toLinearMap_one, Module.End.one_eq_id] using
-        LinearMap.FiniteRangeSetoid.equiv_iff_hasFiniteRange.mp hS.1
-    · apply LinearMap.HasFiniteRange.isCompactOperator
-      simpa only [ContinuousLinearMap.toLinearMap_sub, ContinuousLinearMap.toLinearMap_comp,
-        ContinuousLinearMap.toLinearMap_one, Module.End.one_eq_id] using
-        LinearMap.FiniteRangeSetoid.equiv_iff_hasFiniteRange.mp hS.2
-  · rintro ⟨S, hleft, hright⟩
-    have hST : IsFredholm (S.comp T) := by
-      have h := TauCeti.isFredholm_one_add hleft
-      convert h using 1
-      abel
-    have hTS : IsFredholm (T.comp S) := by
-      have h := TauCeti.isFredholm_one_add hright
-      convert h using 1
-      abel
-    apply IsFredholm.of_finite_ker_coker T
-    · have hker : LinearMap.ker (T : E →ₗ[𝕜] F) ≤
-          LinearMap.ker ((S.comp T) : E →ₗ[𝕜] E) := by
-        intro x hx
-        rw [LinearMap.mem_ker] at hx ⊢
-        simpa only [ContinuousLinearMap.coe_coe, ContinuousLinearMap.comp_apply, map_zero] using
-          congrArg S hx
-      have := hST.finite_ker
-      exact Submodule.finiteDimensional_of_le hker
-    · have hrange : LinearMap.range ((T.comp S) : F →ₗ[𝕜] F) ≤
-          LinearMap.range (T : E →ₗ[𝕜] F) := by
-        rintro y ⟨z, rfl⟩
-        exact ⟨S z, rfl⟩
-      have := hTS.finite_coker
-      exact FiniteDimensional.of_surjective (Submodule.factor hrange)
-        (Submodule.factor_surjective hrange)
-
-end Atkinson
-
 variable {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] [CompleteSpace E]
 
 /-- The Fredholm essential spectrum. Other notions of essential spectrum need not agree
@@ -113,6 +60,18 @@ for non-self-adjoint operators. -/
 @[expose]
 def essentialSpectrum (T : E →L[𝕜] E) : Set 𝕜 :=
   {z | ¬ IsFredholm (T - z • (1 : E →L[𝕜] E))}
+
+omit [CompleteSpace E] in
+/-- Membership in the Fredholm essential spectrum. -/
+theorem mem_essentialSpectrum_iff (T : E →L[𝕜] E) (z : 𝕜) :
+    z ∈ essentialSpectrum T ↔ ¬ IsFredholm (T - z • (1 : E →L[𝕜] E)) :=
+  Iff.rfl
+
+omit [CompleteSpace E] in
+/-- A point lies outside the Fredholm essential spectrum iff `T - z • 1` is Fredholm. -/
+theorem notMem_essentialSpectrum_iff (T : E →L[𝕜] E) (z : 𝕜) :
+    z ∉ essentialSpectrum T ↔ IsFredholm (T - z • (1 : E →L[𝕜] E)) :=
+  not_not
 
 /-- Compact perturbations preserve the Fredholm essential spectrum, without self-adjointness. -/
 theorem essentialSpectrum_add_compact (T K : E →L[𝕜] E) (hK : IsCompactOperator K) :
@@ -136,6 +95,11 @@ theorem essentialSpectrum_add_compact (T K : E →L[𝕜] E) (hK : IsCompactOper
 @[expose]
 def IsIsolatedIn {X : Type*} [TopologicalSpace X] (x : X) (s : Set X) : Prop :=
   x ∈ s ∧ ∀ᶠ y in 𝓝 x, y ∈ s → y = x
+
+/-- The defining property of an isolated point. -/
+theorem isIsolatedIn_iff {X : Type*} [TopologicalSpace X] (x : X) (s : Set X) :
+    IsIsolatedIn x s ↔ x ∈ s ∧ ∀ᶠ y in 𝓝 x, y ∈ s → y = x :=
+  Iff.rfl
 
 /-- The indicator of an isolated point is continuous along the ambient set. -/
 private lemma continuousOn_indicator_isolated {z : ℂ} {s : Set ℂ} (h : IsIsolatedIn z s) :
@@ -246,8 +210,8 @@ private lemma isUnit_of_isUnit_restrict_orthogonal
     rw [hSx1, hSx2, K.starProjection_add_starProjection_orthogonal]
 
 /-- If `w` lies in the spectrum of `a`, then `a - w • 1` is not invertible. -/
-private lemma not_isUnit_sub_smul_one_of_mem_spectrum {A : Type*} [Ring A] [Algebra ℂ A]
-    {a : A} {w : ℂ} (hw : w ∈ spectrum ℂ a) : ¬ IsUnit (a - w • (1 : A)) := by
+theorem not_isUnit_sub_smul_one_of_mem_spectrum {R A : Type*} [CommRing R] [Ring A]
+    [Algebra R A] {a : A} {w : R} (hw : w ∈ spectrum R a) : ¬ IsUnit (a - w • (1 : A)) := by
   intro hunit
   apply spectrum.mem_iff.mp hw
   rw [Algebra.algebraMap_eq_smul_one, ← neg_sub]
@@ -291,7 +255,7 @@ private lemma exists_isUnit_sub_smul_of_isFredholm {H : Type*} [NormedAddCommGro
     ∃ eps > 0, ∀ c : ℂ, c ≠ 0 → ‖c‖ < eps → IsUnit (S - c • (1 : H →L[ℂ] H)) := by
   let K : Submodule ℂ H := LinearMap.ker (S : H →ₗ[ℂ] H)
   have : FiniteDimensional ℂ K := hfred.finite_ker
-  have : CompleteSpace K := FiniteDimensional.complete ℂ K
+  have : CompleteSpace K := FiniteDimensional.completeSpace ℂ K
   have hclosed : IsClosed (LinearMap.range (S : H →ₗ[ℂ] H) : Set H) := hfred.isClosed_range
   have hrange : LinearMap.range (S : H →ₗ[ℂ] H) = Kᗮ :=
     range_eq_orthogonal_ker_of_isFredholm hS hfred
@@ -443,7 +407,7 @@ private lemma isFredholm_sub_smul_of_isIsolatedIn {H : Type*} [NormedAddCommGrou
       cfc_const_one ℂ T]
   have hleft : Q.comp Sz - 1 = -P := by rw [← mul_def, hQSz]; abel
   have hright : Sz.comp Q - 1 = -P := by rw [← mul_def, hSzQ]; abel
-  refine (isFredholm_iff_exists_compact_remainders Sz).2 ⟨Q, ?_, ?_⟩
+  refine (TauCeti.isFredholm_iff_exists_isCompactOperator_comp_sub_one (T := Sz)).2 ⟨Q, ?_, ?_⟩
   · rw [hleft]; exact hneg
   · rw [hright]; exact hneg
 
@@ -461,13 +425,13 @@ theorem mem_spectrum_sdiff_essentialSpectrum_iff {H : Type*} [NormedAddCommGroup
   · rintro ⟨hzspec, hnot⟩
     have hfred : IsFredholm (T - z • (1 : H →L[ℂ] H)) := by
       by_contra h
-      exact hnot (by simpa [essentialSpectrum] using h)
+      exact hnot ((mem_essentialSpectrum_iff _ _).2 h)
     exact ⟨isIsolatedIn_spectrum_of_isFredholm hT hzspec hfred,
       ker_ne_bot_of_isFredholm_of_not_isUnit
         (isSelfAdjoint_sub_smul_one_of_mem_spectrum hT hzspec) hfred
         (not_isUnit_sub_smul_one_of_mem_spectrum hzspec), hfred.finite_ker⟩
   · rintro ⟨hiso, _, hfin⟩
     refine ⟨hiso.1, fun hmem => hmem ?_⟩
-    simpa [essentialSpectrum] using isFredholm_sub_smul_of_isIsolatedIn hT hiso hfin
+    exact isFredholm_sub_smul_of_isIsolatedIn hT hiso hfin
 
 end CKMA

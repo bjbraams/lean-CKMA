@@ -49,6 +49,11 @@ namespace InfinitelyDivisible
 def truncCompensator (x : ℝ) : ℝ :=
   if |x| ≤ 1 then x else 0
 
+/-- Defining formula of `truncCompensator`. -/
+lemma truncCompensator_def (x : ℝ) :
+    truncCompensator x = if |x| ≤ 1 then x else 0 :=
+  rfl
+
 /-- The truncation `x 1_{|x| ≤ 1}` is Borel measurable. -/
 lemma measurable_truncCompensator : Measurable truncCompensator := by
   have hset : MeasurableSet {x : ℝ | |x| ≤ 1} :=
@@ -114,6 +119,11 @@ namespace InfinitelyDivisible
 def truncSet (k : ℕ) : Set ℝ :=
   {x | 1 / ((k : ℝ) + 1) ≤ |x|}
 
+/-- Defining formula of `truncSet`. -/
+lemma truncSet_def (k : ℕ) :
+    truncSet k = {x | 1 / ((k : ℝ) + 1) ≤ |x|} :=
+  rfl
+
 end InfinitelyDivisible
 
 /-- Lévy triplet with jumps restricted to `{|x| ≥ 1 / (k + 1)}`. -/
@@ -139,7 +149,14 @@ lemma LevyTriplet.isFiniteMeasure_trunc (L : LevyTriplet) (k : ℕ) :
 def LevyTriplet.truncLaw (L : LevyTriplet) (k : ℕ) : Measure ℝ :=
   (gaussianReal (L.drift - ∫ x, truncCompensator x ∂(L.trunc k).jumpMeasure)
       L.gaussianVariance) ∗
-    @compoundPoisson (L.trunc k).jumpMeasure (L.isFiniteMeasure_trunc k)
+    compoundPoisson (L.trunc k).jumpMeasure
+
+/-- Defining formula of `LevyTriplet.truncLaw`. -/
+lemma LevyTriplet.truncLaw_def (L : LevyTriplet) (k : ℕ) :
+    LevyTriplet.truncLaw L k =
+      (gaussianReal (L.drift - ∫ x, truncCompensator x ∂(L.trunc k).jumpMeasure)
+      L.gaussianVariance) ∗ compoundPoisson (L.trunc k).jumpMeasure :=
+  rfl
 
 /-- The truncated finite-activity law is a probability measure. -/
 private lemma isProbabilityMeasure_truncLaw (L : LevyTriplet) (k : ℕ) :
@@ -250,12 +267,11 @@ lemma isInfinitelyDivisible_of_forall_charFun_eq_exp (L : LevyTriplet) {μ : Mea
   intro n hn
   obtain ⟨ρ, hρ, hchar⟩ := exists_charFun_eq_exp_exponent (L.divNat n hn)
   have : IsProbabilityMeasure ρ := hρ
-  have := isProbabilityMeasure_convolutionPower ρ n
   refine ⟨ρ, hρ, ?_⟩
   apply Measure.ext_of_charFun
   ext t
   have hnC : (n : ℂ) ≠ 0 := by exact_mod_cast hn.ne'
-  rw [charFun_convolutionPower ρ n t, hchar t, LevyTriplet.exponent_divNat L hn t, hL t,
+  rw [Measure.charFun_convolutionPower ρ n t, hchar t, LevyTriplet.exponent_divNat L hn t, hL t,
     ← exp_nat_mul]
   congr 1
   rw [mul_comm]

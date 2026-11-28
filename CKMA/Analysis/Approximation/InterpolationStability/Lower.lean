@@ -7,6 +7,7 @@ module
 
 public import CKMA.Analysis.Approximation.InterpolationStability.Basic
 
+import CKMA.Analysis.Approximation.InterpolationStability.ElementaryBounds
 import CKMA.Analysis.Approximation.InterpolationStability.Estimates
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Arctan
 import Mathlib.Algebra.Order.Ring.Star
@@ -91,7 +92,7 @@ private lemma midpointAngle_ne_chebyshevNodeAngle {n : ℕ} (hn : 1 ≤ n) (i : 
     (((n - 1) / 2 : ℕ) + (1 : ℝ) / 2) * π / n ≠ chebyshevNodeAngle n i := by
   have hn0 : (0 : ℝ) < n := by exact_mod_cast (by omega : 0 < n)
   intro hi
-  rw [chebyshevNodeAngle, div_left_inj' hn0.ne', mul_comm π] at hi
+  rw [chebyshevNodeAngle, div_left_inj₀ hn0.ne', mul_comm π] at hi
   have hval := mul_right_cancel₀ pi_ne_zero hi
   have heven : (2 : ℝ) * i.val = 2 * (((n - 1) / 2 : ℕ) : ℝ) + 1 := by linarith
   have hnat : 2 * i.val = 2 * ((n - 1) / 2) + 1 := by exact_mod_cast heven
@@ -365,9 +366,9 @@ private lemma midpoint_sum_main_ge {n : ℕ} (hn : 1 ≤ n) :
 
 /-- At the central angular midpoint, the correction terms of the outer indices `i ≤ q` and
 `n - q ≤ i`, where `q = (n - 1) / 2`, are nonnegative. -/
-private lemma chebyshevLebesgueCorr_midpoint_nonneg {n : ℕ} (hn : 1 ≤ n) {i : Fin (n + 1)}
+private lemma chebyshevLebesgueCorrection_midpoint_nonneg {n : ℕ} (hn : 1 ≤ n) {i : Fin (n + 1)}
     (hi : i.val ≤ (n - 1) / 2 ∨ n - (n - 1) / 2 ≤ i.val) :
-    0 ≤ chebyshevLebesgueCorr n ((((n - 1) / 2 : ℕ) + (1 : ℝ) / 2) * π / n) i := by
+    0 ≤ chebyshevLebesgueCorrection n ((((n - 1) / 2 : ℕ) + (1 : ℝ) / 2) * π / n) i := by
   have hn0 : (0 : ℝ) < n := by exact_mod_cast (by omega : 0 < n)
   let q : ℕ := (n - 1) / 2
   let ν : ℝ := (q : ℝ) + 1 / 2
@@ -378,7 +379,7 @@ private lemma chebyshevLebesgueCorr_midpoint_nonneg {n : ℕ} (hn : 1 ≤ n) {i 
     div_nonneg (abs_nonneg _)
       (mul_pos (mul_pos (by norm_num : (0 : ℝ) < 2) hn0)
         (chebyshevExtremalWeight_pos n i)).le
-  have key : 0 ≤ chebyshevLebesgueCorr n θ i := by
+  have key : 0 ≤ chebyshevLebesgueCorrection n θ i := by
     rcases hi with hleftI | hrightI
     · have hφ : chebyshevNodeAngle n i < θ := by
         have hiν : (i.val : ℝ) < ν := by
@@ -397,7 +398,7 @@ private lemma chebyshevLebesgueCorr_midpoint_nonneg {n : ℕ} (hn : 1 ≤ n) {i 
         exact div_pos
           (cos_pos_of_mem_Ioo ⟨by linarith [pi_pos], havg⟩)
           (sin_pos_of_pos_of_lt_pi havg0 (havg.trans (by linarith [pi_pos])))
-      unfold chebyshevLebesgueCorr
+      unfold chebyshevLebesgueCorrection
       rw [hsign, mul_one]
       exact mul_nonneg hpref hcot.le
     · have hφ : π - θ < chebyshevNodeAngle n i := by
@@ -425,7 +426,7 @@ private lemma chebyshevLebesgueCorr_midpoint_nonneg {n : ℕ} (hn : 1 ≤ n) {i 
           cos_neg_of_pi_div_two_lt_of_lt havg
             (havgπ.trans (lt_add_of_pos_right π (div_pos pi_pos (by norm_num))))
         exact div_neg_of_neg_of_pos hcos hsin'
-      unfold chebyshevLebesgueCorr
+      unfold chebyshevLebesgueCorrection
       rw [hsign]
       have hnonnegCot : 0 ≤ -cot ((θ + chebyshevNodeAngle n i) / 2) :=
         neg_nonneg.mpr hcot.le
@@ -466,9 +467,9 @@ private lemma tan_pi_div_four_mul_le_one {n : ℕ} (hn : 1 ≤ n) : tan (π / (4
 
 /-- For even `n`, the middle correction term at index `q + 1`, where `q = (n - 1) / 2`, is at
 least `-1 / 2` at the central angular midpoint. -/
-private lemma chebyshevLebesgueCorr_midpoint_middle_ge {n : ℕ} (hn : 1 ≤ n)
+private lemma chebyshevLebesgueCorrection_midpoint_middle_ge {n : ℕ} (hn : 1 ≤ n)
     (hr1 : (n - 1) % 2 = 1) :
-    -(1 / 2) ≤ chebyshevLebesgueCorr n ((((n - 1) / 2 : ℕ) + (1 : ℝ) / 2) * π / n)
+    -(1 / 2) ≤ chebyshevLebesgueCorrection n ((((n - 1) / 2 : ℕ) + (1 : ℝ) / 2) * π / n)
       ⟨(n - 1) / 2 + 1, by omega⟩ := by
   have hn0 : (0 : ℝ) < n := by exact_mod_cast (by omega : 0 < n)
   let q : ℕ := (n - 1) / 2
@@ -503,8 +504,8 @@ private lemma chebyshevLebesgueCorr_midpoint_middle_ge {n : ℕ} (hn : 1 ≤ n)
       exact not_lt_of_gt (sub_lt_self (π / 2)
         (div_pos pi_pos (mul_pos (by norm_num : (0 : ℝ) < 2) hn0))))
   have htan := tan_pi_div_four_mul_le_one hn
-  have key : -(1 / 2) ≤ chebyshevLebesgueCorr n θ j := by
-    unfold chebyshevLebesgueCorr
+  have key : -(1 / 2) ≤ chebyshevLebesgueCorrection n θ j := by
+    unfold chebyshevLebesgueCorrection
     rw [hw, hsign, hcot, hsin]
     have hstep : tan (π / (4 * n)) / (2 * (n : ℝ)) ≤ 1 / 2 := by
       have hden : 0 < 2 * (n : ℝ) := mul_pos (by norm_num : (0 : ℝ) < 2) hn0
@@ -525,16 +526,17 @@ private lemma chebyshevLebesgueCorr_midpoint_middle_ge {n : ℕ} (hn : 1 ≤ n)
 /-- Sum of the cotangent correction terms at the central midpoint is at least `-1 / 2`. -/
 private lemma midpoint_sum_corr_ge {n : ℕ} (hn : 1 ≤ n) :
     -(1 / 2) ≤
-      ∑ i, chebyshevLebesgueCorr n ((((n - 1) / 2 : ℕ) + (1 : ℝ) / 2) * π / n) i := by
+      ∑ i, chebyshevLebesgueCorrection n ((((n - 1) / 2 : ℕ) + (1 : ℝ) / 2) * π / n) i := by
   classical
   let q : ℕ := (n - 1) / 2
   let θ : ℝ := ((q : ℝ) + 1 / 2) * π / n
   let p : Fin (n + 1) → Prop := fun i => i.val ≤ q ∨ n - q ≤ i.val
   have hadd := Finset.sum_filter_add_sum_filter_not univ p
-    (fun i => chebyshevLebesgueCorr n θ i)
-  have hgood : 0 ≤ ∑ i ∈ univ.filter p, chebyshevLebesgueCorr n θ i :=
-    Finset.sum_nonneg fun i hi => chebyshevLebesgueCorr_midpoint_nonneg hn (mem_filter.mp hi).2
-  have hbad : -(1 / 2) ≤ ∑ i ∈ univ.filter (fun i => ¬ p i), chebyshevLebesgueCorr n θ i := by
+    (fun i => chebyshevLebesgueCorrection n θ i)
+  have hgood : 0 ≤ ∑ i ∈ univ.filter p, chebyshevLebesgueCorrection n θ i :=
+    Finset.sum_nonneg fun i hi =>
+      chebyshevLebesgueCorrection_midpoint_nonneg hn (mem_filter.mp hi).2
+  have hbad : -(1 / 2) ≤ ∑ i ∈ univ.filter (fun i => ¬ p i), chebyshevLebesgueCorrection n θ i := by
     by_cases hr0 : (n - 1) % 2 = 0
     · have hempty : univ.filter (fun i : Fin (n + 1) => ¬ p i) = ∅ := by
         ext i
@@ -571,7 +573,7 @@ private lemma midpoint_sum_corr_ge {n : ℕ} (hn : 1 ≤ n) :
           simp only [p] at hp
           omega
       rw [honly, Finset.sum_singleton]
-      exact chebyshevLebesgueCorr_midpoint_middle_ge hn hr1
+      exact chebyshevLebesgueCorrection_midpoint_middle_ge hn hr1
   have hsumc := add_le_add hgood hbad
   rw [hadd] at hsumc
   simpa [θ, q] using hsumc

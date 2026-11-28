@@ -7,7 +7,9 @@ module
 
 public import TauCeti.MeasureTheory.Integral.MaximalFunction
 public import Mathlib.Analysis.Normed.Lp.MeasurableSpace
-public import CKMA.Analysis.Fourier.WeightedMaximal.Comparison
+public import CKMA.Analysis.Fourier.WeightedMaximal.Doubling
+
+import CKMA.Analysis.Fourier.WeightedMaximal.Comparison
 
 import Mathlib.MeasureTheory.Covering.Vitali
 import Mathlib.MeasureTheory.Measure.RegularityCompacts
@@ -46,19 +48,36 @@ namespace CKMA
 open MeasureTheory MeasureTheory.Measure Metric Filter Set Topology ENNReal TauCeti
 open scoped ENNReal
 
-/-- The measure with a nonnegative real weight as density. -/
+/-- The measure with a nonnegative real weight as density: `CKMA.weightMeasure`, the Lebesgue
+measure with density `ENNReal.ofReal ∘ w`. -/
 @[expose]
 def weightedLebesgueMeasure {d : ℕ} (w : EuclideanSpace ℝ (Fin d) → ℝ) :
-    Measure (EuclideanSpace ℝ (Fin d)) := volume.withDensity (fun x ↦ ENNReal.ofReal (w x))
+    Measure (EuclideanSpace ℝ (Fin d)) := weightMeasure w
 
-/-- The ball A_p characteristic. Balls and axis-parallel cubes give equivalent finite classes
-in Euclidean space, but the characteristic constants themselves depend on this convention. -/
+/-- The weighted measure is Lebesgue measure with density `ENNReal.ofReal ∘ w`. -/
+theorem weightedLebesgueMeasure_def {d : ℕ} (w : EuclideanSpace ℝ (Fin d) → ℝ) :
+    weightedLebesgueMeasure w = volume.withDensity (fun x ↦ ENNReal.ofReal (w x)) := rfl
+
+/-- The ball A_p characteristic, the supremum of the ball products `CKMA.ballProduct` over all
+balls of positive radius. Balls and axis-parallel cubes give equivalent finite classes in
+Euclidean space, but the characteristic constants themselves depend on this convention. -/
 @[expose]
 def muckenhouptCharacteristic {d : ℕ} (p : ℝ) (w : EuclideanSpace ℝ (Fin d) → ℝ) : ℝ≥0∞ :=
-  ⨆ (x : EuclideanSpace ℝ (Fin d)) (r : ℝ) (_hr : 0 < r),
-    ((∫⁻ y in Metric.ball x r, ENNReal.ofReal (w y)) / volume (Metric.ball x r)) *
-      (((∫⁻ y in Metric.ball x r, ENNReal.ofReal ((w y) ^ (-(p - 1)⁻¹))) /
-        volume (Metric.ball x r)) ^ (p - 1))
+  ⨆ (x : EuclideanSpace ℝ (Fin d)) (r : ℝ) (_hr : 0 < r), ballProduct p w x r
+
+/-- The characteristic written out with the two ball averages. -/
+theorem muckenhouptCharacteristic_def {d : ℕ} (p : ℝ) (w : EuclideanSpace ℝ (Fin d) → ℝ) :
+    muckenhouptCharacteristic p w =
+      ⨆ (x : EuclideanSpace ℝ (Fin d)) (r : ℝ) (_hr : 0 < r),
+        ((∫⁻ y in Metric.ball x r, ENNReal.ofReal (w y)) / volume (Metric.ball x r)) *
+          (((∫⁻ y in Metric.ball x r, ENNReal.ofReal ((w y) ^ (-(p - 1)⁻¹))) /
+            volume (Metric.ball x r)) ^ (p - 1)) := rfl
+
+/-- Each ball product is bounded by the characteristic. -/
+theorem ballProduct_le_muckenhouptCharacteristic {d : ℕ} (p : ℝ)
+    (w : EuclideanSpace ℝ (Fin d) → ℝ) (x : EuclideanSpace ℝ (Fin d)) {r : ℝ} (hr : 0 < r) :
+    ballProduct p w x r ≤ muckenhouptCharacteristic p w :=
+  le_iSup_of_le x (le_iSup_of_le r (le_iSup_of_le hr le_rfl))
 
 /-- Positive, locally integrable A_p weights, with the characteristic retaining infinity. -/
 @[expose]
@@ -66,12 +85,35 @@ def IsMuckenhouptWeight {d : ℕ} (p : ℝ) (w : EuclideanSpace ℝ (Fin d) → 
   1 < p ∧ Measurable w ∧ (∀ᵐ x ∂volume, 0 < w x) ∧ LocallyIntegrable w volume ∧
     muckenhouptCharacteristic p w < ∞
 
+/-- Unfolding the `A_p` predicate. -/
+theorem isMuckenhouptWeight_iff {d : ℕ} {p : ℝ} {w : EuclideanSpace ℝ (Fin d) → ℝ} :
+    IsMuckenhouptWeight p w ↔ 1 < p ∧ Measurable w ∧ (∀ᵐ x ∂volume, 0 < w x) ∧
+      LocallyIntegrable w volume ∧ muckenhouptCharacteristic p w < ∞ := Iff.rfl
+
+/-- An `A_p` weight, bundled as `CKMA.ApWeight` with its characteristic as ball bound. -/
+@[expose]
+def IsMuckenhouptWeight.toApWeight {d : ℕ} {p : ℝ} {w : EuclideanSpace ℝ (Fin d) → ℝ}
+    (hw : IsMuckenhouptWeight p w) : ApWeight (d := d) p :=
+  ⟨w, hw.1, hw.2.1, hw.2.2.1, hw.2.2.2.1, muckenhouptCharacteristic p w, hw.2.2.2.2.ne,
+    fun x _ hr ↦ ballProduct_le_muckenhouptCharacteristic p w x hr⟩
+
+/-- The bundled weight of `IsMuckenhouptWeight.toApWeight` is `w`. -/
+@[simp]
+theorem IsMuckenhouptWeight.toApWeight_w {d : ℕ} {p : ℝ} {w : EuclideanSpace ℝ (Fin d) → ℝ}
+    (hw : IsMuckenhouptWeight p w) : hw.toApWeight.w = w := rfl
+
 /-- The A_1 class, using TauCeti's centered maximal function and its actual positive bound. -/
 @[expose]
 def IsMuckenhouptOneWeight {d : ℕ} (w : EuclideanSpace ℝ (Fin d) → ℝ) : Prop :=
   Measurable w ∧ (∀ᵐ x ∂volume, 0 < w x) ∧ LocallyIntegrable w volume ∧
     ∃ C : ℝ, 0 < C ∧ ∀ᵐ x ∂volume,
       TauCeti.maximalFunction volume w x ≤ ENNReal.ofReal (C * w x)
+
+/-- Unfolding the `A_1` predicate. -/
+theorem isMuckenhouptOneWeight_iff {d : ℕ} {w : EuclideanSpace ℝ (Fin d) → ℝ} :
+    IsMuckenhouptOneWeight w ↔ Measurable w ∧ (∀ᵐ x ∂volume, 0 < w x) ∧
+      LocallyIntegrable w volume ∧ ∃ C : ℝ, 0 < C ∧ ∀ᵐ x ∂volume,
+        TauCeti.maximalFunction volume w x ≤ ENNReal.ofReal (C * w x) := Iff.rfl
 
 section Aux
 
@@ -170,10 +212,10 @@ private lemma ofReal_w_le_enorm (w : E → ℝ) (y : E) : ofReal (w y) ≤ ‖w 
 /-- A locally integrable weight charges every closed ball finitely. -/
 private lemma weighted_closedBall_lt_top {w : E → ℝ} (hloc : LocallyIntegrable w volume)
     (x : E) (r : ℝ) : weightedLebesgueMeasure w (closedBall x r) < ∞ := by
-  rw [weightedLebesgueMeasure, withDensity_apply _ isClosed_closedBall.measurableSet]
+  rw [weightedLebesgueMeasure_def, withDensity_apply _ isClosed_closedBall.measurableSet]
   exact lt_of_le_of_lt
     (setLIntegral_mono' isClosed_closedBall.measurableSet fun _ _ => ofReal_w_le_enorm w _)
-    (hasFiniteIntegral_iff_enorm.mp
+    (hasFiniteIntegral_iff_eNorm.mp
       (hloc.integrableOn_isCompact (isCompact_closedBall x r)).hasFiniteIntegral)
 
 /-- One selected ball in the A₁ covering: the weight on the fourfold ball is controlled by the
@@ -534,7 +576,7 @@ private lemma testing_product_le {p : ℝ} (hp : 1 < p) {w : E → ℝ} (hm : Me
   have hp_ne : ofReal p ≠ 0 := (ofReal_pos.mpr hp0).ne'
   have hto : (ofReal p).toReal = p := toReal_ofReal hp0.le
   have hnorm : (eLpNorm f (ofReal p) ν) ^ p = In := by
-    rw [eLpNorm_eq_lintegral_rpow_enorm_toReal hp_ne ofReal_ne_top hfasm, hto, ← rpow_mul]
+    rw [eLpNorm_eq_lintegral_rpow_eNorm_toReal hp_ne ofReal_ne_top hfasm, hto, ← rpow_mul]
     rw [show (1 / p) * p = (1 : ℝ) by field_simp, rpow_one, hpowInt]
   have hmem : MemLp f (ofReal p) ν := by
     rw [memLp_iff]
@@ -686,7 +728,7 @@ theorem weighted_maximal_iff {d : ℕ} {p : ℝ} (hp : 1 < p)
     obtain ⟨C, hC, hbound⟩ := h
     refine ⟨hp, hm, hpos, hloc, ?_⟩
     have hchar : muckenhouptCharacteristic p w ≤ C * ((2 : ℝ≥0∞) ^ d) ^ p := by
-      unfold muckenhouptCharacteristic
+      rw [muckenhouptCharacteristic_def]
       refine iSup_le fun x => iSup_le fun r => iSup_le fun hr => ?_
       simpa [conjugateExponent] using muckenhoupt_ball_le hp hm hpos hbound x hr
     exact hchar.trans_lt (mul_lt_top (lt_top_iff_ne_top.mpr hC)

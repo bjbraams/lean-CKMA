@@ -19,18 +19,24 @@ Each stage of the Saks picture is a harmonic family of axis-aligned strips in a 
 The packing of translates, the higher-dimensional product, and the integrable spike sum are in
 `CounterexampleCover`.
 
+All declarations are in the namespace `CKMA.SaksCounterexample`.
+
 ## Main definitions
 
-* `CKMA.Bohr.stageScale`, `CKMA.Bohr.boxSide`, `CKMA.Bohr.areaLower`: stage scaling parameters.
-* `CKMA.Bohr.stripRect`, `CKMA.Bohr.badPlane`: harmonic strips and their union at stage `k`.
-* `CKMA.Bohr.innerRect`, `CKMA.Bohr.removalRatio`, `CKMA.Bohr.copyCount`: inner domain and copy
+* `stageScale`, `boxSide`, `areaLower`: stage scaling parameters.
+* `stripRect`, `badPlane`: harmonic strips and their union at stage `k`.
+* `innerRect`, `removalRatio`, `copyCount`: inner domain and copy
   count for stage `k`.
 
 ## Main results
 
-* `areaLower_le_volume_badPlane`: lower bound on the area of `badPlane k`.
-* `CKMA.Bohr.exists_heavy_translate`: existence of a translate meeting any positive subset of the
+* `exists_heavy_translate`: existence of a translate meeting any positive subset of the
   inner square in a definite fraction.
+
+## Implementation notes
+
+The fraction in `exists_heavy_translate` comes from the lower bound `areaLower k` for
+the area of `badPlane k`, a harmonic-sum estimate for the strips.
 -/
 
 public section
@@ -40,7 +46,7 @@ noncomputable section
 open MeasureTheory Set Filter Finset
 open scoped ENNReal NNReal BigOperators
 
-namespace CKMA.Bohr
+namespace CKMA.SaksCounterexample
 
 /-- The target average at stage `k`. -/
 @[expose]
@@ -50,7 +56,7 @@ def stageHeight (k : ℕ) : ℝ := k + 1
 @[expose]
 def stageLog (k : ℕ) : ℕ := (k + 1) * 2 ^ (k + 4)
 
-/-- Number of strips in the Bohr picture at stage `k`. -/
+/-- Number of strips in the Saks picture at stage `k`. -/
 @[expose]
 def stageCount (k : ℕ) : ℕ := 2 ^ stageLog k
 
@@ -151,7 +157,7 @@ private lemma stage_harmonic_lower (k : ℕ) :
     simpa [Nat.cast_add, Nat.cast_one] using log_add_one_le_harmonic (stageCount k)
   linarith
 
-/-- Lower bound on the area of one scaled Bohr union of strips. -/
+/-- Lower bound on the area of one scaled Saks union of strips. -/
 @[expose]
 def areaLower (k : ℕ) : ℝ :=
   stageScale k ^ 2 * stageCount k * (stageLog k / 2)
@@ -210,7 +216,7 @@ private lemma volume_translateDomain_pos_lt_top (k : ℕ) :
   · rw [translateDomain_eq_carrier]
     exact (translateDomainRect k).volume_carrier_lt_top
 
-/-- A plane strip of the scaled Bohr picture, for an index `j ≥ 2`. -/
+/-- A plane strip of the scaled Saks picture, for an index `j ≥ 2`. -/
 @[expose]
 def stripRect (k j : ℕ) (hj : 2 ≤ j) : OpenRectangle 2 where
   lower := fun i => if i = 0 then stageScale k * (j - 1) else 0
@@ -448,7 +454,7 @@ lemma filter_val_le_one_eq_pair (d : ℕ) (hd : 2 ≤ d) :
   · intro h
     rcases h with rfl | rfl <;> simp
 
-/-- Two coordinates carry the Bohr picture. -/
+/-- Two coordinates carry the Saks picture. -/
 lemma card_plane (d : ℕ) (hd : 2 ≤ d) :
     (Finset.univ.filter (fun i : Fin d => i.val ≤ 1)).card = 2 := by
   classical
@@ -874,17 +880,4 @@ lemma exists_heavy_translate (k : ℕ) {U : Set (Fin 2 → ℝ)}
   rw [hident, ← hint_eq] at hstrict
   exact (not_lt_of_ge hge) hstrict
 
-@[deprecated (since := "2026-11-15")]
-alias domain := translateDomain
-@[deprecated (since := "2026-11-15")]
-alias volume_real_domain := volume_real_translateDomain
-@[deprecated (since := "2026-11-15")]
-alias inner := innerSet
-@[deprecated (since := "2026-11-15")]
-alias margin := extraSide
-@[deprecated (since := "2026-11-15")]
-alias margin_le_inv_four := extraSide_le_inv_four
-@[deprecated (since := "2026-11-15")]
-alias extraWidth := natCast_sub_two_mul_extraSide
-
-end CKMA.Bohr
+end CKMA.SaksCounterexample

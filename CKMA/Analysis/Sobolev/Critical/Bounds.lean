@@ -27,9 +27,10 @@ import Mathlib.Topology.Algebra.Order.Field
 # Real bounds for the critical Sobolev profile
 
 Comparison of `Real.log (Real.log (e / s))` with a square-root singularity, and convergence of
-the model integral `∫ dy / (y log (e / y) ^ d)` for `d ≥ 2`. `Real.log` of a nonpositive
-number is `0`. The elementary power estimate is Mathlib's `add_pow_le`, loosened from
-`2 ^ (n - 1)` to `2 ^ n`.
+the model integral `∫ dy / (y log (e / y) ^ d)` for `d ≥ 2`. The estimates concern
+`s ∈ (0, 1]`, where `log (e / s) ≥ 1`. Outside that range the junk values of `Real.log`
+(`Real.log 0 = 0`, and `Real.log (-x) = Real.log x`) give `logLog s = log |log (e / |s|)|`,
+which is `0` only at `s = 0`, `|s| = 1`, `|s| = e` and `|s| = e²`.
 
 ## Main definitions
 
@@ -53,8 +54,9 @@ open scoped ENNReal
 
 /-! ### Real bounds and the one-dimensional logarithmic integral -/
 
-/-- Double logarithm `Real.log (Real.log (e / s))`.
-`Real.log` of a nonpositive number is `0`. -/
+/-- Double logarithm `Real.log (Real.log (e / s))`. Since `Real.log 0 = 0` and `Real.log` is
+even, `logLog 0 = 0` and `logLog s = log |log (e / |s|)|` in general; it is nonnegative on
+`(0, 1]` (`logLog_nonneg`), and for `s > e` it is `log (log (s / e))`, which need not vanish. -/
 @[expose]
 def logLog (s : ℝ) : ℝ :=
   Real.log (Real.log (Real.exp 1 / s))
@@ -66,6 +68,9 @@ lemma logLog_def (s : ℝ) : logLog s = Real.log (Real.log (Real.exp 1 / s)) := 
 @[expose]
 def profileBound : ℝ :=
   2 * Real.exp (1 / 2)
+
+/-- Defining equation of `profileBound`. -/
+lemma profileBound_def : profileBound = 2 * Real.exp (1 / 2) := rfl
 
 /-- The comparison constant is positive. -/
 lemma profileBound_pos : 0 < profileBound := by
@@ -232,17 +237,5 @@ lemma integrableOn_inv_mul_log_pow {d : ℕ} (hd : 2 ≤ d) {R : ℝ} (hR : 0 < 
     simp only [g']
     rw [← mul_assoc, inv_mul_cancel₀ hd1, one_mul]
   exact IntegrableOn.congr_fun (hint'.const_mul ((d : ℝ) - 1)⁻¹) heq measurableSet_Ioo
-
-/-- `(a + b) ^ n ≤ 2 ^ n (a ^ n + b ^ n)` for nonnegative `a, b`.
-This is Mathlib's `add_pow_le`, loosened from the constant `2 ^ (n - 1)` to `2 ^ n`. -/
-lemma add_pow_le_two_pow_mul {a b : ℝ} {n : ℕ} (ha : 0 ≤ a) (hb : 0 ≤ b) :
-    (a + b) ^ n ≤ 2 ^ n * (a ^ n + b ^ n) := by
-  calc (a + b) ^ n
-      ≤ 2 ^ (n - 1) * (a ^ n + b ^ n) := add_pow_le ha hb n
-    _ ≤ 2 ^ n * (a ^ n + b ^ n) :=
-        mul_le_mul_of_nonneg_right
-          (pow_le_pow_right₀ one_le_two (Nat.sub_le n 1))
-          (add_nonneg (pow_nonneg ha n) (pow_nonneg hb n))
-
 
 end CKMA

@@ -5,18 +5,13 @@ Authors: CKMA contributors
 -/
 module
 
-public import CKMA.Analysis.OrderedSpace.Bands.Lattice
-public import Mathlib.Algebra.Order.Monoid.Defs
 public import Mathlib.Analysis.Convex.Extreme
-public import Mathlib.Analysis.Normed.Group.Defs
-public import Mathlib.Analysis.Normed.Module.Basic
-public import Mathlib.Analysis.LocallyConvex.WeakDual
 public import Mathlib.Analysis.Normed.Operator.Basic
 public import Mathlib.Analysis.Normed.Order.Lattice
-public import Mathlib.Topology.Algebra.Module.LocallyConvex
 public import Mathlib.Topology.Algebra.Module.Spaces.WeakDual
 
-import Mathlib.Algebra.Order.Module.Basic
+import CKMA.Analysis.OrderedSpace.Bands.Lattice
+import CKMA.Analysis.OrderedSpace.Representation.Basic
 import Mathlib.Analysis.Normed.Module.WeakDual
 
 /-!
@@ -60,30 +55,11 @@ variable {E : Type u} [NormedAddCommGroup E] [NormedSpace ℝ E] [Lattice E]
 
 variable {e : E} (he0 : 0 ≤ e) (hball : closedBall (0 : E) 1 = Icc (-e) e)
 
-/-- The weak-star dual is locally convex, so Krein–Milman applies to state spaces. -/
-@[expose]
-instance amWeakDualLocallyConvex (E : Type u) [NormedAddCommGroup E] [NormedSpace ℝ E] :
-    LocallyConvexSpace ℝ (WeakDual ℝ E) :=
-  WeakBilin.locallyConvexSpace (B := topDualPairing ℝ E)
-
-include hball in
-omit [HasSolidNorm E] in
-/-- A closed ball equal to `[-e, e]` forces every vector under the unit. -/
-private theorem abs_le_smul_amUnit (x : E) : |x| ≤ ‖x‖ • e := by
-  rcases eq_or_ne x 0 with rfl | hx
-  · simp
-  · have hn : ‖x‖ ≠ 0 := norm_ne_zero_iff.mpr hx
-    have hu : ‖‖x‖⁻¹ • x‖ = 1 := by
-      rw [norm_smul, norm_inv, norm_norm, inv_mul_cancel₀ hn]
-    have hmem : ‖x‖⁻¹ • x ∈ Icc (-e) e := by
-      rw [← hball, mem_closedBall_iff_norm]
-      simpa using hu.le
-    have hz1 : ‖x‖⁻¹ • x ≤ e := hmem.2
-    have hz2 : -(‖x‖⁻¹ • x) ≤ e := by simpa using neg_le_neg hmem.1
-    have habs : |‖x‖⁻¹ • x| ≤ e := sup_le hz1 hz2
-    rw [abs_smul, abs_of_nonneg (inv_nonneg.mpr (norm_nonneg x))] at habs
-    have hmul := smul_le_smul_of_nonneg_left habs (norm_nonneg x)
-    simpa [smul_smul, mul_inv_cancel₀ hn] using hmul
+/-- The weak-star dual of a real normed space is locally convex (Mathlib registers the instance
+for `WeakBilin` only), so Krein–Milman applies to state spaces. -/
+instance amWeakDualLocallyConvex (F : Type*) [NormedAddCommGroup F] [NormedSpace ℝ F] :
+    LocallyConvexSpace ℝ (WeakDual ℝ F) :=
+  WeakBilin.locallyConvexSpace (B := topDualPairing ℝ F)
 
 include he0 hball in
 omit [NormedSpace ℝ E] [IsOrderedModule ℝ E] [HasSolidNorm E] in
@@ -99,7 +75,7 @@ omit [HasSolidNorm E] in
 private theorem amUnit_norm_eq_one (he : e ≠ 0) : ‖e‖ = 1 := by
   apply le_antisymm (amUnit_norm_le_one he0 hball)
   have habs : e ≤ ‖e‖ • e := by
-    simpa [abs_of_nonneg he0] using abs_le_smul_amUnit hball e
+    simpa [abs_of_nonneg he0] using IsAMSpaceUnit.abs_le_norm_smul ⟨he0, hball⟩ e
   have hsub : (1 - ‖e‖) • e ≤ 0 := by
     rw [sub_smul, one_smul]
     exact sub_nonpos.mpr habs
@@ -149,7 +125,7 @@ private theorem amPositive_opNorm_eq (he : e ≠ 0) (φ : E →L[ℝ] ℝ)
       have hneg : φ (-|y|) ≤ φ y := hmono horder
       simpa [map_neg] using hneg
     have hdom : φ |y| ≤ ‖y‖ * φ e := by
-      have hy : |y| ≤ ‖y‖ • e := abs_le_smul_amUnit hball y
+      have hy : |y| ≤ ‖y‖ • e := IsAMSpaceUnit.abs_le_norm_smul ⟨he0, hball⟩ y
       simpa [map_smul, smul_eq_mul] using hmono hy
     rw [Real.norm_eq_abs]
     exact habs.trans (by simpa [mul_comm] using hdom)
@@ -241,7 +217,7 @@ theorem exists_amState_norming (he : e ≠ 0) {x : E} (hx0 : 0 ≤ x) (hx : x �
   have hψe : ψ e = 1 := by
     have hle : ψ x ≤ ‖x‖ * ψ e := by
       have hxle : x ≤ ‖x‖ • e := by
-        simpa [abs_of_nonneg hx0] using abs_le_smul_amUnit hball x
+        simpa [abs_of_nonneg hx0] using IsAMSpaceUnit.abs_le_norm_smul ⟨he0, hball⟩ x
       simpa [map_smul, smul_eq_mul] using
         ((monotone_iff_map_nonneg ψ.toLinearMap).2 fun y hy => by
           simpa using hψpos y hy) hxle
@@ -268,6 +244,11 @@ theorem amWeakDual_combine (φ ψ : WeakDual ℝ E) (a b : ℝ) (x : E) :
 @[expose]
 def amStateSet (e : E) : Set (WeakDual ℝ E) :=
   {φ | (∀ x, 0 ≤ x → 0 ≤ φ x) ∧ φ e = 1}
+
+omit [IsOrderedAddMonoid E] [IsOrderedModule ℝ E] [HasSolidNorm E] in
+/-- Membership in the state space. -/
+theorem mem_amStateSet {φ : WeakDual ℝ E} :
+    φ ∈ amStateSet e ↔ (∀ x, 0 ≤ x → 0 ≤ φ x) ∧ φ e = 1 := Iff.rfl
 
 omit [IsOrderedAddMonoid E] [IsOrderedModule ℝ E] [HasSolidNorm E] in
 /-- The state space is weak-star closed. -/
@@ -652,6 +633,11 @@ private theorem amState_extreme_abs (he : e ≠ 0) {φ : WeakDual ℝ E}
 @[expose]
 def amLatticeHomSet (e : E) : Set (WeakDual ℝ E) :=
   {φ | φ e = 1 ∧ ∀ x, φ |x| = |φ x|}
+
+omit [IsOrderedAddMonoid E] [IsOrderedModule ℝ E] [HasSolidNorm E] in
+/-- Membership in the set of normalized lattice homomorphisms. -/
+theorem mem_amLatticeHomSet {φ : WeakDual ℝ E} :
+    φ ∈ amLatticeHomSet e ↔ φ e = 1 ∧ ∀ x, φ |x| = |φ x| := Iff.rfl
 
 include he0 hball in
 /-- Extreme states are normalized lattice homomorphisms. -/

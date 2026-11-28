@@ -9,7 +9,7 @@ public import Mathlib.Analysis.InnerProductSpace.StarOrder
 public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Basic
 public import Mathlib.Analysis.CStarAlgebra.ContinuousLinearMap
 
-import TauCeti.Analysis.InnerProductSpace.Positive.Basic
+import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
 
 /-!
 # Defect operator of a Hilbert-space contraction
@@ -24,7 +24,8 @@ norm computation behind Schäffer's isometric dilation.
 
 ## Main results
 
-* `CKMA.contraction_one_sub_star_mul_self_nonneg`: positivity of `1 - T* T` for a contraction.
+* `CKMA.one_sub_star_mul_self_nonneg_of_norm_le_one`: positivity of `1 - a⋆ a` for an element of
+  norm at most one in a C⋆-algebra.
 * `CKMA.defectOperator_mul_self`: the defect operator of a contraction squares to `1 - T* T`.
 * `CKMA.norm_sq_add_norm_sq_defectOperator`: Pythagorean identity `‖T x‖² + ‖D_T x‖² = ‖x‖²`.
 -/
@@ -41,17 +42,12 @@ universe u
 
 variable {H : Type u} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
 
-/-- A contraction satisfies `T* T ≤ 1`. -/
-private theorem star_mul_self_le_one_of_norm_le_one (T : H →L[ℂ] H) (hT : ‖T‖ ≤ 1) :
-    star T * T ≤ 1 := by
-  simpa [ContinuousLinearMap.star_eq_adjoint, ContinuousLinearMap.mul_def] using
-    (ContinuousLinearMap.self_comp_adjoint_le_one_iff (ContinuousLinearMap.adjoint T)).2
-      (by rwa [LinearIsometryEquiv.norm_map])
-
-/-- The defect element `1 - T* T` of a contraction is positive. -/
-theorem contraction_one_sub_star_mul_self_nonneg (T : H →L[ℂ] H) (hT : ‖T‖ ≤ 1) :
-    0 ≤ (1 - star T * T : H →L[ℂ] H) :=
-  sub_nonneg.mpr (star_mul_self_le_one_of_norm_le_one T hT)
+/-- In a C⋆-algebra, an element of norm at most one satisfies `0 ≤ 1 - a⋆ a`. -/
+theorem one_sub_star_mul_self_nonneg_of_norm_le_one {A : Type*} [CStarAlgebra A]
+    [PartialOrder A] [StarOrderedRing A] (a : A) (ha : ‖a‖ ≤ 1) : 0 ≤ 1 - star a * a := by
+  refine sub_nonneg.mpr ((CStarAlgebra.star_mul_le_algebraMap_norm_sq a).trans ?_)
+  rw [← map_one (algebraMap ℝ A)]
+  exact algebraMap_mono (β := A) (pow_le_one₀ (norm_nonneg a) ha)
 
 /-- The defect operator `CFC.sqrt (1 - star T * T)`.
 
@@ -61,15 +57,18 @@ theorem contraction_one_sub_star_mul_self_nonneg (T : H →L[ℂ] H) (hT : ‖T�
 def defectOperator (T : H →L[ℂ] H) : H →L[ℂ] H :=
   CFC.sqrt (1 - star T * T)
 
+/-- The defect operator is the square root of `1 - T* T`. -/
+theorem defectOperator_def (T : H →L[ℂ] H) : defectOperator T = CFC.sqrt (1 - star T * T) :=
+  rfl
+
 /-- The defect operator of a contraction squares to `1 - T* T`. -/
 theorem defectOperator_mul_self (T : H →L[ℂ] H) (hT : ‖T‖ ≤ 1) :
     defectOperator T * defectOperator T = 1 - star T * T := by
   rw [defectOperator]
-  exact CFC.sqrt_mul_sqrt_self _
-    (contraction_one_sub_star_mul_self_nonneg T hT)
+  exact CFC.sqrt_mul_sqrt_self _ (one_sub_star_mul_self_nonneg_of_norm_le_one T hT)
 
 /-- The defect operator of any operator is self-adjoint. -/
-private theorem defectOperator_adjoint (T : H →L[ℂ] H) :
+theorem defectOperator_adjoint (T : H →L[ℂ] H) :
     (defectOperator T).adjoint = defectOperator T := by
   rw [← ContinuousLinearMap.star_eq_adjoint]
   exact (CFC.sqrt_nonneg (1 - star T * T)).star_eq

@@ -134,6 +134,20 @@ def source_hashes():
     return {str(p.relative_to(ROOT)): hashlib.sha256(p.read_bytes()).hexdigest() for p in files}
 
 
+def public_import_closure(module):
+    """The module together with every CKMA module it imports, directly or transitively."""
+    seen, todo = set(), [module]
+    while todo:
+        m = todo.pop()
+        if m in seen:
+            continue
+        seen.add(m)
+        path = ROOT.joinpath(*m.split('.')).with_suffix('.lean')
+        if path.exists():
+            todo += re.findall(r'^(?:public )?import (CKMA\S*)', path.read_text(), re.M)
+    return seen
+
+
 def check(data, current):
     assert data.get('source_sha256') == source_hashes(), 'Changed Lean sources; rebuild, --refresh and --audit.'
     gaps = re.findall(r'^\* \*\*(\d{2}\.\d+)\. (.*?)\*\*', (ROOT / 'GAPS.md').read_text(), re.M)
@@ -148,11 +162,19 @@ def check(data, current):
     assert len(names) == len(current), 'Duplicate declaration name'
     for e in data['entries']:
         assert e['status'] in data['status_meanings']
-        assert (e['status'] == 'not_started') == (e['module'] is None)
-        assert bool(e['declarations']) == (e['module'] is not None)
+        # An `upstream` entry is a Mathlib or Tau Ceti theorem: no CKMA module, upstream names.
+        assert (e['status'] in ('not_started', 'upstream')) == (e['module'] is None)
+        assert bool(e['declarations']) == (e['status'] != 'not_started')
+        if e['status'] == 'not_started':
+            continue
+        if e['status'] == 'upstream':
+            assert all(not n.startswith('CKMA.') for n in e['declarations']), e['id']
+            continue
+        # The module is the file of the declarations or a hub module that publicly imports them.
+        reach = public_import_closure(e['module'])
         for name in e['declarations']:
             assert name in names, f"Unknown declaration for {e['id']}: {name}"
-            assert names[name]['module'] == e['module']
+            assert names[name]['module'] in reach, f"{name} not under {e['module']} ({e['id']})"
     for area in ['Analysis', 'Probability', 'Dynamics', 'MeasureTheory']:
         assembly = (ROOT / 'CKMA' / (area + '.lean')).read_text()
         expected = {'.'.join(p.relative_to(ROOT).with_suffix('').parts)

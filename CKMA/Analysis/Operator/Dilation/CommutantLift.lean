@@ -41,9 +41,7 @@ namespace CKMA
 open scoped InnerProductSpace Topology
 open ContinuousLinearMap Filter
 
-universe u
-
-variable {H K : Type u}
+variable {H K : Type*}
     [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
     [NormedAddCommGroup K] [InnerProductSpace ℂ K] [CompleteSpace K]
 
@@ -60,7 +58,7 @@ def commutantPartial (T X : H →L[ℂ] H) (hXT : Commute X T)
           (commutantLiftBlock T X hXT J V hcoin k))
 
 /-- Evaluation of a partial sum. -/
-private theorem commutantPartial_apply (T X : H →L[ℂ] H) (hXT : Commute X T)
+theorem commutantPartial_apply (T X : H →L[ℂ] H) (hXT : Commute X T)
     (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K)
     (hcoin : ∀ y : K, J.toContinuousLinearMap.adjoint (V y) =
       T (J.toContinuousLinearMap.adjoint y)) (n : ℕ) (y : K) :
@@ -82,7 +80,7 @@ private theorem norm_pow_liftBlock (T X : H →L[ℂ] H) (hXT : Commute X T)
         ((dilationDefectSpace T J V).subtypeL
           (commutantLiftBlock T X hXT J V hcoin k y))‖ =
       ‖commutantLiftBlock T X hXT J V hcoin k y‖ := by
-  rw [← isometry_pow_apply, (V ^ k).norm_map, Submodule.subtypeL_apply, Submodule.norm_coe]
+  rw [← linearIsometry_pow_apply, (V ^ k).norm_map, Submodule.subtypeL_apply, Submodule.norm_coe]
 
 /-- Squared norm of a partial sum, by orthogonality of the defect orbit. -/
 private theorem norm_sq_commutantPartial (T X : H →L[ℂ] H) (hXT : Commute X T)
@@ -230,8 +228,17 @@ def commutantLiftAt (T X : H →L[ℂ] H) (hXT : Commute X T)
       T (J.toContinuousLinearMap.adjoint y)) (y : K) : K :=
   limUnder atTop fun n => commutantPartial T X hXT J V hcoin n y
 
+/-- `commutantLiftAt y` is the limit of the partial sums at `y`. -/
+theorem commutantLiftAt_def (T X : H →L[ℂ] H) (hXT : Commute X T)
+    (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K)
+    (hcoin : ∀ y : K, J.toContinuousLinearMap.adjoint (V y) =
+      T (J.toContinuousLinearMap.adjoint y)) (y : K) :
+    commutantLiftAt T X hXT J V hcoin y =
+      limUnder atTop fun n => commutantPartial T X hXT J V hcoin n y :=
+  rfl
+
 /-- The partial sums converge to the lifting series. -/
-private theorem tendsto_commutantPartial (T X : H →L[ℂ] H) (hXT : Commute X T)
+theorem tendsto_commutantPartial (T X : H →L[ℂ] H) (hXT : Commute X T)
     (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K)
     (hcoin : ∀ y : K, J.toContinuousLinearMap.adjoint (V y) =
       T (J.toContinuousLinearMap.adjoint y)) (y : K) :
@@ -294,6 +301,14 @@ def commutantLiftLinearMap (T X : H →L[ℂ] H) (hXT : Commute X T)
   map_add' := commutantLiftAt_add T X hXT J V hcoin
   map_smul' := commutantLiftAt_smul T X hXT J V hcoin
 
+/-- `commutantLiftLinearMap` applies `commutantLiftAt`. -/
+theorem commutantLiftLinearMap_apply (T X : H →L[ℂ] H) (hXT : Commute X T)
+    (J : H →ₗᵢ[ℂ] K) (V : K →ₗᵢ[ℂ] K)
+    (hcoin : ∀ y : K, J.toContinuousLinearMap.adjoint (V y) =
+      T (J.toContinuousLinearMap.adjoint y)) (y : K) :
+    commutantLiftLinearMap T X hXT J V hcoin y = commutantLiftAt T X hXT J V hcoin y :=
+  rfl
+
 /-- Continuous commutant lift, with operator norm at most `‖X‖`. -/
 @[expose]
 def commutantLiftCLM (T X : H →L[ℂ] H) (hXT : Commute X T)
@@ -345,7 +360,7 @@ private theorem adjoint_commutantPartial (T X : H →L[ℂ] H) (hXT : Commute X 
   rw [commutantPartial_apply, map_add, map_sum]
   have hJ : J.toContinuousLinearMap.adjoint (J (coextensionCompress X J y)) =
       coextensionCompress X J y :=
-    embed_adjoint_leftInverse J _
+    linearIsometry_adjoint_apply_self J _
   have hsum : ∑ k ∈ Finset.range n, J.toContinuousLinearMap.adjoint
       ((V.toContinuousLinearMap ^ k)
         ((dilationDefectSpace T J V).subtypeL
@@ -408,7 +423,7 @@ theorem commutantPartial_apply_isometry (T X : H →L[ℂ] H) (hXT : Commute X T
     have hcoe : V.toContinuousLinearMap ((V.toContinuousLinearMap ^ k) z) =
         V ((V.toContinuousLinearMap ^ k) z) := by
       rw [LinearIsometry.coe_toContinuousLinearMap]
-    rw [← hcoe, ← continuousLinearMap_pow_succ'_apply]
+    rw [← hcoe, pow_succ', mul_apply_eq_comp]
   rw [commutantPartial_apply, commutantPartial_apply, map_add]
   have hmap : V (∑ k ∈ Finset.range n,
       (V.toContinuousLinearMap ^ k) (L.subtypeL (block k y))) =

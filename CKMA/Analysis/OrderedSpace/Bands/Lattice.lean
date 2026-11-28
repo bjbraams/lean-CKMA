@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Order.Group.PosPart
 public import Mathlib.Algebra.Module.LinearMap.Defs
 public import Mathlib.Algebra.Order.Module.Defs
 public import Mathlib.Basic.Real.Basic
+import Mathlib.Algebra.Order.Group.Pointwise.Bounds
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.Archimedean.Real.Basic
@@ -33,6 +34,9 @@ standard identities in Aliprantis–Burkinshaw, *Positive Operators*, §§1.1 an
 * `CKMA.eq_posPart_negPart_of_inf_eq_zero`: canonical Jordan decomposition when `y ⊓ z = 0`.
 * `CKMA.exists_add_eq_of_le_add`: Riesz decomposition property on the positive cone.
 * `CKMA.coneAdditive_isLinearMap`: Jordan extension of an additive positively homogeneous cone map.
+* `CKMA.abs_smul_of_lattice`: `|c • x| = |c| • |x|` in a Riesz space.
+* `CKMA.isLUB_add`, `CKMA.isLUB_smul_of_pos`: least upper bounds under addition and positive
+  scaling.
 -/
 
 public section
@@ -51,6 +55,10 @@ variable {E F : Type*} [AddCommGroup E] [Lattice E] [Module ℝ E]
 def LatticeDisjoint (x y : E) : Prop := |x| ⊓ |y| = 0
 
 omit [Module ℝ E] [IsOrderedAddMonoid E] [IsOrderedModule ℝ E] in
+/-- Defining property of `LatticeDisjoint`. -/
+theorem latticeDisjoint_iff {x y : E} : LatticeDisjoint x y ↔ |x| ⊓ |y| = 0 := Iff.rfl
+
+omit [Module ℝ E] [IsOrderedAddMonoid E] [IsOrderedModule ℝ E] in
 /-- Lattice disjointness is symmetric. -/
 theorem LatticeDisjoint.symm {x y : E} (h : LatticeDisjoint x y) :
     LatticeDisjoint y x := by
@@ -67,6 +75,11 @@ private theorem LatticeDisjoint.of_abs_le {x y x' y' : E} (h : LatticeDisjoint x
 @[expose]
 def latticeDisjointComplement (s : Set E) : Set E :=
   {x | ∀ y ∈ s, LatticeDisjoint x y}
+
+omit [Module ℝ E] [IsOrderedAddMonoid E] [IsOrderedModule ℝ E] in
+/-- Membership in the disjoint complement. -/
+theorem mem_latticeDisjointComplement {s : Set E} {x : E} :
+    x ∈ latticeDisjointComplement s ↔ ∀ y ∈ s, LatticeDisjoint x y := Iff.rfl
 
 omit [Module ℝ E] [IsOrderedAddMonoid E] [IsOrderedModule ℝ E] in
 /-- Every vector lies in the double disjoint complement of its singleton. -/
@@ -146,10 +159,6 @@ private theorem sub_inf_eq_posPart_sub (x y : E) : x - (x ⊓ y) = (x - y)⁺ :=
   rw [sub_eq_add_neg, neg_inf, add_sup, add_neg_cancel, ← sub_eq_add_neg, sup_comm]
   rfl
 
-@[deprecated (since := "2026-11-15")] alias posPart_eq_zero_of_nonpos := posPart_of_nonpos
-
-@[deprecated (since := "2026-11-15")] alias negPart_eq_zero_of_nonneg := negPart_of_nonneg
-
 omit [Module ℝ E] [IsOrderedModule ℝ E] in
 /-- Canonical decomposition of a difference of elements with infimum zero. -/
 theorem eq_posPart_negPart_of_inf_eq_zero {x y z : E}
@@ -218,7 +227,7 @@ private theorem negPart_smul_of_nonneg {c : ℝ} (hc : 0 ≤ c) (x : E) : (c •
     (by rw [← smul_sub, posPart_sub_negPart])).2
 
 /-- Absolute value is homogeneous over the scalar field of a Riesz space. -/
-theorem abs_smul (c : ℝ) (x : E) : |c • x| = |c| • |x| := by
+theorem abs_smul_of_lattice (c : ℝ) (x : E) : |c • x| = |c| • |x| := by
   rcases le_total 0 c with hc | hc
   · rw [abs_of_nonneg hc, ← posPart_add_negPart (c • x), posPart_smul_of_nonneg hc,
       negPart_smul_of_nonneg hc, ← smul_add, posPart_add_negPart]
@@ -285,11 +294,10 @@ theorem inf_smul_eq_zero {c : ℝ} (hc : 0 ≤ c) {x y : E} (hx : 0 ≤ x) (hy :
   exact le_antisymm (hle.trans (le_of_eq hn0)) (le_inf (smul_nonneg hc hx) hy)
 
 omit [Module ℝ E] [IsOrderedModule ℝ E] in
-/-- Disjoint nonnegative elements add as their supremum. -/
+/-- Elements with zero infimum add as their supremum (`inf_add_sup` at `x ⊓ y = 0`). -/
 theorem add_eq_sup_of_inf_eq_zero {x y : E} (hxy : x ⊓ y = 0) :
     x + y = x ⊔ y := by
-  have hsum : x ⊓ y + (x ⊔ y) = x + y := inf_add_sup x y
-  simpa [hxy, zero_add] using hsum.symm
+  rw [← inf_add_sup x y, hxy, zero_add]
 
 omit [Module ℝ E] [IsOrderedModule ℝ E] in
 /-- Finite infimum-sum estimate for nonnegative families. -/
@@ -312,8 +320,6 @@ private theorem inf_sum_le_sum_inf {n : ℕ} {x : E} {y : Fin n → E} (hx : 0 �
       _ ≤ (∑ i : Fin n, x ⊓ y i.castSucc) + x ⊓ y (Fin.last n) :=
             add_le_add_left hih _
       _ = ∑ i, x ⊓ y i := (Fin.sum_univ_castSucc (fun i ↦ x ⊓ y i)).symm
-
-@[deprecated (since := "2026-11-15")] alias sum_range_sub := Finset.sum_range_sub'
 
 omit [IsOrderedAddMonoid E] in
 /-- Positive scaling preserves least upper bounds of nonempty sets. -/
@@ -339,24 +345,14 @@ theorem isLUB_smul_of_pos {c : ℝ} (hc : 0 < c) {s : Set E} {a : E} (ha : IsLUB
     simpa [smul_smul, mul_inv_cancel₀ hc.ne'] using hmul
 
 omit [Module ℝ E] [IsOrderedModule ℝ E] in
-/-- Addition preserves least upper bounds. -/
+/-- Addition preserves least upper bounds; the set-builder form of `IsLUB.add`. -/
 theorem isLUB_add {s t : Set E} {a b : E} (hs : IsLUB s a) (ht : IsLUB t b) :
     IsLUB {z : E | ∃ x y, x ∈ s ∧ y ∈ t ∧ z = x + y} (a + b) := by
-  refine ⟨?_, ?_⟩
-  · intro z hz
-    obtain ⟨x, y, hx, hy, rfl⟩ := hz
-    exact add_le_add (hs.1 hx) (ht.1 hy)
-  · intro z hz
-    have ha : a ≤ z - b := by
-      refine (isLUB_le_iff hs).2 ?_
-      intro x hx
-      have hb : b ≤ z - x := by
-        refine (isLUB_le_iff ht).2 ?_
-        intro y hy
-        have hxy : x + y ≤ z := hz ⟨x, y, hx, hy, rfl⟩
-        exact (le_sub_iff_add_le).2 (by rwa [add_comm])
-      exact (le_sub_iff_add_le').2 (by simpa [add_comm, sub_add_cancel] using add_le_add_left hb x)
-    exact (le_sub_iff_add_le).1 ha
+  convert hs.add ht using 1
+  ext z
+  simp only [Set.mem_ofPred_eq, Set.mem_add]
+  exact ⟨fun ⟨x, y, hx, hy, h⟩ ↦ ⟨x, hx, y, hy, h.symm⟩,
+    fun ⟨x, hx, y, hy, h⟩ ↦ ⟨x, y, hx, hy, h.symm⟩⟩
 
 omit [Module ℝ E] [IsOrderedModule ℝ E] in
 /-- Existing suprema distribute over infima. -/
@@ -468,6 +464,12 @@ def coneAdditiveLinearMap (f : E → F)
     (hsmul : ∀ (c : ℝ) (x : E), 0 ≤ c → 0 ≤ x → f (c • x) = c • f x) : E →ₗ[ℝ] F :=
   IsLinearMap.mk' (fun x ↦ f x⁺ - f x⁻) (coneAdditive_isLinearMap f hadd hsmul)
 
+/-- The extension evaluates `f` on the positive and negative parts. -/
+theorem coneAdditiveLinearMap_apply (f : E → F)
+    (hadd : ∀ x y : E, 0 ≤ x → 0 ≤ y → f (x + y) = f x + f y)
+    (hsmul : ∀ (c : ℝ) (x : E), 0 ≤ c → 0 ≤ x → f (c • x) = c • f x) (x : E) :
+    coneAdditiveLinearMap f hadd hsmul x = f x⁺ - f x⁻ := rfl
+
 /-- On the positive cone the extension reproduces `f`. -/
 theorem coneAdditiveLinearMap_apply_of_nonneg (f : E → F)
     (hadd : ∀ x y : E, 0 ≤ x → 0 ≤ y → f (x + y) = f x + f y)
@@ -478,7 +480,7 @@ theorem coneAdditiveLinearMap_apply_of_nonneg (f : E → F)
     have h := hadd 0 0 le_rfl le_rfl
     have h' : f 0 + 0 = f 0 + f 0 := by simpa [add_zero] using h
     exact (add_left_cancel h').symm
-  rw [coneAdditiveLinearMap, IsLinearMap.mk'_apply, posPart_eq_self.2 hx,
+  rw [coneAdditiveLinearMap_apply, posPart_eq_self.2 hx,
     negPart_of_nonneg hx, hf0, sub_zero]
 
 end ConeExtension

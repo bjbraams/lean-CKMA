@@ -13,7 +13,6 @@ import CKMA.Analysis.Convex.Duality.Sum
 import Mathlib.Analysis.Convex.Continuous
 import Mathlib.LinearAlgebra.Dual.Lemmas
 import Mathlib.LinearAlgebra.Projection
-import Mathlib.Tactic
 
 /-!
 # The subdifferential sum rule under a relative-interior qualification

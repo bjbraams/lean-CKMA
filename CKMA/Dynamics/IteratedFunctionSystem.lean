@@ -121,7 +121,7 @@ private theorem measure_compl_selfSimilar_eq_zero [MeasurableSpace X] [BorelSpac
     (isOpen_lt continuous_const (continuous_infDist_pt s)).measurableSet
   have hzero {ε : ℝ} (hε : 0 < ε) : μ (A ε) = 0 := by
     by_cases hc0 : c = 0
-    · rw [hμ, Measure.finsetSum_apply]
+    · rw [hμ, sum_apply]
       refine Finset.sum_eq_zero fun i _ ↦ ?_
       rw [Measure.coe_nnreal_smul_apply,
         Measure.map_apply (hS i).continuous.measurable (hA ε)]
@@ -150,7 +150,7 @@ private theorem measure_compl_selfSimilar_eq_zero [MeasurableSpace X] [BorelSpac
         calc
           μ (A t) = ∑ i, (p i • μ.map (S i)) (A t) := by
             conv_lhs => rw [hμ]
-            rw [Measure.finsetSum_apply]
+            rw [sum_apply]
           _ ≤ ∑ i, (p i : ℝ≥0∞) * μ (A (t / c)) :=
             Finset.sum_le_sum fun i _ ↦ hterm i
           _ = (∑ i, (p i : ℝ≥0∞)) * μ (A (t / c)) := by rw [Finset.sum_mul]
@@ -208,9 +208,9 @@ private theorem isProbabilityMeasure_sum_smul_map {Y : Type*} [MeasurableSpace Y
     (hsum : ∑ i, (p i : ℝ≥0∞) = 1) (ν : Measure Y) [IsProbabilityMeasure ν] :
     IsProbabilityMeasure (∑ i, (p i : ℝ≥0∞) • ν.map (T i)) := by
   constructor
-  rw [Measure.finsetSum_apply]
+  rw [sum_apply]
   refine (Finset.sum_congr rfl fun i _ ↦ ?_).trans hsum
-  rw [Measure.smul_apply, Measure.map_apply (hT i) MeasurableSet.univ, Set.preimage_univ,
+  rw [smul_apply, Measure.map_apply (hT i) MeasurableSet.univ, Set.preimage_univ,
     measure_univ, smul_eq_mul, mul_one]
 
 /-- Mixing pushforwards along `c`-Lipschitz maps, with weights of total mass one, multiplies

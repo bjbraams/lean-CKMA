@@ -6,15 +6,15 @@ Authors: CKMA contributors
 module
 
 public import CKMA.Analysis
-public import CKMA.Probability
 public import CKMA.Dynamics
 public import CKMA.MeasureTheory
+public import CKMA.Probability
 
 /-!
 # Core Knowledge of Mathematical Analysis
 
 This library collects definitions and theorem interfaces in analysis, probability,
-dynamics and Haar measure. The analysis branch covers functional, harmonic, complex,
+dynamics and measure theory. The analysis branch covers functional, harmonic, complex,
 real and geometric analysis, differential equations and variational methods. The
 probability and dynamics branches connect limit laws, stochastic processes, ergodic
 theory and deterministic flows. Each subject entry re-exports its implementation modules.

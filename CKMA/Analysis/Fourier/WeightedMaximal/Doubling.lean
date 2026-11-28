@@ -23,6 +23,18 @@ the weighted maximal bound in `CKMA.Analysis.Fourier.WeightedMaximal.Sufficiency
 
 Source: GAPS 27.44. The doubling constant is the one used by Lerner’s reduction of the
 weighted strong-type bound to the weighted maximal operator on its own measure.
+
+## Main definitions
+
+* `CKMA.weightDensity`, `CKMA.dualDensity`: the densities `w` and `w ^ (-1/(p-1))` in `ℝ≥0∞`.
+* `CKMA.weightMeasure`, `CKMA.dualMeasure`: Lebesgue measure with these densities.
+* `CKMA.ballProduct`: the summand of the ball `A_p` characteristic.
+* `CKMA.ApWeight`: an `A_p` weight with an explicit finite ball bound `bound`.
+
+## Main results
+
+* `CKMA.ApWeight.weight_doubling`, `CKMA.ApWeight.dual_doubling`: the weight and dual measures
+  double on Euclidean balls.
 -/
 
 public section
@@ -47,6 +59,13 @@ def weightDensity (w : E → ℝ) (y : E) : ℝ≥0∞ := ENNReal.ofReal (w y)
 def dualDensity (p : ℝ) (w : E → ℝ) (y : E) : ℝ≥0∞ :=
   ENNReal.ofReal (w y ^ (-(p - 1)⁻¹))
 
+/-- Unfolding the weight density. -/
+lemma weightDensity_def (w : E → ℝ) (y : E) : weightDensity w y = ENNReal.ofReal (w y) := rfl
+
+/-- Unfolding the dual density. -/
+lemma dualDensity_def (p : ℝ) (w : E → ℝ) (y : E) :
+    dualDensity p w y = ENNReal.ofReal (w y ^ (-(p - 1)⁻¹)) := rfl
+
 /-- Lebesgue measure weighted by `weightDensity w`. -/
 @[expose]
 def weightMeasure (w : E → ℝ) : Measure E := volume.withDensity (weightDensity w)
@@ -61,6 +80,19 @@ def ballProduct (p : ℝ) (w : E → ℝ) (x : E) (r : ℝ) : ℝ≥0∞ :=
   ((∫⁻ y in ball x r, weightDensity w y ∂volume) / volume (ball x r)) *
     (((∫⁻ y in ball x r, dualDensity p w y ∂volume) / volume (ball x r)) ^ (p - 1))
 
+/-- Unfolding the weight measure. -/
+lemma weightMeasure_def (w : E → ℝ) : weightMeasure w = volume.withDensity (weightDensity w) :=
+  rfl
+
+/-- Unfolding the dual measure. -/
+lemma dualMeasure_def (p : ℝ) (w : E → ℝ) :
+    dualMeasure p w = volume.withDensity (dualDensity p w) := rfl
+
+/-- Unfolding the ball product. -/
+lemma ballProduct_def (p : ℝ) (w : E → ℝ) (x : E) (r : ℝ) :
+    ballProduct p w x r = ((∫⁻ y in ball x r, weightDensity w y ∂volume) / volume (ball x r)) *
+      (((∫⁻ y in ball x r, dualDensity p w y ∂volume) / volume (ball x r)) ^ (p - 1)) := rfl
+
 /-- Data of an `A_p` weight with an explicit finite ball bound. -/
 structure ApWeight (p : ℝ) where
   /-- The weight. -/
@@ -74,11 +106,11 @@ structure ApWeight (p : ℝ) where
   /-- The weight is locally integrable. -/
   locallyIntegrable_w : LocallyIntegrable w volume
   /-- A finite upper bound for every ball product. -/
-  A : ℝ≥0∞
+  bound : ℝ≥0∞
   /-- The ball bound is finite. -/
-  A_ne_top : A ≠ ∞
-  /-- Every positive-radius ball has product at most `A`. -/
-  ball_le : ∀ x r, 0 < r → ballProduct p w x r ≤ A
+  bound_ne_top : bound ≠ ∞
+  /-- Every positive-radius ball has product at most `bound`. -/
+  ball_le : ∀ x r, 0 < r → ballProduct p w x r ≤ bound
 
 namespace ApWeight
 
@@ -87,6 +119,9 @@ variable {p : ℝ}
 /-- The conjugate exponent `p / (p - 1)`. -/
 @[expose]
 def conj (_W : ApWeight (d := d) p) : ℝ := Real.conjExponent p
+
+/-- Unfolding the conjugate exponent. -/
+lemma conj_def (W : ApWeight (d := d) p) : W.conj = Real.conjExponent p := rfl
 
 /-- `p` is conjugate to `W.conj`. -/
 lemma holder (W : ApWeight (d := d) p) : p.HolderConjugate W.conj :=
@@ -135,6 +170,10 @@ lemma measurable_weightDensity (W : ApWeight (d := d) p) : Measurable (weightDen
 @[expose]
 def dualMk (W : ApWeight (d := d) p) (y : E) : ℝ≥0∞ :=
   if 0 < W.w y then ENNReal.ofReal (Real.exp (Real.log (W.w y) * -(p - 1)⁻¹)) else 0
+
+/-- Unfolding the dual representative. -/
+lemma dualMk_def (W : ApWeight (d := d) p) (y : E) : W.dualMk y =
+    if 0 < W.w y then ENNReal.ofReal (Real.exp (Real.log (W.w y) * -(p - 1)⁻¹)) else 0 := rfl
 
 /-- The dual representative is measurable. -/
 lemma measurable_dualMk (W : ApWeight (d := d) p) : Measurable (W.dualMk) := by
@@ -192,7 +231,7 @@ lemma dualDensity_pos_ae (W : ApWeight (d := d) p) :
 lemma weight_ball_ne_top (W : ApWeight (d := d) p) (x : E) (r : ℝ) :
     (∫⁻ y in ball x r, weightDensity W.w y ∂volume) ≠ ∞ := by
   have hint : ∫⁻ y in closedBall x r, ‖W.w y‖ₑ ∂volume < ∞ := by
-    rw [← hasFiniteIntegral_iff_enorm]
+    rw [← hasFiniteIntegral_iff_eNorm]
     exact (W.locallyIntegrable_w.integrableOn_isCompact
       (isCompact_closedBall x r)).hasFiniteIntegral
   refine ne_of_lt (lt_of_le_of_lt ?_ hint)
@@ -201,7 +240,7 @@ lemma weight_ball_ne_top (W : ApWeight (d := d) p) (x : E) (r : ℝ) :
         lintegral_mono_set ball_subset_closedBall
     _ ≤ ∫⁻ y in closedBall x r, ‖W.w y‖ₑ ∂volume :=
         setLIntegral_mono' isClosed_closedBall.measurableSet
-          fun _ _ => Real.ofReal_le_enorm _
+          fun _ _ => Real.ofReal_le_eNorm _
 
 /-- A positive weight charges every positive ball. -/
 lemma weight_ball_ne_zero (W : ApWeight (d := d) p) (x : E) {r : ℝ} (hr : 0 < r) :
@@ -217,13 +256,6 @@ lemma weight_ball_ne_zero (W : ApWeight (d := d) p) (x : E) {r : ℝ} (hr : 0 < 
     simpa [ball] using hempty
   exact (measure_ball_pos volume x hr).ne' this
 
-/-- The volume of a positive ball lies in `(0, ∞)`. -/
-lemma volume_ball_ne_zero (x : E) {r : ℝ} (hr : 0 < r) : volume (ball x r) ≠ 0 :=
-  (measure_ball_pos volume x hr).ne'
-
-/-- The volume of a ball is finite. -/
-lemma volume_ball_ne_top (x : E) (r : ℝ) : volume (ball x r) ≠ ∞ := measure_ball_lt_top.ne
-
 /-- Scaling the radius by `c > 0` multiplies the volume by `c ^ d`. -/
 lemma ball_volume_mul {c r : ℝ} (hc : 0 < c) (hr : 0 < r) (x y : E) :
     volume (ball y (c * r)) = ENNReal.ofReal (c ^ d) * volume (ball x r) := by
@@ -235,7 +267,7 @@ lemma ball_volume_mul {c r : ℝ} (hc : 0 < c) (hr : 0 < r) (x y : E) :
 lemma dual_ball_ne_top (W : ApWeight (d := d) p) (x : E) {r : ℝ} (hr : 0 < r) :
     (∫⁻ y in ball x r, dualDensity p W.w y ∂volume) ≠ ∞ := by
   intro hS
-  have hVt : volume (ball x r) ≠ ∞ := volume_ball_ne_top x r
+  have hVt : volume (ball x r) ≠ ∞ := measure_ball_lt_top.ne
   have hW0 : (∫⁻ y in ball x r, weightDensity W.w y ∂volume) ≠ 0 :=
     W.weight_ball_ne_zero x hr
   have hdiv : (∫⁻ y in ball x r, dualDensity p W.w y ∂volume) / volume (ball x r) = ∞ := by
@@ -249,7 +281,7 @@ lemma dual_ball_ne_top (W : ApWeight (d := d) p) (x : E) {r : ℝ} (hr : 0 < r) 
     (ENNReal.div_ne_zero).2 ⟨hW0, hVt⟩
   have hprod : ballProduct p W.w x r = ∞ := by
     rw [ballProduct, hpow, ENNReal.mul_top hWdiv]
-  exact W.A_ne_top (top_le_iff.mp (hprod ▸ W.ball_le x r hr))
+  exact W.bound_ne_top (top_le_iff.mp (hprod ▸ W.ball_le x r hr))
 
 /-- A positive dual density charges every positive ball. -/
 lemma dual_ball_ne_zero (W : ApWeight (d := d) p) (x : E) {r : ℝ} (hr : 0 < r) :
@@ -273,27 +305,27 @@ lemma dual_ball_ne_zero (W : ApWeight (d := d) p) (x : E) {r : ℝ} (hr : 0 < r)
   exact (measure_ball_pos volume x hr).ne' this
 
 /-- Every ball product is positive, so the characteristic bound is positive. -/
-lemma A_ne_zero (W : ApWeight (d := d) p) : W.A ≠ 0 := by
+lemma bound_ne_zero (W : ApWeight (d := d) p) : W.bound ≠ 0 := by
   let x : E := 0
   have hr : (0 : ℝ) < 1 := one_pos
   have hW : 0 < (∫⁻ y in ball x 1, weightDensity W.w y ∂volume) / volume (ball x 1) :=
-    ENNReal.div_pos (W.weight_ball_ne_zero x hr) (volume_ball_ne_top x 1)
+    ENNReal.div_pos (W.weight_ball_ne_zero x hr) measure_ball_lt_top.ne
   have hS : 0 < (∫⁻ y in ball x 1, dualDensity p W.w y ∂volume) / volume (ball x 1) :=
-    ENNReal.div_pos (W.dual_ball_ne_zero x hr) (volume_ball_ne_top x 1)
+    ENNReal.div_pos (W.dual_ball_ne_zero x hr) measure_ball_lt_top.ne
   have hpow : 0 < ((∫⁻ y in ball x 1, dualDensity p W.w y ∂volume) /
       volume (ball x 1)) ^ (p - 1) :=
-    rpow_pos hS (div_ne_top (W.dual_ball_ne_top x hr) (volume_ball_ne_zero x hr))
+    rpow_pos hS (div_ne_top (W.dual_ball_ne_top x hr) ((measure_ball_pos volume x hr).ne'))
   have hprod : 0 < ballProduct p W.w x 1 := by
     rw [ballProduct]
     exact ENNReal.mul_pos hW.ne' hpow.ne'
   exact (hprod.trans_le (W.ball_le x 1 hr)).ne'
 
 /-- The characteristic bound raised to `1/(p-1)` is finite and positive. -/
-lemma dualA_ne_zero_top (W : ApWeight (d := d) p) :
-    W.A ^ (p - 1)⁻¹ ≠ 0 ∧ W.A ^ (p - 1)⁻¹ ≠ ∞ := by
+lemma bound_rpow_ne_zero_and_ne_top (W : ApWeight (d := d) p) :
+    W.bound ^ (p - 1)⁻¹ ≠ 0 ∧ W.bound ^ (p - 1)⁻¹ ≠ ∞ := by
   refine ⟨?_, ?_⟩
-  · exact (rpow_pos (pos_iff_ne_zero.mpr W.A_ne_zero) W.A_ne_top).ne'
-  · exact rpow_ne_top_of_nonneg (inv_nonneg.mpr W.sub_one_pos.le) W.A_ne_top
+  · exact (rpow_pos (pos_iff_ne_zero.mpr W.bound_ne_zero) W.bound_ne_top).ne'
+  · exact rpow_ne_top_of_nonneg (inv_nonneg.mpr W.sub_one_pos.le) W.bound_ne_top
 
 /-- Doubling rearrangement: a Hölder bound and one characteristic bound give the weight ratio. -/
 lemma rearrange_ap {t : ℝ} {A vE vQ wE wQ sQ : ℝ≥0∞} (ht : 1 < t)
@@ -429,10 +461,10 @@ lemma measure_doubling_of_holder {ρ δ : E → ℝ≥0∞} {t : ℝ} {A : ℝ�
   let vQ := volume (ball x (c * r))
   let wE := ∫⁻ y in ball x r, ρ y ∂volume
   let wQ := ∫⁻ y in ball x (c * r), ρ y ∂volume
-  have hvE0 : vE ≠ 0 := volume_ball_ne_zero x hr
-  have hvEt : vE ≠ ∞ := volume_ball_ne_top x r
-  have hvQ0 : vQ ≠ 0 := volume_ball_ne_zero x (mul_pos hc0 hr)
-  have hvQt : vQ ≠ ∞ := volume_ball_ne_top x (c * r)
+  have hvE0 : vE ≠ 0 := (measure_ball_pos volume x hr).ne'
+  have hvEt : vE ≠ ∞ := measure_ball_lt_top.ne
+  have hvQ0 : vQ ≠ 0 := (measure_ball_pos volume x (mul_pos hc0 hr)).ne'
+  have hvQt : vQ ≠ ∞ := measure_ball_lt_top.ne
   have hrearr := rearrange_ap ht hvE0 hvEt hvQ0 hvQt hwQ0 hwQt hhold hchar
   have hvol : vQ / vE = ENNReal.ofReal (c ^ d) := by
     have hvQ' : vQ = volume (ball x (c * r)) := rfl
@@ -450,7 +482,7 @@ lemma measure_doubling_of_holder {ρ δ : E → ℝ≥0∞} {t : ℝ} {A : ℝ�
 lemma weight_doubling (W : ApWeight (d := d) p) {c : ℝ} (hc : 1 ≤ c) (x : E) {r : ℝ}
     (hr : 0 < r) :
     weightMeasure W.w (ball x (c * r)) ≤
-      W.A * ENNReal.ofReal (c ^ d) ^ p * weightMeasure W.w (ball x r) := by
+      W.bound * ENNReal.ofReal (c ^ d) ^ p * weightMeasure W.w (ball x r) := by
   have hc0 : 0 < c := by linarith
   have hR : r ≤ c * r := by nlinarith [hr, hc]
   exact measure_doubling_of_holder W.hp hc x hr
@@ -463,7 +495,7 @@ lemma weight_doubling (W : ApWeight (d := d) p) {c : ℝ} (hc : 1 ≤ c) (x : E)
 lemma dual_ballProduct_le (W : ApWeight (d := d) p) (x : E) {r : ℝ} (hr : 0 < r) :
     (∫⁻ y in ball x r, dualDensity p W.w y ∂volume) / volume (ball x r) *
       (((∫⁻ y in ball x r, weightDensity W.w y ∂volume) / volume (ball x r)) ^
-        (W.conj - 1)) ≤ W.A ^ (p - 1)⁻¹ := by
+        (W.conj - 1)) ≤ W.bound ^ (p - 1)⁻¹ := by
   have hchar := W.ball_le x r hr
   have hp1 : 0 ≤ (p - 1)⁻¹ := inv_nonneg.mpr W.sub_one_pos.le
   rw [W.conj_sub_one]
@@ -493,7 +525,7 @@ lemma volume_pow_le_dual_mul_weight (W : ApWeight (d := d) p) {x : E} {r R : ℝ
 lemma dual_doubling (W : ApWeight (d := d) p) {c : ℝ} (hc : 1 ≤ c) (x : E) {r : ℝ}
     (hr : 0 < r) :
     dualMeasure p W.w (ball x (c * r)) ≤
-      W.A ^ (p - 1)⁻¹ * ENNReal.ofReal (c ^ d) ^ W.conj *
+      W.bound ^ (p - 1)⁻¹ * ENNReal.ofReal (c ^ d) ^ W.conj *
         dualMeasure p W.w (ball x r) := by
   have hc0 : 0 < c := by linarith
   have hcr : 0 < c * r := mul_pos hc0 hr
@@ -504,28 +536,5 @@ lemma dual_doubling (W : ApWeight (d := d) p) {c : ℝ} (hc : 1 ≤ c) (x : E) {
     (W.dual_ballProduct_le x hcr)
 
 end ApWeight
-
-/-- A closed ball of radius `4r` sits in the concentric ball of radius `5r`. -/
-lemma closedBall_subset_concentric_five {x : E} {r : ℝ} (hr : 0 < r) :
-    closedBall x (4 * r) ⊆ ball x (5 * r) := by
-  intro z hz
-  have hzx : dist z x ≤ 4 * r := mem_closedBall.mp hz
-  exact mem_ball.mpr (hzx.trans_lt (by nlinarith [hr]))
-
-/-- A ball sits in the double ball about any of its points. -/
-lemma ball_subset_double_ball {x y : E} {r : ℝ} (hy : y ∈ ball x r) :
-    ball x r ⊆ ball y (2 * r) := by
-  intro z hz
-  have hzx : dist z x < r := mem_ball.mp hz
-  have hxy : dist x y < r := by simpa [dist_comm] using mem_ball.mp hy
-  exact mem_ball.mpr (by linarith [dist_triangle z x y])
-
-/-- Doubling the radius about a nearby centre stays inside the triple ball. -/
-lemma ball_two_subset_ball_three {x y : E} {r : ℝ} (hy : y ∈ ball x r) :
-    ball y (2 * r) ⊆ ball x (3 * r) := by
-  intro z hz
-  have hzy : dist z y < 2 * r := mem_ball.mp hz
-  have hxy : dist y x < r := mem_ball.mp hy
-  exact mem_ball.mpr (by linarith [dist_triangle z y x])
 
 end CKMA

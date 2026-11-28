@@ -15,7 +15,7 @@ public import Mathlib.Analysis.InnerProductSpace.Basic
 The evaluation pairing identifies a locally compact abelian group with its double
 character dual. With a compatible dual Haar measure, the Fourier integral extends to
 a Plancherel unitary and satisfies Hausdorff–Young bounds on `L¹ ∩ Lᵖ`. The Plancherel
-interface assumes second countability. Character groups use Mathlib's compact-open
+statement assumes second countability. Character groups use Mathlib's compact-open
 Pontryagin dual.
 
 Sources: GAPS 28.24 and 28.29.
@@ -56,8 +56,14 @@ theorem exists_pontryaginDual_equiv :
 def groupFourierIntegral [MeasurableSpace G] (μ : Measure G) (f : G → ℂ)
     (χ : PontryaginDual G) : ℂ := ∫ x, f x * conj (χ x : ℂ) ∂μ
 
-/-- **28.29**: a dual Haar measure gives the Plancherel unitary and Hausdorff–Young bounds.
-This first interface assumes second countability; the general non-sigma-compact LCA case remains. -/
+omit [IsTopologicalGroup G] [LocallyCompactSpace G] [T2Space G] in
+/-- Unfolding the group Fourier integral. -/
+theorem groupFourierIntegral_def [MeasurableSpace G] (μ : Measure G) (f : G → ℂ)
+    (χ : PontryaginDual G) : groupFourierIntegral μ f χ = ∫ x, f x * conj (χ x : ℂ) ∂μ := rfl
+
+/-- **28.29**, for a second-countable LCA group: there is a Haar measure on the dual for which the
+Fourier integral extends from `L¹ ∩ L²` to a unitary `L²(G) ≃ L²(Ĝ)` (Plancherel) and satisfies
+the Hausdorff–Young bound `‖f̂‖_q ≤ ‖f‖_p` on `L¹ ∩ Lᵖ` for `1 ≤ p ≤ 2`, `1/p + 1/q = 1`. -/
 theorem exists_groupPlancherel [SecondCountableTopology G]
     [MeasurableSpace G] [BorelSpace G]
     [MeasurableSpace (PontryaginDual G)] [BorelSpace (PontryaginDual G)]

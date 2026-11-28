@@ -141,7 +141,7 @@ compactness until the relevant theorem is invoked.
 * **27. Reflexivity and weak compactness.** A Banach space is reflexive
   exactly when $B_X$ is weakly compact. Closed subspaces and quotients of
   reflexive spaces are reflexive, and $X$ is reflexive exactly when $X^*$ is.
-* **28. Eberlein–Šmulian theorem.** A subset of a Banach space is relatively
+* **28. Eberlein–Šmulian theorem.** A subset of a normed space is relatively
   weakly compact exactly when every sequence in it has a weakly convergent
   subsequence with limit in the ambient space. In particular, bounded
   sequences in reflexive spaces have weakly convergent subsequences.

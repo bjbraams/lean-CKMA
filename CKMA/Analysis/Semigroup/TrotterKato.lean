@@ -32,7 +32,13 @@ Mathlib's dominated convergence and equicontinuity theorems give the limit estim
 
 ## Main results
 
+* `CKMA.semigroupsConvergeUniformlyOnCompacts_iff_tendstoUniformlyOn`: the predicate as
+  `TendstoUniformlyOn` on bounded time intervals.
 * `CKMA.trotter_kato`: Trotter–Kato approximation (**24.17**).
+
+## References
+
+* K.-J. Engel and R. Nagel, *One-Parameter Semigroups for Linear Evolution Equations*.
 -/
 
 public section
@@ -52,6 +58,30 @@ def SemigroupsConvergeUniformlyOnCompacts
     (S : ℕ → StronglyContinuousSemigroup X) (T : StronglyContinuousSemigroup X) : Prop :=
   ∀ x : X, ∀ R : ℝ≥0, ∀ ε : ℝ, 0 < ε → ∀ᶠ n in atTop,
     ∀ t : ℝ≥0, t ≤ R → ‖S n t x - T t x‖ < ε
+
+omit [CompleteSpace X] in
+/-- Unfolding uniform strong convergence on bounded time intervals. -/
+theorem semigroupsConvergeUniformlyOnCompacts_def {S : ℕ → StronglyContinuousSemigroup X}
+    {T : StronglyContinuousSemigroup X} :
+    SemigroupsConvergeUniformlyOnCompacts S T ↔ ∀ x : X, ∀ R : ℝ≥0, ∀ ε : ℝ, 0 < ε →
+      ∀ᶠ n in atTop, ∀ t : ℝ≥0, t ≤ R → ‖S n t x - T t x‖ < ε :=
+  Iff.rfl
+
+omit [CompleteSpace X] in
+/-- Uniform strong convergence on bounded time intervals is `TendstoUniformlyOn` on every
+`Set.Iic R`, orbit by orbit. -/
+theorem semigroupsConvergeUniformlyOnCompacts_iff_tendstoUniformlyOn
+    {S : ℕ → StronglyContinuousSemigroup X} {T : StronglyContinuousSemigroup X} :
+    SemigroupsConvergeUniformlyOnCompacts S T ↔ ∀ x : X, ∀ R : ℝ≥0,
+      TendstoUniformlyOn (fun n (t : ℝ≥0) ↦ S n t x) (fun t ↦ T t x) atTop (Set.Iic R) := by
+  refine forall_congr' fun x => forall_congr' fun R => ?_
+  rw [Metric.tendstoUniformlyOn_iff]
+  refine forall₂_congr fun ε _ => ⟨fun h => h.mono fun n hn t ht => ?_,
+    fun h => h.mono fun n hn t ht => ?_⟩
+  · rw [dist_comm, dist_eq_norm]
+    exact hn t ht
+  · rw [← dist_eq_norm, dist_comm]
+    exact hn t ht
 
 /-- Strong semigroup convergence implies strong convergence of the Laplace resolvents. -/
 private theorem tendsto_resolvent_of_semigroupsConverge

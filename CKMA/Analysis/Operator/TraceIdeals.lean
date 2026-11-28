@@ -5,9 +5,7 @@ Authors: CKMA contributors
 -/
 module
 
-public import TauCeti.Analysis.OperatorIdeal.Family.Schatten
-public import TauCeti.Analysis.OperatorIdeal.Nuclear.Basic
-public import Mathlib.Analysis.InnerProductSpace.l2Space
+public import CKMA.Analysis.Operator.Basic
 
 import TauCeti.Analysis.OperatorIdeal.Family.TraceClass
 import TauCeti.Analysis.InnerProductSpace.Parseval
@@ -16,30 +14,34 @@ import Mathlib.LinearAlgebra.Eigenspace.ContinuousLinearMap
 /-!
 # Schatten products and the Hilbert-space trace
 
-Schatten gauges reuse TauCeti's operator-ideal family, with finite Banach exponents at least one.
-The product estimate has constant one at conjugate exponents. Trace class is finiteness of
-TauCeti's nuclear gauge `ContinuousLinearMap.nuclearENorm`, which is the Schatten-one gauge.
-
-A supplied Hilbert basis defines the scalar trace sum. Trace-class membership gives absolute
-convergence, independence of the possibly differently indexed basis, and cyclicity under bounded
-multiplication. Inner products are linear in the second slot. Sources: GAPS 21.22 and 21.23.
-
-## Main definitions
-
-* `CKMA.schattenGauge`: the Schatten `p`-gauge from TauCeti.
-* `CKMA.IsTraceClassOperator`: membership in the trace class `S₁`.
-* `CKMA.hilbertTrace`: scalar trace of an operator with respect to a Hilbert basis.
+The definitions `CKMA.schattenGauge`, `CKMA.IsTraceClassOperator` and `CKMA.hilbertTrace` are in
+`CKMA.Analysis.Operator.Basic`. The product estimate has constant one at conjugate exponents.
+Trace-class membership gives absolute convergence of the diagonal series in every Hilbert basis,
+independence of the possibly differently indexed basis, and cyclicity `tr (A T) = tr (T A)` for
+`T : H →L K` trace class and `A : K →L H` bounded, the two traces taken on `H` and on `K`.
+Inner products are linear in the second slot. Sources: GAPS 21.22 and 21.23.
 
 ## Main results
 
 * `CKMA.schatten_holder` (**21.22**): Schatten Hölder inequality with constant one.
 * `CKMA.isTraceClassOperator_iff_schattenGauge_ne_top`: trace class is finiteness of the
   Schatten-one gauge.
-* `CKMA.IsTraceClassOperator.summable_trace` (**21.23**): absolute convergence of the trace series
-  and the trace-norm bound.
+* `CKMA.IsTraceClassOperator.summable_and_enorm_hilbertTrace_le` (**21.23**): absolute
+  convergence of the trace series and the trace-norm bound, also available separately as
+  `CKMA.IsTraceClassOperator.summable_norm_inner_apply` and
+  `CKMA.IsTraceClassOperator.enorm_hilbertTrace_le`.
 * `CKMA.hilbertTrace_basis_independent`: basis independence of the Hilbert-space trace.
-* `CKMA.IsTraceClassOperator.trace_cyclic`: bounded multiplication preserves trace class, and the
-  trace is cyclic.
+* `CKMA.IsTraceClassOperator.comp_left`, `CKMA.IsTraceClassOperator.comp_right`: trace class is
+  a two-sided ideal.
+* `CKMA.IsTraceClassOperator.hilbertTrace_comp_comm`: cyclicity of the trace.
+
+## Auxiliary results
+
+* `CKMA.phaseScalar`: a unit-ball scalar `c` with `c * z = ‖z‖`.
+* `CKMA.sum_mul_norm_inner_hilbertBasis_le`, `CKMA.tsum_mul_norm_inner_hilbertBasis_le`:
+  Cauchy–Schwarz for the absolute coordinate products in a Hilbert basis.
+* `CKMA.inner_eq_zero_of_forall_inner_hilbertBasis_eq_zero`: orthogonality to a Hilbert basis of
+  a subspace is orthogonality to the subspace.
 -/
 
 public section
@@ -57,11 +59,6 @@ variable {𝕜 H K L ι κ : Type*} [RCLike 𝕜]
     [NormedAddCommGroup K] [InnerProductSpace 𝕜 K] [CompleteSpace K]
     [NormedAddCommGroup L] [InnerProductSpace 𝕜 L] [CompleteSpace L]
 
-/-- The upstream Schatten gauge. No second approximation-number definition is introduced. -/
-@[expose]
-abbrev schattenGauge (p : ℝ) (hp : 1 ≤ p) (T : H →L[𝕜] K) : ℝ≥0∞ :=
-  (TauCeti.OperatorIdealFamily.schatten 𝕜 p hp).gauge T
-
 /-- **21.22**: the constant-one Schatten Hölder estimate at finite exponents. -/
 theorem schatten_holder {p q r : ℝ} (hp : 1 ≤ p) (hq : 1 ≤ q) (hr : 1 ≤ r)
     (hpqr : r⁻¹ = p⁻¹ + q⁻¹) (S : K →L[𝕜] L) (T : H →L[𝕜] K) :
@@ -73,43 +70,33 @@ theorem schattenGauge_one_eq_nuclearENorm (T : H →L[𝕜] K) :
     schattenGauge 1 le_rfl T = T.nuclearENorm := by
   simp [schattenGauge, TauCeti.OperatorIdealFamily.schatten_one]
 
-/-- Trace-class membership: finiteness of TauCeti's nuclear gauge
-`ContinuousLinearMap.nuclearENorm`, the Schatten-one gauge. -/
-@[expose]
-def IsTraceClassOperator (T : H →L[𝕜] K) : Prop := T.nuclearENorm ≠ ∞
-
 /-- Trace class is finiteness of the Schatten-one gauge. -/
 theorem isTraceClassOperator_iff_schattenGauge_ne_top (T : H →L[𝕜] K) :
     IsTraceClassOperator T ↔ schattenGauge 1 le_rfl T ≠ ∞ := by
-  rw [IsTraceClassOperator, schattenGauge_one_eq_nuclearENorm]
+  rw [isTraceClassOperator_iff, schattenGauge_one_eq_nuclearENorm]
 
-/-- Trace computed in a supplied Hilbert basis, using Mathlib's second-variable-linear inner
-product convention. The trace-class theorems establish that this sum is legitimate. -/
-@[expose]
-def hilbertTrace (b : HilbertBasis ι 𝕜 H) (T : H →L[𝕜] H) : 𝕜 :=
-  ∑' i, ⟪b i, T (b i)⟫_𝕜
+/-- A unit-ball scalar with `phaseScalar z * z = (‖z‖ : 𝕜)`: the conjugate phase of `z`. At
+zero the scalar vanishes. -/
+def phaseScalar (z : 𝕜) : 𝕜 := (‖z‖ : 𝕜) * z⁻¹
 
-omit [CompleteSpace H] in
-/-- The trace of the zero operator is zero. -/
-theorem hilbertTrace_zero (b : HilbertBasis ι 𝕜 H) : hilbertTrace b (0 : H →L[𝕜] H) = 0 := by
-  simp [hilbertTrace]
-
-/-- Unit-ball scalar with `phaseScalar z * z = (‖z‖ : 𝕜)`. At zero the scalar vanishes. -/
-private def phaseScalar (z : 𝕜) : 𝕜 := (‖z‖ : 𝕜) * z⁻¹
+/-- The defining formula of `phaseScalar`. -/
+theorem phaseScalar_def (z : 𝕜) : phaseScalar z = (‖z‖ : 𝕜) * z⁻¹ := by
+  unfold phaseScalar; rfl
 
 /-- `phaseScalar z` has norm at most one. -/
-private theorem norm_phaseScalar_le_one (z : 𝕜) : ‖phaseScalar z‖ ≤ 1 := by
+theorem norm_phaseScalar_le_one (z : 𝕜) : ‖phaseScalar z‖ ≤ 1 := by
   by_cases hz : z = 0
-  · simp [phaseScalar, hz, inv_zero]
-  · rw [phaseScalar, norm_mul, RCLike.norm_ofReal, abs_of_nonneg (norm_nonneg _), norm_inv,
+  · simp [phaseScalar_def, hz, inv_zero]
+  · rw [phaseScalar_def, norm_mul, RCLike.norm_ofReal, abs_of_nonneg (norm_nonneg _), norm_inv,
       mul_inv_cancel₀ (norm_ne_zero_iff.mpr hz)]
 
 /-- `phaseScalar z` rotates `z` onto its norm. -/
-private theorem phaseScalar_mul (z : 𝕜) : phaseScalar z * z = (‖z‖ : 𝕜) := by
+theorem phaseScalar_mul (z : 𝕜) : phaseScalar z * z = (‖z‖ : 𝕜) := by
   by_cases hz : z = 0
-  · simp [phaseScalar, hz, inv_zero]
-  · rw [phaseScalar, mul_assoc, inv_mul_cancel₀ hz, mul_one]
+  · simp [phaseScalar_def, hz, inv_zero]
+  · rw [phaseScalar_def, mul_assoc, inv_mul_cancel₀ hz, mul_one]
 
+omit [CompleteSpace H] in
 /-- Phased rank-one sum along a finite orthonormal set has operator norm at most one. -/
 private theorem opNorm_sum_phase_rankOne_le {ι : Type*} (b : HilbertBasis ι 𝕜 H) (c : ι → 𝕜)
     (s : Finset ι) (hc : ∀ i ∈ s, ‖c i‖ ≤ 1) :
@@ -133,17 +120,18 @@ private theorem opNorm_sum_phase_rankOne_le {ι : Type*} (b : HilbertBasis ι �
           pow_le_pow_left₀ (mul_nonneg (norm_nonneg _) (norm_nonneg _)) hmul 2
   simpa [abs_of_nonneg (norm_nonneg _), abs_of_nonneg (norm_nonneg x)] using sq_le_sq.mp hle
 
+omit [CompleteSpace H] [CompleteSpace K] in
 /-- A finite pairing of two orthonormal families is bounded by the nuclear gauge. -/
-private theorem enorm_sum_inner_two_families_le (T : H →L[𝕜] H) {ι : Type*} [Fintype ι]
-    (u v : ι → H) (hu : Orthonormal 𝕜 u) (hv : Orthonormal 𝕜 v) :
+private theorem enorm_sum_inner_two_families_le (T : H →L[𝕜] K) {ι : Type*} [Fintype ι]
+    (u : ι → K) (v : ι → H) (hu : Orthonormal 𝕜 u) (hv : Orthonormal 𝕜 v) :
     ‖∑ i, ⟪u i, T (v i)⟫_𝕜‖ₑ ≤ T.nuclearENorm := by
   classical
-  let W : Submodule 𝕜 H := Submodule.span 𝕜 (Set.range u)
+  let W : Submodule 𝕜 K := Submodule.span 𝕜 (Set.range u)
   let V : Submodule 𝕜 H := Submodule.span 𝕜 (Set.range v)
   have : FiniteDimensional 𝕜 W := FiniteDimensional.span_of_finite 𝕜 (Set.finite_range u)
   have : FiniteDimensional 𝕜 V := FiniteDimensional.span_of_finite 𝕜 (Set.finite_range v)
-  have := FiniteDimensional.complete 𝕜 W
-  have := FiniteDimensional.complete 𝕜 V
+  have := FiniteDimensional.completeSpace 𝕜 W
+  have := FiniteDimensional.completeSpace 𝕜 V
   let uW : ι → W := fun i ↦ ⟨u i, Submodule.subset_span ⟨i, rfl⟩⟩
   let vV : ι → V := fun i ↦ ⟨v i, Submodule.subset_span ⟨i, rfl⟩⟩
   have huW : Orthonormal 𝕜 uW := by
@@ -177,7 +165,7 @@ private theorem enorm_sum_inner_two_families_le (T : H →L[𝕜] H) {ι : Type*
       _ = T.singularValue n := by simp
   have hnu : C.nuclearENorm ≤ T.nuclearENorm := by
     simp only [nuclearENorm_def]
-    exact ENNReal.tsum_le_tsum fun n ↦ by exact_mod_cast hsing n
+    exact tsum_le_tsum fun n ↦ ENNReal.coe_le_coe.mpr (hsing n)
   calc ‖∑ i, ⟪u i, T (v i)⟫_𝕜‖ₑ
       = ENNReal.ofReal ‖∑ i, ⟪u i, T (v i)⟫_𝕜‖ := by simp [ofReal_norm]
     _ ≤ ENNReal.ofReal (C.kyFanGauge (Fintype.card ι) : ℝ) :=
@@ -186,6 +174,7 @@ private theorem enorm_sum_inner_two_families_le (T : H →L[𝕜] H) {ι : Type*
     _ ≤ C.nuclearENorm := C.kyFanGauge_le_nuclearENorm _
     _ ≤ T.nuclearENorm := hnu
 
+omit [CompleteSpace H] in
 /-- A finite orthonormal compression has nuclear gauge at most that of the original operator. -/
 private theorem enorm_finset_sum_inner_le_nuclearENorm (T : H →L[𝕜] H) {ι : Type*} (v : ι → H)
     (hv : Orthonormal 𝕜 v) (s : Finset ι) :
@@ -196,6 +185,7 @@ private theorem enorm_finset_sum_inner_le_nuclearENorm (T : H →L[𝕜] H) {ι 
   rw [← Finset.sum_coe_sort s (fun i : ι ↦ ⟪v i, T (v i)⟫_𝕜)]
   simpa [u] using enorm_sum_inner_two_families_le T u u hu hu
 
+omit [CompleteSpace H] in
 /-- Finite sums of absolute diagonal entries are bounded by the nuclear gauge. -/
 private theorem sum_norm_inner_diag_le (T : H →L[𝕜] H) (hT : T.nuclearENorm ≠ ∞)
     (b : HilbertBasis ι 𝕜 H) (s : Finset ι) :
@@ -221,31 +211,41 @@ private theorem sum_norm_inner_diag_le (T : H →L[𝕜] H) (hT : T.nuclearENorm
   have hUnn : ‖U‖₊ ≤ 1 := by exact_mod_cast hU
   have hnu : (T.comp U).nuclearENorm ≤ T.nuclearENorm := by
     simp only [nuclearENorm_def]
-    refine ENNReal.tsum_le_tsum fun n ↦ ?_
-    have hle : (T.comp U).singularValue n ≤ T.singularValue n :=
-      (T.singularValue_comp_le_right U n).trans (mul_le_of_le_one_right' hUnn)
-    exact_mod_cast hle
+    exact tsum_le_tsum fun n ↦ ENNReal.coe_le_coe.mpr
+      ((T.singularValue_comp_le_right U n).trans (mul_le_of_le_one_right' hUnn))
   have hbig : ENNReal.ofReal (∑ i ∈ s, ‖⟪b i, T (b i)⟫_𝕜‖) ≤ T.nuclearENorm := by
     rw [← hreal, ofReal_norm, ← hdiag]
     exact (enorm_finset_sum_inner_le_nuclearENorm (T.comp U) b b.orthonormal s).trans hnu
   exact (ENNReal.ofReal_le_iff_le_toReal hT).mp hbig
 
-/-- **21.23**: absolute convergence and the trace-norm bound for every Hilbert basis. -/
-theorem IsTraceClassOperator.summable_trace {T : H →L[𝕜] H} (hT : IsTraceClassOperator T)
-    (b : HilbertBasis ι 𝕜 H) :
-    Summable (fun i ↦ ‖⟪b i, T (b i)⟫_𝕜‖) ∧
-      ‖hilbertTrace b T‖ₑ ≤ schattenGauge 1 le_rfl T := by
-  have hnu : T.nuclearENorm ≠ ∞ := hT
-  have hsum : Summable fun i ↦ ‖⟪b i, T (b i)⟫_𝕜‖ :=
-    summable_of_sum_le (fun _ ↦ norm_nonneg _) fun s ↦ sum_norm_inner_diag_le T hnu b s
-  refine ⟨hsum, ?_⟩
-  rw [schattenGauge_one_eq_nuclearENorm, hilbertTrace]
-  refine le_of_tendsto'
-    ((continuous_enorm.tendsto _).comp (Summable.of_norm hsum).hasSum) fun s ↦ ?_
+omit [CompleteSpace H] in
+/-- The diagonal entries of a trace-class operator in a Hilbert basis are absolutely
+summable. -/
+theorem IsTraceClassOperator.summable_norm_inner_apply {T : H →L[𝕜] H}
+    (hT : IsTraceClassOperator T) (b : HilbertBasis ι 𝕜 H) :
+    Summable (fun i ↦ ‖⟪b i, T (b i)⟫_𝕜‖) :=
+  summable_of_sum_le (fun _ ↦ norm_nonneg _) fun s ↦
+    sum_norm_inner_diag_le T hT.nuclearENorm_ne_top b s
+
+/-- The trace of a trace-class operator in any Hilbert basis is bounded by its trace norm. -/
+theorem IsTraceClassOperator.enorm_hilbertTrace_le {T : H →L[𝕜] H}
+    (hT : IsTraceClassOperator T) (b : HilbertBasis ι 𝕜 H) :
+    ‖hilbertTrace b T‖ₑ ≤ schattenGauge 1 le_rfl T := by
+  rw [schattenGauge_one_eq_nuclearENorm, hilbertTrace_def]
+  refine le_of_tendsto' ((continuous_eNorm.tendsto _).comp
+    (Summable.of_norm (hT.summable_norm_inner_apply b)).hasSum) fun s ↦ ?_
   simpa using enorm_finset_sum_inner_le_nuclearENorm T b b.orthonormal s
 
+/-- **21.23**: absolute convergence and the trace-norm bound for every Hilbert basis. -/
+theorem IsTraceClassOperator.summable_and_enorm_hilbertTrace_le {T : H →L[𝕜] H}
+    (hT : IsTraceClassOperator T) (b : HilbertBasis ι 𝕜 H) :
+    Summable (fun i ↦ ‖⟪b i, T (b i)⟫_𝕜‖) ∧
+      ‖hilbertTrace b T‖ₑ ≤ schattenGauge 1 le_rfl T :=
+  ⟨hT.summable_norm_inner_apply b, hT.enorm_hilbertTrace_le b⟩
+
+omit [CompleteSpace H] in
 /-- A vector orthogonal to a Hilbert basis of a subspace is orthogonal to the subspace. -/
-private theorem hilbertBasis_inner_eq_zero {K : Submodule 𝕜 H} {ι : Type*}
+theorem inner_eq_zero_of_forall_inner_hilbertBasis_eq_zero {K : Submodule 𝕜 H} {ι : Type*}
     (bK : HilbertBasis ι 𝕜 K) {x : H} (hx : ∀ i, ⟪x, (bK i : H)⟫_𝕜 = 0) {y : H} (hy : y ∈ K) :
     ⟪x, y⟫_𝕜 = 0 := by
   have hsum := ((innerSL 𝕜 x).comp K.subtypeL).hasSum (bK.hasSum_repr ⟨y, hy⟩)
@@ -254,8 +254,9 @@ private theorem hilbertBasis_inner_eq_zero {K : Submodule 𝕜 H} {ι : Type*}
       innerSL_apply_apply, map_smul, hx, smul_zero] using hsum
   exact hzero.unique hasSum_zero
 
-/-- A trace-class operator has a Hilbert basis of eigenvectors of `T† ∘ T`. -/
-private theorem exists_gramEigenbasis (T : H →L[𝕜] H) (hT : T.nuclearENorm ≠ ∞) :
+/-- A trace-class operator `T : H →L K` has a Hilbert basis of `H` of eigenvectors of
+`T† ∘ T`. -/
+private theorem exists_gramEigenbasis (T : H →L[𝕜] K) (hT : T.nuclearENorm ≠ ∞) :
     ∃ (s : Set H) (e : HilbertBasis s 𝕜 H),
       (∀ i, (T† ∘L T) (e i) = (‖T (e i)‖ ^ 2 : 𝕜) • e i) := by
   classical
@@ -296,7 +297,8 @@ private theorem exists_gramEigenbasis (T : H →L[𝕜] H) (hT : T.nuclearENorm 
     simp only [Submodule.mem_iInf]
     intro mu
     rw [Submodule.mem_orthogonal']
-    exact fun y hy ↦ hilbertBasis_inner_eq_zero (bw mu) (fun i ↦ hx' ⟨mu, i⟩) hy
+    exact fun y hy ↦
+      inner_eq_zero_of_forall_inner_hilbertBasis_eq_zero (bw mu) (fun i ↦ hx' ⟨mu, i⟩) hy
   have key : ∀ x : Set.range v, ∃ mu : 𝕜, HasEigenvector (S : Module.End 𝕜 H) mu (x : H) := by
     rintro ⟨-, p, rfl⟩
     refine ⟨p.1, hmem p, fun hzero ↦ ?_⟩
@@ -322,8 +324,9 @@ private theorem exists_gramEigenbasis (T : H →L[𝕜] H) (hT : T.nuclearENorm 
   rw [hvec, inner_smul_right, hunit, mul_one] at hinner
   rw [hvec, hinner]
 
+omit [CompleteSpace H] in
 /-- Cauchy–Schwarz for the coordinatewise absolute products in a Hilbert basis. -/
-private theorem sum_mul_abs_inner_le (b : HilbertBasis κ 𝕜 H) (x y : H) (t : Finset κ) :
+theorem sum_mul_norm_inner_hilbertBasis_le (b : HilbertBasis κ 𝕜 H) (x y : H) (t : Finset κ) :
     ∑ j ∈ t, ‖⟪b j, x⟫_𝕜‖ * ‖⟪b j, y⟫_𝕜‖ ≤ ‖x‖ * ‖y‖ := by
   have h1 : ∑ j ∈ t, ‖⟪b j, x⟫_𝕜‖ ^ 2 ≤ ∑' j, ‖⟪b j, x⟫_𝕜‖ ^ 2 :=
     (b.summable_norm_sq_inner x).sum_le_tsum t fun _ _ ↦ sq_nonneg _
@@ -337,21 +340,21 @@ private theorem sum_mul_abs_inner_le (b : HilbertBasis κ 𝕜 H) (x y : H) (t :
           (Real.sqrt_nonneg _)
     _ = ‖x‖ * ‖y‖ := by simp [b.tsum_norm_sq_inner, Real.sqrt_sq (norm_nonneg _)]
 
+omit [CompleteSpace H] in
 /-- The series of absolute coordinate products is at most the product of the norms. -/
-private theorem tsum_mul_abs_inner_le (b : HilbertBasis κ 𝕜 H) (x y : H) :
+theorem tsum_mul_norm_inner_hilbertBasis_le (b : HilbertBasis κ 𝕜 H) (x y : H) :
     ∑' j, ‖⟪b j, x⟫_𝕜‖ * ‖⟪b j, y⟫_𝕜‖ ≤ ‖x‖ * ‖y‖ :=
   Real.tsum_le_of_sum_le (fun _ ↦ mul_nonneg (norm_nonneg _) (norm_nonneg _))
-    (sum_mul_abs_inner_le b x y)
+    (sum_mul_norm_inner_hilbertBasis_le b x y)
 
-/-- On a Gram eigenbasis, `∑ ‖T eᵢ‖` converges and is at most the nuclear gauge. -/
-private theorem summable_norm_apply_gram (T : H →L[𝕜] H) (hT : T.nuclearENorm ≠ ∞)
+omit [CompleteSpace H] [CompleteSpace K] in
+/-- If the images `T eᵢ` of a Hilbert basis are pairwise orthogonal, `∑ ‖T eᵢ‖` converges and is
+at most the nuclear gauge. -/
+private theorem summable_norm_apply_gram (T : H →L[𝕜] K) (hT : T.nuclearENorm ≠ ∞)
     {s : Set H} (e : HilbertBasis s 𝕜 H)
-    (hE : ∀ i, (T† ∘L T) (e i) = (‖T (e i)‖ ^ 2 : 𝕜) • e i) :
+    (horth : ∀ i j, i ≠ j → ⟪T (e i), T (e j)⟫_𝕜 = 0) :
     Summable (fun i ↦ ‖T (e i)‖) ∧ ∑' i, ‖T (e i)‖ ≤ T.nuclearENorm.toReal := by
   classical
-  have horth {i j : s} (hij : i ≠ j) : ⟪T (e i), T (e j)⟫_𝕜 = 0 := by
-    rw [← adjoint_inner_left T (e j) (T (e i)), ← ContinuousLinearMap.comp_apply, hE i,
-      inner_smul_left, e.orthonormal.inner_eq_zero hij, mul_zero]
   have hfin (t0 : Finset s) : ∑ i ∈ t0, ‖T (e i)‖ ≤ T.nuclearENorm.toReal := by
     let t : Finset s := t0.filter fun i ↦ T (e i) ≠ 0
     have hsplit : ∑ i ∈ t0, ‖T (e i)‖ = ∑ i ∈ t, ‖T (e i)‖ := by
@@ -362,32 +365,25 @@ private theorem summable_norm_apply_gram (T : H →L[𝕜] H) (hT : T.nuclearENo
         exact hnot (Finset.mem_filter.mpr ⟨hi, hnz⟩)
       simp [hzero]
     rw [hsplit]
-    let u : t → H := fun i ↦ (‖T (e i)‖ : 𝕜)⁻¹ • T (e i)
+    have hne (i : t) : ‖T (e i)‖ ≠ 0 := norm_ne_zero_iff.mpr (Finset.mem_filter.mp i.2).2
+    let u : t → K := fun i ↦ (‖T (e i)‖ : 𝕜)⁻¹ • T (e i)
     let v : t → H := fun i ↦ e i
     have hv : Orthonormal 𝕜 v :=
       e.orthonormal.comp (fun i : t ↦ (i : s)) Subtype.val_injective
     have hu : Orthonormal 𝕜 u := by
       refine ⟨fun i ↦ ?_, fun i j hij ↦ ?_⟩
-      · have hne : ‖T (e i)‖ ≠ 0 := by
-          have hi := i.2
-          rw [Finset.mem_filter] at hi
-          exact norm_ne_zero_iff.mpr hi.2
-        simp only [u]
+      · simp only [u]
         rw [norm_smul, norm_inv, RCLike.norm_ofReal, abs_of_nonneg (norm_nonneg _),
-          inv_mul_cancel₀ hne]
+          inv_mul_cancel₀ (hne i)]
       · have hval : (i : s) ≠ j := fun h ↦ hij (Subtype.ext h)
-        simp only [u, inner_smul_left, inner_smul_right, horth hval, mul_zero]
+        simp only [u, inner_smul_left, inner_smul_right, horth _ _ hval, mul_zero]
     have hdiag (i : t) : ⟪u i, T (v i)⟫_𝕜 = (‖T (e i)‖ : 𝕜) := by
-      have hne : ‖T (e i)‖ ≠ 0 := by
-        have hi := i.2
-        rw [Finset.mem_filter] at hi
-        exact norm_ne_zero_iff.mpr hi.2
       simp only [u, v, inner_smul_left, inner_self_eq_norm_sq_to_K]
       rw [show starRingEnd 𝕜 ((‖T (e i)‖ : 𝕜)⁻¹) = (‖T (e i)‖ : 𝕜)⁻¹ by
         rw [← RCLike.ofReal_inv, RCLike.conj_ofReal, RCLike.ofReal_inv]]
       rw [← RCLike.ofReal_inv, ← RCLike.ofReal_pow, ← RCLike.ofReal_mul]
       congr 1
-      rw [pow_two, ← mul_assoc, inv_mul_cancel₀ hne, one_mul]
+      rw [pow_two, ← mul_assoc, inv_mul_cancel₀ (hne i), one_mul]
     have hreal : ‖∑ i : t, (‖T (e i)‖ : 𝕜)‖ = ∑ i ∈ t, ‖T (e i)‖ := by
       rw [Finset.sum_coe_sort t (fun i : s ↦ (‖T (e i)‖ : 𝕜)), ← map_sum (algebraMap ℝ 𝕜),
         RCLike.norm_ofReal, abs_of_nonneg (Finset.sum_nonneg fun _ _ ↦ norm_nonneg _)]
@@ -401,145 +397,99 @@ private theorem summable_norm_apply_gram (T : H →L[𝕜] H) (hT : T.nuclearENo
   exact ⟨summable_of_sum_le (fun _ ↦ norm_nonneg _) hfin,
     Real.tsum_le_of_sum_le (fun _ ↦ norm_nonneg _) hfin⟩
 
+/-- A trace-class `T : H →L K` has a Hilbert basis `e` of `H` with `∑ ‖T eᵢ‖ < ∞`. -/
+private theorem exists_hilbertBasis_summable_norm_apply (T : H →L[𝕜] K)
+    (hT : T.nuclearENorm ≠ ∞) :
+    ∃ (s : Set H) (e : HilbertBasis s 𝕜 H), Summable fun i ↦ ‖T (e i)‖ := by
+  obtain ⟨s, e, hE⟩ := exists_gramEigenbasis T hT
+  refine ⟨s, e, (summable_norm_apply_gram T hT e fun i j hij ↦ ?_).1⟩
+  rw [← adjoint_inner_left T (e j) (T (e i)), ← ContinuousLinearMap.comp_apply, hE i,
+    inner_smul_left, e.orthonormal.inner_eq_zero hij, mul_zero]
+
+omit [CompleteSpace H] [CompleteSpace K] in
 /-- Scalar coefficients of `T` applied to a Hilbert expansion. -/
-private theorem hasSum_inner_expand (T : H →L[𝕜] H) {s : Type*} (e : HilbertBasis s 𝕜 H)
-    (x y : H) : HasSum (fun i ↦ ⟪e i, y⟫_𝕜 * ⟪x, T (e i)⟫_𝕜) ⟪x, T y⟫_𝕜 := by
+private theorem hasSum_inner_expand (T : H →L[𝕜] K) {s : Type*} (e : HilbertBasis s 𝕜 H)
+    (x : K) (y : H) : HasSum (fun i ↦ ⟪e i, y⟫_𝕜 * ⟪x, T (e i)⟫_𝕜) ⟪x, T y⟫_𝕜 := by
   convert (innerSL 𝕜 x).hasSum (T.hasSum (e.hasSum_repr y)) using 1
   · ext i
     simp [e.repr_apply_apply, innerSL_apply_apply, map_smul]
   · simp [innerSL_apply_apply]
 
-/-- If `∑ ‖T eᵢ‖` converges, every Hilbert trace equals `∑ ⟪eᵢ, T eᵢ⟫`. -/
-private theorem hilbertTrace_eq_sum_inner_apply (T : H →L[𝕜] H) {s : Type*}
-    (e : HilbertBasis s 𝕜 H) (hsum : Summable fun i ↦ ‖T (e i)‖) (b : HilbertBasis κ 𝕜 H) :
-    hilbertTrace b T = ∑' i, ⟪e i, T (e i)⟫_𝕜 := by
-  let f : s → κ → 𝕜 := fun i j ↦ ⟪e i, b j⟫_𝕜 * ⟪b j, T (e i)⟫_𝕜
-  have hpoint (j : κ) : ⟪b j, T (b j)⟫_𝕜 = ∑' i, f i j :=
-    (hasSum_inner_expand T e (b j) (b j)).tsum_eq.symm
-  have habs (i : s) (j : κ) : ‖f i j‖ = ‖⟪b j, e i⟫_𝕜‖ * ‖⟪b j, T (e i)⟫_𝕜‖ := by
-    simp only [f, norm_mul, norm_inner_symm]
-  have hrow (i : s) : ∑' j, ‖f i j‖ ≤ ‖T (e i)‖ := by
-    calc ∑' j, ‖f i j‖
-        = ∑' j, ‖⟪b j, e i⟫_𝕜‖ * ‖⟪b j, T (e i)⟫_𝕜‖ := by simp_rw [habs]
-      _ ≤ ‖e i‖ * ‖T (e i)‖ := tsum_mul_abs_inner_le b (e i) (T (e i))
-      _ = ‖T (e i)‖ := by rw [e.orthonormal.norm_eq_one, one_mul]
-  have hpair : Summable fun p : s × κ ↦ ‖f p.1 p.2‖ := by
+/-- If `∑ ‖T eᵢ‖` converges for a Hilbert basis `e` of `H` and `A : K →L H` is bounded, the
+trace of `T ∘ A` in any Hilbert basis of `K` is `∑ ⟪eᵢ, A (T eᵢ)⟫`. With `A = id` this is the
+trace of `T` itself. -/
+private theorem hilbertTrace_comp_eq_tsum (T : H →L[𝕜] K) {s : Type*}
+    (e : HilbertBasis s 𝕜 H) (hsum : Summable fun i ↦ ‖T (e i)‖) (A : K →L[𝕜] H)
+    (c : HilbertBasis κ 𝕜 K) :
+    hilbertTrace c (T.comp A) = ∑' i, ⟪e i, A (T (e i))⟫_𝕜 := by
+  let g : s → κ → 𝕜 := fun i j ↦ ⟪e i, A (c j)⟫_𝕜 * ⟪c j, T (e i)⟫_𝕜
+  have hgj (i : s) (j : κ) : g i j = ⟪(A†) (e i), c j⟫_𝕜 * ⟪c j, T (e i)⟫_𝕜 := by
+    simp only [g, adjoint_inner_left]
+  have hgabs (i : s) (j : κ) : ‖g i j‖ = ‖⟪c j, (A†) (e i)⟫_𝕜‖ * ‖⟪c j, T (e i)⟫_𝕜‖ := by
+    rw [hgj, norm_mul, norm_inner_symm]
+  have hAe (i : s) : ‖(A†) (e i)‖ * ‖T (e i)‖ ≤ ‖A‖ * ‖T (e i)‖ := by
+    refine mul_le_mul_of_nonneg_right ?_ (norm_nonneg _)
+    refine ((A†).le_opNorm _).trans ?_
+    rw [(adjoint (E := K) (F := H)).norm_map A, e.orthonormal.norm_eq_one, mul_one]
+  have hfin (i : s) (t : Finset κ) : ∑ j ∈ t, ‖g i j‖ ≤ ‖A‖ * ‖T (e i)‖ := by
+    simp_rw [hgabs]
+    exact (sum_mul_norm_inner_hilbertBasis_le c _ _ t).trans (hAe i)
+  have hpair : Summable fun p : s × κ ↦ ‖g p.1 p.2‖ := by
     rw [summable_prod_of_nonneg (fun _ ↦ norm_nonneg _)]
-    refine ⟨fun i ↦ ?_, ?_⟩
-    · refine summable_of_sum_le (c := ‖T (e i)‖) (fun _ ↦ norm_nonneg _) fun t ↦ ?_
-      calc ∑ j ∈ t, ‖f i j‖
-          = ∑ j ∈ t, ‖⟪b j, e i⟫_𝕜‖ * ‖⟪b j, T (e i)⟫_𝕜‖ := by simp_rw [habs]
-        _ ≤ ‖e i‖ * ‖T (e i)‖ := sum_mul_abs_inner_le b (e i) (T (e i)) t
-        _ = ‖T (e i)‖ := by rw [e.orthonormal.norm_eq_one, one_mul]
-    · exact Summable.of_nonneg_of_le (fun i ↦ tsum_nonneg fun _ ↦ norm_nonneg _) hrow hsum
-  have hunc : Summable (Function.uncurry f) :=
+    refine ⟨fun i ↦ summable_of_sum_le (fun _ ↦ norm_nonneg _) (hfin i), ?_⟩
+    exact Summable.of_nonneg_of_le (fun i ↦ tsum_nonneg fun _ ↦ norm_nonneg _)
+      (fun i ↦ Real.tsum_le_of_sum_le (fun _ ↦ norm_nonneg _) (hfin i)) (hsum.mul_left ‖A‖)
+  have hunc : Summable (Function.uncurry g) :=
     Summable.of_norm (by simpa [Function.uncurry] using hpair)
-  have hcol (i : s) : ∑' j, f i j = ⟪e i, T (e i)⟫_𝕜 := by
-    simpa [f] using (b.hasSum_inner_mul_inner (e i) (T (e i))).tsum_eq
-  rw [hilbertTrace, tsum_congr hpoint, hunc.tsum_comm]
+  have hpoint (j : κ) : ⟪c j, (T.comp A) (c j)⟫_𝕜 = ∑' i, g i j := by
+    rw [comp_apply]
+    simpa [g] using (hasSum_inner_expand T e (c j) (A (c j))).tsum_eq.symm
+  have hcol (i : s) : ∑' j, g i j = ⟪e i, A (T (e i))⟫_𝕜 := by
+    simp_rw [hgj]
+    exact (c.hasSum_inner_mul_inner ((A†) (e i)) (T (e i))).tsum_eq.trans
+      (adjoint_inner_left A (T (e i)) (e i))
+  rw [hilbertTrace_def, tsum_congr hpoint, hunc.tsum_comm]
   simp_rw [hcol]
 
 /-- The trace is independent of the possibly differently indexed Hilbert basis. -/
 theorem hilbertTrace_basis_independent {T : H →L[𝕜] H} (hT : IsTraceClassOperator T)
     (b : HilbertBasis ι 𝕜 H) (c : HilbertBasis κ 𝕜 H) : hilbertTrace b T = hilbertTrace c T := by
-  have hnu : T.nuclearENorm ≠ ∞ := hT
-  obtain ⟨s, e, hE⟩ := exists_gramEigenbasis T hnu
-  obtain ⟨hsum, -⟩ := summable_norm_apply_gram T hnu e hE
-  rw [hilbertTrace_eq_sum_inner_apply T e hsum b, hilbertTrace_eq_sum_inner_apply T e hsum c]
+  obtain ⟨s, e, hsum⟩ := exists_hilbertBasis_summable_norm_apply T hT.nuclearENorm_ne_top
+  have hb := hilbertTrace_comp_eq_tsum T e hsum (ContinuousLinearMap.id 𝕜 H) b
+  have hc := hilbertTrace_comp_eq_tsum T e hsum (ContinuousLinearMap.id 𝕜 H) c
+  simp only [comp_id, id_apply] at hb hc
+  rw [hb, hc]
 
-/-- Bounded multiplication preserves trace class, and the trace is cyclic. -/
-theorem IsTraceClassOperator.trace_cyclic {T : H →L[𝕜] H} (hT : IsTraceClassOperator T)
-    (A : H →L[𝕜] H) (b : HilbertBasis ι 𝕜 H) :
-    IsTraceClassOperator (A.comp T) ∧ IsTraceClassOperator (T.comp A) ∧
-      hilbertTrace b (A.comp T) = hilbertTrace b (T.comp A) := by
-  have hnu : T.nuclearENorm ≠ ∞ := hT
-  have hfin (B : H →L[𝕜] H) : ‖B‖ₑ ≠ ∞ := by simp [enorm_eq_nnnorm]
-  have hAT : IsTraceClassOperator (A.comp T) := by
-    have h := nuclearENorm_comp_comp_le A T (ContinuousLinearMap.id 𝕜 H)
-    rw [comp_id] at h
-    exact ne_top_of_le_ne_top (ENNReal.mul_ne_top (ENNReal.mul_ne_top (hfin _) hnu) (hfin _)) h
-  have hTA : IsTraceClassOperator (T.comp A) := by
-    have h := nuclearENorm_comp_comp_le (ContinuousLinearMap.id 𝕜 H) T A
-    rw [id_comp] at h
-    exact ne_top_of_le_ne_top (ENNReal.mul_ne_top (ENNReal.mul_ne_top (hfin _) hnu) (hfin _)) h
-  obtain ⟨s, e, hE⟩ := exists_gramEigenbasis T hnu
-  obtain ⟨hsum, -⟩ := summable_norm_apply_gram T hnu e hE
-  let f : s → ι → 𝕜 := fun i j ↦ ⟪e i, b j⟫_𝕜 * ⟪b j, A (T (e i))⟫_𝕜
-  have habs (i : s) (j : ι) : ‖f i j‖ = ‖⟪b j, e i⟫_𝕜‖ * ‖⟪b j, A (T (e i))⟫_𝕜‖ := by
-    simp only [f, norm_mul, norm_inner_symm]
-  have hrow (i : s) : ∑' j, ‖f i j‖ ≤ ‖A‖ * ‖T (e i)‖ := by
-    calc ∑' j, ‖f i j‖
-        = ∑' j, ‖⟪b j, e i⟫_𝕜‖ * ‖⟪b j, A (T (e i))⟫_𝕜‖ := by simp_rw [habs]
-      _ ≤ ‖e i‖ * ‖A (T (e i))‖ := tsum_mul_abs_inner_le b (e i) (A (T (e i)))
-      _ ≤ ‖A‖ * ‖T (e i)‖ := by
-          rw [e.orthonormal.norm_eq_one, one_mul]
-          exact A.le_opNorm (T (e i))
-  have hpair : Summable fun p : s × ι ↦ ‖f p.1 p.2‖ := by
-    rw [summable_prod_of_nonneg (fun _ ↦ norm_nonneg _)]
-    refine ⟨fun i ↦ ?_, ?_⟩
-    · refine summable_of_sum_le (c := ‖A‖ * ‖T (e i)‖) (fun _ ↦ norm_nonneg _) fun t ↦ ?_
-      calc ∑ j ∈ t, ‖f i j‖
-          = ∑ j ∈ t, ‖⟪b j, e i⟫_𝕜‖ * ‖⟪b j, A (T (e i))⟫_𝕜‖ := by simp_rw [habs]
-        _ ≤ ‖e i‖ * ‖A (T (e i))‖ := sum_mul_abs_inner_le b (e i) (A (T (e i))) t
-        _ ≤ ‖A‖ * ‖T (e i)‖ := by
-            rw [e.orthonormal.norm_eq_one, one_mul]
-            exact A.le_opNorm (T (e i))
-    · exact Summable.of_nonneg_of_le (fun i ↦ tsum_nonneg fun _ ↦ norm_nonneg _) hrow
-        (hsum.mul_left ‖A‖)
-  have hunc : Summable (Function.uncurry f) :=
-    Summable.of_norm (by simpa [Function.uncurry] using hpair)
-  have hpoint (j : ι) : ⟪b j, (A.comp T) (b j)⟫_𝕜 = ∑' i, f i j := by
-    rw [comp_apply]
-    have hs := (innerSL 𝕜 (b j)).hasSum (A.hasSum (T.hasSum (e.hasSum_repr (b j))))
-    simp only [innerSL_apply_apply] at hs
-    rw [← hs.tsum_eq]
-    refine tsum_congr fun i ↦ ?_
-    simp [f, e.repr_apply_apply, map_smul, inner_smul_right]
-  have hcol (i : s) : ∑' j, f i j = ⟪e i, A (T (e i))⟫_𝕜 := by
-    simpa [f] using (b.hasSum_inner_mul_inner (e i) (A (T (e i)))).tsum_eq
-  have hleft : hilbertTrace b (A.comp T) = ∑' i, ⟪e i, A (T (e i))⟫_𝕜 := by
-    rw [hilbertTrace, tsum_congr hpoint, hunc.tsum_comm]
-    simp_rw [hcol]
-  let g : s → ι → 𝕜 := fun i j ↦ ⟪e i, A (b j)⟫_𝕜 * ⟪b j, T (e i)⟫_𝕜
-  have hgabs (i : s) (j : ι) : ‖g i j‖ = ‖⟪b j, (A†) (e i)⟫_𝕜‖ * ‖⟪b j, T (e i)⟫_𝕜‖ := by
-    simp only [g]
-    rw [← adjoint_inner_left, norm_mul, norm_inner_symm]
-  have hAnorm : ‖A†‖ = ‖A‖ := (adjoint (E := H) (F := H)).norm_map A
-  have hgrow (i : s) : ∑' j, ‖g i j‖ ≤ ‖A‖ * ‖T (e i)‖ := by
-    calc ∑' j, ‖g i j‖
-        = ∑' j, ‖⟪b j, (A†) (e i)⟫_𝕜‖ * ‖⟪b j, T (e i)⟫_𝕜‖ := by simp_rw [hgabs]
-      _ ≤ ‖(A†) (e i)‖ * ‖T (e i)‖ := tsum_mul_abs_inner_le b ((A†) (e i)) (T (e i))
-      _ ≤ ‖A‖ * ‖T (e i)‖ := by
-          refine mul_le_mul_of_nonneg_right ?_ (norm_nonneg _)
-          exact ((A†).le_opNorm _).trans (by rw [hAnorm, e.orthonormal.norm_eq_one, mul_one])
-  have hgpair : Summable fun p : s × ι ↦ ‖g p.1 p.2‖ := by
-    rw [summable_prod_of_nonneg (fun _ ↦ norm_nonneg _)]
-    refine ⟨fun i ↦ ?_, ?_⟩
-    · refine summable_of_sum_le (c := ‖A‖ * ‖T (e i)‖) (fun _ ↦ norm_nonneg _) fun t ↦ ?_
-      calc ∑ j ∈ t, ‖g i j‖
-          = ∑ j ∈ t, ‖⟪b j, (A†) (e i)⟫_𝕜‖ * ‖⟪b j, T (e i)⟫_𝕜‖ := by simp_rw [hgabs]
-        _ ≤ ‖(A†) (e i)‖ * ‖T (e i)‖ := sum_mul_abs_inner_le b _ _ t
-        _ ≤ ‖A‖ * ‖T (e i)‖ := by
-            refine mul_le_mul_of_nonneg_right ?_ (norm_nonneg _)
-            exact ((A†).le_opNorm _).trans
-              (by rw [hAnorm, e.orthonormal.norm_eq_one, mul_one])
-    · exact Summable.of_nonneg_of_le (fun i ↦ tsum_nonneg fun _ ↦ norm_nonneg _) hgrow
-        (hsum.mul_left ‖A‖)
-  have hgunc : Summable (Function.uncurry g) :=
-    Summable.of_norm (by simpa [Function.uncurry] using hgpair)
-  have hgpoint (j : ι) : ⟪b j, (T.comp A) (b j)⟫_𝕜 = ∑' i, g i j := by
-    rw [comp_apply]
-    simpa [g] using (hasSum_inner_expand T e (b j) (A (b j))).tsum_eq.symm
-  have hgcol (i : s) : ∑' j, g i j = ⟪e i, A (T (e i))⟫_𝕜 := by
-    have hgj : ∀ j, g i j = ⟪(A†) (e i), b j⟫_𝕜 * ⟪b j, T (e i)⟫_𝕜 := by
-      intro j
-      simp only [g, adjoint_inner_left]
-    simp_rw [hgj]
-    exact (b.hasSum_inner_mul_inner ((A†) (e i)) (T (e i))).tsum_eq.trans
-      (adjoint_inner_left A (T (e i)) (e i))
-  have hright : hilbertTrace b (T.comp A) = ∑' i, ⟪e i, A (T (e i))⟫_𝕜 := by
-    rw [hilbertTrace, tsum_congr hgpoint, hgunc.tsum_comm]
-    simp_rw [hgcol]
-  exact ⟨hAT, hTA, hleft.trans hright.symm⟩
+omit [CompleteSpace H] [CompleteSpace K] [CompleteSpace L] in
+/-- Trace class is a left ideal: `A ∘ T` is trace class for bounded `A`. -/
+theorem IsTraceClassOperator.comp_left {T : H →L[𝕜] K} (hT : IsTraceClassOperator T)
+    (A : K →L[𝕜] L) : IsTraceClassOperator (A.comp T) := by
+  have h := nuclearENorm_comp_comp_le A T (ContinuousLinearMap.id 𝕜 H)
+  rw [comp_id] at h
+  exact ne_top_of_le_ne_top (ENNReal.mul_ne_top (ENNReal.mul_ne_top (by simp [eNorm_eq_nnNorm])
+    hT.nuclearENorm_ne_top) (by simp [eNorm_eq_nnNorm])) h
+
+omit [CompleteSpace H] [CompleteSpace K] [CompleteSpace L] in
+/-- Trace class is a right ideal: `T ∘ B` is trace class for bounded `B`. -/
+theorem IsTraceClassOperator.comp_right {T : H →L[𝕜] K} (hT : IsTraceClassOperator T)
+    (B : L →L[𝕜] H) : IsTraceClassOperator (T.comp B) := by
+  have h := nuclearENorm_comp_comp_le (ContinuousLinearMap.id 𝕜 K) T B
+  rw [id_comp] at h
+  exact ne_top_of_le_ne_top (ENNReal.mul_ne_top (ENNReal.mul_ne_top (by simp [eNorm_eq_nnNorm])
+    hT.nuclearENorm_ne_top) (by simp [eNorm_eq_nnNorm])) h
+
+/-- Cyclicity of the trace: for trace-class `T : H →L K` and bounded `A : K →L H`, the trace of
+`A ∘ T` on `H` equals the trace of `T ∘ A` on `K`, in any Hilbert bases of the two spaces. -/
+theorem IsTraceClassOperator.hilbertTrace_comp_comm {T : H →L[𝕜] K}
+    (hT : IsTraceClassOperator T) (A : K →L[𝕜] H) (b : HilbertBasis ι 𝕜 H)
+    (c : HilbertBasis κ 𝕜 K) : hilbertTrace b (A.comp T) = hilbertTrace c (T.comp A) := by
+  obtain ⟨s, e, hsum⟩ := exists_hilbertBasis_summable_norm_apply T hT.nuclearENorm_ne_top
+  have hsumA : Summable fun i ↦ ‖(A.comp T) (e i)‖ :=
+    Summable.of_nonneg_of_le (fun _ ↦ norm_nonneg _) (fun i ↦ A.le_opNorm (T (e i)))
+      (hsum.mul_left ‖A‖)
+  have hleft := hilbertTrace_comp_eq_tsum (A.comp T) e hsumA (ContinuousLinearMap.id 𝕜 H) b
+  simp only [comp_id, id_apply] at hleft
+  rw [hleft, hilbertTrace_comp_eq_tsum T e hsum A c]
+  rfl
 
 end CKMA

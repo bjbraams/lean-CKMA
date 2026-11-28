@@ -53,6 +53,15 @@ open scoped BigOperators Nat
 def prefixGeometricMean (a : ℕ → ℝ) (n : ℕ) : ℝ :=
   (∏ k ∈ Finset.range (n + 1), a k) ^ (1 / (n + 1 : ℝ))
 
+/-- Defining equation of `prefixGeometricMean`. -/
+theorem prefixGeometricMean_def (a : ℕ → ℝ) (n : ℕ) :
+    prefixGeometricMean a n = (∏ k ∈ Finset.range (n + 1), a k) ^ (1 / (n + 1 : ℝ)) := rfl
+
+/-- The prefix geometric means of a nonnegative sequence are nonnegative. -/
+theorem prefixGeometricMean_nonneg {a : ℕ → ℝ} (ha : ∀ n, 0 ≤ a n) (n : ℕ) :
+    0 ≤ prefixGeometricMean a n :=
+  Real.rpow_nonneg (Finset.prod_nonneg fun k _ => ha k) _
+
 /-- `∑_{k < m} (k + 1) log (1 + 1/(k + 1)) = m log (m + 1) - log (m !)`. -/
 private lemma sum_succ_mul_log_one_add_inv (m : ℕ) :
     ∑ k ∈ range m, (k + 1 : ℝ) * Real.log (1 + 1 / (k + 1 : ℝ)) =
@@ -72,7 +81,7 @@ private lemma sum_succ_mul_log_one_add_inv (m : ℕ) :
       rw [hcast]
     rw [hdiv, hfact]
     push_cast
-    ring
+    ring_nf
 
 /-- Each summand in the factorial expansion is at most `1`. -/
 private lemma succ_mul_log_one_add_inv_le_one (k : ℕ) :
@@ -93,7 +102,7 @@ private lemma factorial_ge_carleman (m : ℕ) :
     ((m + 1 : ℝ) / Real.exp 1) ^ (m : ℝ) ≤ (m ! : ℝ) := by
   have hsum : ∑ k ∈ range m, (k + 1 : ℝ) * Real.log (1 + 1 / (k + 1 : ℝ)) ≤ m := by
     calc
-      _ ≤ ∑ k ∈ range m, (1 : ℝ) :=
+      _ ≤ ∑ _k ∈ range m, (1 : ℝ) :=
         sum_le_sum fun k _ => succ_mul_log_one_add_inv_le_one k
       _ = m := by simp
   have hlog : (m : ℝ) * Real.log ((m + 1 : ℝ) / Real.exp 1) ≤ Real.log (m ! : ℝ) := by
@@ -116,7 +125,7 @@ private lemma prefixGeometricMean_le_carleman {a : ℕ → ℝ} (ha : ∀ n, 0 �
   set z : ℕ → ℝ := fun k => (k + 1 : ℝ) * a k
   have hm : (m : ℝ) ≠ 0 := by positivity
   have hw : ∀ i ∈ s, 0 ≤ (1 : ℝ) / m := fun _ _ => by positivity
-  have hw' : ∑ i ∈ s, (1 : ℝ) / m = 1 := by
+  have hw' : ∑ _i ∈ s, (1 : ℝ) / m = 1 := by
     simp only [s, sum_const, card_range, nsmul_eq_mul]
     field
   have hz : ∀ i ∈ s, 0 ≤ z i := fun _ _ => mul_nonneg (by positivity) (ha _)
@@ -219,9 +228,7 @@ private lemma sum_carleman_weights_le {a : ℕ → ℝ} (ha : ∀ n, 0 ≤ a n) 
 theorem carleman {a : ℕ → ℝ} (ha : ∀ n, 0 ≤ a n) (hs : Summable a) :
     Summable (prefixGeometricMean a) ∧
       (∑' n, prefixGeometricMean a n) ≤ Real.exp 1 * ∑' n, a n := by
-  have hG (n : ℕ) : 0 ≤ prefixGeometricMean a n := by
-    unfold prefixGeometricMean
-    exact Real.rpow_nonneg (prod_nonneg fun k _ => ha k) _
+  have hG (n : ℕ) : 0 ≤ prefixGeometricMean a n := prefixGeometricMean_nonneg ha n
   have hpartial (N : ℕ) :
       ∑ n ∈ range N, prefixGeometricMean a n ≤ Real.exp 1 * ∑' n, a n := by
     calc
@@ -296,7 +303,7 @@ private lemma tendsto_self_div_factorial_rpow :
     filter_upwards [eventually_gt_atTop 0] with n hn
     have hx : 0 < 2 * (n : ℝ) * Real.pi := by positivity
     rw [Function.comp_apply, Real.rpow_def_of_pos (Real.sqrt_pos.2 hx), Real.log_sqrt hx.le]
-    ring
+    ring_nf
   have hden : Tendsto (fun n : ℕ => ((n ! : ℝ) / s n) ^ (n : ℝ)⁻¹ *
       Real.sqrt (2 * (n : ℝ) * Real.pi) ^ (n : ℝ)⁻¹) atTop (𝓝 1) := by
     simpa using hroot.mul hsqrt

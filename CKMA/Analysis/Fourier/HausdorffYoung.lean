@@ -466,7 +466,7 @@ private lemma hy_enorm_rpow (hd : 0 < d) (T : ℝ) (N : ℕ) (x : V) {α : ℝ} 
       refine sum_eq_single_of_mem k hk ?_
       intro j hj hjk
       simp [hyPacket, honly j hj hjk]
-    rw [hfun, hyPacket, enorm_mul, ← ofReal_norm, hyPhase_norm, ENNReal.ofReal_one, one_mul]
+    rw [hfun, hyPacket, eNorm_mul, ← ofReal_norm, hyPhase_norm, ENNReal.ofReal_one, one_mul]
     symm
     refine sum_eq_single_of_mem k hk ?_
     intro j hj hjk
@@ -475,11 +475,11 @@ private lemma hy_enorm_rpow (hd : 0 < d) (T : ℝ) (N : ℕ) (x : V) {α : ℝ} 
     have hfun : hyFun hd T N x = 0 := by
       unfold hyFun
       exact sum_eq_zero fun k hk => by simp [hyPacket, h k hk]
-    rw [hfun, enorm_zero, ENNReal.zero_rpow_of_pos hα]
+    rw [hfun, eNorm_zero, ENNReal.zero_rpow_of_pos hα]
     symm
     exact Finset.sum_eq_zero (s := range N)
       (f := fun k : ℕ => ‖hyPhi (x - hyOnAxis hd 5 k)‖ₑ ^ α) fun k hk => by
-        rw [h k hk, enorm_zero, ENNReal.zero_rpow_of_pos hα]
+        rw [h k hk, eNorm_zero, ENNReal.zero_rpow_of_pos hα]
 
 /-- Translating the bump does not change the integral of a power of its norm. -/
 private lemma hy_lintegral_translate (hd : 0 < d) (k : ℕ) {α : ℝ} :
@@ -504,13 +504,13 @@ private lemma hyFun_lintegral_pow (hd : 0 < d) (T : ℝ) (N : ℕ) {α : ℝ} (h
     simp [sum_const, card_range, nsmul_eq_mul]
   · intro k hk
     exact ((hyPhi_continuous.comp
-      (continuous_id.sub continuous_const)).aestronglyMeasurable.enorm).pow_const α
+      (continuous_id.sub continuous_const)).aestronglyMeasurable.eNorm).pow_const α
 
 /-- The bump has essential supremum one. -/
 private lemma hyPhi_eLpNorm_top : eLpNorm (hyPhi : V → ℂ) ∞ volume = 1 := by
   have hm : AEStronglyMeasurable (hyPhi : V → ℂ) (volume : Measure V) :=
     hyPhi_continuous.aestronglyMeasurable
-  rw [eLpNorm_exponent_top hm, eLpNormEssSup_eq_essSup_enorm]
+  rw [eLpNorm_exponent_top hm, eLpNormEssSup_eq_essSup_eNorm]
   apply le_antisymm
   · refine essSup_le_of_ae_le 1 (Eventually.of_forall fun x => ?_)
     change ‖hyPhi x‖ₑ ≤ 1
@@ -559,7 +559,7 @@ private lemma hyFun_eLpNorm_top (hd : 0 < d) (T : ℝ) (N : ℕ) :
     eLpNorm (hyFun hd T N) ∞ volume ≤ 1 := by
   have hm : AEStronglyMeasurable (hyFun hd T N) volume :=
     (hyFun_continuous hd T N).aestronglyMeasurable
-  rw [eLpNorm_exponent_top hm, eLpNormEssSup_eq_essSup_enorm]
+  rw [eLpNorm_exponent_top hm, eLpNormEssSup_eq_essSup_eNorm]
   refine essSup_le_of_ae_le 1 (Eventually.of_forall fun x => ?_)
   change ‖hyFun hd T N x‖ₑ ≤ 1
   rw [← ofReal_norm, ← ENNReal.ofReal_one]
@@ -576,10 +576,10 @@ private lemma eLpNorm_hyFun_le (hd : 0 < d) (T : ℝ) (N : ℕ) {p : ℝ≥0∞}
     have hα : 0 < p.toReal := ENNReal.toReal_pos hp0 htop
     have hm : AEStronglyMeasurable (hyFun hd T N) volume :=
       (hyFun_continuous hd T N).aestronglyMeasurable
-    rw [eLpNorm_eq_lintegral_rpow_enorm_toReal hp0 htop hm, hyFun_lintegral_pow hd T N hα]
+    rw [eLpNorm_eq_lintegral_rpow_eNorm_toReal hp0 htop hm, hyFun_lintegral_pow hd T N hα]
     have hmφ : AEStronglyMeasurable (hyPhi : V → ℂ) (volume : Measure V) :=
       hyPhi_continuous.aestronglyMeasurable
-    have hφ := eLpNorm_eq_lintegral_rpow_enorm_toReal hp0 htop hmφ
+    have hφ := eLpNorm_eq_lintegral_rpow_eNorm_toReal hp0 htop hmφ
     have hI : (∫⁻ x : V, ‖hyPhi x‖ₑ ^ p.toReal ∂volume) =
         eLpNorm (hyPhi : V → ℂ) p volume ^ p.toReal := by
       rw [hφ, ← ENNReal.rpow_mul, one_div, inv_mul_cancel₀ hα.ne', ENNReal.rpow_one]
@@ -816,7 +816,7 @@ theorem not_hausdorff_young {d : ℕ} (hd : 0 < d) {p q : ℝ≥0∞}
       exact lintegral_mono hpoint
     have hlow : ENNReal.ofReal (δ / 2) * v ^ β * (N : ℝ≥0∞) ^ β ≤
         eLpNorm (𝓕 (hyFun hd T N)) q volume := by
-      rw [eLpNorm_eq_lintegral_rpow_enorm_toReal hq0 hqtop hmeas]
+      rw [eLpNorm_eq_lintegral_rpow_eNorm_toReal hq0 hqtop hmeas]
       have hβeq : β = 1 / q.toReal := by simp only [β, inv_eq_one_div]
       rw [← hβeq]
       refine le_trans ?_ (ENNReal.rpow_le_rpow hlin hβpos.le)

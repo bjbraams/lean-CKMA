@@ -342,7 +342,12 @@ private lemma memLp_cutoffProfileFDeriv_zero {d : ℕ} (hd : 2 ≤ d) {c : Euc d
       have hb : 0 ≤ M * profileBound * ‖x - c‖ ^ (-(1 / 2 : ℝ)) :=
         mul_nonneg (mul_nonneg hM0 profileBound_pos.le) (Real.rpow_nonneg (norm_nonneg _) _)
       have hpow := pow_le_pow_left₀ (norm_nonneg _) hsplit d
-      have hadd := add_pow_le_two_pow_mul ha hb (n := d)
+      have hadd : ((‖x - c‖ * L)⁻¹ + M * profileBound * ‖x - c‖ ^ (-(1 / 2 : ℝ))) ^ d ≤
+          (2 : ℝ) ^ d * (((‖x - c‖ * L)⁻¹) ^ d +
+            (M * profileBound * ‖x - c‖ ^ (-(1 / 2 : ℝ))) ^ d) :=
+        (add_pow_le ha hb d).trans (mul_le_mul_of_nonneg_right
+          (pow_le_pow_right₀ one_le_two (Nat.sub_le d 1))
+          (add_nonneg (pow_nonneg ha d) (pow_nonneg hb d)))
       have hA : ((‖x - c‖ * L)⁻¹) ^ d =
           ((‖x - c‖ * Real.log (Real.exp 1 / ‖x - c‖))⁻¹) ^ d := rfl
       have hB : (M * profileBound * ‖x - c‖ ^ (-(1 / 2 : ℝ))) ^ d =
@@ -663,7 +668,7 @@ private lemma not_memLp_top_cutoffProfile {d : ℕ} (hd : 0 < d) {c : Euc d}
       rw [hu]
       linarith
     have hnn : C < ‖cutoffProfile η 0 x‖₊ := by
-      rw [← NNReal.coe_lt_coe, coe_nnnorm, Real.norm_of_nonneg hpos]
+      rw [← NNReal.coe_lt_coe, coe_nnNorm, Real.norm_of_nonneg hpos]
       exact hgt
     exact not_le.mpr hnn
   have hsubΩ : ball c ρ \ {c} ⊆ (Ω : Set (Euc d)) := by

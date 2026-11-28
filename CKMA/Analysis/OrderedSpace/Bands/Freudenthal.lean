@@ -23,9 +23,11 @@ of Aliprantis–Burkinshaw, Theorem 2.8, rewritten for a signed vector.
 
 ## Main results
 
-* `CKMA.projection_eq_posPart`: a contractive projection onto `{z⁺}ᵈᵈ` maps `z` to `z⁺`.
+* `CKMA.IsOrderProjection.apply_eq_posPart`: an order projection onto `{z⁺}ᵈᵈ` maps `z` to
+  `z⁺`.
 * `CKMA.freudenthal_increment_bounds`: scalar bounds for an increment of principal projections.
-* `CKMA.freudenthal_components`: Freudenthal spectral approximation by disjoint components.
+* `CKMA.freudenthal_approximation`: Freudenthal spectral approximation by disjoint components
+  from the principal projection property (**19.8**).
 -/
 
 public section
@@ -40,12 +42,12 @@ variable {E : Type*} [AddCommGroup E] [Lattice E] [Module ℝ E]
     [IsOrderedAddMonoid E] [IsOrderedModule ℝ E]
 
 omit [IsOrderedModule ℝ E] in
-/-- A projection onto the double disjoint complement of `z⁺` reproduces that positive part. -/
-theorem projection_eq_posPart {P : E →ₗ[ℝ] E} {z : E}
+/-- An order projection onto the double disjoint complement of `z⁺` maps `z` to `z⁺`. -/
+theorem IsOrderProjection.apply_eq_posPart {P : E →ₗ[ℝ] E} (hP : IsOrderProjection P) {z : E}
     (hrange : (LinearMap.range P : Set E) =
-      latticeDisjointComplement (latticeDisjointComplement {z⁺}))
-    (hidem : ∀ x, P (P x) = P x)
-    (hcon : ∀ x, 0 ≤ x → 0 ≤ P x ∧ P x ≤ x) : P z = z⁺ := by
+      latticeDisjointComplement (latticeDisjointComplement {z⁺})) : P z = z⁺ := by
+  have hidem := hP.idem
+  have hcon := hP.nonneg_le
   have hz : z = z⁺ - z⁻ := (posPart_sub_negPart z).symm
   have hfix : P z⁺ = z⁺ := by
     refine contractiveProjection_eq_of_mem_range hidem ?_
@@ -74,27 +76,26 @@ theorem projection_eq_posPart {P : E →ₗ[ℝ] E} {z : E}
     _ = z⁺ := by rw [hfix, hzero, sub_zero]
 
 omit [IsOrderedModule ℝ E] in
-/-- The difference of nested contractive projections is a component of a positive vector. -/
-private theorem nestedProjection_isLatticeComponent {P Q : E →ₗ[ℝ] E} {u : E} (hu : 0 ≤ u)
-    (hPidem : ∀ x, P (P x) = P x) (hPcon : ∀ x, 0 ≤ x → 0 ≤ P x ∧ P x ≤ x)
-    (hQidem : ∀ x, Q (Q x) = Q x) (hQcon : ∀ x, 0 ≤ x → 0 ≤ Q x ∧ Q x ≤ x)
+/-- The difference of nested order projections maps a positive vector to a component. -/
+private theorem IsOrderProjection.sub_apply_isLatticeComponent {P Q : E →ₗ[ℝ] E} {u : E}
+    (hu : 0 ≤ u) (hP : IsOrderProjection P) (hQ : IsOrderProjection Q)
     (hsubset : (LinearMap.range Q : Set E) ⊆ (LinearMap.range P : Set E)) :
-    0 ≤ (P - Q) u ∧ (P - Q) u ≤ u ∧ (P - Q) u ⊓ (u - (P - Q) u) = 0 := by
-  have hsub := contractiveProjection_sub hPidem hPcon hQidem hQcon hsubset
-  refine ⟨(hsub.2 u hu).1, (hsub.2 u hu).2, ?_⟩
-  exact contractiveProjection_disjoint_nonneg hsub.1 hsub.2 hu hu
+    IsLatticeComponent ((P - Q) u) u := by
+  have hsub := hP.sub hQ hsubset
+  exact ⟨hsub.nonneg hu, hsub.le hu, hsub.inf_sub_eq_zero hu hu⟩
 
 omit [IsOrderedModule ℝ E] in
 /-- Scalar bounds for an increment of principal projections, as in Freudenthal's estimate. -/
 theorem freudenthal_increment_bounds {P Q : E →ₗ[ℝ] E} {w1 u : E} {α β : ℝ}
-    (hPidem : ∀ x, P (P x) = P x) (hPcon : ∀ x, 0 ≤ x → 0 ≤ P x ∧ P x ≤ x)
-    (hQidem : ∀ x, Q (Q x) = Q x) (hQcon : ∀ x, 0 ≤ x → 0 ≤ Q x ∧ Q x ≤ x)
+    (hP' : IsOrderProjection P) (hQ' : IsOrderProjection Q)
     (hsubset : (LinearMap.range Q : Set E) ⊆ (LinearMap.range P : Set E))
     (hP : P (w1 - α • u) = (w1 - α • u)⁺)
     (hQ : Q (w1 - β • u) = (w1 - β • u)⁺) :
     α • (P - Q) u ≤ (P - Q) w1 ∧ (P - Q) w1 ≤ β • (P - Q) u := by
-  have hQP : Q.comp P = Q :=
-    contractiveProjection_comp_left_eq_of_range_subset hPidem hPcon hQidem hQcon hsubset
+  have hPidem := hP'.idem
+  have hPcon := hP'.nonneg_le
+  have hQcon := hQ'.nonneg_le
+  have hQP : Q.comp P = Q := hP'.comp_eq_of_range_subset hQ' hsubset
   have hQPy : ∀ y, Q (P y) = Q y := by
     intro y
     rw [← LinearMap.comp_apply, hQP]
@@ -233,11 +234,11 @@ private theorem freudenthal_partition_sum_approx {f g : ℕ → E} {w1 u : E} {N
 omit [IsOrderedModule ℝ E] in
 /-- Increments of an antitone sequence of contractive projections are pairwise disjoint. -/
 private theorem freudenthal_step_disjoint {Q : ℕ → E →ₗ[ℝ] E} {u : E} (hu : 0 ≤ u)
-    (hidem : ∀ k x, Q k (Q k x) = Q k x)
-    (hcon : ∀ k x, 0 ≤ x → 0 ≤ Q k x ∧ Q k x ≤ x)
+    (hQ : ∀ k, IsOrderProjection (Q k))
     (hanti : ∀ {p q : ℕ}, p ≤ q → Q q u ≤ Q p u)
     {p q : ℕ} (hpq : p < q) :
     LatticeDisjoint (Q p u - Q (p + 1) u) (Q q u - Q (q + 1) u) := by
+  have hcon := fun k ↦ (hQ k).nonneg_le
   have hp1 : p + 1 ≤ q := Nat.succ_le_of_lt hpq
   have hgp : Q (p + 1) u ≤ Q p u := hanti (Nat.le_succ p)
   have hgq : Q (q + 1) u ≤ Q q u := hanti (Nat.le_succ q)
@@ -250,7 +251,7 @@ private theorem freudenthal_step_disjoint {Q : ℕ → E →ₗ[ℝ] E} {u : E} 
   have hq1 : 0 ≤ Q (q + 1) u := (hcon (q + 1) u hu).1
   have hle2 : Q q u - Q (q + 1) u ≤ Q (p + 1) u := (sub_le_self _ hq1).trans hgqp
   have hinf0 : (u - Q (p + 1) u) ⊓ Q (p + 1) u = 0 := by
-    have hdis := contractiveProjection_disjoint_nonneg (hidem (p + 1)) (hcon (p + 1)) hu hu
+    have hdis := (hQ (p + 1)).inf_sub_eq_zero hu hu
     rwa [inf_comm] at hdis
   rw [LatticeDisjoint, abs_of_nonneg hvp, abs_of_nonneg hvq]
   exact le_antisymm ((inf_le_inf hle1 hle2).trans (le_of_eq hinf0)) (le_inf hvp hvq)
@@ -259,18 +260,17 @@ omit [IsOrderedModule ℝ E] in
 /-- Every increment of an antitone sequence of contractive projections is disjoint from the
 complement of the initial projection. -/
 private theorem freudenthal_rest_disjoint {Q : ℕ → E →ₗ[ℝ] E} {u : E} (hu : 0 ≤ u)
-    (hidem : ∀ k x, Q k (Q k x) = Q k x)
-    (hcon : ∀ k x, 0 ≤ x → 0 ≤ Q k x ∧ Q k x ≤ x)
+    (hQ : ∀ k, IsOrderProjection (Q k))
     (hanti : ∀ {p q : ℕ}, p ≤ q → Q q u ≤ Q p u) (p : ℕ) :
     LatticeDisjoint (Q p u - Q (p + 1) u) (u - Q 0 u) := by
+  have hcon := fun k ↦ (hQ k).nonneg_le
   have hgp : Q (p + 1) u ≤ Q p u := hanti (Nat.le_succ p)
   have hgle : Q p u ≤ Q 0 u := hanti (Nat.zero_le p)
   have hvp : 0 ≤ Q p u - Q (p + 1) u := sub_nonneg.2 hgp
   have hvr : 0 ≤ u - Q 0 u := sub_nonneg.2 (hcon 0 u hu).2
   have hp1 : 0 ≤ Q (p + 1) u := (hcon (p + 1) u hu).1
   have hle : Q p u - Q (p + 1) u ≤ Q 0 u := (sub_le_self _ hp1).trans hgle
-  have h0 : Q 0 u ⊓ (u - Q 0 u) = 0 :=
-    contractiveProjection_disjoint_nonneg (hidem 0) (hcon 0) hu hu
+  have h0 : Q 0 u ⊓ (u - Q 0 u) = 0 := (hQ 0).inf_sub_eq_zero hu hu
   rw [LatticeDisjoint, abs_of_nonneg hvp, abs_of_nonneg hvr]
   exact le_antisymm ((inf_le_inf_right _ hle).trans (le_of_eq h0)) (le_inf hvp hvr)
 
@@ -278,22 +278,17 @@ private theorem freudenthal_rest_disjoint {Q : ℕ → E →ₗ[ℝ] E} {u : E} 
 principal projection property, form a decreasing family of contractive projections from the
 identity on `w1` to zero. Their increments at `u` are components of `u` that bracket the
 increments at `w1` by the scalars `k / N` and `(k + 1) / N`. -/
-private theorem exists_freudenthal_projections
-    (hp : ∀ u : E, ∃ P : E →ₗ[ℝ] E,
-      (LinearMap.range P : Set E) =
-        latticeDisjointComplement (latticeDisjointComplement {u}) ∧
-      (∀ x, P (P x) = P x) ∧ ∀ x, 0 ≤ x → 0 ≤ P x ∧ P x ≤ x)
+private theorem exists_freudenthal_projections (hp : HasPrincipalBandProjections E)
     {u w1 : E} (hu : 0 ≤ u) (hw10 : 0 ≤ w1) (hw1u : w1 ≤ u) {N : ℕ} (hN : (0 : ℝ) < N) :
-    ∃ Q : ℕ → E →ₗ[ℝ] E, (∀ k y, Q k (Q k y) = Q k y) ∧
-      (∀ k y, 0 ≤ y → 0 ≤ Q k y ∧ Q k y ≤ y) ∧
+    ∃ Q : ℕ → E →ₗ[ℝ] E, (∀ k, IsOrderProjection (Q k)) ∧
       (∀ {p q : ℕ}, p ≤ q → Q q u ≤ Q p u) ∧ Q 0 w1 = w1 ∧ (∀ y, Q N y = 0) ∧
       (∀ i : ℕ, ((i : ℝ) / N) • (Q i u - Q (i + 1) u) ≤ Q i w1 - Q (i + 1) w1 ∧
         Q i w1 - Q (i + 1) w1 ≤ (((i : ℝ) + 1) / N) • (Q i u - Q (i + 1) u)) ∧
-      ∀ i : ℕ, 0 ≤ Q i u - Q (i + 1) u ∧ Q i u - Q (i + 1) u ≤ u ∧
-        (Q i u - Q (i + 1) u) ⊓ (u - (Q i u - Q (i + 1) u)) = 0 := by
-  choose proj hrange hidem hcon using hp
+      ∀ i : ℕ, IsLatticeComponent (Q i u - Q (i + 1) u) u := by
+  choose proj hrange hproj using hp
+  have hidem := fun v ↦ (hproj v).idem
   have happly : ∀ t : ℝ, proj (w1 - t • u)⁺ (w1 - t • u) = (w1 - t • u)⁺ := fun t ↦
-    projection_eq_posPart (hrange _) (hidem _) (hcon _)
+    (hproj _).apply_eq_posPart (hrange _)
   have hrange_anti : ∀ {s t : ℝ}, s ≤ t → (LinearMap.range (proj (w1 - t • u)⁺) : Set E) ⊆
       (LinearMap.range (proj (w1 - s • u)⁺) : Set E) := by
     intro s t hst
@@ -314,19 +309,18 @@ private theorem exists_freudenthal_projections
     rwa [hR, Set.mem_singleton_iff] at hy
   have hdiv : ∀ {a b : ℝ}, a ≤ b → a / N ≤ b / N := fun h ↦ div_le_div_of_nonneg_right h hN.le
   have hsucc : ∀ i : ℕ, (i : ℝ) / N ≤ ((i : ℝ) + 1) / N := fun i ↦ hdiv (by linarith)
-  refine ⟨fun k ↦ proj (w1 - ((k : ℝ) / N) • u)⁺, fun k ↦ hidem _, fun k ↦ hcon _, ?_, ?_, ?_,
+  refine ⟨fun k ↦ proj (w1 - ((k : ℝ) / N) • u)⁺, fun k ↦ hproj _, ?_, ?_, ?_,
     fun i ↦ ?_, fun i ↦ ?_⟩
   · intro p q hpq
-    exact contractiveProjection_le_of_range_subset (hidem _) (hcon _) (hcon _)
+    exact (hproj _).le_of_range_subset (hproj _).nonneg_le
       (hrange_anti (hdiv (Nat.cast_le.mpr hpq))) hu
   · simpa only [Nat.cast_zero, zero_div] using hproj0
   · simpa only [div_self hN.ne'] using hproj1
   · simpa only [Nat.cast_add, Nat.cast_one, LinearMap.sub_apply] using
-      freudenthal_increment_bounds (hidem _) (hcon _) (hidem _) (hcon _)
-        (hrange_anti (hsucc i)) (happly _) (happly _)
+      freudenthal_increment_bounds (hproj _) (hproj _) (hrange_anti (hsucc i)) (happly _)
+        (happly _)
   · simpa only [Nat.cast_add, Nat.cast_one, LinearMap.sub_apply] using
-      nestedProjection_isLatticeComponent hu (hidem _) (hcon _) (hidem _) (hcon _)
-        (hrange_anti (hsucc i))
+      (hproj _).sub_apply_isLatticeComponent hu (hproj _) (hrange_anti (hsucc i))
 
 omit [Lattice E] [IsOrderedAddMonoid E] [IsOrderedModule ℝ E] in
 /-- The Freudenthal combination of the increments `g i - g (i + 1)`, `i < N`, and the remainder
@@ -351,8 +345,7 @@ omit [IsOrderedModule ℝ E] in
 /-- The increments of a decreasing family of contractive projections at `u`, completed by the
 remainder `u - Q 0 u`, are pairwise disjoint. -/
 private theorem freudenthal_snoc_disjoint {Q : ℕ → E →ₗ[ℝ] E} {u : E} (hu : 0 ≤ u)
-    (hidem : ∀ k x, Q k (Q k x) = Q k x)
-    (hcon : ∀ k x, 0 ≤ x → 0 ≤ Q k x ∧ Q k x ≤ x)
+    (hQ : ∀ k, IsOrderProjection (Q k))
     (hanti : ∀ {p q : ℕ}, p ≤ q → Q q u ≤ Q p u) {N : ℕ} (i j : Fin (N + 1)) (hij : i ≠ j) :
     LatticeDisjoint
       ((Fin.snoc (fun i : Fin N ↦ Q i u - Q (i + 1) u) (u - Q 0 u) : Fin (N + 1) → E) i)
@@ -363,18 +356,18 @@ private theorem freudenthal_snoc_disjoint {Q : ℕ → E →ₗ[ℝ] E} {u : E} 
     | last => exact absurd rfl hij
     | cast j =>
       simpa only [Fin.snoc_last, Fin.snoc_castSucc] using
-        (freudenthal_rest_disjoint hu hidem hcon hanti j).symm
+        (freudenthal_rest_disjoint hu hQ hanti j).symm
   | cast i =>
     induction j using Fin.lastCases with
     | last =>
       simpa only [Fin.snoc_last, Fin.snoc_castSucc] using
-        freudenthal_rest_disjoint hu hidem hcon hanti i
+        freudenthal_rest_disjoint hu hQ hanti i
     | cast j =>
       simp only [Fin.snoc_castSucc]
       have hij' : (i : ℕ) ≠ j := fun h ↦ hij (congrArg Fin.castSucc (Fin.ext h))
       rcases lt_or_gt_of_ne hij' with hlt | hgt
-      · exact freudenthal_step_disjoint hu hidem hcon hanti hlt
-      · exact (freudenthal_step_disjoint hu hidem hcon hanti hgt).symm
+      · exact freudenthal_step_disjoint hu hQ hanti hlt
+      · exact (freudenthal_step_disjoint hu hQ hanti hgt).symm
 
 /-- Rescaling the mesh estimate `0 ≤ w1 - s ≤ (1 / N) • u` gives the order error of the
 Freudenthal approximation of `x = lam • w1 - c1 • u`. -/
@@ -385,22 +378,19 @@ private theorem freudenthal_error_le {x w1 s u : E} {lam c1 ε : ℝ} {N : ℕ} 
   have herr : x - (lam • s - c1 • u) = lam • (w1 - s) := by
     rw [smul_sub, hw1]
     abel
-  rw [herr, abs_smul, abs_of_nonneg hlam.le, abs_of_nonneg herr1]
+  rw [herr, abs_smul_of_lattice, abs_of_nonneg hlam.le, abs_of_nonneg herr1]
   calc
     lam • (w1 - s) ≤ lam • (((1 : ℝ) / N) • u) := smul_le_smul_of_nonneg_left herr2 hlam.le
     _ = (lam / N) • u := by rw [smul_smul, mul_one_div]
     _ ≤ ε • u := smul_le_smul_of_nonneg_right hdiv.le hu
 
-/-- **Freudenthal approximation** from the principal projection property.
-`hp` is the raw form of `HasPrincipalBandProjections`. -/
-theorem freudenthal_components
-    (hp : ∀ u : E, ∃ P : E →ₗ[ℝ] E,
-      (LinearMap.range P : Set E) =
-        latticeDisjointComplement (latticeDisjointComplement {u}) ∧
-      (∀ x, P (P x) = P x) ∧ ∀ x, 0 ≤ x → 0 ≤ P x ∧ P x ≤ x)
-    {u x : E} (hu : 0 ≤ u) (hx : ∃ c : ℝ, 0 ≤ c ∧ |x| ≤ c • u) {ε : ℝ} (hε : 0 < ε) :
+/-- **19.8**, Freudenthal approximation in the order-error form from the principal projection
+property: a vector of the principal ideal of `u ≥ 0` lies within `ε • u` of a linear
+combination of pairwise disjoint components of `u`. -/
+theorem freudenthal_approximation (hp : HasPrincipalBandProjections E) {u x : E} (hu : 0 ≤ u)
+    (hx : x ∈ principalOrderIdeal u) {ε : ℝ} (hε : 0 < ε) :
     ∃ (n : ℕ) (a : Fin n → ℝ) (v : Fin n → E),
-      (∀ i, 0 ≤ v i ∧ v i ≤ u ∧ v i ⊓ (u - v i) = 0) ∧
+      (∀ i, IsLatticeComponent (v i) u) ∧
       (∀ i j, i ≠ j → LatticeDisjoint (v i) (v j)) ∧
       |x - ∑ i, a i • v i| ≤ ε • u := by
   obtain ⟨c, hc0, hxc⟩ := hx
@@ -414,19 +404,19 @@ theorem freudenthal_components
     rw [div_lt_iff₀ hε] at hN
     rw [div_lt_iff₀ hNpos]
     linarith
-  obtain ⟨Q, hQidem, hQcon, hQanti, hQ0, hQN, hpoint, hstep⟩ :=
+  obtain ⟨Q, hQ, hQanti, hQ0, hQN, hpoint, hstep⟩ :=
     exists_freudenthal_projections hp hu hw10 hw1u hNpos
   obtain ⟨herr1, herr2⟩ := freudenthal_partition_sum_approx (f := fun k ↦ Q k w1)
-    (g := fun k ↦ Q k u) hNpos hQ0 (hQN w1) (hQN u) (hQcon 0 u hu).2 fun i _ ↦ hpoint i
+    (g := fun k ↦ Q k u) hNpos hQ0 (hQN w1) (hQN u) ((hQ 0).le hu) fun i _ ↦ hpoint i
   refine ⟨N + 1, Fin.snoc (fun i : Fin N ↦ lam * ((i : ℝ) / N) - c1) (-c1),
     Fin.snoc (fun i : Fin N ↦ Q i u - Q (i + 1) u) (u - Q 0 u), fun i ↦ ?_,
-    freudenthal_snoc_disjoint hu hQidem hQcon hQanti, ?_⟩
+    freudenthal_snoc_disjoint hu hQ hQanti, ?_⟩
   · induction i using Fin.lastCases with
     | last =>
-      simp only [Fin.snoc_last, sub_sub_cancel]
-      refine ⟨sub_nonneg.2 (hQcon 0 u hu).2, sub_le_self _ (hQcon 0 u hu).1, ?_⟩
-      rw [inf_comm]
-      exact contractiveProjection_disjoint_nonneg (hQidem 0) (hQcon 0) hu hu
+      simp only [Fin.snoc_last]
+      refine ⟨sub_nonneg.2 ((hQ 0).le hu), sub_le_self _ ((hQ 0).nonneg hu), ?_⟩
+      rw [sub_sub_cancel, inf_comm]
+      exact (hQ 0).inf_sub_eq_zero hu hu
     | cast i => simpa only [Fin.snoc_castSucc] using hstep i
   · rw [freudenthal_sum_snoc (fun k ↦ Q k u) u N lam c1 (hQN u)]
     exact freudenthal_error_le hlam hu hdiv hw1w herr1 herr2

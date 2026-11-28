@@ -9,8 +9,12 @@ public import CKMA.Dynamics.Ergodic.Recurrence.Combinatorics
 public import Mathlib.Dynamics.Ergodic.MeasurePreserving
 public import Mathlib.MeasureTheory.Measure.Typeclasses.Probability
 
-import Mathlib.Tactic
 import Mathlib.MeasureTheory.Integral.Lebesgue.Add
+import Mathlib.Tactic.Basify
+import Mathlib.Tactic.ENatToNat
+import Mathlib.Tactic.Monotonicity.Lemmas
+import Mathlib.Tactic.Polynomial.Basic
+import Mathlib.Tactic.ReduceModChar
 
 /-!
 # Multiple recurrence from progression counts
@@ -41,7 +45,7 @@ noncomputable section
 
 namespace CKMA
 
-open Finset MeasureTheory Filter Topology Asymptotics Function
+open Finset MeasureTheory Filter Topology Function
 open scoped ENNReal BigOperators
 
 attribute [local instance] Classical.propDecidable

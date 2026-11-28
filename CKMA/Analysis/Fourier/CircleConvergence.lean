@@ -47,18 +47,10 @@ local notation "haar" => AddCircle.haarAddCircle (T := 1)
 private lemma integrable_fejerKernel_mul_norm_sub {f : 𝕋 → ℂ} (hf : Integrable f haar)
     (N : ℕ) (x : 𝕋) :
     Integrable (fun t : 𝕋 => fejerKernel N t * ‖f (x - t) - f x‖) haar := by
-  have hshift : Integrable (fun t : 𝕋 => f (x - t)) haar := hf.comp_sub_left x
-  have hker : AEStronglyMeasurable (fun t : 𝕋 => (fejerKernel N t : ℂ)) haar :=
-    (Complex.continuous_ofReal.comp (continuous_fejerKernel N)).aestronglyMeasurable
-  have hbound : ∀ᵐ t ∂haar, ‖(fejerKernel N t : ℂ)‖ ≤ (N + 1 : ℝ) :=
-    ae_of_all _ fun t => by
-      rw [Complex.norm_real, Real.norm_of_nonneg (fejerKernel_nonneg N t)]
-      exact fejerKernel_le_succ N t
   have hint1 : Integrable (fun t => (fejerKernel N t : ℂ) * f (x - t)) haar :=
-    hshift.bdd_mul hker hbound
+    integrable_fejerKernel_mul (hf.comp_sub_left x) N
   have hint2 : Integrable (fun t => (fejerKernel N t : ℂ) * f x) haar :=
-    ((Complex.continuous_ofReal.comp (continuous_fejerKernel N)).integrable_of_hasCompactSupport
-      (.of_compactSpace _)).mul_const (f x)
+    integrable_fejerKernel_mul (integrable_const (f x)) N
   have hint : Integrable (fun t => (fejerKernel N t : ℂ) * (f (x - t) - f x)) haar :=
     (hint1.sub hint2).congr <| ae_of_all _ fun t => by
       simp only [Pi.sub_apply]
@@ -306,9 +298,9 @@ private lemma enorm_fejerMean_le {f : 𝕋 → ℂ} (hf : Integrable f haar) (N 
     ‖fejerMean f N x‖ₑ ≤
       ∫⁻ t, ENNReal.ofReal (fejerKernel N t) * ‖f (x - t)‖ₑ ∂haar := by
   rw [fejerMean_eq_conv hf N x]
-  refine (enorm_integral_le_lintegral_enorm _).trans (le_of_eq ?_)
+  refine (eNorm_integral_le_lintegral_eNorm _).trans (le_of_eq ?_)
   refine lintegral_congr fun t => ?_
-  rw [enorm_mul, ← ofReal_norm, Complex.norm_real,
+  rw [eNorm_mul, ← ofReal_norm, Complex.norm_real,
     Real.norm_of_nonneg (fejerKernel_nonneg N t)]
 
 /-- Fejer means contract the finite `L^p` norm. -/
@@ -326,7 +318,7 @@ private lemma eLpNorm_fejerMean_le {p : ℝ≥0∞} (hp : 1 ≤ p) (hpt : p < �
   have hASM : AEStronglyMeasurable (fejerMean g N) haar :=
     (continuous_fejerMean g N).aestronglyMeasurable
   have hgnorm : Measurable fun x => ‖g x‖ₑ :=
-    continuous_enorm.measurable.comp hg_meas
+    continuous_eNorm.measurable.comp hg_meas
   rcases lt_or_eq_of_le hp with hplt | hp1
   · have hq : 1 < p.toReal := by
       rw [← ENNReal.toReal_one]
@@ -345,11 +337,11 @@ private lemma eLpNorm_fejerMean_le {p : ℝ≥0∞} (hp : 1 ≤ p) (hpt : p < �
                 ‖g (x - t)‖ₑ ^ p.toReal ∂haar ∂haar := lintegral_mono hpoint
         _ = ∫⁻ x, ‖g x‖ₑ ^ p.toReal ∂haar :=
           lintegral_fejerKernel_shift N (hgnorm.pow_const _).aemeasurable
-    rw [eLpNorm_eq_lintegral_rpow_enorm_toReal hp0 hpt.ne hASM,
-      eLpNorm_eq_lintegral_rpow_enorm_toReal hp0 hpt.ne hg_mem.aestronglyMeasurable]
+    rw [eLpNorm_eq_lintegral_rpow_eNorm_toReal hp0 hpt.ne hASM,
+      eLpNorm_eq_lintegral_rpow_eNorm_toReal hp0 hpt.ne hg_mem.aestronglyMeasurable]
     exact ENNReal.rpow_le_rpow hint (by positivity)
-  · rw [← hp1, eLpNorm_one_eq_lintegral_enorm hASM,
-      eLpNorm_one_eq_lintegral_enorm hg_mem.aestronglyMeasurable]
+  · rw [← hp1, eLpNorm_one_eq_lintegral_eNorm hASM,
+      eLpNorm_one_eq_lintegral_eNorm hg_mem.aestronglyMeasurable]
     calc
       ∫⁻ x, ‖fejerMean g N x‖ₑ ∂haar
           ≤ ∫⁻ x, ∫⁻ t, ENNReal.ofReal (fejerKernel N t) * ‖g (x - t)‖ₑ ∂haar ∂haar :=

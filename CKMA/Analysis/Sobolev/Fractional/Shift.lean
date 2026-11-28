@@ -29,6 +29,11 @@ For a strongly measurable `ℂ`-valued function on Euclidean space and a positiv
 the quotient `|u(x) - u(y)|² / |x - y|ᵖ` is rearranged, by left invariance of Lebesgue measure,
 as an integral over the increment `h = y - x`. On the diagonal both the extended quotient and
 the real quotient are zero, so the two conventions agree everywhere.
+
+## Main results
+
+* `CKMA.lintegral_sq_div_rpow_eq_translate`: the Gagliardo double integral equals the iterated
+  integral `∫⁻ h, (∫⁻ x, |u (x + h) - u x|²) / |h|ᵖ` over the increment.
 -/
 
 public section
@@ -42,6 +47,7 @@ open scoped ENNReal
 
 variable {d : ℕ}
 
+/-- Measurability of the squared increment `‖u (x + h) - u x‖²` in `(x, h)`. -/
 private lemma measurable_translateDiff_sq {u : EuclideanSpace ℝ (Fin d) → ℂ}
     (hu : StronglyMeasurable u) :
     Measurable fun q : EuclideanSpace ℝ (Fin d) × EuclideanSpace ℝ (Fin d) =>
@@ -50,11 +56,13 @@ private lemma measurable_translateDiff_sq {u : EuclideanSpace ℝ (Fin d) → �
   refine (continuous_pow 2).measurable.comp (measurable_norm.comp ?_)
   exact (hum.comp (measurable_fst.add measurable_snd)).sub (hum.comp measurable_fst)
 
+/-- Measurability of `‖h‖ ^ p` in `(x, h)`. -/
 private lemma measurable_snd_norm_rpow {p : ℝ} (hp : 0 ≤ p) :
     Measurable fun q : EuclideanSpace ℝ (Fin d) × EuclideanSpace ℝ (Fin d) => ‖q.2‖ ^ p := by
   refine ((continuous_norm.comp continuous_id).rpow_const fun _ => Or.inr hp).measurable.comp
     measurable_snd
 
+/-- Measurability of `ENNReal.ofReal ‖u (x + h) - u x‖²` in `x` for fixed `h`. -/
 private lemma measurable_sq_add {u : EuclideanSpace ℝ (Fin d) → ℂ} (hu : StronglyMeasurable u)
     (h : EuclideanSpace ℝ (Fin d)) :
     Measurable fun x => ENNReal.ofReal (‖u (x + h) - u x‖ ^ 2) := by

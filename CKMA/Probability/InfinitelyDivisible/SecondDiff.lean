@@ -47,6 +47,11 @@ open scoped NNReal ENNReal
 def secondDiff (f : ℝ → ℂ) (h t : ℝ) : ℂ :=
   f (t + h) + f (t - h) - 2 * f t
 
+/-- Defining formula of `secondDiff`. -/
+lemma secondDiff_def (f : ℝ → ℂ) (h t : ℝ) :
+    secondDiff f h t = f (t + h) + f (t - h) - 2 * f t :=
+  rfl
+
 /-- Second differences are additive. -/
 private lemma secondDiff_add (f g : ℝ → ℂ) (h t : ℝ) :
     secondDiff (fun s => f s + g s) h t = secondDiff f h t + secondDiff g h t := by
@@ -168,6 +173,11 @@ lemma secondDiff_exponent (L : LevyTriplet) (h t : ℝ) :
 def sineWeight (h x : ℝ) : ℝ :=
   4 * Real.sin (h * x / 2) ^ 2
 
+/-- Defining formula of `sineWeight`. -/
+lemma sineWeight_def (h x : ℝ) :
+    sineWeight h x = 4 * Real.sin (h * x / 2) ^ 2 :=
+  rfl
+
 /-- The sine weight is nonnegative. -/
 private lemma sineWeight_nonneg (h x : ℝ) : 0 ≤ sineWeight h x := by
   unfold sineWeight
@@ -213,6 +223,11 @@ private lemma integrable_sineWeight {ν : Measure ℝ} (hν : IsLevyMeasure ν) 
 def sineDensity (h : ℝ) : ℝ → ℝ≥0∞ :=
   fun x => ENNReal.ofReal (sineWeight h x)
 
+/-- Defining formula of `sineDensity`. -/
+lemma sineDensity_def (h : ℝ) :
+    sineDensity h = fun x => ENNReal.ofReal (sineWeight h x) :=
+  rfl
+
 /-- The sine density is measurable. -/
 private lemma measurable_sineDensity (h : ℝ) : Measurable (sineDensity h) :=
   ENNReal.measurable_ofReal.comp (continuous_sineWeight h).measurable
@@ -221,6 +236,11 @@ private lemma measurable_sineDensity (h : ℝ) : Measurable (sineDensity h) :=
 @[expose]
 def sineSet (h : ℝ) : Set ℝ :=
   {x | Real.sin (h * x / 2) ≠ 0}
+
+/-- Defining formula of `sineSet`. -/
+lemma sineSet_def (h : ℝ) :
+    sineSet h = {x | Real.sin (h * x / 2) ≠ 0} :=
+  rfl
 
 /-- The sine set is Borel. -/
 lemma measurableSet_sineSet (h : ℝ) : MeasurableSet (sineSet h) := by
@@ -250,6 +270,12 @@ def sineMeasure (L : LevyTriplet) (h : ℝ) : Measure ℝ :=
   ENNReal.ofReal ((L.gaussianVariance : ℝ) * h ^ 2) • Measure.dirac 0 +
     L.jumpMeasure.withDensity (sineDensity h)
 
+/-- Defining formula of `sineMeasure`. -/
+lemma sineMeasure_def (L : LevyTriplet) (h : ℝ) :
+    sineMeasure L h = ENNReal.ofReal ((L.gaussianVariance : ℝ) * h ^ 2) • Measure.dirac 0 +
+      L.jumpMeasure.withDensity (sineDensity h) :=
+  rfl
+
 /-- A Lévy measure weighted by the sine density is finite. -/
 private lemma isFiniteMeasure_withDensity_sine (L : LevyTriplet) (h : ℝ) :
     IsFiniteMeasure (L.jumpMeasure.withDensity (sineDensity h)) := by
@@ -267,7 +293,7 @@ private lemma isFiniteMeasure_gaussianAtom (L : LevyTriplet) (h : ℝ) :
   have hdir : Measure.dirac (0 : ℝ) Set.univ = 1 := by
     rw [Measure.dirac_apply' _ MeasurableSet.univ]
     simp [Set.indicator_of_mem]
-  rw [Measure.smul_apply, hdir, smul_eq_mul, mul_one]
+  rw [smul_apply, hdir, smul_eq_mul, mul_one]
   exact ENNReal.ofReal_lt_top
 
 /-- The sine measure of a Lévy triplet is finite. -/
@@ -319,7 +345,7 @@ private lemma charFun_jumpSine (L : LevyTriplet) (h t : ℝ) :
   simp only [sineDensity, ENNReal.toReal_ofReal (sineWeight_nonneg h x),
     RCLike.real_smul_eq_coe_mul]
   congr 1
-  ring
+  ring_nf
 
 /-- The characteristic function of the sine measure is the negative second difference. -/
 lemma charFun_sineMeasure (L : LevyTriplet) (h t : ℝ) :
@@ -349,7 +375,7 @@ lemma sineMeasure_real_singleton (L : LevyTriplet) (h : ℝ) :
   have hdir : Measure.dirac (0 : ℝ) {(0 : ℝ)} = 1 := by
     rw [Measure.dirac_apply' _ (measurableSet_singleton _)]
     simp [Set.indicator_of_mem]
-  rw [measureReal_def, sineMeasure, Measure.add_apply, Measure.smul_apply, hden, add_zero,
+  rw [measureReal_def, sineMeasure, add_apply, smul_apply, hden, add_zero,
     hdir, smul_eq_mul, mul_one, ENNReal.toReal_ofReal
       (mul_nonneg (NNReal.coe_nonneg _) (sq_nonneg _))]
 
@@ -364,11 +390,11 @@ lemma jumpMeasure_restrict_eq_inv_sine (L : LevyTriplet) (h : ℝ) :
   have hdir : (ENNReal.ofReal ((L.gaussianVariance : ℝ) * h ^ 2) •
       Measure.dirac (0 : ℝ)).restrict (sineSet h) = 0 := by
     ext t ht
-    rw [Measure.restrict_apply ht, Measure.smul_apply,
+    rw [Measure.restrict_apply ht, smul_apply,
       Measure.dirac_apply' _ (ht.inter hs),
       Set.indicator_of_notMem (fun hmem => h0 (Set.mem_of_mem_inter_right hmem)),
       smul_zero]
-    simp [Measure.coe_zero]
+    simp
   have hrest : (sineMeasure L h).restrict (sineSet h) =
       (L.jumpMeasure.withDensity (sineDensity h)).restrict (sineSet h) := by
     unfold sineMeasure
